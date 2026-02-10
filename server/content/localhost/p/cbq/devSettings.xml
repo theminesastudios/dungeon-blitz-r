@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+    <!-- Enable core dev modes -->
+    <!-- <DEVFLAG_MASTER_CLIENT /> -->
+    <!-- <DEVFLAG_STANDALONE_CLIENT /> -->
+    <!-- <DEVFLAG_SERVERLOCAL /> -->
+    <!-- <DEVFLAG_ADDXMLDEVSETTINGS /> -->
+
+
+    <!-- Debug visuals and tools -->
+    <!-- <DEVFLAG_SHOWENTITYCOLLISION /> -->
+    <!-- <DEVFLAG_SHOWENTITYGHOST /> -->
+    <!-- <DEVFLAG_SHOWPERFORMANCE /> -->
+    <!-- <DEVFLAG_SHOWRESOURCEMONITOR /> -->
+    <!-- <DEVFLAG_DEVSPAWNENABLED /> -->
+    <!-- <DEVFLAG_SPAWN_MONSTERS /> -->
+    <!-- <DEVFLAG_DUMBMONSTERS /> -->
+    <!-- <DEVFLAG_SHOWWORLDCOLLISION /> -->
+    <!-- <DEVFLAG_SHOWPOWERRANGE /> -->
+    <!-- <DEVFLAG_SHOWBEHAVIOR /> -->
+    <!-- <DEVFLAG_SHOWCUES /> -->
+    <!-- <DEVFLAG_PERFORMANCETEST /> -->
+    <!-- <DEVFLAG_OUTLINE_REMOTE_ENTS /> -->
+    <!-- <DEVFLAG_SHOWCHARACTERCREATE /> -->
+
+    <!-- Standalone overrides -->
+    <!-- <STANDALONEMAPNAME value="LevelsHome.swf/a_Level_Home" /> -->
+    <!-- <STANDALONEMAPINTERNALNAME value="CraftTown" /> -->
+    <!-- <STANDALONEMAPLEVEL value="1" /> -->
+    <!-- <STANDALONEBASELEVEL value="1" />  -->
+    <!-- <STANDALONEPLAYERENTTYPE value="DevPaladin" /> -->
+    <!-- <STANDALONEMOMENTPARAMS value="" /> -->
+    <!-- <STANDALONEALTERPARAMS value="" /> -->
+    <!-- <STANDALONEISINSTANCED value="true" /> -->
+
+    <!-- Other options -->
+    <!-- <VAR_2032 value="127.0.0.1" /> -->
+
+    <!-- not sure what the actual purpose is for these -->
+    <!-- <DEVFLAG_NO_GRAPHICS /> -->
+    <!-- <DEVFLAG_NO_PLAYERENT /> -->
+    <!-- <CONST_511 /> -->
+    <!-- <CONST_938 />  -->
+    <!-- <CONST_1124 /> -->
+
+</settings>
