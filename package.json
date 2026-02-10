@@ -5,6 +5,10 @@
 	"description": "",
 	"author": "",
 	"license": "MIT",
+	"scripts": {
+		"build": "tsc",
+		"start": "node dist/index.js"
+	},
 	"keywords": [
 		"game",
 		"rpg",
