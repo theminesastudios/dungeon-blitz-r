@@ -1,2 +1,3 @@
 node_modules
-server
+server_tapes
+src/server/dist

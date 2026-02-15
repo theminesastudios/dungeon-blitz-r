@@ -17,6 +17,10 @@ import { SigilHandler } from './handlers/SigilHandler';
 import { GameData } from './core/GameData';
 import { MissionLoader } from './data/MissionLoader';
 import { NpcLoader } from './data/NpcLoader';
+import { CombatHandler } from './handlers/CombatHandler';
+import { BuildingHandler } from './handlers/BuildingHandler';
+import { SystemHandler } from './handlers/SystemHandler';
+import { AILogic } from './core/AILogic';
 import * as path from 'path';
 
 import { StaticServer } from './core/StaticServer';
@@ -63,6 +67,24 @@ router.register(0xE9, PetHandler.handleEggSpeedUp);
 router.register(0xEA, PetHandler.handleCollectHatchedEgg);
 router.register(0xE8, PetHandler.handleCancelEggHatch);
 
+// Combat
+router.register(0x9, CombatHandler.handlePowerCast);
+router.register(0x0A, CombatHandler.handlePowerHit);
+router.register(0x0E, CombatHandler.handleProjectileExplode);
+router.register(0x0D, CombatHandler.handleEntityDestroy);
+router.register(0x77, CombatHandler.handleRequestRespawn);
+router.register(0x82, CombatHandler.handleRespawnBroadcast);
+router.register(0x79, CombatHandler.handleBuffTickDot);
+router.register(0x0B, CombatHandler.handleAddBuff);
+router.register(0x0C, CombatHandler.handleRemoveBuff);
+
+// Buildings
+router.register(0xD7, BuildingHandler.handleBuildingUpgrade);
+router.register(0xDC, BuildingHandler.handleBuildingSpeedUpRequest);
+
+// System
+router.register(0x7C, SystemHandler.handleClientCrashReport);
+
 // Talent Packets
 router.register(0xD2, TalentHandler.handleRespecTalentTree);
 router.register(0xC0, TalentHandler.handleAllocateTalentTreePoints);
@@ -82,5 +104,8 @@ policyServer.start();
 const staticServer = new StaticServer(80);
 staticServer.start();
 
+
 const gameServer = new GameServer(Config.PORTS[0], router);
+AILogic.start();
 gameServer.start();
+

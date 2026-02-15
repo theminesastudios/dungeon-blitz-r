@@ -1,0 +1,300 @@
+[
+    {
+        "EggName": "---Template---",
+        "EggID": 0,
+        "DisplayName": "EggName",
+        "ClassType": "ClassType",
+        "Color": "Color",
+        "Description": "Awesome Egg Lore",
+        "EggRank": 99,
+        "Art": "Art"
+    },
+    {
+        "EggName": "GenericBrown",
+        "EggID": 1,
+        "DisplayName": "Speckled White Egg",
+        "ClassType": "Generic",
+        "Color": "Brown",
+        "EggRank": 0
+    },
+    {
+        "EggName": "CommonBrown",
+        "EggID": 2,
+        "DisplayName": "Elaborate White Egg",
+        "ClassType": "Common",
+        "Color": "Brown",
+        "EggRank": 0
+    },
+    {
+        "EggName": "OrdinaryBrown",
+        "EggID": 3,
+        "DisplayName": "Striped White Egg",
+        "ClassType": "Ordinary",
+        "Color": "Brown",
+        "EggRank": 0
+    },
+    {
+        "EggName": "PlainBrown",
+        "EggID": 4,
+        "DisplayName": "Shiny White Egg",
+        "ClassType": "Plain",
+        "Color": "Brown",
+        "EggRank": 0
+    },
+    {
+        "EggName": "GenericRed",
+        "EggID": 5,
+        "DisplayName": "Speckled Red Egg",
+        "ClassType": "Generic",
+        "Color": "Red",
+        "EggRank": 1
+    },
+    {
+        "EggName": "GenericYellow",
+        "EggID": 6,
+        "DisplayName": "Speckled Yellow Egg",
+        "ClassType": "Generic",
+        "Color": "Yellow",
+        "EggRank": 1
+    },
+    {
+        "EggName": "GenericBlue",
+        "EggID": 7,
+        "DisplayName": "Speckled Blue Egg",
+        "ClassType": "Generic",
+        "Color": "Blue",
+        "EggRank": 1
+    },
+    {
+        "EggName": "GenericGreen",
+        "EggID": 8,
+        "DisplayName": "Speckled Green Egg",
+        "ClassType": "Generic",
+        "Color": "Green",
+        "EggRank": 1
+    },
+    {
+        "EggName": "CommonRed",
+        "EggID": 9,
+        "DisplayName": "Elaborate Red Egg",
+        "ClassType": "Common",
+        "Color": "Red",
+        "EggRank": 1
+    },
+    {
+        "EggName": "CommonYellow",
+        "EggID": 10,
+        "DisplayName": "Elaborate Yellow Egg",
+        "ClassType": "Common",
+        "Color": "Yellow",
+        "EggRank": 1
+    },
+    {
+        "EggName": "CommonBlue",
+        "EggID": 11,
+        "DisplayName": "Elaborate Blue Egg",
+        "ClassType": "Common",
+        "Color": "Blue",
+        "EggRank": 1
+    },
+    {
+        "EggName": "CommonGreen",
+        "EggID": 12,
+        "DisplayName": "Elaborate Green Egg",
+        "ClassType": "Common",
+        "Color": "Green",
+        "EggRank": 1
+    },
+    {
+        "EggName": "OrdinaryRed",
+        "EggID": 13,
+        "DisplayName": "Striped Red Egg",
+        "ClassType": "Ordinary",
+        "Color": "Red",
+        "EggRank": 1
+    },
+    {
+        "EggName": "OrdinaryYellow",
+        "EggID": 14,
+        "DisplayName": "Striped Yellow Egg",
+        "ClassType": "Ordinary",
+        "Color": "Yellow",
+        "EggRank": 1
+    },
+    {
+        "EggName": "OrdinaryBlue",
+        "EggID": 15,
+        "DisplayName": "Striped Blue Egg",
+        "ClassType": "Ordinary",
+        "Color": "Blue",
+        "EggRank": 1
+    },
+    {
+        "EggName": "OrdinaryGreen",
+        "EggID": 16,
+        "DisplayName": "Striped Green Egg",
+        "ClassType": "Ordinary",
+        "Color": "Green",
+        "EggRank": 1
+    },
+    {
+        "EggName": "PlainRed",
+        "EggID": 17,
+        "DisplayName": "Shiny Red Egg",
+        "ClassType": "Plain",
+        "Color": "Red",
+        "EggRank": 1
+    },
+    {
+        "EggName": "PlainYellow",
+        "EggID": 18,
+        "DisplayName": "Shiny Yellow Egg",
+        "ClassType": "Plain",
+        "Color": "Yellow",
+        "EggRank": 1
+    },
+    {
+        "EggName": "PlainBlue",
+        "EggID": 19,
+        "DisplayName": "Shiny Blue Egg",
+        "ClassType": "Plain",
+        "Color": "Blue",
+        "EggRank": 1
+    },
+    {
+        "EggName": "PlainGreen",
+        "EggID": 20,
+        "DisplayName": "Shiny Green Egg",
+        "ClassType": "Plain",
+        "Color": "Green",
+        "EggRank": 1
+    },
+    {
+        "EggName": "DragonRed",
+        "EggID": 21,
+        "DisplayName": "Ruby Draconic Egg",
+        "ClassType": "Dragon",
+        "Color": "Red",
+        "EggRank": 2
+    },
+    {
+        "EggName": "DragonYellow",
+        "EggID": 22,
+        "DisplayName": "Amber Draconic Egg",
+        "ClassType": "Dragon",
+        "Color": "Yellow",
+        "EggRank": 2
+    },
+    {
+        "EggName": "DragonBlue",
+        "EggID": 23,
+        "DisplayName": "Saphire Draconic Egg",
+        "ClassType": "Dragon",
+        "Color": "Blue",
+        "EggRank": 2
+    },
+    {
+        "EggName": "DragonGreen",
+        "EggID": 24,
+        "DisplayName": "Emerald Draconic Egg",
+        "ClassType": "Dragon",
+        "Color": "Green",
+        "EggRank": 2
+    },
+    {
+        "EggName": "BirdRed",
+        "EggID": 25,
+        "DisplayName": "Ruddy Avian Egg",
+        "ClassType": "Bird",
+        "Color": "Red",
+        "EggRank": 2
+    },
+    {
+        "EggName": "BirdYellow",
+        "EggID": 26,
+        "DisplayName": "Saffron Avian Egg",
+        "ClassType": "Bird",
+        "Color": "Yellow",
+        "EggRank": 2
+    },
+    {
+        "EggName": "BirdBlue",
+        "EggID": 27,
+        "DisplayName": "Royal Avian Egg",
+        "ClassType": "Bird",
+        "Color": "Blue",
+        "EggRank": 2
+    },
+    {
+        "EggName": "BirdGreen",
+        "EggID": 28,
+        "DisplayName": "Verdant Avian Egg",
+        "ClassType": "Bird",
+        "Color": "Green",
+        "EggRank": 2
+    },
+    {
+        "EggName": "AncientRed",
+        "EggID": 29,
+        "DisplayName": "Bloodshot Antediluvian Egg",
+        "ClassType": "Ancient",
+        "Color": "Red",
+        "EggRank": 2
+    },
+    {
+        "EggName": "AncientYellow",
+        "EggID": 30,
+        "DisplayName": "Xanthous Antediluvian Egg",
+        "ClassType": "Ancient",
+        "Color": "Yellow",
+        "EggRank": 2
+    },
+    {
+        "EggName": "AncientBlue",
+        "EggID": 31,
+        "DisplayName": "Azure Antediluvian Egg",
+        "ClassType": "Ancient",
+        "Color": "Blue",
+        "EggRank": 2
+    },
+    {
+        "EggName": "AncientGreen",
+        "EggID": 32,
+        "DisplayName": "Verdigris Antediluvian Egg",
+        "ClassType": "Ancient",
+        "Color": "Green",
+        "EggRank": 2
+    },
+    {
+        "EggName": "GhostRed",
+        "EggID": 33,
+        "DisplayName": "Sanguine Netherworld Egg",
+        "ClassType": "Ghost",
+        "Color": "Red",
+        "EggRank": 2
+    },
+    {
+        "EggName": "GhostYellow",
+        "EggID": 34,
+        "DisplayName": "Tawny Netherworld Egg",
+        "ClassType": "Ghost",
+        "Color": "Yellow",
+        "EggRank": 2
+    },
+    {
+        "EggName": "GhostBlue",
+        "EggID": 35,
+        "DisplayName": "Cerulean Netherworld Egg",
+        "ClassType": "Ghost",
+        "Color": "Blue",
+        "EggRank": 2
+    },
+    {
+        "EggName": "GhostGreen",
+        "EggID": 36,
+        "DisplayName": "Sage Netherworld Egg",
+        "ClassType": "Ghost",
+        "Color": "Green",
+        "EggRank": 2
+    }
+]

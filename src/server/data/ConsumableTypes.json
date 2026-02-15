@@ -1,0 +1,111 @@
+[
+    {
+        "ConsumableName": "MinorRareCatalyst",
+        "ConsumableID": 1,
+        "DisplayName": "Inventor's Trinket",
+        "RareBoost": 100,
+        "LegendaryBoost": 0,
+        "Type": "Catalyst",
+        "Rarity": "M"
+    },
+    {
+        "ConsumableName": "MinorLegendaryCatalyst",
+        "ConsumableID": 2,
+        "DisplayName": "Voidmatter",
+        "RareBoost": 0,
+        "LegendaryBoost": 0,
+        "Type": "Catalyst",
+        "Rarity": "R"
+    },
+    {
+        "ConsumableName": "MajorRareCatalyst",
+        "ConsumableID": 3,
+        "DisplayName": "Dragonfire Talisman",
+        "RareBoost": 100,
+        "LegendaryBoost": 50,
+        "Type": "Catalyst",
+        "Rarity": "R"
+    },
+    {
+        "ConsumableName": "MajorLegendaryCatalyst",
+        "ConsumableID": 4,
+        "DisplayName": "Heart of the Furnace",
+        "RareBoost": 0,
+        "LegendaryBoost": 100,
+        "Type": "Catalyst",
+        "Rarity": "L"
+    },
+    {
+        "ConsumableName": "ForgeXP",
+        "ConsumableID": 5,
+        "DisplayName": "The Tinker's Soul",
+        "ArtisanXP": 4000,
+        "Type": "ForgeXP",
+        "Rarity": "M"
+    },
+    {
+        "ConsumableName": "GoldFindRegular",
+        "ConsumableID": 6,
+        "DisplayName": "Potion of Gold Find",
+        "GoldFind": 0.5,
+        "Type": "Potion",
+        "Rarity": "M"
+    },
+    {
+        "ConsumableName": "MaterialFindRegular",
+        "ConsumableID": 7,
+        "DisplayName": "Potion of Material Find",
+        "MaterialFind": 0.5,
+        "Type": "Potion",
+        "Rarity": "M"
+    },
+    {
+        "ConsumableName": "XPFindRegular",
+        "ConsumableID": 8,
+        "DisplayName": "Potion of XP Boost",
+        "XP": 0.5,
+        "Type": "Potion",
+        "Rarity": "M"
+    },
+    {
+        "ConsumableName": "Resurrection",
+        "ConsumableID": 9,
+        "DisplayName": "Vengeance Potion",
+        "Type": "ResPotion",
+        "Rarity": "R"
+    },
+    {
+        "ConsumableName": "RarePetFood",
+        "ConsumableID": 10,
+        "DisplayName": "Arcane Chew Bone",
+        "Magnitude": 60000,
+        "Type": "PetFood",
+        "Rarity": "L"
+    },
+    {
+        "ConsumableName": "PetFood",
+        "ConsumableID": 11,
+        "DisplayName": "Savory Steak",
+        "Magnitude": 30000,
+        "Type": "PetFood",
+        "Rarity": "M"
+    },
+    {
+        "ConsumableName": "AwesomeCashShopBoost",
+        "ConsumableID": 12,
+        "DisplayName": "Potion of Triple Find",
+        "GoldFind": 0.75,
+        "MaterialFind": 0.75,
+        "XP": 0.75,
+        "Type": "Potion",
+        "Rarity": "R"
+    },
+    {
+        "ConsumableName": "GearFindRegular",
+        "ConsumableID": 13,
+        "DisplayName": "Potion of Gear Find",
+        "GearFind": 0.5,
+        "Type": "Potion",
+        "Rarity": "M"
+    }
+]

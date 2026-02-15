@@ -1,0 +1,565 @@
+{
+    "mission progress ": {
+        "packet_type": "0x83",
+        "description": "",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "10",
+                "hint": ""
+            },
+            {
+                "method": "write_method_4",
+                "value": "1",
+                "hint": ""
+            }
+        ]
+    },
+    "Mission added": {
+        "packet_type": "0x85",
+        "description": "",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "9"
+            },
+            {
+                "method": "write_method_11",
+                "value": "2,1"
+            }
+        ]
+    },
+    "Mission Complete": {
+        "packet_type": "0x84",
+        "description": "Mission Complete",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "1",
+                "hint": " missions ID"
+            },
+            {
+                "method": "write_method_11",
+                "value": "1,1",
+                "hint": "true if this is a dungeon "
+            },
+            {
+                "method": "write_method_6",
+                "value": "10,4",
+                "hint": "Stars"
+            },
+            {
+                "method": "write_method_4",
+                "value": "5000",
+                "hint": "Dungeon score"
+            }
+        ]
+    },
+    "Marks a mission as complete": {
+        "packet_type": "0x86",
+        "description": "",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "16",
+                "hint": ""
+            }
+        ]
+    },
+    "ZoneFriendsUpdate": {
+        "packet_type": "0x96",
+        "description": "Update nearby players / zone friends",
+        "buffers": [
+            {
+                "method": "write_method_11",
+                "value": "1"
+            },
+            {
+                "method": "write_method_13",
+                "value": "Alice"
+            },
+            {
+                "method": "write_method_6",
+                "value": "1,2"
+            },
+            {
+                "method": "write_method_6",
+                "value": "30,7"
+            },
+            {
+                "method": "write_method_11",
+                "value": "0"
+            }
+        ]
+    },
+    "SkitTrigger": {
+        "packet_type": "0x7b",
+        "description": "Trigger a dialogue/skit on an entity",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "2",
+                "hint": "Entity ID "
+            },
+            {
+                "method": "write_method_6",
+                "value": "3, 3",
+                "hint": "Dialog ID : 1 to 5 "
+            },
+            {
+                "method": "write_method_4",
+                "value": "286",
+                "hint": "Mission ID "
+            }
+        ]
+    },
+    "LevelUp": {
+        "packet_type": "0x39",
+        "description": "Update entity level",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "14968",
+                "hint": "user ID "
+            },
+            {
+                "method": "write_method_6",
+                "value": "41,6",
+                "hint": "level"
+            },
+            {
+                "method": "write_method_45",
+                "value": "5000",
+                "hint": "Health"
+            }
+        ]
+    },
+    "Admin chat Announcement": {
+        "packet_type": "0x102",
+        "description": "Admin chat Announcement",
+        "buffers": [
+            {
+                "method": "write_method_13",
+                "value": "Hello"
+            }
+        ]
+    },
+    "Server Maintenance Warning": {
+        "packet_type": "0x101",
+        "description": "Server Maintance Warning ",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "1000"
+            }
+        ]
+    },
+    "Guild Recieve chat": {
+        "packet_type": "0x60",
+        "description": "Guild Chat",
+        "buffers": [
+            {
+                "method": "write_method_13",
+                "value": "Frosby"
+            },
+            {
+                "method": "write_method_13",
+                "value": "Testing"
+            }
+        ]
+    },
+    "Party Recieve Chat": {
+        "packet_type": "0x64",
+        "description": "Party chat",
+        "buffers": [
+            {
+                "method": "write_method_13",
+                "value": "Pepe"
+            },
+            {
+                "method": "write_method_13",
+                "value": "Testing"
+            }
+        ]
+    },
+    "Update events": {
+        "packet_type": "0x103",
+        "description": "Update Events",
+        "buffers": [
+            {
+                "method": "write_method_13",
+                "value": "a_NewsGearIcon"
+            },
+            {
+                "method": "write_method_13",
+                "value": "Double Gear Event"
+            },
+            {
+                "method": "write_method_13",
+                "value": "More gear drops "
+            },
+            {
+                "method": "write_method_13",
+                "value": "http://www.dungeonblitz.com/"
+            },
+            {
+                "method": "write_method_4",
+                "value": "1786841238"
+            }
+        ]
+    },
+    "Officer Chat Recieve": {
+        "packet_type": "0x62",
+        "description": "Officer Chat Recieve",
+        "buffers": [
+            {
+                "method": "write_method_13",
+                "value": "Player"
+            },
+            {
+                "method": "write_method_13",
+                "value": "Double Gear Event"
+            }
+        ]
+    },
+    "Emote Begin": {
+        "packet_type": "0x7e",
+        "description": "Emote Begin",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "150"
+            },
+            {
+                "method": "write_method_13",
+                "value": "Sharpen L"
+            }
+        ]
+    },
+    "Give Gold": {
+        "packet_type": "0x35",
+        "description": "Give Gold ",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "50000"
+            }
+        ]
+    },
+    "give mount ": {
+        "packet_type": "0x36",
+        "description": "Give Mount",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "106",
+                "hint": ""
+            }
+        ]
+    },
+    "Dungeon Completed ": {
+        "packet_type": "0x87",
+        "description": "Dungeon Completed ",
+        "buffers": [
+            {
+                "method": "write_method_6",
+                "value": "10,4",
+                "hint": "Stars"
+            },
+            {
+                "method": "write_method_4",
+                "value": "1",
+                "hint": "result bar"
+            },
+            {
+                "method": "write_method_4",
+                "value": "1",
+                "hint": "Rank"
+            },
+            {
+                "method": "write_method_4",
+                "value": "2000",
+                "hint": "Kills"
+            },
+            {
+                "method": "write_method_4",
+                "value": "3000",
+                "hint": "Accuracy"
+            },
+            {
+                "method": "write_method_4",
+                "value": "4000",
+                "hint": "deaths"
+            },
+            {
+                "method": "write_method_4",
+                "value": "5000",
+                "hint": "Treasure"
+            },
+            {
+                "method": "write_method_4",
+                "value": "6000",
+                "hint": "time bonus"
+            }
+        ]
+    },
+    "Dye Receive": {
+        "packet_type": "0x10A",
+        "description": "Dye Receive",
+        "buffers": [
+            {
+                "method": "write_method_6",
+                "value": "1,8"
+            },
+            {
+                "method": "write_method_11",
+                "value": "2,1"
+            }
+        ]
+    },
+    "Room Thought ": {
+        "packet_type": "0x76",
+        "description": "Room Thought ",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "1"
+            },
+            {
+                "method": "write_method_13",
+                "value": "We\u2019ve been using  water from the Ogre Magi oasis to revive Shazari.=@Very clever and generous of you.=We were successfully undoing the damage the dragons wrought.=But now someone is siphoning off our water.=And there are carnivorous plants everywhere!=@Devourers in the desert?=@Don\u2019t worry, I know how to take care of them."
+            }
+        ]
+    },
+    "You are no longer ignoring user": {
+        "packet_type": "0x9f",
+        "description": "Ignoring user list ",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "3",
+                "hint": ""
+            },
+            {
+                "method": "write_method_13",
+                "value": "neutral",
+                "hint": ""
+            },
+            {
+                "method": "write_method_13",
+                "value": "user",
+                "hint": ""
+            },
+            {
+                "method": "write_method_13",
+                "value": "pepe",
+                "hint": ""
+            }
+        ]
+    },
+    "Update nearby players / zone friends": {
+        "packet_type": "0x96",
+        "description": "Update nearby players / zone friends",
+        "buffers": [
+            {
+                "method": "write_method_11",
+                "value": "1,1"
+            },
+            {
+                "method": "write_method_13",
+                "value": "Alice"
+            },
+            {
+                "method": "write_method_6",
+                "value": "1,2"
+            },
+            {
+                "method": "write_method_6",
+                "value": "30,6"
+            }
+        ]
+    },
+    "entity Movevement update": {
+        "packet_type": "0x7",
+        "description": "entity Movevement update",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "603",
+                "hint": "Entity ID "
+            },
+            {
+                "method": "write_method_24",
+                "value": "0",
+                "hint": "delta_x"
+            },
+            {
+                "method": "write_method_24",
+                "value": "0",
+                "hint": "delta_y"
+            },
+            {
+                "method": "write_method_24",
+                "value": "0",
+                "hint": "delta_vx"
+            },
+            {
+                "method": "write_method_11",
+                "value": "0,2",
+                "hint": "ent_state"
+            },
+            {
+                "method": "write_method_11",
+                "value": "1,1",
+                "hint": "b_left"
+            },
+            {
+                "method": "write_method_11",
+                "value": "0,1",
+                "hint": "b_running"
+            },
+            {
+                "method": "write_method_11",
+                "value": "0,1",
+                "hint": "b_jumping"
+            },
+            {
+                "method": "write_method_11",
+                "value": "0,1",
+                "hint": "b_dropping"
+            },
+            {
+                "method": "write_method_11",
+                "value": "1,1",
+                "hint": "b_backpedal"
+            }
+        ]
+    },
+    "quest proggres ": {
+        "packet_type": "0xB7",
+        "description": "quest proggres ",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "100",
+                "hint": ""
+            }
+        ]
+    },
+    "Send XP to Player ": {
+        "packet_type": "0x2B",
+        "description": "",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "5000"
+            }
+        ]
+    },
+    "PKTTYPE_GAME_TO_MASTER_START_LEVEL": {
+        "packet_type": "0x24",
+        "description": "",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "1"
+            },
+            {
+                "method": "write_method_13",
+                "value": "LevelsTut.swf"
+            },
+            {
+                "method": "write_method_13",
+                "value": "TutorialBoat"
+            },
+            {
+                "method": "write_method_6",
+                "value": "5,6"
+            },
+            {
+                "method": "write_method_6",
+                "value": "5,6"
+            },
+            {
+                "method": "write_method_4",
+                "value": "30"
+            },
+            {
+                "method": "write_method_13",
+                "value": "Hard"
+            },
+            {
+                "method": "write_method_13",
+                "value": "Hard"
+            },
+            {
+                "method": "write_method_11",
+                "value": "1,1"
+            }
+        ]
+    },
+    "PKTTYPE_GAME_TO_MASTER_PORT": {
+        "packet_type": "0x23",
+        "description": "",
+        "buffers": [
+            {
+                "method": "write_method_13",
+                "value": "127.0.0.1"
+            },
+            {
+                "method": "write_method_91",
+                "value": "8080"
+            }
+        ]
+    },
+    "Enter World ": {
+        "packet_type": "0x10",
+        "description": "",
+        "buffers": [
+            {
+                "method": "write_method_4",
+                "value": "1"
+            },
+            {
+                "method": "write_method_4",
+                "value": "1"
+            },
+            {
+                "method": "write_method_6",
+                "value": "1,2"
+            },
+            {
+                "method": "write_method_4",
+                "value": "1"
+            },
+            {
+                "method": "write_method_13",
+                "value": "DevPaladin"
+            },
+            {
+                "method": "write_method_11",
+                "value": "1,1"
+            },
+            {
+                "method": "write_method_13",
+                "value": "Paladin"
+            },
+            {
+                "method": "write_method_13",
+                "value": "Long"
+            },
+            {
+                "method": "write_method_13",
+                "value": "Do08"
+            },
+            {
+                "method": "write_method_13",
+                "value": "M01"
+            },
+            {
+                "method": "write_method_13",
+                "value": "F06"
+            }
+        ]
+    }
+}

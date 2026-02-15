@@ -1,0 +1,1059 @@
+[
+    {
+        "MaterialName": "---Template---",
+        "MaterialID": "0",
+        "DisplayName": "---Template---",
+        "Rarity": "M",
+        "Kingdom": "Kingdom",
+        "DropRealm": "Realm",
+        "FromRoyalStore": "False"
+    },
+    {
+        "MaterialName": "DraconicDragonM",
+        "MaterialID": "1",
+        "DisplayName": "Massive Scale",
+        "Rarity": "M",
+        "Kingdom": "Draconic",
+        "DropRealm": "Dragon"
+    },
+    {
+        "MaterialName": "DraconicDragonR",
+        "MaterialID": "2",
+        "DisplayName": "Dragon Talon",
+        "Rarity": "R",
+        "Kingdom": "Draconic",
+        "DropRealm": "Dragon"
+    },
+    {
+        "MaterialName": "DraconicDragonL",
+        "MaterialID": "3",
+        "DisplayName": "Skull of the Gods",
+        "Rarity": "L",
+        "Kingdom": "Draconic",
+        "DropRealm": "Dragon",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "DraconicHumanM",
+        "MaterialID": "4",
+        "DisplayName": "Conjured Flame",
+        "Rarity": "M",
+        "Kingdom": "Draconic",
+        "DropRealm": "Human"
+    },
+    {
+        "MaterialName": "DraconicHumanR",
+        "MaterialID": "5",
+        "DisplayName": "Ruby Charm",
+        "Rarity": "R",
+        "Kingdom": "Draconic",
+        "DropRealm": "Human"
+    },
+    {
+        "MaterialName": "DraconicHumanL",
+        "MaterialID": "6",
+        "DisplayName": "Drakefire Talisman",
+        "Rarity": "L",
+        "Kingdom": "Draconic",
+        "DropRealm": "Human",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "DraconicLizardM",
+        "MaterialID": "7",
+        "DisplayName": "Smooth Scales",
+        "Rarity": "M",
+        "Kingdom": "Draconic",
+        "DropRealm": "Lizard"
+    },
+    {
+        "MaterialName": "DraconicLizardR",
+        "MaterialID": "8",
+        "DisplayName": "Lizard Tooth",
+        "Rarity": "R",
+        "Kingdom": "Draconic",
+        "DropRealm": "Lizard"
+    },
+    {
+        "MaterialName": "DraconicLizardL",
+        "MaterialID": "9",
+        "DisplayName": "Bloodguard Bracers",
+        "Rarity": "L",
+        "Kingdom": "Draconic",
+        "DropRealm": "Lizard",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "DraconicRaptorM",
+        "MaterialID": "10",
+        "DisplayName": "Raptor Scales",
+        "Rarity": "M",
+        "Kingdom": "Draconic",
+        "DropRealm": "Raptor"
+    },
+    {
+        "MaterialName": "DraconicRaptorR",
+        "MaterialID": "11",
+        "DisplayName": "Severed Talon",
+        "Rarity": "R",
+        "Kingdom": "Draconic",
+        "DropRealm": "Raptor"
+    },
+    {
+        "MaterialName": "DraconicRaptorL",
+        "MaterialID": "12",
+        "DisplayName": "Eye of the Wild",
+        "Rarity": "L",
+        "Kingdom": "Draconic",
+        "DropRealm": "Raptor",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "DraconicWyrmM",
+        "MaterialID": "13",
+        "DisplayName": "Wyrm Tail",
+        "Rarity": "M",
+        "Kingdom": "Draconic",
+        "DropRealm": "Wyrm"
+    },
+    {
+        "MaterialName": "DraconicWyrmR",
+        "MaterialID": "14",
+        "DisplayName": "Thick Hide",
+        "Rarity": "R",
+        "Kingdom": "Draconic",
+        "DropRealm": "Wyrm"
+    },
+    {
+        "MaterialName": "DraconicWyrmL",
+        "MaterialID": "15",
+        "DisplayName": "Bellow Gland",
+        "Rarity": "L",
+        "Kingdom": "Draconic",
+        "DropRealm": "Wyrm",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "InfernalAbominationM",
+        "MaterialID": "16",
+        "DisplayName": "Unholy Sutures",
+        "Rarity": "M",
+        "Kingdom": "Infernal",
+        "DropRealm": "Abomination"
+    },
+    {
+        "MaterialName": "InfernalAbominationR",
+        "MaterialID": "17",
+        "DisplayName": "Accursed Heart",
+        "Rarity": "R",
+        "Kingdom": "Infernal",
+        "DropRealm": "Abomination"
+    },
+    {
+        "MaterialName": "InfernalAbominationL",
+        "MaterialID": "18",
+        "DisplayName": "Maw of Madness",
+        "Rarity": "L",
+        "Kingdom": "Infernal",
+        "DropRealm": "Abomination",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "InfernalConstructM",
+        "MaterialID": "19",
+        "DisplayName": "Construct Gear",
+        "Rarity": "M",
+        "Kingdom": "Infernal",
+        "DropRealm": "Construct"
+    },
+    {
+        "MaterialName": "InfernalConstructR",
+        "MaterialID": "20",
+        "DisplayName": "Construct Oil",
+        "Rarity": "R",
+        "Kingdom": "Infernal",
+        "DropRealm": "Construct"
+    },
+    {
+        "MaterialName": "InfernalConstructL",
+        "MaterialID": "21",
+        "DisplayName": "Ancient Power Core",
+        "Rarity": "L",
+        "Kingdom": "Infernal",
+        "DropRealm": "Construct",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "InfernalDemonM",
+        "MaterialID": "22",
+        "DisplayName": "Demonic Fur",
+        "Rarity": "M",
+        "Kingdom": "Infernal",
+        "DropRealm": "Demon"
+    },
+    {
+        "MaterialName": "InfernalDemonR",
+        "MaterialID": "23",
+        "DisplayName": "Brutal Horns",
+        "Rarity": "R",
+        "Kingdom": "Infernal",
+        "DropRealm": "Demon"
+    },
+    {
+        "MaterialName": "InfernalDemonL",
+        "MaterialID": "24",
+        "DisplayName": "Bitter Soul",
+        "Rarity": "L",
+        "Kingdom": "Infernal",
+        "DropRealm": "Demon",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "InfernalDreadM",
+        "MaterialID": "25",
+        "DisplayName": "Dread Steel",
+        "Rarity": "M",
+        "Kingdom": "Infernal",
+        "DropRealm": "Dread"
+    },
+    {
+        "MaterialName": "InfernalDreadR",
+        "MaterialID": "26",
+        "DisplayName": "Ancient Emblem",
+        "Rarity": "R",
+        "Kingdom": "Infernal",
+        "DropRealm": "Dread"
+    },
+    {
+        "MaterialName": "InfernalDreadL",
+        "MaterialID": "27",
+        "DisplayName": "Dreadnaught Doubloon",
+        "Rarity": "L",
+        "Kingdom": "Infernal",
+        "DropRealm": "Dread",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "InfernalHumanM",
+        "MaterialID": "28",
+        "DisplayName": "Runed Pages",
+        "Rarity": "M",
+        "Kingdom": "Infernal",
+        "DropRealm": "Human"
+    },
+    {
+        "MaterialName": "InfernalHumanR",
+        "MaterialID": "29",
+        "DisplayName": "Profane Sigil",
+        "Rarity": "R",
+        "Kingdom": "Infernal",
+        "DropRealm": "Human"
+    },
+    {
+        "MaterialName": "InfernalHumanL",
+        "MaterialID": "30",
+        "DisplayName": "Infernal Focus",
+        "Rarity": "L",
+        "Kingdom": "Infernal",
+        "DropRealm": "Human",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "InfernalImpM",
+        "MaterialID": "31",
+        "DisplayName": "Sharp Claw",
+        "Rarity": "M",
+        "Kingdom": "Infernal",
+        "DropRealm": "Imp"
+    },
+    {
+        "MaterialName": "InfernalImpR",
+        "MaterialID": "32",
+        "DisplayName": "Broken Spear Tip",
+        "Rarity": "R",
+        "Kingdom": "Infernal",
+        "DropRealm": "Imp"
+    },
+    {
+        "MaterialName": "InfernalImpL",
+        "MaterialID": "33",
+        "DisplayName": "Lucky Imp's Foot",
+        "Rarity": "L",
+        "Kingdom": "Infernal",
+        "DropRealm": "Imp",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "InfernalPsychophageM",
+        "MaterialID": "34",
+        "DisplayName": "Little Wing",
+        "Rarity": "M",
+        "Kingdom": "Infernal",
+        "DropRealm": "Psychophage"
+    },
+    {
+        "MaterialName": "InfernalPsychophageR",
+        "MaterialID": "35",
+        "DisplayName": "Acrid Ichor",
+        "Rarity": "R",
+        "Kingdom": "Infernal",
+        "DropRealm": "Psychophage"
+    },
+    {
+        "MaterialName": "InfernalPsychophageL",
+        "MaterialID": "36",
+        "DisplayName": "Extract of the Third Eye",
+        "Rarity": "L",
+        "Kingdom": "Infernal",
+        "DropRealm": "Psychophage",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "InfernalRockHulkM",
+        "MaterialID": "37",
+        "DisplayName": "Dolcite",
+        "Rarity": "M",
+        "Kingdom": "Infernal",
+        "DropRealm": "RockHulk"
+    },
+    {
+        "MaterialName": "InfernalRockHulkR",
+        "MaterialID": "38",
+        "DisplayName": "Woomerite",
+        "Rarity": "R",
+        "Kingdom": "Infernal",
+        "DropRealm": "RockHulk"
+    },
+    {
+        "MaterialName": "InfernalRockHulkL",
+        "MaterialID": "39",
+        "DisplayName": "Hamilite",
+        "Rarity": "L",
+        "Kingdom": "Infernal",
+        "DropRealm": "RockHulk",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "InfernalShadeM",
+        "MaterialID": "40",
+        "DisplayName": "Shade Stone",
+        "Rarity": "M",
+        "Kingdom": "Infernal",
+        "DropRealm": "Shade"
+    },
+    {
+        "MaterialName": "InfernalShadeR",
+        "MaterialID": "41",
+        "DisplayName": "Dark Talisman",
+        "Rarity": "R",
+        "Kingdom": "Infernal",
+        "DropRealm": "Shade"
+    },
+    {
+        "MaterialName": "InfernalShadeL",
+        "MaterialID": "42",
+        "DisplayName": "Void Matter",
+        "Rarity": "L",
+        "Kingdom": "Infernal",
+        "DropRealm": "Shade",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "InfernalWispM",
+        "MaterialID": "43",
+        "DisplayName": "Black Soot",
+        "Rarity": "M",
+        "Kingdom": "Infernal",
+        "DropRealm": "Wisp"
+    },
+    {
+        "MaterialName": "InfernalWispR",
+        "MaterialID": "44",
+        "DisplayName": "Emberheart",
+        "Rarity": "R",
+        "Kingdom": "Infernal",
+        "DropRealm": "Wisp"
+    },
+    {
+        "MaterialName": "InfernalWispL",
+        "MaterialID": "45",
+        "DisplayName": "Everburning Stone",
+        "Rarity": "L",
+        "Kingdom": "Infernal",
+        "DropRealm": "Wisp",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "MythicGiantM",
+        "MaterialID": "46",
+        "DisplayName": "Oasis Water",
+        "Rarity": "M",
+        "Kingdom": "Mythic",
+        "DropRealm": "Giant"
+    },
+    {
+        "MaterialName": "MythicGiantR",
+        "MaterialID": "47",
+        "DisplayName": "Giant's Shard",
+        "Rarity": "R",
+        "Kingdom": "Mythic",
+        "DropRealm": "Giant"
+    },
+    {
+        "MaterialName": "MythicGiantL",
+        "MaterialID": "48",
+        "DisplayName": "Moonglow Harvest",
+        "Rarity": "L",
+        "Kingdom": "Mythic",
+        "DropRealm": "Giant",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "MythicGriffonM",
+        "MaterialID": "49",
+        "DisplayName": "Brilliant Feather",
+        "Rarity": "M",
+        "Kingdom": "Mythic",
+        "DropRealm": "Griffon"
+    },
+    {
+        "MaterialName": "MythicGriffonR",
+        "MaterialID": "50",
+        "DisplayName": "Griffon Talon",
+        "Rarity": "R",
+        "Kingdom": "Mythic",
+        "DropRealm": "Griffon"
+    },
+    {
+        "MaterialName": "MythicGriffonL",
+        "MaterialID": "51",
+        "DisplayName": "Mysterious Griffon Egg",
+        "Rarity": "L",
+        "Kingdom": "Mythic",
+        "DropRealm": "Griffon",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "MythicHumanM",
+        "MaterialID": "52",
+        "DisplayName": "Plate Steel",
+        "Rarity": "M",
+        "Kingdom": "Mythic",
+        "DropRealm": "Human"
+    },
+    {
+        "MaterialName": "MythicHumanR",
+        "MaterialID": "53",
+        "DisplayName": "Defused Bomb",
+        "Rarity": "R",
+        "Kingdom": "Mythic",
+        "DropRealm": "Human"
+    },
+    {
+        "MaterialName": "MythicHumanL",
+        "MaterialID": "54",
+        "DisplayName": "Mithian Parchment",
+        "Rarity": "L",
+        "Kingdom": "Mythic",
+        "DropRealm": "Human",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "MythicImperialM",
+        "MaterialID": "55",
+        "DisplayName": "Worn Leather",
+        "Rarity": "M",
+        "Kingdom": "Mythic",
+        "DropRealm": "Imperial"
+    },
+    {
+        "MaterialName": "MythicImperialR",
+        "MaterialID": "56",
+        "DisplayName": "Imperial Talisman",
+        "Rarity": "R",
+        "Kingdom": "Mythic",
+        "DropRealm": "Imperial"
+    },
+    {
+        "MaterialName": "MythicImperialL",
+        "MaterialID": "57",
+        "DisplayName": "Lost Imperial Coin",
+        "Rarity": "L",
+        "Kingdom": "Mythic",
+        "DropRealm": "Imperial",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "MythicLionM",
+        "MaterialID": "58",
+        "DisplayName": "Lion Pelt",
+        "Rarity": "M",
+        "Kingdom": "Mythic",
+        "DropRealm": "Lion"
+    },
+    {
+        "MaterialName": "MythicLionR",
+        "MaterialID": "59",
+        "DisplayName": "Ring of Pride",
+        "Rarity": "R",
+        "Kingdom": "Mythic",
+        "DropRealm": "Lion"
+    },
+    {
+        "MaterialName": "MythicLionL",
+        "MaterialID": "60",
+        "DisplayName": "Regal Pendant",
+        "Rarity": "L",
+        "Kingdom": "Mythic",
+        "DropRealm": "Lion",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "MythicMinotaurM",
+        "MaterialID": "61",
+        "DisplayName": "Shattered Hoof",
+        "Rarity": "M",
+        "Kingdom": "Mythic",
+        "DropRealm": "Minotaur"
+    },
+    {
+        "MaterialName": "MythicMinotaurR",
+        "MaterialID": "62",
+        "DisplayName": "Minotaur Horn",
+        "Rarity": "R",
+        "Kingdom": "Mythic",
+        "DropRealm": "Minotaur"
+    },
+    {
+        "MaterialName": "MythicMinotaurL",
+        "MaterialID": "63",
+        "DisplayName": "Golden Nosering",
+        "Rarity": "L",
+        "Kingdom": "Mythic",
+        "DropRealm": "Minotaur",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "MythicWolfM",
+        "MaterialID": "64",
+        "DisplayName": "Wolf Pelt",
+        "Rarity": "M",
+        "Kingdom": "Mythic",
+        "DropRealm": "Wolf"
+    },
+    {
+        "MaterialName": "MythicWolfR",
+        "MaterialID": "65",
+        "DisplayName": "Black Talon",
+        "Rarity": "R",
+        "Kingdom": "Mythic",
+        "DropRealm": "Wolf"
+    },
+    {
+        "MaterialName": "MythicWolfL",
+        "MaterialID": "66",
+        "DisplayName": "Golden Earring",
+        "Rarity": "L",
+        "Kingdom": "Mythic",
+        "DropRealm": "Wolf",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "SylvanBatM",
+        "MaterialID": "67",
+        "DisplayName": "Cavebat Fur",
+        "Rarity": "M",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Bat"
+    },
+    {
+        "MaterialName": "SylvanBatR",
+        "MaterialID": "68",
+        "DisplayName": "Bloodbat Fathom",
+        "Rarity": "R",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Bat"
+    },
+    {
+        "MaterialName": "SylvanBatL",
+        "MaterialID": "69",
+        "DisplayName": "Duskwing Talons",
+        "Rarity": "L",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Bat",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "SylvanDevourerM",
+        "MaterialID": "70",
+        "DisplayName": "Devourer Pulp",
+        "Rarity": "M",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Devourer"
+    },
+    {
+        "MaterialName": "SylvanDevourerR",
+        "MaterialID": "71",
+        "DisplayName": "Medicinal Root",
+        "Rarity": "R",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Devourer"
+    },
+    {
+        "MaterialName": "SylvanDevourerL",
+        "MaterialID": "72",
+        "DisplayName": "Magic Bean",
+        "Rarity": "L",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Devourer",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "SylvanDryadM",
+        "MaterialID": "73",
+        "DisplayName": "Charred Bark",
+        "Rarity": "M",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Dryad"
+    },
+    {
+        "MaterialName": "SylvanDryadR",
+        "MaterialID": "74",
+        "DisplayName": "Singed Staffhead",
+        "Rarity": "R",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Dryad"
+    },
+    {
+        "MaterialName": "SylvanDryadL",
+        "MaterialID": "75",
+        "DisplayName": "Wildgrowth Blossom",
+        "Rarity": "L",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Dryad",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "SylvanScarabM",
+        "MaterialID": "76",
+        "DisplayName": "Carapace",
+        "Rarity": "M",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Scarab"
+    },
+    {
+        "MaterialName": "SylvanScarabR",
+        "MaterialID": "77",
+        "DisplayName": "Scarab Horn",
+        "Rarity": "R",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Scarab"
+    },
+    {
+        "MaterialName": "SylvanScarabL",
+        "MaterialID": "78",
+        "DisplayName": "Vision of the Tomb",
+        "Rarity": "L",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Scarab",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "SylvanSpiderM",
+        "MaterialID": "79",
+        "DisplayName": "Spider Leg",
+        "Rarity": "M",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Spider"
+    },
+    {
+        "MaterialName": "SylvanSpiderR",
+        "MaterialID": "80",
+        "DisplayName": "Poison Gland",
+        "Rarity": "R",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Spider"
+    },
+    {
+        "MaterialName": "SylvanSpiderL",
+        "MaterialID": "81",
+        "DisplayName": "Death Silk",
+        "Rarity": "L",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Spider",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "SylvanTreantM",
+        "MaterialID": "82",
+        "DisplayName": "Efflorescence Roots",
+        "Rarity": "M",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Treant"
+    },
+    {
+        "MaterialName": "SylvanTreantR",
+        "MaterialID": "83",
+        "DisplayName": "Golden Leaf",
+        "Rarity": "R",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Treant"
+    },
+    {
+        "MaterialName": "SylvanTreantL",
+        "MaterialID": "84",
+        "DisplayName": "Seed of Seasons",
+        "Rarity": "L",
+        "Kingdom": "Sylvan",
+        "DropRealm": "Treant",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "TrogCyclopsM",
+        "MaterialID": "85",
+        "DisplayName": "Bone Zemi Fragment",
+        "Rarity": "M",
+        "Kingdom": "Trog",
+        "DropRealm": "Cyclops"
+    },
+    {
+        "MaterialName": "TrogCyclopsR",
+        "MaterialID": "86",
+        "DisplayName": "Earthen Phylactery",
+        "Rarity": "R",
+        "Kingdom": "Trog",
+        "DropRealm": "Cyclops"
+    },
+    {
+        "MaterialName": "TrogCyclopsL",
+        "MaterialID": "87",
+        "DisplayName": "Hand of the Mountain",
+        "Rarity": "L",
+        "Kingdom": "Trog",
+        "DropRealm": "Cyclops",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "TrogGnomeM",
+        "MaterialID": "88",
+        "DisplayName": "Tiny Teeth",
+        "Rarity": "M",
+        "Kingdom": "Trog",
+        "DropRealm": "Gnome"
+    },
+    {
+        "MaterialName": "TrogGnomeR",
+        "MaterialID": "89",
+        "DisplayName": "Pure Obsidilite",
+        "Rarity": "R",
+        "Kingdom": "Trog",
+        "DropRealm": "Gnome"
+    },
+    {
+        "MaterialName": "TrogGnomeL",
+        "MaterialID": "90",
+        "DisplayName": "Shadow Ring",
+        "Rarity": "L",
+        "Kingdom": "Trog",
+        "DropRealm": "Gnome",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "TrogGoblinM",
+        "MaterialID": "91",
+        "DisplayName": "Yak Jerky",
+        "Rarity": "M",
+        "Kingdom": "Trog",
+        "DropRealm": "Goblin"
+    },
+    {
+        "MaterialName": "TrogGoblinR",
+        "MaterialID": "92",
+        "DisplayName": "Felsilk Bolt",
+        "Rarity": "R",
+        "Kingdom": "Trog",
+        "DropRealm": "Goblin"
+    },
+    {
+        "MaterialName": "TrogGoblinL",
+        "MaterialID": "93",
+        "DisplayName": "Onyx Goblin Dagger",
+        "Rarity": "L",
+        "Kingdom": "Trog",
+        "DropRealm": "Goblin",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "TrogHumanM",
+        "MaterialID": "94",
+        "DisplayName": "Silver Nugget",
+        "Rarity": "M",
+        "Kingdom": "Trog",
+        "DropRealm": "Human"
+    },
+    {
+        "MaterialName": "TrogHumanR",
+        "MaterialID": "95",
+        "DisplayName": "Gold Nugget",
+        "Rarity": "R",
+        "Kingdom": "Trog",
+        "DropRealm": "Human"
+    },
+    {
+        "MaterialName": "TrogHumanL",
+        "MaterialID": "96",
+        "DisplayName": "Korgold Ingot",
+        "Rarity": "L",
+        "Kingdom": "Trog",
+        "DropRealm": "Human",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "TrogImpM",
+        "MaterialID": "97",
+        "DisplayName": "Tattered Rags",
+        "Rarity": "M",
+        "Kingdom": "Trog",
+        "DropRealm": "Imp"
+    },
+    {
+        "MaterialName": "TrogImpR",
+        "MaterialID": "98",
+        "DisplayName": "Imp Tail",
+        "Rarity": "R",
+        "Kingdom": "Trog",
+        "DropRealm": "Imp"
+    },
+    {
+        "MaterialName": "TrogImpL",
+        "MaterialID": "99",
+        "DisplayName": "Abyssal Fang",
+        "Rarity": "L",
+        "Kingdom": "Trog",
+        "DropRealm": "Imp",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "TrogRatlingM",
+        "MaterialID": "100",
+        "DisplayName": "Tuft of Hair",
+        "Rarity": "M",
+        "Kingdom": "Trog",
+        "DropRealm": "Ratling"
+    },
+    {
+        "MaterialName": "TrogRatlingR",
+        "MaterialID": "101",
+        "DisplayName": "Ratling Tail",
+        "Rarity": "R",
+        "Kingdom": "Trog",
+        "DropRealm": "Ratling"
+    },
+    {
+        "MaterialName": "TrogRatlingL",
+        "MaterialID": "102",
+        "DisplayName": "Troglodyte Talisman",
+        "Rarity": "L",
+        "Kingdom": "Trog",
+        "DropRealm": "Ratling",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "UndeadDragonM",
+        "MaterialID": "103",
+        "DisplayName": "Ivory Scale",
+        "Rarity": "M",
+        "Kingdom": "Undead",
+        "DropRealm": "Dragon"
+    },
+    {
+        "MaterialName": "UndeadDragonR",
+        "MaterialID": "104",
+        "DisplayName": "Emerald Dream",
+        "Rarity": "R",
+        "Kingdom": "Undead",
+        "DropRealm": "Dragon"
+    },
+    {
+        "MaterialName": "UndeadDragonL",
+        "MaterialID": "105",
+        "DisplayName": "Stone of Whispers",
+        "Rarity": "L",
+        "Kingdom": "Undead",
+        "DropRealm": "Dragon",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "UndeadGhostM",
+        "MaterialID": "106",
+        "DisplayName": "Chilling Air",
+        "Rarity": "M",
+        "Kingdom": "Undead",
+        "DropRealm": "Ghost"
+    },
+    {
+        "MaterialName": "UndeadGhostR",
+        "MaterialID": "107",
+        "DisplayName": "Banshee Scream",
+        "Rarity": "R",
+        "Kingdom": "Undead",
+        "DropRealm": "Ghost"
+    },
+    {
+        "MaterialName": "UndeadGhostL",
+        "MaterialID": "108",
+        "DisplayName": "Phantom Heart",
+        "Rarity": "L",
+        "Kingdom": "Undead",
+        "DropRealm": "Ghost",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "UndeadMummyM",
+        "MaterialID": "109",
+        "DisplayName": "Timeworn Flax",
+        "Rarity": "M",
+        "Kingdom": "Undead",
+        "DropRealm": "Mummy"
+    },
+    {
+        "MaterialName": "UndeadMummyR",
+        "MaterialID": "110",
+        "DisplayName": "Ancient Linen",
+        "Rarity": "R",
+        "Kingdom": "Undead",
+        "DropRealm": "Mummy"
+    },
+    {
+        "MaterialName": "UndeadMummyL",
+        "MaterialID": "111",
+        "DisplayName": "Sand of the Ancients",
+        "Rarity": "L",
+        "Kingdom": "Undead",
+        "DropRealm": "Mummy",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "UndeadSkeletonM",
+        "MaterialID": "112",
+        "DisplayName": "Splintered Bone",
+        "Rarity": "M",
+        "Kingdom": "Undead",
+        "DropRealm": "Skeleton"
+    },
+    {
+        "MaterialName": "UndeadSkeletonR",
+        "MaterialID": "113",
+        "DisplayName": "Spellbonded Femur",
+        "Rarity": "R",
+        "Kingdom": "Undead",
+        "DropRealm": "Skeleton"
+    },
+    {
+        "MaterialName": "UndeadSkeletonL",
+        "MaterialID": "114",
+        "DisplayName": "Laughing Skull",
+        "Rarity": "L",
+        "Kingdom": "Undead",
+        "DropRealm": "Skeleton",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "UndeadSpiritM",
+        "MaterialID": "115",
+        "DisplayName": "Aetheric Heart",
+        "Rarity": "M",
+        "Kingdom": "Undead",
+        "DropRealm": "Spirit"
+    },
+    {
+        "MaterialName": "UndeadSpiritR",
+        "MaterialID": "116",
+        "DisplayName": "Ethereal Strands",
+        "Rarity": "R",
+        "Kingdom": "Undead",
+        "DropRealm": "Spirit"
+    },
+    {
+        "MaterialName": "UndeadSpiritL",
+        "MaterialID": "117",
+        "DisplayName": "Spirit Stone",
+        "Rarity": "L",
+        "Kingdom": "Undead",
+        "DropRealm": "Spirit",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "UndeadWispM",
+        "MaterialID": "118",
+        "DisplayName": "Ectoplasm",
+        "Rarity": "M",
+        "Kingdom": "Undead",
+        "DropRealm": "Wisp"
+    },
+    {
+        "MaterialName": "UndeadWispR",
+        "MaterialID": "119",
+        "DisplayName": "Spectral Essence",
+        "Rarity": "R",
+        "Kingdom": "Undead",
+        "DropRealm": "Wisp"
+    },
+    {
+        "MaterialName": "UndeadWispL",
+        "MaterialID": "120",
+        "DisplayName": "Vehement Netherstone",
+        "Rarity": "L",
+        "Kingdom": "Undead",
+        "DropRealm": "Wisp",
+        "FromRoyalStore": "True"
+    },
+    {
+        "MaterialName": "InfernalSpecialHalloweenL",
+        "MaterialID": "121",
+        "DisplayName": "Candy Corn",
+        "Rarity": "L",
+        "Kingdom": "Infernal",
+        "DropRealm": "SpecialHalloween"
+    },
+    {
+        "MaterialName": "TrogSpecialHalloweenL",
+        "MaterialID": "122",
+        "DisplayName": "Candy Corn",
+        "Rarity": "L",
+        "Kingdom": "Trog",
+        "DropRealm": "SpecialHalloween"
+    },
+    {
+        "MaterialName": "MythicSpecialHalloweenL",
+        "MaterialID": "123",
+        "DisplayName": "Candy Corn",
+        "Rarity": "L",
+        "Kingdom": "Mythic",
+        "DropRealm": "SpecialHalloween"
+    },
+    {
+        "MaterialName": "UndeadSpecialHalloweenL",
+        "MaterialID": "124",
+        "DisplayName": "Candy Corn",
+        "Rarity": "L",
+        "Kingdom": "Undead",
+        "DropRealm": "SpecialHalloween"
+    },
+    {
+        "MaterialName": "SylvanSpecialHalloweenL",
+        "MaterialID": "125",
+        "DisplayName": "Candy Corn",
+        "Rarity": "L",
+        "Kingdom": "Sylvan",
+        "DropRealm": "SpecialHalloween"
+    },
+    {
+        "MaterialName": "DraconicSpecialHalloweenL",
+        "MaterialID": "126",
+        "DisplayName": "Candy Corn",
+        "Rarity": "L",
+        "Kingdom": "Draconic",
+        "DropRealm": "SpecialHalloween"
+    }
+]
