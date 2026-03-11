@@ -63,12 +63,14 @@ export class NpcHandler {
                 missionId = matched.missionId;
 
                 if (dialogueId === 2 && matched.state === NpcHandler.MISSION_NOT_STARTED) {
+                    const missionDef = MissionLoader.getMissionDef(missionId);
+                    const initialState = NpcHandler.getInitialMissionState(missionDef);
                     NpcHandler.setMissionState(
                         client.character,
                         missionId,
-                        NpcHandler.MISSION_IN_PROGRESS
+                        initialState
                     );
-                    NpcHandler.sendMissionAdded(client, missionId);
+                    NpcHandler.sendMissionAdded(client, missionId, initialState);
                     didMutate = true;
                 } else if (
                     dialogueId === 4 &&
@@ -92,7 +94,11 @@ export class NpcHandler {
                             missionId
                         );
                         if (followupMissionId) {
-                            NpcHandler.sendMissionAdded(client, followupMissionId);
+                            NpcHandler.sendMissionAdded(
+                                client,
+                                followupMissionId,
+                                NpcHandler.getMissionState(client.character, followupMissionId)
+                            );
                         }
 
                         didMutate = true;
@@ -222,7 +228,11 @@ export class NpcHandler {
                 continue;
             }
 
-            NpcHandler.setMissionState(character, missionId, NpcHandler.MISSION_IN_PROGRESS);
+            NpcHandler.setMissionState(
+                character,
+                missionId,
+                NpcHandler.getInitialMissionState(missionDef)
+            );
             return missionId;
         }
 
@@ -242,6 +252,26 @@ export class NpcHandler {
         }
 
         return true;
+    }
+
+    private static missionRequiresTurnIn(missionDef: MissionDef): boolean {
+        return Boolean(String(missionDef.ReturnName ?? '').trim());
+    }
+
+    private static missionStartsReadyToTurnIn(missionDef: MissionDef | undefined): boolean {
+        if (!missionDef) {
+            return false;
+        }
+
+        return !String(missionDef.Dungeon ?? '').trim() &&
+            NpcHandler.missionRequiresTurnIn(missionDef) &&
+            Number(missionDef.CompleteCount ?? 1) <= 0;
+    }
+
+    private static getInitialMissionState(missionDef: MissionDef | undefined): number {
+        return NpcHandler.missionStartsReadyToTurnIn(missionDef)
+            ? NpcHandler.MISSION_READY_TO_TURN_IN
+            : NpcHandler.MISSION_IN_PROGRESS;
     }
 
     private static getMissionStateMap(character: Character): Record<string, MissionEntry> {
@@ -282,10 +312,14 @@ export class NpcHandler {
         missions[key] = next;
     }
 
-    private static sendMissionAdded(client: Client, missionId: number): void {
+    private static sendMissionAdded(
+        client: Client,
+        missionId: number,
+        state: number = NpcHandler.MISSION_IN_PROGRESS
+    ): void {
         const bb = new BitBuffer(false);
         bb.writeMethod4(missionId);
-        bb.writeMethod11(1, 1);
+        bb.writeMethod11(state === NpcHandler.MISSION_IN_PROGRESS ? 1 : 0, 1);
         client.sendBitBuffer(0x85, bb);
     }
 
@@ -357,7 +391,11 @@ export class NpcHandler {
                     NpcHandler.DEFAULT_TURN_IN_STARS
                 );
                 if (followupMissionId) {
-                    NpcHandler.sendMissionAdded(client, followupMissionId);
+                    NpcHandler.sendMissionAdded(
+                        client,
+                        followupMissionId,
+                        NpcHandler.getMissionState(client.character, followupMissionId)
+                    );
                 }
             }
         } finally {

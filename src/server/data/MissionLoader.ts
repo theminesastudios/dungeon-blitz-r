@@ -51,7 +51,10 @@ export class MissionLoader {
             for (const item of json) {
                 const id = parseInt(item.MissionID);
                 if (!isNaN(id)) {
-                    const completeCount = Math.max(1, parseInt(item.CompleteCount ?? "1", 10) || 1);
+                    const parsedCompleteCount = parseInt(item.CompleteCount ?? "1", 10);
+                    const completeCount = Number.isFinite(parsedCompleteCount)
+                        ? Math.max(0, parsedCompleteCount)
+                        : 1;
                     const missionName = String(item.MissionName ?? "").trim();
                     const preReqMissions = String(item.PreReqMissions ?? "")
                         .split(",")

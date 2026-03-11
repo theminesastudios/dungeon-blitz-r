@@ -72,6 +72,10 @@ export class MissionHandler {
             didMutate = true;
         }
 
+        if (MissionHandler.normalizeInstantReturnMissionStates(character)) {
+            didMutate = true;
+        }
+
         return { didMutate, addedMissionId };
     }
 
@@ -139,7 +143,11 @@ export class MissionHandler {
                     );
                     if (addedMissionId) {
                         didMutate = true;
-                        MissionHandler.sendMissionAdded(client, addedMissionId);
+                        MissionHandler.sendMissionAdded(
+                            client,
+                            addedMissionId,
+                            MissionHandler.getMissionState(client.character, addedMissionId)
+                        );
                     }
                 }
 
@@ -233,7 +241,8 @@ export class MissionHandler {
                 continue;
             }
 
-            MissionHandler.setMissionState(character, missionId, MissionHandler.MISSION_IN_PROGRESS, missionDef, {
+            const initialState = MissionHandler.getInitialMissionState(missionDef);
+            MissionHandler.setMissionState(character, missionId, initialState, missionDef, {
                 currCount: 0
             });
             return missionId;
@@ -291,16 +300,32 @@ export class MissionHandler {
         return Boolean(String(missionDef.ReturnName ?? '').trim());
     }
 
+    private static missionStartsReadyToTurnIn(missionDef: MissionDef): boolean {
+        return !String(missionDef.Dungeon ?? '').trim() &&
+            MissionHandler.missionRequiresTurnIn(missionDef) &&
+            Number(missionDef.CompleteCount ?? 1) <= 0;
+    }
+
+    private static getInitialMissionState(missionDef: MissionDef): number {
+        return MissionHandler.missionStartsReadyToTurnIn(missionDef)
+            ? MissionHandler.MISSION_READY_TO_TURN_IN
+            : MissionHandler.MISSION_IN_PROGRESS;
+    }
+
     private static sendQuestProgress(client: Client, percent: number): void {
         const bb = new BitBuffer(false);
         bb.writeMethod4(percent);
         client.sendBitBuffer(0xB7, bb);
     }
 
-    static sendMissionAdded(client: Client, missionId: number): void {
+    static sendMissionAdded(
+        client: Client,
+        missionId: number,
+        state: number = MissionHandler.MISSION_IN_PROGRESS
+    ): void {
         const bb = new BitBuffer(false);
         bb.writeMethod4(missionId);
-        bb.writeMethod11(1, 1);
+        bb.writeMethod11(state === MissionHandler.MISSION_IN_PROGRESS ? 1 : 0, 1);
         client.sendBitBuffer(0x85, bb);
     }
 
@@ -362,6 +387,31 @@ export class MissionHandler {
         const missions = MissionHandler.getMissionStateMap(character);
         const entry = MissionHandler.asMissionEntry(missions[String(missionId)]);
         return Number(entry.state ?? MissionHandler.MISSION_NOT_STARTED);
+    }
+
+    private static normalizeInstantReturnMissionStates(character: Character): boolean {
+        let didMutate = false;
+
+        for (let missionId = 1; missionId <= MissionLoader.getTotalMissions(); missionId++) {
+            const missionDef = MissionLoader.getMissionDef(missionId);
+            if (!missionDef || !MissionHandler.missionStartsReadyToTurnIn(missionDef)) {
+                continue;
+            }
+
+            if (MissionHandler.getMissionState(character, missionId) !== MissionHandler.MISSION_IN_PROGRESS) {
+                continue;
+            }
+
+            MissionHandler.setMissionState(
+                character,
+                missionId,
+                MissionHandler.MISSION_READY_TO_TURN_IN,
+                missionDef
+            );
+            didMutate = true;
+        }
+
+        return didMutate;
     }
 
     private static setMissionState(

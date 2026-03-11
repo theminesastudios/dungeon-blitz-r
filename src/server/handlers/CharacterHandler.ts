@@ -15,6 +15,19 @@ import { LoginHandler } from './LoginHandler';
 const db = new JsonAdapter();
 
 export class CharacterHandler {
+    private static initializeFreshCharacterProgress(character: Character): void {
+        const newbieSpawn = LevelConfig.getSpawn("NewbieRoad");
+
+        character.CurrentLevel = { name: "TutorialBoat", x: 0, y: 0 };
+        character.PreviousLevel = {
+            name: "NewbieRoad",
+            x: newbieSpawn.x,
+            y: newbieSpawn.y
+        };
+        character.missions = {};
+        character.questTrackerState = 0;
+    }
+
     private static normalizeCharacterName(value: string | null | undefined): string {
         return String(value || '').trim().toLowerCase();
     }
@@ -121,9 +134,7 @@ export class CharacterHandler {
         newChar.shirtColor = shirtColor;
         newChar.pantColor = pantColor;
 
-        // Ensure critical fields are set if template missing them
-        if (!newChar.CurrentLevel) newChar.CurrentLevel = { name: "NewbieRoad", x: 1422, y: 827 };
-        if (!newChar.PreviousLevel) newChar.PreviousLevel = { name: "NewbieRoad", x: 1422, y: 827 };
+        CharacterHandler.initializeFreshCharacterProgress(newChar);
         
         // Initialize arrays if missing
         if (!newChar.equippedGears) newChar.equippedGears = [];
