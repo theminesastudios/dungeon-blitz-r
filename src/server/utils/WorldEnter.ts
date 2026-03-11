@@ -301,7 +301,7 @@ export class WorldEnter {
             const colors = WorldEnter.asArray(gear.colors);
             bb.writeMethod11(1, 1);
             bb.writeMethod11(gearId, 11);
-            bb.writeMethod11(0, 2);
+            bb.writeMethod11(Number(gear.tier ?? 0), 2);
             bb.writeMethod11(Number(runes[0] ?? 0), 16);
             bb.writeMethod11(Number(runes[1] ?? 0), 16);
             bb.writeMethod11(Number(runes[2] ?? 0), 16);

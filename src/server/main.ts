@@ -24,6 +24,7 @@ import { AILogic } from './core/AILogic';
 import { MissionHandler } from './handlers/MissionHandler';
 import { NpcHandler } from './handlers/NpcHandler';
 import { RewardHandler } from './handlers/RewardHandler';
+import { EquipmentHandler } from './handlers/EquipmentHandler';
 import * as path from 'path';
 
 import { StaticServer } from './core/StaticServer';
@@ -54,6 +55,8 @@ router.register(0xA2, CommandHandler.handleLinkUpdater); // Link Updater
 router.register(0x10E, CommandHandler.handleQueuePotion); // Queue Potion
 router.register(0x2A, RewardHandler.handleGrantReward); // Grant Reward
 router.register(0x38, RewardHandler.handlePickupLootdrop); // Pickup Lootdrop
+router.register(0x30, EquipmentHandler.handleUpdateEquipment); // Update Equipment
+router.register(0x31, EquipmentHandler.handleUpdateSingleGear); // Update Single Gear
 router.register(0x41, LevelHandler.handleRequestDoorState); // Request Door State
 router.register(0x3F, MissionHandler.handleSetLevelComplete); // Level Complete
 router.register(0xB7, LevelHandler.handleQuestProgressUpdate); // Quest Progress Update

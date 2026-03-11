@@ -12,6 +12,10 @@ import { JsonAdapter } from '../database/JsonAdapter';
 const db = new JsonAdapter();
 
 export class LevelHandler {
+    private static readonly FIRST_KEEP_MISSION_ID = 5;
+    private static readonly MISSION_NOT_STARTED = 0;
+    private static readonly MISSION_IN_PROGRESS = 1;
+
     private static sendDestroyEntity(levelName: string, entityId: number): void {
         const bb = new BitBuffer(false);
         bb.writeMethod4(entityId);
@@ -80,6 +84,30 @@ export class LevelHandler {
         client.startedRoomEvents.add(`${client.currentLevel}:${roomId}`);
     }
 
+    private static getMissionState(client: Client, missionId: number): number {
+        const missions = client.character?.missions;
+        if (!missions || typeof missions !== 'object' || Array.isArray(missions)) {
+            return LevelHandler.MISSION_NOT_STARTED;
+        }
+
+        const entry = missions[String(missionId)];
+        const state = entry && typeof entry === 'object' ? entry.state : undefined;
+        return Number(state ?? LevelHandler.MISSION_NOT_STARTED);
+    }
+
+    private static resolveDoorTarget(client: Client, currentLevel: string, doorId: number): string | null {
+        if (
+            doorId === 999 &&
+            currentLevel !== 'CraftTownTutorial' &&
+            LevelHandler.getMissionState(client, LevelHandler.FIRST_KEEP_MISSION_ID) ===
+                LevelHandler.MISSION_IN_PROGRESS
+        ) {
+            return 'CraftTownTutorial';
+        }
+
+        return LevelConfig.getDoorTarget(currentLevel, doorId);
+    }
+
     private static hasRoomEventStarted(client: Client, roomId: number): boolean {
         if (!client.currentLevel) {
             return false;
@@ -113,7 +141,7 @@ export class LevelHandler {
         
         // Lookup door target in LevelConfig
         const currentLevel = client.currentLevel || "NewbieRoad";
-        const target = LevelConfig.getDoorTarget(currentLevel, doorId);
+        const target = LevelHandler.resolveDoorTarget(client, currentLevel, doorId);
         
         const bb = new BitBuffer();
         bb.writeMethod4(doorId);
@@ -141,7 +169,9 @@ export class LevelHandler {
         const doorId = br.readMethod9();
 
         const currentLevel = LevelConfig.normalizeLevelName(client.currentLevel || "NewbieRoad") || "NewbieRoad";
-        let targetLevel = LevelConfig.normalizeLevelName(LevelConfig.getDoorTarget(currentLevel, doorId));
+        let targetLevel = LevelConfig.normalizeLevelName(
+            LevelHandler.resolveDoorTarget(client, currentLevel, doorId)
+        );
 
         if (!targetLevel && doorId === 999) {
             targetLevel = "CraftTown";

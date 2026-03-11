@@ -78,6 +78,20 @@ export class CharacterHandler {
         }
     }
 
+    private static upsertCharacterList(characters: Character[], character: Character): Character[] {
+        const next = Array.isArray(characters) ? [...characters] : [];
+        const normalizedName = CharacterHandler.normalizeCharacterName(character?.name);
+        const index = next.findIndex((entry) => CharacterHandler.normalizeCharacterName(entry?.name) === normalizedName);
+
+        if (index >= 0) {
+            next[index] = character;
+            return next;
+        }
+
+        next.push(character);
+        return next;
+    }
+
     static async handleLoginCharacterCreate(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
         const name = br.readMethod26();
@@ -244,7 +258,7 @@ export class CharacterHandler {
         console.log(`[EnterWorld] Sent 0x21 to client for char ${char.name}, token=${token}`);
     }
 
-    static handleGameServerLogin(client: Client, data: Buffer): void {
+    static async handleGameServerLogin(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
         const token = br.readMethod9();
         const levelSwf = br.readMethod26(); 
@@ -274,12 +288,16 @@ export class CharacterHandler {
         client.pendingLoot.clear();
         client.processedRewardSources.clear();
 
+        if (client.userId) {
+            const loadedCharacters = await db.loadCharacters(client.userId);
+            client.characters = CharacterHandler.upsertCharacterList(loadedCharacters, client.character);
+        } else {
+            client.characters = CharacterHandler.upsertCharacterList(client.characters, client.character);
+        }
+
         const storyRepair = MissionHandler.repairEarlyStoryOnLogin(client.character, entry.targetLevel);
         if (storyRepair.didMutate && client.userId) {
-            const characterIndex = client.characters.findIndex((entryChar) => entryChar.name === client.character?.name);
-            if (characterIndex >= 0) {
-                client.characters[characterIndex] = client.character;
-            }
+            client.characters = CharacterHandler.upsertCharacterList(client.characters, client.character);
             void db.saveCharacters(client.userId, client.characters);
         }
 
