@@ -492,7 +492,7 @@ export class WorldEnter {
                     continue;
                 }
 
-                bb.writeMethod11(state === 2 ? 1 : 0, 1);
+                bb.writeMethod11(state >= 3 ? 1 : 0, 1);
                 if (missionDef?.Time) {
                     bb.writeMethod11(Number(missionState.Tier ?? 0), 4);
                     bb.writeMethod4(Number(missionState.highscore ?? 0));

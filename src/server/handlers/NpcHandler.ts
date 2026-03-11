@@ -86,7 +86,11 @@ export class NpcHandler {
                             missionId,
                             NpcHandler.MISSION_CLAIMED
                         );
-                        NpcHandler.sendMissionComplete(client, missionId);
+                        NpcHandler.sendMissionCompleteUi(
+                            client,
+                            missionId,
+                            NpcHandler.DEFAULT_TURN_IN_STARS
+                        );
 
                         const followupMissionId = NpcHandler.autoAcceptFollowupMission(
                             client.character,
