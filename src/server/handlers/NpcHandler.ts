@@ -264,7 +264,7 @@ export class NpcHandler {
     private static sendMissionAdded(client: Client, missionId: number): void {
         const bb = new BitBuffer(false);
         bb.writeMethod4(missionId);
-        bb.writeMethod11(0, 1);
+        bb.writeMethod11(1, 1);
         client.sendBitBuffer(0x85, bb);
     }
 

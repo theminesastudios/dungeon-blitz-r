@@ -5,14 +5,25 @@ import { BitReader } from '../network/protocol/bitReader';
 import { GlobalState } from '../core/GlobalState';
 import { LevelConfig } from '../core/LevelConfig';
 import { LevelHandler } from './LevelHandler';
+import { MissionHandler } from './MissionHandler';
 import { WorldEnter } from '../utils/WorldEnter';
 import { Config } from '../core/config';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { Character } from '../database/Database';
+import { LoginHandler } from './LoginHandler';
 
 const db = new JsonAdapter();
 
 export class CharacterHandler {
+    private static normalizeCharacterName(value: string | null | undefined): string {
+        return String(value || '').trim().toLowerCase();
+    }
+
+    private static isPlaceholderCharacterName(value: string | null | undefined): boolean {
+        const normalized = CharacterHandler.normalizeCharacterName(value);
+        return normalized === '' || normalized === 'player';
+    }
+
     private static purgeSameCharacterGhosts(activeClient: Client, userId: number, characterName: string): void {
         const normalizedCharName = String(characterName || '').trim().toLowerCase();
 
@@ -129,23 +140,41 @@ export class CharacterHandler {
         CharacterHandler.sendEnterWorld(client, newChar);
     }
 
-    static handleCharacterSelect(client: Client, data: Buffer): void {
+    static async handleCharacterSelect(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
-        const charName = br.readMethod26();
+        const charName = br.readMethod26().trim();
 
         if (!client.userId) {
             console.log(`[CharacterSelect] No userId for client`);
             return;
         }
 
-        const char = client.characters.find(c => c.name === charName);
+        client.characters = await db.loadCharacters(client.userId);
+        const requestedName = CharacterHandler.normalizeCharacterName(charName);
+        let char = client.characters.find((entry) => CharacterHandler.normalizeCharacterName(entry.name) === requestedName);
+
+        if (!char && client.characters.length > 0 && CharacterHandler.isPlaceholderCharacterName(charName)) {
+            char = client.characters[0];
+            console.log(`[CharacterSelect] Placeholder name '${charName || '(empty)'}' received for user ${client.userId}; falling back to ${char.name}`);
+        }
+
         if (!char) {
-            console.log(`[CharacterSelect] Character ${charName} not found for user ${client.userId}`);
+            const availableNames = client.characters.map((entry) => entry.name).filter(Boolean);
+            console.log(`[CharacterSelect] Character ${charName} not found for user ${client.userId}. Available: ${availableNames.join(', ') || '(none)'}`);
+            LoginHandler.sendCharacterList(client);
+
+            const bb = new BitBuffer(false);
+            const suffix = availableNames.length > 0
+                ? `Available: ${availableNames.join(', ')}`
+                : 'This account has no characters yet.';
+            bb.writeMethod13(`Character '${charName}' was not found on this account. ${suffix}`);
+            bb.writeMethod6(0, 1);
+            client.sendBitBuffer(0x1B, bb);
             return;
         }
 
         client.character = char;
-        console.log(`[CharacterSelect] Selected ${charName}`);
+        console.log(`[CharacterSelect] Selected ${char.name}`);
         
         CharacterHandler.sendEnterWorld(client, char);
     }
@@ -153,6 +182,8 @@ export class CharacterHandler {
     private static sendEnterWorld(client: Client, char: Character): void {
         // Determine Level
         const currentLevelName = char.CurrentLevel?.name || "NewbieRoad";
+        const previousLevelName = char.PreviousLevel?.name || "NewbieRoad";
+        const spawn = LevelConfig.getSpawnCoordinates(char, previousLevelName, currentLevelName);
 
         // Generate Transfer Token
         const token = Math.floor(Math.random() * 0xFFFF); 
@@ -162,8 +193,11 @@ export class CharacterHandler {
              GlobalState.pendingWorld.set(token, {
                 character: char,
                 targetLevel: currentLevelName,
-                previousLevel: char.PreviousLevel?.name || "NewbieRoad", 
-                userId: client.userId
+                previousLevel: previousLevelName,
+                userId: client.userId,
+                newX: spawn.x,
+                newY: spawn.y,
+                newHasCoord: spawn.hasCoord
             });
             GlobalState.pendingExtended.set(token, true);
         }
@@ -184,7 +218,9 @@ export class CharacterHandler {
             isHard ? "Hard" : "",
             isHard ? "Hard" : "",
             levelSpec.isDungeon,
-            false, 0, 0,
+            spawn.hasCoord,
+            spawn.x,
+            spawn.y,
             char
         );
 
@@ -217,12 +253,24 @@ export class CharacterHandler {
         client.token = token;
         client.clientEntID = 0;
         client.currentLevel = entry.targetLevel;
-        client.currentRoomId = -1;
+        client.entryLevel = LevelConfig.get(entry.targetLevel).isDungeon ? entry.previousLevel : '';
+        client.currentRoomId = 0;
         client.lastDoorId = -1;
         client.lastDoorTargetLevel = '';
         client.playerSpawned = false;
         client.entities.clear();
         client.startedRoomEvents.clear();
+        client.pendingLoot.clear();
+        client.processedRewardSources.clear();
+
+        const storyRepair = MissionHandler.repairEarlyStoryOnLogin(client.character, entry.targetLevel);
+        if (storyRepair.didMutate && client.userId) {
+            const characterIndex = client.characters.findIndex((entryChar) => entryChar.name === client.character?.name);
+            if (characterIndex >= 0) {
+                client.characters[characterIndex] = client.character;
+            }
+            void db.saveCharacters(client.userId, client.characters);
+        }
 
         CharacterHandler.purgeSameCharacterGhosts(client, entry.userId, entry.character.name);
         
@@ -237,9 +285,11 @@ export class CharacterHandler {
         
         console.log(`[GameLogin] Client logged in with token ${token} as ${client.character.name}`);
 
-        // Calculate Spawn
-        // For now, simple spawn based on level config
-        const spawn = LevelConfig.getSpawn(entry.targetLevel);
+        const spawn = {
+            x: entry.newX ?? 0,
+            y: entry.newY ?? 0,
+            hasCoord: entry.newHasCoord ?? false
+        };
 
         // Send Player Data (0x10)
         const pdPkt = WorldEnter.buildPlayerDataPacket(
@@ -250,12 +300,16 @@ export class CharacterHandler {
             entry.targetLevel,
             spawn.x,
             spawn.y,
-            true, // newHasCoord
+            spawn.hasCoord,
             sendExtended
         );
         
         client.sendBitBuffer(0x10, pdPkt);
         console.log(`[GameLogin] Sent 0x10 (Player Data)`);
+
+        if (storyRepair.addedMissionId > 0) {
+            MissionHandler.sendMissionAdded(client, storyRepair.addedMissionId);
+        }
         
         // Spawn NPCs
         LevelHandler.spawnLevelNpcs(client, entry.targetLevel);

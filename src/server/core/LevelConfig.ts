@@ -16,7 +16,6 @@ export interface SpawnPoint {
 
 export class LevelConfig {
     private static LEVELS: Record<string, LevelSpec> = {};
-    private static SPAWN_POINTS: Record<string, SpawnPoint> = {}; // We'll hardcode some defaults or parse if available
     private static DOOR_MAP: Map<string, string> = new Map(); // Key: "LevelName_DoorID"
     private static LEVEL_NAME_CANONICAL: Record<string, string> = {};
     private static readonly LEVEL_ALIASES: Record<string, string> = {
@@ -28,21 +27,69 @@ export class LevelConfig {
         "newbieroadhard": "NewbieRoadHard"
     };
     private static readonly DOOR_FALLBACKS: Record<string, string> = {
+        "NewbieRoad_2": "SwampRoadNorth",
+        "NewbieRoadHard_2": "SwampRoadNorthHard",
         "TutorialBoat_2": "NewbieRoad"
+    };
+    private static readonly SPECIAL_SPAWNS: Record<string, SpawnPoint> = {
+        "SwampRoadNorth_NewbieRoad": { x: 20298, y: 639 },
+        "SwampRoadNorthHard_NewbieRoadHard": { x: 20298, y: 639 },
+        "SwampRoadConnection_SwampRoadNorth": { x: 193, y: 511 },
+        "SwampRoadConnectionHard_SwampRoadNorthHard": { x: 193, y: 511 },
+        "EmeraldGlades_OldMineMountain": { x: 18552, y: 4021 },
+        "EmeraldGladesHard_OldMineMountainHard": { x: 18552, y: 4021 },
+        "SwampRoadNorth_SwampRoadConnection": { x: 325, y: 368 },
+        "SwampRoadNorthHard_SwampRoadConnectionHard": { x: 325, y: 368 },
+        "BridgeTown_SwampRoadConnection": { x: 10533, y: 461 },
+        "BridgeTownHard_SwampRoadConnectionHard": { x: 10533, y: 461 },
+        "OldMineMountain_BridgeTown": { x: 16986, y: -296 },
+        "OldMineMountainHard_BridgeTownHard": { x: 16986, y: -296 },
+        "BridgeTown_BridgeTownHard": { x: 11439, y: 2199 },
+        "BridgeTownHard_BridgeTown": { x: 11439, y: 2199 },
+        "Castle_BridgeTown": { x: 10566, y: 493 },
+        "CastleHard_BridgeTownHard": { x: 10566, y: 493 },
+        "ShazariDesert_ShazariDesertHard": { x: 14851, y: 638 },
+        "ShazariDesertHard_ShazariDesert": { x: 14851, y: 638 },
+        "JadeCity_ShazariDesert": { x: 25857, y: 1298 },
+        "JadeCityHard_ShazariDesertHard": { x: 25857, y: 1298 }
     };
 
     // Hardcoded spawns from Python
     private static DEFAULT_SPAWNS: Record<string, SpawnPoint> = {
         "NewbieRoad": { x: 1421, y: 826 },
+        "NewbieRoadHard": { x: 1421, y: 826 },
         "CraftTown": { x: 360, y: 1460 },
         "BridgeTown": { x: 3944, y: 838 },
+        "BridgeTownHard": { x: 3944, y: 838 },
         "SwampRoadNorth": { x: 4360, y: 595 },
+        "SwampRoadNorthHard": { x: 4360, y: 595 },
         "OldMineMountain": { x: 189, y: 1335 },
+        "OldMineMountainHard": { x: 189, y: 1335 },
         "EmeraldGlades": { x: -1433, y: -1883 },
+        "EmeraldGladesHard": { x: -1433, y: -1883 },
         "Castle": { x: -1280, y: -1941 },
+        "CastleHard": { x: -1280, y: -1941 },
         "ShazariDesert": { x: 618, y: 647 },
-        "JadeCity": { x: 10430, y: 1058 }
+        "ShazariDesertHard": { x: 618, y: 647 },
+        "JadeCity": { x: 10430, y: 1058 },
+        "JadeCityHard": { x: 10430, y: 1058 }
     };
+
+    private static asLevelRecord(value: any): { name?: string; x?: number; y?: number } {
+        if (!value || typeof value !== 'object') {
+            return {};
+        }
+        return value;
+    }
+
+    private static copyLevelRecord(value: any): { name: string; x: number; y: number } {
+        const record = LevelConfig.asLevelRecord(value);
+        return {
+            name: String(record.name || ''),
+            x: Number(record.x ?? 0),
+            y: Number(record.y ?? 0)
+        };
+    }
 
     static load(dataDir: string) {
         // Load Level Config
@@ -140,5 +187,115 @@ export class LevelConfig {
         
         const key = `${level}_${doorId}`;
         return this.DOOR_MAP.get(key) || this.DOOR_FALLBACKS[key] || null;
+    }
+
+    static isDungeonLevel(levelName: string | null | undefined): boolean {
+        const normalized = this.normalizeLevelName(levelName);
+        if (!normalized) {
+            return false;
+        }
+        return Boolean(this.LEVELS[normalized]?.isDungeon);
+    }
+
+    static isSaveAllowedLevel(levelName: string | null | undefined): boolean {
+        const normalized = this.normalizeLevelName(levelName);
+        if (!normalized) {
+            return false;
+        }
+        if (normalized === 'CraftTown') {
+            return true;
+        }
+        return !this.isDungeonLevel(normalized);
+    }
+
+    static getSpawnCoordinates(
+        char: any,
+        currentLevelName: string | null | undefined,
+        targetLevelName: string | null | undefined
+    ): { x: number; y: number; hasCoord: boolean } {
+        const currentLevel = this.normalizeLevelName(currentLevelName);
+        const targetLevel = this.normalizeLevelName(targetLevelName);
+
+        if (!targetLevel) {
+            return { x: 0, y: 0, hasCoord: false };
+        }
+
+        const special = currentLevel ? this.SPECIAL_SPAWNS[`${currentLevel}_${targetLevel}`] : undefined;
+        if (special) {
+            return { x: Math.round(special.x), y: Math.round(special.y), hasCoord: true };
+        }
+
+        if (this.isDungeonLevel(targetLevel)) {
+            return { x: 0, y: 0, hasCoord: false };
+        }
+
+        const currentRecord = this.asLevelRecord(char?.CurrentLevel);
+        if (
+            this.normalizeLevelName(currentRecord.name) === targetLevel &&
+            Number.isFinite(currentRecord.x) &&
+            Number.isFinite(currentRecord.y)
+        ) {
+            return {
+                x: Math.round(Number(currentRecord.x)),
+                y: Math.round(Number(currentRecord.y)),
+                hasCoord: true
+            };
+        }
+
+        const previousRecord = this.asLevelRecord(char?.PreviousLevel);
+        if (
+            this.normalizeLevelName(previousRecord.name) === targetLevel &&
+            Number.isFinite(previousRecord.x) &&
+            Number.isFinite(previousRecord.y)
+        ) {
+            return {
+                x: Math.round(Number(previousRecord.x)),
+                y: Math.round(Number(previousRecord.y)),
+                hasCoord: true
+            };
+        }
+
+        const spawn = this.getSpawn(targetLevel);
+        return { x: Math.round(spawn.x), y: Math.round(spawn.y), hasCoord: true };
+    }
+
+    static updateSavedLevelsOnTransfer(
+        char: any,
+        _oldLevelName: string | null | undefined,
+        newLevelName: string | null | undefined,
+        newX: number,
+        newY: number
+    ): void {
+        const newLevel = this.normalizeLevelName(newLevelName);
+        if (!newLevel || !this.isSaveAllowedLevel(newLevel)) {
+            return;
+        }
+
+        const currentRecord = this.asLevelRecord(char?.CurrentLevel);
+        const previousRecord = this.asLevelRecord(char?.PreviousLevel);
+        const currentName = this.normalizeLevelName(currentRecord.name);
+        const previousName = this.normalizeLevelName(previousRecord.name);
+
+        if (newLevel === 'CraftTown') {
+            let safeFrom: { name: string; x: number; y: number } | null = null;
+            if (currentName && this.isSaveAllowedLevel(currentName) && currentName !== 'CraftTown') {
+                safeFrom = this.copyLevelRecord(currentRecord);
+            } else if (previousName && this.isSaveAllowedLevel(previousName) && previousName !== 'CraftTown') {
+                safeFrom = this.copyLevelRecord(previousRecord);
+            }
+
+            if (safeFrom) {
+                char.PreviousLevel = safeFrom;
+            }
+
+            char.CurrentLevel = { name: 'CraftTown', x: Math.round(newX), y: Math.round(newY) };
+            return;
+        }
+
+        if (currentName && this.isSaveAllowedLevel(currentName) && currentName !== newLevel) {
+            char.PreviousLevel = this.copyLevelRecord(currentRecord);
+        }
+
+        char.CurrentLevel = { name: newLevel, x: Math.round(newX), y: Math.round(newY) };
     }
 }

@@ -124,7 +124,12 @@
   ],
   "OwnedDyes": [],
   "consumables": [],
-  "missions": {},
+  "missions": {
+    "1": {
+      "state": 1,
+      "currCount": 0
+    }
+  },
   "questTrackerState": 0,
   "friends": [],
   "learnedAbilities": [

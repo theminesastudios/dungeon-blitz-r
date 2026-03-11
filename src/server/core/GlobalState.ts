@@ -6,6 +6,9 @@ export interface PendingTransfer {
     targetLevel: string;
     previousLevel: string;
     userId: number;
+    newX?: number;
+    newY?: number;
+    newHasCoord?: boolean;
 }
 
 export class GlobalState {

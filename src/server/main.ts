@@ -53,6 +53,7 @@ router.register(0x8, EntityHandler.handleEntityFullUpdate); // Entity Full Updat
 router.register(0xA2, CommandHandler.handleLinkUpdater); // Link Updater
 router.register(0x10E, CommandHandler.handleQueuePotion); // Queue Potion
 router.register(0x2A, RewardHandler.handleGrantReward); // Grant Reward
+router.register(0x38, RewardHandler.handlePickupLootdrop); // Pickup Lootdrop
 router.register(0x41, LevelHandler.handleRequestDoorState); // Request Door State
 router.register(0x3F, MissionHandler.handleSetLevelComplete); // Level Complete
 router.register(0xB7, LevelHandler.handleQuestProgressUpdate); // Quest Progress Update

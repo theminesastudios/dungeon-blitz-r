@@ -12,6 +12,35 @@ import { JsonAdapter } from '../database/JsonAdapter';
 const db = new JsonAdapter();
 
 export class LevelHandler {
+    private static sendDestroyEntity(levelName: string, entityId: number): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(entityId);
+        bb.writeMethod15(false);
+        const payload = bb.toBuffer();
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (!other.playerSpawned || other.currentLevel !== levelName) {
+                continue;
+            }
+            other.send(0x0D, payload);
+        }
+    }
+
+    private static clearTransferState(client: Client, oldLevel: string, oldClientEntId: number): void {
+        if (oldClientEntId > 0 && oldLevel) {
+            LevelHandler.sendDestroyEntity(oldLevel, oldClientEntId);
+        }
+
+        client.entities.delete(oldClientEntId);
+        EntityHandler.removeOwnedEntities(client);
+        client.clientEntID = 0;
+        client.playerSpawned = false;
+        client.pendingLoot.clear();
+        client.processedRewardSources.clear();
+        client.currentRoomId = 0;
+        client.startedRoomEvents.clear();
+    }
+
     private static forLevelRecipients(client: Client, includeSender: boolean = false): Client[] {
         const levelName = client.currentLevel;
         if (!levelName) {
@@ -114,11 +143,12 @@ export class LevelHandler {
         const currentLevel = LevelConfig.normalizeLevelName(client.currentLevel || "NewbieRoad") || "NewbieRoad";
         let targetLevel = LevelConfig.normalizeLevelName(LevelConfig.getDoorTarget(currentLevel, doorId));
 
-        // Fallback for dungeons: use entry level? 
-        // For now, simpler logic.
-        
         if (!targetLevel && doorId === 999) {
             targetLevel = "CraftTown";
+        }
+
+        if (!targetLevel && LevelConfig.isDungeonLevel(currentLevel) && client.entryLevel) {
+            targetLevel = LevelConfig.normalizeLevelName(client.entryLevel);
         }
 
         if (!targetLevel) {
@@ -280,54 +310,31 @@ export class LevelHandler {
             targetLevel = safeFallback;
         }
 
-        // 2. Get Old Position
-        const oldLevel = LevelConfig.normalizeLevelName(client.currentLevel || "NewbieRoad") || "NewbieRoad";
+        const currentLevelRecord = client.character.CurrentLevel;
+        const oldLevel = LevelConfig.normalizeLevelName(currentLevelRecord?.name || client.currentLevel || "NewbieRoad") || "NewbieRoad";
         const ent = client.entities.get(client.clientEntID);
         let oldX = 0, oldY = 0;
+        let hasOldCoord = false;
 
         if (ent) {
             oldX = ent.x;
             oldY = ent.y;
+            hasOldCoord = Number.isFinite(oldX) && Number.isFinite(oldY);
         }
 
-        // 3. Calculate New Spawn
-        // Default spawn from config
-        const targetSpec = LevelConfig.get(targetLevel);
-        const spawn = LevelConfig.getSpawn(targetLevel);
+        const oldClientEntId = client.clientEntID;
+        LevelHandler.clearTransferState(client, oldLevel, oldClientEntId);
+
+        // 3. Calculate New Spawn / save logic like Python
+        const spawn = LevelConfig.getSpawnCoordinates(client.character, oldLevel, targetLevel);
         const newX = spawn.x;
         const newY = spawn.y;
+        const newHasCoord = spawn.hasCoord;
+        LevelConfig.updateSavedLevelsOnTransfer(client.character, oldLevel, targetLevel, newX, newY);
 
-        // 4. Update Character State (PreviousLevel / CurrentLevel) logic
-        // Only if coming from a non-dungeon (safe) level
-        if (oldLevel && !LevelConfig.get(oldLevel).isDungeon) {
-            if (targetLevel === "CraftTown") {
-                // Determine if we should save the previous level
-                // If we are NOT coming from CraftTown, save it.
-                if (oldLevel !== "CraftTown") {
-                    client.character.PreviousLevel = { name: oldLevel, x: oldX, y: oldY };
-                }
-                // If we ARE coming from CraftTown (CraftTown -> CraftTown?), we keep the existing PreviousLevel.
-            } else if (targetLevel !== "CraftTown") {
-                 // Normal travel: Old level becomes PreviousLevel (if safe)
-                 if (oldLevel !== "CraftTown") {
-                     client.character.PreviousLevel = { name: oldLevel, x: oldX, y: oldY };
-                 }
-                 // If we leave CraftTown to a normal zone, we might want to keep CraftTown as previous? 
-                 // Python says: "Prefer CurrentLevel if it’s a safe non-CraftTown... elif prev_name..."
-                 // Basically, if we are in CraftTown, and go to Field, PreviousLevel in DB is probably where we came from BEFORE CraftTown.
-                 // But here we set PreviousLevel to valid safe zones. 
-                 
-                 // Let's stick to the user request: "CraftTown should have returned the player to NewbieRoad at the first, then last coordinate"
-                 // This implies that when entering CraftTown, we saved NewbieRoad.
-                 // When leaving CraftTown (via "Return"?), we read PreviousLevel.
-                 
-                 // If this 0x1D is "Leaving CraftTown", we are just going to `targetLevel`.
-                 // If `targetLevel` is NewbieRoad, we just go there.
-            }
+        if (client.userId) {
+            await db.saveCharacters(client.userId, client.characters);
         }
-        
-        // Update CurrentLevel to new location
-        client.character.CurrentLevel = { name: targetLevel, x: newX, y: newY };
 
         // 5. Generate New Token
         const newToken = Math.floor(Math.random() * 0xFFFF);
@@ -347,18 +354,26 @@ export class LevelHandler {
                 character: client.character,
                 userId: client.userId,
                 targetLevel: targetLevel,
-                previousLevel: client.character.PreviousLevel?.name || "NewbieRoad"
+                previousLevel: oldLevel,
+                newX,
+                newY,
+                newHasCoord
             });
         }
+        GlobalState.pendingExtended.set(newToken, false);
         
         // 8. Send Enter World (0x21)
         const levelSpec = LevelConfig.get(targetLevel);
         const isHard = targetLevel.endsWith("Hard");
-        const newHasCoord = !targetSpec.isDungeon;
+        const oldLevelSpec = LevelConfig.get(oldLevel);
         
         const pkt = WorldEnter.buildEnterWorldPacket(
             newToken,
-            0, "", false, 0, 0, // Old world info (dummy for now)
+            0,
+            oldLevelSpec.swf,
+            hasOldCoord,
+            Math.round(oldX),
+            Math.round(oldY),
             Config.HOST,
             Config.PORTS[0],
             levelSpec.swf,

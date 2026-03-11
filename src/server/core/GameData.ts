@@ -2,10 +2,20 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export class GameData {
+    static readonly MONSTER_GOLD_TABLE: number[] = [0, 43, 46, 49, 53, 57, 61, 65, 70, 75, 80, 86, 92, 98, 106, 113, 121, 130, 139, 149, 160, 171, 184, 197, 211, 226, 243, 260, 279, 299, 320, 343, 368, 394, 422, 453, 485, 520, 557, 597, 640, 686, 735, 788, 844, 905, 970, 1040, 1114, 1194, 1280];
+    static readonly MONSTER_EXP_TABLE: number[] = [0, 10, 13, 15, 17, 20, 23, 26, 30, 35, 40, 46, 53, 61, 70, 80, 92, 106, 121, 139, 160, 184, 211, 243, 279, 320, 368, 422, 485, 557, 640, 735, 844, 970, 1114, 1280, 1470, 1689, 1940, 2229, 2560, 2941, 3378, 3880, 4457, 5120, 5881, 6756, 7760, 8914, 10240];
+    static readonly PLAYER_XP_THRESHOLDS: number[] = [0, 0, 100, 350, 750, 1400, 2400, 3900, 6000, 9000, 13000, 18500, 26000, 36000, 49000, 66000, 88000, 116000, 152000, 198000, 256000, 330000, 424000, 544000, 697000, 893000, 1143000, 1462000, 1869000, 2387000, 3047000, 3420000, 3550000, 3680000, 3810000, 3940000, 4070000, 4100000, 4130000, 4160000, 4190000, 4220000, 4250000, 4280000, 4295000, 4310000, 4325000, 4340000, 4355000, 4367860, 4500000];
     static MOUNT_IDS: { [key: string]: number } = {};
     static CONSUMABLES: any[] = [];
     static CHARMS: any[] = [];
     static ENTTYPES: { [key: string]: any } = {};
+    static MATERIALS: any[] = [];
+    static MATERIALS_BY_REALM: Record<string, { M: number[]; R: number[]; L: number[] }> = {};
+    static GEAR_DATA: { realm_drops: Record<string, number[]>; boss_drops: Record<string, number[]>; global_drops: number[] } = {
+        realm_drops: {},
+        boss_drops: {},
+        global_drops: []
+    };
 
     static load(dataDir: string) {
         // EntTypes
@@ -59,6 +69,43 @@ export class GameData {
         } catch (err) {
             console.error(`[GameData] Failed to load Charms.json:`, err);
         }
+
+        try {
+            const materialsPath = path.join(dataDir, 'Materials.json');
+            if (fs.existsSync(materialsPath)) {
+                GameData.MATERIALS = JSON.parse(fs.readFileSync(materialsPath, 'utf-8'));
+                GameData.MATERIALS_BY_REALM = {};
+                for (const material of GameData.MATERIALS) {
+                    const realm = String(material.DropRealm || '').trim();
+                    const rarity = String(material.Rarity || 'M').trim();
+                    const materialId = Number(material.MaterialID || 0);
+                    if (!realm || materialId <= 0) {
+                        continue;
+                    }
+                    if (!GameData.MATERIALS_BY_REALM[realm]) {
+                        GameData.MATERIALS_BY_REALM[realm] = { M: [], R: [], L: [] };
+                    }
+                    if (rarity === 'R' || rarity === 'L') {
+                        GameData.MATERIALS_BY_REALM[realm][rarity].push(materialId);
+                    } else {
+                        GameData.MATERIALS_BY_REALM[realm].M.push(materialId);
+                    }
+                }
+                console.log(`[GameData] Loaded ${GameData.MATERIALS.length} materials.`);
+            }
+        } catch (err) {
+            console.error(`[GameData] Failed to load Materials.json:`, err);
+        }
+
+        try {
+            const gearPath = path.join(dataDir, 'gear_data.json');
+            if (fs.existsSync(gearPath)) {
+                GameData.GEAR_DATA = JSON.parse(fs.readFileSync(gearPath, 'utf-8'));
+                console.log(`[GameData] Loaded gear drop data.`);
+            }
+        } catch (err) {
+            console.error(`[GameData] Failed to load gear_data.json:`, err);
+        }
     }
 
 
@@ -89,5 +136,92 @@ export class GameData {
     static getCharmId(name: string): number {
         const item = GameData.CHARMS.find(c => c.CharmName === name);
         return item ? parseInt(item.CharmID) : 0;
+    }
+
+    static getPlayerLevelFromXp(xp: number): number {
+        for (let level = GameData.PLAYER_XP_THRESHOLDS.length - 1; level > 0; level--) {
+            if (xp >= GameData.PLAYER_XP_THRESHOLDS[level]) {
+                return Math.min(level, 50);
+            }
+        }
+        return 1;
+    }
+
+    static calculateNpcGold(entName: string, level: number): number {
+        const entType = GameData.getEntType(entName);
+        if (!entType) {
+            return 0;
+        }
+
+        const goldDrop = String(entType.GoldDrop ?? '0').split(',');
+        const primaryScalar = Number(goldDrop[0] ?? 0);
+        const index = Math.max(0, Math.min(level, GameData.MONSTER_GOLD_TABLE.length - 1));
+        const baseGold = GameData.MONSTER_GOLD_TABLE[index];
+
+        const rank = String(entType.EntRank ?? 'Minion');
+        let rankMultiplier = 1;
+        if (rank === 'Lieutenant') {
+            rankMultiplier = 3;
+        } else if (rank === 'MiniBoss' || rank === 'Boss') {
+            rankMultiplier = 10;
+        }
+
+        const lowRoll = primaryScalar * baseGold * 0.5 * rankMultiplier;
+        return Math.max(0, Math.floor(lowRoll + (lowRoll * 2 + 1) * Math.random()));
+    }
+
+    static calculateNpcExp(entName: string, level: number): number {
+        const entType = GameData.getEntType(entName);
+        if (!entType) {
+            return 0;
+        }
+
+        const expMult = Number(entType.ExpMult ?? 1);
+        const index = Math.max(0, Math.min(level, GameData.MONSTER_EXP_TABLE.length - 1));
+        return Math.round(GameData.MONSTER_EXP_TABLE[index] * expMult);
+    }
+
+    static getGearIdForEntity(entName: string): number {
+        const entType = GameData.getEntType(entName);
+        if (!entType) {
+            return 0;
+        }
+
+        const bossDrops = GameData.GEAR_DATA.boss_drops?.[entName];
+        if (Array.isArray(bossDrops) && bossDrops.length > 0) {
+            return Number(bossDrops[Math.floor(Math.random() * bossDrops.length)] ?? 0);
+        }
+
+        const realm = String(entType.Realm ?? '');
+        const realmDrops = GameData.GEAR_DATA.realm_drops?.[realm];
+        if (Array.isArray(realmDrops) && realmDrops.length > 0) {
+            return Number(realmDrops[Math.floor(Math.random() * realmDrops.length)] ?? 0);
+        }
+
+        const globalDrops = GameData.GEAR_DATA.global_drops;
+        if (Array.isArray(globalDrops) && globalDrops.length > 0) {
+            return Number(globalDrops[Math.floor(Math.random() * globalDrops.length)] ?? 0);
+        }
+
+        return 0;
+    }
+
+    static getRandomMaterialForRealm(realm: string): number {
+        const drops = GameData.MATERIALS_BY_REALM[realm];
+        if (!drops) {
+            return 0;
+        }
+
+        const roll = Math.random();
+        if (roll < 0.05 && drops.L.length > 0) {
+            return drops.L[Math.floor(Math.random() * drops.L.length)] ?? 0;
+        }
+        if (roll < 0.30 && drops.R.length > 0) {
+            return drops.R[Math.floor(Math.random() * drops.R.length)] ?? 0;
+        }
+        if (drops.M.length > 0) {
+            return drops.M[Math.floor(Math.random() * drops.M.length)] ?? 0;
+        }
+        return 0;
     }
 }

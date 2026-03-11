@@ -1,8 +1,15 @@
 import * as net from 'net';
 import { BitBuffer } from '../network/protocol/bitBuffer';
-import { BitReader } from '../network/protocol/bitReader';
 import { PacketRouter } from '../network/packetRouter';
 import { UserAccount, Character } from '../database/Database';
+
+export interface PendingLootDrop {
+    gold?: number;
+    health?: number;
+    gear?: number;
+    tier?: number;
+    material?: number;
+}
 
 export class Client {
     public socket: net.Socket;
@@ -22,11 +29,16 @@ export class Client {
     public clientEntID: number = 0;
     public entities: Map<number, any> = new Map();
     public currentLevel: string = "";
+    public entryLevel: string = "";
     public currentRoomId: number = -1;
     public lastDoorId: number = -1;
     public lastDoorTargetLevel: string = "";
     public playerSpawned: boolean = false;
     public startedRoomEvents: Set<string> = new Set();
+    public pendingLoot: Map<number, PendingLootDrop> = new Map();
+    public processedRewardSources: Set<string> = new Set();
+    public authoritativeMaxHp: number = 100;
+    public authoritativeCurrentHp: number = 100;
 
     constructor(socket: net.Socket, router: PacketRouter) {
         this.socket = socket;
@@ -94,6 +106,8 @@ export class Client {
 
         this.playerSpawned = false;
         this.entities.clear();
+        this.pendingLoot.clear();
+        this.processedRewardSources.clear();
 
         console.log(`[Client] Disconnected`);
     }
