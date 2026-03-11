@@ -351,4 +351,61 @@ export class PetHandler {
         client.character.activeEggCount = 0;
         await PetHandler.saveCharacter(client);
     }
+
+    static spawnPet(client: Client): void {
+        const char = client.character;
+        if (!char) {
+            console.log("[PetHandler] spawnPet: No character");
+            return;
+        }
+        if (!char.activePet) {
+             console.log("[PetHandler] spawnPet: No activePet");
+             return;
+        }
+        if (!char.activePet.typeID) {
+            console.log("[PetHandler] spawnPet: activePet.typeID is falsy");
+            return;
+        }
+
+        const petDef = PetConfig.getPetDef(char.activePet.typeID);
+        if (!petDef) {
+            console.log(`[PetHandler] spawnPet: No definition for petID ${char.activePet.typeID}`);
+            return;
+        }
+
+        console.log(`[PetHandler] Spawning pet ${petDef.PetName} (ID: ${char.activePet.typeID}) for ${char.name}`);
+
+        // Create Entity for Pet
+        // Use a large offset for pet ID to avoid collision
+        const petEntID = client.clientEntID + 5000; 
+
+        const entityProps: any = {
+            id: petEntID,
+            name: petDef.PetName, 
+            isPlayer: false,
+            x: char.CurrentLevel?.x || 0,
+            y: char.CurrentLevel?.y || 0,
+            v: 0,
+            team: 1, // Player Team
+            renderDepthOffset: 0,
+            entState: 0,
+            facingLeft: false,
+            summonerId: client.clientEntID, // Linked to player
+            characterName: char.name 
+        };
+
+        // Send to self
+        const { EntityHandler } = require('./EntityHandler'); 
+        EntityHandler.sendEntity(client, entityProps);
+        
+        console.log(`[PetHandler] Sent 0xF for pet entity ${petEntID} with summonerId ${client.clientEntID}`);
+
+        // Broadcast
+        const sessions = require('../core/GlobalState').GlobalState.sessionsByToken;
+        for (const other of sessions.values()) {
+            if (other !== client && other.currentLevel === client.currentLevel) {
+                 EntityHandler.sendEntity(other, entityProps);
+            }
+        }
+    }
 }

@@ -101,7 +101,7 @@ router.register(0x106, SigilHandler.handleRoyalSigilStorePurchase);
 const policyServer = new PolicyServer(Config.POLICY_PORT);
 policyServer.start();
 
-const staticServer = new StaticServer(80);
+const staticServer = new StaticServer(80, '../../client/content/localhost');
 staticServer.start();
 
 

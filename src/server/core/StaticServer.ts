@@ -6,7 +6,7 @@ export class StaticServer {
     private port: number;
     private contentDir: string;
 
-    constructor(port: number = 80, relativeContentPath: string = '../../../server/content/localhost') {
+    constructor(port: number = 80, relativeContentPath: string = '../../client/content/localhost') {
         this.port = port;
         this.app = express();
         

@@ -171,6 +171,7 @@ export class CharacterHandler {
         client.character = entry.character;
         client.userId = entry.userId;
         client.token = token;
+        client.clientEntID = token; // Client uses token as Entity ID
         
         GlobalState.sessionsByToken.set(token, client);
         if (client.userId) {
@@ -203,5 +204,12 @@ export class CharacterHandler {
         
         // Spawn NPCs
         LevelHandler.spawnLevelNpcs(client, entry.targetLevel);
+
+        // Spawn Pet
+        // We need to import PetHandler but circular dependency might be issue if top-level. 
+        // CharacterHandler imports PetHandler? Let's check imports.
+        // It's not imported at top.
+        const { PetHandler } = require('./PetHandler');
+        PetHandler.spawnPet(client);
     }
 }
