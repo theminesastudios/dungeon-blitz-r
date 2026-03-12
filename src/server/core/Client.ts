@@ -15,6 +15,7 @@ export class Client {
     public socket: net.Socket;
     public router: PacketRouter;
     private buffer: Buffer;
+    private packetQueue: Promise<void>;
 
     // Session State
     public userId: number | null = null;
@@ -45,6 +46,7 @@ export class Client {
         this.socket = socket;
         this.router = router;
         this.buffer = Buffer.alloc(0);
+        this.packetQueue = Promise.resolve();
 
         this.socket.on('data', (data: Buffer) => this.onData(data));
         this.socket.on('close', () => this.onClose());
@@ -64,20 +66,16 @@ export class Client {
                 break; // Wait for more data
             }
 
-            const payload = this.buffer.subarray(4, total);
+            const payload = Buffer.from(this.buffer.subarray(4, total));
             this.buffer = this.buffer.subarray(total);
 
-            // Handle Packet
-            // console.log(`[Client] Received Packet 0x${packetId.toString(16)} (len=${length})`);
-            try {
-                // Ensure we handle the promise if it's async, though onData used to be sync-ish.
-                // onData is void, but we can call async func.
-                this.router.handle(this, packetId, payload).catch(err => {
-                     console.error(`[Client] Async Error handling packet 0x${packetId.toString(16)}:`, err);
+            this.packetQueue = this.packetQueue
+                .then(async () => {
+                    await this.router.handle(this, packetId, payload);
+                })
+                .catch((err: unknown) => {
+                    console.error(`[Client] Error handling packet 0x${packetId.toString(16)}:`, err);
                 });
-            } catch (err) {
-                console.error(`[Client] Sync Error handling packet 0x${packetId.toString(16)}:`, err);
-            }
         }
     }
 

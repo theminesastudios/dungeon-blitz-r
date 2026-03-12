@@ -4,9 +4,11 @@ import { Client } from '../core/Client';
 import { BitReader } from '../network/protocol/bitReader';
 import { GlobalState } from '../core/GlobalState';
 import { Entity, EntityProps, EntityState } from '../core/Entity';
+import { PetHandler } from './PetHandler';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
+        'CraftTownTutorial',
         'NewbieRoad',
         'NewbieRoadHard'
     ]);
@@ -99,27 +101,53 @@ export class EntityHandler {
             client.clientEntID = entityId;
         }
 
-        const props: EntityProps & { clientSpawned?: boolean; ownerToken?: number; ownerUserId?: number } = {
-            id: entityId,
-            name: entName,
-            isPlayer: isPlayer,
-            x: posX,
-            y: posY,
-            v: velocityX,
-            team: team,
-            renderDepthOffset: yOffset,
-            characterName: cueData.character_name,
-            dramaAnim: cueData.DramaAnim,
-            sleepAnim: cueData.SleepAnim,
-            summonerId: summonerId,
-            powerId: powerId,
-            entState: entState,
-            facingLeft: bLeft,
-            clientSpawned: !isPlayer,
-            ownerToken: client.token || 0,
-            ownerUserId: client.userId || 0
-            // bRunning etc are flags
-        };
+        const ownsThisPlayerPacket = Boolean(
+            isPlayer &&
+            client.character &&
+            (isSelfPacket || (client.clientEntID > 0 && client.clientEntID === entityId))
+        );
+
+        const props: EntityProps & { clientSpawned?: boolean; ownerToken?: number; ownerUserId?: number } = ownsThisPlayerPacket
+            ? {
+                ...Entity.fromCharacter(entityId, client.character!, {
+                    x: posX,
+                    y: posY,
+                    v: velocityX,
+                    team,
+                    entState,
+                    facingLeft: bLeft,
+                    renderDepthOffset: yOffset
+                }),
+                characterName: cueData.character_name,
+                dramaAnim: cueData.DramaAnim,
+                sleepAnim: cueData.SleepAnim,
+                summonerId,
+                powerId,
+                clientSpawned: false,
+                ownerToken: client.token || 0,
+                ownerUserId: client.userId || 0
+            }
+            : {
+                id: entityId,
+                name: entName,
+                isPlayer: isPlayer,
+                x: posX,
+                y: posY,
+                v: velocityX,
+                team: team,
+                renderDepthOffset: yOffset,
+                characterName: cueData.character_name,
+                dramaAnim: cueData.DramaAnim,
+                sleepAnim: cueData.SleepAnim,
+                summonerId: summonerId,
+                powerId: powerId,
+                entState: entState,
+                facingLeft: bLeft,
+                clientSpawned: !isPlayer,
+                ownerToken: client.token || 0,
+                ownerUserId: client.userId || 0
+                // bRunning etc are flags
+            };
 
         client.entities.set(entityId, props);
 
@@ -138,6 +166,11 @@ export class EntityHandler {
 
         if (isPlayer && !client.playerSpawned) {
              client.playerSpawned = true;
+             PetHandler.sendMountEquipPacket(
+                client,
+                client.clientEntID,
+                Number(client.character?.equippedMount ?? props.equippedMount ?? 0)
+            );
              EntityHandler.sendExistingPlayersToJoiner(client);
              EntityHandler.broadcastPlayerSpawn(client, props);
         }

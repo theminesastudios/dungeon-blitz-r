@@ -17,6 +17,27 @@ export class LevelHandler {
     private static readonly MISSION_NOT_STARTED = 0;
     private static readonly MISSION_IN_PROGRESS = 1;
 
+    private static async refreshCurrentCharacterFromSave(client: Client): Promise<void> {
+        if (!client.userId || !client.character) {
+            return;
+        }
+
+        const latestCharacters = await db.loadCharacters(client.userId);
+        client.characters = latestCharacters;
+
+        const currentName = String(client.character.name ?? '').trim().toLowerCase();
+        const latestCharacter = latestCharacters.find((entry) =>
+            String(entry?.name ?? '').trim().toLowerCase() === currentName
+        );
+
+        if (latestCharacter) {
+            client.character = latestCharacter;
+        } else {
+            latestCharacters.push(client.character);
+            client.characters = latestCharacters;
+        }
+    }
+
     private static sendDestroyEntity(levelName: string, entityId: number): void {
         const bb = new BitBuffer(false);
         bb.writeMethod4(entityId);
@@ -340,6 +361,8 @@ export class LevelHandler {
             console.log(`[Level] Unresolved transfer target '${targetLevel}', staying in ${safeFallback}`);
             targetLevel = safeFallback;
         }
+
+        await LevelHandler.refreshCurrentCharacterFromSave(client);
 
         const currentLevelRecord = client.character.CurrentLevel;
         const oldLevel = LevelConfig.normalizeLevelName(currentLevelRecord?.name || client.currentLevel || "NewbieRoad") || "NewbieRoad";

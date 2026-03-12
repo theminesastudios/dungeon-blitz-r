@@ -116,9 +116,14 @@ export class JsonAdapter implements IDatabase {
         }
 
         const saveData: UserSaveData = { user_id: userId, characters: normalizedCharacters };
-        const tmpPath = `${savePath}.tmp`;
-        await fs.writeFile(tmpPath, JSON.stringify(saveData, null, 2));
-        await fs.rename(tmpPath, savePath);
+        const tmpPath = `${savePath}.${process.pid}.${Date.now()}.${Math.random().toString(16).slice(2)}.tmp`;
+
+        try {
+            await fs.writeFile(tmpPath, JSON.stringify(saveData, null, 2));
+            await fs.rename(tmpPath, savePath);
+        } finally {
+            await fs.rm(tmpPath, { force: true }).catch(() => undefined);
+        }
     }
 
     public async isCharacterNameTaken(name: string): Promise<boolean> {

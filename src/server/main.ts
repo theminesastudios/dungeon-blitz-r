@@ -59,6 +59,7 @@ router.register(0x30, EquipmentHandler.handleUpdateEquipment); // Update Equipme
 router.register(0x31, EquipmentHandler.handleUpdateSingleGear); // Update Single Gear
 router.register(0x41, LevelHandler.handleRequestDoorState); // Request Door State
 router.register(0x3F, MissionHandler.handleSetLevelComplete); // Level Complete
+router.register(0x8D, MissionHandler.handleBadgeRequest); // Badge / Achievement
 router.register(0xB7, LevelHandler.handleQuestProgressUpdate); // Quest Progress Update
 router.register(0xA5, LevelHandler.handleRoomEventStart); // Room Event Start
 router.register(0xA6, LevelHandler.handleRoomClose); // Room Close
@@ -84,6 +85,7 @@ router.register(0x07, LevelHandler.handleEntityIncrementalUpdate); // Movement U
 
 // Pet Packets
 router.register(0xB3, PetHandler.handleEquipPets);
+router.register(0xB2, PetHandler.handleMountEquipPacket);
 router.register(0xE4, PetHandler.handleRequestHatcheryEggs);
 router.register(0xEC, PetHandler.handleTrainPet);
 router.register(0xEF, PetHandler.handlePetTrainingCollect);

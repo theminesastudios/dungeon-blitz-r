@@ -285,6 +285,8 @@ export class RewardHandler {
         const index = client.characters.findIndex((entry) => entry.name === client.character?.name);
         if (index >= 0) {
             client.characters[index] = client.character;
+        } else {
+            client.characters.push(client.character);
         }
         await db.saveCharacters(client.userId, client.characters);
     }

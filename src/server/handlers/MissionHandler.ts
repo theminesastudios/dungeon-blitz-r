@@ -167,8 +167,8 @@ export class MissionHandler {
             }
         }
 
-        if (didMutate && client.userId) {
-            await db.saveCharacters(client.userId, client.characters);
+        if (didMutate) {
+            await MissionHandler.saveCharacter(client);
         }
 
         MissionHandler.sendDungeonComplete(client, {
@@ -176,6 +176,44 @@ export class MissionHandler {
             kills: actualKills,
             treasure: goldReward
         });
+    }
+
+    static async handleBadgeRequest(client: Client, data: Buffer): Promise<void> {
+        if (!client.character) {
+            return;
+        }
+
+        const br = new BitReader(data);
+        const badgeKey = String(br.readMethod26() ?? '').trim();
+        if (!badgeKey) {
+            return;
+        }
+
+        const missionId = MissionLoader.getMissionIdByName(badgeKey);
+        if (!missionId) {
+            return;
+        }
+
+        const missionDef = MissionLoader.getMissionDef(missionId);
+        if (!missionDef?.Tier) {
+            return;
+        }
+
+        if (MissionHandler.getMissionState(client.character, missionId) >= MissionHandler.MISSION_CLAIMED) {
+            return;
+        }
+
+        MissionHandler.setMissionState(
+            client.character,
+            missionId,
+            MissionHandler.MISSION_CLAIMED,
+            missionDef,
+            { currCount: Math.max(1, Number(missionDef.CompleteCount ?? 1)) }
+        );
+
+        MissionHandler.sendMissionProgress(client, missionId, 1);
+        MissionHandler.sendAchievementCompleteUi(client, missionId);
+        await MissionHandler.saveCharacter(client);
     }
 
     private static completeActiveDungeonMission(character: Character, currentLevel: string): number {
@@ -319,6 +357,13 @@ export class MissionHandler {
         client.sendBitBuffer(0xB7, bb);
     }
 
+    private static sendMissionProgress(client: Client, missionId: number, progress: number): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(missionId);
+        bb.writeMethod4(Math.max(0, progress));
+        client.sendBitBuffer(0x83, bb);
+    }
+
     static sendMissionAdded(
         client: Client,
         missionId: number,
@@ -347,6 +392,13 @@ export class MissionHandler {
         bb.writeMethod11(1, 1);
         bb.writeMethod6(Math.max(0, Math.min(stars, 15)), 4);
         bb.writeMethod4(Math.max(0, dungeonScore));
+        client.sendBitBuffer(0x84, bb);
+    }
+
+    private static sendAchievementCompleteUi(client: Client, missionId: number): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(missionId);
+        bb.writeMethod11(0, 1);
         client.sendBitBuffer(0x84, bb);
     }
 
@@ -413,6 +465,22 @@ export class MissionHandler {
         }
 
         return didMutate;
+    }
+
+    private static async saveCharacter(client: Client): Promise<void> {
+        if (!client.userId || !client.character) {
+            return;
+        }
+
+        const chars = await db.loadCharacters(client.userId);
+        const idx = chars.findIndex((entry) => entry.name === client.character?.name);
+        if (idx !== -1) {
+            chars[idx] = client.character;
+        } else {
+            chars.push(client.character);
+        }
+        client.characters = chars;
+        await db.saveCharacters(client.userId, chars);
     }
 
     private static setMissionState(
