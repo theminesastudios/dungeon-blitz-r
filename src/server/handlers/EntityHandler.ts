@@ -1,11 +1,174 @@
 import { NpcLoader, NpcDef } from '../data/NpcLoader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
-import { Client } from '../core/Client';
+import { Client, clearClientSpawnFallbackTimer, createKeepTutorialState } from '../core/Client';
 import { BitReader } from '../network/protocol/bitReader';
 import { GlobalState } from '../core/GlobalState';
 import { Entity, EntityProps, EntityState } from '../core/Entity';
+import { PetHandler } from './PetHandler';
 
 export class EntityHandler {
+    private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
+        'CraftTownTutorial',
+        'NewbieRoad',
+        'NewbieRoadHard'
+    ]);
+
+    private static normalizeIdentityName(value: unknown): string {
+        return String(value ?? '')
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '');
+    }
+
+    private static usesClientSpawn(levelName: string): boolean {
+        return EntityHandler.CLIENT_SPAWN_LEVELS.has(levelName);
+    }
+
+    static isClientSpawnLevel(levelName: string): boolean {
+        return EntityHandler.usesClientSpawn(levelName);
+    }
+
+    private static getCraftTownTutorialState(client: Client) {
+        if (client.currentLevel !== 'CraftTownTutorial') {
+            return null;
+        }
+
+        if (!client.keepTutorialState) {
+            client.keepTutorialState = createKeepTutorialState();
+        }
+
+        return client.keepTutorialState;
+    }
+
+    private static sendStartSkit(client: Client, entityId: number, dialogueId: number, missionId: number): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(entityId);
+        bb.writeMethod6(dialogueId, 3);
+        bb.writeMethod4(missionId);
+        client.sendBitBuffer(0x7B, bb);
+    }
+
+    private static sendRoomBossInfo(levelName: string, roomId: number, bossId: number, bossName: string): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(Math.max(0, roomId));
+        bb.writeMethod4(bossId);
+        bb.writeMethod26(bossName);
+        bb.writeMethod4(0);
+        bb.writeMethod26('');
+        const payload = bb.toBuffer();
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (!other.playerSpawned || other.currentLevel !== levelName) {
+                continue;
+            }
+            other.send(0xAC, payload);
+        }
+    }
+
+    private static sendRoomSound(levelName: string, roomId: number, soundName: string, volume: number): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(Math.max(0, roomId));
+        bb.writeMethod13(soundName);
+        bb.writeMethod4(Math.max(0, Math.min(100, Math.round(volume * 100))));
+        const payload = bb.toBuffer();
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (!other.playerSpawned || other.currentLevel !== levelName) {
+                continue;
+            }
+            other.send(0xA8, payload);
+        }
+    }
+
+    private static sendNpcState(client: Client, entityId: number, entState: number, facingLeft: boolean): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(entityId);
+        bb.writeMethod45(0);
+        bb.writeMethod45(0);
+        bb.writeMethod45(0);
+        bb.writeMethod6(entState, 2);
+        bb.writeMethod15(facingLeft);
+        bb.writeMethod15(false);
+        bb.writeMethod15(false);
+        bb.writeMethod15(false);
+        bb.writeMethod15(false);
+        bb.writeMethod15(false);
+        client.sendBitBuffer(0x07, bb);
+    }
+
+    private static sendSetUntargetable(client: Client, entityId: number, untargetable: boolean): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(entityId);
+        bb.writeMethod15(untargetable);
+        client.sendBitBuffer(0xAE, bb);
+    }
+
+    private static sendDestroyEntity(client: Client, entityId: number): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(entityId);
+        bb.writeMethod15(false);
+        client.send(0x0D, bb.toBuffer());
+    }
+
+    private static suppressCraftTownTutorialBoss(client: Client, entityId: number): void {
+        client.entities.delete(entityId);
+        GlobalState.levelEntities.get(client.currentLevel)?.delete(entityId);
+        EntityHandler.sendDestroyEntity(client, entityId);
+    }
+
+    private static handleCraftTownTutorialEntitySeen(client: Client, entityId: number, entityName: string): void {
+        const state = EntityHandler.getCraftTownTutorialState(client);
+        if (!state) {
+            return;
+        }
+
+        if (entityName === 'IntroParrot' && !state.introSkitSent) {
+            EntityHandler.sendStartSkit(client, entityId, 0, 5);
+            state.introSkitSent = true;
+        }
+
+        if (entityName !== 'GoblinShamanHood' && entityName !== 'IntroGoblinShamanHood') {
+            return;
+        }
+
+        if (
+            state.bossEntitySource === 'fallback' &&
+            state.bossEntitySeen !== null &&
+            state.bossEntitySeen !== entityId
+        ) {
+            EntityHandler.suppressCraftTownTutorialBoss(client, entityId);
+            return;
+        }
+
+        if (entityName === 'GoblinShamanHood' && !state.bossIntroForced) {
+            // The plain boss art should not be visible before the keep intro begins.
+            EntityHandler.suppressCraftTownTutorialBoss(client, entityId);
+            return;
+        }
+
+        state.bossEntitySeen = entityId;
+        state.bossEntitySource = 'client';
+
+        if (!state.bossInfoSentIds.has(entityId)) {
+            EntityHandler.sendRoomBossInfo(
+                client.currentLevel,
+                client.currentRoomId,
+                entityId,
+                'Ranik, The Geomancer'
+            );
+            state.bossInfoSentIds.add(entityId);
+        }
+
+        if (!state.bossMusicStarted) {
+            EntityHandler.sendRoomSound(
+                client.currentLevel,
+                client.currentRoomId,
+                'D02_MoodLoop_GoblinHideout',
+                0.9
+            );
+            state.bossMusicStarted = true;
+        }
+    }
     
     // Server -> Client: Spawn Entity (Packet 0xF)
     static sendEntity(client: Client, entity: EntityProps | any): void {
@@ -35,7 +198,7 @@ export class EntityHandler {
         const posX = br.readMethod24();
         const posY = br.readMethod24();
         const velocityX = br.readMethod24();
-        const entName = br.readMethod26();
+        let entName = br.readMethod26();
 
         const team = br.readMethod20(Entity.TEAM_BITS);
         const isPlayer = br.readMethod15(); // bool
@@ -47,6 +210,14 @@ export class EntityHandler {
         if (hasCue) {
             if (br.readMethod15()) {
                 cueData["character_name"] = br.readMethod13();
+                // Comma-prefixed character_name overrides entity type for server identification
+                const cname = String(cueData["character_name"] ?? '');
+                if (cname.startsWith(',')) {
+                    const overrideName = cname.substring(1);
+                    if (overrideName) {
+                        entName = overrideName;
+                    }
+                }
             }
             if (br.readMethod15()) {
                 cueData["DramaAnim"] = br.readMethod13();
@@ -76,30 +247,71 @@ export class EntityHandler {
         const bDropping = br.readMethod15();
         const bBackpedal = br.readMethod15();
 
-        if (isPlayer && client.clientEntID === 0) {
+        const entNameNorm = EntityHandler.normalizeIdentityName(entName);
+        const charNameNorm = EntityHandler.normalizeIdentityName(client.character?.name);
+        const isSelfPacket = Boolean(isPlayer && entNameNorm && charNameNorm && entNameNorm === charNameNorm);
+
+        if (isPlayer && (client.clientEntID === 0 || (isSelfPacket && client.clientEntID !== entityId))) {
             client.clientEntID = entityId;
         }
 
-        const props: EntityProps = {
-            id: entityId,
-            name: entName,
-            isPlayer: isPlayer,
-            x: posX,
-            y: posY,
-            v: velocityX,
-            team: team,
-            renderDepthOffset: yOffset,
-            characterName: cueData.character_name,
-            dramaAnim: cueData.DramaAnim,
-            sleepAnim: cueData.SleepAnim,
-            summonerId: summonerId,
-            powerId: powerId,
-            entState: entState,
-            facingLeft: bLeft
-            // bRunning etc are flags
-        };
+        const ownsThisPlayerPacket = Boolean(
+            isPlayer &&
+            client.character &&
+            (isSelfPacket || (client.clientEntID > 0 && client.clientEntID === entityId))
+        );
+
+        const props: EntityProps & { clientSpawned?: boolean; ownerToken?: number; ownerUserId?: number } = ownsThisPlayerPacket
+            ? {
+                ...Entity.fromCharacter(entityId, client.character!, {
+                    x: posX,
+                    y: posY,
+                    v: velocityX,
+                    team,
+                    entState,
+                    facingLeft: bLeft,
+                    renderDepthOffset: yOffset
+                }),
+                characterName: cueData.character_name,
+                dramaAnim: cueData.DramaAnim,
+                sleepAnim: cueData.SleepAnim,
+                summonerId,
+                powerId,
+                clientSpawned: false,
+                ownerToken: client.token || 0,
+                ownerUserId: client.userId || 0
+            }
+            : {
+                id: entityId,
+                name: entName,
+                isPlayer: isPlayer,
+                x: posX,
+                y: posY,
+                v: velocityX,
+                team: team,
+                renderDepthOffset: yOffset,
+                characterName: cueData.character_name,
+                dramaAnim: cueData.DramaAnim,
+                sleepAnim: cueData.SleepAnim,
+                summonerId: summonerId,
+                powerId: powerId,
+                entState: entState,
+                facingLeft: bLeft,
+                clientSpawned: !isPlayer,
+                ownerToken: client.token || 0,
+                ownerUserId: client.userId || 0
+                // bRunning etc are flags
+            };
 
         client.entities.set(entityId, props);
+
+        if (!isPlayer) {
+            client.clientSpawnConfirmed = true;
+            clearClientSpawnFallbackTimer(client);
+            if (client.currentLevel === 'CraftTownTutorial') {
+                EntityHandler.handleCraftTownTutorialEntitySeen(client, entityId, String(props.name ?? ''));
+            }
+        }
 
         // Update GlobalState
         if (client.currentLevel) {
@@ -116,8 +328,13 @@ export class EntityHandler {
 
         if (isPlayer && !client.playerSpawned) {
              client.playerSpawned = true;
-             // Send existing entities (packet 0xF) to the new joiner
-             EntityHandler.sendInitialLevelEntities(client, client.currentLevel || "NewbieRoad");
+             PetHandler.sendMountEquipPacket(
+                client,
+                client.clientEntID,
+                Number(client.character?.equippedMount ?? props.equippedMount ?? 0)
+            );
+             EntityHandler.sendExistingPlayersToJoiner(client);
+             EntityHandler.broadcastPlayerSpawn(client, props);
         }
     }
 
@@ -128,43 +345,104 @@ export class EntityHandler {
         if (!levelMap) {
             levelMap = new Map();
             GlobalState.levelEntities.set(levelName, levelMap);
-            
-            const npcs = NpcLoader.getNpcsForLevel(levelName);
-            console.log(`[EntityHandler] Initializing ${npcs.length} NPCs for ${levelName}`);
-            
-            for (const npc of npcs) {
-                const entityProps: any = {
-                    id: npc.id,
-                    name: npc.name,
-                    isPlayer: false,
-                    x: npc.x,
-                    y: npc.y,
-                    v: 0,
-                    team: 2, // Enemy
-                    renderDepthOffset: 0,
-                    entState: 0,
-                    facingLeft: false,
-                };
-                levelMap.set(npc.id, entityProps);
+
+            if (EntityHandler.usesClientSpawn(levelName)) {
+                console.log(`[EntityHandler] Skipping server NPC init for client-spawn level ${levelName}`);
+            } else {
+                const npcs = NpcLoader.getNpcsForLevel(levelName);
+                console.log(`[EntityHandler] Initializing ${npcs.length} NPCs for ${levelName}`);
+
+                for (const npc of npcs) {
+                    const entityProps = Entity.fromNpc(npc);
+                    levelMap.set(npc.id, entityProps);
+                }
             }
+        }
+
+        if (EntityHandler.usesClientSpawn(levelName)) {
+            return;
         }
 
         for (const [id, entityProps] of levelMap.entries()) {
             if (id === client.clientEntID) continue;
+            if (entityProps?.isPlayer) continue;
+            if (entityProps?.clientSpawned) continue;
+            client.entities.set(id, { ...entityProps });
             EntityHandler.sendEntity(client, entityProps);
+        }
+    }
+
+    static removeOwnedEntities(client: Client): void {
+        const levelName = client.currentLevel;
+        if (!levelName) {
+            return;
+        }
+
+        const levelMap = GlobalState.levelEntities.get(levelName);
+        if (!levelMap) {
+            return;
+        }
+
+        const charNameNorm = EntityHandler.normalizeIdentityName(client.character?.name);
+        for (const [entityId, entityProps] of Array.from(levelMap.entries())) {
+            const entityNameNorm = EntityHandler.normalizeIdentityName(entityProps?.name);
+            const isOwnedPlayer = Boolean(entityProps?.isPlayer) && (
+                (client.clientEntID > 0 && entityId === client.clientEntID) ||
+                (charNameNorm && entityNameNorm === charNameNorm)
+            );
+            const isOwnedClientSpawn = Boolean(entityProps?.clientSpawned) && Number(entityProps?.ownerToken ?? 0) === client.token;
+
+            if (isOwnedPlayer || isOwnedClientSpawn) {
+                levelMap.delete(entityId);
+            }
+        }
+
+        if (levelMap.size === 0) {
+            GlobalState.levelEntities.delete(levelName);
+        }
+    }
+
+    private static sendExistingPlayersToJoiner(joiner: Client): void {
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (other === joiner) {
+                continue;
+            }
+            if (!other.playerSpawned || other.currentLevel !== joiner.currentLevel) {
+                continue;
+            }
+            if (other.userId && joiner.userId && other.userId === joiner.userId && other.character?.name === joiner.character?.name) {
+                continue;
+            }
+            if (!other.character || other.clientEntID <= 0) {
+                continue;
+            }
+
+            const otherProps = other.entities.get(other.clientEntID);
+            if (!otherProps) {
+                continue;
+            }
+
+            EntityHandler.sendEntity(joiner, Entity.fromCharacter(other.clientEntID, other.character, otherProps));
+        }
+    }
+
+    private static broadcastPlayerSpawn(client: Client, props: EntityProps): void {
+        if (!client.character || !client.currentLevel) {
+            return;
+        }
+
+        const playerEntity = Entity.fromCharacter(props.id, client.character, props);
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (other === client || !other.playerSpawned || other.currentLevel !== client.currentLevel) {
+                continue;
+            }
+            EntityHandler.sendEntity(other, playerEntity);
         }
     }
 
     private static broadcastToLevel(sender: Client, data: Buffer): void {
         const myLevel = sender.currentLevel;
         if (!myLevel || !sender.playerSpawned) return;
-        
-        // If this is the FIRST 0x8 from a player, we might want to send 0xF to OTHERS?
-        // But broadcastToLevel sends 0x8. 
-        // If other clients didn't receive 0xF for this player yet, 0x8 might be ignored or might cause spawn?
-        // Let's rely on 0x8 for now (as per original code), 
-        // OR we can explicitly send 0xF to others if this is new spawn?
-        // For now, sticking to 0x8 broadcast.
 
         for (const other of GlobalState.sessionsByToken.values()) {
             if (other !== sender && other.playerSpawned && other.currentLevel === myLevel) {

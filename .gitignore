@@ -3,3 +3,4 @@ server_tapes
 src/server/dist
 src/server/Accounts.json
 src/server/saves
+temp

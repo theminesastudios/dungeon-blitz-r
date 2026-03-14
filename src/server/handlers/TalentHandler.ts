@@ -257,8 +257,11 @@ export class TalentHandler {
              const idx = chars.findIndex(c => c.name === client.character?.name);
              if (idx !== -1) {
                  chars[idx] = client.character;
-                 await db.saveCharacters(client.userId, chars);
+             } else {
+                 chars.push(client.character);
              }
+             client.characters = chars;
+             await db.saveCharacters(client.userId, chars);
         }
     }
 }

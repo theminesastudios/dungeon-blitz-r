@@ -6,11 +6,15 @@ export interface PendingTransfer {
     targetLevel: string;
     previousLevel: string;
     userId: number;
+    newX?: number;
+    newY?: number;
+    newHasCoord?: boolean;
 }
 
 export class GlobalState {
     // Token -> Pending Transfer
     static pendingWorld: Map<number, PendingTransfer> = new Map();
+    static pendingExtended: Map<number, boolean> = new Map();
     
     // Token -> Client Session (Active)
     static sessionsByToken: Map<number, Client> = new Map();
@@ -29,4 +33,3 @@ export class GlobalState {
     // Level Name -> LevelInstance (if needed) or just keys of levelEntities
     static levelRegistry: { [key: string]: any } = {};
 }
-

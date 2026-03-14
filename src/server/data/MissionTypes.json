@@ -82,6 +82,7 @@
         "Priority": "Story",
         "ContactName": "NR_Mayor01",
         "CompleteCount": "1",
+        "Dungeon": "CraftTownTutorial",
         "MissionLevel": "3",
         "ExpReward": "M",
         "GoldReward": "M",

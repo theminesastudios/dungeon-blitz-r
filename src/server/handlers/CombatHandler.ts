@@ -2,9 +2,40 @@ import { Client } from '../core/Client';
 import { BitReader } from '../network/protocol/bitReader';
 import { GlobalState } from '../core/GlobalState';
 import { BitBuffer } from '../network/protocol/bitBuffer';
+import { LevelHandler } from './LevelHandler';
 
 
 export class CombatHandler {
+    private static readonly RESPAWN_ENEMY_HEAL = 1_000_000;
+
+    private static sendCharRegen(client: Client, entityId: number, amount: number): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(entityId);
+        bb.writeMethod24(amount);
+        client.sendBitBuffer(0x3B, bb);
+    }
+
+    private static resetLevelEnemiesForRespawn(client: Client): void {
+        if (!client.currentLevel) {
+            return;
+        }
+
+        const levelMap = GlobalState.levelEntities.get(client.currentLevel);
+        if (!levelMap) {
+            return;
+        }
+
+        for (const [entityId, entity] of levelMap.entries()) {
+            if (entityId <= 0 || entityId === client.clientEntID) {
+                continue;
+            }
+            if (Boolean(entity?.isPlayer) || Number(entity?.team ?? 0) !== 2) {
+                continue;
+            }
+
+            CombatHandler.sendCharRegen(client, entityId, CombatHandler.RESPAWN_ENEMY_HEAL);
+        }
+    }
 
     
     // 0x9: Power Cast
@@ -40,6 +71,11 @@ export class CombatHandler {
         
         // Note: Python handles "Client-side entity" vs "Server entity".
         // If unknown entity, it just broadcasts.
+
+        // Check if this hit targets the CraftTownTutorial boss for reinforcement spawning
+        if (client.currentLevel === 'CraftTownTutorial' && client.keepTutorialState) {
+            LevelHandler.checkCraftTownTutorialBossHealth(client, targetId, damage);
+        }
         
         CombatHandler.broadcastToLevel(client, 0x0A, data);
         
@@ -58,10 +94,26 @@ export class CombatHandler {
     static async handleEntityDestroy(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
         const entityId = br.readMethod9();
+        const destroyedEntity = client.entities.get(entityId);
+
+        if (client.currentLevel === 'CraftTownTutorial' && client.keepTutorialState) {
+            const entityName = String(destroyedEntity?.name ?? '');
+            if (entityName === 'GoblinShamanHood' || entityName === 'IntroGoblinShamanHood') {
+                client.keepTutorialState.bossDefeated = true;
+            }
+        }
         
         // Remove from server session map if present
         if (client.entities.has(entityId)) {
             client.entities.delete(entityId);
+        }
+
+        if (client.currentLevel) {
+            const levelMap = GlobalState.levelEntities.get(client.currentLevel);
+            levelMap?.delete(entityId);
+            if (levelMap && levelMap.size === 0) {
+                GlobalState.levelEntities.delete(client.currentLevel);
+            }
         }
         
         // Broadcast
@@ -73,8 +125,10 @@ export class CombatHandler {
         const br = new BitReader(data);
         const usePotion = br.readMethod15();
         
-        // Logic to consume potion?
-        // For now, just send RespawnComplete (0x80)
+        if (!usePotion) {
+            client.processedRewardSources.clear();
+            CombatHandler.resetLevelEnemiesForRespawn(client);
+        }
         
         const healAmount = 100; // Placeholder or calculate from level
         
@@ -119,4 +173,3 @@ export class CombatHandler {
         }
     }
 }
-

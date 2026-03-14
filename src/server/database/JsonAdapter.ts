@@ -17,6 +17,26 @@ export class JsonAdapter implements IDatabase {
         this.savesDir = path.resolve(Config.DATA_DIR, 'saves');
     }
 
+    private async readSaveFile(userId: number): Promise<UserSaveData | null> {
+        const savePath = path.join(this.savesDir, `${userId}.json`);
+        try {
+            const data = await fs.readFile(savePath, 'utf8');
+            if (!data.trim()) {
+                return { user_id: userId, characters: [] };
+            }
+            return JSON.parse(data) as UserSaveData;
+        } catch (err: any) {
+            if (err.code === 'ENOENT') {
+                return null;
+            }
+            if (err instanceof SyntaxError) {
+                console.error(`[JsonAdapter] Invalid save JSON at ${savePath}`);
+                return null;
+            }
+            throw err;
+        }
+    }
+
     private async ensureSavesDir(): Promise<void> {
         try {
             await fs.mkdir(this.savesDir, { recursive: true });
@@ -70,27 +90,40 @@ export class JsonAdapter implements IDatabase {
     }
 
     public async loadCharacters(userId: number): Promise<Character[]> {
-        const savePath = path.join(this.savesDir, `${userId}.json`);
-        try {
-            const data = await fs.readFile(savePath, 'utf8');
-            if (!data.trim()) return [];
-            const save: UserSaveData = JSON.parse(data);
-            return save.characters;
-        } catch (err: any) {
-            if (err.code === 'ENOENT') return [];
-            // If JSON is invalid, return empty? Or throw?
-            // Returning empty might be safer to avoid crash loop, but might lose data if file corrupted.
-            // For now, let's just handle potential empty file (which is common corruption or init state).
-            if (err instanceof SyntaxError) return []; 
-            throw err;
+        const save = await this.readSaveFile(userId);
+        if (!save || !Array.isArray(save.characters)) {
+            return [];
         }
+        return save.characters;
     }
 
     public async saveCharacters(userId: number, characters: Character[]): Promise<void> {
         await this.ensureSavesDir();
         const savePath = path.join(this.savesDir, `${userId}.json`);
-        const saveData: UserSaveData = { user_id: userId, characters };
-        await fs.writeFile(savePath, JSON.stringify(saveData, null, 2));
+        const normalizedCharacters = Array.isArray(characters) ? characters : [];
+        const existing = await this.readSaveFile(userId);
+
+        if (
+            normalizedCharacters.length === 0 &&
+            existing &&
+            Array.isArray(existing.characters) &&
+            existing.characters.length > 0
+        ) {
+            console.warn(
+                `[JsonAdapter] Refusing to overwrite non-empty save ${savePath} with an empty character list`
+            );
+            return;
+        }
+
+        const saveData: UserSaveData = { user_id: userId, characters: normalizedCharacters };
+        const tmpPath = `${savePath}.${process.pid}.${Date.now()}.${Math.random().toString(16).slice(2)}.tmp`;
+
+        try {
+            await fs.writeFile(tmpPath, JSON.stringify(saveData, null, 2));
+            await fs.rename(tmpPath, savePath);
+        } finally {
+            await fs.rm(tmpPath, { force: true }).catch(() => undefined);
+        }
     }
 
     public async isCharacterNameTaken(name: string): Promise<boolean> {

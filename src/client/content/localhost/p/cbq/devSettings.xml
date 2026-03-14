@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
     <!-- Enable core dev modes -->
-    <!-- <DEVFLAG_MASTER_CLIENT /> -->
+    <DEVFLAG_MASTER_CLIENT />
     <!-- <DEVFLAG_STANDALONE_CLIENT /> -->
     <!-- <DEVFLAG_SERVERLOCAL /> -->
     <!-- <DEVFLAG_ADDXMLDEVSETTINGS /> -->

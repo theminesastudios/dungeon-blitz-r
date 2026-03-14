@@ -3,10 +3,78 @@ import { BitReader } from '../network/protocol/bitReader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { PetConfig } from '../core/PetConfig';
+import { GlobalState } from '../core/GlobalState';
 
 const db = new JsonAdapter();
 
 export class PetHandler {
+    static buildMountEquipPacket(entityId: number, mountId: number): Buffer {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(entityId);
+        bb.writeMethod6(Math.max(0, Number(mountId ?? 0)), 7);
+        return bb.toBuffer();
+    }
+
+    static sendMountEquipPacket(client: Client, entityId: number, mountId: number): void {
+        if (entityId <= 0) {
+            return;
+        }
+
+        client.send(0xB2, PetHandler.buildMountEquipPacket(entityId, mountId));
+    }
+
+    private static updateLiveMount(client: Client): void {
+        if (!client.character || client.clientEntID <= 0) {
+            return;
+        }
+
+        const localEntity = client.entities.get(client.clientEntID);
+        if (localEntity && typeof localEntity === 'object') {
+            localEntity.equippedMount = Number(client.character.equippedMount ?? 0);
+        }
+
+        if (!client.currentLevel) {
+            return;
+        }
+
+        const levelMap = GlobalState.levelEntities.get(client.currentLevel);
+        const levelEntity = levelMap?.get(client.clientEntID);
+        if (levelEntity && typeof levelEntity === 'object') {
+            levelEntity.equippedMount = Number(client.character.equippedMount ?? 0);
+        }
+    }
+
+    static async handleMountEquipPacket(client: Client, data: Buffer): Promise<void> {
+        if (!client.character) {
+            return;
+        }
+
+        const br = new BitReader(data);
+        const entityId = br.readMethod4();
+        const mountId = br.readMethod6(7);
+
+        if (entityId > 0 && client.clientEntID > 0 && entityId !== client.clientEntID) {
+            return;
+        }
+
+        client.character.equippedMount = mountId;
+        PetHandler.updateLiveMount(client);
+        await PetHandler.saveCharacter(client);
+
+        if (!client.currentLevel || !client.playerSpawned) {
+            return;
+        }
+
+        PetHandler.sendMountEquipPacket(client, client.clientEntID, mountId);
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (other === client || !other.playerSpawned || other.currentLevel !== client.currentLevel) {
+                continue;
+            }
+
+            other.send(0xB2, data);
+        }
+    }
 
     static async handleEquipPets(client: Client, data: Buffer): Promise<void> { // Removed <void> for shorter diff if needed, but keeping consistent
         const br = new BitReader(data);
@@ -35,13 +103,7 @@ export class PetHandler {
             }));
 
             if (client.userId) {
-                const chars = await db.loadCharacters(client.userId);
-                const char = chars.find(c => c.name === client.character?.name);
-                if (char) {
-                    char.activePet = client.character.activePet;
-                    char.restingPets = client.character.restingPets;
-                    await db.saveCharacters(client.userId, chars);
-                }
+                await PetHandler.saveCharacter(client);
             }
         }
     }
@@ -85,8 +147,11 @@ export class PetHandler {
              const idx = chars.findIndex(c => c.name === client.character?.name);
              if (idx !== -1) {
                  chars[idx] = client.character; // Update in-memory copy before saving
-                 await db.saveCharacters(client.userId, chars);
+             } else {
+                 chars.push(client.character);
              }
+             client.characters = chars;
+             await db.saveCharacters(client.userId, chars);
         }
     }
 

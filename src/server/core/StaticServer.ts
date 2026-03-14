@@ -34,7 +34,7 @@ export class StaticServer {
     public start(): void {
         this.app.listen(this.port, () => {
             console.log(`[StaticServer] Serving ${this.contentDir} on http://localhost:${this.port}`);
-            console.log(`[StaticServer] Flash: http://localhost:${this.port}/p/cbv/DungeonBlitz.swf?fv=cbq&gv=cbv`);
+            console.log(`[StaticServer] Flash: http://localhost:${this.port}/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp`);
         });
     }
 }

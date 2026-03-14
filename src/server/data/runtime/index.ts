@@ -11,3 +11,4 @@ export * from './Eggs';
 export * from './Pets';
 export * from './Charms';
 export * from './Dyes';
+export * from './MissionID';

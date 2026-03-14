@@ -19,4 +19,9 @@ export class CommandHandler {
         // We'll just log deeply verbose if needed, otherwise ignore to avoid spam.
         // console.log(`[LinkUpdater] Sync: elapsed=${clientElapsed}, desync=${clientDesync}, echo=${serverEcho}`);
     }
+
+    static handleQueuePotion(client: Client, data: Buffer): void {
+        const br = new BitReader(data);
+        br.readMethod20(5);
+    }
 }

@@ -1,12 +1,125 @@
 import { BitBuffer } from '../network/protocol/bitBuffer';
-import { Config } from '../core/config';
 import { Character } from '../database/Database';
-import { MissionLoader } from '../data/MissionLoader';
-import { BuildingID, MasterClassID } from '../core/Enums';
+import { MissionDef, MissionLoader } from '../data/MissionLoader';
+import { BuildingID, ClassID, MasterClassID } from '../core/Enums';
 import { GlobalState } from '../core/GlobalState';
 
-
 export class WorldEnter {
+    private static readonly MASTERCLASS_TO_BUILDING: Record<number, number> = {
+        [MasterClassID.Executioner]: BuildingID.ExecutionerTower,
+        [MasterClassID.Shadowwalker]: BuildingID.ShadowwalkerTower,
+        [MasterClassID.Soulthief]: BuildingID.SoulthiefTower,
+        [MasterClassID.Sentinel]: BuildingID.SentinelTower,
+        [MasterClassID.Justicar]: BuildingID.JusticarTower,
+        [MasterClassID.Templar]: BuildingID.TemplarTower,
+        [MasterClassID.Frostwarden]: BuildingID.FrostwardenTower,
+        [MasterClassID.Flameseer]: BuildingID.FlameseerTower,
+        [MasterClassID.Necromancer]: BuildingID.NecromancerTower
+    };
+
+    private static readonly CLASS_TOWER_BUILDINGS: Record<string, number[]> = {
+        rogue: [BuildingID.ExecutionerTower, BuildingID.ShadowwalkerTower, BuildingID.SoulthiefTower],
+        paladin: [BuildingID.JusticarTower, BuildingID.SentinelTower, BuildingID.TemplarTower],
+        mage: [BuildingID.FrostwardenTower, BuildingID.FlameseerTower, BuildingID.NecromancerTower]
+    };
+
+    private static readonly CLASS_DEFAULT_MASTERCLASS: Record<string, number> = {
+        rogue: MasterClassID.None,
+        paladin: MasterClassID.None,
+        mage: MasterClassID.None
+    };
+
+    private static readonly TALENT_SLOT_MAX_POINTS: number[] = [
+        5, 2, 3, 5, 5, 3, 2, 3, 2,
+        5, 2, 3, 5, 5, 3, 2, 3, 2,
+        5, 2, 3, 5, 5, 3, 2, 3, 2
+    ];
+
+    private static readonly TALENT_SLOT_BIT_WIDTHS: number[] = WorldEnter.TALENT_SLOT_MAX_POINTS.map((value) => {
+        let bits = 0;
+        if (value <= 2) {
+            bits = 1;
+        }
+        if (value <= 4) {
+            bits = 2;
+        }
+        if (value <= 5) {
+            bits = 3;
+        }
+        return bits;
+    });
+
+    private static readonly DEFAULT_NEWS_EVENT = {
+        icon: 'a_NewsPetXPIcon',
+        url: 'Double Pet XP Event',
+        body: 'Double Pet XP Event',
+        tooltip: 'http://www.dungeonblitz.com/',
+        startTs: 1786841238
+    };
+
+    private static asRecord(value: unknown): Record<string, any> {
+        return value && typeof value === 'object' ? value as Record<string, any> : {};
+    }
+
+    private static asArray(value: unknown): any[] {
+        return Array.isArray(value) ? value : [];
+    }
+
+    private static missionHasDungeonProgress(missionDef: MissionDef | undefined): boolean {
+        return Boolean(String(missionDef?.Dungeon ?? '').trim());
+    }
+
+    private static getClassId(className: string): ClassID {
+        switch ((className || '').toLowerCase()) {
+            case 'rogue':
+                return ClassID.Rogue;
+            case 'mage':
+                return ClassID.Mage;
+            case 'paladin':
+            default:
+                return ClassID.Paladin;
+        }
+    }
+
+    private static normalizeTalentNodes(rawNodes: unknown): Array<{ filled: boolean; points: number; nodeID: number }> {
+        const normalized: Array<{ filled: boolean; points: number; nodeID: number }> = [];
+        const nodes = WorldEnter.asArray(rawNodes);
+
+        for (let index = 0; index < WorldEnter.TALENT_SLOT_MAX_POINTS.length; index++) {
+            const node = WorldEnter.asRecord(nodes[index]);
+            if (!node.filled) {
+                normalized.push({
+                    filled: false,
+                    points: 0,
+                    nodeID: index + 1
+                });
+                continue;
+            }
+
+            let nodeID = Number(node.nodeID ?? index + 1);
+            if (!Number.isFinite(nodeID) || nodeID < 1 || nodeID > WorldEnter.TALENT_SLOT_MAX_POINTS.length) {
+                nodeID = index + 1;
+            }
+
+            let points = Number(node.points ?? 0);
+            const maxPoints = WorldEnter.TALENT_SLOT_MAX_POINTS[index];
+            if (!Number.isFinite(points) || points < 1) {
+                points = 1;
+            }
+            if (points > maxPoints) {
+                points = maxPoints;
+            }
+
+            normalized.push({
+                filled: true,
+                points,
+                nodeID
+            });
+        }
+
+        return normalized;
+    }
+
     static buildEnterWorldPacket(
         transferToken: number,
         oldLevelId: number,
@@ -26,14 +139,13 @@ export class WorldEnter {
         newHasCoord: boolean,
         newX: number,
         newY: number,
-        character: Character | null // used for CraftTown buildings
+        character: Character | null
     ): BitBuffer {
         const bb = new BitBuffer();
 
         bb.writeMethod4(transferToken);
         bb.writeMethod4(oldLevelId);
         bb.writeMethod13(oldSwf);
-        
         bb.writeMethod11(hasOldCoord ? 1 : 0, 1);
         if (hasOldCoord) {
             bb.writeMethod4(oldX);
@@ -43,149 +155,84 @@ export class WorldEnter {
         bb.writeMethod13(host);
         bb.writeMethod4(port);
         bb.writeMethod13(newLevelSwf);
-
-        // Map Level & Base Level (6 bits each)
-        // Entity.MAX_CHAR_LEVEL_BITS = 6 typically? Reference said 6.
         bb.writeMethod6(newMapLvl, 6);
         bb.writeMethod6(newBaseLvl, 6);
-
         bb.writeMethod13(newInternal);
         bb.writeMethod13(newMoment);
         bb.writeMethod13(newAlter);
-
         bb.writeMethod11(newIsDungeon ? 1 : 0, 1);
-
         bb.writeMethod11(newHasCoord ? 1 : 0, 1);
         if (newHasCoord) {
             bb.writeMethod45(newX);
             bb.writeMethod45(newY);
         }
 
-        // CraftTown Check
-        const isCraftTown = newInternal.toLowerCase().includes("crafttown") || newLevelSwf.toLowerCase().includes("crafttown");
-        
+        const isCraftTown =
+            newInternal.toLowerCase().includes('crafttown') ||
+            newLevelSwf.toLowerCase().includes('crafttown');
+
         bb.writeMethod11(isCraftTown ? 1 : 0, 1);
-        
         if (isCraftTown && character) {
-            // Extended Building Data
-            // Reuse transferToken as levelID
             bb.writeMethod4(transferToken);
-            
-            // Resolve Master Class
+
             const masterClassId = WorldEnter.resolveMasterClass(character);
-            bb.writeMethod6(masterClassId, 4); // Game.const_209 is 4 bits
-            
-            // Get Stats
-            const mf = character.magicForge?.stats_by_building || {};
-            const getStat = (id: number) => mf[id.toString()] || 0;
+            bb.writeMethod6(masterClassId, 4);
 
-            // Determine Tower ID based on MasterClass
-            // Python: tower_building_id = MASTERCLASS_TO_BUILDING.get(master_class_id, 3)
-            // Default 3 (Justicar - Paladin Default?) or fallback
-            // Let's use JusticarTower (3) as safe default if unknown
-            let towerBuildingId = BuildingID.JusticarTower; 
+            const statsByBuilding = WorldEnter.asRecord(character.magicForge?.stats_by_building);
+            const getStat = (buildingId: number): number =>
+                Number(statsByBuilding[buildingId.toString()] ?? statsByBuilding[buildingId] ?? 0);
 
-            if (WorldEnter.MASTERCLASS_TO_BUILDING[masterClassId]) {
-                towerBuildingId = WorldEnter.MASTERCLASS_TO_BUILDING[masterClassId];
-            }
+            const towerBuildingId = WorldEnter.MASTERCLASS_TO_BUILDING[masterClassId] ?? BuildingID.JusticarTower;
+            const scaffoldingLevel = Number(character.buildingUpgrade?.buildingID ?? 0);
 
-            const forgeLevel = getStat(BuildingID.Forge);
-            const keepLevel = getStat(BuildingID.Keep);
-            const towerLevel = getStat(towerBuildingId);
-            const tomeLevel = getStat(BuildingID.Tome);
-            const barnLevel = getStat(BuildingID.Barn);
-            
-            // Scaffolding: Active Upgrade Building ID
-            const scaffoldingLevel = character.buildingUpgrade?.buildingID || 0;
-
-            bb.writeMethod6(forgeLevel, 5); // class_9.const_28 (5 bits)
-            bb.writeMethod6(keepLevel, 5);
-            bb.writeMethod6(towerLevel, 5);
-            bb.writeMethod6(tomeLevel, 5);
-            bb.writeMethod6(barnLevel, 5);
-            bb.writeMethod6(scaffoldingLevel, 5); // Scaffolding (class_9.const_129 is 5)
+            bb.writeMethod6(getStat(BuildingID.Forge), 5);
+            bb.writeMethod6(getStat(BuildingID.Keep), 5);
+            bb.writeMethod6(getStat(towerBuildingId), 5);
+            bb.writeMethod6(getStat(BuildingID.Tome), 5);
+            bb.writeMethod6(getStat(BuildingID.Barn), 5);
+            bb.writeMethod6(scaffoldingLevel, 5);
         }
 
         return bb;
     }
 
-    // Helper Maps
-    private static MASTERCLASS_TO_BUILDING: Record<number, number> = {
-        // Rogue
-        [MasterClassID.Executioner]: BuildingID.ExecutionerTower,
-        [MasterClassID.Shadowwalker]: BuildingID.ShadowwalkerTower,
-        [MasterClassID.Soulthief]: BuildingID.SoulthiefTower, // 11
-
-        // Paladin
-        [MasterClassID.Sentinel]: BuildingID.SentinelTower,      // 4
-        [MasterClassID.Justicar]: BuildingID.JusticarTower,      // 5 -> Wait, Justicar is 5 in Enum? 
-                                                                 // Let's check Python 5:3
-                                                                 // Python: 5: 3 (JusticarTower)
-                                                                 // My Enum: JusticarTower = 3. Correct.
-                                                                 // MasterClassID: Justicar = 5. Correct.
-        [MasterClassID.Templar]: BuildingID.TemplarTower,        // 6: 5
-
-        // Mage
-        [MasterClassID.Frostwarden]: BuildingID.FrostwardenTower, // 7: 6
-        [MasterClassID.Flameseer]: BuildingID.FlameseerTower,     // 8: 7
-        [MasterClassID.Necromancer]: BuildingID.NecromancerTower  // 9: 8
-    };
-
-    private static CLASS_TOWER_BUILDINGS: Record<string, number[]> = {
-        "rogue": [BuildingID.ExecutionerTower, BuildingID.ShadowwalkerTower, BuildingID.SoulthiefTower],
-        "paladin": [BuildingID.JusticarTower, BuildingID.SentinelTower, BuildingID.TemplarTower],
-        "mage": [BuildingID.FrostwardenTower, BuildingID.FlameseerTower, BuildingID.NecromancerTower]
-    };
-
-    private static CLASS_DEFAULT_MASTERCLASS: Record<string, number> = {
-        "rogue": MasterClassID.Executioner,
-        "paladin": MasterClassID.Sentinel, // 4? Python: 4:4 (Sentinel)
-        "mage": MasterClassID.Frostwarden
-    };
-
     static resolveMasterClass(char: Character): number {
-        const className = (char.class || "").toLowerCase();
+        const className = (char.class || '').toLowerCase();
         const towerIds = WorldEnter.CLASS_TOWER_BUILDINGS[className] || [];
-        
-        let raw = char.MasterClass || 0;
-        
-        // If current MasterClass is valid for this class, keep it
+        const raw = Number(char.MasterClass ?? 0);
+
         if (WorldEnter.MASTERCLASS_TO_BUILDING[raw]) {
-             const mappedTower = WorldEnter.MASTERCLASS_TO_BUILDING[raw];
-             if (towerIds.length === 0 || towerIds.includes(mappedTower)) {
-                 return raw;
-             }
-        }
-
-        // Otherwise find best tower based on stats
-        const mfValid = char.magicForge?.stats_by_building || {};
-        
-        let bestBuildingId = 0;
-        let bestRank = 0;
-
-        for (const bid of towerIds) {
-            const rank = mfValid[bid.toString()] || 0;
-            if (rank > bestRank) {
-                bestRank = rank;
-                bestBuildingId = bid;
+            const mappedTower = WorldEnter.MASTERCLASS_TO_BUILDING[raw];
+            if (towerIds.length === 0 || towerIds.includes(mappedTower)) {
+                return raw;
             }
         }
 
-        // Reverse lookup building -> masterclass
+        const statsByBuilding = WorldEnter.asRecord(char.magicForge?.stats_by_building);
+        let bestBuildingId = 0;
+        let bestRank = 0;
+
+        for (const towerId of towerIds) {
+            const rank = Number(statsByBuilding[towerId.toString()] ?? statsByBuilding[towerId] ?? 0);
+            if (rank > bestRank) {
+                bestRank = rank;
+                bestBuildingId = towerId;
+            }
+        }
+
         if (bestRank > 0) {
-            for (const [mcId, bId] of Object.entries(WorldEnter.MASTERCLASS_TO_BUILDING)) {
-                if (bId === bestBuildingId) {
-                    return parseInt(mcId);
+            for (const [masterClassId, buildingId] of Object.entries(WorldEnter.MASTERCLASS_TO_BUILDING)) {
+                if (buildingId === bestBuildingId) {
+                    return Number(masterClassId);
                 }
             }
         }
 
-        // Default
         return WorldEnter.CLASS_DEFAULT_MASTERCLASS[className] || 0;
     }
 
-    static resolveMagicForgeState(mf: any, now: number): any {
-        if (!mf || !mf.primary) {
+    static resolveMagicForgeState(magicForge: any, now: number): { has_session: boolean; in_progress: boolean; completed: boolean; ready_time?: number } {
+        if (!magicForge || !magicForge.primary) {
             return {
                 has_session: false,
                 in_progress: false,
@@ -193,13 +240,13 @@ export class WorldEnter {
             };
         }
 
-        const ready = mf.ReadyTime || 0;
-        if (ready && ready > now) {
+        const readyTime = Number(magicForge.ReadyTime ?? 0);
+        if (readyTime && readyTime > now) {
             return {
                 has_session: true,
                 in_progress: true,
                 completed: false,
-                ready_time: ready
+                ready_time: readyTime
             };
         }
 
@@ -211,11 +258,11 @@ export class WorldEnter {
     }
 
     static buildPlayerDataPacket(
-        character: Character, 
+        character: Character,
         transferToken: number,
         hpScaling: number = 0,
         bonusLevels: number = 0,
-        targetLevel: string = "",
+        targetLevel: string = '',
         newX: number = 0,
         newY: number = 0,
         newHasCoord: boolean = false,
@@ -223,71 +270,66 @@ export class WorldEnter {
     ): BitBuffer {
         const bb = new BitBuffer();
         const now = Math.floor(Date.now() / 1000);
-        
-        // Preamble
+        const equippedGears = WorldEnter.asArray(character.equippedGears);
+
+        hpScaling = Math.max(0, Math.min(hpScaling, 3));
+        bonusLevels = Math.max(0, Math.min(bonusLevels, 0xFFFFFFFF));
+
         bb.writeMethod4(transferToken);
-        bb.writeMethod4(now); // Time
-        bb.writeMethod6(hpScaling, 2); // Game.const_813 (2 bits)
+        bb.writeMethod4(now);
+        bb.writeMethod6(hpScaling, 2);
         bb.writeMethod4(bonusLevels);
 
-        // Customization
-        bb.writeMethod13(character.name || "");
-        bb.writeMethod11(1, 1); // hasCustomization
-        bb.writeMethod13(character.class || "");
-        bb.writeMethod13(character.gender || "");
-        bb.writeMethod13(character.headSet || "");
-        bb.writeMethod13(character.hairSet || "");
-        bb.writeMethod13(character.mouthSet || "");
-        bb.writeMethod13(character.faceSet || "");
-        bb.writeMethod11(character.hairColor || 0, 24);
-        bb.writeMethod11(character.skinColor || 0, 24);
-        bb.writeMethod11(character.shirtColor || 0, 24);
-        bb.writeMethod11(character.pantColor || 0, 24);
+        bb.writeMethod13(character.name || '');
+        bb.writeMethod11(1, 1);
+        bb.writeMethod13(character.class || '');
+        bb.writeMethod13(character.gender || '');
+        bb.writeMethod13(character.headSet || '');
+        bb.writeMethod13(character.hairSet || '');
+        bb.writeMethod13(character.mouthSet || '');
+        bb.writeMethod13(character.faceSet || '');
+        bb.writeMethod11(Number(character.hairColor ?? 0), 24);
+        bb.writeMethod11(Number(character.skinColor ?? 0), 24);
+        bb.writeMethod11(Number(character.shirtColor ?? 0), 24);
+        bb.writeMethod11(Number(character.pantColor ?? 0), 24);
 
-        // Gear Slots (6 slots)
-        const equippedGears = character.equippedGears || [];
         for (let i = 0; i < 6; i++) {
-             const gear = equippedGears[i];
-             if (gear && gear.gearID) {
-                 bb.writeMethod11(1, 1); // Has item
-                 bb.writeMethod11(gear.gearID, 11);
-                 bb.writeMethod11(0, 2); // Tier always 0 in slot loop per Python
-                 
-                 const runes = gear.runes || [0, 0, 0];
-                 const colors = gear.colors || [0, 0];
-                 
-                 bb.writeMethod11(runes[0], 16);
-                 bb.writeMethod11(runes[1], 16);
-                 bb.writeMethod11(runes[2], 16);
-                 bb.writeMethod11(colors[0], 8);
-                 bb.writeMethod11(colors[1], 8);
-             } else {
-                 bb.writeMethod11(0, 1); // No item
-             }
+            const gear = WorldEnter.asRecord(equippedGears[i]);
+            const gearId = Number(gear.gearID ?? 0);
+            if (!gearId) {
+                bb.writeMethod11(0, 1);
+                continue;
+            }
+
+            const runes = WorldEnter.asArray(gear.runes);
+            const colors = WorldEnter.asArray(gear.colors);
+            bb.writeMethod11(1, 1);
+            bb.writeMethod11(gearId, 11);
+            bb.writeMethod11(Number(gear.tier ?? 0), 2);
+            bb.writeMethod11(Number(runes[0] ?? 0), 16);
+            bb.writeMethod11(Number(runes[1] ?? 0), 16);
+            bb.writeMethod11(Number(runes[2] ?? 0), 16);
+            bb.writeMethod11(Number(colors[0] ?? 0), 8);
+            bb.writeMethod11(Number(colors[1] ?? 0), 8);
         }
 
-        // Numeric Fields
-        bb.writeMethod6(character.level || 1, 6);
-        bb.writeMethod4(character.xp || 0);
-        bb.writeMethod4(character.gold || 0);
-        bb.writeMethod4(character.craftXP || 0);
-        bb.writeMethod4(character.DragonOre || 0);
-        bb.writeMethod4(character.mammothIdols || 0);
+        bb.writeMethod6(Number(character.level ?? 1), 6);
+        bb.writeMethod4(Number(character.xp ?? 0));
+        bb.writeMethod4(Number(character.gold ?? 0));
+        bb.writeMethod4(Number(character.craftXP ?? 0));
+        bb.writeMethod4(Number(character.DragonOre ?? 0));
+        bb.writeMethod4(Number(character.mammothIdols ?? 0));
+        bb.writeMethod11(character.showHigher ? 1 : 0, 1);
 
-        bb.writeMethod11(character.showHigher ? 1 : 0, 1); 
-
-        // Quest Tracker
-        const questVal = character.questTrackerState;
-        if (questVal !== undefined && questVal !== null) {
+        const questTrackerState = character.questTrackerState ?? 0;
+        if (questTrackerState !== null) {
             bb.writeMethod11(1, 1);
-            bb.writeMethod4(questVal);
+            bb.writeMethod4(Number(questTrackerState));
         } else {
             bb.writeMethod11(0, 1);
         }
 
-        // Position Presence
-        // Only if we send coords here.
-        if (newHasCoord && targetLevel && newX !== 0 && newY !== 0) {
+        if (newHasCoord && targetLevel && newX !== undefined && newY !== undefined) {
             bb.writeMethod11(1, 1);
             bb.writeMethod45(newX);
             bb.writeMethod45(newY);
@@ -295,500 +337,440 @@ export class WorldEnter {
             bb.writeMethod11(0, 1);
         }
 
-        // Extended Data (Only sent once on load)
         if (sendExtended) {
             bb.writeMethod6(1, 1);
 
-        // -- Extended Blocks --
-        // Inventory Gears (0)
-        const inventoryGears = character.inventoryGears || [];
-        bb.writeMethod6(inventoryGears.length, 11); // len
+            const inventoryGears = WorldEnter.asArray(character.inventoryGears);
+            bb.writeMethod6(inventoryGears.length, 11);
+            for (const rawGear of inventoryGears) {
+                const gear = WorldEnter.asRecord(rawGear);
+                const runes = WorldEnter.asArray(gear.runes);
+                const colors = WorldEnter.asArray(gear.colors);
+                bb.writeMethod11(Number(gear.gearID ?? 0), 11);
+                bb.writeMethod11(Number(gear.tier ?? 0), 2);
 
-        for (const gear of inventoryGears) {
-            const gearID = gear.gearID || 0;
-            const tier = gear.tier || 0;
-            const runes = gear.runes || [0, 0, 0];
-            const colors = gear.colors || [0, 0];
-            
-            bb.writeMethod11(gearID, 11);
-            bb.writeMethod11(tier, 2); 
-            
-            const hasModifiers = runes.some((r: number) => r !== 0) || colors.some((c: number) => c !== 0);
-            bb.writeMethod11(hasModifiers ? 1 : 0, 1);
-            
-            if (hasModifiers) {
-                // Runes
-                for (let i = 0; i < 3; i++) {
-                    const r = runes[i];
-                    bb.writeMethod11(r !== 0 ? 1 : 0, 1);
-                    if (r !== 0) bb.writeMethod11(r, 16);
-                }
-                // Colors
-                for (let i = 0; i < 2; i++) {
-                    const c = colors[i];
-                    bb.writeMethod11(c !== 0 ? 1 : 0, 1);
-                    if (c !== 0) bb.writeMethod11(c, 8);
-                }
-            }
-        }
-
-        // Gear Sets (0)
-        const gearSets = character.gearSets || [];
-        bb.writeMethod6(gearSets.length, 3); // const_348
-
-        for (const gs of gearSets) {
-            bb.writeMethod13(gs.name || "");
-            let slots = gs.slots || [];
-            // Pad or trim to 7 (index 0 unused)
-            if (slots.length < 7) {
-                slots = slots.concat(new Array(7 - slots.length).fill(0));
-            } else {
-                slots = slots.slice(0, 7);
-            }
-             // armor, gloves, boots, hat, sword, shield
-            bb.writeMethod11(slots[1], 11);
-            bb.writeMethod11(slots[2], 11);
-            bb.writeMethod11(slots[3], 11);
-            bb.writeMethod11(slots[4], 11);
-            bb.writeMethod11(slots[5], 11);
-            bb.writeMethod11(slots[6], 11);
-        }
-
-        // Keybinds
-        bb.writeMethod11(0, 1);
-
-        // Mounts
-        const mounts = character.mounts || [];
-        bb.writeMethod4(mounts.length);
-        for (const mId of mounts) {
-            bb.writeMethod4(mId);
-        }
-
-        // Pets
-        const pets = character.pets || [];
-        bb.writeMethod4(pets.length);
-        for (const pet of pets) {
-            const typeID = Math.min(Math.max(pet.typeID || 0, 0), 127);
-            const iteration = Math.min(Math.max(pet.level || 0, 0), 63);
-            bb.writeMethod6(typeID, 7);
-            bb.writeMethod6(iteration, 6);
-            bb.writeMethod4(pet.xp || 0);
-            bb.writeMethod4(pet.special_id || 0);
-        }
-
-        // Charms
-        const charms = character.charms || [];
-        for (const charm of charms) {
-            const charmID = charm.charmID || 0;
-            const count = charm.count || 1;
-            bb.writeMethod11(1, 1); // Has charm
-            bb.writeMethod11(charmID, 9); // const_101 (9 bits for 512?) Python checks class_64.const_101. Usually 9 or 10.
-                                          // GameData says 279 charms loaded. 9 bits (512) enough.
-            if (count != 1) {
-                bb.writeMethod11(1, 1);
-                bb.writeMethod4(count);
-            } else {
-                bb.writeMethod11(0, 1);
-            }
-        }
-        bb.writeMethod11(0, 1); // End Charms
-
-        // Materials
-        const materials = character.materials || [];
-        for (const mat of materials) {
-            const matID = mat.materialID || 0;
-            const count = mat.count || 1;
-            bb.writeMethod11(1, 1);
-            bb.writeMethod4(matID);
-            if (count != 1) {
-                bb.writeMethod11(1, 1);
-                bb.writeMethod4(count);
-            } else {
-                bb.writeMethod11(0, 1);
-            }
-        }
-        bb.writeMethod11(0, 1); // End Materials
-
-        // Lockboxes
-        const lockboxes = character.lockboxes || [];
-        for (const box of lockboxes) {
-            bb.writeMethod11(1, 1);
-            bb.writeMethod4(box.lockboxID || 0);
-            bb.writeMethod4(box.count || 1);
-        }
-        bb.writeMethod11(0, 1); // End Lockboxes
-
-        // Keys/Sigils
-        bb.writeMethod4(character.DragonKeys || 0);
-        bb.writeMethod4(character.SilverSigils || 0);
-
-        // Alert State
-        bb.writeMethod6(character.alertState || 0, 4);
-
-        // Dyes (range 1 to 250)
-        const ownedDyes = new Set(character.OwnedDyes || []);
-        for (let i = 1; i <= 250; i++) { // Python: range(1, 763+1) but loop is implied by bit width? 
-                                         // Python loops range(1, class_21.const_763 + 1).
-                                         // If const_763 is 250?
-                                         // TS original code had 250.
-            bb.writeMethod11(ownedDyes.has(i) ? 1 : 0, 1);
-        }
-
-        // Consumables
-        const consumables = character.consumables || [];
-        for (const item of consumables) {
-            bb.writeMethod11(1, 1);
-            bb.writeMethod4(item.consumableID || 0);
-            bb.writeMethod4(item.count || 1);
-        }
-        bb.writeMethod11(0, 1); // End Consumables
-
-        // Missions
-        const missionsState = character.missions || {};
-        const totalDefs = MissionLoader.getTotalMissions() || 300;
-        bb.writeMethod4(totalDefs);
-
-        for (let mid = 1; mid <= totalDefs; mid++) {
-            const mdef = MissionLoader.getMissionDef(mid);
-            const mstate = missionsState[mid.toString()];
-            
-            if (mdef && mdef.Tier) {
-                // Tier Mission
-                const ready = mstate && mstate.state === 2; // const_72
-                bb.writeMethod11(ready ? 1 : 0, 1);
-            } else {
-                // Regular Mission
-                const hasEntry = !!mstate;
-                bb.writeMethod11(hasEntry ? 1 : 0, 1);
-                
-                if (hasEntry) {
-                    const state = mstate.state || 0; // const_213 (0?)
-                    const isReady = (state === 2);
-                    bb.writeMethod11(isReady ? 1 : 0, 1);
-
-                    if (!isReady) {
-                        // In Progress
-                        if (mdef && (mdef.highscore || 0) > 1) {
-                            bb.writeMethod4(mstate.currCount || 0);
+                const hasModifiers =
+                    runes.some((r: unknown) => Number(r) !== 0) ||
+                    colors.some((c: unknown) => Number(c) !== 0);
+                bb.writeMethod11(hasModifiers ? 1 : 0, 1);
+                if (hasModifiers) {
+                    for (let i = 0; i < 3; i++) {
+                        const rune = Number(runes[i] ?? 0);
+                        bb.writeMethod11(rune !== 0 ? 1 : 0, 1);
+                        if (rune !== 0) {
+                            bb.writeMethod11(rune, 16);
                         }
-                    } else {
-                        // Ready
-                        const isTurnIn = (state === 2) ? 1 : 0;
-                        bb.writeMethod11(isTurnIn, 1);
-
-                        if (mdef && mdef.Time) {
-                            bb.writeMethod11(mstate.Tier || 0, 4);
-                            bb.writeMethod4(mstate.highscore || 0);
-                            bb.writeMethod4(mstate.Time || 0);
+                    }
+                    for (let i = 0; i < 2; i++) {
+                        const color = Number(colors[i] ?? 0);
+                        bb.writeMethod11(color !== 0 ? 1 : 0, 1);
+                        if (color !== 0) {
+                            bb.writeMethod11(color, 8);
                         }
                     }
                 }
             }
-        }
 
-        // Friends
-        const friends = character.friends || [];
-        bb.writeMethod4(friends.length);
-        for (const f of friends) {
-             const fname = f.name;
-             const isRequest = f.isRequest || false;
-             
-             // Lookup online status
-             let online = false;
-             let className = "";
-             let level = 1;
-             
-             for (const s of GlobalState.sessionsByToken.values()) {
-                 if (s.character && s.character.name === fname) {
-                     online = true;
-                     className = s.character.class;
-                     level = s.character.level;
-                     break;
-                 }
-             }
+            const gearSets = WorldEnter.asArray(character.gearSets);
+            bb.writeMethod6(gearSets.length, 3);
+            for (const rawGearSet of gearSets) {
+                const gearSet = WorldEnter.asRecord(rawGearSet);
+                const slots = WorldEnter.asArray(gearSet.slots).slice(0, 7);
+                while (slots.length < 7) {
+                    slots.push(0);
+                }
 
-             bb.writeMethod13(fname);
-             bb.writeMethod11(isRequest ? 1 : 0, 1);
-             bb.writeMethod11(online ? 1 : 0, 1);
+                bb.writeMethod13(String(gearSet.name ?? ''));
+                bb.writeMethod11(Number(slots[1] ?? 0), 11);
+                bb.writeMethod11(Number(slots[2] ?? 0), 11);
+                bb.writeMethod11(Number(slots[3] ?? 0), 11);
+                bb.writeMethod11(Number(slots[4] ?? 0), 11);
+                bb.writeMethod11(Number(slots[5] ?? 0), 11);
+                bb.writeMethod11(Number(slots[6] ?? 0), 11);
+            }
 
-             if (online) {
-                 bb.writeMethod11(0, 1); // custom name false
-                 // Map class name to ID
-                 let cId = 0;
-                 if (className.toLowerCase() === "paladin") cId = 1;
-                 else if (className.toLowerCase() === "rogue") cId = 2;
-                 else if (className.toLowerCase() === "mage") cId = 3; 
-                 // Note: Enums.ts might have ClassID
-                 
-                 bb.writeMethod11(cId, 4); // const_244
-                 bb.writeMethod11(level, 6);
-             }
-        }
+            bb.writeMethod11(0, 1);
 
-        // Abilities (Learned)
-        const learnedAbilities = character.learnedAbilities || [];
-        bb.writeMethod6(learnedAbilities.length, 7); // const_83
-        for (const ab of learnedAbilities) {
-            bb.writeMethod6(ab.abilityID || 0, 7);
-            bb.writeMethod6(ab.rank || 0, 3); // const_665
-        }
+            const mounts = WorldEnter.asArray(character.mounts);
+            bb.writeMethod4(mounts.length);
+            for (const mountId of mounts) {
+                bb.writeMethod4(Number(mountId ?? 0));
+            }
 
-        // Active Abilities (3 slots)
-        const activeAbilities = character.activeAbilities || [];
-        for(let i=0; i<3; i++) {
-            bb.writeMethod6(activeAbilities[i] || 0, 7);
-        }
+            const pets = WorldEnter.asArray(character.pets);
+            bb.writeMethod4(pets.length);
+            for (const rawPet of pets) {
+                const pet = WorldEnter.asRecord(rawPet);
+                const typeId = Math.max(0, Math.min(Number(pet.typeID ?? 0), 127));
+                const iteration = Math.max(0, Math.min(Number(pet.level ?? 0), 63));
+                bb.writeMethod6(typeId, 7);
+                bb.writeMethod6(iteration, 6);
+                bb.writeMethod4(Number(pet.xp ?? 0));
+                bb.writeMethod4(Number(pet.special_id ?? 0));
+            }
 
-        // Craft Talent Points
-        const ctp = character.craftTalentPoints || [0,0,0,0,0];
-        let packedCtp = 0;
-        for(let i=0; i<5; i++) {
-            packedCtp |= ((ctp[i] || 0) & 0xF) << (i * 4);
-        }
-        bb.writeMethod4(packedCtp);
+            const charms = WorldEnter.asArray(character.charms);
+            for (const rawCharm of charms) {
+                const charm = WorldEnter.asRecord(rawCharm);
+                const count = Number(charm.count ?? 1);
+                bb.writeMethod11(1, 1);
+                bb.writeMethod11(Number(charm.charmID ?? 0), 16);
+                if (count !== 1) {
+                    bb.writeMethod11(1, 1);
+                    bb.writeMethod4(count);
+                } else {
+                    bb.writeMethod11(0, 1);
+                }
+            }
+            bb.writeMethod11(0, 1);
 
-        // Talent Points
-        const tp = character.talentPoints || {};
-        for(let i=1; i<=3; i++) {
-             bb.writeMethod6(tp[i.toString()] || 0, 6);
-        }
+            const materials = WorldEnter.asArray(character.materials);
+            for (const rawMaterial of materials) {
+                const material = WorldEnter.asRecord(rawMaterial);
+                const count = Number(material.count ?? 1);
+                bb.writeMethod11(1, 1);
+                bb.writeMethod4(Number(material.materialID ?? 0));
+                if (count !== 1) {
+                    bb.writeMethod11(1, 1);
+                    bb.writeMethod4(count);
+                } else {
+                    bb.writeMethod11(0, 1);
+                }
+            }
+            bb.writeMethod11(0, 1);
 
-        // Magic Forge
-        const mf = character.magicForge || { stats_by_building: {} };
-        const hasStats = Object.keys(mf.stats_by_building || {}).length > 0;
-        bb.writeMethod11(hasStats ? 1 : 0, 1);
+            const lockboxes = WorldEnter.asArray(character.lockboxes);
+            for (const rawLockbox of lockboxes) {
+                const lockbox = WorldEnter.asRecord(rawLockbox);
+                bb.writeMethod11(1, 1);
+                bb.writeMethod4(Number(lockbox.lockboxID ?? 0));
+                bb.writeMethod4(Number(lockbox.count ?? 1));
+            }
+            bb.writeMethod11(0, 1);
 
-        if (hasStats) {
-             const cls = (character.class || "paladin").toLowerCase();
-             // Default build order (Paladin)
-             let seq = [2, 12, 3, 4, 5, 1, 13];
-             if (cls === "mage") seq = [2, 12, 6, 7, 8, 1, 13];
-             if (cls === "rogue") seq = [2, 12, 9, 10, 11, 1, 13];
+            bb.writeMethod4(Number(character.DragonKeys ?? 0));
+            bb.writeMethod4(Number(character.SilverSigils ?? 0));
+            bb.writeMethod6(Number(character.alertState ?? 0), 4);
 
-             for (const bid of seq) {
-                 const val = mf.stats_by_building[bid.toString()] || 0;
-                 bb.writeMethod6(val, 5); // const_28
-             }
-        }
+            const ownedDyes = new Set<number>(
+                WorldEnter.asArray(character.OwnedDyes).map((value: unknown) => Number(value))
+            );
+            for (let dyeId = 1; dyeId <= 250; dyeId++) {
+                bb.writeMethod11(ownedDyes.has(dyeId) ? 1 : 0, 1);
+            }
 
-        const forgeState = WorldEnter.resolveMagicForgeState(mf, now);
-        bb.writeMethod11(forgeState.has_session ? 1 : 0, 1);
-        
-        if (forgeState.has_session) {
-             bb.writeMethod6(mf.primary || 0, 8); // const_254 (8 bits?) Python says 8 bits? No, Python line 457: class_1.const_254. 
-                                                  // class_1.const_254 is usually 9 bits (512)? 
-                                                  // Wait, "write_method_6(primary, class_1.const_254)"
-                                                  // Let's assume 9 bits.
-             
-             if (forgeState.in_progress) {
-                 bb.writeMethod11(1, 1);
-                 bb.writeMethod4(forgeState.ready_time || 0);
-             } else {
-                 bb.writeMethod11(0, 1);
-                 bb.writeMethod6(mf.secondary_tier || 0, 2); // const_499
-                 if ((mf.secondary_tier || 0) > 0) {
-                     bb.writeMethod6(mf.secondary || 0, 5); // const_218
-                     bb.writeMethod6(mf.usedlist || 0, 9); // const_432
-                 }
-             }
+            const consumables = WorldEnter.asArray(character.consumables);
+            for (const rawConsumable of consumables) {
+                const consumable = WorldEnter.asRecord(rawConsumable);
+                bb.writeMethod11(1, 1);
+                bb.writeMethod4(Number(consumable.consumableID ?? 0));
+                bb.writeMethod4(Number(consumable.count ?? 1));
+            }
+            bb.writeMethod11(0, 1);
 
-             // Forge rolls
-             bb.writeMethod91(Math.min(mf.forge_roll_a || 0, 65535));
-             bb.writeMethod91(Math.min(mf.forge_roll_b || 0, 65535));
-        }
+            const missionsState = WorldEnter.asRecord(character.missions);
+            const totalMissions = MissionLoader.getTotalMissions();
+            bb.writeMethod4(totalMissions);
+            for (let missionId = 1; missionId <= totalMissions; missionId++) {
+                const missionDef = MissionLoader.getMissionDef(missionId);
+                const missionState = WorldEnter.asRecord(missionsState[missionId.toString()]);
+                const state = Number(missionState.state ?? 0);
 
-        // Extended Forge Flag
-        bb.writeMethod11(mf.is_extended_forge ? 1 : 0, 1);
+                if (missionDef?.Tier) {
+                    bb.writeMethod11(state >= 3 ? 1 : 0, 1);
+                    continue;
+                }
 
-        // Skill Research
-        const sr = character.SkillResearch;
-        if (sr) {
-            bb.writeMethod11(1, 1);
-            bb.writeMethod6(sr.abilityID || 0, 7);
-            const endSec = sr.ReadyTime || 0;
-            if (endSec && endSec <= now) {
-                bb.writeMethod4(0);
+                const hasEntry = state !== 0;
+                bb.writeMethod11(hasEntry ? 1 : 0, 1);
+                if (!hasEntry) {
+                    continue;
+                }
+
+                const isReady = state >= 2;
+                bb.writeMethod11(isReady ? 1 : 0, 1);
+                if (!isReady) {
+                    if ((missionDef?.highscore ?? 0) > 1) {
+                        bb.writeMethod4(Number(missionState.currCount ?? 0));
+                    }
+                    continue;
+                }
+
+                bb.writeMethod11(state === 2 ? 1 : 0, 1);
+                if (WorldEnter.missionHasDungeonProgress(missionDef)) {
+                    bb.writeMethod11(Number(missionState.Tier ?? 0), 4);
+                    bb.writeMethod4(Number(missionState.highscore ?? 0));
+                    bb.writeMethod4(Number(missionState.Time ?? 0));
+                }
+            }
+
+            const friends = WorldEnter.asArray(character.friends);
+            bb.writeMethod4(friends.length);
+            for (const rawFriend of friends) {
+                const friend = WorldEnter.asRecord(rawFriend);
+                const friendName = String(friend.name ?? '');
+                const isRequest = Boolean(friend.isRequest);
+                let isOnline = false;
+                let className = '';
+                let level = 1;
+
+                for (const session of GlobalState.sessionsByToken.values()) {
+                    if (session.character?.name === friendName) {
+                        isOnline = true;
+                        className = String(session.character.class ?? '');
+                        level = Number(session.character.level ?? 1);
+                        break;
+                    }
+                }
+
+                bb.writeMethod13(friendName);
+                bb.writeMethod11(isRequest ? 1 : 0, 1);
+                bb.writeMethod11(isOnline ? 1 : 0, 1);
+                if (isOnline) {
+                    bb.writeMethod11(0, 1);
+                    bb.writeMethod11(WorldEnter.getClassId(className), 2);
+                    bb.writeMethod11(level, 6);
+                }
+            }
+
+            const learnedAbilities = WorldEnter.asArray(character.learnedAbilities);
+            bb.writeMethod6(learnedAbilities.length, 7);
+            for (const rawAbility of learnedAbilities) {
+                const ability = WorldEnter.asRecord(rawAbility);
+                bb.writeMethod6(Number(ability.abilityID ?? 0), 7);
+                bb.writeMethod6(Number(ability.rank ?? 0), 4);
+            }
+
+            const activeAbilities = WorldEnter.asArray(character.activeAbilities).slice(0, 3);
+            while (activeAbilities.length < 3) {
+                activeAbilities.push(0);
+            }
+            for (const activeAbilityId of activeAbilities) {
+                bb.writeMethod6(Number(activeAbilityId ?? 0), 7);
+            }
+
+            const craftTalentPoints = WorldEnter.asArray(character.craftTalentPoints).slice(0, 5);
+            while (craftTalentPoints.length < 5) {
+                craftTalentPoints.push(0);
+            }
+            let packedCraftTalentPoints = 0;
+            for (let i = 0; i < 5; i++) {
+                packedCraftTalentPoints |= (Number(craftTalentPoints[i] ?? 0) & 0xF) << (i * 4);
+            }
+            bb.writeMethod4(packedCraftTalentPoints);
+
+            const talentPoints = WorldEnter.asRecord(character.talentPoints);
+            for (const classIndex of [1, 2, 3]) {
+                bb.writeMethod6(Number(talentPoints[classIndex.toString()] ?? 0), 6);
+            }
+
+            const magicForge = WorldEnter.asRecord(character.magicForge);
+            const statsByBuilding = WorldEnter.asRecord(magicForge.stats_by_building);
+            const hasForgeStats = Object.keys(statsByBuilding).length > 0;
+            bb.writeMethod11(hasForgeStats ? 1 : 0, 1);
+            if (hasForgeStats) {
+                const className = (character.class || '').toLowerCase();
+                const buildOrder = className === 'mage'
+                    ? [2, 12, 6, 7, 8, 1, 13]
+                    : className === 'rogue'
+                        ? [2, 12, 9, 10, 11, 1, 13]
+                        : [2, 12, 3, 4, 5, 1, 13];
+
+                for (const buildingId of buildOrder) {
+                    bb.writeMethod6(Number(statsByBuilding[buildingId.toString()] ?? 0), 5);
+                }
+            }
+
+            const forgeState = WorldEnter.resolveMagicForgeState(magicForge, now);
+            bb.writeMethod11(forgeState.has_session ? 1 : 0, 1);
+            if (forgeState.has_session) {
+                bb.writeMethod6(Number(magicForge.primary ?? 0), 7);
+                if (forgeState.in_progress) {
+                    bb.writeMethod11(1, 1);
+                    bb.writeMethod4(Number(forgeState.ready_time ?? 0));
+                } else {
+                    const secondaryTier = Number(magicForge.secondary_tier ?? 0);
+                    bb.writeMethod11(0, 1);
+                    bb.writeMethod6(secondaryTier, 2);
+                    if (secondaryTier > 0) {
+                        bb.writeMethod6(Number(magicForge.secondary ?? 0), 5);
+                        bb.writeMethod6(Number(magicForge.usedlist ?? 0), 9);
+                    }
+                }
+
+                bb.writeMethod91(Math.min(Number(magicForge.forge_roll_a ?? 0), 65535));
+                bb.writeMethod91(Math.min(Number(magicForge.forge_roll_b ?? 0), 65535));
+            }
+
+            bb.writeMethod11(Boolean(magicForge.is_extended_forge) ? 1 : 0, 1);
+
+            const skillResearch = WorldEnter.asRecord(character.SkillResearch);
+            if (Object.keys(skillResearch).length > 0) {
+                const readyTime = Number(skillResearch.ReadyTime ?? 0);
+                bb.writeMethod11(1, 1);
+                bb.writeMethod6(Number(skillResearch.abilityID ?? 0), 7);
+                bb.writeMethod4(readyTime && readyTime <= now ? 0 : readyTime);
             } else {
-                bb.writeMethod4(endSec);
+                bb.writeMethod11(0, 1);
+            }
+
+            const buildingUpgrade = WorldEnter.asRecord(character.buildingUpgrade);
+            const buildingReadyTime = Number(buildingUpgrade.ReadyTime ?? 0);
+            const hasBuildingUpgrade = Number(buildingUpgrade.buildingID ?? 0) !== 0 && buildingReadyTime > now;
+            bb.writeMethod11(hasBuildingUpgrade ? 1 : 0, 1);
+            if (hasBuildingUpgrade) {
+                bb.writeMethod6(Number(buildingUpgrade.buildingID ?? 0), 5);
+                bb.writeMethod4(buildingReadyTime);
+            }
+
+            const talentResearch = WorldEnter.asRecord(character.talentResearch);
+            const talentReadyTime = Number(talentResearch.ReadyTime ?? 0);
+            const hasTalentResearch = talentReadyTime > 0 && talentReadyTime > now;
+            bb.writeMethod11(hasTalentResearch ? 1 : 0, 1);
+            if (hasTalentResearch) {
+                bb.writeMethod6(Number(talentResearch.classIndex ?? 0), 2);
+                bb.writeMethod4(talentReadyTime);
+            }
+
+            const eggHatchery = WorldEnter.asRecord(character.EggHachery);
+            const eggId = Number(eggHatchery.EggID ?? 0);
+            if (eggId !== 0) {
+                const readyTime = Number(eggHatchery.ReadyTime ?? 0);
+                bb.writeMethod11(1, 1);
+                bb.writeMethod6(eggId, 6);
+                bb.writeMethod4(readyTime !== 0 && readyTime <= now ? 0 : readyTime);
+            } else {
+                bb.writeMethod11(0, 1);
+            }
+
+            const ownedEggs = WorldEnter.asArray(character.OwnedEggsID).slice(0, 8);
+            while (ownedEggs.length < 8) {
+                ownedEggs.push(0);
+            }
+            bb.writeMethod6(8, 6);
+            for (const ownedEgg of ownedEggs) {
+                bb.writeMethod6(Number(ownedEgg ?? 0), 6);
+            }
+
+            bb.writeMethod4(Number(character.activeEggCount ?? 0));
+
+            const restingPets = WorldEnter.asArray(character.restingPets).slice(0, 3);
+            for (let i = 0; i < 3; i++) {
+                const pet = WorldEnter.asRecord(restingPets[i]);
+                if (Object.keys(pet).length === 0) {
+                    bb.writeMethod11(0, 1);
+                    continue;
+                }
+
+                bb.writeMethod11(1, 1);
+                bb.writeMethod6(Number(pet.typeID ?? 0), 7);
+                bb.writeMethod4(Number(pet.special_id ?? 0));
+            }
+
+            const trainingPets = WorldEnter.asArray(character.trainingPet);
+            if (trainingPets.length > 0) {
+                const pet = WorldEnter.asRecord(trainingPets[0]);
+                const readyTime = Number(pet.trainingTime ?? 0);
+                bb.writeMethod11(1, 1);
+                bb.writeMethod6(Number(pet.typeID ?? 0), 7);
+                bb.writeMethod4(Number(pet.special_id ?? 0));
+                bb.writeMethod4(readyTime <= now ? 0 : readyTime);
+            } else {
+                bb.writeMethod11(0, 1);
+            }
+
+            bb.writeMethod13(WorldEnter.DEFAULT_NEWS_EVENT.icon);
+            bb.writeMethod13(WorldEnter.DEFAULT_NEWS_EVENT.url);
+            bb.writeMethod13(WorldEnter.DEFAULT_NEWS_EVENT.body);
+            bb.writeMethod13(WorldEnter.DEFAULT_NEWS_EVENT.tooltip);
+            bb.writeMethod4(WorldEnter.DEFAULT_NEWS_EVENT.startTs);
+        } else {
+            bb.writeMethod6(0, 1);
+        }
+
+        const masterClassId = WorldEnter.resolveMasterClass(character);
+        if (masterClassId && Number(character.MasterClass ?? 0) !== masterClassId) {
+            character.MasterClass = masterClassId;
+        }
+        bb.writeMethod6(masterClassId, 4);
+
+        if (masterClassId > 0) {
+            bb.writeMethod11(1, 1);
+            const talentTree = WorldEnter.asRecord(character.TalentTree);
+            const classTree = WorldEnter.asRecord(talentTree[masterClassId.toString()]);
+            const nodes = WorldEnter.normalizeTalentNodes(classTree.nodes);
+
+            for (let i = 0; i < WorldEnter.TALENT_SLOT_MAX_POINTS.length; i++) {
+                const node = nodes[i];
+                if (!node.filled) {
+                    bb.writeMethod11(0, 1);
+                    continue;
+                }
+
+                bb.writeMethod11(1, 1);
+                bb.writeMethod6(node.nodeID, 6);
+                bb.writeMethod6(node.points - 1, WorldEnter.TALENT_SLOT_BIT_WIDTHS[i]);
             }
         } else {
             bb.writeMethod11(0, 1);
         }
 
-        // Building Upgrade
-        const bu = character.buildingUpgrade || { buildingID: 0, ReadyTime: 0, rank: 0 };
-        const buReady = bu.ReadyTime || 0;
-        const hasBu = (bu.buildingID !== 0 && buReady > now);
-        bb.writeMethod11(hasBu ? 1 : 0, 1);
-        if (hasBu) {
-            bb.writeMethod6(bu.buildingID, 5); // const_129
-            bb.writeMethod4(buReady);
+        for (let i = 0; i < 6; i++) {
+            const gear = WorldEnter.asRecord(equippedGears[i]);
+            const gearId = Number(gear.gearID ?? 0);
+            if (gearId) {
+                bb.writeMethod11(1, 1);
+                bb.writeMethod6(gearId, 11);
+            } else {
+                bb.writeMethod11(0, 1);
+            }
         }
 
-        // Talent Research
-        const tr = character.talentResearch || {};
-        const trReady = tr.ReadyTime || 0;
-        const hasTr = (trReady > 0 && trReady > now);
-        bb.writeMethod11(hasTr ? 1 : 0, 1);
-        if (hasTr) {
-             bb.writeMethod6(tr.classIndex || 0, 4); // const_571
-             bb.writeMethod4(trReady);
+        bb.writeMethod4(Number(character.equippedMount ?? 0));
+
+        const activePet = WorldEnter.asRecord(character.activePet);
+        bb.writeMethod4(Number(activePet.typeID ?? 0));
+        bb.writeMethod4(Number(activePet.special_id ?? 0));
+
+        bb.writeMethod4(Number(character.activeConsumableID ?? 0));
+        bb.writeMethod4(Number(character.queuedConsumableID ?? 0));
+
+        const guild = WorldEnter.asRecord(character.guild);
+        const inGuild = Object.keys(guild).length > 0;
+        bb.writeMethod11(inGuild ? 1 : 0, 1);
+        if (inGuild) {
+            const onlineMembers = WorldEnter.asArray(guild.onlineMembers);
+            bb.writeMethod13(String(guild.name ?? ''));
+            bb.writeMethod6(Number(guild.rank ?? 0), 3);
+            bb.writeMethod4(onlineMembers.length);
+
+            for (const rawMember of onlineMembers) {
+                const member = WorldEnter.asRecord(rawMember);
+                bb.writeMethod13(String(member.name ?? ''));
+                bb.writeMethod6(Number(member.classID ?? 0), 2);
+                bb.writeMethod6(Number(member.level ?? 1), 6);
+                bb.writeMethod6(Number(member.rank ?? 0), 3);
+            }
         }
 
-        // Egg Hatchery
-        const eggData = character.EggHachery || {};
-        if (eggData.EggID) {
-             bb.writeMethod11(1, 1);
-             bb.writeMethod6(eggData.EggID, 8); // const_167 (assume 8)
-             
-             const readyTime = eggData.ReadyTime || 0;
-             if (readyTime !== 0 && readyTime <= now) {
-                 bb.writeMethod4(0);
-             } else {
-                 bb.writeMethod4(readyTime);
-             }
-        } else {
-             bb.writeMethod11(0, 1);
+        const completedLevels = WorldEnter.asArray(character.completed_levels);
+        bb.writeMethod4(completedLevels.length);
+        for (const rawLevel of completedLevels) {
+            const level = WorldEnter.asRecord(rawLevel);
+            const composite = `${level.id ?? ''}^${level.internal ?? ''}^${level.variant ?? ''}`;
+            bb.writeMethod13(composite);
+            bb.writeMethod13(String(level.state ?? ''));
         }
 
-        // Owned Eggs
-        const MAX_EGG_SLOTS = 8;
-        const ownedEggs = character.OwnedEggsID || [];
-        bb.writeMethod6(MAX_EGG_SLOTS, 6); // Python writes MAX_SLOTS, const_167
-        // Wait, Python writes loop padded to MAX_SLOTS.
-        // Python: buf.write_method_6(MAX_SLOTS, class_16.const_167) ??
-        // Check Python: "buf.write_method_6(MAX_SLOTS, class_16.const_167)" -> writes COUNT?
-        // Ah, const_167 is bit width?
-        // Typically write_method_6 writes value with N bits.
-        // So sending COUNT using N bits.
-        for (let i = 0; i < MAX_EGG_SLOTS; i++) {
-            bb.writeMethod6(ownedEggs[i] || 0, 8); // const_167
-        }
-
-        // Active Egg Count
-        bb.writeMethod4(character.activeEggCount || 0);
-
-        // Resting Pets (3)
-        const resting = character.restingPets || [];
-        for(let i=0; i<3; i++) {
-             if (i < resting.length) {
-                 bb.writeMethod11(1, 1);
-                 bb.writeMethod6(resting[i].typeID, 7); // const_19
-                 bb.writeMethod4(resting[i].special_id);
-             } else {
-                 bb.writeMethod11(0, 1);
-             }
-        }
-
-        // Training Pet
-        const tpList = character.trainingPet || [];
-        if (tpList.length > 0) {
-            const tp = tpList[0];
-            bb.writeMethod11(1, 1);
-            bb.writeMethod6(tp.typeID, 7);
-            bb.writeMethod4(tp.special_id);
-            const ready = tp.trainingTime || 0;
-            if (ready <= now) bb.writeMethod4(0);
-            else bb.writeMethod4(ready);
-        } else {
-            bb.writeMethod11(0, 1);
-        }
-
-        // News Event
-        // icon, url, body, tooltip, time
-        bb.writeMethod13("");
-        bb.writeMethod13("");
-        bb.writeMethod13("");
-        bb.writeMethod13("");
-        bb.writeMethod4(0);
-
-        // Master Class
-        const mcId = WorldEnter.resolveMasterClass(character);
-        // Correct char MC if mismatch (logic in python)
-        bb.writeMethod6(mcId, 4); 
-        
-        if (mcId > 0) {
-            bb.writeMethod11(1, 1);
-            // Talent Tree logic for master class
-            // Simplify for now: empty/unfilled
-             const tt = (character.TalentTree || {})[mcId.toString()] || { nodes: [] };
-             // Normalize nodes logic omitted for brevity, assuming standard structure or sending empty
-             // Python normalizes.
-             // Let's send 0s for nodes if we don't normalize.
-             const numSlots = 20; // class_118.NUM_TALENT_SLOTS
-             for(let i=0; i<numSlots; i++) {
-                 // Check if node exists and filled
-                 // For now send 0 (not filled)
-                 bb.writeMethod11(0, 1);
-             }
-        } else {
-            bb.writeMethod11(0, 1);
-        }
-
-        // Equipped Gears (6 slots) redundancy?
-        // Python writes them AGAIN here.
-        for(let i=0; i<6; i++) {
-             const gear = equippedGears[i];
-             if (gear && gear.gearID) {
-                 bb.writeMethod11(1, 1);
-                 bb.writeMethod6(gear.gearID, 11);
-             } else {
-                 bb.writeMethod11(0, 1);
-             }
-        }
-
-        // Equipped Mount
-        bb.writeMethod4(character.equippedMount || 0);
-
-        // Active Pet
-        const activePet = character.activePet || {};
-        bb.writeMethod4(activePet.typeID || 0);
-        bb.writeMethod4(activePet.special_id || 0);
-
-        // Active Consumable
-        bb.writeMethod4(character.activeConsumableID || 0);
-        bb.writeMethod4(character.queuedConsumableID || 0);
-
-        // Guild
-        const guild = character.guild;
-        bb.writeMethod11(guild ? 1 : 0, 1);
-        if (guild) {
-             bb.writeMethod13(guild.name);
-             bb.writeMethod6(guild.rank || 0, 3);
-             
-             const members = guild.onlineMembers || [];
-             bb.writeMethod4(members.length);
-             for(const m of members) {
-                 bb.writeMethod13(m.name);
-                 bb.writeMethod6(m.classID || 0, 4);
-                 bb.writeMethod6(m.level || 1, 6);
-                 bb.writeMethod6(m.rank || 0, 3);
-             }
-        }
-
-        // Level Updates
-        const levelUpdates = character.completed_levels || [];
-        bb.writeMethod4(levelUpdates.length);
-        for(const update of levelUpdates) {
-             const composite = `${update.id}^${update.internal}^${update.variant}`;
-             bb.writeMethod13(composite);
-             bb.writeMethod13(update.state);
-        }
-
-        // Room Updates
-        const roomUpdates = character.updated_rooms || [];
-        bb.writeMethod4(roomUpdates.length);
-        for(const update of roomUpdates) {
-             bb.writeMethod4(update.id);
-             bb.writeMethod13(update.action);
-             bb.writeMethod13(update.state);
-        }
-
-        } else {
-            bb.writeMethod6(0, 1);
+        const updatedRooms = WorldEnter.asArray(character.updated_rooms);
+        bb.writeMethod4(updatedRooms.length);
+        for (const rawRoom of updatedRooms) {
+            const room = WorldEnter.asRecord(rawRoom);
+            bb.writeMethod4(Number(room.id ?? 0));
+            bb.writeMethod13(String(room.action ?? ''));
+            bb.writeMethod13(String(room.state ?? ''));
         }
 
         return bb;
     }
-
 }

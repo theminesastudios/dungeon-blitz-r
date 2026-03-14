@@ -68,10 +68,10 @@
   <Level Version="cbp"				 Size="2658" Name="LevelsHome.swf" />
   <Level Version="cbp"				 Size="3728" Name="LevelsJC.swf" />
   <Level Version="cam"				 Size="1337" Name="LevelsLD.swf" />
-  <Level Version="cbp"				 Size="1337" Name="LevelsNR.swf" />
+  <Level Version="cbp"				 Size="2647" Name="LevelsNR.swf" />
   <Level Version="cbp"				 Size="1967" Name="LevelsOMM.swf" />
   <Level Version="cam"				 Size="1792" Name="LevelsSD.swf" />
   <Level Version="cbp"				 Size="797"	 Name="LevelsSRN.swf" />
-  <Level Version="cbp"				 Size="165"	 Name="LevelsTut.swf" />
+  <Level Version="cbp"				 Size="242"	 Name="LevelsTut.swf" />
   
 </MasterFileList>
