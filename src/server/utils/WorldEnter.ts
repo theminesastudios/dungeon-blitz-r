@@ -496,7 +496,7 @@ export class WorldEnter {
                     continue;
                 }
 
-                bb.writeMethod11(state === 2 ? 1 : 0, 1);
+                bb.writeMethod11(state >= 3 ? 1 : 0, 1);
                 if (WorldEnter.missionHasDungeonProgress(missionDef)) {
                     bb.writeMethod11(Number(missionState.Tier ?? 0), 4);
                     bb.writeMethod4(Number(missionState.highscore ?? 0));
@@ -605,10 +605,11 @@ export class WorldEnter {
             bb.writeMethod11(Boolean(magicForge.is_extended_forge) ? 1 : 0, 1);
 
             const skillResearch = WorldEnter.asRecord(character.SkillResearch);
-            if (Object.keys(skillResearch).length > 0) {
+            const skillResearchAbilityId = Number(skillResearch.abilityID ?? 0);
+            if (skillResearchAbilityId !== 0) {
                 const readyTime = Number(skillResearch.ReadyTime ?? 0);
                 bb.writeMethod11(1, 1);
-                bb.writeMethod6(Number(skillResearch.abilityID ?? 0), 7);
+                bb.writeMethod6(skillResearchAbilityId, 7);
                 bb.writeMethod4(readyTime && readyTime <= now ? 0 : readyTime);
             } else {
                 bb.writeMethod11(0, 1);

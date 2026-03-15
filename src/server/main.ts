@@ -25,6 +25,7 @@ import { MissionHandler } from './handlers/MissionHandler';
 import { NpcHandler } from './handlers/NpcHandler';
 import { RewardHandler } from './handlers/RewardHandler';
 import { EquipmentHandler } from './handlers/EquipmentHandler';
+import { AbilityHandler } from './handlers/AbilityHandler';
 import * as path from 'path';
 
 import { StaticServer } from './core/StaticServer';
@@ -57,6 +58,8 @@ router.register(0x2A, RewardHandler.handleGrantReward); // Grant Reward
 router.register(0x38, RewardHandler.handlePickupLootdrop); // Pickup Lootdrop
 router.register(0x30, EquipmentHandler.handleUpdateEquipment); // Update Equipment
 router.register(0x31, EquipmentHandler.handleUpdateSingleGear); // Update Single Gear
+router.register(0xBD, AbilityHandler.handleActiveAbilitiesUpdate); // Active Ability Loadout
+router.register(0xBE, AbilityHandler.handleStartAbilityResearch); // Start Ability Research
 router.register(0x41, LevelHandler.handleRequestDoorState); // Request Door State
 router.register(0x3F, MissionHandler.handleSetLevelComplete); // Level Complete
 router.register(0x8D, MissionHandler.handleBadgeRequest); // Badge / Achievement
@@ -72,6 +75,7 @@ router.register(0xAD, LevelHandler.handleRoomUnlock); // Room Unlock
 router.register(0xAE, LevelHandler.handleSetUntargetable); // Set Untargetable
 router.register(0x40, SocialHandler.handleLevelState); // Level State
 router.register(0x76, SocialHandler.handleRoomThought); // Room Thought
+router.register(0x8A, LevelHandler.handleChangeMaxSpeed); // Change Max Speed
 router.register(0x7D, LevelHandler.handleChangeOffsetY); // Change Offset Y
 router.register(0x7E, SocialHandler.handleEmoteBegin); // Emote Begin
 router.register(0x7F, SocialHandler.handleEmoteEnd); // Emote End
@@ -110,6 +114,7 @@ router.register(0x0C, CombatHandler.handleRemoveBuff);
 
 // Buildings
 router.register(0xD7, BuildingHandler.handleBuildingUpgrade);
+router.register(0xD9, BuildingHandler.handleBuildingClaim);
 router.register(0xDC, BuildingHandler.handleBuildingSpeedUpRequest);
 
 // System
@@ -117,11 +122,14 @@ router.register(0x7C, SystemHandler.handleClientCrashReport);
 
 // Talent Packets
 router.register(0xD2, TalentHandler.handleRespecTalentTree);
+router.register(0xD1, AbilityHandler.handleClaimAbilityResearch);
 router.register(0xC0, TalentHandler.handleAllocateTalentTreePoints);
 router.register(0xD4, TalentHandler.handleTrainTalentPoint);
 router.register(0xE0, TalentHandler.handleTalentSpeedup);
 router.register(0xD6, TalentHandler.handleTalentClaim);
 router.register(0xC3, TalentHandler.handleActiveTalentChangeRequest);
+router.register(0xDD, AbilityHandler.handleClearAbilityResearch);
+router.register(0xDE, AbilityHandler.handleSpeedupAbilityResearch);
 router.register(0xDF, TalentHandler.handleClearTalentResearch);
 
 // Sigil Packets

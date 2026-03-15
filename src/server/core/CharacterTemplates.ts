@@ -17,6 +17,9 @@ export class CharacterTemplates {
                     const content = fs.readFileSync(filePath, 'utf-8');
                     const data = JSON.parse(content);
                     CharacterTemplates.templates[cls] = data;
+                    CharacterTemplates.templates[cls.toLowerCase()] = data;
+                    CharacterTemplates.templates[String(data.class ?? cls).trim()] = data;
+                    CharacterTemplates.templates[String(data.class ?? cls).trim().toLowerCase()] = data;
                     console.log(`[CharacterTemplates] Loaded template for ${cls}`);
                 } else {
                     console.warn(`[CharacterTemplates] Template file not found: ${filename}`);
@@ -29,7 +32,9 @@ export class CharacterTemplates {
 
     static get(className: string): any {
         // Return a deep copy to ensure modifications don't affect the base template
-        const template = CharacterTemplates.templates[className];
+        const normalizedName = String(className ?? '').trim();
+        const template = CharacterTemplates.templates[normalizedName]
+            || CharacterTemplates.templates[normalizedName.toLowerCase()];
         if (!template) {
             return null;
         }

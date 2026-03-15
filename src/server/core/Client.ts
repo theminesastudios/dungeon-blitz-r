@@ -2,6 +2,9 @@ import * as net from 'net';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { PacketRouter } from '../network/packetRouter';
 import { UserAccount, Character } from '../database/Database';
+import { JsonAdapter } from '../database/JsonAdapter';
+
+const db = new JsonAdapter();
 
 export interface PendingLootDrop {
     gold?: number;
@@ -164,6 +167,12 @@ export class Client {
     private onClose(): void {
         const { GlobalState } = require('./GlobalState') as typeof import('./GlobalState');
         const { EntityHandler } = require('../handlers/EntityHandler') as typeof import('../handlers/EntityHandler');
+
+        if (this.userId && this.character) {
+            void db.saveCharacterSnapshot(this.userId, this.character).catch((err) => {
+                console.error('[Client] Failed to persist character on disconnect:', err);
+            });
+        }
 
         EntityHandler.removeOwnedEntities(this);
 

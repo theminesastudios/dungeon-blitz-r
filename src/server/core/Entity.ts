@@ -41,6 +41,7 @@ export interface EntityProps {
     noJumpAttack?: boolean;
     untargetable?: boolean;
     behaviorSpeed?: number;
+    behaviorSpeedMod?: number;
     
     // Player specific
     class?: string;

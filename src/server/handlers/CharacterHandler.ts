@@ -11,6 +11,7 @@ import { Config } from '../core/config';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { Character } from '../database/Database';
 import { LoginHandler } from './LoginHandler';
+import { AbilityHandler } from './AbilityHandler';
 
 const db = new JsonAdapter();
 
@@ -149,6 +150,7 @@ export class CharacterHandler {
         newChar.pantColor = pantColor;
 
         CharacterHandler.initializeFreshCharacterProgress(newChar);
+        AbilityHandler.repairCharacterAbilityState(newChar);
         
         // Initialize arrays if missing
         if (!newChar.equippedGears) newChar.equippedGears = [];
@@ -309,8 +311,9 @@ export class CharacterHandler {
             client.characters = CharacterHandler.upsertCharacterList(client.characters, client.character);
         }
 
+        const abilityRepairDidMutate = AbilityHandler.repairCharacterAbilityState(client.character);
         const storyRepair = MissionHandler.repairEarlyStoryOnLogin(client.character, entry.targetLevel);
-        if (storyRepair.didMutate && client.userId) {
+        if ((abilityRepairDidMutate || storyRepair.didMutate) && client.userId) {
             client.characters = CharacterHandler.upsertCharacterList(client.characters, client.character);
             void db.saveCharacters(client.userId, client.characters);
         }
