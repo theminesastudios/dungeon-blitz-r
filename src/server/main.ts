@@ -48,6 +48,7 @@ router.register(0x13, LoginHandler.handleLoginCreate);        // Create Account
 router.register(0x14, LoginHandler.handleLoginAuthenticate);  // Login
 router.register(0x16, CharacterHandler.handleCharacterSelect); // Select Character
 router.register(0x17, CharacterHandler.handleLoginCharacterCreate); // Create Character
+router.register(0x19, CharacterHandler.handlePaperDollRequest); // Paper Doll Request
 router.register(0x1f, CharacterHandler.handleGameServerLogin); // Game Server Login
 
 // Missing Packets

@@ -317,6 +317,7 @@ export class Entity {
         
         bb.writeMethod6(entity.entState || 0, Entity.STATE_BITS);
         bb.writeMethod6(entity.facingLeft ? 1 : 0, 1);
+        bb.writeMethod6(entity.noJumpAttack ? 1 : 0, 1);
         
         if (entity.isPlayer) {
             bb.writeMethod6(entity.level || 1, Entity.MAX_CHAR_LEVEL_BITS);
@@ -337,6 +338,8 @@ export class Entity {
                     }
                 }
             }
+        } else {
+            bb.writeMethod6(0, 1);
         }
         
         bb.writeMethod45(Math.floor(entity.healthDelta || 0));

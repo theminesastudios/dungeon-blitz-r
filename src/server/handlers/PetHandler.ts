@@ -8,6 +8,63 @@ import { GlobalState } from '../core/GlobalState';
 const db = new JsonAdapter();
 
 export class PetHandler {
+    private static readonly MOUNT_REASSERT_DELAYS_MS = [0, 300, 1200, 2500, 4000];
+
+    private static shouldIgnoreTransientTravelUnequip(client: Client, mountId: number): boolean {
+        if (mountId !== 0) {
+            return false;
+        }
+
+        const hasEquippedMount = Number(client.character?.equippedMount ?? 0) > 0;
+        if (!hasEquippedMount) {
+            return false;
+        }
+
+        if (!client.playerSpawned) {
+            return true;
+        }
+
+        return Date.now() < Number(client.mountTransferGraceUntil ?? 0);
+    }
+
+    private static reassertEquippedMount(client: Client): void {
+        const entityId = Number(client.clientEntID ?? 0);
+        const mountId = Number(client.character?.equippedMount ?? 0);
+        if (entityId <= 0 || mountId <= 0) {
+            return;
+        }
+
+        const levelName = client.currentLevel;
+        const token = client.token;
+
+        for (const delayMs of PetHandler.MOUNT_REASSERT_DELAYS_MS) {
+            setTimeout(() => {
+                if (
+                    client.clientEntID !== entityId ||
+                    Number(client.character?.equippedMount ?? 0) !== mountId ||
+                    client.token !== token
+                ) {
+                    return;
+                }
+
+                PetHandler.sendMountEquipPacket(client, entityId, mountId);
+
+                if (!levelName || !client.playerSpawned || client.currentLevel !== levelName) {
+                    return;
+                }
+
+                const payload = PetHandler.buildMountEquipPacket(entityId, mountId);
+                for (const other of GlobalState.sessionsByToken.values()) {
+                    if (other === client || !other.playerSpawned || other.currentLevel !== levelName) {
+                        continue;
+                    }
+
+                    other.send(0xB2, payload);
+                }
+            }, delayMs);
+        }
+    }
+
     static buildMountEquipPacket(entityId: number, mountId: number): Buffer {
         const bb = new BitBuffer(false);
         bb.writeMethod4(entityId);
@@ -57,7 +114,19 @@ export class PetHandler {
             return;
         }
 
+        if (PetHandler.shouldIgnoreTransientTravelUnequip(client, mountId)) {
+            const graceRemainingMs = Math.max(0, Number(client.mountTransferGraceUntil ?? 0) - Date.now());
+            console.log(
+                `[PetHandler] Ignoring transient travel mount clear for ${client.character?.name ?? 'unknown'} in ${client.currentLevel || '(loading)'} grace=${graceRemainingMs}ms spawned=${client.playerSpawned}`
+            );
+            PetHandler.reassertEquippedMount(client);
+            return;
+        }
+
         client.character.equippedMount = mountId;
+        if (mountId > 0) {
+            client.mountTransferGraceUntil = 0;
+        }
         PetHandler.updateLiveMount(client);
         await PetHandler.saveCharacter(client);
 

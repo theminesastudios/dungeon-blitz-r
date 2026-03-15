@@ -106,6 +106,7 @@ export class Client {
     public lastDoorId: number = -1;
     public lastDoorTargetLevel: string = "";
     public playerSpawned: boolean = false;
+    public mountTransferGraceUntil: number = 0;
     public startedRoomEvents: Set<string> = new Set();
     public pendingLoot: Map<number, PendingLootDrop> = new Map();
     public processedRewardSources: Set<string> = new Set();
@@ -184,6 +185,7 @@ export class Client {
         }
 
         this.playerSpawned = false;
+        this.mountTransferGraceUntil = 0;
         this.entities.clear();
         this.pendingLoot.clear();
         this.processedRewardSources.clear();
