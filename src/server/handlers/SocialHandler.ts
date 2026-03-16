@@ -1004,6 +1004,7 @@ export class SocialHandler {
             return;
         }
 
+        const actorName = client.character.name;
         const br = new BitReader(data);
         const targetNameRaw = br.readMethod26();
         const targetName = String(targetNameRaw ?? '').trim();
@@ -1036,8 +1037,24 @@ export class SocialHandler {
         }
 
         const oldMembers = [...party.group.members];
+        const targetSession = SocialHandler.getOnlineSession(targetMember);
         SocialHandler.removePartyMember(targetMember);
-        SocialHandler.sendEmptyPartyUpdate(SocialHandler.getOnlineSession(targetMember));
+        SocialHandler.sendEmptyPartyUpdate(targetSession);
+        SocialHandler.sendChatStatus(targetSession, `You were kicked from ${actorName}'s party.`);
+
+        const notifiedMembers = new Set<string>();
+        for (const member of oldMembers) {
+            const memberKey = SocialHandler.normalizeName(member);
+            if (!memberKey || memberKey === SocialHandler.normalizeName(targetMember) || notifiedMembers.has(memberKey)) {
+                continue;
+            }
+
+            notifiedMembers.add(memberKey);
+            SocialHandler.sendChatStatus(
+                SocialHandler.getOnlineSession(member),
+                `${targetMember} was kicked from the party.`
+            );
+        }
 
         const refreshed = GlobalState.partyGroups.get(party.partyId);
         if (!refreshed || refreshed.members.length <= 1) {
