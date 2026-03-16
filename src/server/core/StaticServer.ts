@@ -142,9 +142,10 @@ export class StaticServer {
 
     public start(): void {
         this.app.listen(this.port, this.host, () => {
+            const portSuffix = this.port === 80 ? '' : `:${this.port}`;
             console.log(`[StaticServer] Serving ${this.contentDir} on http://${this.host}:${this.port}`);
             console.log(`[StaticServer] Multiplayer mode: ${Config.MULTIPLAYER_MODE}`);
-            console.log(`[StaticServer] Flash URL: http://${Config.HOST}/p/cbp/DungeonBlitz.swf`);
+            console.log(`[StaticServer] Flash URL: http://${Config.HOST}${portSuffix}/p/cbp/DungeonBlitz.swf`);
         });
     }
 }

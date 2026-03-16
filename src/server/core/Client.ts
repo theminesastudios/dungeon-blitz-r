@@ -6,6 +6,13 @@ import { JsonAdapter } from '../database/JsonAdapter';
 import { DebugLogger } from './Debug';
 
 const db = new JsonAdapter();
+const SOCKET_POLICY_REQUEST = '<policy-file-request/>';
+const SOCKET_POLICY_RESPONSE = `<?xml version="1.0"?>
+<!DOCTYPE cross-domain-policy SYSTEM
+  "http://www.adobe.com/xml/dtds/cross-domain-policy.dtd">
+<cross-domain-policy>
+  <allow-access-from domain="*" to-ports="1-65535" secure="false"/>
+</cross-domain-policy>\0`;
 
 export interface PendingLootDrop {
     gold?: number;
@@ -137,6 +144,10 @@ export class Client {
     private onData(data: Buffer): void {
         this.rawBytesIn += data.length;
         this.buffer = Buffer.concat([this.buffer, data]);
+
+        if (this.tryServeSocketPolicy()) {
+            return;
+        }
         
         while (this.buffer.length >= 4) {
             // Read Header
@@ -160,6 +171,24 @@ export class Client {
                     console.error(`[Client] Error handling packet 0x${packetId.toString(16)}:`, err);
                 });
         }
+    }
+
+    private tryServeSocketPolicy(): boolean {
+        if (this.buffer.length === 0 || this.buffer[0] !== 0x3c) {
+            return false;
+        }
+
+        const incoming = this.buffer.toString('utf8');
+        if (!incoming.includes(SOCKET_POLICY_REQUEST)) {
+            return false;
+        }
+
+        const addr = `${this.socket.remoteAddress}:${this.socket.remotePort}`;
+        this.rawBytesOut += Buffer.byteLength(SOCKET_POLICY_RESPONSE);
+        this.buffer = Buffer.alloc(0);
+        console.log(`[Client] Served inline socket policy to ${addr}`);
+        this.socket.end(SOCKET_POLICY_RESPONSE);
+        return true;
     }
 
     public send(packetId: number, buffer: Buffer): void {
