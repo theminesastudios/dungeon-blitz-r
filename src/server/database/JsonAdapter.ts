@@ -17,6 +17,10 @@ export class JsonAdapter implements IDatabase {
         this.savesDir = path.resolve(Config.DATA_DIR, 'saves');
     }
 
+    private normalizeCharacterName(value: string | null | undefined): string {
+        return String(value ?? '').trim().toLowerCase();
+    }
+
     private async readSaveFile(userId: number): Promise<UserSaveData | null> {
         const savePath = path.join(this.savesDir, `${userId}.json`);
         try {
@@ -124,6 +128,23 @@ export class JsonAdapter implements IDatabase {
         } finally {
             await fs.rm(tmpPath, { force: true }).catch(() => undefined);
         }
+    }
+
+    public async saveCharacterSnapshot(userId: number, character: Character): Promise<Character[]> {
+        const characters = await this.loadCharacters(userId);
+        const normalizedName = this.normalizeCharacterName(character?.name);
+        const index = characters.findIndex((entry) =>
+            this.normalizeCharacterName(entry?.name) === normalizedName
+        );
+
+        if (index >= 0) {
+            characters[index] = character;
+        } else {
+            characters.push(character);
+        }
+
+        await this.saveCharacters(userId, characters);
+        return characters;
     }
 
     public async isCharacterNameTaken(name: string): Promise<boolean> {

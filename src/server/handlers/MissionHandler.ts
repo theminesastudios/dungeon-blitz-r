@@ -135,6 +135,9 @@ export class MissionHandler {
                 didMutate = true;
                 MissionHandler.sendMissionComplete(client, completedMissionId);
 
+                const completedMissionDef = MissionLoader.getMissionDef(completedMissionId);
+                const completedMissionState = MissionHandler.getMissionState(client.character, completedMissionId);
+
                 if (completedMissionId === MissionID.RescueAnna) {
                     const contactNpc = 'Anna';
                     const addedMissionId = MissionHandler.autoAcceptFollowupMission(
@@ -152,7 +155,12 @@ export class MissionHandler {
                     }
                 }
 
-                if (completedMissionId !== MissionID.DefendTheShip) {
+                if (
+                    completedMissionId !== MissionID.DefendTheShip &&
+                    completedMissionDef &&
+                    !MissionHandler.missionRequiresTurnIn(completedMissionDef) &&
+                    completedMissionState >= MissionHandler.MISSION_CLAIMED
+                ) {
                     MissionHandler.sendMissionCompleteUi(
                         client,
                         completedMissionId,

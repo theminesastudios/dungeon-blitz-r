@@ -1065,6 +1065,14 @@ export class LevelHandler {
         }
     }
 
+    private static async saveCurrentCharacterSnapshot(client: Client): Promise<void> {
+        if (!client.userId || !client.character) {
+            return;
+        }
+
+        client.characters = await db.saveCharacterSnapshot(client.userId, client.character);
+    }
+
     private static sendDestroyEntity(levelName: string, entityId: number): void {
         const bb = new BitBuffer(false);
         bb.writeMethod4(entityId);
@@ -1348,6 +1356,27 @@ export class LevelHandler {
         LevelHandler.relayToLevel(client, 0xAE, data);
     }
 
+    static handleChangeMaxSpeed(client: Client, data: Buffer): void {
+        const br = new BitReader(data);
+        const entityId = br.readMethod4();
+        const speedScaled = br.readMethod4();
+        const behaviorSpeedMod = speedScaled / 10000;
+
+        const entity = client.entities.get(entityId);
+        if (entity) {
+            entity.behaviorSpeedMod = behaviorSpeedMod;
+        }
+
+        if (client.currentLevel) {
+            const levelEntity = GlobalState.levelEntities.get(client.currentLevel)?.get(entityId);
+            if (levelEntity) {
+                levelEntity.behaviorSpeedMod = behaviorSpeedMod;
+            }
+        }
+
+        LevelHandler.relayToLevel(client, 0x8A, data);
+    }
+
     static handleChangeOffsetY(client: Client, data: Buffer): void {
         const br = new BitReader(data);
         const entityId = br.readMethod4();
@@ -1407,6 +1436,7 @@ export class LevelHandler {
             targetLevel = safeFallback;
         }
 
+        await LevelHandler.saveCurrentCharacterSnapshot(client);
         await LevelHandler.refreshCurrentCharacterFromSave(client);
 
         const currentLevelRecord = client.character.CurrentLevel;

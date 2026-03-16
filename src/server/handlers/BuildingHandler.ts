@@ -7,6 +7,14 @@ import { JsonAdapter } from '../database/JsonAdapter';
 const db = new JsonAdapter();
 
 export class BuildingHandler {
+    private static async saveCharacter(client: Client): Promise<void> {
+        if (!client.userId || !client.character) {
+            return;
+        }
+
+        client.characters = await db.saveCharacterSnapshot(client.userId, client.character);
+    }
+
     // 0xD7: Upgrade Building
     // Python: building_id (20 bits), target_rank (20 bits), used_idols (15 bits) -> weird bit counts?
     // Python: br.read_method_20(5), br.read_method_20(5), br.read_method_15()
@@ -41,7 +49,7 @@ export class BuildingHandler {
         }
 
         // Save
-        await db.saveCharacters(client.userId, client.characters);
+        await BuildingHandler.saveCharacter(client);
         
         // Note: Python scheduling logic sets a timer. 
         // For now, client might handle countdown? Or we need to send immediate completion if debug?
@@ -74,10 +82,31 @@ export class BuildingHandler {
         // Clear Upgrade
         client.character.buildingUpgrade = { buildingID: 0, rank: 0, ReadyTime: 0 };
         
-        await db.saveCharacters(client.userId, client.characters);
+        await BuildingHandler.saveCharacter(client);
 
         // Send Completion Packet (0xD8)
         BuildingHandler.sendBuildingComplete(client, buildingId, newRank);
+    }
+
+    static async handleBuildingClaim(client: Client, data: Buffer): Promise<void> {
+        if (!client.userId || !client.character) return;
+
+        const upgrade = client.character.buildingUpgrade;
+        const buildingId = Number(upgrade?.buildingID ?? 0);
+        const rank = Number(upgrade?.rank ?? 0);
+
+        if (buildingId > 0 && rank > 0) {
+            if (!client.character.magicForge) {
+                client.character.magicForge = { stats_by_building: {} };
+            }
+            if (!client.character.magicForge.stats_by_building) {
+                client.character.magicForge.stats_by_building = {};
+            }
+            client.character.magicForge.stats_by_building[buildingId.toString()] = rank;
+        }
+
+        client.character.buildingUpgrade = { buildingID: 0, rank: 0, ReadyTime: 0 };
+        await BuildingHandler.saveCharacter(client);
     }
 
     static sendBuildingComplete(client: Client, buildingId: number, rank: number): void {

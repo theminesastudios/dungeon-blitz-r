@@ -12,6 +12,7 @@ export class EntityHandler {
         'NewbieRoad',
         'NewbieRoadHard'
     ]);
+    private static readonly MOUNT_SYNC_RETRY_DELAYS_MS = [0, 300, 1200, 2500, 4000];
 
     private static normalizeIdentityName(value: unknown): string {
         return String(value ?? '')
@@ -108,6 +109,65 @@ export class EntityHandler {
         bb.writeMethod4(entityId);
         bb.writeMethod15(false);
         client.send(0x0D, bb.toBuffer());
+    }
+
+    private static getEquippedMountId(value: unknown): number {
+        const mountId = Number(value ?? 0);
+        return Number.isFinite(mountId) && mountId > 0 ? mountId : 0;
+    }
+
+    private static sendMountState(client: Client, entityId: number, mountId: number): void {
+        if (entityId <= 0 || mountId <= 0) {
+            return;
+        }
+
+        PetHandler.sendMountEquipPacket(client, entityId, mountId);
+    }
+
+    private static scheduleSelfMountSync(client: Client, entityId: number, mountId: number): void {
+        if (entityId <= 0 || mountId <= 0) {
+            return;
+        }
+
+        const levelName = client.currentLevel;
+        const token = client.token;
+        for (const delayMs of EntityHandler.MOUNT_SYNC_RETRY_DELAYS_MS) {
+            setTimeout(() => {
+                if (
+                    !client.playerSpawned ||
+                    client.currentLevel !== levelName ||
+                    client.token !== token ||
+                    client.clientEntID !== entityId
+                ) {
+                    return;
+                }
+
+                EntityHandler.sendMountState(client, entityId, mountId);
+            }, delayMs);
+        }
+    }
+
+    private static sendOtherPlayerMountToJoiner(joiner: Client, other: Client): void {
+        if (!other.character || other.clientEntID <= 0) {
+            return;
+        }
+
+        const mountId = EntityHandler.getEquippedMountId(other.character.equippedMount);
+        EntityHandler.sendMountState(joiner, other.clientEntID, mountId);
+    }
+
+    private static broadcastPlayerMountState(client: Client, entityId: number, mountId: number): void {
+        if (!client.currentLevel || mountId <= 0) {
+            return;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (other === client || !other.playerSpawned || other.currentLevel !== client.currentLevel) {
+                continue;
+            }
+
+            EntityHandler.sendMountState(other, entityId, mountId);
+        }
     }
 
     private static suppressCraftTownTutorialBoss(client: Client, entityId: number): void {
@@ -328,13 +388,14 @@ export class EntityHandler {
 
         if (isPlayer && !client.playerSpawned) {
              client.playerSpawned = true;
-             PetHandler.sendMountEquipPacket(
-                client,
-                client.clientEntID,
-                Number(client.character?.equippedMount ?? props.equippedMount ?? 0)
+             client.mountTransferGraceUntil = Math.max(client.mountTransferGraceUntil, Date.now() + 4000);
+             const equippedMountId = EntityHandler.getEquippedMountId(
+                client.character?.equippedMount ?? props.equippedMount ?? 0
             );
+             EntityHandler.scheduleSelfMountSync(client, client.clientEntID, equippedMountId);
              EntityHandler.sendExistingPlayersToJoiner(client);
              EntityHandler.broadcastPlayerSpawn(client, props);
+             EntityHandler.broadcastPlayerMountState(client, props.id, equippedMountId);
         }
     }
 
@@ -423,6 +484,7 @@ export class EntityHandler {
             }
 
             EntityHandler.sendEntity(joiner, Entity.fromCharacter(other.clientEntID, other.character, otherProps));
+            EntityHandler.sendOtherPlayerMountToJoiner(joiner, other);
         }
     }
 

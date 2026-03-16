@@ -1,10 +1,11 @@
 import * as net from 'net';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
+import { Config } from '../core/config';
 
 const client = new net.Socket();
 const PORT = 8080;
-const HOST = '127.0.0.1';
+const HOST = Config.HOST;
 
 // Buffer for incoming data
 let buffer = Buffer.alloc(0);

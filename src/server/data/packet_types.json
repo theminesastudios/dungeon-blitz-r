@@ -504,7 +504,7 @@
         "buffers": [
             {
                 "method": "write_method_13",
-                "value": "127.0.0.1"
+                "value": "localhost"
             },
             {
                 "method": "write_method_91",

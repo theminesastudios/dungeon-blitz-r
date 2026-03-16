@@ -34,7 +34,7 @@
     <!-- <STANDALONEISINSTANCED value="true" /> -->
 
     <!-- Other options -->
-    <!-- <VAR_2032 value="127.0.0.1" /> -->
+    <!-- <VAR_2032 value="localhost" /> -->
 
     <!-- not sure what the actual purpose is for these -->
     <!-- <DEVFLAG_NO_GRAPHICS /> -->

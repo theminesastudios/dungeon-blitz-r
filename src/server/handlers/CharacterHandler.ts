@@ -11,6 +11,7 @@ import { Config } from '../core/config';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { Character } from '../database/Database';
 import { LoginHandler } from './LoginHandler';
+import { AbilityHandler } from './AbilityHandler';
 
 const db = new JsonAdapter();
 
@@ -92,6 +93,70 @@ export class CharacterHandler {
         return next;
     }
 
+    private static buildPaperDollPacket(character: Character): BitBuffer {
+        const bb = new BitBuffer(false);
+
+        for (const value of [
+            character.name,
+            character.class,
+            character.gender,
+            character.headSet,
+            character.hairSet,
+            character.mouthSet,
+            character.faceSet
+        ]) {
+            bb.writeMethod13(String(value ?? ''));
+        }
+
+        for (const color of [
+            character.hairColor,
+            character.skinColor,
+            character.shirtColor,
+            character.pantColor
+        ]) {
+            bb.writeMethod6(Number(color ?? 0), 24);
+        }
+
+        const fallbackTemplate = CharacterTemplates.get(String(character.class ?? ''));
+        const equippedGears = Array.isArray(character.equippedGears) && character.equippedGears.length > 0
+            ? character.equippedGears
+            : Array.isArray(fallbackTemplate?.equippedGears)
+                ? fallbackTemplate.equippedGears
+                : [];
+
+        for (let i = 0; i < 6; i++) {
+            const slot = equippedGears[i];
+            const gearId = Array.isArray(slot)
+                ? Number(slot[0] ?? 0)
+                : Number((slot as Record<string, unknown> | undefined)?.gearID ?? 0);
+            bb.writeMethod6(gearId, 11);
+        }
+
+        return bb;
+    }
+
+    static handlePaperDollRequest(client: Client, data: Buffer): void {
+        const br = new BitReader(data);
+        const requestedName = br.readMethod26();
+        const normalizedName = CharacterHandler.normalizeCharacterName(requestedName);
+
+        const character = client.characters.find((entry) =>
+            CharacterHandler.normalizeCharacterName(entry?.name) === normalizedName
+        ) ?? (
+            client.character && CharacterHandler.normalizeCharacterName(client.character.name) === normalizedName
+                ? client.character
+                : null
+        );
+
+        if (!character) {
+            client.send(0x1A, Buffer.alloc(0));
+            console.log(`[0x19] Character '${requestedName}' not found; sent empty 0x1A`);
+            return;
+        }
+
+        client.sendBitBuffer(0x1A, CharacterHandler.buildPaperDollPacket(character));
+    }
+
     static async handleLoginCharacterCreate(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
         const name = br.readMethod26();
@@ -149,6 +214,7 @@ export class CharacterHandler {
         newChar.pantColor = pantColor;
 
         CharacterHandler.initializeFreshCharacterProgress(newChar);
+        AbilityHandler.repairCharacterAbilityState(newChar);
         
         // Initialize arrays if missing
         if (!newChar.equippedGears) newChar.equippedGears = [];
@@ -290,6 +356,7 @@ export class CharacterHandler {
         client.lastDoorId = -1;
         client.lastDoorTargetLevel = '';
         client.playerSpawned = false;
+        client.mountTransferGraceUntil = Date.now() + 5000;
         client.entities.clear();
         client.clientSpawnConfirmed = false;
         clearKeepTutorialTimers(client.keepTutorialState);
@@ -309,8 +376,9 @@ export class CharacterHandler {
             client.characters = CharacterHandler.upsertCharacterList(client.characters, client.character);
         }
 
+        const abilityRepairDidMutate = AbilityHandler.repairCharacterAbilityState(client.character);
         const storyRepair = MissionHandler.repairEarlyStoryOnLogin(client.character, entry.targetLevel);
-        if (storyRepair.didMutate && client.userId) {
+        if ((abilityRepairDidMutate || storyRepair.didMutate) && client.userId) {
             client.characters = CharacterHandler.upsertCharacterList(client.characters, client.character);
             void db.saveCharacters(client.userId, client.characters);
         }

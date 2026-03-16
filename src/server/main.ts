@@ -25,6 +25,8 @@ import { MissionHandler } from './handlers/MissionHandler';
 import { NpcHandler } from './handlers/NpcHandler';
 import { RewardHandler } from './handlers/RewardHandler';
 import { EquipmentHandler } from './handlers/EquipmentHandler';
+import { AbilityHandler } from './handlers/AbilityHandler';
+import { DebugLogger } from './core/Debug';
 import * as path from 'path';
 
 import { StaticServer } from './core/StaticServer';
@@ -37,6 +39,7 @@ PetConfig.load(dataDir);
 GameData.load(dataDir);
 MissionLoader.load(dataDir);
 NpcLoader.load(dataDir);
+DebugLogger.logStartup();
 
 // Initialize Router
 const router = new PacketRouter();
@@ -47,6 +50,7 @@ router.register(0x13, LoginHandler.handleLoginCreate);        // Create Account
 router.register(0x14, LoginHandler.handleLoginAuthenticate);  // Login
 router.register(0x16, CharacterHandler.handleCharacterSelect); // Select Character
 router.register(0x17, CharacterHandler.handleLoginCharacterCreate); // Create Character
+router.register(0x19, CharacterHandler.handlePaperDollRequest); // Paper Doll Request
 router.register(0x1f, CharacterHandler.handleGameServerLogin); // Game Server Login
 
 // Missing Packets
@@ -57,6 +61,8 @@ router.register(0x2A, RewardHandler.handleGrantReward); // Grant Reward
 router.register(0x38, RewardHandler.handlePickupLootdrop); // Pickup Lootdrop
 router.register(0x30, EquipmentHandler.handleUpdateEquipment); // Update Equipment
 router.register(0x31, EquipmentHandler.handleUpdateSingleGear); // Update Single Gear
+router.register(0xBD, AbilityHandler.handleActiveAbilitiesUpdate); // Active Ability Loadout
+router.register(0xBE, AbilityHandler.handleStartAbilityResearch); // Start Ability Research
 router.register(0x41, LevelHandler.handleRequestDoorState); // Request Door State
 router.register(0x3F, MissionHandler.handleSetLevelComplete); // Level Complete
 router.register(0x8D, MissionHandler.handleBadgeRequest); // Badge / Achievement
@@ -72,6 +78,7 @@ router.register(0xAD, LevelHandler.handleRoomUnlock); // Room Unlock
 router.register(0xAE, LevelHandler.handleSetUntargetable); // Set Untargetable
 router.register(0x40, SocialHandler.handleLevelState); // Level State
 router.register(0x76, SocialHandler.handleRoomThought); // Room Thought
+router.register(0x8A, LevelHandler.handleChangeMaxSpeed); // Change Max Speed
 router.register(0x7D, LevelHandler.handleChangeOffsetY); // Change Offset Y
 router.register(0x7E, SocialHandler.handleEmoteBegin); // Emote Begin
 router.register(0x7F, SocialHandler.handleEmoteEnd); // Emote End
@@ -110,6 +117,7 @@ router.register(0x0C, CombatHandler.handleRemoveBuff);
 
 // Buildings
 router.register(0xD7, BuildingHandler.handleBuildingUpgrade);
+router.register(0xD9, BuildingHandler.handleBuildingClaim);
 router.register(0xDC, BuildingHandler.handleBuildingSpeedUpRequest);
 
 // System
@@ -117,24 +125,27 @@ router.register(0x7C, SystemHandler.handleClientCrashReport);
 
 // Talent Packets
 router.register(0xD2, TalentHandler.handleRespecTalentTree);
+router.register(0xD1, AbilityHandler.handleClaimAbilityResearch);
 router.register(0xC0, TalentHandler.handleAllocateTalentTreePoints);
 router.register(0xD4, TalentHandler.handleTrainTalentPoint);
 router.register(0xE0, TalentHandler.handleTalentSpeedup);
 router.register(0xD6, TalentHandler.handleTalentClaim);
 router.register(0xC3, TalentHandler.handleActiveTalentChangeRequest);
+router.register(0xDD, AbilityHandler.handleClearAbilityResearch);
+router.register(0xDE, AbilityHandler.handleSpeedupAbilityResearch);
 router.register(0xDF, TalentHandler.handleClearTalentResearch);
 
 // Sigil Packets
 router.register(0x106, SigilHandler.handleRoyalSigilStorePurchase);
 
 // Start Servers
-const policyServer = new PolicyServer(Config.POLICY_PORT);
+const policyServer = new PolicyServer(Config.POLICY_PORT, Config.BIND_HOST);
 policyServer.start();
 
-const staticServer = new StaticServer(80, '../../client/content/localhost');
+const staticServer = new StaticServer(Config.STATIC_PORT, '../client/content/localhost', Config.BIND_HOST);
 staticServer.start();
 
 
-const gameServer = new GameServer(Config.PORTS[0], router);
+const gameServer = new GameServer(Config.PORTS[0], router, Config.BIND_HOST);
 AILogic.start();
 gameServer.start();
