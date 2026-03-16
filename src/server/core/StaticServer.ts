@@ -43,6 +43,8 @@ export class StaticServer {
     }
 
     private setupRoutes(): void {
+        const remoteSwfPath = path.join(this.contentDir, 'p', 'cbp', 'DungeonBlitz.swf');
+
         this.app.use((req, res, next) => {
             const shouldLog =
                 req.path === '/' ||
@@ -51,8 +53,22 @@ export class StaticServer {
                 req.path.endsWith('.xml');
 
             if (shouldLog) {
+                const remoteAddress = req.socket.remoteAddress ?? '-';
+                const startedAt = Date.now();
+                let finished = false;
+                console.log(`[StaticServer] -> ${req.method} ${req.path} from ${remoteAddress}`);
                 res.on('finish', () => {
-                    console.log(`[StaticServer] ${res.statusCode} ${req.method} ${req.path}`);
+                    finished = true;
+                    console.log(
+                        `[StaticServer] <- ${res.statusCode} ${req.method} ${req.path} to ${remoteAddress} ${Date.now() - startedAt}ms`
+                    );
+                });
+                res.on('close', () => {
+                    if (!finished) {
+                        console.log(
+                            `[StaticServer] xx ${req.method} ${req.path} to ${remoteAddress} closed after ${Date.now() - startedAt}ms`
+                        );
+                    }
                 });
             }
 
@@ -70,18 +86,31 @@ export class StaticServer {
                 res.setHeader('Pragma', 'no-cache');
                 res.setHeader('Expires', '0');
                 res.setHeader('Surrogate-Control', 'no-store');
+                res.setHeader('Connection', 'close');
             }
             next();
         });
 
-        // Serve static files
-        this.app.use(express.static(this.contentDir));
-        
-        // Basic root handler
-        this.app.get('/', (req, res) => {
-            res.sendFile(path.join(this.contentDir, 'index.html'));
+        this.app.get('/', (_req, res) => {
+            res.type('application/x-shockwave-flash');
+            res.sendFile(remoteSwfPath);
         });
 
+        this.app.get('/DungeonBlitzRemote.swf', (_req, res) => {
+            res.type('application/x-shockwave-flash');
+            res.sendFile(remoteSwfPath);
+        });
+
+        // Serve static files
+        this.app.use(express.static(this.contentDir, { index: false }));
+
+        this.app.get('/healthz', (_req, res) => {
+            res.type('text/plain');
+            res.setHeader('Cache-Control', 'no-store');
+            res.setHeader('Connection', 'close');
+            res.send('ok');
+        });
+        
         // Debug route to check path
         this.app.get('/debug-path', (req, res) => {
             res.send(`Serving content from: ${this.contentDir}`);

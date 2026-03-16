@@ -19,7 +19,7 @@ function resolveServerDataDir(): string {
 }
 
 export const Config = {
-    HOST: '100.107.83.49',
+    HOST: '100.100.146.54',
     BIND_HOST: '0.0.0.0',
     STATIC_PORT: 80,
     PORTS: [8080],

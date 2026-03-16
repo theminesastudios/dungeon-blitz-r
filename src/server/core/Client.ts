@@ -88,6 +88,8 @@ export class Client {
     public router: PacketRouter;
     private buffer: Buffer;
     private packetQueue: Promise<void>;
+    private rawBytesIn: number;
+    private rawBytesOut: number;
 
     // Session State
     public userId: number | null = null;
@@ -123,13 +125,17 @@ export class Client {
         this.router = router;
         this.buffer = Buffer.alloc(0);
         this.packetQueue = Promise.resolve();
+        this.rawBytesIn = 0;
+        this.rawBytesOut = 0;
 
         this.socket.on('data', (data: Buffer) => this.onData(data));
-        this.socket.on('close', () => this.onClose());
+        this.socket.on('end', () => this.onEnd());
+        this.socket.on('close', (hadError: boolean) => this.onClose(hadError));
         this.socket.on('error', (err: Error) => this.onError(err));
     }
 
     private onData(data: Buffer): void {
+        this.rawBytesIn += data.length;
         this.buffer = Buffer.concat([this.buffer, data]);
         
         while (this.buffer.length >= 4) {
@@ -161,16 +167,26 @@ export class Client {
         header.writeUInt16BE(packetId, 0);
         header.writeUInt16BE(buffer.length, 2);
         DebugLogger.logPacket('OUT', this, packetId, buffer);
-        this.socket.write(Buffer.concat([header, buffer]));
+        const payload = Buffer.concat([header, buffer]);
+        this.rawBytesOut += payload.length;
+        this.socket.write(payload);
     }
 
     public sendBitBuffer(packetId: number, bb: BitBuffer): void {
         this.send(packetId, bb.toBuffer());
     }
 
-    private onClose(): void {
+    private onEnd(): void {
+        const addr = `${this.socket.remoteAddress}:${this.socket.remotePort}`;
+        console.log(
+            `[Client] Socket ended: ${addr} bytesIn=${this.rawBytesIn} bytesOut=${this.rawBytesOut} authenticated=${this.authenticated}`
+        );
+    }
+
+    private onClose(hadError: boolean): void {
         const { GlobalState } = require('./GlobalState') as typeof import('./GlobalState');
         const { EntityHandler } = require('../handlers/EntityHandler') as typeof import('../handlers/EntityHandler');
+        const addr = `${this.socket.remoteAddress}:${this.socket.remotePort}`;
 
         if (this.userId && this.character) {
             void db.saveCharacterSnapshot(this.userId, this.character).catch((err) => {
@@ -198,10 +214,13 @@ export class Client {
         clearKeepTutorialTimers(this.keepTutorialState);
         this.keepTutorialState = null;
 
-        console.log(`[Client] Disconnected`);
+        console.log(
+            `[Client] Disconnected: ${addr} hadError=${hadError} bytesIn=${this.rawBytesIn} bytesOut=${this.rawBytesOut} authenticated=${this.authenticated} token=${this.token}`
+        );
     }
 
     private onError(err: Error): void {
-        console.error(`[Client] Error:`, err);
+        const addr = `${this.socket.remoteAddress}:${this.socket.remotePort}`;
+        console.error(`[Client] Error from ${addr}:`, err);
     }
 }
