@@ -962,6 +962,7 @@ export class SocialHandler {
             return;
         }
 
+        const leavingName = client.character.name;
         const party = SocialHandler.getPartyForName(client.character.name);
         if (!party) {
             SocialHandler.sendChatStatus(client, 'You are not in a party.');
@@ -969,14 +970,26 @@ export class SocialHandler {
         }
 
         const oldMembers = [...party.group.members];
-        SocialHandler.removePartyMember(client.character.name);
+        SocialHandler.removePartyMember(leavingName);
         SocialHandler.sendEmptyPartyUpdate(client);
+        SocialHandler.sendChatStatus(client, 'You left the party.');
+
+        const notifiedMembers = new Set<string>();
+        for (const member of oldMembers) {
+            const memberKey = SocialHandler.normalizeName(member);
+            if (!memberKey || memberKey === SocialHandler.normalizeName(leavingName) || notifiedMembers.has(memberKey)) {
+                continue;
+            }
+
+            notifiedMembers.add(memberKey);
+            SocialHandler.sendChatStatus(SocialHandler.getOnlineSession(member), `${leavingName} has left the party.`);
+        }
 
         const refreshed = GlobalState.partyGroups.get(party.partyId);
         if (!refreshed || refreshed.members.length <= 1) {
             const finalMembers = refreshed ? SocialHandler.disbandParty(party.partyId) : [];
             const everyoneToClear = new Set<string>([...oldMembers, ...finalMembers]);
-            everyoneToClear.delete(client.character.name);
+            everyoneToClear.delete(leavingName);
             for (const member of everyoneToClear) {
                 SocialHandler.sendEmptyPartyUpdate(SocialHandler.getOnlineSession(member));
             }
