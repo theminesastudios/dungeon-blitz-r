@@ -3,6 +3,7 @@ import { GlobalState } from '../core/GlobalState';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
+import { EntityHandler } from './EntityHandler';
 
 const db = new JsonAdapter();
 
@@ -253,5 +254,6 @@ export class EquipmentHandler {
         }
 
         EquipmentHandler.broadcastEquipmentUpdate(client, entityId, changedSlots);
+        EntityHandler.refreshPlayerSnapshot(client);
     }
 }

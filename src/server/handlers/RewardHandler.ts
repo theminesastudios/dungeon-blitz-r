@@ -4,6 +4,8 @@ import { BitReader } from '../network/protocol/bitReader';
 import { GameData } from '../core/GameData';
 import { GlobalState } from '../core/GlobalState';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { CombatHandler } from './CombatHandler';
+import { getClientCharacterKey, getPartyIdForClient } from '../core/PartySync';
 
 const db = new JsonAdapter();
 
@@ -291,6 +293,108 @@ export class RewardHandler {
         await db.saveCharacters(client.userId, client.characters);
     }
 
+    private static findOnlineContributor(levelName: string, contributorKey: string): Client | null {
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (!other.playerSpawned || !other.character || other.currentLevel !== levelName) {
+                continue;
+            }
+            if (getClientCharacterKey(other) === contributorKey) {
+                return other;
+            }
+        }
+
+        return null;
+    }
+
+    private static resolveEligibleRecipients(client: Client, sourceId: number): { rewardNonce: number; recipients: Client[] } {
+        const snapshot = CombatHandler.getContributionSnapshot(client.currentLevel, sourceId);
+        const partyId = getPartyIdForClient(client);
+        const recipients = new Map<string, Client>();
+
+        for (const contributorKey of snapshot.contributors) {
+            const session = RewardHandler.findOnlineContributor(client.currentLevel, contributorKey);
+            if (!session?.character) {
+                continue;
+            }
+            if (partyId > 0 && getPartyIdForClient(session) !== partyId) {
+                continue;
+            }
+            if (partyId <= 0 && session !== client) {
+                continue;
+            }
+
+            recipients.set(getClientCharacterKey(session), session);
+        }
+
+        if (!recipients.size && client.character) {
+            recipients.set(getClientCharacterKey(client), client);
+        }
+
+        return {
+            rewardNonce: snapshot.nonce,
+            recipients: Array.from(recipients.values())
+        };
+    }
+
+    private static async applyRewardToRecipient(
+        client: Client,
+        reward: RewardRequest,
+        rewardNonce: number,
+        sourceEntity: any,
+        dropPosition: { x: number; y: number }
+    ): Promise<void> {
+        if (!client.character || !client.currentLevel) {
+            return;
+        }
+
+        const rewardKey = `${client.currentLevel}:${reward.sourceId}:${rewardNonce}`;
+        if (client.processedRewardSources.has(rewardKey)) {
+            return;
+        }
+        client.processedRewardSources.add(rewardKey);
+
+        const resolved = RewardHandler.maybeOverrideDungeonReward(client, sourceEntity, reward);
+        const shouldSave = RewardHandler.applyXpReward(client, resolved.exp);
+
+        if (resolved.gold > 0) {
+            RewardHandler.spawnLoot(client, dropPosition.x, dropPosition.y, { gold: resolved.gold });
+        }
+        if (resolved.hpGain > 0) {
+            RewardHandler.spawnLoot(
+                client,
+                dropPosition.x,
+                dropPosition.y,
+                { health: resolved.hpGain },
+                Math.floor(Math.random() * 31) - 15,
+                Math.floor(Math.random() * 31) - 15
+            );
+        }
+        if (resolved.gearId > 0) {
+            RewardHandler.spawnLoot(
+                client,
+                dropPosition.x,
+                dropPosition.y,
+                { gear: resolved.gearId, tier: resolved.gearTier },
+                Math.floor(Math.random() * 41) - 20,
+                Math.floor(Math.random() * 21) - 10
+            );
+        }
+        if (resolved.materialId > 0) {
+            RewardHandler.spawnLoot(
+                client,
+                dropPosition.x,
+                dropPosition.y,
+                { material: resolved.materialId },
+                Math.floor(Math.random() * 41) - 20,
+                Math.floor(Math.random() * 21) - 10
+            );
+        }
+
+        if (shouldSave) {
+            await RewardHandler.persistCharacter(client);
+        }
+    }
+
     static async handleGrantReward(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
         const reward: RewardRequest = {
@@ -315,34 +419,16 @@ export class RewardHandler {
             return;
         }
 
-        const rewardKey = `${client.currentLevel}:${reward.sourceId}`;
-        if (client.processedRewardSources.has(rewardKey)) {
-            return;
-        }
-        client.processedRewardSources.add(rewardKey);
-
         const sourceEntity = RewardHandler.resolveSourceEntity(client, reward.sourceId);
         const dropPosition = RewardHandler.resolveDropPosition(client, sourceEntity, reward.worldX, reward.worldY);
-        const resolved = RewardHandler.maybeOverrideDungeonReward(client, sourceEntity, reward);
+        const { rewardNonce, recipients } = RewardHandler.resolveEligibleRecipients(client, reward.sourceId);
 
-        const shouldSave =
-            RewardHandler.applyXpReward(client, resolved.exp);
+        for (const recipient of recipients) {
+            if (!recipient.playerSpawned || recipient.currentLevel !== client.currentLevel) {
+                continue;
+            }
 
-        if (resolved.gold > 0) {
-            RewardHandler.spawnLoot(client, dropPosition.x, dropPosition.y, { gold: resolved.gold });
-        }
-        if (resolved.hpGain > 0) {
-            RewardHandler.spawnLoot(client, dropPosition.x, dropPosition.y, { health: resolved.hpGain }, Math.floor(Math.random() * 31) - 15, Math.floor(Math.random() * 31) - 15);
-        }
-        if (resolved.gearId > 0) {
-            RewardHandler.spawnLoot(client, dropPosition.x, dropPosition.y, { gear: resolved.gearId, tier: resolved.gearTier }, Math.floor(Math.random() * 41) - 20, Math.floor(Math.random() * 21) - 10);
-        }
-        if (resolved.materialId > 0) {
-            RewardHandler.spawnLoot(client, dropPosition.x, dropPosition.y, { material: resolved.materialId }, Math.floor(Math.random() * 41) - 20, Math.floor(Math.random() * 21) - 10);
-        }
-
-        if (shouldSave) {
-            await RewardHandler.persistCharacter(client);
+            await RewardHandler.applyRewardToRecipient(recipient, reward, rewardNonce, sourceEntity, dropPosition);
         }
     }
 

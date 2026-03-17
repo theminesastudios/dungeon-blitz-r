@@ -176,7 +176,7 @@ export class WorldEnter {
         if (isCraftTown && character) {
             bb.writeMethod4(transferToken);
 
-            const masterClassId = WorldEnter.resolveMasterClass(character);
+            const masterClassId = Math.max(0, Number(character.MasterClass ?? 0));
             bb.writeMethod6(masterClassId, 4);
 
             const statsByBuilding = WorldEnter.asRecord(character.magicForge?.stats_by_building);
@@ -689,10 +689,7 @@ export class WorldEnter {
             bb.writeMethod6(0, 1);
         }
 
-        const masterClassId = WorldEnter.resolveMasterClass(character);
-        if (masterClassId && Number(character.MasterClass ?? 0) !== masterClassId) {
-            character.MasterClass = masterClassId;
-        }
+        const masterClassId = Math.max(0, Number(character.MasterClass ?? 0));
         bb.writeMethod6(masterClassId, 4);
 
         if (masterClassId > 0) {

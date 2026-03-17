@@ -654,6 +654,33 @@ export class SocialHandler {
         SocialHandler.broadcastPartyUpdateById(party.partyId);
     }
 
+    private static getStartedRoomIdsForLevel(target: Client, levelName: string): number[] {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        if (!normalizedLevel) {
+            return [];
+        }
+
+        const startedRoomIds = new Set<number>();
+        for (const key of target.startedRoomEvents) {
+            const separatorIndex = key.lastIndexOf(':');
+            if (separatorIndex <= 0) {
+                continue;
+            }
+
+            const eventLevel = LevelConfig.normalizeLevelName(key.substring(0, separatorIndex));
+            if (eventLevel !== normalizedLevel) {
+                continue;
+            }
+
+            const roomId = Number(key.substring(separatorIndex + 1));
+            if (Number.isFinite(roomId) && roomId >= 0) {
+                startedRoomIds.add(Math.round(roomId));
+            }
+        }
+
+        return Array.from(startedRoomIds.values()).sort((left, right) => left - right);
+    }
+
     private static getTeleportTargetPosition(target: Client): PendingTeleport | null {
         const targetLevel = LevelConfig.normalizeLevelName(target.currentLevel || target.character?.CurrentLevel?.name);
         if (!targetLevel || !LevelConfig.has(targetLevel)) {
@@ -687,11 +714,26 @@ export class SocialHandler {
             }
         }
 
+        const shouldSyncDungeonProgress = LevelConfig.isDungeonLevel(targetLevel);
+        const syncRoomId = shouldSyncDungeonProgress &&
+            Number.isFinite(Number(target.currentRoomId)) &&
+            target.currentRoomId >= 0
+            ? Math.round(Number(target.currentRoomId))
+            : undefined;
+        const syncStartedRoomIds = shouldSyncDungeonProgress
+            ? SocialHandler.getStartedRoomIdsForLevel(target, targetLevel)
+            : undefined;
+
         return {
             targetLevel,
             x,
             y,
-            hasCoord
+            hasCoord,
+            syncAnchorToken: target.token > 0 ? target.token : undefined,
+            syncAnchorCharacterName: target.character?.name,
+            syncEntryLevel: shouldSyncDungeonProgress ? LevelConfig.normalizeLevelName(target.entryLevel) : undefined,
+            syncRoomId,
+            syncStartedRoomIds
         };
     }
 
@@ -1390,6 +1432,7 @@ export class SocialHandler {
         GlobalState.pendingTeleports.set(client.token, targetTeleport);
         client.lastDoorId = 0;
         client.lastDoorTargetLevel = targetTeleport.targetLevel;
+        client.armPendingTransferGrace();
 
         const bb = new BitBuffer(false);
         bb.writeMethod4(0);
@@ -1426,6 +1469,7 @@ export class SocialHandler {
         bb.writeMethod13('CraftTown');
         client.lastDoorId = 999;
         client.lastDoorTargetLevel = 'CraftTown';
+        client.armPendingTransferGrace();
         client.sendBitBuffer(0x2e, bb);
         SocialHandler.sendChatStatus(client, `Visiting ${targetChar.name}'s house...`);
     }

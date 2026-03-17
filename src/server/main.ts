@@ -168,8 +168,9 @@ router.register(0xDF, TalentHandler.handleClearTalentResearch);
 router.register(0x106, SigilHandler.handleRoyalSigilStorePurchase);
 
 // Start Servers
+let policyServer: PolicyServer | null = null;
 if (Config.ENABLE_POLICY_SERVER) {
-    const policyServer = new PolicyServer(Config.POLICY_PORT, Config.BIND_HOST);
+    policyServer = new PolicyServer(Config.POLICY_PORT, Config.BIND_HOST);
     policyServer.start();
 } else {
     console.log(
@@ -184,3 +185,41 @@ staticServer.start();
 const gameServer = new GameServer(Config.PORTS[0], router, Config.BIND_HOST);
 AILogic.start();
 gameServer.start();
+
+let isShuttingDown = false;
+
+function shutdown(signal: string, exitCode: number, onComplete?: () => void): void {
+    if (isShuttingDown) {
+        return;
+    }
+
+    isShuttingDown = true;
+    console.log(`[System] Received ${signal}; shutting down servers.`);
+
+    const tasks = [
+        staticServer.stop(),
+        gameServer.stop(),
+        policyServer?.stop() ?? Promise.resolve()
+    ];
+
+    void Promise.allSettled(tasks).then((results) => {
+        for (const result of results) {
+            if (result.status === 'rejected') {
+                console.error('[System] Shutdown error:', result.reason);
+            }
+        }
+
+        if (onComplete) {
+            onComplete();
+            return;
+        }
+
+        process.exit(exitCode);
+    });
+}
+
+process.once('SIGINT', () => shutdown('SIGINT', 0));
+process.once('SIGTERM', () => shutdown('SIGTERM', 0));
+process.once('SIGBREAK', () => shutdown('SIGBREAK', 0));
+process.once('SIGHUP', () => shutdown('SIGHUP', 0));
+process.once('SIGUSR2', () => shutdown('SIGUSR2', 0, () => process.kill(process.pid, 'SIGUSR2')));

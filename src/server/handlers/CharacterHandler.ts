@@ -16,6 +16,7 @@ import { SocialHandler } from './SocialHandler';
 import { GuildHandler } from './GuildHandler';
 import { EntityHandler } from './EntityHandler';
 import { ensureCharacterSocialState, normalizeCharacterKey } from '../core/SocialState';
+import { TransferTokenAllocator } from '../core/TransferTokenAllocator';
 
 const db = new JsonAdapter();
 
@@ -42,19 +43,8 @@ export class CharacterHandler {
         return normalized === '' || normalized === 'player';
     }
 
-    private static allocateTransferToken(userId: number | null, characterName: string): number {
-        let token = 0;
-        do {
-            token = Math.floor(Math.random() * 0x10000);
-        } while (
-            token <= 0 ||
-            GlobalState.pendingWorld.has(token) ||
-            GlobalState.pendingExtended.has(token) ||
-            GlobalState.sessionsByToken.has(token) ||
-            GlobalState.tokenChar.has(token)
-        );
-
-        return token;
+    private static allocateTransferToken(targetLevel: string): number {
+        return TransferTokenAllocator.allocate(targetLevel);
     }
 
     private static isSessionStale(session: Client): boolean {
@@ -347,7 +337,7 @@ export class CharacterHandler {
         const spawn = LevelConfig.getSpawnCoordinates(char, previousLevelName, currentLevelName);
 
         // Generate Transfer Token
-        const token = CharacterHandler.allocateTransferToken(client.userId, char.name);
+        const token = CharacterHandler.allocateTransferToken(currentLevelName);
         
         // Store Pending State
         if (client.userId) {
@@ -415,7 +405,9 @@ export class CharacterHandler {
         client.clientEntID = 0;
         client.currentLevel = entry.targetLevel;
         client.entryLevel = LevelConfig.get(entry.targetLevel).isDungeon ? entry.previousLevel : '';
-        client.currentRoomId = 0;
+        client.currentRoomId = Number.isFinite(Number(entry.syncRoomId)) && Number(entry.syncRoomId) >= 0
+            ? Math.round(Number(entry.syncRoomId))
+            : 0;
         client.lastDoorId = -1;
         client.lastDoorTargetLevel = '';
         client.playerSpawned = false;
@@ -456,6 +448,20 @@ export class CharacterHandler {
             // Ensure persistence mapping exists
             GlobalState.tokenChar.set(token, { character: entry.character, userId: client.userId });
         }
+        GlobalState.usedTransferTokens.set(token, {
+            character: entry.character,
+            userId: entry.userId,
+            targetLevel: entry.targetLevel,
+            previousLevel: entry.previousLevel,
+            newX: entry.newX,
+            newY: entry.newY,
+            newHasCoord: entry.newHasCoord,
+            syncAnchorToken: entry.syncAnchorToken,
+            syncAnchorCharacterName: entry.syncAnchorCharacterName,
+            syncEntryLevel: entry.syncEntryLevel,
+            syncRoomId: entry.syncRoomId,
+            syncStartedRoomIds: entry.syncStartedRoomIds
+        });
         const characterKey = normalizeCharacterKey(client.character.name);
         if (characterKey) {
             GlobalState.sessionsByCharacterName.set(characterKey, client);
@@ -495,6 +501,7 @@ export class CharacterHandler {
         
         // Spawn NPCs
         LevelHandler.spawnLevelNpcs(client, entry.targetLevel);
+        LevelHandler.restoreTransferredRoomProgress(client, entry);
         LevelHandler.primeTutorialRoomEvents(client);
         await LevelHandler.prepareCraftTownTutorialEntry(client);
         LevelHandler.scheduleClientSpawnFallback(client);

@@ -99,6 +99,8 @@ export function clearClientSpawnFallbackTimer(client: Pick<Client, 'clientSpawnF
 }
 
 export class Client {
+    private static readonly PENDING_TRANSFER_GRACE_MS = 15000;
+
     public socket: net.Socket;
     public router: PacketRouter;
     private buffer: Buffer;
@@ -126,8 +128,10 @@ export class Client {
     public playerSpawned: boolean = false;
     public partyMapX: number = 0;
     public partyMapY: number = 0;
+    public pendingTransferUntil: number = 0;
     public mountTransferGraceUntil: number = 0;
     public startedRoomEvents: Set<string> = new Set();
+    public knownEntityIds: Set<number> = new Set();
     public pendingLoot: Map<number, PendingLootDrop> = new Map();
     public processedRewardSources: Set<string> = new Set();
     public pendingMissionTurnIns: Set<number> = new Set();
@@ -215,6 +219,10 @@ export class Client {
         this.send(packetId, bb.toBuffer());
     }
 
+    public armPendingTransferGrace(durationMs: number = Client.PENDING_TRANSFER_GRACE_MS): void {
+        this.pendingTransferUntil = Math.max(this.pendingTransferUntil, Date.now() + Math.max(0, durationMs));
+    }
+
     private createSessionCleanupSnapshot(): SessionCleanupSnapshot {
         const characterName = String(this.character?.name ?? '').trim();
 
@@ -261,8 +269,10 @@ export class Client {
         this.playerSpawned = false;
         this.partyMapX = 0;
         this.partyMapY = 0;
+        this.pendingTransferUntil = 0;
         this.mountTransferGraceUntil = 0;
         this.startedRoomEvents.clear();
+        this.knownEntityIds.clear();
         this.pendingLoot.clear();
         this.processedRewardSources.clear();
         this.pendingMissionTurnIns.clear();
@@ -283,12 +293,75 @@ export class Client {
         this.challengeStr = "";
     }
 
+    private isTransferInProgressOnClose(snapshot: SessionCleanupSnapshot): boolean {
+        const { GlobalState } = require('./GlobalState') as typeof import('./GlobalState');
+        const pendingWorldTransfer = Boolean(
+            snapshot.userId &&
+            snapshot.normalizedCharName &&
+            Array.from(GlobalState.pendingWorld.values()).some((entry) =>
+                entry.userId === snapshot.userId &&
+                String(entry.character?.name ?? '').trim().toLowerCase() === snapshot.normalizedCharName
+            )
+        );
+
+        if (pendingWorldTransfer) {
+            return true;
+        }
+
+        return Boolean(
+            snapshot.userId &&
+            snapshot.normalizedCharName &&
+            snapshot.token > 0 &&
+            Date.now() < Number(this.pendingTransferUntil ?? 0)
+        );
+    }
+
+    private preserveTransferRecoveryState(snapshot: SessionCleanupSnapshot): void {
+        const { GlobalState } = require('./GlobalState') as typeof import('./GlobalState');
+        if (!snapshot.userId || !this.character || snapshot.token <= 0) {
+            return;
+        }
+
+        const currentLevel = String(this.currentLevel || this.character.CurrentLevel?.name || 'NewbieRoad');
+        const previousLevel = String(this.entryLevel || this.character.PreviousLevel?.name || currentLevel);
+        const entity = this.clientEntID > 0 ? this.entities.get(this.clientEntID) : null;
+        const newX = Number(entity?.x ?? this.character.CurrentLevel?.x ?? 0);
+        const newY = Number(entity?.y ?? this.character.CurrentLevel?.y ?? 0);
+        const newHasCoord = Number.isFinite(newX) && Number.isFinite(newY);
+        const syncRoomId = Number.isFinite(Number(this.currentRoomId)) && this.currentRoomId >= 0
+            ? Math.round(Number(this.currentRoomId))
+            : undefined;
+        const syncStartedRoomIds = Array.from(this.startedRoomEvents.values())
+            .filter((key) => key.startsWith(`${currentLevel}:`))
+            .map((key) => Number(key.substring(currentLevel.length + 1)))
+            .filter((roomId) => Number.isFinite(roomId) && roomId >= 0)
+            .map((roomId) => Math.round(roomId));
+
+        GlobalState.tokenChar.set(snapshot.token, {
+            character: this.character,
+            userId: snapshot.userId
+        });
+        GlobalState.usedTransferTokens.set(snapshot.token, {
+            character: this.character,
+            userId: snapshot.userId,
+            targetLevel: currentLevel,
+            previousLevel,
+            newX: newHasCoord ? Math.round(newX) : undefined,
+            newY: newHasCoord ? Math.round(newY) : undefined,
+            newHasCoord,
+            syncEntryLevel: previousLevel,
+            syncRoomId,
+            syncStartedRoomIds
+        });
+    }
+
     private cleanupSessionState(snapshot: SessionCleanupSnapshot, transferInProgress: boolean): void {
         const { GlobalState } = require('./GlobalState') as typeof import('./GlobalState');
         const { EntityHandler } = require('../handlers/EntityHandler') as typeof import('../handlers/EntityHandler');
         const { SocialHandler } = require('../handlers/SocialHandler') as typeof import('../handlers/SocialHandler');
 
         EntityHandler.removeOwnedEntities(this);
+        const removedTransferTokens = new Set<number>();
 
         const sessionTokens = new Set<number>();
         if (snapshot.token > 0) {
@@ -303,13 +376,15 @@ export class Client {
 
         for (const token of sessionTokens) {
             GlobalState.sessionsByToken.delete(token);
-            GlobalState.pendingTeleports.delete(token);
 
             if (!transferInProgress) {
+                GlobalState.pendingTeleports.delete(token);
                 GlobalState.pendingWorld.delete(token);
                 GlobalState.pendingExtended.delete(token);
+                GlobalState.usedTransferTokens.delete(token);
                 GlobalState.tokenChar.delete(token);
                 GlobalState.houseVisits.delete(token);
+                removedTransferTokens.add(token);
             }
         }
 
@@ -322,9 +397,11 @@ export class Client {
 
                 GlobalState.pendingWorld.delete(token);
                 GlobalState.pendingExtended.delete(token);
+                GlobalState.usedTransferTokens.delete(token);
                 GlobalState.tokenChar.delete(token);
                 GlobalState.pendingTeleports.delete(token);
                 GlobalState.houseVisits.delete(token);
+                removedTransferTokens.add(token);
             }
 
             for (const [token, entry] of Array.from(GlobalState.tokenChar.entries())) {
@@ -336,6 +413,29 @@ export class Client {
                 GlobalState.tokenChar.delete(token);
                 GlobalState.pendingTeleports.delete(token);
                 GlobalState.houseVisits.delete(token);
+                removedTransferTokens.add(token);
+            }
+
+            for (const [token, entry] of Array.from(GlobalState.usedTransferTokens.entries())) {
+                const entryCharName = String(entry.character?.name ?? '').trim().toLowerCase();
+                if (entry.userId !== snapshot.userId || entryCharName !== snapshot.normalizedCharName) {
+                    continue;
+                }
+
+                GlobalState.usedTransferTokens.delete(token);
+                removedTransferTokens.add(token);
+            }
+        }
+
+        if (!transferInProgress && removedTransferTokens.size > 0) {
+            for (const token of removedTransferTokens) {
+                GlobalState.transferTokenAliases.delete(token);
+            }
+
+            for (const [aliasToken, targetToken] of Array.from(GlobalState.transferTokenAliases.entries())) {
+                if (removedTransferTokens.has(targetToken)) {
+                    GlobalState.transferTokenAliases.delete(aliasToken);
+                }
             }
         }
 
@@ -395,14 +495,10 @@ export class Client {
                 console.error('[Client] Failed to persist character on disconnect:', err);
             });
         }
-        const transferInProgress = Boolean(
-            snapshot.userId &&
-            snapshot.normalizedCharName &&
-            Array.from(GlobalState.pendingWorld.values()).some((entry) =>
-                entry.userId === snapshot.userId &&
-                String(entry.character?.name ?? '').trim().toLowerCase() === snapshot.normalizedCharName
-            )
-        );
+        const transferInProgress = this.isTransferInProgressOnClose(snapshot);
+        if (transferInProgress) {
+            this.preserveTransferRecoveryState(snapshot);
+        }
 
         this.cleanupSessionState(snapshot, transferInProgress);
 

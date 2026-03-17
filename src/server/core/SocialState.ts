@@ -17,6 +17,11 @@ export interface PendingTeleport {
     x: number;
     y: number;
     hasCoord: boolean;
+    syncAnchorToken?: number;
+    syncAnchorCharacterName?: string;
+    syncEntryLevel?: string;
+    syncRoomId?: number;
+    syncStartedRoomIds?: number[];
 }
 
 export function normalizeCharacterKey(value: unknown): string {

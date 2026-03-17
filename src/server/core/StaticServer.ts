@@ -1,5 +1,6 @@
 import express from 'express';
 import * as fs from 'fs';
+import type { Server as HttpServer } from 'http';
 import * as path from 'path';
 import { Config } from './config';
 
@@ -23,6 +24,7 @@ function resolveContentDir(relativeContentPath: string): string {
 
 export class StaticServer {
     private app: express.Application;
+    private server: HttpServer | null;
     private port: number;
     private contentDir: string;
     private host: string;
@@ -37,6 +39,7 @@ export class StaticServer {
         this.port = port;
         this.host = host;
         this.app = express();
+        this.server = null;
         
         // Resolve against the server root so dist and ts-node use the same content directory.
         this.contentDir = resolveContentDir(relativeContentPath);
@@ -146,13 +149,45 @@ export class StaticServer {
     }
 
     public start(): void {
-        this.app.listen(this.port, this.host, () => {
+        this.server = this.app.listen(this.port, this.host, () => {
             const portSuffix = this.port === 80 ? '' : `:${this.port}`;
             const baseUrl = `http://${Config.HOST}${portSuffix}`;
             console.log(`[StaticServer] Serving ${this.contentDir} on http://${this.host}:${this.port}`);
             console.log(`[StaticServer] Multiplayer mode: ${Config.MULTIPLAYER_MODE}`);
             console.log(`[StaticServer] Browser URL: ${baseUrl}/`);
             console.log(`[StaticServer] Flash URL: ${baseUrl}${this.getSelectedSwfUrl()}`);
+        });
+
+        this.server.on('error', (error) => {
+            const socketError = error as NodeJS.ErrnoException;
+            if (socketError.code === 'EADDRINUSE') {
+                console.error(
+                    `[StaticServer] Cannot listen on ${this.host}:${this.port} because the port is already in use.`
+                );
+                console.error('[StaticServer] Stop the previous dev server or change STATIC_PORT before restarting.');
+                process.exitCode = 1;
+                setImmediate(() => process.exit(1));
+                return;
+            }
+
+            console.error('[StaticServer] Server error:', error);
+        });
+    }
+
+    public stop(): Promise<void> {
+        if (!this.server || !this.server.listening) {
+            return Promise.resolve();
+        }
+
+        return new Promise((resolve, reject) => {
+            this.server?.close((error) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+
+                resolve();
+            });
         });
     }
 }

@@ -4,6 +4,7 @@ import { BitBuffer } from '../network/protocol/bitBuffer';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { PetConfig } from '../core/PetConfig';
 import { GlobalState } from '../core/GlobalState';
+import { EntityHandler } from './EntityHandler';
 
 const db = new JsonAdapter();
 
@@ -143,6 +144,8 @@ export class PetHandler {
 
             other.send(0xB2, data);
         }
+
+        EntityHandler.refreshPlayerSnapshot(client);
     }
 
     static async handleEquipPets(client: Client, data: Buffer): Promise<void> { // Removed <void> for shorter diff if needed, but keeping consistent
@@ -173,6 +176,10 @@ export class PetHandler {
 
             if (client.userId) {
                 await PetHandler.saveCharacter(client);
+            }
+
+            if (client.playerSpawned && client.currentLevel) {
+                EntityHandler.refreshPlayerSnapshot(client);
             }
         }
     }

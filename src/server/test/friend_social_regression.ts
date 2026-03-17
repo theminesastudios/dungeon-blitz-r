@@ -1,7 +1,9 @@
 import { strict as assert } from 'assert';
+import * as path from 'path';
 import { Character } from '../database/Database';
 import { GlobalState } from '../core/GlobalState';
 import { normalizeCharacterKey } from '../core/SocialState';
+import { LevelConfig } from '../core/LevelConfig';
 import { SocialHandler } from '../handlers/SocialHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
@@ -12,11 +14,20 @@ type SentPacket = {
 };
 
 type FakeClient = {
+    token: number;
     userId: number | null;
     character: Character;
     characters: Character[];
     currentLevel: string;
+    entryLevel: string;
+    currentRoomId: number;
+    clientEntID: number;
     playerSpawned: boolean;
+    startedRoomEvents: Set<string>;
+    entities: Map<number, any>;
+    lastDoorId: number;
+    lastDoorTargetLevel: string;
+    armPendingTransferGrace: () => void;
     send: (id: number, payload: Buffer) => void;
     sendBitBuffer: (id: number, bb: BitBuffer) => void;
     sentPackets: SentPacket[];
@@ -38,11 +49,22 @@ function createFakeClient(name: string, friends: Array<{ name: string; isRequest
     const character = createCharacter(name, friends);
 
     return {
+        token: Math.floor(Math.random() * 100000) + 1,
         userId: null,
         character,
         characters: [character],
         currentLevel: '',
+        entryLevel: '',
+        currentRoomId: 0,
+        clientEntID: 0,
         playerSpawned: false,
+        startedRoomEvents: new Set<string>(),
+        entities: new Map<number, any>(),
+        lastDoorId: -1,
+        lastDoorTargetLevel: '',
+        armPendingTransferGrace() {
+            return;
+        },
         sentPackets,
         send(id: number, payload: Buffer) {
             sentPackets.push({ id, payload: Buffer.from(payload) });
@@ -70,6 +92,12 @@ function decodeFriendUpdate(payload: Buffer): { name: string; isRequest: boolean
 function decodeFriendRemoved(payload: Buffer): string {
     const br = new BitReader(payload);
     return br.readMethod13();
+}
+
+function ensureLevelConfigLoaded(): void {
+    if (!LevelConfig.has('TutorialDungeon')) {
+        LevelConfig.load(path.resolve(__dirname, '../data'));
+    }
 }
 
 async function testAcceptPreservesExistingFriendKey(): Promise<void> {
@@ -112,7 +140,59 @@ async function testUnfriendUsesRemovedEntryKeyForReverseUpdate(): Promise<void> 
     assert.equal(requesterRemoval, 'receiver');
 }
 
+function testTeleportToPlayerCapturesDungeonAnchorState(): void {
+    const caller = createFakeClient('Caller');
+    const target = createFakeClient('Target');
+    caller.token = 1001;
+    caller.currentLevel = 'BridgeTown';
+    caller.playerSpawned = true;
+    caller.clientEntID = 4001;
+    target.token = 1002;
+    target.currentLevel = 'TutorialDungeon';
+    target.entryLevel = 'NewbieRoad';
+    target.currentRoomId = 15;
+    target.playerSpawned = true;
+    target.clientEntID = 4002;
+    target.entities.set(target.clientEntID, { x: 1444, y: 2333 });
+    target.startedRoomEvents = new Set([
+        'TutorialDungeon:0',
+        'TutorialDungeon:4',
+        'TutorialDungeon:15',
+        'OtherLevel:2'
+    ]);
+
+    GlobalState.sessionsByCharacterName.set(normalizeCharacterKey(caller.character.name), caller as never);
+    GlobalState.sessionsByCharacterName.set(normalizeCharacterKey(target.character.name), target as never);
+
+    const partyId = 77;
+    GlobalState.partyGroups.set(partyId, {
+        id: partyId,
+        leader: caller.character.name,
+        members: [caller.character.name, target.character.name],
+        locked: false
+    });
+    GlobalState.partyByMember.set(normalizeCharacterKey(caller.character.name), partyId);
+    GlobalState.partyByMember.set(normalizeCharacterKey(target.character.name), partyId);
+
+    SocialHandler.handleTeleportToPlayer(caller as never, buildNamePacket(target.character.name));
+
+    const pendingTeleport = GlobalState.pendingTeleports.get(caller.token);
+    assert.ok(pendingTeleport);
+    assert.equal(pendingTeleport?.targetLevel, 'TutorialDungeon');
+    assert.equal(pendingTeleport?.x, 1444);
+    assert.equal(pendingTeleport?.y, 2333);
+    assert.equal(pendingTeleport?.syncAnchorToken, target.token);
+    assert.equal(pendingTeleport?.syncAnchorCharacterName, target.character.name);
+    assert.equal(pendingTeleport?.syncEntryLevel, 'NewbieRoad');
+    assert.equal(pendingTeleport?.syncRoomId, 15);
+    assert.deepEqual(pendingTeleport?.syncStartedRoomIds, [0, 4, 15]);
+    assert.equal(caller.lastDoorTargetLevel, 'TutorialDungeon');
+    assert.equal(caller.sentPackets.some((packet) => packet.id === 0x2E), true);
+}
+
 async function main(): Promise<void> {
+    ensureLevelConfigLoaded();
+
     const sessionsByCharacterName = new Map(GlobalState.sessionsByCharacterName);
     const sessionsByToken = new Map(GlobalState.sessionsByToken);
     const sessionsByUserId = new Map(GlobalState.sessionsByUserId);
@@ -138,6 +218,12 @@ async function main(): Promise<void> {
 
         GlobalState.sessionsByCharacterName.clear();
         await testUnfriendUsesRemovedEntryKeyForReverseUpdate();
+
+        GlobalState.sessionsByCharacterName.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.pendingTeleports.clear();
+        testTeleportToPlayerCapturesDungeonAnchorState();
     } finally {
         GlobalState.sessionsByCharacterName = sessionsByCharacterName;
         GlobalState.sessionsByToken = sessionsByToken;

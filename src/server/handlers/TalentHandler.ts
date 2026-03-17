@@ -4,6 +4,7 @@ import { BitBuffer } from '../network/protocol/bitBuffer';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { TalentConfig } from '../core/TalentConfig';
 import { GlobalState } from '../core/GlobalState';
+import { EntityHandler } from './EntityHandler';
 
 const db = new JsonAdapter();
 
@@ -249,6 +250,10 @@ export class TalentHandler {
         }
         
         client.sendBitBuffer(0xC1, treePkt);
+
+        if (client.playerSpawned && client.currentLevel) {
+            EntityHandler.refreshPlayerSnapshot(client);
+        }
     }
 
     private static async saveCharacter(client: Client) {

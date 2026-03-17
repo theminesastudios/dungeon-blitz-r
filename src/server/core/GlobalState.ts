@@ -10,12 +10,18 @@ export interface PendingTransfer {
     newX?: number;
     newY?: number;
     newHasCoord?: boolean;
+    syncAnchorToken?: number;
+    syncAnchorCharacterName?: string;
+    syncEntryLevel?: string;
+    syncRoomId?: number;
+    syncStartedRoomIds?: number[];
 }
 
 export class GlobalState {
     // Token -> Pending Transfer
     static pendingWorld: Map<number, PendingTransfer> = new Map();
     static pendingExtended: Map<number, boolean> = new Map();
+    static usedTransferTokens: Map<number, PendingTransfer> = new Map();
     
     // Token -> Client Session (Active)
     static sessionsByToken: Map<number, Client> = new Map();
@@ -32,6 +38,9 @@ export class GlobalState {
     // Token -> Character Data (Persists across disconnects for transfers)
     static tokenChar: Map<number, { character: Character, userId: number }> = new Map();
 
+    // Legacy transfer token -> latest active transfer token
+    static transferTokenAliases: Map<number, number> = new Map();
+
     // PartyId -> PartyGroup
     static partyGroups: Map<number, PartyGroup> = new Map();
 
@@ -43,6 +52,9 @@ export class GlobalState {
 
     // Level Name -> Map<EntityId, EntityData>
     static levelEntities: Map<string, Map<number, any>> = new Map();
+    static combatContributions: Map<string, Map<string, number>> = new Map();
+    static entityLifeNonces: Map<string, number> = new Map();
+    static entityLastRewardNonces: Map<string, number> = new Map();
     // Level Name -> LevelInstance (if needed) or just keys of levelEntities
     static levelRegistry: { [key: string]: any } = {};
 }

@@ -6,6 +6,7 @@ import { GlobalState } from '../core/GlobalState';
 import { Entity, EntityProps, EntityState } from '../core/Entity';
 import { LevelConfig } from '../core/LevelConfig';
 import { PetHandler } from './PetHandler';
+import { areClientsInSameParty, sharesRoomIds } from '../core/PartySync';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
@@ -43,6 +44,237 @@ export class EntityHandler {
 
     private static usesClientSpawn(levelName: string): boolean {
         return EntityHandler.CLIENT_SPAWN_LEVELS.has(levelName);
+    }
+
+    private static isLocalOnlyClientSpawnEntity(levelName: string | null | undefined, entity: any): boolean {
+        if (!levelName || !entity?.clientSpawned || entity?.isPlayer || !EntityHandler.usesClientSpawn(levelName)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    static shouldRelayEntityToOtherClients(levelName: string | null | undefined, entity: any): boolean {
+        return !EntityHandler.isLocalOnlyClientSpawnEntity(levelName, entity);
+    }
+
+    static shouldTrackKnownEntity(levelName: string | null | undefined, entity: any): boolean {
+        if (!entity) {
+            return false;
+        }
+        if (!levelName) {
+            return true;
+        }
+
+        return EntityHandler.shouldRelayEntityToOtherClients(levelName, entity);
+    }
+
+    private static rememberEntityKnown(client: Client, levelName: string | null | undefined, entity: any): void {
+        const entityId = Number(entity?.id ?? 0);
+        if (entityId <= 0) {
+            return;
+        }
+
+        if (EntityHandler.shouldTrackKnownEntity(levelName, entity)) {
+            client.knownEntityIds.add(entityId);
+            return;
+        }
+
+        client.knownEntityIds.delete(entityId);
+    }
+
+    private static hasConflictingLocalKnownEntity(client: Client, levelName: string, entityId: number, entity: any): boolean {
+        const localEntity = client.entities.get(entityId);
+        if (!localEntity) {
+            return false;
+        }
+
+        if (EntityHandler.isLocalOnlyClientSpawnEntity(levelName, localEntity)) {
+            return true;
+        }
+
+        if (Boolean(localEntity.isPlayer) !== Boolean(entity?.isPlayer)) {
+            return true;
+        }
+
+        const localOwnerToken = Number(localEntity?.ownerToken ?? (entityId === client.clientEntID ? client.token : 0));
+        const remoteOwnerToken = Number(entity?.ownerToken ?? 0);
+        if (localOwnerToken > 0 && remoteOwnerToken > 0 && localOwnerToken !== remoteOwnerToken) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static resolvePlayerSessionByEntityId(entityId: number, entity: any = null): Client | null {
+        const ownerToken = Number(entity?.ownerToken ?? 0);
+        if (ownerToken > 0) {
+            const ownerSession = GlobalState.sessionsByToken.get(ownerToken);
+            if (ownerSession?.clientEntID === entityId && ownerSession.character) {
+                return ownerSession;
+            }
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (other.clientEntID === entityId && other.character) {
+                return other;
+            }
+        }
+
+        return null;
+    }
+
+    private static resolveEntityOwnerSession(entity: any): Client | null {
+        const ownerToken = Number(entity?.ownerToken ?? 0);
+        if (ownerToken > 0) {
+            const ownerSession = GlobalState.sessionsByToken.get(ownerToken);
+            if (ownerSession?.character) {
+                return ownerSession;
+            }
+        }
+
+        return null;
+    }
+
+    static resolveCanonicalEntity(levelName: string, entityId: number): EntityProps | null {
+        if (!levelName || entityId <= 0) {
+            return null;
+        }
+
+        const entity = GlobalState.levelEntities.get(levelName)?.get(entityId);
+        if (!entity) {
+            return null;
+        }
+
+        if (entity.isPlayer) {
+            const ownerSession = EntityHandler.resolvePlayerSessionByEntityId(entityId, entity);
+            if (ownerSession?.character) {
+                return Entity.fromCharacter(entityId, ownerSession.character, entity);
+            }
+        }
+
+        if (entity.id && entity.entState !== undefined) {
+            return entity as EntityProps;
+        }
+
+        return Entity.fromNpc(entity);
+    }
+
+    static canClientSeeEntity(client: Client, entity: any): boolean {
+        if (!client.playerSpawned || !client.currentLevel || !entity) {
+            return false;
+        }
+
+        if (entity.isPlayer) {
+            return true;
+        }
+
+        if (!EntityHandler.shouldRelayEntityToOtherClients(client.currentLevel, entity)) {
+            return false;
+        }
+
+        const ownerSession = EntityHandler.resolveEntityOwnerSession(entity);
+        if (entity.clientSpawned) {
+            if (ownerSession && ownerSession.currentLevel === client.currentLevel && areClientsInSameParty(client, ownerSession)) {
+                return true;
+            }
+
+            const entityRoomId = Number.isFinite(Number(entity?.roomId)) ? Number(entity.roomId) : -1;
+            return sharesRoomIds(client.currentRoomId, entityRoomId);
+        }
+
+        return true;
+    }
+
+    static ensureEntityKnown(client: Client, levelName: string, entityId: number): boolean {
+        if (entityId <= 0) {
+            return true;
+        }
+
+        const entity = GlobalState.levelEntities.get(levelName)?.get(entityId);
+        if (!entity || !EntityHandler.canClientSeeEntity(client, entity)) {
+            return false;
+        }
+
+        if (client.knownEntityIds.has(entityId)) {
+            if (!EntityHandler.hasConflictingLocalKnownEntity(client, levelName, entityId, entity)) {
+                return true;
+            }
+
+            client.knownEntityIds.delete(entityId);
+        }
+
+        const snapshot = EntityHandler.resolveCanonicalEntity(levelName, entityId);
+        if (!snapshot) {
+            return false;
+        }
+
+        EntityHandler.sendEntity(client, snapshot);
+        return true;
+    }
+
+    static forgetKnownEntity(levelName: string, entityId: number): void {
+        if (!levelName || entityId <= 0) {
+            return;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (other.currentLevel === levelName) {
+                other.knownEntityIds.delete(entityId);
+            }
+        }
+    }
+
+    private static buildEntityFullUpdatePayload(entity: EntityProps): Buffer {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(entity.id);
+        bb.writeMethod24(Math.round(Number(entity.x ?? 0)));
+        bb.writeMethod24(Math.round(Number(entity.y ?? 0)));
+        bb.writeMethod24(Math.round(Number(entity.v ?? 0)));
+        bb.writeMethod26(entity.name ?? '');
+        bb.writeMethod6(Number(entity.team ?? 0), Entity.TEAM_BITS);
+        bb.writeMethod15(Boolean(entity.isPlayer));
+        bb.writeMethod706(Math.round(Number(entity.renderDepthOffset ?? 0)));
+
+        const characterName = String(entity.characterName ?? '');
+        const dramaAnim = String(entity.dramaAnim ?? '');
+        const sleepAnim = String(entity.sleepAnim ?? '');
+        const hasCue = Boolean(characterName || dramaAnim || sleepAnim);
+        bb.writeMethod15(hasCue);
+        if (hasCue) {
+            bb.writeMethod15(Boolean(characterName));
+            if (characterName) {
+                bb.writeMethod13(characterName);
+            }
+            bb.writeMethod15(Boolean(dramaAnim));
+            if (dramaAnim) {
+                bb.writeMethod13(dramaAnim);
+            }
+            bb.writeMethod15(Boolean(sleepAnim));
+            if (sleepAnim) {
+                bb.writeMethod13(sleepAnim);
+            }
+        }
+
+        const summonerId = Number(entity.summonerId ?? 0);
+        bb.writeMethod15(summonerId > 0);
+        if (summonerId > 0) {
+            bb.writeMethod4(summonerId);
+        }
+
+        const powerId = Number(entity.powerId ?? 0);
+        bb.writeMethod15(powerId > 0);
+        if (powerId > 0) {
+            bb.writeMethod4(powerId);
+        }
+
+        bb.writeMethod6(Number(entity.entState ?? EntityState.ACTIVE), Entity.STATE_BITS);
+        bb.writeMethod15(Boolean(entity.facingLeft));
+        bb.writeMethod15(Boolean(entity.running));
+        bb.writeMethod15(Boolean(entity.jumping));
+        bb.writeMethod15(Boolean(entity.dropping));
+        bb.writeMethod15(Boolean(entity.backpedal));
+        return bb.toBuffer();
     }
 
     static isClientSpawnLevel(levelName: string): boolean {
@@ -170,6 +402,7 @@ export class EntityHandler {
                 continue;
             }
 
+            other.knownEntityIds.delete(entityId);
             other.send(0x0D, payload);
         }
     }
@@ -306,6 +539,7 @@ export class EntityHandler {
         
         const data = Entity.serialize(props);
         client.send(0xF, data);
+        EntityHandler.rememberEntityKnown(client, client.currentLevel, props);
     }
 
     // Deprecated: use sendEntity
@@ -406,19 +640,29 @@ export class EntityHandler {
                     x: posX,
                     y: posY,
                     v: velocityX,
-                    team,
-                    entState,
-                    facingLeft: bLeft,
-                    renderDepthOffset: yOffset
+                team,
+                entState,
+                facingLeft: bLeft,
+                running: bRunning,
+                jumping: bJumping,
+                dropping: bDropping,
+                backpedal: bBackpedal,
+                renderDepthOffset: yOffset,
+                roomId: client.currentRoomId
                 }),
                 characterName: cueData.character_name,
                 dramaAnim: cueData.DramaAnim,
                 sleepAnim: cueData.SleepAnim,
                 summonerId,
                 powerId,
+                running: bRunning,
+                jumping: bJumping,
+                dropping: bDropping,
+                backpedal: bBackpedal,
                 clientSpawned: false,
                 ownerToken: client.token || 0,
-                ownerUserId: client.userId || 0
+                ownerUserId: client.userId || 0,
+                roomId: client.currentRoomId
             }
             : {
                 id: entityId,
@@ -436,13 +680,19 @@ export class EntityHandler {
                 powerId: powerId,
                 entState: entState,
                 facingLeft: bLeft,
+                running: bRunning,
+                jumping: bJumping,
+                dropping: bDropping,
+                backpedal: bBackpedal,
                 clientSpawned: !isPlayer,
                 ownerToken: client.token || 0,
-                ownerUserId: client.userId || 0
+                ownerUserId: client.userId || 0,
+                roomId: client.currentRoomId
                 // bRunning etc are flags
             };
 
         client.entities.set(entityId, props);
+        EntityHandler.rememberEntityKnown(client, levelName, props);
 
         if (!isPlayer) {
             client.clientSpawnConfirmed = true;
@@ -462,8 +712,8 @@ export class EntityHandler {
             levelMap.set(entityId, props);
         }
 
-        // Broadcast to others in level
-        EntityHandler.broadcastToLevel(client, data);
+        // Broadcast the normalized snapshot so remote clients receive canonical state.
+        EntityHandler.broadcastToLevel(client, EntityHandler.buildEntityFullUpdatePayload(props), props);
 
         if (isPlayer && !client.playerSpawned) {
              client.playerSpawned = true;
@@ -582,30 +832,98 @@ export class EntityHandler {
             EntityHandler.sendEntity(joiner, Entity.fromCharacter(other.clientEntID, other.character, otherProps));
             EntityHandler.sendOtherPlayerMountToJoiner(joiner, other);
         }
+
+        EntityHandler.sendExistingVisibleClientSpawnEntitiesToJoiner(joiner);
+    }
+
+    private static sendExistingVisibleClientSpawnEntitiesToJoiner(joiner: Client): void {
+        if (!joiner.currentLevel) {
+            return;
+        }
+
+        const levelMap = GlobalState.levelEntities.get(joiner.currentLevel);
+        if (!levelMap) {
+            return;
+        }
+
+        for (const [entityId, entityProps] of levelMap.entries()) {
+            if (entityId <= 0 || entityProps?.isPlayer || !entityProps?.clientSpawned) {
+                continue;
+            }
+            if (!EntityHandler.canClientSeeEntity(joiner, entityProps)) {
+                continue;
+            }
+
+            const snapshot = EntityHandler.resolveCanonicalEntity(joiner.currentLevel, entityId);
+            if (!snapshot) {
+                continue;
+            }
+
+            EntityHandler.sendEntity(joiner, snapshot);
+        }
     }
 
     private static broadcastPlayerSpawn(client: Client, props: EntityProps): void {
+        EntityHandler.refreshPlayerSnapshot(client);
+    }
+
+    static refreshPlayerSnapshot(client: Client, includeSelf: boolean = false): void {
         if (!client.character || !client.currentLevel) {
             return;
         }
 
-        const playerEntity = Entity.fromCharacter(props.id, client.character, props);
+        const entityId = Number(client.clientEntID || 0);
+        if (entityId <= 0) {
+            return;
+        }
+
+        const current = client.entities.get(entityId) ?? GlobalState.levelEntities.get(client.currentLevel)?.get(entityId) ?? {};
+        const playerEntity = Entity.fromCharacter(entityId, client.character, {
+            ...current,
+            roomId: client.currentRoomId
+        });
+        const persistedEntity = {
+            ...current,
+            ...playerEntity,
+            clientSpawned: false,
+            ownerToken: client.token || 0,
+            ownerUserId: client.userId || 0,
+            roomId: client.currentRoomId
+        };
+
+        client.entities.set(entityId, persistedEntity);
+        EntityHandler.rememberEntityKnown(client, client.currentLevel, persistedEntity);
+        let levelMap = GlobalState.levelEntities.get(client.currentLevel);
+        if (!levelMap) {
+            levelMap = new Map();
+            GlobalState.levelEntities.set(client.currentLevel, levelMap);
+        }
+        levelMap.set(entityId, persistedEntity);
+
         for (const other of GlobalState.sessionsByToken.values()) {
-            if (other === client || !other.playerSpawned || other.currentLevel !== client.currentLevel) {
+            if ((!includeSelf && other === client) || !other.playerSpawned || other.currentLevel !== client.currentLevel) {
                 continue;
             }
             EntityHandler.sendEntity(other, playerEntity);
         }
     }
 
-    private static broadcastToLevel(sender: Client, data: Buffer): void {
+    private static broadcastToLevel(sender: Client, data: Buffer, entity: EntityProps): void {
         const myLevel = sender.currentLevel;
         if (!myLevel || !sender.playerSpawned) return;
 
         for (const other of GlobalState.sessionsByToken.values()) {
-            if (other !== sender && other.playerSpawned && other.currentLevel === myLevel) {
-                 other.send(0x8, data);
+            if (other === sender || !other.playerSpawned || other.currentLevel !== myLevel) {
+                continue;
             }
+            if (!entity.isPlayer && !EntityHandler.canClientSeeEntity(other, entity)) {
+                continue;
+            }
+            if (!EntityHandler.ensureEntityKnown(other, myLevel, entity.id)) {
+                continue;
+            }
+
+            other.send(0x8, data);
         }
     }
 }

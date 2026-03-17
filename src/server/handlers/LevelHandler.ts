@@ -17,10 +17,313 @@ import { MissionID } from '../data/runtime';
 import { Entity } from '../core/Entity';
 import { EntityHandler } from './EntityHandler';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { normalizeCharacterKey, PendingTeleport } from '../core/SocialState';
+import { TransferTokenAllocator } from '../core/TransferTokenAllocator';
+import { areClientsInSameParty } from '../core/PartySync';
 
 const db = new JsonAdapter();
 
+type LevelSyncState = {
+    x: number;
+    y: number;
+    hasCoord: boolean;
+    syncAnchorToken?: number;
+    syncAnchorCharacterName?: string;
+    syncEntryLevel?: string;
+    syncRoomId?: number;
+    syncStartedRoomIds?: number[];
+};
+
 export class LevelHandler {
+    private static cloneTransferGameplayState(target: Client, source: Client): void {
+        target.character = source.character;
+        target.userId = source.userId;
+        target.characters = Array.isArray(source.characters) ? [...source.characters] : [];
+        target.currentLevel = source.currentLevel;
+        target.entryLevel = source.entryLevel;
+        target.currentRoomId = source.currentRoomId;
+        target.lastDoorId = source.lastDoorId;
+        target.lastDoorTargetLevel = source.lastDoorTargetLevel;
+        target.clientEntID = source.clientEntID;
+        target.token = source.token;
+        target.playerSpawned = source.playerSpawned;
+        target.entities = new Map(source.entities);
+        target.startedRoomEvents = new Set(source.startedRoomEvents);
+    }
+
+    private static findActiveTransferSession(userId: number | null, characterName: string | null | undefined): Client | null {
+        const normalizedCharName = normalizeCharacterKey(characterName);
+
+        if (userId) {
+            const userSession = GlobalState.sessionsByUserId.get(userId);
+            if (userSession?.character) {
+                if (!normalizedCharName || normalizeCharacterKey(userSession.character.name) === normalizedCharName) {
+                    return userSession;
+                }
+            }
+        }
+
+        if (normalizedCharName) {
+            const charSession = GlobalState.sessionsByCharacterName.get(normalizedCharName);
+            if (charSession?.character) {
+                return charSession;
+            }
+        }
+
+        for (const session of GlobalState.sessionsByToken.values()) {
+            if (!session.character) {
+                continue;
+            }
+            if (userId && session.userId === userId) {
+                if (!normalizedCharName || normalizeCharacterKey(session.character.name) === normalizedCharName) {
+                    return session;
+                }
+            }
+            if (normalizedCharName && normalizeCharacterKey(session.character.name) === normalizedCharName) {
+                return session;
+            }
+        }
+
+        return null;
+    }
+
+    private static normalizeStartedRoomIds(levelName: string, startedRoomIds: number[] | null | undefined): number[] {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        if (!normalizedLevel || !Array.isArray(startedRoomIds)) {
+            return [];
+        }
+
+        const deduped = new Set<number>();
+        for (const roomId of startedRoomIds) {
+            const numericRoomId = Number(roomId);
+            if (!Number.isFinite(numericRoomId) || numericRoomId < 0) {
+                continue;
+            }
+            deduped.add(Math.round(numericRoomId));
+        }
+
+        return Array.from(deduped.values()).sort((left, right) => left - right);
+    }
+
+    private static getStartedRoomIdsForLevel(session: Client, levelName: string): number[] {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        if (!normalizedLevel) {
+            return [];
+        }
+
+        const startedRoomIds = new Set<number>();
+        for (const key of session.startedRoomEvents) {
+            const separatorIndex = key.lastIndexOf(':');
+            if (separatorIndex <= 0) {
+                continue;
+            }
+
+            const eventLevel = LevelConfig.normalizeLevelName(key.substring(0, separatorIndex));
+            if (eventLevel !== normalizedLevel) {
+                continue;
+            }
+
+            const roomId = Number(key.substring(separatorIndex + 1));
+            if (Number.isFinite(roomId) && roomId >= 0) {
+                startedRoomIds.add(Math.round(roomId));
+            }
+        }
+
+        return Array.from(startedRoomIds.values()).sort((left, right) => left - right);
+    }
+
+    private static applyStoredRoomProgressState(
+        client: Client,
+        levelName: string,
+        syncRoomId?: number,
+        syncStartedRoomIds?: number[],
+        replayPackets: boolean = false
+    ): void {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        if (!normalizedLevel) {
+            return;
+        }
+
+        const startedRoomIds = LevelHandler.normalizeStartedRoomIds(normalizedLevel, syncStartedRoomIds);
+        const roomId = Number.isFinite(Number(syncRoomId)) && Number(syncRoomId) >= 0
+            ? Math.round(Number(syncRoomId))
+            : -1;
+
+        if (roomId >= 0 && !startedRoomIds.includes(roomId)) {
+            startedRoomIds.push(roomId);
+            startedRoomIds.sort((left, right) => left - right);
+        }
+
+        if (roomId >= 0) {
+            client.currentRoomId = roomId;
+        }
+
+        for (const startedRoomId of startedRoomIds) {
+            client.startedRoomEvents.add(`${normalizedLevel}:${startedRoomId}`);
+        }
+
+        if (!replayPackets) {
+            return;
+        }
+
+        for (const startedRoomId of startedRoomIds) {
+            if (!LevelHandler.hasRoomEventStarted(client, startedRoomId)) {
+                LevelHandler.sendRoomEventStart(client, startedRoomId, true);
+            } else {
+                const bb = new BitBuffer(false);
+                bb.writeMethod9(startedRoomId);
+                bb.writeMethod15(true);
+                client.sendBitBuffer(0xA5, bb);
+            }
+        }
+    }
+
+    private static resolveExplicitSyncAnchor(targetLevel: string, teleportOverride: PendingTeleport | null): Client | null {
+        if (!teleportOverride) {
+            return null;
+        }
+
+        const desiredLevel = LevelConfig.normalizeLevelName(targetLevel);
+        if (!desiredLevel) {
+            return null;
+        }
+
+        const anchorToken = Number(teleportOverride.syncAnchorToken ?? 0);
+        if (anchorToken > 0) {
+            const tokenSession = GlobalState.sessionsByToken.get(anchorToken);
+            if (tokenSession?.playerSpawned && LevelConfig.normalizeLevelName(tokenSession.currentLevel) === desiredLevel) {
+                return tokenSession;
+            }
+        }
+
+        const anchorNameKey = normalizeCharacterKey(teleportOverride.syncAnchorCharacterName);
+        if (!anchorNameKey) {
+            return null;
+        }
+
+        const namedSession = GlobalState.sessionsByCharacterName.get(anchorNameKey);
+        if (namedSession?.playerSpawned && LevelConfig.normalizeLevelName(namedSession.currentLevel) === desiredLevel) {
+            return namedSession;
+        }
+
+        return null;
+    }
+
+    private static resolveTransferSyncAnchor(
+        client: Client,
+        targetLevel: string,
+        teleportOverride: PendingTeleport | null
+    ): Client | null {
+        const explicitAnchor = LevelHandler.resolveExplicitSyncAnchor(targetLevel, teleportOverride);
+        if (explicitAnchor && explicitAnchor !== client) {
+            return explicitAnchor;
+        }
+
+        if (!LevelConfig.isDungeonLevel(targetLevel)) {
+            return null;
+        }
+
+        let firstOccupant: Client | null = null;
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (
+                other === client ||
+                !other.playerSpawned ||
+                !other.character ||
+                LevelConfig.normalizeLevelName(other.currentLevel) !== targetLevel
+            ) {
+                continue;
+            }
+
+            if (!firstOccupant) {
+                firstOccupant = other;
+            }
+
+            if (client.character && areClientsInSameParty(client, other)) {
+                return other;
+            }
+        }
+
+        return firstOccupant;
+    }
+
+    private static buildTransferSyncState(
+        client: Client,
+        targetLevel: string,
+        teleportOverride: PendingTeleport | null
+    ): LevelSyncState | null {
+        const normalizedTargetLevel = LevelConfig.normalizeLevelName(targetLevel);
+        if (!normalizedTargetLevel) {
+            return null;
+        }
+
+        const shouldSyncDungeonProgress = LevelConfig.isDungeonLevel(normalizedTargetLevel);
+        const anchor = LevelHandler.resolveTransferSyncAnchor(client, normalizedTargetLevel, teleportOverride);
+        let x = Math.round(Number(teleportOverride?.x ?? 0));
+        let y = Math.round(Number(teleportOverride?.y ?? 0));
+        let hasCoord = Boolean(teleportOverride?.hasCoord);
+        let syncEntryLevel = shouldSyncDungeonProgress ? LevelConfig.normalizeLevelName(teleportOverride?.syncEntryLevel) : undefined;
+        let syncRoomId = shouldSyncDungeonProgress &&
+            Number.isFinite(Number(teleportOverride?.syncRoomId)) &&
+            Number(teleportOverride?.syncRoomId) >= 0
+            ? Math.round(Number(teleportOverride?.syncRoomId))
+            : undefined;
+        let syncStartedRoomIds = shouldSyncDungeonProgress
+            ? LevelHandler.normalizeStartedRoomIds(normalizedTargetLevel, teleportOverride?.syncStartedRoomIds)
+            : [];
+        let syncAnchorToken = Number(teleportOverride?.syncAnchorToken ?? 0) > 0
+            ? Math.round(Number(teleportOverride?.syncAnchorToken))
+            : undefined;
+        let syncAnchorCharacterName = String(teleportOverride?.syncAnchorCharacterName ?? '').trim() || undefined;
+
+        if (anchor) {
+            const anchorEntity = anchor.entities.get(anchor.clientEntID);
+            if (anchorEntity && Number.isFinite(anchorEntity.x) && Number.isFinite(anchorEntity.y)) {
+                x = Math.round(Number(anchorEntity.x));
+                y = Math.round(Number(anchorEntity.y));
+                hasCoord = true;
+            } else {
+                const savedLevel = anchor.character?.CurrentLevel;
+                if (
+                    LevelConfig.normalizeLevelName(savedLevel?.name) === normalizedTargetLevel &&
+                    Number.isFinite(savedLevel?.x) &&
+                    Number.isFinite(savedLevel?.y)
+                ) {
+                    x = Math.round(Number(savedLevel.x));
+                    y = Math.round(Number(savedLevel.y));
+                    hasCoord = true;
+                }
+            }
+
+            syncAnchorToken = anchor.token > 0 ? anchor.token : syncAnchorToken;
+            syncAnchorCharacterName = anchor.character?.name ?? syncAnchorCharacterName;
+            if (shouldSyncDungeonProgress) {
+                syncEntryLevel = LevelConfig.normalizeLevelName(anchor.entryLevel) || syncEntryLevel;
+                if (Number.isFinite(Number(anchor.currentRoomId)) && anchor.currentRoomId >= 0) {
+                    syncRoomId = Math.round(Number(anchor.currentRoomId));
+                }
+                const anchorStartedRoomIds = LevelHandler.getStartedRoomIdsForLevel(anchor, normalizedTargetLevel);
+                if (anchorStartedRoomIds.length > 0) {
+                    syncStartedRoomIds = anchorStartedRoomIds;
+                }
+            }
+        }
+
+        if (!hasCoord && !syncStartedRoomIds.length && syncRoomId === undefined && !syncEntryLevel) {
+            return null;
+        }
+
+        return {
+            x,
+            y,
+            hasCoord,
+            syncAnchorToken,
+            syncAnchorCharacterName,
+            syncEntryLevel,
+            syncRoomId,
+            syncStartedRoomIds
+        };
+    }
+
     private static readonly CLIENT_SPAWN_FALLBACK_MS = 5000;
     private static readonly FIRST_KEEP_MISSION_ID = MissionID.ClearYourHouse;
     private static readonly MISSION_NOT_STARTED = 0;
@@ -1162,6 +1465,203 @@ export class LevelHandler {
         return client.startedRoomEvents.has(`${client.currentLevel}:${roomId}`);
     }
 
+    private static storePendingTransferToken(
+        token: number,
+        character: any,
+        userId: number | null,
+        targetLevel: string,
+        previousLevel: string,
+        newX: number,
+        newY: number,
+        newHasCoord: boolean,
+        sendExtended: boolean,
+        syncState: LevelSyncState | null = null
+    ): void {
+        if (userId) {
+            GlobalState.pendingWorld.set(token, {
+                character,
+                userId,
+                targetLevel,
+                previousLevel,
+                newX,
+                newY,
+                newHasCoord,
+                syncAnchorToken: syncState?.syncAnchorToken,
+                syncAnchorCharacterName: syncState?.syncAnchorCharacterName,
+                syncEntryLevel: syncState?.syncEntryLevel,
+                syncRoomId: syncState?.syncRoomId,
+                syncStartedRoomIds: syncState?.syncStartedRoomIds
+            });
+            GlobalState.tokenChar.set(token, {
+                character,
+                userId
+            });
+        }
+
+        GlobalState.pendingExtended.set(token, sendExtended);
+    }
+
+    private static allocateTransferToken(targetLevel: string): number {
+        return TransferTokenAllocator.allocate(targetLevel);
+    }
+
+    private static rememberTransferTokenAlias(sourceToken: number, targetToken: number): void {
+        if (!Number.isFinite(sourceToken) || !Number.isFinite(targetToken)) {
+            return;
+        }
+        if (sourceToken <= 0 || targetToken <= 0 || sourceToken === targetToken) {
+            return;
+        }
+
+        GlobalState.transferTokenAliases.set(sourceToken, targetToken);
+    }
+
+    private static resolveTransferTokenAlias(token: number): number {
+        let resolvedToken = token;
+        const visitedTokens = new Set<number>([resolvedToken]);
+
+        while (true) {
+            const nextToken = GlobalState.transferTokenAliases.get(resolvedToken);
+            if (!nextToken || nextToken <= 0 || visitedTokens.has(nextToken)) {
+                return resolvedToken;
+            }
+
+            resolvedToken = nextToken;
+            visitedTokens.add(resolvedToken);
+        }
+    }
+
+    private static recoverTransferSessionStateFromExactToken(
+        client: Client,
+        token: number
+    ): { resolvedToken: number; source: string } | null {
+        const activeSession = GlobalState.sessionsByToken.get(token);
+        if (activeSession?.character) {
+            LevelHandler.cloneTransferGameplayState(client, activeSession);
+            console.log(
+                `[Level] Recovered transfer session from active token ${token} for user ${client.userId} (Char: ${activeSession.character.name})`
+            );
+            return {
+                resolvedToken: activeSession.token > 0 ? activeSession.token : token,
+                source: 'active-token'
+            };
+        }
+
+        const usedEntry = GlobalState.usedTransferTokens.get(token);
+        if (usedEntry) {
+            const liveSession = LevelHandler.findActiveTransferSession(usedEntry.userId, usedEntry.character?.name);
+            if (liveSession?.character) {
+                LevelHandler.cloneTransferGameplayState(client, liveSession);
+                console.log(
+                    `[Level] Recovered transfer session from used token ${token} via active token ${liveSession.token} for user ${client.userId} (Char: ${liveSession.character.name})`
+                );
+                return {
+                    resolvedToken: liveSession.token > 0 ? liveSession.token : token,
+                    source: 'used-token-live-session'
+                };
+            }
+
+            client.character = usedEntry.character;
+            client.userId = usedEntry.userId;
+            client.currentLevel = usedEntry.targetLevel;
+            client.entryLevel = usedEntry.previousLevel;
+            LevelHandler.applyStoredRoomProgressState(
+                client,
+                usedEntry.targetLevel,
+                usedEntry.syncRoomId,
+                usedEntry.syncStartedRoomIds
+            );
+            console.log(
+                `[Level] Recovered transfer session from used token ${token} for user ${client.userId} (Char: ${client.character.name})`
+            );
+            return {
+                resolvedToken: token,
+                source: 'used-token'
+            };
+        }
+
+        const tokenInfo = GlobalState.tokenChar.get(token);
+        if (tokenInfo) {
+            client.character = tokenInfo.character;
+            client.userId = tokenInfo.userId;
+            const liveSession = LevelHandler.findActiveTransferSession(tokenInfo.userId, tokenInfo.character?.name);
+            if (liveSession?.character) {
+                LevelHandler.cloneTransferGameplayState(client, liveSession);
+                console.log(
+                    `[Level] Recovered transfer session from tokenChar ${token} via active token ${liveSession.token} for user ${client.userId} (Char: ${client.character.name})`
+                );
+                return {
+                    resolvedToken: liveSession.token > 0 ? liveSession.token : token,
+                    source: 'token-char-live-session'
+                };
+            }
+
+            console.log(
+                `[Level] Recovered transfer session from tokenChar ${token} for user ${client.userId} (Char: ${client.character.name})`
+            );
+            return {
+                resolvedToken: token,
+                source: 'token-char'
+            };
+        }
+
+        const pendingEntry = GlobalState.pendingWorld.get(token);
+        if (pendingEntry) {
+            client.character = pendingEntry.character;
+            client.userId = pendingEntry.userId;
+            client.currentLevel = pendingEntry.targetLevel;
+            client.entryLevel = pendingEntry.previousLevel;
+            LevelHandler.applyStoredRoomProgressState(
+                client,
+                pendingEntry.targetLevel,
+                pendingEntry.syncRoomId,
+                pendingEntry.syncStartedRoomIds
+            );
+            console.log(
+                `[Level] Recovered transfer session from pendingWorld ${token} for user ${client.userId} (Char: ${client.character.name})`
+            );
+            return {
+                resolvedToken: token,
+                source: 'pending-world'
+            };
+        }
+
+        return null;
+    }
+
+    private static recoverTransferSessionState(
+        client: Client,
+        token: number
+    ): { resolvedToken: number; source: string } | null {
+        if (client.character) {
+            return {
+                resolvedToken: client.token > 0 ? client.token : token,
+                source: 'client'
+            };
+        }
+
+        const directState = LevelHandler.recoverTransferSessionStateFromExactToken(client, token);
+        if (directState) {
+            return directState;
+        }
+
+        const aliasedToken = LevelHandler.resolveTransferTokenAlias(token);
+        if (aliasedToken === token) {
+            return null;
+        }
+
+        const aliasedState = LevelHandler.recoverTransferSessionStateFromExactToken(client, aliasedToken);
+        if (!aliasedState) {
+            return null;
+        }
+
+        console.log(`[Level] Recovered transfer session from aliased token ${token} -> ${aliasedToken}`);
+        return {
+            resolvedToken: aliasedState.resolvedToken,
+            source: `alias:${token}->${aliasedToken}:${aliasedState.source}`
+        };
+    }
+
     static sendRoomEventStart(client: Client, roomId: number, flag: boolean): void {
         const bb = new BitBuffer(false);
         bb.writeMethod9(roomId);
@@ -1180,6 +1680,19 @@ export class LevelHandler {
                 LevelHandler.sendRoomEventStart(client, roomId, true);
             }
         }
+    }
+
+    static restoreTransferredRoomProgress(
+        client: Client,
+        entry: { targetLevel: string; syncRoomId?: number; syncStartedRoomIds?: number[] }
+    ): void {
+        LevelHandler.applyStoredRoomProgressState(
+            client,
+            entry.targetLevel,
+            entry.syncRoomId,
+            entry.syncStartedRoomIds,
+            true
+        );
     }
 
     static handleRequestDoorState(client: Client, data: Buffer): void {
@@ -1238,6 +1751,7 @@ export class LevelHandler {
         if (targetLevel) {
             client.lastDoorId = doorId;
             client.lastDoorTargetLevel = targetLevel;
+            client.armPendingTransferGrace();
             const bb = new BitBuffer();
             bb.writeMethod4(doorId);
             bb.writeMethod13(targetLevel);
@@ -1380,30 +1894,31 @@ export class LevelHandler {
     // 0x1D: Level Transfer Request
     static async handleLevelTransferRequest(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
-        const token = br.readMethod9();
+        const packetToken = br.readMethod9();
         const requestedLevelRaw = br.readMethod13();
         const requestedLevel = LevelConfig.normalizeLevelName(requestedLevelRaw);
-        const lastDoorTarget = LevelConfig.normalizeLevelName(client.lastDoorTargetLevel);
-        const teleportOverride = GlobalState.pendingTeleports.get(token);
-        if (teleportOverride) {
-            GlobalState.pendingTeleports.delete(token);
-        }
 
-        console.log(`[Level] Transfer Request (0x1D): Token=${token}, Level=${requestedLevelRaw}`);
+        console.log(`[Level] Transfer Request (0x1D): Token=${packetToken}, Level=${requestedLevelRaw}`);
 
         // Safety: ensure client is authenticated or token matches
-        if (!client.character) {
-             // Attempt to recover session from token
-             const entry = GlobalState.tokenChar.get(token);
-             if (entry) {
-                 client.character = entry.character;
-                 client.userId = entry.userId;
-                 console.log(`[Level] Recovered session for user ${client.userId} (Char: ${client.character.name}) using token ${token}`);
-             } else {
-                 console.error(`[Level] No character on session during transfer request. Token=${token} not found in tokenChar.`);
-                 console.log(`[Level] Available tokens: ${Array.from(GlobalState.tokenChar.keys()).join(", ")}`);
-                 return;
-             }
+        const transferState = LevelHandler.recoverTransferSessionState(client, packetToken);
+        if (!transferState) {
+             console.error(`[Level] No character on session during transfer request. Token=${packetToken} was not recoverable.`);
+             console.log(`[Level] Available tokenChar tokens: ${Array.from(GlobalState.tokenChar.keys()).join(", ")}`);
+             console.log(`[Level] Available used tokens: ${Array.from(GlobalState.usedTransferTokens.keys()).join(", ")}`);
+             console.log(`[Level] Available session tokens: ${Array.from(GlobalState.sessionsByToken.keys()).join(", ")}`);
+             return;
+        }
+
+        const transferToken = transferState.resolvedToken;
+        if (transferToken !== packetToken) {
+            console.log(`[Level] Remapped transfer token ${packetToken} -> active token ${transferToken} (${transferState.source})`);
+        }
+
+        const lastDoorTarget = LevelConfig.normalizeLevelName(client.lastDoorTargetLevel);
+        const teleportOverride = GlobalState.pendingTeleports.get(transferToken);
+        if (teleportOverride) {
+            GlobalState.pendingTeleports.delete(transferToken);
         }
 
         // 1. Determine Target Level
@@ -1430,10 +1945,18 @@ export class LevelHandler {
             targetLevel = safeFallback;
         }
 
+        const syncState = LevelHandler.buildTransferSyncState(client, targetLevel, teleportOverride ?? null);
+
         await LevelHandler.saveCurrentCharacterSnapshot(client);
         await LevelHandler.refreshCurrentCharacterFromSave(client);
 
-        const currentLevelRecord = client.character.CurrentLevel;
+        const activeCharacter = client.character;
+        if (!activeCharacter) {
+            console.error(`[Level] Character state disappeared during transfer. Token=${packetToken}`);
+            return;
+        }
+
+        const currentLevelRecord = activeCharacter.CurrentLevel;
         const oldLevel = LevelConfig.normalizeLevelName(currentLevelRecord?.name || client.currentLevel || "NewbieRoad") || "NewbieRoad";
         const ent = client.entities.get(client.clientEntID);
         let oldX = 0, oldY = 0;
@@ -1449,47 +1972,52 @@ export class LevelHandler {
         LevelHandler.clearTransferState(client, oldLevel, oldClientEntId);
 
         // 3. Calculate New Spawn / save logic like Python
-        const spawn = teleportTargetLevel && LevelConfig.has(teleportTargetLevel)
+        const spawn = syncState?.hasCoord
             ? {
-                x: Math.round(Number(teleportOverride?.x ?? 0)),
-                y: Math.round(Number(teleportOverride?.y ?? 0)),
-                hasCoord: Boolean(teleportOverride?.hasCoord)
+                x: Math.round(Number(syncState.x ?? 0)),
+                y: Math.round(Number(syncState.y ?? 0)),
+                hasCoord: true
             }
-            : LevelConfig.getSpawnCoordinates(client.character, oldLevel, targetLevel);
+            : LevelConfig.getSpawnCoordinates(activeCharacter, oldLevel, targetLevel);
         const newX = spawn.x;
         const newY = spawn.y;
         const newHasCoord = spawn.hasCoord;
-        LevelConfig.updateSavedLevelsOnTransfer(client.character, oldLevel, targetLevel, newX, newY);
+        LevelConfig.updateSavedLevelsOnTransfer(activeCharacter, oldLevel, targetLevel, newX, newY);
 
         if (client.userId) {
             await db.saveCharacters(client.userId, client.characters);
         }
 
         // 5. Generate New Token
-        const newToken = Math.floor(Math.random() * 0xFFFF);
+        const newToken = LevelHandler.allocateTransferToken(targetLevel);
         
         // 6. Check House Visit Override
-        let hostChar = client.character;
+        let hostChar = activeCharacter;
         // Use token from packet (0x1D) to lookup house visit
-        if (GlobalState.houseVisits.has(token)) {
-            hostChar = GlobalState.houseVisits.get(token)!;
-            GlobalState.houseVisits.delete(token); // Consume
+        if (GlobalState.houseVisits.has(transferToken)) {
+            hostChar = GlobalState.houseVisits.get(transferToken)!;
+            GlobalState.houseVisits.delete(transferToken); // Consume
             console.log(`[Level] House Visit active! Host: ${hostChar.name}`);
         }
 
         // 7. Store Pending Transfer State
-        if (client.userId) {
-            GlobalState.pendingWorld.set(newToken, {
-                character: client.character,
-                userId: client.userId,
-                targetLevel: targetLevel,
-                previousLevel: oldLevel,
-                newX,
-                newY,
-                newHasCoord
-            });
-        }
-        GlobalState.pendingExtended.set(newToken, false);
+        const effectivePreviousLevel = LevelConfig.isDungeonLevel(targetLevel) && syncState?.syncEntryLevel
+            ? syncState.syncEntryLevel
+            : oldLevel;
+        LevelHandler.storePendingTransferToken(
+            newToken,
+            activeCharacter,
+            client.userId,
+            targetLevel,
+            effectivePreviousLevel,
+            newX,
+            newY,
+            newHasCoord,
+            false,
+            syncState
+        );
+        LevelHandler.rememberTransferTokenAlias(packetToken, newToken);
+        LevelHandler.rememberTransferTokenAlias(transferToken, newToken);
         
         // 8. Send Enter World (0x21)
         const levelSpec = LevelConfig.get(targetLevel);
@@ -1563,10 +2091,25 @@ export class LevelHandler {
         ent.bBackpedal = flags.bBackpedal;
         ent.velocityY = velocityY;
         ent.airborne = isAirborne;
+
+        const currentLevel = client.currentLevel || "NewbieRoad";
+        const levelEntity = GlobalState.levelEntities.get(currentLevel)?.get(entityId);
+        if (levelEntity && levelEntity !== ent) {
+            levelEntity.x = ent.x;
+            levelEntity.y = ent.y;
+            levelEntity.v = ent.v;
+            levelEntity.entState = entState;
+            levelEntity.facingLeft = flags.bLeft;
+            levelEntity.bRunning = flags.bRunning;
+            levelEntity.bJumping = flags.bJumping;
+            levelEntity.bDropping = flags.bDropping;
+            levelEntity.bBackpedal = flags.bBackpedal;
+            levelEntity.velocityY = velocityY;
+            levelEntity.airborne = isAirborne;
+        }
         
         // Update Saved Coords if it's us and safe level
         if (isSelf && client.character) {
-            const currentLevel = client.currentLevel || "NewbieRoad";
             const isDungeon = LevelConfig.get(currentLevel).isDungeon;
             
             if (currentLevel === "CraftTown" || !isDungeon) {
@@ -1584,7 +2127,20 @@ export class LevelHandler {
             }
         }
 
-        LevelHandler.relayToLevel(client, 0x07, data);
+        if (!client.playerSpawned || !client.currentLevel) {
+            return;
+        }
+
+        const relayEntity = levelEntity ?? ent;
+        for (const other of LevelHandler.forLevelRecipients(client)) {
+            if (!EntityHandler.canClientSeeEntity(other, relayEntity)) {
+                continue;
+            }
+            if (!EntityHandler.ensureEntityKnown(other, client.currentLevel, entityId)) {
+                continue;
+            }
+            other.send(0x07, data);
+        }
     }
 
 }
