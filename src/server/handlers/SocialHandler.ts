@@ -136,6 +136,15 @@ export class SocialHandler {
         );
     }
 
+    private static getFriendEntry(character: Character | null | undefined, friendName: string): FriendEntry | null {
+        const index = SocialHandler.findFriendIndex(character, friendName);
+        if (index < 0) {
+            return null;
+        }
+
+        return SocialHandler.getFriendEntries(character)[index] ?? null;
+    }
+
     private static upsertFriendEntry(character: Character | null | undefined, entry: FriendEntry): boolean {
         if (!character) {
             return false;
@@ -158,21 +167,22 @@ export class SocialHandler {
         return true;
     }
 
-    private static removeFriendEntry(character: Character | null | undefined, friendName: string): boolean {
+    private static removeFriendEntry(character: Character | null | undefined, friendName: string): FriendEntry | null {
         if (!character) {
-            return false;
+            return null;
         }
 
         const friends = SocialHandler.getFriendEntries(character);
         const index = SocialHandler.findFriendIndex(character, friendName);
         if (index < 0) {
-            return false;
+            return null;
         }
 
+        const removed = friends[index];
         const nextFriends = [...friends];
         nextFriends.splice(index, 1);
         character.friends = nextFriends;
-        return true;
+        return removed ?? null;
     }
 
     private static buildFriendStatusPayload(friendName: string, isRequest: boolean, session: Client | null): Buffer {
@@ -775,15 +785,15 @@ export class SocialHandler {
         ensureCharacterSocialState(targetCharacter);
 
         const targetDisplayName = targetCharacter.name;
-        const senderEntryIndex = SocialHandler.findFriendIndex(client.character, targetDisplayName);
-        const targetEntryIndex = SocialHandler.findFriendIndex(targetCharacter, senderName);
-        const senderEntry = senderEntryIndex >= 0 ? SocialHandler.getFriendEntries(client.character)[senderEntryIndex] : null;
-        const targetEntry = targetEntryIndex >= 0 ? SocialHandler.getFriendEntries(targetCharacter)[targetEntryIndex] : null;
+        const senderEntry = SocialHandler.getFriendEntry(client.character, targetDisplayName);
+        const targetEntry = SocialHandler.getFriendEntry(targetCharacter, senderName);
+        const senderEntryName = senderEntry?.name ?? targetDisplayName;
+        const targetEntryName = targetEntry?.name ?? senderName;
 
         if (senderEntry && !senderEntry.isRequest) {
             if (!targetEntry || targetEntry.isRequest) {
                 const repaired = SocialHandler.upsertFriendEntry(targetCharacter, {
-                    name: senderName,
+                    name: targetEntryName,
                     isRequest: false
                 });
                 if (repaired) {
@@ -801,11 +811,11 @@ export class SocialHandler {
 
         if (senderEntry?.isRequest) {
             const senderChanged = SocialHandler.upsertFriendEntry(client.character, {
-                name: targetDisplayName,
+                name: senderEntryName,
                 isRequest: false
             });
             const targetChanged = SocialHandler.upsertFriendEntry(targetCharacter, {
-                name: senderName,
+                name: targetEntryName,
                 isRequest: false
             });
 
@@ -821,25 +831,25 @@ export class SocialHandler {
                 }
             }
 
-            SocialHandler.sendFriendUpdate(client, targetDisplayName, false, targetSession);
+            SocialHandler.sendFriendUpdate(client, senderEntryName, false, targetSession);
             if (targetSession) {
-                SocialHandler.sendFriendUpdate(targetSession, senderName, false, client);
+                SocialHandler.sendFriendUpdate(targetSession, targetEntryName, false, client);
             }
             return;
         }
 
         if (targetEntry && !targetEntry.isRequest) {
             const senderChanged = SocialHandler.upsertFriendEntry(client.character, {
-                name: targetDisplayName,
+                name: senderEntryName,
                 isRequest: false
             });
             if (senderChanged) {
                 await SocialHandler.persistClientCharacter(client);
             }
 
-            SocialHandler.sendFriendUpdate(client, targetDisplayName, false, targetSession);
+            SocialHandler.sendFriendUpdate(client, senderEntryName, false, targetSession);
             if (targetSession) {
-                SocialHandler.sendFriendUpdate(targetSession, senderName, false, client);
+                SocialHandler.sendFriendUpdate(targetSession, targetEntryName, false, client);
             }
             return;
         }
@@ -893,24 +903,24 @@ export class SocialHandler {
         const targetRecord = targetSession ? null : await SocialHandler.loadCharacterRecordByName(friendEntry.name);
         const targetCharacter = targetSession?.character ?? targetRecord?.character ?? null;
 
-        const senderChanged = SocialHandler.removeFriendEntry(client.character, friendEntry.name);
-        if (senderChanged) {
+        const removedSenderEntry = SocialHandler.removeFriendEntry(client.character, friendEntry.name);
+        if (removedSenderEntry) {
             await SocialHandler.persistClientCharacter(client);
         }
-        SocialHandler.sendFriendRemoved(client, friendEntry.name);
+        SocialHandler.sendFriendRemoved(client, removedSenderEntry?.name ?? friendEntry.name);
 
         if (!targetCharacter) {
             return;
         }
 
-        const targetChanged = SocialHandler.removeFriendEntry(targetCharacter, senderName);
-        if (!targetChanged) {
+        const removedTargetEntry = SocialHandler.removeFriendEntry(targetCharacter, senderName);
+        if (!removedTargetEntry) {
             return;
         }
 
         if (targetSession) {
             await SocialHandler.persistClientCharacter(targetSession);
-            SocialHandler.sendFriendRemoved(targetSession, senderName);
+            SocialHandler.sendFriendRemoved(targetSession, removedTargetEntry.name);
         } else if (targetRecord) {
             await SocialHandler.persistLoadedCharacter(targetRecord);
         }
