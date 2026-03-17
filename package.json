@@ -4,7 +4,6 @@
     "description": "Dungeon Blitz: R",
     "main": "index.js",
     "scripts": {
-        "start": "cd src/server && npm run start",
         "dev": "cd src/server && npm run dev",
         "build": "cd src/server && npm run build",
         "start:multiplayer": "cd src/server && npm run start:multiplayer"

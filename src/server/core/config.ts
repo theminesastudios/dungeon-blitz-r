@@ -53,7 +53,7 @@ function parseNumberEnv(name: string, fallback: number): number {
 const MULTIPLAYER_MODE = parseBooleanEnv('MULTIPLAYER_MODE', false);
 const LOCAL_HOST = 'localhost';
 const MULTIPLAYER_HOST = '100.100.146.54';
-const DEFAULT_STATIC_PORT = 80;
+const DEFAULT_STATIC_PORT = MULTIPLAYER_MODE ? 80 : 8000;
 const DEFAULT_GAME_PORT = 8080;
 const DEFAULT_POLICY_PORT = 843;
 
