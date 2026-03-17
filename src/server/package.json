@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "sudo ts-node main.ts",
-    "dev": "nodemon --ext ts --exec ts-node main.ts",
-    "build": "tsc"
+    "dev": "MULTIPLAYER_MODE=false STATIC_PORT=8000 ENABLE_POLICY_SERVER=false nodemon --ext ts --exec ts-node main.ts",
+    "build": "tsc",
+    "start:multiplayer": "sudo env MULTIPLAYER_MODE=true ENABLE_POLICY_SERVER=true node dist/main.js"
   },
   "keywords": [],
   "author": "",

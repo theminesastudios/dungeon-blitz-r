@@ -1,0 +1,13 @@
+{
+    "name": "dungeon-blitz-r",
+    "version": "1.0.0",
+    "description": "Dungeon Blitz: R",
+    "main": "index.js",
+    "scripts": {
+        "dev": "cd src/server && npm run dev",
+        "build": "cd src/server && npm run build",
+        "start:multiplayer": "cd src/server && npm run start:multiplayer"
+    },
+    "author": "The Minesa Studios",
+    "license": "MIT"
+}

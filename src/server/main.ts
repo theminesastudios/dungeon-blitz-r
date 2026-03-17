@@ -139,8 +139,14 @@ router.register(0xDF, TalentHandler.handleClearTalentResearch);
 router.register(0x106, SigilHandler.handleRoyalSigilStorePurchase);
 
 // Start Servers
-const policyServer = new PolicyServer(Config.POLICY_PORT, Config.BIND_HOST);
-policyServer.start();
+if (Config.ENABLE_POLICY_SERVER) {
+    const policyServer = new PolicyServer(Config.POLICY_PORT, Config.BIND_HOST);
+    policyServer.start();
+} else {
+    console.log(
+        `[Policy] Dedicated policy server disabled; serving socket policy inline on ${Config.BIND_HOST}:${Config.PORTS[0]}`
+    );
+}
 
 const staticServer = new StaticServer(Config.STATIC_PORT, '../client/content/localhost', Config.BIND_HOST);
 staticServer.start();

@@ -26,6 +26,8 @@ export class StaticServer {
     private port: number;
     private contentDir: string;
     private host: string;
+    private readonly flashVersion = 'cbq';
+    private readonly gameVersion = 'cbp';
 
     constructor(
         port: number = Config.STATIC_PORT,
@@ -45,6 +47,10 @@ export class StaticServer {
     private getSelectedSwfPath(): string {
         const swfName = Config.MULTIPLAYER_MODE ? 'DungeonBlitz.multiplayer.swf' : 'DungeonBlitz.localhost.swf';
         return path.join(this.contentDir, 'p', 'cbp', swfName);
+    }
+
+    private getSelectedSwfUrl(): string {
+        return `/p/cbp/DungeonBlitz.swf?fv=${this.flashVersion}&gv=${this.gameVersion}`;
     }
 
     private renderDevSettings(devSettingsPath: string): string {
@@ -105,8 +111,7 @@ export class StaticServer {
         });
 
         this.app.get('/', (_req, res) => {
-            res.type('application/x-shockwave-flash');
-            res.sendFile(this.getSelectedSwfPath());
+            res.sendFile(path.join(this.contentDir, 'index.html'));
         });
 
         this.app.get('/p/cbp/DungeonBlitz.swf', (_req, res) => {
@@ -142,9 +147,12 @@ export class StaticServer {
 
     public start(): void {
         this.app.listen(this.port, this.host, () => {
+            const portSuffix = this.port === 80 ? '' : `:${this.port}`;
+            const baseUrl = `http://${Config.HOST}${portSuffix}`;
             console.log(`[StaticServer] Serving ${this.contentDir} on http://${this.host}:${this.port}`);
             console.log(`[StaticServer] Multiplayer mode: ${Config.MULTIPLAYER_MODE}`);
-            console.log(`[StaticServer] Flash URL: http://${Config.HOST}/p/cbp/DungeonBlitz.swf`);
+            console.log(`[StaticServer] Browser URL: ${baseUrl}/`);
+            console.log(`[StaticServer] Flash URL: ${baseUrl}${this.getSelectedSwfUrl()}`);
         });
     }
 }
