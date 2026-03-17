@@ -76,6 +76,9 @@ router.register(0xAB, LevelHandler.handleRoomInfoUpdate); // Room Info Update
 router.register(0xAC, LevelHandler.handleRoomBossInfo); // Room Boss Info
 router.register(0xAD, LevelHandler.handleRoomUnlock); // Room Unlock
 router.register(0xAE, LevelHandler.handleSetUntargetable); // Set Untargetable
+router.register(0x95, SocialHandler.handleZonePanelRequest); // Zone Panel Request
+router.register(0x2C, SocialHandler.handlePublicChat); // Public Chat
+router.register(0x46, SocialHandler.handlePrivateMessage); // Private Message
 router.register(0x40, SocialHandler.handleLevelState); // Level State
 router.register(0x76, SocialHandler.handleRoomThought); // Room Thought
 router.register(0x8A, LevelHandler.handleChangeMaxSpeed); // Change Max Speed
@@ -85,6 +88,19 @@ router.register(0x7F, SocialHandler.handleEmoteEnd); // Emote End
 router.register(0x7A, NpcHandler.handleTalkToNpc); // Talk To NPC
 router.register(0xA7, SocialHandler.handleEmote); // Emote
 router.register(0xC5, SocialHandler.handleStartSkit); // Start Skit
+router.register(0x65, SocialHandler.handleGroupInvite); // Group Invite
+router.register(0x59, SocialHandler.handleQueryMessageAnswer); // Query Message Answer
+router.register(0x8B, SocialHandler.handleMapLocationUpdate); // Group Map Position
+router.register(0x67, SocialHandler.handleGroupKick); // Group Kick
+router.register(0x66, SocialHandler.handleGroupLeave); // Group Leave
+router.register(0x68, SocialHandler.handleGroupLeader); // Group Leader
+router.register(0x69, SocialHandler.handleGroupLock); // Group Lock
+router.register(0x6A, SocialHandler.handleJoinPartyRequest); // Join Party
+router.register(0x63, SocialHandler.handleSendGroupChat); // Group Chat
+router.register(0x6B, SocialHandler.handleTeleportToPlayer); // Teleport To Party Member
+router.register(0x90, SocialHandler.handleFriendRequest); // Friend Request / Accept
+router.register(0x91, SocialHandler.handleUnfriend); // Unfriend / Decline
+router.register(0xC9, SocialHandler.handleRequestFriendList); // Friend List Request
 
 router.register(0xF3, SocialHandler.handleRequestVisitPlayerHouse); // Visit House
 router.register(0x2D, LevelHandler.handleOpenDoor); // Open Door

@@ -1398,6 +1398,10 @@ export class LevelHandler {
         const requestedLevelRaw = br.readMethod13();
         const requestedLevel = LevelConfig.normalizeLevelName(requestedLevelRaw);
         const lastDoorTarget = LevelConfig.normalizeLevelName(client.lastDoorTargetLevel);
+        const teleportOverride = GlobalState.pendingTeleports.get(token);
+        if (teleportOverride) {
+            GlobalState.pendingTeleports.delete(token);
+        }
 
         console.log(`[Level] Transfer Request (0x1D): Token=${token}, Level=${requestedLevelRaw}`);
 
@@ -1418,7 +1422,11 @@ export class LevelHandler {
 
         // 1. Determine Target Level
         let targetLevel = requestedLevel;
-        if (!targetLevel || targetLevel === "None") {
+        const teleportTargetLevel = LevelConfig.normalizeLevelName(teleportOverride?.targetLevel);
+
+        if (teleportTargetLevel && LevelConfig.has(teleportTargetLevel)) {
+            targetLevel = teleportTargetLevel;
+        } else if (!targetLevel || targetLevel === "None") {
             if (lastDoorTarget && LevelConfig.has(lastDoorTarget)) {
                 targetLevel = lastDoorTarget;
                 console.log(`[Level] Using last door target for transfer: ${targetLevel}`);
@@ -1455,7 +1463,13 @@ export class LevelHandler {
         LevelHandler.clearTransferState(client, oldLevel, oldClientEntId);
 
         // 3. Calculate New Spawn / save logic like Python
-        const spawn = LevelConfig.getSpawnCoordinates(client.character, oldLevel, targetLevel);
+        const spawn = teleportTargetLevel && LevelConfig.has(teleportTargetLevel)
+            ? {
+                x: Math.round(Number(teleportOverride?.x ?? 0)),
+                y: Math.round(Number(teleportOverride?.y ?? 0)),
+                hasCoord: Boolean(teleportOverride?.hasCoord)
+            }
+            : LevelConfig.getSpawnCoordinates(client.character, oldLevel, targetLevel);
         const newX = spawn.x;
         const newY = spawn.y;
         const newHasCoord = spawn.hasCoord;

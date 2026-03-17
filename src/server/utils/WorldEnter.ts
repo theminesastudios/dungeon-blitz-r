@@ -3,6 +3,7 @@ import { Character } from '../database/Database';
 import { MissionDef, MissionLoader } from '../data/MissionLoader';
 import { BuildingID, ClassID, MasterClassID } from '../core/Enums';
 import { GlobalState } from '../core/GlobalState';
+import { normalizeFriendEntries } from '../core/SocialState';
 
 export class WorldEnter {
     private static readonly MASTERCLASS_TO_BUILDING: Record<number, number> = {
@@ -504,10 +505,9 @@ export class WorldEnter {
                 }
             }
 
-            const friends = WorldEnter.asArray(character.friends);
+            const friends = normalizeFriendEntries(character.friends);
             bb.writeMethod4(friends.length);
-            for (const rawFriend of friends) {
-                const friend = WorldEnter.asRecord(rawFriend);
+            for (const friend of friends) {
                 const friendName = String(friend.name ?? '');
                 const isRequest = Boolean(friend.isRequest);
                 let isOnline = false;

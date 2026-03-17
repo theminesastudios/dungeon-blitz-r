@@ -105,10 +105,29 @@ export class EntityHandler {
     }
 
     private static sendDestroyEntity(client: Client, entityId: number): void {
+        client.send(0x0D, EntityHandler.buildDestroyEntityPayload(entityId));
+    }
+
+    private static buildDestroyEntityPayload(entityId: number): Buffer {
         const bb = new BitBuffer(false);
         bb.writeMethod4(entityId);
         bb.writeMethod15(false);
-        client.send(0x0D, bb.toBuffer());
+        return bb.toBuffer();
+    }
+
+    static broadcastDestroyEntity(levelName: string, entityId: number, excludedClient: Client | null = null): void {
+        if (!levelName || entityId <= 0) {
+            return;
+        }
+
+        const payload = EntityHandler.buildDestroyEntityPayload(entityId);
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (other === excludedClient || !other.playerSpawned || other.currentLevel !== levelName) {
+                continue;
+            }
+
+            other.send(0x0D, payload);
+        }
     }
 
     private static getEquippedMountId(value: unknown): number {
@@ -433,18 +452,19 @@ export class EntityHandler {
         }
     }
 
-    static removeOwnedEntities(client: Client): void {
+    static removeOwnedEntities(client: Client, broadcastDestroy: boolean = false): number[] {
         const levelName = client.currentLevel;
         if (!levelName) {
-            return;
+            return [];
         }
 
         const levelMap = GlobalState.levelEntities.get(levelName);
         if (!levelMap) {
-            return;
+            return [];
         }
 
         const charNameNorm = EntityHandler.normalizeIdentityName(client.character?.name);
+        const removedEntityIds: number[] = [];
         for (const [entityId, entityProps] of Array.from(levelMap.entries())) {
             const entityNameNorm = EntityHandler.normalizeIdentityName(entityProps?.name);
             const isOwnedPlayer = Boolean(entityProps?.isPlayer) && (
@@ -455,12 +475,21 @@ export class EntityHandler {
 
             if (isOwnedPlayer || isOwnedClientSpawn) {
                 levelMap.delete(entityId);
+                removedEntityIds.push(entityId);
+            }
+        }
+
+        if (broadcastDestroy) {
+            for (const entityId of removedEntityIds) {
+                EntityHandler.broadcastDestroyEntity(levelName, entityId, client);
             }
         }
 
         if (levelMap.size === 0) {
             GlobalState.levelEntities.delete(levelName);
         }
+
+        return removedEntityIds;
     }
 
     private static sendExistingPlayersToJoiner(joiner: Client): void {
