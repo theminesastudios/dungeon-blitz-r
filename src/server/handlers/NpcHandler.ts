@@ -8,6 +8,7 @@ import { MissionID } from '../data/runtime';
 import { NpcLoader } from '../data/NpcLoader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
+import { getClientLevelScope } from '../core/LevelScope';
 import { RewardHandler } from './RewardHandler';
 
 const db = new JsonAdapter();
@@ -162,7 +163,7 @@ export class NpcHandler {
             return local;
         }
 
-        const levelMap = GlobalState.levelEntities.get(levelName);
+        const levelMap = GlobalState.levelEntities.get(getClientLevelScope(client));
         const global = levelMap?.get(npcId);
         if (global) {
             return global;

@@ -5,13 +5,17 @@ import { BitBuffer } from '../network/protocol/bitBuffer';
 import { GlobalState } from '../core/GlobalState';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { LevelConfig } from '../core/LevelConfig';
+import { GuildHandler } from './GuildHandler';
 import {
     ensureCharacterSocialState,
     FriendEntry,
+    getCharacterIgnoredEntries,
+    isCharacterIgnoring,
     normalizeCharacterKey,
     PartyGroup,
     PendingTeleport
 } from '../core/SocialState';
+import { areClientsInSameLevelScope, getClientLevelScope } from '../core/LevelScope';
 
 const db = new JsonAdapter();
 
@@ -133,6 +137,15 @@ export class SocialHandler {
         );
     }
 
+    private static getFriendEntry(character: Character | null | undefined, friendName: string): FriendEntry | null {
+        const index = SocialHandler.findFriendIndex(character, friendName);
+        if (index < 0) {
+            return null;
+        }
+
+        return SocialHandler.getFriendEntries(character)[index] ?? null;
+    }
+
     private static upsertFriendEntry(character: Character | null | undefined, entry: FriendEntry): boolean {
         if (!character) {
             return false;
@@ -155,21 +168,22 @@ export class SocialHandler {
         return true;
     }
 
-    private static removeFriendEntry(character: Character | null | undefined, friendName: string): boolean {
+    private static removeFriendEntry(character: Character | null | undefined, friendName: string): FriendEntry | null {
         if (!character) {
-            return false;
+            return null;
         }
 
         const friends = SocialHandler.getFriendEntries(character);
         const index = SocialHandler.findFriendIndex(character, friendName);
         if (index < 0) {
-            return false;
+            return null;
         }
 
+        const removed = friends[index];
         const nextFriends = [...friends];
         nextFriends.splice(index, 1);
         character.friends = nextFriends;
-        return true;
+        return removed ?? null;
     }
 
     private static buildFriendStatusPayload(friendName: string, isRequest: boolean, session: Client | null): Buffer {
@@ -239,6 +253,92 @@ export class SocialHandler {
         client.sendBitBuffer(0xCA, bb);
     }
 
+    private static getIgnoredEntries(character: Character | null | undefined): string[] {
+        return getCharacterIgnoredEntries(character);
+    }
+
+    private static findIgnoredIndex(character: Character | null | undefined, targetName: string): number {
+        const targetKey = SocialHandler.normalizeName(targetName);
+        return SocialHandler.getIgnoredEntries(character).findIndex((entry) =>
+            SocialHandler.normalizeName(entry) === targetKey
+        );
+    }
+
+    private static addIgnoredEntry(character: Character | null | undefined, targetName: string): boolean {
+        if (!character) {
+            return false;
+        }
+
+        const ignored = SocialHandler.getIgnoredEntries(character);
+        if (SocialHandler.findIgnoredIndex(character, targetName) >= 0) {
+            return false;
+        }
+
+        character.ignored = [...ignored, String(targetName ?? '').trim()];
+        return true;
+    }
+
+    private static removeIgnoredEntry(character: Character | null | undefined, targetName: string): boolean {
+        if (!character) {
+            return false;
+        }
+
+        const ignored = SocialHandler.getIgnoredEntries(character);
+        const index = SocialHandler.findIgnoredIndex(character, targetName);
+        if (index < 0) {
+            return false;
+        }
+
+        const nextIgnored = [...ignored];
+        nextIgnored.splice(index, 1);
+        character.ignored = nextIgnored;
+        return true;
+    }
+
+    private static buildIgnoreNamePayload(targetName: string): Buffer {
+        const bb = new BitBuffer(false);
+        bb.writeMethod13(targetName);
+        return bb.toBuffer();
+    }
+
+    private static sendIgnoreAdded(target: Client | null | undefined, targetName: string): void {
+        if (!target) {
+            return;
+        }
+
+        target.send(0x9d, SocialHandler.buildIgnoreNamePayload(targetName));
+    }
+
+    private static sendIgnoreRemoved(target: Client | null | undefined, targetName: string): void {
+        if (!target) {
+            return;
+        }
+
+        target.send(0x9c, SocialHandler.buildIgnoreNamePayload(targetName));
+    }
+
+    private static sendFullIgnoreList(client: Client): void {
+        if (!client.character) {
+            return;
+        }
+
+        const ignored = SocialHandler.getIgnoredEntries(client.character);
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(ignored.length);
+        for (const entry of ignored) {
+            bb.writeMethod13(entry);
+        }
+
+        client.sendBitBuffer(0x9f, bb);
+    }
+
+    private static canReceiveChatFrom(recipient: Client | null | undefined, senderName: string): boolean {
+        if (!recipient?.character) {
+            return false;
+        }
+
+        return !isCharacterIgnoring(recipient.character, senderName);
+    }
     private static upsertCharacter(characters: Character[], character: Character): Character[] {
         const normalizedName = SocialHandler.normalizeName(character.name);
         const nextCharacters = Array.isArray(characters) ? [...characters] : [];
@@ -318,7 +418,7 @@ export class SocialHandler {
         const selfName = SocialHandler.normalizeName(client.character?.name);
 
         for (const other of GlobalState.sessionsByToken.values()) {
-            if (!other.playerSpawned || other.currentLevel !== client.currentLevel || !other.character) {
+            if (!other.playerSpawned || !areClientsInSameLevelScope(client, other) || !other.character) {
                 continue;
             }
             if (SocialHandler.normalizeName(other.character.name) === selfName) {
@@ -343,7 +443,7 @@ export class SocialHandler {
 
         const recipients: Client[] = [];
         for (const other of GlobalState.sessionsByToken.values()) {
-            if (!other.playerSpawned || other.currentLevel !== levelName) {
+            if (!other.playerSpawned || !areClientsInSameLevelScope(client, other)) {
                 continue;
             }
             if (!includeSender && other === client) {
@@ -355,8 +455,18 @@ export class SocialHandler {
         return recipients;
     }
 
-    private static relayToLevel(client: Client, packetId: number, data: Buffer, includeSender: boolean = false): void {
+    private static relayToLevel(
+        client: Client,
+        packetId: number,
+        data: Buffer,
+        includeSender: boolean = false,
+        filterIgnored: boolean = false
+    ): void {
         for (const other of SocialHandler.forLevelRecipients(client, includeSender)) {
+            if (filterIgnored && !SocialHandler.canReceiveChatFrom(other, SocialHandler.getCharacterName(client))) {
+                continue;
+            }
+
             other.send(packetId, data);
         }
     }
@@ -488,6 +598,7 @@ export class SocialHandler {
     private static buildPartyUpdatePayload(group: PartyGroup, viewer: Client): Buffer {
         const bb = new BitBuffer(false);
         const viewerLevel = viewer.currentLevel;
+        const viewerScope = getClientLevelScope(viewer);
 
         bb.writeMethod15(true);
         bb.writeMethod15(Boolean(group.locked));
@@ -506,7 +617,7 @@ export class SocialHandler {
 
             if (isOnline && session) {
                 const position = SocialHandler.getPartyMapPosition(session);
-                const sameLevel = Boolean(viewerLevel) && session.currentLevel === viewerLevel;
+                const sameLevel = Boolean(viewerLevel) && getClientLevelScope(session) === viewerScope;
                 bb.writeMethod91(position.x);
                 bb.writeMethod91(position.y);
                 bb.writeMethod15(sameLevel);
@@ -545,6 +656,33 @@ export class SocialHandler {
         SocialHandler.broadcastPartyUpdateById(party.partyId);
     }
 
+    private static getStartedRoomIdsForLevel(target: Client, levelName: string): number[] {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        if (!normalizedLevel) {
+            return [];
+        }
+
+        const startedRoomIds = new Set<number>();
+        for (const key of target.startedRoomEvents) {
+            const separatorIndex = key.lastIndexOf(':');
+            if (separatorIndex <= 0) {
+                continue;
+            }
+
+            const eventLevel = LevelConfig.normalizeLevelName(key.substring(0, separatorIndex));
+            if (eventLevel !== normalizedLevel) {
+                continue;
+            }
+
+            const roomId = Number(key.substring(separatorIndex + 1));
+            if (Number.isFinite(roomId) && roomId >= 0) {
+                startedRoomIds.add(Math.round(roomId));
+            }
+        }
+
+        return Array.from(startedRoomIds.values()).sort((left, right) => left - right);
+    }
+
     private static getTeleportTargetPosition(target: Client): PendingTeleport | null {
         const targetLevel = LevelConfig.normalizeLevelName(target.currentLevel || target.character?.CurrentLevel?.name);
         if (!targetLevel || !LevelConfig.has(targetLevel)) {
@@ -578,11 +716,27 @@ export class SocialHandler {
             }
         }
 
+        const shouldSyncDungeonProgress = LevelConfig.isDungeonLevel(targetLevel);
+        const syncRoomId = shouldSyncDungeonProgress &&
+            Number.isFinite(Number(target.currentRoomId)) &&
+            target.currentRoomId >= 0
+            ? Math.round(Number(target.currentRoomId))
+            : undefined;
+        const syncStartedRoomIds = shouldSyncDungeonProgress
+            ? SocialHandler.getStartedRoomIdsForLevel(target, targetLevel)
+            : undefined;
+
         return {
             targetLevel,
+            levelInstanceId: shouldSyncDungeonProgress ? target.levelInstanceId : undefined,
             x,
             y,
-            hasCoord
+            hasCoord,
+            syncAnchorToken: target.token > 0 ? target.token : undefined,
+            syncAnchorCharacterName: target.character?.name,
+            syncEntryLevel: shouldSyncDungeonProgress ? LevelConfig.normalizeLevelName(target.entryLevel) : undefined,
+            syncRoomId,
+            syncStartedRoomIds
         };
     }
 
@@ -593,6 +747,7 @@ export class SocialHandler {
 
         SocialHandler.notifyFriendsAboutStatus(client, true);
         SocialHandler.broadcastPartyUpdateForMember(client.character.name);
+        GuildHandler.handleSessionReady(client);
     }
 
     static handleSessionClose(client: Client, transferInProgress: boolean): void {
@@ -602,6 +757,7 @@ export class SocialHandler {
 
         SocialHandler.notifyFriendsAboutStatus(client, false);
         SocialHandler.broadcastPartyUpdateForMember(client.character.name);
+        GuildHandler.handleSessionClose(client);
     }
 
     static handleZonePanelRequest(client: Client, _data: Buffer): void {
@@ -613,7 +769,7 @@ export class SocialHandler {
         br.readMethod9();
         br.readMethod13();
 
-        SocialHandler.relayToLevel(client, 0x2c, data);
+        SocialHandler.relayToLevel(client, 0x2c, data, false, true);
     }
 
     static handlePrivateMessage(client: Client, data: Buffer): void {
@@ -631,7 +787,9 @@ export class SocialHandler {
         const received = new BitBuffer(false);
         received.writeMethod13(senderName);
         received.writeMethod13(message);
-        recipient.sendBitBuffer(0x47, received);
+        if (SocialHandler.canReceiveChatFrom(recipient, senderName)) {
+            recipient.sendBitBuffer(0x47, received);
+        }
 
         const echoed = new BitBuffer(false);
         echoed.writeMethod13(recipient.character.name);
@@ -671,15 +829,15 @@ export class SocialHandler {
         ensureCharacterSocialState(targetCharacter);
 
         const targetDisplayName = targetCharacter.name;
-        const senderEntryIndex = SocialHandler.findFriendIndex(client.character, targetDisplayName);
-        const targetEntryIndex = SocialHandler.findFriendIndex(targetCharacter, senderName);
-        const senderEntry = senderEntryIndex >= 0 ? SocialHandler.getFriendEntries(client.character)[senderEntryIndex] : null;
-        const targetEntry = targetEntryIndex >= 0 ? SocialHandler.getFriendEntries(targetCharacter)[targetEntryIndex] : null;
+        const senderEntry = SocialHandler.getFriendEntry(client.character, targetDisplayName);
+        const targetEntry = SocialHandler.getFriendEntry(targetCharacter, senderName);
+        const senderEntryName = senderEntry?.name ?? targetDisplayName;
+        const targetEntryName = targetEntry?.name ?? senderName;
 
         if (senderEntry && !senderEntry.isRequest) {
             if (!targetEntry || targetEntry.isRequest) {
                 const repaired = SocialHandler.upsertFriendEntry(targetCharacter, {
-                    name: senderName,
+                    name: targetEntryName,
                     isRequest: false
                 });
                 if (repaired) {
@@ -697,11 +855,11 @@ export class SocialHandler {
 
         if (senderEntry?.isRequest) {
             const senderChanged = SocialHandler.upsertFriendEntry(client.character, {
-                name: targetDisplayName,
+                name: senderEntryName,
                 isRequest: false
             });
             const targetChanged = SocialHandler.upsertFriendEntry(targetCharacter, {
-                name: senderName,
+                name: targetEntryName,
                 isRequest: false
             });
 
@@ -717,25 +875,25 @@ export class SocialHandler {
                 }
             }
 
-            SocialHandler.sendFriendUpdate(client, targetDisplayName, false, targetSession);
+            SocialHandler.sendFriendUpdate(client, senderEntryName, false, targetSession);
             if (targetSession) {
-                SocialHandler.sendFriendUpdate(targetSession, senderName, false, client);
+                SocialHandler.sendFriendUpdate(targetSession, targetEntryName, false, client);
             }
             return;
         }
 
         if (targetEntry && !targetEntry.isRequest) {
             const senderChanged = SocialHandler.upsertFriendEntry(client.character, {
-                name: targetDisplayName,
+                name: senderEntryName,
                 isRequest: false
             });
             if (senderChanged) {
                 await SocialHandler.persistClientCharacter(client);
             }
 
-            SocialHandler.sendFriendUpdate(client, targetDisplayName, false, targetSession);
+            SocialHandler.sendFriendUpdate(client, senderEntryName, false, targetSession);
             if (targetSession) {
-                SocialHandler.sendFriendUpdate(targetSession, senderName, false, client);
+                SocialHandler.sendFriendUpdate(targetSession, targetEntryName, false, client);
             }
             return;
         }
@@ -789,24 +947,24 @@ export class SocialHandler {
         const targetRecord = targetSession ? null : await SocialHandler.loadCharacterRecordByName(friendEntry.name);
         const targetCharacter = targetSession?.character ?? targetRecord?.character ?? null;
 
-        const senderChanged = SocialHandler.removeFriendEntry(client.character, friendEntry.name);
-        if (senderChanged) {
+        const removedSenderEntry = SocialHandler.removeFriendEntry(client.character, friendEntry.name);
+        if (removedSenderEntry) {
             await SocialHandler.persistClientCharacter(client);
         }
-        SocialHandler.sendFriendRemoved(client, friendEntry.name);
+        SocialHandler.sendFriendRemoved(client, removedSenderEntry?.name ?? friendEntry.name);
 
         if (!targetCharacter) {
             return;
         }
 
-        const targetChanged = SocialHandler.removeFriendEntry(targetCharacter, senderName);
-        if (!targetChanged) {
+        const removedTargetEntry = SocialHandler.removeFriendEntry(targetCharacter, senderName);
+        if (!removedTargetEntry) {
             return;
         }
 
         if (targetSession) {
             await SocialHandler.persistClientCharacter(targetSession);
-            SocialHandler.sendFriendRemoved(targetSession, senderName);
+            SocialHandler.sendFriendRemoved(targetSession, removedTargetEntry.name);
         } else if (targetRecord) {
             await SocialHandler.persistLoadedCharacter(targetRecord);
         }
@@ -814,6 +972,51 @@ export class SocialHandler {
 
     static handleRequestFriendList(client: Client, _data: Buffer): void {
         SocialHandler.sendFullFriendList(client);
+    }
+
+    static async handleToggleIgnore(client: Client, data: Buffer): Promise<void> {
+        if (!client.character) {
+            return;
+        }
+
+        const br = new BitReader(data);
+        const targetNameRaw = br.readMethod26();
+        const targetName = String(targetNameRaw ?? '').trim();
+        const senderName = client.character.name;
+
+        if (!targetName) {
+            return;
+        }
+        if (SocialHandler.normalizeName(targetName) === SocialHandler.normalizeName(senderName)) {
+            SocialHandler.sendChatStatus(client, 'You cannot ignore yourself.');
+            return;
+        }
+
+        const targetSession = SocialHandler.getOnlineSession(targetName);
+        const targetRecord = targetSession ? null : await SocialHandler.loadCharacterRecordByName(targetName);
+        const displayName = targetSession?.character?.name ?? targetRecord?.character?.name ?? targetName;
+
+        if (!targetSession && !targetRecord) {
+            SocialHandler.sendChatStatus(client, `Player ${targetName} not found.`);
+            return;
+        }
+
+        if (SocialHandler.findIgnoredIndex(client.character, displayName) >= 0) {
+            if (SocialHandler.removeIgnoredEntry(client.character, displayName)) {
+                await SocialHandler.persistClientCharacter(client);
+            }
+            SocialHandler.sendIgnoreRemoved(client, displayName);
+            return;
+        }
+
+        if (SocialHandler.addIgnoredEntry(client.character, displayName)) {
+            await SocialHandler.persistClientCharacter(client);
+        }
+        SocialHandler.sendIgnoreAdded(client, displayName);
+    }
+
+    static handleRequestIgnoreList(client: Client, _data: Buffer): void {
+        SocialHandler.sendFullIgnoreList(client);
     }
 
     static handleGroupInvite(client: Client, data: Buffer): void {
@@ -860,7 +1063,7 @@ export class SocialHandler {
         );
     }
 
-    static handleQueryMessageAnswer(client: Client, data: Buffer): void {
+    static async handleQueryMessageAnswer(client: Client, data: Buffer): Promise<void> {
         if (!client.character) {
             return;
         }
@@ -869,6 +1072,10 @@ export class SocialHandler {
         const inviterEntityId = br.readMethod9();
         br.readMethod26();
         const accepted = br.readMethod15();
+
+        if (await GuildHandler.tryHandleInviteAnswer(client, inviterEntityId, accepted)) {
+            return;
+        }
 
         const inviter = SocialHandler.findSessionByEntityId(inviterEntityId);
         if (!inviter?.character) {
@@ -955,6 +1162,7 @@ export class SocialHandler {
             return;
         }
 
+        const leavingName = client.character.name;
         const party = SocialHandler.getPartyForName(client.character.name);
         if (!party) {
             SocialHandler.sendChatStatus(client, 'You are not in a party.');
@@ -962,14 +1170,26 @@ export class SocialHandler {
         }
 
         const oldMembers = [...party.group.members];
-        SocialHandler.removePartyMember(client.character.name);
+        SocialHandler.removePartyMember(leavingName);
         SocialHandler.sendEmptyPartyUpdate(client);
+        SocialHandler.sendChatStatus(client, 'You left the party.');
+
+        const notifiedMembers = new Set<string>();
+        for (const member of oldMembers) {
+            const memberKey = SocialHandler.normalizeName(member);
+            if (!memberKey || memberKey === SocialHandler.normalizeName(leavingName) || notifiedMembers.has(memberKey)) {
+                continue;
+            }
+
+            notifiedMembers.add(memberKey);
+            SocialHandler.sendChatStatus(SocialHandler.getOnlineSession(member), `${leavingName} has left the party.`);
+        }
 
         const refreshed = GlobalState.partyGroups.get(party.partyId);
         if (!refreshed || refreshed.members.length <= 1) {
             const finalMembers = refreshed ? SocialHandler.disbandParty(party.partyId) : [];
             const everyoneToClear = new Set<string>([...oldMembers, ...finalMembers]);
-            everyoneToClear.delete(client.character.name);
+            everyoneToClear.delete(leavingName);
             for (const member of everyoneToClear) {
                 SocialHandler.sendEmptyPartyUpdate(SocialHandler.getOnlineSession(member));
             }
@@ -984,6 +1204,7 @@ export class SocialHandler {
             return;
         }
 
+        const actorName = client.character.name;
         const br = new BitReader(data);
         const targetNameRaw = br.readMethod26();
         const targetName = String(targetNameRaw ?? '').trim();
@@ -1016,8 +1237,24 @@ export class SocialHandler {
         }
 
         const oldMembers = [...party.group.members];
+        const targetSession = SocialHandler.getOnlineSession(targetMember);
         SocialHandler.removePartyMember(targetMember);
-        SocialHandler.sendEmptyPartyUpdate(SocialHandler.getOnlineSession(targetMember));
+        SocialHandler.sendEmptyPartyUpdate(targetSession);
+        SocialHandler.sendChatStatus(targetSession, `You were kicked from ${actorName}'s party.`);
+
+        const notifiedMembers = new Set<string>();
+        for (const member of oldMembers) {
+            const memberKey = SocialHandler.normalizeName(member);
+            if (!memberKey || memberKey === SocialHandler.normalizeName(targetMember) || notifiedMembers.has(memberKey)) {
+                continue;
+            }
+
+            notifiedMembers.add(memberKey);
+            SocialHandler.sendChatStatus(
+                SocialHandler.getOnlineSession(member),
+                `${targetMember} was kicked from the party.`
+            );
+        }
 
         const refreshed = GlobalState.partyGroups.get(party.partyId);
         if (!refreshed || refreshed.members.length <= 1) {
@@ -1087,8 +1324,14 @@ export class SocialHandler {
             return;
         }
 
+        const wasLocked = Boolean(party.group.locked);
         party.group.locked = locked;
         GlobalState.partyGroups.set(party.partyId, party.group);
+        if (locked && !wasLocked) {
+            for (const member of party.group.members) {
+                SocialHandler.sendChatStatus(SocialHandler.getOnlineSession(member), 'Party is locked.');
+            }
+        }
         SocialHandler.broadcastPartyUpdateById(party.partyId);
     }
 
@@ -1112,7 +1355,7 @@ export class SocialHandler {
         const payload = SocialHandler.buildGroupChatPayload(client.character.name, message);
         for (const member of party.group.members) {
             const session = SocialHandler.getOnlineSession(member);
-            if (!session) {
+            if (!session || !SocialHandler.canReceiveChatFrom(session, client.character.name)) {
                 continue;
             }
 
@@ -1192,6 +1435,7 @@ export class SocialHandler {
         GlobalState.pendingTeleports.set(client.token, targetTeleport);
         client.lastDoorId = 0;
         client.lastDoorTargetLevel = targetTeleport.targetLevel;
+        client.armPendingTransferGrace();
 
         const bb = new BitBuffer(false);
         bb.writeMethod4(0);
@@ -1228,6 +1472,7 @@ export class SocialHandler {
         bb.writeMethod13('CraftTown');
         client.lastDoorId = 999;
         client.lastDoorTargetLevel = 'CraftTown';
+        client.armPendingTransferGrace();
         client.sendBitBuffer(0x2e, bb);
         SocialHandler.sendChatStatus(client, `Visiting ${targetChar.name}'s house...`);
     }

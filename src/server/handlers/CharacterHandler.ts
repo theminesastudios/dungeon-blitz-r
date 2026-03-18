@@ -13,8 +13,18 @@ import { Character } from '../database/Database';
 import { LoginHandler } from './LoginHandler';
 import { AbilityHandler } from './AbilityHandler';
 import { SocialHandler } from './SocialHandler';
+import { GuildHandler } from './GuildHandler';
 import { EntityHandler } from './EntityHandler';
 import { ensureCharacterSocialState, normalizeCharacterKey } from '../core/SocialState';
+import { getPartyIdForClient, areClientsInSameParty } from '../core/PartySync';
+import { TransferTokenAllocator } from '../core/TransferTokenAllocator';
+import {
+    createDungeonInstanceId,
+    getClientLevelScope,
+    getScopeLevelInstanceId,
+    getScopeLevelName,
+    normalizeLevelInstanceId
+} from '../core/LevelScope';
 
 const db = new JsonAdapter();
 
@@ -41,19 +51,8 @@ export class CharacterHandler {
         return normalized === '' || normalized === 'player';
     }
 
-    private static allocateTransferToken(userId: number | null, characterName: string): number {
-        let token = 0;
-        do {
-            token = Math.floor(Math.random() * 0x10000);
-        } while (
-            token <= 0 ||
-            GlobalState.pendingWorld.has(token) ||
-            GlobalState.pendingExtended.has(token) ||
-            GlobalState.sessionsByToken.has(token) ||
-            GlobalState.tokenChar.has(token)
-        );
-
-        return token;
+    private static allocateTransferToken(targetLevel: string): number {
+        return TransferTokenAllocator.allocate(targetLevel);
     }
 
     private static isSessionStale(session: Client): boolean {
@@ -63,7 +62,7 @@ export class CharacterHandler {
     private static purgeSameCharacterGhosts(activeClient: Client, userId: number, characterName: string): void {
         const normalizedCharName = String(characterName || '').trim().toLowerCase();
 
-        for (const [levelName, levelMap] of Array.from(GlobalState.levelEntities.entries())) {
+        for (const [levelScopeKey, levelMap] of Array.from(GlobalState.levelEntities.entries())) {
             const liveEntityIds = new Set<number>();
             const liveOwnerTokens = new Set<number>();
 
@@ -71,7 +70,7 @@ export class CharacterHandler {
                 if (session === activeClient || CharacterHandler.isSessionStale(session)) {
                     continue;
                 }
-                if (!session.playerSpawned || session.currentLevel !== levelName) {
+                if (!session.playerSpawned || getClientLevelScope(session) !== levelScopeKey) {
                     continue;
                 }
 
@@ -95,7 +94,7 @@ export class CharacterHandler {
                 if (!isDuplicatePlayer && !isDuplicateOwnedSpawn) {
                     continue;
                 }
-                if (activeClient.currentLevel === levelName && activeClient.clientEntID > 0 && activeClient.clientEntID === entityId) {
+                if (getClientLevelScope(activeClient) === levelScopeKey && activeClient.clientEntID > 0 && activeClient.clientEntID === entityId) {
                     continue;
                 }
                 if (liveEntityIds.has(entityId)) {
@@ -106,11 +105,16 @@ export class CharacterHandler {
                 }
 
                 levelMap.delete(entityId);
-                EntityHandler.broadcastDestroyEntity(levelName, entityId);
+                EntityHandler.broadcastDestroyEntity(
+                    getScopeLevelName(levelScopeKey),
+                    entityId,
+                    null,
+                    getScopeLevelInstanceId(levelScopeKey)
+                );
             }
 
             if (levelMap.size === 0) {
-                GlobalState.levelEntities.delete(levelName);
+                GlobalState.levelEntities.delete(levelScopeKey);
             }
         }
 
@@ -125,7 +129,7 @@ export class CharacterHandler {
                 continue;
             }
 
-            EntityHandler.removeOwnedEntities(other, true);
+            EntityHandler.removeOwnedEntities(other);
             GlobalState.sessionsByToken.delete(token);
             if (GlobalState.sessionsByUserId.get(userId) === other) {
                 GlobalState.sessionsByUserId.delete(userId);
@@ -344,20 +348,66 @@ export class CharacterHandler {
         const currentLevelName = char.CurrentLevel?.name || "NewbieRoad";
         const previousLevelName = char.PreviousLevel?.name || "NewbieRoad";
         const spawn = LevelConfig.getSpawnCoordinates(char, previousLevelName, currentLevelName);
+        const isDungeonLevel = LevelConfig.isDungeonLevel(currentLevelName);
 
         // Generate Transfer Token
-        const token = CharacterHandler.allocateTransferToken(client.userId, char.name);
+        const token = CharacterHandler.allocateTransferToken(currentLevelName);
         
         // Store Pending State
         if (client.userId) {
+             // For dungeon levels, try to find a party member already in the same dungeon
+             // and reuse their levelInstanceId so both players share the same level scope.
+             let levelInstanceId = '';
+             let syncAnchorStartedAt: number | undefined = isDungeonLevel ? Date.now() : undefined;
+             let syncAnchorToken: number | undefined = isDungeonLevel ? token : undefined;
+             let syncAnchorCharacterName: string | undefined = isDungeonLevel ? char.name : undefined;
+             let syncRoomId: number | undefined;
+             let syncStartedRoomIds: number[] | undefined;
+             let syncEntryLevel: string | undefined;
+
+             if (isDungeonLevel) {
+                 const normalizedTarget = LevelConfig.normalizeLevelName(currentLevelName);
+                 // Search active sessions for a party member in the same dungeon
+                 for (const other of GlobalState.sessionsByToken.values()) {
+                     if (!other.playerSpawned || !other.character) continue;
+                     if (LevelConfig.normalizeLevelName(other.currentLevel) !== normalizedTarget) continue;
+                     if (!areClientsInSameParty(client, other)) continue;
+                     if (normalizeCharacterKey(other.character.name) === normalizeCharacterKey(char.name)) continue;
+
+                     // Found a party member in the same dungeon — reuse their level scope
+                     levelInstanceId = normalizeLevelInstanceId(other.levelInstanceId) || createDungeonInstanceId(token);
+                     syncAnchorStartedAt = other.syncAnchorStartedAt > 0 ? other.syncAnchorStartedAt : Date.now();
+                     syncAnchorToken = other.syncAnchorToken > 0 ? other.syncAnchorToken : token;
+                     syncAnchorCharacterName = String(other.syncAnchorCharacterName || other.character.name).trim();
+                     // NOTE: Do NOT sync syncRoomId or syncStartedRoomIds here.
+                     // Room progress replay causes null errors in the Flash client when
+                     // it receives room event start packets before the level SWF is loaded.
+                     // Room progress will sync naturally as the Flash client loads rooms.
+                     syncEntryLevel = LevelConfig.normalizeLevelName(other.entryLevel) || undefined;
+                     console.log(`[EnterWorld] Syncing dungeon instance for ${char.name} with party anchor ${other.character.name} (instanceId=${levelInstanceId})`);
+                     break;
+                 }
+
+                 if (!levelInstanceId) {
+                     levelInstanceId = createDungeonInstanceId(token);
+                 }
+             }
+
              GlobalState.pendingWorld.set(token, {
                 character: char,
                 targetLevel: currentLevelName,
+                levelInstanceId: levelInstanceId || undefined,
                 previousLevel: previousLevelName,
                 userId: client.userId,
                 newX: spawn.x,
                 newY: spawn.y,
-                newHasCoord: spawn.hasCoord
+                newHasCoord: spawn.hasCoord,
+                syncAnchorStartedAt,
+                syncAnchorToken,
+                syncAnchorCharacterName,
+                syncRoomId,
+                syncStartedRoomIds,
+                syncEntryLevel
             });
             GlobalState.pendingExtended.set(token, true);
         }
@@ -366,8 +416,11 @@ export class CharacterHandler {
         const levelSpec = LevelConfig.get(currentLevelName);
         const isHard = currentLevelName.endsWith("Hard");
 
+        const pendingEntry = GlobalState.pendingWorld.get(token);
+        const resolvedTransferToken = pendingEntry?.syncAnchorToken || token;
+
         const pkt = WorldEnter.buildEnterWorldPacket(
-            token,
+            resolvedTransferToken, // Ensure Flash client uses the Host's token for Room Event Generation Offset
             0, "", false, 0, 0,
             Config.HOST,
             Config.PORTS[0],
@@ -413,8 +466,24 @@ export class CharacterHandler {
         client.token = token;
         client.clientEntID = 0;
         client.currentLevel = entry.targetLevel;
+        client.levelInstanceId = LevelConfig.isDungeonLevel(entry.targetLevel)
+            ? normalizeLevelInstanceId(entry.levelInstanceId) || createDungeonInstanceId(token)
+            : '';
+        console.log(`[GameLogin] ${entry.character.name} entering ${entry.targetLevel} with levelInstanceId='${client.levelInstanceId}' (from entry: '${entry.levelInstanceId}')`);
         client.entryLevel = LevelConfig.get(entry.targetLevel).isDungeon ? entry.previousLevel : '';
-        client.currentRoomId = 0;
+        client.syncAnchorStartedAt = Number.isFinite(Number(entry.syncAnchorStartedAt)) && Number(entry.syncAnchorStartedAt) > 0
+            ? Math.round(Number(entry.syncAnchorStartedAt))
+            : 0;
+        client.syncAnchorToken = Number.isFinite(Number(entry.syncAnchorToken)) && Number(entry.syncAnchorToken) > 0
+            ? Math.round(Number(entry.syncAnchorToken))
+            : (LevelConfig.isDungeonLevel(entry.targetLevel) ? token : 0);
+        client.syncAnchorCharacterName = String(
+            entry.syncAnchorCharacterName ??
+            (LevelConfig.isDungeonLevel(entry.targetLevel) ? entry.character.name : '')
+        ).trim();
+        client.currentRoomId = Number.isFinite(Number(entry.syncRoomId)) && Number(entry.syncRoomId) >= 0
+            ? Math.round(Number(entry.syncRoomId))
+            : 0;
         client.lastDoorId = -1;
         client.lastDoorTargetLevel = '';
         client.playerSpawned = false;
@@ -438,6 +507,7 @@ export class CharacterHandler {
             client.characters = CharacterHandler.upsertCharacterList(client.characters, client.character);
         }
 
+        await GuildHandler.refreshClientGuildState(client);
         const socialRepairDidMutate = ensureCharacterSocialState(client.character);
         const abilityRepairDidMutate = AbilityHandler.repairCharacterAbilityState(client.character);
         const storyRepair = MissionHandler.repairEarlyStoryOnLogin(client.character, entry.targetLevel);
@@ -454,6 +524,22 @@ export class CharacterHandler {
             // Ensure persistence mapping exists
             GlobalState.tokenChar.set(token, { character: entry.character, userId: client.userId });
         }
+        GlobalState.usedTransferTokens.set(token, {
+            character: entry.character,
+            userId: entry.userId,
+            targetLevel: entry.targetLevel,
+            levelInstanceId: client.levelInstanceId || undefined,
+            previousLevel: entry.previousLevel,
+            newX: entry.newX,
+            newY: entry.newY,
+            newHasCoord: entry.newHasCoord,
+            syncAnchorStartedAt: entry.syncAnchorStartedAt,
+            syncAnchorToken: client.syncAnchorToken > 0 ? client.syncAnchorToken : undefined,
+            syncAnchorCharacterName: client.syncAnchorCharacterName || undefined,
+            syncEntryLevel: entry.syncEntryLevel,
+            syncRoomId: entry.syncRoomId,
+            syncStartedRoomIds: entry.syncStartedRoomIds
+        });
         const characterKey = normalizeCharacterKey(client.character.name);
         if (characterKey) {
             GlobalState.sessionsByCharacterName.set(characterKey, client);
@@ -493,7 +579,10 @@ export class CharacterHandler {
         
         // Spawn NPCs
         LevelHandler.spawnLevelNpcs(client, entry.targetLevel);
-        LevelHandler.primeTutorialRoomEvents(client);
+        const restoredRoomProgress = LevelHandler.restoreTransferredRoomProgress(client, entry);
+        if (!restoredRoomProgress) {
+            LevelHandler.primeTutorialRoomEvents(client);
+        }
         await LevelHandler.prepareCraftTownTutorialEntry(client);
         LevelHandler.scheduleClientSpawnFallback(client);
     }

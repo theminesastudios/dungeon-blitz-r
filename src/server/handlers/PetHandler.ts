@@ -4,6 +4,8 @@ import { BitBuffer } from '../network/protocol/bitBuffer';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { PetConfig } from '../core/PetConfig';
 import { GlobalState } from '../core/GlobalState';
+import { EntityHandler } from './EntityHandler';
+import { areClientsInSameLevelScope, getClientLevelScope } from '../core/LevelScope';
 
 const db = new JsonAdapter();
 
@@ -35,6 +37,7 @@ export class PetHandler {
         }
 
         const levelName = client.currentLevel;
+        const levelScope = getClientLevelScope(client);
         const token = client.token;
 
         for (const delayMs of PetHandler.MOUNT_REASSERT_DELAYS_MS) {
@@ -49,13 +52,13 @@ export class PetHandler {
 
                 PetHandler.sendMountEquipPacket(client, entityId, mountId);
 
-                if (!levelName || !client.playerSpawned || client.currentLevel !== levelName) {
+                if (!levelName || !client.playerSpawned || getClientLevelScope(client) !== levelScope) {
                     return;
                 }
 
                 const payload = PetHandler.buildMountEquipPacket(entityId, mountId);
                 for (const other of GlobalState.sessionsByToken.values()) {
-                    if (other === client || !other.playerSpawned || other.currentLevel !== levelName) {
+                    if (other === client || !other.playerSpawned || !areClientsInSameLevelScope(client, other)) {
                         continue;
                     }
 
@@ -94,7 +97,7 @@ export class PetHandler {
             return;
         }
 
-        const levelMap = GlobalState.levelEntities.get(client.currentLevel);
+        const levelMap = GlobalState.levelEntities.get(getClientLevelScope(client));
         const levelEntity = levelMap?.get(client.clientEntID);
         if (levelEntity && typeof levelEntity === 'object') {
             levelEntity.equippedMount = Number(client.character.equippedMount ?? 0);
@@ -137,12 +140,14 @@ export class PetHandler {
         PetHandler.sendMountEquipPacket(client, client.clientEntID, mountId);
 
         for (const other of GlobalState.sessionsByToken.values()) {
-            if (other === client || !other.playerSpawned || other.currentLevel !== client.currentLevel) {
+            if (other === client || !other.playerSpawned || !areClientsInSameLevelScope(client, other)) {
                 continue;
             }
 
             other.send(0xB2, data);
         }
+
+        EntityHandler.refreshPlayerSnapshot(client);
     }
 
     static async handleEquipPets(client: Client, data: Buffer): Promise<void> { // Removed <void> for shorter diff if needed, but keeping consistent
@@ -173,6 +178,10 @@ export class PetHandler {
 
             if (client.userId) {
                 await PetHandler.saveCharacter(client);
+            }
+
+            if (client.playerSpawned && client.currentLevel) {
+                EntityHandler.refreshPlayerSnapshot(client);
             }
         }
     }
@@ -537,7 +546,7 @@ export class PetHandler {
         // Broadcast
         const sessions = require('../core/GlobalState').GlobalState.sessionsByToken;
         for (const other of sessions.values()) {
-            if (other !== client && other.currentLevel === client.currentLevel) {
+            if (other !== client && areClientsInSameLevelScope(client, other)) {
                  EntityHandler.sendEntity(other, entityProps);
             }
         }

@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "MULTIPLAYER_MODE=false STATIC_PORT=8000 ENABLE_POLICY_SERVER=false nodemon --ext ts --exec ts-node main.ts",
+    "dev": "node scripts/cleanup-dev-instance.js && cross-env MULTIPLAYER_MODE=false STATIC_PORT=8000 GAME_PORT=8080 ENABLE_POLICY_SERVER=false nodemon --ext ts --signal SIGTERM --exec ts-node main.ts",
     "build": "tsc",
-    "start:multiplayer": "sudo env MULTIPLAYER_MODE=true ENABLE_POLICY_SERVER=true node dist/main.js"
+    "start:multiplayer": "cross-env MULTIPLAYER_MODE=true ENABLE_POLICY_SERVER=true node dist/main.js"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +14,7 @@
   "type": "commonjs",
   "devDependencies": {
     "@types/node": "^25.2.3",
+    "cross-env": "^10.0.0",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"

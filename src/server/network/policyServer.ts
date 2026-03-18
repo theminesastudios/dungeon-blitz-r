@@ -25,7 +25,32 @@ export class PolicyServer {
         });
 
         this.server.on('error', (err) => {
+            const socketError = err as NodeJS.ErrnoException;
+            if (socketError.code === 'EADDRINUSE') {
+                console.error(`[Policy] Cannot listen on ${this.host}:${this.port} because the port is already in use.`);
+                process.exitCode = 1;
+                setImmediate(() => process.exit(1));
+                return;
+            }
+
             console.error(`[Policy] Server error:`, err);
+        });
+    }
+
+    public stop(): Promise<void> {
+        if (!this.server.listening) {
+            return Promise.resolve();
+        }
+
+        return new Promise((resolve, reject) => {
+            this.server.close((error) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+
+                resolve();
+            });
         });
     }
 

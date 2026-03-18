@@ -6,6 +6,8 @@ import { CombatHandler } from '../handlers/CombatHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { NpcDef } from '../data/NpcLoader';
 import { Client } from './Client';
+import { sharesRoomIds } from './PartySync';
+import { getClientLevelScope, getScopeLevelName } from './LevelScope';
 
 
 export class AILogic {
@@ -24,19 +26,20 @@ export class AILogic {
     static start() {
         setInterval(() => {
             // Iterate over all active levels (keys of levelEntities)
-            for (const levelName of GlobalState.levelEntities.keys()) {
-                AILogic.updateLevel(levelName);
+            for (const levelScope of GlobalState.levelEntities.keys()) {
+                AILogic.updateLevel(levelScope);
             }
         }, AILogic.INTERVAL);
     }
 
-    static updateLevel(levelName: string) {
-        const levelEntities = GlobalState.levelEntities.get(levelName);
+    static updateLevel(levelScope: string) {
+        const levelEntities = GlobalState.levelEntities.get(levelScope);
         if (!levelEntities) return;
+        const levelName = getScopeLevelName(levelScope);
 
         const players: Client[] = [];
         for (const session of GlobalState.sessionsByToken.values()) {
-            if (session.playerSpawned && session.currentLevel === levelName && session.character) {
+            if (session.playerSpawned && getClientLevelScope(session) === levelScope && session.character) {
                 players.push(session);
             }
         }
@@ -50,18 +53,20 @@ export class AILogic {
             // Simple dead check (if no hp prop, assume 100)
             if ((npc.hp !== undefined && npc.hp <= 0)) continue;
 
-            AILogic.updateNpc(npc, players, levelName);
+            AILogic.updateNpc(npc, players, levelScope);
         }
     }
 
-    static updateNpc(npc: any, players: Client[], levelName: string) {
+    static updateNpc(npc: any, players: Client[], levelScope: string) {
         let target: Client | null = null;
         let minDist = Number.MAX_VALUE;
         const npcX = npc.x || 0;
         const npcY = npc.y || 0;
+        const npcRoomId = Number.isFinite(Number(npc?.roomId)) ? Number(npc.roomId) : -1;
 
         for (const p of players) {
              if (!p.character || !p.character.CurrentLevel) continue;
+             if (!sharesRoomIds(p.currentRoomId, npcRoomId)) continue;
              const px = p.character.CurrentLevel.x;
              const py = p.character.CurrentLevel.y;
              
@@ -96,21 +101,22 @@ export class AILogic {
                     const powerId = 1693; // DefaultMobMelee
                     
                     // 1. Broadcast Power Cast (0x09)
-                    const bbCast = new BitBuffer();
+                    const bbCast = new BitBuffer(false);
                     bbCast.writeMethod4(npc.id);
                     bbCast.writeMethod4(powerId); // PowerID
-                    bbCast.writeMethod15(true);  // hasTargetEntity
-                    bbCast.writeMethod15(false); // hasTargetPos
-                    // ... other flags 0
+                    bbCast.writeMethod15(false); // hasTargetEntity
+                    bbCast.writeMethod15(true);  // hasTargetPos
+                    bbCast.writeMethod24(Math.round(targetX));
+                    bbCast.writeMethod24(Math.round(targetY));
                     bbCast.writeMethod15(false); // hasProjectile
-                    bbCast.writeMethod15(false); // isCharged
-                    bbCast.writeMethod15(false); // hasExtra
-                    bbCast.writeMethod15(false); // hasFlags
+                    bbCast.writeMethod15(false); // isPersistent
+                    bbCast.writeMethod15(false); // hasComboData
+                    bbCast.writeMethod15(false); // hasPowerResourceData
 
-                    AILogic.broadcastToLevel(levelName, 0x09, bbCast.toBuffer());
+                    CombatHandler.broadcastEntityViewPacket(levelScope, npc, 0x09, bbCast.toBuffer(), [npc.id, target.clientEntID]);
 
                     // 2. Broadcast Power Hit (0x0A)
-                    const bbHit = new BitBuffer();
+                    const bbHit = new BitBuffer(false);
                     bbHit.writeMethod4(target.clientEntID); // Target
                     bbHit.writeMethod4(npc.id);             // Source
                     bbHit.writeMethod24(damage);            // Damage
@@ -119,7 +125,9 @@ export class AILogic {
                     bbHit.writeMethod15(false); // Effect override
                     bbHit.writeMethod15(false); // Crit
 
-                    AILogic.broadcastToLevel(levelName, 0x0A, bbHit.toBuffer());
+                    void CombatHandler.handlePowerHit(target, bbHit.toBuffer()).catch((error) => {
+                        console.error('[AILogic] Failed to process NPC power hit:', error);
+                    });
                 }
             } else {
                 // Chase Logic
@@ -143,7 +151,7 @@ export class AILogic {
                     // Python sends delta.
                     // Packet 0x07 expects deltaX, deltaY.
                     
-                    const bbMove = new BitBuffer();
+                    const bbMove = new BitBuffer(false);
                     bbMove.writeMethod4(npc.id);
                     bbMove.writeMethod45(Math.round(moveX));
                     bbMove.writeMethod45(Math.round(moveY));
@@ -157,16 +165,8 @@ export class AILogic {
                     bbMove.writeMethod15(false); // bBackpedal
                     bbMove.writeMethod15(false); // isAirborne
 
-                    AILogic.broadcastToLevel(levelName, 0x07, bbMove.toBuffer());
+                    CombatHandler.broadcastEntityViewPacket(levelScope, npc, 0x07, bbMove.toBuffer(), [npc.id]);
                 }
-            }
-        }
-    }
-
-    private static broadcastToLevel(levelName: string, packetId: number, data: Buffer) {
-        for (const session of GlobalState.sessionsByToken.values()) {
-            if (session.playerSpawned && session.currentLevel === levelName) {
-                session.send(packetId, data);
             }
         }
     }

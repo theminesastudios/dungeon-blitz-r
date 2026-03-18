@@ -10,6 +10,8 @@ const db = new JsonAdapter();
 export class LoginHandler {
     static async handleLoginVersion(client: Client, data: Buffer): Promise<void> {
         // 0x11
+        await client.resetForLoginCycle('login version');
+
         const br = new BitReader(data);
         const version = br.readMethod9();
         
@@ -40,6 +42,8 @@ export class LoginHandler {
 
     static async handleLoginCreate(client: Client, data: Buffer): Promise<void> {
         // 0x13
+        await client.resetForLoginCycle('login create');
+
         const br = new BitReader(data);
         const fbId = br.readMethod26();
         const kongId = br.readMethod26();
@@ -84,6 +88,8 @@ export class LoginHandler {
 
     static async handleLoginAuthenticate(client: Client, data: Buffer): Promise<void> {
         // 0x14
+        await client.resetForLoginCycle('login authenticate');
+
         const br = new BitReader(data);
         const fbId = br.readMethod26();
         const kongId = br.readMethod26();

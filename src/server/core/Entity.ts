@@ -38,6 +38,10 @@ export interface EntityProps {
     entState?: number;
     
     facingLeft?: boolean;
+    running?: boolean;
+    jumping?: boolean;
+    dropping?: boolean;
+    backpedal?: boolean;
     noJumpAttack?: boolean;
     untargetable?: boolean;
     behaviorSpeed?: number;
@@ -72,6 +76,7 @@ export interface EntityProps {
     
     healthDelta?: number;
     buffs?: any[];
+    roomId?: number;
     
     // Flags
     idleReset?: boolean;
@@ -96,8 +101,13 @@ export class Entity {
             team: Number(props.team ?? EntityTeam.PLAYER),
             entState: Number(props.entState ?? props.ent_state ?? EntityState.ACTIVE),
             facingLeft: Boolean(props.facingLeft ?? props.b_left),
+            running: Boolean(props.running ?? props.b_running),
+            jumping: Boolean(props.jumping ?? props.b_jumping),
+            dropping: Boolean(props.dropping ?? props.b_dropping),
+            backpedal: Boolean(props.backpedal ?? props.b_backpedal),
             renderDepthOffset: Number(props.renderDepthOffset ?? props.render_depth_offset ?? 0),
             buffs: props.buffs || [],
+            roomId: Number(props.roomId ?? props.room_id ?? -1),
         } as any;
 
         // Player specific fields
@@ -143,11 +153,16 @@ export class Entity {
             powerId: Number(npc?.power_id ?? 0),
             entState: Number(npc?.entState ?? 0),
             facingLeft: Boolean(npc?.facing_left),
+            running: Boolean(npc?.running),
+            jumping: Boolean(npc?.jumping),
+            dropping: Boolean(npc?.dropping),
+            backpedal: Boolean(npc?.backpedal),
             noJumpAttack: Boolean(npc?.noJumpAttack),
             untargetable: Boolean(npc?.untargetable),
             behaviorSpeed: Number(npc?.behavior_speed ?? 0),
             healthDelta: Number(npc?.health_delta ?? 0),
             buffs: Array.isArray(npc?.buffs) ? npc.buffs : [],
+            roomId: Number(npc?.roomId ?? npc?.room_id ?? -1),
             idleReset: Boolean(npc?.idle_reset),
             spawnFx: Boolean(npc?.spawn_fx),
             class: String(npc?.class ?? ''),

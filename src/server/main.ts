@@ -27,6 +27,7 @@ import { RewardHandler } from './handlers/RewardHandler';
 import { EquipmentHandler } from './handlers/EquipmentHandler';
 import { AbilityHandler } from './handlers/AbilityHandler';
 import { DebugLogger } from './core/Debug';
+import { GuildHandler } from './handlers/GuildHandler';
 import * as path from 'path';
 
 import { StaticServer } from './core/StaticServer';
@@ -100,7 +101,19 @@ router.register(0x63, SocialHandler.handleSendGroupChat); // Group Chat
 router.register(0x6B, SocialHandler.handleTeleportToPlayer); // Teleport To Party Member
 router.register(0x90, SocialHandler.handleFriendRequest); // Friend Request / Accept
 router.register(0x91, SocialHandler.handleUnfriend); // Unfriend / Decline
+router.register(0x43, SocialHandler.handleToggleIgnore); // Ignore Toggle
+router.register(0x9E, SocialHandler.handleRequestIgnoreList); // Ignore List Request
 router.register(0xC9, SocialHandler.handleRequestFriendList); // Friend List Request
+router.register(0x4D, GuildHandler.handleCreateGuild); // Create Guild
+router.register(0x4E, GuildHandler.handleDisbandGuild); // Disband Guild
+router.register(0x4F, GuildHandler.handleInviteGuildMember); // Guild Invite
+router.register(0x50, GuildHandler.handleKickGuildMember); // Guild Kick
+router.register(0x51, GuildHandler.handlePromoteGuildMember); // Guild Promote
+router.register(0x52, GuildHandler.handleDemoteGuildMember); // Guild Demote
+router.register(0x53, GuildHandler.handleTransferGuildLeadership); // Guild Leader Transfer
+router.register(0x54, GuildHandler.handleQuitGuild); // Guild Leave
+router.register(0x5F, GuildHandler.handleGuildChat); // Guild Chat
+router.register(0x61, GuildHandler.handleOfficerChat); // Officer Chat
 
 router.register(0xF3, SocialHandler.handleRequestVisitPlayerHouse); // Visit House
 router.register(0x2D, LevelHandler.handleOpenDoor); // Open Door
@@ -155,8 +168,9 @@ router.register(0xDF, TalentHandler.handleClearTalentResearch);
 router.register(0x106, SigilHandler.handleRoyalSigilStorePurchase);
 
 // Start Servers
+let policyServer: PolicyServer | null = null;
 if (Config.ENABLE_POLICY_SERVER) {
-    const policyServer = new PolicyServer(Config.POLICY_PORT, Config.BIND_HOST);
+    policyServer = new PolicyServer(Config.POLICY_PORT, Config.BIND_HOST);
     policyServer.start();
 } else {
     console.log(
@@ -171,3 +185,41 @@ staticServer.start();
 const gameServer = new GameServer(Config.PORTS[0], router, Config.BIND_HOST);
 AILogic.start();
 gameServer.start();
+
+let isShuttingDown = false;
+
+function shutdown(signal: string, exitCode: number, onComplete?: () => void): void {
+    if (isShuttingDown) {
+        return;
+    }
+
+    isShuttingDown = true;
+    console.log(`[System] Received ${signal}; shutting down servers.`);
+
+    const tasks = [
+        staticServer.stop(),
+        gameServer.stop(),
+        policyServer?.stop() ?? Promise.resolve()
+    ];
+
+    void Promise.allSettled(tasks).then((results) => {
+        for (const result of results) {
+            if (result.status === 'rejected') {
+                console.error('[System] Shutdown error:', result.reason);
+            }
+        }
+
+        if (onComplete) {
+            onComplete();
+            return;
+        }
+
+        process.exit(exitCode);
+    });
+}
+
+process.once('SIGINT', () => shutdown('SIGINT', 0));
+process.once('SIGTERM', () => shutdown('SIGTERM', 0));
+process.once('SIGBREAK', () => shutdown('SIGBREAK', 0));
+process.once('SIGHUP', () => shutdown('SIGHUP', 0));
+process.once('SIGUSR2', () => shutdown('SIGUSR2', 0, () => process.kill(process.pid, 'SIGUSR2')));
