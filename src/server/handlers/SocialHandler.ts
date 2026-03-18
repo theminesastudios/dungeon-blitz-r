@@ -25,6 +25,21 @@ interface LoadedCharacterRecord {
     character: Character;
 }
 
+export interface DiscordPartyJoinResult {
+    ok: boolean;
+    reason:
+        | 'ok'
+        | 'requester-offline'
+        | 'requester-in-party'
+        | 'already-in-party'
+        | 'party-not-found'
+        | 'party-leader-mismatch'
+        | 'party-locked'
+        | 'party-full';
+    message: string;
+    partyId: number | null;
+}
+
 export class SocialHandler {
     private static readonly MAX_PARTY_SIZE = 4;
 
@@ -758,6 +773,90 @@ export class SocialHandler {
         SocialHandler.notifyFriendsAboutStatus(client, false);
         SocialHandler.broadcastPartyUpdateForMember(client.character.name);
         GuildHandler.handleSessionClose(client);
+    }
+
+    static joinPartyFromDiscord(
+        requesterName: string,
+        targetPartyId: number,
+        expectedLeaderName: string | null | undefined = null
+    ): DiscordPartyJoinResult {
+        const requester = SocialHandler.getOnlineSession(requesterName);
+        if (!requester?.character) {
+            return {
+                ok: false,
+                reason: 'requester-offline',
+                message: `Character ${requesterName} is not online.`,
+                partyId: null
+            };
+        }
+
+        const requesterDisplayName = requester.character.name;
+        const requesterParty = SocialHandler.getPartyForName(requesterDisplayName);
+        if (requesterParty && requesterParty.partyId === targetPartyId) {
+            return {
+                ok: false,
+                reason: 'already-in-party',
+                message: `${requesterDisplayName} is already in that party.`,
+                partyId: targetPartyId
+            };
+        }
+
+        if (requesterParty) {
+            return {
+                ok: false,
+                reason: 'requester-in-party',
+                message: `${requesterDisplayName} is already in a party.`,
+                partyId: requesterParty.partyId
+            };
+        }
+
+        const group = GlobalState.partyGroups.get(targetPartyId);
+        if (!group) {
+            return {
+                ok: false,
+                reason: 'party-not-found',
+                message: 'That Discord party is no longer active.',
+                partyId: null
+            };
+        }
+
+        const expectedLeaderKey = SocialHandler.normalizeName(expectedLeaderName);
+        if (expectedLeaderKey && SocialHandler.normalizeName(group.leader) !== expectedLeaderKey) {
+            return {
+                ok: false,
+                reason: 'party-leader-mismatch',
+                message: 'That Discord party invite is no longer valid.',
+                partyId: targetPartyId
+            };
+        }
+
+        if (group.locked) {
+            return {
+                ok: false,
+                reason: 'party-locked',
+                message: `${group.leader}'s party is locked.`,
+                partyId: targetPartyId
+            };
+        }
+
+        if (group.members.length >= SocialHandler.MAX_PARTY_SIZE) {
+            return {
+                ok: false,
+                reason: 'party-full',
+                message: `${group.leader}'s party is already full.`,
+                partyId: targetPartyId
+            };
+        }
+
+        SocialHandler.addPartyMember(group, requesterDisplayName);
+        SocialHandler.broadcastPartyUpdateById(targetPartyId);
+
+        return {
+            ok: true,
+            reason: 'ok',
+            message: `${requesterDisplayName} joined ${group.leader}'s party.`,
+            partyId: targetPartyId
+        };
     }
 
     static handleZonePanelRequest(client: Client, _data: Buffer): void {

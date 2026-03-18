@@ -487,6 +487,7 @@ export class CharacterHandler {
         client.lastDoorId = -1;
         client.lastDoorTargetLevel = '';
         client.playerSpawned = false;
+        client.worldEnteredAt = Date.now();
         client.mountTransferGraceUntil = Date.now() + 5000;
         client.entities.clear();
         client.clientSpawnConfirmed = false;

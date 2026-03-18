@@ -73,6 +73,13 @@
 
   <script>
     const swfUrl = "p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp&rv=20260316b";
+    const localBridgeBaseUrl = "http://127.0.0.1:47631";
+    const selfPresenceUrl = "/api/presence/self";
+    const discordJoinUrl = "/api/presence/discord-join";
+    const presencePollMs = 4000;
+    const localDiscordBridgeEnabled =
+      window.location.protocol === "http:" || window.location.protocol === "https:";
+    let lastPresenceHash = "";
 
     function showFallback() {
       document.getElementById("flash-hint").style.display = "none";
@@ -82,6 +89,77 @@
     function hideHint() {
       const hint = document.getElementById("flash-hint");
       if (hint) hint.style.display = "none";
+    }
+
+    async function postToLocalBridge(path, body) {
+      try {
+        await fetch(`${localBridgeBaseUrl}${path}`, {
+          method: "POST",
+          mode: "cors",
+          cache: "no-store",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+          keepalive: true
+        });
+      } catch (_error) {
+        // Local bridge is optional; ignore when it is not running.
+      }
+    }
+
+    async function syncDiscordPresence() {
+      if (!localDiscordBridgeEnabled) {
+        return;
+      }
+
+      try {
+        const response = await fetch(selfPresenceUrl, {
+          cache: "no-store",
+          credentials: "same-origin"
+        });
+
+        if (!response.ok) {
+          if (lastPresenceHash) {
+            lastPresenceHash = "";
+            await postToLocalBridge("/clear", { clear: true });
+          }
+          return;
+        }
+
+        const payload = await response.json();
+        const session = payload && payload.session ? payload.session : null;
+        if (!session) {
+          if (lastPresenceHash) {
+            lastPresenceHash = "";
+            await postToLocalBridge("/clear", { clear: true });
+          }
+          return;
+        }
+
+        const bridgePayload = {
+          characterName: session.characterName,
+          details: session.details,
+          state: session.state,
+          startedAtMs: session.startedAtMs,
+          partySize: session.partySize,
+          partyId: session.partyId,
+          partyMax: session.partyMax,
+          partyLocked: session.partyLocked,
+          joinSecret: session.joinSecret,
+          levelKey: session.levelKey,
+          activityKind: session.activityKind,
+          presenceUrl: new URL(selfPresenceUrl, window.location.origin).toString(),
+          joinUrl: new URL(discordJoinUrl, window.location.origin).toString()
+        };
+        const nextHash = JSON.stringify(bridgePayload);
+        if (nextHash === lastPresenceHash) {
+          return;
+        }
+
+        lastPresenceHash = nextHash;
+        await postToLocalBridge("/presence", bridgePayload);
+      } catch (_error) {
+        // Keep polling; game must continue even if presence sync fails.
+      }
     }
 
     // Attempt native Flash immediately
@@ -105,6 +183,15 @@
 
     // Give Flash time to initialize after permission
     setTimeout(hideHint, 2500);
+    if (localDiscordBridgeEnabled) {
+      setTimeout(syncDiscordPresence, 2500);
+      setInterval(syncDiscordPresence, presencePollMs);
+    }
+
+    window.addEventListener("beforeunload", function () {
+      if (!localDiscordBridgeEnabled || !lastPresenceHash) return;
+      void postToLocalBridge("/clear", { clear: true });
+    });
   </script>
 </body>
 </html>

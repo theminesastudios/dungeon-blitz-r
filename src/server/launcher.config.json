@@ -1,0 +1,10 @@
+{
+  "clientUrl": "http://100.100.146.54/",
+  "presenceUrl": "http://100.100.146.54/api/presence/discord-target",
+  "joinUrl": "http://100.100.146.54/api/presence/discord-join",
+  "characterName": "",
+  "clientCommandMac": [],
+  "clientCommandWindows": [],
+  "clientWorkingDirectoryMac": "",
+  "clientWorkingDirectoryWindows": ""
+}

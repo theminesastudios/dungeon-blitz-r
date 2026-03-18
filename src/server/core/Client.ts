@@ -127,6 +127,7 @@ export class Client {
     public lastDoorId: number = -1;
     public lastDoorTargetLevel: string = "";
     public playerSpawned: boolean = false;
+    public worldEnteredAt: number = Date.now();
     public partyMapX: number = 0;
     public partyMapY: number = 0;
     public syncAnchorStartedAt: number = 0;
