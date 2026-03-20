@@ -1616,7 +1616,7 @@ export class SocialHandler {
     static handleLevelState(client: Client, data: Buffer): void {
         const br = new BitReader(data);
         const stateKey = br.readMethod26();
-        const stateValue = br.readMethod26();
+        br.readMethod26();
 
         const scopeKey = getClientLevelScope(client);
         if (scopeKey && stateKey) {
