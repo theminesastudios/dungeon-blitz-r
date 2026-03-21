@@ -140,6 +140,7 @@ export class Client {
     public pendingTransferUntil: number = 0;
     public mountTransferGraceUntil: number = 0;
     public startedRoomEvents: Set<string> = new Set();
+    public deferredRoomEventStarts: Set<string> = new Set();
     public knownEntityIds: Set<number> = new Set();
     public pendingLoot: Map<number, PendingLootDrop> = new Map();
     public processedRewardSources: Set<string> = new Set();
@@ -285,6 +286,7 @@ export class Client {
         this.pendingTransferUntil = 0;
         this.mountTransferGraceUntil = 0;
         this.startedRoomEvents.clear();
+        this.deferredRoomEventStarts.clear();
         this.knownEntityIds.clear();
         this.pendingLoot.clear();
         this.processedRewardSources.clear();

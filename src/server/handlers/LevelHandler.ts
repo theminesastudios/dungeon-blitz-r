@@ -16,6 +16,7 @@ import { NpcLoader, NpcDef } from '../data/NpcLoader';
 import { MissionID } from '../data/runtime';
 import { Entity } from '../core/Entity';
 import { EntityHandler } from './EntityHandler';
+import { MissionHandler } from './MissionHandler';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { normalizeCharacterKey, PendingTeleport } from '../core/SocialState';
 import { TransferTokenAllocator } from '../core/TransferTokenAllocator';
@@ -40,6 +41,9 @@ type LevelSyncState = {
     syncAnchorCharacterName?: string;
     syncEntryLevel?: string;
     syncQuestTrackerState?: number;
+    syncDungeonMissionId?: number;
+    syncDungeonMissionState?: number;
+    syncDungeonMissionProgress?: number;
     syncRoomId?: number;
     syncStartedRoomIds?: number[];
 };
@@ -52,6 +56,18 @@ type TransferSyncAnchorCandidate = {
 };
 
 export class LevelHandler {
+    private static buildDungeonInstanceSeed(
+        subject: Pick<Client, 'character'> | { character?: { name?: string | null } | null },
+        fallbackSeed: number | string
+    ): string {
+        const partyId = getPartyIdForClient(subject as Pick<Client, 'character'>);
+        if (partyId > 0) {
+            return `party-${partyId}`;
+        }
+
+        return createDungeonInstanceId(fallbackSeed);
+    }
+
     private static cloneTransferGameplayState(target: Client, source: Client): void {
         target.character = source.character;
         target.userId = source.userId;
@@ -126,7 +142,7 @@ export class LevelHandler {
         return Array.from(deduped.values()).sort((left, right) => left - right);
     }
 
-    private static getStartedRoomIdsForLevel(session: Client, levelName: string): number[] {
+    static getStartedRoomIdsForLevel(session: Pick<Client, 'startedRoomEvents'>, levelName: string): number[] {
         const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
         if (!normalizedLevel) {
             return [];
@@ -151,6 +167,46 @@ export class LevelHandler {
         }
 
         return Array.from(startedRoomIds.values()).sort((left, right) => left - right);
+    }
+
+    private static getDeferredRoomEventStartIdsForLevel(
+        client: Pick<Client, 'deferredRoomEventStarts'>,
+        levelName: string
+    ): number[] {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        if (!normalizedLevel) {
+            return [];
+        }
+
+        const deferredRoomIds = new Set<number>();
+        for (const key of client.deferredRoomEventStarts) {
+            const separatorIndex = key.lastIndexOf(':');
+            if (separatorIndex <= 0) {
+                continue;
+            }
+
+            const eventLevel = LevelConfig.normalizeLevelName(key.substring(0, separatorIndex));
+            if (eventLevel !== normalizedLevel) {
+                continue;
+            }
+
+            const roomId = Number(key.substring(separatorIndex + 1));
+            if (Number.isFinite(roomId) && roomId >= 0) {
+                deferredRoomIds.add(Math.round(roomId));
+            }
+        }
+
+        return Array.from(deferredRoomIds.values()).sort((left, right) => left - right);
+    }
+
+    private static queueDeferredRoomEventStart(client: Client, levelName: string, roomId: number): void {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        const normalizedRoomId = Number(roomId);
+        if (!normalizedLevel || !Number.isFinite(normalizedRoomId) || normalizedRoomId < 0) {
+            return;
+        }
+
+        client.deferredRoomEventStarts.add(`${normalizedLevel}:${Math.round(normalizedRoomId)}`);
     }
 
     private static normalizeSyncAnchorStartedAt(value: unknown): number | undefined {
@@ -214,6 +270,15 @@ export class LevelHandler {
                 syncQuestTrackerState: Number.isFinite(Number(session.syncedQuestTrackerState))
                     ? Math.max(0, Math.round(Number(session.syncedQuestTrackerState)))
                     : Math.max(0, Number(session.character.questTrackerState ?? 0)),
+                syncDungeonMissionId: Number.isFinite(Number(session.syncedDungeonMissionId))
+                    ? Math.max(0, Math.round(Number(session.syncedDungeonMissionId)))
+                    : undefined,
+                syncDungeonMissionState: Number.isFinite(Number(session.syncedDungeonMissionState))
+                    ? Math.max(0, Math.round(Number(session.syncedDungeonMissionState)))
+                    : undefined,
+                syncDungeonMissionProgress: Number.isFinite(Number(session.syncedDungeonMissionProgress))
+                    ? Math.max(0, Math.round(Number(session.syncedDungeonMissionProgress)))
+                    : undefined,
                 syncRoomId: Number.isFinite(Number(session.currentRoomId)) && session.currentRoomId >= 0
                     ? Math.round(Number(session.currentRoomId))
                     : undefined,
@@ -255,6 +320,15 @@ export class LevelHandler {
                 syncQuestTrackerState: Number.isFinite(Number(entry.syncQuestTrackerState))
                     ? Math.max(0, Math.round(Number(entry.syncQuestTrackerState)))
                     : undefined,
+                syncDungeonMissionId: Number.isFinite(Number(entry.syncDungeonMissionId))
+                    ? Math.max(0, Math.round(Number(entry.syncDungeonMissionId)))
+                    : undefined,
+                syncDungeonMissionState: Number.isFinite(Number(entry.syncDungeonMissionState))
+                    ? Math.max(0, Math.round(Number(entry.syncDungeonMissionState)))
+                    : undefined,
+                syncDungeonMissionProgress: Number.isFinite(Number(entry.syncDungeonMissionProgress))
+                    ? Math.max(0, Math.round(Number(entry.syncDungeonMissionProgress)))
+                    : undefined,
                 syncRoomId: Number.isFinite(Number(entry.syncRoomId)) && Number(entry.syncRoomId) >= 0
                     ? Math.round(Number(entry.syncRoomId))
                     : undefined,
@@ -267,20 +341,20 @@ export class LevelHandler {
         left: TransferSyncAnchorCandidate,
         right: TransferSyncAnchorCandidate
     ): number {
+        if (left.source !== right.source) {
+            return left.source === 'active' ? -1 : 1;
+        }
+
+        const leftStartedRoomCount = Array.isArray(left.state.syncStartedRoomIds) ? left.state.syncStartedRoomIds.length : 0;
+        const rightStartedRoomCount = Array.isArray(right.state.syncStartedRoomIds) ? right.state.syncStartedRoomIds.length : 0;
+        if (leftStartedRoomCount !== rightStartedRoomCount) {
+            return rightStartedRoomCount - leftStartedRoomCount;
+        }
+
         const leftStartedAt = LevelHandler.normalizeSyncAnchorStartedAt(left.state.syncAnchorStartedAt) ?? Number.MAX_SAFE_INTEGER;
         const rightStartedAt = LevelHandler.normalizeSyncAnchorStartedAt(right.state.syncAnchorStartedAt) ?? Number.MAX_SAFE_INTEGER;
         if (leftStartedAt !== rightStartedAt) {
             return leftStartedAt - rightStartedAt;
-        }
-
-        const leftIsRootAuthority = Boolean(left.token && left.state.syncAnchorToken && left.token === left.state.syncAnchorToken);
-        const rightIsRootAuthority = Boolean(right.token && right.state.syncAnchorToken && right.token === right.state.syncAnchorToken);
-        if (leftIsRootAuthority !== rightIsRootAuthority) {
-            return leftIsRootAuthority ? -1 : 1;
-        }
-
-        if (left.source !== right.source) {
-            return left.source === 'active' ? -1 : 1;
         }
 
         const leftToken = left.token ?? Number.MAX_SAFE_INTEGER;
@@ -442,6 +516,13 @@ export class LevelHandler {
             return didApplyState;
         }
 
+        if (!client.playerSpawned) {
+            for (const startedRoomId of startedRoomIds) {
+                LevelHandler.queueDeferredRoomEventStart(client, normalizedLevel, startedRoomId);
+            }
+            return didApplyState;
+        }
+
         for (const startedRoomId of startedRoomIds) {
             if (!LevelHandler.hasRoomEventStarted(client, startedRoomId)) {
                 LevelHandler.sendRoomEventStart(client, startedRoomId, true);
@@ -499,6 +580,18 @@ export class LevelHandler {
             Number.isFinite(Number(teleportOverride?.syncQuestTrackerState))
             ? Math.max(0, Math.round(Number(teleportOverride?.syncQuestTrackerState)))
             : undefined;
+        let syncDungeonMissionId = shouldSyncDungeonProgress &&
+            Number.isFinite(Number((teleportOverride as any)?.syncDungeonMissionId))
+            ? Math.max(0, Math.round(Number((teleportOverride as any)?.syncDungeonMissionId)))
+            : undefined;
+        let syncDungeonMissionState = shouldSyncDungeonProgress &&
+            Number.isFinite(Number((teleportOverride as any)?.syncDungeonMissionState))
+            ? Math.max(0, Math.round(Number((teleportOverride as any)?.syncDungeonMissionState)))
+            : undefined;
+        let syncDungeonMissionProgress = shouldSyncDungeonProgress &&
+            Number.isFinite(Number((teleportOverride as any)?.syncDungeonMissionProgress))
+            ? Math.max(0, Math.round(Number((teleportOverride as any)?.syncDungeonMissionProgress)))
+            : undefined;
 
         if (anchor) {
             const anchorState = anchor.state;
@@ -517,6 +610,15 @@ export class LevelHandler {
                 if (Number.isFinite(Number(anchorState.syncQuestTrackerState))) {
                     syncQuestTrackerState = Math.max(0, Math.round(Number(anchorState.syncQuestTrackerState)));
                 }
+                if (Number.isFinite(Number(anchorState.syncDungeonMissionId))) {
+                    syncDungeonMissionId = Math.max(0, Math.round(Number(anchorState.syncDungeonMissionId)));
+                }
+                if (Number.isFinite(Number(anchorState.syncDungeonMissionState))) {
+                    syncDungeonMissionState = Math.max(0, Math.round(Number(anchorState.syncDungeonMissionState)));
+                }
+                if (Number.isFinite(Number(anchorState.syncDungeonMissionProgress))) {
+                    syncDungeonMissionProgress = Math.max(0, Math.round(Number(anchorState.syncDungeonMissionProgress)));
+                }
                 if (Number.isFinite(Number(anchorState.syncRoomId)) && Number(anchorState.syncRoomId) >= 0) {
                     syncRoomId = Math.round(Number(anchorState.syncRoomId));
                 }
@@ -532,6 +634,17 @@ export class LevelHandler {
 
         if (shouldSyncDungeonProgress) {
             syncAnchorStartedAt = syncAnchorStartedAt ?? Date.now();
+        }
+
+        if (shouldSyncDungeonProgress && !anchor && syncQuestTrackerState === undefined) {
+            syncQuestTrackerState = 0;
+        }
+
+        if (shouldSyncDungeonProgress && !anchor && syncDungeonMissionId === undefined) {
+            const freshDungeonMission = MissionHandler.getDungeonMissionSyncState(client.character, normalizedTargetLevel, 0);
+            syncDungeonMissionId = freshDungeonMission?.missionId;
+            syncDungeonMissionState = freshDungeonMission?.state;
+            syncDungeonMissionProgress = freshDungeonMission?.progress;
         }
 
         if (
@@ -555,6 +668,9 @@ export class LevelHandler {
             syncAnchorCharacterName,
             syncEntryLevel,
             syncQuestTrackerState,
+            syncDungeonMissionId,
+            syncDungeonMissionState,
+            syncDungeonMissionProgress,
             syncRoomId,
             syncStartedRoomIds
         };
@@ -1774,7 +1890,7 @@ export class LevelHandler {
     ): void {
         const shouldSyncDungeonProgress = LevelConfig.isDungeonLevel(targetLevel);
         const levelInstanceId = shouldSyncDungeonProgress
-            ? normalizeLevelInstanceId(syncState?.levelInstanceId) || createDungeonInstanceId(token)
+            ? normalizeLevelInstanceId(syncState?.levelInstanceId) || LevelHandler.buildDungeonInstanceSeed({ character }, token)
             : '';
         const syncAnchorStartedAt = shouldSyncDungeonProgress
             ? LevelHandler.normalizeSyncAnchorStartedAt(syncState?.syncAnchorStartedAt) ?? Date.now()
@@ -1802,6 +1918,15 @@ export class LevelHandler {
                 syncEntryLevel: syncState?.syncEntryLevel,
                 syncQuestTrackerState: Number.isFinite(Number(syncState?.syncQuestTrackerState))
                     ? Math.max(0, Math.round(Number(syncState?.syncQuestTrackerState)))
+                    : undefined,
+                syncDungeonMissionId: Number.isFinite(Number(syncState?.syncDungeonMissionId))
+                    ? Math.max(0, Math.round(Number(syncState?.syncDungeonMissionId)))
+                    : undefined,
+                syncDungeonMissionState: Number.isFinite(Number(syncState?.syncDungeonMissionState))
+                    ? Math.max(0, Math.round(Number(syncState?.syncDungeonMissionState)))
+                    : undefined,
+                syncDungeonMissionProgress: Number.isFinite(Number(syncState?.syncDungeonMissionProgress))
+                    ? Math.max(0, Math.round(Number(syncState?.syncDungeonMissionProgress)))
                     : undefined,
                 syncRoomId: syncState?.syncRoomId,
                 syncStartedRoomIds: syncState?.syncStartedRoomIds
@@ -1996,14 +2121,38 @@ export class LevelHandler {
         if (!['TutorialBoat', 'TutorialDungeon', 'CraftTownTutorial'].includes(client.currentLevel)) {
             return;
         }
-        if (LevelHandler.getStartedRoomIdsForLevel(client, client.currentLevel).length > 0) {
+        const currentLevel = client.currentLevel;
+        if (
+            LevelHandler.getStartedRoomIdsForLevel(client, currentLevel).length > 0 ||
+            LevelHandler.getDeferredRoomEventStartIdsForLevel(client, currentLevel).length > 0
+        ) {
             return;
         }
 
         for (const roomId of [0, 1]) {
-            if (!LevelHandler.hasRoomEventStarted(client, roomId)) {
+            if (client.playerSpawned && !LevelHandler.hasRoomEventStarted(client, roomId)) {
                 LevelHandler.sendRoomEventStart(client, roomId, true);
+            } else {
+                client.startedRoomEvents.add(`${currentLevel}:${roomId}`);
+                LevelHandler.queueDeferredRoomEventStart(client, currentLevel, roomId);
             }
+        }
+    }
+
+    static flushDeferredRoomEventStarts(client: Client): void {
+        if (!client.playerSpawned || !client.currentLevel) {
+            return;
+        }
+
+        const currentLevel = LevelConfig.normalizeLevelName(client.currentLevel) || client.currentLevel;
+        const deferredRoomIds = LevelHandler.getDeferredRoomEventStartIdsForLevel(client, currentLevel);
+        if (deferredRoomIds.length === 0) {
+            return;
+        }
+
+        for (const roomId of deferredRoomIds) {
+            LevelHandler.sendRoomEventStart(client, roomId, true);
+            client.deferredRoomEventStarts.delete(`${currentLevel}:${roomId}`);
         }
     }
 

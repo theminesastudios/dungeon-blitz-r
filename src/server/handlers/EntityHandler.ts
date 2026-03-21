@@ -14,6 +14,9 @@ export class EntityHandler {
         'NewbieRoad',
         'NewbieRoadHard'
     ]);
+    private static readonly RAW_SERVER_SEEDED_DUNGEON_LEVELS = new Set<string>([
+        'TutorialDungeon'
+    ]);
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
         'CraftTownTutorial',
         'CraftTown',
@@ -77,12 +80,45 @@ export class EntityHandler {
     }
 
     private static getServerSeededNpcs(levelName: string): NpcDef[] {
+        if (EntityHandler.RAW_SERVER_SEEDED_DUNGEON_LEVELS.has(levelName)) {
+            return NpcLoader.getRawNpcsForLevel(levelName);
+        }
+
         const npcs = NpcLoader.getNpcsForLevel(levelName);
         if (!EntityHandler.usesServerSeededNpcs(levelName)) {
             return npcs;
         }
 
         return npcs.filter((npc) => Number(npc?.team ?? 0) === 3);
+    }
+
+    private static shouldSeedServerNpcs(levelName: string, levelMap: Map<number, any> | null): boolean {
+        if (!levelMap || levelMap.size === 0) {
+            return true;
+        }
+
+        if (!EntityHandler.RAW_SERVER_SEEDED_DUNGEON_LEVELS.has(levelName)) {
+            return false;
+        }
+
+        for (const entityProps of levelMap.values()) {
+            if (entityProps?.isPlayer) {
+                continue;
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    private static seedServerNpcs(levelMap: Map<number, any>, levelName: string, logContext: string): void {
+        const npcs = EntityHandler.getServerSeededNpcs(levelName);
+        console.log(`[EntityHandler] Initializing ${npcs.length} NPCs for ${logContext}`);
+
+        for (const npc of npcs) {
+            const entityProps = Entity.fromNpc(npc);
+            levelMap.set(npc.id, entityProps);
+        }
     }
 
     private static isSharedClientSpawnRegionActor(levelName: string | null | undefined, entity: any): boolean {
@@ -1168,6 +1204,8 @@ export class EntityHandler {
         if (isPlayer && !client.playerSpawned) {
              client.playerSpawned = true;
              client.mountTransferGraceUntil = Math.max(client.mountTransferGraceUntil, Date.now() + 4000);
+             const { LevelHandler } = require('./LevelHandler') as typeof import('./LevelHandler');
+             LevelHandler.flushDeferredRoomEventStarts(client);
              const equippedMountId = EntityHandler.getEquippedMountId(
                 client.character?.equippedMount ?? props.equippedMount ?? 0
             );
@@ -1182,10 +1220,13 @@ export class EntityHandler {
         console.log(`[EntityHandler] Sending initial entities for ${levelName} to ${client.character?.name}`);
         
         let levelMap = EntityHandler.getLevelMap(levelName, client.levelInstanceId);
-        if (!levelMap) {
+        if (!levelMap || EntityHandler.shouldSeedServerNpcs(levelName, levelMap)) {
             levelMap = EntityHandler.getLevelMap(levelName, client.levelInstanceId, true) ?? new Map<number, any>();
+            if (EntityHandler.RAW_SERVER_SEEDED_DUNGEON_LEVELS.has(levelName)) {
+                EntityHandler.seedServerNpcs(levelMap, levelName, levelName);
+            }
 
-            if (EntityHandler.usesClientSpawn(levelName)) {
+            if (EntityHandler.usesClientSpawn(levelName) && !EntityHandler.RAW_SERVER_SEEDED_DUNGEON_LEVELS.has(levelName)) {
                 if (EntityHandler.usesServerSeededNpcs(levelName)) {
                     const npcs = EntityHandler.getServerSeededNpcs(levelName);
                     console.log(`[EntityHandler] Initializing ${npcs.length} server NPCs for client-spawn level ${levelName}`);
@@ -1197,14 +1238,8 @@ export class EntityHandler {
                 } else {
                     console.log(`[EntityHandler] Skipping server NPC init for client-spawn level ${levelName}`);
                 }
-            } else {
-                const npcs = EntityHandler.getServerSeededNpcs(levelName);
-                console.log(`[EntityHandler] Initializing ${npcs.length} NPCs for ${levelName}`);
-
-                for (const npc of npcs) {
-                    const entityProps = Entity.fromNpc(npc);
-                    levelMap.set(npc.id, entityProps);
-                }
+            } else if (levelMap.size === 0) {
+                EntityHandler.seedServerNpcs(levelMap, levelName, levelName);
             }
         }
 

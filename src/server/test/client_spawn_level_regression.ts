@@ -26,6 +26,7 @@ type FakeClient = {
     clientEntID: number;
     syncAnchorStartedAt: number;
     startedRoomEvents: Set<string>;
+    deferredRoomEventStarts: Set<string>;
     knownEntityIds: Set<number>;
     entities: Map<number, any>;
     sentPackets: SentPacket[];
@@ -66,6 +67,7 @@ function createFakeClient(name: string): FakeClient {
         clientEntID: 0,
         syncAnchorStartedAt: 0,
         startedRoomEvents: new Set<string>(),
+        deferredRoomEventStarts: new Set<string>(),
         knownEntityIds: new Set<number>(),
         entities: new Map<number, any>(),
         sentPackets,
@@ -168,6 +170,33 @@ function testNewbieRoadSeedsServerNpcCopies(): void {
     assert.equal(client.sentPackets.some((packet) => packet.id === 0x0F), true, 'joining clients should receive seeded NewbieRoad NPCs');
     assert.equal(seededServerNpcs.some((entity) => entity?.team === 3), true, 'friendly NPCs should come from the server seed');
     assert.equal(seededServerNpcs.some((entity) => entity?.team === 1), false, 'neutral helper actors should stay out of the server-seeded NPC set');
+}
+
+function testTutorialDungeonSeedsRawServerNpcsWhenScopeAlreadyHasPlayer(): void {
+    const client = createFakeClient('Watcher');
+    client.currentLevel = 'TutorialDungeon';
+    client.levelInstanceId = 'party-seed';
+    client.clientEntID = 9001;
+
+    GlobalState.levelEntities.set('TutorialDungeon#party-seed', new Map<number, any>([
+        [client.clientEntID, {
+            id: client.clientEntID,
+            name: client.character.name,
+            isPlayer: true,
+            team: 1,
+            ownerToken: client.token
+        }]
+    ]));
+
+    EntityHandler.sendInitialLevelEntities(client as never, 'TutorialDungeon');
+
+    const levelMap = GlobalState.levelEntities.get('TutorialDungeon#party-seed');
+    assert.ok(levelMap, 'TutorialDungeon should have a scoped shared state bucket');
+
+    const seededServerNpcs = Array.from(levelMap!.values()).filter((entity) => !entity?.isPlayer && !entity?.clientSpawned);
+    assert.ok(seededServerNpcs.length > 0, 'TutorialDungeon should seed server NPCs even when the player is already present in the scope map');
+    assert.equal(seededServerNpcs.some((entity) => entity?.team === 2), true, 'hostile dungeon NPCs should be seeded for the first entrant');
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0x0F), true, 'first entrant should immediately receive seeded dungeon NPCs');
 }
 
 function testNewbieRoadRejectsClientSpawnedNonEnemyNpcs(): void {
@@ -1046,6 +1075,34 @@ function testDungeonJoinerReplaysStartedRoomEventsFromPartyAnchor(): void {
     assert.equal(joiner.startedRoomEvents.has('TutorialDungeon:5'), true);
 }
 
+function testTutorialDungeonPrimeRoomEventsFlushAfterSelfSpawn(): void {
+    const client = createFakeClient('Alpha');
+    client.currentLevel = 'TutorialDungeon';
+    client.playerSpawned = false;
+
+    LevelHandler.primeTutorialRoomEvents(client as never);
+
+    assert.equal(client.sentPackets.length, 0, 'tutorial dungeon room starts should wait until the local player entity exists');
+    assert.equal(client.startedRoomEvents.has('TutorialDungeon:0'), true);
+    assert.equal(client.startedRoomEvents.has('TutorialDungeon:1'), true);
+    assert.equal(client.deferredRoomEventStarts.has('TutorialDungeon:0'), true);
+    assert.equal(client.deferredRoomEventStarts.has('TutorialDungeon:1'), true);
+
+    client.playerSpawned = true;
+    LevelHandler.flushDeferredRoomEventStarts(client as never);
+
+    const roomPackets = client.sentPackets.filter((packet) => packet.id === 0xA5);
+    assert.deepEqual(
+        roomPackets.map((packet) => parseRoomEventStart(packet.payload)),
+        [
+            { roomId: 0, flag: true },
+            { roomId: 1, flag: true }
+        ],
+        'tutorial dungeon bootstrap should flush deferred room starts after self spawn'
+    );
+    assert.equal(client.deferredRoomEventStarts.size, 0);
+}
+
 function testDungeonJoinerSeedsVisibleHostilesImmediatelyAfterRoomReplay(): void {
     const anchor = createFakeClient('Alpha');
     const joiner = createFakeClient('Beta');
@@ -1203,6 +1260,12 @@ function main(): void {
         GlobalState.levelStateByScope.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
+        testTutorialDungeonSeedsRawServerNpcsWhenScopeAlreadyHasPlayer();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelStateByScope.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
         testNewbieRoadRejectsClientSpawnedNonEnemyNpcs();
 
         GlobalState.levelEntities.clear();
@@ -1308,6 +1371,12 @@ function main(): void {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         testDungeonJoinerReplaysStartedRoomEventsFromPartyAnchor();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelStateByScope.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testTutorialDungeonPrimeRoomEventsFlushAfterSelfSpawn();
 
         GlobalState.levelEntities.clear();
         GlobalState.levelStateByScope.clear();

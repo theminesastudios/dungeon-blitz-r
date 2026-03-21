@@ -118,13 +118,8 @@ function replaceExact(source, needle, replacement, label) {
 function patchLinkUpdater(source) {
     if (
         source.includes('DUPLICATE_REMOTE_ENTITY_POSITION_TOLERANCE') &&
-        source.includes('private function method_1830(') &&
-        source.includes('_loc46_.cue.bSpawned = true;') &&
-        source.includes('this.method_1830(_loc3_,_loc5_,_loc6_)') &&
-        source.includes('if(!_loc3_ || !_loc3_.var_38)') &&
-        source.includes('_loc73_ && (!_loc73_.var_38 || !_loc73_.gfx || !_loc73_.gfx.m_TheDO)') &&
-        !source.includes('if(!(_loc8_.var_20 & Entity.REMOTE) || Boolean(_loc8_.var_20 & Entity.PLAYER))') &&
-        !source.includes('if(!(!(_loc8_.var_20 & Entity.REMOTE) || Boolean(_loc8_.var_20 & Entity.PLAYER)))')
+        source.includes('private function method_1828(') &&
+        !source.includes('if(!(_loc8_.var_20 & Entity.REMOTE) || Boolean(_loc8_.var_20 & Entity.PLAYER))')
     ) {
         return source;
     }
@@ -517,8 +512,53 @@ function patchRoom(source) {
     const eol = source.includes('\r\n') ? '\r\n' : '\n';
     const join = (lines) => lines.join(eol);
     const oldJoinerGuard = 'this.bInstanced && this.var_1.groupmates && this.var_1.groupmates.length && !this.var_1.bAmGroupLeader';
-    const expandedJoinerGuard = '(this.bInstanced || this.var_1.level.internalName == "NewbieRoad" || this.var_1.level.internalName == "NewbieRoadHard") && this.var_1.groupmates && this.var_1.groupmates.length && !this.var_1.bAmGroupLeader';
     const outdoorServerNpcGuard = '(this.var_1.level.internalName == "NewbieRoad" || this.var_1.level.internalName == "NewbieRoadHard")';
+    const expandedJoinerGuard = `(this.bInstanced || ${outdoorServerNpcGuard.substring(1, outdoorServerNpcGuard.length - 1)}) && this.var_1.groupmates && this.var_1.groupmates.length && !this.var_1.bAmGroupLeader`;
+    const relaxedJoinerGuard = `${outdoorServerNpcGuard} && this.var_1.groupmates && this.var_1.groupmates.length && !this.var_1.bAmGroupLeader`;
+    const expandedJoinerGuardBlock = join([
+        `         if(${expandedJoinerGuard})`,
+        '         {',
+        '            if(param1.team != "friend")',
+        '            {',
+        '               return null;',
+        '            }',
+        '         }'
+    ]);
+    const relaxedJoinerGuardBlock = join([
+        `         if(${relaxedJoinerGuard})`,
+        '         {',
+        '            if(param1.team != "friend")',
+        '            {',
+        '               return null;',
+        '            }',
+        '         }'
+    ]);
+    const instancedMasterGuard = join([
+        '         if(!(DevSettings.flags & DevSettings.DEVFLAG_MASTER_CLIENT) && !(DevSettings.flags & DevSettings.DEVFLAG_STANDALONE_CLIENT))',
+        '         {',
+        '            return;',
+        '         }'
+    ]);
+    const instancedMasterGuardPatched = join([
+        '         if(!this.bInstanced && !(DevSettings.flags & DevSettings.DEVFLAG_MASTER_CLIENT) && !(DevSettings.flags & DevSettings.DEVFLAG_STANDALONE_CLIENT))',
+        '         {',
+        '            return;',
+        '         }'
+    ]);
+    const instancedMasterGuardDecompiled = join([
+        '         DevSettings;',
+        '         if(!(-1 & DevSettings.DEVFLAG_MASTER_CLIENT) && !(-1 & DevSettings.DEVFLAG_STANDALONE_CLIENT))',
+        '         {',
+        '            return;',
+        '         }'
+    ]);
+    const instancedMasterGuardDecompiledPatched = join([
+        '         DevSettings;',
+        '         if(!this.bInstanced && !(-1 & DevSettings.DEVFLAG_MASTER_CLIENT) && !(-1 & DevSettings.DEVFLAG_STANDALONE_CLIENT))',
+        '         {',
+        '            return;',
+        '         }'
+    ]);
 
     if (source.includes('null.bDisabled = param3 != "On";')) {
         source = replaceExact(
@@ -600,29 +640,45 @@ function patchRoom(source) {
         );
     }
 
-    if (source.includes(`${outdoorServerNpcGuard})\n         {\n            if(param1.team != "enemy")`)) {
-        return source;
+    if (source.includes(instancedMasterGuard) && !source.includes(instancedMasterGuardPatched)) {
+        source = replaceExact(
+            source,
+            instancedMasterGuard,
+            instancedMasterGuardPatched,
+            'Room instanced master-client gate'
+        );
+    } else if (source.includes(instancedMasterGuardDecompiled) && !source.includes(instancedMasterGuardDecompiledPatched)) {
+        source = replaceExact(
+            source,
+            instancedMasterGuardDecompiled,
+            instancedMasterGuardDecompiledPatched,
+            'Room instanced master-client gate (decompiled)'
+        );
     }
 
-    if (source.includes(expandedJoinerGuard)) {
-        source = source.replace(
-            `         if(${expandedJoinerGuard})`,
-            join([
-                `         if(${outdoorServerNpcGuard})`,
-                '         {',
-                '            if(param1.team != "enemy")',
-                '            {',
-                '               return null;',
-                '            }',
-                '         }',
-                `         if(${expandedJoinerGuard})`
-            ])
+    if (source.includes(expandedJoinerGuardBlock) && !source.includes(relaxedJoinerGuardBlock)) {
+        source = replaceExact(
+            source,
+            expandedJoinerGuardBlock,
+            relaxedJoinerGuardBlock,
+            'Room instanced joiner cue guard'
         );
-        return source;
+    } else if (source.includes(expandedJoinerGuard)) {
+        source = source.replace(expandedJoinerGuard, relaxedJoinerGuard);
     }
 
     if (source.includes(oldJoinerGuard)) {
-        source = source.replace(oldJoinerGuard, expandedJoinerGuard);
+        source = source.replace(oldJoinerGuard, relaxedJoinerGuard);
+    }
+
+    if (
+        source.includes(outdoorServerNpcGuard) &&
+        (
+            source.includes(`if(${relaxedJoinerGuard})`) ||
+            source.includes(`if(${expandedJoinerGuard})`)
+        )
+    ) {
+        return source;
     }
 
     return replaceExact(
@@ -646,7 +702,7 @@ function patchRoom(source) {
             '               return null;',
             '            }',
             '         }',
-            `         if(${expandedJoinerGuard})`,
+            `         if(${relaxedJoinerGuard})`,
             '         {',
             '            if(param1.team != "friend")',
             '            {',
@@ -656,6 +712,38 @@ function patchRoom(source) {
             '         if(param1.bRareSpawn)'
         ]),
         'Room joiner cue spawn guard'
+    );
+}
+
+function patchLevel(source) {
+    const eol = source.includes('\r\n') ? '\r\n' : '\n';
+    const join = (lines) => lines.join(eol);
+    const oldTickGuard = join([
+        '         if(!const_919)',
+        '         {',
+        '            if(this.var_333)',
+        '            {'
+    ]);
+    const patchedTickGuard = join([
+        '         if(!const_919 && !this.bInstanced)',
+        '         {',
+        '            if(this.var_333)',
+        '            {'
+    ]);
+
+    if (source.includes(patchedTickGuard)) {
+        return source;
+    }
+
+    if (!source.includes(oldTickGuard)) {
+        return source;
+    }
+
+    return replaceExact(
+        source,
+        oldTickGuard,
+        patchedTickGuard,
+        'Level instanced tick authority gate'
     );
 }
 
@@ -687,24 +775,30 @@ function main() {
 
     fs.rmSync(workRoot, { recursive: true, force: true });
     fs.mkdirSync(workRoot, { recursive: true });
-    runFfdec(ffdecPath, ['-selectclass', 'LinkUpdater,Room', '-export', 'script', workRoot, swfPath]);
+    runFfdec(ffdecPath, ['-selectclass', 'LinkUpdater,Room,Level', '-export', 'script', workRoot, swfPath]);
 
     const linkUpdaterPath = path.join(scriptsRoot, 'LinkUpdater.as');
     const roomPath = path.join(scriptsRoot, 'Room.as');
-    if (!fs.existsSync(linkUpdaterPath) || !fs.existsSync(roomPath)) {
+    const levelPath = path.join(scriptsRoot, 'Level.as');
+    if (!fs.existsSync(linkUpdaterPath) || !fs.existsSync(roomPath) || !fs.existsSync(levelPath)) {
         throw new Error(`FFDec export did not produce expected scripts in ${scriptsRoot}`);
     }
 
     const originalLinkUpdater = fs.readFileSync(linkUpdaterPath, 'utf8');
     const originalRoom = fs.readFileSync(roomPath, 'utf8');
+    const originalLevel = fs.readFileSync(levelPath, 'utf8');
     const patchedLinkUpdater = patchLinkUpdater(originalLinkUpdater);
     const patchedRoom = patchRoom(originalRoom);
-    if (patchedLinkUpdater !== originalLinkUpdater || patchedRoom !== originalRoom) {
+    const patchedLevel = patchLevel(originalLevel);
+    if (patchedLinkUpdater !== originalLinkUpdater || patchedRoom !== originalRoom || patchedLevel !== originalLevel) {
         if (patchedLinkUpdater !== originalLinkUpdater) {
             fs.writeFileSync(linkUpdaterPath, patchedLinkUpdater, 'utf8');
         }
         if (patchedRoom !== originalRoom) {
             fs.writeFileSync(roomPath, patchedRoom, 'utf8');
+        }
+        if (patchedLevel !== originalLevel) {
+            fs.writeFileSync(levelPath, patchedLevel, 'utf8');
         }
         runFfdec(ffdecPath, ['-importScript', swfPath, patchedSwfPath, scriptsRoot]);
         fs.copyFileSync(patchedSwfPath, outputPath);

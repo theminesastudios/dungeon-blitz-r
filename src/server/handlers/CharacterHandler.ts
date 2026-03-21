@@ -29,6 +29,15 @@ import {
 const db = new JsonAdapter();
 
 export class CharacterHandler {
+    private static buildDungeonInstanceSeed(client: Pick<Client, 'character'>, fallbackSeed: number | string): string {
+        const partyId = getPartyIdForClient(client);
+        if (partyId > 0) {
+            return `party-${partyId}`;
+        }
+
+        return createDungeonInstanceId(fallbackSeed);
+    }
+
     private static initializeFreshCharacterProgress(character: Character): void {
         const newbieSpawn = LevelConfig.getSpawn("NewbieRoad");
 
@@ -371,38 +380,61 @@ export class CharacterHandler {
 
              if (isDungeonLevel) {
                  const normalizedTarget = LevelConfig.normalizeLevelName(currentLevelName);
-                 // Search active sessions for a party member in the same dungeon
+                 let bestAnchor: Client | null = null;
+                 let bestAnchorStartedRoomCount = -1;
+                 let bestAnchorStartedAt = Number.MAX_SAFE_INTEGER;
+
                  for (const other of GlobalState.sessionsByToken.values()) {
                      if (!other.playerSpawned || !other.character) continue;
                      if (LevelConfig.normalizeLevelName(other.currentLevel) !== normalizedTarget) continue;
                      if (!areClientsInSameParty(client, other)) continue;
                      if (normalizeCharacterKey(other.character.name) === normalizeCharacterKey(char.name)) continue;
+                     const startedRoomIds = LevelHandler.getStartedRoomIdsForLevel(other, currentLevelName);
+                     const startedRoomCount = startedRoomIds.length;
+                     const startedAt = Number.isFinite(Number(other.syncAnchorStartedAt)) && Number(other.syncAnchorStartedAt) > 0
+                        ? Math.round(Number(other.syncAnchorStartedAt))
+                        : Number.MAX_SAFE_INTEGER;
 
-                     // Found a party member in the same dungeon — reuse their level scope
-                     levelInstanceId = normalizeLevelInstanceId(other.levelInstanceId) || createDungeonInstanceId(token);
-                     syncAnchorStartedAt = other.syncAnchorStartedAt > 0 ? other.syncAnchorStartedAt : Date.now();
-                     syncAnchorToken = other.syncAnchorToken > 0 ? other.syncAnchorToken : token;
-                     syncAnchorCharacterName = String(other.syncAnchorCharacterName || other.character.name).trim();
-                     syncQuestTrackerState = MissionHandler.getEffectiveQuestProgress(other);
+                     if (
+                        !bestAnchor ||
+                        startedRoomCount > bestAnchorStartedRoomCount ||
+                        (startedRoomCount === bestAnchorStartedRoomCount && startedAt < bestAnchorStartedAt) ||
+                        (
+                            startedRoomCount === bestAnchorStartedRoomCount &&
+                            startedAt === bestAnchorStartedAt &&
+                            Number(other.token ?? Number.MAX_SAFE_INTEGER) < Number(bestAnchor.token ?? Number.MAX_SAFE_INTEGER)
+                        )
+                     ) {
+                        bestAnchor = other;
+                        bestAnchorStartedRoomCount = startedRoomCount;
+                        bestAnchorStartedAt = startedAt;
+                     }
+                 }
+
+                 if (bestAnchor) {
+                     levelInstanceId = normalizeLevelInstanceId(bestAnchor.levelInstanceId) || CharacterHandler.buildDungeonInstanceSeed(client, token);
+                     syncAnchorStartedAt = bestAnchor.syncAnchorStartedAt > 0 ? bestAnchor.syncAnchorStartedAt : Date.now();
+                     syncAnchorToken = bestAnchor.syncAnchorToken > 0 ? bestAnchor.syncAnchorToken : token;
+                     syncAnchorCharacterName = String(bestAnchor.syncAnchorCharacterName || bestAnchor.character?.name).trim();
+                     syncQuestTrackerState = MissionHandler.getEffectiveQuestProgress(bestAnchor);
                      const syncedDungeonMission = MissionHandler.getDungeonMissionSyncState(
-                        other.character,
+                        bestAnchor.character,
                         currentLevelName,
                         syncQuestTrackerState
                      );
                      syncDungeonMissionId = syncedDungeonMission?.missionId;
                      syncDungeonMissionState = syncedDungeonMission?.state;
                      syncDungeonMissionProgress = syncedDungeonMission?.progress;
-                     // NOTE: Do NOT sync syncRoomId or syncStartedRoomIds here.
-                     // Room progress replay causes null errors in the Flash client when
-                     // it receives room event start packets before the level SWF is loaded.
-                     // Room progress will sync naturally as the Flash client loads rooms.
-                     syncEntryLevel = LevelConfig.normalizeLevelName(other.entryLevel) || undefined;
-                     console.log(`[EnterWorld] Syncing dungeon instance for ${char.name} with party anchor ${other.character.name} (instanceId=${levelInstanceId})`);
-                     break;
+                     syncRoomId = Number.isFinite(Number(bestAnchor.currentRoomId)) && Number(bestAnchor.currentRoomId) >= 0
+                        ? Math.round(Number(bestAnchor.currentRoomId))
+                        : undefined;
+                     syncStartedRoomIds = LevelHandler.getStartedRoomIdsForLevel(bestAnchor, currentLevelName);
+                     syncEntryLevel = LevelConfig.normalizeLevelName(bestAnchor.entryLevel) || undefined;
+                     console.log(`[EnterWorld] Syncing dungeon instance for ${char.name} with party anchor ${bestAnchor.character?.name} (instanceId=${levelInstanceId})`);
                  }
 
                  if (!levelInstanceId) {
-                     levelInstanceId = createDungeonInstanceId(token);
+                     levelInstanceId = CharacterHandler.buildDungeonInstanceSeed(client, token);
                  }
              }
 
@@ -433,11 +465,8 @@ export class CharacterHandler {
         const levelSpec = LevelConfig.get(currentLevelName);
         const isHard = currentLevelName.endsWith("Hard");
 
-        const pendingEntry = GlobalState.pendingWorld.get(token);
-        const resolvedTransferToken = pendingEntry?.syncAnchorToken || token;
-
         const pkt = WorldEnter.buildEnterWorldPacket(
-            resolvedTransferToken, // Ensure Flash client uses the Host's token for Room Event Generation Offset
+            token,
             0, "", false, 0, 0,
             Config.HOST,
             Config.PORTS[0],
@@ -616,6 +645,7 @@ export class CharacterHandler {
         if (!restoredRoomProgress) {
             LevelHandler.primeTutorialRoomEvents(client);
         }
+        LevelHandler.flushDeferredRoomEventStarts(client);
         await LevelHandler.prepareCraftTownTutorialEntry(client);
         LevelHandler.scheduleClientSpawnFallback(client);
     }
