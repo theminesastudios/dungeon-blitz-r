@@ -2,6 +2,7 @@ import { strict as assert } from 'assert';
 import { GlobalState } from '../core/GlobalState';
 import { getClientLevelScope } from '../core/LevelScope';
 import { BitBuffer } from '../network/protocol/bitBuffer';
+import { BitReader } from '../network/protocol/bitReader';
 import { RewardHandler } from '../handlers/RewardHandler';
 import { CombatHandler } from '../handlers/CombatHandler';
 
@@ -68,7 +69,7 @@ function createFakeClient(token: number, name: string): FakeClient {
     };
 }
 
-function buildGrantRewardPayload(sourceId: number, gold: number): Buffer {
+function buildGrantRewardPayload(sourceId: number, gold: number, worldX: number = 120, worldY: number = 220): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod4(0);
     bb.writeMethod4(sourceId);
@@ -82,8 +83,8 @@ function buildGrantRewardPayload(sourceId: number, gold: number): Buffer {
     bb.writeMethod4(0);
     bb.writeMethod4(0);
     bb.writeMethod4(gold);
-    bb.writeMethod24(120);
-    bb.writeMethod24(220);
+    bb.writeMethod24(worldX);
+    bb.writeMethod24(worldY);
     bb.writeMethod15(false);
     return bb.toBuffer();
 }
@@ -121,6 +122,14 @@ function setContributors(levelScope: string, sourceId: number, contributors: str
 
 function firstPendingLoot(client: FakeClient): any {
     return Array.from(client.pendingLoot.values())[0] ?? null;
+}
+
+function decodeLootdropPosition(payload: Buffer): { x: number; y: number } {
+    const br = new BitReader(payload);
+    br.readMethod4();
+    const x = br.readMethod45();
+    const y = br.readMethod45();
+    return { x, y };
 }
 
 async function testPartyContributorRewardsEntireParty(): Promise<void> {
@@ -213,6 +222,73 @@ async function testPetContributionResolvesToOwner(): Promise<void> {
     assert.deepEqual(snapshot.contributors, ['alpha'], 'pet damage should count for its owner');
 }
 
+async function testChainsLootDropsOnPlayerPath(): Promise<void> {
+    const alpha = createFakeClient(30, 'Alpha');
+    GlobalState.sessionsByToken.set(alpha.token, alpha as never);
+
+    alpha.entities.set(alpha.clientEntID, {
+        id: alpha.clientEntID,
+        name: 'MagePaperDoll',
+        isPlayer: true,
+        team: 1,
+        x: 1500,
+        y: 1942
+    });
+
+    const sourceId = 9301;
+    addLevelEntity(alpha, {
+        id: sourceId,
+        name: 'Chains02',
+        isPlayer: false,
+        team: 2,
+        x: 1327,
+        y: 1880
+    });
+    setContributors(getClientLevelScope(alpha as never), sourceId, ['alpha']);
+
+    await RewardHandler.handleGrantReward(alpha as never, buildGrantRewardPayload(sourceId, 25, 2713, 1510));
+
+    const lootPacket = alpha.sentPackets.find((packet) => packet.id === 0x32);
+    assert.ok(lootPacket, 'chains kill should emit a lootdrop packet');
+    const lootPosition = decodeLootdropPosition(lootPacket!.payload);
+    assert.equal(lootPosition.x, 1327, 'chains loot should keep source x position');
+    assert.equal(lootPosition.y, 1942, 'chains loot should snap to player path y position');
+}
+
+async function testGoblinRiverFlyingLootDropsOnPlayerPath(): Promise<void> {
+    const alpha = createFakeClient(40, 'Alpha');
+    alpha.currentLevel = 'GoblinRiverDungeon';
+    GlobalState.sessionsByToken.set(alpha.token, alpha as never);
+
+    alpha.entities.set(alpha.clientEntID, {
+        id: alpha.clientEntID,
+        name: 'MagePaperDoll',
+        isPlayer: true,
+        team: 1,
+        x: 2800,
+        y: 1510
+    });
+
+    const sourceId = 9401;
+    addLevelEntity(alpha, {
+        id: sourceId,
+        name: 'PsychophageBaby',
+        isPlayer: false,
+        team: 2,
+        x: 2713,
+        y: 1441
+    });
+    setContributors(getClientLevelScope(alpha as never), sourceId, ['alpha']);
+
+    await RewardHandler.handleGrantReward(alpha as never, buildGrantRewardPayload(sourceId, 25, 2713, 1510));
+
+    const lootPacket = alpha.sentPackets.find((packet) => packet.id === 0x32);
+    assert.ok(lootPacket, 'goblin river flying kill should emit a lootdrop packet');
+    const lootPosition = decodeLootdropPosition(lootPacket!.payload);
+    assert.equal(lootPosition.x, 2713, 'psychophage loot should use reward world x position');
+    assert.equal(lootPosition.y, 1510, 'psychophage loot should use reward world ground y position');
+}
+
 async function main(): Promise<void> {
     const sessionsByToken = new Map(GlobalState.sessionsByToken);
     const partyByMember = new Map(GlobalState.partyByMember);
@@ -248,6 +324,24 @@ async function main(): Promise<void> {
         GlobalState.entityLastRewardNonces.clear();
 
         await testPetContributionResolvesToOwner();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testChainsLootDropsOnPlayerPath();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testGoblinRiverFlyingLootDropsOnPlayerPath();
     } finally {
         GlobalState.sessionsByToken = sessionsByToken;
         GlobalState.partyByMember = partyByMember;
