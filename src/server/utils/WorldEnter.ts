@@ -469,9 +469,10 @@ export class WorldEnter {
             }
             bb.writeMethod11(0, 1);
 
-            // Temporarily suppress mission-state sync in the login packet while
-            // stabilizing the Flash client's parser. Live mission updates still
-            // arrive through runtime mission packets after login.
+            // Mission serialization inside 0x10 is still misaligned against the
+            // Flash client and corrupts all later fields (gear, mounts, skills).
+            // Keep the login packet stable and restore quest state through the
+            // runtime mission packets after login instead.
             bb.writeMethod4(0);
 
             const friends = normalizeFriendEntries(character.friends);

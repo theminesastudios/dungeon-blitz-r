@@ -572,13 +572,11 @@ export class CharacterHandler {
         client.sendBitBuffer(0x10, pdPkt);
         console.log(`[GameLogin] Sent 0x10 (Player Data)`);
 
+        MissionHandler.syncMissionStateOnLogin(client);
+
         // Defer social/guild login sync while stabilizing the Flash client's
         // post-login packet stream. These packets are not required to load the world.
         // SocialHandler.handleSessionReady(client);
-
-        if (storyRepair.addedMissionId > 0) {
-            MissionHandler.sendMissionAdded(client, storyRepair.addedMissionId);
-        }
         
         // Spawn NPCs
         LevelHandler.spawnLevelNpcs(client, entry.targetLevel);

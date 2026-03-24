@@ -18,6 +18,8 @@ export class MissionHandler {
     private static readonly MISSION_CLAIMED = 3;
     private static readonly DEFAULT_DUNGEON_TIER = 10;
     private static readonly DEFAULT_DUNGEON_HIGHSCORE = 99999999;
+    private static readonly LOGIN_REPLAY_STARS = 3;
+    private static readonly LOGIN_REPLAY_SCORE = 0;
 
     static repairEarlyStoryOnLogin(
         character: Character,
@@ -322,6 +324,50 @@ export class MissionHandler {
         bb.writeMethod4(missionId);
         bb.writeMethod11(state === MissionHandler.MISSION_IN_PROGRESS ? 1 : 0, 1);
         client.sendBitBuffer(0x85, bb);
+    }
+
+    static syncMissionStateOnLogin(client: Client): void {
+        if (!client.character) {
+            return;
+        }
+
+        const missions = MissionHandler.getMissionStateMap(client.character);
+        const missionIds = Object.keys(missions)
+            .map((value) => Number(value))
+            .filter((value) => Number.isFinite(value) && value > 0)
+            .sort((a, b) => a - b);
+
+        for (const missionId of missionIds) {
+            const entry = MissionHandler.asMissionEntry(missions[String(missionId)]);
+            const state = Number(entry.state ?? MissionHandler.MISSION_NOT_STARTED);
+
+            if (state <= MissionHandler.MISSION_NOT_STARTED) {
+                continue;
+            }
+
+            if (state >= MissionHandler.MISSION_CLAIMED) {
+                MissionHandler.sendMissionAdded(client, missionId, MissionHandler.MISSION_READY_TO_TURN_IN);
+                MissionHandler.sendMissionComplete(client, missionId);
+
+                const missionDef = MissionLoader.getMissionDef(missionId);
+                if (missionDef && Boolean(String(missionDef.Dungeon ?? '').trim())) {
+                    MissionHandler.sendMissionCompleteUi(
+                        client,
+                        missionId,
+                        MissionHandler.LOGIN_REPLAY_STARS,
+                        MissionHandler.LOGIN_REPLAY_SCORE
+                    );
+                }
+                continue;
+            }
+
+            MissionHandler.sendMissionAdded(client, missionId, state);
+
+            const progress = Math.max(0, Number(entry.currCount ?? 0));
+            if (state === MissionHandler.MISSION_IN_PROGRESS && progress > 0) {
+                MissionHandler.sendMissionProgress(client, missionId, progress);
+            }
+        }
     }
 
     private static sendMissionComplete(client: Client, missionId: number): void {

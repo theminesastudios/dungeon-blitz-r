@@ -4,8 +4,8 @@
     {
       "name": "Graalhob",
       "class": "Mage",
-      "level": 2,
-      "xp": 339,
+      "level": 3,
+      "xp": 404,
       "gold": 440,
       "craftXP": 0,
       "DragonOre": 0,
@@ -105,13 +105,13 @@
       "inventory": [],
       "CurrentLevel": {
         "name": "NewbieRoad",
-        "x": 3631,
-        "y": 579
+        "x": 5324,
+        "y": 860
       },
       "PreviousLevel": {
         "name": "CraftTown",
-        "x": 1339,
-        "y": 1436
+        "x": 1247,
+        "y": 1441
       },
       "inventoryGears": [
         {

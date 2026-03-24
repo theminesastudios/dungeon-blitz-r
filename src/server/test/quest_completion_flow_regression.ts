@@ -218,11 +218,57 @@ function testNpcFallbackBubblePacketUsesReadableRoomThoughtFormat(): void {
     assert.equal(reader.readMethod13(), 'Test fallback line');
 }
 
+function testMissionStateReplayOnLoginRestoresOnlyActiveMissions(): void {
+    const character: TestCharacter = {
+        name: 'QuestHero',
+        level: 3,
+        xp: 0,
+        gold: 0,
+        questTrackerState: 100,
+        CurrentLevel: { name: 'NewbieRoad', x: 0, y: 0 },
+        missions: {
+            [MissionID.DefendTheShip]: { state: 3, currCount: 1, claimed: 1, complete: 1 },
+            [MissionID.FindAnnasFather]: { state: 1, currCount: 0 }
+        }
+    };
+    const client = createFakeClient('NewbieRoad', character);
+
+    MissionHandler.syncMissionStateOnLogin(client as never);
+
+    const missionAddedPackets = client.sentPackets.filter((packet) => packet.id === 0x85);
+    const missionProgressPackets = client.sentPackets.filter((packet) => packet.id === 0x83);
+    const missionCompletePackets = client.sentPackets.filter((packet) => packet.id === 0x86);
+    const missionCompleteUiPackets = client.sentPackets.filter((packet) => packet.id === 0x84);
+
+    assert.equal(missionAddedPackets.length, 2, 'login replay should include active and claimed missions');
+    assert.equal(missionProgressPackets.length, 0, 'zero-progress active missions should not emit progress packets');
+    assert.equal(missionCompletePackets.length, 1, 'claimed missions should be marked complete after login replay');
+    assert.equal(missionCompleteUiPackets.length, 1, 'claimed dungeon missions should get placeholder completion UI');
+
+    const addedClaimedMission = new BitReader(missionAddedPackets[0]!.payload);
+    assert.equal(addedClaimedMission.readMethod4(), MissionID.DefendTheShip);
+    assert.equal(addedClaimedMission.readMethod15(), false, 'claimed missions should replay as non-active');
+
+    const addedFindAnnasFather = new BitReader(missionAddedPackets[1]!.payload);
+    assert.equal(addedFindAnnasFather.readMethod4(), MissionID.FindAnnasFather);
+    assert.equal(addedFindAnnasFather.readMethod15(), true, 'active missions should replay as active');
+
+    const completedClaimedMission = new BitReader(missionCompletePackets[0]!.payload);
+    assert.equal(completedClaimedMission.readMethod4(), MissionID.DefendTheShip);
+
+    const completedUi = new BitReader(missionCompleteUiPackets[0]!.payload);
+    assert.equal(completedUi.readMethod4(), MissionID.DefendTheShip);
+    assert.equal(completedUi.readMethod15(), true);
+    assert.equal(completedUi.readMethod6(4), 3);
+    assert.equal(completedUi.readMethod4(), 0);
+}
+
 async function main(): Promise<void> {
     ensureMissionDataLoaded();
     await testClaimedQuestDoesNotAutoAcceptFollowup();
     await testDungeonCompletionLeavesNextNpcQuestAvailable();
     testNpcFallbackBubblePacketUsesReadableRoomThoughtFormat();
+    testMissionStateReplayOnLoginRestoresOnlyActiveMissions();
     console.log('quest_completion_flow_regression: ok');
 }
 
