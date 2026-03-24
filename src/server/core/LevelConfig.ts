@@ -208,6 +208,65 @@ export class LevelConfig {
         return !this.isDungeonLevel(normalized);
     }
 
+    static resolveSafeReturnLevel(
+        candidates: Array<string | null | undefined>,
+        options?: {
+            fallbackLevel?: string;
+            excludedLevels?: Array<string | null | undefined>;
+        }
+    ): string {
+        const excludedLevels = new Set(
+            (options?.excludedLevels ?? [])
+                .map((levelName) => this.normalizeLevelName(levelName))
+                .filter((levelName): levelName is string => Boolean(levelName))
+        );
+
+        for (const candidate of candidates) {
+            const normalized = this.normalizeLevelName(candidate);
+            if (!normalized || excludedLevels.has(normalized)) {
+                continue;
+            }
+            if (!this.isSaveAllowedLevel(normalized)) {
+                continue;
+            }
+            return normalized;
+        }
+
+        const fallbackLevel = this.normalizeLevelName(options?.fallbackLevel || 'NewbieRoad');
+        if (fallbackLevel && !excludedLevels.has(fallbackLevel) && this.isSaveAllowedLevel(fallbackLevel)) {
+            return fallbackLevel;
+        }
+
+        return 'NewbieRoad';
+    }
+
+    static resolveDungeonEntryLevel(
+        targetLevelName: string | null | undefined,
+        entryLevelName: string | null | undefined,
+        char?: any
+    ): string {
+        const targetLevel = this.normalizeLevelName(targetLevelName);
+        if (!targetLevel || !this.isDungeonLevel(targetLevel)) {
+            return '';
+        }
+
+        if (targetLevel === 'CraftTown') {
+            return this.resolveSafeReturnLevel(
+                [
+                    entryLevelName,
+                    char?.PreviousLevel?.name,
+                    char?.CurrentLevel?.name
+                ],
+                {
+                    fallbackLevel: 'NewbieRoad',
+                    excludedLevels: ['CraftTown']
+                }
+            );
+        }
+
+        return this.normalizeLevelName(entryLevelName) || String(entryLevelName || '');
+    }
+
     static getSpawnCoordinates(
         char: any,
         currentLevelName: string | null | undefined,

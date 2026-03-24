@@ -2,10 +2,12 @@ import { NpcLoader, NpcDef } from '../data/NpcLoader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { Client, clearClientSpawnFallbackTimer, createKeepTutorialState } from '../core/Client';
 import { BitReader } from '../network/protocol/bitReader';
+import { DebugConfig } from '../core/Debug';
 import { GlobalState } from '../core/GlobalState';
 import { Entity, EntityProps, EntityState } from '../core/Entity';
 import { LevelConfig } from '../core/LevelConfig';
 import { PetHandler } from './PetHandler';
+import { BuildingHandler } from './BuildingHandler';
 import { areClientsInSameParty, getPartyIdForClient, sharesRoomIds } from '../core/PartySync';
 import { areClientsInSameLevelScope, getClientLevelScope, getLevelScopeKey } from '../core/LevelScope';
 
@@ -35,6 +37,7 @@ export class EntityHandler {
         'JadeCityHard'
     ]);
     private static readonly MOUNT_SYNC_RETRY_DELAYS_MS = [0, 300, 1200, 2500, 4000];
+    private static readonly CLIENT_SPAWN_JOINER_SEED_DELAYS_MS = [2500, 4500];
 
     private static normalizeIdentityName(value: unknown): string {
         return String(value ?? '')
@@ -105,13 +108,14 @@ export class EntityHandler {
         return storedPartyId > 0 ? storedPartyId : 0;
     }
 
-    private static findSharedClientSpawnCanonicalMatch(
+    private static findBestSharedClientSpawnCanonicalMatch(
         levelName: string,
         levelMap: Map<number, any>,
         partyId: number,
         roomId: number,
         entity: any,
-        excludedOwnerToken: number
+        excludedOwnerToken: number,
+        requireSharedRoom: boolean
     ): any | null {
         const targetName = EntityHandler.normalizeIdentityName(entity?.name);
         const targetTeam = Number(entity?.team ?? 0);
@@ -130,7 +134,7 @@ export class EntityHandler {
                     continue;
                 }
             }
-            if (!sharesRoomIds(roomId, Number(candidate?.roomId ?? -1))) {
+            if (requireSharedRoom && !sharesRoomIds(roomId, Number(candidate?.roomId ?? -1))) {
                 continue;
             }
             if (EntityHandler.normalizeIdentityName(candidate?.name) !== targetName) {
@@ -152,6 +156,44 @@ export class EntityHandler {
         return bestMatch;
     }
 
+    private static findSharedClientSpawnCanonicalMatch(
+        levelName: string,
+        levelMap: Map<number, any>,
+        partyId: number,
+        roomId: number,
+        entity: any,
+        excludedOwnerToken: number
+    ): any | null {
+        const exactRoomMatch = EntityHandler.findBestSharedClientSpawnCanonicalMatch(
+            levelName,
+            levelMap,
+            partyId,
+            roomId,
+            entity,
+            excludedOwnerToken,
+            true
+        );
+        if (exactRoomMatch) {
+            return exactRoomMatch;
+        }
+
+        const targetTeam = Number(entity?.team ?? 0);
+        if (partyId <= 0 || targetTeam !== 2 || !LevelConfig.isDungeonLevel(levelName)) {
+            return null;
+        }
+
+        // Joiners can be in the correct dungeon instance before their room state syncs.
+        return EntityHandler.findBestSharedClientSpawnCanonicalMatch(
+            levelName,
+            levelMap,
+            partyId,
+            roomId,
+            entity,
+            excludedOwnerToken,
+            false
+        );
+    }
+
     private static suppressDuplicateSharedClientSpawn(
         client: Client,
         levelName: string | null | undefined,
@@ -159,7 +201,9 @@ export class EntityHandler {
         entity: any
     ): boolean {
         if (!levelName || !levelMap || !EntityHandler.isSharedClientSpawnRegionActor(levelName, entity)) {
-            console.log(`[Dedup] SKIP: isSharedClientSpawnRegionActor=false for ${entity?.name} in ${levelName} (clientSpawned=${entity?.clientSpawned}, team=${entity?.team})`);
+            if (DebugConfig.enabled) {
+                console.log(`[Dedup] SKIP: isSharedClientSpawnRegionActor=false for ${entity?.name} in ${levelName} (clientSpawned=${entity?.clientSpawned}, team=${entity?.team})`);
+            }
             return false;
         }
 
@@ -176,16 +220,19 @@ export class EntityHandler {
             client.token
         );
         if (!canonical) {
-            console.log(`[Dedup] NO MATCH for ${entity?.name} (id=${entity?.id}, team=${entity?.team}) in ${levelName}. LevelMap has ${levelMap.size} entities. PartyId=${partyId}, ownerToken=${client.token}`);
-            // List candidates for debugging
-            for (const [cId, c] of levelMap.entries()) {
-                if (c?.clientSpawned && !c?.isPlayer) {
-                    console.log(`[Dedup]   candidate id=${cId} name=${c?.name} team=${c?.team} ownerToken=${c?.ownerToken} ownerPartyId=${c?.ownerPartyId}`);
+            if (DebugConfig.enabled) {
+                console.log(`[Dedup] NO MATCH for ${entity?.name} (id=${entity?.id}, team=${entity?.team}) in ${levelName}. LevelMap has ${levelMap.size} entities. PartyId=${partyId}, ownerToken=${client.token}`);
+                for (const [cId, c] of levelMap.entries()) {
+                    if (c?.clientSpawned && !c?.isPlayer) {
+                        console.log(`[Dedup]   candidate id=${cId} name=${c?.name} team=${c?.team} ownerToken=${c?.ownerToken} ownerPartyId=${c?.ownerPartyId}`);
+                    }
                 }
             }
             return false;
         }
-        console.log(`[Dedup] MATCH found! ${entity?.name} (id=${entity?.id}) -> canonical id=${canonical?.id} ownerToken=${canonical?.ownerToken}`);
+        if (DebugConfig.enabled) {
+            console.log(`[Dedup] MATCH found! ${entity?.name} (id=${entity?.id}) -> canonical id=${canonical?.id} ownerToken=${canonical?.ownerToken}`);
+        }
 
         const duplicateId = Number(entity?.id ?? 0);
         const canonicalId = Number(canonical?.id ?? 0);
@@ -327,6 +374,90 @@ export class EntityHandler {
         }
 
         return null;
+    }
+
+    private static getStartedRoomIdsForLevel(
+        client: Pick<Client, 'startedRoomEvents'> | null | undefined,
+        levelName: string | null | undefined
+    ): number[] {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        if (!normalizedLevel || !client?.startedRoomEvents) {
+            return [];
+        }
+
+        const prefix = `${normalizedLevel}:`;
+        const roomIds = new Set<number>();
+        for (const key of client.startedRoomEvents) {
+            if (!key.startsWith(prefix)) {
+                continue;
+            }
+
+            const roomId = Number(key.substring(prefix.length));
+            if (Number.isFinite(roomId) && roomId >= 0) {
+                roomIds.add(Math.round(roomId));
+            }
+        }
+
+        return Array.from(roomIds).sort((left, right) => left - right);
+    }
+
+    private static sendRoomEventStartPacket(client: Client, roomId: number): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod9(roomId);
+        bb.writeMethod15(true);
+        client.sendBitBuffer(0xA5, bb);
+    }
+
+    private static replayStartedDungeonRoomEventsToJoiner(joiner: Client): void {
+        const levelName = LevelConfig.normalizeLevelName(joiner.currentLevel);
+        if (!levelName || !LevelConfig.isDungeonLevel(levelName) || !joiner.playerSpawned) {
+            return;
+        }
+
+        let anchor: Client | null = null;
+        let anchorStartedRoomIds: number[] = [];
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (other === joiner) {
+                continue;
+            }
+            if (!other.playerSpawned || !areClientsInSameLevelScope(joiner, other) || !areClientsInSameParty(joiner, other)) {
+                continue;
+            }
+
+            const startedRoomIds = EntityHandler.getStartedRoomIdsForLevel(other, levelName);
+            if (startedRoomIds.length === 0) {
+                continue;
+            }
+
+            if (
+                !anchor ||
+                startedRoomIds.length > anchorStartedRoomIds.length ||
+                (startedRoomIds.length === anchorStartedRoomIds.length && Number(other.syncAnchorStartedAt ?? 0) > Number(anchor.syncAnchorStartedAt ?? 0))
+            ) {
+                anchor = other;
+                anchorStartedRoomIds = startedRoomIds;
+            }
+        }
+
+        if (!anchor || anchorStartedRoomIds.length === 0) {
+            return;
+        }
+
+        const anchorRoomId = Number(anchor.currentRoomId ?? -1);
+        if (Number.isFinite(anchorRoomId) && anchorRoomId >= 0) {
+            joiner.currentRoomId = anchorRoomId;
+        }
+
+        for (const roomId of anchorStartedRoomIds) {
+            const key = `${levelName}:${roomId}`;
+            if (joiner.startedRoomEvents.has(key)) {
+                continue;
+            }
+
+            EntityHandler.sendRoomEventStartPacket(joiner, roomId);
+            joiner.startedRoomEvents.add(key);
+        }
     }
 
     static resolveCanonicalEntity(levelName: string, entityId: number): EntityProps | null {
@@ -582,6 +713,22 @@ export class EntityHandler {
         client.sendBitBuffer(0x07, bb);
     }
 
+    static sendNpcMove(client: Client, entityId: number, dx: number, dy: number, state: number = 0, facingLeft: boolean = false): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(entityId);
+        bb.writeMethod45(dx);
+        bb.writeMethod45(dy);
+        bb.writeMethod45(0); // deltaV
+        bb.writeMethod6(state, 2);
+        bb.writeMethod15(facingLeft);
+        bb.writeMethod15(false); // running
+        bb.writeMethod15(false); // jumping
+        bb.writeMethod15(false); // dropping
+        bb.writeMethod15(false); // backpedal
+        bb.writeMethod15(false); // airborne
+        client.sendBitBuffer(0x07, bb);
+    }
+
     private static sendSetUntargetable(client: Client, entityId: number, untargetable: boolean): void {
         const bb = new BitBuffer(false);
         bb.writeMethod4(entityId);
@@ -675,6 +822,20 @@ export class EntityHandler {
                 }
 
                 EntityHandler.sendMountState(client, entityId, mountId);
+            }, delayMs);
+        }
+    }
+
+    private static scheduleExistingVisibleClientSpawnEntitiesToJoiner(joiner: Client): void {
+        const levelScope = getClientLevelScope(joiner);
+        const token = joiner.token;
+        for (const delayMs of EntityHandler.CLIENT_SPAWN_JOINER_SEED_DELAYS_MS) {
+            setTimeout(() => {
+                if (!joiner.playerSpawned || getClientLevelScope(joiner) !== levelScope || joiner.token !== token) {
+                    return;
+                }
+
+                EntityHandler.sendExistingVisibleClientSpawnEntitiesToJoiner(joiner);
             }, delayMs);
         }
     }
@@ -942,7 +1103,7 @@ export class EntityHandler {
             return;
         }
 
-        if (!isPlayer && levelName) {
+        if (!isPlayer && levelName && DebugConfig.enabled) {
             console.log(`[EntityHandler] Non-player entity ACCEPTED: id=${entityId} name=${entName} team=${team} from ${client.character?.name} in ${levelName} scope=${getClientLevelScope(client)} levelMap.size=${levelMap?.size ?? 'null'}`);
         }
 
@@ -967,6 +1128,7 @@ export class EntityHandler {
              EntityHandler.sendExistingPlayersToJoiner(client);
              EntityHandler.broadcastPlayerSpawn(client, props);
              EntityHandler.broadcastPlayerMountState(client, props.id, equippedMountId);
+             BuildingHandler.refreshCraftTownBuildingsOnSpawn(client);
         }
     }
 
@@ -1074,7 +1236,8 @@ export class EntityHandler {
             EntityHandler.sendOtherPlayerMountToJoiner(joiner, other);
         }
 
-        EntityHandler.sendExistingVisibleClientSpawnEntitiesToJoiner(joiner);
+        EntityHandler.replayStartedDungeonRoomEventsToJoiner(joiner);
+        EntityHandler.scheduleExistingVisibleClientSpawnEntitiesToJoiner(joiner);
     }
 
     private static sendExistingVisibleClientSpawnEntitiesToJoiner(joiner: Client): void {
@@ -1089,6 +1252,9 @@ export class EntityHandler {
 
         for (const [entityId, entityProps] of levelMap.entries()) {
             if (entityId <= 0 || entityProps?.isPlayer || !entityProps?.clientSpawned) {
+                continue;
+            }
+            if (joiner.knownEntityIds.has(entityId)) {
                 continue;
             }
             if (!EntityHandler.canClientSeeEntity(joiner, entityProps)) {

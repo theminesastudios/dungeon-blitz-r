@@ -233,16 +233,29 @@ export class RewardHandler {
         let gearTier = 0;
 
         const entName = String(sourceEntity?.name ?? '');
+
+        // Target Dummy (Hedefkuklası) - No rewards
+        if (entName.startsWith('IntroDummy') || entName === 'EmperorDummy' || entName === 'EmperorDummyHard' || entName.startsWith('HomeDummy')) {
+            return { exp: 0, gold: 0, hpGain: 0, materialId: 0, gearId: 0, gearTier: 0 };
+        }
+
         const entType = entName ? GameData.getEntType(entName) : null;
         const entLevel = Math.max(1, Number(entType?.Level ?? 1));
         const playerClass = String(client.character?.class ?? '');
         const realm = String(entType?.Realm ?? RewardHandler.DUNGEON_REALM_MAP[client.currentLevel] ?? '');
         const materialChance = realm ? RewardHandler.resolveMaterialDropChance(entType, reward) : 0;
 
+        // Küçük Intro düşmanlar (Minion rank) ve Chains entitylerinden eşya düşmez
+        const isIntroEnemy = entName.startsWith('Intro');
+        const isChainsEnemy = entName.startsWith('Chains');
+        const entRank = String(entType?.EntRank ?? 'Minion');
+        const isLargeEnemy = entRank === 'Lieutenant' || entRank === 'MiniBoss' || entRank === 'Boss';
+        const allowItemDrop = !isChainsEnemy && (!isIntroEnemy || isLargeEnemy);
+
         if (realm && materialChance > 0 && Math.random() < materialChance) {
             materialId = GameData.getRandomMaterialForRealm(realm);
         }
-        if (reward.dropGear) {
+        if (reward.dropGear && allowItemDrop) {
             gearId = GameData.getGearIdForEntity(entName, playerClass);
             gearTier = RewardHandler.resolveGearTier(entName, entLevel);
         }
@@ -268,7 +281,7 @@ export class RewardHandler {
             }
         }
 
-        if (!gearId && entName && Math.random() < 0.10) {
+        if (!gearId && entName && allowItemDrop && Math.random() < 0.10) {
             gearId = GameData.getGearIdForEntity(entName, playerClass);
             gearTier = RewardHandler.resolveGearTier(entName, entLevel);
         }
@@ -278,7 +291,11 @@ export class RewardHandler {
             hpGain = Math.max(1, Math.floor(maxHp * 0.15));
         }
 
-        return { exp, gold, hpGain, materialId, gearId, gearTier };
+        const result = { exp, gold, hpGain, materialId, gearId, gearTier };
+        if (entName === 'IntroParrot' || entName.startsWith('Chains')) {
+            result.exp = 0;
+        }
+        return result;
     }
 
     private static async persistCharacter(client: Client): Promise<void> {

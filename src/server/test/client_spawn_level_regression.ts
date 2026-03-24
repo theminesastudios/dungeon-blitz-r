@@ -6,6 +6,7 @@ import { EntityHandler } from '../handlers/EntityHandler';
 import { LevelHandler } from '../handlers/LevelHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
+import { NpcLoader } from '../data/NpcLoader';
 
 type SentPacket = {
     id: number;
@@ -16,13 +17,19 @@ type FakeClient = {
     token: number;
     character: { name: string };
     currentLevel: string;
+    levelInstanceId: string;
     currentRoomId: number;
     playerSpawned: boolean;
     clientEntID: number;
+    userId: number | null;
+    mountTransferGraceUntil: number;
+    syncAnchorStartedAt: number;
+    startedRoomEvents: Set<string>;
     knownEntityIds: Set<number>;
     entities: Map<number, any>;
     sentPackets: SentPacket[];
     send: (id: number, payload: Buffer) => void;
+    sendBitBuffer: (id: number, bb: BitBuffer) => void;
 };
 
 let nextFakeToken = 1000;
@@ -39,6 +46,9 @@ function ensureLevelConfigLoaded(): void {
     if (!LevelConfig.has('TutorialDungeon')) {
         LevelConfig.load(path.resolve(__dirname, '../data'));
     }
+    if (NpcLoader.getRawNpcsForLevel('TutorialDungeon').length === 0) {
+        NpcLoader.load(path.resolve(__dirname, '../data'));
+    }
 }
 
 function createFakeClient(name: string): FakeClient {
@@ -48,14 +58,22 @@ function createFakeClient(name: string): FakeClient {
         token: nextFakeToken++,
         character: { name },
         currentLevel: 'NewbieRoad',
+        levelInstanceId: '',
         currentRoomId: 1,
         playerSpawned: true,
         clientEntID: 0,
+        userId: 1,
+        mountTransferGraceUntil: 0,
+        syncAnchorStartedAt: 0,
+        startedRoomEvents: new Set<string>(),
         knownEntityIds: new Set<number>(),
         entities: new Map<number, any>(),
         sentPackets,
         send(id: number, payload: Buffer) {
             sentPackets.push({ id, payload: Buffer.from(payload) });
+        },
+        sendBitBuffer(id: number, bb: BitBuffer) {
+            sentPackets.push({ id, payload: bb.toBuffer() });
         }
     };
 }
@@ -63,6 +81,14 @@ function createFakeClient(name: string): FakeClient {
 function parseDestroyEntityId(payload: Buffer): number {
     const br = new BitReader(payload);
     return br.readMethod4();
+}
+
+function parseRoomEventStart(payload: Buffer): { roomId: number; flag: boolean } {
+    const br = new BitReader(payload);
+    return {
+        roomId: br.readMethod4(),
+        flag: br.readMethod15()
+    };
 }
 
 function testOutdoorLevelsUseClientSpawn(): void {
@@ -281,6 +307,68 @@ function testDungeonPartyAuthoritySuppressesDuplicateHostileSpawns(): void {
     assert.equal(follower.knownEntityIds.has(canonical.id), true);
     assert.equal(follower.knownEntityIds.has(3301), false);
     assert.equal(follower.entities.has(3301), false);
+}
+
+function testDungeonPartyAuthoritySuppressesDuplicateHostileSpawnsAcrossUnsyncedRooms(): void {
+    const owner = createFakeClient('Alpha');
+    const follower = createFakeClient('Beta');
+
+    owner.currentLevel = 'TutorialDungeon';
+    follower.currentLevel = 'TutorialDungeon';
+    owner.currentRoomId = 4;
+    follower.currentRoomId = 0;
+
+    const canonical = {
+        id: 2302,
+        name: 'IntroGoblin',
+        isPlayer: false,
+        x: 120,
+        y: 220,
+        v: 0,
+        team: 2,
+        entState: 0,
+        clientSpawned: true,
+        ownerToken: owner.token,
+        ownerPartyId: 98,
+        roomId: owner.currentRoomId
+    };
+
+    GlobalState.levelEntities.set('TutorialDungeon', new Map([[canonical.id, canonical]]));
+    GlobalState.sessionsByToken.set(owner.token, owner as never);
+    GlobalState.sessionsByToken.set(follower.token, follower as never);
+    GlobalState.partyByMember.set('alpha', 98);
+    GlobalState.partyByMember.set('beta', 98);
+
+    const duplicate = {
+        id: 3302,
+        name: canonical.name,
+        isPlayer: false,
+        x: 123,
+        y: 218,
+        v: 0,
+        team: canonical.team,
+        entState: canonical.entState,
+        clientSpawned: true,
+        ownerToken: follower.token,
+        ownerPartyId: 98,
+        roomId: follower.currentRoomId
+    };
+
+    const suppressed = (EntityHandler as any).suppressDuplicateSharedClientSpawn(
+        follower as never,
+        'TutorialDungeon',
+        GlobalState.levelEntities.get('TutorialDungeon'),
+        duplicate
+    );
+
+    const levelMap = GlobalState.levelEntities.get('TutorialDungeon');
+    assert.equal(suppressed, true, 'follower hostile spawn should still be suppressed while the joiner room state is unsynced');
+    assert.equal(levelMap?.size, 1, 'cross-room dungeon hostile should still collapse to the existing shared entity');
+    assert.deepEqual(follower.sentPackets.map((packet) => packet.id), [0x0D, 0x0F]);
+    assert.equal(parseDestroyEntityId(follower.sentPackets[0]!.payload), 3302);
+    assert.equal(follower.knownEntityIds.has(canonical.id), true);
+    assert.equal(follower.knownEntityIds.has(3302), false);
+    assert.equal(follower.entities.has(3302), false);
 }
 
 function testOutdoorPartyAuthoritySuppressesDuplicateNpcSpawns(): void {
@@ -728,6 +816,68 @@ function testOutdoorHostileIncrementalUpdatesRelayToPartyPeers(): void {
     );
 }
 
+function testDungeonJoinerReplaysStartedRoomEventsFromPartyAnchor(): void {
+    const anchor = createFakeClient('Alpha');
+    const joiner = createFakeClient('Beta');
+
+    anchor.currentLevel = 'TutorialDungeon';
+    joiner.currentLevel = 'TutorialDungeon';
+    anchor.levelInstanceId = '41035';
+    joiner.levelInstanceId = '41035';
+    anchor.currentRoomId = 5;
+    joiner.currentRoomId = 0;
+    anchor.syncAnchorStartedAt = 100;
+    joiner.syncAnchorStartedAt = 50;
+    anchor.clientEntID = 7001;
+    joiner.clientEntID = 7002;
+
+    anchor.startedRoomEvents.add('TutorialDungeon:0');
+    anchor.startedRoomEvents.add('TutorialDungeon:1');
+    anchor.startedRoomEvents.add('TutorialDungeon:5');
+    joiner.startedRoomEvents.add('TutorialDungeon:0');
+
+    const anchorProps = {
+        id: anchor.clientEntID,
+        name: 'Alpha',
+        isPlayer: true,
+        x: 100,
+        y: 200,
+        team: 1,
+        entState: 0
+    };
+
+    anchor.entities.set(anchor.clientEntID, anchorProps);
+    joiner.entities.set(joiner.clientEntID, {
+        id: joiner.clientEntID,
+        name: 'Beta',
+        isPlayer: true,
+        x: 120,
+        y: 200,
+        team: 1,
+        entState: 0
+    });
+
+    GlobalState.sessionsByToken.set(anchor.token, anchor as never);
+    GlobalState.sessionsByToken.set(joiner.token, joiner as never);
+    GlobalState.partyByMember.set('alpha', 77);
+    GlobalState.partyByMember.set('beta', 77);
+
+    (EntityHandler as any).sendExistingPlayersToJoiner(joiner as never);
+
+    const roomPackets = joiner.sentPackets.filter((packet) => packet.id === 0xA5);
+    assert.deepEqual(
+        roomPackets.map((packet) => parseRoomEventStart(packet.payload)),
+        [
+            { roomId: 1, flag: true },
+            { roomId: 5, flag: true }
+        ],
+        'joiner should replay missing dungeon room starts from the party anchor only once'
+    );
+    assert.equal(joiner.currentRoomId, 5, 'joiner should inherit the party anchor room before visible client-spawn seeding');
+    assert.equal(joiner.startedRoomEvents.has('TutorialDungeon:1'), true);
+    assert.equal(joiner.startedRoomEvents.has('TutorialDungeon:5'), true);
+}
+
 function main(): void {
     ensureLevelConfigLoaded();
 
@@ -774,6 +924,11 @@ function main(): void {
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
+        testDungeonPartyAuthoritySuppressesDuplicateHostileSpawnsAcrossUnsyncedRooms();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
         testOutdoorPartyAuthoritySuppressesDuplicateNpcSpawns();
 
         GlobalState.levelEntities.clear();
@@ -815,6 +970,11 @@ function main(): void {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         testOutdoorHostileIncrementalUpdatesRelayToPartyPeers();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testDungeonJoinerReplaysStartedRoomEventsFromPartyAnchor();
     } finally {
         GlobalState.levelEntities = levelEntities;
         GlobalState.sessionsByToken = sessionsByToken;

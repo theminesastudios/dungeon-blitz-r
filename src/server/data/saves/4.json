@@ -1,0 +1,499 @@
+{
+  "user_id": 4,
+  "characters": [
+    {
+      "name": "Prutacold",
+      "class": "Rogue",
+      "level": 4,
+      "xp": 954,
+      "gold": 2888,
+      "craftXP": 0,
+      "DragonOre": 0,
+      "mammothIdols": 0,
+      "DragonKeys": 0,
+      "SilverSigils": 0,
+      "alertState": 0,
+      "gender": "",
+      "headSet": "MaleHead3",
+      "hairSet": "Do16",
+      "mouthSet": "Mouth04",
+      "faceSet": "Face12",
+      "hairColor": 4201984,
+      "skinColor": 11760985,
+      "shirtColor": 10290729,
+      "pantColor": 4067694,
+      "equippedGears": [
+        {
+          "gearID": 46,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 50,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 44,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 766,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 31,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 39,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        }
+      ],
+      "CurrentLevel": {
+        "name": "NewbieRoad",
+        "x": 6825,
+        "y": 493
+      },
+      "PreviousLevel": {
+        "name": "CraftTown",
+        "x": 0,
+        "y": 0
+      },
+      "inventoryGears": [
+        {
+          "gearID": 27,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 39,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 46,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 668,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 44,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 46,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 50,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 31,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 31,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 661,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 668,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 766,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 50,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 745,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 661,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 36,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        }
+      ],
+      "gearSets": [],
+      "mounts": [
+        1
+      ],
+      "pets": [],
+      "charms": [],
+      "materials": [
+        {
+          "materialID": 35,
+          "count": 5
+        },
+        {
+          "materialID": 91,
+          "count": 43
+        },
+        {
+          "materialID": 92,
+          "count": 13
+        },
+        {
+          "materialID": 93,
+          "count": 5
+        },
+        {
+          "materialID": 34,
+          "count": 2
+        },
+        {
+          "materialID": 112,
+          "count": 1
+        },
+        {
+          "materialID": 106,
+          "count": 1
+        }
+      ],
+      "lockboxes": [
+        {
+          "lockboxID": 1,
+          "count": 100
+        }
+      ],
+      "OwnedDyes": [],
+      "consumables": [],
+      "missions": {
+        "1": {
+          "state": 3,
+          "currCount": 1,
+          "Tier": 10,
+          "highscore": 99999999,
+          "Time": 1774366391,
+          "claimed": 1,
+          "complete": 1
+        },
+        "2": {
+          "state": 3,
+          "claimed": 1,
+          "complete": 1
+        },
+        "3": {
+          "state": 3,
+          "currCount": 1,
+          "Tier": 10,
+          "highscore": 99999999,
+          "Time": 1774366708,
+          "claimed": 1,
+          "complete": 1
+        },
+        "4": {
+          "state": 3,
+          "currCount": 0,
+          "claimed": 1,
+          "complete": 1
+        },
+        "5": {
+          "state": 3,
+          "currCount": 1,
+          "Tier": 10,
+          "highscore": 99999999,
+          "Time": 1774366805,
+          "claimed": 1,
+          "complete": 1
+        },
+        "9": {
+          "state": 3,
+          "currCount": 0,
+          "claimed": 1,
+          "complete": 1
+        },
+        "12": {
+          "state": 1,
+          "currCount": 0
+        },
+        "271": {
+          "state": 1,
+          "currCount": 0
+        }
+      },
+      "questTrackerState": 11,
+      "friends": [],
+      "learnedAbilities": [
+        {
+          "abilityID": 3,
+          "rank": 1
+        },
+        {
+          "abilityID": 5,
+          "rank": 1
+        },
+        {
+          "abilityID": 6,
+          "rank": 1
+        },
+        {
+          "abilityID": 9,
+          "rank": 1
+        }
+      ],
+      "activeAbilities": [
+        3,
+        6,
+        9
+      ],
+      "craftTalentPoints": [],
+      "talentPoints": {},
+      "magicForge": {
+        "stats_by_building": {
+          "1": 1,
+          "2": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "12": 0,
+          "13": 0
+        },
+        "primary": 0,
+        "secondary": 0,
+        "ReadyTime": 0,
+        "secondary_tier": 0,
+        "usedlist": 0,
+        "forge_roll_a": 0,
+        "forge_roll_b": 0,
+        "is_extended_forge": false
+      },
+      "SkillResearch": {},
+      "buildingUpgrade": {
+        "buildingID": 0,
+        "rank": 0,
+        "ReadyTime": 0
+      },
+      "talentResearch": {
+        "classIndex": null,
+        "ReadyTime": 0
+      },
+      "EggHachery": {},
+      "OwnedEggsID": [],
+      "EggNotifySent": false,
+      "EggResetTime": 0,
+      "activeEggCount": 0,
+      "restingPets": [],
+      "trainingPet": [],
+      "MasterClass": 0,
+      "TalentTree": {},
+      "equippedMount": 1,
+      "activePet": {
+        "typeID": 0,
+        "special_id": 0
+      },
+      "activeConsumableID": 0,
+      "queuedConsumableID": 0,
+      "guild": {},
+      "ignored": []
+    }
+  ]
+}

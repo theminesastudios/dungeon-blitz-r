@@ -209,7 +209,11 @@ export class PresenceService {
         const levelKey = LevelConfig.normalizeLevelName(client.currentLevel || client.character?.CurrentLevel?.name || '');
         const levelName = PresenceService.formatLevelLabel(levelKey);
         const levelSpec = levelKey ? LevelConfig.get(levelKey) : null;
-        const activityKind = levelSpec?.isDungeon ? 'dungeon' : 'zone';
+        const activityKind = levelKey === 'CraftTown'
+            ? 'zone'
+            : levelSpec?.isDungeon
+                ? 'dungeon'
+                : 'zone';
         const party = PresenceService.getPartySnapshot(characterName);
         const startedAtMs = Number.isFinite(client.worldEnteredAt) ? client.worldEnteredAt : Date.now();
         const className = PresenceService.formatClassName(client.character?.class);

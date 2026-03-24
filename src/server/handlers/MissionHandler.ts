@@ -16,6 +16,14 @@ export class MissionHandler {
     private static readonly MISSION_IN_PROGRESS = 1;
     private static readonly MISSION_READY_TO_TURN_IN = 2;
     private static readonly MISSION_CLAIMED = 3;
+    private static readonly LOGIN_SYNC_MISSION_IDS = new Set<number>([
+        MissionID.DefendTheShip,
+        MissionID.MeetTheTown,
+        MissionID.RescueAnna,
+        MissionID.FindAnnasFather,
+        MissionID.ClearYourHouse,
+        MissionID.GoblinRiver
+    ]);
     private static readonly DEFAULT_DUNGEON_TIER = 10;
     private static readonly DEFAULT_DUNGEON_HIGHSCORE = 99999999;
 
@@ -77,7 +85,56 @@ export class MissionHandler {
             didMutate = true;
         }
 
+        if (
+            MissionHandler.getMissionState(character, MissionID.ClearYourHouse) >= MissionHandler.MISSION_CLAIMED &&
+            Number(character.questTrackerState ?? 0) < 100
+        ) {
+            character.questTrackerState = 100;
+            didMutate = true;
+        }
+
         return { didMutate, addedMissionId };
+    }
+
+    static syncMissionStateToClient(client: Client): void {
+        if (!client.character) {
+            return;
+        }
+
+        MissionHandler.sendQuestProgress(client, Math.max(0, Number(client.character.questTrackerState ?? 0)));
+
+        const missions = MissionHandler.getMissionStateMap(client.character);
+        const missionIds = Object.keys(missions)
+            .map((value) => Number(value))
+            .filter((value) => Number.isFinite(value) && value > 0)
+            .sort((left, right) => left - right);
+
+        for (const missionId of missionIds) {
+            if (!MissionHandler.LOGIN_SYNC_MISSION_IDS.has(missionId)) {
+                continue;
+            }
+
+            const entry = MissionHandler.asMissionEntry(missions[String(missionId)]);
+            const state = Number(entry.state ?? MissionHandler.MISSION_NOT_STARTED);
+
+            if (state >= MissionHandler.MISSION_CLAIMED) {
+                MissionHandler.sendMissionComplete(client, missionId);
+                continue;
+            }
+
+            if (state === MissionHandler.MISSION_READY_TO_TURN_IN) {
+                MissionHandler.sendMissionAdded(client, missionId, MissionHandler.MISSION_READY_TO_TURN_IN);
+                continue;
+            }
+
+            if (state === MissionHandler.MISSION_IN_PROGRESS) {
+                MissionHandler.sendMissionAdded(client, missionId, MissionHandler.MISSION_IN_PROGRESS);
+                const progress = Math.max(0, Number(entry.currCount ?? 0));
+                if (progress > 0) {
+                    MissionHandler.sendMissionProgress(client, missionId, progress);
+                }
+            }
+        }
     }
 
     static async handleSetLevelComplete(client: Client, data: Buffer): Promise<void> {
@@ -170,7 +227,7 @@ export class MissionHandler {
                 }
             }
 
-            if (MissionHandler.moveCharacterBackToSafeLevel(client.character, currentLevel)) {
+            if (currentLevel !== 'CraftTownTutorial' && MissionHandler.moveCharacterBackToSafeLevel(client.character, currentLevel)) {
                 didMutate = true;
             }
         }

@@ -1,0 +1,26 @@
+[
+  {
+    "email": "neo@gmail.com",
+    "user_id": 1
+  },
+  {
+    "email": "1@gmail.com",
+    "user_id": 2
+  },
+  {
+    "email": "n@gmail.com",
+    "user_id": 3
+  },
+  {
+    "email": "a@gmail.com",
+    "user_id": 4
+  },
+  {
+    "email": "daredevil@gmail.com",
+    "user_id": 5
+  },
+  {
+    "email": "neodevils@gmail.com",
+    "user_id": 6
+  }
+]

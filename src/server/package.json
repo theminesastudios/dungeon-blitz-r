@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --ext ts,js --exec \"node tools/runDevServer.js\"",
-    "dev:discord-bridge": "ts-node tools/discordLocalBridge.ts",
+    "dev:discord-bridge": "ts-node tools/discordLocalBridge.ts discord-bridge.dev.config.json",
     "build": "tsc",
     "start:multiplayer": "node tools/startMultiplayerServer.js",
     "start:discord-bridge": "node dist/tools/discordLocalBridge.js"

@@ -1,0 +1,3 @@
+[DiscordBridge] Connected to local Discord client.
+[DiscordBridge] Polling http://100.100.146.54/api/presence/discord-target every 4000ms
+[DiscordBridge] Listening on http://127.0.0.1:47631

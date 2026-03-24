@@ -1,6 +1,7 @@
 import abilityTypes from '../data/AbilityTypes.json';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { Client } from '../core/Client';
+import { DebugLogger } from '../core/Debug';
 import { BitReader } from '../network/protocol/bitReader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 
@@ -13,11 +14,15 @@ type AbilityDef = {
 };
 
 type CharacterRecord = Record<string, unknown>;
+type SkillResearchRecord = Record<string, unknown>;
 
 const db = new JsonAdapter();
 const abilityDefs = abilityTypes as AbilityDef[];
 const abilityDefsByKey = new Map<string, AbilityDef>(
     abilityDefs.map((def) => [`${def.AbilityID}:${def.Rank}`, def])
+);
+const knownAbilityIds = new Set<number>(
+    abilityDefs.map((def) => Number(def.AbilityID ?? 0)).filter((abilityId) => abilityId > 0)
 );
 
 export class AbilityHandler {
@@ -54,23 +59,83 @@ export class AbilityHandler {
         const abilityId = br.readMethod20(7);
         const rank = br.readMethod20(4);
         const payWithIdols = br.readMethod15();
+        DebugLogger.logProgress('AbilityResearch:startRequest', client, client.character, {
+            abilityId,
+            rank,
+            payWithIdols,
+            raw: DebugLogger.previewBuffer(data)
+        });
 
         if (abilityId <= 0 || rank <= 0) {
+            DebugLogger.logProgress('AbilityResearch:startRejected', client, client.character, {
+                abilityId,
+                rank,
+                payWithIdols,
+                reason: 'invalid_ability_or_rank',
+                raw: DebugLogger.previewBuffer(data)
+            });
             return;
         }
 
         const skillResearch = AbilityHandler.getSkillResearch(client.character);
         if (Number(skillResearch.abilityID ?? 0) !== 0) {
+            DebugLogger.logProgress('AbilityResearch:startRejected', client, client.character, {
+                abilityId,
+                rank,
+                payWithIdols,
+                reason: 'research_already_active',
+                existingResearch: {
+                    abilityID: Number(skillResearch.abilityID ?? 0),
+                    rank: Number(skillResearch.rank ?? 0),
+                    ReadyTime: Number(skillResearch.ReadyTime ?? 0)
+                },
+                raw: DebugLogger.previewBuffer(data)
+            });
             return;
         }
 
         const currentRank = AbilityHandler.getLearnedAbilityRank(client.character, abilityId);
         if (rank !== currentRank + 1) {
+            if (AbilityHandler.shouldTreatAsTutorialEcho(client, abilityId, rank, currentRank)) {
+                client.character.SkillResearch = {
+                    abilityID: abilityId,
+                    rank,
+                    ReadyTime: 0,
+                    tutorialEcho: true
+                };
+                await AbilityHandler.saveCharacter(client);
+                DebugLogger.logProgress('AbilityResearch:tutorialEchoAccepted', client, client.character, {
+                    abilityId,
+                    rank,
+                    currentRank,
+                    payWithIdols,
+                    raw: DebugLogger.previewBuffer(data)
+                });
+                AbilityHandler.sendAbilityResearchDone(client, abilityId);
+                return;
+            }
+
+            DebugLogger.logProgress('AbilityResearch:startRejected', client, client.character, {
+                abilityId,
+                rank,
+                currentRank,
+                expectedRank: currentRank + 1,
+                payWithIdols,
+                reason: 'rank_not_next_upgrade',
+                raw: DebugLogger.previewBuffer(data)
+            });
             return;
         }
 
         const abilityDef = AbilityHandler.getAbilityDef(abilityId, rank);
         if (!abilityDef) {
+            DebugLogger.logProgress('AbilityResearch:startRejected', client, client.character, {
+                abilityId,
+                rank,
+                payWithIdols,
+                reason: 'missing_ability_definition',
+                raw: DebugLogger.previewBuffer(data)
+            });
             return;
         }
 
@@ -81,12 +146,30 @@ export class AbilityHandler {
         if (payWithIdols) {
             const idols = Number(client.character.mammothIdols ?? 0);
             if (idols < idolCost) {
+                DebugLogger.logProgress('AbilityResearch:startRejected', client, client.character, {
+                    abilityId,
+                    rank,
+                    payWithIdols,
+                    idolCost,
+                    idols,
+                    reason: 'not_enough_idols',
+                    raw: DebugLogger.previewBuffer(data)
+                });
                 return;
             }
             client.character.mammothIdols = idols - idolCost;
         } else {
             const gold = Number(client.character.gold ?? 0);
             if (gold < goldCost) {
+                DebugLogger.logProgress('AbilityResearch:startRejected', client, client.character, {
+                    abilityId,
+                    rank,
+                    payWithIdols,
+                    goldCost,
+                    gold,
+                    reason: 'not_enough_gold',
+                    raw: DebugLogger.previewBuffer(data)
+                });
                 return;
             }
             client.character.gold = gold - goldCost;
@@ -100,6 +183,12 @@ export class AbilityHandler {
         };
 
         await AbilityHandler.saveCharacter(client);
+        DebugLogger.logProgress('AbilityResearch:started', client, client.character, {
+            abilityId,
+            rank,
+            payWithIdols,
+            upgradeTime
+        });
     }
 
     static async handleClaimAbilityResearch(client: Client): Promise<void> {
@@ -107,18 +196,43 @@ export class AbilityHandler {
 
         const skillResearch = AbilityHandler.getSkillResearch(client.character);
         const abilityId = Number(skillResearch.abilityID ?? 0);
+        DebugLogger.logProgress('AbilityResearch:claimRequest', client, client.character, {
+            abilityId
+        });
         if (abilityId === 0) {
+            DebugLogger.logProgress('AbilityResearch:claimRejected', client, client.character, {
+                reason: 'no_active_research'
+            });
             return;
         }
 
         const readyTime = Number(skillResearch.ReadyTime ?? 0);
         const now = Math.floor(Date.now() / 1000);
         if (readyTime > 0 && readyTime > now) {
+            DebugLogger.logProgress('AbilityResearch:claimRejected', client, client.character, {
+                abilityId,
+                readyTime,
+                now,
+                reason: 'research_not_ready'
+            });
             return;
         }
 
         const learnedAbilities = AbilityHandler.getLearnedAbilities(client.character);
         const targetRank = Number(skillResearch.rank ?? AbilityHandler.getLearnedAbilityRank(client.character, abilityId) + 1);
+        const currentRank = AbilityHandler.getLearnedAbilityRank(client.character, abilityId);
+        const isTutorialEcho = Boolean(skillResearch.tutorialEcho);
+
+        if (isTutorialEcho && currentRank >= targetRank) {
+            client.character.SkillResearch = {};
+            await AbilityHandler.saveCharacter(client);
+            DebugLogger.logProgress('AbilityResearch:claimTutorialEcho', client, client.character, {
+                abilityId,
+                targetRank,
+                currentRank
+            });
+            return;
+        }
 
         const existing = learnedAbilities.find((ability) => Number(ability.abilityID ?? 0) === abilityId);
         if (existing) {
@@ -129,6 +243,10 @@ export class AbilityHandler {
 
         client.character.SkillResearch = {};
         await AbilityHandler.saveCharacter(client);
+        DebugLogger.logProgress('AbilityResearch:claimed', client, client.character, {
+            abilityId,
+            targetRank
+        });
     }
 
     static async handleClearAbilityResearch(client: Client): Promise<void> {
@@ -136,6 +254,7 @@ export class AbilityHandler {
 
         client.character.SkillResearch = {};
         await AbilityHandler.saveCharacter(client);
+        DebugLogger.logProgress('AbilityResearch:cleared', client, client.character);
     }
 
     static async handleSpeedupAbilityResearch(client: Client, data: Buffer): Promise<void> {
@@ -145,12 +264,29 @@ export class AbilityHandler {
         const idolCost = br.readMethod9();
         const skillResearch = AbilityHandler.getSkillResearch(client.character);
         const abilityId = Number(skillResearch.abilityID ?? 0);
+        DebugLogger.logProgress('AbilityResearch:speedupRequest', client, client.character, {
+            abilityId,
+            idolCost,
+            raw: DebugLogger.previewBuffer(data)
+        });
         if (abilityId === 0) {
+            DebugLogger.logProgress('AbilityResearch:speedupRejected', client, client.character, {
+                idolCost,
+                reason: 'no_active_research',
+                raw: DebugLogger.previewBuffer(data)
+            });
             return;
         }
 
         const idols = Number(client.character.mammothIdols ?? 0);
         if (idols < idolCost) {
+            DebugLogger.logProgress('AbilityResearch:speedupRejected', client, client.character, {
+                abilityId,
+                idolCost,
+                idols,
+                reason: 'not_enough_idols',
+                raw: DebugLogger.previewBuffer(data)
+            });
             return;
         }
 
@@ -161,6 +297,10 @@ export class AbilityHandler {
         };
 
         await AbilityHandler.saveCharacter(client);
+        DebugLogger.logProgress('AbilityResearch:speedupApplied', client, client.character, {
+            abilityId,
+            idolCost
+        });
         AbilityHandler.sendAbilityResearchDone(client, abilityId);
     }
 
@@ -189,6 +329,15 @@ export class AbilityHandler {
             if (!learnedRanks.has(starterAbilityId)) {
                 learnedRanks.set(starterAbilityId, 1);
             }
+        }
+
+        for (const rawAbilityId of originalActive) {
+            const abilityId = Number(rawAbilityId ?? 0);
+            if (abilityId <= 0 || !knownAbilityIds.has(abilityId) || learnedRanks.has(abilityId)) {
+                continue;
+            }
+
+            learnedRanks.set(abilityId, 1);
         }
 
         const learnedAbilities = Array.from(learnedRanks.entries())
@@ -287,6 +436,40 @@ export class AbilityHandler {
         const research = character.SkillResearch;
         return research && typeof research === 'object' && !Array.isArray(research)
             ? research as Record<string, unknown>
+            : {};
+    }
+
+    private static shouldTreatAsTutorialEcho(
+        client: Client,
+        abilityId: number,
+        requestedRank: number,
+        currentRank: number
+    ): boolean {
+        if (!client.character) {
+            return false;
+        }
+
+        if (client.currentLevel !== 'CraftTown') {
+            return false;
+        }
+
+        if (Number(client.character.questTrackerState ?? 0) < 100) {
+            return false;
+        }
+
+        const statsByBuilding = AbilityHandler.asRecord(client.character.magicForge)?.stats_by_building;
+        const buildingRanks = AbilityHandler.asRecord(statsByBuilding);
+        const tomeRank = Number(buildingRanks['1'] ?? buildingRanks[1] ?? 0);
+        if (tomeRank < 1) {
+            return false;
+        }
+
+        return requestedRank > 0 && currentRank >= requestedRank;
+    }
+
+    private static asRecord(value: unknown): Record<string, unknown> {
+        return value && typeof value === 'object' && !Array.isArray(value)
+            ? value as Record<string, unknown>
             : {};
     }
 

@@ -5,3 +5,4 @@ src/server/Accounts.json
 src/server/saves
 temp
 .DS_Store
+build
