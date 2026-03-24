@@ -40,9 +40,13 @@ function createClient(): any {
         lastDoorTargetLevel: '',
         playerSpawned: false,
         startedRoomEvents: new Set<string>(),
+        knownEntityIds: new Set<number>(),
         sentPackets,
         sendBitBuffer(id: number, bb: BitBuffer) {
             sentPackets.push({ id, payload: bb.toBuffer() });
+        },
+        send(id: number, payload: Buffer) {
+            sentPackets.push({ id, payload });
         }
     };
 }
@@ -471,28 +475,72 @@ function testPrimeTutorialRoomEventsSkipsSyncedProgress(): void {
 
 function testPrimeTutorialRoomEventsSeedsTutorialDungeonIntroThought(): void {
     const client = createClient();
+    client.token = 7001;
     client.currentLevel = 'TutorialDungeon';
+    client.playerSpawned = true;
+    GlobalState.sessionsByToken.set(client.token, client as never);
 
     LevelHandler.primeTutorialRoomEvents(client as never);
 
     assert.equal(client.startedRoomEvents.has('TutorialDungeon:0'), true);
     assert.equal(client.startedRoomEvents.has('TutorialDungeon:1'), true);
+    assert.equal(client.startedRoomEvents.has('TutorialDungeon:4'), true);
     assert.deepEqual(
         client.sentPackets.map((packet: { id: number }) => packet.id),
-        [0xA5, 0xA5, 0x76]
+        [0xA5, 0xA5, 0xA5, 0x76]
     );
 }
 
-function testTutorialDungeonGoblinSceneStartsOnRoomFiveEntry(): void {
+function testTutorialDungeonRoomFiveEntryDoesNotStartGoblinScene(): void {
     const client = createClient();
+    client.token = 7002;
     client.currentLevel = 'TutorialDungeon';
+    client.playerSpawned = true;
     client.startedRoomEvents.add('TutorialDungeon:4');
+    GlobalState.sessionsByToken.set(client.token, client as never);
 
     (LevelHandler as any).cacheRoomId(client, 5);
 
     assert.equal(client.currentRoomId, 5);
     assert.equal(client.startedRoomEvents.has('TutorialDungeon:5'), false);
-    assert.deepEqual(client.sentPackets.map((packet: { id: number }) => packet.id), [0x76]);
+    assert.deepEqual(client.sentPackets.map((packet: { id: number }) => packet.id), []);
+}
+
+function testTutorialDungeonTraversalRoomStartsMissingRoomEvent(): void {
+    const client = createClient();
+    client.currentLevel = 'TutorialDungeon';
+    client.clientEntID = 99;
+    client.entities.set(99, { id: 99, x: 6800, y: 2300 });
+    client.entities.set(384606, { id: 384606, name: 'IntroParrot', team: 3, x: 7271, y: 2074 });
+    client.knownEntityIds.add(384606);
+
+    (LevelHandler as any).cacheRoomId(client, 4);
+
+    assert.equal(client.currentRoomId, 4);
+    assert.equal(client.startedRoomEvents.has('TutorialDungeon:4'), true);
+    assert.equal(client.entities.get(384606).x, 7271);
+    assert.equal(client.entities.get(384606).y, 2200);
+    assert.deepEqual(client.sentPackets.map((packet: { id: number }) => packet.id), [0x07, 0xA5]);
+}
+
+function testTutorialDungeonTraversalAdvanceUsesNearestParrotThought(): void {
+    const client = createClient();
+    client.token = 7003;
+    client.currentLevel = 'TutorialDungeon';
+    client.playerSpawned = true;
+    client.currentRoomId = 4;
+    client.entities.set(384606, { id: 384606, name: 'IntroParrot', team: 3, x: 7271, y: 2074 });
+    client.entities.set(712286, { id: 712286, name: 'IntroParrot', team: 3, x: 17981, y: 2343 });
+    client.knownEntityIds.add(712286);
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    (LevelHandler as any).maybeTriggerTutorialDungeonDropTutorial(client, 17000, 2300, { bJumping: true, bDropping: false });
+
+    assert.equal(client.startedRoomEvents.has('TutorialDungeon:5'), true);
+    assert.equal(client.entities.get(712286).x, 17000);
+    assert.equal(client.entities.get(712286).y, 2200);
+    assert.equal(client.entities.get(384606).x, 7271);
+    assert.deepEqual(client.sentPackets.map((packet: { id: number }) => packet.id), [0xA5, 0x07, 0x76]);
 }
 
 function testDisconnectDuringDoorTransferPreservesRecoveryState(): void {
@@ -743,7 +791,11 @@ function main(): void {
 
         testPrimeTutorialRoomEventsSeedsTutorialDungeonIntroThought();
 
-        testTutorialDungeonGoblinSceneStartsOnRoomFiveEntry();
+        testTutorialDungeonRoomFiveEntryDoesNotStartGoblinScene();
+
+        testTutorialDungeonTraversalRoomStartsMissingRoomEvent();
+
+        testTutorialDungeonTraversalAdvanceUsesNearestParrotThought();
     } finally {
         GlobalState.sessionsByToken = sessionsByToken;
         GlobalState.sessionsByUserId = sessionsByUserId;

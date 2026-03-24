@@ -563,8 +563,10 @@ export class LevelHandler {
     private static readonly KEEP_TUTORIAL_FIRST_PARROT_X = 7271;
     private static readonly KEEP_TUTORIAL_SECOND_PARROT_X = 17981;
     private static readonly TUTORIAL_DUNGEON_INTRO_PARROT_ID = 384606;
-    private static readonly TUTORIAL_DUNGEON_ROOM_FIVE_PARROT_ID = 712286;
-    private static readonly TUTORIAL_DUNGEON_GOBLIN_SCENE_ROOM_ID = 5;
+    private static readonly TUTORIAL_DUNGEON_TRAVERSAL_ROOM_ID = 4;
+    private static readonly TUTORIAL_DUNGEON_JUMP_X_THRESHOLD = 7350;
+    private static readonly TUTORIAL_DUNGEON_DROP_Y_THRESHOLD = 2150;
+    private static readonly TUTORIAL_DUNGEON_DROP_ROOM_EVENT = 5;
     private static readonly TUTORIAL_DUNGEON_INTRO_LINE =
         'Squawk! Goblins! Goblins everywhere! Help Pecky!';
 
@@ -678,24 +680,6 @@ export class LevelHandler {
             }
             other.send(0x76, payload);
         }
-    }
-
-    private static maybeTriggerTutorialDungeonGoblinScene(client: Client, previousRoomId: number, roomId: number): void {
-        if (
-            client.currentLevel !== 'TutorialDungeon' ||
-            previousRoomId === roomId ||
-            roomId !== LevelHandler.TUTORIAL_DUNGEON_GOBLIN_SCENE_ROOM_ID ||
-            !LevelHandler.hasRoomEventStarted(client, 4)
-        ) {
-            return;
-        }
-
-        LevelHandler.sendRoomThought(
-            client.currentLevel,
-            LevelHandler.TUTORIAL_DUNGEON_ROOM_FIVE_PARROT_ID,
-            LevelHandler.TUTORIAL_DUNGEON_INTRO_LINE,
-            client.levelInstanceId
-        );
     }
 
     private static sendRoomCutSceneStart(
@@ -1345,6 +1329,45 @@ export class LevelHandler {
         return bestId;
     }
 
+    private static findTutorialDungeonParrotId(client: Client, targetX: number): number | null {
+        let bestId: number | null = null;
+        let bestDistance = Number.POSITIVE_INFINITY;
+
+        const seen = new Set<number>();
+        const sources: Array<Map<number, any> | undefined> = [
+            client.entities,
+            LevelHandler.getCurrentLevelMap(client) ?? undefined
+        ];
+
+        for (const source of sources) {
+            if (!source) {
+                continue;
+            }
+
+            for (const [entityId, entity] of source.entries()) {
+                if (seen.has(entityId)) {
+                    continue;
+                }
+                seen.add(entityId);
+
+                const entityName = String(entity?.name ?? entity?.props?.name ?? '');
+                const entityTeam = Number(entity?.team ?? entity?.props?.team ?? 0);
+                if (entityName !== 'IntroParrot' || entityTeam !== 3) {
+                    continue;
+                }
+
+                const entityX = Number(entity?.x ?? entity?.props?.x ?? entity?.props?.pos_x ?? 0);
+                const distance = Math.abs(entityX - targetX);
+                if (distance < bestDistance) {
+                    bestDistance = distance;
+                    bestId = entityId;
+                }
+            }
+        }
+
+        return bestId;
+    }
+
     private static maybeTriggerCraftTownTutorialParrot(client: Client, newX: number): void {
         const state = LevelHandler.getCraftTownTutorialState(client);
         if (!state || state.bossDefeated) {
@@ -1806,9 +1829,70 @@ export class LevelHandler {
 
     private static cacheRoomId(client: Client, roomId: number): void {
         if (Number.isFinite(roomId) && roomId >= 0) {
-            const previousRoomId = client.currentRoomId;
             client.currentRoomId = roomId;
-            LevelHandler.maybeTriggerTutorialDungeonGoblinScene(client, previousRoomId, roomId);
+            LevelHandler.maybeStartTutorialDungeonTraversalTutorial(client, roomId);
+        }
+    }
+
+    private static maybeStartTutorialDungeonTraversalTutorial(client: Client, roomId: number): void {
+        if (
+            client.currentLevel !== 'TutorialDungeon' ||
+            !Number.isFinite(roomId) ||
+            roomId < 0 ||
+            roomId !== LevelHandler.TUTORIAL_DUNGEON_TRAVERSAL_ROOM_ID ||
+            LevelHandler.hasRoomEventStarted(client, roomId)
+        ) {
+            return;
+        }
+
+        const player = client.entities.get(client.clientEntID);
+        const playerX = Number(player?.x ?? client.character?.CurrentLevel?.x ?? 0);
+        const playerY = Number(player?.y ?? client.character?.CurrentLevel?.y ?? 0);
+        const parrotId = LevelHandler.findTutorialDungeonParrotId(client, playerX);
+        if (parrotId !== null) {
+            const parrot = client.entities.get(parrotId);
+            const parrotX = Number(parrot?.x ?? playerX);
+            LevelHandler.teleportParrot(client, parrotId, parrotX, playerY - 100);
+        }
+
+        LevelHandler.sendRoomEventStart(client, roomId, true);
+    }
+
+    private static maybeTriggerTutorialDungeonDropTutorial(
+        client: Client,
+        currentX: number,
+        currentY: number,
+        flags?: { bJumping?: boolean; bDropping?: boolean }
+    ): void {
+        const roomId = client.currentRoomId;
+        if (client.currentLevel !== 'TutorialDungeon' || roomId !== LevelHandler.TUTORIAL_DUNGEON_TRAVERSAL_ROOM_ID) {
+            return;
+        }
+
+        // Advance as soon as the player actually performs the jump/drop input, while
+        // keeping the coordinate thresholds as a fallback for late or missed signals.
+        const performedTraversalInput = Boolean(flags?.bJumping || flags?.bDropping);
+        const hasJumped = currentX > LevelHandler.TUTORIAL_DUNGEON_JUMP_X_THRESHOLD;
+        const hasDropped = currentY > LevelHandler.TUTORIAL_DUNGEON_DROP_Y_THRESHOLD;
+
+        if ((performedTraversalInput || hasJumped || hasDropped) && !LevelHandler.hasRoomEventStarted(client, LevelHandler.TUTORIAL_DUNGEON_DROP_ROOM_EVENT)) {
+            console.log(
+                `[TutorialDungeon] Advancing traversal tutorial. inputJump=${Boolean(flags?.bJumping)} inputDrop=${Boolean(flags?.bDropping)} x=${currentX} y=${currentY}`
+            );
+            
+            // Advance the tutorial state machine client-side by starting room event 5
+            LevelHandler.sendRoomEventStart(client, LevelHandler.TUTORIAL_DUNGEON_DROP_ROOM_EVENT, true);
+
+            const parrotId = LevelHandler.findTutorialDungeonParrotId(client, currentX);
+            if (parrotId !== null) {
+                LevelHandler.teleportParrot(client, parrotId, currentX, currentY - 100);
+                LevelHandler.sendRoomThought(
+                    client.currentLevel,
+                    parrotId,
+                    LevelHandler.TUTORIAL_DUNGEON_INTRO_LINE,
+                    client.levelInstanceId
+                );
+            }
         }
     }
 
@@ -2158,7 +2242,11 @@ export class LevelHandler {
             return;
         }
 
-        for (const roomId of [0, 1]) {
+        const initialRoomIds = client.currentLevel === 'TutorialDungeon'
+            ? [0, 1, LevelHandler.TUTORIAL_DUNGEON_TRAVERSAL_ROOM_ID]
+            : [0, 1];
+
+        for (const roomId of initialRoomIds) {
             if (!LevelHandler.hasRoomEventStarted(client, roomId)) {
                 LevelHandler.sendRoomEventStart(client, roomId, true);
             }
@@ -2616,6 +2704,18 @@ export class LevelHandler {
 
             if (currentLevel === 'CraftTownTutorial') {
                 LevelHandler.maybeTriggerCraftTownTutorialParrot(client, Number(ent.x ?? 0));
+            }
+
+            if (currentLevel === 'TutorialDungeon') {
+                LevelHandler.maybeTriggerTutorialDungeonDropTutorial(
+                    client,
+                    Number(ent.x ?? 0),
+                    Number(ent.y ?? 0),
+                    {
+                        bJumping: flags.bJumping,
+                        bDropping: flags.bDropping,
+                    }
+                );
             }
         }
 

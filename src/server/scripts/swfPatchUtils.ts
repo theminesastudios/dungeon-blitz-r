@@ -44,6 +44,7 @@ export interface InstanceInfo {
 
 export interface MethodBodyInfo {
   methodIdx: number;
+  codeLenPos: number;
   codeStart: number;
   codeLen: number;
 }
@@ -490,11 +491,12 @@ export function parseAbc(ctx: SwfContext): AbcParseResult {
     [, pos] = readU30(data, pos, `abc.body[${i}].local_count`);
     [, pos] = readU30(data, pos, `abc.body[${i}].init_scope_depth`);
     [, pos] = readU30(data, pos, `abc.body[${i}].max_scope_depth`);
+    const codeLenPos = pos;
     let codeLen: number;
     [codeLen, pos] = readU30(data, pos, `abc.body[${i}].code_length`);
     const codeStart = pos;
     pos += codeLen;
-    methodBodies.set(methodIdx, { methodIdx, codeStart, codeLen });
+    methodBodies.set(methodIdx, { methodIdx, codeLenPos, codeStart, codeLen });
 
     let exceptionCount: number;
     [exceptionCount, pos] = readU30(data, pos, `abc.body[${i}].exception_count`);
