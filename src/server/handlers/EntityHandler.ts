@@ -8,6 +8,7 @@ import { LevelConfig } from '../core/LevelConfig';
 import { PetHandler } from './PetHandler';
 import { areClientsInSameParty, getPartyIdForClient, sharesRoomIds } from '../core/PartySync';
 import { areClientsInSameLevelScope, getClientLevelScope, getLevelScopeKey } from '../core/LevelScope';
+import { DebugConfig } from '../core/Debug';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
@@ -35,6 +36,14 @@ export class EntityHandler {
         'JadeCityHard'
     ]);
     private static readonly MOUNT_SYNC_RETRY_DELAYS_MS = [0, 300, 1200, 2500, 4000];
+
+    private static logDedup(message: string): void {
+        if (!DebugConfig.dedup) {
+            return;
+        }
+
+        console.log(`[Dedup] ${message}`);
+    }
 
     private static normalizeIdentityName(value: unknown): string {
         return String(value ?? '')
@@ -159,7 +168,9 @@ export class EntityHandler {
         entity: any
     ): boolean {
         if (!levelName || !levelMap || !EntityHandler.isSharedClientSpawnRegionActor(levelName, entity)) {
-            console.log(`[Dedup] SKIP: isSharedClientSpawnRegionActor=false for ${entity?.name} in ${levelName} (clientSpawned=${entity?.clientSpawned}, team=${entity?.team})`);
+            EntityHandler.logDedup(
+                `SKIP: isSharedClientSpawnRegionActor=false for ${entity?.name} in ${levelName} (clientSpawned=${entity?.clientSpawned}, team=${entity?.team})`
+            );
             return false;
         }
 
@@ -176,16 +187,22 @@ export class EntityHandler {
             client.token
         );
         if (!canonical) {
-            console.log(`[Dedup] NO MATCH for ${entity?.name} (id=${entity?.id}, team=${entity?.team}) in ${levelName}. LevelMap has ${levelMap.size} entities. PartyId=${partyId}, ownerToken=${client.token}`);
+            EntityHandler.logDedup(
+                `NO MATCH for ${entity?.name} (id=${entity?.id}, team=${entity?.team}) in ${levelName}. LevelMap has ${levelMap.size} entities. PartyId=${partyId}, ownerToken=${client.token}`
+            );
             // List candidates for debugging
             for (const [cId, c] of levelMap.entries()) {
                 if (c?.clientSpawned && !c?.isPlayer) {
-                    console.log(`[Dedup]   candidate id=${cId} name=${c?.name} team=${c?.team} ownerToken=${c?.ownerToken} ownerPartyId=${c?.ownerPartyId}`);
+                    EntityHandler.logDedup(
+                        `  candidate id=${cId} name=${c?.name} team=${c?.team} ownerToken=${c?.ownerToken} ownerPartyId=${c?.ownerPartyId}`
+                    );
                 }
             }
             return false;
         }
-        console.log(`[Dedup] MATCH found! ${entity?.name} (id=${entity?.id}) -> canonical id=${canonical?.id} ownerToken=${canonical?.ownerToken}`);
+        EntityHandler.logDedup(
+            `MATCH found! ${entity?.name} (id=${entity?.id}) -> canonical id=${canonical?.id} ownerToken=${canonical?.ownerToken}`
+        );
 
         const duplicateId = Number(entity?.id ?? 0);
         const canonicalId = Number(canonical?.id ?? 0);

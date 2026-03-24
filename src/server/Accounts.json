@@ -2,5 +2,9 @@
   {
     "email": "1@gmail.com",
     "user_id": 1
+  },
+  {
+    "email": "2@gmail.com",
+    "user_id": 2
   }
 ]

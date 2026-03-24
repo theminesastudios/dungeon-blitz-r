@@ -242,6 +242,28 @@ export class StaticServer {
             });
         });
 
+        this.app.post('/api/presence/create-party', (req, res) => {
+            const body = req.body && typeof req.body === 'object' ? (req.body as Record<string, unknown>) : {};
+            const requesterName = String(body.requesterName ?? '').trim();
+            const resolvedRequesterName =
+                requesterName ||
+                PresenceService.selectRequesterSession(this.resolveRequesterAddress(req)).snapshot?.characterName ||
+                '';
+
+            if (!resolvedRequesterName) {
+                res.status(404).json({
+                    ok: false,
+                    reason: 'requester-not-found',
+                    message: 'Could not resolve an online character for party creation.'
+                });
+                return;
+            }
+
+            const result = SocialHandler.ensurePartyForDiscordHost(resolvedRequesterName);
+            res.setHeader('Cache-Control', 'no-store');
+            res.status(result.ok ? 200 : 404).json(result);
+        });
+
         // Serve static files
         this.app.use(express.static(this.contentDir, { index: false }));
 

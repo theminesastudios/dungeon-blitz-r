@@ -56,6 +56,14 @@ interface PresencePayload {
 const DEFAULT_PORT = 47631;
 const PARTY_MAX_MEMBERS = 4;
 
+function describeError(error: unknown): string {
+    if (error instanceof Error) {
+        return error.message || error.name || 'Unknown error';
+    }
+
+    return String(error ?? 'Unknown error');
+}
+
 function resolveConfigPath(): string {
     const candidates = [
         path.resolve(process.cwd(), 'discord-bridge.config.json'),
@@ -77,10 +85,14 @@ const CONFIG_PATH = resolveConfigPath();
 class LocalDiscordBridge {
     private readonly app = express();
     private readonly config: BridgeConfig;
+    private discordRpc: DiscordRpcLibrary | null = null;
     private client: DiscordRpcClient | null = null;
     private ready = false;
     private lastActivityHash = '';
     private pollTimer: NodeJS.Timeout | null = null;
+    private reconnectTimer: NodeJS.Timeout | null = null;
+    private loginInFlight = false;
+    private listening = false;
     private currentPresence: PresencePayload | null = null;
     private runtimePresenceUrl = '';
     private runtimeJoinUrl = '';
@@ -116,45 +128,109 @@ class LocalDiscordBridge {
             return;
         }
 
+        this.discordRpc = discordRpc;
         discordRpc.register(this.config.appId);
-        this.client = new discordRpc.Client({ transport: 'ipc' });
+        this.ensureListening();
+        void this.connectToDiscord();
 
-        this.client.on('ready', () => {
+        this.startPolling();
+    }
+
+    private ensureListening(): void {
+        if (this.listening) {
+            return;
+        }
+
+        this.listening = true;
+        this.app.listen(this.config.port, '127.0.0.1', () => {
+            console.log(`[DiscordBridge] Listening on http://127.0.0.1:${this.config.port}`);
+        });
+    }
+
+    private async connectToDiscord(): Promise<void> {
+        if (!this.discordRpc || this.loginInFlight) {
+            return;
+        }
+
+        if (this.reconnectTimer) {
+            clearTimeout(this.reconnectTimer);
+            this.reconnectTimer = null;
+        }
+
+        this.loginInFlight = true;
+        const client = new this.discordRpc.Client({ transport: 'ipc' });
+        this.client = client;
+
+        client.on('ready', () => {
+            if (this.client !== client) {
+                return;
+            }
+
             this.ready = true;
+            this.lastActivityHash = '';
+            this.loginInFlight = false;
             console.log('[DiscordBridge] Connected to local Discord client.');
             void this.subscribeToDiscordEvents();
+
+            if (this.currentPresence) {
+                void this.applyActivity(this.currentPresence);
+            }
         });
 
-        this.client.on('disconnected', () => {
+        client.on('disconnected', () => {
+            if (this.client !== client) {
+                return;
+            }
+
             this.ready = false;
             this.lastActivityHash = '';
+            this.loginInFlight = false;
+            this.client = null;
             console.log('[DiscordBridge] Disconnected from local Discord client.');
+            this.scheduleReconnect();
         });
 
-        this.client.on('error', (error: unknown) => {
-            console.error('[DiscordBridge] Discord client error:', error);
+        client.on('error', (error: unknown) => {
+            if (this.client !== client) {
+                return;
+            }
+
+            console.warn(`[DiscordBridge] Discord client error: ${describeError(error)}`);
         });
 
-        this.client.on('ACTIVITY_JOIN', (data: unknown) => {
+        client.on('ACTIVITY_JOIN', (data: unknown) => {
             void this.handleDiscordActivityJoin(data);
         });
 
-        this.client.on('ACTIVITY_JOIN_REQUEST', (data: unknown) => {
+        client.on('ACTIVITY_JOIN_REQUEST', (data: unknown) => {
             void this.handleDiscordActivityJoinRequest(data);
         });
 
         try {
-            await this.client.login({ clientId: this.config.appId });
+            await client.login({ clientId: this.config.appId });
         } catch (error) {
-            console.error('[DiscordBridge] Failed to connect to local Discord client:', error);
+            if (this.client === client) {
+                this.client = null;
+            }
+
+            this.ready = false;
+            this.loginInFlight = false;
+            console.warn(
+                `[DiscordBridge] Failed to connect to local Discord client: ${describeError(error)}. Retrying in 3s.`
+            );
+            this.scheduleReconnect();
+        }
+    }
+
+    private scheduleReconnect(): void {
+        if (this.reconnectTimer || this.loginInFlight) {
             return;
         }
 
-        this.app.listen(this.config.port, '127.0.0.1', () => {
-            console.log(`[DiscordBridge] Listening on http://127.0.0.1:${this.config.port}`);
-        });
-
-        this.startPolling();
+        this.reconnectTimer = setTimeout(() => {
+            this.reconnectTimer = null;
+            void this.connectToDiscord();
+        }, 3000);
     }
 
     private setupRoutes(): void {

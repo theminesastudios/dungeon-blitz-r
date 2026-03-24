@@ -1,27 +1,27 @@
 {
-  "user_id": 1,
+  "user_id": 2,
   "characters": [
     {
-      "name": "Graalhob",
-      "class": "Mage",
-      "level": 2,
-      "xp": 121,
-      "gold": 317,
+      "name": "Paoglud",
+      "class": "Paladin",
+      "level": 1,
+      "xp": 70,
+      "gold": 60,
       "craftXP": 0,
       "DragonOre": 0,
       "mammothIdols": 0,
       "DragonKeys": 0,
       "SilverSigils": 0,
       "alertState": 0,
-      "gender": "Male",
-      "headSet": "Head01",
-      "hairSet": "MDo10",
-      "mouthSet": "MM06",
-      "faceSet": "MF01",
-      "hairColor": 1456834,
-      "skinColor": 14982710,
-      "shirtColor": 11411789,
-      "pantColor": 4523043,
+      "gender": "Female",
+      "headSet": "FLarge",
+      "hairSet": "FDo01",
+      "mouthSet": "FM01",
+      "faceSet": "FF01",
+      "hairColor": 1583247,
+      "skinColor": 16761778,
+      "shirtColor": 14810354,
+      "pantColor": 7735904,
       "equippedGears": [
         {
           "gearID": 0,
@@ -50,7 +50,7 @@
           ]
         },
         {
-          "gearID": 1170,
+          "gearID": 0,
           "tier": 0,
           "runes": [
             0,
@@ -76,7 +76,7 @@
           ]
         },
         {
-          "gearID": 53,
+          "gearID": 1,
           "tier": 0,
           "runes": [
             0,
@@ -89,7 +89,7 @@
           ]
         },
         {
-          "gearID": 65,
+          "gearID": 13,
           "tier": 0,
           "runes": [
             0,
@@ -102,11 +102,10 @@
           ]
         }
       ],
-      "inventory": [],
       "CurrentLevel": {
         "name": "NewbieRoad",
-        "x": 2859,
-        "y": 599
+        "x": 6098,
+        "y": 973
       },
       "PreviousLevel": {
         "name": "NewbieRoad",
@@ -115,7 +114,7 @@
       },
       "inventoryGears": [
         {
-          "gearID": 53,
+          "gearID": 1,
           "tier": 0,
           "runes": [
             0,
@@ -128,33 +127,7 @@
           ]
         },
         {
-          "gearID": 65,
-          "tier": 0,
-          "runes": [
-            0,
-            0,
-            0
-          ],
-          "colors": [
-            0,
-            0
-          ]
-        },
-        {
-          "gearID": 65,
-          "tier": 0,
-          "runes": [
-            0,
-            0,
-            0
-          ],
-          "colors": [
-            0,
-            0
-          ]
-        },
-        {
-          "gearID": 1170,
+          "gearID": 13,
           "tier": 0,
           "runes": [
             0,
@@ -173,52 +146,12 @@
       ],
       "pets": [],
       "charms": [],
-      "materials": [
-        {
-          "materialID": 34,
-          "count": 2
-        },
-        {
-          "materialID": 93,
-          "count": 1
-        },
-        {
-          "materialID": 91,
-          "count": 1
-        }
-      ],
+      "materials": [],
       "lockboxes": [
         {
           "lockboxID": 1,
           "count": 100
         }
-      ],
-      "craftInventory": [],
-      "bankInventory": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
       ],
       "OwnedDyes": [],
       "consumables": [],
@@ -228,7 +161,7 @@
           "currCount": 1,
           "Tier": 10,
           "highscore": 99999999,
-          "Time": 1774377137,
+          "Time": 1774390045,
           "claimed": 1,
           "complete": 1
         },
@@ -246,17 +179,17 @@
       "friends": [],
       "learnedAbilities": [
         {
-          "abilityID": 10,
+          "abilityID": 20,
           "rank": 1
         },
         {
-          "abilityID": 14,
+          "abilityID": 24,
           "rank": 1
         }
       ],
       "activeAbilities": [
-        10,
-        14
+        20,
+        24
       ],
       "craftTalentPoints": [],
       "talentPoints": {},
