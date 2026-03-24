@@ -487,6 +487,8 @@ export class MissionHandler {
             mayorristas: 'nrmayor01',
             mayor: 'nrmayor01',
             anna: 'nranna03',
+            annaoutside: 'nranna03',
+            annaoutsidehard: 'nranna03hard',
             pecky: 'nrpecky',
             captainfink: 'nrcaptfink',
             fink: 'nrcaptfink'

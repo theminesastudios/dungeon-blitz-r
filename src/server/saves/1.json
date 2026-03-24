@@ -5,8 +5,8 @@
       "name": "Graalhob",
       "class": "Mage",
       "level": 2,
-      "xp": 119,
-      "gold": 317,
+      "xp": 339,
+      "gold": 440,
       "craftXP": 0,
       "DragonOre": 0,
       "mammothIdols": 0,
@@ -105,13 +105,13 @@
       "inventory": [],
       "CurrentLevel": {
         "name": "NewbieRoad",
-        "x": 3082,
-        "y": 595
+        "x": 3631,
+        "y": 579
       },
       "PreviousLevel": {
-        "name": "NewbieRoad",
-        "x": 1421,
-        "y": 826
+        "name": "CraftTown",
+        "x": 1339,
+        "y": 1436
       },
       "inventoryGears": [
         {
@@ -238,11 +238,34 @@
           "complete": 1
         },
         "3": {
+          "state": 3,
+          "currCount": 1,
+          "Tier": 10,
+          "highscore": 99999999,
+          "Time": 1774391582,
+          "claimed": 1,
+          "complete": 1
+        },
+        "4": {
+          "state": 3,
+          "claimed": 1,
+          "complete": 1
+        },
+        "5": {
+          "state": 3,
+          "currCount": 1,
+          "Tier": 10,
+          "highscore": 99999999,
+          "Time": 1774391860,
+          "claimed": 1,
+          "complete": 1
+        },
+        "271": {
           "state": 1,
           "currCount": 0
         }
       },
-      "questTrackerState": 100,
+      "questTrackerState": 92,
       "friends": [],
       "learnedAbilities": [
         {
@@ -252,17 +275,22 @@
         {
           "abilityID": 14,
           "rank": 1
+        },
+        {
+          "abilityID": 17,
+          "rank": 1
         }
       ],
       "activeAbilities": [
         10,
-        14
+        14,
+        17
       ],
       "craftTalentPoints": [],
       "talentPoints": {},
       "magicForge": {
         "stats_by_building": {
-          "1": 0,
+          "1": 1,
           "2": 0,
           "6": 0,
           "7": 0,
@@ -279,10 +307,7 @@
         "forge_roll_b": 0,
         "is_extended_forge": false
       },
-      "SkillResearch": {
-        "abilityID": 0,
-        "ReadyTime": 0
-      },
+      "SkillResearch": {},
       "buildingUpgrade": {
         "buildingID": 0,
         "rank": 0,

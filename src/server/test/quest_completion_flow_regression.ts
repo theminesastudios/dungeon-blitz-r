@@ -177,6 +177,23 @@ async function testDungeonCompletionLeavesNextNpcQuestAvailable(): Promise<void>
         false,
         'dungeon completion should not auto-send a mission-added packet for the next quest'
     );
+
+    const annaClient = createFakeClient('NewbieRoad', character);
+    const annaNpcId = 6218466;
+    annaClient.entities.set(annaNpcId, {
+        id: annaNpcId,
+        character_name: 'AnnaOutside'
+    });
+
+    await NpcHandler.handleTalkToNpc(annaClient as never, buildTalkToNpcPacket(annaNpcId));
+
+    const findAnnasFather = character.missions[MissionID.FindAnnasFather] as Record<string, any> | undefined;
+    assert.ok(findAnnasFather, 'AnnaOutside should accept the follow-up quest in NewbieRoad');
+    assert.equal(
+        findAnnasFather.state,
+        2,
+        'FindAnnasFather should start when talking to AnnaOutside after RescueAnna is claimed'
+    );
 }
 
 async function main(): Promise<void> {
