@@ -657,41 +657,32 @@ function patchRoom(source) {
         '            }',
         '         }'
     ]);
-    const combinedJoinerGuardBlock = join([
-        '         if(this.bInstanced && this.var_1.groupmates && this.var_1.groupmates.length && !this.var_1.bAmGroupLeader)',
-        '         {',
-        '            var _loc14_:class_133 = null;',
-        '            for each(_loc14_ in this.var_1.groupmates)',
-        '            {',
-        '               if(_loc14_.bOnline && _loc14_.var_2370)',
-        '               {',
+            const combinedJoinerGuardBlock = join([
+                '         if(this.bInstanced && this.var_1.groupmates && this.var_1.groupmates.length && !this.var_1.bAmGroupLeader)',
+                '         {',
+                '            var _loc14_:class_133 = null;',
+                '            for each(_loc14_ in this.var_1.groupmates)',
+                '            {',
+                '               if(_loc14_.bOnline && _loc14_.var_2370)',
+                '               {',
         '                  return null;',
-        '               }',
-        '            }',
-        '         }',
-        `         if(${outdoorServerNpcGuard} && this.var_1.groupmates && this.var_1.groupmates.length && !this.var_1.bAmGroupLeader)`,
-        '         {',
-        '            if(param1.team != "friend")',
-        '            {',
-        '               return null;',
-        '            }',
-        '         }'
-    ]);
-    const outdoorJoinerGuardBlock = join([
-        `         if(${outdoorServerNpcGuard} && this.var_1.groupmates && this.var_1.groupmates.length && !this.var_1.bAmGroupLeader)`,
-        '         {',
-        '            if(param1.team != "friend")',
-        '            {',
-        '               return null;',
-        '            }',
-        '         }'
-    ]);
-    const instancedMasterGuard = join([
-        '         if(!(DevSettings.flags & DevSettings.DEVFLAG_MASTER_CLIENT) && !(DevSettings.flags & DevSettings.DEVFLAG_STANDALONE_CLIENT))',
-        '         {',
-        '            return;',
-        '         }'
-    ]);
+                '               }',
+                '            }',
+                '         }',
+                `         if(${outdoorServerNpcGuard} && this.var_1.groupmates && this.var_1.groupmates.length && !this.var_1.bAmGroupLeader)`,
+                '         {',
+                '            if(param1.team != "friend")',
+                '            {',
+                '               return null;',
+                '            }',
+                '         }'
+            ]);
+            const instancedMasterGuard = join([
+                '         if(!(DevSettings.flags & DevSettings.DEVFLAG_MASTER_CLIENT) && !(DevSettings.flags & DevSettings.DEVFLAG_STANDALONE_CLIENT))',
+                '         {',
+                '            return;',
+                '         }'
+            ]);
     const instancedMasterGuardPatched = join([
         '         if(!this.bInstanced && !(DevSettings.flags & DevSettings.DEVFLAG_MASTER_CLIENT) && !(DevSettings.flags & DevSettings.DEVFLAG_STANDALONE_CLIENT))',
         '         {',
