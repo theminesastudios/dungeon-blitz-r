@@ -10,15 +10,14 @@ export class JsonAdapter implements IDatabase {
         fs.rename(fromPath, toPath);
     private accountsPath: string;
     private savesDir: string;
+    private legacyAccountsPath: string;
+    private legacySavesDir: string;
 
     constructor() {
-        // Resolve paths relative to the current working directory of the process
-        // or absolute paths. Config.DATA_DIR is '../../server' from src/server/core/Config.ts
-        // But when running, we are likely in src/server or root.
-        
-        // Let's assume we run from src/server for now or fix path resolution.
-        this.accountsPath = path.resolve(Config.DATA_DIR, 'Accounts.json');
-        this.savesDir = path.resolve(Config.DATA_DIR, 'saves');
+        this.accountsPath = path.resolve(Config.DATA_DIR, 'data', 'Accounts.json');
+        this.savesDir = path.resolve(Config.DATA_DIR, 'data', 'saves');
+        this.legacyAccountsPath = path.resolve(Config.DATA_DIR, 'Accounts.json');
+        this.legacySavesDir = path.resolve(Config.DATA_DIR, 'saves');
     }
 
     private normalizeCharacterName(value: string | null | undefined): string {
@@ -26,23 +25,29 @@ export class JsonAdapter implements IDatabase {
     }
 
     private async readSaveFile(userId: number): Promise<UserSaveData | null> {
-        const savePath = path.join(this.savesDir, `${userId}.json`);
-        try {
-            const data = await fs.readFile(savePath, 'utf8');
-            if (!data.trim()) {
-                return { user_id: userId, characters: [] };
+        for (const savePath of [
+            path.join(this.savesDir, `${userId}.json`),
+            path.join(this.legacySavesDir, `${userId}.json`)
+        ]) {
+            try {
+                const data = await fs.readFile(savePath, 'utf8');
+                if (!data.trim()) {
+                    return { user_id: userId, characters: [] };
+                }
+                return JSON.parse(data) as UserSaveData;
+            } catch (err: any) {
+                if (err.code === 'ENOENT') {
+                    continue;
+                }
+                if (err instanceof SyntaxError) {
+                    console.error(`[JsonAdapter] Invalid save JSON at ${savePath}`);
+                    return null;
+                }
+                throw err;
             }
-            return JSON.parse(data) as UserSaveData;
-        } catch (err: any) {
-            if (err.code === 'ENOENT') {
-                return null;
-            }
-            if (err instanceof SyntaxError) {
-                console.error(`[JsonAdapter] Invalid save JSON at ${savePath}`);
-                return null;
-            }
-            throw err;
         }
+
+        return null;
     }
 
     private async ensureSavesDir(): Promise<void> {
@@ -112,18 +117,22 @@ export class JsonAdapter implements IDatabase {
     }
 
     private async readAccounts(): Promise<Array<{ email: string, user_id: number }>> {
-        try {
-            const data = await fs.readFile(this.accountsPath, 'utf8');
-            if (!data.trim()) {
-                return [];
+        for (const accountsPath of [this.accountsPath, this.legacyAccountsPath]) {
+            try {
+                const data = await fs.readFile(accountsPath, 'utf8');
+                if (!data.trim()) {
+                    return [];
+                }
+                return JSON.parse(data);
+            } catch (err: any) {
+                if (err.code === 'ENOENT') {
+                    continue;
+                }
+                throw err;
             }
-            return JSON.parse(data);
-        } catch (err: any) {
-            if (err.code === 'ENOENT') {
-                return [];
-            }
-            throw err;
         }
+
+        return [];
     }
 
     public async getAccountId(email: string): Promise<number | null> {
@@ -134,6 +143,7 @@ export class JsonAdapter implements IDatabase {
 
     public async createAccount(email: string): Promise<number> {
         await this.ensureSavesDir();
+        await fs.mkdir(path.dirname(this.accountsPath), { recursive: true });
         
         const accounts = await this.readAccounts();
 

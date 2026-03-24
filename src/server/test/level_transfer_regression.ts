@@ -41,10 +41,22 @@ function createClient(): any {
         playerSpawned: false,
         startedRoomEvents: new Set<string>(),
         sentPackets,
+        armPendingTransferGrace() {
+            return undefined;
+        },
         sendBitBuffer(id: number, bb: BitBuffer) {
             sentPackets.push({ id, payload: bb.toBuffer() });
+        },
+        send(id: number, payload: Buffer) {
+            sentPackets.push({ id, payload });
         }
     };
+}
+
+function createOpenDoorPacket(doorId: number): Buffer {
+    const bb = new BitBuffer();
+    bb.writeMethod9(doorId);
+    return bb.toBuffer();
 }
 
 function withMockedRandom(values: number[], fn: () => void): void {
@@ -183,7 +195,7 @@ function testRecoverTransferSessionStateFromLegacyAliasChain(): void {
     assert.equal(client.startedRoomEvents.has('TutorialDungeon:5'), true);
 }
 
-function testStorePendingTransferTokenKeepsTokenCharInSync(): void {
+function testStorePendingTransferTokenKeepsTokenCharInSyncAndRequestsExtendedState(): void {
     const character = createCharacter('Hero');
 
     (LevelHandler as any).storePendingTransferToken(
@@ -224,7 +236,11 @@ function testStorePendingTransferTokenKeepsTokenCharInSync(): void {
     assert.deepEqual(pendingEntry?.syncStartedRoomIds, [2, 9]);
     assert.equal(tokenEntry?.character, character);
     assert.equal(tokenEntry?.userId, 41);
-    assert.equal(GlobalState.pendingExtended.get(50001), false);
+    assert.equal(
+        GlobalState.pendingExtended.get(50001),
+        false,
+        'post-transfer game login should preserve client-side extended state to avoid inventory duplication'
+    );
 }
 
 function testBuildTransferSyncStatePrefersPartyAnchorInDungeon(): void {
@@ -359,6 +375,111 @@ function testBuildTransferSyncStateUsesPendingPartyAnchorWhenLeaderStillTransfer
     assert.deepEqual(syncState.syncStartedRoomIds, [0, 12]);
 }
 
+function testBuildTransferSyncStatePreservesExistingDungeonEntryLevel(): void {
+    const client = createClient();
+    client.character = createCharacter('KeepRunner');
+    client.currentLevel = 'CraftTownTutorial';
+    client.entryLevel = 'WolfsEnd';
+    client.playerSpawned = true;
+
+    const syncState = (LevelHandler as any).buildTransferSyncState(client, 'CraftTown', null);
+
+    assert.ok(syncState);
+    assert.equal(syncState.syncEntryLevel, 'NewbieRoad');
+}
+
+function testResolveTransferSourceLevelPrefersLiveSessionLevel(): void {
+    const client = createClient();
+    client.currentLevel = 'CraftTownTutorial';
+    client.character = createCharacter('KeepRunner');
+
+    const resolved = (LevelHandler as any).resolveTransferSourceLevel(client, client.character);
+
+    assert.equal(resolved, 'CraftTownTutorial');
+}
+
+function testResolveCraftTownReturnLevelRejectsCraftTownLoop(): void {
+    const client = createClient();
+    client.entryLevel = 'CraftTown';
+    const character = createCharacter('KeepRunner');
+    character.CurrentLevel = { name: 'CraftTown', x: 918, y: 1440 };
+    character.PreviousLevel = { name: 'WolfsEnd', x: 1210, y: 880 };
+
+    const resolved = (LevelHandler as any).resolveCraftTownReturnLevel(
+        client,
+        character,
+        'CraftTownTutorial',
+        {
+            x: 0,
+            y: 0,
+            hasCoord: false,
+            syncEntryLevel: 'CraftTown'
+        }
+    );
+
+    assert.equal(resolved, 'NewbieRoad');
+}
+
+function testRecoverTransferSessionStateRepairsCraftTownEntryLoop(): void {
+    const client = createClient();
+    const character = createCharacter('KeepRunner');
+    character.CurrentLevel = { name: 'CraftTown', x: 918, y: 1440 };
+    character.PreviousLevel = { name: 'WolfsEnd', x: 1210, y: 880 };
+
+    GlobalState.usedTransferTokens.set(61234, {
+        character,
+        userId: 41,
+        targetLevel: 'CraftTown',
+        previousLevel: 'CraftTown'
+    });
+
+    const recovered = (LevelHandler as any).recoverTransferSessionState(client, 61234);
+
+    assert.ok(recovered);
+    assert.equal(client.currentLevel, 'CraftTown');
+    assert.equal(client.entryLevel, 'NewbieRoad');
+}
+
+function testCraftTownDoorFallsBackToPreviousOverworld(): void {
+    const client = createClient();
+    client.currentLevel = 'CraftTown';
+    client.entryLevel = 'CraftTown';
+    client.character = createCharacter('KeepRunner');
+    client.character.PreviousLevel = { name: 'WolfsEnd', x: 1210, y: 880 };
+
+    LevelHandler.handleOpenDoor(client as never, createOpenDoorPacket(0));
+
+    assert.equal(client.lastDoorId, 0);
+    assert.equal(client.lastDoorTargetLevel, 'NewbieRoad');
+}
+
+function testDisconnectRecoverySnapshotRepairsCraftTownEntryLoop(): void {
+    const client = new Client(
+        new net.Socket(),
+        {
+            handle: async () => undefined
+        } as never
+    );
+    const character = createCharacter('Hero');
+    character.CurrentLevel = { name: 'CraftTown', x: 918, y: 1440 };
+    character.PreviousLevel = { name: 'WolfsEnd', x: 1210, y: 880 };
+
+    client.userId = 41;
+    client.authenticated = true;
+    client.character = character;
+    client.characters = [character];
+    client.token = 18390;
+    client.currentLevel = 'CraftTown';
+    client.entryLevel = 'CraftTown';
+
+    const snapshot = (client as any).createSessionCleanupSnapshot();
+    (client as any).preserveTransferRecoveryState(snapshot);
+
+    assert.equal(GlobalState.usedTransferTokens.get(18390)?.targetLevel, 'CraftTown');
+    assert.equal(GlobalState.usedTransferTokens.get(18390)?.previousLevel, 'NewbieRoad');
+    assert.equal(GlobalState.usedTransferTokens.get(18390)?.syncEntryLevel, 'NewbieRoad');
+}
+
 function testBuildTransferSyncStatePrefersEarliestPartyAnchorAcrossActiveAndPending(): void {
     const follower = createClient();
     follower.character = createCharacter('Follower');
@@ -467,6 +588,38 @@ function testPrimeTutorialRoomEventsSkipsSyncedProgress(): void {
 
     assert.equal(client.startedRoomEvents.has('TutorialDungeon:1'), false, 'synced tutorial progress should not re-prime room 1');
     assert.deepEqual(client.sentPackets.map((packet: { id: number }) => packet.id), [0xA5, 0xA5, 0xA5]);
+}
+
+function testPrimeTutorialRoomEventsSeedsTutorialDungeonIntroThought(): void {
+    const client = createClient();
+    client.token = 8001;
+    client.currentLevel = 'TutorialDungeon';
+    client.playerSpawned = true;
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    LevelHandler.primeTutorialRoomEvents(client as never);
+
+    assert.equal(client.startedRoomEvents.has('TutorialDungeon:0'), true);
+    assert.equal(client.startedRoomEvents.has('TutorialDungeon:1'), true);
+    assert.deepEqual(
+        client.sentPackets.map((packet: { id: number }) => packet.id),
+        [0xA5, 0xA5, 0x76]
+    );
+}
+
+function testTutorialDungeonGoblinSceneStartsOnRoomFiveEntry(): void {
+    const client = createClient();
+    client.token = 8002;
+    client.currentLevel = 'TutorialDungeon';
+    client.playerSpawned = true;
+    client.startedRoomEvents.add('TutorialDungeon:4');
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    (LevelHandler as any).cacheRoomId(client, 5);
+
+    assert.equal(client.currentRoomId, 5);
+    assert.equal(client.startedRoomEvents.has('TutorialDungeon:5'), false);
+    assert.deepEqual(client.sentPackets.map((packet: { id: number }) => packet.id), [0x76]);
 }
 
 function testDisconnectDuringDoorTransferPreservesRecoveryState(): void {
@@ -628,7 +781,7 @@ function main(): void {
         GlobalState.transferTokenAliases.clear();
         GlobalState.levelEntities.clear();
 
-        testStorePendingTransferTokenKeepsTokenCharInSync();
+        testStorePendingTransferTokenKeepsTokenCharInSyncAndRequestsExtendedState();
 
         GlobalState.pendingWorld.clear();
         GlobalState.pendingExtended.clear();
@@ -699,6 +852,45 @@ function main(): void {
         GlobalState.pendingWorld.clear();
         GlobalState.partyByMember.clear();
 
+        testBuildTransferSyncStatePreservesExistingDungeonEntryLevel();
+
+        testResolveTransferSourceLevelPrefersLiveSessionLevel();
+
+        testResolveCraftTownReturnLevelRejectsCraftTownLoop();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.sessionsByUserId.clear();
+        GlobalState.sessionsByCharacterName.clear();
+        GlobalState.pendingWorld.clear();
+        GlobalState.pendingExtended.clear();
+        GlobalState.usedTransferTokens.clear();
+        GlobalState.tokenChar.clear();
+        GlobalState.transferTokenAliases.clear();
+
+        testRecoverTransferSessionStateRepairsCraftTownEntryLoop();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.sessionsByUserId.clear();
+        GlobalState.sessionsByCharacterName.clear();
+        GlobalState.pendingWorld.clear();
+        GlobalState.pendingExtended.clear();
+        GlobalState.usedTransferTokens.clear();
+        GlobalState.tokenChar.clear();
+        GlobalState.transferTokenAliases.clear();
+
+        testCraftTownDoorFallsBackToPreviousOverworld();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.sessionsByUserId.clear();
+        GlobalState.sessionsByCharacterName.clear();
+        GlobalState.pendingWorld.clear();
+        GlobalState.pendingExtended.clear();
+        GlobalState.usedTransferTokens.clear();
+        GlobalState.tokenChar.clear();
+        GlobalState.transferTokenAliases.clear();
+
+        testDisconnectRecoverySnapshotRepairsCraftTownEntryLoop();
+
         testBuildTransferSyncStatePrefersEarliestPartyAnchorAcrossActiveAndPending();
 
         GlobalState.sessionsByToken.clear();
@@ -714,6 +906,10 @@ function main(): void {
         testRestoreTransferredRoomProgressReplaysRoomEvents();
 
         testPrimeTutorialRoomEventsSkipsSyncedProgress();
+
+        testPrimeTutorialRoomEventsSeedsTutorialDungeonIntroThought();
+
+        testTutorialDungeonGoblinSceneStartsOnRoomFiveEntry();
     } finally {
         GlobalState.sessionsByToken = sessionsByToken;
         GlobalState.sessionsByUserId = sessionsByUserId;

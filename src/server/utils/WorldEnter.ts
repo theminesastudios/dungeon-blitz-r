@@ -70,6 +70,66 @@ export class WorldEnter {
         return Boolean(String(missionDef?.Dungeon ?? '').trim());
     }
 
+    private static missionUsesTimedProgressFields(missionDef: MissionDef | undefined): boolean {
+        const dungeonName = String(missionDef?.Dungeon ?? '').trim();
+
+        // The client MissionTypes data does not mark ClearYourHouse as a dungeon/timed mission,
+        // even though the server data file still carries CraftTownTutorial here. Writing the
+        // timed extras for mission 5 shifts the welcome packet before the embedded friend list.
+        if (dungeonName === 'CraftTownTutorial') {
+            return false;
+        }
+
+        return Boolean(missionDef?.Time);
+    }
+
+    private static missionRequiresTurnIn(missionDef: MissionDef | undefined): boolean {
+        return Boolean(String(missionDef?.ReturnName ?? '').trim());
+    }
+
+    private static normalizeMissionEntry(
+        missionId: number,
+        missionDef: MissionDef | undefined,
+        entry: Record<string, any>
+    ): Record<string, any> {
+        const normalized = { ...entry };
+        const rawState = Number(normalized.state ?? 0);
+        const state = Number.isFinite(rawState) ? rawState : 0;
+
+        if (state <= 0) {
+            normalized.state = 0;
+            delete normalized.claimed;
+            delete normalized.complete;
+            return normalized;
+        }
+
+        if (state === 1) {
+            normalized.state = 1;
+            delete normalized.claimed;
+            delete normalized.complete;
+            return normalized;
+        }
+
+        if (state === 2) {
+            const legacyClaimed = Boolean(normalized.claimed) || Boolean(normalized.complete);
+            if (legacyClaimed || !WorldEnter.missionRequiresTurnIn(missionDef)) {
+                normalized.state = 3;
+                normalized.claimed = 1;
+                normalized.complete = 1;
+            } else {
+                normalized.state = 2;
+                delete normalized.claimed;
+                delete normalized.complete;
+            }
+            return normalized;
+        }
+
+        normalized.state = 3;
+        normalized.claimed = 1;
+        normalized.complete = 1;
+        return normalized;
+    }
+
     private static getClassId(className: string): ClassID {
         switch ((className || '').toLowerCase()) {
             case 'rogue':
@@ -474,7 +534,11 @@ export class WorldEnter {
             bb.writeMethod4(totalMissions);
             for (let missionId = 1; missionId <= totalMissions; missionId++) {
                 const missionDef = MissionLoader.getMissionDef(missionId);
-                const missionState = WorldEnter.asRecord(missionsState[missionId.toString()]);
+                const missionState = WorldEnter.normalizeMissionEntry(
+                    missionId,
+                    missionDef,
+                    WorldEnter.asRecord(missionsState[missionId.toString()])
+                );
                 const state = Number(missionState.state ?? 0);
 
                 if (missionDef?.Tier) {
@@ -497,8 +561,8 @@ export class WorldEnter {
                     continue;
                 }
 
-                bb.writeMethod11(state >= 3 ? 1 : 0, 1);
-                if (WorldEnter.missionHasDungeonProgress(missionDef)) {
+                bb.writeMethod11(state === 2 ? 1 : 0, 1);
+                if (WorldEnter.missionUsesTimedProgressFields(missionDef)) {
                     bb.writeMethod11(Number(missionState.Tier ?? 0), 4);
                     bb.writeMethod4(Number(missionState.highscore ?? 0));
                     bb.writeMethod4(Number(missionState.Time ?? 0));

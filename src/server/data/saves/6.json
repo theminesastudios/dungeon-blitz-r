@@ -1,0 +1,362 @@
+{
+  "user_id": 6,
+  "characters": [
+    {
+      "name": "Neodevils",
+      "class": "Mage",
+      "level": 3,
+      "xp": 417,
+      "gold": 1934,
+      "craftXP": 0,
+      "DragonOre": 0,
+      "mammothIdols": 0,
+      "DragonKeys": 0,
+      "SilverSigils": 0,
+      "alertState": 0,
+      "gender": "Male",
+      "headSet": "Head03",
+      "hairSet": "MDo02",
+      "mouthSet": "MM01",
+      "faceSet": "MF03",
+      "hairColor": 6184542,
+      "skinColor": 16761778,
+      "shirtColor": 997558,
+      "pantColor": 4802889,
+      "equippedGears": [
+        {
+          "gearID": 0,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 0,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 70,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 0,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 63,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 691,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        }
+      ],
+      "inventory": [],
+      "CurrentLevel": {
+        "name": "NewbieRoad",
+        "x": 5514,
+        "y": 902
+      },
+      "PreviousLevel": {
+        "name": "CraftTown",
+        "x": 0,
+        "y": 0
+      },
+      "inventoryGears": [
+        {
+          "gearID": 53,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 65,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 63,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 70,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 691,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        }
+      ],
+      "gearSets": [],
+      "mounts": [
+        1
+      ],
+      "pets": [],
+      "charms": [],
+      "materials": [
+        {
+          "materialID": 91,
+          "count": 16
+        },
+        {
+          "materialID": 92,
+          "count": 11
+        },
+        {
+          "materialID": 34,
+          "count": 3
+        },
+        {
+          "materialID": 93,
+          "count": 3
+        },
+        {
+          "materialID": 35,
+          "count": 1
+        }
+      ],
+      "lockboxes": [
+        {
+          "lockboxID": 1,
+          "count": 100
+        }
+      ],
+      "craftInventory": [],
+      "bankInventory": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "OwnedDyes": [],
+      "consumables": [],
+      "missions": {
+        "1": {
+          "state": 3,
+          "currCount": 1,
+          "Tier": 10,
+          "highscore": 99999999,
+          "Time": 1774360002,
+          "claimed": 1,
+          "complete": 1
+        },
+        "2": {
+          "state": 3,
+          "claimed": 1,
+          "complete": 1
+        },
+        "3": {
+          "state": 3,
+          "currCount": 1,
+          "Tier": 10,
+          "highscore": 99999999,
+          "Time": 1774360921,
+          "claimed": 1,
+          "complete": 1
+        },
+        "4": {
+          "state": 3,
+          "currCount": 0,
+          "claimed": 1,
+          "complete": 1
+        },
+        "5": {
+          "state": 3,
+          "currCount": 1,
+          "Tier": 10,
+          "highscore": 99999999,
+          "Time": 1774361133,
+          "claimed": 1,
+          "complete": 1
+        },
+        "271": {
+          "state": 1,
+          "currCount": 0
+        }
+      },
+      "questTrackerState": 22,
+      "friends": [],
+      "learnedAbilities": [
+        {
+          "abilityID": 10,
+          "rank": 1
+        },
+        {
+          "abilityID": 14,
+          "rank": 1
+        },
+        {
+          "abilityID": 17,
+          "rank": 1
+        }
+      ],
+      "activeAbilities": [
+        10,
+        14,
+        17
+      ],
+      "craftTalentPoints": [],
+      "talentPoints": {},
+      "magicForge": {
+        "stats_by_building": {
+          "1": 1,
+          "2": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "12": 0,
+          "13": 0
+        },
+        "primary": 0,
+        "secondary": 0,
+        "ReadyTime": 0,
+        "secondary_tier": 0,
+        "usedlist": 0,
+        "forge_roll_a": 0,
+        "forge_roll_b": 0,
+        "is_extended_forge": false
+      },
+      "SkillResearch": {},
+      "buildingUpgrade": {
+        "buildingID": 0,
+        "rank": 0,
+        "ReadyTime": 0
+      },
+      "talentResearch": {
+        "classIndex": null,
+        "ReadyTime": 0
+      },
+      "EggHachery": {},
+      "OwnedEggsID": [],
+      "EggNotifySent": false,
+      "EggResetTime": 0,
+      "activeEggCount": 0,
+      "restingPets": [],
+      "trainingPet": [],
+      "MasterClass": 0,
+      "TalentTree": {},
+      "equippedMount": 1,
+      "activePet": {
+        "typeID": 0,
+        "special_id": 0
+      },
+      "activeConsumableID": 0,
+      "queuedConsumableID": 0,
+      "guild": {},
+      "ignored": []
+    }
+  ]
+}

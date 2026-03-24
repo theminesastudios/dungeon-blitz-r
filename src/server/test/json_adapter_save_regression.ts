@@ -66,7 +66,7 @@ async function testSaveCharactersRetriesTransientRenameLock(): Promise<void> {
             adapterClass.renameFile = originalRenameFile;
         }
 
-        const savedPath = path.join(tempDir, 'saves', '7.json');
+        const savedPath = path.join(tempDir, 'data', 'saves', '7.json');
         const saved = JSON.parse(await fs.readFile(savedPath, 'utf8')) as { characters: Character[] };
         assert.equal(attempts, 3, 'rename should retry until the lock clears');
         assert.equal(saved.characters[0]?.name, 'RetryHero');
@@ -103,7 +103,7 @@ async function testSaveCharactersSerializesConcurrentWrites(): Promise<void> {
             adapterClass.renameFile = originalRenameFile;
         }
 
-        const savedPath = path.join(tempDir, 'saves', '9.json');
+        const savedPath = path.join(tempDir, 'data', 'saves', '9.json');
         const saved = JSON.parse(await fs.readFile(savedPath, 'utf8')) as { characters: Character[] };
         assert.equal(maxActiveRenames, 1, 'same save file should not be renamed concurrently');
         assert.equal(saved.characters[0]?.name, 'SecondSave');

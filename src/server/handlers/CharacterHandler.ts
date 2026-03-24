@@ -15,6 +15,7 @@ import { AbilityHandler } from './AbilityHandler';
 import { SocialHandler } from './SocialHandler';
 import { GuildHandler } from './GuildHandler';
 import { EntityHandler } from './EntityHandler';
+import { DebugLogger } from '../core/Debug';
 import { ensureCharacterSocialState, normalizeCharacterKey } from '../core/SocialState';
 import { getPartyIdForClient, areClientsInSameParty } from '../core/PartySync';
 import { TransferTokenAllocator } from '../core/TransferTokenAllocator';
@@ -157,6 +158,37 @@ export class CharacterHandler {
 
         next.push(character);
         return next;
+    }
+
+    private static async reloadCurrentCharacterFromSave(client: Client): Promise<void> {
+        if (!client.character) {
+            return;
+        }
+
+        if (!client.userId) {
+            client.characters = CharacterHandler.upsertCharacterList(client.characters, client.character);
+            return;
+        }
+
+        const loadedCharacters = await db.loadCharacters(client.userId);
+        const normalizedName = CharacterHandler.normalizeCharacterName(client.character?.name);
+        const loadedCharacter = loadedCharacters.find((entry) =>
+            CharacterHandler.normalizeCharacterName(entry?.name) === normalizedName
+        );
+
+        if (loadedCharacter) {
+            client.character = loadedCharacter;
+            client.characters = loadedCharacters;
+            DebugLogger.logProgress('CharacterReload:loaded', client, loadedCharacter, {
+                source: 'disk'
+            });
+            return;
+        }
+
+        client.characters = CharacterHandler.upsertCharacterList(loadedCharacters, client.character);
+        DebugLogger.logProgress('CharacterReload:missingOnDisk', client, client.character, {
+            source: 'memory'
+        });
     }
 
     private static buildPaperDollPacket(character: Character): BitBuffer {
@@ -346,7 +378,14 @@ export class CharacterHandler {
     private static sendEnterWorld(client: Client, char: Character): void {
         // Determine Level
         const currentLevelName = char.CurrentLevel?.name || "NewbieRoad";
-        const previousLevelName = char.PreviousLevel?.name || "NewbieRoad";
+        const previousLevelName =
+            LevelConfig.resolveDungeonEntryLevel(
+                currentLevelName,
+                char.PreviousLevel?.name || "NewbieRoad",
+                char
+            ) ||
+            char.PreviousLevel?.name ||
+            "NewbieRoad";
         const spawn = LevelConfig.getSpawnCoordinates(char, previousLevelName, currentLevelName);
         const isDungeonLevel = LevelConfig.isDungeonLevel(currentLevelName);
 
@@ -437,6 +476,15 @@ export class CharacterHandler {
             char
         );
 
+        DebugLogger.logProgress('EnterWorld:initialPacket', client, char, {
+            transferToken: resolvedTransferToken,
+            targetLevel: currentLevelName,
+            targetSwf: levelSpec.swf,
+            previousLevel: previousLevelName,
+            previousSwf: '',
+            sendExtended: true
+        });
+
         // Store token mapping for persistence
         if (client.userId) {
             GlobalState.tokenChar.set(token, { character: char, userId: client.userId });
@@ -470,7 +518,11 @@ export class CharacterHandler {
             ? normalizeLevelInstanceId(entry.levelInstanceId) || createDungeonInstanceId(token)
             : '';
         console.log(`[GameLogin] ${entry.character.name} entering ${entry.targetLevel} with levelInstanceId='${client.levelInstanceId}' (from entry: '${entry.levelInstanceId}')`);
-        client.entryLevel = LevelConfig.get(entry.targetLevel).isDungeon ? entry.previousLevel : '';
+        client.entryLevel = LevelConfig.resolveDungeonEntryLevel(
+            entry.targetLevel,
+            entry.previousLevel,
+            entry.character
+        );
         client.syncAnchorStartedAt = Number.isFinite(Number(entry.syncAnchorStartedAt)) && Number(entry.syncAnchorStartedAt) > 0
             ? Math.round(Number(entry.syncAnchorStartedAt))
             : 0;
@@ -501,20 +553,41 @@ export class CharacterHandler {
             LevelHandler.resetCraftTownTutorialInstance();
         }
 
-        if (client.userId) {
-            const loadedCharacters = await db.loadCharacters(client.userId);
-            client.characters = CharacterHandler.upsertCharacterList(loadedCharacters, client.character);
-        } else {
-            client.characters = CharacterHandler.upsertCharacterList(client.characters, client.character);
-        }
+        await CharacterHandler.reloadCurrentCharacterFromSave(client);
 
         await GuildHandler.refreshClientGuildState(client);
         const socialRepairDidMutate = ensureCharacterSocialState(client.character);
         const abilityRepairDidMutate = AbilityHandler.repairCharacterAbilityState(client.character);
         const storyRepair = MissionHandler.repairEarlyStoryOnLogin(client.character, entry.targetLevel);
+        const expectedLevelSwf = LevelConfig.get(entry.targetLevel).swf;
         if ((socialRepairDidMutate || abilityRepairDidMutate || storyRepair.didMutate) && client.userId) {
             client.characters = CharacterHandler.upsertCharacterList(client.characters, client.character);
             void db.saveCharacters(client.userId, client.characters);
+        }
+
+        DebugLogger.logProgress('GameLogin:ready', client, client.character, {
+            token,
+            firstLogin,
+            sendExtended,
+            levelSwf,
+            expectedLevelSwf,
+            levelSwfMatchesTarget: levelSwf === expectedLevelSwf,
+            isDev,
+            storyRepairDidMutate: storyRepair.didMutate,
+            storyRepairAddedMissionId: storyRepair.addedMissionId,
+            socialRepairDidMutate,
+            abilityRepairDidMutate
+        });
+
+        if (levelSwf !== expectedLevelSwf) {
+            DebugLogger.logProgress('GameLogin:swfMismatch', client, client.character, {
+                token,
+                targetLevel: entry.targetLevel,
+                expectedLevelSwf,
+                clientLevelSwf: levelSwf,
+                firstLogin,
+                sendExtended
+            });
         }
 
         CharacterHandler.purgeSameCharacterGhosts(client, entry.userId, entry.character.name);
@@ -568,15 +641,21 @@ export class CharacterHandler {
             spawn.hasCoord,
             sendExtended
         );
-        
-        client.sendBitBuffer(0x10, pdPkt);
+        const pdBuffer = pdPkt.toBuffer();
+
+        client.send(0x10, pdBuffer);
         console.log(`[GameLogin] Sent 0x10 (Player Data)`);
+        DebugLogger.logProgress('GameLogin:sentPlayerData', client, client.character, {
+            token,
+            sendExtended,
+            targetLevel: entry.targetLevel,
+            payloadLength: pdBuffer.length,
+            payloadPreview: DebugLogger.previewBuffer(pdBuffer)
+        });
+
+        MissionHandler.syncMissionStateToClient(client);
 
         SocialHandler.handleSessionReady(client);
-
-        if (storyRepair.addedMissionId > 0) {
-            MissionHandler.sendMissionAdded(client, storyRepair.addedMissionId);
-        }
         
         // Spawn NPCs
         LevelHandler.spawnLevelNpcs(client, entry.targetLevel);

@@ -1,5 +1,6 @@
 
 import { Client } from '../core/Client';
+import { DebugLogger } from '../core/Debug';
 import { BitReader } from '../network/protocol/bitReader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { JsonAdapter } from '../database/JsonAdapter';
@@ -7,12 +8,47 @@ import { JsonAdapter } from '../database/JsonAdapter';
 const db = new JsonAdapter();
 
 export class BuildingHandler {
+    private static readonly CRAFT_TOWN_REFRESH_RETRY_DELAYS_MS = [1200, 2800];
+
     private static async saveCharacter(client: Client): Promise<void> {
         if (!client.userId || !client.character) {
             return;
         }
 
         client.characters = await db.saveCharacterSnapshot(client.userId, client.character);
+    }
+
+    private static sendPremiumPurchase(client: Client, itemName: string, cost: number): void {
+        if (cost <= 0) {
+            return;
+        }
+
+        const bb = new BitBuffer();
+        bb.writeMethod13(itemName);
+        bb.writeMethod4(cost);
+        client.sendBitBuffer(0xB5, bb);
+    }
+
+    static refreshCraftTownBuildingsOnSpawn(client: Client): void {
+        if (!client.character || !client.playerSpawned || client.currentLevel !== 'CraftTown') {
+            return;
+        }
+
+        BuildingHandler.sendBuildingUpdate(client);
+        DebugLogger.logProgress('BuildingRefresh:spawn', client, client.character, {
+            reason: 'crafttown_spawn'
+        });
+
+        for (const delayMs of BuildingHandler.CRAFT_TOWN_REFRESH_RETRY_DELAYS_MS) {
+            const timer = setTimeout(() => {
+                if (!client.character || !client.playerSpawned || client.currentLevel !== 'CraftTown') {
+                    return;
+                }
+
+                BuildingHandler.sendBuildingUpdate(client);
+            }, delayMs);
+            timer.unref?.();
+        }
     }
 
     // 0xD7: Upgrade Building
@@ -27,6 +63,29 @@ export class BuildingHandler {
         const usedIdols = br.readMethod15();
 
         console.log(`[Building] Upgrade request: ID=${buildingId}, Rank=${targetRank}, Idols=${usedIdols}`);
+        DebugLogger.logProgress('BuildingUpgrade:request', client, client.character, {
+            buildingId,
+            targetRank,
+            usedIdols
+        });
+
+        const statsByBuilding = BuildingHandler.asRecord(client.character.magicForge?.stats_by_building);
+        const currentRank = Number(statsByBuilding[buildingId.toString()] ?? statsByBuilding[buildingId] ?? 0);
+        if (buildingId > 0 && targetRank > 0 && currentRank >= targetRank) {
+            DebugLogger.logProgress('BuildingUpgrade:ignored', client, client.character, {
+                buildingId,
+                targetRank,
+                currentRank,
+                usedIdols,
+                reason: 'already_at_or_above_target_rank'
+            });
+
+            if (client.playerSpawned && client.currentLevel === 'CraftTown') {
+                BuildingHandler.sendBuildingComplete(client, buildingId, currentRank);
+                BuildingHandler.sendBuildingUpdate(client);
+            }
+            return;
+        }
 
         // Simplified Logic: 
         // 1. Calculate time/cost (skipped for now, assume valid)
@@ -50,6 +109,11 @@ export class BuildingHandler {
 
         // Save
         await BuildingHandler.saveCharacter(client);
+        DebugLogger.logProgress('BuildingUpgrade:queued', client, client.character, {
+            buildingId,
+            targetRank,
+            readyTime
+        });
         
         // Note: Python scheduling logic sets a timer. 
         // For now, client might handle countdown? Or we need to send immediate completion if debug?
@@ -65,9 +129,34 @@ export class BuildingHandler {
         const idolCost = br.readMethod9();
 
         console.log(`[Building] SpeedUp request: Cost=${idolCost}`);
+        DebugLogger.logProgress('BuildingSpeedup:request', client, client.character, {
+            idolCost
+        });
 
         const upgrade = client.character.buildingUpgrade;
-        if (!upgrade || !upgrade.buildingID) return;
+        if (!upgrade || !upgrade.buildingID) {
+            const existingRank = BuildingHandler.getBuildingRank(client.character, 1);
+            DebugLogger.logProgress('BuildingSpeedup:ignored', client, client.character, {
+                idolCost,
+                reason: 'no_active_building_upgrade',
+                existingTomeRank: existingRank
+            });
+
+            if (client.playerSpawned && client.currentLevel === 'CraftTown' && existingRank > 0) {
+                BuildingHandler.sendBuildingComplete(client, 1, existingRank);
+                BuildingHandler.sendBuildingUpdate(client);
+            }
+            return;
+        }
+
+        if (idolCost > 0) {
+            const idols = Number(client.character.mammothIdols ?? 0);
+            if (idols < idolCost) {
+                return;
+            }
+
+            client.character.mammothIdols = idols - idolCost;
+        }
 
         // Apply Upgrade Immediately
         const buildingId = upgrade.buildingID;
@@ -79,13 +168,23 @@ export class BuildingHandler {
         }
         client.character.magicForge.stats_by_building[buildingId.toString()] = newRank;
 
-        // Clear Upgrade
         client.character.buildingUpgrade = { buildingID: 0, rank: 0, ReadyTime: 0 };
         
         await BuildingHandler.saveCharacter(client);
+        DebugLogger.logProgress('BuildingSpeedup:applied', client, client.character, {
+            idolCost,
+            buildingId,
+            newRank
+        });
+
+        BuildingHandler.sendPremiumPurchase(client, 'BuildingSpeedup', idolCost);
 
         // Send Completion Packet (0xD8)
         BuildingHandler.sendBuildingComplete(client, buildingId, newRank);
+
+        if (client.playerSpawned && client.currentLevel === 'CraftTown') {
+            BuildingHandler.sendBuildingUpdate(client);
+        }
     }
 
     static async handleBuildingClaim(client: Client, data: Buffer): Promise<void> {
@@ -107,6 +206,10 @@ export class BuildingHandler {
 
         client.character.buildingUpgrade = { buildingID: 0, rank: 0, ReadyTime: 0 };
         await BuildingHandler.saveCharacter(client);
+        DebugLogger.logProgress('BuildingClaim:applied', client, client.character, {
+            buildingId,
+            rank
+        });
     }
 
     static sendBuildingComplete(client: Client, buildingId: number, rank: number): void {
@@ -174,5 +277,17 @@ export class BuildingHandler {
          for (const bid of bids) {
              sendDelta(bid, getStat(bid));
          }
+    }
+
+    private static asRecord(value: unknown): Record<string, unknown> {
+        return value && typeof value === 'object' && !Array.isArray(value)
+            ? value as Record<string, unknown>
+            : {};
+    }
+
+    private static getBuildingRank(character: Record<string, unknown>, buildingId: number): number {
+        const magicForge = BuildingHandler.asRecord(character.magicForge);
+        const statsByBuilding = BuildingHandler.asRecord(magicForge.stats_by_building);
+        return Number(statsByBuilding[buildingId.toString()] ?? statsByBuilding[buildingId] ?? 0);
     }
 }

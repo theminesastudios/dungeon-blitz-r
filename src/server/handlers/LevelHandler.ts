@@ -9,13 +9,15 @@ import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { LevelConfig } from '../core/LevelConfig';
 import { GlobalState, PendingTransfer } from '../core/GlobalState';
+import { DebugLogger } from '../core/Debug';
 import { WorldEnter } from '../utils/WorldEnter';
 import { Config } from '../core/config';
 import { MissionLoader } from '../data/MissionLoader';
 import { NpcLoader, NpcDef } from '../data/NpcLoader';
 import { MissionID } from '../data/runtime';
-import { Entity } from '../core/Entity';
+import { Entity, EntityTeam } from '../core/Entity';
 import { EntityHandler } from './EntityHandler';
+import { MissionHandler } from './MissionHandler';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { normalizeCharacterKey, PendingTeleport } from '../core/SocialState';
 import { TransferTokenAllocator } from '../core/TransferTokenAllocator';
@@ -51,6 +53,41 @@ type TransferSyncAnchorCandidate = {
 };
 
 export class LevelHandler {
+    private static readonly GOBLIN_RIVER_BOSS_INTRO_TEXTS = new Set<string>([
+        "You're the one that killed our Kraken!",
+        'That was the last of our Monster Fleet!'
+    ]);
+    private static readonly GOBLIN_RIVER_BOSS_INTRO_DEFAULT_MS = 5000;
+
+    private static resolveTransferSourceLevel(client: Client, character: any): string {
+        // Keep-clear flows intentionally preserve the safe return point in Character.CurrentLevel
+        // until the actual exit transfer runs, so the live session level must win here.
+        return LevelConfig.normalizeLevelName(
+            client.currentLevel || character?.CurrentLevel?.name || 'NewbieRoad'
+        ) || 'NewbieRoad';
+    }
+
+    private static resolveCraftTownReturnLevel(
+        client: Client,
+        character: any,
+        oldLevel: string,
+        syncState: LevelSyncState | null
+    ): string {
+        return LevelConfig.resolveSafeReturnLevel(
+            [
+                syncState?.syncEntryLevel,
+                client.entryLevel,
+                character?.PreviousLevel?.name,
+                oldLevel,
+                character?.CurrentLevel?.name
+            ],
+            {
+                fallbackLevel: 'NewbieRoad',
+                excludedLevels: ['CraftTown']
+            }
+        );
+    }
+
     private static cloneTransferGameplayState(target: Client, source: Client): void {
         target.character = source.character;
         target.userId = source.userId;
@@ -470,7 +507,9 @@ export class LevelHandler {
         let syncAnchorStartedAt = shouldSyncDungeonProgress
             ? LevelHandler.normalizeSyncAnchorStartedAt(client.syncAnchorStartedAt)
             : undefined;
-        let syncEntryLevel = shouldSyncDungeonProgress ? LevelConfig.normalizeLevelName(teleportOverride?.syncEntryLevel) : undefined;
+        let syncEntryLevel = shouldSyncDungeonProgress
+            ? LevelConfig.normalizeLevelName(teleportOverride?.syncEntryLevel ?? client.entryLevel)
+            : undefined;
         let syncRoomId = shouldSyncDungeonProgress &&
             Number.isFinite(Number(teleportOverride?.syncRoomId)) &&
             Number(teleportOverride?.syncRoomId) >= 0
@@ -549,13 +588,18 @@ export class LevelHandler {
     private static readonly FIRST_KEEP_MISSION_ID = MissionID.ClearYourHouse;
     private static readonly MISSION_NOT_STARTED = 0;
     private static readonly MISSION_IN_PROGRESS = 1;
-    private static readonly KEEP_TUTORIAL_BOSS_TRIGGER_X = -3200;
+    private static readonly KEEP_TUTORIAL_BOSS_TRIGGER_X = Number.MAX_SAFE_INTEGER;
     private static readonly KEEP_TUTORIAL_CUTSCENE_STEP_MS = 250;
     private static readonly KEEP_TUTORIAL_BOSS_INTRO_TOTAL_MS = 14750;
     private static readonly KEEP_TUTORIAL_BOSS_SOUND = 'D02_MoodLoop_GoblinHideout';
     private static readonly KEEP_TUTORIAL_BOSS_NAME = 'Ranik, The Geomancer';
-    private static readonly KEEP_TUTORIAL_FIRST_PARROT_X = -965;
-    private static readonly KEEP_TUTORIAL_SECOND_PARROT_X = -2627;
+    private static readonly KEEP_TUTORIAL_FIRST_PARROT_X = 7271;
+    private static readonly KEEP_TUTORIAL_SECOND_PARROT_X = 17981;
+    private static readonly TUTORIAL_DUNGEON_INTRO_PARROT_ID = 384606;
+    private static readonly TUTORIAL_DUNGEON_ROOM_FIVE_PARROT_ID = 712286;
+    private static readonly TUTORIAL_DUNGEON_GOBLIN_SCENE_ROOM_ID = 5;
+    private static readonly TUTORIAL_DUNGEON_INTRO_LINE =
+        'Squawk! Goblins! Goblins everywhere! Help Pecky!';
 
     static resetCraftTownTutorialInstance(): void {
         const levelName = 'CraftTownTutorial';
@@ -669,6 +713,24 @@ export class LevelHandler {
         }
     }
 
+    private static maybeTriggerTutorialDungeonGoblinScene(client: Client, previousRoomId: number, roomId: number): void {
+        if (
+            client.currentLevel !== 'TutorialDungeon' ||
+            previousRoomId === roomId ||
+            roomId !== LevelHandler.TUTORIAL_DUNGEON_GOBLIN_SCENE_ROOM_ID ||
+            !LevelHandler.hasRoomEventStarted(client, 4)
+        ) {
+            return;
+        }
+
+        LevelHandler.sendRoomThought(
+            client.currentLevel,
+            LevelHandler.TUTORIAL_DUNGEON_ROOM_FIVE_PARROT_ID,
+            LevelHandler.TUTORIAL_DUNGEON_INTRO_LINE,
+            client.levelInstanceId
+        );
+    }
+
     private static sendRoomCutSceneStart(
         levelName: string,
         roomId: number,
@@ -779,12 +841,16 @@ export class LevelHandler {
         ).entityId;
         const parrotId = LevelHandler.findCraftTownTutorialParrotId(client, playerX);
 
+        if (parrotId !== null) {
+            LevelHandler.teleportParrot(client, parrotId, playerX, playerY - 100);
+        }
+
         let elapsedUnits = 0;
         const introSteps: Array<{ delayUnits: number; entityId: number | null; text: string }> = [
+            { delayUnits: 0, entityId: parrotId, text: '<Goto Red 1> Look out!' },
             { delayUnits: 5, entityId: oldManId, text: "Thank the stars you're here!" },
             { delayUnits: 14, entityId: oldManId, text: 'The goblins have ruined the keep.' },
             { delayUnits: 14, entityId: oldManId, text: 'I was the caretaker here...' },
-            { delayUnits: 6, entityId: parrotId, text: '<Goto Red 1> Look out!' },
             { delayUnits: 4, entityId: bossId, text: '<Goto Red 2> Stop the human!' },
             { delayUnits: 10, entityId: bossId, text: "Don't let him|her take our home!" }
         ];
@@ -1322,28 +1388,47 @@ export class LevelHandler {
         const playerX = Number(player?.x ?? newX);
         const playerY = Number(player?.y ?? 0);
 
-        if (state.phase < 1 && newX <= -900) {
+        if (state.phase < 1 && newX >= 8650) {
             const parrotId = LevelHandler.findCraftTownTutorialParrotId(
                 client,
                 LevelHandler.KEEP_TUTORIAL_FIRST_PARROT_X
             );
             if (parrotId !== null) {
-                LevelHandler.sendStartSkit(client, parrotId, 0, LevelHandler.FIRST_KEEP_MISSION_ID);
+                LevelHandler.teleportParrotAndStartSkit(client, parrotId, newX, playerY - 100);
             }
             state.phase = 1;
             return;
         }
 
-        if (state.phase < 2 && newX <= -2400) {
+        if (state.phase < 2 && newX >= 19400) {
             const parrotId = LevelHandler.findCraftTownTutorialParrotId(
                 client,
                 LevelHandler.KEEP_TUTORIAL_SECOND_PARROT_X
             );
             if (parrotId !== null) {
-                LevelHandler.sendStartSkit(client, parrotId, 0, LevelHandler.FIRST_KEEP_MISSION_ID);
+                LevelHandler.teleportParrotAndStartSkit(client, parrotId, newX, playerY - 100);
             }
             state.phase = 2;
             return;
+        }
+
+        // --- Follow Logic ---
+        if (state.phase >= 1 && state.phase <= 2) {
+            const anchorX = (state.phase === 1) 
+                ? LevelHandler.KEEP_TUTORIAL_FIRST_PARROT_X 
+                : LevelHandler.KEEP_TUTORIAL_SECOND_PARROT_X;
+                
+            const parrotId = LevelHandler.findCraftTownTutorialParrotId(client, anchorX);
+            if (parrotId !== null) {
+                const parrotEnt = client.entities.get(parrotId);
+                if (parrotEnt) {
+                    const dist = Math.abs(parrotEnt.x - newX);
+                    // If player is more than 600px away, teleport parrot to follow
+                    if (dist > 600) {
+                        LevelHandler.teleportParrot(client, parrotId, newX, playerY - 100);
+                    }
+                }
+            }
         }
 
         if (state.phase >= 3) {
@@ -1359,12 +1444,60 @@ export class LevelHandler {
 
         const distanceToOldMan = Number(oldMan.distance ?? 999999);
         const reachedBossTrigger =
-            newX <= LevelHandler.KEEP_TUTORIAL_BOSS_TRIGGER_X ||
+            newX >= LevelHandler.KEEP_TUTORIAL_BOSS_TRIGGER_X ||
             (state.phase >= 2 && oldMan.entityId !== null && distanceToOldMan <= 700);
 
         if (reachedBossTrigger) {
             LevelHandler.maybeTriggerCraftTownTutorialBossIntro(client);
         }
+    }
+
+    private static teleportParrot(client: Client, parrotId: number, x: number, y: number): void {
+        const parrotEnt = client.entities.get(parrotId);
+        if (parrotEnt) {
+            const dx = Math.round(x - parrotEnt.x);
+            const dy = Math.round(y - parrotEnt.y);
+
+            // 1. Update server-side position BEFORE ensuring it's known
+            // This ensures the spawn packet (if sent) has the right coords.
+            parrotEnt.x = x;
+            parrotEnt.y = y;
+            
+            const levelMap = LevelHandler.getCurrentLevelMap(client);
+            const globalParrot = levelMap?.get(parrotId);
+            if (globalParrot) {
+                globalParrot.x = x;
+                globalParrot.y = y;
+            }
+
+            // 2. Ensure client knows it. If not known, this sends a Spawn (0x0F).
+            const wasKnown = client.knownEntityIds.has(parrotId);
+            EntityHandler.ensureEntityKnown(client, client.currentLevel, parrotId);
+
+            // 3. If it WAS already known, send an incremental move (0x07) to the client
+            // This avoids Error #2015: Invalid BitmapData from Destroy+Spawn cycles.
+            if (wasKnown && (dx !== 0 || dy !== 0)) {
+                EntityHandler.sendNpcMove(client, parrotId, dx, dy, parrotEnt.entState ?? 0, parrotEnt.facingLeft ?? false);
+            }
+        }
+    }
+
+    private static teleportParrotAndStartSkit(client: Client, parrotId: number, x: number, y: number): void {
+        LevelHandler.teleportParrot(client, parrotId, x, y);
+        
+        // 4. Start skit
+        LevelHandler.sendStartSkit(client, parrotId, 0, LevelHandler.FIRST_KEEP_MISSION_ID);
+    }
+
+    private static snapCraftTownTutorialParrotToPlayer(client: Client): number | null {
+        const player = client.entities.get(client.clientEntID);
+        const playerX = Number(player?.x ?? client.character?.CurrentLevel?.x ?? 0);
+        const playerY = Number(player?.y ?? client.character?.CurrentLevel?.y ?? 0);
+        const parrotId = LevelHandler.findCraftTownTutorialParrotId(client, playerX);
+        if (parrotId !== null) {
+            LevelHandler.teleportParrot(client, parrotId, playerX, playerY - 100);
+        }
+        return parrotId;
     }
 
     private static maybeTriggerCraftTownTutorialBossIntro(client: Client): void {
@@ -1381,6 +1514,8 @@ export class LevelHandler {
         state.phase = 3;
         state.bossIntroForced = true;
         state.forcedLastGuyId = lastGuyId;
+
+        LevelHandler.snapCraftTownTutorialParrotToPlayer(client);
 
         LevelHandler.killCraftTownTutorialLastGuy(client, lastGuyId);
 
@@ -1553,6 +1688,9 @@ export class LevelHandler {
             delete missions[String(LevelHandler.FIRST_KEEP_MISSION_ID)].complete;
             client.character.missions = missions;
             client.character.questTrackerState = 0;
+            DebugLogger.logProgress('CraftTownTutorial:bootstrapMission', client, client.character, {
+                missionId: LevelHandler.FIRST_KEEP_MISSION_ID
+            });
 
             LevelHandler.sendMissionAdded(client, LevelHandler.FIRST_KEEP_MISSION_ID);
             LevelHandler.sendQuestProgress(client, 0);
@@ -1656,6 +1794,11 @@ export class LevelHandler {
         clearClientSpawnFallbackTimer(client);
         clearKeepTutorialTimers(client.keepTutorialState);
         client.keepTutorialState = null;
+        if (client.goblinRiverBossIntroUnlockTimer) {
+            clearTimeout(client.goblinRiverBossIntroUnlockTimer);
+            client.goblinRiverBossIntroUnlockTimer = null;
+        }
+        client.goblinRiverBossIntroLockUntil = 0;
         client.clientSpawnConfirmed = false;
         client.entities.delete(oldClientEntId);
         EntityHandler.removeOwnedEntities(client);
@@ -1699,8 +1842,81 @@ export class LevelHandler {
 
     private static cacheRoomId(client: Client, roomId: number): void {
         if (Number.isFinite(roomId) && roomId >= 0) {
+            const previousRoomId = client.currentRoomId;
             client.currentRoomId = roomId;
+            LevelHandler.maybeTriggerTutorialDungeonGoblinScene(client, previousRoomId, roomId);
         }
+    }
+
+    static isGoblinRiverBossIntroLocked(client: Client): boolean {
+        return Date.now() < Number(client.goblinRiverBossIntroLockUntil ?? 0);
+    }
+
+    private static setGoblinRiverHostilesUntargetable(client: Client, untargetable: boolean): void {
+        const levelMap = LevelHandler.getCurrentLevelMap(client);
+        if (!levelMap) {
+            return;
+        }
+
+        for (const recipient of LevelHandler.forLevelRecipients(client, true)) {
+            for (const [entityId, entity] of levelMap.entries()) {
+                if (!entity || Number(entity.team ?? 0) !== EntityTeam.ENEMY) {
+                    continue;
+                }
+
+                entity.untargetable = untargetable;
+                const localEntity = recipient.entities.get(entityId);
+                if (localEntity) {
+                    localEntity.untargetable = untargetable;
+                }
+                LevelHandler.sendSetUntargetable(recipient, entityId, untargetable);
+            }
+        }
+    }
+
+    private static clearGoblinRiverBossIntroLock(client: Client): void {
+        if (client.goblinRiverBossIntroUnlockTimer) {
+            clearTimeout(client.goblinRiverBossIntroUnlockTimer);
+            client.goblinRiverBossIntroUnlockTimer = null;
+        }
+        client.goblinRiverBossIntroLockUntil = 0;
+        LevelHandler.setGoblinRiverHostilesUntargetable(client, false);
+    }
+
+    static maybeStartGoblinRiverBossIntroLock(client: Client, entityId: number, text: string): void {
+        if (client.currentLevel !== 'GoblinRiverDungeon') {
+            return;
+        }
+        if (!LevelHandler.GOBLIN_RIVER_BOSS_INTRO_TEXTS.has(String(text ?? '').trim())) {
+            return;
+        }
+
+        const entity =
+            client.entities.get(entityId) ??
+            LevelHandler.getCurrentLevelMap(client)?.get(entityId);
+        const entityName = String(entity?.name ?? '');
+        if (entityName !== 'GoblinBoss2' && entityName !== 'GoblinBoss2Hard') {
+            return;
+        }
+
+        const lockUntil = Date.now() + LevelHandler.GOBLIN_RIVER_BOSS_INTRO_DEFAULT_MS;
+        client.goblinRiverBossIntroLockUntil = Math.max(client.goblinRiverBossIntroLockUntil, lockUntil);
+        LevelHandler.setGoblinRiverHostilesUntargetable(client, true);
+
+        if (client.goblinRiverBossIntroUnlockTimer) {
+            clearTimeout(client.goblinRiverBossIntroUnlockTimer);
+        }
+
+        const levelScope = getClientLevelScope(client);
+        const levelName = client.currentLevel;
+        client.goblinRiverBossIntroUnlockTimer = setTimeout(() => {
+            client.goblinRiverBossIntroUnlockTimer = null;
+            if (client.currentLevel !== levelName || getClientLevelScope(client) !== levelScope) {
+                client.goblinRiverBossIntroLockUntil = 0;
+                return;
+            }
+            LevelHandler.clearGoblinRiverBossIntroLock(client);
+        }, LevelHandler.GOBLIN_RIVER_BOSS_INTRO_DEFAULT_MS);
     }
 
     private static markRoomEventStarted(client: Client, roomId: number): void {
@@ -1857,7 +2073,11 @@ export class LevelHandler {
             client.userId = usedEntry.userId;
             client.currentLevel = usedEntry.targetLevel;
             client.levelInstanceId = normalizeLevelInstanceId(usedEntry.levelInstanceId);
-            client.entryLevel = usedEntry.previousLevel;
+            client.entryLevel = LevelConfig.resolveDungeonEntryLevel(
+                usedEntry.targetLevel,
+                usedEntry.previousLevel,
+                usedEntry.character
+            );
             client.syncAnchorStartedAt = LevelHandler.normalizeSyncAnchorStartedAt(usedEntry.syncAnchorStartedAt) ?? 0;
             client.syncAnchorToken = Number(usedEntry.syncAnchorToken ?? 0) > 0 ? Math.round(Number(usedEntry.syncAnchorToken)) : 0;
             client.syncAnchorCharacterName = String(usedEntry.syncAnchorCharacterName ?? '').trim();
@@ -1907,7 +2127,11 @@ export class LevelHandler {
             client.userId = pendingEntry.userId;
             client.currentLevel = pendingEntry.targetLevel;
             client.levelInstanceId = normalizeLevelInstanceId(pendingEntry.levelInstanceId);
-            client.entryLevel = pendingEntry.previousLevel;
+            client.entryLevel = LevelConfig.resolveDungeonEntryLevel(
+                pendingEntry.targetLevel,
+                pendingEntry.previousLevel,
+                pendingEntry.character
+            );
             client.syncAnchorStartedAt = LevelHandler.normalizeSyncAnchorStartedAt(pendingEntry.syncAnchorStartedAt) ?? 0;
             client.syncAnchorToken = Number(pendingEntry.syncAnchorToken ?? 0) > 0 ? Math.round(Number(pendingEntry.syncAnchorToken)) : 0;
             client.syncAnchorCharacterName = String(pendingEntry.syncAnchorCharacterName ?? '').trim();
@@ -1983,6 +2207,15 @@ export class LevelHandler {
                 LevelHandler.sendRoomEventStart(client, roomId, true);
             }
         }
+
+        if (client.currentLevel === 'TutorialDungeon') {
+            LevelHandler.sendRoomThought(
+                client.currentLevel,
+                LevelHandler.TUTORIAL_DUNGEON_INTRO_PARROT_ID,
+                LevelHandler.TUTORIAL_DUNGEON_INTRO_LINE,
+                client.levelInstanceId
+            );
+        }
     }
 
     static restoreTransferredRoomProgress(
@@ -2040,8 +2273,8 @@ export class LevelHandler {
             targetLevel = "CraftTown";
         }
 
-        if (!targetLevel && LevelConfig.isDungeonLevel(currentLevel) && client.entryLevel) {
-            targetLevel = LevelConfig.normalizeLevelName(client.entryLevel);
+        if (!targetLevel && LevelConfig.isDungeonLevel(currentLevel)) {
+            targetLevel = LevelConfig.resolveDungeonEntryLevel(currentLevel, client.entryLevel, client.character);
         }
 
         if (!targetLevel) {
@@ -2062,12 +2295,35 @@ export class LevelHandler {
         }
     }
 
-    static handleQuestProgressUpdate(client: Client, data: Buffer): void {
+    static async handleQuestProgressUpdate(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
-        const progress = br.readMethod4();
+        const requestedProgress = br.readMethod4();
+        const previousProgress = Number(client.character?.questTrackerState ?? 0);
+        let progress = requestedProgress;
+        const currentLevel = LevelConfig.normalizeLevelName(
+            client.currentLevel || String(client.character?.CurrentLevel?.name ?? '')
+        );
+
+        if (currentLevel === 'CraftTown' && previousProgress >= 100 && requestedProgress < 100) {
+            progress = previousProgress;
+        }
 
         if (client.character) {
             client.character.questTrackerState = progress;
+        }
+
+        DebugLogger.logProgress('QuestProgress:update', client, client.character, {
+            previousProgress,
+            requestedProgress,
+            progress
+        });
+
+        if (client.character && client.userId && progress !== previousProgress) {
+            await LevelHandler.saveCurrentCharacterSnapshot(client);
+            DebugLogger.logProgress('QuestProgress:saved', client, client.character, {
+                previousProgress,
+                progress
+            });
         }
 
         LevelHandler.relayToLevel(client, 0xB7, data);
@@ -2250,8 +2506,16 @@ export class LevelHandler {
 
         const syncState = LevelHandler.buildTransferSyncState(client, targetLevel, teleportOverride ?? null);
 
+        DebugLogger.logProgress('LevelTransfer:beforeSave', client, client.character, {
+            packetToken,
+            targetLevel
+        });
         await LevelHandler.saveCurrentCharacterSnapshot(client);
         await LevelHandler.refreshCurrentCharacterFromSave(client);
+        DebugLogger.logProgress('LevelTransfer:afterReload', client, client.character, {
+            packetToken,
+            targetLevel
+        });
 
         const activeCharacter = client.character;
         if (!activeCharacter) {
@@ -2259,8 +2523,7 @@ export class LevelHandler {
             return;
         }
 
-        const currentLevelRecord = activeCharacter.CurrentLevel;
-        const oldLevel = LevelConfig.normalizeLevelName(currentLevelRecord?.name || client.currentLevel || "NewbieRoad") || "NewbieRoad";
+        const oldLevel = LevelHandler.resolveTransferSourceLevel(client, activeCharacter);
         const ent = client.entities.get(client.clientEntID);
         let oldX = 0, oldY = 0;
         let hasOldCoord = false;
@@ -2304,9 +2567,11 @@ export class LevelHandler {
         }
 
         // 7. Store Pending Transfer State
-        const effectivePreviousLevel = LevelConfig.isDungeonLevel(targetLevel) && syncState?.syncEntryLevel
-            ? syncState.syncEntryLevel
-            : oldLevel;
+        const effectivePreviousLevel = targetLevel === 'CraftTown'
+            ? LevelHandler.resolveCraftTownReturnLevel(client, activeCharacter, oldLevel, syncState)
+            : LevelConfig.isDungeonLevel(targetLevel)
+                ? LevelConfig.normalizeLevelName(syncState?.syncEntryLevel) || oldLevel
+                : oldLevel;
         LevelHandler.storePendingTransferToken(
             newToken,
             activeCharacter,
@@ -2346,6 +2611,19 @@ export class LevelHandler {
             newHasCoord, newX, newY,
             hostChar
         );
+
+        DebugLogger.logProgress('EnterWorld:transferPacket', client, activeCharacter, {
+            previousLevel: oldLevel,
+            previousSwf: oldLevelSpec.swf,
+            targetLevel,
+            targetSwf: levelSpec.swf,
+            transferToken: newToken,
+            packetToken,
+            effectivePreviousLevel,
+            newHasCoord,
+            newX,
+            newY
+        });
 
         client.sendBitBuffer(0x21, pkt);
     }

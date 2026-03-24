@@ -23,8 +23,8 @@ export class NpcHandler {
     private static readonly MISSION_CLAIMED = 3;
     private static readonly FIRST_MISSION_ID = MissionID.DefendTheShip;
     private static readonly FIRST_MISSION_NPC_KEY = 'captainfink';
-    private static readonly RETURN_DIALOGUE_BASE_MS = 2000;
-    private static readonly RETURN_DIALOGUE_CHAR_MS = 50;
+    private static readonly RETURN_DIALOGUE_BASE_MS = 10;
+    private static readonly RETURN_DIALOGUE_CHAR_MS = 1;
     private static readonly DEFAULT_TURN_IN_STARS = 3;
 
     static async handleTalkToNpc(client: Client, data: Buffer): Promise<void> {

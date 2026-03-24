@@ -8,6 +8,7 @@
         "build": "cd src/server && npm run build",
         "start:multiplayer": "cd src/server && npm run start:multiplayer",
         "start:discord-bridge": "cd src/server && npm run start:discord-bridge",
+        "dev:discord": "npm run dev:with-discord",
         "launch:multiplayer-with-discord": "node src/server/tools/launchMultiplayerClient.js",
         "install:discord-bridge-autostart": "node src/server/tools/installDiscordBridgeAutostart.js",
         "remove:discord-bridge-autostart": "node src/server/tools/removeDiscordBridgeAutostart.js",

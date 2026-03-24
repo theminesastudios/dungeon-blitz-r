@@ -1,8 +1,8 @@
 {
   "appId": "1483737686874394655",
   "port": 47631,
-  "presenceUrl": "http://100.100.146.54/api/presence/discord-target",
-  "joinUrl": "http://100.100.146.54/api/presence/discord-join",
+  "presenceUrl": "http://127.0.0.1:8000/api/presence/self",
+  "joinUrl": "http://127.0.0.1:8000/api/presence/discord-join",
   "characterName": "",
   "pollMs": 4000,
   "largeImageText": "Dungeon Blitz R",

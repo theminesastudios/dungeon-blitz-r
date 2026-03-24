@@ -4,6 +4,7 @@ import { PacketRouter } from '../network/packetRouter';
 import { UserAccount, Character } from '../database/Database';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { DebugLogger } from './Debug';
+import { LevelConfig } from './LevelConfig';
 
 const db = new JsonAdapter();
 const SOCKET_POLICY_REQUEST = '<policy-file-request/>';
@@ -145,6 +146,8 @@ export class Client {
     public clientSpawnConfirmed: boolean = false;
     public clientSpawnFallbackTimer: NodeJS.Timeout | null = null;
     public keepTutorialState: KeepTutorialState | null = null;
+    public goblinRiverBossIntroLockUntil: number = 0;
+    public goblinRiverBossIntroUnlockTimer: NodeJS.Timeout | null = null;
 
     constructor(socket: net.Socket, router: PacketRouter) {
         this.socket = socket;
@@ -291,6 +294,11 @@ export class Client {
         clearClientSpawnFallbackTimer(this);
         clearKeepTutorialTimers(this.keepTutorialState);
         this.keepTutorialState = null;
+        if (this.goblinRiverBossIntroUnlockTimer) {
+            clearTimeout(this.goblinRiverBossIntroUnlockTimer);
+            this.goblinRiverBossIntroUnlockTimer = null;
+        }
+        this.goblinRiverBossIntroLockUntil = 0;
     }
 
     private clearIdentityState(): void {
@@ -332,7 +340,13 @@ export class Client {
         }
 
         const currentLevel = String(this.currentLevel || this.character.CurrentLevel?.name || 'NewbieRoad');
-        const previousLevel = String(this.entryLevel || this.character.PreviousLevel?.name || currentLevel);
+        const previousLevel =
+            LevelConfig.resolveDungeonEntryLevel(
+                currentLevel,
+                this.entryLevel || this.character.PreviousLevel?.name || currentLevel,
+                this.character
+            ) ||
+            String(this.entryLevel || this.character.PreviousLevel?.name || currentLevel);
         const entity = this.clientEntID > 0 ? this.entities.get(this.clientEntID) : null;
         const newX = Number(entity?.x ?? this.character.CurrentLevel?.x ?? 0);
         const newY = Number(entity?.y ?? this.character.CurrentLevel?.y ?? 0);

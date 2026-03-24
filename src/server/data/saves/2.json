@@ -1,0 +1,251 @@
+{
+  "user_id": 2,
+  "characters": [
+    {
+      "name": "Spepyluv",
+      "class": "Paladin",
+      "level": 1,
+      "xp": 61,
+      "gold": 186,
+      "craftXP": 0,
+      "DragonOre": 0,
+      "mammothIdols": 0,
+      "DragonKeys": 0,
+      "SilverSigils": 0,
+      "alertState": 0,
+      "gender": "",
+      "headSet": "Short",
+      "hairSet": "Do03",
+      "mouthSet": "M10",
+      "faceSet": "F11",
+      "hairColor": 36108,
+      "skinColor": 10902329,
+      "shirtColor": 11467197,
+      "pantColor": 4528128,
+      "equippedGears": [
+        {
+          "gearID": 0,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 0,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 0,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 0,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 1,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 13,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        }
+      ],
+      "CurrentLevel": {
+        "name": "NewbieRoad",
+        "x": 1421,
+        "y": 826
+      },
+      "PreviousLevel": {
+        "name": "NewbieRoad",
+        "x": 1421,
+        "y": 826
+      },
+      "inventoryGears": [
+        {
+          "gearID": 1,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 13,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        }
+      ],
+      "gearSets": [],
+      "mounts": [
+        1
+      ],
+      "pets": [],
+      "charms": [],
+      "materials": [
+        {
+          "materialID": 92,
+          "count": 2
+        },
+        {
+          "materialID": 91,
+          "count": 1
+        }
+      ],
+      "lockboxes": [
+        {
+          "lockboxID": 1,
+          "count": 100
+        }
+      ],
+      "OwnedDyes": [],
+      "consumables": [],
+      "missions": {
+        "1": {
+          "state": 3,
+          "currCount": 1,
+          "Tier": 10,
+          "highscore": 99999999,
+          "Time": 1774367372,
+          "claimed": 1,
+          "complete": 1
+        },
+        "2": {
+          "state": 2
+        }
+      },
+      "questTrackerState": 1,
+      "friends": [],
+      "learnedAbilities": [
+        {
+          "abilityID": 20,
+          "rank": 1
+        },
+        {
+          "abilityID": 24,
+          "rank": 1
+        }
+      ],
+      "activeAbilities": [
+        20,
+        24
+      ],
+      "craftTalentPoints": [],
+      "talentPoints": {},
+      "magicForge": {
+        "stats_by_building": {
+          "1": 0,
+          "2": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "12": 0,
+          "13": 0
+        },
+        "primary": 0,
+        "secondary": 0,
+        "ReadyTime": 0,
+        "secondary_tier": 0,
+        "usedlist": 0,
+        "forge_roll_a": 0,
+        "forge_roll_b": 0,
+        "is_extended_forge": false
+      },
+      "SkillResearch": {
+        "abilityID": 0,
+        "ReadyTime": 0
+      },
+      "buildingUpgrade": {
+        "buildingID": 0,
+        "rank": 0,
+        "ReadyTime": 0
+      },
+      "talentResearch": {
+        "classIndex": null,
+        "ReadyTime": 0
+      },
+      "EggHachery": {},
+      "OwnedEggsID": [],
+      "EggNotifySent": false,
+      "EggResetTime": 0,
+      "activeEggCount": 0,
+      "restingPets": [],
+      "trainingPet": [],
+      "MasterClass": 0,
+      "TalentTree": {},
+      "equippedMount": 1,
+      "activePet": {
+        "typeID": 0,
+        "special_id": 0
+      },
+      "activeConsumableID": 0,
+      "queuedConsumableID": 0,
+      "guild": {},
+      "ignored": []
+    }
+  ]
+}
