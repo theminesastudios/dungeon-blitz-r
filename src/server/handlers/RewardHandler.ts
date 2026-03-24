@@ -59,12 +59,14 @@ export class RewardHandler {
         WyrmCaveDungeonHard: 'Wyrm',
         WolfDenDungeon: 'Wolf',
         WolfDenDungeonHard: 'Wolf',
-        SkeletonCryptDungeon: 'Skeleton',
         SkeletonCryptDungeonHard: 'Skeleton',
         LizardTempleDungeon: 'Lizard',
         LizardTempleDungeonHard: 'Lizard',
         MummyTombDungeon: 'Mummy',
-        MummyTombDungeonHard: 'Mummy'
+        MummyTombDungeonHard: 'Mummy',
+        TutorialDungeon: 'Goblin',
+        TutorialBoat: 'Goblin',
+        CraftTownTutorial: 'Goblin'
     };
 
     private static buildLootdrop(
@@ -74,9 +76,12 @@ export class RewardHandler {
         reward: LootReward
     ): Buffer {
         const bb = new BitBuffer(false);
+        bb.writeMethod15(true); // Flag start of list item
+
         bb.writeMethod4(lootId);
-        bb.writeMethod45(Math.round(x));
-        bb.writeMethod45(Math.round(y));
+        // Coordinates for loot drops must use unsigned Method 4 (varint) to avoid bit-shifting misalignment
+        bb.writeMethod4(Math.round(x));
+        bb.writeMethod4(Math.round(y));
 
         if (reward.gear && reward.gear > 0) {
             bb.writeMethod15(true);
@@ -107,8 +112,8 @@ export class RewardHandler {
         }
         bb.writeMethod15(false);
 
+        // Terminate the list properly
         bb.writeMethod15(false);
-        bb.writeMethod4(1);
         return bb.toBuffer();
     }
 
@@ -233,10 +238,21 @@ export class RewardHandler {
         let gearTier = 0;
 
         const entName = String(sourceEntity?.name ?? '');
+
+        // Disable all rewards for Target Dummies and Chains as per user request
+        if (entName.toLowerCase().includes('dummy') || entName.toLowerCase().includes('hedefkuklas') || entName.startsWith('Chains')) {
+            return { exp: 0, gold: 0, hpGain: 0, materialId: 0, gearId: 0, gearTier: 0 };
+        }
+
         const entType = entName ? GameData.getEntType(entName) : null;
         const entLevel = Math.max(1, Number(entType?.Level ?? 1));
         const playerClass = String(client.character?.class ?? '');
-        const realm = String(entType?.Realm ?? RewardHandler.DUNGEON_REALM_MAP[client.currentLevel] ?? '');
+        
+        let realm = String(entType?.Realm ?? RewardHandler.DUNGEON_REALM_MAP[client.currentLevel] ?? '');
+        if (entType?.Realm && entType.Realm !== 'DeterminesDrop' && entType.Realm !== 'Object') {
+            realm = String(entType.Realm);
+        }
+
         const materialChance = realm ? RewardHandler.resolveMaterialDropChance(entType, reward) : 0;
 
         if (realm && materialChance > 0 && Math.random() < materialChance) {
@@ -276,6 +292,21 @@ export class RewardHandler {
         if (hpGain <= 0 && Math.random() < 0.20) {
             const maxHp = Math.max(100, Number(client.authoritativeMaxHp ?? 100));
             hpGain = Math.max(1, Math.floor(maxHp * 0.15));
+        }
+
+        const tutorialLevels = ['CraftTownTutorial', 'TutorialDungeon', 'TutorialBoat', 'GoblinKidnappers'];
+        const isTutorial = tutorialLevels.includes(client.currentLevel || '') || (client.currentLevel || '').includes('Kidnappers');
+
+        if (gold <= 0 && isTutorial) {
+            gold = Math.max(2, Math.floor(2 + 5 * Math.random()));
+        }
+
+        if (isTutorial) {
+            const isLarge = entName.includes('Boss') || entName.includes('Brute') || entName.includes('Kraken');
+            if (!isLarge) {
+                gearId = 0;
+                gearTier = 0;
+            }
         }
 
         return { exp, gold, hpGain, materialId, gearId, gearTier };

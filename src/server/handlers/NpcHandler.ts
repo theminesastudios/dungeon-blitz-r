@@ -396,7 +396,7 @@ export class NpcHandler {
 
     private static scheduleFirstMissionFollowup(client: Client, npcKey: string): void {
         const missionDef = MissionLoader.getMissionDef(NpcHandler.FIRST_MISSION_ID);
-        const delayMs = NpcHandler.estimateDialogueDelay(missionDef?.ReturnText ?? '');
+        const delayMs = 0; // The user requested to remove the intentional dialogue reading delay
 
         setTimeout(() => {
             void NpcHandler.finalizeFirstMissionTurnIn(client, npcKey);
