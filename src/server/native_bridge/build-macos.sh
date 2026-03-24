@@ -17,7 +17,7 @@ clang++ \
   "$ROOT_DIR/DiscordBridge.cpp" \
   -L"$SDK_DIR/lib/release" \
   -ldiscord_partner_sdk \
-  -Wl,-rpath,"$SDK_DIR/lib/release" \
+  -Wl,-rpath,@executable_path \
   -o "$OUTPUT"
 
 if [[ -f "$DYLIB" ]]; then

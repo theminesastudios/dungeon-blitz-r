@@ -12,6 +12,11 @@ add_executable(discord_social_bridge
     DiscordBridge.cpp
 )
 
+set_target_properties(discord_social_bridge PROPERTIES
+    BUILD_RPATH "@executable_path"
+    INSTALL_RPATH "@executable_path"
+)
+
 target_include_directories(discord_social_bridge PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}"
     "${DISCORD_SDK_DIR}"

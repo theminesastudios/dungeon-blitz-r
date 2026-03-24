@@ -191,6 +191,10 @@ class DiscordSocialBridge {
             return;
         }
 
+        console.log(
+            `[DiscordSocialBridge] Starting native bridge: ${this.executablePath} (cwd=${this.workingDirectory})`
+        );
+
         this.child = spawn(this.executablePath, [], {
             cwd: this.workingDirectory,
             stdio: ['pipe', 'pipe', 'pipe']
@@ -225,11 +229,21 @@ class DiscordSocialBridge {
     }
 
     public relay(payload: DiscordRelayPayload): void {
-        if (!this.enabled || !this.ready || !this.child) {
+        if (!this.enabled) {
+            return;
+        }
+
+        if (!this.ready || !this.child) {
+            if (this.logPayloads) {
+                console.log('[DiscordSocialBridge] Dropping outbound chat because native bridge is not ready yet.');
+            }
             return;
         }
 
         if (payload.scope !== 'public') {
+            if (this.logPayloads) {
+                console.log(`[DiscordSocialBridge] Ignoring non-public relay scope: ${payload.scope}`);
+            }
             return;
         }
 
@@ -258,9 +272,15 @@ class DiscordSocialBridge {
 
     private sendControlMessage(payload: Record<string, unknown>): void {
         if (!this.child?.stdin.writable) {
+            if (this.logPayloads) {
+                console.log('[DiscordSocialBridge] Cannot send control message because native stdin is not writable.');
+            }
             return;
         }
 
+        if (this.logPayloads) {
+            console.log('[DiscordSocialBridge] Control -> native:', payload);
+        }
         this.child.stdin.write(`${JSON.stringify(payload)}\n`);
     }
 
@@ -311,14 +331,23 @@ class DiscordSocialBridge {
 
     private async handleLobbyReady(payload: NativeBridgeInboundLobbyReady): Promise<void> {
         if (!this.enableChannelLinking) {
+            if (this.logPayloads) {
+                console.log('[DiscordSocialBridge] Lobby ready received, but channel linking is disabled.');
+            }
             return;
         }
 
         const granted = await this.serverApi.grantCanLinkLobby(payload.lobbyId, payload.userId);
         if (!granted) {
+            console.warn(
+                `[DiscordSocialBridge] Failed to grant CAN_LINK_LOBBY for lobby=${payload.lobbyId} user=${payload.userId}.`
+            );
             return;
         }
 
+        console.log(
+            `[DiscordSocialBridge] Linking lobby ${payload.lobbyId} to channel ${this.channelId} for user ${payload.userId}.`
+        );
         this.sendControlMessage({
             type: 'link_channel',
             lobbyId: payload.lobbyId,

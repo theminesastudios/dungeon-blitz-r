@@ -187,18 +187,49 @@ std::optional<DeviceAuthorizationInfo> DiscordBridge::beginDeviceAuthorization()
         return std::nullopt;
     }
 
+    const auto applicationId = std::strtoull(config_.appId.c_str(), nullptr, 10);
+    const auto completeTokenExchange =
+        [this](
+            discordpp::ClientResult result,
+            std::string accessToken,
+            std::string refreshToken,
+            discordpp::AuthorizationTokenType tokenType,
+            int32_t,
+            std::string
+        ) {
+            authInFlight_.store(false);
+            if (!result.Successful()) {
+                std::cerr << "[DiscordBridge] Device authorization failed: " << result.ToString() << std::endl;
+                return;
+            }
+
+            accessToken_ = std::move(accessToken);
+            refreshToken_ = std::move(refreshToken);
+            persistTokens();
+            connectWithToken(tokenType, accessToken_);
+        };
+
+    if (config_.useDeviceFlow) {
+        discordpp::DeviceAuthorizationArgs args {};
+        args.SetClientId(applicationId);
+        args.SetScopes(discordpp::Client::GetDefaultCommunicationScopes());
+
+        client_->GetTokenFromDevice(args, completeTokenExchange);
+        return std::nullopt;
+    }
+
 #if defined(__APPLE__)
     auto verifier = client_->CreateAuthorizationCodeVerifier();
     pkceVerifier_ = verifier.Verifier();
 
     discordpp::AuthorizationArgs args {};
-    args.SetClientId(std::strtoull(config_.appId.c_str(), nullptr, 10));
+    args.SetClientId(applicationId);
     args.SetScopes(discordpp::Client::GetDefaultCommunicationScopes());
     args.SetCodeChallenge(verifier.Challenge());
 
     client_->Authorize(
         args,
-        [this](discordpp::ClientResult result, std::string code, std::string redirectUri) {
+        [this, applicationId](discordpp::ClientResult result, std::string code, std::string redirectUri) {
             if (!result.Successful()) {
                 authInFlight_.store(false);
                 std::cerr << "[DiscordBridge] Authorize failed: " << result.ToString() << std::endl;
@@ -206,7 +237,7 @@ std::optional<DeviceAuthorizationInfo> DiscordBridge::beginDeviceAuthorization()
             }
 
             client_->GetToken(
-                std::strtoull(config_.appId.c_str(), nullptr, 10),
+                applicationId,
                 code,
                 pkceVerifier_,
                 redirectUri,
@@ -235,33 +266,8 @@ std::optional<DeviceAuthorizationInfo> DiscordBridge::beginDeviceAuthorization()
 
     return std::nullopt;
 #else
-    discordpp::DeviceAuthorizationArgs args {};
-    args.SetClientId(std::strtoull(config_.appId.c_str(), nullptr, 10));
-    args.SetScopes(discordpp::Client::GetDefaultCommunicationScopes());
-
-    client_->GetTokenFromDevice(
-        args,
-        [this](
-            discordpp::ClientResult result,
-            std::string accessToken,
-            std::string refreshToken,
-            discordpp::AuthorizationTokenType tokenType,
-            int32_t,
-            std::string
-        ) {
-            authInFlight_.store(false);
-            if (!result.Successful()) {
-                std::cerr << "[DiscordBridge] Device authorization failed: " << result.ToString() << std::endl;
-                return;
-            }
-
-            accessToken_ = std::move(accessToken);
-            refreshToken_ = std::move(refreshToken);
-            persistTokens();
-            connectWithToken(tokenType, accessToken_);
-        }
-    );
-
+    authInFlight_.store(false);
+    std::cerr << "[DiscordBridge] PKCE/browser authorization is not implemented on this platform." << std::endl;
     return std::nullopt;
 #endif
 }
