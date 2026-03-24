@@ -16,6 +16,7 @@ import {
     PendingTeleport
 } from '../core/SocialState';
 import { areClientsInSameLevelScope, getClientLevelScope } from '../core/LevelScope';
+import { discordSocialBridge } from '../integrations/DiscordSocialBridge';
 
 const db = new JsonAdapter();
 
@@ -866,7 +867,16 @@ export class SocialHandler {
     static handlePublicChat(client: Client, data: Buffer): void {
         const br = new BitReader(data);
         br.readMethod9();
-        br.readMethod13();
+        const message = br.readMethod13().trim();
+
+        if (client.character && message) {
+            discordSocialBridge.relay({
+                scope: 'public',
+                senderName: client.character.name,
+                message,
+                levelName: client.currentLevel || undefined
+            });
+        }
 
         SocialHandler.relayToLevel(client, 0x2c, data, false, true);
     }
@@ -1450,6 +1460,14 @@ export class SocialHandler {
             SocialHandler.sendChatStatus(client, 'You are not in a party.');
             return;
         }
+
+        discordSocialBridge.relay({
+            scope: 'party',
+            senderName: client.character.name,
+            message,
+            levelName: client.currentLevel || undefined,
+            partyId: party.partyId
+        });
 
         const payload = SocialHandler.buildGroupChatPayload(client.character.name, message);
         for (const member of party.group.members) {

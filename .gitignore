@@ -1,7 +1,10 @@
 node_modules
 server_tapes
 src/server/dist
-src/server/Accounts.json
-src/server/saves
+src/server/data/Accounts.json
+src/server/data/saves/*.json
 temp
 .DS_Store
+.env
+src/server/.env
+src/server/.discord-social-token.json

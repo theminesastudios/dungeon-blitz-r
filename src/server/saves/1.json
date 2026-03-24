@@ -1,0 +1,309 @@
+{
+  "user_id": 1,
+  "characters": [
+    {
+      "name": "Graalhob",
+      "class": "Mage",
+      "level": 2,
+      "xp": 114,
+      "gold": 300,
+      "craftXP": 0,
+      "DragonOre": 0,
+      "mammothIdols": 0,
+      "DragonKeys": 0,
+      "SilverSigils": 0,
+      "alertState": 0,
+      "gender": "Male",
+      "headSet": "Head01",
+      "hairSet": "MDo10",
+      "mouthSet": "MM06",
+      "faceSet": "MF01",
+      "hairColor": 1456834,
+      "skinColor": 14982710,
+      "shirtColor": 11411789,
+      "pantColor": 4523043,
+      "equippedGears": [
+        {
+          "gearID": 0,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 0,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 1170,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 0,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 53,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 65,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        }
+      ],
+      "inventory": [],
+      "CurrentLevel": {
+        "name": "NewbieRoad",
+        "x": 1421,
+        "y": 826
+      },
+      "PreviousLevel": {
+        "name": "NewbieRoad",
+        "x": 1421,
+        "y": 826
+      },
+      "inventoryGears": [
+        {
+          "gearID": 53,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 65,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 65,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        },
+        {
+          "gearID": 1170,
+          "tier": 0,
+          "runes": [
+            0,
+            0,
+            0
+          ],
+          "colors": [
+            0,
+            0
+          ]
+        }
+      ],
+      "gearSets": [],
+      "mounts": [
+        1
+      ],
+      "pets": [],
+      "charms": [],
+      "materials": [
+        {
+          "materialID": 34,
+          "count": 2
+        },
+        {
+          "materialID": 93,
+          "count": 1
+        },
+        {
+          "materialID": 91,
+          "count": 1
+        }
+      ],
+      "lockboxes": [
+        {
+          "lockboxID": 1,
+          "count": 100
+        }
+      ],
+      "craftInventory": [],
+      "bankInventory": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "OwnedDyes": [],
+      "consumables": [],
+      "missions": {
+        "1": {
+          "state": 3,
+          "currCount": 1,
+          "Tier": 10,
+          "highscore": 99999999,
+          "Time": 1774377137,
+          "claimed": 1,
+          "complete": 1
+        },
+        "2": {
+          "state": 2
+        }
+      },
+      "questTrackerState": 100,
+      "friends": [],
+      "learnedAbilities": [
+        {
+          "abilityID": 10,
+          "rank": 1
+        },
+        {
+          "abilityID": 14,
+          "rank": 1
+        }
+      ],
+      "activeAbilities": [
+        10,
+        14
+      ],
+      "craftTalentPoints": [],
+      "talentPoints": {},
+      "magicForge": {
+        "stats_by_building": {
+          "1": 0,
+          "2": 0,
+          "6": 0,
+          "7": 0,
+          "8": 0,
+          "12": 0,
+          "13": 0
+        },
+        "primary": 0,
+        "secondary": 0,
+        "ReadyTime": 0,
+        "secondary_tier": 0,
+        "usedlist": 0,
+        "forge_roll_a": 0,
+        "forge_roll_b": 0,
+        "is_extended_forge": false
+      },
+      "SkillResearch": {
+        "abilityID": 0,
+        "ReadyTime": 0
+      },
+      "buildingUpgrade": {
+        "buildingID": 0,
+        "rank": 0,
+        "ReadyTime": 0
+      },
+      "talentResearch": {
+        "classIndex": null,
+        "ReadyTime": 0
+      },
+      "EggHachery": {},
+      "OwnedEggsID": [],
+      "EggNotifySent": false,
+      "EggResetTime": 0,
+      "activeEggCount": 0,
+      "restingPets": [],
+      "trainingPet": [],
+      "MasterClass": 0,
+      "TalentTree": {},
+      "equippedMount": 1,
+      "activePet": {
+        "typeID": 0,
+        "special_id": 0
+      },
+      "activeConsumableID": 0,
+      "queuedConsumableID": 0,
+      "guild": {},
+      "ignored": []
+    }
+  ]
+}

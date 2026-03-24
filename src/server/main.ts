@@ -28,6 +28,7 @@ import { EquipmentHandler } from './handlers/EquipmentHandler';
 import { AbilityHandler } from './handlers/AbilityHandler';
 import { DebugLogger } from './core/Debug';
 import { GuildHandler } from './handlers/GuildHandler';
+import { discordSocialBridge } from './integrations/DiscordSocialBridge';
 import * as path from 'path';
 
 import { StaticServer } from './core/StaticServer';
@@ -41,6 +42,7 @@ GameData.load(dataDir);
 MissionLoader.load(dataDir);
 NpcLoader.load(dataDir);
 DebugLogger.logStartup();
+discordSocialBridge.initialize();
 
 // Initialize Router
 const router = new PacketRouter();

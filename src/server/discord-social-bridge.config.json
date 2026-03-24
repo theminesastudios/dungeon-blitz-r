@@ -1,0 +1,12 @@
+{
+  "enabled": false,
+  "appId": "1483737686874394655",
+  "channelId": "1486055498691383419",
+  "deviceFlow": true,
+  "enableChannelLinking": true,
+  "executablePath": "",
+  "workingDirectory": "",
+  "tokenCachePath": "",
+  "inboundPrefix": "[Discord]",
+  "logPayloads": false
+}
