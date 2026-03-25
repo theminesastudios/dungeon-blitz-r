@@ -20,6 +20,8 @@ const METHOD_NAME = "WaitingForJump";
 const SCRIPT_NAME = "Script_OpeningScene";
 const POP_AND_NOP_FILL = Buffer.from([0x29, 0x02, 0x02, 0x02]);
 const REQUIRED_TRIGGER = "am_Trigger_2";
+const JUMP_TUTORIAL = "am_JumpTut";
+const SHOW_TUTORIAL = "ShowTutorial";
 
 function resolveSwfPath(args: string[]): string {
   const idx = args.indexOf("--swf-path");
@@ -31,6 +33,17 @@ function resolveSwfPath(args: string[]): string {
 
 function hasFlag(args: string[], flag: string): boolean {
   return args.includes(flag);
+}
+
+function buildShowTutorialCall(tutorialIndex: number, showTutorialIndex: number): Buffer {
+  return Buffer.concat([
+    Buffer.from([0xd1]),
+    Buffer.from([0x2c]),
+    writeU30(tutorialIndex),
+    Buffer.from([0x4f]),
+    writeU30(showTutorialIndex),
+    writeU30(1),
+  ]);
 }
 
 function analyzePatch(swfPath: string): {
@@ -58,6 +71,15 @@ function analyzePatch(swfPath: string): {
   const code = ctx.body.subarray(methodBody.codeStart, methodBody.codeStart + methodBody.codeLen);
   const instrs = disassemble(code, `${CLASS_NAME}.${METHOD_NAME}`);
   const patches: BytePatch[] = [];
+  const showTutorialIndex = abc.multinameNames.indexOf(SHOW_TUTORIAL);
+  if (showTutorialIndex <= 0) {
+    throw new PatchError(`${SHOW_TUTORIAL} multiname not found`);
+  }
+
+  const jumpTutorialIndex = abc.stringValues.indexOf(JUMP_TUTORIAL);
+  if (jumpTutorialIndex <= 0) {
+    throw new PatchError(`${JUMP_TUTORIAL} string not found`);
+  }
 
   const matches: Array<{ start: number; end: number }> = [];
   for (let i = 1; i < instrs.length; i += 1) {
@@ -90,6 +112,64 @@ function analyzePatch(swfPath: string): {
       end,
       data: POP_AND_NOP_FILL,
       detail: `Force ${CLASS_NAME}.${METHOD_NAME} to show the jump tutorial without waiting for ${SCRIPT_NAME} to finish`,
+    });
+  }
+
+  const showTutorialPayload = buildShowTutorialCall(jumpTutorialIndex, showTutorialIndex);
+  let insertionPos = -1;
+  for (let i = 0; i + 3 < instrs.length; i += 1) {
+    const first = instrs[i];
+    const second = instrs[i + 1];
+    const third = instrs[i + 2];
+    const fourth = instrs[i + 3];
+
+    if (first.opcode !== 0x2c || u30OperandName(first, abc.stringValues) !== JUMP_TUTORIAL) {
+      continue;
+    }
+    if (
+      second.opcode !== 0x2c ||
+      (u30OperandName(second, abc.multinameNames) !== "Show" &&
+        u30OperandName(second, abc.stringValues) !== "Show")
+    ) {
+      continue;
+    }
+    if (third.opcode !== 0x26) {
+      continue;
+    }
+    if (fourth.opcode !== 0x4f || u30OperandName(fourth, abc.multinameNames) !== "Animate") {
+      continue;
+    }
+
+    insertionPos = methodBody.codeStart + fourth.offset + fourth.size;
+    break;
+  }
+
+  if (insertionPos < 0) {
+    throw new PatchError(`Could not find initial ${JUMP_TUTORIAL} animation call in ${CLASS_NAME}.${METHOD_NAME}`);
+  }
+
+  const legacyShowTutorialPayload = Buffer.concat([
+    Buffer.from([0x2c]),
+    writeU30(jumpTutorialIndex),
+    Buffer.from([0x4f]),
+    writeU30(showTutorialIndex),
+    writeU30(1),
+  ]);
+  const existingShowTutorial = ctx.body.subarray(insertionPos, insertionPos + showTutorialPayload.length);
+  const existingLegacyShowTutorial = ctx.body.subarray(
+    insertionPos,
+    insertionPos + legacyShowTutorialPayload.length
+  );
+  const hasCorrectShowTutorial = existingShowTutorial.equals(showTutorialPayload);
+  const hasLegacyShowTutorial = existingLegacyShowTutorial.equals(legacyShowTutorialPayload);
+  const needsShowTutorialPatch = !hasCorrectShowTutorial;
+  if (needsShowTutorialPatch) {
+    patches.push({
+      key: "levelsnr_room4_insert_jump_showtutorial",
+      start: insertionPos,
+      end: insertionPos + (hasLegacyShowTutorial ? legacyShowTutorialPayload.length : 0),
+      data: showTutorialPayload,
+      detail: `Show ${JUMP_TUTORIAL} tutorial box during ${CLASS_NAME}.${METHOD_NAME}`,
     });
   }
 
@@ -136,6 +216,26 @@ function analyzePatch(swfPath: string): {
       end: operandEnd,
       data: replacement,
       detail: `Restore ${CLASS_NAME}.${METHOD_NAME} completion trigger to ${REQUIRED_TRIGGER}`,
+    });
+  }
+
+  if (needsShowTutorialPatch) {
+    const replacedLength = hasLegacyShowTutorial ? legacyShowTutorialPayload.length : 0;
+    const newCodeLen = methodBody.codeLen + showTutorialPayload.length - replacedLength;
+    const currentCodeLenBytes = writeU30(methodBody.codeLen);
+    const replacementCodeLenBytes = writeU30(newCodeLen);
+    if (currentCodeLenBytes.length !== replacementCodeLenBytes.length) {
+      throw new PatchError(
+        `Unsupported ${CLASS_NAME}.${METHOD_NAME} code length varint width change ${currentCodeLenBytes.length} -> ${replacementCodeLenBytes.length}`
+      );
+    }
+
+    patches.push({
+      key: "levelsnr_room4_force_show_jump_tutorial_codelen",
+      start: methodBody.codeLenPos,
+      end: methodBody.codeStart,
+      data: replacementCodeLenBytes,
+      detail: `Expand ${CLASS_NAME}.${METHOD_NAME} code length to ${newCodeLen}`,
     });
   }
 
