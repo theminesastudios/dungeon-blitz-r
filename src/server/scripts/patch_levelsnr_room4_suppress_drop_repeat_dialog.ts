@@ -18,6 +18,9 @@ const CLASS_NAME = "a_Room_Tutorial_04";
 const METHOD_NAME = "WaitingForDrop";
 const DROP_TRIGGER = "a_Room_NRM04R10";
 const SCRIPT_FALL = "Script_Fall";
+const GETLOCAL1 = 0xd1;
+const PUSHNULL = 0x20;
+const POP = 0x29;
 const NOP = 0x02;
 
 function resolveSwfPath(args: string[]): string {
@@ -55,6 +58,7 @@ function analyzePatch(swfPath: string): {
 
   const code = ctx.body.subarray(methodBody.codeStart, methodBody.codeStart + methodBody.codeLen);
   const instrs = disassemble(code, `${CLASS_NAME}.${METHOD_NAME}`);
+  const replacement = Buffer.from([GETLOCAL1, PUSHNULL, POP, POP, NOP, NOP, NOP, NOP]);
 
   for (let i = 0; i + 7 < instrs.length; i += 1) {
     const trigger = instrs[i];
@@ -74,21 +78,12 @@ function analyzePatch(swfPath: string): {
     if (branch.opcode !== 0x12 || branch.operands.length !== 1 || branch.operands[0][0] !== "s24") {
       continue;
     }
-    if (receiver.opcode === NOP) {
-      let j = i + 3;
-      while (j < instrs.length && instrs[j].opcode === NOP) {
-        j += 1;
-      }
-      if (
-        j < instrs.length &&
-        instrs[j].opcode === 0xd1 &&
-        j + 1 < instrs.length &&
-        instrs[j + 1].opcode === 0x2c &&
-        u30OperandName(instrs[j + 1], abc.multinameNames) === DROP_TRIGGER
-      ) {
+    if (receiver.opcode === GETLOCAL1 && local0.opcode === PUSHNULL && scriptLoad.opcode === POP && playScript.opcode === POP) {
+      const start = methodBody.codeStart + receiver.offset;
+      const end = start + replacement.length;
+      if (ctx.body.subarray(start, end).equals(replacement)) {
         return { ctx, patch: null };
       }
-      continue;
     }
     if (receiver.opcode !== 0xd1) {
       continue;
@@ -106,9 +101,11 @@ function analyzePatch(swfPath: string): {
     const start = methodBody.codeStart + receiver.offset;
     const end = methodBody.codeStart + playScript.offset + playScript.size;
     const current = ctx.body.subarray(start, end);
-    const replacement = Buffer.alloc(current.length, NOP);
     if (current.equals(replacement)) {
       return { ctx, patch: null };
+    }
+    if (current.length !== replacement.length) {
+      throw new PatchError(`Unexpected ${SCRIPT_FALL} block size ${current.length}`);
     }
 
     return {

@@ -17,8 +17,8 @@ import {
 
 const CLASS_NAME = "a_Room_Tutorial_04";
 const METHOD_NAME = "WaitingForDrop";
-const TARGET_TRIGGER = "am_Trigger_3";
-const ORIGINAL_TRIGGER = "am_Trigger_Fall3";
+const TARGET_TRIGGER = "am_Trigger_Fall3";
+const ORIGINAL_TRIGGER = "am_Trigger_4";
 
 function resolveSwfPath(args: string[]): string {
   const idx = args.indexOf("--swf-path");
@@ -72,11 +72,14 @@ function analyzePatch(swfPath: string): {
     }
 
     const triggerName = u30OperandName(inst, abc.stringValues) || "";
-    if (triggerName !== ORIGINAL_TRIGGER && triggerName !== TARGET_TRIGGER) {
+    if (triggerName !== ORIGINAL_TRIGGER) {
       continue;
     }
-
-    if (triggerName === TARGET_TRIGGER) {
+    const operandStart = methodBody.codeStart + inst.offset + 1;
+    const operandEnd = methodBody.codeStart + inst.offset + inst.size;
+    const replacement = writeU30(targetIndex);
+    const currentBytes = ctx.body.subarray(operandStart, operandEnd);
+    if (currentBytes.equals(replacement)) {
       return { ctx, patch: null };
     }
     candidate = inst;
@@ -84,13 +87,13 @@ function analyzePatch(swfPath: string): {
   }
 
   if (!candidate) {
-    throw new PatchError(`Could not find first OnTrigger check in ${CLASS_NAME}.${METHOD_NAME}`);
+    throw new PatchError(`Could not find ${ORIGINAL_TRIGGER} OnTrigger check in ${CLASS_NAME}.${METHOD_NAME}`);
   }
 
-  const replacement = writeU30(targetIndex);
   const operandStart = methodBody.codeStart + candidate.offset + 1;
   const operandEnd = methodBody.codeStart + candidate.offset + candidate.size;
   const currentBytes = ctx.body.subarray(operandStart, operandEnd);
+  const replacement = writeU30(targetIndex);
   if (currentBytes.length !== replacement.length) {
     throw new PatchError(`Unsupported varint width change ${currentBytes.length} -> ${replacement.length}`);
   }
@@ -98,11 +101,11 @@ function analyzePatch(swfPath: string): {
   return {
     ctx,
     patch: {
-      key: "levelsnr_room4_drop_complete_once",
+      key: "levelsnr_room4_exit_drop_phase_on_fall",
       start: operandStart,
       end: operandEnd,
       data: replacement,
-      detail: `Retarget first ${CLASS_NAME}.${METHOD_NAME} trigger to ${TARGET_TRIGGER}`,
+      detail: `Retarget ${ORIGINAL_TRIGGER} to ${TARGET_TRIGGER} in ${CLASS_NAME}.${METHOD_NAME}`,
     },
   };
 }
