@@ -209,7 +209,15 @@ std::optional<DeviceAuthorizationInfo> DiscordBridge::beginDeviceAuthorization()
             connectWithToken(tokenType, accessToken_);
         };
 
-    if (config_.useDeviceFlow) {
+    bool useDeviceFlow = config_.useDeviceFlow;
+#if !defined(__APPLE__)
+    if (!useDeviceFlow) {
+        std::cerr << "[DiscordBridge] PKCE/browser authorization is not implemented on this platform. Falling back to device flow." << std::endl;
+        useDeviceFlow = true;
+    }
+#endif
+
+    if (useDeviceFlow) {
         discordpp::DeviceAuthorizationArgs args {};
         args.SetClientId(applicationId);
         args.SetScopes(discordpp::Client::GetDefaultCommunicationScopes());

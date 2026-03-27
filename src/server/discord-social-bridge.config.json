@@ -2,7 +2,7 @@
   "enabled": false,
   "appId": "1447954255452311695",
   "channelId": "1296158709529055253",
-  "deviceFlow": false,
+  "deviceFlow": true,
   "enableChannelLinking": true,
   "executablePath": "",
   "workingDirectory": "",
