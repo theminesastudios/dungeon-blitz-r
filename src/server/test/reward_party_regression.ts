@@ -3,6 +3,9 @@ import { GlobalState } from '../core/GlobalState';
 import { getClientLevelScope } from '../core/LevelScope';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
+import { Entity, EntityState } from '../core/Entity';
+import { EntityHandler } from '../handlers/EntityHandler';
+import { LevelHandler } from '../handlers/LevelHandler';
 import { RewardHandler } from '../handlers/RewardHandler';
 import { CombatHandler } from '../handlers/CombatHandler';
 
@@ -27,6 +30,8 @@ type FakeClient = {
     pendingLoot: Map<number, any>;
     knownEntityIds: Set<number>;
     entities: Map<number, any>;
+    goblinRiverBossIntroLockUntil?: number;
+    goblinRiverBossIntroUnlockTimer?: NodeJS.Timeout | null;
     sentPackets: SentPacket[];
     send: (id: number, payload: Buffer) => void;
     sendBitBuffer: (id: number, payload: BitBuffer) => void;
@@ -59,6 +64,8 @@ function createFakeClient(token: number, name: string): FakeClient {
         pendingLoot: new Map<number, any>(),
         knownEntityIds: new Set<number>(),
         entities: new Map<number, any>(),
+        goblinRiverBossIntroLockUntil: 0,
+        goblinRiverBossIntroUnlockTimer: null,
         sentPackets,
         send(id: number, payload: Buffer) {
             sentPackets.push({ id, payload: Buffer.from(payload) });
@@ -101,6 +108,78 @@ function buildPowerHitPayload(targetId: number, sourceId: number, damage: number
     return bb.toBuffer();
 }
 
+function buildEntityFullUpdatePayload(entity: {
+    id: number;
+    name: string;
+    x: number;
+    y: number;
+    v?: number;
+    team: number;
+    isPlayer?: boolean;
+    renderDepthOffset?: number;
+    characterName?: string;
+    dramaAnim?: string;
+    sleepAnim?: string;
+    summonerId?: number;
+    powerId?: number;
+    entState?: number;
+    facingLeft?: boolean;
+    running?: boolean;
+    jumping?: boolean;
+    dropping?: boolean;
+    backpedal?: boolean;
+}): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(entity.id);
+    bb.writeMethod24(entity.x);
+    bb.writeMethod24(entity.y);
+    bb.writeMethod24(entity.v ?? 0);
+    bb.writeMethod26(entity.name);
+    bb.writeMethod6(entity.team, Entity.TEAM_BITS);
+    bb.writeMethod15(Boolean(entity.isPlayer));
+    bb.writeMethod706(entity.renderDepthOffset ?? 0);
+
+    const characterName = String(entity.characterName ?? '');
+    const dramaAnim = String(entity.dramaAnim ?? '');
+    const sleepAnim = String(entity.sleepAnim ?? '');
+    const hasCue = Boolean(characterName || dramaAnim || sleepAnim);
+    bb.writeMethod15(hasCue);
+    if (hasCue) {
+        bb.writeMethod15(Boolean(characterName));
+        if (characterName) {
+            bb.writeMethod13(characterName);
+        }
+        bb.writeMethod15(Boolean(dramaAnim));
+        if (dramaAnim) {
+            bb.writeMethod13(dramaAnim);
+        }
+        bb.writeMethod15(Boolean(sleepAnim));
+        if (sleepAnim) {
+            bb.writeMethod13(sleepAnim);
+        }
+    }
+
+    const summonerId = Number(entity.summonerId ?? 0);
+    bb.writeMethod15(summonerId > 0);
+    if (summonerId > 0) {
+        bb.writeMethod4(summonerId);
+    }
+
+    const powerId = Number(entity.powerId ?? 0);
+    bb.writeMethod15(powerId > 0);
+    if (powerId > 0) {
+        bb.writeMethod4(powerId);
+    }
+
+    bb.writeMethod6(entity.entState ?? EntityState.ACTIVE, Entity.STATE_BITS);
+    bb.writeMethod15(Boolean(entity.facingLeft));
+    bb.writeMethod15(Boolean(entity.running));
+    bb.writeMethod15(Boolean(entity.jumping));
+    bb.writeMethod15(Boolean(entity.dropping));
+    bb.writeMethod15(Boolean(entity.backpedal));
+    return bb.toBuffer();
+}
+
 function addLevelEntity(client: FakeClient, entity: any): void {
     const scope = getClientLevelScope(client as never);
     let levelMap = GlobalState.levelEntities.get(scope);
@@ -130,6 +209,328 @@ function decodeLootdropPosition(payload: Buffer): { x: number; y: number } {
     const x = br.readMethod45();
     const y = br.readMethod45();
     return { x, y };
+}
+
+function clearTestState(): void {
+    GlobalState.sessionsByToken.clear();
+    GlobalState.partyByMember.clear();
+    GlobalState.levelEntities.clear();
+    GlobalState.combatContributions.clear();
+    GlobalState.entityLifeNonces.clear();
+    GlobalState.entityLastRewardNonces.clear();
+}
+
+async function testGoblinKidnappersBossIntroAliasLocksHostilesUntargetable(): Promise<void> {
+    const alpha = createFakeClient(60, 'Alpha');
+    alpha.currentLevel = 'GoblinKidnappers';
+    alpha.currentRoomId = 4;
+    GlobalState.sessionsByToken.set(alpha.token, alpha as never);
+
+    const bossId = 9601;
+    const minionId = 9602;
+    const neutralId = 9603;
+    addLevelEntity(alpha, {
+        id: bossId,
+        name: 'GoblinBoss2',
+        isPlayer: false,
+        team: 2,
+        roomId: 4,
+        x: 2800,
+        y: 1510,
+        untargetable: false,
+        entState: 0
+    });
+    addLevelEntity(alpha, {
+        id: minionId,
+        name: 'GoblinEyeScout',
+        isPlayer: false,
+        team: 2,
+        roomId: 4,
+        x: 2713,
+        y: 1510,
+        untargetable: false,
+        entState: 0
+    });
+    addLevelEntity(alpha, {
+        id: neutralId,
+        name: 'GoblinCutsceneProp',
+        isPlayer: false,
+        team: 3,
+        roomId: 4,
+        x: 2900,
+        y: 1510,
+        untargetable: false,
+        entState: 0
+    });
+    alpha.entities.set(minionId, {
+        id: minionId,
+        name: 'GoblinEyeScout',
+        isPlayer: false,
+        team: 2,
+        roomId: 4,
+        x: 2713,
+        y: 1510,
+        untargetable: false,
+        entState: 0
+    });
+    alpha.entities.set(neutralId, {
+        id: neutralId,
+        name: 'GoblinCutsceneProp',
+        isPlayer: false,
+        team: 3,
+        roomId: 4,
+        x: 2900,
+        y: 1510,
+        untargetable: false,
+        entState: 0
+    });
+
+    LevelHandler.maybeStartGoblinRiverBossIntroLock(alpha as never, bossId, "You're the one that killed our Kraken!");
+
+    assert.ok(
+        Number(alpha.goblinRiverBossIntroLockUntil ?? 0) > Date.now(),
+        'GoblinKidnappers alias should arm the goblin river boss intro lock'
+    );
+    assert.equal(
+        GlobalState.levelEntities.get(getClientLevelScope(alpha as never))?.get(minionId)?.untargetable,
+        true,
+        'GoblinKidnappers alias should make room hostiles untargetable during boss intro'
+    );
+    assert.equal(
+        alpha.entities.get(minionId)?.untargetable,
+        true,
+        'local hostile cache should also be marked untargetable during boss intro'
+    );
+    assert.equal(
+        GlobalState.levelEntities.get(getClientLevelScope(alpha as never))?.get(minionId)?.entState,
+        2,
+        'GoblinKidnappers alias should switch room hostiles into drama state during boss intro'
+    );
+    assert.equal(
+        GlobalState.levelEntities.get(getClientLevelScope(alpha as never))?.get(neutralId)?.untargetable,
+        true,
+        'GoblinKidnappers alias should also lock non-player neutral scene entities during boss intro'
+    );
+    assert.ok(
+        alpha.sentPackets.some((packet) => packet.id === 0xA5),
+        'GoblinKidnappers alias should start a room cutscene during boss intro lock'
+    );
+    assert.ok(
+        alpha.sentPackets.some((packet) => packet.id === 0x07),
+        'GoblinKidnappers alias should send drama-state updates so cutscene enemies do not expose normal hp bars'
+    );
+}
+
+async function testGoblinKidnappersTakUgoIntroAlsoLocksRoomHostiles(): Promise<void> {
+    const alpha = createFakeClient(61, 'Alpha');
+    alpha.currentLevel = 'GoblinKidnappers';
+    alpha.currentRoomId = 4;
+    GlobalState.sessionsByToken.set(alpha.token, alpha as never);
+
+    const bossId = 9611;
+    const minionId = 9612;
+    const offRoomId = 9613;
+    addLevelEntity(alpha, {
+        id: bossId,
+        name: 'GoblinBoss1',
+        isPlayer: false,
+        team: 2,
+        roomId: 4,
+        x: 24816,
+        y: 1877,
+        untargetable: false,
+        entState: 0
+    });
+    addLevelEntity(alpha, {
+        id: minionId,
+        name: 'GoblinEyeScout',
+        isPlayer: false,
+        team: 2,
+        roomId: 4,
+        x: 24720,
+        y: 1877,
+        untargetable: false,
+        entState: 0
+    });
+    addLevelEntity(alpha, {
+        id: offRoomId,
+        name: 'GoblinShamanHood',
+        isPlayer: false,
+        team: 2,
+        roomId: 5,
+        x: 26000,
+        y: 1877,
+        untargetable: false,
+        entState: 0
+    });
+
+    LevelHandler.maybeStartGoblinRiverBossIntroLock(alpha as never, bossId, "You're the one that killed our Kraken!");
+
+    assert.equal(
+        GlobalState.levelEntities.get(getClientLevelScope(alpha as never))?.get(bossId)?.untargetable,
+        true,
+        'Tak-Ugo intro should also make the boss untargetable during the cutscene'
+    );
+    assert.equal(
+        GlobalState.levelEntities.get(getClientLevelScope(alpha as never))?.get(minionId)?.untargetable,
+        true,
+        'Tak-Ugo intro should also lock nearby cutscene hostiles'
+    );
+    assert.equal(
+        GlobalState.levelEntities.get(getClientLevelScope(alpha as never))?.get(minionId)?.entState,
+        2,
+        'Tak-Ugo intro should also switch nearby cutscene hostiles into drama state'
+    );
+    assert.equal(
+        GlobalState.levelEntities.get(getClientLevelScope(alpha as never))?.get(offRoomId)?.untargetable,
+        false,
+        'Tak-Ugo intro should not lock enemies outside the cutscene room'
+    );
+}
+
+async function testUntargetableGoblinKidnappersCutsceneEnemiesIgnoreDamage(): Promise<void> {
+    const alpha = createFakeClient(62, 'Alpha');
+    alpha.currentLevel = 'GoblinKidnappers';
+    alpha.currentRoomId = 4;
+    GlobalState.sessionsByToken.set(alpha.token, alpha as never);
+
+    const bossId = 9621;
+    addLevelEntity(alpha, {
+        id: bossId,
+        name: 'GoblinBoss1',
+        isPlayer: false,
+        team: 2,
+        roomId: 4,
+        hp: 150,
+        x: 24816,
+        y: 1877,
+        untargetable: true,
+        dead: false,
+        entState: 2
+    });
+
+    await CombatHandler.handlePowerHit(
+        alpha as never,
+        buildPowerHitPayload(bossId, alpha.clientEntID, 50, 77)
+    );
+
+    const boss = GlobalState.levelEntities.get(getClientLevelScope(alpha as never))?.get(bossId);
+    assert.equal(
+        boss?.hp,
+        150,
+        'untargetable Goblin Kidnappers cutscene enemies should not lose hp'
+    );
+    assert.equal(
+        boss?.dead,
+        false,
+        'untargetable Goblin Kidnappers cutscene enemies should not be killed by incoming hits'
+    );
+    assert.equal(
+        alpha.sentPackets.some((packet) => packet.id === 0x0A),
+        false,
+        'server should not relay hit packets against untargetable Goblin Kidnappers cutscene enemies'
+    );
+}
+
+async function testGoblinKidnappersCutsceneLockBlocksOtherRoomClientsToo(): Promise<void> {
+    const alpha = createFakeClient(63, 'Alpha');
+    const beta = createFakeClient(64, 'Beta');
+    alpha.currentLevel = 'GoblinKidnappers';
+    beta.currentLevel = 'GoblinKidnappers';
+    alpha.currentRoomId = 4;
+    beta.currentRoomId = 4;
+    GlobalState.sessionsByToken.set(alpha.token, alpha as never);
+    GlobalState.sessionsByToken.set(beta.token, beta as never);
+
+    const bossId = 9631;
+    addLevelEntity(alpha, {
+        id: bossId,
+        name: 'GoblinBoss1',
+        isPlayer: false,
+        team: 2,
+        roomId: 4,
+        hp: 150,
+        x: 24816,
+        y: 1877,
+        untargetable: false,
+        dead: false,
+        entState: 0
+    });
+
+    LevelHandler.maybeStartGoblinRiverBossIntroLock(alpha as never, bossId, "You're the one that killed our Kraken!");
+
+    await CombatHandler.handlePowerHit(
+        beta as never,
+        buildPowerHitPayload(bossId, beta.clientEntID, 50, 77)
+    );
+
+    const boss = GlobalState.levelEntities.get(getClientLevelScope(alpha as never))?.get(bossId);
+    assert.equal(
+        boss?.hp,
+        150,
+        'Goblin Kidnappers cutscene lock should block hit packets from other clients in the same room'
+    );
+    assert.equal(
+        beta.sentPackets.some((packet) => packet.id === 0x0A),
+        false,
+        'Goblin Kidnappers cutscene lock should stop other room clients from relaying hit packets'
+    );
+}
+
+async function testGoblinKidnappersClientSpawnedHostilesStayUntargetableDuringCutscene(): Promise<void> {
+    const alpha = createFakeClient(65, 'Alpha');
+    const beta = createFakeClient(66, 'Beta');
+    alpha.currentLevel = 'GoblinKidnappers';
+    beta.currentLevel = 'GoblinKidnappers';
+    alpha.currentRoomId = 4;
+    beta.currentRoomId = 4;
+    GlobalState.sessionsByToken.set(alpha.token, alpha as never);
+    GlobalState.sessionsByToken.set(beta.token, beta as never);
+
+    const bossId = 9641;
+    const minionId = 9642;
+    addLevelEntity(alpha, {
+        id: bossId,
+        name: 'GoblinBoss1',
+        isPlayer: false,
+        team: 2,
+        roomId: 4,
+        x: 24816,
+        y: 1877,
+        untargetable: false,
+        entState: 0
+    });
+
+    LevelHandler.maybeStartGoblinRiverBossIntroLock(alpha as never, bossId, "You're the one that killed our Kraken!");
+
+    EntityHandler.handleEntityFullUpdate(alpha as never, buildEntityFullUpdatePayload({
+        id: minionId,
+        name: 'GoblinEyeScout',
+        x: 24720,
+        y: 1877,
+        team: 2,
+        entState: EntityState.ACTIVE
+    }));
+
+    const stored = GlobalState.levelEntities.get(getClientLevelScope(alpha as never))?.get(minionId);
+    assert.equal(
+        stored?.untargetable,
+        true,
+        'client-spawned Goblin Kidnappers cutscene hostiles should be canonicalized as untargetable'
+    );
+    assert.equal(
+        stored?.entState,
+        EntityState.DRAMA,
+        'client-spawned Goblin Kidnappers cutscene hostiles should be canonicalized into drama state'
+    );
+
+    beta.sentPackets.length = 0;
+    EntityHandler.ensureEntityKnown(beta as never, beta.currentLevel, minionId);
+    assert.deepEqual(
+        beta.sentPackets.map((packet) => packet.id),
+        [0x0F, 0xAE, 0x07],
+        'late-seen cutscene hostiles should spawn with untargetable and drama updates for viewers'
+    );
 }
 
 async function testPartyContributorRewardsEntireParty(): Promise<void> {
@@ -402,66 +803,51 @@ async function main(): Promise<void> {
     try {
         await testPartyContributorRewardsEntireParty();
 
-        GlobalState.sessionsByToken.clear();
-        GlobalState.partyByMember.clear();
-        GlobalState.levelEntities.clear();
-        GlobalState.combatContributions.clear();
-        GlobalState.entityLifeNonces.clear();
-        GlobalState.entityLastRewardNonces.clear();
+        clearTestState();
 
         await testSoloContributorDoesNotRewardBystander();
 
-        GlobalState.sessionsByToken.clear();
-        GlobalState.partyByMember.clear();
-        GlobalState.levelEntities.clear();
-        GlobalState.combatContributions.clear();
-        GlobalState.entityLifeNonces.clear();
-        GlobalState.entityLastRewardNonces.clear();
+        clearTestState();
 
         await testPetContributionResolvesToOwner();
 
-        GlobalState.sessionsByToken.clear();
-        GlobalState.partyByMember.clear();
-        GlobalState.levelEntities.clear();
-        GlobalState.combatContributions.clear();
-        GlobalState.entityLifeNonces.clear();
-        GlobalState.entityLastRewardNonces.clear();
+        clearTestState();
 
         await testChainsLootDropsOnPlayerPath();
 
-        GlobalState.sessionsByToken.clear();
-        GlobalState.partyByMember.clear();
-        GlobalState.levelEntities.clear();
-        GlobalState.combatContributions.clear();
-        GlobalState.entityLifeNonces.clear();
-        GlobalState.entityLastRewardNonces.clear();
+        clearTestState();
 
         await testGoblinRiverFlyingLootDropsOnPlayerPath();
 
-        GlobalState.sessionsByToken.clear();
-        GlobalState.partyByMember.clear();
-        GlobalState.levelEntities.clear();
-        GlobalState.combatContributions.clear();
-        GlobalState.entityLifeNonces.clear();
-        GlobalState.entityLastRewardNonces.clear();
+        clearTestState();
 
         await testGoblinKidnappersAirborneLootDropsOnPlayerPathWithoutFlyingFlag();
 
-        GlobalState.sessionsByToken.clear();
-        GlobalState.partyByMember.clear();
-        GlobalState.levelEntities.clear();
-        GlobalState.combatContributions.clear();
-        GlobalState.entityLifeNonces.clear();
-        GlobalState.entityLastRewardNonces.clear();
+        clearTestState();
+
+        await testGoblinKidnappersBossIntroAliasLocksHostilesUntargetable();
+
+        clearTestState();
+
+        await testGoblinKidnappersTakUgoIntroAlsoLocksRoomHostiles();
+
+        clearTestState();
+
+        await testUntargetableGoblinKidnappersCutsceneEnemiesIgnoreDamage();
+
+        clearTestState();
+
+        await testGoblinKidnappersCutsceneLockBlocksOtherRoomClientsToo();
+
+        clearTestState();
+
+        await testGoblinKidnappersClientSpawnedHostilesStayUntargetableDuringCutscene();
+
+        clearTestState();
 
         await testGroundEnemyLootKeepsRewardWorldPosition();
 
-        GlobalState.sessionsByToken.clear();
-        GlobalState.partyByMember.clear();
-        GlobalState.levelEntities.clear();
-        GlobalState.combatContributions.clear();
-        GlobalState.entityLifeNonces.clear();
-        GlobalState.entityLastRewardNonces.clear();
+        clearTestState();
 
         await testMissingAirborneSourceStillSnapsLootToPlayerPath();
     } finally {

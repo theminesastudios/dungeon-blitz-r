@@ -19,7 +19,7 @@ import { EntityHandler } from './EntityHandler';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { normalizeCharacterKey, PendingTeleport } from '../core/SocialState';
 import { TransferTokenAllocator } from '../core/TransferTokenAllocator';
-import { areClientsInSameParty, getPartyIdForClient } from '../core/PartySync';
+import { areClientsInSameParty, getPartyIdForClient, sharesRoomIds } from '../core/PartySync';
 import {
     areClientsInSameLevelScope,
     createDungeonInstanceId,
@@ -1897,7 +1897,29 @@ export class LevelHandler {
     }
 
     static isGoblinRiverBossIntroLocked(client: Client): boolean {
-        return Date.now() < Number(client.goblinRiverBossIntroLockUntil ?? 0);
+        const currentLockUntil = Number(client.goblinRiverBossIntroLockUntil ?? 0);
+        if (currentLockUntil > Date.now()) {
+            return true;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        if (!levelScope) {
+            return false;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (!other.playerSpawned || getClientLevelScope(other) !== levelScope) {
+                continue;
+            }
+            if (!sharesRoomIds(client.currentRoomId, other.currentRoomId)) {
+                continue;
+            }
+            if (Number(other.goblinRiverBossIntroLockUntil ?? 0) > Date.now()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static setGoblinRiverHostilesUntargetable(client: Client, untargetable: boolean): void {
@@ -1906,18 +1928,33 @@ export class LevelHandler {
             return;
         }
 
-        for (const recipient of LevelHandler.forLevelRecipients(client, true)) {
-            for (const [entityId, entity] of levelMap.entries()) {
-                if (!entity || Number(entity.team ?? 0) !== EntityTeam.ENEMY) {
-                    continue;
-                }
+        const targetState = untargetable ? 2 : 0;
+        for (const [entityId, entity] of levelMap.entries()) {
+            if (!entity || Boolean(entity.isPlayer)) {
+                continue;
+            }
 
-                entity.untargetable = untargetable;
+            const entityRoomId = Number(entity.roomId ?? -1);
+            if (!sharesRoomIds(client.currentRoomId, entityRoomId)) {
+                continue;
+            }
+
+            entity.untargetable = untargetable;
+            entity.entState = targetState;
+
+            for (const recipient of LevelHandler.forLevelRecipients(client, true)) {
                 const localEntity = recipient.entities.get(entityId);
                 if (localEntity) {
                     localEntity.untargetable = untargetable;
+                    localEntity.entState = targetState;
                 }
                 LevelHandler.sendSetUntargetable(recipient, entityId, untargetable);
+                LevelHandler.sendNpcState(
+                    recipient,
+                    entityId,
+                    targetState,
+                    Boolean(entity.facing_left ?? entity.facingLeft)
+                );
             }
         }
     }
@@ -1927,12 +1964,20 @@ export class LevelHandler {
             clearTimeout(client.goblinRiverBossIntroUnlockTimer);
             client.goblinRiverBossIntroUnlockTimer = null;
         }
+        if (client.currentLevel) {
+            LevelHandler.sendRoomCutSceneEnd(client.currentLevel, Math.max(0, client.currentRoomId), client.levelInstanceId);
+        }
         client.goblinRiverBossIntroLockUntil = 0;
         LevelHandler.setGoblinRiverHostilesUntargetable(client, false);
     }
 
+    private static isGoblinRiverBossIntroLevel(levelName: string | null | undefined): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        return normalizedLevel === 'GoblinRiverDungeon' || normalizedLevel === 'GoblinRiverDungeonHard';
+    }
+
     static maybeStartGoblinRiverBossIntroLock(client: Client, entityId: number, text: string): void {
-        if (client.currentLevel !== 'GoblinRiverDungeon') {
+        if (!LevelHandler.isGoblinRiverBossIntroLevel(client.currentLevel)) {
             return;
         }
         if (!LevelHandler.GOBLIN_RIVER_BOSS_INTRO_TEXTS.has(String(text ?? '').trim())) {
@@ -1943,12 +1988,30 @@ export class LevelHandler {
             client.entities.get(entityId) ??
             LevelHandler.getCurrentLevelMap(client)?.get(entityId);
         const entityName = String(entity?.name ?? '');
-        if (entityName !== 'GoblinBoss2' && entityName !== 'GoblinBoss2Hard') {
+        if (
+            entityName !== 'GoblinBoss1' &&
+            entityName !== 'GoblinBoss1Hard' &&
+            entityName !== 'GoblinBoss2' &&
+            entityName !== 'GoblinBoss2Hard'
+        ) {
             return;
         }
 
         const lockUntil = Date.now() + LevelHandler.GOBLIN_RIVER_BOSS_INTRO_DEFAULT_MS;
-        client.goblinRiverBossIntroLockUntil = Math.max(client.goblinRiverBossIntroLockUntil, lockUntil);
+        const existingLockUntil = Number(client.goblinRiverBossIntroLockUntil ?? 0);
+        const wasLocked = Number.isFinite(existingLockUntil) && existingLockUntil > Date.now();
+        client.goblinRiverBossIntroLockUntil = Math.max(
+            Number.isFinite(existingLockUntil) ? existingLockUntil : 0,
+            lockUntil
+        );
+        if (!wasLocked && client.currentLevel) {
+            LevelHandler.sendRoomCutSceneStart(
+                client.currentLevel,
+                Math.max(0, client.currentRoomId),
+                false,
+                client.levelInstanceId
+            );
+        }
         LevelHandler.setGoblinRiverHostilesUntargetable(client, true);
 
         if (client.goblinRiverBossIntroUnlockTimer) {
