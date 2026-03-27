@@ -77,12 +77,9 @@ export class RewardHandler {
         reward: LootReward
     ): Buffer {
         const bb = new BitBuffer(false);
-        bb.writeMethod15(true); // Flag start of list item
-
         bb.writeMethod4(lootId);
-        // Coordinates for loot drops must use unsigned Method 4 (varint) to avoid bit-shifting misalignment
-        bb.writeMethod4(Math.round(x));
-        bb.writeMethod4(Math.round(y));
+        bb.writeMethod45(Math.round(x));
+        bb.writeMethod45(Math.round(y));
 
         if (reward.gear && reward.gear > 0) {
             bb.writeMethod15(true);
@@ -301,10 +298,15 @@ export class RewardHandler {
 
         // Küçük Intro düşmanlar (Minion rank) ve Chains entitylerinden eşya düşmez
         const isIntroEnemy = entName.startsWith('Intro');
+        const isTutorialLevel =
+            client.currentLevel === 'TutorialDungeon' ||
+            client.currentLevel === 'TutorialBoat' ||
+            client.currentLevel === 'CraftTownTutorial';
         const isChainsEnemy = entName.startsWith('Chains');
         const entRank = String(entType?.EntRank ?? 'Minion');
         const isLargeEnemy = entRank === 'Lieutenant' || entRank === 'MiniBoss' || entRank === 'Boss';
-        const allowItemDrop = !isChainsEnemy && (!isIntroEnemy || isLargeEnemy);
+        const suppressTutorialIntroGear = isTutorialLevel && isIntroEnemy && !isLargeEnemy;
+        const allowItemDrop = !isChainsEnemy && !suppressTutorialIntroGear;
 
         if (realm && materialChance > 0 && Math.random() < materialChance) {
             materialId = GameData.getRandomMaterialForRealm(realm);
