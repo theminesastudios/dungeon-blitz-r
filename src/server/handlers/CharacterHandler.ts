@@ -86,12 +86,19 @@ export class CharacterHandler {
                 const normalizedEntityName = String(entityProps?.name || '').trim().toLowerCase();
                 const ownerUserId = Number(entityProps?.ownerUserId ?? 0);
                 const ownerToken = Number(entityProps?.ownerToken ?? 0);
+                const ownerSession = ownerToken > 0 ? GlobalState.sessionsByToken.get(ownerToken) : null;
+                const ownerSessionAlive = Boolean(ownerSession) &&
+                    ownerSession !== activeClient &&
+                    !CharacterHandler.isSessionStale(ownerSession!) &&
+                    Boolean(ownerSession?.playerSpawned) &&
+                    getClientLevelScope(ownerSession) === levelScopeKey;
                 const isSameUser = ownerUserId > 0 && ownerUserId === userId;
                 const isSameCharacter = normalizedEntityName === normalizedCharName;
                 const isDuplicatePlayer = Boolean(entityProps?.isPlayer) && (isSameUser || isSameCharacter);
                 const isDuplicateOwnedSpawn = Boolean(entityProps?.clientSpawned) && isSameUser;
+                const isStaleOwnedSpawn = Boolean(entityProps?.clientSpawned) && ownerToken > 0 && !ownerSessionAlive;
 
-                if (!isDuplicatePlayer && !isDuplicateOwnedSpawn) {
+                if (!isDuplicatePlayer && !isDuplicateOwnedSpawn && !isStaleOwnedSpawn) {
                     continue;
                 }
                 if (getClientLevelScope(activeClient) === levelScopeKey && activeClient.clientEntID > 0 && activeClient.clientEntID === entityId) {
@@ -100,7 +107,7 @@ export class CharacterHandler {
                 if (liveEntityIds.has(entityId)) {
                     continue;
                 }
-                if (Boolean(entityProps?.clientSpawned) && ownerToken > 0 && liveOwnerTokens.has(ownerToken)) {
+                if (Boolean(entityProps?.clientSpawned) && ownerToken > 0 && liveOwnerTokens.has(ownerToken) && !isStaleOwnedSpawn) {
                     continue;
                 }
 

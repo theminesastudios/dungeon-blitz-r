@@ -179,6 +179,66 @@ function testOutdoorHostileClientSpawnSeedsToPartyPeers(): void {
     assert.equal(watcher.knownEntityIds.has(hostile.id), true);
 }
 
+function testOutdoorPartyPeerSeedDestroysMatchingLocalDuplicateAfterCanonicalSeed(): void {
+    const owner = createFakeClient('Alpha');
+    const watcher = createFakeClient('Beta');
+
+    owner.currentLevel = 'NewbieRoad';
+    watcher.currentLevel = 'NewbieRoad';
+    owner.currentRoomId = 1;
+    watcher.currentRoomId = 1;
+
+    const canonical = {
+        id: 2206,
+        name: 'IntroGoblin',
+        isPlayer: false,
+        x: 120,
+        y: 220,
+        v: 0,
+        team: 2,
+        entState: 0,
+        clientSpawned: true,
+        ownerToken: owner.token,
+        ownerPartyId: 78,
+        roomId: owner.currentRoomId
+    };
+    const localDuplicate = {
+        id: 3206,
+        name: canonical.name,
+        isPlayer: false,
+        x: 122,
+        y: 222,
+        v: 0,
+        team: canonical.team,
+        entState: canonical.entState,
+        clientSpawned: true,
+        ownerToken: watcher.token,
+        ownerPartyId: 78,
+        roomId: watcher.currentRoomId
+    };
+
+    watcher.entities.set(localDuplicate.id, { ...localDuplicate });
+    watcher.knownEntityIds.add(localDuplicate.id);
+    GlobalState.levelEntities.set('NewbieRoad', new Map([[canonical.id, canonical]]));
+    GlobalState.sessionsByToken.set(owner.token, owner as never);
+    GlobalState.sessionsByToken.set(watcher.token, watcher as never);
+    GlobalState.partyByMember.set('alpha', 78);
+    GlobalState.partyByMember.set('beta', 78);
+
+    const known = EntityHandler.ensureEntityKnown(watcher as never, 'NewbieRoad', canonical.id);
+
+    assert.equal(known, true, 'party watcher should receive the canonical outdoor hostile');
+    assert.deepEqual(
+        watcher.sentPackets.map((packet) => packet.id),
+        [0x0F, 0x0D],
+        'canonical hostile should seed before the watcher local duplicate is destroyed'
+    );
+    assert.equal(parseDestroyEntityId(watcher.sentPackets[1]!.payload), localDuplicate.id);
+    assert.equal(watcher.entities.has(localDuplicate.id), false, 'watcher local duplicate should be removed from local cache');
+    assert.equal(watcher.knownEntityIds.has(localDuplicate.id), false, 'watcher local duplicate should be forgotten');
+    assert.equal(watcher.knownEntityIds.has(canonical.id), true, 'watcher should keep the canonical hostile known');
+}
+
 function testDungeonHostileClientSpawnSeedsToPartyPeersOnly(): void {
     const owner = createFakeClient('Alpha');
     const partyWatcher = createFakeClient('Beta');
@@ -523,6 +583,63 @@ function testSoloDungeonNpcReferencePromotesToPartyJoinerSeed(): void {
     assert.equal(joiner.knownEntityIds.has(canonical.id), true);
 }
 
+function testSendExistingVisibleClientSpawnEntitiesPrunesStaleOutdoorOwnerBeforeSeed(): void {
+    const owner = createFakeClient('Alpha');
+    const joiner = createFakeClient('Beta');
+
+    owner.currentLevel = 'NewbieRoad';
+    joiner.currentLevel = 'NewbieRoad';
+    owner.currentRoomId = 2;
+    joiner.currentRoomId = 2;
+
+    const stale = {
+        id: 2553,
+        name: 'IntroGoblin',
+        isPlayer: false,
+        x: 100,
+        y: 200,
+        v: 0,
+        team: 2,
+        entState: 0,
+        clientSpawned: true,
+        ownerToken: 99999,
+        ownerPartyId: 99,
+        roomId: 2
+    };
+    const canonical = {
+        id: 2554,
+        name: 'IntroGoblin',
+        isPlayer: false,
+        x: 140,
+        y: 240,
+        v: 0,
+        team: 2,
+        entState: 0,
+        clientSpawned: true,
+        ownerToken: owner.token,
+        ownerPartyId: 99,
+        roomId: 2
+    };
+
+    GlobalState.levelEntities.set('NewbieRoad', new Map([
+        [stale.id, stale],
+        [canonical.id, canonical]
+    ]));
+    GlobalState.sessionsByToken.set(owner.token, owner as never);
+    GlobalState.sessionsByToken.set(joiner.token, joiner as never);
+    GlobalState.partyByMember.set('alpha', 99);
+    GlobalState.partyByMember.set('beta', 99);
+
+    (EntityHandler as any).sendExistingVisibleClientSpawnEntitiesToJoiner(joiner as never);
+
+    const levelMap = GlobalState.levelEntities.get('NewbieRoad');
+    assert.equal(levelMap?.has(stale.id), false, 'stale outdoor owner entity should be pruned from the shared level map');
+    assert.equal(levelMap?.has(canonical.id), true, 'active outdoor owner entity should remain');
+    assert.deepEqual(joiner.sentPackets.map((packet) => packet.id), [0x0D, 0x0F]);
+    assert.equal(parseDestroyEntityId(joiner.sentPackets[0]!.payload), stale.id, 'stale entity should be destroyed before seeding canonical state');
+    assert.equal(joiner.knownEntityIds.has(canonical.id), true, 'joiner should only keep the canonical outdoor entity');
+}
+
 function testConflictingLocalIdsStillTriggerRemotePlayerSeed(): void {
     const sender = createFakeClient('Alpha');
     const watcher = createFakeClient('Beta');
@@ -764,6 +881,11 @@ function main(): void {
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
+        testOutdoorPartyPeerSeedDestroysMatchingLocalDuplicateAfterCanonicalSeed();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
         testDungeonHostileClientSpawnSeedsToPartyPeersOnly();
 
         GlobalState.levelEntities.clear();
@@ -795,6 +917,11 @@ function main(): void {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         testSoloDungeonNpcReferencePromotesToPartyJoinerSeed();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testSendExistingVisibleClientSpawnEntitiesPrunesStaleOutdoorOwnerBeforeSeed();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();

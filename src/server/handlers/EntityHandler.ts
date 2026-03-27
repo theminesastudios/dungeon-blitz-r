@@ -7,8 +7,8 @@ import { Entity, EntityProps, EntityState } from '../core/Entity';
 import { LevelConfig } from '../core/LevelConfig';
 import { PetHandler } from './PetHandler';
 import { areClientsInSameParty, getPartyIdForClient, sharesRoomIds } from '../core/PartySync';
-import { areClientsInSameLevelScope, getClientLevelScope, getLevelScopeKey } from '../core/LevelScope';
-import { DebugConfig } from '../core/Debug';
+import { areClientsInSameLevelScope, getClientLevelScope, getLevelScopeKey, getScopeLevelInstanceId, getScopeLevelName } from '../core/LevelScope';
+import { DebugConfig, DebugLogger } from '../core/Debug';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
@@ -43,6 +43,10 @@ export class EntityHandler {
         }
 
         console.log(`[Dedup] ${message}`);
+    }
+
+    private static logSync(scope: string, client: Client | null | undefined, details: Record<string, unknown>): void {
+        DebugLogger.logSync(scope, client, details);
     }
 
     private static normalizeIdentityName(value: unknown): string {
@@ -161,6 +165,132 @@ export class EntityHandler {
         return bestMatch;
     }
 
+    private static isSharedClientSpawnOwnerActive(scopeKey: string, entity: any): boolean {
+        const ownerToken = Number(entity?.ownerToken ?? 0);
+        if (ownerToken <= 0) {
+            return true;
+        }
+
+        const ownerSession = GlobalState.sessionsByToken.get(ownerToken);
+        return Boolean(ownerSession?.character) &&
+            Boolean(ownerSession?.playerSpawned) &&
+            getClientLevelScope(ownerSession) === scopeKey;
+    }
+
+    private static pruneStaleSharedClientSpawnEntities(scopeKey: string, levelMap: Map<number, any> | null): number[] {
+        if (!scopeKey || !levelMap) {
+            return [];
+        }
+
+        const removedIds: number[] = [];
+        for (const [entityId, entity] of Array.from(levelMap.entries())) {
+            if (!entity?.clientSpawned || entity?.isPlayer) {
+                continue;
+            }
+            if (EntityHandler.isSharedClientSpawnOwnerActive(scopeKey, entity)) {
+                continue;
+            }
+
+            levelMap.delete(entityId);
+            removedIds.push(entityId);
+        }
+
+        if (removedIds.length === 0) {
+            return removedIds;
+        }
+
+        const payloads = new Map<number, Buffer>();
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (getClientLevelScope(other) !== scopeKey) {
+                continue;
+            }
+
+            for (const entityId of removedIds) {
+                other.entities.delete(entityId);
+                other.knownEntityIds.delete(entityId);
+                if (!other.playerSpawned) {
+                    continue;
+                }
+                let payload = payloads.get(entityId);
+                if (!payload) {
+                    payload = EntityHandler.buildDestroyEntityPayload(entityId);
+                    payloads.set(entityId, payload);
+                }
+                other.send(0x0D, payload);
+            }
+        }
+
+        EntityHandler.logSync('PruneStaleSharedClientSpawn', null, {
+            scopeKey,
+            removedIds
+        });
+        return removedIds;
+    }
+
+    private static findLocalSharedClientSpawnConflict(client: Client, levelName: string, entity: any): any | null {
+        if (!EntityHandler.isSharedClientSpawnRegionActor(levelName, entity)) {
+            return null;
+        }
+
+        const targetName = EntityHandler.normalizeIdentityName(entity?.name);
+        const targetTeam = Number(entity?.team ?? 0);
+        const targetRoomId = Number.isFinite(Number(entity?.roomId)) ? Number(entity.roomId) : -1;
+        const targetOwnerToken = Number(entity?.ownerToken ?? 0);
+
+        let bestMatch: any | null = null;
+        let bestDistanceSq = Number.POSITIVE_INFINITY;
+        for (const [localEntityId, localEntity] of client.entities.entries()) {
+            if (Number(localEntityId) === Number(entity?.id ?? 0) || !localEntity?.clientSpawned || localEntity?.isPlayer) {
+                continue;
+            }
+            if (!EntityHandler.isSharedClientSpawnRegionActor(levelName, localEntity)) {
+                continue;
+            }
+            if (EntityHandler.normalizeIdentityName(localEntity?.name) !== targetName) {
+                continue;
+            }
+            if (Number(localEntity?.team ?? 0) !== targetTeam) {
+                continue;
+            }
+            if (!sharesRoomIds(targetRoomId, Number(localEntity?.roomId ?? -1))) {
+                continue;
+            }
+
+            const localOwnerToken = Number(localEntity?.ownerToken ?? 0);
+            if (localOwnerToken > 0 && localOwnerToken === targetOwnerToken) {
+                continue;
+            }
+
+            const dx = Number(localEntity?.x ?? 0) - Number(entity?.x ?? 0);
+            const dy = Number(localEntity?.y ?? 0) - Number(entity?.y ?? 0);
+            const distanceSq = (dx * dx) + (dy * dy);
+            if (distanceSq < bestDistanceSq) {
+                bestDistanceSq = distanceSq;
+                bestMatch = { ...localEntity, id: Number(localEntityId) };
+            }
+        }
+
+        return bestMatch;
+    }
+
+    private static destroyLocalSharedClientSpawnConflict(client: Client, conflictingEntity: any, canonicalEntity: any): void {
+        const conflictingId = Number(conflictingEntity?.id ?? 0);
+        if (conflictingId <= 0) {
+            return;
+        }
+
+        client.entities.delete(conflictingId);
+        client.knownEntityIds.delete(conflictingId);
+        EntityHandler.sendDestroyEntity(client, conflictingId);
+        EntityHandler.logSync('DestroyLocalSharedClientSpawnConflict', client, {
+            conflictingId,
+            canonicalId: Number(canonicalEntity?.id ?? 0),
+            conflictingOwnerToken: Number(conflictingEntity?.ownerToken ?? 0),
+            canonicalOwnerToken: Number(canonicalEntity?.ownerToken ?? 0),
+            roomId: Number(canonicalEntity?.roomId ?? -1)
+        });
+    }
+
     private static suppressDuplicateSharedClientSpawn(
         client: Client,
         levelName: string | null | undefined,
@@ -203,6 +333,16 @@ export class EntityHandler {
         EntityHandler.logDedup(
             `MATCH found! ${entity?.name} (id=${entity?.id}) -> canonical id=${canonical?.id} ownerToken=${canonical?.ownerToken}`
         );
+        EntityHandler.logSync('SuppressDuplicateSharedClientSpawn', client, {
+            levelScope: getClientLevelScope(client),
+            duplicateId: Number(entity?.id ?? 0),
+            canonicalId: Number(canonical?.id ?? 0),
+            ownerToken: Number(entity?.ownerToken ?? 0),
+            canonicalOwnerToken: Number(canonical?.ownerToken ?? 0),
+            ownerPartyId: Number(entity?.ownerPartyId ?? 0),
+            canonicalOwnerPartyId: Number(canonical?.ownerPartyId ?? 0),
+            roomId
+        });
 
         const duplicateId = Number(entity?.id ?? 0);
         const canonicalId = Number(canonical?.id ?? 0);
@@ -411,25 +551,50 @@ export class EntityHandler {
             return true;
         }
 
-        const entity = EntityHandler.getLevelMap(levelName, client.levelInstanceId)?.get(entityId);
+        const scopeKey = getLevelScopeKey(levelName, client.levelInstanceId);
+        const levelMap = EntityHandler.getLevelMap(levelName, client.levelInstanceId);
+        EntityHandler.pruneStaleSharedClientSpawnEntities(scopeKey, levelMap);
+        const entity = levelMap?.get(entityId);
         if (!entity || !EntityHandler.canClientSeeEntity(client, entity)) {
+            EntityHandler.logSync('EnsureEntityKnownSkip', client, {
+                levelScope: scopeKey,
+                entityId,
+                hasEntity: Boolean(entity),
+                visible: Boolean(entity && EntityHandler.canClientSeeEntity(client, entity))
+            });
             return false;
         }
 
+        const localConflict = EntityHandler.findLocalSharedClientSpawnConflict(client, levelName, entity);
+
         if (client.knownEntityIds.has(entityId)) {
             if (!EntityHandler.hasConflictingLocalKnownEntity(client, levelName, entityId, entity)) {
+                if (localConflict) {
+                    EntityHandler.destroyLocalSharedClientSpawnConflict(client, localConflict, entity);
+                }
                 return true;
             }
 
             client.knownEntityIds.delete(entityId);
         }
 
-        const snapshot = EntityHandler.resolveCanonicalEntity(getLevelScopeKey(levelName, client.levelInstanceId), entityId);
+        const snapshot = EntityHandler.resolveCanonicalEntity(scopeKey, entityId);
         if (!snapshot) {
             return false;
         }
 
         EntityHandler.sendEntity(client, snapshot);
+        EntityHandler.logSync('EnsureEntityKnownSeed', client, {
+            levelScope: scopeKey,
+            entityId,
+            ownerToken: Number(entity?.ownerToken ?? 0),
+            ownerPartyId: Number(entity?.ownerPartyId ?? 0),
+            roomId: Number(entity?.roomId ?? -1),
+            packetId: '0x0F'
+        });
+        if (localConflict) {
+            EntityHandler.destroyLocalSharedClientSpawnConflict(client, localConflict, entity);
+        }
         return true;
     }
 
@@ -1082,6 +1247,8 @@ export class EntityHandler {
             }
         }
 
+        EntityHandler.pruneStaleSharedClientSpawnEntities(getLevelScopeKey(levelName, client.levelInstanceId), levelMap);
+
         if (EntityHandler.usesClientSpawn(levelName)) {
             const removedCount = EntityHandler.pruneStaleServerNpcs(levelMap);
             if (removedCount > 0) {
@@ -1179,6 +1346,8 @@ export class EntityHandler {
             return;
         }
 
+        EntityHandler.pruneStaleSharedClientSpawnEntities(getClientLevelScope(joiner), levelMap);
+
         for (const [entityId, entityProps] of levelMap.entries()) {
             if (entityId <= 0 || entityProps?.isPlayer || !entityProps?.clientSpawned) {
                 continue;
@@ -1256,6 +1425,15 @@ export class EntityHandler {
                 continue;
             }
 
+            EntityHandler.logSync('BroadcastToLevel', other, {
+                levelScope: myScope,
+                entityId: entity.id,
+                ownerToken: Number((entity as any)?.ownerToken ?? 0),
+                ownerPartyId: Number((entity as any)?.ownerPartyId ?? 0),
+                roomId: Number((entity as any)?.roomId ?? -1),
+                packetId: '0x08',
+                action: 'relay'
+            });
             other.send(0x8, data);
         }
     }

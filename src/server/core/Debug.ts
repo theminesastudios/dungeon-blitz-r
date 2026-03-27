@@ -37,6 +37,7 @@ export const DebugConfig = {
     unhandledPackets: parseBooleanEnv('DEBUG_UNHANDLED_PACKETS', parseBooleanEnv('DEBUG_ENABLED', false)),
     router: parseBooleanEnv('DEBUG_ROUTER', parseBooleanEnv('DEBUG_ENABLED', false)),
     dedup: parseBooleanEnv('DEBUG_DEDUP', false),
+    sync: parseBooleanEnv('DEBUG_SYNC', parseBooleanEnv('DEBUG_ENABLED', false)),
     payloadPreviewBytes: Math.max(1, Number(process.env.DEBUG_PAYLOAD_PREVIEW_BYTES ?? 64) || 64)
 };
 
@@ -104,13 +105,23 @@ export class DebugLogger {
         );
     }
 
+    static logSync(scope: string, client: Client | null | undefined, details: Record<string, unknown>): void {
+        if (!DebugConfig.sync) {
+            return;
+        }
+
+        console.log(
+            `[Debug][Sync][${scope}] ${DebugLogger.formatClient(client)} ${JSON.stringify(details)}`
+        );
+    }
+
     static logStartup(): void {
         if (!DebugConfig.enabled) {
             return;
         }
 
         console.log(
-            `[Debug] enabled packets=${DebugConfig.packets} router=${DebugConfig.router} unhandled=${DebugConfig.unhandledPackets} payloads=${DebugConfig.packetPayloads} dedup=${DebugConfig.dedup}`
+            `[Debug] enabled packets=${DebugConfig.packets} router=${DebugConfig.router} unhandled=${DebugConfig.unhandledPackets} payloads=${DebugConfig.packetPayloads} dedup=${DebugConfig.dedup} sync=${DebugConfig.sync}`
         );
     }
 }

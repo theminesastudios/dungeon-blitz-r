@@ -1,4 +1,5 @@
 import { Client } from '../core/Client';
+import { DebugLogger } from '../core/Debug';
 import { BitReader } from '../network/protocol/bitReader';
 
 export class CommandHandler {
@@ -14,10 +15,14 @@ export class CommandHandler {
         const clientDesync = br.readMethod15();
         const serverEcho = br.readMethod24();
 
-        // Used for heartbeat / sync
-        // Python implementation effectively does nothing but parse and maybe log desync.
-        // We'll just log deeply verbose if needed, otherwise ignore to avoid spam.
-        // console.log(`[LinkUpdater] Sync: elapsed=${clientElapsed}, desync=${clientDesync}, echo=${serverEcho}`);
+        DebugLogger.logSync('LinkUpdater', client, {
+            clientElapsed,
+            clientDesync,
+            serverEcho,
+            currentRoomId: Number(client.currentRoomId ?? -1),
+            knownEntityCount: client.knownEntityIds?.size ?? 0,
+            localEntityCount: client.entities?.size ?? 0
+        });
     }
 
     static handleQueuePotion(client: Client, data: Buffer): void {
