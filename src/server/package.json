@@ -7,6 +7,7 @@
     "dev": "nodemon --ext ts,js --exec \"node tools/runDevServer.js\"",
     "dev:discord-bridge": "ts-node tools/discordLocalBridge.ts",
     "build": "tsc",
+    "register:linked-roles": "ts-node tools/registerLinkedRolesMetadata.ts",
     "start:multiplayer": "node tools/startMultiplayerServer.js",
     "start:discord-bridge": "node dist/tools/discordLocalBridge.js"
   },
@@ -24,6 +25,8 @@
   "dependencies": {
     "@types/express": "^5.0.6",
     "discord-rpc": "^4.0.1",
+    "discord-interactions": "^4.4.0",
+    "dotenv": "^17.3.1",
     "express": "^5.2.1"
   }
 }

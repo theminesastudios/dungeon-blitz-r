@@ -1,0 +1,21 @@
+{
+  "oauthByDiscordUserId": {
+    "285118390031351809": {
+      "accessToken": "MTQ0Nzk1NDI1NTQ1MjMxMTY5NQ.QB6PRIRE8XH5HOSc6IIfPhLc2GfTRg",
+      "refreshToken": "Sg3xXbb48biyZWfZiBpCsOj8DKqFAb",
+      "expiresAt": 1775168263922,
+      "scope": "sdk.social_layer role_connections.write identify openid"
+    }
+  },
+  "linksByDiscordUserId": {
+    "285118390031351809": {
+      "accountId": 1,
+      "characterName": "Neo",
+      "linkedAt": "2026-03-26T21:55:54.659Z",
+      "updatedAt": "2026-03-26T22:17:44.176Z"
+    }
+  },
+  "discordUserIdByAccountId": {
+    "1": "285118390031351809"
+  }
+}

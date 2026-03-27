@@ -17,6 +17,7 @@ import {
     PendingTeleport
 } from '../core/SocialState';
 import { areClientsInSameLevelScope, getClientLevelScope } from '../core/LevelScope';
+import { discordSocialBridge } from '../integrations/DiscordSocialBridge';
 
 const db = new JsonAdapter();
 
@@ -39,6 +40,14 @@ export interface DiscordPartyJoinResult {
         | 'party-full';
     message: string;
     partyId: number | null;
+}
+
+export interface DiscordPartyCreateResult {
+    ok: boolean;
+    reason: 'ok' | 'requester-offline';
+    message: string;
+    partyId: number | null;
+    created: boolean;
 }
 
 export class SocialHandler {
@@ -794,6 +803,7 @@ export class SocialHandler {
         const requesterDisplayName = requester.character.name;
         const requesterParty = SocialHandler.getPartyForName(requesterDisplayName);
         if (requesterParty && requesterParty.partyId === targetPartyId) {
+            SocialHandler.sendChatStatus(requester, 'You are already in that Discord party.');
             return {
                 ok: false,
                 reason: 'already-in-party',
@@ -803,6 +813,7 @@ export class SocialHandler {
         }
 
         if (requesterParty) {
+            SocialHandler.sendChatStatus(requester, 'Leave your current party before joining a Discord party.');
             return {
                 ok: false,
                 reason: 'requester-in-party',
@@ -813,6 +824,7 @@ export class SocialHandler {
 
         const group = GlobalState.partyGroups.get(targetPartyId);
         if (!group) {
+            SocialHandler.sendChatStatus(requester, 'That Discord party is no longer active.');
             return {
                 ok: false,
                 reason: 'party-not-found',
@@ -823,6 +835,7 @@ export class SocialHandler {
 
         const expectedLeaderKey = SocialHandler.normalizeName(expectedLeaderName);
         if (expectedLeaderKey && SocialHandler.normalizeName(group.leader) !== expectedLeaderKey) {
+            SocialHandler.sendChatStatus(requester, 'That Discord party invite is no longer valid.');
             return {
                 ok: false,
                 reason: 'party-leader-mismatch',
@@ -832,6 +845,7 @@ export class SocialHandler {
         }
 
         if (group.locked) {
+            SocialHandler.sendChatStatus(requester, `${group.leader}'s party is locked.`);
             return {
                 ok: false,
                 reason: 'party-locked',
@@ -841,6 +855,7 @@ export class SocialHandler {
         }
 
         if (group.members.length >= SocialHandler.MAX_PARTY_SIZE) {
+            SocialHandler.sendChatStatus(requester, `${group.leader}'s party is already full.`);
             return {
                 ok: false,
                 reason: 'party-full',
@@ -849,14 +864,60 @@ export class SocialHandler {
             };
         }
 
+        const existingMembers = [...group.members];
         SocialHandler.addPartyMember(group, requesterDisplayName);
         SocialHandler.broadcastPartyUpdateById(targetPartyId);
+        SocialHandler.sendChatStatus(requester, `You joined ${group.leader}'s party through Discord.`);
+        for (const member of existingMembers) {
+            SocialHandler.sendChatStatus(
+                SocialHandler.getOnlineSession(member),
+                `${requesterDisplayName} joined the party through Discord.`
+            );
+        }
 
         return {
             ok: true,
             reason: 'ok',
             message: `${requesterDisplayName} joined ${group.leader}'s party.`,
             partyId: targetPartyId
+        };
+    }
+
+    static ensurePartyForDiscordHost(requesterName: string): DiscordPartyCreateResult {
+        const requester = SocialHandler.getOnlineSession(requesterName);
+        if (!requester?.character) {
+            return {
+                ok: false,
+                reason: 'requester-offline',
+                message: `Character ${requesterName} is not online.`,
+                partyId: null,
+                created: false
+            };
+        }
+
+        const requesterDisplayName = requester.character.name;
+        const existingParty = SocialHandler.getPartyForName(requesterDisplayName);
+        if (existingParty) {
+            SocialHandler.broadcastPartyUpdateById(existingParty.partyId);
+            return {
+                ok: true,
+                reason: 'ok',
+                message: `${requesterDisplayName} is already hosting a party.`,
+                partyId: existingParty.partyId,
+                created: false
+            };
+        }
+
+        const group = SocialHandler.createParty(requesterDisplayName);
+        SocialHandler.broadcastPartyUpdateById(group.id);
+        SocialHandler.sendChatStatus(requester, 'Party created. Discord friends can now ask to join.');
+
+        return {
+            ok: true,
+            reason: 'ok',
+            message: `${requesterDisplayName} created a party.`,
+            partyId: group.id,
+            created: true
         };
     }
 
@@ -867,7 +928,16 @@ export class SocialHandler {
     static handlePublicChat(client: Client, data: Buffer): void {
         const br = new BitReader(data);
         br.readMethod9();
-        br.readMethod13();
+        const message = br.readMethod13().trim();
+
+        if (client.character && message) {
+            discordSocialBridge.relay({
+                scope: 'public',
+                senderName: client.character.name,
+                message,
+                levelName: client.currentLevel || undefined
+            });
+        }
 
         SocialHandler.relayToLevel(client, 0x2c, data, false, true);
     }
@@ -1451,6 +1521,14 @@ export class SocialHandler {
             SocialHandler.sendChatStatus(client, 'You are not in a party.');
             return;
         }
+
+        discordSocialBridge.relay({
+            scope: 'party',
+            senderName: client.character.name,
+            message,
+            levelName: client.currentLevel || undefined,
+            partyId: party.partyId
+        });
 
         const payload = SocialHandler.buildGroupChatPayload(client.character.name, message);
         for (const member of party.group.members) {

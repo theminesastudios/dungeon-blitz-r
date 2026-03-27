@@ -1,0 +1,16 @@
+{
+  "appId": "1447954255452311695",
+  "port": 47631,
+  "presenceUrl": "http://127.0.0.1:8000/api/presence/self",
+  "joinUrl": "http://127.0.0.1:8000/api/presence/discord-join",
+  "characterName": "",
+  "pollMs": 4000,
+  "largeImageText": "In Game",
+  "smallImageKey": "dungeon_blitz",
+  "smallImageText": "Dungeon Blitz",
+  "largeImageHomeKey": "home",
+  "largeImageDungeonKey": "indungeon",
+  "largeImageNewbieRoadKey": "newbieroad",
+  "logPayloads": false,
+  "targetProcessName": ""
+}

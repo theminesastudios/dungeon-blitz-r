@@ -5,6 +5,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "cd src/server && npm run dev",
+        "dev:server": "npm run dev",
         "build": "cd src/server && npm run build",
         "start:multiplayer": "cd src/server && npm run start:multiplayer",
         "start:discord-bridge": "cd src/server && npm run start:discord-bridge",
@@ -14,9 +15,9 @@
         "dev:discord-bridge": "cd src/server && npm run dev:discord-bridge",
         "dev:with-discord": "concurrently -n GAME,RPC -c blue,magenta \"npm run dev\" \"npm run dev:discord-bridge\""
     },
+    "author": "The Minesa Studios",
     "devDependencies": {
         "concurrently": "^9.2.1"
     },
-    "author": "The Minesa Studios",
     "license": "MIT"
 }

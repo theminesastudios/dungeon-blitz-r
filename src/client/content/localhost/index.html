@@ -6,6 +6,16 @@
   <script src="js/swfobject.min.js"></script>
 
   <style>
+    :root {
+      color-scheme: dark;
+      --discord-accent: #5865f2;
+      --discord-accent-strong: #7289ff;
+      --discord-surface: rgba(12, 14, 24, 0.92);
+      --discord-border: rgba(130, 146, 255, 0.28);
+      --discord-text: #eef2ff;
+      --discord-muted: rgba(238, 242, 255, 0.72);
+    }
+
     html, body {
       margin: 0;
       padding: 0;
@@ -40,6 +50,182 @@
       padding-top: 20vh;
     }
 
+    #discord-party-button {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      padding: 12px 16px;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.12), transparent 42%),
+        linear-gradient(135deg, var(--discord-accent-strong), var(--discord-accent));
+      color: white;
+      font: 600 14px/1 sans-serif;
+      letter-spacing: 0.02em;
+      box-shadow: 0 14px 38px rgba(0, 0, 0, 0.45);
+      cursor: pointer;
+    }
+
+    #discord-party-panel {
+      position: fixed;
+      right: 18px;
+      bottom: 74px;
+      width: min(340px, calc(100vw - 36px));
+      z-index: 30;
+      display: none;
+      border: 1px solid var(--discord-border);
+      border-radius: 18px;
+      padding: 16px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 20%),
+        var(--discord-surface);
+      color: var(--discord-text);
+      font-family: sans-serif;
+      box-shadow: 0 18px 46px rgba(0, 0, 0, 0.46);
+      backdrop-filter: blur(16px);
+    }
+
+    #discord-party-panel[data-open="true"] {
+      display: block;
+    }
+
+    #discord-party-panel h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+    }
+
+    #discord-party-panel p {
+      margin: 0;
+      color: var(--discord-muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    #discord-party-status {
+      margin-top: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    #discord-party-status strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+      color: #fff;
+    }
+
+    #discord-party-status span {
+      display: block;
+      color: var(--discord-muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    #discord-party-meta {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--discord-muted);
+    }
+
+    #discord-party-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    #discord-linked-roles {
+      margin-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 14px;
+    }
+
+    #discord-linked-roles h4 {
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+
+    #discord-linked-roles p {
+      font-size: 12px;
+    }
+
+    #discord-linked-roles-status {
+      margin-top: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    #discord-linked-roles-status strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+      color: #fff;
+    }
+
+    #discord-linked-roles-status span {
+      display: block;
+      color: var(--discord-muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    #discord-linked-roles-meta {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--discord-muted);
+    }
+
+    #discord-linked-roles-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    #discord-party-actions button,
+    #discord-party-actions a,
+    #discord-linked-roles-actions button {
+      flex: 1 1 140px;
+      border-radius: 12px;
+      padding: 11px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font: 600 13px/1 sans-serif;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    #discord-party-refresh {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--discord-text);
+    }
+
+    #discord-party-create {
+      background: rgba(114, 137, 255, 0.18);
+      color: white;
+    }
+
+    #discord-party-open {
+      background: var(--discord-accent);
+      color: white;
+    }
+
+    #discord-linked-roles-connect {
+      background: rgba(114, 137, 255, 0.18);
+      color: white;
+    }
+
+    #discord-linked-roles-sync {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--discord-text);
+    }
+
     a { color: #6cf; }
   </style>
 </head>
@@ -47,6 +233,40 @@
 <body>
 
   <div id="game-container"></div>
+  <button id="discord-party-button" type="button">Discord Party</button>
+  <aside id="discord-party-panel" aria-live="polite" data-open="false">
+    <h3>Host Or Join Via Discord</h3>
+    <p>
+      Create a party in-game, then Discord can expose an Ask to Join action for friends.
+    </p>
+    <div id="discord-party-status">
+      <strong>Checking session…</strong>
+      <span>Waiting for the game to report your current party state.</span>
+    </div>
+    <div id="discord-party-meta"></div>
+    <div id="discord-party-actions">
+      <button id="discord-party-create" type="button">Parti Kur</button>
+      <button id="discord-party-refresh" type="button">Refresh</button>
+      <a id="discord-party-open" href="https://discord.com/app" target="_blank" rel="noreferrer">
+        Open Discord
+      </a>
+    </div>
+    <section id="discord-linked-roles" aria-live="polite">
+      <h4>Linked Roles</h4>
+      <p>
+        Link the current Dungeon Blitz character to Discord, then sync level, class, and item metadata on demand.
+      </p>
+      <div id="discord-linked-roles-status">
+        <strong>Not connected</strong>
+        <span>Log into the game with one active character, then start the Linked Roles flow.</span>
+      </div>
+      <div id="discord-linked-roles-meta"></div>
+      <div id="discord-linked-roles-actions">
+        <button id="discord-linked-roles-connect" type="button">Connect Roles</button>
+        <button id="discord-linked-roles-sync" type="button">Sync Metadata</button>
+      </div>
+    </section>
+  </aside>
 
   <div id="flash-hint">
     <div>
@@ -76,10 +296,301 @@
     const localBridgeBaseUrl = "http://127.0.0.1:47631";
     const selfPresenceUrl = "/api/presence/self";
     const discordJoinUrl = "/api/presence/discord-join";
+    const createPartyUrl = "/api/presence/create-party";
+    const linkedRolesConnectUrl = "/api/discord-linked-roles/connect";
+    const linkedRolesSyncUrl = "/api/discord-linked-roles/sync";
     const presencePollMs = 4000;
     const localDiscordBridgeEnabled =
       window.location.protocol === "http:" || window.location.protocol === "https:";
     let lastPresenceHash = "";
+    const discordPartyButton = document.getElementById("discord-party-button");
+    const discordPartyPanel = document.getElementById("discord-party-panel");
+    const discordPartyStatus = document.getElementById("discord-party-status");
+    const discordPartyMeta = document.getElementById("discord-party-meta");
+    const discordPartyCreate = document.getElementById("discord-party-create");
+    const discordPartyRefresh = document.getElementById("discord-party-refresh");
+    const discordLinkedRolesStatus = document.getElementById("discord-linked-roles-status");
+    const discordLinkedRolesMeta = document.getElementById("discord-linked-roles-meta");
+    const discordLinkedRolesConnect = document.getElementById("discord-linked-roles-connect");
+    const discordLinkedRolesSync = document.getElementById("discord-linked-roles-sync");
+
+    function setDiscordPartyStatus(title, message, meta) {
+      discordPartyStatus.innerHTML = "";
+
+      const titleNode = document.createElement("strong");
+      titleNode.textContent = title;
+      const messageNode = document.createElement("span");
+      messageNode.textContent = message;
+
+      discordPartyStatus.appendChild(titleNode);
+      discordPartyStatus.appendChild(messageNode);
+      discordPartyMeta.textContent = meta || "";
+    }
+
+    function updateDiscordPartyPanel(session) {
+      if (!localDiscordBridgeEnabled) {
+        setDiscordPartyStatus(
+          "Discord bridge unavailable",
+          "Open the game over HTTP so the local Discord bridge can sync your session.",
+          ""
+        );
+        return;
+      }
+
+      if (!session) {
+        setDiscordPartyStatus(
+          "No active character",
+          "Log into the game first. When your character is online, Discord party status can sync automatically.",
+          ""
+        );
+        return;
+      }
+
+      const partySize = Number(session.partySize || 0);
+      const partyMax = Number(session.partyMax || 0);
+      const partyId = Number(session.partyId || 0);
+      const partyLocked = Boolean(session.partyLocked);
+      const hasJoinSecret = Boolean(String(session.joinSecret || "").trim());
+      const canJoinOnDiscord =
+        partyId > 0 && hasJoinSecret && !partyLocked && (!partyMax || partySize < partyMax);
+      const meta = session.characterName
+        ? `Character: ${session.characterName}${partyId > 0 ? ` | Party ${partySize}/${partyMax || "?"}` : ""}`
+        : "";
+
+      if (canJoinOnDiscord) {
+        setDiscordPartyStatus(
+          "Discord join is live",
+          "Friends can find your activity on Discord and use Ask to Join while this character stays online.",
+          meta
+        );
+        return;
+      }
+
+      if (partyId > 0 && partyLocked) {
+        setDiscordPartyStatus(
+          "Party is locked",
+          "Unlock the party in-game if you want Discord friends to request access.",
+          meta
+        );
+        return;
+      }
+
+      if (partyId > 0 && partyMax && partySize >= partyMax) {
+        setDiscordPartyStatus(
+          "Party is full",
+          "Free up a slot in-game before Discord can accept more join requests.",
+          meta
+        );
+        return;
+      }
+
+      setDiscordPartyStatus(
+        "Create a party to host on Discord",
+        "Once you are grouped in-game, Discord can advertise your session and let friends ask to join.",
+        meta
+      );
+    }
+
+    function setDiscordLinkedRolesStatus(title, message, meta) {
+      discordLinkedRolesStatus.innerHTML = "";
+
+      const titleNode = document.createElement("strong");
+      titleNode.textContent = title;
+      const messageNode = document.createElement("span");
+      messageNode.textContent = message;
+
+      discordLinkedRolesStatus.appendChild(titleNode);
+      discordLinkedRolesStatus.appendChild(messageNode);
+      discordLinkedRolesMeta.textContent = meta || "";
+    }
+
+    function updateDiscordLinkedRolesPanel(session) {
+      if (!session) {
+        setDiscordLinkedRolesStatus(
+          "No active character",
+          "Select a character in-game before linking Discord Linked Roles.",
+          ""
+        );
+        return;
+      }
+
+      const level = Number(session.level || 1);
+      const className = String(session.characterClass || "Unknown");
+      setDiscordLinkedRolesStatus(
+        "Ready to link",
+        "Open Discord authorization, then use Sync Metadata whenever you want to push updated stats.",
+        `Character: ${session.characterName} | Level ${level} ${className}`
+      );
+    }
+
+    async function refreshDiscordPartyPanel() {
+      if (!localDiscordBridgeEnabled) {
+        updateDiscordPartyPanel(null);
+        return;
+      }
+
+      try {
+        const response = await fetch(selfPresenceUrl, {
+          cache: "no-store",
+          credentials: "same-origin"
+        });
+
+        if (!response.ok) {
+          updateDiscordPartyPanel(null);
+          return;
+        }
+
+        const payload = await response.json();
+        updateDiscordPartyPanel(payload && payload.session ? payload.session : null);
+        updateDiscordLinkedRolesPanel(payload && payload.session ? payload.session : null);
+      } catch (_error) {
+        setDiscordPartyStatus(
+          "Status unavailable",
+          "The game is still running, but Discord party status could not be refreshed right now.",
+          ""
+        );
+        setDiscordLinkedRolesStatus(
+          "Status unavailable",
+          "The game is still running, but the current linked-role character could not be resolved right now.",
+          ""
+        );
+      }
+    }
+
+    async function createDiscordParty() {
+      discordPartyCreate.disabled = true;
+
+      try {
+        const response = await fetch(createPartyUrl, {
+          method: "POST",
+          cache: "no-store",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({})
+        });
+        const payload = await response.json().catch(function () {
+          return null;
+        });
+
+        if (!response.ok || !payload || !payload.ok) {
+          setDiscordPartyStatus(
+            "Party could not be created",
+            payload && payload.message
+              ? String(payload.message)
+              : "The server could not create a party for the current character.",
+            ""
+          );
+          return;
+        }
+
+        setDiscordPartyStatus(
+          payload.created ? "Party created" : "Party already active",
+          payload.created
+            ? "Your party is ready. Discord friends can now use Ask to Join."
+            : "You already have a party. Discord friends can use Ask to Join if the party is open.",
+          payload.partyId ? `Party ID: ${payload.partyId}` : ""
+        );
+        await refreshDiscordPartyPanel();
+      } catch (_error) {
+        setDiscordPartyStatus(
+          "Party could not be created",
+          "The request failed before the game server could confirm the new party.",
+          ""
+        );
+      } finally {
+        discordPartyCreate.disabled = false;
+      }
+    }
+
+    function formatLinkedRoleProfile(profile) {
+      if (!profile) {
+        return "";
+      }
+
+      return `Character: ${profile.characterName} | Level ${profile.level} ${profile.className}`;
+    }
+
+    async function connectDiscordLinkedRoles() {
+      discordLinkedRolesConnect.disabled = true;
+
+      try {
+        const response = await fetch(`${linkedRolesConnectUrl}?format=json`, {
+          cache: "no-store",
+          credentials: "same-origin"
+        });
+        const payload = await response.json().catch(function () {
+          return null;
+        });
+
+        if (!response.ok || !payload || !payload.ok || !payload.connectUrl) {
+          setDiscordLinkedRolesStatus(
+            "Connect failed",
+            payload && payload.message
+              ? String(payload.message)
+              : "The game server could not prepare a Linked Roles authorization link.",
+            ""
+          );
+          return;
+        }
+
+        window.open(String(payload.connectUrl), "_blank", "noopener,noreferrer");
+        setDiscordLinkedRolesStatus(
+          "Authorization opened",
+          "Finish the Discord authorization in the new tab, then return here and use Sync Metadata after your character changes.",
+          `Character: ${payload.characterName} | Level ${payload.level} ${payload.characterClass || "Unknown"}`
+        );
+      } catch (_error) {
+        setDiscordLinkedRolesStatus(
+          "Connect failed",
+          "The local game server could not prepare the Discord Linked Roles authorization flow.",
+          ""
+        );
+      } finally {
+        discordLinkedRolesConnect.disabled = false;
+      }
+    }
+
+    async function syncDiscordLinkedRoles() {
+      discordLinkedRolesSync.disabled = true;
+
+      try {
+        const response = await fetch(linkedRolesSyncUrl, {
+          method: "POST",
+          cache: "no-store",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({})
+        });
+        const payload = await response.json().catch(function () {
+          return null;
+        });
+
+        if (!response.ok || !payload || !payload.ok) {
+          setDiscordLinkedRolesStatus(
+            "Sync failed",
+            payload && payload.error
+              ? String(payload.error)
+              : "The Linked Roles metadata could not be pushed to Discord.",
+            ""
+          );
+          return;
+        }
+
+        setDiscordLinkedRolesStatus(
+          "Metadata synced",
+          "Discord now has the latest level, class, and item counts for this linked character.",
+          formatLinkedRoleProfile(payload.profile)
+        );
+      } catch (_error) {
+        setDiscordLinkedRolesStatus(
+          "Sync failed",
+          "The local server could not sync Linked Roles metadata right now.",
+          ""
+        );
+      } finally {
+        discordLinkedRolesSync.disabled = false;
+      }
+    }
 
     function showFallback() {
       document.getElementById("flash-hint").style.display = "none";
@@ -127,6 +638,7 @@
 
         const payload = await response.json();
         const session = payload && payload.session ? payload.session : null;
+        updateDiscordPartyPanel(session);
         if (!session) {
           if (lastPresenceHash) {
             lastPresenceHash = "";
@@ -161,6 +673,34 @@
         // Keep polling; game must continue even if presence sync fails.
       }
     }
+
+    discordPartyButton.addEventListener("click", function () {
+      const isOpen = discordPartyPanel.getAttribute("data-open") === "true";
+      discordPartyPanel.setAttribute("data-open", isOpen ? "false" : "true");
+
+      if (!isOpen) {
+        void refreshDiscordPartyPanel();
+      }
+    });
+
+    discordPartyRefresh.addEventListener("click", function () {
+      void refreshDiscordPartyPanel();
+    });
+
+    discordPartyCreate.addEventListener("click", function () {
+      void createDiscordParty();
+    });
+
+    discordLinkedRolesConnect.addEventListener("click", function () {
+      void connectDiscordLinkedRoles();
+    });
+
+    discordLinkedRolesSync.addEventListener("click", function () {
+      void syncDiscordLinkedRoles();
+    });
+
+    updateDiscordPartyPanel(null);
+    updateDiscordLinkedRolesPanel(null);
 
     // Attempt native Flash immediately
     swfobject.embedSWF(

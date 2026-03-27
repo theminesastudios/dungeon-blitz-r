@@ -3,9 +3,12 @@ import * as fs from 'fs';
 import type { Server as HttpServer } from 'http';
 import * as path from 'path';
 import type { Request } from 'express';
+import { verifyKey } from 'discord-interactions';
 import { Config } from './config';
 import { PresenceService } from './PresenceService';
 import { SocialHandler } from '../handlers/SocialHandler';
+import type { Client } from './Client';
+import { discordLinkedRolesService } from '../integrations/DiscordLinkedRolesService';
 
 function resolveContentDir(relativeContentPath: string): string {
     const candidates = [
@@ -26,6 +29,7 @@ function resolveContentDir(relativeContentPath: string): string {
 }
 
 export class StaticServer {
+    private static readonly LINKED_ROLES_STATE_TTL_MS = 15 * 60 * 1000;
     private app: express.Application;
     private server: HttpServer | null;
     private port: number;
@@ -80,10 +84,62 @@ export class StaticServer {
         return req.socket.remoteAddress ?? '';
     }
 
+    private resolveLinkedRolesClient(req: Request): {
+        ok: true;
+        client: Client;
+    } | {
+        ok: false;
+        statusCode: number;
+        body: Record<string, unknown>;
+    } {
+        const selection = PresenceService.selectRequesterClient(this.resolveRequesterAddress(req));
+        if (selection.reason !== 'ok' || !selection.client) {
+            const statusCode =
+                selection.reason === 'ambiguous' ? 409 : selection.reason === 'not-found' ? 404 : 404;
+            return {
+                ok: false,
+                statusCode,
+                body: {
+                    ok: false,
+                    reason: selection.reason,
+                    message:
+                        selection.reason === 'ambiguous'
+                            ? 'Multiple active characters were detected for this browser session. Leave only one character online before linking Discord.'
+                            : 'Could not resolve the active Dungeon Blitz character for this browser session.',
+                    availableCharacters: selection.availableCharacters
+                }
+            };
+        }
+
+        if (!selection.client.userId || !String(selection.client.character?.name ?? '').trim()) {
+            return {
+                ok: false,
+                statusCode: 404,
+                body: {
+                    ok: false,
+                    reason: 'not-linked',
+                    message: 'Log into the game and select a character before linking Discord.'
+                }
+            };
+        }
+
+        return {
+            ok: true,
+            client: selection.client
+        };
+    }
+
     private setupRoutes(): void {
         const devSettingsPath = path.join(this.contentDir, 'p', 'cbq', 'devSettings.xml');
 
-        this.app.use(express.json({ limit: '64kb' }));
+        this.app.use(
+            express.json({
+                limit: '64kb',
+                verify: (req, _res, buf) => {
+                    (req as Request & { rawBody?: Buffer }).rawBody = Buffer.from(buf);
+                }
+            })
+        );
 
         this.app.use((req, res, next) => {
             const shouldLog =
@@ -240,6 +296,210 @@ export class StaticServer {
                 message: result.message,
                 partyId: result.partyId
             });
+        });
+
+        this.app.post('/api/presence/create-party', (req, res) => {
+            const body = req.body && typeof req.body === 'object' ? (req.body as Record<string, unknown>) : {};
+            const requesterName = String(body.requesterName ?? '').trim();
+            const resolvedRequesterName =
+                requesterName ||
+                PresenceService.selectRequesterSession(this.resolveRequesterAddress(req)).snapshot?.characterName ||
+                '';
+
+            if (!resolvedRequesterName) {
+                res.status(404).json({
+                    ok: false,
+                    reason: 'requester-not-found',
+                    message: 'Could not resolve an online character for party creation.'
+                });
+                return;
+            }
+
+            const result = SocialHandler.ensurePartyForDiscordHost(resolvedRequesterName);
+            res.setHeader('Cache-Control', 'no-store');
+            res.status(result.ok ? 200 : 404).json(result);
+        });
+
+        this.app.get('/api/discord-linked-roles/connect', (req, res) => {
+            const resolved = this.resolveLinkedRolesClient(req);
+            if (!resolved.ok) {
+                res.setHeader('Cache-Control', 'no-store');
+                res.status(resolved.statusCode).json(resolved.body);
+                return;
+            }
+
+            let connectUrl = '';
+            try {
+                connectUrl = discordLinkedRolesService.buildAuthorizeUrl(
+                    req,
+                    Number(resolved.client.userId ?? 0),
+                    String(resolved.client.character?.name ?? '')
+                );
+            } catch (error) {
+                res.setHeader('Cache-Control', 'no-store');
+                res.status(500).json({
+                    ok: false,
+                    error: error instanceof Error ? error.message : 'Failed to prepare Discord authorization URL.'
+                });
+                return;
+            }
+
+            const responseFormat = String(req.query.format ?? '').trim().toLowerCase();
+            if (responseFormat !== 'json') {
+                res.setHeader('Cache-Control', 'no-store');
+                res.redirect(302, connectUrl);
+                return;
+            }
+
+            res.setHeader('Cache-Control', 'no-store');
+            res.json({
+                ok: true,
+                connectUrl,
+                expiresInMs: StaticServer.LINKED_ROLES_STATE_TTL_MS,
+                accountId: resolved.client.userId,
+                characterName: resolved.client.character?.name ?? '',
+                characterClass: resolved.client.character?.class ?? '',
+                level: Number(resolved.client.character?.level ?? 1)
+            });
+        });
+
+        this.app.post('/api/discord-linked-roles/sync', async (req, res) => {
+            const resolved = this.resolveLinkedRolesClient(req);
+            if (!resolved.ok) {
+                res.setHeader('Cache-Control', 'no-store');
+                res.status(resolved.statusCode).json(resolved.body);
+                return;
+            }
+
+            try {
+                res.setHeader('Cache-Control', 'no-store');
+                const profile = await discordLinkedRolesService.pushMetadataForAccount(
+                    Number(resolved.client.userId ?? 0),
+                    String(resolved.client.character?.name ?? '')
+                );
+                res.json({
+                    ok: true,
+                    profile
+                });
+            } catch (error) {
+                console.error('[StaticServer] Linked Roles sync failed:', error);
+                res.setHeader('Cache-Control', 'no-store');
+                res.status(400).json({
+                    ok: false,
+                    error:
+                        error instanceof Error
+                            ? error.message
+                            : 'Could not sync Linked Roles metadata.'
+                });
+            }
+        });
+
+        this.app.get('/api/discord-linked-roles/callback', async (req, res) => {
+            const code = String(req.query.code ?? '').trim();
+            const state = String(req.query.state ?? '').trim();
+            if (!code || !state) {
+                res.status(400).type('text/html').send(`
+                    <html><body style="font-family: sans-serif; padding: 2rem; text-align: center;">
+                    <h1>Discord Link Failed</h1>
+                    <p>Missing authorization data. Start the flow again from Dungeon Blitz.</p>
+                    </body></html>
+                `);
+                return;
+            }
+
+            try {
+                const result = await discordLinkedRolesService.completeOAuth(req, code, state);
+                res.status(200).type('text/html').send(`
+                    <html><body style="font-family: sans-serif; padding: 2rem; text-align: center;">
+                    <h1>Discord Linked Roles Connected</h1>
+                    <p>${result.discordUsername} is now linked to ${result.profile.characterName}.</p>
+                    <p>Level ${result.profile.level} ${result.profile.className} and item metadata were synced to Discord.</p>
+                    <p>You can close this window and return to the game.</p>
+                    </body></html>
+                `);
+            } catch (error) {
+                console.error('[StaticServer] Linked Roles callback failed:', error);
+                res.status(400).type('text/html').send(`
+                    <html><body style="font-family: sans-serif; padding: 2rem; text-align: center;">
+                    <h1>Discord Link Failed</h1>
+                    <p>${error instanceof Error ? error.message : 'The Linked Roles callback failed.'}</p>
+                    <p>Return to Dungeon Blitz and try again.</p>
+                    </body></html>
+                `);
+            }
+        });
+
+        this.app.post('/api/discord-interactions', async (req, res) => {
+            const publicKey = String(process.env.DISCORD_APP_PUBLIC_KEY ?? '').trim();
+            const signature = String(req.get('X-Signature-Ed25519') ?? '').trim();
+            const timestamp = String(req.get('X-Signature-Timestamp') ?? '').trim();
+            const rawBody = (req as Request & { rawBody?: Buffer }).rawBody ?? Buffer.alloc(0);
+
+            if (!publicKey || !signature || !timestamp || rawBody.length === 0) {
+                res.status(401).send('invalid request signature');
+                return;
+            }
+
+            const isValid = verifyKey(rawBody, signature, timestamp, publicKey);
+            if (!isValid) {
+                res.status(401).send('invalid request signature');
+                return;
+            }
+
+            const payload = req.body && typeof req.body === 'object'
+                ? req.body as Record<string, any>
+                : {};
+
+            if (Number(payload.type ?? 0) === 1) {
+                res.json({ type: 1 });
+                return;
+            }
+
+            const commandName = String(payload.data?.name ?? '').trim().toLowerCase();
+            if (Number(payload.type ?? 0) !== 2 || commandName !== 'sync-linked-role') {
+                res.json({
+                    type: 4,
+                    data: {
+                        content: 'Unknown command.',
+                        flags: 64
+                    }
+                });
+                return;
+            }
+
+            const discordUserId = String(payload.member?.user?.id ?? payload.user?.id ?? '').trim();
+            if (!discordUserId) {
+                res.json({
+                    type: 4,
+                    data: {
+                        content: 'Could not resolve your Discord user id for this command.',
+                        flags: 64
+                    }
+                });
+                return;
+            }
+
+            try {
+                const profile = await discordLinkedRolesService.pushMetadataForDiscordUser(discordUserId);
+                res.json({
+                    type: 4,
+                    data: {
+                        content: `Linked Roles synced for ${profile.characterName}. Level ${profile.level} ${profile.className}.`,
+                        flags: 64
+                    }
+                });
+            } catch (error) {
+                res.json({
+                    type: 4,
+                    data: {
+                        content:
+                            error instanceof Error
+                                ? error.message
+                                : 'Could not sync your Linked Roles metadata.',
+                        flags: 64
+                    }
+                });
+            }
         });
 
         // Serve static files

@@ -15,10 +15,16 @@ export interface MissionDef {
     ZoneSet?: string;
     MissionLevel?: number;
     PreReqMissions?: string[];
+    PreReqText?: string;
+    OfferText?: string;
+    ActiveText?: string;
     ExpReward?: string;
     GoldReward?: string;
     ExpRewardValue?: number;
     GoldRewardValue?: number;
+    TrackerText?: string;
+    Description?: string;
+    PraiseText?: string;
 }
 
 export class MissionLoader {
@@ -104,10 +110,16 @@ export class MissionLoader {
                         ZoneSet: item.ZoneSet || "",
                         MissionLevel: parseInt(item.MissionLevel ?? "0", 10) || 0,
                         PreReqMissions: preReqMissions,
+                        PreReqText: item.PreReqText || "",
+                        OfferText: item.OfferText || "",
+                        ActiveText: item.ActiveText || "",
                         ExpReward: item.ExpReward || "",
                         GoldReward: item.GoldReward || "",
                         ExpRewardValue: expRewardNumeric ?? (this.REWARD_EXP_VALUES[expRewardKey] ?? this.REWARD_EXP_VALUES['M']),
-                        GoldRewardValue: goldRewardNumeric ?? (this.REWARD_GOLD_VALUES[goldRewardKey] ?? this.REWARD_GOLD_VALUES['M'])
+                        GoldRewardValue: goldRewardNumeric ?? (this.REWARD_GOLD_VALUES[goldRewardKey] ?? this.REWARD_GOLD_VALUES['M']),
+                        TrackerText: item.TrackerText || "",
+                        Description: item.Description || "",
+                        PraiseText: item.PraiseText || ""
                     });
                     const normalizedName = this.normalizeMissionName(missionName);
                     if (normalizedName) {

@@ -18,6 +18,9 @@ export class MissionHandler {
     private static readonly MISSION_CLAIMED = 3;
     private static readonly DEFAULT_DUNGEON_TIER = 10;
     private static readonly DEFAULT_DUNGEON_HIGHSCORE = 99999999;
+    private static readonly ACHIEVEMENT_MAMMOTH_IDOL_REWARD = 10;
+    private static readonly LOGIN_REPLAY_STARS = 3;
+    private static readonly LOGIN_REPLAY_SCORE = 0;
 
     static repairEarlyStoryOnLogin(
         character: Character,
@@ -138,23 +141,6 @@ export class MissionHandler {
                 const completedMissionDef = MissionLoader.getMissionDef(completedMissionId);
                 const completedMissionState = MissionHandler.getMissionState(client.character, completedMissionId);
 
-                if (completedMissionId === MissionID.RescueAnna) {
-                    const contactNpc = 'Anna';
-                    const addedMissionId = MissionHandler.autoAcceptFollowupMission(
-                        client.character,
-                        contactNpc,
-                        completedMissionId
-                    );
-                    if (addedMissionId) {
-                        didMutate = true;
-                        MissionHandler.sendMissionAdded(
-                            client,
-                            addedMissionId,
-                            MissionHandler.getMissionState(client.character, addedMissionId)
-                        );
-                    }
-                }
-
                 if (
                     completedMissionId !== MissionID.DefendTheShip &&
                     completedMissionDef &&
@@ -218,8 +204,10 @@ export class MissionHandler {
             missionDef,
             { currCount: Math.max(1, Number(missionDef.CompleteCount ?? 1)) }
         );
+        client.character.mammothIdols = Number(client.character.mammothIdols ?? 0) + MissionHandler.ACHIEVEMENT_MAMMOTH_IDOL_REWARD;
 
         MissionHandler.sendMissionProgress(client, missionId, 1);
+        MissionHandler.sendMissionComplete(client, missionId);
         MissionHandler.sendAchievementCompleteUi(client, missionId);
         await MissionHandler.saveCharacter(client);
     }
@@ -249,48 +237,6 @@ export class MissionHandler {
 
             MissionHandler.setMissionState(character, missionId, completionState, missionDef, {
                 currCount: Math.max(1, Number(missionDef.CompleteCount ?? 1))
-            });
-            return missionId;
-        }
-
-        return 0;
-    }
-
-    private static autoAcceptFollowupMission(
-        character: Character,
-        npcName: string,
-        excludeMissionId: number
-    ): number {
-        const normalizedNpc = MissionHandler.normalizeNpcKey(npcName);
-        if (!normalizedNpc) {
-            return 0;
-        }
-
-        for (let missionId = 1; missionId <= MissionLoader.getTotalMissions(); missionId++) {
-            if (missionId === excludeMissionId) {
-                continue;
-            }
-
-            const missionDef = MissionLoader.getMissionDef(missionId);
-            if (!missionDef) {
-                continue;
-            }
-
-            if (MissionHandler.getMissionState(character, missionId) !== MissionHandler.MISSION_NOT_STARTED) {
-                continue;
-            }
-
-            if (MissionHandler.normalizeNpcKey(missionDef.ContactName ?? '') !== normalizedNpc) {
-                continue;
-            }
-
-            if (!MissionHandler.canStartMission(character, missionDef)) {
-                continue;
-            }
-
-            const initialState = MissionHandler.getInitialMissionState(missionDef);
-            MissionHandler.setMissionState(character, missionId, initialState, missionDef, {
-                currCount: 0
             });
             return missionId;
         }
@@ -381,6 +327,50 @@ export class MissionHandler {
         bb.writeMethod4(missionId);
         bb.writeMethod11(state === MissionHandler.MISSION_IN_PROGRESS ? 1 : 0, 1);
         client.sendBitBuffer(0x85, bb);
+    }
+
+    static syncMissionStateOnLogin(client: Client): void {
+        if (!client.character) {
+            return;
+        }
+
+        const missions = MissionHandler.getMissionStateMap(client.character);
+        const missionIds = Object.keys(missions)
+            .map((value) => Number(value))
+            .filter((value) => Number.isFinite(value) && value > 0)
+            .sort((a, b) => a - b);
+
+        for (const missionId of missionIds) {
+            const entry = MissionHandler.asMissionEntry(missions[String(missionId)]);
+            const state = Number(entry.state ?? MissionHandler.MISSION_NOT_STARTED);
+
+            if (state <= MissionHandler.MISSION_NOT_STARTED) {
+                continue;
+            }
+
+            if (state >= MissionHandler.MISSION_CLAIMED) {
+                MissionHandler.sendMissionAdded(client, missionId, MissionHandler.MISSION_READY_TO_TURN_IN);
+                MissionHandler.sendMissionComplete(client, missionId);
+
+                const missionDef = MissionLoader.getMissionDef(missionId);
+                if (missionDef && Boolean(String(missionDef.Dungeon ?? '').trim())) {
+                    MissionHandler.sendMissionCompleteUi(
+                        client,
+                        missionId,
+                        MissionHandler.LOGIN_REPLAY_STARS,
+                        MissionHandler.LOGIN_REPLAY_SCORE
+                    );
+                }
+                continue;
+            }
+
+            MissionHandler.sendMissionAdded(client, missionId, state);
+
+            const progress = Math.max(0, Number(entry.currCount ?? 0));
+            if (state === MissionHandler.MISSION_IN_PROGRESS && progress > 0) {
+                MissionHandler.sendMissionProgress(client, missionId, progress);
+            }
+        }
     }
 
     private static sendMissionComplete(client: Client, missionId: number): void {
@@ -546,6 +536,8 @@ export class MissionHandler {
             mayorristas: 'nrmayor01',
             mayor: 'nrmayor01',
             anna: 'nranna03',
+            annaoutside: 'nranna03',
+            annaoutsidehard: 'nranna03hard',
             pecky: 'nrpecky',
             captainfink: 'nrcaptfink',
             fink: 'nrcaptfink'

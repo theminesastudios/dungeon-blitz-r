@@ -469,41 +469,11 @@ export class WorldEnter {
             }
             bb.writeMethod11(0, 1);
 
-            const missionsState = WorldEnter.asRecord(character.missions);
-            const totalMissions = MissionLoader.getTotalMissions();
-            bb.writeMethod4(totalMissions);
-            for (let missionId = 1; missionId <= totalMissions; missionId++) {
-                const missionDef = MissionLoader.getMissionDef(missionId);
-                const missionState = WorldEnter.asRecord(missionsState[missionId.toString()]);
-                const state = Number(missionState.state ?? 0);
-
-                if (missionDef?.Tier) {
-                    bb.writeMethod11(state >= 3 ? 1 : 0, 1);
-                    continue;
-                }
-
-                const hasEntry = state !== 0;
-                bb.writeMethod11(hasEntry ? 1 : 0, 1);
-                if (!hasEntry) {
-                    continue;
-                }
-
-                const isReady = state >= 2;
-                bb.writeMethod11(isReady ? 1 : 0, 1);
-                if (!isReady) {
-                    if ((missionDef?.highscore ?? 0) > 1) {
-                        bb.writeMethod4(Number(missionState.currCount ?? 0));
-                    }
-                    continue;
-                }
-
-                bb.writeMethod11(state >= 3 ? 1 : 0, 1);
-                if (WorldEnter.missionHasDungeonProgress(missionDef)) {
-                    bb.writeMethod11(Number(missionState.Tier ?? 0), 4);
-                    bb.writeMethod4(Number(missionState.highscore ?? 0));
-                    bb.writeMethod4(Number(missionState.Time ?? 0));
-                }
-            }
+            // Mission serialization inside 0x10 is still misaligned against the
+            // Flash client and corrupts all later fields (gear, mounts, skills).
+            // Keep the login packet stable and restore quest state through the
+            // runtime mission packets after login instead.
+            bb.writeMethod4(0);
 
             const friends = normalizeFriendEntries(character.friends);
             bb.writeMethod4(friends.length);

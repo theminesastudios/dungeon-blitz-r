@@ -5,6 +5,7 @@ import { BitReader } from '../network/protocol/bitReader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { GlobalState } from '../core/GlobalState';
 import { isCharacterIgnoring, normalizeCharacterKey } from '../core/SocialState';
+import { discordSocialBridge } from '../integrations/DiscordSocialBridge';
 
 const db = new JsonAdapter();
 
@@ -958,6 +959,14 @@ export class GuildHandler {
         const targets = members
             .map((record) => GuildHandler.getOnlineSession(record.character.name))
             .filter((session): session is Client => Boolean(session?.character));
+
+        discordSocialBridge.relay({
+            scope: 'guild',
+            senderName: client.character.name,
+            message,
+            guildName
+        });
+
         GuildHandler.sendGuildMessage(targets, 0x60, client.character.name, message);
     }
 
@@ -988,6 +997,14 @@ export class GuildHandler {
             .map((record) => GuildHandler.getOnlineSession(record.character.name))
             .filter((session): session is Client => Boolean(session?.character))
             .filter((session) => GuildHandler.getGuildRank(session.character) <= GuildHandler.RANK_OFFICER);
+
+        discordSocialBridge.relay({
+            scope: 'officer',
+            senderName: client.character.name,
+            message,
+            guildName
+        });
+
         GuildHandler.sendGuildMessage(targets, 0x62, client.character.name, message);
     }
 }

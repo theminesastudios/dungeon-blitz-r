@@ -41,6 +41,13 @@ export interface RequesterPresenceSelection {
     remoteAddress: string;
 }
 
+export interface RequesterClientSelection {
+    client: Client | null;
+    reason: 'ok' | 'no-sessions' | 'not-found' | 'ambiguous';
+    availableCharacters: string[];
+    remoteAddress: string;
+}
+
 interface PartySnapshot {
     partyId: number | null;
     partySize: number;
@@ -194,6 +201,54 @@ export class PresenceService {
 
         return {
             snapshot: null,
+            reason: 'ambiguous',
+            availableCharacters,
+            remoteAddress: normalizedAddress
+        };
+    }
+
+    static selectRequesterClient(remoteAddress: string | null | undefined): RequesterClientSelection {
+        const normalizedAddress = PresenceService.normalizeRemoteAddress(remoteAddress);
+        const sessions = Array.from(GlobalState.sessionsByToken.values()).filter((client) => {
+            return PresenceService.normalizeRemoteAddress(client.socket.remoteAddress) === normalizedAddress;
+        });
+        const availableCharacters = sessions
+            .map((client) => String(client.character?.name ?? '').trim())
+            .filter(Boolean)
+            .sort((left, right) => left.localeCompare(right));
+
+        if (!normalizedAddress) {
+            return {
+                client: null,
+                reason: 'not-found',
+                availableCharacters,
+                remoteAddress: ''
+            };
+        }
+
+        if (sessions.length === 0) {
+            return {
+                client: null,
+                reason: 'no-sessions',
+                availableCharacters,
+                remoteAddress: normalizedAddress
+            };
+        }
+
+        const spawnedSessions = sessions.filter((client) => client.playerSpawned && client.character);
+        const candidates = spawnedSessions.length > 0 ? spawnedSessions : sessions.filter((client) => client.character);
+
+        if (candidates.length === 1) {
+            return {
+                client: candidates[0] ?? null,
+                reason: 'ok',
+                availableCharacters,
+                remoteAddress: normalizedAddress
+            };
+        }
+
+        return {
+            client: null,
             reason: 'ambiguous',
             availableCharacters,
             remoteAddress: normalizedAddress

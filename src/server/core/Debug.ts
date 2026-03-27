@@ -36,6 +36,7 @@ export const DebugConfig = {
     packetPayloads: parseBooleanEnv('DEBUG_PACKET_PAYLOADS', false),
     unhandledPackets: parseBooleanEnv('DEBUG_UNHANDLED_PACKETS', parseBooleanEnv('DEBUG_ENABLED', false)),
     router: parseBooleanEnv('DEBUG_ROUTER', parseBooleanEnv('DEBUG_ENABLED', false)),
+    dedup: parseBooleanEnv('DEBUG_DEDUP', false),
     payloadPreviewBytes: Math.max(1, Number(process.env.DEBUG_PAYLOAD_PREVIEW_BYTES ?? 64) || 64)
 };
 
@@ -109,7 +110,7 @@ export class DebugLogger {
         }
 
         console.log(
-            `[Debug] enabled packets=${DebugConfig.packets} router=${DebugConfig.router} unhandled=${DebugConfig.unhandledPackets} payloads=${DebugConfig.packetPayloads}`
+            `[Debug] enabled packets=${DebugConfig.packets} router=${DebugConfig.router} unhandled=${DebugConfig.unhandledPackets} payloads=${DebugConfig.packetPayloads} dedup=${DebugConfig.dedup}`
         );
     }
 }

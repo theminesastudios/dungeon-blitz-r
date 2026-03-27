@@ -60,12 +60,14 @@ export class RewardHandler {
         WyrmCaveDungeonHard: 'Wyrm',
         WolfDenDungeon: 'Wolf',
         WolfDenDungeonHard: 'Wolf',
-        SkeletonCryptDungeon: 'Skeleton',
         SkeletonCryptDungeonHard: 'Skeleton',
         LizardTempleDungeon: 'Lizard',
         LizardTempleDungeonHard: 'Lizard',
         MummyTombDungeon: 'Mummy',
-        MummyTombDungeonHard: 'Mummy'
+        MummyTombDungeonHard: 'Mummy',
+        TutorialDungeon: 'Goblin',
+        TutorialBoat: 'Goblin',
+        CraftTownTutorial: 'Goblin'
     };
 
     private static buildLootdrop(
@@ -75,9 +77,12 @@ export class RewardHandler {
         reward: LootReward
     ): Buffer {
         const bb = new BitBuffer(false);
+        bb.writeMethod15(true); // Flag start of list item
+
         bb.writeMethod4(lootId);
-        bb.writeMethod45(Math.round(x));
-        bb.writeMethod45(Math.round(y));
+        // Coordinates for loot drops must use unsigned Method 4 (varint) to avoid bit-shifting misalignment
+        bb.writeMethod4(Math.round(x));
+        bb.writeMethod4(Math.round(y));
 
         if (reward.gear && reward.gear > 0) {
             bb.writeMethod15(true);
@@ -108,8 +113,8 @@ export class RewardHandler {
         }
         bb.writeMethod15(false);
 
+        // Terminate the list properly
         bb.writeMethod15(false);
-        bb.writeMethod4(1);
         return bb.toBuffer();
     }
 
@@ -286,7 +291,12 @@ export class RewardHandler {
         const entType = entName ? GameData.getEntType(entName) : null;
         const entLevel = Math.max(1, Number(entType?.Level ?? 1));
         const playerClass = String(client.character?.class ?? '');
-        const realm = String(entType?.Realm ?? RewardHandler.DUNGEON_REALM_MAP[client.currentLevel] ?? '');
+        
+        let realm = String(entType?.Realm ?? RewardHandler.DUNGEON_REALM_MAP[client.currentLevel] ?? '');
+        if (entType?.Realm && entType.Realm !== 'DeterminesDrop' && entType.Realm !== 'Object') {
+            realm = String(entType.Realm);
+        }
+
         const materialChance = realm ? RewardHandler.resolveMaterialDropChance(entType, reward) : 0;
 
         // Küçük Intro düşmanlar (Minion rank) ve Chains entitylerinden eşya düşmez
