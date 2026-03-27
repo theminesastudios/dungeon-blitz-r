@@ -635,8 +635,7 @@ function testSendExistingVisibleClientSpawnEntitiesPrunesStaleOutdoorOwnerBefore
     const levelMap = GlobalState.levelEntities.get('NewbieRoad');
     assert.equal(levelMap?.has(stale.id), false, 'stale outdoor owner entity should be pruned from the shared level map');
     assert.equal(levelMap?.has(canonical.id), true, 'active outdoor owner entity should remain');
-    assert.deepEqual(joiner.sentPackets.map((packet) => packet.id), [0x0D, 0x0F]);
-    assert.equal(parseDestroyEntityId(joiner.sentPackets[0]!.payload), stale.id, 'stale entity should be destroyed before seeding canonical state');
+    assert.deepEqual(joiner.sentPackets.map((packet) => packet.id), [0x0F]);
     assert.equal(joiner.knownEntityIds.has(canonical.id), true, 'joiner should only keep the canonical outdoor entity');
 }
 

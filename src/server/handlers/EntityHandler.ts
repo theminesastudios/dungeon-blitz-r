@@ -206,9 +206,10 @@ export class EntityHandler {
             }
 
             for (const entityId of removedIds) {
+                const viewerKnewEntity = other.knownEntityIds.has(entityId) || other.entities.has(entityId);
                 other.entities.delete(entityId);
                 other.knownEntityIds.delete(entityId);
-                if (!other.playerSpawned) {
+                if (!other.playerSpawned || !viewerKnewEntity) {
                     continue;
                 }
                 let payload = payloads.get(entityId);
