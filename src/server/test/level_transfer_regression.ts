@@ -618,53 +618,6 @@ function testEnterWorldTokenSkipsTargetLevelEntityIds(): void {
     assert.equal(GlobalState.tokenChar.get(4097)?.character, character);
 }
 
-function testEnterWorldDungeonPartyAnchorCarriesRoomProgress(): void {
-    const client = {
-        userId: 41,
-        character: { name: 'Scout' },
-        sendBitBuffer: () => undefined
-    };
-    const character = createCharacter('Scout');
-    character.CurrentLevel = { name: 'GoblinKidnappers', x: 24816, y: 1877 };
-    character.PreviousLevel = { name: 'NewbieRoad', x: 1421, y: 826 };
-
-    GlobalState.sessionsByToken.set(6002, {
-        token: 6002,
-        userId: 42,
-        character: createCharacter('Leader'),
-        currentLevel: 'GoblinRiverDungeon',
-        levelInstanceId: 'party-run-6002',
-        entryLevel: 'NewbieRoad',
-        currentRoomId: 7,
-        startedRoomEvents: new Set<string>([
-            'GoblinRiverDungeon:0',
-            'GoblinRiverDungeon:4',
-            'GoblinRiverDungeon:7'
-        ]),
-        syncAnchorStartedAt: 1777,
-        syncAnchorToken: 6002,
-        syncAnchorCharacterName: 'Leader',
-        playerSpawned: true
-    } as never);
-    GlobalState.partyByMember.set('scout', 88);
-    GlobalState.partyByMember.set('leader', 88);
-
-    withMockedRandom([(4101.5 / 0x10000)], () => {
-        (CharacterHandler as any).sendEnterWorld(client, character);
-    });
-
-    const pendingEntry = GlobalState.pendingWorld.get(4101);
-    assert.ok(pendingEntry);
-    assert.equal(pendingEntry?.targetLevel, 'GoblinKidnappers');
-    assert.equal(pendingEntry?.levelInstanceId, 'party-run-6002');
-    assert.equal(pendingEntry?.syncAnchorStartedAt, 1777);
-    assert.equal(pendingEntry?.syncAnchorToken, 6002);
-    assert.equal(pendingEntry?.syncAnchorCharacterName, 'Leader');
-    assert.equal(pendingEntry?.syncEntryLevel, 'NewbieRoad');
-    assert.equal(pendingEntry?.syncRoomId, 7);
-    assert.deepEqual(pendingEntry?.syncStartedRoomIds, [0, 4, 7]);
-}
-
 function testLevelTransferTokenSkipsTargetLevelEntityAndLivePlayerIds(): void {
     GlobalState.levelEntities.set('NewbieRoad', new Map<number, any>([
         [2701, { id: 2701, name: 'IntroGoblin', isPlayer: false, clientSpawned: true }]
@@ -778,19 +731,6 @@ function main(): void {
         GlobalState.levelEntities.clear();
 
         testEnterWorldTokenSkipsTargetLevelEntityIds();
-
-        GlobalState.sessionsByToken.clear();
-        GlobalState.sessionsByUserId.clear();
-        GlobalState.sessionsByCharacterName.clear();
-        GlobalState.pendingWorld.clear();
-        GlobalState.pendingExtended.clear();
-        GlobalState.usedTransferTokens.clear();
-        GlobalState.tokenChar.clear();
-        GlobalState.transferTokenAliases.clear();
-        GlobalState.levelEntities.clear();
-        GlobalState.partyByMember.clear();
-
-        testEnterWorldDungeonPartyAnchorCarriesRoomProgress();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.sessionsByUserId.clear();

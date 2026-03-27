@@ -379,26 +379,10 @@ export class CharacterHandler {
                      syncAnchorStartedAt = other.syncAnchorStartedAt > 0 ? other.syncAnchorStartedAt : Date.now();
                      syncAnchorToken = other.syncAnchorToken > 0 ? other.syncAnchorToken : token;
                      syncAnchorCharacterName = String(other.syncAnchorCharacterName || other.character.name).trim();
-                     syncRoomId = Number.isFinite(Number(other.currentRoomId)) && other.currentRoomId >= 0
-                         ? Math.round(Number(other.currentRoomId))
-                         : undefined;
-                     syncStartedRoomIds = Array.from(other.startedRoomEvents)
-                         .map((key) => {
-                             const separatorIndex = key.lastIndexOf(':');
-                             if (separatorIndex <= 0) {
-                                 return NaN;
-                             }
-
-                             const eventLevel = LevelConfig.normalizeLevelName(key.substring(0, separatorIndex));
-                             if (eventLevel !== normalizedTarget) {
-                                 return NaN;
-                             }
-
-                             const roomId = Number(key.substring(separatorIndex + 1));
-                             return Number.isFinite(roomId) && roomId >= 0 ? Math.round(roomId) : NaN;
-                         })
-                         .filter((roomId) => Number.isFinite(roomId))
-                         .sort((left, right) => left - right);
+                     // NOTE: Do NOT sync syncRoomId or syncStartedRoomIds here.
+                     // Room progress replay causes null errors in the Flash client when
+                     // it receives room event start packets before the level SWF is loaded.
+                     // Room progress will sync naturally as the Flash client loads rooms.
                      syncEntryLevel = LevelConfig.normalizeLevelName(other.entryLevel) || undefined;
                      console.log(`[EnterWorld] Syncing dungeon instance for ${char.name} with party anchor ${other.character.name} (instanceId=${levelInstanceId})`);
                      break;
