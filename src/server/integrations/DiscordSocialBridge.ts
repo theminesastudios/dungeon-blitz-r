@@ -76,8 +76,24 @@ const CONFIG_CANDIDATES = [
     path.resolve(__dirname, '..', '..', 'discord-social-bridge.config.json')
 ];
 
+function getConfigCandidates(): string[] {
+    const explicitPath = String(process.env.DISCORD_SOCIAL_BRIDGE_CONFIG ?? '').trim();
+    if (explicitPath) {
+        return [path.resolve(process.cwd(), explicitPath)];
+    }
+
+    if (String(process.env.NODE_ENV ?? '').trim().toLowerCase() !== 'development') {
+        return CONFIG_CANDIDATES;
+    }
+
+    const devCandidates = CONFIG_CANDIDATES.map((candidate) =>
+        candidate.replace(/discord-social-bridge\.config\.json$/i, 'discord-social-bridge.dev.config.json')
+    );
+    return [...devCandidates, ...CONFIG_CANDIDATES];
+}
+
 function readConfigFile(): DiscordSocialBridgeConfig {
-    for (const candidate of CONFIG_CANDIDATES) {
+    for (const candidate of getConfigCandidates()) {
         if (!fs.existsSync(candidate)) {
             continue;
         }

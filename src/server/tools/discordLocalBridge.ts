@@ -65,11 +65,23 @@ function describeError(error: unknown): string {
 }
 
 function resolveConfigPath(): string {
-    const candidates = [
+    const explicitPath = String(process.env.DISCORD_BRIDGE_CONFIG ?? '').trim();
+    if (explicitPath) {
+        return path.resolve(process.cwd(), explicitPath);
+    }
+
+    const baseCandidates = [
         path.resolve(process.cwd(), 'discord-bridge.config.json'),
         path.resolve(__dirname, '..', 'discord-bridge.config.json'),
         path.resolve(__dirname, '..', '..', 'discord-bridge.config.json')
     ];
+    const devCandidates = baseCandidates.map((candidate) =>
+        candidate.replace(/discord-bridge\.config\.json$/i, 'discord-bridge.dev.config.json')
+    );
+    const candidates =
+        String(process.env.NODE_ENV ?? '').trim().toLowerCase() === 'development'
+            ? [...devCandidates, ...baseCandidates]
+            : baseCandidates;
 
     for (const candidate of candidates) {
         if (fs.existsSync(candidate)) {
