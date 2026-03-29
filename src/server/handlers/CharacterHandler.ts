@@ -663,6 +663,7 @@ export class CharacterHandler {
         if (!restoredRoomProgress) {
             LevelHandler.primeTutorialRoomEvents(client);
         }
+        LevelHandler.syncSharedDungeonQuestProgressState(client);
         await LevelHandler.prepareCraftTownTutorialEntry(client);
         LevelHandler.scheduleClientSpawnFallback(client);
     }

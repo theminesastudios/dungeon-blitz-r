@@ -52,17 +52,41 @@ export class EntityHandler {
         return EntityHandler.CLIENT_SPAWN_LEVELS.has(levelName);
     }
 
+    private static isPrivateClientSpawnNpc(levelName: string | null | undefined, entity: any): boolean {
+        if (!levelName || !entity?.clientSpawned || entity?.isPlayer) {
+            return false;
+        }
+
+        if (levelName === 'CraftTownTutorial') {
+            return false;
+        }
+
+        return (
+            Number(entity?.team ?? 0) === 3 &&
+            EntityHandler.usesClientSpawn(levelName) &&
+            !LevelConfig.isDungeonLevel(levelName)
+        );
+    }
+
     private static isSharedClientSpawnRegionActor(levelName: string | null | undefined, entity: any): boolean {
         if (!levelName || !entity?.clientSpawned || entity?.isPlayer) {
             return false;
         }
 
         const team = Number(entity?.team ?? 0);
-        if (team !== 2 && team !== 3) {
-            return false;
+        if (team === 2) {
+            return EntityHandler.usesClientSpawn(levelName) || LevelConfig.isDungeonLevel(levelName);
         }
 
-        return EntityHandler.usesClientSpawn(levelName) || LevelConfig.isDungeonLevel(levelName);
+        if (team === 3) {
+            if (EntityHandler.isPrivateClientSpawnNpc(levelName, entity)) {
+                return false;
+            }
+
+            return levelName === 'CraftTownTutorial' || LevelConfig.isDungeonLevel(levelName);
+        }
+
+        return false;
     }
 
     private static getLevelMap(
@@ -259,7 +283,15 @@ export class EntityHandler {
     }
 
     static shouldRelayEntityToOtherClients(levelName: string | null | undefined, entity: any): boolean {
+        if (EntityHandler.isPrivateClientSpawnNpc(levelName, entity)) {
+            return false;
+        }
+
         return !EntityHandler.isPartySharedClientSpawnHostile(levelName, entity);
+    }
+
+    static shouldMirrorClientSpawnEntityToParty(levelName: string | null | undefined, entity: any): boolean {
+        return EntityHandler.isPartySharedClientSpawnHostile(levelName, entity);
     }
 
     static shouldTrackKnownEntity(levelName: string | null | undefined, entity: any): boolean {

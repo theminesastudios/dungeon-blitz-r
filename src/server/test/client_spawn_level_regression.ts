@@ -409,7 +409,7 @@ function testDungeonPartyAuthoritySuppressesDuplicateHostileSpawnsAcrossUnsynced
     assert.equal(follower.entities.has(3302), false);
 }
 
-function testOutdoorPartyAuthoritySuppressesDuplicateNpcSpawns(): void {
+function testOutdoorNpcSpawnsStayPrivateToOwner(): void {
     const owner = createFakeClient('Alpha');
     const follower = createFakeClient('Beta');
 
@@ -454,6 +454,7 @@ function testOutdoorPartyAuthoritySuppressesDuplicateNpcSpawns(): void {
         roomId: follower.currentRoomId
     };
 
+    const known = EntityHandler.ensureEntityKnown(follower as never, 'NewbieRoad', canonical.id);
     const suppressed = (EntityHandler as any).suppressDuplicateSharedClientSpawn(
         follower as never,
         'NewbieRoad',
@@ -462,11 +463,11 @@ function testOutdoorPartyAuthoritySuppressesDuplicateNpcSpawns(): void {
     );
 
     const levelMap = GlobalState.levelEntities.get('NewbieRoad');
-    assert.equal(suppressed, true, 'follower NPC spawn should be suppressed when a party authority already owns the room');
-    assert.equal(levelMap?.size, 1, 'duplicate outdoor NPC should not be added as a second shared entity');
-    assert.deepEqual(follower.sentPackets.map((packet) => packet.id), [0x0D, 0x0F]);
-    assert.equal(parseDestroyEntityId(follower.sentPackets[0]!.payload), 3401);
-    assert.equal(follower.knownEntityIds.has(canonical.id), true);
+    assert.equal(known, false, 'party peers should not receive private outdoor NPC seeds');
+    assert.equal(suppressed, false, 'private outdoor NPC spawns should not collapse to a party canonical entity');
+    assert.equal(levelMap?.size, 1, 'the owner NPC should remain isolated in the shared level map');
+    assert.deepEqual(follower.sentPackets, [], 'private outdoor NPCs should not emit destroy/adopt packets to party peers');
+    assert.equal(follower.knownEntityIds.has(canonical.id), false);
     assert.equal(follower.entities.has(3401), false);
 }
 
@@ -854,6 +855,52 @@ function testOutdoorHostileIncrementalUpdatesRelayToPartyPeers(): void {
     );
 }
 
+function testOutdoorNpcIncrementalUpdatesDoNotRelayToPartyPeers(): void {
+    const sender = createFakeClient('Alpha');
+    const watcher = createFakeClient('Beta');
+
+    sender.currentLevel = 'NewbieRoad';
+    watcher.currentLevel = 'NewbieRoad';
+    sender.currentRoomId = 2;
+    watcher.currentRoomId = 2;
+
+    const npc = {
+        id: 2206,
+        name: 'VillageGuide',
+        isPlayer: false,
+        x: 100,
+        y: 200,
+        v: 0,
+        team: 3,
+        entState: 0,
+        clientSpawned: true,
+        ownerToken: sender.token,
+        roomId: sender.currentRoomId
+    };
+
+    sender.entities.set(npc.id, { ...npc });
+    sender.knownEntityIds.add(npc.id);
+    watcher.entities.set(npc.id, { ...npc, ownerToken: watcher.token });
+    watcher.knownEntityIds.add(npc.id);
+
+    GlobalState.levelEntities.set('NewbieRoad', new Map([[npc.id, npc]]));
+    GlobalState.sessionsByToken.set(sender.token, sender as never);
+    GlobalState.sessionsByToken.set(watcher.token, watcher as never);
+    GlobalState.partyByMember.set('alpha', 189);
+    GlobalState.partyByMember.set('beta', 189);
+
+    LevelHandler.handleEntityIncrementalUpdate(
+        sender as never,
+        buildIncrementalUpdatePayload(npc.id, 8, -2, 1)
+    );
+
+    assert.equal(
+        watcher.sentPackets.some((packet) => packet.id === 0x07 || packet.id === 0x0F),
+        false,
+        'private outdoor NPC movement should remain owner-local even for party mates in the same room'
+    );
+}
+
 function testDungeonJoinerReplaysStartedRoomEventsFromPartyAnchor(): void {
     const anchor = createFakeClient('Alpha');
     const joiner = createFakeClient('Beta');
@@ -1169,7 +1216,7 @@ function main(): void {
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
-        testOutdoorPartyAuthoritySuppressesDuplicateNpcSpawns();
+        testOutdoorNpcSpawnsStayPrivateToOwner();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
@@ -1210,6 +1257,11 @@ function main(): void {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         testOutdoorHostileIncrementalUpdatesRelayToPartyPeers();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testOutdoorNpcIncrementalUpdatesDoNotRelayToPartyPeers();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();

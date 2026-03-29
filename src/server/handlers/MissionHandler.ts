@@ -1,5 +1,13 @@
 import { Client } from '../core/Client';
+import { GlobalState } from '../core/GlobalState';
 import { LevelConfig } from '../core/LevelConfig';
+import { getClientLevelScope } from '../core/LevelScope';
+import {
+    getOrCreateSharedDungeonProgressState,
+    resolveSharedDungeonProgressAuthorityToken,
+    setSharedDungeonProgressState,
+    usesSharedDungeonProgress
+} from '../core/SharedDungeonProgress';
 import { Character } from '../database/Database';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { MissionDef, MissionLoader } from '../data/MissionLoader';
@@ -153,10 +161,31 @@ export class MissionHandler {
         const levelWidthScore = br.readMethod9();
 
         const currentLevel = client.currentLevel || String(client.character.CurrentLevel?.name ?? '');
+        const levelScope = getClientLevelScope(client);
         let actualKills = Math.max(requiredKills - remainingKills, 0);
         let clearedDungeon =
             completionPercent >= 100 ||
             (requiredKills > 0 && remainingKills <= 0);
+
+        if (usesSharedDungeonProgress(currentLevel) && levelScope) {
+            const sharedState = getOrCreateSharedDungeonProgressState(levelScope);
+            if (sharedState) {
+                const liveAuthorityToken = resolveSharedDungeonProgressAuthorityToken(levelScope);
+                if (liveAuthorityToken > 0) {
+                    sharedState.authorityToken = liveAuthorityToken;
+                }
+
+                const isAuthority = sharedState.authorityToken > 0 && client.token === sharedState.authorityToken;
+                if (sharedState.progress < 100) {
+                    if (!isAuthority || completionPercent < 100) {
+                        return;
+                    }
+
+                    setSharedDungeonProgressState(levelScope, 100, sharedState.authorityToken);
+                    MissionHandler.broadcastSharedDungeonQuestProgress(levelScope, 100);
+                }
+            }
+        }
 
         let didMutate = false;
         if (currentLevel === 'TutorialBoat' || currentLevel === 'TutorialDungeon') {
@@ -420,6 +449,26 @@ export class MissionHandler {
         const bb = new BitBuffer(false);
         bb.writeMethod4(percent);
         client.sendBitBuffer(0xB7, bb);
+    }
+
+    private static buildQuestProgressPayload(percent: number): Buffer {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(Math.max(0, Math.min(100, Math.round(Number(percent ?? 0)))));
+        return bb.toBuffer();
+    }
+
+    private static broadcastSharedDungeonQuestProgress(levelScope: string, progress: number): void {
+        const payload = MissionHandler.buildQuestProgressPayload(progress);
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (!other.playerSpawned || getClientLevelScope(other) !== levelScope) {
+                continue;
+            }
+
+            if (other.character) {
+                other.character.questTrackerState = progress;
+            }
+            other.send(0xB7, payload);
+        }
     }
 
     private static sendMissionProgress(client: Client, missionId: number, progress: number): void {

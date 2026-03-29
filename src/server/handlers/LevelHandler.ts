@@ -23,6 +23,12 @@ import { normalizeCharacterKey, PendingTeleport } from '../core/SocialState';
 import { TransferTokenAllocator } from '../core/TransferTokenAllocator';
 import { areClientsInSameParty, getPartyIdForClient, sharesRoomIds } from '../core/PartySync';
 import {
+    getOrCreateSharedDungeonProgressState,
+    resolveSharedDungeonProgressAuthorityToken,
+    setSharedDungeonProgressState,
+    usesSharedDungeonProgress
+} from '../core/SharedDungeonProgress';
+import {
     areClientsInSameLevelScope,
     createDungeonInstanceId,
     getClientLevelScope,
@@ -649,9 +655,51 @@ export class LevelHandler {
     }
 
     private static sendQuestProgress(client: Client, percent: number): void {
+        client.send(0xB7, LevelHandler.buildQuestProgressPayload(percent));
+    }
+
+    private static buildQuestProgressPayload(percent: number): Buffer {
         const bb = new BitBuffer(false);
-        bb.writeMethod4(percent);
-        client.sendBitBuffer(0xB7, bb);
+        bb.writeMethod4(Math.max(0, Math.min(100, Math.round(Number(percent ?? 0)))));
+        return bb.toBuffer();
+    }
+
+    private static broadcastSharedDungeonQuestProgress(levelScope: string, progress: number): void {
+        const payload = LevelHandler.buildQuestProgressPayload(progress);
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (!other.playerSpawned || getClientLevelScope(other) !== levelScope) {
+                continue;
+            }
+
+            if (other.character) {
+                other.character.questTrackerState = progress;
+            }
+            other.send(0xB7, payload);
+        }
+    }
+
+    static syncSharedDungeonQuestProgressState(client: Client): void {
+        if (!client.currentLevel || !client.character || !usesSharedDungeonProgress(client.currentLevel)) {
+            return;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        if (!levelScope) {
+            return;
+        }
+
+        const sharedState = getOrCreateSharedDungeonProgressState(levelScope);
+        if (!sharedState) {
+            return;
+        }
+
+        const authorityToken = resolveSharedDungeonProgressAuthorityToken(levelScope);
+        if (authorityToken > 0) {
+            sharedState.authorityToken = authorityToken;
+        }
+
+        client.character.questTrackerState = sharedState.progress;
+        client.send(0xB7, LevelHandler.buildQuestProgressPayload(sharedState.progress));
     }
 
     private static sendRoomBossInfo(
@@ -2455,6 +2503,25 @@ export class LevelHandler {
             progress = previousProgress;
         }
 
+        const levelScope = getClientLevelScope(client);
+        if (usesSharedDungeonProgress(currentLevel) && levelScope) {
+            const sharedState = getOrCreateSharedDungeonProgressState(levelScope);
+            if (sharedState) {
+                const liveAuthorityToken = resolveSharedDungeonProgressAuthorityToken(levelScope);
+                if (liveAuthorityToken > 0) {
+                    sharedState.authorityToken = liveAuthorityToken;
+                }
+
+                progress = sharedState.progress;
+                if (sharedState.authorityToken > 0 && client.token === sharedState.authorityToken) {
+                    progress = Math.max(sharedState.progress, requestedProgress);
+                    setSharedDungeonProgressState(levelScope, progress, sharedState.authorityToken);
+                }
+            } else {
+                progress = 0;
+            }
+        }
+
         if (client.character) {
             client.character.questTrackerState = progress;
         }
@@ -2471,6 +2538,11 @@ export class LevelHandler {
                 previousProgress,
                 progress
             });
+        }
+
+        if (usesSharedDungeonProgress(currentLevel) && levelScope) {
+            LevelHandler.broadcastSharedDungeonQuestProgress(levelScope, progress);
+            return;
         }
 
         LevelHandler.relayToLevel(client, 0xB7, data);

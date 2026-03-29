@@ -54,6 +54,7 @@ export class GlobalState {
 
     // Level scope key -> Map<EntityId, EntityData>
     static levelEntities: Map<string, Map<number, any>> = new Map();
+    static levelQuestProgress: Map<string, { progress: number; authorityToken: number }> = new Map();
     static combatContributions: Map<string, Map<string, number>> = new Map();
     static entityLifeNonces: Map<string, number> = new Map();
     static entityLastRewardNonces: Map<string, number> = new Map();

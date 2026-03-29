@@ -299,8 +299,8 @@ export class CombatHandler {
         return GlobalState.levelEntities.get(levelName)?.get(entityId) ?? null;
     }
 
-    private static isLocalOnlyClientSpawnEntity(levelName: string, entity: any): boolean {
-        return !EntityHandler.shouldRelayEntityToOtherClients(levelName, entity);
+    private static shouldMirrorClientSpawnEntityToParty(levelName: string, entity: any): boolean {
+        return EntityHandler.shouldMirrorClientSpawnEntityToParty(levelName, entity);
     }
 
     private static getCombatRecipients(anchor: Client, includeAnchor: boolean = false): Client[] {
@@ -346,12 +346,12 @@ export class CombatHandler {
         }
 
         const canonicalEntity = CombatHandler.resolveLevelEntity(levelScope, entityId);
-        if (!CombatHandler.isLocalOnlyClientSpawnEntity(anchor.currentLevel, canonicalEntity)) {
+        if (!CombatHandler.shouldMirrorClientSpawnEntityToParty(anchor.currentLevel, canonicalEntity)) {
             return false;
         }
 
         const localEntity = viewer.entities.get(entityId);
-        return CombatHandler.isLocalOnlyClientSpawnEntity(anchor.currentLevel, localEntity);
+        return CombatHandler.shouldMirrorClientSpawnEntityToParty(anchor.currentLevel, localEntity);
     }
 
     private static relayPartyLocalEntityDestroy(anchor: Client, levelScope: string, entityId: number, data: Buffer): void {
@@ -365,7 +365,7 @@ export class CombatHandler {
                 !other.playerSpawned ||
                 getClientLevelScope(other) !== levelScope ||
                 !areClientsInSameParty(anchor, other) ||
-                !CombatHandler.isLocalOnlyClientSpawnEntity(anchor.currentLevel, other.entities.get(entityId))
+                !CombatHandler.shouldMirrorClientSpawnEntityToParty(anchor.currentLevel, other.entities.get(entityId))
             ) {
                 continue;
             }
@@ -970,9 +970,9 @@ export class CombatHandler {
         const destroyedEntity =
             client.entities.get(entityId) ??
             (levelScope ? GlobalState.levelEntities.get(levelScope)?.get(entityId) : null);
-        const isLocalOnlyClientSpawnEntity = Boolean(
+        const shouldMirrorClientSpawnEntity = Boolean(
             levelName &&
-            CombatHandler.isLocalOnlyClientSpawnEntity(levelName, destroyedEntity)
+            CombatHandler.shouldMirrorClientSpawnEntityToParty(levelName, destroyedEntity)
         );
         const shouldRelayDestroy = EntityHandler.shouldRelayEntityToOtherClients(levelName, destroyedEntity);
 
@@ -997,7 +997,7 @@ export class CombatHandler {
 
         if (shouldRelayDestroy) {
             CombatHandler.broadcastToSameLevel(levelScope, 0x0D, data, [], client);
-        } else if (isLocalOnlyClientSpawnEntity) {
+        } else if (shouldMirrorClientSpawnEntity) {
             CombatHandler.relayPartyLocalEntityDestroy(client, levelScope, entityId, data);
         }
     }
