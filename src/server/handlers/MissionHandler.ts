@@ -2,11 +2,15 @@ import { Client } from '../core/Client';
 import { GlobalState } from '../core/GlobalState';
 import { LevelConfig } from '../core/LevelConfig';
 import { getClientLevelScope } from '../core/LevelScope';
+import { areClientsInSameParty } from '../core/PartySync';
 import {
+    getSharedDungeonProgressState,
     getOrCreateSharedDungeonProgressState,
     hasSharedDungeonProgressHostiles,
     recomputeSharedDungeonProgress,
     resolveSharedDungeonProgressAuthorityToken,
+    setSharedDungeonTrackerMissionSnapshot,
+    setSharedDungeonProgressState,
     usesSharedDungeonProgress
 } from '../core/SharedDungeonProgress';
 import { Character } from '../database/Database';
@@ -32,7 +36,8 @@ export class MissionHandler {
         MissionID.RescueAnna,
         MissionID.FindAnnasFather,
         MissionID.ClearYourHouse,
-        MissionID.GoblinRiver
+        MissionID.GoblinRiver,
+        MissionID.GoblinRiverHard
     ]);
     private static readonly DEFAULT_DUNGEON_TIER = 10;
     private static readonly DEFAULT_DUNGEON_HIGHSCORE = 99999999;
@@ -145,6 +150,135 @@ export class MissionHandler {
                 }
             }
         }
+
+        MissionHandler.captureSharedDungeonMissionSnapshot(client);
+    }
+
+    private static getSharedDungeonMissionIdForLevel(levelName: string | null | undefined): number {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        if (normalizedLevel === 'GoblinRiverDungeon') {
+            return MissionID.GoblinRiver;
+        }
+        if (normalizedLevel === 'GoblinRiverDungeonHard') {
+            return MissionID.GoblinRiverHard;
+        }
+        return 0;
+    }
+
+    private static getMissionProgress(character: Character, missionId: number): number {
+        const missions = MissionHandler.getMissionStateMap(character);
+        const entry = MissionHandler.asMissionEntry(missions[String(missionId)]);
+        return Math.max(0, Number(entry.currCount ?? 0));
+    }
+
+    static captureSharedDungeonMissionSnapshot(client: Client): void {
+        if (!client.character || !usesSharedDungeonProgress(client.currentLevel)) {
+            return;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        if (!levelScope) {
+            return;
+        }
+
+        const missionId = MissionHandler.getSharedDungeonMissionIdForLevel(client.currentLevel);
+        if (!missionId) {
+            return;
+        }
+
+        const missionState = MissionHandler.getMissionState(client.character, missionId);
+        if (missionState <= MissionHandler.MISSION_NOT_STARTED) {
+            return;
+        }
+
+        setSharedDungeonTrackerMissionSnapshot(
+            levelScope,
+            missionId,
+            missionState,
+            MissionHandler.getMissionProgress(client.character, missionId)
+        );
+    }
+
+    static syncSharedDungeonMissionSnapshotToClient(client: Client): void {
+        if (!client.character || !usesSharedDungeonProgress(client.currentLevel)) {
+            return;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        if (!levelScope) {
+            return;
+        }
+
+        const missionId = MissionHandler.getSharedDungeonMissionIdForLevel(client.currentLevel);
+        if (!missionId) {
+            return;
+        }
+
+        const sharedState = getSharedDungeonProgressState(levelScope);
+        if (!sharedState || Number(sharedState.trackerMissionId ?? 0) !== missionId) {
+            return;
+        }
+
+        const sharedMissionState = Number(sharedState.trackerMissionState ?? MissionHandler.MISSION_NOT_STARTED);
+        if (sharedMissionState <= MissionHandler.MISSION_NOT_STARTED) {
+            return;
+        }
+
+        const localMissionState = MissionHandler.getMissionState(client.character, missionId);
+        if (localMissionState <= MissionHandler.MISSION_NOT_STARTED) {
+            return;
+        }
+
+        const sharedMissionProgress = Math.max(0, Number(sharedState.trackerMissionProgress ?? 0));
+        const localMissionProgress = MissionHandler.getMissionProgress(client.character, missionId);
+
+        if (sharedMissionState >= MissionHandler.MISSION_CLAIMED) {
+            if (localMissionState < MissionHandler.MISSION_CLAIMED) {
+                MissionHandler.sendMissionComplete(client, missionId);
+            }
+            return;
+        }
+
+        if (sharedMissionState > localMissionState) {
+            MissionHandler.sendMissionAdded(client, missionId, sharedMissionState);
+            if (sharedMissionState === MissionHandler.MISSION_IN_PROGRESS && sharedMissionProgress > 0) {
+                MissionHandler.sendMissionProgress(client, missionId, sharedMissionProgress);
+            }
+            return;
+        }
+
+        if (
+            sharedMissionState === MissionHandler.MISSION_IN_PROGRESS &&
+            localMissionState === MissionHandler.MISSION_IN_PROGRESS &&
+            sharedMissionProgress > localMissionProgress
+        ) {
+            MissionHandler.sendMissionProgress(client, missionId, sharedMissionProgress);
+        }
+    }
+
+    static syncSharedDungeonMissionSnapshotToParty(client: Client): void {
+        if (!usesSharedDungeonProgress(client.currentLevel)) {
+            return;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        if (!levelScope) {
+            return;
+        }
+
+        MissionHandler.captureSharedDungeonMissionSnapshot(client);
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (
+                other === client ||
+                !other.playerSpawned ||
+                getClientLevelScope(other) !== levelScope ||
+                !areClientsInSameParty(client, other)
+            ) {
+                continue;
+            }
+
+            MissionHandler.syncSharedDungeonMissionSnapshotToClient(other);
+        }
     }
 
     static async handleSetLevelComplete(client: Client, data: Buffer): Promise<void> {
@@ -172,16 +306,26 @@ export class MissionHandler {
         if (usesSharedDungeonProgress(currentLevel) && levelScope) {
             const sharedState = recomputeSharedDungeonProgress(levelScope) ?? getOrCreateSharedDungeonProgressState(levelScope);
             if (sharedState) {
+                const liveAuthorityToken = resolveSharedDungeonProgressAuthorityToken(levelScope);
+                if (liveAuthorityToken > 0) {
+                    sharedState.authorityToken = liveAuthorityToken;
+                }
+
                 if (sharedState.progress < 100) {
                     if (!hasSharedDungeonProgressHostiles(levelScope)) {
                         return;
                     }
-                    return;
-                }
 
-                const liveAuthorityToken = resolveSharedDungeonProgressAuthorityToken(levelScope);
-                if (liveAuthorityToken > 0) {
-                    sharedState.authorityToken = liveAuthorityToken;
+                    const authorityToken = Number(sharedState.authorityToken ?? 0);
+                    const canForceSharedCompletion =
+                        clearedDungeon &&
+                        (authorityToken <= 0 || client.token === authorityToken);
+                    if (!canForceSharedCompletion) {
+                        return;
+                    }
+
+                    setSharedDungeonProgressState(levelScope, 100, authorityToken > 0 ? authorityToken : client.token);
+                    MissionHandler.broadcastSharedDungeonQuestProgress(levelScope, 100);
                 }
 
                 if (sharedState.authorityToken > 0 && client.token !== sharedState.authorityToken) {
@@ -223,6 +367,8 @@ export class MissionHandler {
             if (completedMissionId) {
                 didMutate = true;
                 MissionHandler.sendMissionComplete(client, completedMissionId);
+                MissionHandler.captureSharedDungeonMissionSnapshot(client);
+                MissionHandler.syncSharedDungeonMissionSnapshotToParty(client);
 
                 const completedMissionDef = MissionLoader.getMissionDef(completedMissionId);
                 const completedMissionState = MissionHandler.getMissionState(client.character, completedMissionId);

@@ -4,12 +4,14 @@ import * as path from 'path';
 import { Client } from '../core/Client';
 import { Character } from '../database/Database';
 import { GlobalState } from '../core/GlobalState';
+import { getOrCreateSharedDungeonProgressState } from '../core/SharedDungeonProgress';
 import { CharacterHandler } from '../handlers/CharacterHandler';
 import { LevelHandler } from '../handlers/LevelHandler';
 import { PetHandler } from '../handlers/PetHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { LevelConfig } from '../core/LevelConfig';
+import { MissionID } from '../data/runtime';
 
 function createCharacter(name: string): Character {
     return {
@@ -642,6 +644,46 @@ function testGoblinRiverTransferredRoomProgressIsIgnored(): void {
     assert.equal(client.sentPackets.length, 0);
 }
 
+function testGoblinRiverSharedSnapshotPreloadsTrackerWithoutTransferRoomReplay(): void {
+    const client = createClient();
+    client.currentLevel = 'GoblinRiverDungeon';
+    client.levelInstanceId = 'gr-preload';
+    client.character = {
+        ...createCharacter('GoblinRunner'),
+        CurrentLevel: { name: 'GoblinRiverDungeon', x: 100, y: 200 },
+        questTrackerState: 11,
+        missions: {
+            [String(MissionID.GoblinRiver)]: {
+                state: 1,
+                currCount: 0
+            }
+        }
+    };
+
+    const restored = LevelHandler.restoreTransferredRoomProgress(client as never, {
+        targetLevel: 'GoblinRiverDungeon',
+        syncRoomId: 6,
+        syncStartedRoomIds: [0, 3, 6]
+    });
+    assert.equal(restored, false, 'Goblin River should continue skipping transfer-based room replay');
+
+    const sharedState = getOrCreateSharedDungeonProgressState('GoblinRiverDungeon#gr-preload');
+    assert.ok(sharedState, 'shared Goblin River state should exist for preload sync');
+    sharedState!.progress = 67;
+    sharedState!.startedRoomIds = new Set<number>([0, 3, 6]);
+    sharedState!.trackerMissionId = MissionID.GoblinRiver;
+    sharedState!.trackerMissionState = 1;
+    sharedState!.trackerMissionProgress = 1;
+
+    LevelHandler.syncSharedDungeonQuestProgressState(client as never);
+
+    assert.equal(client.character.questTrackerState, 67, 'shared Goblin River preload should advance the tracker percent without transfer room replay');
+    assert.equal(client.startedRoomEvents.has('GoblinRiverDungeon:0'), true);
+    assert.equal(client.startedRoomEvents.has('GoblinRiverDungeon:3'), true);
+    assert.equal(client.startedRoomEvents.has('GoblinRiverDungeon:6'), true);
+    assert.deepEqual(client.sentPackets.map((packet: { id: number }) => packet.id), [0xA5, 0xA5, 0xA5, 0xB7, 0x83]);
+}
+
 function testPrepareGoblinRiverDungeonEntryStateResetsToIntroBaseline(): void {
     const client = createClient();
     client.currentLevel = 'GoblinRiverDungeon';
@@ -904,6 +946,7 @@ async function main(): Promise<void> {
     const tokenChar = new Map(GlobalState.tokenChar);
     const transferTokenAliases = new Map(GlobalState.transferTokenAliases);
     const levelEntities = new Map(GlobalState.levelEntities);
+    const levelQuestProgress = new Map(GlobalState.levelQuestProgress);
     const partyByMember = new Map(GlobalState.partyByMember);
 
     GlobalState.sessionsByToken.clear();
@@ -915,6 +958,7 @@ async function main(): Promise<void> {
     GlobalState.tokenChar.clear();
     GlobalState.transferTokenAliases.clear();
     GlobalState.levelEntities.clear();
+    GlobalState.levelQuestProgress.clear();
     GlobalState.partyByMember.clear();
 
     try {
@@ -1079,8 +1123,12 @@ async function main(): Promise<void> {
         GlobalState.pendingWorld.clear();
         GlobalState.pendingExtended.clear();
         GlobalState.tokenChar.clear();
+        GlobalState.levelQuestProgress.clear();
 
         testGoblinRiverTransferredRoomProgressIsIgnored();
+
+        GlobalState.levelQuestProgress.clear();
+        testGoblinRiverSharedSnapshotPreloadsTrackerWithoutTransferRoomReplay();
 
         testPrepareGoblinRiverDungeonEntryStateResetsToIntroBaseline();
 
@@ -1109,6 +1157,7 @@ async function main(): Promise<void> {
         GlobalState.tokenChar = tokenChar;
         GlobalState.transferTokenAliases = transferTokenAliases;
         GlobalState.levelEntities = levelEntities;
+        GlobalState.levelQuestProgress = levelQuestProgress;
         GlobalState.partyByMember = partyByMember;
     }
 

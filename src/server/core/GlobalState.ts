@@ -24,6 +24,15 @@ export type SharedDungeonProgressState = {
     authorityToken: number;
     trackedHostileIds?: Set<number>;
     defeatedHostileIds?: Set<number>;
+    startedRoomIds?: Set<number>;
+    roomPacketSnapshots?: Map<string, { packetId: number; roomId: number; payload: Buffer; seq: number }>;
+    roomPacketSequence?: number;
+    trackerMissionId?: number;
+    trackerMissionState?: number;
+    trackerMissionProgress?: number;
+    activeCutsceneRoomId?: number;
+    activeCutsceneAllowInput?: boolean;
+    activeCutsceneUntil?: number;
 };
 
 export class GlobalState {

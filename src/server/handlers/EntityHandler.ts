@@ -5,10 +5,18 @@ import { BitReader } from '../network/protocol/bitReader';
 import { DebugConfig } from '../core/Debug';
 import { GlobalState } from '../core/GlobalState';
 import { Entity, EntityProps, EntityState } from '../core/Entity';
+import { GameData } from '../core/GameData';
 import { LevelConfig } from '../core/LevelConfig';
+import {
+    noteSharedDungeonHostileState,
+    recomputeSharedDungeonProgress,
+    resolveSharedDungeonProgressAuthorityToken,
+    usesSharedDungeonProgress
+} from '../core/SharedDungeonProgress';
 import { PetHandler } from './PetHandler';
 import { BuildingHandler } from './BuildingHandler';
-import { areClientsInSameParty, getPartyIdForClient, isClientPartyLeader, sharesRoomIds } from '../core/PartySync';
+import { LevelHandler } from './LevelHandler';
+import { areClientsInSameParty, getPartyIdForClient, sharesRoomIds } from '../core/PartySync';
 import { areClientsInSameLevelScope, getClientLevelScope, getLevelScopeKey } from '../core/LevelScope';
 
 export class EntityHandler {
@@ -40,15 +48,18 @@ export class EntityHandler {
     ]);
     private static readonly MOUNT_SYNC_RETRY_DELAYS_MS = [0, 300, 1200, 2500, 4000];
     private static readonly CLIENT_SPAWN_JOINER_SEED_DELAYS_MS = [2500, 4500];
-    private static readonly LEADER_AUTHORITATIVE_CLIENT_SPAWN_LEVELS = new Set<string>([
-        'GoblinRiverDungeon',
-        'GoblinRiverDungeonHard'
-    ]);
     private static readonly GOBLIN_RIVER_ROOM_SYNC_SKIP_LEVELS = new Set<string>([
-        'TutorialDungeon',
-        'GoblinRiverDungeon',
-        'GoblinRiverDungeonHard'
+        'TutorialDungeon'
     ]);
+    private static readonly NON_HOSTILE_DUNGEON_OBJECT_BEHAVIORS = new Set<string>([
+        'Chest',
+        'TreasureChest'
+    ]);
+    private static readonly NON_HOSTILE_DUNGEON_OBJECT_NAME_PATTERNS = [
+        /chest/i,
+        /\bbarrel\b/i,
+        /\bcrate\b/i
+    ];
 
     private static normalizeIdentityName(value: unknown): string {
         return String(value ?? '')
@@ -59,10 +70,6 @@ export class EntityHandler {
 
     private static usesClientSpawn(levelName: string): boolean {
         return EntityHandler.CLIENT_SPAWN_LEVELS.has(levelName);
-    }
-
-    private static usesLeaderAuthoritativeClientSpawns(levelName: string | null | undefined): boolean {
-        return Boolean(levelName) && EntityHandler.LEADER_AUTHORITATIVE_CLIENT_SPAWN_LEVELS.has(String(levelName));
     }
 
     private static shouldSkipDungeonRoomProgressSync(levelName: string | null | undefined): boolean {
@@ -114,6 +121,22 @@ export class EntityHandler {
         return false;
     }
 
+    private static isNonHostileDungeonObject(entity: any): boolean {
+        if (!entity || entity.isPlayer) {
+            return false;
+        }
+
+        const entName = String(entity?.name ?? '').trim();
+        const entType = entName ? GameData.getEntType(entName) : null;
+        const behavior = String(entType?.Behavior ?? '').trim();
+        if (EntityHandler.NON_HOSTILE_DUNGEON_OBJECT_BEHAVIORS.has(behavior)) {
+            return true;
+        }
+
+        return EntityHandler.NON_HOSTILE_DUNGEON_OBJECT_NAME_PATTERNS.some((pattern) => pattern.test(entName)) &&
+            (!entType || String(entType?.Realm ?? '').trim() === 'Object');
+    }
+
     private static getLevelMap(
         levelName: string | null | undefined,
         levelInstanceId: string = '',
@@ -144,75 +167,9 @@ export class EntityHandler {
     }
 
     private static isPartySharedClientSpawnHostile(levelName: string | null | undefined, entity: any): boolean {
-        return EntityHandler.isSharedClientSpawnRegionActor(levelName, entity) && Number(entity?.team ?? 0) === 2;
-    }
-
-    private static findLeaderAuthoritativeClientSpawnMatch(
-        levelMap: Map<number, any> | null,
-        entity: any
-    ): any | null {
-        if (!levelMap || !entity || entity.isPlayer) {
-            return null;
-        }
-
-        const targetName = EntityHandler.normalizeIdentityName(entity.name);
-        const targetTeam = Number(entity.team ?? 0);
-        let bestMatch: any | null = null;
-        let bestDistanceSq = Number.POSITIVE_INFINITY;
-
-        for (const candidate of levelMap.values()) {
-            if (!candidate || candidate.isPlayer) {
-                continue;
-            }
-            if (Number(candidate.team ?? 0) !== targetTeam) {
-                continue;
-            }
-            if (EntityHandler.normalizeIdentityName(candidate.name) !== targetName) {
-                continue;
-            }
-
-            const dx = Number(candidate.x ?? 0) - Number(entity.x ?? 0);
-            const dy = Number(candidate.y ?? 0) - Number(entity.y ?? 0);
-            const distanceSq = (dx * dx) + (dy * dy);
-            if (distanceSq < bestDistanceSq) {
-                bestDistanceSq = distanceSq;
-                bestMatch = candidate;
-            }
-        }
-
-        return bestMatch;
-    }
-
-    private static suppressFollowerLeaderAuthoritativeDungeonSpawn(
-        client: Client,
-        levelName: string | null | undefined,
-        levelMap: Map<number, any> | null,
-        entity: any
-    ): boolean {
-        const partyId = getPartyIdForClient(client);
-        if (
-            !EntityHandler.usesLeaderAuthoritativeClientSpawns(levelName) ||
-            !entity ||
-            entity.isPlayer ||
-            (Number(entity.team ?? 0) !== 2 && Number(entity.team ?? 0) !== 3) ||
-            partyId <= 0 ||
-            isClientPartyLeader(client)
-        ) {
-            return false;
-        }
-
-        const canonical =
-            (levelMap && levelMap.get(Number(entity.id ?? 0))) ??
-            EntityHandler.findLeaderAuthoritativeClientSpawnMatch(levelMap, entity);
-        // Non-leader suppression is only valid after a canonical shared hostile
-        // already exists in-scope and can replace the follower's local spawn.
-        if (!canonical) {
-            return false;
-        }
-
-        EntityHandler.sendDestroyEntity(client, Number(entity.id ?? 0));
-        EntityHandler.ensureEntityKnown(client, String(levelName ?? ''), Number(canonical.id ?? 0));
-        return true;
+        return EntityHandler.isSharedClientSpawnRegionActor(levelName, entity) &&
+            Number(entity?.team ?? 0) === 2 &&
+            !EntityHandler.isNonHostileDungeonObject(entity);
     }
 
     private static getSharedClientSpawnOwnerPartyId(entity: any): number {
@@ -870,6 +827,60 @@ export class EntityHandler {
         client.send(0x0D, EntityHandler.buildDestroyEntityPayload(entityId));
     }
 
+    private static buildQuestProgressPayload(percent: number): Buffer {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(Math.max(0, Math.min(100, Math.round(Number(percent ?? 0)))));
+        return bb.toBuffer();
+    }
+
+    private static broadcastSharedDungeonQuestProgress(levelScope: string, progress: number): void {
+        const payload = EntityHandler.buildQuestProgressPayload(progress);
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (!other.playerSpawned || getClientLevelScope(other) !== levelScope) {
+                continue;
+            }
+
+            if (other.character) {
+                other.character.questTrackerState = progress;
+            }
+            other.send(0xB7, payload);
+        }
+    }
+
+    private static refreshSharedDungeonQuestProgressFromCanonicalHostile(
+        levelName: string | null | undefined,
+        levelScope: string,
+        entityId: number,
+        entity: any,
+        hadTrackedHostilesBeforeInsert: boolean
+    ): void {
+        if (
+            !levelName ||
+            !levelScope ||
+            entityId <= 0 ||
+            !usesSharedDungeonProgress(levelName) ||
+            !EntityHandler.isPartySharedClientSpawnHostile(levelName, entity)
+        ) {
+            return;
+        }
+
+        noteSharedDungeonHostileState(levelScope, entityId, entity);
+        if (hadTrackedHostilesBeforeInsert) {
+            return;
+        }
+
+        const sharedState = recomputeSharedDungeonProgress(levelScope);
+        const progress = sharedState?.progress ?? 0;
+        if (sharedState) {
+            const authorityToken = resolveSharedDungeonProgressAuthorityToken(levelScope);
+            if (authorityToken > 0) {
+                sharedState.authorityToken = authorityToken;
+            }
+        }
+
+        EntityHandler.broadcastSharedDungeonQuestProgress(levelScope, progress);
+    }
+
     private static buildEntityStateDeadPayload(entityId: number): Buffer {
         const bb = new BitBuffer(false);
         bb.writeMethod4(entityId);
@@ -1239,14 +1250,23 @@ export class EntityHandler {
         }
 
         let levelMap = existingLevelMap;
+        const levelScope = getClientLevelScope(client);
+        const shouldPrimeSharedDungeonProgress = Boolean(
+            levelName &&
+            levelScope &&
+            usesSharedDungeonProgress(levelName) &&
+            !isPlayer &&
+            Number(team ?? 0) === 2
+        );
+        const hadTrackedHostilesBeforeInsert = Boolean(
+            shouldPrimeSharedDungeonProgress &&
+            levelMap &&
+            Array.from(levelMap.values()).some((entity) => EntityHandler.isPartySharedClientSpawnHostile(levelName, entity))
+        );
         if (levelName) {
             if (!levelMap) {
                 levelMap = EntityHandler.getLevelMapForClient(client, true) ?? new Map<number, any>();
             }
-        }
-
-        if (EntityHandler.suppressFollowerLeaderAuthoritativeDungeonSpawn(client, levelName, levelMap, props)) {
-            return;
         }
 
         if (EntityHandler.suppressDuplicateSharedClientSpawn(client, levelName, levelMap, props)) {
@@ -1263,6 +1283,16 @@ export class EntityHandler {
         // Update GlobalState
         if (levelMap) {
             levelMap.set(entityId, props);
+        }
+
+        if (shouldPrimeSharedDungeonProgress && levelScope) {
+            EntityHandler.refreshSharedDungeonQuestProgressFromCanonicalHostile(
+                levelName,
+                levelScope,
+                entityId,
+                props,
+                hadTrackedHostilesBeforeInsert
+            );
         }
 
         // Broadcast the normalized snapshot so remote clients receive canonical state.
@@ -1398,6 +1428,8 @@ export class EntityHandler {
         }
 
         EntityHandler.replayStartedDungeonRoomEventsToJoiner(joiner);
+        LevelHandler.syncSharedDungeonQuestProgressState(joiner);
+        EntityHandler.sendExistingVisibleClientSpawnEntitiesToJoiner(joiner);
         EntityHandler.scheduleExistingVisibleClientSpawnEntitiesToJoiner(joiner);
     }
 

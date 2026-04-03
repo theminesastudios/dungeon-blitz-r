@@ -24,10 +24,17 @@ import { normalizeCharacterKey, PendingTeleport } from '../core/SocialState';
 import { TransferTokenAllocator } from '../core/TransferTokenAllocator';
 import { areClientsInSameParty, getPartyIdForClient, sharesRoomIds } from '../core/PartySync';
 import {
+    clearSharedDungeonActiveCutscene,
+    getSharedDungeonRoomPacketSnapshots,
+    getSharedDungeonProgressState,
     getOrCreateSharedDungeonProgressState,
     hasSharedDungeonProgressHostiles,
+    noteSharedDungeonRoomPacketSnapshot,
+    noteSharedDungeonStartedRoomIds,
+    promoteSharedDungeonProgressState,
     recomputeSharedDungeonProgress,
     resolveSharedDungeonProgressAuthorityToken,
+    setSharedDungeonActiveCutscene,
     usesSharedDungeonProgress
 } from '../core/SharedDungeonProgress';
 import {
@@ -704,6 +711,81 @@ export class LevelHandler {
         return progress;
     }
 
+    private static canPromoteSharedDungeonProgress(client: Client, levelScope: string): boolean {
+        const scopePeers: Client[] = [];
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (!other.playerSpawned || getClientLevelScope(other) !== levelScope) {
+                continue;
+            }
+
+            scopePeers.push(other);
+        }
+
+        if (scopePeers.length <= 1) {
+            return true;
+        }
+
+        const clientPartyId = getPartyIdForClient(client);
+        if (clientPartyId <= 0) {
+            return false;
+        }
+
+        return scopePeers.some((other) =>
+            other !== client &&
+            getPartyIdForClient(other) === clientPartyId &&
+            areClientsInSameParty(client, other)
+        );
+    }
+
+    private static syncGoblinRiverSharedState(
+        client: Client,
+        options: {
+            setCutscene?: boolean;
+            allowRoomInput?: boolean;
+            clearCutscene?: boolean;
+        } = {}
+    ): void {
+        const levelName = LevelConfig.normalizeLevelName(client.currentLevel);
+        const levelScope = getClientLevelScope(client);
+        if (!levelScope || !levelName || !LevelHandler.isGoblinRiverBossIntroLevel(levelName)) {
+            return;
+        }
+
+        noteSharedDungeonStartedRoomIds(levelScope, LevelHandler.getStartedRoomIdsForLevel(client, levelName));
+        if (options.setCutscene) {
+            setSharedDungeonActiveCutscene(
+                levelScope,
+                Math.max(0, Number(client.currentRoomId ?? 0)),
+                Boolean(options.allowRoomInput),
+                Number(client.goblinRiverBossIntroLockUntil ?? 0)
+            );
+        } else if (options.clearCutscene) {
+            clearSharedDungeonActiveCutscene(levelScope);
+        }
+
+        LevelHandler.refreshSharedDungeonQuestProgress(levelScope);
+        MissionHandler.syncSharedDungeonMissionSnapshotToParty(client);
+    }
+
+    private static replaySharedDungeonRoomPacketSnapshots(client: Client): void {
+        if (!client.currentLevel || !usesSharedDungeonProgress(client.currentLevel)) {
+            return;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        if (!levelScope) {
+            return;
+        }
+
+        for (const snapshot of getSharedDungeonRoomPacketSnapshots(levelScope)) {
+            if (!sharesRoomIds(client.currentRoomId, snapshot.roomId)) {
+                continue;
+            }
+
+            client.send(snapshot.packetId, Buffer.from(snapshot.payload));
+        }
+    }
+
     static syncSharedDungeonQuestProgressState(client: Client): void {
         if (!client.currentLevel || !client.character || !usesSharedDungeonProgress(client.currentLevel)) {
             return;
@@ -714,19 +796,50 @@ export class LevelHandler {
             return;
         }
 
-        const sharedState = getOrCreateSharedDungeonProgressState(levelScope);
+        const sharedState = getSharedDungeonProgressState(levelScope);
         if (!sharedState) {
             return;
         }
 
+        noteSharedDungeonStartedRoomIds(levelScope, LevelHandler.getStartedRoomIdsForLevel(client, client.currentLevel));
         recomputeSharedDungeonProgress(levelScope);
         const authorityToken = resolveSharedDungeonProgressAuthorityToken(levelScope);
         if (authorityToken > 0) {
             sharedState.authorityToken = authorityToken;
         }
 
+        const sharedStartedRoomIds = Array.from(sharedState.startedRoomIds?.values() ?? []).sort((left, right) => left - right);
+        for (const roomId of sharedStartedRoomIds) {
+            if (!LevelHandler.hasRoomEventStarted(client, roomId)) {
+                LevelHandler.sendRoomEventStart(client, roomId, true);
+            }
+        }
+        LevelHandler.replaySharedDungeonRoomPacketSnapshots(client);
+
         client.character.questTrackerState = sharedState.progress;
         client.send(0xB7, LevelHandler.buildQuestProgressPayload(sharedState.progress));
+        MissionHandler.syncSharedDungeonMissionSnapshotToClient(client);
+
+        const activeCutsceneUntil = Number(sharedState.activeCutsceneUntil ?? 0);
+        const activeCutsceneRoomId = Number(sharedState.activeCutsceneRoomId ?? -1);
+        if (
+            activeCutsceneUntil > Date.now() &&
+            Number.isFinite(activeCutsceneRoomId) &&
+            activeCutsceneRoomId >= 0 &&
+            sharesRoomIds(client.currentRoomId, activeCutsceneRoomId)
+        ) {
+            client.goblinRiverBossIntroLockUntil = Math.max(
+                Number(client.goblinRiverBossIntroLockUntil ?? 0),
+                activeCutsceneUntil
+            );
+            LevelHandler.sendRoomCutSceneStartToClient(
+                client,
+                activeCutsceneRoomId,
+                Boolean(sharedState.activeCutsceneAllowInput)
+            );
+        } else if (activeCutsceneUntil > 0 && activeCutsceneUntil <= Date.now()) {
+            clearSharedDungeonActiveCutscene(levelScope);
+        }
     }
 
     static shouldSkipDungeonRoomProgressSync(levelName: string | null | undefined): boolean {
@@ -837,6 +950,13 @@ export class LevelHandler {
             }
             other.send(0xA5, payload);
         }
+    }
+
+    private static sendRoomCutSceneStartToClient(client: Client, roomId: number, allowRoomInput: boolean): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod9(Math.max(0, roomId));
+        bb.writeMethod15(allowRoomInput);
+        client.sendBitBuffer(0xA5, bb);
     }
 
     private static sendRoomCutSceneEnd(levelName: string, roomId: number, levelInstanceId: string = ''): void {
@@ -1967,6 +2087,124 @@ export class LevelHandler {
         }
     }
 
+    private static captureSharedDungeonRoomPacketSnapshot(
+        client: Client,
+        packetId: number,
+        roomId: number,
+        data: Buffer
+    ): void {
+        if (!client.currentLevel || !usesSharedDungeonProgress(client.currentLevel)) {
+            return;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        if (!levelScope) {
+            return;
+        }
+
+        noteSharedDungeonRoomPacketSnapshot(levelScope, packetId, roomId, data);
+    }
+
+    private static syncGoblinRiverTutorialStateToParty(client: Client, roomId: number): void {
+        const levelScope = getClientLevelScope(client);
+        const levelName = LevelConfig.normalizeLevelName(client.currentLevel);
+        if (!levelScope || !levelName || !LevelHandler.isGoblinRiverBossIntroLevel(levelName)) {
+            return;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (
+                other === client ||
+                !other.playerSpawned ||
+                getClientLevelScope(other) !== levelScope ||
+                !areClientsInSameParty(client, other) ||
+                !sharesRoomIds(other.currentRoomId, roomId)
+            ) {
+                continue;
+            }
+
+            LevelHandler.syncSharedDungeonQuestProgressState(other);
+        }
+    }
+
+    private static mirrorGoblinRiverRoomEventStartedToParty(client: Client, roomId: number): void {
+        const levelScope = getClientLevelScope(client);
+        const levelName = LevelConfig.normalizeLevelName(client.currentLevel);
+        if (!levelScope || !levelName || !LevelHandler.isGoblinRiverBossIntroLevel(levelName)) {
+            return;
+        }
+
+        const key = `${levelName}:${roomId}`;
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (
+                other === client ||
+                !other.playerSpawned ||
+                getClientLevelScope(other) !== levelScope ||
+                !areClientsInSameParty(client, other)
+            ) {
+                continue;
+            }
+
+            other.startedRoomEvents.add(key);
+            const otherRoomId = Number.isFinite(Number(other.currentRoomId))
+                ? Math.round(Number(other.currentRoomId))
+                : -1;
+            if (otherRoomId < roomId) {
+                LevelHandler.cacheRoomId(other, roomId);
+            }
+            LevelHandler.syncSharedDungeonQuestProgressState(other);
+        }
+    }
+
+    private static mirrorGoblinRiverCutsceneRoomToParty(client: Client, roomId: number): void {
+        const levelScope = getClientLevelScope(client);
+        const levelName = LevelConfig.normalizeLevelName(client.currentLevel);
+        if (!levelScope || !levelName || !LevelHandler.isGoblinRiverBossIntroLevel(levelName)) {
+            return;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (
+                other === client ||
+                !other.playerSpawned ||
+                getClientLevelScope(other) !== levelScope ||
+                !areClientsInSameParty(client, other)
+            ) {
+                continue;
+            }
+
+            const otherRoomId = Number.isFinite(Number(other.currentRoomId))
+                ? Math.round(Number(other.currentRoomId))
+                : -1;
+            if (otherRoomId < roomId) {
+                LevelHandler.cacheRoomId(other, roomId);
+            }
+            LevelHandler.syncSharedDungeonQuestProgressState(other);
+        }
+    }
+
+    private static relayGoblinRiverRoomEventStartToParty(client: Client, data: Buffer): void {
+        const levelScope = getClientLevelScope(client);
+        const levelName = LevelConfig.normalizeLevelName(client.currentLevel);
+        if (!levelScope || !levelName || !LevelHandler.isGoblinRiverBossIntroLevel(levelName)) {
+            LevelHandler.relayToLevel(client, 0xA5, data);
+            return;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (
+                other === client ||
+                !other.playerSpawned ||
+                getClientLevelScope(other) !== levelScope ||
+                !areClientsInSameParty(client, other)
+            ) {
+                continue;
+            }
+
+            other.send(0xA5, data);
+        }
+    }
+
     private static cacheRoomId(client: Client, roomId: number): void {
         if (Number.isFinite(roomId) && roomId >= 0) {
             const previousRoomId = Number.isFinite(Number(client.currentRoomId))
@@ -1975,6 +2213,7 @@ export class LevelHandler {
             client.currentRoomId = roomId;
             if (previousRoomId >= 0 && previousRoomId !== roomId) {
                 PetHandler.armMountTravelProtection(client, 4000, true);
+                LevelHandler.replaySharedDungeonRoomPacketSnapshots(client);
             }
             LevelHandler.maybeStartTutorialDungeonTraversalTutorial(client, roomId);
         }
@@ -2102,6 +2341,7 @@ export class LevelHandler {
     }
 
     private static clearGoblinRiverBossIntroLock(client: Client): void {
+        const levelScope = getClientLevelScope(client);
         if (client.goblinRiverBossIntroUnlockTimer) {
             clearTimeout(client.goblinRiverBossIntroUnlockTimer);
             client.goblinRiverBossIntroUnlockTimer = null;
@@ -2110,6 +2350,9 @@ export class LevelHandler {
             LevelHandler.sendRoomCutSceneEnd(client.currentLevel, Math.max(0, client.currentRoomId), client.levelInstanceId);
         }
         client.goblinRiverBossIntroLockUntil = 0;
+        if (levelScope) {
+            clearSharedDungeonActiveCutscene(levelScope);
+        }
         LevelHandler.setGoblinRiverHostilesUntargetable(client, false);
     }
 
@@ -2155,6 +2398,10 @@ export class LevelHandler {
             );
         }
         LevelHandler.setGoblinRiverHostilesUntargetable(client, true);
+        LevelHandler.syncGoblinRiverSharedState(client, {
+            setCutscene: true,
+            allowRoomInput: false
+        });
 
         if (client.goblinRiverBossIntroUnlockTimer) {
             clearTimeout(client.goblinRiverBossIntroUnlockTimer);
@@ -2572,13 +2819,25 @@ export class LevelHandler {
 
         const levelScope = getClientLevelScope(client);
         if (usesSharedDungeonProgress(currentLevel) && levelScope) {
-            const sharedState = recomputeSharedDungeonProgress(levelScope);
+            let sharedState = recomputeSharedDungeonProgress(levelScope);
             if (sharedState) {
                 const liveAuthorityToken = resolveSharedDungeonProgressAuthorityToken(levelScope);
                 if (liveAuthorityToken > 0) {
                     sharedState.authorityToken = liveAuthorityToken;
                 }
+
                 progress = sharedState.progress;
+                const normalizedRequestedProgress = Math.round(Number(requestedProgress ?? 0));
+                const requestedSharedProgress = Math.max(0, Math.min(99, normalizedRequestedProgress));
+                if (
+                    normalizedRequestedProgress < 100 &&
+                    hasSharedDungeonProgressHostiles(levelScope) &&
+                    requestedSharedProgress > progress &&
+                    LevelHandler.canPromoteSharedDungeonProgress(client, levelScope)
+                ) {
+                    sharedState = promoteSharedDungeonProgressState(levelScope, requestedSharedProgress) ?? sharedState;
+                    progress = sharedState.progress;
+                }
             } else {
                 progress = LevelHandler.GOBLIN_RIVER_INITIAL_PROGRESS;
             }
@@ -2617,7 +2876,9 @@ export class LevelHandler {
         br.readMethod26();
         br.readMethod9();
 
+        LevelHandler.captureSharedDungeonRoomPacketSnapshot(client, 0xA8, roomId, data);
         LevelHandler.relayToLevel(client, 0xA8, data);
+        LevelHandler.syncGoblinRiverTutorialStateToParty(client, roomId);
     }
 
     static handleActionUpdate(client: Client, data: Buffer): void {
@@ -2626,7 +2887,9 @@ export class LevelHandler {
         LevelHandler.cacheRoomId(client, roomId);
         br.readMethod9();
 
+        LevelHandler.captureSharedDungeonRoomPacketSnapshot(client, 0xAA, roomId, data);
         LevelHandler.relayToLevel(client, 0xAA, data);
+        LevelHandler.syncGoblinRiverTutorialStateToParty(client, roomId);
     }
 
     static handleRoomStateUpdate(client: Client, data: Buffer): void {
@@ -2635,17 +2898,30 @@ export class LevelHandler {
         LevelHandler.cacheRoomId(client, roomId);
         br.readMethod9();
 
+        LevelHandler.captureSharedDungeonRoomPacketSnapshot(client, 0xA9, roomId, data);
         LevelHandler.relayToLevel(client, 0xA9, data);
+        LevelHandler.syncGoblinRiverTutorialStateToParty(client, roomId);
     }
 
     static handleRoomEventStart(client: Client, data: Buffer): void {
         const br = new BitReader(data);
         const roomId = br.readMethod9();
         LevelHandler.cacheRoomId(client, roomId);
-        br.readMethod15();
-        LevelHandler.markRoomEventStarted(client, roomId);
+        const flag = br.readMethod15();
 
-        LevelHandler.relayToLevel(client, 0xA5, data);
+        if (flag) {
+            LevelHandler.markRoomEventStarted(client, roomId);
+            LevelHandler.mirrorGoblinRiverRoomEventStartedToParty(client, roomId);
+        } else {
+            LevelHandler.captureSharedDungeonRoomPacketSnapshot(client, 0xA5, roomId, data);
+            LevelHandler.mirrorGoblinRiverCutsceneRoomToParty(client, roomId);
+        }
+
+        LevelHandler.relayGoblinRiverRoomEventStartToParty(client, data);
+        if (!flag) {
+            LevelHandler.syncGoblinRiverTutorialStateToParty(client, roomId);
+        }
+        LevelHandler.syncGoblinRiverSharedState(client);
     }
 
     static handleRoomInfoUpdate(client: Client, data: Buffer): void {
@@ -2657,7 +2933,9 @@ export class LevelHandler {
         br.readMethod9();
         br.readMethod26();
 
+        LevelHandler.captureSharedDungeonRoomPacketSnapshot(client, 0xAB, roomId, data);
         LevelHandler.relayToLevel(client, 0xAB, data);
+        LevelHandler.syncGoblinRiverTutorialStateToParty(client, roomId);
     }
 
     static handleRoomClose(client: Client, data: Buffer): void {
@@ -2665,7 +2943,9 @@ export class LevelHandler {
         const roomId = br.readMethod9();
         LevelHandler.cacheRoomId(client, roomId);
 
+        LevelHandler.captureSharedDungeonRoomPacketSnapshot(client, 0xA6, roomId, data);
         LevelHandler.relayToLevel(client, 0xA6, data);
+        LevelHandler.syncGoblinRiverTutorialStateToParty(client, roomId);
     }
 
     static handleRoomUnlock(client: Client, data: Buffer): void {
@@ -2673,7 +2953,9 @@ export class LevelHandler {
         const roomId = br.readMethod9();
         LevelHandler.cacheRoomId(client, roomId);
 
+        LevelHandler.captureSharedDungeonRoomPacketSnapshot(client, 0xAD, roomId, data);
         LevelHandler.relayToLevel(client, 0xAD, data);
+        LevelHandler.syncGoblinRiverTutorialStateToParty(client, roomId);
     }
 
     static handleRoomBossInfo(client: Client, data: Buffer): void {
@@ -2685,7 +2967,9 @@ export class LevelHandler {
         br.readMethod9();
         br.readMethod26();
 
+        LevelHandler.captureSharedDungeonRoomPacketSnapshot(client, 0xAC, roomId, data);
         LevelHandler.relayToLevel(client, 0xAC, data);
+        LevelHandler.syncGoblinRiverTutorialStateToParty(client, roomId);
     }
 
     static handleSetUntargetable(client: Client, data: Buffer): void {
