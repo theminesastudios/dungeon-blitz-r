@@ -217,6 +217,37 @@ export class WorldEnter {
         return normalized;
     }
 
+    private static isCraftTownTutorialLevel(levelName: string | null | undefined): boolean {
+        return String(levelName ?? '').trim() === 'CraftTownTutorial';
+    }
+
+    static getTutorialSafeBuildingStatsForLevel(character: Character | null | undefined, levelName: string | null | undefined): Record<string, unknown> {
+        const statsByBuilding = WorldEnter.asRecord(character?.magicForge?.stats_by_building);
+        if (!WorldEnter.isCraftTownTutorialLevel(levelName)) {
+            return statsByBuilding;
+        }
+
+        return {
+            ...statsByBuilding,
+            [BuildingID.Keep]: 0,
+            [String(BuildingID.Keep)]: 0
+        };
+    }
+
+    static getTutorialSafeBuildingUpgradeForLevel(character: Character | null | undefined, levelName: string | null | undefined): Record<string, unknown> {
+        const buildingUpgrade = WorldEnter.asRecord(character?.buildingUpgrade);
+        if (!WorldEnter.isCraftTownTutorialLevel(levelName)) {
+            return buildingUpgrade;
+        }
+
+        return {
+            ...buildingUpgrade,
+            buildingID: 0,
+            rank: 0,
+            ReadyTime: 0
+        };
+    }
+
     static buildEnterWorldPacket(
         transferToken: number,
         oldLevelId: number,
@@ -267,7 +298,7 @@ export class WorldEnter {
         const isCraftTown =
             newInternal.toLowerCase().includes('crafttown') ||
             newLevelSwf.toLowerCase().includes('crafttown');
-        const isCraftTownTutorial = newInternal === 'CraftTownTutorial';
+        const isCraftTownTutorial = WorldEnter.isCraftTownTutorialLevel(newInternal);
 
         bb.writeMethod11(isCraftTown ? 1 : 0, 1);
         if (isCraftTown && character) {
@@ -276,13 +307,14 @@ export class WorldEnter {
             const masterClassId = Math.max(0, Number(character.MasterClass ?? 0));
             bb.writeMethod6(masterClassId, 4);
 
-            const statsByBuilding = WorldEnter.asRecord(character.magicForge?.stats_by_building);
+            const statsByBuilding = WorldEnter.getTutorialSafeBuildingStatsForLevel(character, newInternal);
             const getStat = (buildingId: number): number =>
                 Number(statsByBuilding[buildingId.toString()] ?? statsByBuilding[buildingId] ?? 0);
 
             const towerBuildingId = WorldEnter.MASTERCLASS_TO_BUILDING[masterClassId] ?? BuildingID.JusticarTower;
-            const keepRank = isCraftTownTutorial ? 0 : getStat(BuildingID.Keep);
-            const scaffoldingLevel = isCraftTownTutorial ? 0 : Number(character.buildingUpgrade?.buildingID ?? 0);
+            const buildingUpgrade = WorldEnter.getTutorialSafeBuildingUpgradeForLevel(character, newInternal);
+            const keepRank = getStat(BuildingID.Keep);
+            const scaffoldingLevel = Number(buildingUpgrade.buildingID ?? 0);
 
             bb.writeMethod6(getStat(BuildingID.Forge), 5);
             bb.writeMethod6(keepRank, 5);
@@ -370,6 +402,8 @@ export class WorldEnter {
         const bb = new BitBuffer();
         const now = Math.floor(Date.now() / 1000);
         const equippedGears = WorldEnter.asArray(character.equippedGears);
+        const safeStatsByBuilding = WorldEnter.getTutorialSafeBuildingStatsForLevel(character, targetLevel);
+        const safeBuildingUpgrade = WorldEnter.getTutorialSafeBuildingUpgradeForLevel(character, targetLevel);
 
         hpScaling = Math.max(0, Math.min(hpScaling, 3));
         bonusLevels = Math.max(0, Math.min(bonusLevels, 0xFFFFFFFF));
@@ -640,7 +674,7 @@ export class WorldEnter {
             }
 
             const magicForge = WorldEnter.asRecord(character.magicForge);
-            const statsByBuilding = WorldEnter.asRecord(magicForge.stats_by_building);
+            const statsByBuilding = safeStatsByBuilding;
             const hasForgeStats = Object.keys(statsByBuilding).length > 0;
             bb.writeMethod11(hasForgeStats ? 1 : 0, 1);
             if (hasForgeStats) {
@@ -690,7 +724,7 @@ export class WorldEnter {
                 bb.writeMethod11(0, 1);
             }
 
-            const buildingUpgrade = WorldEnter.asRecord(character.buildingUpgrade);
+            const buildingUpgrade = safeBuildingUpgrade;
             const buildingReadyTime = Number(buildingUpgrade.ReadyTime ?? 0);
             const hasBuildingUpgrade = Number(buildingUpgrade.buildingID ?? 0) !== 0 && buildingReadyTime > now;
             bb.writeMethod11(hasBuildingUpgrade ? 1 : 0, 1);

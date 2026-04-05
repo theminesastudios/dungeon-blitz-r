@@ -735,21 +735,23 @@ function testCraftTownTutorialBossRecoveryActivatesTrackedHelpersImmediately(): 
     client.keepTutorialState = createKeepTutorialState();
     client.keepTutorialState.bossEntitySeen = 2701;
     client.keepTutorialState.bossEntitySource = 'fallback';
-    client.keepTutorialState.helperEntityIds = [2702, 2703];
+    client.keepTutorialState.helperEntityIds = CRAFT_TOWN_HELPER_IDS.slice(0, 3);
     (client as any).character = {
         name: 'Alpha',
         CurrentLevel: { name: 'CraftTownTutorial', x: 80, y: 1450 }
     };
 
     const boss = { id: 2701, name: 'IntroGoblinShamanHood', x: 49, y: 1459, entState: 2, untargetable: true, facingLeft: false };
-    const helperOne = { id: 2702, name: 'GoblinDagger', x: 269, y: 1459, entState: 2, untargetable: true, dramaAnim: 'Board', facingLeft: false };
-    const helperTwo = { id: 2703, name: 'GoblinDagger', x: 342, y: 1459, entState: 2, untargetable: true, dramaAnim: 'Board', facingLeft: false };
+    const helperOne = { id: CRAFT_TOWN_HELPER_IDS[0], name: 'GoblinDagger', x: -1449, y: 1399, entState: 2, untargetable: true, dramaAnim: 'Board', facingLeft: false };
+    const helperTwo = { id: CRAFT_TOWN_HELPER_IDS[1], name: 'GoblinDagger', x: -1349, y: 1399, entState: 2, untargetable: true, dramaAnim: 'Board', facingLeft: false };
+    const helperThree = { id: CRAFT_TOWN_HELPER_IDS[2], name: 'GoblinDagger', x: 269, y: 1459, entState: 2, untargetable: true, dramaAnim: 'Board', facingLeft: false };
 
     client.entities.set(boss.id, boss);
     const levelMap = new Map<number, any>([
         [boss.id, boss],
         [helperOne.id, helperOne],
-        [helperTwo.id, helperTwo]
+        [helperTwo.id, helperTwo],
+        [helperThree.id, helperThree]
     ]);
 
     GlobalState.sessionsByToken.set(client.token, client as never);
@@ -762,8 +764,48 @@ function testCraftTownTutorialBossRecoveryActivatesTrackedHelpersImmediately(): 
     assert.equal(levelMap.get(helperOne.id)?.dramaAnim, '');
     assert.equal(levelMap.get(helperTwo.id)?.entState, 0);
     assert.equal(levelMap.get(helperTwo.id)?.untargetable, false);
+    assert.equal(levelMap.get(helperThree.id)?.entState, 0);
+    assert.equal(levelMap.get(helperThree.id)?.untargetable, false);
     assert.equal(client.entities.get(boss.id)?.entState, 0);
     assert.equal(client.entities.get(boss.id)?.untargetable, false);
+}
+
+function testCraftTownTutorialBossRecoverySeedsClientTrackedHelpersImmediately(): void {
+    const client = createFakeClient('Alpha');
+    client.currentLevel = 'CraftTownTutorial';
+    client.levelInstanceId = 'keep-client-run';
+    client.currentRoomId = 1;
+    client.keepTutorialState = createKeepTutorialState();
+    client.keepTutorialState.bossEntitySeen = 2711;
+    client.keepTutorialState.bossEntitySource = 'client';
+    client.keepTutorialState.helperEntityIds = CRAFT_TOWN_HELPER_IDS.slice(0, 3);
+    (client as any).character = {
+        name: 'Alpha',
+        CurrentLevel: { name: 'CraftTownTutorial', x: 80, y: 1450 }
+    };
+
+    const boss = { id: 2711, name: 'IntroGoblinShamanHood', x: 49, y: 1459, entState: 2, untargetable: true, facingLeft: false };
+    const helperOne = { id: CRAFT_TOWN_HELPER_IDS[0], name: 'GoblinDagger', x: -1449, y: 1399, entState: 2, untargetable: true, dramaAnim: 'Board', facingLeft: false };
+    const helperTwo = { id: CRAFT_TOWN_HELPER_IDS[1], name: 'GoblinDagger', x: -1349, y: 1399, entState: 2, untargetable: true, dramaAnim: 'Board', facingLeft: false };
+    const helperThree = { id: CRAFT_TOWN_HELPER_IDS[2], name: 'GoblinDagger', x: 269, y: 1459, entState: 2, untargetable: true, dramaAnim: 'Board', facingLeft: false };
+
+    client.entities.set(boss.id, boss);
+    const levelMap = new Map<number, any>([
+        [boss.id, boss],
+        [helperOne.id, helperOne],
+        [helperTwo.id, helperTwo],
+        [helperThree.id, helperThree]
+    ]);
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    GlobalState.levelEntities.set('CraftTownTutorial#keep-client-run', levelMap);
+
+    (LevelHandler as any).armCraftTownTutorialBossRecovery(client as never, boss.id);
+
+    assert.deepEqual(client.keepTutorialState?.helperWaveActiveIds, CRAFT_TOWN_HELPER_IDS.slice(0, 3));
+    assert.equal(levelMap.get(helperOne.id)?.entState, 0);
+    assert.equal(levelMap.get(helperTwo.id)?.entState, 0);
+    assert.equal(levelMap.get(helperThree.id)?.entState, 0);
 }
 
 function testCraftTownTutorialBossIntroStillTriggersAfterClientSpawnConfirmation(): void {
@@ -902,6 +944,90 @@ async function testCraftTownTutorialHelperWaveRespawnsAfterAllHelpersDie(): Prom
         assert.equal(client.entities.get(helperId)?.entState, 0, `helper ${helperId} should be active in the next wave`);
         assert.equal(client.entities.get(helperId)?.untargetable, false, `helper ${helperId} should be targetable in the next wave`);
     }
+}
+
+async function testCraftTownTutorialClientSourceHelperWaveRespawnsAfterAllHelpersDie(): Promise<void> {
+    const client = createFakeClient('Alpha');
+    client.currentLevel = 'CraftTownTutorial';
+    client.levelInstanceId = 'keep-client-wave';
+    client.currentRoomId = 1;
+    client.keepTutorialState = createKeepTutorialState();
+    client.keepTutorialState.bossEntitySeen = 2901;
+    client.keepTutorialState.bossEntitySource = 'client';
+    client.keepTutorialState.helperEntityIds = [...CRAFT_TOWN_HELPER_IDS];
+    (client as any).character = {
+        name: 'Alpha',
+        CurrentLevel: { name: 'CraftTownTutorial', x: 80, y: 1450 }
+    };
+
+    const boss = {
+        id: 2901,
+        name: 'IntroGoblinShamanHood',
+        x: 49,
+        y: 1459,
+        entState: 0,
+        untargetable: false,
+        facingLeft: false,
+        health_delta: 0
+    };
+    const levelMap = new Map<number, any>([[boss.id, boss]]);
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    GlobalState.levelEntities.set('CraftTownTutorial#keep-client-wave', levelMap);
+    client.entities.set(boss.id, { ...boss });
+
+    (LevelHandler as any).summonCraftTownTutorialReinforcements(client as never);
+
+    const firstWave = [...(client.keepTutorialState?.helperWaveActiveIds ?? [])];
+    assert.deepEqual(firstWave, CRAFT_TOWN_HELPER_IDS.slice(0, 3));
+
+    for (const helperId of firstWave) {
+        await CombatHandler.handleEntityDestroy(client as never, buildDestroyEntityPayload(helperId));
+    }
+
+    const secondWave = [...(client.keepTutorialState?.helperWaveActiveIds ?? [])];
+    assert.equal(secondWave.length, 2, 'client-source helper wave should respawn as a 2-goblin wave');
+    assert.equal(secondWave.some((helperId) => firstWave.includes(helperId)), false, 'client-source helper wave should rotate to fresh helpers');
+}
+
+function testCraftTownTutorialClientSourceBossWoundedThoughtsPlay(): void {
+    const client = createFakeClient('Alpha');
+    client.currentLevel = 'CraftTownTutorial';
+    client.levelInstanceId = 'keep-client-boss-lines';
+    client.currentRoomId = 1;
+    client.keepTutorialState = createKeepTutorialState();
+    client.keepTutorialState.bossEntitySeen = 2951;
+    client.keepTutorialState.bossEntitySource = 'client';
+    client.keepTutorialState.helperEntityIds = [...CRAFT_TOWN_HELPER_IDS];
+    (client as any).character = {
+        name: 'Alpha',
+        CurrentLevel: { name: 'CraftTownTutorial', x: 80, y: 1450 }
+    };
+
+    const boss = {
+        id: 2951,
+        name: 'IntroGoblinShamanHood',
+        x: 49,
+        y: 1459,
+        entState: 0,
+        untargetable: false,
+        facingLeft: false,
+        health_delta: 0
+    };
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    GlobalState.levelEntities.set('CraftTownTutorial#keep-client-boss-lines', new Map<number, any>([[boss.id, boss]]));
+    client.entities.set(boss.id, { ...boss });
+
+    LevelHandler.checkCraftTownTutorialBossHealth(client as never, boss.id, 1600);
+    LevelHandler.checkCraftTownTutorialBossHealth(client as never, boss.id, 1600);
+
+    const thoughts = client.sentPackets
+        .filter((packet) => packet.id === 0x76)
+        .map((packet) => decodeNpcBubblePacket(packet.payload).text);
+
+    assert.equal(thoughts.includes('To me! Protect your home!'), true);
+    assert.equal(thoughts.includes('I will not fall! To me, brothers!'), true);
 }
 
 function testSoloDungeonHostileReferencePromotesToPartyJoinerSeed(): void {
@@ -1710,6 +1836,11 @@ async function main(): Promise<void> {
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
+        testCraftTownTutorialBossRecoverySeedsClientTrackedHelpersImmediately();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
         testCraftTownTutorialBossIntroStillTriggersAfterClientSpawnConfirmation();
 
         GlobalState.levelEntities.clear();
@@ -1726,6 +1857,16 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         await testCraftTownTutorialHelperWaveRespawnsAfterAllHelpersDie();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        await testCraftTownTutorialClientSourceHelperWaveRespawnsAfterAllHelpersDie();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testCraftTownTutorialClientSourceBossWoundedThoughtsPlay();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();

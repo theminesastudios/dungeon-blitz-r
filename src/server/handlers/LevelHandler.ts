@@ -1150,7 +1150,8 @@ export class LevelHandler {
             if (state.bossEntitySource === 'fallback' || stillLocked) {
                 LevelHandler.activateCraftTownTutorialBoss(client, bossId);
             }
-            if (state.bossEntitySource === 'fallback') {
+            LevelHandler.ensureCraftTownTutorialBossEncounterEntities(client);
+            if (state.helperEntityIds.length > 0) {
                 LevelHandler.summonCraftTownTutorialReinforcements(client);
             }
         }, LevelHandler.KEEP_TUTORIAL_BOSS_INTRO_TOTAL_MS);
@@ -1772,6 +1773,22 @@ export class LevelHandler {
         }, delayMs);
     }
 
+    private static triggerCraftTownTutorialBossReinforcementThought(
+        client: Client,
+        state: KeepTutorialState,
+        text: string
+    ): void {
+        if (!client.currentLevel || state.bossEntitySeen === null) {
+            return;
+        }
+
+        LevelHandler.sendRoomThought(client.currentLevel, state.bossEntitySeen, text, client.levelInstanceId);
+        LevelHandler.pruneCraftTownTutorialActiveHelperIds(client, state);
+        if (state.helperWaveActiveIds.length === 0) {
+            LevelHandler.summonCraftTownTutorialReinforcements(client);
+        }
+    }
+
     private static summonCraftTownTutorialReinforcements(client: Client): void {
         const state = LevelHandler.getCraftTownTutorialState(client);
         if (!state || !client.currentLevel) {
@@ -1847,7 +1864,6 @@ export class LevelHandler {
         if (
             !state ||
             state.bossDefeated ||
-            state.bossEntitySource !== 'fallback' ||
             !state.helperEntityIds.includes(entityId)
         ) {
             return;
@@ -1870,7 +1886,7 @@ export class LevelHandler {
      */
     static checkCraftTownTutorialBossHealth(client: Client, targetId: number, damage: number): void {
         const state = LevelHandler.getCraftTownTutorialState(client);
-        if (!state || state.bossDefeated || state.bossEntitySource !== 'fallback') {
+        if (!state || state.bossDefeated || damage <= 0) {
             return;
         }
 
@@ -1884,27 +1900,35 @@ export class LevelHandler {
             return;
         }
 
-        // Calculate approximate HP ratio from accumulated damage
-        // The client tracks actual HP; we estimate from damage dealt
         const healthDelta = Number(boss.health_delta ?? boss.healthDelta ?? 0) - Math.abs(damage);
         boss.health_delta = healthDelta;
         boss.healthDelta = healthDelta;
+        const levelBoss = LevelHandler.getCurrentLevelMap(client)?.get(targetId);
+        if (levelBoss) {
+            levelBoss.health_delta = healthDelta;
+            levelBoss.healthDelta = healthDelta;
+        }
 
-        // EntTypes typically have MaxHP around 1000-5000 for bosses.
-        // We track cumulative damage and compare to a threshold.
-        // Since we don't have exact max HP, use the ratio of health_delta to estimate.
-        // A simpler approach: track total damage dealt and compare to known boss HP.
-        // For now, use damage thresholds based on typical boss HP (~3000-5000).
         const totalDamageDealt = Math.abs(healthDelta);
 
         if (!state.bossWounded60 && totalDamageDealt > 1500) {
             state.bossWounded60 = true;
             console.log('[CraftTownTutorial] Boss wounded (60%).');
+            LevelHandler.triggerCraftTownTutorialBossReinforcementThought(
+                client,
+                state,
+                'To me! Protect your home!'
+            );
         }
 
         if (!state.bossWounded30 && totalDamageDealt > 3000) {
             state.bossWounded30 = true;
             console.log('[CraftTownTutorial] Boss critical (30%).');
+            LevelHandler.triggerCraftTownTutorialBossReinforcementThought(
+                client,
+                state,
+                'I will not fall! To me, brothers!'
+            );
         }
 
         if (state.helperWaveActiveIds.length === 0 && !state.helperWaveRespawnTimer) {

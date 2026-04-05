@@ -119,9 +119,30 @@ function testCraftTownPreservesLiveKeepUpgradeVisuals(): void {
     assert.equal(decoded.scaffoldingLevel, 12, 'town keep should continue to use the live scaffolding state');
 }
 
+function testCraftTownTutorialPlayerDataSuppressesKeepUpgradeState(): void {
+    const character = createCharacter();
+    const safeStats = WorldEnter.getTutorialSafeBuildingStatsForLevel(character, 'CraftTownTutorial');
+    const safeUpgrade = WorldEnter.getTutorialSafeBuildingUpgradeForLevel(character, 'CraftTownTutorial');
+
+    assert.equal(Number(safeStats['12'] ?? safeStats[12]), 0, 'tutorial player data should suppress live keep rank');
+    assert.equal(Number(safeUpgrade.buildingID ?? 0), 0, 'tutorial player data should suppress live scaffolding building id');
+    assert.equal(Number(safeUpgrade.ReadyTime ?? 0), 0, 'tutorial player data should suppress live scaffolding timer');
+}
+
+function testCraftTownPlayerDataPreservesLiveKeepUpgradeState(): void {
+    const character = createCharacter();
+    const safeStats = WorldEnter.getTutorialSafeBuildingStatsForLevel(character, 'CraftTown');
+    const safeUpgrade = WorldEnter.getTutorialSafeBuildingUpgradeForLevel(character, 'CraftTown');
+
+    assert.equal(Number(safeStats['12'] ?? safeStats[12]), 5, 'town player data should keep the live keep rank');
+    assert.equal(Number(safeUpgrade.buildingID ?? 0), 12, 'town player data should keep the live scaffolding building id');
+}
+
 function main(): void {
     testCraftTownTutorialSuppressesKeepUpgradeVisuals();
     testCraftTownPreservesLiveKeepUpgradeVisuals();
+    testCraftTownTutorialPlayerDataSuppressesKeepUpgradeState();
+    testCraftTownPlayerDataPreservesLiveKeepUpgradeState();
     console.log('world_enter_crafttown_visual_state_regression: ok');
 }
 
