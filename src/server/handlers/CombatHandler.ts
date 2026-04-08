@@ -918,8 +918,12 @@ export class CombatHandler {
         if (sourceSession) {
             noteDungeonRunCast(sourceSession, {
                 sourceId: info.sourceId,
+                powerId: info.powerId,
+                hasTargetEntity: info.hasTargetEntity,
+                hasTargetPos: info.hasTargetPos,
                 projectileId: info.projectileId,
-                isPersistent: info.isPersistent
+                isPersistent: info.isPersistent,
+                comboData: info.comboData
             });
         }
 

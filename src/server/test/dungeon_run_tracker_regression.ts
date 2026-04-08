@@ -3,6 +3,8 @@ import * as path from 'path';
 import { GlobalState } from '../core/GlobalState';
 import { GameData } from '../core/GameData';
 import {
+    getWolfsEndLiveStatCap,
+    getWolfsEndTimeBonusCap,
     noteDungeonRunBossCutscene,
     noteDungeonRunCast,
     noteDungeonRunDeath,
@@ -113,6 +115,37 @@ function createFakeDungeonClient(levelName: string, missionId: MissionID): FakeC
     return client;
 }
 
+function getExpectedWolfsEndTimeCap(levelName: string): number {
+    const normalizedLevel = LevelConfig.normalizeLevelName(levelName) || levelName;
+    const baseLevelName = normalizedLevel.replace(/Hard$/, '');
+
+    switch (baseLevelName) {
+        case 'TutorialDungeon':
+        case 'GoblinRiverDungeon':
+            return 40_000;
+        case 'CraftTownTutorial':
+            return 60_000;
+        case 'GhostBossDungeon':
+            return 80_000;
+        case 'DreamDragonDungeon':
+            return 100_000;
+        default:
+            throw new Error(`Unexpected Wolf's End level ${levelName}`);
+    }
+}
+
+function getExpectedWolfsEndLiveStatCap(levelName: string): number {
+    const normalizedLevel = LevelConfig.normalizeLevelName(levelName) || levelName;
+    const baseLevelName = normalizedLevel.replace(/Hard$/, '');
+
+    switch (baseLevelName) {
+        case 'CraftTownTutorial':
+            return 60_000;
+        default:
+            return 40_000;
+    }
+}
+
 function resetTrackerEntityBuckets(client: FakeClient): void {
     client.dungeonRun.entryAccumulator.eligibleEnemyIds = new Set<number>();
     client.dungeonRun.entryAccumulator.killedEnemyIds = new Set<number>();
@@ -167,15 +200,19 @@ function triggerBossCutscene(client: FakeClient, boss: any): void {
     noteDungeonRunBossCutscene(getClientLevelScope(client as never), client.currentRoomId, boss.id);
 }
 
-function createLevelCompletePacket(): Buffer {
+function createLevelCompletePacket(
+    completionPercent: number = 100,
+    remainingKills: number = 1,
+    requiredKills: number = 2
+): Buffer {
     const bb = new BitBuffer(false);
-    bb.writeMethod9(100);
+    bb.writeMethod9(completionPercent);
     bb.writeMethod9(0);
     bb.writeMethod9(0);
     bb.writeMethod9(0);
     bb.writeMethod9(0);
-    bb.writeMethod9(1);
-    bb.writeMethod9(2);
+    bb.writeMethod9(remainingKills);
+    bb.writeMethod9(requiredKills);
     bb.writeMethod9(3);
     return bb.toBuffer();
 }
@@ -233,15 +270,34 @@ function getExpectedTimeBonus(levelName: string, bossRun: boolean, cap: number, 
     const spec = LevelConfig.get(levelName);
     const levelTier = Math.max(1, Number(spec.baseId || 1));
     const hardScalar = spec.isHard ? 1.15 : 1;
-    const modeScalar = bossRun ? 0.9 : 1;
-    const targetMs = Math.max(180_000, Math.round((120_000 + (levelTier * 60_000)) * hardScalar * modeScalar));
-    const drainWindowMs = Math.max(targetMs, Math.round(targetMs * 1.5));
-    const remainingRatio = Math.max(0, Math.min(1, 1 - (Math.min(Math.max(0, elapsedMs), drainWindowMs) / drainWindowMs)));
+    const modeScalar = bossRun ? 0.85 : 1;
+    const wolfsEndScalar = 1.5;
+    const targetMs = Math.max(240_000, Math.round((120_000 + (levelTier * 60_000)) * hardScalar * modeScalar * wolfsEndScalar));
+    const drainWindowMs = Math.max(targetMs, Math.round(targetMs * 2));
+    const clampedElapsedMs = Math.max(0, elapsedMs);
+    const remainingRatio = clampedElapsedMs <= targetMs
+        ? 1
+        : Math.max(0, Math.min(1, 1 - ((Math.min(clampedElapsedMs, drainWindowMs) - targetMs) / Math.max(1, drainWindowMs - targetMs))));
     return Math.round(cap * remainingRatio);
 }
 
 async function finalizeAndReadResult(client: FakeClient): Promise<ReturnType<typeof decodeDungeonCompletePacket>> {
     await MissionHandler.handleSetLevelComplete(client as never, createLevelCompletePacket());
+    const resultPacket = client.sentPackets.find((packet) => packet.id === 0x87);
+    assert.ok(resultPacket, 'dungeon completion should send 0x87');
+    return decodeDungeonCompletePacket(resultPacket!.payload);
+}
+
+async function finalizeAndReadResultWithPacket(
+    client: FakeClient,
+    completionPercent: number,
+    remainingKills: number = 1,
+    requiredKills: number = 2
+): Promise<ReturnType<typeof decodeDungeonCompletePacket>> {
+    await MissionHandler.handleSetLevelComplete(
+        client as never,
+        createLevelCompletePacket(completionPercent, remainingKills, requiredKills)
+    );
     const resultPacket = client.sentPackets.find((packet) => packet.id === 0x87);
     assert.ok(resultPacket, 'dungeon completion should send 0x87');
     return decodeDungeonCompletePacket(resultPacket!.payload);
@@ -292,10 +348,12 @@ async function testBossRunDeathsUseDungeonScaledPenalty(): Promise<void> {
     noteDungeonRunKill(levelScope, ['trackerrunner'], boss.id, boss);
 
     const result = await finalizeAndReadResult(client);
-    const expected = getExpectedDeathScore('GhostBossDungeon', 2);
     assertResultMatchesTrackerSummary(client, result);
-    assert.equal(result.deaths, expected, 'deaths should use the dungeon-scaled deterministic penalty formula');
-    assert.equal(result.deaths < LIVE_DEATHS_BASE, true, 'deaths should fall below 40000 after one or more dungeon deaths');
+    assert.equal(
+        result.deaths,
+        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.deaths,
+        'Wolf\'s End full clears should clamp deaths to the max bucket even if the run had deaths'
+    );
 }
 
 async function testBossRunAccuracyUsesBossFightOnlyWhenNoPreBossHits(): Promise<void> {
@@ -324,7 +382,11 @@ async function testBossRunAccuracyUsesBossFightOnlyWhenNoPreBossHits(): Promise<
     const result = await finalizeAndReadResult(client);
     assertResultMatchesTrackerSummary(client, result);
     assert.equal(client.dungeonRun.finalizedStats?.accuracyWindowSource, 'boss_cutscene', 'boss-only runs should score accuracy from the boss window');
-    assert.equal(result.accuracy, 20_000, 'one boss hit and one boss miss should score 20000 accuracy');
+    assert.equal(
+        result.accuracy,
+        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.accuracy,
+        'Wolf\'s End boss-only full clears should clamp accuracy to max even when the pre-clear combat had misses'
+    );
 }
 
 async function testBossRunAccuracyStartsAtFirstPreBossHit(): Promise<void> {
@@ -361,10 +423,14 @@ async function testBossRunAccuracyStartsAtFirstPreBossHit(): Promise<void> {
     const result = await finalizeAndReadResult(client);
     assertResultMatchesTrackerSummary(client, result);
     assert.equal(client.dungeonRun.finalizedStats?.accuracyWindowSource, 'pre_boss_hit', 'pre-boss combat should anchor the accuracy window at the first hit');
-    assert.equal(result.accuracy, Math.round(LIVE_ACCURACY_CAP * (2 / 3)), 'accuracy should count from the first pre-boss hit through the boss fight');
+    assert.equal(
+        result.accuracy,
+        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.accuracy,
+        'Wolf\'s End full clears should clamp accuracy to max after the run reaches full completion'
+    );
 }
 
-async function testBossRunElapsedTimingUsesEntryToBossDefeat(): Promise<void> {
+async function testBossRunElapsedTimingUsesEntryToDungeonCompletion(): Promise<void> {
     const client = createFakeDungeonClient('GhostBossDungeon', MissionID.KillNephit);
     const levelScope = getClientLevelScope(client as never);
     const boss = { id: 90042, name: 'NephitLargeEye', team: 2, entRank: 'Boss', hp: 10 };
@@ -372,8 +438,10 @@ async function testBossRunElapsedTimingUsesEntryToBossDefeat(): Promise<void> {
     GlobalState.sessionsByToken.set(client.token, client as never);
     syncClientDungeonRunState(client as never);
     resetTrackerEntityBuckets(client);
-    const elapsedMs = 180_000;
-    const runStart = Date.now() - elapsedMs;
+    const elapsedMsBeforeBossDefeat = 180_000;
+    const elapsedMsAfterBossDefeat = 45_000;
+    const totalElapsedMs = elapsedMsBeforeBossDefeat + elapsedMsAfterBossDefeat;
+    const runStart = Date.now() - totalElapsedMs;
     client.dungeonRun.entryStartTime = runStart;
     client.dungeonRun.runStartTime = runStart;
     client.dungeonRun.entryAccumulator.startTime = runStart;
@@ -387,12 +455,124 @@ async function testBossRunElapsedTimingUsesEntryToBossDefeat(): Promise<void> {
         damage: 25
     });
     noteDungeonRunKill(levelScope, ['trackerrunner'], boss.id, boss);
+    client.dungeonRun.bossDefeatTime = Date.now() - elapsedMsAfterBossDefeat;
 
     const result = await finalizeAndReadResult(client);
     const timeCap = client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.timeBonus;
-    const expected = getExpectedTimeBonus('GhostBossDungeon', true, timeCap, elapsedMs);
+    const expected = getExpectedTimeBonus('GhostBossDungeon', true, timeCap, totalElapsedMs);
     assertResultMatchesTrackerSummary(client, result);
-    assert.equal(result.timeBonus, expected, 'boss-run time bonus should use entry-to-boss-defeat elapsed time');
+    assert.equal(result.timeBonus, expected, 'boss-run time bonus should use entry-to-dungeon-completion elapsed time');
+}
+
+async function testGoblinRiverFullClearKeepsPositiveTimeBonusAtTenMinutes(): Promise<void> {
+    const client = createFakeDungeonClient('GoblinRiverDungeon', MissionID.RescueAnna);
+    const levelScope = getClientLevelScope(client as never);
+    const hostile = { id: 90101, name: 'GoblinClub', team: 2, entRank: 'Minion', hp: 10, clientSpawned: true, ownerToken: client.token, roomId: 1 };
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    syncClientDungeonRunState(client as never);
+    resetTrackerEntityBuckets(client);
+    const elapsedMs = 600_000;
+    const runStart = Date.now() - elapsedMs;
+    client.dungeonRun.entryStartTime = runStart;
+    client.dungeonRun.runStartTime = runStart;
+    client.dungeonRun.entryAccumulator.startTime = runStart;
+    client.entities.set(hostile.id, hostile);
+    noteDungeonRunEntitySeen(client as never, hostile.id, hostile);
+    noteDungeonRunCast(client as never, { sourceId: client.clientEntID, projectileId: null, isPersistent: false, hasTargetPos: true });
+    noteDungeonRunHit(client as never, {
+        sourceId: client.clientEntID,
+        targetId: hostile.id,
+        targetEntity: hostile,
+        damage: 25
+    });
+    noteDungeonRunKill(levelScope, ['trackerrunner'], hostile.id, { ...hostile, hp: 0, dead: true, entState: 6 });
+
+    client.character.questTrackerState = 100;
+    const result = await finalizeAndReadResultWithPacket(client, 100, 0, 1);
+    assertResultMatchesTrackerSummary(client, result);
+    assert.equal(result.timeBonus > 0, true, 'Goblin River full clears should still award time bonus after a ten-minute run');
+}
+
+async function testGoblinRiverFullClearKeepsMaxTimeBonusBeforeParTime(): Promise<void> {
+    const client = createFakeDungeonClient('GoblinRiverDungeon', MissionID.RescueAnna);
+    const levelScope = getClientLevelScope(client as never);
+    const hostile = { id: 90111, name: 'GoblinClub', team: 2, entRank: 'Minion', hp: 10, clientSpawned: true, ownerToken: client.token, roomId: 1 };
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    syncClientDungeonRunState(client as never);
+    resetTrackerEntityBuckets(client);
+    const elapsedMs = 255_000;
+    const runStart = Date.now() - elapsedMs;
+    client.dungeonRun.entryStartTime = runStart;
+    client.dungeonRun.runStartTime = runStart;
+    client.dungeonRun.entryAccumulator.startTime = runStart;
+    client.entities.set(hostile.id, hostile);
+    noteDungeonRunEntitySeen(client as never, hostile.id, hostile);
+    noteDungeonRunCast(client as never, { sourceId: client.clientEntID, projectileId: null, isPersistent: false, hasTargetPos: true });
+    noteDungeonRunHit(client as never, {
+        sourceId: client.clientEntID,
+        targetId: hostile.id,
+        targetEntity: hostile,
+        damage: 25
+    });
+    noteDungeonRunKill(levelScope, ['trackerrunner'], hostile.id, { ...hostile, hp: 0, dead: true, entState: 6 });
+
+    client.character.questTrackerState = 100;
+    const result = await finalizeAndReadResultWithPacket(client, 100, 0, 1);
+    assertResultMatchesTrackerSummary(client, result);
+    assert.equal(
+        result.timeBonus,
+        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.timeBonus,
+        'Goblin River full clears faster than the par time should keep the max time bonus'
+    );
+}
+
+async function testWolfsEndTimeBonusCapsStayDungeonSpecific(): Promise<void> {
+    const resolverCases: Array<{ levelName: string; expectedCap: number }> = [
+        { levelName: 'TutorialDungeon', expectedCap: 40_000 },
+        { levelName: 'GoblinRiverDungeon', expectedCap: 40_000 },
+        { levelName: 'CraftTownTutorial', expectedCap: 60_000 },
+        { levelName: 'GhostBossDungeon', expectedCap: 80_000 },
+        { levelName: 'DreamDragonDungeon', expectedCap: 100_000 }
+    ];
+
+    for (const testCase of resolverCases) {
+        assert.equal(
+            getWolfsEndTimeBonusCap(testCase.levelName, 10_000),
+            testCase.expectedCap,
+            `${testCase.levelName} should resolve to its dungeon-specific time bonus cap`
+        );
+        assert.equal(
+            testCase.expectedCap,
+            getExpectedWolfsEndTimeCap(testCase.levelName),
+            `${testCase.levelName} helper expectation should match the regression table`
+        );
+    }
+
+}
+
+function testWolfsEndLiveStatCapsStayDungeonSpecific(): void {
+    const cases: Array<{ levelName: string; expectedCap: number }> = [
+        { levelName: 'TutorialDungeon', expectedCap: 40_000 },
+        { levelName: 'GoblinRiverDungeon', expectedCap: 40_000 },
+        { levelName: 'CraftTownTutorial', expectedCap: 60_000 },
+        { levelName: 'GhostBossDungeon', expectedCap: 40_000 },
+        { levelName: 'DreamDragonDungeon', expectedCap: 40_000 }
+    ];
+
+    for (const testCase of cases) {
+        assert.equal(
+            getWolfsEndLiveStatCap(testCase.levelName, LIVE_ACCURACY_CAP),
+            testCase.expectedCap,
+            `${testCase.levelName} should resolve to its dungeon-specific live stat cap`
+        );
+        assert.equal(
+            getExpectedWolfsEndLiveStatCap(testCase.levelName),
+            testCase.expectedCap,
+            `${testCase.levelName} regression table should match the live stat cap helper`
+        );
+    }
 }
 
 async function testBossSceneKillsOnlyUseBossEncounterEnemies(): Promise<void> {
@@ -421,7 +601,43 @@ async function testBossSceneKillsOnlyUseBossEncounterEnemies(): Promise<void> {
     const result = await finalizeAndReadResult(client);
     assertResultMatchesTrackerSummary(client, result);
     assert.equal(client.dungeonRun.finalizedStats?.scoreMode, 'boss_run', 'skipping pre-boss enemies should stay in boss_run mode');
-    assert.equal(result.kills, LIVE_BOSS_RUN_KILL_CAP / 2, 'boss-run kills should only score the boss-scene enemies');
+    assert.equal(
+        result.kills,
+        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.kills,
+        'Wolf\'s End full clears should clamp boss-run kills to the max bucket once completion reaches 100%'
+    );
+}
+
+async function testNoChestBossRunsUseHostileFallbackTreasure(): Promise<void> {
+    const client = createFakeDungeonClient('GhostBossDungeon', MissionID.KillNephit);
+    const levelScope = getClientLevelScope(client as never);
+    const boss = { id: 90058, name: 'NephitLargeEye', team: 2, entRank: 'Boss', hp: 10 };
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    syncClientDungeonRunState(client as never);
+    resetTrackerEntityBuckets(client);
+    triggerBossCutscene(client, boss);
+    noteDungeonRunCast(client as never, {
+        sourceId: client.clientEntID,
+        hasTargetPos: true,
+        projectileId: null,
+        isPersistent: false
+    });
+    noteDungeonRunHit(client as never, {
+        sourceId: client.clientEntID,
+        targetId: boss.id,
+        targetEntity: boss,
+        damage: 25
+    });
+    noteDungeonRunKill(levelScope, ['trackerrunner'], boss.id, boss);
+
+    const result = await finalizeAndReadResult(client);
+    assertResultMatchesTrackerSummary(client, result);
+    assert.equal(
+        result.treasure,
+        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.treasure,
+        'no-chest Wolf\'s End boss runs should max treasure through hostile fallback progress'
+    );
 }
 
 async function testFinalPacketMatchesTrackerWithoutFallbackInflation(): Promise<void> {
@@ -438,9 +654,62 @@ async function testFinalPacketMatchesTrackerWithoutFallbackInflation(): Promise<
 
     const result = await finalizeAndReadResult(client);
     assertResultMatchesTrackerSummary(client, result);
-    assert.equal(result.accuracy, 0, 'a boss kill without a landed scored hit should not get free accuracy');
+    assert.equal(
+        result.accuracy,
+        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.accuracy,
+        'Wolf\'s End full clears should max accuracy even if completion was driven by dungeon progress rather than landed-hit bookkeeping'
+    );
     assert.notEqual(result.accuracy, 50, 'accuracy should not fall back to the old fabricated default');
     assert.notEqual(result.deaths, 80_000, 'deaths should no longer use the legacy profile-perfect value');
+}
+
+async function testDreamDragonQuestTrackerFullClearOverridesPacketProgress(): Promise<void> {
+    const client = createFakeDungeonClient('DreamDragonDungeon', MissionID.SlayTheDragon);
+    const levelScope = getClientLevelScope(client as never);
+    const boss = { id: 90072, name: 'DreamDragon', team: 2, entRank: 'Boss', hp: 10 };
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    syncClientDungeonRunState(client as never);
+    resetTrackerEntityBuckets(client);
+    client.character.questTrackerState = 100;
+
+    triggerBossCutscene(client, boss);
+    noteDungeonRunCast(client as never, { sourceId: client.clientEntID, projectileId: null, isPersistent: false });
+    noteDungeonRunHit(client as never, {
+        sourceId: client.clientEntID,
+        targetId: boss.id,
+        targetEntity: boss,
+        damage: 25
+    });
+    noteDungeonRunKill(levelScope, ['trackerrunner'], boss.id, boss);
+
+    const result = await finalizeAndReadResultWithPacket(client, 99, 1, 2);
+    assertResultMatchesTrackerSummary(client, result);
+    assert.equal(
+        client.dungeonRun.finalizedStats?.completionPercent,
+        100,
+        'Wolf\'s End completion should use the higher server-tracked quest progress when finalizing'
+    );
+    assert.equal(
+        result.kills,
+        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.kills,
+        'Dream Dragon full progress should clamp kills to max even if the client packet progress lags behind'
+    );
+    assert.equal(
+        result.treasure,
+        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.treasure,
+        'Dream Dragon full progress should clamp treasure to max even if the client packet progress lags behind'
+    );
+    assert.equal(
+        result.accuracy,
+        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.accuracy,
+        'Dream Dragon full progress should clamp accuracy to max even if the client packet progress lags behind'
+    );
+    assert.equal(
+        result.deaths,
+        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.deaths,
+        'Dream Dragon full progress should clamp deaths to max even if the client packet progress lags behind'
+    );
 }
 
 async function main(): Promise<void> {
@@ -462,13 +731,31 @@ async function main(): Promise<void> {
         await testBossRunAccuracyStartsAtFirstPreBossHit();
         GlobalState.sessionsByToken.clear();
 
-        await testBossRunElapsedTimingUsesEntryToBossDefeat();
+        await testBossRunElapsedTimingUsesEntryToDungeonCompletion();
+        GlobalState.sessionsByToken.clear();
+
+        await testGoblinRiverFullClearKeepsPositiveTimeBonusAtTenMinutes();
+        GlobalState.sessionsByToken.clear();
+
+        await testGoblinRiverFullClearKeepsMaxTimeBonusBeforeParTime();
+        GlobalState.sessionsByToken.clear();
+
+        await testWolfsEndTimeBonusCapsStayDungeonSpecific();
+        GlobalState.sessionsByToken.clear();
+
+        testWolfsEndLiveStatCapsStayDungeonSpecific();
         GlobalState.sessionsByToken.clear();
 
         await testBossSceneKillsOnlyUseBossEncounterEnemies();
         GlobalState.sessionsByToken.clear();
 
+        await testNoChestBossRunsUseHostileFallbackTreasure();
+        GlobalState.sessionsByToken.clear();
+
         await testFinalPacketMatchesTrackerWithoutFallbackInflation();
+        GlobalState.sessionsByToken.clear();
+
+        await testDreamDragonQuestTrackerFullClearOverridesPacketProgress();
     } finally {
         GlobalState.sessionsByToken = sessionsByToken;
     }

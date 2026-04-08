@@ -10,7 +10,13 @@ import { BitReader } from '../network/protocol/bitReader';
 import { LevelConfig } from '../core/LevelConfig';
 import { GlobalState, PendingTransfer } from '../core/GlobalState';
 import { DebugLogger } from '../core/Debug';
-import { cloneDungeonRunStats, finalizeDungeonRun, noteDungeonRunBossCutscene, noteDungeonRunEntitySeen } from '../core/DungeonRunStats';
+import {
+    cloneDungeonRunStats,
+    finalizeDungeonRun,
+    noteDungeonRunBossCutscene,
+    noteDungeonRunCompletionProgress,
+    noteDungeonRunEntitySeen
+} from '../core/DungeonRunStats';
 import { WorldEnter } from '../utils/WorldEnter';
 import { Config } from '../core/config';
 import { MissionLoader } from '../data/MissionLoader';
@@ -25,6 +31,7 @@ import { normalizeCharacterKey, PendingTeleport } from '../core/SocialState';
 import { TransferTokenAllocator } from '../core/TransferTokenAllocator';
 import { areClientsInSameParty, getPartyIdForClient, sharesRoomIds } from '../core/PartySync';
 import {
+    getSharedDungeonInitialProgress,
     getOrCreateSharedDungeonProgressState,
     hasSharedDungeonProgressHostiles,
     recomputeSharedDungeonProgress,
@@ -734,8 +741,7 @@ export class LevelHandler {
 
     static shouldSkipDungeonRoomProgressSync(levelName: string | null | undefined): boolean {
         const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
-        return normalizedLevel === 'GoblinRiverDungeon' ||
-            normalizedLevel === 'GoblinRiverDungeonHard' ||
+        return usesSharedDungeonProgress(normalizedLevel) ||
             normalizedLevel === 'TutorialDungeon';
     }
 
@@ -753,7 +759,7 @@ export class LevelHandler {
 
         client.currentRoomId = 0;
         client.startedRoomEvents.clear();
-        client.character.questTrackerState = LevelHandler.GOBLIN_RIVER_INITIAL_PROGRESS;
+        client.character.questTrackerState = getSharedDungeonInitialProgress(client.currentLevel);
     }
 
     private static shouldClampTutorialDungeonToIntroProgress(client: Client): boolean {
@@ -2768,13 +2774,14 @@ export class LevelHandler {
                 }
                 progress = sharedState.progress;
             } else {
-                progress = LevelHandler.GOBLIN_RIVER_INITIAL_PROGRESS;
+                progress = getSharedDungeonInitialProgress(currentLevel);
             }
         }
 
         if (client.character) {
             client.character.questTrackerState = progress;
         }
+        noteDungeonRunCompletionProgress(client, progress);
 
         DebugLogger.logProgress('QuestProgress:update', client, client.character, {
             previousProgress,

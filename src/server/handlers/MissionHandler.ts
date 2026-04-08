@@ -6,6 +6,7 @@ import {
     type ResolvedDungeonScoreProfile
 } from '../core/DungeonScoreProfiles';
 import { GlobalState } from '../core/GlobalState';
+import { isWolfsEndDungeonLevel } from '../core/WolfsEndDungeonStatsPolicy';
 import { finalizeDungeonRun, getActiveDungeonRunStats, noteDungeonRunCompletionProgress } from '../core/DungeonRunStats';
 import { buildDungeonRunScoreSummary } from '../core/DungeonRunStats';
 import { LevelConfig } from '../core/LevelConfig';
@@ -174,12 +175,18 @@ export class MissionHandler {
         const requiredKills = br.readMethod9();
         const levelWidthScore = br.readMethod9();
 
-        const currentLevel = client.currentLevel || String(client.character.CurrentLevel?.name ?? '');
+        const currentLevel =
+            LevelConfig.normalizeLevelName(client.currentLevel || String(client.character.CurrentLevel?.name ?? '')) ||
+            client.currentLevel ||
+            String(client.character.CurrentLevel?.name ?? '');
         const levelScope = getClientLevelScope(client);
-        noteDungeonRunCompletionProgress(client, completionPercent);
+        const trackerCompletionPercent = Math.max(0, Number(client.character.questTrackerState ?? 0));
+        let effectiveCompletionPercent = isWolfsEndDungeonLevel(currentLevel)
+            ? Math.max(completionPercent, trackerCompletionPercent)
+            : completionPercent;
         let actualKills = Math.max(requiredKills - remainingKills, 0);
         let clearedDungeon =
-            completionPercent >= 100 ||
+            effectiveCompletionPercent >= 100 ||
             (requiredKills > 0 && remainingKills <= 0);
 
         if (usesSharedDungeonProgress(currentLevel) && levelScope) {
@@ -192,6 +199,12 @@ export class MissionHandler {
                     return;
                 }
 
+                effectiveCompletionPercent = Math.max(effectiveCompletionPercent, Number(sharedState.progress ?? 0));
+                noteDungeonRunCompletionProgress(client, effectiveCompletionPercent);
+                clearedDungeon =
+                    effectiveCompletionPercent >= 100 ||
+                    (requiredKills > 0 && remainingKills <= 0);
+
                 const liveAuthorityToken = resolveSharedDungeonProgressAuthorityToken(levelScope);
                 if (liveAuthorityToken > 0) {
                     sharedState.authorityToken = liveAuthorityToken;
@@ -202,6 +215,7 @@ export class MissionHandler {
                 }
             }
         }
+        noteDungeonRunCompletionProgress(client, effectiveCompletionPercent);
 
         let didMutate = false;
         if (currentLevel === 'TutorialBoat' || currentLevel === 'TutorialDungeon') {
@@ -237,7 +251,7 @@ export class MissionHandler {
             currentLevel,
             levelScope,
             {
-                completionPercent,
+                completionPercent: effectiveCompletionPercent,
                 bonusScoreTotal,
                 goldReward,
                 requiredKills,
@@ -645,6 +659,7 @@ export class MissionHandler {
             dungeonCompleted: boolean;
         }
     ): DungeonCompletionResult {
+        const normalizedLevel = LevelConfig.normalizeLevelName(currentLevel) || currentLevel;
         const runStats = getActiveDungeonRunStats(client);
         const finalizedRun = finalizeDungeonRun(
             client,
@@ -656,7 +671,7 @@ export class MissionHandler {
         );
         const scoreSummary = finalizedRun?.scoreSummary ?? (runStats ? buildDungeonRunScoreSummary(runStats) : null);
         const profile: ResolvedDungeonScoreProfile =
-            scoreSummary?.profile ?? getDungeonScoreProfile(currentLevel) ?? buildDefaultDungeonScoreProfile(currentLevel);
+            scoreSummary?.profile ?? getDungeonScoreProfile(normalizedLevel) ?? buildDefaultDungeonScoreProfile(normalizedLevel);
         const maxTotalScore = getDungeonScoreTotalCap(profile);
         const killsScore = Math.max(0, Number(scoreSummary?.finalStat.kills ?? 0));
         const accuracyScore = Math.max(0, Number(scoreSummary?.finalStat.accuracy ?? 0));

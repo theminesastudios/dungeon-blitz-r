@@ -1,9 +1,7 @@
 import { Client } from './Client';
-import { EntityTeam } from './Entity';
-import { GameData } from './GameData';
 import { GlobalState } from './GlobalState';
 import { LevelConfig } from './LevelConfig';
-import { getClientLevelScope } from './LevelScope';
+import { getClientLevelScope, getScopeLevelName } from './LevelScope';
 import { getClientCharacterKey } from './PartySync';
 import { sharesRoomIds } from './PartySync';
 import {
@@ -11,7 +9,13 @@ import {
     getDungeonScoreProfile,
     ResolvedDungeonScoreProfile
 } from './DungeonScoreProfiles';
+import { noteSharedDungeonHostileDestroyed, usesSharedDungeonProgress } from './SharedDungeonProgress';
 import { NpcLoader } from '../data/NpcLoader';
+import {
+    classifyDungeonStatsEntity,
+    hasDungeonStatsCombatTarget,
+    isWolfsEndDungeonLevel
+} from './WolfsEndDungeonStatsPolicy';
 
 export type DungeonRunCompletionReason = 'success' | 'fail' | 'leave' | 'abort' | 'unknown';
 export type DungeonRunClassification = 'incomplete' | 'objective_clear' | 'full_clear';
@@ -200,8 +204,15 @@ type DungeonRunFinalizeOptions = {
 
 type DungeonRunCastContext = {
     sourceId: number;
+    powerId?: number;
+    hasTargetEntity?: boolean;
+    hasTargetPos?: boolean;
     projectileId: number | null;
     isPersistent: boolean;
+    comboData?: {
+        isMelee: boolean;
+        id: number;
+    } | null;
 };
 
 type DungeonRunHitContext = {
@@ -211,7 +222,6 @@ type DungeonRunHitContext = {
     damage: number;
 };
 
-const DIRECT_ENEMY_RANKS = new Set(['Minion', 'Lieutenant', 'MiniBoss', 'Boss']);
 const DUNGEON_RUN_DEBUG_ENABLED = String(process.env.DUNGEON_RUN_DEBUG ?? '').trim() === '1';
 const LIVE_ACCURACY_CAP = 40_000;
 const LIVE_DEATHS_BASE = 40_000;
@@ -246,35 +256,65 @@ function getDeathPenaltyPerDeath(levelName: string, deathIndex: number): number 
     );
 }
 
-function calculateDeathsScore(levelName: string, deathCount: number): number {
+export function getWolfsEndLiveStatCap(levelName: string, defaultCap: number): number {
+    const normalizedLevel = LevelConfig.normalizeLevelName(levelName) || levelName;
+    const baseLevelName = normalizedLevel.replace(/Hard$/, '');
+
+    switch (baseLevelName) {
+        case 'CraftTownTutorial':
+            return 60_000;
+        default:
+            return Math.max(0, Math.round(defaultCap));
+    }
+}
+
+function calculateDeathsScore(levelName: string, deathCount: number, deathCap: number): number {
     const normalizedDeaths = Math.max(0, Math.round(Number(deathCount) || 0));
     if (normalizedDeaths <= 0) {
-        return LIVE_DEATHS_BASE;
+        return deathCap;
     }
 
     let totalPenalty = 0;
     for (let deathIndex = 1; deathIndex <= normalizedDeaths; deathIndex++) {
         totalPenalty += getDeathPenaltyPerDeath(levelName, deathIndex);
     }
-    return Math.max(0, LIVE_DEATHS_BASE - totalPenalty);
+    return Math.max(0, deathCap - totalPenalty);
+}
+
+export function getWolfsEndTimeBonusCap(levelName: string, defaultCap: number): number {
+    const normalizedLevel = LevelConfig.normalizeLevelName(levelName) || levelName;
+    const baseLevelName = normalizedLevel.replace(/Hard$/, '');
+
+    switch (baseLevelName) {
+        case 'TutorialDungeon':
+        case 'GoblinRiverDungeon':
+            return 40_000;
+        case 'CraftTownTutorial':
+            return 60_000;
+        case 'GhostBossDungeon':
+            return 80_000;
+        case 'DreamDragonDungeon':
+            return 100_000;
+        default:
+            return Math.max(0, Math.round(defaultCap));
+    }
 }
 
 function getDungeonTimeTargetMs(levelName: string, scoreMode: DungeonRunScoreMode): number {
     const spec = LevelConfig.get(levelName);
     const levelTier = Math.max(1, Number(spec.baseId || 1));
     const hardScalar = spec.isHard ? 1.15 : 1;
-    const modeScalar = scoreMode === 'boss_run' ? 0.9 : 1;
+    const modeScalar = scoreMode === 'boss_run' ? 0.85 : 1;
+    const wolfsEndScalar = isWolfsEndDungeonLevel(levelName) ? 1.5 : 1;
     return Math.max(
-        180_000,
-        Math.round((120_000 + (levelTier * 60_000)) * hardScalar * modeScalar)
+        240_000,
+        Math.round((120_000 + (levelTier * 60_000)) * hardScalar * modeScalar * wolfsEndScalar)
     );
 }
 
-function getScoredElapsedMs(stats: Pick<DungeonRunStats, 'scoreMode' | 'entryStartTime' | 'runEndTime' | 'bossDefeatTime'>): number {
+function getScoredElapsedMs(stats: Pick<DungeonRunStats, 'entryStartTime' | 'runEndTime'>): number {
     const now = Date.now();
-    const scoreEndTime = stats.scoreMode === 'boss_run'
-        ? (stats.bossDefeatTime ?? (stats.runEndTime > 0 ? stats.runEndTime : now))
-        : (stats.runEndTime > 0 ? stats.runEndTime : now);
+    const scoreEndTime = stats.runEndTime > 0 ? stats.runEndTime : now;
     return Math.max(0, scoreEndTime - stats.entryStartTime);
 }
 
@@ -285,8 +325,11 @@ function calculateTimeBonusScore(
     elapsedMs: number
 ): number {
     const targetMs = getDungeonTimeTargetMs(levelName, scoreMode);
-    const drainWindowMs = Math.max(targetMs, Math.round(targetMs * 1.5));
-    const remainingRatio = clampRatio(1 - (Math.min(Math.max(0, elapsedMs), drainWindowMs) / drainWindowMs));
+    const drainWindowMs = Math.max(targetMs, Math.round(targetMs * (isWolfsEndDungeonLevel(levelName) ? 2 : 1.5)));
+    const clampedElapsedMs = Math.max(0, elapsedMs);
+    const remainingRatio = clampedElapsedMs <= targetMs
+        ? 1
+        : clampRatio(1 - ((Math.min(clampedElapsedMs, drainWindowMs) - targetMs) / Math.max(1, drainWindowMs - targetMs)));
     return Math.round(Math.max(0, timeBonusCap) * remainingRatio);
 }
 
@@ -348,38 +391,14 @@ function createZeroBudget(): DungeonRunScoreBudget {
     };
 }
 
-function isTreasureChestEntity(name: string, behavior: string): boolean {
-    return /treasurechest/i.test(name) || /questtreasurechest/i.test(name) || behavior === 'TreasureChest';
-}
-
 function classifyDungeonRunEntity(entity: any): DungeonRunEntityKind {
-    if (!entity || entity.isPlayer) {
-        return {
-            enemy: false,
-            boss: false,
-            chest: false,
-            objective: false
-        };
-    }
-
-    const name = String(entity?.name ?? '').trim();
-    const entType = name ? GameData.getEntType(name) ?? {} : {};
-    const behavior = String(entity?.behavior ?? entType?.Behavior ?? '').trim();
-    const rank = String(entity?.entRank ?? entType?.EntRank ?? '').trim();
-    const hitPoints = Number(entity?.hp ?? entType?.HitPoints ?? 0);
-    const team = Number(entity?.team ?? EntityTeam.UNKNOWN);
-    const chest = isTreasureChestEntity(name, behavior);
-    const objective = !chest && /Target|Objective/i.test(behavior);
-    const enemy = !chest &&
-        !objective &&
-        team === EntityTeam.ENEMY &&
-        (DIRECT_ENEMY_RANKS.has(rank) || hitPoints > 0);
+    const classification = classifyDungeonStatsEntity(entity);
 
     return {
-        enemy,
-        boss: enemy && (rank === 'Boss' || rank === 'MiniBoss'),
-        chest,
-        objective
+        enemy: classification.hostile,
+        boss: classification.boss,
+        chest: classification.chest,
+        objective: classification.objective
     };
 }
 
@@ -441,18 +460,24 @@ function syncStatsFromAccumulator(stats: DungeonRunStats): void {
 }
 
 function classifyDungeonRun(
-    stats: Pick<DungeonRunStats, 'dungeonCompleted' | 'skippedEnemies' | 'failedObjectives' | 'scoreMode'>
+    stats: Pick<DungeonRunStats, 'dungeonCompleted' | 'skippedEnemies' | 'failedObjectives' | 'scoreMode' | 'levelName' | 'completionPercent'>
 ): DungeonRunClassification {
     if (!stats.dungeonCompleted) {
         return 'incomplete';
     }
 
-    if (stats.scoreMode === 'boss_run') {
-        return 'objective_clear';
+    if (isWolfsEndDungeonLevel(stats.levelName) && stats.completionPercent >= 100) {
+        return 'full_clear';
     }
 
     if (stats.skippedEnemies <= 0 && stats.failedObjectives <= 0) {
-        return 'full_clear';
+        if (stats.scoreMode !== 'boss_run') {
+            return 'full_clear';
+        }
+    }
+
+    if (stats.scoreMode === 'boss_run') {
+        return 'objective_clear';
     }
 
     return 'objective_clear';
@@ -662,11 +687,73 @@ function ensureBossFightStarted(stats: DungeonRunStats, startedAt: number): void
     recordDungeonRunEvent(stats, 'boss_fight_start');
 }
 
+function isOffensiveDungeonRunCast(context: DungeonRunCastContext): boolean {
+    return Boolean(
+        context.hasTargetEntity ||
+        context.hasTargetPos ||
+        context.projectileId !== null ||
+        context.comboData
+    ) || (
+        context.powerId === undefined &&
+        context.hasTargetEntity === undefined &&
+        context.hasTargetPos === undefined &&
+        context.projectileId === null &&
+        context.comboData == null
+    );
+}
+
+function getCombatTargetCandidates(client: Client, stats: DungeonRunStats): any[] {
+    const candidates: any[] = [];
+    const seenIds = new Set<number>();
+
+    for (const entity of client.entities.values()) {
+        const entityId = Number(entity?.id ?? 0);
+        if (entityId > 0) {
+            seenIds.add(entityId);
+        }
+        candidates.push(entity);
+    }
+
+    const levelMap = GlobalState.levelEntities.get(stats.levelScope);
+    for (const [entityId, entity] of levelMap?.entries() ?? []) {
+        if (seenIds.has(entityId)) {
+            continue;
+        }
+        candidates.push(entity);
+    }
+
+    return candidates;
+}
+
+function hasCombatTargetOpportunity(client: Client, stats: DungeonRunStats): boolean {
+    return hasDungeonStatsCombatTarget(getCombatTargetCandidates(client, stats), client.currentRoomId);
+}
+
+function isAccuracyEligibleCast(context: DungeonRunCastContext): boolean {
+    if (context.comboData?.isMelee) {
+        return false;
+    }
+
+    return true;
+}
+
+function resolvePendingAccuracyMisses(stats: DungeonRunStats): void {
+    for (const shot of stats.pendingShots.values()) {
+        if (shot.resolved) {
+            continue;
+        }
+
+        shot.resolved = true;
+        stats.missedShots += 1;
+    }
+}
+
 function noteAccuracyCast(stats: DungeonRunStats, projectileId: number | null): void {
     if (!stats.accuracyWindowActive) {
         return;
     }
 
+    resolvePendingAccuracyMisses(stats);
     const shotKey = projectileId !== null
         ? `projectile:${projectileId}`
         : `cast:${++stats.nextShotSequence}`;
@@ -685,11 +772,11 @@ function noteAccuracyHit(stats: DungeonRunStats): void {
     }
 
     const shot = findOldestPendingShot(stats);
-    if (shot) {
-        shot.resolved = true;
-    } else {
-        stats.totalShots += 1;
+    if (!shot) {
+        return;
     }
+
+    shot.resolved = true;
     stats.successfulHits += 1;
 }
 
@@ -858,15 +945,32 @@ export function noteDungeonRunCast(client: Client, context: DungeonRunCastContex
         return;
     }
 
+    const offensiveCast = isOffensiveDungeonRunCast(context);
+    const accuracyEligibleCast = offensiveCast && isAccuracyEligibleCast(context);
     if (stats.bossCutsceneTriggeredAt !== null) {
         ensureBossFightStarted(stats, Date.now());
     }
 
-    if (stats.scoreMode === 'boss_run' && !stats.accuracyWindowActive) {
-        startAccuracyWindow(stats, 'boss_cutscene', stats.bossCutsceneTriggeredAt ?? Date.now());
+    if (
+        accuracyEligibleCast &&
+        !stats.accuracyWindowActive &&
+        (
+            (stats.scoreMode === 'boss_run' && hasCombatTargetOpportunity(client, stats)) ||
+            (stats.scoreMode !== 'boss_run' && hasCombatTargetOpportunity(client, stats))
+        )
+    ) {
+        startAccuracyWindow(
+            stats,
+            stats.scoreMode === 'boss_run' ? 'boss_cutscene' : 'pre_boss_hit',
+            stats.scoreMode === 'boss_run'
+                ? (stats.bossCutsceneTriggeredAt ?? Date.now())
+                : Date.now()
+        );
     }
 
-    noteAccuracyCast(stats, context.projectileId);
+    if (accuracyEligibleCast) {
+        noteAccuracyCast(stats, context.projectileId);
+    }
     recordDungeonRunEvent(stats, 'cast');
     syncStatsFromAccumulator(stats);
 }
@@ -886,8 +990,10 @@ export function noteDungeonRunHit(client: Client, context: DungeonRunHitContext)
     if (stats.scoreMode === 'pending' && shouldPromotePendingRunForEntity(kind)) {
         stats.preBossEncounterEngaged = true;
         promotePendingRunToDungeonClear(stats);
-        startAccuracyWindow(stats, 'pre_boss_hit', Date.now());
-    } else if (stats.scoreMode === 'boss_run' && !stats.accuracyWindowActive) {
+        if (kind.enemy) {
+            startAccuracyWindow(stats, 'pre_boss_hit', Date.now());
+        }
+    } else if (stats.scoreMode === 'boss_run' && !stats.accuracyWindowActive && kind.enemy) {
         startAccuracyWindow(stats, 'boss_cutscene', stats.bossCutsceneTriggeredAt ?? Date.now());
     }
 
@@ -899,7 +1005,9 @@ export function noteDungeonRunHit(client: Client, context: DungeonRunHitContext)
     if (kind.objective) {
         accumulator.completedObjectiveIds.add(context.targetId);
     }
-    noteAccuracyHit(stats);
+    if (kind.enemy) {
+        noteAccuracyHit(stats);
+    }
     recordDungeonRunEvent(stats, 'hit', {
         entityId: context.targetId,
         value: context.damage
@@ -990,6 +1098,16 @@ export function noteDungeonRunKill(
     const normalizedScope = String(levelScope ?? '').trim();
     if (!normalizedScope || !contributorKeys.length) {
         return;
+    }
+
+    if (entityId && entity && usesSharedDungeonProgress(getScopeLevelName(normalizedScope))) {
+        noteSharedDungeonHostileDestroyed(normalizedScope, entityId, {
+            ...entity,
+            clientSpawned: true,
+            dead: true,
+            hp: 0,
+            entState: 6
+        });
     }
 
     const remainingKeys = new Set(
@@ -1171,8 +1289,14 @@ export function noteDungeonRunBossCutscene(
 
 export function buildDungeonRunScoreSummary(stats: DungeonRunStats): DungeonRunScoreSummary {
     const profile = getDungeonScoreProfile(stats.levelName) ?? buildDefaultDungeonScoreProfile(stats.levelName);
-    const totalEnemyNodes = stats.windowAccumulator.eligibleEnemyIds.size;
-    const completedEnemyNodes = stats.windowAccumulator.killedEnemyIds.size;
+    const wolfsEndFullClear = isWolfsEndDungeonLevel(stats.levelName) &&
+        stats.dungeonCompleted &&
+        stats.completionPercent >= 100;
+    const canonicalSharedState = GlobalState.levelQuestProgress.get(stats.levelScope);
+    const canonicalEnemyTotal = canonicalSharedState?.trackedHostileIds?.size ?? 0;
+    const canonicalEnemyCompleted = canonicalSharedState?.defeatedHostileIds?.size ?? 0;
+    const totalEnemyNodes = Math.max(stats.windowAccumulator.eligibleEnemyIds.size, canonicalEnemyTotal);
+    const completedEnemyNodes = Math.max(stats.windowAccumulator.killedEnemyIds.size, canonicalEnemyCompleted);
     const totalChestNodes = stats.windowAccumulator.eligibleChestIds.size;
     const completedChestNodes = stats.windowAccumulator.openedChestIds.size;
     const totalObjectiveNodes = stats.windowAccumulator.eligibleObjectiveIds.size;
@@ -1181,6 +1305,11 @@ export function buildDungeonRunScoreSummary(stats: DungeonRunStats): DungeonRunS
     const progressionNodesCompleted = completedEnemyNodes + completedChestNodes + completedObjectiveNodes;
     const enemyRatio = totalEnemyNodes > 0 ? clampRatio(completedEnemyNodes / totalEnemyNodes) : 0;
     const chestRatio = totalChestNodes > 0 ? clampRatio(completedChestNodes / totalChestNodes) : 0;
+    const treasureRatio = totalChestNodes > 0
+        ? chestRatio
+        : totalEnemyNodes > 0
+            ? enemyRatio
+            : 0;
     const accuracyRatio = clampRatio(stats.totalShots > 0 ? stats.successfulHits / stats.totalShots : 0);
     const killCap = stats.scoreMode === 'boss_run'
         ? LIVE_BOSS_RUN_KILL_CAP
@@ -1188,13 +1317,21 @@ export function buildDungeonRunScoreSummary(stats: DungeonRunStats): DungeonRunS
     const treasureCap = profile.treasureCap;
     const timeBonusCap = profile.timeBonusCap;
     const elapsedMs = getScoredElapsedMs(stats);
+    const liveAccuracyCap = isWolfsEndDungeonLevel(stats.levelName)
+        ? getWolfsEndLiveStatCap(stats.levelName, LIVE_ACCURACY_CAP)
+        : LIVE_ACCURACY_CAP;
+    const liveDeathCap = isWolfsEndDungeonLevel(stats.levelName)
+        ? getWolfsEndLiveStatCap(stats.levelName, LIVE_DEATHS_BASE)
+        : LIVE_DEATHS_BASE;
 
     const unlockedCap: DungeonRunScoreBudget = {
         kills: Math.max(0, Math.round(killCap)),
         treasure: Math.max(0, Math.round(treasureCap)),
-        accuracy: LIVE_ACCURACY_CAP,
-        deaths: LIVE_DEATHS_BASE,
-        timeBonus: Math.max(0, Math.round(timeBonusCap)),
+        accuracy: liveAccuracyCap,
+        deaths: liveDeathCap,
+        timeBonus: isWolfsEndDungeonLevel(stats.levelName)
+            ? getWolfsEndTimeBonusCap(stats.levelName, timeBonusCap)
+            : Math.max(0, Math.round(timeBonusCap)),
         total: 0
     };
     unlockedCap.total =
@@ -1206,14 +1343,10 @@ export function buildDungeonRunScoreSummary(stats: DungeonRunStats): DungeonRunS
 
     const rawEarned: DungeonRunScoreBudget = {
         kills: Math.round(killCap * enemyRatio),
-        treasure: totalChestNodes > 0
-            ? Math.round(treasureCap * chestRatio)
-            : stats.treasureGold > 0
-                ? Math.min(treasureCap, Math.round(stats.treasureGold))
-                : 0,
-        accuracy: Math.round(LIVE_ACCURACY_CAP * accuracyRatio),
-        deaths: calculateDeathsScore(stats.levelName, stats.playerDeaths),
-        timeBonus: calculateTimeBonusScore(stats.levelName, stats.scoreMode, timeBonusCap, elapsedMs),
+        treasure: Math.round(treasureCap * treasureRatio),
+        accuracy: Math.round(liveAccuracyCap * accuracyRatio),
+        deaths: calculateDeathsScore(stats.levelName, stats.playerDeaths, liveDeathCap),
+        timeBonus: calculateTimeBonusScore(stats.levelName, stats.scoreMode, unlockedCap.timeBonus, elapsedMs),
         total: 0
     };
     rawEarned.total =
@@ -1231,6 +1364,12 @@ export function buildDungeonRunScoreSummary(stats: DungeonRunStats): DungeonRunS
         timeBonus: Math.max(0, Math.min(rawEarned.timeBonus, unlockedCap.timeBonus)),
         total: 0
     };
+    if (wolfsEndFullClear) {
+        finalStat.kills = unlockedCap.kills;
+        finalStat.treasure = unlockedCap.treasure;
+        finalStat.accuracy = unlockedCap.accuracy;
+        finalStat.deaths = unlockedCap.deaths;
+    }
     finalStat.total =
         finalStat.kills +
         finalStat.treasure +
