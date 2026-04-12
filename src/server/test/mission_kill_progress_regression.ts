@@ -58,7 +58,10 @@ function resetGlobalState(): void {
     GlobalState.entityLastRewardNonces.clear();
 }
 
-function createCharacter(missions: Record<string, Record<string, number>>): Character {
+function createCharacter(
+    missions: Record<string, Record<string, number>>,
+    currentLevel: string = 'NewbieRoad'
+): Character {
     return {
         name: 'QuestKillTester',
         class: 'Paladin',
@@ -66,18 +69,21 @@ function createCharacter(missions: Record<string, Record<string, number>>): Char
         level: 3,
         missions,
         questTrackerState: 100,
-        CurrentLevel: { name: 'NewbieRoad', x: 0, y: 0 },
-        PreviousLevel: { name: 'NewbieRoad', x: 0, y: 0 }
+        CurrentLevel: { name: currentLevel, x: 0, y: 0 },
+        PreviousLevel: { name: currentLevel, x: 0, y: 0 }
     };
 }
 
-function createClient(missions: Record<string, Record<string, number>>): FakeClient {
+function createClient(
+    missions: Record<string, Record<string, number>>,
+    currentLevel: string = 'NewbieRoad'
+): FakeClient {
     const sentPackets: SentPacket[] = [];
-    const character = createCharacter(missions);
+    const character = createCharacter(missions, currentLevel);
 
     return {
         token: 9101,
-        currentLevel: 'NewbieRoad',
+        currentLevel,
         levelInstanceId: '',
         currentRoomId: 0,
         playerSpawned: true,
@@ -121,12 +127,18 @@ function decodeMissionCompletePacket(payload: Buffer): number {
     return br.readMethod4();
 }
 
-async function destroyEnemy(client: FakeClient, entityId: number, entityName: string): Promise<void> {
+async function destroyEnemy(
+    client: FakeClient,
+    entityId: number,
+    entityName: string,
+    extra: Record<string, unknown> = {}
+): Promise<void> {
     client.entities.set(entityId, {
         id: entityId,
         name: entityName,
         isPlayer: false,
-        team: 2
+        team: 2,
+        ...extra
     });
     await CombatHandler.handleEntityDestroy(client as never, createDestroyEntityPacket(entityId));
 }
@@ -260,12 +272,148 @@ async function testGoblinTakedownIgnoresNonGoblinKills(): Promise<void> {
     );
 }
 
+async function testLootersCompletesOnGoblinThiefKill(): Promise<void> {
+    resetGlobalState();
+    const client = createClient({
+        [String(MissionID.RecoverMyStuff)]: {
+            state: 1,
+            currCount: 0
+        }
+    });
+
+    await destroyEnemy(client, 8101, 'GoblinMiniBoss', {
+        characterName: 'GoblinThief'
+    });
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.RecoverMyStuff)]?.currCount ?? 0),
+        1,
+        'Looters should count the GoblinThief kill'
+    );
+    assert.equal(
+        Number(client.character.missions[String(MissionID.RecoverMyStuff)]?.state ?? 0),
+        2,
+        'Looters should become ready to turn in after GoblinThief dies'
+    );
+    assert.deepEqual(
+        client.sentPackets
+            .filter((packet) => packet.id === 0x83)
+            .map((packet) => decodeMissionProgressPacket(packet.payload)),
+        [{ missionId: MissionID.RecoverMyStuff, progress: 1 }],
+        'Looters should send a single additive mission progress packet'
+    );
+    assert.equal(
+        decodeMissionCompletePacket(
+            client.sentPackets.find((packet) => packet.id === 0x86)!.payload
+        ),
+        MissionID.RecoverMyStuff,
+        'Looters should notify the client when the commander dies'
+    );
+}
+
+async function testBoneyardMonsterCompletesOnGraveyardSkeletonKill(): Promise<void> {
+    resetGlobalState();
+    const client = createClient({
+        [String(MissionID.KillGraveyardSkeleton)]: {
+            state: 1,
+            currCount: 0
+        }
+    });
+
+    await destroyEnemy(client, 8201, 'SkeletonKnight', {
+        characterName: 'GraveyardSkeleton'
+    });
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.KillGraveyardSkeleton)]?.currCount ?? 0),
+        1,
+        'Boneyard Monster should count the GraveyardSkeleton kill'
+    );
+    assert.equal(
+        Number(client.character.missions[String(MissionID.KillGraveyardSkeleton)]?.state ?? 0),
+        2,
+        'Boneyard Monster should become ready to turn in after GraveyardSkeleton dies'
+    );
+    assert.deepEqual(
+        client.sentPackets
+            .filter((packet) => packet.id === 0x83)
+            .map((packet) => decodeMissionProgressPacket(packet.payload)),
+        [{ missionId: MissionID.KillGraveyardSkeleton, progress: 1 }],
+        'Boneyard Monster should send a single additive mission progress packet'
+    );
+    assert.equal(
+        decodeMissionCompletePacket(
+            client.sentPackets.find((packet) => packet.id === 0x86)!.payload
+        ),
+        MissionID.KillGraveyardSkeleton,
+        'Boneyard Monster should notify the client when the shrine boss dies'
+    );
+}
+
+async function testLootersHardCompletesOnGoblinThiefHardKill(): Promise<void> {
+    resetGlobalState();
+    const client = createClient({
+        [String(MissionID.RecoverMyStuffHard)]: {
+            state: 1,
+            currCount: 0
+        }
+    }, 'NewbieRoadHard');
+
+    await destroyEnemy(client, 8301, 'GoblinMiniBossHard', {
+        characterName: 'GoblinThiefHard'
+    });
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.RecoverMyStuffHard)]?.currCount ?? 0),
+        1,
+        'Looters hard mode should count GoblinThiefHard'
+    );
+    assert.equal(
+        Number(client.character.missions[String(MissionID.RecoverMyStuffHard)]?.state ?? 0),
+        2,
+        'Looters hard mode should become ready to turn in after GoblinThiefHard dies'
+    );
+}
+
+async function testRecoverWandsProgressesOnGoblinShamanKills(): Promise<void> {
+    resetGlobalState();
+    const client = createClient({
+        [String(MissionID.GetGoblinWands)]: {
+            state: 1,
+            currCount: 0
+        }
+    });
+
+    await destroyEnemy(client, 8401, 'GoblinShamanHood');
+    await destroyEnemy(client, 8402, 'GoblinShamanSkullHat');
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.GetGoblinWands)]?.currCount ?? 0),
+        2,
+        'Recover Wands should count both goblin shaman variants'
+    );
+    assert.deepEqual(
+        client.sentPackets
+            .filter((packet) => packet.id === 0x83)
+            .map((packet) => decodeMissionProgressPacket(packet.payload)),
+        [
+            { missionId: MissionID.GetGoblinWands, progress: 1 },
+            { missionId: MissionID.GetGoblinWands, progress: 1 }
+        ],
+        'Recover Wands should send additive mission progress packets for shaman kills'
+    );
+}
+
 async function main(): Promise<void> {
     ensureDataLoaded();
     await testRecoverRingsProgressesOnGoblinBruteKills();
     await testRecoverRingsIgnoresNonBruteGoblinKills();
     await testGoblinTakedownProgressesOnAnyNewbieRoadGoblinKill();
     await testGoblinTakedownIgnoresNonGoblinKills();
+    await testLootersCompletesOnGoblinThiefKill();
+    await testBoneyardMonsterCompletesOnGraveyardSkeletonKill();
+    await testLootersHardCompletesOnGoblinThiefHardKill();
+    await testRecoverWandsProgressesOnGoblinShamanKills();
     console.log('mission_kill_progress_regression: ok');
 }
 

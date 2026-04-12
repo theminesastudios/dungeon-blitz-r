@@ -6,6 +6,7 @@ export interface MissionDef {
     MissionID: number;
     OfferText?: string;
     ActiveText?: string;
+    ActiveTarget?: string;
     Tier?: boolean;
     Time?: boolean;
     highscore?: number;
@@ -98,6 +99,7 @@ export class MissionLoader {
                         MissionID: id,
                         OfferText: item.OfferText || "",
                         ActiveText: item.ActiveText || "",
+                        ActiveTarget: item.ActiveTarget || "",
                         Tier: this.isTruthy(item.Achievement),
                         Time: this.isTruthy(item.Timed) || Boolean(item.Dungeon),
                         highscore: completeCount,

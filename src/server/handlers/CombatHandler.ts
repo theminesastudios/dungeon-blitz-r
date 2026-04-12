@@ -1079,8 +1079,8 @@ export class CombatHandler {
         }
 
         if (destroyedEntity && !destroyedEntity.isPlayer && Number(destroyedEntity.team ?? 0) === EntityTeam.ENEMY) {
-            await MissionHandler.handleEnemyDefeatMissionProgress(client, String(destroyedEntity.name ?? ''));
-            await MissionHandler.handleForcedGoblinRiverBossCompletion(client, destroyedEntity);
+            await MissionHandler.handleEnemyDefeatMissionProgress(client, destroyedEntity);
+            await MissionHandler.handleForcedDungeonBossCompletion(client, destroyedEntity);
         }
 
         if (shouldRelayDestroy) {

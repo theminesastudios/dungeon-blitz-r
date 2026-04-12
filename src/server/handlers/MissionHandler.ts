@@ -5,6 +5,7 @@ import {
     getDungeonScoreTotalCap,
     type ResolvedDungeonScoreProfile
 } from '../core/DungeonScoreProfiles';
+import { GameData } from '../core/GameData';
 import { GlobalState } from '../core/GlobalState';
 import { isWolfsEndDungeonLevel } from '../core/WolfsEndDungeonStatsPolicy';
 import { finalizeDungeonRun, getActiveDungeonRunStats, noteDungeonRunCompletionProgress } from '../core/DungeonRunStats';
@@ -78,7 +79,9 @@ export class MissionHandler {
     ]);
     private static readonly KILL_PROGRESS_TARGETS: Readonly<Record<number, ReadonlySet<string>>> = {
         [MissionID.GetGoblinNoserings]: new Set(['GoblinBrute']),
+        [MissionID.GetGoblinWands]: new Set(['GoblinShamanHood', 'GoblinShamanSkullHat']),
         [MissionID.GetGoblinNoseringsHard]: new Set(['GoblinBruteHard']),
+        [MissionID.GetGoblinWandsHard]: new Set(['GoblinShamanHoodHard', 'GoblinShamanSkullHatHard']),
         [MissionID.KillGoblins]: MissionHandler.NEWBIE_ROAD_GOBLIN_KILL_NAMES,
         [MissionID.KillGoblinsHard]: MissionHandler.NEWBIE_ROAD_HARD_GOBLIN_KILL_NAMES,
         [MissionID.GetHobgoblinNoserings]: new Set(['BlackGoblinBrute']),
@@ -192,13 +195,13 @@ export class MissionHandler {
         MissionHandler.sendQuestProgress(client, Math.max(0, Number(client.character.questTrackerState ?? 0)));
     }
 
-    static async handleEnemyDefeatMissionProgress(client: Client, entityNameRaw: string): Promise<void> {
+    static async handleEnemyDefeatMissionProgress(client: Client, destroyedEntity: any): Promise<void> {
         if (!client.character) {
             return;
         }
 
-        const entityName = String(entityNameRaw ?? '').trim();
-        if (!entityName) {
+        const defeatedNames = MissionHandler.getDefeatedEnemyNames(destroyedEntity);
+        if (!defeatedNames.length) {
             return;
         }
 
@@ -219,13 +222,18 @@ export class MissionHandler {
                 continue;
             }
 
-            const targetNames = MissionHandler.KILL_PROGRESS_TARGETS[missionId];
-            if (!targetNames?.has(entityName)) {
+            const missionDef = MissionLoader.getMissionDef(missionId);
+            if (!missionDef || !MissionHandler.isMissionAvailableInCurrentLevel(missionDef, currentLevel)) {
                 continue;
             }
 
-            const missionDef = MissionLoader.getMissionDef(missionId);
-            if (!missionDef || !MissionHandler.isMissionAvailableInCurrentLevel(missionDef, currentLevel)) {
+            const targetNames = MissionHandler.KILL_PROGRESS_TARGETS[missionId];
+            const activeTargetNames = MissionHandler.getMissionActiveTargetNames(missionDef);
+            const matchesKillTarget = Boolean(
+                targetNames && defeatedNames.some((name) => targetNames.has(name))
+            );
+            const matchesActiveTarget = activeTargetNames.some((name) => defeatedNames.includes(name));
+            if (!matchesKillTarget && !matchesActiveTarget) {
                 continue;
             }
 
@@ -428,7 +436,7 @@ export class MissionHandler {
         }
     }
 
-    static async handleForcedGoblinRiverBossCompletion(client: Client, destroyedEntity: any): Promise<void> {
+    static async handleForcedDungeonBossCompletion(client: Client, destroyedEntity: any): Promise<void> {
         if (!client.character) {
             return;
         }
@@ -437,12 +445,11 @@ export class MissionHandler {
             LevelConfig.normalizeLevelName(client.currentLevel || String(client.character.CurrentLevel?.name ?? '')) ||
             client.currentLevel ||
             String(client.character.CurrentLevel?.name ?? '');
-        if (currentLevel !== 'GoblinRiverDungeon' && currentLevel !== 'GoblinRiverDungeonHard') {
+        if (!currentLevel || !LevelConfig.isDungeonLevel(currentLevel)) {
             return;
         }
 
-        const entityName = String(destroyedEntity?.name ?? '');
-        if (entityName !== 'GoblinBoss2' && entityName !== 'GoblinBoss2Hard') {
+        if (!MissionHandler.isDungeonBossEntity(destroyedEntity)) {
             return;
         }
 
@@ -906,6 +913,35 @@ export class MissionHandler {
         bb.writeMethod9(1);
         bb.writeMethod9(3);
         return bb.toBuffer();
+    }
+
+    private static getMissionActiveTargetNames(missionDef: MissionDef): string[] {
+        return String(missionDef.ActiveTarget ?? '')
+            .split(',')
+            .map((entry) => entry.trim())
+            .filter(Boolean);
+    }
+
+    private static getDefeatedEnemyNames(entity: any): string[] {
+        const names = new Set<string>();
+        for (const raw of [
+            entity?.name,
+            entity?.characterName,
+            entity?.character_name
+        ]) {
+            const normalized = String(raw ?? '').trim();
+            if (normalized) {
+                names.add(normalized);
+            }
+        }
+        return [...names];
+    }
+
+    private static isDungeonBossEntity(entity: any): boolean {
+        const entityName = String(entity?.name ?? '').trim();
+        const entType = entityName ? GameData.getEntType(entityName) ?? {} : {};
+        const entRank = String(entity?.entRank ?? entType?.EntRank ?? '').trim();
+        return entRank === 'Boss';
     }
 
     private static getMissionStateMap(character: Character): Record<string, MissionEntry> {
