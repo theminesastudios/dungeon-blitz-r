@@ -15,6 +15,9 @@ export interface PendingTransfer {
     syncAnchorToken?: number;
     syncAnchorCharacterName?: string;
     syncEntryLevel?: string;
+    syncEntryX?: number;
+    syncEntryY?: number;
+    syncEntryHasCoord?: boolean;
     syncRoomId?: number;
     syncStartedRoomIds?: number[];
 }

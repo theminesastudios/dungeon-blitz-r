@@ -694,6 +694,22 @@ export class CharacterHandler {
             entry.previousLevel,
             entry.character
         );
+        const entryCoords = Boolean(entry.syncEntryHasCoord)
+            && Number.isFinite(Number(entry.syncEntryX))
+            && Number.isFinite(Number(entry.syncEntryY))
+            ? {
+                x: Math.round(Number(entry.syncEntryX)),
+                y: Math.round(Number(entry.syncEntryY)),
+                hasCoord: true
+            }
+            : LevelConfig.resolveDungeonEntryCoordinates(
+                entry.targetLevel,
+                entry.previousLevel,
+                entry.character
+            );
+        client.entryX = entryCoords.x;
+        client.entryY = entryCoords.y;
+        client.entryHasCoord = entryCoords.hasCoord;
         client.syncAnchorStartedAt = Number.isFinite(Number(entry.syncAnchorStartedAt)) && Number(entry.syncAnchorStartedAt) > 0
             ? Math.round(Number(entry.syncAnchorStartedAt))
             : 0;

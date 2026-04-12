@@ -138,6 +138,9 @@ export class Client {
     public currentLevel: string = "";
     public levelInstanceId: string = "";
     public entryLevel: string = "";
+    public entryX: number = 0;
+    public entryY: number = 0;
+    public entryHasCoord: boolean = false;
     public currentRoomId: number = -1;
     public lastDoorId: number = -1;
     public lastDoorTargetLevel: string = "";
@@ -288,6 +291,9 @@ export class Client {
         this.currentLevel = "";
         this.levelInstanceId = "";
         this.entryLevel = "";
+        this.entryX = 0;
+        this.entryY = 0;
+        this.entryHasCoord = false;
         this.currentRoomId = -1;
         this.lastDoorId = -1;
         this.lastDoorTargetLevel = "";
@@ -365,6 +371,8 @@ export class Client {
                 this.character
             ) ||
             String(this.entryLevel || this.character.PreviousLevel?.name || currentLevel);
+        const entryX = Number.isFinite(Number(this.entryX)) ? Math.round(Number(this.entryX)) : 0;
+        const entryY = Number.isFinite(Number(this.entryY)) ? Math.round(Number(this.entryY)) : 0;
         const entity = this.clientEntID > 0 ? this.entities.get(this.clientEntID) : null;
         const newX = Number(entity?.x ?? this.character.CurrentLevel?.x ?? 0);
         const newY = Number(entity?.y ?? this.character.CurrentLevel?.y ?? 0);
@@ -395,6 +403,9 @@ export class Client {
             syncAnchorToken: this.syncAnchorToken > 0 ? this.syncAnchorToken : undefined,
             syncAnchorCharacterName: this.syncAnchorCharacterName || undefined,
             syncEntryLevel: previousLevel,
+            syncEntryX: this.entryHasCoord ? entryX : undefined,
+            syncEntryY: this.entryHasCoord ? entryY : undefined,
+            syncEntryHasCoord: this.entryHasCoord,
             syncRoomId,
             syncStartedRoomIds
         });

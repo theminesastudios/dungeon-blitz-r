@@ -34,6 +34,9 @@ function createClient(): any {
         currentLevel: '',
         levelInstanceId: '',
         entryLevel: '',
+        entryX: 0,
+        entryY: 0,
+        entryHasCoord: false,
         syncAnchorStartedAt: 0,
         syncAnchorToken: 0,
         syncAnchorCharacterName: '',
@@ -482,6 +485,29 @@ function testSyncTransferSourcePositionFromLiveEntityDoesNotOverwriteDungeonRetu
         { name: 'NewbieRoad', x: 13816, y: 605 },
         'dungeon transfers should preserve the safe return point already stored in CurrentLevel'
     );
+}
+
+function testResolveDungeonExitSpawnUsesRecordedDungeonEntryCoords(): void {
+    const client = createClient();
+    client.currentLevel = 'GhostBossDungeon';
+    client.entryLevel = 'NewbieRoad';
+    client.entryX = 13816;
+    client.entryY = 605;
+    client.entryHasCoord = true;
+
+    const character = createCharacter('Hero');
+    character.CurrentLevel = { name: 'GhostBossDungeon', x: 0, y: 0 };
+    character.PreviousLevel = { name: 'NewbieRoad', x: 1421, y: 826 };
+
+    const spawn = (LevelHandler as any).resolveDungeonExitSpawn(
+        client,
+        character,
+        'GhostBossDungeon',
+        'NewbieRoad',
+        null
+    );
+
+    assert.deepEqual(spawn, { x: 13816, y: 605, hasCoord: true });
 }
 
 function testRecoverTransferSessionStateRepairsCraftTownEntryLoop(): void {
@@ -1068,6 +1094,8 @@ async function main(): Promise<void> {
         testSyncTransferSourcePositionFromLiveEntityUsesOverworldCoords();
 
         testSyncTransferSourcePositionFromLiveEntityDoesNotOverwriteDungeonReturnPoint();
+
+        testResolveDungeonExitSpawnUsesRecordedDungeonEntryCoords();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.sessionsByUserId.clear();

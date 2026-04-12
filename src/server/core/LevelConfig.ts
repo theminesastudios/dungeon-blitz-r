@@ -269,6 +269,46 @@ export class LevelConfig {
         return this.normalizeLevelName(entryLevelName) || String(entryLevelName || '');
     }
 
+    static resolveDungeonEntryCoordinates(
+        targetLevelName: string | null | undefined,
+        entryLevelName: string | null | undefined,
+        char?: any
+    ): { x: number; y: number; hasCoord: boolean } {
+        const targetLevel = this.normalizeLevelName(targetLevelName);
+        const entryLevel = this.resolveDungeonEntryLevel(targetLevelName, entryLevelName, char);
+        if (!targetLevel || !this.isDungeonLevel(targetLevel) || !entryLevel) {
+            return { x: 0, y: 0, hasCoord: false };
+        }
+
+        const currentRecord = this.asLevelRecord(char?.CurrentLevel);
+        if (
+            this.normalizeLevelName(currentRecord.name) === entryLevel &&
+            Number.isFinite(currentRecord.x) &&
+            Number.isFinite(currentRecord.y)
+        ) {
+            return {
+                x: Math.round(Number(currentRecord.x)),
+                y: Math.round(Number(currentRecord.y)),
+                hasCoord: true
+            };
+        }
+
+        const previousRecord = this.asLevelRecord(char?.PreviousLevel);
+        if (
+            this.normalizeLevelName(previousRecord.name) === entryLevel &&
+            Number.isFinite(previousRecord.x) &&
+            Number.isFinite(previousRecord.y)
+        ) {
+            return {
+                x: Math.round(Number(previousRecord.x)),
+                y: Math.round(Number(previousRecord.y)),
+                hasCoord: true
+            };
+        }
+
+        return { x: 0, y: 0, hasCoord: false };
+    }
+
     static getSpawnCoordinates(
         char: any,
         currentLevelName: string | null | undefined,

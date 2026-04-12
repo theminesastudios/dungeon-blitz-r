@@ -59,6 +59,9 @@ type LevelSyncState = {
     syncAnchorToken?: number;
     syncAnchorCharacterName?: string;
     syncEntryLevel?: string;
+    syncEntryX?: number;
+    syncEntryY?: number;
+    syncEntryHasCoord?: boolean;
     syncRoomId?: number;
     syncStartedRoomIds?: number[];
 };
@@ -159,6 +162,9 @@ export class LevelHandler {
         target.currentLevel = source.currentLevel;
         target.levelInstanceId = source.levelInstanceId;
         target.entryLevel = source.entryLevel;
+        target.entryX = source.entryX;
+        target.entryY = source.entryY;
+        target.entryHasCoord = source.entryHasCoord;
         target.currentRoomId = source.currentRoomId;
         target.lastDoorId = source.lastDoorId;
         target.lastDoorTargetLevel = source.lastDoorTargetLevel;
@@ -650,6 +656,43 @@ export class LevelHandler {
             syncRoomId,
             syncStartedRoomIds
         };
+    }
+
+    private static resolveDungeonExitSpawn(
+        client: Client,
+        activeCharacter: any,
+        oldLevel: string,
+        targetLevel: string,
+        syncState: LevelSyncState | null
+    ): { x: number; y: number; hasCoord: boolean } {
+        if (syncState?.hasCoord) {
+            return {
+                x: Math.round(Number(syncState.x ?? 0)),
+                y: Math.round(Number(syncState.y ?? 0)),
+                hasCoord: true
+            };
+        }
+
+        const normalizedOldLevel = LevelConfig.normalizeLevelName(oldLevel);
+        const normalizedTargetLevel = LevelConfig.normalizeLevelName(targetLevel);
+        const normalizedEntryLevel = LevelConfig.normalizeLevelName(client.entryLevel);
+        if (
+            normalizedOldLevel &&
+            normalizedTargetLevel &&
+            LevelConfig.isDungeonLevel(normalizedOldLevel) &&
+            normalizedTargetLevel === normalizedEntryLevel &&
+            client.entryHasCoord &&
+            Number.isFinite(Number(client.entryX)) &&
+            Number.isFinite(Number(client.entryY))
+        ) {
+            return {
+                x: Math.round(Number(client.entryX)),
+                y: Math.round(Number(client.entryY)),
+                hasCoord: true
+            };
+        }
+
+        return LevelConfig.getSpawnCoordinates(activeCharacter, oldLevel, targetLevel);
     }
 
     private static readonly CLIENT_SPAWN_FALLBACK_MS = 5000;
@@ -2557,6 +2600,9 @@ export class LevelHandler {
                 syncAnchorToken,
                 syncAnchorCharacterName,
                 syncEntryLevel: syncState?.syncEntryLevel,
+                syncEntryX: syncState?.syncEntryHasCoord ? Math.round(Number(syncState.syncEntryX ?? 0)) : undefined,
+                syncEntryY: syncState?.syncEntryHasCoord ? Math.round(Number(syncState.syncEntryY ?? 0)) : undefined,
+                syncEntryHasCoord: Boolean(syncState?.syncEntryHasCoord),
                 syncRoomId: syncState?.syncRoomId,
                 syncStartedRoomIds: syncState?.syncStartedRoomIds
             });
@@ -2638,6 +2684,22 @@ export class LevelHandler {
                 usedEntry.previousLevel,
                 usedEntry.character
             );
+            const usedEntryCoords = Boolean(usedEntry.syncEntryHasCoord)
+                && Number.isFinite(Number(usedEntry.syncEntryX))
+                && Number.isFinite(Number(usedEntry.syncEntryY))
+                ? {
+                    x: Math.round(Number(usedEntry.syncEntryX)),
+                    y: Math.round(Number(usedEntry.syncEntryY)),
+                    hasCoord: true
+                }
+                : LevelConfig.resolveDungeonEntryCoordinates(
+                    usedEntry.targetLevel,
+                    usedEntry.previousLevel,
+                    usedEntry.character
+                );
+            client.entryX = usedEntryCoords.x;
+            client.entryY = usedEntryCoords.y;
+            client.entryHasCoord = usedEntryCoords.hasCoord;
             client.syncAnchorStartedAt = LevelHandler.normalizeSyncAnchorStartedAt(usedEntry.syncAnchorStartedAt) ?? 0;
             client.syncAnchorToken = Number(usedEntry.syncAnchorToken ?? 0) > 0 ? Math.round(Number(usedEntry.syncAnchorToken)) : 0;
             client.syncAnchorCharacterName = String(usedEntry.syncAnchorCharacterName ?? '').trim();
@@ -2692,6 +2754,22 @@ export class LevelHandler {
                 pendingEntry.previousLevel,
                 pendingEntry.character
             );
+            const pendingEntryCoords = Boolean(pendingEntry.syncEntryHasCoord)
+                && Number.isFinite(Number(pendingEntry.syncEntryX))
+                && Number.isFinite(Number(pendingEntry.syncEntryY))
+                ? {
+                    x: Math.round(Number(pendingEntry.syncEntryX)),
+                    y: Math.round(Number(pendingEntry.syncEntryY)),
+                    hasCoord: true
+                }
+                : LevelConfig.resolveDungeonEntryCoordinates(
+                    pendingEntry.targetLevel,
+                    pendingEntry.previousLevel,
+                    pendingEntry.character
+                );
+            client.entryX = pendingEntryCoords.x;
+            client.entryY = pendingEntryCoords.y;
+            client.entryHasCoord = pendingEntryCoords.hasCoord;
             client.syncAnchorStartedAt = LevelHandler.normalizeSyncAnchorStartedAt(pendingEntry.syncAnchorStartedAt) ?? 0;
             client.syncAnchorToken = Number(pendingEntry.syncAnchorToken ?? 0) > 0 ? Math.round(Number(pendingEntry.syncAnchorToken)) : 0;
             client.syncAnchorCharacterName = String(pendingEntry.syncAnchorCharacterName ?? '').trim();
@@ -3130,13 +3208,13 @@ export class LevelHandler {
         LevelHandler.clearTransferState(client, oldLevel, oldClientEntId);
 
         // 3. Calculate New Spawn / save logic like Python
-        const spawn = syncState?.hasCoord
-            ? {
-                x: Math.round(Number(syncState.x ?? 0)),
-                y: Math.round(Number(syncState.y ?? 0)),
-                hasCoord: true
-            }
-            : LevelConfig.getSpawnCoordinates(activeCharacter, oldLevel, targetLevel);
+        const spawn = LevelHandler.resolveDungeonExitSpawn(
+            client,
+            activeCharacter,
+            oldLevel,
+            targetLevel,
+            syncState
+        );
         const newX = spawn.x;
         const newY = spawn.y;
         const newHasCoord = spawn.hasCoord;
