@@ -129,6 +129,29 @@ export class LevelHandler {
         );
     }
 
+    private static syncTransferSourcePositionFromLiveEntity(
+        character: any,
+        sourceLevel: string,
+        entity: { x?: number; y?: number } | null | undefined
+    ): void {
+        const normalizedSourceLevel = LevelConfig.normalizeLevelName(sourceLevel);
+        if (!character || !normalizedSourceLevel || LevelConfig.isDungeonLevel(normalizedSourceLevel)) {
+            return;
+        }
+
+        const liveX = Number(entity?.x);
+        const liveY = Number(entity?.y);
+        if (!Number.isFinite(liveX) || !Number.isFinite(liveY)) {
+            return;
+        }
+
+        character.CurrentLevel = {
+            name: normalizedSourceLevel,
+            x: Math.round(liveX),
+            y: Math.round(liveY)
+        };
+    }
+
     private static cloneTransferGameplayState(target: Client, source: Client): void {
         target.character = source.character;
         target.userId = source.userId;
@@ -3100,6 +3123,8 @@ export class LevelHandler {
             oldY = ent.y;
             hasOldCoord = Number.isFinite(oldX) && Number.isFinite(oldY);
         }
+
+        LevelHandler.syncTransferSourcePositionFromLiveEntity(activeCharacter, oldLevel, ent);
 
         const oldClientEntId = client.clientEntID;
         LevelHandler.clearTransferState(client, oldLevel, oldClientEntId);

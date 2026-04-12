@@ -89,6 +89,11 @@ export class NpcHandler {
                         missionId,
                         initialState
                     );
+                    NpcHandler.resetQuestTrackerForStartedDungeonMission(
+                        client.character,
+                        missionDef,
+                        initialState
+                    );
                     NpcHandler.sendMissionAdded(client, missionId, initialState);
                     didMutate = true;
                 } else if (
@@ -297,6 +302,22 @@ export class NpcHandler {
         return NpcHandler.missionStartsReadyToTurnIn(missionDef)
             ? NpcHandler.MISSION_READY_TO_TURN_IN
             : NpcHandler.MISSION_IN_PROGRESS;
+    }
+
+    private static resetQuestTrackerForStartedDungeonMission(
+        character: Character,
+        missionDef: MissionDef | undefined,
+        state: number
+    ): void {
+        if (state !== NpcHandler.MISSION_IN_PROGRESS) {
+            return;
+        }
+
+        if (!String(missionDef?.Dungeon ?? '').trim()) {
+            return;
+        }
+
+        character.questTrackerState = 0;
     }
 
     private static getMissionStateMap(character: Character): Record<string, MissionEntry> {

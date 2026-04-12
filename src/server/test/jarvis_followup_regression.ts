@@ -257,10 +257,63 @@ async function testAnnaTurnInClaimsLastOfTheGoblinsThenOffersNephitsQuestOnSecon
     );
 }
 
+async function testAnnaOffersDragonsDreamWithFreshDungeonTracker(): Promise<void> {
+    const client = createFakeClient(
+        'NewbieRoad',
+        {
+            [String(MissionID.KillNephit)]: {
+                state: 3,
+                currCount: 1,
+                claimed: 1,
+                complete: 1
+            }
+        },
+        100
+    );
+    client.entities.set(4186851, { id: 4186851, characterName: 'NR_QuestAnna02' });
+
+    await NpcHandler.handleTalkToNpc(client as never, createNpcTalkPacket(4186851));
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.SlayTheDragon)]?.state ?? 0),
+        1,
+        "talking to Anna after Nephit's Quest should accept The Dragon's Dream"
+    );
+    assert.equal(
+        client.character.questTrackerState,
+        0,
+        "accepting a new dungeon mission should clear stale completion progress from the previous dungeon"
+    );
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x85),
+        true,
+        "accepting The Dragon's Dream should send the mission-added packet"
+    );
+
+    client.sentPackets.length = 0;
+    await NpcHandler.handleTalkToNpc(client as never, createNpcTalkPacket(4186851));
+
+    const skitPacket = client.sentPackets.find((packet) => packet.id === 0x7B);
+    assert.ok(
+        skitPacket,
+        "talking to Anna again after accepting The Dragon's Dream should keep the mission active"
+    );
+    assert.deepEqual(
+        decodeStartSkitPacket(skitPacket!.payload),
+        {
+            npcId: 4186851,
+            dialogueId: 3,
+            missionId: MissionID.SlayTheDragon
+        },
+        "Anna should not treat The Dragon's Dream as completed immediately after it is accepted"
+    );
+}
+
 async function main(): Promise<void> {
     ensureDataLoaded();
     await testJarvisTurnInClaimsRecoverRingsThenOffersGoblinTakedownOnSecondTalk();
     await testAnnaTurnInClaimsLastOfTheGoblinsThenOffersNephitsQuestOnSecondTalk();
+    await testAnnaOffersDragonsDreamWithFreshDungeonTracker();
     console.log('jarvis_followup_regression: ok');
 }
 

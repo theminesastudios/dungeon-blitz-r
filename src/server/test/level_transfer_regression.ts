@@ -454,6 +454,36 @@ function testResolveCraftTownReturnLevelRejectsCraftTownLoop(): void {
     assert.equal(resolved, 'NewbieRoad');
 }
 
+function testSyncTransferSourcePositionFromLiveEntityUsesOverworldCoords(): void {
+    const character = createCharacter('Hero');
+    character.CurrentLevel = { name: 'NewbieRoad', x: 1421, y: 826 };
+
+    (LevelHandler as any).syncTransferSourcePositionFromLiveEntity(
+        character,
+        'NewbieRoad',
+        { x: 13816.4, y: 605.2 }
+    );
+
+    assert.deepEqual(character.CurrentLevel, { name: 'NewbieRoad', x: 13816, y: 605 });
+}
+
+function testSyncTransferSourcePositionFromLiveEntityDoesNotOverwriteDungeonReturnPoint(): void {
+    const character = createCharacter('Hero');
+    character.CurrentLevel = { name: 'NewbieRoad', x: 13816, y: 605 };
+
+    (LevelHandler as any).syncTransferSourcePositionFromLiveEntity(
+        character,
+        'GhostBossDungeon',
+        { x: 512, y: 768 }
+    );
+
+    assert.deepEqual(
+        character.CurrentLevel,
+        { name: 'NewbieRoad', x: 13816, y: 605 },
+        'dungeon transfers should preserve the safe return point already stored in CurrentLevel'
+    );
+}
+
 function testRecoverTransferSessionStateRepairsCraftTownEntryLoop(): void {
     const client = createClient();
     const character = createCharacter('KeepRunner');
@@ -1034,6 +1064,10 @@ async function main(): Promise<void> {
         testResolveTransferSourceLevelPrefersLiveSessionLevel();
 
         testResolveCraftTownReturnLevelRejectsCraftTownLoop();
+
+        testSyncTransferSourcePositionFromLiveEntityUsesOverworldCoords();
+
+        testSyncTransferSourcePositionFromLiveEntityDoesNotOverwriteDungeonReturnPoint();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.sessionsByUserId.clear();
