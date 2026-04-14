@@ -314,10 +314,10 @@ export class GameData {
         }
 
         const roll = Math.random();
-        if (roll < 0.05 && drops.L.length > 0) {
+        if (roll < 0.03 && drops.L.length > 0) {
             return drops.L[Math.floor(Math.random() * drops.L.length)] ?? 0;
         }
-        if (roll < 0.30 && drops.R.length > 0) {
+        if (roll < 0.15 && drops.R.length > 0) {
             return drops.R[Math.floor(Math.random() * drops.R.length)] ?? 0;
         }
         if (drops.M.length > 0) {

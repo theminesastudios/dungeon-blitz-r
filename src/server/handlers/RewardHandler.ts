@@ -42,9 +42,9 @@ interface LootReward {
 export class RewardHandler {
     private static nextLootId = 900000;
     private static readonly MATERIAL_DROP_CHANCE_BY_RANK: Record<string, number> = {
-        Minion: 0.2,
-        Lieutenant: 0.6,
-        MiniBoss: 0.8,
+        Minion: 0.03,
+        Lieutenant: 0.15,
+        MiniBoss: 0.5,
         Boss: 1
     };
     private static readonly DYE_DROP_CHANCE = 0.01;
