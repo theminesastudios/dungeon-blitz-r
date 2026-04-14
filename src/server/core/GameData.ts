@@ -215,27 +215,6 @@ export class GameData {
         return entry?.id ?? 0;
     }
 
-    static getRandomDyeId(allowedRarities?: Iterable<string>): number {
-        if (!Array.isArray(GameData.DYES) || GameData.DYES.length === 0) {
-            return 0;
-        }
-
-        const allowed = new Set<string>();
-        if (allowedRarities) {
-            for (const rarity of allowedRarities) {
-                const normalized = String(rarity ?? '').trim().toUpperCase();
-                if (normalized) {
-                    allowed.add(normalized);
-                }
-            }
-        }
-
-        const pool = allowed.size > 0
-            ? GameData.DYES.filter((dye) => allowed.has(String(dye.rarity).toUpperCase()))
-            : GameData.DYES;
-        return pool[Math.floor(Math.random() * pool.length)]?.id ?? 0;
-    }
-
     static getPlayerLevelFromXp(xp: number): number {
         for (let level = GameData.PLAYER_XP_THRESHOLDS.length - 1; level > 0; level--) {
             if (xp >= GameData.PLAYER_XP_THRESHOLDS[level]) {
