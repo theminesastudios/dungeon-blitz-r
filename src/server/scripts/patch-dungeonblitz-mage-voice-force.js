@@ -47,8 +47,8 @@ function printHelp() {
             '  node src/server/scripts/patch-dungeonblitz-mage-voice-force.js [--verify] [--swf <path>] [--ffdec <path>]',
             '',
             'Defaults:',
-            '  patches ActivePower in the served DungeonBlitz SWF',
-            '  so male mage casts force-replace known female-only voice tokens with male mage fallback grunts.'
+            '  patches ActivePower and SoundManager in the served DungeonBlitz SWF',
+            '  so mage cast voice tokens and pet-call animations force male mage fallback behavior.'
         ].join('\n')
     );
 }
@@ -126,12 +126,18 @@ function runFfdec(ffdecPath, repoRoot, args) {
     });
 }
 
-function exportActivePower(repoRoot, ffdecPath, workRoot, swfPath) {
+function exportClassScript(repoRoot, ffdecPath, workRoot, swfPath, className, format = 'script:as') {
     fs.rmSync(workRoot, { recursive: true, force: true });
     fs.mkdirSync(workRoot, { recursive: true });
-    runFfdec(ffdecPath, repoRoot, ['-selectclass', 'ActivePower', '-export', 'script', workRoot, swfPath]);
+    const args = [];
+    if (format) {
+        args.push('-format', format);
+    }
+    args.push('-selectclass', className, '-export', 'script', workRoot, swfPath);
+    runFfdec(ffdecPath, repoRoot, args);
 
-    const classPath = path.join(workRoot, 'scripts', 'ActivePower.as');
+    const extension = format === 'script:pcode' ? 'pcode' : 'as';
+    const classPath = path.join(workRoot, 'scripts', `${className}.${extension}`);
     if (!fs.existsSync(classPath)) {
         throw new Error(`FFDec export did not produce ${classPath}`);
     }
@@ -139,11 +145,11 @@ function exportActivePower(repoRoot, ffdecPath, workRoot, swfPath) {
     return classPath;
 }
 
-function getTemplateActivePowerSource(repoRoot) {
+function getTemplateScriptSource(repoRoot, className) {
     const candidates = [
-        path.join(repoRoot, 'build', 'extracted', 'dungeonblitz-localhost-hotbar-all', 'scripts', 'ActivePower.as'),
-        path.join(repoRoot, 'build', 'ffdec-chat-all', 'scripts', 'ActivePower.as'),
-        path.join(repoRoot, 'build', 'verify', 'dungeonblitz-localhost-mountslotfix-export', 'scripts', 'ActivePower.as')
+        path.join(repoRoot, 'build', 'extracted', 'dungeonblitz-localhost-hotbar-all', 'scripts', `${className}.as`),
+        path.join(repoRoot, 'build', 'ffdec-chat-all', 'scripts', `${className}.as`),
+        path.join(repoRoot, 'build', 'verify', 'dungeonblitz-localhost-mountslotfix-export', 'scripts', `${className}.as`)
     ];
 
     for (const candidate of candidates) {
@@ -152,7 +158,7 @@ function getTemplateActivePowerSource(repoRoot) {
         }
     }
 
-    throw new Error('Template ActivePower.as not found in extracted build artifacts.');
+    throw new Error(`Template ${className}.as not found in extracted build artifacts.`);
 }
 
 function replaceExact(source, needle, replacement, label) {
@@ -207,21 +213,35 @@ function patchActivePower(source) {
     const helperPatched = join([
         '      private function method_2981(param1:String) : String',
         '      {',
+        '         var _loc4_:Array = null;',
+        '         var _loc5_:uint = 0;',
+        '         var _loc6_:String = null;',
+        '         var _loc7_:Boolean = false;',
         '         var _loc2_:String = null;',
         '         var _loc3_:uint = 0;',
         '         if(!param1 || !this.var_4 || !this.var_4.entType || this.var_4.entType.className != "Mage" || this.var_4.entType.var_620 || !(this.var_4.var_20 & Entity.PLAYER))',
         '         {',
         '            return param1;',
         '         }',
-        '         if(param1.indexOf("snd_pwr_mage_poisoncloud_vox") == -1 && param1.indexOf("snd_pwr_mage_hailStorm_new__vox") == -1)',
+        '         if(param1.indexOf("snd_pwr_mage_") == -1 || param1.indexOf("vox") == -1 && param1.indexOf("_female") == -1)',
         '         {',
         '            return param1;',
         '         }',
         '         _loc3_ = 1 + uint(Math.random() * 3);',
         '         _loc2_ = "snd_hurt_mage_0" + _loc3_ + "_male";',
-        '         param1 = param1.split("snd_pwr_mage_poisoncloud_vox").join(_loc2_);',
-        '         param1 = param1.split("snd_pwr_mage_hailStorm_new__vox").join(_loc2_);',
-        '         return param1;',
+        '         _loc4_ = param1.split(",");',
+        '         _loc5_ = 0;',
+        '         while(_loc5_ < _loc4_.length)',
+        '         {',
+        '            _loc6_ = _loc4_[_loc5_];',
+        '            if(_loc6_ && _loc6_.indexOf("snd_pwr_mage_") != -1 && (_loc6_.indexOf("vox") != -1 || _loc6_.indexOf("_female") != -1))',
+        '            {',
+        '               _loc4_[_loc5_] = _loc2_;',
+        '               _loc7_ = true;',
+        '            }',
+        '            _loc5_++;',
+        '         }',
+        '         return _loc7_ ? _loc4_.join(",") : param1;',
         '      }',
         '      ',
         '      private function method_2982(param1:String) : String',
@@ -273,15 +293,75 @@ function patchActivePower(source) {
     return patched;
 }
 
+function patchSoundManager(source) {
+    const eol = source.includes('\r\n') ? '\r\n' : '\n';
+    const join = (lines) => lines.join(eol);
+
+    const helperAnchor = join([
+        '      public static function Play(param1:String, param2:Number = 1, param3:Boolean = false, param4:Number = 0) : SoundChannel',
+        '      {'
+    ]);
+    const helperPatched = join([
+        '      private static function method_2981(param1:String) : String',
+        '      {',
+        '         var _loc2_:Array = null;',
+        '         var _loc3_:uint = 0;',
+        '         var _loc4_:String = null;',
+        '         var _loc5_:Boolean = false;',
+        '         var _loc6_:String = null;',
+        '         var _loc7_:uint = 0;',
+        '         if(!param1 || param1.indexOf("snd_pwr_mage_") == -1)',
+        '         {',
+        '            return param1;',
+        '         }',
+        '         _loc3_ = 1 + uint(Math.random() * 3);',
+        '         _loc6_ = "snd_hurt_mage_0" + _loc3_ + "_male";',
+        '         _loc2_ = param1.split(",");',
+        '         _loc7_ = 0;',
+        '         while(_loc7_ < _loc2_.length)',
+        '         {',
+        '            _loc4_ = _loc2_[_loc7_];',
+        '            if(_loc4_ && _loc4_.indexOf("snd_pwr_mage_") != -1 && (_loc4_.indexOf("vox") != -1 || _loc4_.indexOf("_female") != -1))',
+        '            {',
+        '               _loc2_[_loc7_] = _loc6_;',
+        '               _loc5_ = true;',
+        '            }',
+        '            _loc7_++;',
+        '         }',
+        '         return _loc5_ ? _loc2_.join(",") : param1;',
+        '      }',
+        '      ',
+        '      public static function Play(param1:String, param2:Number = 1, param3:Boolean = false, param4:Number = 0) : SoundChannel',
+        '      {'
+    ]);
+
+    const playOriginal = join([
+        '         var _loc5_:Array = param1.split("|");',
+        '         var _loc6_:uint = uint(Math.random() * _loc5_.length);',
+        '         param1 = _loc5_[_loc6_];'
+    ]);
+    const playPatched = join([
+        '         var _loc5_:Array = param1.split("|");',
+        '         var _loc6_:uint = uint(Math.random() * _loc5_.length);',
+        '         param1 = _loc5_[_loc6_];',
+        '         param1 = method_2981(param1);'
+    ]);
+
+    let patched = source;
+    patched = replaceExact(patched, helperAnchor, helperPatched, 'SoundManager mage voice helper');
+    patched = replaceExact(patched, playOriginal, playPatched, 'SoundManager Play mage voice override');
+    return patched;
+}
+
 function verifyPatchedActivePower(source, swfPath) {
     const requiredSnippets = [
         'private function method_2981(param1:String) : String',
         'private function method_2982(param1:String) : String',
         'this.var_4.entType.className != "Mage"',
-        'param1.indexOf("snd_pwr_mage_poisoncloud_vox") == -1',
-        'param1.indexOf("snd_pwr_mage_hailStorm_new__vox") == -1',
+        'param1.indexOf("snd_pwr_mage_") == -1 || param1.indexOf("vox") == -1 && param1.indexOf("_female") == -1',
         'param1 == "CallPet" && (this.powerType.basePowerName == "SummonPet" || this.powerType.basePowerName == "VanityPet")',
         '_loc2_ = "snd_hurt_mage_0" + _loc3_ + "_male";',
+        '_loc6_.indexOf("snd_pwr_mage_") != -1 && (_loc6_.indexOf("vox") != -1 || _loc6_.indexOf("_female") != -1)',
         'var _loc4_:String = this.method_2982(this.powerType.var_136);',
         '_loc12_ = this.method_2981(_loc12_);'
     ];
@@ -289,6 +369,21 @@ function verifyPatchedActivePower(source, swfPath) {
     for (const snippet of requiredSnippets) {
         if (!source.includes(snippet)) {
             throw new Error(`${path.basename(swfPath)} is missing required snippet: ${snippet}`);
+        }
+    }
+}
+
+function verifyPatchedSoundManager(source, swfPath) {
+    const requiredSnippets = [
+        'private static function method_2981(param1:String) : String',
+        'pushstring "snd_pwr_mage_"',
+        'pushstring "snd_hurt_mage_0"',
+        'callproperty QName(PrivateNamespace("SoundManager"),"method_2981"), 1'
+    ];
+
+    for (const snippet of requiredSnippets) {
+        if (!source.includes(snippet)) {
+            throw new Error(`${path.basename(swfPath)} is missing required SoundManager snippet: ${snippet}`);
         }
     }
 }
@@ -304,16 +399,12 @@ function patchSwf(repoRoot, ffdecPath, swfPath) {
     fs.rmSync(workRoot, { recursive: true, force: true });
     fs.mkdirSync(scriptsRoot, { recursive: true });
 
-    const original = getTemplateActivePowerSource(repoRoot);
-    const patched = patchActivePower(original);
-
-    if (patched === original) {
-        console.log(`[mage-voice-force] ActivePower template already patched for ${path.basename(swfPath)}`);
-        return;
-    }
-
+    const activePowerSource = getTemplateScriptSource(repoRoot, 'ActivePower');
+    const soundManagerSource = getTemplateScriptSource(repoRoot, 'SoundManager');
     const activePowerPath = path.join(scriptsRoot, 'ActivePower.as');
-    fs.writeFileSync(activePowerPath, patched, 'utf8');
+    const soundManagerPath = path.join(scriptsRoot, 'SoundManager.as');
+    fs.writeFileSync(activePowerPath, patchActivePower(activePowerSource), 'utf8');
+    fs.writeFileSync(soundManagerPath, patchSoundManager(soundManagerSource), 'utf8');
     const patchedSwfPath = path.join(path.dirname(swfPath), `${path.basename(swfPath, path.extname(swfPath))}.mage-voice-force.swf`);
     runFfdec(ffdecPath, repoRoot, ['-importScript', swfPath, patchedSwfPath, scriptsRoot]);
     fs.copyFileSync(patchedSwfPath, swfPath);
@@ -321,14 +412,24 @@ function patchSwf(repoRoot, ffdecPath, swfPath) {
 }
 
 function verifySwf(repoRoot, ffdecPath, swfPath) {
-    const workRoot = path.join(
+    const activePowerWorkRoot = path.join(
         repoRoot,
         'build',
         'ffdec-dungeonblitz-mage-voice-force-verify',
+        'source',
         path.basename(swfPath, path.extname(swfPath))
     );
-    const activePowerPath = exportActivePower(repoRoot, ffdecPath, workRoot, swfPath);
+    const soundManagerWorkRoot = path.join(
+        repoRoot,
+        'build',
+        'ffdec-dungeonblitz-mage-voice-force-verify',
+        'pcode',
+        path.basename(swfPath, path.extname(swfPath))
+    );
+    const activePowerPath = exportClassScript(repoRoot, ffdecPath, activePowerWorkRoot, swfPath, 'ActivePower');
+    const soundManagerPath = exportClassScript(repoRoot, ffdecPath, soundManagerWorkRoot, swfPath, 'SoundManager', 'script:pcode');
     verifyPatchedActivePower(fs.readFileSync(activePowerPath, 'utf8'), swfPath);
+    verifyPatchedSoundManager(fs.readFileSync(soundManagerPath, 'utf8'), swfPath);
 }
 
 function resolveTargets(repoRoot, requestedSwfs) {
