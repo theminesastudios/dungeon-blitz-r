@@ -19,6 +19,7 @@ import {
     noteSharedDungeonHostileState,
     usesSharedDungeonProgress
 } from '../core/SharedDungeonProgress';
+import { EquipmentHandler } from './EquipmentHandler';
 
 type CombatRelayOptions = {
     includeAnchor?: boolean;
@@ -1003,6 +1004,8 @@ export class CombatHandler {
                 } else {
                     CombatHandler.broadcastPlayerState(targetSession, EntityState.DEAD);
                 }
+
+                EquipmentHandler.broadcastGearChange(targetSession, true);
             }
         } else {
             CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage);
@@ -1148,6 +1151,7 @@ export class CombatHandler {
             const facingLeft = Boolean(ent?.facingLeft ?? false);
             const statePayload = CombatHandler.buildEntityStatePayload(client.clientEntID, EntityState.ACTIVE, facingLeft);
             CombatHandler.broadcastToSameLevel(getClientLevelScope(client), 0x07, statePayload, [client.clientEntID], client);
+            EquipmentHandler.broadcastGearChange(client, true);
         }
 
         const bb = new BitBuffer(false);

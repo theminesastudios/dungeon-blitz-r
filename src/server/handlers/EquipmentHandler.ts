@@ -96,6 +96,41 @@ export class EquipmentHandler {
         };
     }
 
+    static buildEntityGearUpdatePacket(entityId: number, equippedGears: unknown[]): Buffer {
+        const normalizedGears = Array.from({ length: EquipmentHandler.LAST_SLOT }, (_, index) =>
+            EquipmentHandler.normalizeGearEntry(
+                Array.isArray(equippedGears) ? equippedGears[index] : EquipmentHandler.emptyGearEntry()
+            )
+        );
+
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(entityId);
+
+        for (let index = 0; index < EquipmentHandler.LAST_SLOT; index++) {
+            const gear = normalizedGears[index];
+            const gearId = Number(gear.gearID ?? 0);
+
+            bb.writeMethod15(true);
+            bb.writeMethod15(gearId > 0);
+            if (!gearId) {
+                continue;
+            }
+
+            const runes = Array.isArray(gear.runes) ? gear.runes : [0, 0, 0];
+            const colors = Array.isArray(gear.colors) ? gear.colors : [0, 0];
+
+            bb.writeMethod6(gearId, 11);
+            bb.writeMethod6(Number(gear.tier ?? 0), 2);
+            bb.writeMethod6(Number(runes[0] ?? 0), 16);
+            bb.writeMethod6(Number(runes[1] ?? 0), 16);
+            bb.writeMethod6(Number(runes[2] ?? 0), 16);
+            bb.writeMethod6(Number(colors[0] ?? 0), 8);
+            bb.writeMethod6(Number(colors[1] ?? 0), 8);
+        }
+
+        return bb.toBuffer();
+    }
+
     private static ensureEquippedGears(client: Client): GearEntry[] {
         const current = Array.isArray(client.character?.equippedGears) ? client.character!.equippedGears : [];
         const next = Array.from({ length: EquipmentHandler.LAST_SLOT }, (_, index) =>
@@ -243,6 +278,39 @@ export class EquipmentHandler {
 
             other.send(0x30, payload);
         }
+    }
+
+    static broadcastGearChange(client: Client, includeSelf: boolean = false): void {
+        if (!client.currentLevel || !client.playerSpawned || !client.character || client.clientEntID <= 0) {
+            return;
+        }
+
+        const payload = EquipmentHandler.buildEntityGearUpdatePacket(
+            client.clientEntID,
+            Array.isArray(client.character.equippedGears) ? client.character.equippedGears : []
+        );
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if ((!includeSelf && other === client) || !other.playerSpawned || !areClientsInSameLevelScope(client, other)) {
+                continue;
+            }
+
+            other.send(0xAF, payload);
+        }
+    }
+
+    static sendGearToSelf(client: Client): void {
+        if (!client.playerSpawned || !client.character || client.clientEntID <= 0) {
+            return;
+        }
+
+        client.send(
+            0xAF,
+            EquipmentHandler.buildEntityGearUpdatePacket(
+                client.clientEntID,
+                Array.isArray(client.character.equippedGears) ? client.character.equippedGears : []
+            )
+        );
     }
 
     private static async persistAndBroadcast(client: Client, entityId: number, changedSlots: Set<number>): Promise<void> {

@@ -9,7 +9,7 @@ export class GameData {
     static MOUNT_IDS: { [key: string]: number } = {};
     static CONSUMABLES: any[] = [];
     static CHARMS: any[] = [];
-    static DYES: Array<{ id: number; name: string; rarity: string }> = [];
+    static DYES: Array<{ id: number; name: string; rarity: string; color: number | null }> = [];
     static ENTTYPES: { [key: string]: any } = {};
     static MATERIALS: any[] = [];
     static MATERIALS_BY_REALM: Record<string, { M: number[]; R: number[]; L: number[] }> = {};
@@ -84,7 +84,10 @@ export class GameData {
                 GameData.DYES = Object.entries(rawDyes).map(([id, value]) => ({
                     id: Number(id),
                     name: String((value as { name?: string }).name ?? ''),
-                    rarity: String((value as { rarity?: string }).rarity ?? 'M')
+                    rarity: String((value as { rarity?: string }).rarity ?? 'M'),
+                    color: Number.isFinite(Number((value as { color?: number | string }).color))
+                        ? Number((value as { color?: number | string }).color)
+                        : null
                 }));
                 console.log(`[GameData] Loaded ${GameData.DYES.length} dyes.`);
             }
@@ -233,6 +236,15 @@ export class GameData {
 
         const entry = GameData.DYES.find((dye) => GameData.normalizeLookupKey(dye.name) === lookupKey);
         return entry?.id ?? 0;
+    }
+
+    static getDyeColor(nameOrId: string | number): number | null {
+        const dyeId = GameData.getDyeId(nameOrId);
+        if (dyeId <= 0) {
+            return null;
+        }
+
+        return GameData.DYES.find((dye) => dye.id === dyeId)?.color ?? null;
     }
 
     static getRandomDyeId(allowedRarities?: Iterable<string>): number {

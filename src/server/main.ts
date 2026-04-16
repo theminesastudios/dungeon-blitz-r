@@ -60,6 +60,7 @@ router.register(0x19, CharacterHandler.handlePaperDollRequest); // Paper Doll Re
 router.register(0x1f, CharacterHandler.handleGameServerLogin); // Game Server Login
 router.register(0x8E, CharacterHandler.handleHomeLookChange); // Home Look Change
 router.register(0xF4, CharacterHandler.handleRequestArmoryGears); // Armory Gear Request
+router.register(0xBA, CharacterHandler.handleApplyDyes); // Apply Dye
 
 // Missing Packets
 router.register(0x8, EntityHandler.handleEntityFullUpdate); // Entity Full Update

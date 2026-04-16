@@ -1,5 +1,6 @@
 import { Client, clearKeepTutorialTimers, createKeepTutorialState } from '../core/Client';
 import { CharacterTemplates } from '../core/CharacterTemplates';
+import { GameData } from '../core/GameData';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { GlobalState } from '../core/GlobalState';
@@ -34,6 +35,9 @@ import {
 const db = new JsonAdapter();
 
 export class CharacterHandler {
+    private static readonly DYE_GOLD_COST = [0, 455, 550, 595, 650, 735, 795, 890, 965, 1075, 1155, 1285, 1385, 1520, 1685, 1810, 1985, 2180, 2380, 2600, 2845, 3090, 3375, 3710, 4025, 4410, 4790, 5225, 5705, 6215, 6750, 7340, 8020, 8690, 9455, 10300, 11230, 12185, 13255, 14405, 15635, 17010, 18475, 20050, 21725, 23650, 25640, 27835, 30165, 32730, 35540] as const;
+    private static readonly DYE_IDOLS_COST = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7, 7, 8, 8, 9, 10, 11, 11, 12, 13, 14, 16, 17] as const;
+
     private static async saveCharacterSnapshot(client: Client): Promise<void> {
         if (!client.character) {
             return;
@@ -285,6 +289,45 @@ export class CharacterHandler {
         return bb;
     }
 
+    private static buildDyeSyncPacket(entityId: number, character: Character): BitBuffer {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(Number(entityId || 0));
+
+        const equippedGears = Array.isArray(character.equippedGears) ? character.equippedGears : [];
+        for (let i = 0; i < 6; i++) {
+            const gear = equippedGears[i] && typeof equippedGears[i] === 'object'
+                ? equippedGears[i] as Record<string, unknown>
+                : null;
+            const colors = Array.isArray(gear?.colors) ? gear.colors : [];
+
+            if (gear) {
+                bb.writeMethod6(1, 1);
+                bb.writeMethod6(Number(colors[0] ?? 0), 8);
+                bb.writeMethod6(Number(colors[1] ?? 0), 8);
+            } else {
+                bb.writeMethod6(0, 1);
+            }
+        }
+
+        const shirtColor = character.shirtColor;
+        if (shirtColor !== undefined && shirtColor !== null) {
+            bb.writeMethod6(1, 1);
+            bb.writeMethod6(Number(shirtColor), 24);
+        } else {
+            bb.writeMethod6(0, 1);
+        }
+
+        const pantColor = character.pantColor;
+        if (pantColor !== undefined && pantColor !== null) {
+            bb.writeMethod6(1, 1);
+            bb.writeMethod6(Number(pantColor), 24);
+        } else {
+            bb.writeMethod6(0, 1);
+        }
+
+        return bb;
+    }
+
     private static buildLevelGearsPacket(character: Character): BitBuffer {
         const bb = new BitBuffer(false);
         const inventoryGears = normalizeCharacterInventoryGears(character);
@@ -328,6 +371,32 @@ export class CharacterHandler {
         }
     }
 
+    private static syncCurrentPlayerDyeEntity(client: Client): void {
+        const entityId = Number(client.clientEntID || 0);
+        if (!client.character || entityId <= 0) {
+            return;
+        }
+
+        const character = client.character;
+        const equippedGears = Array.isArray(character.equippedGears) ? character.equippedGears : [];
+        const applyDyeFields = (entity: Record<string, unknown> | undefined): void => {
+            if (!entity) {
+                return;
+            }
+
+            entity.shirtColor = Number(character.shirtColor ?? 0);
+            entity.pantColor = Number(character.pantColor ?? 0);
+            entity.equippedGears = equippedGears;
+        };
+
+        applyDyeFields(client.entities.get(entityId));
+
+        const levelScope = getClientLevelScope(client);
+        if (levelScope) {
+            applyDyeFields(GlobalState.levelEntities.get(levelScope)?.get(entityId));
+        }
+    }
+
     private static broadcastLookUpdate(client: Client): void {
         if (!client.character) {
             return;
@@ -356,6 +425,56 @@ export class CharacterHandler {
         }
     }
 
+    private static broadcastDyeUpdate(client: Client): void {
+        if (!client.character) {
+            return;
+        }
+
+        const entityId = Number(client.clientEntID || 0);
+        if (entityId <= 0) {
+            return;
+        }
+
+        const dyeUpdate = CharacterHandler.buildDyeSyncPacket(entityId, client.character).toBuffer();
+        const levelScope = getClientLevelScope(client);
+
+        client.send(0x111, dyeUpdate);
+
+        if (!levelScope) {
+            return;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (other === client || !other.playerSpawned || getClientLevelScope(other) !== levelScope) {
+                continue;
+            }
+
+            other.send(0x111, dyeUpdate);
+        }
+    }
+
+    private static sendGoldLoss(client: Client, amount: number): void {
+        if (amount <= 0) {
+            return;
+        }
+
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(amount);
+        client.sendBitBuffer(0xB4, bb);
+    }
+
+    private static sendMammothIdolUpdate(client: Client): void {
+        if (!client.character) {
+            return;
+        }
+
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(Number(client.character.mammothIdols ?? 0));
+        bb.writeMethod4(0);
+        bb.writeMethod11(client.character.showHigher ? 1 : 0, 1);
+        client.sendBitBuffer(0xA1, bb);
+    }
+
     static handlePaperDollRequest(client: Client, data: Buffer): void {
         const br = new BitReader(data);
         const requestedName = br.readMethod26();
@@ -376,6 +495,146 @@ export class CharacterHandler {
         }
 
         client.sendBitBuffer(0x1A, CharacterHandler.buildPaperDollPacket(character));
+    }
+
+    static async handleApplyDyes(client: Client, data: Buffer): Promise<void> {
+        if (!client.character) {
+            return;
+        }
+
+        const br = new BitReader(data);
+        const entityId = br.readMethod4();
+        if (entityId > 0 && client.clientEntID > 0 && entityId !== client.clientEntID) {
+            return;
+        }
+
+        const equippedGears = Array.isArray(client.character.equippedGears) ? client.character.equippedGears : [];
+        const inventoryGears = Array.isArray(client.character.inventoryGears) ? client.character.inventoryGears : [];
+        const dyesBySlot = new Map<number, [number, number]>();
+
+        for (let slot = 1; slot <= 6; slot++) {
+            if (!br.readMethod20(1)) {
+                continue;
+            }
+
+            dyesBySlot.set(slot, [br.readMethod20(8), br.readMethod20(8)]);
+        }
+
+        const payWithIdols = Boolean(br.readMethod20(1));
+        const shirtDye = br.readMethod20(1) ? br.readMethod20(8) : null;
+        const pantsDye = br.readMethod20(1) ? br.readMethod20(8) : null;
+
+        const level = Math.max(0, Math.min(
+            Number(client.character.level ?? 1),
+            CharacterHandler.DYE_GOLD_COST.length - 1
+        ));
+        const goldPerUnit = CharacterHandler.DYE_GOLD_COST[level] ?? 0;
+        const idolsPerUnit = CharacterHandler.DYE_IDOLS_COST[level] ?? 0;
+
+        let changedUnits = 0;
+        for (const [slot, [nextPrimary, nextSecondary]] of dyesBySlot.entries()) {
+            const gear = equippedGears[slot - 1] && typeof equippedGears[slot - 1] === 'object'
+                ? equippedGears[slot - 1] as Record<string, unknown>
+                : null;
+            if (!gear || Number(gear.gearID ?? 0) <= 0) {
+                continue;
+            }
+
+            const colors = Array.isArray(gear.colors) ? gear.colors : [0, 0];
+            const currentPrimary = Number(colors[0] ?? 0);
+            const currentSecondary = Number(colors[1] ?? 0);
+
+            if (nextPrimary > 0 && nextPrimary !== currentPrimary) {
+                changedUnits += 1;
+            }
+            if (nextSecondary > 0 && nextSecondary !== currentSecondary) {
+                changedUnits += 1;
+            }
+        }
+
+        if (shirtDye !== null) {
+            const shirtColor = GameData.getDyeColor(shirtDye);
+            if (shirtColor !== null && shirtColor !== undefined) {
+                client.character.shirtColor = shirtColor;
+            }
+        }
+
+        if (pantsDye !== null) {
+            const pantColor = GameData.getDyeColor(pantsDye);
+            if (pantColor !== null && pantColor !== undefined) {
+                client.character.pantColor = pantColor;
+            }
+        }
+
+        if (changedUnits > 0) {
+            if (payWithIdols) {
+                client.character.mammothIdols = Number(client.character.mammothIdols ?? 0) - (idolsPerUnit * changedUnits);
+                CharacterHandler.sendMammothIdolUpdate(client);
+            } else {
+                const goldCost = goldPerUnit * changedUnits;
+                client.character.gold = Number(client.character.gold ?? 0) - goldCost;
+                CharacterHandler.sendGoldLoss(client, goldCost);
+            }
+        }
+
+        const touchedGearIds = new Set<number>();
+        for (const [slot, [nextPrimary, nextSecondary]] of dyesBySlot.entries()) {
+            const gear = equippedGears[slot - 1] && typeof equippedGears[slot - 1] === 'object'
+                ? equippedGears[slot - 1] as Record<string, unknown>
+                : null;
+            if (!gear || Number(gear.gearID ?? 0) <= 0) {
+                continue;
+            }
+
+            gear.colors = [Number(nextPrimary), Number(nextSecondary)];
+            const gearId = Number(gear.gearID ?? 0);
+            if (gearId > 0) {
+                touchedGearIds.add(gearId);
+            }
+        }
+
+        if (touchedGearIds.size > 0) {
+            const inventoryByGearId = new Map<number, Record<string, unknown>>();
+            for (const rawGear of inventoryGears) {
+                if (!rawGear || typeof rawGear !== 'object') {
+                    continue;
+                }
+                const gear = rawGear as Record<string, unknown>;
+                const gearId = Number(gear.gearID ?? 0);
+                if (gearId > 0) {
+                    inventoryByGearId.set(gearId, gear);
+                }
+            }
+
+            for (const rawGear of equippedGears) {
+                if (!rawGear || typeof rawGear !== 'object') {
+                    continue;
+                }
+                const gear = rawGear as Record<string, unknown>;
+                const gearId = Number(gear.gearID ?? 0);
+                if (gearId <= 0 || !touchedGearIds.has(gearId)) {
+                    continue;
+                }
+
+                const matchingInventory = inventoryByGearId.get(gearId);
+                if (matchingInventory) {
+                    matchingInventory.colors = Array.isArray(gear.colors) ? [...gear.colors] : [0, 0];
+                } else {
+                    inventoryGears.push({
+                        ...gear,
+                        colors: Array.isArray(gear.colors) ? [...gear.colors] : [0, 0]
+                    });
+                }
+            }
+        }
+
+        client.character.equippedGears = equippedGears;
+        client.character.inventoryGears = inventoryGears;
+        CharacterHandler.syncCurrentPlayerDyeEntity(client);
+        await CharacterHandler.saveCharacterSnapshot(client);
+
+        client.sendBitBuffer(0x1A, CharacterHandler.buildPaperDollPacket(client.character));
+        CharacterHandler.broadcastDyeUpdate(client);
     }
 
     static handleRequestArmoryGears(client: Client, data: Buffer): void {
