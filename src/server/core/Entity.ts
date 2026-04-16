@@ -2,6 +2,7 @@
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { Game } from './Enums'; // We might need to create this or import from a centralized place
 import { Character } from '../database/Database';
+import { TalentConfig } from './TalentConfig';
 import { normalizeGender } from '../utils/normalizeGender';
 
 // Assuming these enums exist or need to be defined
@@ -127,7 +128,7 @@ export class Entity {
         ent.abilities = char.learnedAbilities || [];
         ent.level = char.level || 1;
         ent.masterClass = char.MasterClass || 0;
-        ent.talents = Array.isArray((char as any).talents) ? (char as any).talents : [];
+        ent.talents = TalentConfig.buildTalentSlots(char as Record<string, unknown>);
         ent.equippedMount = char.equippedMount || 0;
         ent.activeConsumableId = Number((char as any).activeConsumableID ?? (char as any).activeConsumableId ?? 0);
         ent.activePet = char.activePet || {};
@@ -207,15 +208,7 @@ export class Entity {
         } as const;
 
         const getTalentPointBits = (slotIndex: number): number => {
-            const talentCaps = [5, 2, 3, 5, 5, 3, 2, 3, 2, 5, 2, 3, 5, 5, 3, 2, 3, 2, 5, 2, 3, 5, 5, 3, 2, 3, 2];
-            const maxPoints = talentCaps[slotIndex] ?? 0;
-            if (maxPoints <= 2) {
-                return 1;
-            }
-            if (maxPoints <= 4) {
-                return 2;
-            }
-            return 3;
+            return TalentConfig.getSlotBitWidth(slotIndex);
         };
         
         bb.writeMethod4(entity.id);

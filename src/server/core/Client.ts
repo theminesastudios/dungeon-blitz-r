@@ -165,6 +165,7 @@ export class Client {
     public activePotionDrainAtMs: number = 0;
     public clientSpawnConfirmed: boolean = false;
     public clientSpawnFallbackTimer: NodeJS.Timeout | null = null;
+    public talentResearchTimer: NodeJS.Timeout | null = null;
     public keepTutorialState: KeepTutorialState | null = null;
     public goblinRiverBossIntroLockUntil: number = 0;
     public goblinRiverBossIntroUnlockTimer: NodeJS.Timeout | null = null;
@@ -317,6 +318,10 @@ export class Client {
         this.authoritativeCurrentHp = 100;
         this.clientSpawnConfirmed = false;
         clearClientSpawnFallbackTimer(this);
+        if (this.talentResearchTimer) {
+            clearTimeout(this.talentResearchTimer);
+            this.talentResearchTimer = null;
+        }
         clearKeepTutorialTimers(this.keepTutorialState);
         this.keepTutorialState = null;
         if (this.goblinRiverBossIntroUnlockTimer) {

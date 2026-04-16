@@ -4,6 +4,7 @@ import { PetHandler } from '../handlers/PetHandler';
 import { Character } from '../database/Database';
 import { MissionDef, MissionLoader } from '../data/MissionLoader';
 import { BuildingID, ClassID, MasterClassID } from '../core/Enums';
+import { GameData } from '../core/GameData';
 import { GlobalState } from '../core/GlobalState';
 import { normalizeFriendEntries } from '../core/SocialState';
 import { normalizeGender } from './normalizeGender';
@@ -308,7 +309,10 @@ export class WorldEnter {
         if (isCraftTown && character) {
             bb.writeMethod4(transferToken);
 
-            const masterClassId = Math.max(0, Number(character.MasterClass ?? 0));
+            const masterClassId = WorldEnter.resolveMasterClass(character);
+            if (masterClassId > 0 && Number(character.MasterClass ?? 0) !== masterClassId) {
+                character.MasterClass = masterClassId;
+            }
             bb.writeMethod6(masterClassId, 4);
 
             const statsByBuilding = WorldEnter.getTutorialSafeBuildingStatsForLevel(character, newInternal);
@@ -405,6 +409,10 @@ export class WorldEnter {
     ): BitBuffer {
         const bb = new BitBuffer();
         const now = Math.floor(Date.now() / 1000);
+        const normalizedLevel = GameData.getPlayerLevelFromXp(Math.max(0, Number(character.xp ?? 0)));
+        if (Number(character.level ?? 1) !== normalizedLevel) {
+            character.level = normalizedLevel;
+        }
         const equippedGears = WorldEnter.asArray(character.equippedGears);
         const safeStatsByBuilding = WorldEnter.getTutorialSafeBuildingStatsForLevel(character, targetLevel);
         const safeBuildingUpgrade = WorldEnter.getTutorialSafeBuildingUpgradeForLevel(character, targetLevel);
@@ -803,7 +811,10 @@ export class WorldEnter {
             bb.writeMethod6(0, 1);
         }
 
-        const masterClassId = Math.max(0, Number(character.MasterClass ?? 0));
+        const masterClassId = WorldEnter.resolveMasterClass(character);
+        if (masterClassId > 0 && Number(character.MasterClass ?? 0) !== masterClassId) {
+            character.MasterClass = masterClassId;
+        }
         bb.writeMethod6(masterClassId, 4);
 
         if (masterClassId > 0) {

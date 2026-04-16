@@ -184,11 +184,40 @@ async function testSaveCharactersMergesLiveSessionCharacter(): Promise<void> {
     });
 }
 
+async function testLoadCharactersNormalizesLevelFromXp(): Promise<void> {
+    await withTempDataDir('load_normalizes_level_from_xp', async (adapter, tempDir) => {
+        const saveDir = path.join(tempDir, 'data', 'saves');
+        await fs.mkdir(saveDir, { recursive: true });
+        await fs.writeFile(
+            path.join(saveDir, '13.json'),
+            JSON.stringify({
+                user_id: 13,
+                characters: [
+                    {
+                        ...createCharacter('ThresholdHero'),
+                        level: 9,
+                        xp: 12284
+                    }
+                ]
+            }, null, 2)
+        );
+
+        const loadedCharacters = await adapter.loadCharacters(13);
+        assert.equal(
+            loadedCharacters[0]?.level,
+            10,
+            'character level should be derived from the client XP thresholds when a stale level is loaded'
+        );
+        assert.equal(loadedCharacters[0]?.xp, 12284);
+    });
+}
+
 async function main(): Promise<void> {
     await testSaveCharactersRetriesTransientRenameLock();
     await testSaveCharactersSerializesConcurrentWrites();
     await testLoadCharactersWaitsForQueuedSave();
     await testSaveCharactersMergesLiveSessionCharacter();
+    await testLoadCharactersNormalizesLevelFromXp();
     console.log('json_adapter_save_regression: ok');
 }
 

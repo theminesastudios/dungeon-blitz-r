@@ -1,0 +1,11 @@
+{
+  "user_id": 11,
+  "characters": [
+    {
+      "name": "BeforeTransfer",
+      "class": "Mage",
+      "gender": "male",
+      "level": 1
+    }
+  ]
+}

@@ -32,6 +32,14 @@ export class NpcHandler {
     private static readonly DEFAULT_TURN_IN_STARS = 3;
     private static readonly DEFAULT_DIALOGUE_LANGUAGE = 'en';
 
+    private static async persistCharacter(client: Client): Promise<void> {
+        if (!client.userId || !client.character) {
+            return;
+        }
+
+        client.characters = await db.saveCharacterSnapshot(client.userId, client.character);
+    }
+
     static async handleTalkToNpc(client: Client, data: Buffer): Promise<void> {
         if (!client.character) {
             return;
@@ -149,7 +157,7 @@ export class NpcHandler {
 
                         // Сохраняем прогресс
                         if (client.userId) {
-                            await db.saveCharacters(client.userId, client.characters);
+                            await NpcHandler.persistCharacter(client);
                         }
 
                         didMutate = true;
@@ -168,7 +176,7 @@ export class NpcHandler {
         }
 
         if (didMutate && client.userId) {
-            await db.saveCharacters(client.userId, client.characters);
+            await NpcHandler.persistCharacter(client);
         }
 
         NpcHandler.sendResolvedDialogue(client, npcId, dialogueId, missionId);
@@ -515,7 +523,7 @@ export class NpcHandler {
 
             // Сохраняем прогресс
             if (client.userId) {
-                await db.saveCharacters(client.userId, client.characters);
+                await NpcHandler.persistCharacter(client);
             }
         } finally {
             client.pendingMissionTurnIns.delete(NpcHandler.FIRST_MISSION_ID);

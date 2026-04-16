@@ -19,6 +19,7 @@ import { GuildHandler } from './GuildHandler';
 import { EntityHandler } from './EntityHandler';
 import { PetHandler } from './PetHandler';
 import { ForgeHandler } from './ForgeHandler';
+import { TalentHandler } from './TalentHandler';
 import { DebugLogger } from '../core/Debug';
 import { syncClientDungeonRunState } from '../core/DungeonRunStats';
 import { ensureCharacterSocialState, normalizeCharacterKey } from '../core/SocialState';
@@ -726,8 +727,8 @@ export class CharacterHandler {
              console.error(`[CharCreate] No template found for class ${className}, using fallback.`);
              newChar = {
                 class: className,
-                level: 1,
-                xp: 0,
+                level: 10,
+                xp: 11240,
                 gold: 0,
                 // ... minimal defaults ...
              };
@@ -1008,6 +1009,7 @@ export class CharacterHandler {
 
         await CharacterHandler.reloadCurrentCharacterFromSave(client);
         await ForgeHandler.syncCompletionState(client);
+        TalentHandler.syncResearchTimer(client);
 
         await GuildHandler.refreshClientGuildState(client);
         const socialRepairDidMutate = ensureCharacterSocialState(client.character);

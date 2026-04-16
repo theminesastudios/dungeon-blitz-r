@@ -1,3 +1,14 @@
+type TalentNode = {
+    filled: boolean;
+    points: number;
+    nodeID: number;
+};
+
+type TalentSlot = {
+    nodeID: number;
+    points: number;
+};
+
 export class TalentConfig {
     static readonly NUM_TALENT_SLOTS = 27;
 
@@ -26,16 +37,115 @@ export class TalentConfig {
     static readonly CONST_529 = [5, 2, 3, 5, 5, 3, 2, 3, 2, 5, 2, 3, 5, 5, 3, 2, 3, 2, 5, 2, 3, 5, 5, 3, 2, 3, 2];
 
     static indexToNodeId(index: number): number {
-        if (index < 9) return index + 1;
-        else if (index < 18) return index + 2;
-        else return index + 3;
+        if (index < 0) return 1;
+        if (index >= TalentConfig.NUM_TALENT_SLOTS) return TalentConfig.NUM_TALENT_SLOTS;
+        return index + 1;
     }
 
     static getSlotBitWidth(index: number): number {
-        const x = TalentConfig.CONST_529[index];
-        if (x <= 2) return 1;
-        if (x <= 4) return 2;
-        if (x <= 5) return 3;
-        return 0;
+        const x = TalentConfig.CONST_529[index] ?? 0;
+        let width = 0;
+        if (x <= 2) width = 1;
+        if (x <= 4) width = 2;
+        if (x <= 5) width = 3;
+        return width;
+    }
+
+    static buildEmptyTalentNodes(): TalentNode[] {
+        const nodes: TalentNode[] = [];
+        for (let index = 0; index < TalentConfig.NUM_TALENT_SLOTS; index += 1) {
+            nodes.push({
+                nodeID: TalentConfig.indexToNodeId(index),
+                points: 0,
+                filled: false
+            });
+        }
+        return nodes;
+    }
+
+    static normalizeTalentNodes(rawNodes: unknown): TalentNode[] {
+        const normalized: TalentNode[] = [];
+        const nodes = Array.isArray(rawNodes) ? rawNodes : [];
+
+        for (let index = 0; index < TalentConfig.NUM_TALENT_SLOTS; index += 1) {
+            const fallbackNodeId = TalentConfig.indexToNodeId(index);
+            const rawNode = nodes[index];
+            const node = rawNode && typeof rawNode === 'object' && !Array.isArray(rawNode)
+                ? rawNode as Record<string, unknown>
+                : null;
+
+            if (!node || !Boolean(node.filled)) {
+                normalized.push({
+                    nodeID: fallbackNodeId,
+                    points: 0,
+                    filled: false
+                });
+                continue;
+            }
+
+            let nodeID = Number(node.nodeID ?? fallbackNodeId);
+            if (!Number.isFinite(nodeID) || nodeID < 1 || nodeID > TalentConfig.NUM_TALENT_SLOTS) {
+                nodeID = fallbackNodeId;
+            }
+
+            let points = Number(node.points ?? 0);
+            const maxPoints = TalentConfig.CONST_529[index] ?? 0;
+            if (!Number.isFinite(points) || points < 1) {
+                points = 1;
+            }
+            if (points > maxPoints) {
+                points = maxPoints;
+            }
+
+            normalized.push({
+                nodeID,
+                points,
+                filled: true
+            });
+        }
+
+        return normalized;
+    }
+
+    static buildTalentSlots(character: Record<string, unknown>): Array<TalentSlot | null> {
+        const slots: Array<TalentSlot | null> = new Array(TalentConfig.NUM_TALENT_SLOTS).fill(null);
+        const masterClass = Math.max(0, Number(character.MasterClass ?? 0));
+        if (masterClass === 0) {
+            return slots;
+        }
+
+        const rawTree = character.TalentTree;
+        const talentTree = rawTree && typeof rawTree === 'object' && !Array.isArray(rawTree)
+            ? rawTree as Record<string, unknown>
+            : {};
+        const rawClassTree = talentTree[String(masterClass)];
+        const classTree = rawClassTree && typeof rawClassTree === 'object' && !Array.isArray(rawClassTree)
+            ? rawClassTree as Record<string, unknown>
+            : null;
+        if (!classTree) {
+            return slots;
+        }
+
+        for (const node of TalentConfig.normalizeTalentNodes(classTree.nodes)) {
+            if (!node.filled) {
+                continue;
+            }
+
+            if (node.nodeID <= 0 || node.points <= 0) {
+                continue;
+            }
+
+            const slotIndex = node.nodeID - 1;
+            if (slotIndex < 0 || slotIndex >= TalentConfig.NUM_TALENT_SLOTS) {
+                continue;
+            }
+
+            slots[slotIndex] = {
+                nodeID: node.nodeID,
+                points: node.points
+            };
+        }
+
+        return slots;
     }
 }

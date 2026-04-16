@@ -2,6 +2,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { IDatabase, Character, UserSaveData } from './Database';
 import { Config } from '../core/config';
+import { GameData } from '../core/GameData';
 
 export class JsonAdapter implements IDatabase {
     private static readonly renameRetryDelaysMs = [25, 50, 100, 200, 350];
@@ -22,6 +23,20 @@ export class JsonAdapter implements IDatabase {
 
     private normalizeCharacterName(value: string | null | undefined): string {
         return String(value ?? '').trim().toLowerCase();
+    }
+
+    private normalizeCharacterProgress(character: Character | null | undefined): Character | null | undefined {
+        if (!character) {
+            return character;
+        }
+
+        const xp = Math.max(0, Number(character.xp ?? 0));
+        const normalizedLevel = GameData.getPlayerLevelFromXp(xp);
+        if (Number(character.level ?? 1) !== normalizedLevel) {
+            character.level = normalizedLevel;
+        }
+
+        return character;
     }
 
     private async readSaveFile(userId: number): Promise<UserSaveData | null> {
@@ -120,11 +135,15 @@ export class JsonAdapter implements IDatabase {
     }
 
     private mergeLiveSessionCharacter(userId: number, characters: Character[]): Character[] {
-        const nextCharacters = Array.isArray(characters) ? [...characters] : [];
+        const nextCharacters = Array.isArray(characters)
+            ? characters.map((entry) => this.normalizeCharacterProgress(entry) as Character)
+            : [];
 
         try {
             const { GlobalState } = require('../core/GlobalState') as typeof import('../core/GlobalState');
-            const liveCharacter = GlobalState.sessionsByUserId.get(userId)?.character;
+            const liveCharacter = this.normalizeCharacterProgress(
+                GlobalState.sessionsByUserId.get(userId)?.character
+            );
             if (!liveCharacter) {
                 return nextCharacters;
             }
@@ -210,7 +229,7 @@ export class JsonAdapter implements IDatabase {
         if (!save || !Array.isArray(save.characters)) {
             return [];
         }
-        return save.characters;
+        return save.characters.map((entry) => this.normalizeCharacterProgress(entry) as Character);
     }
 
     public async loadAllCharacterRecords(): Promise<UserSaveData[]> {
