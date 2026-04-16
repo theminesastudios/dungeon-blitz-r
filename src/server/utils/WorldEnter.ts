@@ -7,6 +7,7 @@ import { BuildingID, ClassID, MasterClassID } from '../core/Enums';
 import { GlobalState } from '../core/GlobalState';
 import { normalizeFriendEntries } from '../core/SocialState';
 import { normalizeGender } from './normalizeGender';
+import { getVisibleConsumableCount } from './ConsumableState';
 
 export class WorldEnter {
     private static readonly MASTERCLASS_TO_BUILDING: Record<number, number> = {
@@ -598,9 +599,10 @@ export class WorldEnter {
             const consumables = WorldEnter.asArray(character.consumables);
             for (const rawConsumable of consumables) {
                 const consumable = WorldEnter.asRecord(rawConsumable);
+                const consumableId = Number(consumable.consumableID ?? 0);
                 bb.writeMethod11(1, 1);
-                bb.writeMethod4(Number(consumable.consumableID ?? 0));
-                bb.writeMethod4(Number(consumable.count ?? 1));
+                bb.writeMethod4(consumableId);
+                bb.writeMethod4(getVisibleConsumableCount(character, consumableId));
             }
             bb.writeMethod11(0, 1);
 

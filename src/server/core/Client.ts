@@ -162,6 +162,7 @@ export class Client {
     public pendingMissionTurnIns: Set<number> = new Set();
     public authoritativeMaxHp: number = 100;
     public authoritativeCurrentHp: number = 100;
+    public activePotionDrainAtMs: number = 0;
     public clientSpawnConfirmed: boolean = false;
     public clientSpawnFallbackTimer: NodeJS.Timeout | null = null;
     public keepTutorialState: KeepTutorialState | null = null;

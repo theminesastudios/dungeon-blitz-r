@@ -10,6 +10,7 @@ import { getClientCharacterKey, getPartyIdForClient } from '../core/PartySync';
 import { areClientsInSameLevelScope, getClientLevelScope } from '../core/LevelScope';
 import { upsertInventoryGear } from '../utils/GearInventory';
 import { getEquippedCharmBonuses } from '../utils/CharmBonuses';
+import { getActivePotionBonuses } from '../utils/ConsumableState';
 import { PetHandler } from './PetHandler';
 
 const db = new JsonAdapter();
@@ -325,7 +326,8 @@ export class RewardHandler {
         }
 
         const petBonuses = PetHandler.getActivePetBonusRates(client.character);
-        const totalAmount = Math.max(0, Math.round(amount * (1 + petBonuses.expBonus)));
+        const potionBonuses = getActivePotionBonuses(client.character, client.currentLevel);
+        const totalAmount = Math.max(0, Math.round(amount * (1 + petBonuses.expBonus + potionBonuses.expBonus)));
 
         client.character.xp = Number(client.character.xp ?? 0) + totalAmount;
         client.character.level = GameData.getPlayerLevelFromXp(Number(client.character.xp ?? 0));
@@ -378,6 +380,7 @@ export class RewardHandler {
         let gearTier = 0;
         let dyeId = 0;
         const petBonuses = PetHandler.getActivePetBonusRates(client.character);
+        const potionBonuses = getActivePotionBonuses(client.character, client.currentLevel);
         const charmBonuses = getEquippedCharmBonuses(client.character);
 
         const entName = String(sourceEntity?.name ?? '');
@@ -393,9 +396,9 @@ export class RewardHandler {
         const ownedGearIds = RewardHandler.collectOwnedGearIds(client);
         const realm = String(entType?.Realm ?? RewardHandler.DUNGEON_REALM_MAP[client.currentLevel] ?? '');
         const itemLootAllowedByClass = RewardHandler.rewardClassAllowsItemLoot(entType);
-        const materialFindRate = petBonuses.craftFind + charmBonuses.craftFind;
-        const itemFindRate = petBonuses.itemFind + charmBonuses.itemFind;
-        const goldFindRate = petBonuses.goldFind + charmBonuses.goldFind;
+        const materialFindRate = petBonuses.craftFind + charmBonuses.craftFind + potionBonuses.craftFind;
+        const itemFindRate = petBonuses.itemFind + charmBonuses.itemFind + potionBonuses.itemFind;
+        const goldFindRate = petBonuses.goldFind + charmBonuses.goldFind + potionBonuses.goldFind;
         const materialChance = realm && reward.dropMaterial && itemLootAllowedByClass
             ? Math.max(0, Math.min(1, RewardHandler.resolveMaterialDropChance(entType, reward) * (1 + materialFindRate)))
             : 0;

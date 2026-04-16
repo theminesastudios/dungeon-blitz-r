@@ -30,6 +30,7 @@ import { JsonAdapter } from '../database/JsonAdapter';
 import { normalizeCharacterKey, PendingTeleport } from '../core/SocialState';
 import { TransferTokenAllocator } from '../core/TransferTokenAllocator';
 import { areClientsInSameParty, getPartyIdForClient, sharesRoomIds } from '../core/PartySync';
+import { syncPotionReservationForLevelTransition } from '../utils/ConsumableState';
 import {
     getSharedDungeonInitialProgress,
     getOrCreateSharedDungeonProgressState,
@@ -3218,6 +3219,8 @@ export class LevelHandler {
         const newX = spawn.x;
         const newY = spawn.y;
         const newHasCoord = spawn.hasCoord;
+        syncPotionReservationForLevelTransition(activeCharacter, oldLevel, targetLevel);
+        client.activePotionDrainAtMs = 0;
         LevelConfig.updateSavedLevelsOnTransfer(activeCharacter, oldLevel, targetLevel, newX, newY);
 
         if (client.userId) {

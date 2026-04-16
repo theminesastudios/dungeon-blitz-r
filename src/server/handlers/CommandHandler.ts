@@ -2,12 +2,24 @@ import { Client } from '../core/Client';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { BitReader } from '../network/protocol/bitReader';
 import { GameData } from '../core/GameData';
+import { LevelConfig } from '../core/LevelConfig';
 import { CharacterSync } from '../utils/CharacterSync';
+import {
+    ensureActiveDungeonPotionReserved,
+    getActivePotionCharges,
+    getStoredConsumableCount,
+    hasAvailablePotionSelection,
+    isPotionConsumable,
+    sendConsumableUpdate
+} from '../utils/ConsumableState';
 
 const db = new JsonAdapter();
+const POTION_CHARGE_UNIT_MS = 60;
+const POTION_DRAIN_STEP_UNITS = 50;
+const POTION_DRAIN_STEP_MS = POTION_CHARGE_UNIT_MS * POTION_DRAIN_STEP_UNITS;
 
 export class CommandHandler {
-    static handleLinkUpdater(client: Client, data: Buffer): void {
+    static async handleLinkUpdater(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
         
         // Python:
@@ -23,6 +35,7 @@ export class CommandHandler {
         // Python implementation effectively does nothing but parse and maybe log desync.
         // We'll just log deeply verbose if needed, otherwise ignore to avoid spam.
         // console.log(`[LinkUpdater] Sync: elapsed=${clientElapsed}, desync=${clientDesync}, echo=${serverEcho}`);
+        await CommandHandler.syncDungeonPotionCharge(client);
     }
 
     static async handleQueuePotion(client: Client, data: Buffer): Promise<void> {
@@ -48,6 +61,7 @@ export class CommandHandler {
         const br = new BitReader(data);
         const entityId = br.readMethod9();
         const activeConsumableId = br.readMethod20(5);
+        const previousActiveConsumableId = Math.max(0, Math.round(Number(client.character.activeConsumableID ?? 0)));
         if (entityId <= 0 || (client.clientEntID > 0 && entityId !== client.clientEntID)) {
             return;
         }
@@ -56,9 +70,19 @@ export class CommandHandler {
             return;
         }
 
+        if (activeConsumableId !== previousActiveConsumableId) {
+            client.character.activeConsumableCharges = 0;
+        }
         client.character.activeConsumableID = activeConsumableId;
         if (activeConsumableId === 0) {
             client.character.queuedConsumableID = 0;
+            client.character.activeConsumableCharges = 0;
+            client.activePotionDrainAtMs = 0;
+        } else if (ensureActiveDungeonPotionReserved(client.character, client.currentLevel, activeConsumableId)) {
+            client.activePotionDrainAtMs = Date.now();
+            sendConsumableUpdate(client, activeConsumableId);
+        } else {
+            client.activePotionDrainAtMs = LevelConfig.isDungeonLevel(client.currentLevel) ? Date.now() : 0;
         }
 
         CharacterSync.updateLiveActiveConsumable(client, activeConsumableId);
@@ -123,9 +147,87 @@ export class CommandHandler {
             return false;
         }
 
-        const inventoryEntry = (Array.isArray(client.character.consumables) ? client.character.consumables : [])
-            .find((entry: any) => Number(entry?.consumableID ?? 0) === consumableId);
-        return Number(inventoryEntry?.count ?? 0) > 0;
+        return hasAvailablePotionSelection(client.character, consumableId);
+    }
+
+    private static async syncDungeonPotionCharge(client: Client): Promise<void> {
+        if (!client.character) {
+            client.activePotionDrainAtMs = 0;
+            return;
+        }
+
+        const activeConsumableId = Math.max(0, Math.round(Number(client.character.activeConsumableID ?? 0)));
+        if (!LevelConfig.isDungeonLevel(client.currentLevel) || !isPotionConsumable(activeConsumableId)) {
+            client.activePotionDrainAtMs = 0;
+            return;
+        }
+
+        const nowMs = Date.now();
+        let didChange = false;
+        if (ensureActiveDungeonPotionReserved(client.character, client.currentLevel, activeConsumableId)) {
+            didChange = true;
+        }
+
+        let activeCharges = getActivePotionCharges(client.character);
+        if (activeCharges <= 0) {
+            client.activePotionDrainAtMs = nowMs;
+            if (didChange) {
+                sendConsumableUpdate(client, activeConsumableId);
+            }
+            return;
+        }
+
+        if (client.activePotionDrainAtMs <= 0) {
+            client.activePotionDrainAtMs = nowMs;
+            if (didChange) {
+                sendConsumableUpdate(client, activeConsumableId);
+            }
+            return;
+        }
+
+        const elapsedMs = Math.max(0, nowMs - client.activePotionDrainAtMs);
+        const initialDrainSteps = Math.floor(elapsedMs / POTION_DRAIN_STEP_MS);
+        const initialDrainUnits = initialDrainSteps * POTION_DRAIN_STEP_UNITS;
+        if (initialDrainUnits <= 0) {
+            if (didChange) {
+                sendConsumableUpdate(client, activeConsumableId);
+            }
+            return;
+        }
+
+        let remainingDrainUnits = initialDrainUnits;
+        while (remainingDrainUnits > 0) {
+            activeCharges = getActivePotionCharges(client.character);
+            if (activeCharges <= 0) {
+                if (!ensureActiveDungeonPotionReserved(client.character, client.currentLevel, activeConsumableId)) {
+                    break;
+                }
+                didChange = true;
+                activeCharges = getActivePotionCharges(client.character);
+                if (activeCharges <= 0) {
+                    break;
+                }
+            }
+
+            const drainedUnits = Math.min(activeCharges, remainingDrainUnits);
+            client.character.activeConsumableCharges = activeCharges - drainedUnits;
+            remainingDrainUnits -= drainedUnits;
+            didChange = didChange || drainedUnits > 0;
+
+            if (
+                client.character.activeConsumableCharges <= 0 &&
+                getStoredConsumableCount(client.character, activeConsumableId) <= 0
+            ) {
+                break;
+            }
+        }
+
+        const consumedDrainUnits = initialDrainUnits - remainingDrainUnits;
+        client.activePotionDrainAtMs += Math.floor(consumedDrainUnits / POTION_DRAIN_STEP_UNITS) * POTION_DRAIN_STEP_MS;
+
+        if (didChange) {
+            sendConsumableUpdate(client, activeConsumableId);
+        }
     }
 
     private static async saveCharacter(client: Client): Promise<void> {
