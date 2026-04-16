@@ -3221,7 +3221,7 @@ export class LevelHandler {
         LevelConfig.updateSavedLevelsOnTransfer(activeCharacter, oldLevel, targetLevel, newX, newY);
 
         if (client.userId) {
-            await db.saveCharacters(client.userId, client.characters);
+            await LevelHandler.saveCurrentCharacterSnapshot(client);
         }
 
         // 5. Generate New Token

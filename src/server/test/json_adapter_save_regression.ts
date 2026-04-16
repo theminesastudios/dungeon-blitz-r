@@ -2,6 +2,7 @@ import { strict as assert } from 'assert';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Config } from '../core/config';
+import { GlobalState } from '../core/GlobalState';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { Character } from '../database/Database';
 
@@ -153,10 +154,41 @@ async function testLoadCharactersWaitsForQueuedSave(): Promise<void> {
     });
 }
 
+async function testSaveCharactersMergesLiveSessionCharacter(): Promise<void> {
+    await withTempDataDir('live_session_merge', async (adapter, tempDir) => {
+        const staleCharacter = createCharacter('SessionHero');
+        staleCharacter.level = 1;
+        staleCharacter.gold = 50;
+
+        const liveCharacter = createCharacter('SessionHero');
+        liveCharacter.level = 12;
+        liveCharacter.gold = 999;
+
+        GlobalState.sessionsByUserId.set(12, { character: liveCharacter } as never);
+
+        try {
+            await adapter.saveCharacters(12, [staleCharacter]);
+        } finally {
+            GlobalState.sessionsByUserId.delete(12);
+        }
+
+        const savedPath = path.join(tempDir, 'data', 'saves', '12.json');
+        const saved = JSON.parse(await fs.readFile(savedPath, 'utf8')) as { characters: Character[] };
+        assert.equal(saved.characters[0]?.name, 'SessionHero');
+        assert.equal(
+            saved.characters[0]?.level,
+            12,
+            'live session state should win over stale character lists during saves'
+        );
+        assert.equal(saved.characters[0]?.gold, 999);
+    });
+}
+
 async function main(): Promise<void> {
     await testSaveCharactersRetriesTransientRenameLock();
     await testSaveCharactersSerializesConcurrentWrites();
     await testLoadCharactersWaitsForQueuedSave();
+    await testSaveCharactersMergesLiveSessionCharacter();
     console.log('json_adapter_save_regression: ok');
 }
 

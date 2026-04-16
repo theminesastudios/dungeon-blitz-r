@@ -785,13 +785,14 @@ export class CharacterHandler {
         CharacterHandler.purgeSameCharacterGhosts(client, entry.userId, entry.character.name);
         
         GlobalState.sessionsByToken.set(token, client);
+        const liveCharacter = client.character;
         if (client.userId) {
             GlobalState.sessionsByUserId.set(client.userId, client);
             // Ensure persistence mapping exists
-            GlobalState.tokenChar.set(token, { character: entry.character, userId: client.userId });
+            GlobalState.tokenChar.set(token, { character: liveCharacter, userId: client.userId });
         }
         GlobalState.usedTransferTokens.set(token, {
-            character: entry.character,
+            character: liveCharacter,
             userId: entry.userId,
             targetLevel: entry.targetLevel,
             levelInstanceId: client.levelInstanceId || undefined,

@@ -90,7 +90,10 @@ export class JsonAdapter implements IDatabase {
         savePath: string
     ): Promise<void> {
         await this.ensureSavesDir();
-        const normalizedCharacters = Array.isArray(characters) ? characters : [];
+        const normalizedCharacters = this.mergeLiveSessionCharacter(
+            userId,
+            Array.isArray(characters) ? characters : []
+        );
         const existing = await this.readSaveFile(userId);
 
         if (
@@ -114,6 +117,33 @@ export class JsonAdapter implements IDatabase {
         } finally {
             await fs.rm(tmpPath, { force: true }).catch(() => undefined);
         }
+    }
+
+    private mergeLiveSessionCharacter(userId: number, characters: Character[]): Character[] {
+        const nextCharacters = Array.isArray(characters) ? [...characters] : [];
+
+        try {
+            const { GlobalState } = require('../core/GlobalState') as typeof import('../core/GlobalState');
+            const liveCharacter = GlobalState.sessionsByUserId.get(userId)?.character;
+            if (!liveCharacter) {
+                return nextCharacters;
+            }
+
+            const normalizedName = this.normalizeCharacterName(liveCharacter?.name);
+            const index = nextCharacters.findIndex((entry) =>
+                this.normalizeCharacterName(entry?.name) === normalizedName
+            );
+
+            if (index >= 0) {
+                nextCharacters[index] = liveCharacter;
+            } else {
+                nextCharacters.push(liveCharacter);
+            }
+        } catch {
+            return nextCharacters;
+        }
+
+        return nextCharacters;
     }
 
     private static async waitForQueuedSave(savePath: string): Promise<void> {
