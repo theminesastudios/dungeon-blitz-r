@@ -194,14 +194,14 @@ async function testRescueAnnaCompletionLeavesFindAnnasFatherAvailableOnAnna(): P
         'Goblin Kidnappers should persist the completed total score'
     );
     assert.equal(
-        client.character.missions[String(MissionID.FindAnnasFather)],
-        undefined,
-        "Find Anna's Father should stay available until Anna offers it"
+        Number(client.character.missions[String(MissionID.FindAnnasFather)]?.state ?? 0),
+        2,
+        "Find Anna's Father should be primed as Anna's ready follow-up as soon as Goblin Kidnappers finishes"
     );
     assert.equal(
         client.sentPackets.some((packet) => packet.id === 0x85),
-        false,
-        'dungeon completion should not auto-send a follow-up mission-added popup'
+        true,
+        "dungeon completion should sync Anna's follow-up marker to the client"
     );
 
     const nextMission = (NpcHandler as any).findBestMission(client.character, 'nranna03');
@@ -210,9 +210,89 @@ async function testRescueAnnaCompletionLeavesFindAnnasFatherAvailableOnAnna(): P
         {
             missionId: MissionID.FindAnnasFather,
             dialogueId: 2,
-            state: 0
+            state: 2,
+            primedContactOffer: true
         },
-        'Anna should advertise the next quest after Goblin Kidnappers is cleared'
+        'Anna should keep the follow-up offer dialogue while the primed marker is waiting to be shown'
+    );
+}
+
+async function testPrimedFindAnnasFatherBlocksMayorUntilAnnaShowsOffer(): Promise<void> {
+    const client = createFakeClient(
+        'NewbieRoad',
+        {
+            [String(MissionID.MeetTheTown)]: {
+                state: 3,
+                claimed: 1,
+                complete: 1
+            },
+            [String(MissionID.RescueAnna)]: {
+                state: 3,
+                currCount: 1,
+                claimed: 1,
+                complete: 1
+            },
+            [String(MissionID.FindAnnasFather)]: {
+                state: 2,
+                currCount: -1
+            }
+        },
+        100
+    );
+    client.character.CurrentLevel = { name: 'NewbieRoad', x: 3158, y: 479 };
+
+    client.sentPackets.length = 0;
+    await NpcHandler.handleTalkToNpc(client as never, createNpcTalkPacket(5825250));
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.FindAnnasFather)]?.state ?? 0),
+        2,
+        "Mayor should not claim Find Anna's Father before Anna has shown the follow-up offer"
+    );
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x84),
+        false,
+        "Mayor should not show the mission-complete reward UI before Anna's offer dialogue"
+    );
+
+    client.sentPackets.length = 0;
+    await NpcHandler.handleTalkToNpc(client as never, createNpcTalkPacket(6218466));
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.FindAnnasFather)]?.currCount ?? 0),
+        0,
+        "Talking to Anna should clear the primed follow-up sentinel after showing the offer"
+    );
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x85),
+        false,
+        'Anna should not re-send the mission-added packet when the primed follow-up is already synced'
+    );
+
+    const skitPacket = client.sentPackets.find((packet) => packet.id === 0x7B);
+    assert.ok(skitPacket, 'Anna should still start the follow-up offer skit after the dungeon completion prime');
+    assert.deepEqual(
+        decodeStartSkitPacket(skitPacket!.payload),
+        {
+            npcId: 6218466,
+            dialogueId: 2,
+            missionId: MissionID.FindAnnasFather
+        },
+        "Anna should keep using Find Anna's Father offer dialogue while the primed follow-up marker is active"
+    );
+}
+
+function testFindAnnasFatherUsesOverworldAnnaContact(): void {
+    const missionDef = MissionLoader.getMissionDef(MissionID.FindAnnasFather);
+    assert.equal(
+        missionDef?.ContactName,
+        'AnnaOutside',
+        "Find Anna's Father should anchor to Anna's overworld NPC for map and minimap markers"
+    );
+    assert.equal(
+        NpcLoader.getNpcsForLevel('NewbieRoad').some((npc) => String((npc as { character_name?: string }).character_name ?? '') === 'AnnaOutside'),
+        true,
+        "NewbieRoad should contain the AnnaOutside NPC used by Find Anna's Father's marker"
     );
 }
 
@@ -604,6 +684,53 @@ async function testMayorTurnInClaimsFindAnnasFatherThenOffersKeepQuestOnSecondTa
     );
 }
 
+async function testClaimedRescueAnnaLetsAnnaOutsideOfferFindAnnasFather(): Promise<void> {
+    const client = createFakeClient(
+        'NewbieRoad',
+        {
+            [String(MissionID.MeetTheTown)]: {
+                state: 3,
+                claimed: 1,
+                complete: 1
+            },
+            [String(MissionID.RescueAnna)]: {
+                state: 3,
+                currCount: 1,
+                claimed: 1,
+                complete: 1
+            }
+        },
+        100
+    );
+    client.character.CurrentLevel = { name: 'NewbieRoad', x: 3158, y: 479 };
+
+    client.sentPackets.length = 0;
+    await NpcHandler.handleTalkToNpc(client as never, createNpcTalkPacket(6218466));
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.FindAnnasFather)]?.state ?? 0),
+        2,
+        "AnnaOutside should offer Find Anna's Father once Goblin Kidnappers is fully claimed"
+    );
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x85),
+        true,
+        "accepting Find Anna's Father from AnnaOutside should notify the client with a mission-added packet"
+    );
+
+    const skitPacket = client.sentPackets.find((packet) => packet.id === 0x7B);
+    assert.ok(skitPacket, 'AnnaOutside should still start the mission offer dialogue');
+    assert.deepEqual(
+        decodeStartSkitPacket(skitPacket!.payload),
+        {
+            npcId: 6218466,
+            dialogueId: 2,
+            missionId: MissionID.FindAnnasFather
+        },
+        "AnnaOutside should use the Find Anna's Father offer dialogue after Goblin Kidnappers is turned in"
+    );
+}
+
 async function testTurkishMissionDialogueUsesLocalizedRawText(): Promise<void> {
     const client = createFakeClient(
         'NewbieRoad',
@@ -820,6 +947,8 @@ async function main(): Promise<void> {
     ensureDataLoaded();
     await testTutorialBoatCompletionPersistsDungeonHoverStats();
     await testRescueAnnaCompletionLeavesFindAnnasFatherAvailableOnAnna();
+    await testPrimedFindAnnasFatherBlocksMayorUntilAnnaShowsOffer();
+    testFindAnnasFatherUsesOverworldAnnaContact();
     await testRescueAnnaRerunRefreshesDungeonHoverStats();
     await testRescueAnnaLowerScoreRerunKeepsBestHoverStats();
     await testCaptainFinkRepairsLostAtSeaTurnInForCurrentPlayer();
@@ -827,6 +956,7 @@ async function main(): Promise<void> {
     await testMayorTurnInClaimsWashedAshoreThenOffersRescueAnnaOnSecondTalk();
     await testMayorUsesJsonFallbackDialogueWhenNoQuestMatches();
     await testMayorTurnInClaimsFindAnnasFatherThenOffersKeepQuestOnSecondTalk();
+    await testClaimedRescueAnnaLetsAnnaOutsideOfferFindAnnasFather();
     await testTurkishMissionDialogueUsesLocalizedRawText();
     await testTurkishFallbackDialogueUsesLocalizedJsonLines();
     await testNewbieRoadAffricFallbackUsesOriginalGuardedLines();

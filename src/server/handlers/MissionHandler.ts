@@ -56,6 +56,7 @@ export class MissionHandler {
     private static readonly MISSION_IN_PROGRESS = 1;
     private static readonly MISSION_READY_TO_TURN_IN = 2;
     private static readonly MISSION_CLAIMED = 3;
+    private static readonly PRIMED_CONTACT_DIALOGUE_COUNT = -1;
     private static readonly ACHIEVEMENT_MAMMOTH_IDOL_REWARD = 10;
     private static readonly NEWBIE_ROAD_GOBLIN_KILL_NAMES = new Set([
         'GoblinArmorSword',
@@ -410,6 +411,11 @@ export class MissionHandler {
                         missionUpdate.persistedScore
                     );
                 }
+
+                const primedMissionId = MissionHandler.primeRescueAnnaFollowup(client, completedMissionId);
+                if (primedMissionId > 0) {
+                    didMutate = true;
+                }
             }
 
             if (currentLevel !== 'CraftTownTutorial' && MissionHandler.moveCharacterBackToSafeLevel(client.character, currentLevel)) {
@@ -593,6 +599,36 @@ export class MissionHandler {
             persistedStars: 0,
             persistedScore: 0
         };
+    }
+
+    private static primeRescueAnnaFollowup(client: Client, completedMissionId: number): number {
+        if (!client.character || completedMissionId !== MissionID.RescueAnna) {
+            return 0;
+        }
+
+        if (MissionHandler.getMissionState(client.character, MissionID.FindAnnasFather) !== MissionHandler.MISSION_NOT_STARTED) {
+            return 0;
+        }
+
+        const missionDef = MissionLoader.getMissionDef(MissionID.FindAnnasFather);
+        if (!missionDef || !MissionHandler.canStartMission(client.character, missionDef)) {
+            return 0;
+        }
+
+        const initialState = MissionHandler.getInitialMissionState(missionDef);
+        if (initialState !== MissionHandler.MISSION_READY_TO_TURN_IN) {
+            return 0;
+        }
+
+        MissionHandler.setMissionState(
+            client.character,
+            MissionID.FindAnnasFather,
+            initialState,
+            missionDef,
+            { currCount: MissionHandler.PRIMED_CONTACT_DIALOGUE_COUNT }
+        );
+        MissionHandler.sendMissionAdded(client, MissionID.FindAnnasFather, initialState);
+        return MissionID.FindAnnasFather;
     }
 
     private static autoAcceptFollowupMission(
@@ -1106,6 +1142,17 @@ export class MissionHandler {
             mayorristas: 'nrmayor01',
             mayor: 'nrmayor01',
             anna: 'nranna03',
+            npcanna: 'nranna03',
+            annaoutside: 'nranna03',
+            npcannaoutside: 'nranna03',
+            nrquestanna01: 'nranna03',
+            nrquestanna02: 'nranna03',
+            nrquestanna03: 'nranna03',
+            annaoutsidehard: 'nranna03hard',
+            npcannaoutsidehard: 'nranna03hard',
+            nrquestanna01hard: 'nranna03hard',
+            nrquestanna02hard: 'nranna03hard',
+            nrquestanna03hard: 'nranna03hard',
             pecky: 'nrpecky',
             captainfink: 'nrcaptfink',
             fink: 'nrcaptfink'

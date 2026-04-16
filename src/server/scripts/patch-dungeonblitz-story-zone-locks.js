@@ -10,6 +10,7 @@ const TARGETS = [
 
 const EARLY_ZONE_METHOD = 'method_6901';
 const STORY_UNLOCK_METHOD = 'method_6902';
+const ANNA_MARKER_METHOD = 'method_6903';
 
 function parseArgs(argv) {
     const args = {
@@ -129,7 +130,10 @@ function exportClass119(ffdecPath, workRoot, swfPath) {
 function patchSource(source) {
     source = source.replace(/\r\n/g, '\n');
 
-    if (source.includes(`private function ${STORY_UNLOCK_METHOD}(param1:class_13) : Boolean`)) {
+    if (
+        source.includes(`private function ${STORY_UNLOCK_METHOD}(param1:class_13) : Boolean`) &&
+        source.includes(`private function ${ANNA_MARKER_METHOD}(param1:class_13,param2:Mission) : Boolean`)
+    ) {
         return source;
     }
 
@@ -185,13 +189,38 @@ function patchSource(source) {
         '               {',
         '                  continue;',
         '               }',
+        '               _loc19_ = var_1.mMissionInfoList[_loc20_.missionID];',
+        `               if(!this.${ANNA_MARKER_METHOD}(_loc20_,_loc19_))`,
+        '               {',
+        '                  continue;',
+        '               }'
+    ].join('\n');
+    const patchedLoopNeedle = [
+        `               if(!this.${STORY_UNLOCK_METHOD}(_loc20_))`,
+        '               {',
+        '                  continue;',
+        '               }',
         '               _loc19_ = var_1.mMissionInfoList[_loc20_.missionID];'
     ].join('\n');
+    const patchedLoopReplacement = [
+        `               if(!this.${STORY_UNLOCK_METHOD}(_loc20_))`,
+        '               {',
+        '                  continue;',
+        '               }',
+        '               _loc19_ = var_1.mMissionInfoList[_loc20_.missionID];',
+        `               if(!this.${ANNA_MARKER_METHOD}(_loc20_,_loc19_))`,
+        '               {',
+        '                  continue;',
+        '               }'
+    ].join('\n');
 
-    if (!source.includes(loopNeedle)) {
+    if (source.includes(loopNeedle)) {
+        source = source.replace(loopNeedle, loopReplacement);
+    } else if (source.includes(patchedLoopNeedle) && !source.includes(ANNA_MARKER_METHOD)) {
+        source = source.replace(patchedLoopNeedle, patchedLoopReplacement);
+    } else if (!source.includes(`${ANNA_MARKER_METHOD}(_loc20_,_loc19_)`)) {
         throw new Error('Failed to find the map marker mission loop in class_119.as.');
     }
-    source = source.replace(loopNeedle, loopReplacement);
 
     const helperAnchor = [
         '      public function method_517(param1:MovieClip) : void',
@@ -219,6 +248,16 @@ function patchSource(source) {
         '         return Boolean(_loc2_) && _loc2_.var_145 == Mission.const_72;',
         '      }',
         '      ',
+        `      private function ${ANNA_MARKER_METHOD}(param1:class_13,param2:Mission) : Boolean`,
+        '      {',
+        '         var _loc3_:class_13 = class_14.var_42["FindAnnasFather"];',
+        '         if(!_loc3_ || !param1 || param1.missionID != _loc3_.missionID)',
+        '         {',
+        '            return true;',
+        '         }',
+        '         return Boolean(param2);',
+        '      }',
+        '      ',
         `      private function ${EARLY_ZONE_METHOD}(param1:String) : Boolean`,
         '      {',
         '         if(!param1)',
@@ -232,10 +271,11 @@ function patchSource(source) {
         '      {'
     ].join('\n');
 
-    if (!source.includes(helperAnchor)) {
+    if (source.includes(helperAnchor) && !source.includes(`private function ${ANNA_MARKER_METHOD}(param1:class_13,param2:Mission) : Boolean`)) {
+        source = source.replace(helperAnchor, helperBlock);
+    } else if (!source.includes(`private function ${STORY_UNLOCK_METHOD}(param1:class_13) : Boolean`)) {
         throw new Error('Failed to find helper insertion point in class_119.as.');
     }
-    source = source.replace(helperAnchor, helperBlock);
 
     return source;
 }
@@ -246,14 +286,23 @@ function verifySource(source, swfPath) {
     if (!source.includes(`private function ${STORY_UNLOCK_METHOD}(param1:class_13) : Boolean`)) {
         throw new Error(`${path.basename(swfPath)} is missing the story zone unlock helper.`);
     }
+    if (!source.includes(`private function ${ANNA_MARKER_METHOD}(param1:class_13,param2:Mission) : Boolean`)) {
+        throw new Error(`${path.basename(swfPath)} is missing the Anna marker gate.`);
+    }
     if (!source.includes(`private function ${EARLY_ZONE_METHOD}(param1:String) : Boolean`)) {
         throw new Error(`${path.basename(swfPath)} is missing the early-zone helper.`);
     }
     if (!new RegExp(`if\\s*\\(!?this\\.${STORY_UNLOCK_METHOD}\\(`).test(source)) {
         throw new Error(`${path.basename(swfPath)} is missing the map marker story gate.`);
     }
+    if (!new RegExp(`if\\s*\\(!?this\\.${ANNA_MARKER_METHOD}\\(`).test(source)) {
+        throw new Error(`${path.basename(swfPath)} is missing the Anna follow-up marker gate.`);
+    }
     if (!source.includes('_loc3_ = class_14.var_42["DeliverToSwamp"];')) {
         throw new Error(`${path.basename(swfPath)} is missing the DeliverToSwamp unlock dependency.`);
+    }
+    if (!source.includes('class_14.var_42["FindAnnasFather"]')) {
+        throw new Error(`${path.basename(swfPath)} is missing the FindAnnasFather marker dependency.`);
     }
 }
 

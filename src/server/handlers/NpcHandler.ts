@@ -24,6 +24,7 @@ export class NpcHandler {
     private static readonly MISSION_IN_PROGRESS = 1;
     private static readonly MISSION_READY_TO_TURN_IN = 2;
     private static readonly MISSION_CLAIMED = 3;
+    private static readonly PRIMED_CONTACT_DIALOGUE_COUNT = -1;
     private static readonly FIRST_MISSION_ID = MissionID.DefendTheShip;
     private static readonly FIRST_MISSION_NPC_KEY = 'nrcaptfink';
     private static readonly RETURN_DIALOGUE_BASE_MS = 10;
@@ -95,6 +96,14 @@ export class NpcHandler {
                         initialState
                     );
                     NpcHandler.sendMissionAdded(client, missionId, initialState);
+                    didMutate = true;
+                } else if (dialogueId === 2 && matched.primedContactOffer) {
+                    NpcHandler.setMissionState(
+                        client.character,
+                        missionId,
+                        matched.state,
+                        { currCount: 0 }
+                    );
                     didMutate = true;
                 } else if (
                     dialogueId === 4 &&
@@ -187,12 +196,12 @@ export class NpcHandler {
     private static findBestMission(
         character: Character,
         npcKey: string
-    ): { missionId: number; dialogueId: number; state: number } | null {
+    ): { missionId: number; dialogueId: number; state: number; primedContactOffer: boolean } | null {
         if (!npcKey) {
             return null;
         }
 
-        let best: { missionId: number; dialogueId: number; state: number; priority: number } | null = null;
+        let best: { missionId: number; dialogueId: number; state: number; priority: number; primedContactOffer: boolean } | null = null;
 
         for (let missionId = 1; missionId <= MissionLoader.getTotalMissions(); missionId++) {
             const missionDef = MissionLoader.getMissionDef(missionId);
@@ -200,18 +209,30 @@ export class NpcHandler {
                 continue;
             }
 
+            const entry = NpcHandler.getMissionEntry(character, missionId);
             const state = NpcHandler.getMissionState(character, missionId);
             const contactKey = NpcHandler.normalizeMissionNpcKey(missionDef.ContactName ?? '');
             const returnKey = NpcHandler.normalizeMissionNpcKey(missionDef.ReturnName ?? '');
+            const primedContactOffer =
+                missionId === MissionID.FindAnnasFather &&
+                state === NpcHandler.MISSION_READY_TO_TURN_IN &&
+                Number(entry.currCount ?? 0) === NpcHandler.PRIMED_CONTACT_DIALOGUE_COUNT;
             let priority = 0;
             let dialogueId = 0;
 
             if (
                 npcKey === returnKey &&
-                state === NpcHandler.MISSION_READY_TO_TURN_IN
+                state === NpcHandler.MISSION_READY_TO_TURN_IN &&
+                !primedContactOffer
             ) {
                 priority = 4;
                 dialogueId = 4;
+            } else if (
+                npcKey === contactKey &&
+                primedContactOffer
+            ) {
+                priority = 3;
+                dialogueId = 2;
             } else if (
                 npcKey === contactKey &&
                 (
@@ -241,11 +262,18 @@ export class NpcHandler {
             }
 
             if (!best || priority > best.priority) {
-                best = { missionId, dialogueId, state, priority };
+                best = { missionId, dialogueId, state, priority, primedContactOffer };
             }
         }
 
-        return best ? { missionId: best.missionId, dialogueId: best.dialogueId, state: best.state } : null;
+        return best
+            ? {
+                missionId: best.missionId,
+                dialogueId: best.dialogueId,
+                state: best.state,
+                primedContactOffer: best.primedContactOffer
+            }
+            : null;
     }
 
     private static canStartMission(character: Character, missionDef: MissionDef): boolean {
@@ -335,7 +363,18 @@ export class NpcHandler {
         return Number((entry && typeof entry === 'object' ? entry.state : undefined) ?? NpcHandler.MISSION_NOT_STARTED);
     }
 
-    private static setMissionState(character: Character, missionId: number, state: number): void {
+    private static getMissionEntry(character: Character, missionId: number): MissionEntry {
+        const missions = NpcHandler.getMissionStateMap(character);
+        const entry = missions[String(missionId)];
+        return entry && typeof entry === 'object' ? entry : {};
+    }
+
+    private static setMissionState(
+        character: Character,
+        missionId: number,
+        state: number,
+        extra: Partial<MissionEntry> = {}
+    ): void {
         const missions = NpcHandler.getMissionStateMap(character);
         const key = String(missionId);
         const next: MissionEntry = {
@@ -343,6 +382,9 @@ export class NpcHandler {
         };
 
         next.state = state;
+        if (extra.currCount !== undefined) {
+            next.currCount = Number(extra.currCount);
+        }
         if (state >= NpcHandler.MISSION_CLAIMED) {
             next.claimed = 1;
             next.complete = 1;
@@ -557,6 +599,17 @@ export class NpcHandler {
             mayorristas: 'nrmayor01',
             mayor: 'nrmayor01',
             anna: 'nranna03',
+            npcanna: 'nranna03',
+            annaoutside: 'nranna03',
+            npcannaoutside: 'nranna03',
+            nrquestanna01: 'nranna03',
+            nrquestanna02: 'nranna03',
+            nrquestanna03: 'nranna03',
+            annaoutsidehard: 'nranna03hard',
+            npcannaoutsidehard: 'nranna03hard',
+            nrquestanna01hard: 'nranna03hard',
+            nrquestanna02hard: 'nranna03hard',
+            nrquestanna03hard: 'nranna03hard',
             pecky: 'nrpecky',
             captainfink: 'nrcaptfink',
             fink: 'nrcaptfink',
@@ -588,6 +641,17 @@ export class NpcHandler {
             mayorristas: 'nrmayor01',
             mayor: 'nrmayor01',
             anna: 'nranna03',
+            npcanna: 'nranna03',
+            annaoutside: 'nranna03',
+            npcannaoutside: 'nranna03',
+            nrquestanna01: 'nranna03',
+            nrquestanna02: 'nranna03',
+            nrquestanna03: 'nranna03',
+            annaoutsidehard: 'nranna03hard',
+            npcannaoutsidehard: 'nranna03hard',
+            nrquestanna01hard: 'nranna03hard',
+            nrquestanna02hard: 'nranna03hard',
+            nrquestanna03hard: 'nranna03hard',
             pecky: 'nrpecky',
             captainfink: 'nrcaptfink',
             fink: 'nrcaptfink'
