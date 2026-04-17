@@ -61,6 +61,15 @@ export class RewardHandler {
         { rarity: 'R', weight: 0.32 },
         { rarity: 'L', weight: 0.06 }
     ];
+    private static readonly DYE_RARITY_WEIGHTS_NORMAL: Array<{ rarity: 'M' | 'R'; weight: number }> = [
+        { rarity: 'M', weight: 0.95 },
+        { rarity: 'R', weight: 0.05 }
+    ];
+    private static readonly DYE_RARITY_WEIGHTS_HARD: Array<{ rarity: 'M' | 'R' | 'L'; weight: number }> = [
+        { rarity: 'M', weight: 0.72 },
+        { rarity: 'R', weight: 0.20 },
+        { rarity: 'L', weight: 0.08 }
+    ];
     private static readonly GEAR_RARITY_WEIGHTS_HARD: Array<{ tier: 0 | 1 | 2; weight: number }> = [
         { tier: 0, weight: 0.65 },
         { tier: 1, weight: 0.30 },
@@ -275,21 +284,17 @@ export class RewardHandler {
             return null;
         }
 
-        const rarityRoll = Math.random();
         if (RewardHandler.isHardDungeon(client.currentLevel)) {
-            if (rarityRoll < 0.72) {
-                return 'M';
-            }
-            if (rarityRoll < 0.92) {
-                return 'R';
-            }
-            return 'L';
+            return RewardHandler.pickWeighted<'M' | 'R' | 'L'>(RewardHandler.DYE_RARITY_WEIGHTS_HARD.map((entry) => ({
+                value: entry.rarity,
+                weight: entry.weight
+            })));
         }
 
-        if (rarityRoll < 0.95) {
-            return 'M';
-        }
-        return 'R';
+        return RewardHandler.pickWeighted<'M' | 'R'>(RewardHandler.DYE_RARITY_WEIGHTS_NORMAL.map((entry) => ({
+            value: entry.rarity,
+            weight: entry.weight
+        })));
     }
 
     private static spawnLoot(client: Client, x: number, y: number, reward: LootReward, offsetX: number = 0, offsetY: number = 0): void {
