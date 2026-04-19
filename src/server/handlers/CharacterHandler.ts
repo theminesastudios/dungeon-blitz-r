@@ -727,8 +727,8 @@ export class CharacterHandler {
              console.error(`[CharCreate] No template found for class ${className}, using fallback.`);
              newChar = {
                 class: className,
-                level: 10,
-                xp: 11240,
+                level: 1,
+                xp: 0,
                 gold: 0,
                 // ... minimal defaults ...
              };
