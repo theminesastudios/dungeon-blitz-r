@@ -17,6 +17,7 @@ import { areClientsInSameLevelScope, getClientLevelScope, getScopeLevelName } fr
 import {
     noteSharedDungeonHostileDestroyed,
     noteSharedDungeonHostileState,
+    resolveSharedDungeonProgressAuthorityToken,
     usesSharedDungeonProgress
 } from '../core/SharedDungeonProgress';
 import { EquipmentHandler } from './EquipmentHandler';
@@ -1083,7 +1084,15 @@ export class CombatHandler {
 
         if (destroyedEntity && !destroyedEntity.isPlayer && Number(destroyedEntity.team ?? 0) === EntityTeam.ENEMY) {
             await MissionHandler.handleEnemyDefeatMissionProgress(client, destroyedEntity);
-            await MissionHandler.handleForcedDungeonBossCompletion(client, destroyedEntity);
+            const destroyedOwnerToken = Math.round(Number((destroyedEntity as any)?.ownerToken ?? 0));
+            const authorityToken = destroyedOwnerToken > 0
+                ? destroyedOwnerToken
+                : (levelScope ? resolveSharedDungeonProgressAuthorityToken(levelScope) : 0);
+            const authorityClient = authorityToken > 0 ? GlobalState.sessionsByToken.get(authorityToken) : null;
+            const completionClient = authorityClient && areClientsInSameLevelScope(client, authorityClient)
+                ? authorityClient
+                : client;
+            await MissionHandler.handleForcedDungeonBossCompletion(completionClient, destroyedEntity);
         }
 
         if (shouldRelayDestroy) {

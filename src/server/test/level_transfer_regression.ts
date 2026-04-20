@@ -330,9 +330,9 @@ function testBuildTransferSyncStatePrefersPartyAnchorInDungeon(): void {
     const syncState = (LevelHandler as any).buildTransferSyncState(follower, 'TutorialDungeon', null);
 
     assert.ok(syncState);
-    assert.equal(syncState.x, 1777);
-    assert.equal(syncState.y, 2888);
-    assert.equal(syncState.hasCoord, true);
+    assert.equal(syncState.x, 0);
+    assert.equal(syncState.y, 0);
+    assert.equal(syncState.hasCoord, false);
     assert.equal(syncState.syncAnchorToken, leader.token);
     assert.equal(syncState.syncAnchorCharacterName, 'Leader');
     assert.equal(syncState.syncAnchorStartedAt, 1111);
@@ -402,9 +402,9 @@ function testBuildTransferSyncStateUsesPendingPartyAnchorWhenLeaderStillTransfer
     const syncState = (LevelHandler as any).buildTransferSyncState(follower, 'TutorialDungeon', null);
 
     assert.ok(syncState);
-    assert.equal(syncState.x, 1777);
-    assert.equal(syncState.y, 2888);
-    assert.equal(syncState.hasCoord, true);
+    assert.equal(syncState.x, 0);
+    assert.equal(syncState.y, 0);
+    assert.equal(syncState.hasCoord, false);
     assert.equal(syncState.levelInstanceId, 'party-run-pending');
     assert.equal(syncState.syncAnchorStartedAt, 900);
     assert.equal(syncState.syncAnchorToken, 7001);
@@ -423,8 +423,7 @@ function testBuildTransferSyncStatePreservesExistingDungeonEntryLevel(): void {
 
     const syncState = (LevelHandler as any).buildTransferSyncState(client, 'CraftTown', null);
 
-    assert.ok(syncState);
-    assert.equal(syncState.syncEntryLevel, 'NewbieRoad');
+    assert.equal(syncState, null);
 }
 
 function testResolveTransferSourceLevelPrefersLiveSessionLevel(): void {

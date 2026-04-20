@@ -254,10 +254,6 @@ export class LevelConfig {
         char?: any
     ): string {
         const targetLevel = this.normalizeLevelName(targetLevelName);
-        if (!targetLevel || !this.isDungeonLevel(targetLevel)) {
-            return '';
-        }
-
         if (targetLevel === 'CraftTown') {
             return this.resolveSafeReturnLevel(
                 [
@@ -270,6 +266,10 @@ export class LevelConfig {
                     excludedLevels: ['CraftTown']
                 }
             );
+        }
+
+        if (!targetLevel || !this.isDungeonLevel(targetLevel)) {
+            return '';
         }
 
         return this.normalizeLevelName(entryLevelName) || String(entryLevelName || '');

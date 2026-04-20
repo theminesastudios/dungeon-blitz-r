@@ -605,7 +605,7 @@ export class LevelHandler {
 
         if (anchor) {
             const anchorState = anchor.state;
-            if (anchorState.hasCoord) {
+            if (!shouldSyncDungeonProgress && anchorState.hasCoord) {
                 x = Math.round(Number(anchorState.x ?? 0));
                 y = Math.round(Number(anchorState.y ?? 0));
                 hasCoord = true;
@@ -632,6 +632,8 @@ export class LevelHandler {
 
         if (shouldSyncDungeonProgress) {
             syncAnchorStartedAt = syncAnchorStartedAt ?? Date.now();
+            // Dungeon start position is authored by the dungeon SWF; never force coordinates on entry.
+            hasCoord = false;
         }
 
         if (
