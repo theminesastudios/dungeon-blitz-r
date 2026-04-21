@@ -1,7 +1,7 @@
 {
-  "clientUrl": "http://10.179.241.95/",
-  "presenceUrl": "http://10.179.241.95/api/presence/discord-target",
-  "joinUrl": "http://10.179.241.95/api/presence/discord-join",
+  "clientUrl": "http://127.0.0.1/",
+  "presenceUrl": "http://127.0.0.1/api/presence/discord-target",
+  "joinUrl": "http://127.0.0.1/api/presence/discord-join",
   "characterName": "",
   "clientCommandMac": [],
   "clientCommandWindows": [],

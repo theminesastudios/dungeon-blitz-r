@@ -2,7 +2,7 @@ const { execFileSync } = require('child_process');
 const path = require('path');
 
 const serverRoot = normalize(path.resolve(__dirname, '..'));
-const ports = [8000, 8080];
+const ports = [80, 843, 8000, 8080];
 
 function normalize(value) {
     return value.replace(/["']/g, '').replace(/\\/g, '/').toLowerCase();
@@ -21,10 +21,11 @@ function run(command, args) {
 
 function getListeningPids(port) {
     if (process.platform === 'win32') {
+        const escapedPort = String(port).replace(/[^\d]/g, '');
         const output = run('powershell', [
             '-NoProfile',
             '-Command',
-            `Get-NetTCPConnection -LocalPort ${port} -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess | Sort-Object -Unique`
+            `netstat -ano -p tcp | Select-String -Pattern ":${escapedPort}\\s+.*LISTENING\\s+" | ForEach-Object { ($_ -split "\\s+")[-1] }`
         ]);
         return output
             .split(/\r?\n/)
@@ -51,9 +52,37 @@ function getCommandLine(pid) {
     return run('ps', ['-p', String(pid), '-o', 'command=']);
 }
 
-function isStaleDungeonBlitzDevServer(commandLine) {
+function getProcessName(pid) {
+    if (process.platform === 'win32') {
+        return run('powershell', [
+            '-NoProfile',
+            '-Command',
+            `(Get-Process -Id ${pid} -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ProcessName)`
+        ]);
+    }
+
+    return run('ps', ['-p', String(pid), '-o', 'comm=']);
+}
+
+function isStaleDungeonBlitzDevServer(pid, commandLine) {
     const normalizedCommand = normalize(commandLine);
-    return normalizedCommand.includes(serverRoot) && normalizedCommand.includes('main.ts');
+    if (normalizedCommand.includes(serverRoot)) {
+        return (
+            normalizedCommand.includes('tools/rundevserver.js') ||
+            normalizedCommand.includes('tools/startmultiplayerserver.js') ||
+            normalizedCommand.includes('/dist/main.js') ||
+            normalizedCommand.includes('/main.ts')
+        );
+    }
+
+    if (process.platform === 'win32') {
+        // On Windows, reading another process command line can be denied for
+        // normal users. For the dedicated local dev ports, falling back to the
+        // process image name keeps restart behavior reliable without elevation.
+        return normalize(getProcessName(pid)) === 'node';
+    }
+
+    return false;
 }
 
 function stopProcess(pid) {
@@ -81,7 +110,7 @@ for (const port of ports) {
 
 for (const pid of stalePids) {
     const commandLine = getCommandLine(pid);
-    if (!isStaleDungeonBlitzDevServer(commandLine)) {
+    if (!isStaleDungeonBlitzDevServer(pid, commandLine)) {
         continue;
     }
 
