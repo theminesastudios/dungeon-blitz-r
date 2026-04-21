@@ -227,7 +227,9 @@ export class WorldEnter {
     }
 
     static getTutorialSafeBuildingStatsForLevel(character: Character | null | undefined, levelName: string | null | undefined): Record<string, unknown> {
-        const statsByBuilding = WorldEnter.asRecord(character?.magicForge?.stats_by_building);
+        const statsByBuilding = WorldEnter.sanitizeBuildingStatsForClient(
+            WorldEnter.asRecord(character?.magicForge?.stats_by_building)
+        );
         if (!WorldEnter.isCraftTownTutorialLevel(levelName)) {
             return statsByBuilding;
         }
@@ -250,6 +252,19 @@ export class WorldEnter {
             buildingID: 0,
             rank: 0,
             ReadyTime: 0
+        };
+    }
+
+    private static sanitizeBuildingStatsForClient(statsByBuilding: Record<string, unknown>): Record<string, unknown> {
+        const keepRank = Number(statsByBuilding[String(BuildingID.Keep)] ?? statsByBuilding[BuildingID.Keep] ?? 0);
+        if (!Number.isFinite(keepRank) || keepRank <= 0) {
+            return statsByBuilding;
+        }
+
+        return {
+            ...statsByBuilding,
+            [BuildingID.Keep]: 0,
+            [String(BuildingID.Keep)]: 0
         };
     }
 

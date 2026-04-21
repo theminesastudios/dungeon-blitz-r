@@ -3,6 +3,7 @@ import { Character } from '../database/Database';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { BuildingHandler } from '../handlers/BuildingHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
+import { BitReader } from '../network/protocol/bitReader';
 
 type SentPacket = {
     id: number;
@@ -197,11 +198,52 @@ function testCraftTownSpawnRefreshSendsImmediateBuildingReassert(): void {
     assert.deepEqual(observedDelays, [1200, 2800]);
 }
 
+function decodeBuildingDelta(packet: Buffer): {
+    previousBuildingId: number;
+    previousRank: number;
+    targetBuildingId: number;
+    targetRank: number;
+    scaffoldingId: number;
+} {
+    const br = new BitReader(packet);
+    return {
+        previousBuildingId: br.readMethod20(5),
+        previousRank: br.readMethod20(5),
+        targetBuildingId: br.readMethod20(5),
+        targetRank: br.readMethod20(5),
+        scaffoldingId: br.readMethod20(5)
+    };
+}
+
+function testCraftTownRefreshClampsUnsupportedKeepRanks(): void {
+    const client = createClient();
+    client.character.magicForge = {
+        stats_by_building: {
+            '1': 1,
+            '2': 5,
+            '3': 2,
+            '12': 5,
+            '13': 4
+        }
+    };
+
+    BuildingHandler.refreshCraftTownBuildingsOnSpawn(client as never);
+
+    const keepPacket = client.sentPackets
+        .filter((packet) => packet.id === 0xDA)
+        .map((packet) => decodeBuildingDelta(packet.payload))
+        .find((packet) => packet.targetBuildingId === 12);
+
+    assert.ok(keepPacket, 'CraftTown refresh should still emit a keep delta');
+    assert.equal(keepPacket?.targetRank, 0, 'CraftTown refresh should clamp unsupported keep ranks');
+}
+
 async function main(): Promise<void> {
     await testBuildingSpeedupCompletesUpgradeAndReassertsCraftTownState();
     await testDuplicateBuiltTomeUpgradeRequestIsIgnoredAndReassertsHomeState();
     await testDuplicateSpeedupRequestReplaysCompletionForBuiltTome();
     testCraftTownSpawnRefreshSendsImmediateBuildingReassert();
+    testCraftTownRefreshClampsUnsupportedKeepRanks();
     console.log('building_speedup_regression: ok');
 }
 

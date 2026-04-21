@@ -3,6 +3,7 @@ import path from 'path';
 import { Character } from '../database/Database';
 import { GlobalState } from '../core/GlobalState';
 import { LevelConfig } from '../core/LevelConfig';
+import { getClientLevelScope } from '../core/LevelScope';
 import { MissionLoader } from '../data/MissionLoader';
 import { MissionID } from '../data/runtime';
 import { CombatHandler } from '../handlers/CombatHandler';
@@ -110,6 +111,18 @@ function createClient(
 function createDestroyEntityPacket(entityId: number): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod4(entityId);
+    bb.writeMethod15(false);
+    return bb.toBuffer();
+}
+
+function buildPowerHitPayload(targetId: number, sourceId: number, damage: number, powerId: number): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(targetId);
+    bb.writeMethod4(sourceId);
+    bb.writeMethod24(damage);
+    bb.writeMethod4(powerId);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
     bb.writeMethod15(false);
     return bb.toBuffer();
 }
@@ -404,6 +417,52 @@ async function testRecoverWandsProgressesOnGoblinShamanKills(): Promise<void> {
     );
 }
 
+async function testSideQuestEnemyKillsProgressInsideDungeonsOnDeadStateOnlyOnce(): Promise<void> {
+    resetGlobalState();
+    const client = createClient({
+        [String(MissionID.GetGoblinNoserings)]: {
+            state: 1,
+            currCount: 0
+        }
+    }, 'GoblinRiverDungeon');
+    client.levelInstanceId = 'side-quest-dungeon';
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    const levelScope = getClientLevelScope(client as never);
+    const hostile = {
+        id: 8501,
+        name: 'GoblinBrute',
+        isPlayer: false,
+        team: 2,
+        hp: 1,
+        entState: 0,
+        roomId: 0,
+        ownerToken: client.token
+    };
+    GlobalState.levelEntities.set(levelScope, new Map<number, any>([
+        [hostile.id, hostile]
+    ]));
+
+    await CombatHandler.handlePowerHit(
+        client as never,
+        buildPowerHitPayload(hostile.id, client.clientEntID, 5, 77)
+    );
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.GetGoblinNoserings)]?.currCount ?? 0),
+        1,
+        'side-quest enemy kills should progress inside dungeons as soon as the enemy enters the dead state'
+    );
+
+    await CombatHandler.handleEntityDestroy(client as never, createDestroyEntityPacket(hostile.id));
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.GetGoblinNoserings)]?.currCount ?? 0),
+        1,
+        'dead-state side-quest progress should not count a second time when the corpse later disappears'
+    );
+}
+
 async function main(): Promise<void> {
     ensureDataLoaded();
     await testRecoverRingsProgressesOnGoblinBruteKills();
@@ -414,6 +473,7 @@ async function main(): Promise<void> {
     await testBoneyardMonsterCompletesOnGraveyardSkeletonKill();
     await testLootersHardCompletesOnGoblinThiefHardKill();
     await testRecoverWandsProgressesOnGoblinShamanKills();
+    await testSideQuestEnemyKillsProgressInsideDungeonsOnDeadStateOnlyOnce();
     console.log('mission_kill_progress_regression: ok');
 }
 

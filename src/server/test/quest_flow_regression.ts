@@ -392,6 +392,7 @@ async function testRescueAnnaLowerScoreRerunKeepsBestHoverStats(): Promise<void>
     );
 }
 
+
 async function testCaptainFinkRepairsLostAtSeaTurnInForCurrentPlayer(): Promise<void> {
     const client = createFakeClient('CraftTown', {}, 100);
     client.character.CurrentLevel = { name: 'CraftTown', x: 360, y: 1460 };

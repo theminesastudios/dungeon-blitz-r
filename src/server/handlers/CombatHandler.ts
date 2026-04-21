@@ -66,6 +66,11 @@ type PlayerHitResolution = {
     killed: boolean;
 };
 
+type NpcHitResolution = {
+    entity: any | null;
+    killed: boolean;
+};
+
 export class CombatHandler {
     private static readonly RESPAWN_ENEMY_HEAL = 1_000_000;
     // Extracted from Game.swz power metadata: these target methods require a real target entity on the client.
@@ -801,17 +806,24 @@ export class CombatHandler {
         };
     }
 
-    private static updateNpcTargetAfterHit(levelName: string, targetId: number, damage: number): void {
+    private static updateNpcTargetAfterHit(levelName: string, targetId: number, damage: number): NpcHitResolution {
         if (!levelName || targetId <= 0 || damage <= 0) {
-            return;
+            return {
+                entity: null,
+                killed: false
+            };
         }
 
         const entity = CombatHandler.resolveLevelEntity(levelName, targetId);
         if (!entity || entity.isPlayer) {
-            return;
+            return {
+                entity: null,
+                killed: false
+            };
         }
 
         const hp = Number(entity.hp ?? NaN);
+        const wasAlive = !Boolean(entity.dead) && Number(entity.entState ?? EntityState.ACTIVE) !== EntityState.DEAD;
         if (Number.isFinite(hp)) {
             entity.hp = Math.max(0, Math.round(hp) - Math.max(0, Math.round(damage)));
         }
@@ -824,6 +836,59 @@ export class CombatHandler {
             noteSharedDungeonHostileState(levelName, targetId, entity);
             LevelHandler.refreshSharedDungeonQuestProgress(levelName);
         }
+
+        return {
+            entity,
+            killed: wasAlive && (Boolean(entity.dead) || Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD)
+        };
+    }
+
+    private static markEnemyDefeatProcessed(levelScope: string, entityId: number, entity: any): void {
+        if (entity && typeof entity === 'object') {
+            entity.questDefeatProcessed = true;
+        }
+
+        const scopedEntity = levelScope ? GlobalState.levelEntities.get(levelScope)?.get(entityId) : null;
+        if (scopedEntity && typeof scopedEntity === 'object') {
+            scopedEntity.questDefeatProcessed = true;
+        }
+
+        if (!levelScope) {
+            return;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (getClientLevelScope(other) !== levelScope) {
+                continue;
+            }
+            const localEntity = other.entities.get(entityId);
+            if (localEntity && typeof localEntity === 'object') {
+                localEntity.questDefeatProcessed = true;
+            }
+        }
+    }
+
+    private static async handleEnemyDefeatState(client: Client, levelScope: string, entityId: number, entity: any): Promise<void> {
+        if (!entity || entity.isPlayer || Number(entity.team ?? 0) !== EntityTeam.ENEMY) {
+            return;
+        }
+
+        if (Boolean(entity.questDefeatProcessed)) {
+            return;
+        }
+
+        CombatHandler.markEnemyDefeatProcessed(levelScope, entityId, entity);
+        await MissionHandler.handleEnemyDefeatMissionProgress(client, entity);
+
+        const destroyedOwnerToken = Math.round(Number((entity as any)?.ownerToken ?? 0));
+        const authorityToken = destroyedOwnerToken > 0
+            ? destroyedOwnerToken
+            : (levelScope ? resolveSharedDungeonProgressAuthorityToken(levelScope) : 0);
+        const authorityClient = authorityToken > 0 ? GlobalState.sessionsByToken.get(authorityToken) : null;
+        const completionClient = authorityClient && areClientsInSameLevelScope(client, authorityClient)
+            ? authorityClient
+            : client;
+        await MissionHandler.handleForcedDungeonBossCompletion(completionClient, entity);
     }
 
     private static parseReferencedEntityIds(packetId: number, data: Buffer): number[] {
@@ -1009,7 +1074,10 @@ export class CombatHandler {
                 EquipmentHandler.broadcastGearChange(targetSession, true);
             }
         } else {
-            CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage);
+            const resolution = CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage);
+            if (resolution.killed && resolution.entity) {
+                await CombatHandler.handleEnemyDefeatState(sourceSession ?? client, levelScope, targetId, resolution.entity);
+            }
         }
 
         const relayPayload = relayDamage === damage ? data : CombatHandler.buildPowerHitPayload(info, relayDamage);
@@ -1083,16 +1151,7 @@ export class CombatHandler {
         }
 
         if (destroyedEntity && !destroyedEntity.isPlayer && Number(destroyedEntity.team ?? 0) === EntityTeam.ENEMY) {
-            await MissionHandler.handleEnemyDefeatMissionProgress(client, destroyedEntity);
-            const destroyedOwnerToken = Math.round(Number((destroyedEntity as any)?.ownerToken ?? 0));
-            const authorityToken = destroyedOwnerToken > 0
-                ? destroyedOwnerToken
-                : (levelScope ? resolveSharedDungeonProgressAuthorityToken(levelScope) : 0);
-            const authorityClient = authorityToken > 0 ? GlobalState.sessionsByToken.get(authorityToken) : null;
-            const completionClient = authorityClient && areClientsInSameLevelScope(client, authorityClient)
-                ? authorityClient
-                : client;
-            await MissionHandler.handleForcedDungeonBossCompletion(completionClient, destroyedEntity);
+            await CombatHandler.handleEnemyDefeatState(client, levelScope, entityId, destroyedEntity);
         }
 
         if (shouldRelayDestroy) {

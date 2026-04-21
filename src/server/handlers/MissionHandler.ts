@@ -10,6 +10,7 @@ import { GlobalState } from '../core/GlobalState';
 import { isWolfsEndDungeonLevel } from '../core/WolfsEndDungeonStatsPolicy';
 import { finalizeDungeonRun, getActiveDungeonRunStats, noteDungeonRunCompletionProgress } from '../core/DungeonRunStats';
 import { buildDungeonRunScoreSummary } from '../core/DungeonRunStats';
+import { EntityState, EntityTeam } from '../core/Entity';
 import { LevelConfig } from '../core/LevelConfig';
 import { getClientLevelScope } from '../core/LevelScope';
 import {
@@ -231,7 +232,10 @@ export class MissionHandler {
             }
 
             const missionDef = MissionLoader.getMissionDef(missionId);
-            if (!missionDef || !MissionHandler.isMissionAvailableInCurrentLevel(missionDef, currentLevel)) {
+            const allowDungeonEnemyProgress =
+                LevelConfig.isDungeonLevel(currentLevel) &&
+                !String(missionDef?.Dungeon ?? '').trim();
+            if (!missionDef || (!allowDungeonEnemyProgress && !MissionHandler.isMissionAvailableInCurrentLevel(missionDef, currentLevel))) {
                 continue;
             }
 
@@ -380,6 +384,18 @@ export class MissionHandler {
 
         if (
             clearedDungeon &&
+            currentLevel !== 'TutorialBoat' &&
+            currentLevel !== 'TutorialDungeon'
+        ) {
+            if (Number(client.character.questTrackerState ?? 0) !== 100) {
+                client.character.questTrackerState = 100;
+                didMutate = true;
+            }
+            MissionHandler.sendQuestProgress(client, 100);
+        }
+
+        if (
+            clearedDungeon &&
             currentLevel === 'TutorialBoat' &&
             MissionHandler.getMissionState(client.character, MissionID.DefendTheShip) === MissionHandler.MISSION_NOT_STARTED &&
             MissionHandler.getMissionState(client.character, MissionID.MeetTheTown) === MissionHandler.MISSION_NOT_STARTED
@@ -419,6 +435,7 @@ export class MissionHandler {
             if (completedMissionId) {
                 didMutate = true;
                 if (missionUpdate.newlyCompleted) {
+                    MissionHandler.sendMissionAdded(client, completedMissionId, missionUpdate.state);
                     MissionHandler.sendMissionComplete(client, completedMissionId);
                 }
 
@@ -516,7 +533,7 @@ export class MissionHandler {
             return;
         }
 
-        if (!MissionHandler.isDungeonBossEntity(destroyedEntity)) {
+        if (!MissionHandler.shouldForceCompleteDungeonOnEnemyDefeat(levelScope, destroyedEntity)) {
             return;
         }
 
@@ -1161,11 +1178,58 @@ export class MissionHandler {
         const entityName = String(entity?.name ?? '').trim();
         const entType = entityName ? GameData.getEntType(entityName) ?? {} : {};
         const entRank = String(entity?.entRank ?? entType?.EntRank ?? '').trim();
-        return entRank === 'Boss';
+        return entRank === 'Boss' || entRank === 'MiniBoss';
     }
 
     private static isCraftTownTutorialBossEntity(entity: any): boolean {
         return MissionHandler.CRAFT_TOWN_TUTORIAL_BOSS_NAMES.has(String(entity?.name ?? '').trim());
+    }
+
+    private static shouldForceCompleteDungeonOnEnemyDefeat(levelScope: string, entity: any): boolean {
+        if (MissionHandler.isDungeonBossEntity(entity)) {
+            return true;
+        }
+
+        return !MissionHandler.hasRemainingDungeonHostiles(levelScope);
+    }
+
+    private static hasRemainingDungeonHostiles(levelScope: string): boolean {
+        const levelMap = GlobalState.levelEntities.get(levelScope);
+        if (!levelMap?.size) {
+            return false;
+        }
+
+        for (const candidate of levelMap.values()) {
+            if (MissionHandler.isAliveDungeonHostile(candidate)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static isAliveDungeonHostile(entity: any): boolean {
+        if (!entity || entity.isPlayer) {
+            return false;
+        }
+
+        if (Number(entity.team ?? 0) !== EntityTeam.ENEMY) {
+            return false;
+        }
+
+        if (Boolean(entity.untargetable)) {
+            return false;
+        }
+
+        if (Boolean(entity.dead) || Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
+            return false;
+        }
+
+        if (Number(entity.hp ?? 1) <= 0) {
+            return false;
+        }
+
+        return true;
     }
 
     private static getMissionStateMap(character: Character): Record<string, MissionEntry> {
