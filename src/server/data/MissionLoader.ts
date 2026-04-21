@@ -4,6 +4,7 @@ import path from 'path';
 export interface MissionDef {
     MissionName: string;
     MissionID: number;
+    DisplayName?: string;
     OfferText?: string;
     ActiveText?: string;
     ActiveTarget?: string;
@@ -97,6 +98,7 @@ export class MissionLoader {
                     this.missions.set(id, {
                         MissionName: missionName,
                         MissionID: id,
+                        DisplayName: item.DisplayName || "",
                         OfferText: item.OfferText || "",
                         ActiveText: item.ActiveText || "",
                         ActiveTarget: item.ActiveTarget || "",
@@ -137,6 +139,21 @@ export class MissionLoader {
 
     static getMissionIdByName(name: string): number | undefined {
         return this.missionIdsByName.get(this.normalizeMissionName(name));
+    }
+
+    static findPrimaryMissionByDungeon(levelName: string): MissionDef | undefined {
+        const normalizedLevel = String(levelName ?? '').trim();
+        if (!normalizedLevel) {
+            return undefined;
+        }
+
+        for (const mission of this.missions.values()) {
+            if (String(mission.Dungeon ?? '').trim() === normalizedLevel) {
+                return mission;
+            }
+        }
+
+        return undefined;
     }
 
     static getTotalMissions(): number {

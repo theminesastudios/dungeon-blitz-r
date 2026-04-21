@@ -1,6 +1,7 @@
 
 import { Client } from '../core/Client';
 import { DebugLogger } from '../core/Debug';
+import { BuildingID } from '../core/Enums';
 import { BitReader } from '../network/protocol/bitReader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { JsonAdapter } from '../database/JsonAdapter';
@@ -227,8 +228,10 @@ export class BuildingHandler {
          // This needs character data
          if (!client.character || !client.character.magicForge) return;
 
-         const mfStats = client.character.magicForge.stats_by_building || {};
-         const getStat = (id: number) => mfStats[id.toString()] || 0;
+         const mfStats = BuildingHandler.sanitizeBuildingStatsForClient(
+            client.character.magicForge.stats_by_building || {}
+         );
+         const getStat = (id: number): number => Number(mfStats[id.toString()] ?? 0);
 
          // Resolve MasterClass (can use helper if available, or just use current)
          const masterClassId = client.character.MasterClass || 0;
@@ -283,6 +286,19 @@ export class BuildingHandler {
         return value && typeof value === 'object' && !Array.isArray(value)
             ? value as Record<string, unknown>
             : {};
+    }
+
+    private static sanitizeBuildingStatsForClient(statsByBuilding: Record<string, unknown>): Record<string, unknown> {
+        const keepRank = Number(statsByBuilding[String(BuildingID.Keep)] ?? statsByBuilding[BuildingID.Keep] ?? 0);
+        if (!Number.isFinite(keepRank) || keepRank <= 0) {
+            return statsByBuilding;
+        }
+
+        return {
+            ...statsByBuilding,
+            [BuildingID.Keep]: 0,
+            [String(BuildingID.Keep)]: 0
+        };
     }
 
     private static getBuildingRank(character: Record<string, unknown>, buildingId: number): number {

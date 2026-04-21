@@ -160,6 +160,16 @@ async function testTutorialBoatCompletionPersistsDungeonHoverStats(): Promise<vo
     assert.equal(Number(mission?.Tier ?? 0) > 0, true, 'Lost at Sea should persist the completed star count');
     assert.equal(Number(mission?.highscore ?? 0) > 0, true, 'Lost at Sea should persist the completed total score');
     assert.equal(Number(mission?.Time ?? 0) > 0, true, 'Lost at Sea should persist completion time metadata');
+    assert.deepEqual(
+        client.character.CurrentLevel,
+        { name: 'TutorialBoat', x: 0, y: 0 },
+        'Lost at Sea should keep the player in TutorialBoat until the actual exit transfer finishes'
+    );
+    assert.deepEqual(
+        client.character.PreviousLevel,
+        { name: 'NewbieRoad', x: 1421, y: 826 },
+        'Lost at Sea should preserve the safe return point instead of consuming it during completion'
+    );
 }
 
 async function testRescueAnnaCompletionLeavesFindAnnasFatherAvailableOnAnna(): Promise<void> {
@@ -381,6 +391,7 @@ async function testRescueAnnaLowerScoreRerunKeepsBestHoverStats(): Promise<void>
         'a weaker rerun should not fire the mission-complete hover packet again'
     );
 }
+
 
 async function testCaptainFinkRepairsLostAtSeaTurnInForCurrentPlayer(): Promise<void> {
     const client = createFakeClient('CraftTown', {}, 100);

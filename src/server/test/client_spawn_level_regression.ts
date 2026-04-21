@@ -748,6 +748,40 @@ function testCraftTownTutorialBossIntroUsesRunLoopThoughts(): void {
     assert.equal(thoughts.includes("<End> Don't let him|her take our home!"), true);
 }
 
+function testCraftTownTutorialServerFallbackDoesNotSeedInitialHostiles(): void {
+    const client = createFakeClient('Alpha');
+    client.currentLevel = 'CraftTownTutorial';
+    client.levelInstanceId = 'keep-fallback';
+    client.currentRoomId = 1;
+    client.keepTutorialState = createKeepTutorialState();
+    (client as any).character = {
+        name: 'Alpha',
+        CurrentLevel: { name: 'CraftTownTutorial', x: 80, y: 1450 }
+    };
+
+    (LevelHandler as any).spawnCraftTownTutorialServerFallback(client as never);
+
+    const levelMap = GlobalState.levelEntities.get('CraftTownTutorial#keep-fallback');
+    assert.ok(levelMap, 'fallback should still seed a scoped level map');
+
+    const hostileCount = Array.from(levelMap!.values()).filter((entity) => Number(entity?.team ?? 0) === 2).length;
+    assert.equal(hostileCount, 0, 'fallback should not seed the authored goblin population');
+
+    const sentHostiles = client.sentPackets
+        .filter((packet) => packet.id === 0x0F)
+        .map((packet) => {
+            const br = new BitReader(packet.payload);
+            br.readMethod4();
+            br.readMethod24();
+            br.readMethod24();
+            br.readMethod24();
+            br.readMethod26();
+            return br.readMethod20(2);
+        })
+        .filter((team) => team === 2);
+    assert.deepEqual(sentHostiles, [], 'fallback should not send hostile spawn packets up front');
+}
+
 function testCraftTownTutorialBossRecoveryActivatesTrackedHelpersImmediately(): void {
     const client = createFakeClient('Alpha');
     client.currentLevel = 'CraftTownTutorial';
@@ -861,13 +895,13 @@ function testCraftTownTutorialBossRecoveryIgnoresTrackedStrayHelpers(): void {
 
     assert.deepEqual(
         client.keepTutorialState?.helperWaveActiveIds,
-        CRAFT_TOWN_HELPER_IDS.slice(0, 3),
-        'boss recovery should activate the canonical authored helper wave instead of a tracked stray entity'
+        [],
+        'boss recovery should not server-spawn a helper wave when only a stray tracked goblin exists'
     );
     assert.equal(
         client.keepTutorialState?.helperEntityIds.includes(strayHelper.id),
         false,
-        'stray boarded goblins should not remain in the helper rotation after canonical seeding'
+        'stray boarded goblins should not remain in the helper rotation'
     );
     assert.equal(levelMap.get(strayHelper.id)?.entState, 2, 'stray helper should remain boarded and inactive');
     assert.equal(levelMap.get(strayHelper.id)?.untargetable, true, 'stray helper should stay untargetable');
@@ -902,11 +936,11 @@ function testCraftTownTutorialBossIntroStillTriggersAfterClientSpawnConfirmation
 
     assert.equal(client.keepTutorialState?.bossIntroForced, true);
     assert.equal(client.keepTutorialState?.bossRecoveryArmed, true);
-    assert.equal(client.keepTutorialState?.helperEntityIds.length, CRAFT_TOWN_HELPER_IDS.length);
-    assert.equal(client.keepTutorialState?.bossEntitySeen !== null, true);
+    assert.equal(client.keepTutorialState?.helperEntityIds.length, 0);
+    assert.equal(client.keepTutorialState?.bossEntitySeen, null);
 }
 
-function testCraftTownTutorialReinforcementSeedingRestoresMissingHelpers(): void {
+function testCraftTownTutorialReinforcementsOnlyUseExistingHelpers(): void {
     const client = createFakeClient('Alpha');
     client.currentLevel = 'CraftTownTutorial';
     client.levelInstanceId = 'keep-seed';
@@ -931,15 +965,12 @@ function testCraftTownTutorialReinforcementSeedingRestoresMissingHelpers(): void
 
     (LevelHandler as any).summonCraftTownTutorialReinforcements(client as never);
 
-    assert.deepEqual(client.keepTutorialState?.helperEntityIds, CRAFT_TOWN_HELPER_IDS);
-    assert.deepEqual(client.keepTutorialState?.helperWaveActiveIds, CRAFT_TOWN_HELPER_IDS.slice(0, 3));
-    for (const helperId of CRAFT_TOWN_HELPER_IDS.slice(0, 3)) {
-        assert.equal(client.entities.get(helperId)?.entState, 0, `helper ${helperId} should be active`);
-        assert.equal(client.entities.get(helperId)?.untargetable, false, `helper ${helperId} should be targetable`);
-    }
-    for (const helperId of CRAFT_TOWN_HELPER_IDS.slice(3)) {
-        assert.equal(client.entities.has(helperId), false, `helper ${helperId} should stay hidden until its wave`);
-        assert.equal(GlobalState.levelEntities.get('CraftTownTutorial#keep-seed')?.get(helperId)?.entState, 2, `helper ${helperId} should remain boarded`);
+    assert.deepEqual(client.keepTutorialState?.helperEntityIds, [CRAFT_TOWN_HELPER_IDS[0]]);
+    assert.deepEqual(client.keepTutorialState?.helperWaveActiveIds, [CRAFT_TOWN_HELPER_IDS[0]]);
+    assert.equal(client.entities.get(CRAFT_TOWN_HELPER_IDS[0])?.entState, 0);
+    assert.equal(client.entities.get(CRAFT_TOWN_HELPER_IDS[0])?.untargetable, false);
+    for (const helperId of CRAFT_TOWN_HELPER_IDS.slice(1)) {
+        assert.equal(client.entities.has(helperId), false, `missing helper ${helperId} should not be server-spawned`);
     }
 }
 
@@ -984,14 +1015,29 @@ async function testCraftTownTutorialHelperWaveRespawnsAfterAllHelpersDie(): Prom
     client.levelInstanceId = 'keep-wave';
     client.currentRoomId = 1;
     client.keepTutorialState = createKeepTutorialState();
+    client.keepTutorialState.helperEntityIds = [...CRAFT_TOWN_HELPER_IDS];
     client.keepTutorialState.bossEntitySource = 'fallback';
     (client as any).character = {
         name: 'Alpha',
         CurrentLevel: { name: 'CraftTownTutorial', x: 80, y: 1450 }
     };
 
+    const levelMap = new Map<number, any>();
+    for (const [index, helperId] of CRAFT_TOWN_HELPER_IDS.entries()) {
+        levelMap.set(helperId, {
+            id: helperId,
+            name: 'GoblinDagger',
+            x: index * 80,
+            y: 1459,
+            entState: 2,
+            untargetable: true,
+            dramaAnim: 'Board',
+            facingLeft: false
+        });
+    }
+
     GlobalState.sessionsByToken.set(client.token, client as never);
-    GlobalState.levelEntities.set('CraftTownTutorial#keep-wave', new Map<number, any>());
+    GlobalState.levelEntities.set('CraftTownTutorial#keep-wave', levelMap);
 
     (LevelHandler as any).summonCraftTownTutorialReinforcements(client as never);
 
@@ -1040,6 +1086,20 @@ async function testCraftTownTutorialClientSourceHelperWaveRespawnsAfterAllHelper
     GlobalState.sessionsByToken.set(client.token, client as never);
     GlobalState.levelEntities.set('CraftTownTutorial#keep-client-wave', levelMap);
     client.entities.set(boss.id, { ...boss });
+    for (const [index, helperId] of CRAFT_TOWN_HELPER_IDS.entries()) {
+        const helper = {
+            id: helperId,
+            name: 'GoblinDagger',
+            x: index * 80,
+            y: 1459,
+            entState: 2,
+            untargetable: true,
+            dramaAnim: 'Board',
+            facingLeft: false
+        };
+        client.entities.set(helperId, { ...helper });
+        client.knownEntityIds.add(helperId);
+    }
 
     (LevelHandler as any).summonCraftTownTutorialReinforcements(client as never);
 
@@ -1896,6 +1956,11 @@ async function main(): Promise<void> {
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
+        testCraftTownTutorialServerFallbackDoesNotSeedInitialHostiles();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
         testCraftTownTutorialBossRecoveryActivatesTrackedHelpersImmediately();
 
         GlobalState.levelEntities.clear();
@@ -1916,7 +1981,7 @@ async function main(): Promise<void> {
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
-        testCraftTownTutorialReinforcementSeedingRestoresMissingHelpers();
+        testCraftTownTutorialReinforcementsOnlyUseExistingHelpers();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();

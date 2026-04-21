@@ -128,7 +128,7 @@ export class LevelHandler {
             ],
             {
                 fallbackLevel: 'NewbieRoad',
-                excludedLevels: ['CraftTown']
+                excludedLevels: ['CraftTown', 'CraftTownTutorial']
             }
         );
     }
@@ -605,7 +605,7 @@ export class LevelHandler {
 
         if (anchor) {
             const anchorState = anchor.state;
-            if (anchorState.hasCoord) {
+            if (!shouldSyncDungeonProgress && anchorState.hasCoord) {
                 x = Math.round(Number(anchorState.x ?? 0));
                 y = Math.round(Number(anchorState.y ?? 0));
                 hasCoord = true;
@@ -632,6 +632,8 @@ export class LevelHandler {
 
         if (shouldSyncDungeonProgress) {
             syncAnchorStartedAt = syncAnchorStartedAt ?? Date.now();
+            // Dungeon start position is authored by the dungeon SWF; never force coordinates on entry.
+            hasCoord = false;
         }
 
         if (
@@ -700,6 +702,7 @@ export class LevelHandler {
     private static readonly FIRST_KEEP_MISSION_ID = MissionID.ClearYourHouse;
     private static readonly MISSION_NOT_STARTED = 0;
     private static readonly MISSION_IN_PROGRESS = 1;
+    private static readonly MISSION_CLAIMED = 3;
     private static readonly KEEP_TUTORIAL_BOSS_TRIGGER_X = Number.MAX_SAFE_INTEGER;
     private static readonly KEEP_TUTORIAL_CUTSCENE_STEP_MS = 250;
     private static readonly KEEP_TUTORIAL_BOSS_INTRO_TOTAL_MS = 14750;
@@ -848,14 +851,23 @@ export class LevelHandler {
             return;
         }
 
+        if (
+            LevelConfig.normalizeLevelName(authorityClient.currentLevel) === 'CraftTownTutorial' &&
+            !authorityClient.keepTutorialState?.bossDefeated
+        ) {
+            return;
+        }
+
         sharedState.completionRequested = true;
         const requiredKills = Math.max(1, getSharedDungeonProgressTotals(levelScope).total);
-        void MissionHandler.handleSetLevelComplete(
+        MissionHandler.scheduleDungeonCompletion(
             authorityClient,
             LevelHandler.buildSharedDungeonAutoCompletePayload(requiredKills)
-        ).then(() => {
+        );
+        const refreshDelay = MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS + 50;
+        setTimeout(() => {
             recomputeSharedDungeonProgress(levelScope);
-        });
+        }, refreshDelay).unref?.();
     }
 
     static syncSharedDungeonQuestProgressState(client: Client): void {
@@ -886,7 +898,8 @@ export class LevelHandler {
     static shouldSkipDungeonRoomProgressSync(levelName: string | null | undefined): boolean {
         const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
         return usesSharedDungeonProgress(normalizedLevel) ||
-            normalizedLevel === 'TutorialDungeon';
+            normalizedLevel === 'TutorialDungeon' ||
+            normalizedLevel === 'CraftTownTutorial';
     }
 
     static prepareGoblinRiverDungeonEntryState(client: Client): void {
@@ -898,6 +911,13 @@ export class LevelHandler {
             client.currentRoomId = 0;
             client.startedRoomEvents.clear();
             client.character.questTrackerState = LevelHandler.TUTORIAL_DUNGEON_INITIAL_PROGRESS;
+            return;
+        }
+
+        if (client.currentLevel === 'CraftTownTutorial') {
+            client.currentRoomId = 0;
+            client.startedRoomEvents.clear();
+            client.character.questTrackerState = 0;
             return;
         }
 
@@ -1164,58 +1184,7 @@ export class LevelHandler {
     }
 
     private static spawnCraftTownTutorialFallbackBoss(client: Client): number | null {
-        const state = LevelHandler.getCraftTownTutorialState(client);
-        if (!state || !client.currentLevel) {
-            return null;
-        }
-
-        if (state.bossEntitySeen && state.bossEntitySource === 'fallback') {
-            return state.bossEntitySeen;
-        }
-
-        const levelMap = LevelHandler.getCurrentLevelMap(client, true) ?? new Map<number, any>();
-
-        for (const [entityId, entity] of levelMap.entries()) {
-            const entityName = String(entity?.name ?? entity?.props?.name ?? '');
-            const clientSpawned = Boolean(entity?.clientSpawned ?? entity?.props?.clientSpawned);
-            if (entityName === 'GoblinShamanHood' || entityName === 'IntroGoblinShamanHood') {
-                if (clientSpawned) {
-                    continue;
-                }
-                if (!client.entities.has(entityId)) {
-                    const bossProps = { ...entity, clientSpawned: false };
-                    client.entities.set(entityId, bossProps);
-                    noteDungeonRunEntitySeen(client, entityId, bossProps);
-                    EntityHandler.sendEntity(client, bossProps);
-                } else {
-                    client.entities.set(entityId, entity);
-                    noteDungeonRunEntitySeen(client, entityId, entity);
-                }
-                LevelHandler.markCraftTownTutorialBossSeen(client, entityId, 'fallback');
-                return entityId;
-            }
-        }
-
-        const template = LevelHandler.findCraftTownTutorialBossTemplate();
-        if (!template) {
-            return null;
-        }
-
-        const boss = {
-            ...template,
-            name: 'IntroGoblinShamanHood',
-            character_name: ',IntroGoblinShamanHood',
-            entState: 2,
-            untargetable: true,
-            clientSpawned: false
-        };
-
-        client.entities.set(boss.id, boss);
-        noteDungeonRunEntitySeen(client, boss.id, boss);
-        levelMap.set(boss.id, boss);
-        EntityHandler.sendEntity(client, boss);
-        LevelHandler.markCraftTownTutorialBossSeen(client, boss.id, 'fallback');
-        return boss.id;
+        return null;
     }
 
     private static activateCraftTownTutorialBoss(client: Client, bossId: number): void {
@@ -1478,45 +1447,19 @@ export class LevelHandler {
             return;
         }
 
-        const levelMap = LevelHandler.getCurrentLevelMap(client, true) ?? new Map<number, any>();
+        const levelMap = LevelHandler.getCurrentLevelMap(client, true);
+        if (!levelMap) {
+            return;
+        }
+
         const existing = LevelHandler.classifyCraftTownTutorialFallbackEntities(levelMap);
 
-        const rawLevelMap = new Map<number, any>();
-        for (const npc of NpcLoader.getRawNpcsForLevel('CraftTownTutorial')) {
-            const entity = {
-                ...Entity.fromNpc(npc),
-                clientSpawned: false
-            };
-            rawLevelMap.set(entity.id, entity);
+        if (existing.bossId !== null && state.bossEntitySeen === null) {
+            LevelHandler.markCraftTownTutorialBossSeen(client, existing.bossId, 'client');
         }
 
-        const rawEncounter = LevelHandler.prepareCraftTownTutorialFallbackEntities(rawLevelMap);
-
-        if (existing.bossId === null && rawEncounter.bossId !== null) {
-            const rawBoss = rawLevelMap.get(rawEncounter.bossId);
-            if (rawBoss && !levelMap.has(rawEncounter.bossId)) {
-                levelMap.set(rawEncounter.bossId, { ...rawBoss });
-            }
-        }
-
-        for (const helperId of rawEncounter.helperIds) {
-            if (levelMap.has(helperId)) {
-                continue;
-            }
-
-            const rawHelper = rawLevelMap.get(helperId);
-            if (rawHelper) {
-                levelMap.set(helperId, { ...rawHelper });
-            }
-        }
-
-        if (rawEncounter.helperIds.length > 0) {
-            // Prefer the canonical keep-tutorial helper set from the authored NPC data.
-            // Client-spawn tracking can surface transient boarded goblins with unstable IDs,
-            // and promoting those into the recovery wave can crash the client LinkUpdater flow.
-            state.helperEntityIds = [...rawEncounter.helperIds];
-        } else {
-            LevelHandler.mergeCraftTownTutorialHelperIds(state, levelMap, rawEncounter.helperIds);
+        if (existing.helperIds.length > 0) {
+            state.helperEntityIds = [...existing.helperIds];
         }
     }
 
@@ -1542,7 +1485,7 @@ export class LevelHandler {
         }
 
         const levelMap = new Map<number, any>();
-        for (const npc of NpcLoader.getRawNpcsForLevel(client.currentLevel)) {
+        for (const npc of NpcLoader.getNpcsForLevel(client.currentLevel)) {
             const entity = {
                 ...Entity.fromNpc(npc),
                 clientSpawned: false
@@ -1971,12 +1914,14 @@ export class LevelHandler {
         }
 
         const preferredHelperIds = state.helperEntityIds.filter((helperId) => {
-            const helper = LevelHandler.getCurrentLevelMap(client)?.get(helperId);
+            const helper =
+                LevelHandler.getCurrentLevelMap(client)?.get(helperId) ??
+                client.entities.get(helperId);
             return Boolean(helper);
         });
 
         LevelHandler.ensureCraftTownTutorialBossEncounterEntities(client);
-        const levelMap = LevelHandler.getCurrentLevelMap(client);
+        const levelMap = LevelHandler.getCurrentLevelMap(client, true);
         if (!levelMap) {
             return;
         }
@@ -1990,9 +1935,13 @@ export class LevelHandler {
         let spawnedCount = 0;
         const activeIds: number[] = [];
         for (const helperId of waveIds) {
-            const helper = levelMap.get(helperId);
+            const helper = levelMap.get(helperId) ?? client.entities.get(helperId);
             if (!helper) {
                 continue;
+            }
+
+            if (!levelMap.has(helperId)) {
+                levelMap.set(helperId, { ...helper });
             }
 
             helper.untargetable = false;
@@ -2144,9 +2093,14 @@ export class LevelHandler {
         const state = LevelHandler.getCraftTownTutorialState(client);
 
         const missionState = LevelHandler.getCharacterMissionState(client.character, LevelHandler.FIRST_KEEP_MISSION_ID);
+        const shouldResetKeepMission =
+            missionState === LevelHandler.MISSION_IN_PROGRESS ||
+            (
+                missionState === LevelHandler.MISSION_NOT_STARTED &&
+                LevelHandler.canStartMission(client.character, LevelHandler.FIRST_KEEP_MISSION_ID)
+            );
         if (
-            missionState === LevelHandler.MISSION_NOT_STARTED &&
-            LevelHandler.canStartMission(client.character, LevelHandler.FIRST_KEEP_MISSION_ID)
+            shouldResetKeepMission
         ) {
             const missions =
                 client.character.missions &&
@@ -2168,7 +2122,9 @@ export class LevelHandler {
                 missionId: LevelHandler.FIRST_KEEP_MISSION_ID
             });
 
-            LevelHandler.sendMissionAdded(client, LevelHandler.FIRST_KEEP_MISSION_ID);
+            if (missionState === LevelHandler.MISSION_NOT_STARTED) {
+                LevelHandler.sendMissionAdded(client, LevelHandler.FIRST_KEEP_MISSION_ID);
+            }
             LevelHandler.sendQuestProgress(client, 0);
 
             if (client.userId) {
@@ -2541,14 +2497,42 @@ export class LevelHandler {
         return Number(state ?? LevelHandler.MISSION_NOT_STARTED);
     }
 
-    private static resolveDoorTarget(client: Client, currentLevel: string, doorId: number): string | null {
+    private static resolveKeepTutorialTransferTarget(client: Client, targetLevel: string): string {
         if (
-            doorId === 999 &&
-            currentLevel !== 'CraftTownTutorial' &&
+            targetLevel === 'CraftTown' &&
             LevelHandler.getMissionState(client, LevelHandler.FIRST_KEEP_MISSION_ID) ===
                 LevelHandler.MISSION_IN_PROGRESS
         ) {
             return 'CraftTownTutorial';
+        }
+
+        return targetLevel;
+    }
+
+    private static resolveDoorTarget(client: Client, currentLevel: string, doorId: number): string | null {
+        if (doorId === 999 && currentLevel === 'CraftTown') {
+            if (
+                LevelHandler.getMissionState(client, LevelHandler.FIRST_KEEP_MISSION_ID) ===
+                LevelHandler.MISSION_IN_PROGRESS
+            ) {
+                return 'CraftTownTutorial';
+            }
+
+            return LevelHandler.resolveCraftTownReturnLevel(
+                client,
+                client.character,
+                currentLevel,
+                null
+            );
+        }
+
+        if (doorId === 0 && (currentLevel === 'CraftTown' || currentLevel === 'CraftTownTutorial')) {
+            return LevelHandler.resolveCraftTownReturnLevel(
+                client,
+                client.character,
+                currentLevel,
+                null
+            );
         }
 
         return LevelConfig.getDoorTarget(currentLevel, doorId);
@@ -3166,6 +3150,8 @@ export class LevelHandler {
             console.log(`[Level] Invalid transfer target '${targetLevel}', falling back to last door target ${lastDoorTarget}`);
             targetLevel = lastDoorTarget;
         }
+
+        targetLevel = LevelHandler.resolveKeepTutorialTransferTarget(client, targetLevel);
 
         if (!LevelConfig.has(targetLevel)) {
             const safeFallback = LevelConfig.normalizeLevelName(client.currentLevel || "NewbieRoad") || "NewbieRoad";

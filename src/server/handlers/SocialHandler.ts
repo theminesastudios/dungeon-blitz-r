@@ -7,6 +7,7 @@ import { JsonAdapter } from '../database/JsonAdapter';
 import { LevelConfig } from '../core/LevelConfig';
 import { GuildHandler } from './GuildHandler';
 import { LevelHandler } from './LevelHandler';
+import { MissionHandler } from './MissionHandler';
 import { PetHandler } from './PetHandler';
 import {
     ensureCharacterSocialState,
@@ -1606,6 +1607,7 @@ export class SocialHandler {
         const text = br.readMethod13();
         const payload = SocialHandler.buildRoomThoughtPayload(entityId, text);
         LevelHandler.maybeStartGoblinRiverBossIntroLock(client, entityId, text);
+        MissionHandler.noteDungeonSkitActivity(client);
 
         SocialHandler.relayToLevel(client, 0x76, payload, true);
     }
@@ -1617,6 +1619,7 @@ export class SocialHandler {
         const text = br.readMethod26();
         const payload = SocialHandler.buildRoomThoughtPayload(entityId, text);
         LevelHandler.maybeStartGoblinRiverBossIntroLock(client, entityId, text);
+        MissionHandler.noteDungeonSkitActivity(client);
 
         SocialHandler.relayToLevel(client, 0x76, payload, true);
     }

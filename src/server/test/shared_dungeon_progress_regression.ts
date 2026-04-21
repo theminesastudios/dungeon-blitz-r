@@ -161,6 +161,10 @@ function buildPowerCastPayload(sourceId: number): Buffer {
     return bb.toBuffer();
 }
 
+function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function assertDungeonCompleteMatchesTracker(client: FakeClient, payload: Buffer): void {
     const result = parseDungeonComplete(payload);
     const summary = client.dungeonRun?.finalizedStats?.scoreSummary;
@@ -829,7 +833,7 @@ async function testGoblinRiverAutoCompletesWhenSharedProgressReachesFullClear():
     noteDungeonRunKill(levelScope, [authority.character.name], bossDead.id, bossDead);
 
     LevelHandler.refreshSharedDungeonQuestProgress(levelScope);
-    await new Promise((resolve) => setTimeout(resolve, 25));
+    await sleep(MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS + 100);
 
     const resultPacket = authority.sentPackets.find((packet) => packet.id === 0x87);
     assert.ok(resultPacket, 'Goblin River should auto-send the completion packet when shared progress reaches 100%');

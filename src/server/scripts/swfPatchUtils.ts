@@ -99,7 +99,7 @@ function initOpcodeInfo(): void {
   }
   OPCODE_INFO.set(0x24, ["s8"]);
   OPCODE_INFO.set(0x32, ["u30", "u30"]);
-  OPCODE_INFO.set(0xef, []);
+  OPCODE_INFO.set(0xef, ["s8", "u30", "s8", "u30"]);
 }
 
 initOpcodeInfo();

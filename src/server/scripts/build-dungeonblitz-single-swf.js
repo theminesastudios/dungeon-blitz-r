@@ -9,6 +9,7 @@ const DEFAULT_INPUT_FALLBACK = path.join('src', 'client', 'content', 'localhost'
 const DEFAULT_OUTPUT = path.join('src', 'client', 'content', 'localhost', 'p', 'cbp', 'DungeonBlitz.swf');
 const DEFAULT_EXISTING_OUTPUT = path.join('src', 'client', 'content', 'localhost', 'p', 'cbp', 'DungeonBlitz.swf');
 const CLASS_NAMES = ['DungeonBlitz', 'class_67', 'Game'];
+const MULTIPLAYER_BASE_IP = String(process.env.MULTIPLAYER_BASE_IP || '10.179.241.95').trim() || '10.179.241.95';
 
 function parseArgs(argv) {
     const args = {
@@ -144,6 +145,13 @@ function replaceExact(source, needle, replacement, label) {
     return source.replace(needle, replacement);
 }
 
+function replaceRegex(source, pattern, replacement, label) {
+    if (!pattern.test(source)) {
+        throw new Error(`Could not find patch marker: ${label}`);
+    }
+    return source.replace(pattern, replacement);
+}
+
 function patchDungeonBlitzSource(source) {
     const eol = source.includes('\r\n') ? '\r\n' : '\n';
     const join = (lines) => lines.join(eol);
@@ -151,30 +159,13 @@ function patchDungeonBlitzSource(source) {
     if (source.includes('_loc4_ = stage.loaderInfo.url.toLowerCase();')) {
         return source;
     }
-
-    const original = join([
-        '      public function method_861(param1:Event = null) : void',
-        '      {',
-        '         var _loc2_:String = null;',
-        '         var _loc3_:String = null;',
-        '         DevSettings.method_275();',
-        '         stage.scaleMode = StageScaleMode.NO_SCALE;',
-        '         stage.align = StageAlign.TOP_LEFT;',
-        '         this.var_2228 = new Sprite();',
-        '         addChild(this.var_2228);',
-        '         if(!(DevSettings.flags & DevSettings.DEVFLAG_MASTER_CLIENT))',
-        '         {',
-        '            _loc2_ = ResourceManager.method_1071(root);',
-        '            _loc3_ = ResourceManager.method_1544(stage,"100.100.146.54","100.100.146.54","/p/");',
-        '         }'
-    ]);
     const patched = join([
         '      public function method_861(param1:Event = null) : void',
         '      {',
         '         var _loc2_:String = null;',
         '         var _loc3_:String = null;',
         '         var _loc4_:String = null;',
-        '         var _loc5_:String = "100.100.146.54";',
+        `         var _loc5_:String = "${MULTIPLAYER_BASE_IP}";`,
         '         var _loc6_:String = "/p/";',
         '         DevSettings.method_275();',
         '         stage.scaleMode = StageScaleMode.NO_SCALE;',
@@ -199,7 +190,12 @@ function patchDungeonBlitzSource(source) {
         '         }'
     ]);
 
-    return replaceExact(source, original, patched, 'DungeonBlitz.method_861 host selection');
+    return replaceRegex(
+        source,
+        /      public function method_861\(param1:Event = null\) : void\r?\n      \{\r?\n         var _loc2_:String = null;\r?\n         var _loc3_:String = null;\r?\n         DevSettings\.method_275\(\);\r?\n         stage\.scaleMode = StageScaleMode\.NO_SCALE;\r?\n         stage\.align = StageAlign\.TOP_LEFT;\r?\n         this\.var_2228 = new Sprite\(\);\r?\n         addChild\(this\.var_2228\);\r?\n         if\(!\(DevSettings\.flags & DevSettings\.DEVFLAG_MASTER_CLIENT\)\)\r?\n         \{\r?\n            _loc2_ = ResourceManager\.method_1071\(root\);\r?\n            _loc3_ = ResourceManager\.method_1544\(stage,"[^"]+","[^"]+","[^"]+"\);\r?\n         \}/,
+        patched,
+        'DungeonBlitz.method_861 host selection'
+    );
 }
 
 function patchCrashWindowSource(source) {
@@ -207,9 +203,9 @@ function patchCrashWindowSource(source) {
         return source;
     }
 
-    return replaceExact(
+    return replaceRegex(
         source,
-        '         var _loc2_:String = "http://100.100.146.54/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp";',
+        /         var _loc2_:String = "http:\/\/[^"]+\/p\/cbp\/DungeonBlitz\.swf\?fv=cbq&gv=cbp";/,
         '         var _loc2_:String = "/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp";',
         'class_67.method_1866 refresh URL'
     );

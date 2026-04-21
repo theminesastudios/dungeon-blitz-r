@@ -170,6 +170,15 @@ export class Client {
     public goblinRiverBossIntroLockUntil: number = 0;
     public goblinRiverBossIntroUnlockTimer: NodeJS.Timeout | null = null;
     public forcedDungeonCompletionScope: string = "";
+    public pendingDungeonCompletionScope: string = "";
+    public pendingDungeonCompletionRequestedAt: number = 0;
+    public pendingDungeonCompletionLastSkitAt: number = 0;
+    public pendingDungeonCompletionNotBeforeAt: number = 0;
+    public pendingDungeonCompletionSettleMs: number = 0;
+    public pendingDungeonCompletionPayload: Buffer | null = null;
+    public pendingDungeonCompletionForceSharedScope: string = "";
+    public pendingDungeonCompletionTimer: NodeJS.Timeout | null = null;
+    public pendingDungeonCompletionFlushActive: boolean = false;
 
     constructor(socket: net.Socket, router: PacketRouter) {
         this.socket = socket;
@@ -330,6 +339,18 @@ export class Client {
         }
         this.goblinRiverBossIntroLockUntil = 0;
         this.forcedDungeonCompletionScope = "";
+        this.pendingDungeonCompletionScope = "";
+        this.pendingDungeonCompletionRequestedAt = 0;
+        this.pendingDungeonCompletionLastSkitAt = 0;
+        this.pendingDungeonCompletionNotBeforeAt = 0;
+        this.pendingDungeonCompletionSettleMs = 0;
+        this.pendingDungeonCompletionPayload = null;
+        this.pendingDungeonCompletionForceSharedScope = "";
+        if (this.pendingDungeonCompletionTimer) {
+            clearTimeout(this.pendingDungeonCompletionTimer);
+            this.pendingDungeonCompletionTimer = null;
+        }
+        this.pendingDungeonCompletionFlushActive = false;
     }
 
     private clearIdentityState(): void {

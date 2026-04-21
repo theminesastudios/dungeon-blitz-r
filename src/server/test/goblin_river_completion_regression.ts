@@ -3,9 +3,11 @@ import * as path from 'path';
 import { GlobalState } from '../core/GlobalState';
 import { GameData } from '../core/GameData';
 import { LevelConfig } from '../core/LevelConfig';
+import { getClientLevelScope } from '../core/LevelScope';
 import { NpcLoader } from '../data/NpcLoader';
 import { MissionLoader } from '../data/MissionLoader';
 import { MissionID } from '../data/runtime';
+import { CombatHandler } from '../handlers/CombatHandler';
 import { MissionHandler } from '../handlers/MissionHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 
@@ -23,6 +25,7 @@ type FakeClient = {
     currentRoomId: number;
     clientEntID: number;
     forcedDungeonCompletionScope: string;
+    knownEntityIds: Set<number>;
     character: {
         name: string;
         level: number;
@@ -84,6 +87,7 @@ function createClient(levelName: string, missionId: MissionID, characterName: st
         currentRoomId: 1,
         clientEntID: 19301,
         forcedDungeonCompletionScope: '',
+        knownEntityIds: new Set<number>(),
         character,
         characters: [character],
         entities: new Map<number, any>(),
@@ -96,6 +100,22 @@ function createClient(levelName: string, missionId: MissionID, characterName: st
             sentPackets.push({ id, payload: bb.toBuffer() });
         }
     };
+}
+
+function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function buildPowerHitPayload(targetId: number, sourceId: number, damage: number, powerId: number): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(targetId);
+    bb.writeMethod4(sourceId);
+    bb.writeMethod24(damage);
+    bb.writeMethod4(powerId);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    return bb.toBuffer();
 }
 
 async function testGoblinRiverBossKillForcesDungeonCompleteScreen(): Promise<void> {
@@ -135,8 +155,25 @@ async function testGoblinRiverBossKillForcesDungeonCompleteScreen(): Promise<voi
 
     assert.equal(
         client.sentPackets.some((packet) => packet.id === 0x87),
+        false,
+        'killing GoblinBoss2 should defer dungeon completion long enough for post-boss skits to play'
+    );
+
+    MissionHandler.noteDungeonSkitActivity(client as never);
+    await sleep(Math.max(25, MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS - 250));
+
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x87),
+        false,
+        'recent skit activity should keep the dungeon completion screen from cutting off dialogue'
+    );
+
+    await sleep(400);
+
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x87),
         true,
-        'killing GoblinBoss2 should force the dungeon completion screen even if the shared tracker still has other hostiles'
+        'killing GoblinBoss2 should still force the dungeon completion screen after the skit window settles'
     );
     assert.equal(
         Number(client.character.missions[String(MissionID.GoblinRiver)]?.state ?? 0),
@@ -192,8 +229,16 @@ async function testNephitBossKillForcesDungeonCompleteScreen(): Promise<void> {
 
     assert.equal(
         client.sentPackets.some((packet) => packet.id === 0x87),
+        false,
+        'killing Nephit should not immediately interrupt any trailing dungeon dialogue'
+    );
+
+    await sleep(MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS + 100);
+
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x87),
         true,
-        'killing Nephit should force the dungeon completion screen even if other hostiles remain alive'
+        'killing Nephit should still force the dungeon completion screen once the defer window expires'
     );
     assert.equal(
         Number(client.character.missions[String(MissionID.KillNephit)]?.state ?? 0),
@@ -212,6 +257,139 @@ async function testNephitBossKillForcesDungeonCompleteScreen(): Promise<void> {
     );
 }
 
+async function testLastHostileDeathForcesDungeonCompleteWithoutBossRank(): Promise<void> {
+    const client = createClient('GoblinRiverDungeon', MissionID.GoblinRiver, 'FallbackBossTester');
+    const levelScope = `${client.currentLevel}#${client.levelInstanceId}`;
+    const finalEnemy = {
+        id: 8402,
+        name: 'GoblinClub',
+        isPlayer: false,
+        team: 2,
+        entRank: 'Minion',
+        entState: 6,
+        hp: 0,
+        dead: true,
+        clientSpawned: true,
+        ownerToken: client.token,
+        roomId: 1
+    };
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    GlobalState.levelEntities.set(levelScope, new Map<number, any>());
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, finalEnemy);
+    await sleep(MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS + 100);
+
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x87),
+        true,
+        'killing the last remaining hostile in a dungeon should complete the run even if the final enemy is not tagged Boss'
+    );
+}
+
+async function testNonBossKillDoesNotForceCompletionWhileHostilesRemain(): Promise<void> {
+    const client = createClient('GoblinRiverDungeon', MissionID.GoblinRiver, 'NonBossGateTester');
+    const levelScope = `${client.currentLevel}#${client.levelInstanceId}`;
+    const remainingHostile = {
+        id: 8501,
+        name: 'GoblinHatchet',
+        isPlayer: false,
+        team: 2,
+        entState: 0,
+        hp: 10,
+        dead: false,
+        clientSpawned: true,
+        ownerToken: client.token,
+        roomId: 1
+    };
+    const defeatedAdd = {
+        id: 8502,
+        name: 'GoblinClub',
+        isPlayer: false,
+        team: 2,
+        entRank: 'Minion',
+        entState: 6,
+        hp: 0,
+        dead: true,
+        clientSpawned: true,
+        ownerToken: client.token,
+        roomId: 1
+    };
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    GlobalState.levelEntities.set(levelScope, new Map<number, any>([
+        [remainingHostile.id, { ...remainingHostile }]
+    ]));
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, defeatedAdd);
+    await sleep(MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS + 100);
+
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x87),
+        false,
+        'non-boss enemies should not force dungeon completion while live hostiles still remain in the instance'
+    );
+}
+
+async function testBossDeadStateForcesDungeonCompletionBeforeDisappear(): Promise<void> {
+    const client = createClient('GoblinRiverDungeon', MissionID.GoblinRiver, 'DeadStateBossTester');
+    const levelScope = getClientLevelScope(client as never);
+    const boss = {
+        id: 8602,
+        name: 'GoblinBoss2',
+        isPlayer: false,
+        team: 2,
+        entRank: 'Boss',
+        entState: 0,
+        hp: 1,
+        dead: false,
+        clientSpawned: true,
+        ownerToken: client.token,
+        roomId: 1
+    };
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    GlobalState.levelEntities.set(levelScope, new Map<number, any>([
+        [boss.id, boss]
+    ]));
+
+    await CombatHandler.handlePowerHit(
+        client as never,
+        buildPowerHitPayload(boss.id, client.clientEntID, 5, 77)
+    );
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.GoblinRiver)]?.state ?? 0),
+        1,
+        'boss dead state should schedule completion, not instantly mutate mission state before the skit settle window'
+    );
+
+    await sleep(MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS + 100);
+
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x87),
+        true,
+        'dungeon completion should trigger from the boss dead state without waiting for entity destroy'
+    );
+    assert.equal(
+        Number(client.character.missions[String(MissionID.GoblinRiver)]?.state ?? 0),
+        2,
+        'boss dead state should complete the dungeon mission once the settle window ends'
+    );
+
+    const completionCountBeforeDestroy = client.sentPackets.filter((packet) => packet.id === 0x87).length;
+    const destroyPacket = new BitBuffer(false);
+    destroyPacket.writeMethod4(boss.id);
+    destroyPacket.writeMethod15(false);
+    await CombatHandler.handleEntityDestroy(client as never, destroyPacket.toBuffer());
+
+    assert.equal(
+        client.sentPackets.filter((packet) => packet.id === 0x87).length,
+        completionCountBeforeDestroy,
+        'the later disappear event should not trigger dungeon completion a second time after dead-state completion'
+    );
+}
+
 async function main(): Promise<void> {
     ensureDataLoaded();
     const sessionsByToken = new Map(GlobalState.sessionsByToken);
@@ -224,6 +402,15 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.levelEntities.clear();
         await testNephitBossKillForcesDungeonCompleteScreen();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        await testLastHostileDeathForcesDungeonCompleteWithoutBossRank();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        await testNonBossKillDoesNotForceCompletionWhileHostilesRemain();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        await testBossDeadStateForcesDungeonCompletionBeforeDisappear();
         console.log('goblin_river_completion_regression: ok');
     } finally {
         GlobalState.sessionsByToken = sessionsByToken;

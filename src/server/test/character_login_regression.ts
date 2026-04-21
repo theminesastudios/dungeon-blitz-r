@@ -224,6 +224,48 @@ function testStoryRepairFinalizesCompletedGoblinRiverOutsideDungeon(): void {
     assert.equal(Number(character.missions?.['271']?.currCount ?? 0), 1);
 }
 
+function testStoryRepairDoesNotAutoClaimKeepQuestOutsideDungeon(): void {
+    MissionLoader.load(path.resolve(__dirname, '..', 'data'));
+
+    const character = createCharacter('KeepRepairGuard');
+    character.CurrentLevel = { name: 'NewbieRoad', x: 11083, y: 539 };
+    character.PreviousLevel = { name: 'CraftTown', x: 1083, y: 1448 };
+    character.questTrackerState = 100;
+    character.missions = {
+        '1': {
+            state: 3,
+            currCount: 1,
+            claimed: 1,
+            complete: 1
+        },
+        '2': {
+            state: 3,
+            claimed: 1,
+            complete: 1
+        },
+        '3': {
+            state: 3,
+            currCount: 1,
+            claimed: 1,
+            complete: 1
+        },
+        '4': {
+            state: 3,
+            claimed: 1,
+            complete: 1
+        },
+        '5': {
+            state: 1,
+            currCount: 0
+        }
+    };
+
+    const repair = MissionHandler.repairEarlyStoryOnLogin(character, 'NewbieRoad');
+
+    assert.equal(Number(character.missions?.['5']?.state ?? 0), 1);
+    assert.equal(Number(character.missions?.['5']?.currCount ?? 0), 0);
+}
+
 function testMissionSyncDoesNotReplayQuestPopupsOnLogin(): void {
     const character = createCharacter('QuestSync');
     character.questTrackerState = 100;
@@ -325,6 +367,7 @@ async function main(): Promise<void> {
     testBootstrappedStoryMissionSendsGoblinAssaultAssignment();
     testMissingBootstrappedMissionDoesNotReplayGoblinAssaultAssignment();
     testStoryRepairFinalizesCompletedGoblinRiverOutsideDungeon();
+    testStoryRepairDoesNotAutoClaimKeepQuestOutsideDungeon();
     console.log('character_login_regression: ok');
 }
 

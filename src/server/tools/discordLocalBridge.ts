@@ -9,17 +9,18 @@ interface DiscordRpcClient {
         event: 'ready' | 'disconnected' | 'error' | 'ACTIVITY_JOIN' | 'ACTIVITY_JOIN_REQUEST',
         listener: (...args: unknown[]) => void
     ): void;
-    login(options: { clientId: string }): Promise<void>;
+    login(options: { clientId: string; scopes?: string[] }): Promise<void>;
     setActivity(activity: Record<string, unknown>, pid?: number): Promise<void>;
     clearActivity(pid?: number): Promise<void>;
     subscribe(event: string, args?: Record<string, unknown>): Promise<{ unsubscribe: () => Promise<unknown> }>;
     sendJoinInvite(user: { id: string } | string): Promise<void>;
     closeJoinRequest(user: { id: string } | string): Promise<void>;
+    destroy(): Promise<void>;
 }
 
 interface DiscordRpcLibrary {
     register(clientId: string): void;
-    Client: new (options: { transport: 'ipc' }) => DiscordRpcClient;
+    Client: new (options: { transport: 'ipc' | 'websocket'; origin?: string }) => DiscordRpcClient;
 }
 
 interface BridgeConfig {
@@ -119,6 +120,8 @@ class LocalDiscordBridge {
     private readonly app = express();
     private readonly config: BridgeConfig;
     private client: DiscordRpcClient | null = null;
+    private discordRpc: DiscordRpcLibrary | null = null;
+    private transport: 'ipc' = 'ipc';
     private ready = false;
     private lastActivityHash = '';
     private pollTimer: NodeJS.Timeout | null = null;
@@ -127,6 +130,8 @@ class LocalDiscordBridge {
     private runtimeJoinUrl = '';
     private runtimeCharacterName = '';
     private targetPid: number | null = null;
+    private connectAttempt = 0;
+    private connectTimer: NodeJS.Timeout | null = null;
 
     constructor(config: BridgeConfig) {
         this.config = config;
@@ -158,12 +163,46 @@ class LocalDiscordBridge {
             return;
         }
 
-        discordRpc.register(this.config.appId);
-        this.client = new discordRpc.Client({ transport: 'ipc' });
+        this.discordRpc = discordRpc;
+        try {
+            this.discordRpc.register(this.config.appId);
+        } catch (error) {
+            console.error('[DiscordBridge] Failed to register appId:', error);
+        }
+        await this.createRpcClient();
+
+        this.app.listen(this.config.port, '127.0.0.1', () => {
+            console.log(`[DiscordBridge] Listening on http://127.0.0.1:${this.config.port}`);
+        });
+
+        this.updateTargetPid();
+        this.startPolling();
+
+        await this.tryLogin();
+    }
+
+
+
+    private async createRpcClient(): Promise<void> {
+        if (!this.discordRpc) {
+            return;
+        }
+
+        if (this.client) {
+            try {
+                await this.client.destroy();
+            } catch {
+                // Ignore destruction errors
+            }
+        }
+
+        this.transport = 'ipc';
+        this.client = new this.discordRpc.Client({ transport: 'ipc' });
 
         this.client.on('ready', () => {
             this.ready = true;
-            console.log('[DiscordBridge] Connected to local Discord client.');
+            this.connectAttempt = 0;
+            console.log(`[DiscordBridge] Connected to local Discord client. (transport=${this.transport})`);
             void this.subscribeToDiscordEvents();
         });
 
@@ -171,10 +210,17 @@ class LocalDiscordBridge {
             this.ready = false;
             this.lastActivityHash = '';
             console.log('[DiscordBridge] Disconnected from local Discord client.');
+            this.scheduleReconnect();
         });
 
         this.client.on('error', (error: unknown) => {
             console.error('[DiscordBridge] Discord client error:', error);
+            if (error && typeof error === 'object' && 'code' in error) {
+                console.error('[DiscordBridge] Error Code:', (error as any).code);
+            }
+            this.ready = false;
+            this.lastActivityHash = '';
+            this.scheduleReconnect();
         });
 
         this.client.on('ACTIVITY_JOIN', (data: unknown) => {
@@ -184,21 +230,47 @@ class LocalDiscordBridge {
         this.client.on('ACTIVITY_JOIN_REQUEST', (data: unknown) => {
             void this.handleDiscordActivityJoinRequest(data);
         });
+    }
 
-        try {
-            await this.client.login({ clientId: this.config.appId });
-        } catch (error) {
-            console.error('[DiscordBridge] Failed to connect to local Discord client:', error);
+    private scheduleReconnect(): void {
+        if (this.connectTimer) {
             return;
         }
 
-        this.app.listen(this.config.port, '127.0.0.1', () => {
-            console.log(`[DiscordBridge] Listening on http://127.0.0.1:${this.config.port}`);
-        });
+        const attempt = Math.max(0, Math.min(30, this.connectAttempt));
+        const delayMs = Math.min(60_000, 1_000 * Math.pow(2, attempt));
+        this.connectAttempt = attempt + 1;
 
-        this.updateTargetPid();
-        this.startPolling();
+        this.connectTimer = setTimeout(() => {
+            this.connectTimer = null;
+            void this.tryLogin();
+        }, delayMs);
     }
+
+    private async tryLogin(): Promise<void> {
+        if (this.ready) {
+            return;
+        }
+
+        try {
+            await this.createRpcClient();
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            console.log(`[DiscordBridge] Connecting to local Discord client... (transport=${this.transport})`);
+            await this.client!.login({ clientId: this.config.appId });
+        } catch (error) {
+            console.error('[DiscordBridge] Full Login Error:', error);
+            const code = String((error as any)?.code ?? '').trim();
+            const message = error instanceof Error ? error.message : String(error ?? '');
+            if (this.config.logPayloads || this.connectAttempt % 1 === 0) {
+                console.error(
+                    '[DiscordBridge] Failed to connect to local Discord client:',
+                    code ? `${code} ${message}` : message
+                );
+            }
+            this.scheduleReconnect();
+        }
+    }
+
 
     private setupRoutes(): void {
         this.app.get('/healthz', (_req, res) => {
@@ -715,9 +787,9 @@ function readConfig(): BridgeConfig {
         joinUrl: '',
         characterName: '',
         pollMs: 4000,
-        largeImageText: 'Dungeon Blitz R',
+        largeImageText: 'Dungeon Blitz: R',
         smallImageKey: 'dungeon_blitz',
-        smallImageText: 'Dungeon Blitz R',
+        smallImageText: 'Dungeon Blitz: R',
         largeImageHomeKey: 'home',
         largeImageDungeonKey: 'indungeon',
         largeImageNewbieRoadKey: 'newbieroad',

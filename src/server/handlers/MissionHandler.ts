@@ -10,6 +10,7 @@ import { GlobalState } from '../core/GlobalState';
 import { isWolfsEndDungeonLevel } from '../core/WolfsEndDungeonStatsPolicy';
 import { finalizeDungeonRun, getActiveDungeonRunStats, noteDungeonRunCompletionProgress } from '../core/DungeonRunStats';
 import { buildDungeonRunScoreSummary } from '../core/DungeonRunStats';
+import { EntityState, EntityTeam } from '../core/Entity';
 import { LevelConfig } from '../core/LevelConfig';
 import { getClientLevelScope } from '../core/LevelScope';
 import {
@@ -56,8 +57,15 @@ export class MissionHandler {
     private static readonly MISSION_IN_PROGRESS = 1;
     private static readonly MISSION_READY_TO_TURN_IN = 2;
     private static readonly MISSION_CLAIMED = 3;
+    static readonly DUNGEON_COMPLETION_SKIT_SETTLE_MS = 1500;
+    static readonly DUNGEON_COMPLETION_MAX_DEFER_MS = 15000;
+    static readonly CRAFT_TOWN_TUTORIAL_COMPLETION_DELAY_MS = 43 * 250;
     private static readonly PRIMED_CONTACT_DIALOGUE_COUNT = -1;
     private static readonly ACHIEVEMENT_MAMMOTH_IDOL_REWARD = 10;
+    private static readonly CRAFT_TOWN_TUTORIAL_BOSS_NAMES = new Set([
+        'GoblinShamanHood',
+        'IntroGoblinShamanHood'
+    ]);
     private static readonly NEWBIE_ROAD_GOBLIN_KILL_NAMES = new Set([
         'GoblinArmorSword',
         'GoblinBrute',
@@ -224,7 +232,10 @@ export class MissionHandler {
             }
 
             const missionDef = MissionLoader.getMissionDef(missionId);
-            if (!missionDef || !MissionHandler.isMissionAvailableInCurrentLevel(missionDef, currentLevel)) {
+            const allowDungeonEnemyProgress =
+                LevelConfig.isDungeonLevel(currentLevel) &&
+                !String(missionDef?.Dungeon ?? '').trim();
+            if (!missionDef || (!allowDungeonEnemyProgress && !MissionHandler.isMissionAvailableInCurrentLevel(missionDef, currentLevel))) {
                 continue;
             }
 
@@ -275,6 +286,15 @@ export class MissionHandler {
             return;
         }
 
+        const pendingScope = String(client.pendingDungeonCompletionScope ?? '').trim();
+        if (
+            pendingScope &&
+            !client.pendingDungeonCompletionFlushActive &&
+            pendingScope === getClientLevelScope(client)
+        ) {
+            MissionHandler.clearPendingDungeonCompletion(client);
+        }
+
         const br = new BitReader(data);
         const completionPercent = br.readMethod9();
         const bonusScoreTotal = br.readMethod9();
@@ -299,6 +319,10 @@ export class MissionHandler {
         let clearedDungeon =
             effectiveCompletionPercent >= 100 ||
             (requiredKills > 0 && remainingKills <= 0);
+        const allowCraftTownTutorialClientCompletion =
+            currentLevel === 'CraftTownTutorial' &&
+            Boolean(client.keepTutorialState?.bossDefeated) &&
+            clearedDungeon;
 
         if (usesSharedDungeonProgress(currentLevel) && levelScope) {
             const sharedState = forceSharedDungeonCompletion
@@ -306,10 +330,17 @@ export class MissionHandler {
                 : recomputeSharedDungeonProgress(levelScope) ?? getOrCreateSharedDungeonProgressState(levelScope);
             if (sharedState) {
                 if (!forceSharedDungeonCompletion && sharedState.progress < 100) {
-                    if (!hasSharedDungeonProgressHostiles(levelScope)) {
+                    if (allowCraftTownTutorialClientCompletion) {
+                        sharedState.progress = 100;
+                        effectiveCompletionPercent = 100;
+                        client.character.questTrackerState = 100;
+                        MissionHandler.broadcastSharedDungeonQuestProgress(levelScope, 100);
+                    } else {
+                        if (!hasSharedDungeonProgressHostiles(levelScope)) {
+                            return;
+                        }
                         return;
                     }
-                    return;
                 }
 
                 if (forceSharedDungeonCompletion) {
@@ -344,6 +375,18 @@ export class MissionHandler {
             if (currentLevel === 'TutorialBoat') {
                 actualKills = Math.max(actualKills, requiredKills, 1);
             }
+            if (Number(client.character.questTrackerState ?? 0) !== 100) {
+                client.character.questTrackerState = 100;
+                didMutate = true;
+            }
+            MissionHandler.sendQuestProgress(client, 100);
+        }
+
+        if (
+            clearedDungeon &&
+            currentLevel !== 'TutorialBoat' &&
+            currentLevel !== 'TutorialDungeon'
+        ) {
             if (Number(client.character.questTrackerState ?? 0) !== 100) {
                 client.character.questTrackerState = 100;
                 didMutate = true;
@@ -392,6 +435,7 @@ export class MissionHandler {
             if (completedMissionId) {
                 didMutate = true;
                 if (missionUpdate.newlyCompleted) {
+                    MissionHandler.sendMissionAdded(client, completedMissionId, missionUpdate.state);
                     MissionHandler.sendMissionComplete(client, completedMissionId);
                 }
 
@@ -418,7 +462,11 @@ export class MissionHandler {
                 }
             }
 
-            if (currentLevel !== 'CraftTownTutorial' && MissionHandler.moveCharacterBackToSafeLevel(client.character, currentLevel)) {
+            if (
+                currentLevel !== 'CraftTownTutorial' &&
+                currentLevel !== 'TutorialBoat' &&
+                MissionHandler.moveCharacterBackToSafeLevel(client.character, currentLevel)
+            ) {
                 didMutate = true;
             }
         }
@@ -451,16 +499,41 @@ export class MissionHandler {
             LevelConfig.normalizeLevelName(client.currentLevel || String(client.character.CurrentLevel?.name ?? '')) ||
             client.currentLevel ||
             String(client.character.CurrentLevel?.name ?? '');
-        if (!currentLevel || !LevelConfig.isDungeonLevel(currentLevel)) {
-            return;
-        }
-
-        if (!MissionHandler.isDungeonBossEntity(destroyedEntity)) {
+        if (!currentLevel) {
             return;
         }
 
         const levelScope = getClientLevelScope(client);
         if (!levelScope || client.forcedDungeonCompletionScope === levelScope) {
+            return;
+        }
+
+        if (currentLevel === 'CraftTownTutorial') {
+            if (!MissionHandler.isCraftTownTutorialBossEntity(destroyedEntity)) {
+                return;
+            }
+
+            MissionHandler.scheduleDungeonCompletion(
+                client,
+                MissionHandler.buildSyntheticLevelCompletePacket(100),
+                {
+                    forcedDungeonCompletionScope: levelScope,
+                    initialDelayMs: MissionHandler.CRAFT_TOWN_TUTORIAL_COMPLETION_DELAY_MS,
+                    settleDelayMs: 0
+                }
+            );
+            return;
+        }
+
+        if (!LevelConfig.isDungeonLevel(currentLevel)) {
+            return;
+        }
+
+        if (currentLevel === 'TutorialBoat') {
+            return;
+        }
+
+        if (!MissionHandler.shouldForceCompleteDungeonOnEnemyDefeat(levelScope, destroyedEntity)) {
             return;
         }
 
@@ -473,14 +546,142 @@ export class MissionHandler {
             return;
         }
 
-        client.forcedDungeonCompletionScope = levelScope;
-        try {
-            await MissionHandler.handleSetLevelComplete(
+        MissionHandler.scheduleDungeonCompletion(
+            client,
+            MissionHandler.buildSyntheticLevelCompletePacket(100),
+            { forcedDungeonCompletionScope: levelScope }
+        );
+    }
+
+    static scheduleDungeonCompletion(
+        client: Client,
+        payload: Buffer,
+        options: {
+            forcedDungeonCompletionScope?: string;
+            initialDelayMs?: number;
+            settleDelayMs?: number;
+        } = {}
+    ): void {
+        const levelScope = getClientLevelScope(client);
+        if (!client.character || !levelScope) {
+            return;
+        }
+
+        const now = Date.now();
+        const initialDelayMs = Math.max(
+            0,
+            Math.round(Number(options.initialDelayMs ?? MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS))
+        );
+        const settleDelayMs = Math.max(
+            0,
+            Math.round(Number(options.settleDelayMs ?? MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS))
+        );
+        client.pendingDungeonCompletionScope = levelScope;
+        client.pendingDungeonCompletionRequestedAt = now;
+        client.pendingDungeonCompletionLastSkitAt = now;
+        client.pendingDungeonCompletionNotBeforeAt = now + initialDelayMs;
+        client.pendingDungeonCompletionSettleMs = settleDelayMs;
+        client.pendingDungeonCompletionPayload = Buffer.from(payload);
+        client.pendingDungeonCompletionForceSharedScope = String(options.forcedDungeonCompletionScope ?? '').trim();
+
+        MissionHandler.armPendingDungeonCompletionTimer(client, initialDelayMs);
+    }
+
+    static noteDungeonSkitActivity(client: Client): void {
+        const pendingScope = String(client.pendingDungeonCompletionScope ?? '').trim();
+        if (!pendingScope || getClientLevelScope(client) !== pendingScope) {
+            return;
+        }
+
+        client.pendingDungeonCompletionLastSkitAt = Date.now();
+        const settleDelayMs = Math.max(0, Number(client.pendingDungeonCompletionSettleMs ?? MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS));
+        const remainingNotBeforeMs = Math.max(
+            0,
+            Number(client.pendingDungeonCompletionNotBeforeAt ?? 0) - Date.now()
+        );
+        MissionHandler.armPendingDungeonCompletionTimer(
+            client,
+            Math.max(remainingNotBeforeMs, settleDelayMs)
+        );
+    }
+
+    private static armPendingDungeonCompletionTimer(client: Client, delayMs: number): void {
+        if (client.pendingDungeonCompletionTimer) {
+            clearTimeout(client.pendingDungeonCompletionTimer);
+        }
+
+        const safeDelay = Math.max(0, Math.round(Number(delayMs ?? 0)));
+        client.pendingDungeonCompletionTimer = setTimeout(() => {
+            client.pendingDungeonCompletionTimer = null;
+            void MissionHandler.flushPendingDungeonCompletion(client);
+        }, safeDelay);
+        client.pendingDungeonCompletionTimer.unref?.();
+    }
+
+    private static clearPendingDungeonCompletion(client: Client): void {
+        if (client.pendingDungeonCompletionTimer) {
+            clearTimeout(client.pendingDungeonCompletionTimer);
+            client.pendingDungeonCompletionTimer = null;
+        }
+        client.pendingDungeonCompletionScope = '';
+        client.pendingDungeonCompletionRequestedAt = 0;
+        client.pendingDungeonCompletionLastSkitAt = 0;
+        client.pendingDungeonCompletionNotBeforeAt = 0;
+        client.pendingDungeonCompletionSettleMs = 0;
+        client.pendingDungeonCompletionPayload = null;
+        client.pendingDungeonCompletionForceSharedScope = '';
+        client.pendingDungeonCompletionFlushActive = false;
+    }
+
+    private static async flushPendingDungeonCompletion(client: Client): Promise<void> {
+        const pendingScope = String(client.pendingDungeonCompletionScope ?? '').trim();
+        const currentScope = getClientLevelScope(client);
+        const payload = client.pendingDungeonCompletionPayload;
+        if (!client.character || !pendingScope || !payload || currentScope !== pendingScope) {
+            MissionHandler.clearPendingDungeonCompletion(client);
+            return;
+        }
+
+        const now = Date.now();
+        const requestedAt = Math.max(0, Number(client.pendingDungeonCompletionRequestedAt ?? 0));
+        const lastSkitAt = Math.max(requestedAt, Number(client.pendingDungeonCompletionLastSkitAt ?? 0));
+        const notBeforeAt = Math.max(requestedAt, Number(client.pendingDungeonCompletionNotBeforeAt ?? 0));
+        const settleDelayMs = Math.max(0, Number(client.pendingDungeonCompletionSettleMs ?? MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS));
+        const quietForMs = now - lastSkitAt;
+        const maxQuietWaitDeadline = Math.max(
+            requestedAt + MissionHandler.DUNGEON_COMPLETION_MAX_DEFER_MS,
+            notBeforeAt + settleDelayMs
+        );
+
+        if (now < notBeforeAt) {
+            MissionHandler.armPendingDungeonCompletionTimer(client, notBeforeAt - now);
+            return;
+        }
+
+        if (
+            quietForMs < settleDelayMs &&
+            now < maxQuietWaitDeadline
+        ) {
+            MissionHandler.armPendingDungeonCompletionTimer(
                 client,
-                MissionHandler.buildSyntheticLevelCompletePacket(100)
+                settleDelayMs - quietForMs
             );
+            return;
+        }
+
+        const forcedScope = String(client.pendingDungeonCompletionForceSharedScope ?? '').trim();
+        MissionHandler.clearPendingDungeonCompletion(client);
+
+        if (forcedScope) {
+            client.forcedDungeonCompletionScope = forcedScope;
+        }
+
+        try {
+            client.pendingDungeonCompletionFlushActive = true;
+            await MissionHandler.handleSetLevelComplete(client, payload);
         } finally {
-            if (client.forcedDungeonCompletionScope === levelScope && getActiveDungeonRunStats(client)?.finalizedStats) {
+            client.pendingDungeonCompletionFlushActive = false;
+            if (forcedScope && client.forcedDungeonCompletionScope === forcedScope && getActiveDungeonRunStats(client)?.finalizedStats) {
                 client.forcedDungeonCompletionScope = '';
             }
         }
@@ -977,7 +1178,58 @@ export class MissionHandler {
         const entityName = String(entity?.name ?? '').trim();
         const entType = entityName ? GameData.getEntType(entityName) ?? {} : {};
         const entRank = String(entity?.entRank ?? entType?.EntRank ?? '').trim();
-        return entRank === 'Boss';
+        return entRank === 'Boss' || entRank === 'MiniBoss';
+    }
+
+    private static isCraftTownTutorialBossEntity(entity: any): boolean {
+        return MissionHandler.CRAFT_TOWN_TUTORIAL_BOSS_NAMES.has(String(entity?.name ?? '').trim());
+    }
+
+    private static shouldForceCompleteDungeonOnEnemyDefeat(levelScope: string, entity: any): boolean {
+        if (MissionHandler.isDungeonBossEntity(entity)) {
+            return true;
+        }
+
+        return !MissionHandler.hasRemainingDungeonHostiles(levelScope);
+    }
+
+    private static hasRemainingDungeonHostiles(levelScope: string): boolean {
+        const levelMap = GlobalState.levelEntities.get(levelScope);
+        if (!levelMap?.size) {
+            return false;
+        }
+
+        for (const candidate of levelMap.values()) {
+            if (MissionHandler.isAliveDungeonHostile(candidate)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static isAliveDungeonHostile(entity: any): boolean {
+        if (!entity || entity.isPlayer) {
+            return false;
+        }
+
+        if (Number(entity.team ?? 0) !== EntityTeam.ENEMY) {
+            return false;
+        }
+
+        if (Boolean(entity.untargetable)) {
+            return false;
+        }
+
+        if (Boolean(entity.dead) || Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
+            return false;
+        }
+
+        if (Number(entity.hp ?? 1) <= 0) {
+            return false;
+        }
+
+        return true;
     }
 
     private static getMissionStateMap(character: Character): Record<string, MissionEntry> {
@@ -1042,6 +1294,10 @@ export class MissionHandler {
 
             const entry = MissionHandler.asMissionEntry(rawEntry);
             if (Number(entry.state ?? MissionHandler.MISSION_NOT_STARTED) !== MissionHandler.MISSION_IN_PROGRESS) {
+                continue;
+            }
+
+            if (missionId === MissionID.ClearYourHouse) {
                 continue;
             }
 

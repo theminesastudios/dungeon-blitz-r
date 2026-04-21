@@ -5,6 +5,7 @@ import { LevelConfig } from './LevelConfig';
 import { GlobalState } from './GlobalState';
 import { normalizeCharacterKey } from './SocialState';
 import { Config } from './config';
+import { MissionLoader } from '../data/MissionLoader';
 
 export interface PresenceSnapshot {
     characterName: string;
@@ -53,8 +54,8 @@ const PARTY_MAX_MEMBERS = 4;
 export class PresenceService {
     private static readonly LEVEL_DISPLAY_NAMES: Record<string, string> = {
         NewbieRoad: "Wolf's End",
-        CraftTown: "Wolf's End Keep",
-        CraftTownTutorial: "Wolf's End Keep",
+        CraftTown: 'Home',
+        CraftTownTutorial: 'Home',
         SwampRoadNorth: 'Black Rose Mire',
         BridgeTown: 'Felbridge',
         Castle: 'Castle Hocke'
@@ -218,12 +219,13 @@ export class PresenceService {
         const startedAtMs = Number.isFinite(client.worldEnteredAt) ? client.worldEnteredAt : Date.now();
         const className = PresenceService.formatClassName(client.character?.class);
         const disciplineName = PresenceService.formatDisciplineName(
-            Number(client.character?.MasterClass ?? 0)
+            Number(client.character?.MasterClass ?? 0),
+            className
         );
+        const characterLevel = PresenceService.formatCharacterLevel(client.character?.level);
 
-        const detailsPrefix = client.playerSpawned ? (activityKind === 'dungeon' ? 'Dungeon' : 'Area') : 'Loading';
-        const details = `${detailsPrefix}: ${levelName}`;
-        const stateParts = [characterName, className, disciplineName].filter(Boolean);
+        const details = client.playerSpawned ? levelName : 'Loading';
+        const stateParts = [characterName, disciplineName, `Lv. ${characterLevel}`].filter(Boolean);
         const joinSecret = PresenceService.buildDiscordJoinSecret(party.partyId, party.partyLeader);
 
         return {
@@ -286,6 +288,11 @@ export class PresenceService {
             return `${directLabel}${hardMode ? ' (Hard)' : ''}`;
         }
 
+        const missionLabel = PresenceService.getDungeonDisplayName(baseName);
+        if (missionLabel) {
+            return `${missionLabel}${hardMode ? ' (Hard)' : ''}`;
+        }
+
         const missionMatch = baseName.match(/^([A-Z]+)_Mission(\d+)$/);
         if (missionMatch) {
             const prefix = PresenceService.LEVEL_PREFIX_LABELS[missionMatch[1]] ?? missionMatch[1];
@@ -322,7 +329,18 @@ export class PresenceService {
         return className.charAt(0).toUpperCase() + className.slice(1).toLowerCase();
     }
 
-    private static formatDisciplineName(masterClassId: number): string {
+    private static getDungeonDisplayName(levelName: string): string | null {
+        const mission = MissionLoader.findPrimaryMissionByDungeon(levelName);
+        const displayName = String(mission?.DisplayName ?? '').trim();
+        return displayName || null;
+    }
+
+    private static formatCharacterLevel(rawLevel: unknown): number {
+        const level = Math.max(1, Math.floor(Number(rawLevel) || 1));
+        return Number.isFinite(level) ? level : 1;
+    }
+
+    private static formatDisciplineName(masterClassId: number, className: string): string {
         switch (masterClassId) {
             case MasterClassID.Executioner:
                 return 'Executioner';
@@ -343,7 +361,7 @@ export class PresenceService {
             case MasterClassID.Necromancer:
                 return 'Necromancer';
             default:
-                return 'Base Class';
+                return className;
         }
     }
 
