@@ -12,7 +12,10 @@ export interface PresenceSnapshot {
     characterClass: string;
     levelKey: string;
     levelName: string;
+    areaKey: string;
+    disciplineKey: string;
     activityKind: 'zone' | 'dungeon';
+    playerStatus: string;
     hardMode: boolean;
     playerSpawned: boolean;
     roomId: number | null;
@@ -58,7 +61,35 @@ export class PresenceService {
         CraftTownTutorial: 'Home',
         SwampRoadNorth: 'Black Rose Mire',
         BridgeTown: 'Felbridge',
-        Castle: 'Castle Hocke'
+        Castle: 'Castle Hocke',
+        EmeraldGlades: 'Emerald Glades',
+        ShazariDesert: 'Shazari Desert',
+        OldMineMountain: 'Stormshard Mountain'
+    };
+    private static readonly LEVEL_IMAGE_KEYS: Record<string, string> = {
+        CraftTown: 'home',
+        CraftTownTutorial: 'home',
+        NewbieRoad: 'newbieroad',
+        SwampRoadNorth: 'blackrosemire',
+        BridgeTown: 'fellbridge',
+        Castle: 'castlehocke',
+        EmeraldGlades: 'emeraldglades',
+        ShazariDesert: 'shazaridesert',
+        OldMineMountain: 'stormshardmountain'
+    };
+    private static readonly DISCIPLINE_IMAGE_KEYS: Record<string, string> = {
+        Executioner: 'viperblade',
+        Shadowwalker: 'shadowbringer',
+        Soulthief: 'soulthieft',
+        Sentinel: 'sentinel',
+        Justicar: 'justicar',
+        Templar: 'templar',
+        Frostwarden: 'frostbringer',
+        Flameseer: 'flameseer',
+        Necromancer: 'necromancer',
+        Paladin: 'paladin',
+        Rogue: 'rogue',
+        Mage: 'mage'
     };
     private static readonly LEVEL_PREFIX_LABELS: Record<string, string> = {
         AC: 'Castle',
@@ -225,15 +256,36 @@ export class PresenceService {
         const characterLevel = PresenceService.formatCharacterLevel(client.character?.level);
 
         const details = client.playerSpawned ? levelName : 'Loading';
-        const stateParts = [characterName, disciplineName, `Lv. ${characterLevel}`].filter(Boolean);
         const joinSecret = PresenceService.buildDiscordJoinSecret(party.partyId, party.partyLeader);
+
+        const areaKey = PresenceService.LEVEL_IMAGE_KEYS[levelKey] || 
+                        (activityKind === 'dungeon' ? 'indungeon' : 'dungeon_blitz');
+        
+        const disciplineKey = PresenceService.DISCIPLINE_IMAGE_KEYS[disciplineName] || 
+                             PresenceService.DISCIPLINE_IMAGE_KEYS[className] || 
+                             'dungeon_blitz';
+
+        let playerStatus = 'In game';
+        if (activityKind === 'dungeon') {
+            playerStatus = 'In dungeon';
+            if (client.authoritativeCurrentHp < client.authoritativeMaxHp) {
+                playerStatus = 'In fight';
+            }
+        } else if (client.authoritativeCurrentHp < client.authoritativeMaxHp) {
+            playerStatus = 'In fight';
+        }
+
+        const state = playerStatus;
 
         return {
             characterName,
             characterClass: className,
             levelKey,
             levelName,
+            areaKey,
+            disciplineKey,
             activityKind,
+            playerStatus,
             hardMode: Boolean(levelSpec?.isHard),
             playerSpawned: client.playerSpawned,
             roomId: null,
@@ -244,8 +296,8 @@ export class PresenceService {
             partyLocked: party.locked,
             partyMax: PARTY_MAX_MEMBERS,
             joinSecret: joinSecret && !party.locked && party.partySize < PARTY_MAX_MEMBERS ? joinSecret : null,
-            details,
-            state: stateParts.join(' - '),
+            details: levelName,
+            state: playerStatus,
             startedAt: new Date(startedAtMs).toISOString(),
             startedAtMs
         };

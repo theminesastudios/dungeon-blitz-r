@@ -42,6 +42,7 @@ interface BridgeConfig {
 
 interface PresencePayload {
     characterName?: string;
+    characterClass?: string;
     details?: string;
     state?: string;
     startedAtMs?: number;
@@ -51,7 +52,11 @@ interface PresencePayload {
     partyLocked?: boolean;
     joinSecret?: string;
     levelKey?: string;
+    levelName?: string;
+    areaKey?: string;
+    disciplineKey?: string;
     activityKind?: string;
+    playerStatus?: string;
     presenceUrl?: string;
     joinUrl?: string;
 }
@@ -357,6 +362,11 @@ class LocalDiscordBridge {
         const activityKind = String(body.activityKind ?? '').trim();
         const presenceUrl = this.normalizeUrl(body.presenceUrl);
         const joinUrl = this.normalizeUrl(body.joinUrl);
+        const areaKey = String(body.areaKey ?? '').trim();
+        const disciplineKey = String(body.disciplineKey ?? '').trim();
+        const playerStatus = String(body.playerStatus ?? '').trim();
+        const levelName = String(body.levelName ?? '').trim();
+        const characterClass = String(body.characterClass ?? '').trim();
 
         if (!characterName || !details || !state || !Number.isFinite(startedAtMs) || startedAtMs <= 0) {
             return null;
@@ -364,6 +374,7 @@ class LocalDiscordBridge {
 
         return {
             characterName,
+            characterClass,
             details,
             state,
             startedAtMs,
@@ -373,7 +384,11 @@ class LocalDiscordBridge {
             partyLocked,
             joinSecret,
             levelKey,
+            levelName,
+            areaKey,
+            disciplineKey,
             activityKind,
+            playerStatus,
             presenceUrl,
             joinUrl
         };
@@ -445,7 +460,12 @@ class LocalDiscordBridge {
                 partyLocked: Boolean(session.partyLocked),
                 joinSecret: String(session.joinSecret ?? '').trim(),
                 levelKey: String(session.levelKey ?? '').trim(),
-                activityKind: String(session.activityKind ?? '').trim()
+                activityKind: String(session.activityKind ?? '').trim(),
+                areaKey: String(session.areaKey ?? '').trim(),
+                disciplineKey: String(session.disciplineKey ?? '').trim(),
+                playerStatus: String(session.playerStatus ?? '').trim(),
+                levelName: String(session.levelName ?? '').trim(),
+                characterClass: String(session.characterClass ?? '').trim()
             };
 
             if (!payload.characterName || !payload.details || !payload.state || !payload.startedAtMs) {
@@ -654,19 +674,31 @@ class LocalDiscordBridge {
             activity.joinSecret = payload.joinSecret;
         }
 
-        if (this.config.smallImageKey) {
+        if (payload.disciplineKey) {
+            activity.smallImageKey = payload.disciplineKey;
+            activity.smallImageText = `${payload.characterName} - ${payload.characterClass}`;
+        } else if (this.config.smallImageKey) {
             activity.smallImageKey = this.config.smallImageKey;
             if (this.config.smallImageText) {
                 activity.smallImageText = this.config.smallImageText;
             }
         }
 
-        const largeImageKey = this.resolveLargeImageKey(payload);
+        const largeImageKey = payload.areaKey || this.resolveLargeImageKey(payload);
         if (largeImageKey) {
             activity.largeImageKey = largeImageKey;
-            if (this.config.largeImageText) {
-                activity.largeImageText = this.config.largeImageText;
-            }
+            activity.largeImageText = payload.levelName || this.config.largeImageText;
+        }
+
+        // Add Buttons
+        const buttons: any[] = [];
+        const baseUrl = this.getActivePresenceUrl().split('/api/')[0];
+        if (baseUrl) {
+            buttons.push({ label: 'Play Game', url: baseUrl });
+        }
+        
+        if (buttons.length > 0) {
+            activity.buttons = buttons;
         }
 
         const nextHash = JSON.stringify(activity);
