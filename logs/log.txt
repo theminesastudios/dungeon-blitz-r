@@ -1,1 +1,0 @@
-18:11:27.449 > SEVERE: Unknown preprocessor instruction: §§findproperty on line 367, column -1, file: C:\Users\USER\Documents\GitHub\dungeon-blitz-typescript\build\ffdec-dungeon-door-label\scripts\Entity.as
