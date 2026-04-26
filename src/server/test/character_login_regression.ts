@@ -148,6 +148,49 @@ function testCraftTownLoginRepairsCompletedKeepQuestProgress(): void {
     assert.equal(character.questTrackerState, 100);
 }
 
+function testCraftTownLoginMarksClearedKeepQuestReadyToTurnIn(): void {
+    const character = createCharacter('FleerpuhRepair');
+    character.CurrentLevel = { name: 'CraftTown', x: 918, y: 1440 };
+    character.PreviousLevel = { name: 'WolfsEnd', x: 1210, y: 880 };
+    character.questTrackerState = 100;
+    character.missions = {
+        '1': {
+            state: 3,
+            currCount: 1,
+            claimed: 1,
+            complete: 1
+        },
+        '2': {
+            state: 3,
+            claimed: 1,
+            complete: 1
+        },
+        '3': {
+            state: 3,
+            currCount: 1,
+            claimed: 1,
+            complete: 1
+        },
+        '4': {
+            state: 3,
+            currCount: 1,
+            claimed: 1,
+            complete: 1
+        },
+        '5': {
+            state: 1,
+            currCount: 0
+        }
+    };
+
+    const repair = MissionHandler.repairEarlyStoryOnLogin(character, 'CraftTown');
+
+    assert.equal(repair.didMutate, true);
+    assert.equal(Number(character.missions?.['5']?.state ?? 0), 2);
+    assert.equal(Number(character.missions?.['5']?.currCount ?? 0), 1);
+    assert.equal(Number(character.magicForge?.stats_by_building?.['12'] ?? 0), 5);
+}
+
 function testNewbieRoadLoginRepairsCompletedKeepQuestProgress(): void {
     const character = createCharacter('Prutacold');
     character.CurrentLevel = { name: 'NewbieRoad', x: 12340, y: 2299 };
@@ -418,6 +461,7 @@ async function main(): Promise<void> {
     testAbilityRepairSyncsUnlockedActiveAbilityIntoLearnedAbilities();
     testPaperDollPacketNormalizesLegacyLowercaseGender();
     testCraftTownLoginRepairsCompletedKeepQuestProgress();
+    testCraftTownLoginMarksClearedKeepQuestReadyToTurnIn();
     testNewbieRoadLoginRepairsCompletedKeepQuestProgress();
     testStoryRepairRestoresLostAtSeaTurnInWhenMissionIsMissing();
     testStoryRepairUpgradesLostAtSeaTurnInInsideTutorialBoat();

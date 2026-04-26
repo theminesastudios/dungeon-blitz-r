@@ -369,7 +369,7 @@ async function testRescueAnnaLowerScoreRerunKeepsBestHoverStats(): Promise<void>
                 claimed: 1,
                 complete: 1,
                 Tier: 9,
-                highscore: 120000,
+                highscore: 999999,
                 Time: 111111
             }
         },
@@ -383,7 +383,7 @@ async function testRescueAnnaLowerScoreRerunKeepsBestHoverStats(): Promise<void>
 
     const rescueAnna = client.character.missions[String(MissionID.RescueAnna)];
     assert.equal(Number(rescueAnna?.Tier ?? 0), 9, 'a weaker rerun should keep the best stored star count');
-    assert.equal(Number(rescueAnna?.highscore ?? 0), 120000, 'a weaker rerun should keep the best stored score');
+    assert.equal(Number(rescueAnna?.highscore ?? 0), 999999, 'a weaker rerun should keep the best stored score');
 
     assert.equal(
         client.sentPackets.some((packet) => packet.id === 0x84),

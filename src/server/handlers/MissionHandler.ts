@@ -28,6 +28,7 @@ import { MissionDef, MissionLoader } from '../data/MissionLoader';
 import { MissionID } from '../data/runtime';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
+import { RewardHandler } from './RewardHandler';
 
 const db = new JsonAdapter();
 
@@ -196,6 +197,23 @@ export class MissionHandler {
         }
 
         if (MissionHandler.normalizeInstantReturnMissionStates(character)) {
+            didMutate = true;
+        }
+
+        if (
+            currentLevel === 'CraftTown' &&
+            questProgress >= 100 &&
+            MissionHandler.getMissionState(character, MissionID.ClearYourHouse) === MissionHandler.MISSION_IN_PROGRESS
+        ) {
+            const keepMissionDef = MissionLoader.getMissionDef(MissionID.ClearYourHouse);
+            MissionHandler.setMissionState(
+                character,
+                MissionID.ClearYourHouse,
+                MissionHandler.MISSION_READY_TO_TURN_IN,
+                keepMissionDef,
+                { currCount: Math.max(1, Number(keepMissionDef?.CompleteCount ?? 1)) }
+            );
+            MissionHandler.ensureCraftTownKeepRepaired(character);
             didMutate = true;
         }
 
@@ -503,6 +521,14 @@ export class MissionHandler {
                     currentLevel === 'CraftTownTutorial' &&
                     completedMissionId === MissionID.ClearYourHouse &&
                     MissionHandler.ensureCraftTownKeepRepaired(client.character)
+                ) {
+                    didMutate = true;
+                }
+
+                if (
+                    missionUpdate.newlyCompleted &&
+                    completedMissionId === MissionID.ClearYourHouse &&
+                    MissionHandler.claimKeepQuestCompletionReward(client, missionUpdate)
                 ) {
                     didMutate = true;
                 }
@@ -1017,6 +1043,59 @@ export class MissionHandler {
         return 0;
     }
 
+    private static claimKeepQuestCompletionReward(
+        client: Client,
+        missionUpdate: DungeonMissionUpdateResult
+    ): boolean {
+        if (!client.character || missionUpdate.missionId !== MissionID.ClearYourHouse) {
+            return false;
+        }
+
+        const missionDef = MissionLoader.getMissionDef(MissionID.ClearYourHouse);
+        if (!missionDef) {
+            return false;
+        }
+
+        MissionHandler.setMissionState(
+            client.character,
+            MissionID.ClearYourHouse,
+            MissionHandler.MISSION_CLAIMED,
+            missionDef,
+            {
+                currCount: Math.max(1, Number(missionDef.CompleteCount ?? 1)),
+                Tier: missionUpdate.persistedStars,
+                highscore: missionUpdate.persistedScore
+            }
+        );
+        MissionHandler.sendMissionCompleteUi(
+            client,
+            MissionID.ClearYourHouse,
+            missionUpdate.persistedStars,
+            missionUpdate.persistedScore
+        );
+        MissionHandler.grantMissionRewards(client, missionDef);
+        return true;
+    }
+
+    private static grantMissionRewards(client: Client, missionDef: MissionDef): void {
+        if (!client.character) {
+            return;
+        }
+
+        const expReward = Math.max(0, Number(missionDef.ExpRewardValue ?? 0));
+        if (expReward > 0) {
+            client.character.xp = Number(client.character.xp ?? 0) + expReward;
+            client.character.level = GameData.getPlayerLevelFromXp(Number(client.character.xp ?? 0));
+            MissionHandler.sendXpReward(client, expReward);
+        }
+
+        const goldReward = Math.max(0, Number(missionDef.GoldRewardValue ?? 0));
+        if (goldReward > 0) {
+            client.character.gold = Number(client.character.gold ?? 0) + goldReward;
+            RewardHandler.sendGoldReward(client, goldReward, false);
+        }
+    }
+
     private static canStartMission(character: Character, missionDef: MissionDef): boolean {
         if (!MissionHandler.isMissionZoneUnlocked(character, missionDef)) {
             return false;
@@ -1174,6 +1253,12 @@ export class MissionHandler {
         bb.writeMethod6(Math.max(0, Math.min(stars, 15)), 4);
         bb.writeMethod4(Math.max(0, dungeonScore));
         client.sendBitBuffer(0x84, bb);
+    }
+
+    private static sendXpReward(client: Client, amount: number): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(amount);
+        client.sendBitBuffer(0x2B, bb);
     }
 
     private static sendAchievementCompleteUi(client: Client, missionId: number): void {

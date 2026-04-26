@@ -81,6 +81,7 @@
         "ZoneSet": "NewbieRoad",
         "Priority": "Story",
         "ContactName": "NR_Mayor01",
+        "ReturnName": "NR_Mayor01",
         "CompleteCount": "1",
         "Dungeon": "CraftTownTutorial",
         "MissionLevel": "3",
@@ -88,9 +89,11 @@
         "GoldReward": "M",
         "DisplayName": "I Claim This Keep",
         "TrackerText": "Clear the goblins from the ruined keep",
+        "TrackerReturn": "Tell the Mayor the keep is cleared",
         "Description": "The original Wolf's End Keep is overrun with goblins. If you drive them out, you could make the keep your own.",
         "OfferText": "Fifty years ago we had Wolf's End Keep to protect us.",
-        "ActiveText": "Sigismund Hocke built the keep as a base for his expedition.=But goblins and worse drove us out decades ago.=With your goblin-slaying skills…=@I might be just the one to reclaim the keep.=Well, it's in pretty bad shape, just a ruin now.=@I will clear it out and start rebuilding it.=@I need a safe place here in Ellyria.=If you can drive away the goblins, we'll help as best we can to rebuild it.=@I can take care of the goblins.=@In fact, I will do it right now."
+        "ActiveText": "Sigismund Hocke built the keep as a base for his expedition.=But goblins and worse drove us out decades ago.=With your goblin-slaying skills…=@I might be just the one to reclaim the keep.=Well, it's in pretty bad shape, just a ruin now.=@I will clear it out and start rebuilding it.=@I need a safe place here in Ellyria.=If you can drive away the goblins, we'll help as best we can to rebuild it.=@I can take care of the goblins.=@In fact, I will do it right now.",
+        "ReturnText": "You cleared the old keep? Then it is yours. We will help make it a proper home again.=@Thank you, Mayor. I will put it to good use."
     },
     {
         "MissionName": "KillNephit",
