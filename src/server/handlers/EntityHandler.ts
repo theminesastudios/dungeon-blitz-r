@@ -4,8 +4,9 @@ import { Client, clearClientSpawnFallbackTimer, createKeepTutorialState } from '
 import { BitReader } from '../network/protocol/bitReader';
 import { DebugConfig } from '../core/Debug';
 import { GlobalState } from '../core/GlobalState';
-import { Entity, EntityProps, EntityState } from '../core/Entity';
+import { Entity, EntityProps, EntityState, EntityTeam } from '../core/Entity';
 import { LevelConfig } from '../core/LevelConfig';
+import { DungeonInstance } from '../core/DungeonInstance';
 import { PetHandler } from './PetHandler';
 import { BuildingHandler } from './BuildingHandler';
 import { noteDungeonRunBossCutscene, noteDungeonRunEntitySeen } from '../core/DungeonRunStats';
@@ -394,6 +395,47 @@ export class EntityHandler {
         }
         EntityHandler.ensureEntityKnown(client, levelName, canonicalId);
         
+        return true;
+    }
+
+    private static suppressServerAuthoritativeDungeonEnemySpawn(
+        client: Client,
+        levelName: string | null | undefined,
+        entity: any
+    ): boolean {
+        if (
+            !levelName ||
+            !entity ||
+            entity.isPlayer ||
+            Number(entity.team ?? 0) !== EntityTeam.ENEMY ||
+            !DungeonInstance.isServerAuthoritativeDungeon(levelName)
+        ) {
+            return false;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        DungeonInstance.ensure(levelName, client.levelInstanceId);
+        const canonical = DungeonInstance.findCanonicalEnemy(levelScope, entity);
+        const duplicateId = Number(entity.id ?? 0);
+
+        client.entities.delete(duplicateId);
+        client.knownEntityIds.delete(duplicateId);
+
+        if (!canonical) {
+            EntityHandler.sendDestroyEntity(client, duplicateId);
+            return true;
+        }
+
+        const canonicalId = Number(canonical.id ?? 0);
+        if (canonicalId !== duplicateId || !DungeonInstance.isEnemyAlive(canonical)) {
+            EntityHandler.sendDestroyEntity(client, duplicateId);
+        }
+
+        if (DungeonInstance.isEnemyAlive(canonical)) {
+            EntityHandler.ensureEntityKnown(client, levelName, canonicalId);
+        } else {
+            client.knownEntityIds.add(canonicalId);
+        }
         return true;
     }
 
@@ -1315,6 +1357,10 @@ export class EntityHandler {
             }
         }
 
+        if (EntityHandler.suppressServerAuthoritativeDungeonEnemySpawn(client, levelName, props)) {
+            return;
+        }
+
         if (EntityHandler.suppressFollowerLeaderAuthoritativeDungeonSpawn(client, levelName, levelMap, props)) {
             return;
         }
@@ -1355,6 +1401,33 @@ export class EntityHandler {
 
     static sendInitialLevelEntities(client: Client, levelName: string): void {
         console.log(`[EntityHandler] Sending initial entities for ${levelName} to ${client.character?.name}`);
+
+        if (DungeonInstance.isServerAuthoritativeDungeon(levelName)) {
+            const instance = DungeonInstance.ensure(levelName, client.levelInstanceId);
+            const levelMap = instance ? EntityHandler.getLevelMap(levelName, client.levelInstanceId) : null;
+            if (!instance || !levelMap) {
+                return;
+            }
+
+            DungeonInstance.rememberActiveInstance(client);
+            for (const [id, entityProps] of levelMap.entries()) {
+                if (id === client.clientEntID || entityProps?.isPlayer) {
+                    continue;
+                }
+                if (!DungeonInstance.isServerAuthoritativeDungeonEntity(entityProps)) {
+                    continue;
+                }
+
+                client.entities.set(id, { ...entityProps });
+                noteDungeonRunEntitySeen(client, id, entityProps);
+                if (DungeonInstance.isEnemyAlive(entityProps)) {
+                    EntityHandler.sendEntity(client, entityProps);
+                } else {
+                    client.knownEntityIds.add(id);
+                }
+            }
+            return;
+        }
         
         let levelMap = EntityHandler.getLevelMap(levelName, client.levelInstanceId);
         if (!levelMap) {

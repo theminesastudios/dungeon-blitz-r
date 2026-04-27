@@ -134,7 +134,8 @@ function refreshSharedDungeonLiveStats(
 }
 
 function isSharedDungeonTrackedHostile(entity: any): boolean {
-    return Boolean(entity?.clientSpawned) && isDungeonStatsHostile(entity);
+    return (Boolean(entity?.clientSpawned) || Boolean(entity?.serverAuthoritativeDungeon)) &&
+        isDungeonStatsHostile(entity);
 }
 
 function isEntityDefeated(entity: any): boolean {
@@ -177,7 +178,12 @@ export function resolveSharedDungeonProgressAuthorityToken(levelScope: string | 
     const counts = new Map<number, number>();
 
     for (const entity of levelMap?.values() ?? []) {
-        if (!entity || entity.isPlayer || !entity.clientSpawned || Number(entity.team ?? 0) !== 2) {
+        if (
+            !entity ||
+            entity.isPlayer ||
+            (!entity.clientSpawned && !entity.serverAuthoritativeDungeon) ||
+            Number(entity.team ?? 0) !== 2
+        ) {
             continue;
         }
 

@@ -192,7 +192,7 @@ function testClientSpawnLevelsStartEmptyWithoutServerNpcInit(): void {
     assert.equal(client.sentPackets.length, 0);
 }
 
-function testGoblinRiverClientSpawnLevelsPruneServerNpcCopies(): void {
+function testGoblinRiverServerAuthoritativeDungeonsPruneClientCopies(): void {
     for (const levelName of GOBLIN_RIVER_LEVELS) {
         const client = createFakeClient('Watcher');
         client.currentLevel = levelName;
@@ -207,14 +207,18 @@ function testGoblinRiverClientSpawnLevelsPruneServerNpcCopies(): void {
 
         EntityHandler.sendInitialLevelEntities(client as never, levelName);
 
-        assert.equal(levelMap.has(9101), false, `${levelName} should prune stale server-seeded hostiles`);
-        assert.equal(levelMap.has(9102), true, `${levelName} should preserve canonical client-spawn hostiles`);
+        assert.equal(levelMap.has(9101), false, `${levelName} should prune stale non-authoritative server hostiles`);
+        assert.equal(levelMap.has(9102), false, `${levelName} should prune stale client-spawn hostiles`);
         assert.equal(levelMap.has(9103), true, `${levelName} should preserve players`);
-        assert.equal(client.sentPackets.length, 0, `${levelName} should not seed server NPC packets`);
+        assert.ok(
+            Array.from(levelMap.values()).some((entity) => entity.serverAuthoritativeDungeon),
+            `${levelName} should seed authoritative dungeon enemies`
+        );
+        assert.ok(client.sentPackets.some((packet) => packet.id === 0x0F), `${levelName} should send server enemy snapshots`);
     }
 }
 
-function testGoblinRiverClientSpawnLevelsStartEmptyWithoutServerNpcInit(): void {
+function testGoblinRiverServerAuthoritativeDungeonsSeedEnemiesOnJoin(): void {
     for (const levelName of GOBLIN_RIVER_LEVELS) {
         const client = createFakeClient('Watcher');
         client.currentLevel = levelName;
@@ -223,8 +227,13 @@ function testGoblinRiverClientSpawnLevelsStartEmptyWithoutServerNpcInit(): void 
 
         const levelMap = GlobalState.levelEntities.get(levelName);
         assert.ok(levelMap, `${levelName} should create a level state bucket`);
-        assert.equal(levelMap?.size, 0, `${levelName} should start empty until the leader client spawns hostiles`);
-        assert.equal(client.sentPackets.length, 0, `${levelName} should not send server NPCs on join`);
+        assert.ok(levelMap && levelMap.size > 0, `${levelName} should seed enemies from server NPC data`);
+        assert.equal(
+            Array.from(levelMap?.values() ?? []).every((entity) => !entity.clientSpawned),
+            true,
+            `${levelName} authoritative enemies should not be client-spawned`
+        );
+        assert.ok(client.sentPackets.some((packet) => packet.id === 0x0F), `${levelName} should send server NPCs on join`);
     }
 }
 
@@ -1869,12 +1878,12 @@ async function main(): Promise<void> {
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
-        testGoblinRiverClientSpawnLevelsPruneServerNpcCopies();
+        testGoblinRiverServerAuthoritativeDungeonsPruneClientCopies();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
-        testGoblinRiverClientSpawnLevelsStartEmptyWithoutServerNpcInit();
+        testGoblinRiverServerAuthoritativeDungeonsSeedEnemiesOnJoin();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();

@@ -5,6 +5,7 @@ import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { GlobalState } from '../core/GlobalState';
 import { LevelConfig } from '../core/LevelConfig';
+import { DungeonInstance } from '../core/DungeonInstance';
 import { LevelHandler } from './LevelHandler';
 import { MissionHandler } from './MissionHandler';
 import { WorldEnter } from '../utils/WorldEnter';
@@ -842,8 +843,17 @@ export class CharacterHandler {
 
              if (isDungeonLevel) {
                  const normalizedTarget = LevelConfig.normalizeLevelName(currentLevelName);
+                 const reconnectInstance = DungeonInstance.getActiveInstanceForCharacter(char.name, normalizedTarget);
+                 if (reconnectInstance) {
+                     levelInstanceId = reconnectInstance.levelInstanceId;
+                     syncAnchorStartedAt = reconnectInstance.updatedAt || Date.now();
+                     syncAnchorToken = token;
+                     syncAnchorCharacterName = char.name;
+                     console.log(`[EnterWorld] Restoring active dungeon instance for ${char.name} (instanceId=${levelInstanceId})`);
+                 }
                  // Search active sessions for a party member in the same dungeon
                  for (const other of GlobalState.sessionsByToken.values()) {
+                     if (levelInstanceId) break;
                      if (!other.playerSpawned || !other.character) continue;
                      if (LevelConfig.normalizeLevelName(other.currentLevel) !== normalizedTarget) continue;
                      if (!areClientsInSameParty(client, other)) continue;
@@ -954,6 +964,10 @@ export class CharacterHandler {
         client.levelInstanceId = LevelConfig.isDungeonLevel(entry.targetLevel)
             ? normalizeLevelInstanceId(entry.levelInstanceId) || createDungeonInstanceId(token)
             : '';
+        if (DungeonInstance.isServerAuthoritativeDungeon(client.currentLevel)) {
+            DungeonInstance.ensure(client.currentLevel, client.levelInstanceId);
+            DungeonInstance.rememberActiveInstance(client);
+        }
         console.log(`[GameLogin] ${entry.character.name} entering ${entry.targetLevel} with levelInstanceId='${client.levelInstanceId}' (from entry: '${entry.levelInstanceId}')`);
         client.entryLevel = LevelConfig.resolveDungeonEntryLevel(
             entry.targetLevel,

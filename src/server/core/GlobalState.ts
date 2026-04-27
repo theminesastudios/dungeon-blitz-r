@@ -43,6 +43,26 @@ export type SharedDungeonProgressState = {
     }>;
 };
 
+export type DungeonInstanceState = {
+    levelName: string;
+    levelInstanceId: string;
+    scopeKey: string;
+    enemyIds: Set<number>;
+    deadEnemyIds: Set<number>;
+    completedRoomIds: Set<number>;
+    openedChestIds: Set<number>;
+    completed: boolean;
+    createdAt: number;
+    updatedAt: number;
+};
+
+export type ActiveDungeonInstanceRef = {
+    levelName: string;
+    levelInstanceId: string;
+    scopeKey: string;
+    updatedAt: number;
+};
+
 export class GlobalState {
     // Token -> Pending Transfer
     static pendingWorld: Map<number, PendingTransfer> = new Map();
@@ -79,6 +99,8 @@ export class GlobalState {
     // Level scope key -> Map<EntityId, EntityData>
     static levelEntities: Map<string, Map<number, any>> = new Map();
     static levelQuestProgress: Map<string, SharedDungeonProgressState> = new Map();
+    static dungeonInstances: Map<string, DungeonInstanceState> = new Map();
+    static activeDungeonByCharacter: Map<string, ActiveDungeonInstanceRef> = new Map();
     static combatContributions: Map<string, Map<string, number>> = new Map();
     static entityLifeNonces: Map<string, number> = new Map();
     static entityLastRewardNonces: Map<string, number> = new Map();

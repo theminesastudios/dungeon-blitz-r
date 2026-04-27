@@ -8,6 +8,7 @@ import {
 import { GameData } from '../core/GameData';
 import { GlobalState } from '../core/GlobalState';
 import { isWolfsEndDungeonLevel } from '../core/WolfsEndDungeonStatsPolicy';
+import { DungeonInstance } from '../core/DungeonInstance';
 import { finalizeDungeonRun, getActiveDungeonRunStats, noteDungeonRunCompletionProgress } from '../core/DungeonRunStats';
 import { buildDungeonRunScoreSummary } from '../core/DungeonRunStats';
 import { EntityState, EntityTeam } from '../core/Entity';
@@ -423,6 +424,14 @@ export class MissionHandler {
                     return;
                 }
             }
+        } else if (DungeonInstance.isServerAuthoritativeDungeon(currentLevel) && levelScope) {
+            DungeonInstance.ensure(currentLevel, client.levelInstanceId);
+            const serverProgress = DungeonInstance.getCompletionProgress(levelScope);
+            if (serverProgress < 100) {
+                return;
+            }
+            effectiveCompletionPercent = 100;
+            clearedDungeon = true;
         }
         noteDungeonRunCompletionProgress(client, effectiveCompletionPercent);
 

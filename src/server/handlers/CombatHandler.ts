@@ -23,6 +23,7 @@ import {
 import { EquipmentHandler } from './EquipmentHandler';
 import { GameData } from '../core/GameData';
 import { CharacterSync } from '../utils/CharacterSync';
+import { DungeonInstance } from '../core/DungeonInstance';
 
 type CombatRelayOptions = {
     includeAnchor?: boolean;
@@ -1494,7 +1495,14 @@ export class CombatHandler {
             !sourceEntity.isPlayer &&
             Number(sourceEntity.team ?? 0) === EntityTeam.ENEMY
         );
+        const isServerAuthoritativeDungeonSource = DungeonInstance.isServerAuthoritativeDungeonEntity(sourceEntity);
         if (targetEntity && !targetEntity.isPlayer && Boolean(targetEntity.untargetable)) {
+            return;
+        }
+        if (
+            DungeonInstance.isServerAuthoritativeDungeonEntity(targetEntity) &&
+            !DungeonInstance.validateEnemyTarget(levelScope, targetEntity)
+        ) {
             return;
         }
 
@@ -1526,8 +1534,21 @@ export class CombatHandler {
         let relayDamage = damage;
         const targetSession = CombatHandler.findPlayerSessionByEntityId(targetId);
         if (targetSession && areClientsInSameLevelScope(client, targetSession)) {
+            if (isServerAuthoritativeDungeonSource) {
+                const validation = DungeonInstance.validateReportedEnemyAttack(
+                    client,
+                    levelScope,
+                    sourceEntity,
+                    targetSession,
+                    damage
+                );
+                if (!validation.ok) {
+                    return;
+                }
+                relayDamage = validation.damage;
+            }
             const preventDeath = CombatHandler.shouldPreventHostilePlayerDeath(levelScope, sourceId, targetSession);
-            const resolution = CombatHandler.updatePlayerTargetAfterHit(targetSession, damage, preventDeath);
+            const resolution = CombatHandler.updatePlayerTargetAfterHit(targetSession, relayDamage, preventDeath);
             relayDamage = resolution.appliedDamage;
 
             if (resolution.appliedDamage > 0 && !isHostileNpcSource) {
@@ -1551,6 +1572,7 @@ export class CombatHandler {
         } else {
             const resolution = CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage);
             if (resolution.killed && resolution.entity) {
+                DungeonInstance.noteEnemyState(levelScope, targetId, resolution.entity);
                 await CombatHandler.handleEnemyDefeatState(sourceSession ?? client, levelScope, targetId, resolution.entity);
             }
         }
@@ -1584,6 +1606,30 @@ export class CombatHandler {
         const destroyedEntity =
             client.entities.get(entityId) ??
             (levelScope ? GlobalState.levelEntities.get(levelScope)?.get(entityId) : null);
+        if (DungeonInstance.isServerAuthoritativeDungeonEntity(destroyedEntity)) {
+            if (DungeonInstance.isEnemyAlive(destroyedEntity)) {
+                EntityHandler.ensureEntityKnown(client, levelName, entityId);
+                return;
+            }
+
+            const contributionSnapshot = CombatHandler.getContributionSnapshot(levelScope, entityId);
+            DungeonInstance.noteEnemyState(levelScope, entityId, destroyedEntity);
+            client.entities.delete(entityId);
+            EntityHandler.forgetKnownEntity(levelName, entityId, client.levelInstanceId);
+            if (contributionSnapshot.contributors.length) {
+                noteDungeonRunKill(levelScope, contributionSnapshot.contributors, entityId, destroyedEntity);
+            }
+            CombatHandler.noteEntityDestroyed(levelScope, entityId);
+            if (usesSharedDungeonProgress(getScopeLevelName(levelScope))) {
+                noteSharedDungeonHostileDestroyed(levelScope, entityId, destroyedEntity);
+                LevelHandler.refreshSharedDungeonQuestProgress(levelScope);
+            }
+            if (!destroyedEntity.questDefeatProcessed) {
+                await CombatHandler.handleEnemyDefeatState(client, levelScope, entityId, destroyedEntity);
+            }
+            CombatHandler.broadcastToSameLevel(levelScope, 0x0D, data, [], client);
+            return;
+        }
         const contributionSnapshot = destroyedEntity && !destroyedEntity.isPlayer && Number(destroyedEntity.team ?? 0) === EntityTeam.ENEMY
             ? CombatHandler.getContributionSnapshot(levelScope, entityId)
             : null;
@@ -1724,6 +1770,12 @@ export class CombatHandler {
         if (targetEntity && !targetEntity.isPlayer && Boolean(targetEntity.untargetable)) {
             return;
         }
+        if (
+            DungeonInstance.isServerAuthoritativeDungeonEntity(targetEntity) &&
+            !DungeonInstance.validateEnemyTarget(levelScope, targetEntity)
+        ) {
+            return;
+        }
 
         if (damage > 0) {
             CombatHandler.noteCombatInteraction(levelScope, sourceId, targetId, client);
@@ -1748,6 +1800,7 @@ export class CombatHandler {
 
         const resolution = CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage);
         if (resolution.killed && resolution.entity) {
+            DungeonInstance.noteEnemyState(levelScope, targetId, resolution.entity);
             await CombatHandler.handleEnemyDefeatState(sourceSession ?? client, levelScope, targetId, resolution.entity);
         }
 

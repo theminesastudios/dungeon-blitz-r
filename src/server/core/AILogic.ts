@@ -52,6 +52,10 @@ export class AILogic {
         for (const [entId, npc] of levelEntities.entries()) {
             if (npc.isPlayer || npc.team !== 2) continue; // Only Enemy NPCs
             if (npc.clientSpawned) continue; // Client-owned monsters should not receive server AI movement.
+            // TODO(server-ai): DungeonInstance enemies are server-authoritative for
+            // state only while the Flash client continues to report temporary AI
+            // results. Move aggro/pathing/attack choice here in the full AI pass.
+            if (npc.serverAuthoritativeDungeon) continue;
             // Simple dead check (if no hp prop, assume 100)
             if ((npc.hp !== undefined && npc.hp <= 0)) continue;
 

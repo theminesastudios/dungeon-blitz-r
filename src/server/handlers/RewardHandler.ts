@@ -12,6 +12,7 @@ import { upsertInventoryGear } from '../utils/GearInventory';
 import { getEquippedCharmBonuses } from '../utils/CharmBonuses';
 import { getActivePotionBonuses } from '../utils/ConsumableState';
 import { PetHandler } from './PetHandler';
+import { DungeonInstance } from '../core/DungeonInstance';
 
 const db = new JsonAdapter();
 
@@ -524,6 +525,11 @@ export class RewardHandler {
         };
     }
 
+    private static isChestSource(sourceEntity: any): boolean {
+        const name = String(sourceEntity?.name ?? sourceEntity?.EntName ?? '').toLowerCase();
+        return name.includes('chest') || name.includes('treasure');
+    }
+
     private static async applyRewardToRecipient(
         client: Client,
         reward: RewardRequest,
@@ -620,6 +626,12 @@ export class RewardHandler {
         }
 
         const sourceEntity = RewardHandler.resolveSourceEntity(client, reward.sourceId);
+        if (
+            RewardHandler.isChestSource(sourceEntity) &&
+            !DungeonInstance.noteChestOpened(getClientLevelScope(client), reward.sourceId)
+        ) {
+            return;
+        }
         const dropPosition = RewardHandler.resolveDropPosition(client, sourceEntity, reward.worldX, reward.worldY);
         const { rewardNonce, recipients } = RewardHandler.resolveEligibleRecipients(client, reward.sourceId);
 

@@ -23,6 +23,7 @@ import { MissionLoader } from '../data/MissionLoader';
 import { NpcLoader, NpcDef } from '../data/NpcLoader';
 import { MissionID } from '../data/runtime';
 import { Entity, EntityTeam } from '../core/Entity';
+import { DungeonInstance } from '../core/DungeonInstance';
 import { EntityHandler } from './EntityHandler';
 import { MissionHandler } from './MissionHandler';
 import { PetHandler } from './PetHandler';
@@ -2228,6 +2229,9 @@ export class LevelHandler {
     }
 
     private static clearTransferState(client: Client, oldLevel: string, oldClientEntId: number): void {
+        if (DungeonInstance.isServerAuthoritativeDungeon(oldLevel) && !LevelConfig.isDungeonLevel(client.lastDoorTargetLevel)) {
+            DungeonInstance.clearActiveInstanceForCharacter(client.character?.name);
+        }
         clearClientSpawnFallbackTimer(client);
         clearKeepTutorialTimers(client.keepTutorialState);
         client.keepTutorialState = null;
@@ -3012,6 +3016,9 @@ export class LevelHandler {
             } else {
                 progress = getSharedDungeonInitialProgress(currentLevel);
             }
+        } else if (DungeonInstance.isServerAuthoritativeDungeon(currentLevel) && levelScope) {
+            DungeonInstance.ensure(currentLevel, client.levelInstanceId);
+            progress = DungeonInstance.getCompletionProgress(levelScope);
         }
 
         if (client.character) {
@@ -3095,6 +3102,9 @@ export class LevelHandler {
         const br = new BitReader(data);
         const roomId = br.readMethod9();
         LevelHandler.cacheRoomId(client, roomId);
+        if (DungeonInstance.isServerAuthoritativeScope(getClientLevelScope(client))) {
+            DungeonInstance.noteRoomClearReported(getClientLevelScope(client), roomId);
+        }
 
         LevelHandler.relayToLevel(client, 0xA6, data);
         for (const other of LevelHandler.forLevelRecipients(client, true)) {
@@ -3310,6 +3320,12 @@ export class LevelHandler {
             sendExtendedOnTransfer,
             syncState
         );
+        if (LevelConfig.isDungeonLevel(targetLevel)) {
+            const pending = GlobalState.pendingWorld.get(newToken);
+            if (pending?.levelInstanceId && DungeonInstance.isServerAuthoritativeDungeon(targetLevel)) {
+                DungeonInstance.ensure(targetLevel, pending.levelInstanceId);
+            }
+        }
         LevelHandler.rememberTransferTokenAlias(packetToken, newToken);
         LevelHandler.rememberTransferTokenAlias(transferToken, newToken);
         
