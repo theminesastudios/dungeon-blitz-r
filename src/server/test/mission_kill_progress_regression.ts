@@ -468,6 +468,80 @@ async function testGetSpiderFangsProgressesOnSwampSpiderKills(): Promise<void> {
     );
 }
 
+async function testBannersOfTheTuataraProgressesOnLizardBannerKills(): Promise<void> {
+    resetGlobalState();
+    const client = createClient({
+        [String(MissionID.GetLizardBanners)]: {
+            state: 1,
+            currCount: 4
+        }
+    }, 'SwampRoadNorth');
+
+    await destroyEnemy(client, 8461, 'LizardBanner');
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.GetLizardBanners)]?.currCount ?? 0),
+        5,
+        'Banners of the Tuatara should count LizardBanner kills toward the banner total'
+    );
+    assert.equal(
+        Number(client.character.missions[String(MissionID.GetLizardBanners)]?.state ?? 0),
+        2,
+        'Banners of the Tuatara should become ready to turn in after enough banners are collected'
+    );
+    assert.deepEqual(
+        client.sentPackets
+            .filter((packet) => packet.id === 0x83)
+            .map((packet) => decodeMissionProgressPacket(packet.payload)),
+        [{ missionId: MissionID.GetLizardBanners, progress: 1 }],
+        'Banners of the Tuatara should emit additive mission progress packets for banner kills'
+    );
+    assert.equal(
+        decodeMissionCompletePacket(
+            client.sentPackets.find((packet) => packet.id === 0x86)!.payload
+        ),
+        MissionID.GetLizardBanners,
+        'Banners of the Tuatara should notify the client once the banner objective is complete'
+    );
+}
+
+async function testHardBannersOfTheTuataraProgressesOnLizardBannerKills(): Promise<void> {
+    resetGlobalState();
+    const client = createClient({
+        [String(MissionID.GetLizardBannersHard)]: {
+            state: 1,
+            currCount: 9
+        }
+    }, 'SwampRoadNorthHard');
+
+    await destroyEnemy(client, 8462, 'LizardBannerHard');
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.GetLizardBannersHard)]?.currCount ?? 0),
+        10,
+        'Hard Banners of the Tuatara should count LizardBannerHard kills toward the banner total'
+    );
+    assert.equal(
+        Number(client.character.missions[String(MissionID.GetLizardBannersHard)]?.state ?? 0),
+        2,
+        'Hard Banners of the Tuatara should become ready to turn in after enough banners are collected'
+    );
+    assert.deepEqual(
+        client.sentPackets
+            .filter((packet) => packet.id === 0x83)
+            .map((packet) => decodeMissionProgressPacket(packet.payload)),
+        [{ missionId: MissionID.GetLizardBannersHard, progress: 1 }],
+        'Hard Banners of the Tuatara should emit additive mission progress packets for banner kills'
+    );
+    assert.equal(
+        decodeMissionCompletePacket(
+            client.sentPackets.find((packet) => packet.id === 0x86)!.payload
+        ),
+        MissionID.GetLizardBannersHard,
+        'Hard Banners of the Tuatara should notify the client once the banner objective is complete'
+    );
+}
+
 async function testSideQuestEnemyKillsProgressInsideDungeonsOnDeadStateOnlyOnce(): Promise<void> {
     resetGlobalState();
     const client = createClient({
@@ -571,6 +645,8 @@ async function main(): Promise<void> {
     await testLootersHardCompletesOnGoblinThiefHardKill();
     await testRecoverWandsProgressesOnGoblinShamanKills();
     await testGetSpiderFangsProgressesOnSwampSpiderKills();
+    await testBannersOfTheTuataraProgressesOnLizardBannerKills();
+    await testHardBannersOfTheTuataraProgressesOnLizardBannerKills();
     await testSideQuestEnemyKillsProgressInsideDungeonsOnDeadStateOnlyOnce();
     await testSideQuestDotKillsProgressInsideDungeonsOnDeadStateOnlyOnce();
     console.log('mission_kill_progress_regression: ok');

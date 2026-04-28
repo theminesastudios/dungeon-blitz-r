@@ -103,6 +103,12 @@ export class MissionHandler {
         'SwampSpiderSuperGiantHard',
         'SwampSpiderQueenHard'
     ]);
+    private static readonly SWAMP_LIZARD_BANNER_KILL_NAMES = new Set([
+        'LizardBanner'
+    ]);
+    private static readonly SWAMP_LIZARD_BANNER_HARD_KILL_NAMES = new Set([
+        'LizardBannerHard'
+    ]);
     private static readonly KILL_PROGRESS_TARGETS: Readonly<Record<number, ReadonlySet<string>>> = {
         [MissionID.GetGoblinNoserings]: new Set(['GoblinBrute']),
         [MissionID.GetGoblinWands]: new Set(['GoblinShamanHood', 'GoblinShamanSkullHat']),
@@ -110,6 +116,8 @@ export class MissionHandler {
         [MissionID.GetGoblinWandsHard]: new Set(['GoblinShamanHoodHard', 'GoblinShamanSkullHatHard']),
         [MissionID.KillGoblins]: MissionHandler.NEWBIE_ROAD_GOBLIN_KILL_NAMES,
         [MissionID.KillGoblinsHard]: MissionHandler.NEWBIE_ROAD_HARD_GOBLIN_KILL_NAMES,
+        [MissionID.GetLizardBanners]: MissionHandler.SWAMP_LIZARD_BANNER_KILL_NAMES,
+        [MissionID.GetLizardBannersHard]: MissionHandler.SWAMP_LIZARD_BANNER_HARD_KILL_NAMES,
         [MissionID.GetSpiderFangs]: MissionHandler.SWAMP_SPIDER_KILL_NAMES,
         [MissionID.GetSpiderFangsHard]: MissionHandler.SWAMP_SPIDER_HARD_KILL_NAMES,
         [MissionID.GetHobgoblinNoserings]: new Set(['BlackGoblinBrute']),

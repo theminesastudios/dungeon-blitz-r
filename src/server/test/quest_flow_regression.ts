@@ -1054,6 +1054,51 @@ async function testSwampRoadNorthStoryNpcDoesNotAssignBeforeSwampUnlock(): Promi
     );
 }
 
+async function testCompletedTowerOfTuataraRepairsReadyTurnInAtAbbod(): Promise<void> {
+    const client = createFakeClient(
+        'SwampRoadNorth',
+        {
+            [String(MissionID.DeliverToSwamp)]: {
+                state: 3,
+                currCount: 1,
+                claimed: 1,
+                complete: 1
+            },
+            [String(MissionID.StopCastout)]: {
+                state: 1,
+                currCount: 0
+            }
+        },
+        100
+    );
+    client.character.CurrentLevel = { name: 'SwampRoadNorth', x: 16000, y: 4800 };
+    client.entities.set(15001, { id: 15001, characterName: 'SRN_Mayor01' });
+
+    await NpcHandler.handleTalkToNpc(client as never, createNpcTalkPacket(15001));
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.StopCastout)]?.state ?? 0),
+        3,
+        'Tower of the Tuatara should be claimable when dungeon tracker progress is complete'
+    );
+    assert.equal(
+        client.sentPackets.some((entry) => entry.id === 0x84),
+        true,
+        'Tower of the Tuatara turn-in should send the mission-complete reward UI'
+    );
+    const skitPacket = client.sentPackets.find((entry) => entry.id === 0x7B);
+    assert.ok(skitPacket, 'Tower of the Tuatara turn-in should play the return dialogue');
+    assert.deepEqual(
+        decodeStartSkitPacket(skitPacket!.payload),
+        {
+            npcId: 15001,
+            dialogueId: 4,
+            missionId: MissionID.StopCastout
+        },
+        'Tower of the Tuatara should resolve to the return dialogue at Abbod'
+    );
+}
+
 async function testJarvisDoesNotAutoTurnInRecoverRingsWhileInProgress(): Promise<void> {
     const client = createFakeClient(
         'NewbieRoad',
@@ -1128,6 +1173,7 @@ async function main(): Promise<void> {
     await testSwampRoadNorthAffricUsesSrnMayorDialogueKey();
     await testNewbieRoadOdemDoesNotStartBlackRoseMireQuestEarly();
     await testSwampRoadNorthStoryNpcDoesNotAssignBeforeSwampUnlock();
+    await testCompletedTowerOfTuataraRepairsReadyTurnInAtAbbod();
     await testJarvisDoesNotAutoTurnInRecoverRingsWhileInProgress();
     console.log('quest_flow_regression: ok');
 }

@@ -88,6 +88,9 @@ export class NpcHandler {
             if (NpcHandler.repairCompletedKeepQuestTurnIn(client.character, missionNpcKey)) {
                 didMutate = true;
             }
+            if (NpcHandler.repairCompletedDungeonQuestTurnIn(client.character, missionNpcKey)) {
+                didMutate = true;
+            }
 
             const matched = NpcHandler.findBestMission(client.character, missionNpcKey);
             if (matched) {
@@ -367,6 +370,35 @@ export class NpcHandler {
             { currCount: Math.max(1, Number(keepMissionDef.CompleteCount ?? 1)) }
         );
         return true;
+    }
+
+    private static repairCompletedDungeonQuestTurnIn(character: Character, npcKey: string): boolean {
+        if (!npcKey || Number(character.questTrackerState ?? 0) < 100) {
+            return false;
+        }
+
+        for (let missionId = 1; missionId <= MissionLoader.getTotalMissions(); missionId++) {
+            const missionDef = MissionLoader.getMissionDef(missionId);
+            if (!missionDef || !String(missionDef.Dungeon ?? '').trim()) {
+                continue;
+            }
+            if (npcKey !== NpcHandler.getMissionReturnNpcKey(missionDef)) {
+                continue;
+            }
+            if (NpcHandler.getMissionState(character, missionId) !== NpcHandler.MISSION_IN_PROGRESS) {
+                continue;
+            }
+
+            NpcHandler.setMissionState(
+                character,
+                missionId,
+                NpcHandler.MISSION_READY_TO_TURN_IN,
+                { currCount: Math.max(1, Number(missionDef.CompleteCount ?? 1)) }
+            );
+            return true;
+        }
+
+        return false;
     }
 
     private static missionStartsReadyToTurnIn(missionDef: MissionDef | undefined): boolean {
