@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<TooltipTypes>
+	<Tip name="am_GoMap">Map (M)</Tip>
+	<Tip name="am_GoMe">Inventory (I)</Tip>
+	<Tip name="am_GoMissions">Quest Log (L)</Tip>
+	<Tip name="am_GoSocial">Social (O)</Tip>
+	<Tip name="am_GoMenu">Options (ESC)</Tip>
+	<Tip name="am_GoPremium">Join Dungeon Blitz as a Premium Member</Tip>
+	
+	<Tip name="am_Whisper">Begin a message in your chat box below that will go just to this teammate</Tip>
+	<Tip name="am_Promote">Make this teammate the party leader</Tip>
+	<Tip name="am_Teleport">Teleport to this member of the party</Tip>
+	<Tip name="am_Remove">Kick this teammate from the party</Tip>
+	<Tip name="am_Invite">Invite this person to your party</Tip>
+	<Tip name="am_Examine">Look at the gear this person is wearing</Tip>
+	
+	<Tip name="am_MissionExit">Travel back out of this mission back to the door you entered</Tip>
+	
+	<Tip name="am_Respawn">Stand back up with this much health</Tip>
+	
+	<Tip name="am_Class_Paladin">Paladins can take a blow, heal friends, and smash whole groups of badguys at once.</Tip>
+	<Tip name="am_Class_Mage">Mages can hit hard from anywhere and do well at dealing with groups.</Tip>
+	<Tip name="am_Class_Rogue">Rogues hit hard, move fast, and confound badguys with misdirection and entanglement.</Tip>
+	
+	<Tip name="am_AddFriend">Invite this player to be your friend.</Tip>
+	
+	<Tip name="am_AddFriendButton">Invite a player to be your friend.</Tip>
+	<Tip name="am_AddIgnoreButton">Accept no more messages from a player.</Tip>
+	
+	<Tip name="am_HPBar">Your current health</Tip>
+	<Tip name="am_ManaBar">Your current rage. You need rage to use your powers</Tip>
+	<Tip name="am_XPBar">When this bar is full, you level up</Tip>
+	<Tip name="am_GoldArea">Gold you have</Tip>
+
+	<Tip name="am_Channels">Current Chat Channel</Tip>
+	<Tip name="am_ChannelLocal">Speak to players nearby</Tip>
+	<Tip name="am_ChannelGroup">Speak to teammates in your party</Tip>
+	<Tip name="am_ChannelGuild">Speak to the players in your guild</Tip>
+	
+	<Tip name="am_ChatOptions">Chat Options</Tip>
+	<Tip name="am_ChatBox"></Tip>
+	<Tip name="am_ChatEntry">Chat    shortcut:    Hit [Enter] to begin              Hit [Enter] to send</Tip>
+	
+	<Tip name="NewCharPremiumReact">REACT$You must first unlock more character slots in the in-game store.</Tip>
+
+</TooltipTypes>

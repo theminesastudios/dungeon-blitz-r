@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MagicTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<MagicType MagicName="---Template---">
+		<MagicID>0</MagicID>
+		<DisplayName>Display</DisplayName>
+		<RuneIcon>Rune Icon</RuneIcon>
+		<Description>WhatIDo</Description>
+		<Speed>0</Speed>
+		<GoldDrop>0</GoldDrop>
+		<ItemDrop>0</ItemDrop>
+		<CraftDrop>0</CraftDrop>
+	</MagicType>
+	<MagicType MagicName="Speed">
+		<MagicID>1</MagicID>
+		<DisplayName>Swiftness</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeSpeed</RuneIcon>
+		<Description>+2.3% Movement Speed</Description>
+		<Speed>0.25</Speed>
+	</MagicType>
+	<MagicType MagicName="ItemDrop">
+		<MagicID>2</MagicID>
+		<DisplayName>Relic Hunting</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeItemDrop</RuneIcon>
+		<Description>+10% Gear Finding</Description>
+		<ItemDrop>0.1</ItemDrop>
+	</MagicType>
+	<MagicType MagicName="GoldDrop">
+		<MagicID>3</MagicID>
+		<DisplayName>Gold Seeker</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeGoldDrop</RuneIcon>
+		<Description>+10% Gold Finding</Description>
+		<GoldDrop>0.1</GoldDrop>
+	</MagicType>
+	<MagicType MagicName="CraftDrop">
+		<MagicID>4</MagicID>
+		<DisplayName>Scavenging</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeCraftDrop</RuneIcon>
+		<Description>+10% Material Finding</Description>
+		<CraftDrop>0.1</CraftDrop>
+	</MagicType>
+	<MagicType MagicName="Speed+ItemDrop">
+		<MagicID>5</MagicID>
+		<DisplayName>Swift Relic Hunt</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeSpeed_ItemDrop</RuneIcon>
+		<Description>+2.3% Movement Speed, +10% Gear Finding</Description>
+		<Speed>0.25</Speed>
+		<ItemDrop>0.1</ItemDrop>
+	</MagicType>
+	<MagicType MagicName="Speed+GoldDrop">
+		<MagicID>6</MagicID>
+		<DisplayName>Swift Gold Seek</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeSpeed_GoldDrop</RuneIcon>
+		<Description>+2.3% Movement Speed, +10% Gold Finding</Description>
+		<Speed>0.25</Speed>
+		<GoldDrop>0.1</GoldDrop>
+	</MagicType>
+	<MagicType MagicName="Speed+CraftDrop">
+		<MagicID>7</MagicID>
+		<DisplayName>Swift Scavenge</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeSpeed_CraftDrop</RuneIcon>
+		<Description>+2.3% Movement Speed, +10% Material Finding</Description>
+		<Speed>0.25</Speed>
+		<CraftDrop>0.1</CraftDrop>
+	</MagicType>
+	<MagicType MagicName="ItemDrop+GoldDrop">
+		<MagicID>8</MagicID>
+		<DisplayName>Forager</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeItemDrop_GoldDrop</RuneIcon>
+		<Description>+10% Gear Finding, +10% Gold Finding</Description>
+		<GoldDrop>0.1</GoldDrop>
+		<ItemDrop>0.1</ItemDrop>
+	</MagicType>
+	<MagicType MagicName="ItemDrop+CraftDrop">
+		<MagicID>9</MagicID>
+		<DisplayName>Poaching</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeItemDrop_CraftDrop</RuneIcon>
+		<Description>+10% Gear Finding, +10% Material Finding</Description>
+		<ItemDrop>0.1</ItemDrop>
+		<CraftDrop>0.1</CraftDrop>
+	</MagicType>
+	<MagicType MagicName="GoldDrop+CraftDrop">
+		<MagicID>10</MagicID>
+		<DisplayName>Artisan</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeGoldDrop_CraftDrop</RuneIcon>
+		<Description>+10% Gold Finding, +10% Material Finding</Description>
+		<GoldDrop>0.1</GoldDrop>
+		<CraftDrop>0.1</CraftDrop>
+	</MagicType>
+	<MagicType MagicName="Speed+ItemDrop+GoldDrop">
+		<MagicID>11</MagicID>
+		<DisplayName>Swift Forage</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeSpeed_ItemDrop_GoldDrop</RuneIcon>
+		<Description>+2.3% Movement Speed, +10% Gear Finding, +10% Gold Finding</Description>
+		<Speed>0.25</Speed>
+		<GoldDrop>0.1</GoldDrop>
+		<ItemDrop>0.1</ItemDrop>
+	</MagicType>
+	<MagicType MagicName="Speed+ItemDrop+CraftDrop">
+		<MagicID>12</MagicID>
+		<DisplayName>Swift Poach</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeSpeed_ItemDrop_CraftDrop</RuneIcon>
+		<Description>+2.3% Movement Speed, +10% Gear Finding, +10% Material Finding</Description>
+		<Speed>0.25</Speed>
+		<ItemDrop>0.1</ItemDrop>
+		<CraftDrop>0.1</CraftDrop>
+	</MagicType>
+	<MagicType MagicName="Speed+GoldDrop+CraftDrop">
+		<MagicID>13</MagicID>
+		<DisplayName>Swift Artisan</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeSpeed_GoldDrop_CraftFind</RuneIcon>
+		<Description>+2.3% Movement Speed, +10% Gold Finding, +10% Material Finding</Description>
+		<Speed>0.25</Speed>
+		<GoldDrop>0.1</GoldDrop>
+		<CraftDrop>0.1</CraftDrop>
+	</MagicType>
+	<MagicType MagicName="ItemDrop+GoldDrop+CraftDrop">
+		<MagicID>14</MagicID>
+		<DisplayName>Treasure Hunter</DisplayName>
+		<RuneIcon>a_RuneIcon_MagicTypeItemDrop_GoldDrop_CraftDrop</RuneIcon>
+		<Description>+10% Gear Finding, +10% Gold Finding, +10% Material Finding</Description>
+		<GoldDrop>0.1</GoldDrop>
+		<ItemDrop>0.1</ItemDrop>
+		<CraftDrop>0.1</CraftDrop>
+	</MagicType>
+</MagicTypes>

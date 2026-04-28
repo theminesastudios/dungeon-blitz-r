@@ -1,0 +1,1009 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PetTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<PetType PetName="---Template---">
+		<PetID>0</PetID>
+		<PetLevel>0</PetLevel>
+		<IdolCost>0</IdolCost>
+		<DisplayName>Name</DisplayName>
+		<PetPower>PowerName</PetPower>
+		<Kingdom>Draconic</Kingdom>
+		<ItemFind>bool</ItemFind>
+		<GoldFind>bool</GoldFind>
+		<CraftFind>bool</CraftFind>
+		<ExpBonus>bool</ExpBonus>
+		<BonusInfo>Bonus vs Draconic</BonusInfo>
+		<ClassType>Class</ClassType>
+		<Color>Color</Color>
+		<Description>Description</Description>
+		<UseVanityPower>FALSE</UseVanityPower>
+		<DisplayRarity>Rarity</DisplayRarity>
+	</PetType>
+	<PetType PetName="OwlRed">
+		<PetID>1</PetID>
+		<PetLevel>15</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Great Horned Owl</DisplayName>
+		<PetPower>PetOwl</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Red</Color>
+		<Description>Owls like this are said to be able to read your fate. This owl's big eyes study you closely.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="AngelRed">
+		<PetID>2</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Questing Cherub</DisplayName>
+		<PetPower>PetAngel</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Red</Color>
+		<Description>Who wouldn't want their own guardian angel?</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="FalconRed">
+		<PetID>3</PetID>
+		<PetLevel>25</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Hunting Falcon</DisplayName>
+		<PetPower>PetFalcon</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Red</Color>
+		<Description>Wings like wind, claws like knives, brain like a bag of feathers. This falcon is a perfect battle companion.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="CrowRed">
+		<PetID>4</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Acquisitive Rook</DisplayName>
+		<PetPower>PetCrow</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Red</Color>
+		<Description>A crow is universally acknowledged throughout the Kingdom as good luck.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="DjinnRed">
+		<PetID>5</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Ravening Djinn</DisplayName>
+		<PetPower>PetDjinn</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Red</Color>
+		<Description>The denezins of the Sleeping Lands are not all malign. This Djinn hails from the deep places.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="Dragon2Red">
+		<PetID>6</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Omnivorous Bone Dragon</DisplayName>
+		<PetPower>PetDragonBone</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Dragon</ClassType>
+		<Color>Red</Color>
+		<Description>The perfect pet for the person who can never remember to feed their pet.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="Dragon3Red">
+		<PetID>7</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Zhulong</DisplayName>
+		<PetPower>PetDragonGold</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Dragon</ClassType>
+		<Color>Red</Color>
+		<Description>This small serpentine air spirit does not speak, but he is always up for perilous enterprise.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="DragonetteRed">
+		<PetID>8</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Vigilent Whelpling</DisplayName>
+		<PetPower>PetDragonRed</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Dragon</ClassType>
+		<Color>Red</Color>
+		<Description>These little guys come straight from the draconic toy groups and are astonishingly energetic.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="FairyRed">
+		<PetID>9</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Flame Fey</DisplayName>
+		<PetPower>PetFairy</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Red</Color>
+		<Description>Forest sprites live deep in heavily wooded areas. It is said these creatures bring great fortune.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="GhostRed">
+		<PetID>10</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Rapacious Specter</DisplayName>
+		<PetPower>PetGhost</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Ghost</ClassType>
+		<Color>Red</Color>
+		<Description>This ghastly fellow makes being dead look good! In it's spare time it enjoys scaring small children and gazing at full moons.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="GhoulRed">
+		<PetID>11</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Wailing Phantom</DisplayName>
+		<PetPower>PetGhoul</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Ghost</ClassType>
+		<Color>Red</Color>
+		<Description>Indigenous to the crypts of Cemetery Hill, this little transparent bundle of joy just wants to say boo.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="MonkeyRed">
+		<PetID>12</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Soaring Howler</DisplayName>
+		<PetPower>PetMonkey</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Ghost</ClassType>
+		<Color>Red</Color>
+		<Description>This strange flying mammal scolds you furiously in a strange language.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="PhoenixRed">
+		<PetID>13</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Serendipitous Garuda</DisplayName>
+		<PetPower>PetPhoenix</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Red</Color>
+		<Description>The phoenix is an enchanted creature born of ash and ember. They say it's tail feathers and tears have magical healing powers.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="SpriteRed">
+		<PetID>14</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Firebrand Elemental</DisplayName>
+		<PetPower>PetSprite</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Red</Color>
+		<Description>What would it be like to have a fireball as a friend? You'd just do stuff together. Hang out.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="OwlYellow">
+		<PetID>15</PetID>
+		<PetLevel>15</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Burrowing Owl</DisplayName>
+		<PetPower>PetOwl</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Yellow</Color>
+		<Description>Owls like this are said to be able to read your fate. This owl's big eyes study you closely.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="AngelYellow">
+		<PetID>16</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Midas Angel</DisplayName>
+		<PetPower>PetAngel</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Yellow</Color>
+		<Description>Who wouldn't want their own guardian angel?</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="FalconYellow">
+		<PetID>17</PetID>
+		<PetLevel>25</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Golden Kestrel</DisplayName>
+		<PetPower>PetFalcon</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Yellow</Color>
+		<Description>Wings like wind, claws like knives, brain like a bag of feathers. This falcon is a perfect battle companion.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="CrowYellow">
+		<PetID>18</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Piping Corvus</DisplayName>
+		<PetPower>PetCrow</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Yellow</Color>
+		<Description>A crow is universally acknowledged throughout the Kingdom as good luck.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="DjinnYellow">
+		<PetID>19</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Extravagant Efrit</DisplayName>
+		<PetPower>PetDjinn</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Yellow</Color>
+		<Description>The denezins of the Sleeping Lands are not all malign. This Djinn hails from the deep places.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="Dragon2Yellow">
+		<PetID>20</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Ivory Draconic Remnant</DisplayName>
+		<PetPower>PetDragonBone</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Dragon</ClassType>
+		<Color>Yellow</Color>
+		<Description>The perfect pet for the person who can never remember to feed their pet.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="Dragon3Yellow">
+		<PetID>21</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Fucanglong</DisplayName>
+		<PetPower>PetDragonGold</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Dragon</ClassType>
+		<Color>Yellow</Color>
+		<Description>This small serpentine air spirit does not speak, but he is always up for perilous enterprise.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="DragonetteYellow">
+		<PetID>22</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Divulgent  Dragonnette</DisplayName>
+		<PetPower>PetDragonRed</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Dragon</ClassType>
+		<Color>Yellow</Color>
+		<Description>These little guys come straight from the draconic toy groups and are astonishingly energetic.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="FairyYellow">
+		<PetID>23</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Diamond-dust Pixie</DisplayName>
+		<PetPower>PetFairy</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Yellow</Color>
+		<Description>Forest sprites live deep in heavily wooded areas. It is said these creatures bring great fortune.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="GhostYellow">
+		<PetID>24</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Avaricious Phantom</DisplayName>
+		<PetPower>PetGhost</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Ghost</ClassType>
+		<Color>Yellow</Color>
+		<Description>This ghastly fellow makes being dead look good! In it's spare time it enjoys scaring small children and gazing at full moons.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="GhoulYellow">
+		<PetID>25</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Sinful Specter</DisplayName>
+		<PetPower>PetGhoul</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Ghost</ClassType>
+		<Color>Yellow</Color>
+		<Description>Indigenous to the crypts of Cemetery Hill, this little transparent bundle of joy just wants to say boo.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="MonkeyYellow">
+		<PetID>26</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Golden Macaque</DisplayName>
+		<PetPower>PetMonkey</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Ghost</ClassType>
+		<Color>Yellow</Color>
+		<Description>This strange flying mammal scolds you furiously in a strange language.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="PhoenixYellow">
+		<PetID>27</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Fortune-favored Firebird</DisplayName>
+		<PetPower>PetPhoenix</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Yellow</Color>
+		<Description>The phoenix is an enchanted creature born of ash and ember. They say it's tail feathers and tears have magical healing powers.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="SpriteYellow">
+		<PetID>28</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Incandescent Spirit</DisplayName>
+		<PetPower>PetSprite</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Yellow</Color>
+		<Description>What would it be like to have a fireball as a friend? You'd just do stuff together. Hang out.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="OwlBlue">
+		<PetID>29</PetID>
+		<PetLevel>15</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Saw-Whet Owl</DisplayName>
+		<PetPower>PetOwl</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Blue</Color>
+		<Description>Owls like this are said to be able to read your fate. This owl's big eyes study you closely.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="AngelBlue">
+		<PetID>30</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Ingenious  Seraph</DisplayName>
+		<PetPower>PetAngel</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Blue</Color>
+		<Description>Who wouldn't want their own guardian angel?</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="FalconBlue">
+		<PetID>31</PetID>
+		<PetLevel>25</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Mountain Caracara</DisplayName>
+		<PetPower>PetFalcon</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Blue</Color>
+		<Description>Wings like wind, claws like knives, brain like a bag of feathers. This falcon is a perfect battle companion.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="CrowBlue">
+		<PetID>32</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Nightfall Crow</DisplayName>
+		<PetPower>PetCrow</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Blue</Color>
+		<Description>A crow is universally acknowledged throughout the Kingdom as good luck.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="DjinnBlue">
+		<PetID>33</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Brilliant Genie</DisplayName>
+		<PetPower>PetDjinn</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Blue</Color>
+		<Description>The denezins of the Sleeping Lands are not all malign. This Djinn hails from the deep places.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="Dragon2Blue">
+		<PetID>34</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Ingenious Skeletal Construct</DisplayName>
+		<PetPower>PetDragonBone</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Dragon</ClassType>
+		<Color>Blue</Color>
+		<Description>The perfect pet for the person who can never remember to feed their pet.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="Dragon3Blue">
+		<PetID>35</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Shenlong</DisplayName>
+		<PetPower>PetDragonGold</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Dragon</ClassType>
+		<Color>Blue</Color>
+		<Description>This small serpentine air spirit does not speak, but he is always up for perilous enterprise.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="DragonetteBlue">
+		<PetID>36</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Savvy Wyrmspawn</DisplayName>
+		<PetPower>PetDragonRed</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Dragon</ClassType>
+		<Color>Blue</Color>
+		<Description>These little guys come straight from the draconic toy groups and are astonishingly energetic.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="FairyBlue">
+		<PetID>37</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Seafoam Nymph</DisplayName>
+		<PetPower>PetFairy</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Blue</Color>
+		<Description>Forest sprites live deep in heavily wooded areas. It is said these creatures bring great fortune.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="GhostBlue">
+		<PetID>38</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Patchwork Apparition</DisplayName>
+		<PetPower>PetGhost</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Ghost</ClassType>
+		<Color>Blue</Color>
+		<Description>This ghastly fellow makes being dead look good! In it's spare time it enjoys scaring small children and gazing at full moons.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="GhoulBlue">
+		<PetID>39</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Fearsome Banshee</DisplayName>
+		<PetPower>PetGhoul</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Ghost</ClassType>
+		<Color>Blue</Color>
+		<Description>Indigenous to the crypts of Cemetery Hill, this little transparent bundle of joy just wants to say boo.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="MonkeyBlue">
+		<PetID>40</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Flying Mangabey</DisplayName>
+		<PetPower>PetMonkey</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Ghost</ClassType>
+		<Color>Blue</Color>
+		<Description>This strange flying mammal scolds you furiously in a strange language.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="PhoenixBlue">
+		<PetID>41</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Masterful Benu</DisplayName>
+		<PetPower>PetPhoenix</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Blue</Color>
+		<Description>The phoenix is an enchanted creature born of ash and ember. They say it's tail feathers and tears have magical healing powers.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="SpriteBlue">
+		<PetID>42</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Coalseared Spirit</DisplayName>
+		<PetPower>PetSprite</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Blue</Color>
+		<Description>What would it be like to have a fireball as a friend? You'd just do stuff together. Hang out.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="OwlGreen">
+		<PetID>43</PetID>
+		<PetLevel>15</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Spectacled Owl</DisplayName>
+		<PetPower>PetOwl</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Green</Color>
+		<Description>Owls like this are said to be able to read your fate. This owl's big eyes study you closely.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="AngelGreen">
+		<PetID>44</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Battle Cherub</DisplayName>
+		<PetPower>PetAngel</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Green</Color>
+		<Description>Who wouldn't want their own guardian angel?</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="FalconGreen">
+		<PetID>45</PetID>
+		<PetLevel>25</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Cryptic Forest-falcon</DisplayName>
+		<PetPower>PetFalcon</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Green</Color>
+		<Description>Wings like wind, claws like knives, brain like a bag of feathers. This falcon is a perfect battle companion.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="CrowGreen">
+		<PetID>46</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>50</IdolCost>
+		<DisplayName>Sylvan Raven</DisplayName>
+		<PetPower>PetCrow</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Green</Color>
+		<Description>A crow is universally acknowledged throughout the Kingdom as good luck.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="DjinnGreen">
+		<PetID>47</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Virtuoso Marid</DisplayName>
+		<PetPower>PetDjinn</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Green</Color>
+		<Description>The denezins of the Sleeping Lands are not all malign. This Djinn hails from the deep places.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="Dragon2Green">
+		<PetID>48</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Exemplary Draconic Skeleton</DisplayName>
+		<PetPower>PetDragonBone</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Dragon</ClassType>
+		<Color>Green</Color>
+		<Description>The perfect pet for the person who can never remember to feed their pet.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="Dragon3Green">
+		<PetID>49</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Tianlong</DisplayName>
+		<PetPower>PetDragonGold</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Dragon</ClassType>
+		<Color>Green</Color>
+		<Description>This small serpentine air spirit does not speak, but he is always up for perilous enterprise.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="DragonetteGreen">
+		<PetID>50</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Sophic Whelp</DisplayName>
+		<PetPower>PetDragonRed</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Dragon</ClassType>
+		<Color>Green</Color>
+		<Description>These little guys come straight from the draconic toy groups and are astonishingly energetic.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="FairyGreen">
+		<PetID>51</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Sagacious  Sprite</DisplayName>
+		<PetPower>PetFairy</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Green</Color>
+		<Description>Forest sprites live deep in heavily wooded areas. It is said these creatures bring great fortune.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="GhostGreen">
+		<PetID>52</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Avid Eidolon</DisplayName>
+		<PetPower>PetGhost</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Ghost</ClassType>
+		<Color>Green</Color>
+		<Description>This ghastly fellow makes being dead look good! In it's spare time it enjoys scaring small children and gazing at full moons.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="GhoulGreen">
+		<PetID>53</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Scholarly Shade</DisplayName>
+		<PetPower>PetGhoul</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Ghost</ClassType>
+		<Color>Green</Color>
+		<Description>Indigenous to the crypts of Cemetery Hill, this little transparent bundle of joy just wants to say boo.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="MonkeyGreen">
+		<PetID>54</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Winged Capuchin</DisplayName>
+		<PetPower>PetMonkey</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Ghost</ClassType>
+		<Color>Green</Color>
+		<Description>This strange flying mammal scolds you furiously in a strange language.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="PhoenixGreen">
+		<PetID>55</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Sacred Phoenix</DisplayName>
+		<PetPower>PetPhoenix</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Bird</ClassType>
+		<Color>Green</Color>
+		<Description>The phoenix is an enchanted creature born of ash and ember. They say it's tail feathers and tears have magical healing powers.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="SpriteGreen">
+		<PetID>56</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Scintilating Spirit</DisplayName>
+		<PetPower>PetSprite</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>Ancient</ClassType>
+		<Color>Green</Color>
+		<Description>What would it be like to have a fireball as a friend? You'd just do stuff together. Hang out.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</PetType>
+	<PetType PetName="PumpkinRed">
+		<PetID>57</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Bewildered Jack-O</DisplayName>
+		<PetPower>PetPumpkin</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>HalloweenNormal</ClassType>
+		<Color>Red</Color>
+		<Description>Jack-Os have distinct personalities. This one seems a bit off.</Description>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>R</DisplayRarity>
+	</PetType>
+	<PetType PetName="PumpkinYellow">
+		<PetID>58</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Menacing Jack-O</DisplayName>
+		<PetPower>PetPumpkin</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>HalloweenNormal</ClassType>
+		<Color>Yellow</Color>
+		<Description>Jack-Os have distinct personalities. This one seems menacing.</Description>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>R</DisplayRarity>
+	</PetType>
+	<PetType PetName="PumpkinBlue">
+		<PetID>59</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Cyclops Jack-O</DisplayName>
+		<PetPower>PetPumpkin</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>HalloweenNormal</ClassType>
+		<Color>Blue</Color>
+		<Description>Jack-Os have distinct personalities. This one keeps staring at you with its lazy eye.</Description>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>R</DisplayRarity>
+	</PetType>
+	<PetType PetName="PumpkinGreen">
+		<PetID>60</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Jubilant Jack-O</DisplayName>
+		<PetPower>PetPumpkin</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>HalloweenNormal</ClassType>
+		<Color>Green</Color>
+		<Description>Jack-Os have distinct personalities. This one is happy way too much.</Description>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>R</DisplayRarity>
+	</PetType>
+	<PetType PetName="GargoyleRed">
+		<PetID>61</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Red-Eyed Gargoyle</DisplayName>
+		<PetPower>PetGargoyle</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>HalloweenHard</ClassType>
+		<Color>Red</Color>
+		<Description>Red Gargoyle</Description>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>R</DisplayRarity>
+	</PetType>
+	<PetType PetName="GargoyleYellow">
+		<PetID>62</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Yellow-Eyed Gargoyle</DisplayName>
+		<PetPower>PetGargoyle</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>HalloweenHard</ClassType>
+		<Color>Yellow</Color>
+		<Description>Yellow Gargoyle</Description>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>R</DisplayRarity>
+	</PetType>
+	<PetType PetName="GargoyleBlue">
+		<PetID>63</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Blue-Eyed Gargoyle</DisplayName>
+		<PetPower>PetGargoyle</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>HalloweenHard</ClassType>
+		<Color>Blue</Color>
+		<Description>Blue Gargoyle</Description>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>R</DisplayRarity>
+	</PetType>
+	<PetType PetName="GargoyleGreen">
+		<PetID>64</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>200</IdolCost>
+		<DisplayName>Green-Eyed Gargoyle</DisplayName>
+		<PetPower>PetGargoyle</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>HalloweenHard</ClassType>
+		<Color>Green</Color>
+		<Description>Green Gargoyle</Description>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>R</DisplayRarity>
+	</PetType>
+	<PetType PetName="Lockbox01L01">
+		<PetID>65</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>500</IdolCost>
+		<DisplayName>Darkheart Apparition</DisplayName>
+		<PetPower>PetLockbox01L01</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>SigilLegendary01</ClassType>
+		<Color>Red</Color>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>L</DisplayRarity>
+	</PetType>
+	<PetType PetName="Lockbox01L02">
+		<PetID>66</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>500</IdolCost>
+		<DisplayName>Dreamscale Dragonette</DisplayName>
+		<PetPower>PetLockbox01L02</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>Lockbox01</ClassType>
+		<Color>Yellow</Color>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>L</DisplayRarity>
+	</PetType>
+	<PetType PetName="Lockbox01RRed">
+		<PetID>67</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>500</IdolCost>
+		<DisplayName>Accursed Counselor</DisplayName>
+		<PetPower>PetLockbox01R01</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<BonusInfo>Increase Gear Finding by X Pet Level</BonusInfo>
+		<ClassType>SigilRare01</ClassType>
+		<Color>Red</Color>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>R</DisplayRarity>
+	</PetType>
+	<PetType PetName="Lockbox01RYellow">
+		<PetID>68</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>500</IdolCost>
+		<DisplayName>Ruined Counselor</DisplayName>
+		<PetPower>PetLockbox01R01</PetPower>
+		<Kingdom>Any</Kingdom>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Increase Gold Finding by X Pet Level</BonusInfo>
+		<ClassType>SigilRare01</ClassType>
+		<Color>Yellow</Color>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>R</DisplayRarity>
+	</PetType>
+	<PetType PetName="Lockbox01RBlue">
+		<PetID>69</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>500</IdolCost>
+		<DisplayName>Hexed Counselor</DisplayName>
+		<PetPower>PetLockbox01R01</PetPower>
+		<Kingdom>Any</Kingdom>
+		<CraftFind>true</CraftFind>
+		<BonusInfo>Increase Material Finding by X Pet Level</BonusInfo>
+		<ClassType>SigilRare01</ClassType>
+		<Color>Blue</Color>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>R</DisplayRarity>
+	</PetType>
+	<PetType PetName="Lockbox01RGreen">
+		<PetID>70</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>500</IdolCost>
+		<DisplayName>Doomed Counselor</DisplayName>
+		<PetPower>PetLockbox01R01</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>Increase XP Gain by X Pet Level</BonusInfo>
+		<ClassType>SigilRare01</ClassType>
+		<Color>Green</Color>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>R</DisplayRarity>
+	</PetType>
+</PetTypes>

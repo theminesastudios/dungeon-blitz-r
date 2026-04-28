@@ -1,0 +1,1002 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<LevelTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<LevelType LevelName="CraftTown">
+		<ZoneSet>Global</ZoneSet>
+	</LevelType>
+	<LevelType LevelName="NewbieRoad">
+		<ZoneSet>NewbieRoad</ZoneSet>
+		<DisplayName>Wolf's End</DisplayName>
+	</LevelType>
+	<LevelType LevelName="TutorialBoat">
+		<ZoneSet>NewbieRoad</ZoneSet>
+		<DisplayName>Lost at Sea</DisplayName>
+		<RankingsURL>assault</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="TutorialDungeon">
+		<ZoneSet>NewbieRoad</ZoneSet>
+		<DisplayName>Goblin Kidnappers</DisplayName>
+		<RankingsURL>kidnap</RankingsURL>
+		<MusicLoop>D02_MoodLoop_GoblinHideout.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CraftTownTutorial">
+		<ZoneSet>NewbieRoad</ZoneSet>
+		<DisplayName>I Claim This Keep</DisplayName>
+	</LevelType>
+	<LevelType LevelName="GoblinRiverDungeon">
+		<ZoneSet>NewbieRoad</ZoneSet>
+		<DisplayName>Goblin Camp</DisplayName>
+		<RankingsURL>river</RankingsURL>
+		<MusicLoop>D04_DramaLoop_SpookyForest.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="GhostBossDungeon">
+		<ZoneSet>NewbieRoad</ZoneSet>
+		<DisplayName>Nephit's Quest</DisplayName>
+		<RankingsURL>nephit</RankingsURL>
+		<MusicLoop>D03_MoodLoop_Nephit.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="DreamDragonDungeon">
+		<ZoneSet>NewbieRoad</ZoneSet>
+		<DisplayName>The Dragon's Dream</DisplayName>
+		<RankingsURL>dragonkey</RankingsURL>
+		<MusicLoop>D01_MoodLoop_DreamDragonLair.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SwampRoadNorth">
+		<ZoneSet>SwampRoadNorth</ZoneSet>
+		<DisplayName>Black Rose Mire</DisplayName>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission1">
+		<ZoneSet>SwampRoadNorth</ZoneSet>
+		<DisplayName>Tower of the Tuatara</DisplayName>
+		<RankingsURL>castout</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_09.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission2">
+		<ZoneSet>SwampRoadNorth</ZoneSet>
+		<DisplayName>Mystery of the Yornak</DisplayName>
+		<RankingsURL>yornak</RankingsURL>
+		<MusicLoop>D06_DramaLoop_General2.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission3">
+		<ZoneSet>SwampRoadNorth</ZoneSet>
+		<DisplayName>Svar's Spite</DisplayName>
+		<RankingsURL>svar</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission4">
+		<ZoneSet>SwampRoadNorth</ZoneSet>
+		<DisplayName>Lair of the Ooyak</DisplayName>
+		<RankingsURL>ooyak</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission5">
+		<ZoneSet>SwampRoadNorth</ZoneSet>
+		<DisplayName>Citadel of the Vizier</DisplayName>
+		<RankingsURL>broodvictor</RankingsURL>
+		<MusicLoop>D05_MoodLoop_General1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission6">
+		<ZoneSet>SwampRoadNorth</ZoneSet>
+		<DisplayName>Mindless Queen's Glade</DisplayName>
+		<RankingsURL>mindless</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_09.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission7">
+		<ZoneSet>SwampRoadNorth</ZoneSet>
+		<DisplayName>The Great Green Svath</DisplayName>
+		<RankingsURL>svath</RankingsURL>
+		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SwampRoadConnectionMission">
+		<ZoneSet>SwampRoadNorth</ZoneSet>
+		<DisplayName>Arachnae's Swamp</DisplayName>
+		<RankingsURL>arachnae</RankingsURL>
+		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SwampRoadConnection">
+		<ZoneSet>SwampRoadNorth</ZoneSet>
+		<DisplayName>Black Rose Mire</DisplayName>
+	</LevelType>
+	<LevelType LevelName="BridgeTown">
+		<ZoneSet>BridgeTown</ZoneSet>
+		<DisplayName>Felbridge</DisplayName>
+	</LevelType>
+	<LevelType LevelName="BT_Mission1">
+		<ZoneSet>BridgeTown</ZoneSet>
+		<DisplayName>Bandit Camp</DisplayName>
+		<RankingsURL>bandit</RankingsURL>
+		<MusicLoop>D04_DramaLoop_SpookyForest.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="BT_Mission2">
+		<ZoneSet>BridgeTown</ZoneSet>
+		<DisplayName>Svagg's Last Stand</DisplayName>
+		<RankingsURL>svagg</RankingsURL>
+		<MusicLoop>D04_DramaLoop_SpookyForest.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="BT_Mission3">
+		<ZoneSet>BridgeTown</ZoneSet>
+		<DisplayName>The Mouth of Meylour</DisplayName>
+		<RankingsURL>mouth</RankingsURL>
+		<MusicLoop>D04_DramaLoop_SpookyForest.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="BT_Mission4">
+		<ZoneSet>BridgeTown</ZoneSet>
+		<DisplayName>Dereliction of Duty</DisplayName>
+		<RankingsURL>dereliction</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CemeteryHill">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Cemetery Hill</DisplayName>
+	</LevelType>
+	<LevelType LevelName="CH_Mission1">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Wither the Witch?</DisplayName>
+		<RankingsURL>yagaga</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission2">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Gnole's Storehouse</DisplayName>
+		<RankingsURL>storehouse</RankingsURL>
+		<MusicLoop>D05_MoodLoop_General1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission3">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Undying Vendetta</DisplayName>
+		<RankingsURL>warslain</RankingsURL>
+		<MusicLoop>D01_MoodLoop_DreamDragonLair.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission4">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Lord Tilly's Rest</DisplayName>
+		<RankingsURL>pappy</RankingsURL>
+		<MusicLoop>D05_MoodLoop_General1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission5">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Embodiment of Evil</DisplayName>
+		<RankingsURL>kamak</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_09.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission6">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Mausoleum of the Wise</DisplayName>
+		<RankingsURL>secret</RankingsURL>
+		<MusicLoop>D06_DramaLoop_General2.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission7">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Rising Damned</DisplayName>
+		<RankingsURL>glimpse</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission8">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Gnole's Last Stand</DisplayName>
+		<RankingsURL>dogfather</RankingsURL>
+		<MusicLoop>D03_MoodLoop_Nephit.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission1">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Lady Ellen Tilly's Tomb</DisplayName>
+		<RankingsURL>kyra</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission2">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Sir Edmund Tilly's Tomb</DisplayName>
+		<RankingsURL>dwarfkin</RankingsURL>
+		<MusicLoop>D01_MoodLoop_DreamDragonLair.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission3">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Lord Hugh Tilly's Tomb</DisplayName>
+		<RankingsURL>zed</RankingsURL>
+		<MusicLoop>D_dungeon_catacomb_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission4">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Lord Peter Tilly's Tomb</DisplayName>
+		<RankingsURL>warik</RankingsURL>
+		<MusicLoop>D05_MoodLoop_General1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission5">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Baroness Julia Hocke</DisplayName>
+		<RankingsURL>hal</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission6">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Baron Karl Hocke</DisplayName>
+		<RankingsURL>xal</RankingsURL>
+		<MusicLoop>D_dungeon_catacomb_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission7">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Baron Symon Hocke</DisplayName>
+		<RankingsURL>ariston</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission8">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Sir Edgar Hocke</DisplayName>
+		<RankingsURL>grond</RankingsURL>
+		<MusicLoop>D_dungeon_catacomb_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission9">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>General Sven Hocke</DisplayName>
+		<RankingsURL>naj</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OldMineMountain">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>Stormshard Mountains</DisplayName>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission1">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>Give Voice to Stone</DisplayName>
+		<RankingsURL>voice</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission2">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>Rock Hulk Garden</DisplayName>
+		<RankingsURL>garden</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_06.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission3">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>Eye of the Tyrant</DisplayName>
+		<RankingsURL>tyrant</RankingsURL>
+		<MusicLoop>D06_DramaLoop_General2.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission4">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>Abandoned Armory</DisplayName>
+		<RankingsURL>armory</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_09.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission5">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>Hunted to the Edge</DisplayName>
+		<RankingsURL>hunted</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission6">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>Forgotten Forge</DisplayName>
+		<RankingsURL>forge</RankingsURL>
+		<MusicLoop>D06_DramaLoop_General2.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission7">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>Gnole's Roost</DisplayName>
+		<RankingsURL>redoubt</RankingsURL>
+		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission8">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>Veins of Meylour</DisplayName>
+		<RankingsURL>veins</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission9">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>The Growing Flame</DisplayName>
+		<RankingsURL>rebellion</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission10">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>All Shall be Ashes</DisplayName>
+		<RankingsURL>quary</RankingsURL>
+		<MusicLoop>D01_MoodLoop_DreamDragonLair.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission11">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>Meylour's Embers</DisplayName>
+		<RankingsURL>heart</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission12">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>Death to Meylour</DisplayName>
+		<RankingsURL>meylour</RankingsURL>
+		<MusicLoop>D_dungeon_catacomb_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="EmeraldGlades">
+		<ZoneSet>EmeraldGlades</ZoneSet>
+		<DisplayName>Emerald Glades</DisplayName>
+	</LevelType>
+	<LevelType LevelName="EG_Mission1">
+		<ZoneSet>EmeraldGlades</ZoneSet>
+		<DisplayName>The Ashen Dryad</DisplayName>
+		<RankingsURL>ashen</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="EG_Mission2">
+		<ZoneSet>EmeraldGlades</ZoneSet>
+		<DisplayName>Out on a Limb</DisplayName>
+		<RankingsURL>limb</RankingsURL>
+		<MusicLoop>D_dungeon_cave_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="EG_Mission3">
+		<ZoneSet>EmeraldGlades</ZoneSet>
+		<DisplayName>Rotten to the Roots</DisplayName>
+		<RankingsURL>rotten</RankingsURL>
+		<MusicLoop>D02_MoodLoop_GoblinHideout.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="EG_Mission4">
+		<ZoneSet>EmeraldGlades</ZoneSet>
+		<DisplayName>Hope Springs Eternal</DisplayName>
+		<RankingsURL>hope</RankingsURL>
+		<MusicLoop>D_dungeon_open_area_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="EG_Mission5">
+		<ZoneSet>EmeraldGlades</ZoneSet>
+		<DisplayName>Refuge of the Damned</DisplayName>
+		<RankingsURL>refuge</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="Castle">
+		<ZoneSet>Castle</ZoneSet>
+		<DisplayName>Castle Hocke</DisplayName>
+	</LevelType>
+	<LevelType LevelName="AC_Mission1">
+		<ZoneSet>Castle</ZoneSet>
+		<DisplayName>Castle Hocke</DisplayName>
+		<RankingsURL>deepgard</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="AC_Mission2">
+		<ZoneSet>Castle</ZoneSet>
+		<DisplayName>The Emerald Throne</DisplayName>
+		<RankingsURL>throne</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="AC_Mission3">
+		<ZoneSet>Castle</ZoneSet>
+		<DisplayName>Battles Lost and Won</DisplayName>
+		<RankingsURL>battlefield</RankingsURL>
+		<MusicLoop>D03_MoodLoop_Nephit.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="AC_Mission4">
+		<ZoneSet>Castle</ZoneSet>
+		<DisplayName>Aetheric Observatory</DisplayName>
+		<RankingsURL>observatory</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_06.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="AC_Mission5">
+		<ZoneSet>Castle</ZoneSet>
+		<DisplayName>Last Stand</DisplayName>
+		<RankingsURL>ramparts</RankingsURL>
+		<MusicLoop>D_dungeon_ruin_and_vault_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="AC_Mission6">
+		<ZoneSet>Castle</ZoneSet>
+		<DisplayName>The Capstone</DisplayName>
+		<RankingsURL>capstone</RankingsURL>
+		<MusicLoop>D_dungeon_ruin_and_vault_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="ShazariDesert">
+		<ZoneSet>ShazariDesert</ZoneSet>
+		<DisplayName>Shazari Desert</DisplayName>
+	</LevelType>
+	<LevelType LevelName="SD_Mission1">
+		<ZoneSet>ShazariDesert</ZoneSet>
+		<DisplayName>Unearthing the Past</DisplayName>
+		<RankingsURL>temple</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SD_Mission2">
+		<ZoneSet>ShazariDesert</ZoneSet>
+		<DisplayName>Scarab Invasion</DisplayName>
+		<RankingsURL>scarab</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SD_Mission3">
+		<ZoneSet>ShazariDesert</ZoneSet>
+		<DisplayName>Blood and Sand</DisplayName>
+		<RankingsURL>gladiator</RankingsURL>
+		<MusicLoop>D03_MoodLoop_Nephit.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SD_Mission4">
+		<ZoneSet>ShazariDesert</ZoneSet>
+		<DisplayName>Goblin Diplomacy</DisplayName>
+		<RankingsURL>oasis</RankingsURL>
+		<MusicLoop>D_dungeon_open_area_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SD_Mission5">
+		<ZoneSet>ShazariDesert</ZoneSet>
+		<DisplayName>Ancient Unrest</DisplayName>
+		<RankingsURL>sandworm</RankingsURL>
+		<MusicLoop>D03_MoodLoop_Nephit.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SD_Mission6">
+		<ZoneSet>ShazariDesert</ZoneSet>
+		<DisplayName>Legacy of the Magi</DisplayName>
+		<RankingsURL>anchor</RankingsURL>
+		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JadeCity">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>Valhaven</DisplayName>
+	</LevelType>
+	<LevelType LevelName="JC_Mission1">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>The Welcome Party</DisplayName>
+		<RankingsURL>welcome</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_06.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission2">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>Back Alley Deals</DisplayName>
+		<RankingsURL>alley</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission3">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>The Prodigal Son</DisplayName>
+		<RankingsURL>prodigal</RankingsURL>
+		<MusicLoop>D03_MoodLoop_Nephit.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission4">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>Sewer Suffering</DisplayName>
+		<RankingsURL>sewer</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission5">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>Fable of the Lost Temple</DisplayName>
+		<RankingsURL>fable</RankingsURL>
+		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission6">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>Dream Within a Dream</DisplayName>
+		<RankingsURL>dream</RankingsURL>
+		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission7">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>Royal Intervention</DisplayName>
+		<RankingsURL>intervention</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_03.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission8">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>Attack of Opportunity</DisplayName>
+		<RankingsURL>attack</RankingsURL>
+		<MusicLoop>D_dungeon_open_area_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission9">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>Hiding Out</DisplayName>
+		<RankingsURL>shadows</RankingsURL>
+		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission10">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>Ancient Vault</DisplayName>
+		<RankingsURL>vault</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission11">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>Ring of Fire</DisplayName>
+		<RankingsURL>ringoffire</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_17.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mini1">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>The West Wing</DisplayName>
+		<RankingsURL>westwing</RankingsURL>
+		<MusicLoop>D06_DramaLoop_General2.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mini2">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>The East Wing</DisplayName>
+		<RankingsURL>eastwing</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="NewbieRoadHard">
+		<ZoneSet>NewbieRoadHard</ZoneSet>
+		<DisplayName>Dread Wolf's End</DisplayName>
+	</LevelType>
+	<LevelType LevelName="TutorialDungeonHard">
+		<ZoneSet>NewbieRoadHard</ZoneSet>
+		<DisplayName>Dread Goblin Hideout</DisplayName>
+		<RankingsURL>dread/kidnap</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="GhostBossDungeonHard">
+		<ZoneSet>NewbieRoadHard</ZoneSet>
+		<DisplayName>Dread Nephit's Quest</DisplayName>
+		<RankingsURL>dread/nephit</RankingsURL>
+		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="GoblinRiverDungeonHard">
+		<ZoneSet>NewbieRoadHard</ZoneSet>
+		<DisplayName>Dread Goblin Camp</DisplayName>
+		<RankingsURL>dread/river</RankingsURL>
+		<MusicLoop>D04_DramaLoop_SpookyForest.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="DreamDragonDungeonHard">
+		<ZoneSet>NewbieRoadHard</ZoneSet>
+		<DisplayName>Dread Dragon's Dream</DisplayName>
+		<RankingsURL>dread/dragonkey</RankingsURL>
+		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SwampRoadNorthHard">
+		<ZoneSet>SwampRoadNorthHard</ZoneSet>
+		<DisplayName>Dread Black Rose Mire</DisplayName>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission1Hard">
+		<ZoneSet>SwampRoadNorthHard</ZoneSet>
+		<DisplayName>Dread Tuatara</DisplayName>
+		<RankingsURL>dread/castout</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission2Hard">
+		<ZoneSet>SwampRoadNorthHard</ZoneSet>
+		<DisplayName>Dread Yornak</DisplayName>
+		<RankingsURL>dread/yornak</RankingsURL>
+		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission3Hard">
+		<ZoneSet>SwampRoadNorthHard</ZoneSet>
+		<DisplayName>Dread Svar's Spite</DisplayName>
+		<RankingsURL>dread/svar</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_17.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission4Hard">
+		<ZoneSet>SwampRoadNorthHard</ZoneSet>
+		<DisplayName>Dread Ooyak</DisplayName>
+		<RankingsURL>dread/ooyak</RankingsURL>
+		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission5Hard">
+		<ZoneSet>SwampRoadNorthHard</ZoneSet>
+		<DisplayName>Dread Vizier</DisplayName>
+		<RankingsURL>dread/broodvictor</RankingsURL>
+		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission6Hard">
+		<ZoneSet>SwampRoadNorthHard</ZoneSet>
+		<DisplayName>Dread Mindless Queen</DisplayName>
+		<RankingsURL>dread/mindless</RankingsURL>
+		<MusicLoop>D_dungeon_catacomb_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SRN_Mission7Hard">
+		<ZoneSet>SwampRoadNorthHard</ZoneSet>
+		<DisplayName>Dread Svath's Spite</DisplayName>
+		<RankingsURL>dread/svath</RankingsURL>
+		<MusicLoop>D_dungeon_open_area_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SwampRoadConnectionMissionHard">
+		<ZoneSet>SwampRoadNorthHard</ZoneSet>
+		<DisplayName>Dread Arachnae's Swamp</DisplayName>
+		<RankingsURL>dread/arachnae</RankingsURL>
+		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SwampRoadConnectionHard">
+		<ZoneSet>SwampRoadNorthHard</ZoneSet>
+		<DisplayName>Dread Black Rose Mire</DisplayName>
+	</LevelType>
+	<LevelType LevelName="BridgeTownHard">
+		<ZoneSet>BridgeTownHard</ZoneSet>
+		<DisplayName>Dread Felbridge</DisplayName>
+	</LevelType>
+	<LevelType LevelName="BT_Mission1Hard">
+		<ZoneSet>BridgeTownHard</ZoneSet>
+		<DisplayName>Dread Bandit Camp</DisplayName>
+		<RankingsURL>dread/bandit</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="BT_Mission2Hard">
+		<ZoneSet>BridgeTownHard</ZoneSet>
+		<DisplayName>Dread Svagg's Last Stand</DisplayName>
+		<RankingsURL>dread/svagg</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_03.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="BT_Mission3Hard">
+		<ZoneSet>BridgeTownHard</ZoneSet>
+		<DisplayName>Dread Mouth of Meylour</DisplayName>
+		<RankingsURL>dread/mouth</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="BT_Mission4Hard">
+		<ZoneSet>BridgeTownHard</ZoneSet>
+		<DisplayName>Dread Dereliction of Duty</DisplayName>
+		<RankingsURL>dread/dereliction</RankingsURL>
+		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CemeteryHillHard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Cemetery Hill</DisplayName>
+	</LevelType>
+	<LevelType LevelName="CH_Mission1Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Wither the Witch?</DisplayName>
+		<RankingsURL>dread/yagaga</RankingsURL>
+		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission2Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Gnole Storehouse</DisplayName>
+		<RankingsURL>dread/storehouse</RankingsURL>
+		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission3Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Undying Vendetta</DisplayName>
+		<RankingsURL>dread/warslain</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_17.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission4Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Lord Tilly's Rest</DisplayName>
+		<RankingsURL>dread/pappy</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_18.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission5Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Embodiment</DisplayName>
+		<RankingsURL>dread/kamak</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission6Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Mausleum</DisplayName>
+		<RankingsURL>dread/secret</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_17.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission7Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Rising Damned</DisplayName>
+		<RankingsURL>dread/glimpse</RankingsURL>
+		<MusicLoop>D_dungeon_catacomb_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_Mission8Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Last Stand</DisplayName>
+		<RankingsURL>dread/dogfather</RankingsURL>
+		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission1Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Ellen Tilly's Tomb</DisplayName>
+		<RankingsURL>dread/kyra</RankingsURL>
+		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission2Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Edmund Tilly's Tomb</DisplayName>
+		<RankingsURL>dread/dwarfkin</RankingsURL>
+		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission3Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Hugh Tilly's Tomb</DisplayName>
+		<RankingsURL>dread/zed</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission4Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Peter Tilly's Tomb</DisplayName>
+		<RankingsURL>dread/warik</RankingsURL>
+		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission5Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Julia Hocke</DisplayName>
+		<RankingsURL>dread/hal</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_13.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission6Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Baron Karl Hocke</DisplayName>
+		<RankingsURL>dread/xal</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_18.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission7Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Baron Symon Hocke</DisplayName>
+		<RankingsURL>dread/ariston</RankingsURL>
+		<MusicLoop>D_dungeon_open_area_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission8Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread Sir Edgar Hocke</DisplayName>
+		<RankingsURL>dread/grond</RankingsURL>
+		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CH_MiniMission9Hard">
+		<ZoneSet>CemeteryHillHard</ZoneSet>
+		<DisplayName>Dread General Sven Hocke</DisplayName>
+		<RankingsURL>dread/naj</RankingsURL>
+		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OldMineMountainHard">
+		<ZoneSet>OldMineMountainHard</ZoneSet>
+		<DisplayName>Dread Stormshard</DisplayName>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission1Hard">
+		<ZoneSet>OldMineMountainHard</ZoneSet>
+		<DisplayName>Dread Voice to Stone</DisplayName>
+		<RankingsURL>dread/voice</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_03.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission2Hard">
+		<ZoneSet>OldMineMountainHard</ZoneSet>
+		<DisplayName>Dread Rock Hulk Garden</DisplayName>
+		<RankingsURL>dread/garden</RankingsURL>
+		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission3Hard">
+		<ZoneSet>OldMineMountainHard</ZoneSet>
+		<DisplayName>Dread Eye of the Tyrant</DisplayName>
+		<RankingsURL>dread/tyrant</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_13.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission4Hard">
+		<ZoneSet>OldMineMountainHard</ZoneSet>
+		<DisplayName>Dread Abandoned Armory</DisplayName>
+		<RankingsURL>dread/armory</RankingsURL>
+		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission5Hard">
+		<ZoneSet>OldMineMountainHard</ZoneSet>
+		<DisplayName>Dread Hunt</DisplayName>
+		<RankingsURL>dread/hunted</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission6Hard">
+		<ZoneSet>OldMineMountainHard</ZoneSet>
+		<DisplayName>Dread Forgotten Forge</DisplayName>
+		<RankingsURL>dread/forge</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_18.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission7Hard">
+		<ZoneSet>OldMineMountainHard</ZoneSet>
+		<DisplayName>Dread Gnole's Roost</DisplayName>
+		<RankingsURL>dread/redoubt</RankingsURL>
+		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission8Hard">
+		<ZoneSet>OldMineMountainHard</ZoneSet>
+		<DisplayName>Dread Veins of Meylour</DisplayName>
+		<RankingsURL>dread/veins</RankingsURL>
+		<MusicLoop>D_dungeon_catacomb_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission9Hard">
+		<ZoneSet>OldMineMountainHard</ZoneSet>
+		<DisplayName>Dread Growing Flame</DisplayName>
+		<RankingsURL>dread/rebellion</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_13.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission10Hard">
+		<ZoneSet>OldMineMountainHard</ZoneSet>
+		<DisplayName>Dread All Shall Be Ashes</DisplayName>
+		<RankingsURL>dread/quary</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_17.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission11Hard">
+		<ZoneSet>OldMineMountainHard</ZoneSet>
+		<DisplayName>Dread Meylour's Embers</DisplayName>
+		<RankingsURL>dread/heart</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="OMM_Mission12Hard">
+		<ZoneSet>OldMineMountainHard</ZoneSet>
+		<DisplayName>Dread Death to Meylour</DisplayName>
+		<RankingsURL>dread/meylour</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="EmeraldGladesHard">
+		<ZoneSet>EmeraldGladesHard</ZoneSet>
+		<DisplayName>Dread Emerald Glades</DisplayName>
+	</LevelType>
+	<LevelType LevelName="EG_Mission1Hard">
+		<ZoneSet>EmeraldGladesHard</ZoneSet>
+		<DisplayName>Dread Ashen Dryad</DisplayName>
+		<RankingsURL>dread/ashen</RankingsURL>
+		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="EG_Mission2Hard">
+		<ZoneSet>EmeraldGladesHard</ZoneSet>
+		<DisplayName>Dread Out on a Limb</DisplayName>
+		<RankingsURL>dread/limb</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_03.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="EG_Mission3Hard">
+		<ZoneSet>EmeraldGladesHard</ZoneSet>
+		<DisplayName>Dread Rotten</DisplayName>
+		<RankingsURL>dread/rotten</RankingsURL>
+		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="EG_Mission4Hard">
+		<ZoneSet>EmeraldGladesHard</ZoneSet>
+		<DisplayName>Dread Hope Springs</DisplayName>
+		<RankingsURL>dread/hope</RankingsURL>
+		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="EG_Mission5Hard">
+		<ZoneSet>EmeraldGladesHard</ZoneSet>
+		<DisplayName>Dread Refuge</DisplayName>
+		<RankingsURL>dread/refuge</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="CastleHard">
+		<ZoneSet>CastleHard</ZoneSet>
+		<DisplayName>Dread Castle Hocke</DisplayName>
+	</LevelType>
+	<LevelType LevelName="AC_Mission1Hard">
+		<ZoneSet>CastleHard</ZoneSet>
+		<DisplayName>Dread Castle Hocke</DisplayName>
+		<RankingsURL>dread/deepgard</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_13.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="AC_Mission2Hard">
+		<ZoneSet>CastleHard</ZoneSet>
+		<DisplayName>Dread Emerald Throne</DisplayName>
+		<RankingsURL>dread/throne</RankingsURL>
+		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="AC_Mission3Hard">
+		<ZoneSet>CastleHard</ZoneSet>
+		<DisplayName>Dread Battles Lost</DisplayName>
+		<RankingsURL>dread/battlefield</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_18.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="AC_Mission4Hard">
+		<ZoneSet>CastleHard</ZoneSet>
+		<DisplayName>Dread Observatory</DisplayName>
+		<RankingsURL>dread/observatory</RankingsURL>
+		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="AC_Mission5Hard">
+		<ZoneSet>CastleHard</ZoneSet>
+		<DisplayName>Dread Last Stand</DisplayName>
+		<RankingsURL>dread/ramparts</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_17.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="AC_Mission6Hard">
+		<ZoneSet>CastleHard</ZoneSet>
+		<DisplayName>Dread Capstone</DisplayName>
+		<RankingsURL>dread/capstone</RankingsURL>
+		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="ShazariDesertHard">
+		<ZoneSet>ShazariDesertHard</ZoneSet>
+		<DisplayName>Dread Shazari</DisplayName>
+	</LevelType>
+	<LevelType LevelName="SD_Mission1Hard">
+		<ZoneSet>ShazariDesertHard</ZoneSet>
+		<DisplayName>Dread Unearthing</DisplayName>
+		<RankingsURL>dread/temple</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_13.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SD_Mission2Hard">
+		<ZoneSet>ShazariDesertHard</ZoneSet>
+		<DisplayName>Dread Scarab Invasion</DisplayName>
+		<RankingsURL>dread/scarab</RankingsURL>
+		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SD_Mission3Hard">
+		<ZoneSet>ShazariDesertHard</ZoneSet>
+		<DisplayName>Dread Blood and Sand</DisplayName>
+		<RankingsURL>dread/gladiator</RankingsURL>
+		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SD_Mission4Hard">
+		<ZoneSet>ShazariDesertHard</ZoneSet>
+		<DisplayName>Dread Goblin Diplomacy</DisplayName>
+		<RankingsURL>dread/oasis</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_03.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SD_Mission5Hard">
+		<ZoneSet>ShazariDesertHard</ZoneSet>
+		<DisplayName>Dread Ancient Unrest</DisplayName>
+		<RankingsURL>dread/sandworm</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_18.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="SD_Mission6Hard">
+		<ZoneSet>ShazariDesertHard</ZoneSet>
+		<DisplayName>Dread Legacy of Magi</DisplayName>
+		<RankingsURL>dread/anchor</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_13.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JadeCityHard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread Valhaven</DisplayName>
+	</LevelType>
+	<LevelType LevelName="JC_Mission1Hard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread Welcome Party</DisplayName>
+		<RankingsURL>dread/welcome</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopNoDrama_06.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission2Hard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread Alley Deals</DisplayName>
+		<RankingsURL>dread/alley</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission3Hard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread Prodigal Son</DisplayName>
+		<RankingsURL>dread/prodigal</RankingsURL>
+		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission4Hard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread Sewer Suffering</DisplayName>
+		<RankingsURL>dread/sewer</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission5Hard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread Fable</DisplayName>
+		<RankingsURL>dread/fable</RankingsURL>
+		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission6Hard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread Dreaming</DisplayName>
+		<RankingsURL>dread/dream</RankingsURL>
+		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission7Hard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread Intervention</DisplayName>
+		<RankingsURL>dread/intervention</RankingsURL>
+		<MusicLoop>D_dungeon_catacomb_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission8Hard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread Opportunity</DisplayName>
+		<RankingsURL>dread/attack</RankingsURL>
+		<MusicLoop>D_dungeon_open_area_v1.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission9Hard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread Hiding Out</DisplayName>
+		<RankingsURL>dread/shadows</RankingsURL>
+		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission10Hard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread Ancient Vault</DisplayName>
+		<RankingsURL>dread/vault</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mission11Hard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread Ring of Fire</DisplayName>
+		<RankingsURL>dread/ringoffire</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithDrama_17.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mini1Hard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread West Wing</DisplayName>
+		<RankingsURL>dread/westwing</RankingsURL>
+		<MusicLoop>D06_DramaLoop_General2.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="JC_Mini2Hard">
+		<ZoneSet>JadeCityHard</ZoneSet>
+		<DisplayName>Dread East Wing</DisplayName>
+		<RankingsURL>dread/eastwing</RankingsURL>
+		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="LDArena1">
+		<ZoneSet>SwampRoadNorth</ZoneSet>
+		<DisplayName>The Green Knight</DisplayName>
+		<RankingsURL>event</RankingsURL>
+		<MusicLoop>D_dungeon_catacomb_v1.mp3</MusicLoop>
+	</LevelType>
+</LevelTypes>

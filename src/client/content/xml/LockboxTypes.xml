@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<LockboxTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<LockboxType LockboxName="---Template---">
+		<LockboxID>0</LockboxID>
+		<DisplayName>Template</DisplayName>
+		<CustomArt>text</CustomArt>
+		<IconName>text</IconName>
+		<Droppable>false</Droppable>
+		<DroppableWeight>0</DroppableWeight>
+		<Description>WhatIDo</Description>
+	</LockboxType>
+	<LockboxType LockboxName="Lockbox01">
+		<LockboxID>1</LockboxID>
+		<DisplayName>Treasure Trove</DisplayName>
+		<CustomArt>a_Lockbox01art</CustomArt>
+		<IconName>a_Lockbox01icon</IconName>
+		<Droppable>true</Droppable>
+		<DroppableWeight>1</DroppableWeight>
+	</LockboxType>
+</LockboxTypes>

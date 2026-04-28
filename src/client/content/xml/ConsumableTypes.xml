@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ConsumableTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<ConsumableType ConsumableName="---Template---">
+		<ConsumableID>0</ConsumableID>
+		<DisplayName>Template</DisplayName>
+		<IconName>a_Icon_PotionGearFind</IconName>
+		<RareBoost>0</RareBoost>
+		<LegendaryBoost>0</LegendaryBoost>
+		<ArtisanXP>0</ArtisanXP>
+		<GearFind>0</GearFind>
+		<GoldFind>0</GoldFind>
+		<MaterialFind>0</MaterialFind>
+		<XP>0</XP>
+		<Magnitude>300</Magnitude>
+		<Description>WhatIDo</Description>
+		<Type>Potion</Type>
+		<Rarity>Rarity</Rarity>
+	</ConsumableType>
+	<ConsumableType ConsumableName="MinorRareCatalyst">
+		<ConsumableID>1</ConsumableID>
+		<DisplayName>Inventor's Trinket</DisplayName>
+		<IconName>a_Icon_PrimordialHeart</IconName>
+		<RareBoost>100</RareBoost>
+		<LegendaryBoost>0</LegendaryBoost>
+		<Description>Use in Forge to guarantee a &lt;font color='#0099FF'&gt;Rare&lt;/font&gt; charm</Description>
+		<Type>Catalyst</Type>
+		<Rarity>M</Rarity>
+	</ConsumableType>
+	<ConsumableType ConsumableName="MinorLegendaryCatalyst">
+		<ConsumableID>2</ConsumableID>
+		<DisplayName>Voidmatter</DisplayName>
+		<IconName>a_Icon_PrimordialHeart</IconName>
+		<RareBoost>0</RareBoost>
+		<LegendaryBoost>0</LegendaryBoost>
+		<Description>UNUSED</Description>
+		<Type>Catalyst</Type>
+		<Rarity>R</Rarity>
+	</ConsumableType>
+	<ConsumableType ConsumableName="MajorRareCatalyst">
+		<ConsumableID>3</ConsumableID>
+		<DisplayName>Dragonfire Talisman</DisplayName>
+		<IconName>a_Icon_DragonfireTalisman</IconName>
+		<RareBoost>100</RareBoost>
+		<LegendaryBoost>50</LegendaryBoost>
+		<Description>Use in Forge to guarantee &lt;font color='#0099FF'&gt;Rare&lt;/font&gt; charm and add a 50% chance to make it &lt;font color='#F8DD45'&gt;Legendary&lt;/font&gt;</Description>
+		<Type>Catalyst</Type>
+		<Rarity>R</Rarity>
+	</ConsumableType>
+	<ConsumableType ConsumableName="MajorLegendaryCatalyst">
+		<ConsumableID>4</ConsumableID>
+		<DisplayName>Heart of the Furnace</DisplayName>
+		<IconName>a_Icon_HeartoftheFurnace</IconName>
+		<RareBoost>0</RareBoost>
+		<LegendaryBoost>100</LegendaryBoost>
+		<Description>Use in Forge to guarantee a &lt;font color='#F8DD45'&gt;Legendary&lt;/font&gt; charm</Description>
+		<Type>Catalyst</Type>
+		<Rarity>L</Rarity>
+	</ConsumableType>
+	<ConsumableType ConsumableName="ForgeXP">
+		<ConsumableID>5</ConsumableID>
+		<DisplayName>The Tinker's Soul</DisplayName>
+		<IconName>a_Icon_Anvil</IconName>
+		<ArtisanXP>4000</ArtisanXP>
+		<Description>Immediately Gain 4000 Artisan XP</Description>
+		<Type>ForgeXP</Type>
+		<Rarity>M</Rarity>
+	</ConsumableType>
+	<ConsumableType ConsumableName="GoldFindRegular">
+		<ConsumableID>6</ConsumableID>
+		<DisplayName>Potion of Gold Find</DisplayName>
+		<IconName>a_Icon_PotionGoldFind</IconName>
+		<GoldFind>0.5</GoldFind>
+		<Description>Adds 50% to your Gold Find for 1-2 dungeons</Description>
+		<Type>Potion</Type>
+		<Rarity>M</Rarity>
+	</ConsumableType>
+	<ConsumableType ConsumableName="MaterialFindRegular">
+		<ConsumableID>7</ConsumableID>
+		<DisplayName>Potion of Material Find</DisplayName>
+		<IconName>a_Icon_PotionMaterial</IconName>
+		<MaterialFind>0.5</MaterialFind>
+		<Description>Adds 50% to your Material Find for 1-2 dungeons</Description>
+		<Type>Potion</Type>
+		<Rarity>M</Rarity>
+	</ConsumableType>
+	<ConsumableType ConsumableName="XPFindRegular">
+		<ConsumableID>8</ConsumableID>
+		<DisplayName>Potion of XP Boost</DisplayName>
+		<IconName>a_Icon_PotionXP</IconName>
+		<XP>0.5</XP>
+		<Description>Adds 50% to your XP Boost for 1-2 dungeons</Description>
+		<Type>Potion</Type>
+		<Rarity>M</Rarity>
+	</ConsumableType>
+	<ConsumableType ConsumableName="Resurrection">
+		<ConsumableID>9</ConsumableID>
+		<DisplayName>Vengeance Potion</DisplayName>
+		<IconName>a_Icon_PotionVeng</IconName>
+		<Description>Instantly revive with a Power Surge; a buff granting the user full mana and a boost in damage for a short period of time</Description>
+		<Type>ResPotion</Type>
+		<Rarity>R</Rarity>
+	</ConsumableType>
+	<ConsumableType ConsumableName="RarePetFood">
+		<ConsumableID>10</ConsumableID>
+		<DisplayName>Arcane Chew Bone</DisplayName>
+		<IconName>a_Icon_LegendaryPetFood</IconName>
+		<Magnitude>60000</Magnitude>
+		<Description>Gives your pet 60,000 XP and grants your pet a level.</Description>
+		<Type>PetFood</Type>
+		<Rarity>L</Rarity>
+	</ConsumableType>
+	<ConsumableType ConsumableName="PetFood">
+		<ConsumableID>11</ConsumableID>
+		<DisplayName>Savory Steak</DisplayName>
+		<IconName>a_Icon_Petfood</IconName>
+		<Magnitude>30000</Magnitude>
+		<Description>Gives your pet 30,000 XP</Description>
+		<Type>PetFood</Type>
+		<Rarity>M</Rarity>
+	</ConsumableType>
+	<ConsumableType ConsumableName="AwesomeCashShopBoost">
+		<ConsumableID>12</ConsumableID>
+		<DisplayName>Potion of Triple Find</DisplayName>
+		<IconName>a_Icon_PotionGearFind</IconName>
+		<GoldFind>0.75</GoldFind>
+		<MaterialFind>0.75</MaterialFind>
+		<XP>0.75</XP>
+		<Description>Adds 75% to your XP, Material and Gold Find for 1-2 dungeons</Description>
+		<Type>Potion</Type>
+		<Rarity>R</Rarity>
+	</ConsumableType>
+	<ConsumableType ConsumableName="GearFindRegular">
+		<ConsumableID>13</ConsumableID>
+		<DisplayName>Potion of Gear Find</DisplayName>
+		<IconName>a_Icon_PotionGearFind</IconName>
+		<GearFind>0.5</GearFind>
+		<Description>Adds 50% to your Gear Find for 1-2 dungeons</Description>
+		<Type>Potion</Type>
+		<Rarity>M</Rarity>
+	</ConsumableType>
+</ConsumableTypes>

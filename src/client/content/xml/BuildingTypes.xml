@@ -1,0 +1,1377 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<BuildingTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Building BuildingName="---Template---">
+		<BuildingID>0</BuildingID>
+		<DisplayName>Template</DisplayName>
+		<Type>Template</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Art</Art>
+		<BackgroundArt>a_bgart</BackgroundArt>
+		<UpgradeIcon>a_upgradeicon</UpgradeIcon>
+		<UpgradeDescription>template</UpgradeDescription>
+	</Building>
+	<Building BuildingName="Tome">
+		<BuildingID>1</BuildingID>
+		<DisplayName>Tome of Power</DisplayName>
+		<Type>Tome</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Upgrade_Tome_0</Art>
+		<BackgroundArt>a_Upgrade_Tome_1</BackgroundArt>
+		<UpgradeIcon>a_TomeUpgradeIcon</UpgradeIcon>
+		<UpgradeDescription>Nothing</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Tome of Power Level 1</DisplayName>
+		<Rank>1</Rank>
+		<PlayerLevel>1</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>45</UpgradeTime>
+		<Art>a_Upgrade_Tome_1</Art>
+		<UpgradeDescription>Unlocks all Rank 2 abilities for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Tome of Power Level 2</DisplayName>
+		<Rank>2</Rank>
+		<PlayerLevel>5</PlayerLevel>
+		<GoldCost>5872</GoldCost>
+		<IdolCost>3</IdolCost>
+		<UpgradeTime>14400</UpgradeTime>
+		<Art>a_Upgrade_Tome_2</Art>
+		<UpgradeDescription>Unlocks all Rank 3 abilities for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Tome of Power Level 3</DisplayName>
+		<Rank>3</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>32867</GoldCost>
+		<IdolCost>17</IdolCost>
+		<UpgradeTime>49200</UpgradeTime>
+		<Art>a_Upgrade_Tome_3</Art>
+		<UpgradeDescription>Unlocks all Rank 4 abilities for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Tome of Power Level 4</DisplayName>
+		<Rank>4</Rank>
+		<PlayerLevel>15</PlayerLevel>
+		<GoldCost>91888</GoldCost>
+		<IdolCost>39</IdolCost>
+		<UpgradeTime>142800</UpgradeTime>
+		<Art>a_Upgrade_Tome_4</Art>
+		<UpgradeDescription>Unlocks all Rank 5 abilities for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Tome of Power Level 5</DisplayName>
+		<Rank>5</Rank>
+		<PlayerLevel>20</PlayerLevel>
+		<GoldCost>209646</GoldCost>
+		<IdolCost>55</IdolCost>
+		<UpgradeTime>259200</UpgradeTime>
+		<Art>a_Upgrade_Tome_5</Art>
+		<UpgradeDescription>Unlocks all Rank 6 abilities for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Tome of Power Level 6</DisplayName>
+		<Rank>6</Rank>
+		<PlayerLevel>25</PlayerLevel>
+		<GoldCost>432172</GoldCost>
+		<IdolCost>85</IdolCost>
+		<UpgradeTime>343800</UpgradeTime>
+		<Art>a_Upgrade_Tome_6</Art>
+		<UpgradeDescription>Unlocks all Rank 7 abilities for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Tome of Power Level 7</DisplayName>
+		<Rank>7</Rank>
+		<PlayerLevel>30</PlayerLevel>
+		<GoldCost>835058</GoldCost>
+		<IdolCost>123</IdolCost>
+		<UpgradeTime>439200</UpgradeTime>
+		<Art>a_Upgrade_Tome_7</Art>
+		<UpgradeDescription>Unlocks all Rank 8 abilities for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Tome of Power Level 8</DisplayName>
+		<Rank>8</Rank>
+		<PlayerLevel>35</PlayerLevel>
+		<GoldCost>1539532</GoldCost>
+		<IdolCost>158</IdolCost>
+		<UpgradeTime>634800</UpgradeTime>
+		<Art>a_Upgrade_Tome_8</Art>
+		<UpgradeDescription>Unlocks all Rank 9 abilities for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Tome of Power Level 9</DisplayName>
+		<Rank>9</Rank>
+		<PlayerLevel>40</PlayerLevel>
+		<GoldCost>2748303</GoldCost>
+		<IdolCost>198</IdolCost>
+		<UpgradeTime>715200</UpgradeTime>
+		<Art>a_Upgrade_Tome_9</Art>
+		<UpgradeDescription>Unlocks all Rank 10 abilities for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Tome of Power Level 10</DisplayName>
+		<Rank>10</Rank>
+		<PlayerLevel>45</PlayerLevel>
+		<GoldCost>4781913</GoldCost>
+		<IdolCost>239</IdolCost>
+		<UpgradeTime>1024200</UpgradeTime>
+		<Art>a_Upgrade_Tome_Final</Art>
+	</Building>
+	<Building BuildingName="Forge">
+		<BuildingID>2</BuildingID>
+		<DisplayName>Magic Forge</DisplayName>
+		<Type>Forge</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Upgrade_Forge_0</Art>
+		<BackgroundArt>a_Upgrade_Forge_0</BackgroundArt>
+		<UpgradeIcon>a_ForgeUpgradeIcon</UpgradeIcon>
+	</Building>
+	<Building>
+		<DisplayName>Magic Forge Level 1</DisplayName>
+		<Rank>1</Rank>
+		<PlayerLevel>1</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>45</UpgradeTime>
+		<Art>a_Upgrade_Forge_1</Art>
+		<UpgradeDescription>Unlocks Rank 2 charm recipes</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magic Forge Level 2</DisplayName>
+		<Rank>2</Rank>
+		<PlayerLevel>5</PlayerLevel>
+		<GoldCost>5872</GoldCost>
+		<IdolCost>3</IdolCost>
+		<UpgradeTime>14400</UpgradeTime>
+		<Art>a_Upgrade_Forge_2</Art>
+		<UpgradeDescription>Unlocks Rank 3 charm recipes</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magic Forge Level 3</DisplayName>
+		<Rank>3</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>32867</GoldCost>
+		<IdolCost>17</IdolCost>
+		<UpgradeTime>49200</UpgradeTime>
+		<Art>a_Upgrade_Forge_3</Art>
+		<UpgradeDescription>Unlocks Rank 4 charm recipes</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magic Forge Level 4</DisplayName>
+		<Rank>4</Rank>
+		<PlayerLevel>15</PlayerLevel>
+		<GoldCost>91888</GoldCost>
+		<IdolCost>39</IdolCost>
+		<UpgradeTime>142800</UpgradeTime>
+		<Art>a_Upgrade_Forge_4</Art>
+		<UpgradeDescription>Unlocks Rank 5 charm recipes</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magic Forge Level 5</DisplayName>
+		<Rank>5</Rank>
+		<PlayerLevel>20</PlayerLevel>
+		<GoldCost>209646</GoldCost>
+		<IdolCost>55</IdolCost>
+		<UpgradeTime>259200</UpgradeTime>
+		<Art>a_Upgrade_Forge_5</Art>
+		<UpgradeDescription>Unlocks Rank 6 charm recipes</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magic Forge Level 6</DisplayName>
+		<Rank>6</Rank>
+		<PlayerLevel>25</PlayerLevel>
+		<GoldCost>432172</GoldCost>
+		<IdolCost>85</IdolCost>
+		<UpgradeTime>343800</UpgradeTime>
+		<Art>a_Upgrade_Forge_6</Art>
+		<UpgradeDescription>Unlocks Rank 7 charm recipes</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magic Forge Level 7</DisplayName>
+		<Rank>7</Rank>
+		<PlayerLevel>30</PlayerLevel>
+		<GoldCost>835058</GoldCost>
+		<IdolCost>123</IdolCost>
+		<UpgradeTime>439200</UpgradeTime>
+		<Art>a_Upgrade_Forge_7</Art>
+		<UpgradeDescription>Unlocks Rank 8 charm recipes</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magic Forge Level 8</DisplayName>
+		<Rank>8</Rank>
+		<PlayerLevel>35</PlayerLevel>
+		<GoldCost>1539532</GoldCost>
+		<IdolCost>158</IdolCost>
+		<UpgradeTime>634800</UpgradeTime>
+		<Art>a_Upgrade_Forge_8</Art>
+		<UpgradeDescription>Unlocks Rank 9 charm recipes</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magic Forge Level 9</DisplayName>
+		<Rank>9</Rank>
+		<PlayerLevel>40</PlayerLevel>
+		<GoldCost>2748303</GoldCost>
+		<IdolCost>198</IdolCost>
+		<UpgradeTime>715200</UpgradeTime>
+		<Art>a_Upgrade_Forge_9</Art>
+		<UpgradeDescription>Unlocks Rank 10 charm recipes</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magic Forge Level 10</DisplayName>
+		<Rank>10</Rank>
+		<PlayerLevel>45</PlayerLevel>
+		<GoldCost>4781913</GoldCost>
+		<IdolCost>239</IdolCost>
+		<UpgradeTime>1024200</UpgradeTime>
+		<Art>a_Upgrade_Forge_Final</Art>
+	</Building>
+	<Building BuildingName="JusticarTower">
+		<BuildingID>3</BuildingID>
+		<DisplayName>Flamefury Dais</DisplayName>
+		<Type>Tower</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Upgrade_Tower</Art>
+		<BackgroundArt>a_Upgrade_ConduitBarbarian_1</BackgroundArt>
+		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
+	</Building>
+	<Building>
+		<DisplayName>Flamefury Dais Level 1</DisplayName>
+		<Rank>1</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>120</UpgradeTime>
+		<Art>a_Upgrade_Tower_Justicar1</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Flamefury Dais Level 2</DisplayName>
+		<Rank>2</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>32867</GoldCost>
+		<IdolCost>17</IdolCost>
+		<UpgradeTime>14400</UpgradeTime>
+		<Art>a_Upgrade_Tower_Justicar2</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Flamefury Dais Level 3</DisplayName>
+		<Rank>3</Rank>
+		<PlayerLevel>15</PlayerLevel>
+		<GoldCost>91888</GoldCost>
+		<IdolCost>39</IdolCost>
+		<UpgradeTime>49200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Justicar3</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Flamefury Dais Level 4</DisplayName>
+		<Rank>4</Rank>
+		<PlayerLevel>20</PlayerLevel>
+		<GoldCost>209646</GoldCost>
+		<IdolCost>55</IdolCost>
+		<UpgradeTime>142800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Justicar4</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Flamefury Dais Level 5</DisplayName>
+		<Rank>5</Rank>
+		<PlayerLevel>25</PlayerLevel>
+		<GoldCost>432172</GoldCost>
+		<IdolCost>85</IdolCost>
+		<UpgradeTime>259200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Justicar5</Art>
+		<BackgroundArt>a_Upgrade_ConduitBarbarian_5</BackgroundArt>
+		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Flamefury Dais Level 6</DisplayName>
+		<Rank>6</Rank>
+		<PlayerLevel>30</PlayerLevel>
+		<GoldCost>835058</GoldCost>
+		<IdolCost>123</IdolCost>
+		<UpgradeTime>343800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Justicar6</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Flamefury Dais Level 7</DisplayName>
+		<Rank>7</Rank>
+		<PlayerLevel>35</PlayerLevel>
+		<GoldCost>1539532</GoldCost>
+		<IdolCost>158</IdolCost>
+		<UpgradeTime>439200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Justicar7</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Flamefury Dais Level 8</DisplayName>
+		<Rank>8</Rank>
+		<PlayerLevel>40</PlayerLevel>
+		<GoldCost>2748303</GoldCost>
+		<IdolCost>198</IdolCost>
+		<UpgradeTime>634800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Justicar8</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Flamefury Dais Level 9</DisplayName>
+		<Rank>9</Rank>
+		<PlayerLevel>45</PlayerLevel>
+		<GoldCost>4781913</GoldCost>
+		<IdolCost>239</IdolCost>
+		<UpgradeTime>715200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Justicar9</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Flamefury Dais Level 10</DisplayName>
+		<Rank>10</Rank>
+		<PlayerLevel>50</PlayerLevel>
+		<GoldCost>8155866</GoldCost>
+		<IdolCost>299</IdolCost>
+		<UpgradeTime>1024200</UpgradeTime>
+		<Art>a_Upgrade_Tower_JusticarFinal</Art>
+		<BackgroundArt>a_Upgrade_ConduitBarbarian_10</BackgroundArt>
+		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
+	</Building>
+	<Building BuildingName="SentinelTower">
+		<BuildingID>4</BuildingID>
+		<DisplayName>Stormgaze Refuge</DisplayName>
+		<Type>Tower</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Upgrade_Tower</Art>
+	</Building>
+	<Building>
+		<DisplayName>Stormgaze Refuge Level 1</DisplayName>
+		<Rank>1</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>120</UpgradeTime>
+		<Art>a_Upgrade_Tower_Sentinel1</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Stormgaze Refuge Level 2</DisplayName>
+		<Rank>2</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>32867</GoldCost>
+		<IdolCost>17</IdolCost>
+		<UpgradeTime>14400</UpgradeTime>
+		<Art>a_Upgrade_Tower_Sentinel2</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Stormgaze Refuge Level 3</DisplayName>
+		<Rank>3</Rank>
+		<PlayerLevel>15</PlayerLevel>
+		<GoldCost>91888</GoldCost>
+		<IdolCost>39</IdolCost>
+		<UpgradeTime>49200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Sentinel3</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Stormgaze Refuge Level 4</DisplayName>
+		<Rank>4</Rank>
+		<PlayerLevel>20</PlayerLevel>
+		<GoldCost>209646</GoldCost>
+		<IdolCost>55</IdolCost>
+		<UpgradeTime>142800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Sentinel4</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Stormgaze Refuge Level 5</DisplayName>
+		<Rank>5</Rank>
+		<PlayerLevel>25</PlayerLevel>
+		<GoldCost>432172</GoldCost>
+		<IdolCost>85</IdolCost>
+		<UpgradeTime>259200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Sentinel5</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Stormgaze Refuge Level 6</DisplayName>
+		<Rank>6</Rank>
+		<PlayerLevel>30</PlayerLevel>
+		<GoldCost>835058</GoldCost>
+		<IdolCost>123</IdolCost>
+		<UpgradeTime>343800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Sentinel6</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Stormgaze Refuge Level 7</DisplayName>
+		<Rank>7</Rank>
+		<PlayerLevel>35</PlayerLevel>
+		<GoldCost>1539532</GoldCost>
+		<IdolCost>158</IdolCost>
+		<UpgradeTime>439200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Sentinel7</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Stormgaze Refuge Level 8</DisplayName>
+		<Rank>8</Rank>
+		<PlayerLevel>40</PlayerLevel>
+		<GoldCost>2748303</GoldCost>
+		<IdolCost>198</IdolCost>
+		<UpgradeTime>634800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Sentinel8</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Stormgaze Refuge Level 9</DisplayName>
+		<Rank>9</Rank>
+		<PlayerLevel>45</PlayerLevel>
+		<GoldCost>4781913</GoldCost>
+		<IdolCost>239</IdolCost>
+		<UpgradeTime>715200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Sentinel9</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Stormgaze Refuge Level 10</DisplayName>
+		<Rank>10</Rank>
+		<PlayerLevel>50</PlayerLevel>
+		<GoldCost>8155866</GoldCost>
+		<IdolCost>299</IdolCost>
+		<UpgradeTime>1024200</UpgradeTime>
+		<Art>a_Upgrade_Tower_SentinelFinal</Art>
+	</Building>
+	<Building BuildingName="TemplarTower">
+		<BuildingID>5</BuildingID>
+		<DisplayName>Templar Citadel</DisplayName>
+		<Type>Tower</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Upgrade_Tower</Art>
+		<BackgroundArt>a_templar1</BackgroundArt>
+		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
+	</Building>
+	<Building>
+		<DisplayName>Templar Citadel Level 1</DisplayName>
+		<Rank>1</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>120</UpgradeTime>
+		<Art>a_Upgrade_Tower_Templar1</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Templar Citadel Level 2</DisplayName>
+		<Rank>2</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>32867</GoldCost>
+		<IdolCost>17</IdolCost>
+		<UpgradeTime>14400</UpgradeTime>
+		<Art>a_Upgrade_Tower_Templar2</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Templar Citadel Level 3</DisplayName>
+		<Rank>3</Rank>
+		<PlayerLevel>15</PlayerLevel>
+		<GoldCost>91888</GoldCost>
+		<IdolCost>39</IdolCost>
+		<UpgradeTime>49200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Templar3</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Templar Citadel Level 4</DisplayName>
+		<Rank>4</Rank>
+		<PlayerLevel>20</PlayerLevel>
+		<GoldCost>209646</GoldCost>
+		<IdolCost>55</IdolCost>
+		<UpgradeTime>142800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Templar4</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Templar Citadel Level 5</DisplayName>
+		<Rank>5</Rank>
+		<PlayerLevel>25</PlayerLevel>
+		<GoldCost>432172</GoldCost>
+		<IdolCost>85</IdolCost>
+		<UpgradeTime>259200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Templar5</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Templar Citadel Level 6</DisplayName>
+		<Rank>6</Rank>
+		<PlayerLevel>30</PlayerLevel>
+		<GoldCost>835058</GoldCost>
+		<IdolCost>123</IdolCost>
+		<UpgradeTime>343800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Templar6</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Templar Citadel Level 7</DisplayName>
+		<Rank>7</Rank>
+		<PlayerLevel>35</PlayerLevel>
+		<GoldCost>1539532</GoldCost>
+		<IdolCost>158</IdolCost>
+		<UpgradeTime>439200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Templar7</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Templar Citadel Level 8</DisplayName>
+		<Rank>8</Rank>
+		<PlayerLevel>40</PlayerLevel>
+		<GoldCost>2748303</GoldCost>
+		<IdolCost>198</IdolCost>
+		<UpgradeTime>634800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Templar8</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Templar Citadel Level 9</DisplayName>
+		<Rank>9</Rank>
+		<PlayerLevel>45</PlayerLevel>
+		<GoldCost>4781913</GoldCost>
+		<IdolCost>239</IdolCost>
+		<UpgradeTime>715200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Templar9</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Templar Citadel Level 10</DisplayName>
+		<Rank>10</Rank>
+		<PlayerLevel>50</PlayerLevel>
+		<GoldCost>8155866</GoldCost>
+		<IdolCost>299</IdolCost>
+		<UpgradeTime>1024200</UpgradeTime>
+		<Art>a_Upgrade_Tower_TemplarFinal</Art>
+	</Building>
+	<Building BuildingName="FrostwardenTower">
+		<BuildingID>6</BuildingID>
+		<DisplayName>Coldsnap Conduit</DisplayName>
+		<Type>Tower</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Upgrade_Tower</Art>
+		<BackgroundArt>a_TowerAndBG_frostwarden1</BackgroundArt>
+		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
+	</Building>
+	<Building>
+		<DisplayName>Coldsnap Conduit Level 1</DisplayName>
+		<Rank>1</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>120</UpgradeTime>
+		<Art>a_Upgrade_Tower_Frostwarden1</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Coldsnap Conduit Level 2</DisplayName>
+		<Rank>2</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>32867</GoldCost>
+		<IdolCost>17</IdolCost>
+		<UpgradeTime>14400</UpgradeTime>
+		<Art>a_Upgrade_Tower_Frostwarden2</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Coldsnap Conduit Level 3</DisplayName>
+		<Rank>3</Rank>
+		<PlayerLevel>15</PlayerLevel>
+		<GoldCost>91888</GoldCost>
+		<IdolCost>39</IdolCost>
+		<UpgradeTime>49200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Frostwarden3</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Coldsnap Conduit Level 4</DisplayName>
+		<Rank>4</Rank>
+		<PlayerLevel>20</PlayerLevel>
+		<GoldCost>209646</GoldCost>
+		<IdolCost>55</IdolCost>
+		<UpgradeTime>142800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Frostwarden4</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Coldsnap Conduit Level 5</DisplayName>
+		<Rank>5</Rank>
+		<PlayerLevel>25</PlayerLevel>
+		<GoldCost>432172</GoldCost>
+		<IdolCost>85</IdolCost>
+		<UpgradeTime>259200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Frostwarden5</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Coldsnap Conduit Level 6</DisplayName>
+		<Rank>6</Rank>
+		<PlayerLevel>30</PlayerLevel>
+		<GoldCost>835058</GoldCost>
+		<IdolCost>123</IdolCost>
+		<UpgradeTime>343800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Frostwarden6</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Coldsnap Conduit Level 7</DisplayName>
+		<Rank>7</Rank>
+		<PlayerLevel>35</PlayerLevel>
+		<GoldCost>1539532</GoldCost>
+		<IdolCost>158</IdolCost>
+		<UpgradeTime>439200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Frostwarden7</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Coldsnap Conduit Level 8</DisplayName>
+		<Rank>8</Rank>
+		<PlayerLevel>40</PlayerLevel>
+		<GoldCost>2748303</GoldCost>
+		<IdolCost>198</IdolCost>
+		<UpgradeTime>634800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Frostwarden8</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Coldsnap Conduit Level 9</DisplayName>
+		<Rank>9</Rank>
+		<PlayerLevel>45</PlayerLevel>
+		<GoldCost>4781913</GoldCost>
+		<IdolCost>239</IdolCost>
+		<UpgradeTime>715200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Frostwarden9</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Coldsnap Conduit Level 10</DisplayName>
+		<Rank>10</Rank>
+		<PlayerLevel>50</PlayerLevel>
+		<GoldCost>8155866</GoldCost>
+		<IdolCost>299</IdolCost>
+		<UpgradeTime>1024200</UpgradeTime>
+		<Art>a_Upgrade_Tower_FrostwardenFinal</Art>
+	</Building>
+	<Building BuildingName="FlameseerTower">
+		<BuildingID>7</BuildingID>
+		<DisplayName>Magmaheart Furnace</DisplayName>
+		<Type>Tower</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Upgrade_Tower</Art>
+		<BackgroundArt>a_towerbg_flameseer1</BackgroundArt>
+		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
+	</Building>
+	<Building>
+		<DisplayName>Magmaheart Furnace Level 1</DisplayName>
+		<Rank>1</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>120</UpgradeTime>
+		<Art>a_Upgrade_Tower_Flameseer1</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magmaheart Furnace Level 2</DisplayName>
+		<Rank>2</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>32867</GoldCost>
+		<IdolCost>17</IdolCost>
+		<UpgradeTime>14400</UpgradeTime>
+		<Art>a_Upgrade_Tower_Flameseer2</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magmaheart Furnace Level 3</DisplayName>
+		<Rank>3</Rank>
+		<PlayerLevel>15</PlayerLevel>
+		<GoldCost>91888</GoldCost>
+		<IdolCost>39</IdolCost>
+		<UpgradeTime>49200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Flameseer3</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magmaheart Furnace Level 4</DisplayName>
+		<Rank>4</Rank>
+		<PlayerLevel>20</PlayerLevel>
+		<GoldCost>209646</GoldCost>
+		<IdolCost>55</IdolCost>
+		<UpgradeTime>142800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Flameseer4</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magmaheart Furnace Level 5</DisplayName>
+		<Rank>5</Rank>
+		<PlayerLevel>25</PlayerLevel>
+		<GoldCost>432172</GoldCost>
+		<IdolCost>85</IdolCost>
+		<UpgradeTime>259200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Flameseer5</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magmaheart Furnace Level 6</DisplayName>
+		<Rank>6</Rank>
+		<PlayerLevel>30</PlayerLevel>
+		<GoldCost>835058</GoldCost>
+		<IdolCost>123</IdolCost>
+		<UpgradeTime>343800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Flameseer6</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magmaheart Furnace Level 7</DisplayName>
+		<Rank>7</Rank>
+		<PlayerLevel>35</PlayerLevel>
+		<GoldCost>1539532</GoldCost>
+		<IdolCost>158</IdolCost>
+		<UpgradeTime>439200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Flameseer7</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magmaheart Furnace Level 8</DisplayName>
+		<Rank>8</Rank>
+		<PlayerLevel>40</PlayerLevel>
+		<GoldCost>2748303</GoldCost>
+		<IdolCost>198</IdolCost>
+		<UpgradeTime>634800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Flameseer8</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magmaheart Furnace Level 9</DisplayName>
+		<Rank>9</Rank>
+		<PlayerLevel>45</PlayerLevel>
+		<GoldCost>4781913</GoldCost>
+		<IdolCost>239</IdolCost>
+		<UpgradeTime>715200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Flameseer9</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Magmaheart Furnace Level 10</DisplayName>
+		<Rank>10</Rank>
+		<PlayerLevel>50</PlayerLevel>
+		<GoldCost>8155866</GoldCost>
+		<IdolCost>299</IdolCost>
+		<UpgradeTime>1024200</UpgradeTime>
+		<Art>a_Upgrade_Tower_FlameseerFinal</Art>
+	</Building>
+	<Building BuildingName="NecromancerTower">
+		<BuildingID>8</BuildingID>
+		<DisplayName>Necromancer Tower</DisplayName>
+		<Type>Tower</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Upgrade_Tower</Art>
+		<BackgroundArt>a_towerbg_necromancer1</BackgroundArt>
+		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
+	</Building>
+	<Building>
+		<DisplayName>Necromancer Tower Level 1</DisplayName>
+		<Rank>1</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>120</UpgradeTime>
+		<Art>a_Upgrade_Tower_Necromancer1</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Necromancer Tower Level 2</DisplayName>
+		<Rank>2</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>32867</GoldCost>
+		<IdolCost>17</IdolCost>
+		<UpgradeTime>14400</UpgradeTime>
+		<Art>a_Upgrade_Tower_Necromancer2</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Necromancer Tower Level 3</DisplayName>
+		<Rank>3</Rank>
+		<PlayerLevel>15</PlayerLevel>
+		<GoldCost>91888</GoldCost>
+		<IdolCost>39</IdolCost>
+		<UpgradeTime>49200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Necromancer3</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Necromancer Tower Level 4</DisplayName>
+		<Rank>4</Rank>
+		<PlayerLevel>20</PlayerLevel>
+		<GoldCost>209646</GoldCost>
+		<IdolCost>55</IdolCost>
+		<UpgradeTime>142800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Necromancer4</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Necromancer Tower Level 5</DisplayName>
+		<Rank>5</Rank>
+		<PlayerLevel>25</PlayerLevel>
+		<GoldCost>432172</GoldCost>
+		<IdolCost>85</IdolCost>
+		<UpgradeTime>259200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Necromancer5</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Necromancer Tower Level 6</DisplayName>
+		<Rank>6</Rank>
+		<PlayerLevel>30</PlayerLevel>
+		<GoldCost>835058</GoldCost>
+		<IdolCost>123</IdolCost>
+		<UpgradeTime>343800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Necromancer6</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Necromancer Tower Level 7</DisplayName>
+		<Rank>7</Rank>
+		<PlayerLevel>35</PlayerLevel>
+		<GoldCost>1539532</GoldCost>
+		<IdolCost>158</IdolCost>
+		<UpgradeTime>439200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Necromancer7</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Necromancer Tower Level 8</DisplayName>
+		<Rank>8</Rank>
+		<PlayerLevel>40</PlayerLevel>
+		<GoldCost>2748303</GoldCost>
+		<IdolCost>198</IdolCost>
+		<UpgradeTime>634800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Necromancer8</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Necromancer Tower Level 9</DisplayName>
+		<Rank>9</Rank>
+		<PlayerLevel>45</PlayerLevel>
+		<GoldCost>4781913</GoldCost>
+		<IdolCost>239</IdolCost>
+		<UpgradeTime>715200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Necromancer9</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Necromancer Tower Level 10</DisplayName>
+		<Rank>10</Rank>
+		<PlayerLevel>50</PlayerLevel>
+		<GoldCost>8155866</GoldCost>
+		<IdolCost>299</IdolCost>
+		<UpgradeTime>1024200</UpgradeTime>
+		<Art>a_Upgrade_Tower_NecromancerFinal</Art>
+	</Building>
+	<Building BuildingName="ExecutionerTower">
+		<BuildingID>9</BuildingID>
+		<DisplayName>Elysian Soultrap</DisplayName>
+		<Type>Tower</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Upgrade_Tower</Art>
+		<BackgroundArt>a_executioner1</BackgroundArt>
+		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
+	</Building>
+	<Building>
+		<DisplayName>Elysian Soultrap Level 1</DisplayName>
+		<Rank>1</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>120</UpgradeTime>
+		<Art>a_Upgrade_Tower_Executioner1</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Elysian Soultrap Level 2</DisplayName>
+		<Rank>2</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>32867</GoldCost>
+		<IdolCost>17</IdolCost>
+		<UpgradeTime>14400</UpgradeTime>
+		<Art>a_Upgrade_Tower_Executioner2</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Elysian Soultrap Level 3</DisplayName>
+		<Rank>3</Rank>
+		<PlayerLevel>15</PlayerLevel>
+		<GoldCost>91888</GoldCost>
+		<IdolCost>39</IdolCost>
+		<UpgradeTime>49200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Executioner3</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Elysian Soultrap Level 4</DisplayName>
+		<Rank>4</Rank>
+		<PlayerLevel>20</PlayerLevel>
+		<GoldCost>209646</GoldCost>
+		<IdolCost>55</IdolCost>
+		<UpgradeTime>142800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Executioner4</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Elysian Soultrap Level 5</DisplayName>
+		<Rank>5</Rank>
+		<PlayerLevel>25</PlayerLevel>
+		<GoldCost>432172</GoldCost>
+		<IdolCost>85</IdolCost>
+		<UpgradeTime>259200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Executioner5</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Elysian Soultrap Level 6</DisplayName>
+		<Rank>6</Rank>
+		<PlayerLevel>30</PlayerLevel>
+		<GoldCost>835058</GoldCost>
+		<IdolCost>123</IdolCost>
+		<UpgradeTime>343800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Executioner6</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Elysian Soultrap Level 7</DisplayName>
+		<Rank>7</Rank>
+		<PlayerLevel>35</PlayerLevel>
+		<GoldCost>1539532</GoldCost>
+		<IdolCost>158</IdolCost>
+		<UpgradeTime>439200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Executioner7</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Elysian Soultrap Level 8</DisplayName>
+		<Rank>8</Rank>
+		<PlayerLevel>40</PlayerLevel>
+		<GoldCost>2748303</GoldCost>
+		<IdolCost>198</IdolCost>
+		<UpgradeTime>634800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Executioner8</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Elysian Soultrap Level 9</DisplayName>
+		<Rank>9</Rank>
+		<PlayerLevel>45</PlayerLevel>
+		<GoldCost>4781913</GoldCost>
+		<IdolCost>239</IdolCost>
+		<UpgradeTime>715200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Executioner9</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Elysian Soultrap Level 10</DisplayName>
+		<Rank>10</Rank>
+		<PlayerLevel>50</PlayerLevel>
+		<GoldCost>8155866</GoldCost>
+		<IdolCost>299</IdolCost>
+		<UpgradeTime>1024200</UpgradeTime>
+		<Art>a_Upgrade_Tower_ExecutionerFinal</Art>
+	</Building>
+	<Building BuildingName="ShadowwalkerTower">
+		<BuildingID>10</BuildingID>
+		<DisplayName>Twisted Nethertotem</DisplayName>
+		<Type>Tower</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Upgrade_Tower</Art>
+		<BackgroundArt>a_shadowwalker1</BackgroundArt>
+		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
+	</Building>
+	<Building>
+		<DisplayName>Twisted Nethertotem Level 1</DisplayName>
+		<Rank>1</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>120</UpgradeTime>
+		<Art>a_Upgrade_Tower_Shadowwalker1</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Twisted Nethertotem Level 2</DisplayName>
+		<Rank>2</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>32867</GoldCost>
+		<IdolCost>17</IdolCost>
+		<UpgradeTime>14400</UpgradeTime>
+		<Art>a_Upgrade_Tower_Shadowwalker2</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Twisted Nethertotem Level 3</DisplayName>
+		<Rank>3</Rank>
+		<PlayerLevel>15</PlayerLevel>
+		<GoldCost>91888</GoldCost>
+		<IdolCost>39</IdolCost>
+		<UpgradeTime>49200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Shadowwalker3</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Twisted Nethertotem Level 4</DisplayName>
+		<Rank>4</Rank>
+		<PlayerLevel>20</PlayerLevel>
+		<GoldCost>209646</GoldCost>
+		<IdolCost>55</IdolCost>
+		<UpgradeTime>142800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Shadowwalker4</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Twisted Nethertotem Level 5</DisplayName>
+		<Rank>5</Rank>
+		<PlayerLevel>25</PlayerLevel>
+		<GoldCost>432172</GoldCost>
+		<IdolCost>85</IdolCost>
+		<UpgradeTime>259200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Shadowwalker5</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Twisted Nethertotem Level 6</DisplayName>
+		<Rank>6</Rank>
+		<PlayerLevel>30</PlayerLevel>
+		<GoldCost>835058</GoldCost>
+		<IdolCost>123</IdolCost>
+		<UpgradeTime>343800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Shadowwalker6</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Twisted Nethertotem Level 7</DisplayName>
+		<Rank>7</Rank>
+		<PlayerLevel>35</PlayerLevel>
+		<GoldCost>1539532</GoldCost>
+		<IdolCost>158</IdolCost>
+		<UpgradeTime>439200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Shadowwalker7</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Twisted Nethertotem Level 8</DisplayName>
+		<Rank>8</Rank>
+		<PlayerLevel>40</PlayerLevel>
+		<GoldCost>2748303</GoldCost>
+		<IdolCost>198</IdolCost>
+		<UpgradeTime>634800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Shadowwalker8</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Twisted Nethertotem Level 9</DisplayName>
+		<Rank>9</Rank>
+		<PlayerLevel>45</PlayerLevel>
+		<GoldCost>4781913</GoldCost>
+		<IdolCost>239</IdolCost>
+		<UpgradeTime>715200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Shadowwalker9</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Twisted Nethertotem Level 10</DisplayName>
+		<Rank>10</Rank>
+		<PlayerLevel>50</PlayerLevel>
+		<GoldCost>8155866</GoldCost>
+		<IdolCost>299</IdolCost>
+		<UpgradeTime>1024200</UpgradeTime>
+		<Art>a_Upgrade_Tower_ShadowwalkerFinal</Art>
+	</Building>
+	<Building BuildingName="SoulthiefTower">
+		<BuildingID>11</BuildingID>
+		<DisplayName>Soulthief Lair</DisplayName>
+		<Type>Tower</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Upgrade_Tower</Art>
+		<BackgroundArt>a_revenant1</BackgroundArt>
+		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
+	</Building>
+	<Building>
+		<DisplayName>Soulthief Lair Level 1</DisplayName>
+		<Rank>1</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>120</UpgradeTime>
+		<Art>a_Upgrade_Tower_Blademaster1</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Soulthief Lair Level 2</DisplayName>
+		<Rank>2</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>32867</GoldCost>
+		<IdolCost>17</IdolCost>
+		<UpgradeTime>14400</UpgradeTime>
+		<Art>a_Upgrade_Tower_Blademaster2</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Soulthief Lair Level 3</DisplayName>
+		<Rank>3</Rank>
+		<PlayerLevel>15</PlayerLevel>
+		<GoldCost>91888</GoldCost>
+		<IdolCost>39</IdolCost>
+		<UpgradeTime>49200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Blademaster3</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Soulthief Lair Level 4</DisplayName>
+		<Rank>4</Rank>
+		<PlayerLevel>20</PlayerLevel>
+		<GoldCost>209646</GoldCost>
+		<IdolCost>55</IdolCost>
+		<UpgradeTime>142800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Blademaster4</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Soulthief Lair Level 5</DisplayName>
+		<Rank>5</Rank>
+		<PlayerLevel>25</PlayerLevel>
+		<GoldCost>432172</GoldCost>
+		<IdolCost>85</IdolCost>
+		<UpgradeTime>259200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Blademaster5</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Soulthief Lair Level 6</DisplayName>
+		<Rank>6</Rank>
+		<PlayerLevel>30</PlayerLevel>
+		<GoldCost>835058</GoldCost>
+		<IdolCost>123</IdolCost>
+		<UpgradeTime>343800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Blademaster6</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Soulthief Lair Level 7</DisplayName>
+		<Rank>7</Rank>
+		<PlayerLevel>35</PlayerLevel>
+		<GoldCost>1539532</GoldCost>
+		<IdolCost>158</IdolCost>
+		<UpgradeTime>439200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Blademaster7</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Soulthief Lair Level 8</DisplayName>
+		<Rank>8</Rank>
+		<PlayerLevel>40</PlayerLevel>
+		<GoldCost>2748303</GoldCost>
+		<IdolCost>198</IdolCost>
+		<UpgradeTime>634800</UpgradeTime>
+		<Art>a_Upgrade_Tower_Blademaster8</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Soulthief Lair Level 9</DisplayName>
+		<Rank>9</Rank>
+		<PlayerLevel>45</PlayerLevel>
+		<GoldCost>4781913</GoldCost>
+		<IdolCost>239</IdolCost>
+		<UpgradeTime>715200</UpgradeTime>
+		<Art>a_Upgrade_Tower_Blademaster9</Art>
+		<UpgradeDescription>Unlocks the next 5 talent points for training</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Soulthief Lair Level 10</DisplayName>
+		<Rank>10</Rank>
+		<PlayerLevel>50</PlayerLevel>
+		<GoldCost>8155866</GoldCost>
+		<IdolCost>299</IdolCost>
+		<UpgradeTime>1024200</UpgradeTime>
+		<Art>a_Upgrade_Tower_BlademasterFinal</Art>
+	</Building>
+	<Building BuildingName="Keep">
+		<BuildingID>12</BuildingID>
+		<DisplayName>Hero's Keep</DisplayName>
+		<Type>Keep</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Upgrade_Keep_5</Art>
+		<BackgroundArt>a_Upgrade_Keep_1</BackgroundArt>
+		<UpgradeIcon>a_Upgrade_Keep_1</UpgradeIcon>
+	</Building>
+	<Building BuildingName="Barn">
+		<BuildingID>13</BuildingID>
+		<DisplayName>Hatchery</DisplayName>
+		<Type>Barn</Type>
+		<Rank>0</Rank>
+		<PlayerLevel>0</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>0</UpgradeTime>
+		<Art>a_Upgrade_Barn_0</Art>
+		<BackgroundArt>a_Upgrade_PetHouse_1</BackgroundArt>
+		<UpgradeIcon>a_BarnUpgradeIcon</UpgradeIcon>
+	</Building>
+	<Building>
+		<DisplayName>Hatchery Level 1</DisplayName>
+		<Rank>1</Rank>
+		<PlayerLevel>5</PlayerLevel>
+		<GoldCost>0</GoldCost>
+		<IdolCost>0</IdolCost>
+		<UpgradeTime>150</UpgradeTime>
+		<Art>a_Upgrade_Barn_1</Art>
+		<UpgradeDescription>Increases the max pet level cap by 2</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Hatchery Level 2</DisplayName>
+		<Rank>2</Rank>
+		<PlayerLevel>5</PlayerLevel>
+		<GoldCost>5872</GoldCost>
+		<IdolCost>3</IdolCost>
+		<UpgradeTime>14400</UpgradeTime>
+		<Art>a_Upgrade_Barn_2</Art>
+		<UpgradeDescription>Increases the max pet level cap by 2</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Hatchery Level 3</DisplayName>
+		<Rank>3</Rank>
+		<PlayerLevel>10</PlayerLevel>
+		<GoldCost>32867</GoldCost>
+		<IdolCost>17</IdolCost>
+		<UpgradeTime>49200</UpgradeTime>
+		<Art>a_Upgrade_Barn_3</Art>
+		<UpgradeDescription>Increases the max pet level cap by 2</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Hatchery Level 4</DisplayName>
+		<Rank>4</Rank>
+		<PlayerLevel>15</PlayerLevel>
+		<GoldCost>91888</GoldCost>
+		<IdolCost>39</IdolCost>
+		<UpgradeTime>142800</UpgradeTime>
+		<Art>a_Upgrade_Barn_4</Art>
+		<UpgradeDescription>Increases the max pet level cap by 2</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Hatchery Level 5</DisplayName>
+		<Rank>5</Rank>
+		<PlayerLevel>20</PlayerLevel>
+		<GoldCost>209646</GoldCost>
+		<IdolCost>55</IdolCost>
+		<UpgradeTime>259200</UpgradeTime>
+		<Art>a_Upgrade_Barn_5</Art>
+		<UpgradeDescription>Increases the max pet level cap by 2</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Hatchery Level 6</DisplayName>
+		<Rank>6</Rank>
+		<PlayerLevel>25</PlayerLevel>
+		<GoldCost>432172</GoldCost>
+		<IdolCost>85</IdolCost>
+		<UpgradeTime>343800</UpgradeTime>
+		<Art>a_Upgrade_Barn_6</Art>
+		<UpgradeDescription>Increases the max pet level cap by 2</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Hatchery Level 7</DisplayName>
+		<Rank>7</Rank>
+		<PlayerLevel>30</PlayerLevel>
+		<GoldCost>835058</GoldCost>
+		<IdolCost>123</IdolCost>
+		<UpgradeTime>439200</UpgradeTime>
+		<Art>a_Upgrade_Barn_7</Art>
+		<UpgradeDescription>Increases the max pet level cap by 2</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Hatchery Level 8</DisplayName>
+		<Rank>8</Rank>
+		<PlayerLevel>35</PlayerLevel>
+		<GoldCost>1539532</GoldCost>
+		<IdolCost>158</IdolCost>
+		<UpgradeTime>634800</UpgradeTime>
+		<Art>a_Upgrade_Barn_8</Art>
+		<UpgradeDescription>Increases the max pet level cap by 2</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Hatchery Level 9</DisplayName>
+		<Rank>9</Rank>
+		<PlayerLevel>40</PlayerLevel>
+		<GoldCost>2748303</GoldCost>
+		<IdolCost>198</IdolCost>
+		<UpgradeTime>715200</UpgradeTime>
+		<Art>a_Upgrade_Barn_9</Art>
+		<UpgradeDescription>Increases the max pet level cap by 2</UpgradeDescription>
+	</Building>
+	<Building>
+		<DisplayName>Hatchery Level 10</DisplayName>
+		<Rank>10</Rank>
+		<PlayerLevel>45</PlayerLevel>
+		<GoldCost>4781913</GoldCost>
+		<IdolCost>239</IdolCost>
+		<UpgradeTime>1024200</UpgradeTime>
+		<Art>a_Upgrade_Barn_Final</Art>
+	</Building>
+</BuildingTypes>

@@ -1,0 +1,1164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<CharmTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<CharmType CharmName="---Template---">
+		<CharmID>0</CharmID>
+		<DisplayName>Template</DisplayName>
+		<CharmLevel>0</CharmLevel>
+		<UpgradeCharm>NextCharm</UpgradeCharm>
+		<PrimaryType>Realm</PrimaryType>
+		<PrimaryCost>0</PrimaryCost>
+		<CharmSize>0</CharmSize>
+		<GoldDrop>0</GoldDrop>
+		<ItemDrop>0</ItemDrop>
+		<CraftDrop>0</CraftDrop>
+		<HitPointBoost>0</HitPointBoost>
+		<PowerBonus>0</PowerBonus>
+		<ProcChanceUp>0</ProcChanceUp>
+		<MeleeBonus>0</MeleeBonus>
+		<MagicBonus>0</MagicBonus>
+		<ArmorBonus>0</ArmorBonus>
+		<IconName>a_CharmIcon_Blank</IconName>
+		<Description>WhatIDo</Description>
+		<DisallowCrafting>False</DisallowCrafting>
+	</CharmType>
+	<CharmType CharmName="Trog01">
+		<CharmID>1</CharmID>
+		<DisplayName>Chipped Diamond</DisplayName>
+		<CharmLevel>1</CharmLevel>
+		<UpgradeCharm>Trog02</UpgradeCharm>
+		<PrimaryType>Trog</PrimaryType>
+		<PrimaryCost>1</PrimaryCost>
+		<CharmSize>1</CharmSize>
+		<ItemDrop>0.01</ItemDrop>
+		<IconName>a_CharmIcon_Diamond1</IconName>
+		<Description>+1% Gear Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Infernal01">
+		<CharmID>2</CharmID>
+		<DisplayName>Chipped Amethyst</DisplayName>
+		<CharmLevel>1</CharmLevel>
+		<UpgradeCharm>Infernal02</UpgradeCharm>
+		<PrimaryType>Infernal</PrimaryType>
+		<PrimaryCost>1</PrimaryCost>
+		<CharmSize>1</CharmSize>
+		<ProcChanceUp>0.005</ProcChanceUp>
+		<IconName>a_CharmIcon_Amethyst1</IconName>
+		<Description>+0.5% Critical Chance</Description>
+	</CharmType>
+	<CharmType CharmName="Undead01">
+		<CharmID>3</CharmID>
+		<DisplayName>Chipped Topaz</DisplayName>
+		<CharmLevel>1</CharmLevel>
+		<UpgradeCharm>Undead02</UpgradeCharm>
+		<PrimaryType>Undead</PrimaryType>
+		<PrimaryCost>1</PrimaryCost>
+		<CharmSize>1</CharmSize>
+		<GoldDrop>0.01</GoldDrop>
+		<IconName>a_CharmIcon_Topaz1</IconName>
+		<Description>+1% Gold</Description>
+	</CharmType>
+	<CharmType CharmName="Mythic01">
+		<CharmID>4</CharmID>
+		<DisplayName>Chipped Zircon</DisplayName>
+		<CharmLevel>1</CharmLevel>
+		<UpgradeCharm>Mythic02</UpgradeCharm>
+		<PrimaryType>Mythic</PrimaryType>
+		<PrimaryCost>1</PrimaryCost>
+		<CharmSize>1</CharmSize>
+		<CraftDrop>0.01</CraftDrop>
+		<IconName>a_CharmIcon_Sapphire1</IconName>
+		<Description>+1% Material Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Draconic01">
+		<CharmID>5</CharmID>
+		<DisplayName>Chipped Ruby</DisplayName>
+		<CharmLevel>1</CharmLevel>
+		<UpgradeCharm>Draconic02</UpgradeCharm>
+		<PrimaryType>Draconic</PrimaryType>
+		<PrimaryCost>1</PrimaryCost>
+		<CharmSize>1</CharmSize>
+		<PowerBonus>0.005</PowerBonus>
+		<IconName>a_CharmIcon_Ruby1</IconName>
+		<Description>+0.5% Critical Bonus</Description>
+	</CharmType>
+	<CharmType CharmName="Sylvan01">
+		<CharmID>6</CharmID>
+		<DisplayName>Chipped Emerald</DisplayName>
+		<CharmLevel>1</CharmLevel>
+		<UpgradeCharm>Sylvan02</UpgradeCharm>
+		<PrimaryType>Sylvan</PrimaryType>
+		<PrimaryCost>1</PrimaryCost>
+		<CharmSize>1</CharmSize>
+		<HitPointBoost>379</HitPointBoost>
+		<IconName>a_CharmIcon_Emerald1</IconName>
+		<Description>+379 Health</Description>
+	</CharmType>
+	<CharmType CharmName="Trog02">
+		<CharmID>7</CharmID>
+		<DisplayName>Dim Diamond</DisplayName>
+		<CharmLevel>2</CharmLevel>
+		<UpgradeCharm>Trog03</UpgradeCharm>
+		<PrimaryType>Trog</PrimaryType>
+		<PrimaryCost>6</PrimaryCost>
+		<CharmSize>2</CharmSize>
+		<ItemDrop>0.02</ItemDrop>
+		<IconName>a_CharmIcon_Diamond2</IconName>
+		<Description>+2% Gear Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Infernal02">
+		<CharmID>8</CharmID>
+		<DisplayName>Dim Amethyst</DisplayName>
+		<CharmLevel>3</CharmLevel>
+		<UpgradeCharm>Infernal03</UpgradeCharm>
+		<PrimaryType>Infernal</PrimaryType>
+		<PrimaryCost>8</PrimaryCost>
+		<CharmSize>2</CharmSize>
+		<ProcChanceUp>0.01</ProcChanceUp>
+		<IconName>a_CharmIcon_Amethyst2</IconName>
+		<Description>+1% Critical Chance</Description>
+	</CharmType>
+	<CharmType CharmName="Undead02">
+		<CharmID>9</CharmID>
+		<DisplayName>Dim Topaz</DisplayName>
+		<CharmLevel>4</CharmLevel>
+		<UpgradeCharm>Undead03</UpgradeCharm>
+		<PrimaryType>Undead</PrimaryType>
+		<PrimaryCost>10</PrimaryCost>
+		<CharmSize>2</CharmSize>
+		<GoldDrop>0.02</GoldDrop>
+		<IconName>a_CharmIcon_Topaz2</IconName>
+		<Description>+2% Gold</Description>
+	</CharmType>
+	<CharmType CharmName="Mythic02">
+		<CharmID>10</CharmID>
+		<DisplayName>Dim Zircon</DisplayName>
+		<CharmLevel>5</CharmLevel>
+		<UpgradeCharm>Mythic03</UpgradeCharm>
+		<PrimaryType>Mythic</PrimaryType>
+		<PrimaryCost>13</PrimaryCost>
+		<CharmSize>2</CharmSize>
+		<CraftDrop>0.02</CraftDrop>
+		<IconName>a_CharmIcon_Sapphire2</IconName>
+		<Description>+2% Material Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Draconic02">
+		<CharmID>11</CharmID>
+		<DisplayName>Dim Ruby</DisplayName>
+		<CharmLevel>6</CharmLevel>
+		<UpgradeCharm>Draconic03</UpgradeCharm>
+		<PrimaryType>Draconic</PrimaryType>
+		<PrimaryCost>16</PrimaryCost>
+		<CharmSize>2</CharmSize>
+		<PowerBonus>0.01</PowerBonus>
+		<IconName>a_CharmIcon_Ruby2</IconName>
+		<Description>+1% Critical Bonus</Description>
+	</CharmType>
+	<CharmType CharmName="Sylvan02">
+		<CharmID>12</CharmID>
+		<DisplayName>Dim Emerald</DisplayName>
+		<CharmLevel>7</CharmLevel>
+		<UpgradeCharm>Sylvan03</UpgradeCharm>
+		<PrimaryType>Sylvan</PrimaryType>
+		<PrimaryCost>20</PrimaryCost>
+		<CharmSize>2</CharmSize>
+		<HitPointBoost>468</HitPointBoost>
+		<IconName>a_CharmIcon_Emerald2</IconName>
+		<Description>+468 Health</Description>
+	</CharmType>
+	<CharmType CharmName="Trog03">
+		<CharmID>13</CharmID>
+		<DisplayName>Streaked Diamond</DisplayName>
+		<CharmLevel>8</CharmLevel>
+		<UpgradeCharm>Trog04</UpgradeCharm>
+		<PrimaryType>Trog</PrimaryType>
+		<PrimaryCost>24</PrimaryCost>
+		<CharmSize>3</CharmSize>
+		<ItemDrop>0.03</ItemDrop>
+		<IconName>a_CharmIcon_Diamond3</IconName>
+		<Description>+3% Gear Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Infernal03">
+		<CharmID>14</CharmID>
+		<DisplayName>Streaked Amethyst</DisplayName>
+		<CharmLevel>9</CharmLevel>
+		<UpgradeCharm>Infernal04</UpgradeCharm>
+		<PrimaryType>Infernal</PrimaryType>
+		<PrimaryCost>28</PrimaryCost>
+		<CharmSize>3</CharmSize>
+		<ProcChanceUp>0.015</ProcChanceUp>
+		<IconName>a_CharmIcon_Amethyst3</IconName>
+		<Description>+1.5% Critical Chance</Description>
+	</CharmType>
+	<CharmType CharmName="Undead03">
+		<CharmID>15</CharmID>
+		<DisplayName>Streaked Topaz</DisplayName>
+		<CharmLevel>10</CharmLevel>
+		<UpgradeCharm>Undead04</UpgradeCharm>
+		<PrimaryType>Undead</PrimaryType>
+		<PrimaryCost>32</PrimaryCost>
+		<CharmSize>3</CharmSize>
+		<GoldDrop>0.03</GoldDrop>
+		<IconName>a_CharmIcon_Topaz3</IconName>
+		<Description>+3% Gold</Description>
+	</CharmType>
+	<CharmType CharmName="Mythic03">
+		<CharmID>16</CharmID>
+		<DisplayName>Streaked Zircon</DisplayName>
+		<CharmLevel>11</CharmLevel>
+		<UpgradeCharm>Mythic04</UpgradeCharm>
+		<PrimaryType>Mythic</PrimaryType>
+		<PrimaryCost>37</PrimaryCost>
+		<CharmSize>3</CharmSize>
+		<CraftDrop>0.03</CraftDrop>
+		<IconName>a_CharmIcon_Sapphire3</IconName>
+		<Description>+3% Material Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Draconic03">
+		<CharmID>17</CharmID>
+		<DisplayName>Streaked Ruby</DisplayName>
+		<CharmLevel>12</CharmLevel>
+		<UpgradeCharm>Draconic04</UpgradeCharm>
+		<PrimaryType>Draconic</PrimaryType>
+		<PrimaryCost>41</PrimaryCost>
+		<CharmSize>3</CharmSize>
+		<PowerBonus>0.015</PowerBonus>
+		<IconName>a_CharmIcon_Ruby3</IconName>
+		<Description>+1.5% Critical Bonus</Description>
+	</CharmType>
+	<CharmType CharmName="Sylvan03">
+		<CharmID>18</CharmID>
+		<DisplayName>Streaked Emerald</DisplayName>
+		<CharmLevel>13</CharmLevel>
+		<UpgradeCharm>Sylvan04</UpgradeCharm>
+		<PrimaryType>Sylvan</PrimaryType>
+		<PrimaryCost>46</PrimaryCost>
+		<CharmSize>3</CharmSize>
+		<HitPointBoost>581</HitPointBoost>
+		<IconName>a_CharmIcon_Emerald3</IconName>
+		<Description>+581 Health</Description>
+	</CharmType>
+	<CharmType CharmName="Trog04">
+		<CharmID>19</CharmID>
+		<DisplayName>Unflawed Diamond</DisplayName>
+		<CharmLevel>14</CharmLevel>
+		<UpgradeCharm>Trog05</UpgradeCharm>
+		<PrimaryType>Trog</PrimaryType>
+		<PrimaryCost>52</PrimaryCost>
+		<CharmSize>4</CharmSize>
+		<ItemDrop>0.04</ItemDrop>
+		<IconName>a_CharmIcon_Diamond4</IconName>
+		<Description>+4% Gear Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Infernal04">
+		<CharmID>20</CharmID>
+		<DisplayName>Unflawed Amethyst</DisplayName>
+		<CharmLevel>15</CharmLevel>
+		<UpgradeCharm>Infernal05</UpgradeCharm>
+		<PrimaryType>Infernal</PrimaryType>
+		<PrimaryCost>57</PrimaryCost>
+		<CharmSize>4</CharmSize>
+		<ProcChanceUp>0.02</ProcChanceUp>
+		<IconName>a_CharmIcon_Amethyst4</IconName>
+		<Description>+2% Critical Chance</Description>
+	</CharmType>
+	<CharmType CharmName="Undead04">
+		<CharmID>21</CharmID>
+		<DisplayName>Unflawed Topaz</DisplayName>
+		<CharmLevel>16</CharmLevel>
+		<UpgradeCharm>Undead05</UpgradeCharm>
+		<PrimaryType>Undead</PrimaryType>
+		<PrimaryCost>63</PrimaryCost>
+		<CharmSize>4</CharmSize>
+		<GoldDrop>0.04</GoldDrop>
+		<IconName>a_CharmIcon_Topaz4</IconName>
+		<Description>+4% Gold</Description>
+	</CharmType>
+	<CharmType CharmName="Mythic04">
+		<CharmID>22</CharmID>
+		<DisplayName>Unflawed Zircon</DisplayName>
+		<CharmLevel>17</CharmLevel>
+		<UpgradeCharm>Mythic05</UpgradeCharm>
+		<PrimaryType>Mythic</PrimaryType>
+		<PrimaryCost>69</PrimaryCost>
+		<CharmSize>4</CharmSize>
+		<CraftDrop>0.04</CraftDrop>
+		<IconName>a_CharmIcon_Sapphire4</IconName>
+		<Description>+4% Material Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Draconic04">
+		<CharmID>23</CharmID>
+		<DisplayName>Unflawed Ruby</DisplayName>
+		<CharmLevel>18</CharmLevel>
+		<UpgradeCharm>Draconic05</UpgradeCharm>
+		<PrimaryType>Draconic</PrimaryType>
+		<PrimaryCost>75</PrimaryCost>
+		<CharmSize>4</CharmSize>
+		<PowerBonus>0.02</PowerBonus>
+		<IconName>a_CharmIcon_Ruby4</IconName>
+		<Description>+2% Critical Bonus</Description>
+	</CharmType>
+	<CharmType CharmName="Sylvan04">
+		<CharmID>24</CharmID>
+		<DisplayName>Unflawed Emerald</DisplayName>
+		<CharmLevel>19</CharmLevel>
+		<UpgradeCharm>Sylvan05</UpgradeCharm>
+		<PrimaryType>Sylvan</PrimaryType>
+		<PrimaryCost>81</PrimaryCost>
+		<CharmSize>4</CharmSize>
+		<HitPointBoost>724</HitPointBoost>
+		<IconName>a_CharmIcon_Emerald4</IconName>
+		<Description>+724 Health</Description>
+	</CharmType>
+	<CharmType CharmName="Trog05">
+		<CharmID>25</CharmID>
+		<DisplayName>Superb Diamond</DisplayName>
+		<CharmLevel>20</CharmLevel>
+		<UpgradeCharm>Trog06</UpgradeCharm>
+		<PrimaryType>Trog</PrimaryType>
+		<PrimaryCost>88</PrimaryCost>
+		<CharmSize>5</CharmSize>
+		<ItemDrop>0.05</ItemDrop>
+		<IconName>a_CharmIcon_Diamond5</IconName>
+		<Description>+5% Gear Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Infernal05">
+		<CharmID>26</CharmID>
+		<DisplayName>Superb Amethyst</DisplayName>
+		<CharmLevel>21</CharmLevel>
+		<UpgradeCharm>Infernal06</UpgradeCharm>
+		<PrimaryType>Infernal</PrimaryType>
+		<PrimaryCost>95</PrimaryCost>
+		<CharmSize>5</CharmSize>
+		<ProcChanceUp>0.025</ProcChanceUp>
+		<IconName>a_CharmIcon_Amethyst5</IconName>
+		<Description>+2.5% Critical Chance</Description>
+	</CharmType>
+	<CharmType CharmName="Undead05">
+		<CharmID>27</CharmID>
+		<DisplayName>Superb Topaz</DisplayName>
+		<CharmLevel>22</CharmLevel>
+		<UpgradeCharm>Undead06</UpgradeCharm>
+		<PrimaryType>Undead</PrimaryType>
+		<PrimaryCost>102</PrimaryCost>
+		<CharmSize>5</CharmSize>
+		<GoldDrop>0.05</GoldDrop>
+		<IconName>a_CharmIcon_Topaz5</IconName>
+		<Description>+5% Gold</Description>
+	</CharmType>
+	<CharmType CharmName="Mythic05">
+		<CharmID>28</CharmID>
+		<DisplayName>Superb Zircon</DisplayName>
+		<CharmLevel>23</CharmLevel>
+		<UpgradeCharm>Mythic06</UpgradeCharm>
+		<PrimaryType>Mythic</PrimaryType>
+		<PrimaryCost>109</PrimaryCost>
+		<CharmSize>5</CharmSize>
+		<CraftDrop>0.05</CraftDrop>
+		<IconName>a_CharmIcon_Sapphire5</IconName>
+		<Description>+5% Material Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Draconic05">
+		<CharmID>29</CharmID>
+		<DisplayName>Superb Ruby</DisplayName>
+		<CharmLevel>24</CharmLevel>
+		<UpgradeCharm>Draconic06</UpgradeCharm>
+		<PrimaryType>Draconic</PrimaryType>
+		<PrimaryCost>117</PrimaryCost>
+		<CharmSize>5</CharmSize>
+		<PowerBonus>0.025</PowerBonus>
+		<IconName>a_CharmIcon_Ruby5</IconName>
+		<Description>+2.5% Critical Bonus</Description>
+	</CharmType>
+	<CharmType CharmName="Sylvan05">
+		<CharmID>30</CharmID>
+		<DisplayName>Superb Emerald</DisplayName>
+		<CharmLevel>25</CharmLevel>
+		<UpgradeCharm>Sylvan06</UpgradeCharm>
+		<PrimaryType>Sylvan</PrimaryType>
+		<PrimaryCost>125</PrimaryCost>
+		<CharmSize>5</CharmSize>
+		<HitPointBoost>905</HitPointBoost>
+		<IconName>a_CharmIcon_Emerald5</IconName>
+		<Description>+905 Health</Description>
+	</CharmType>
+	<CharmType CharmName="Trog06">
+		<CharmID>31</CharmID>
+		<DisplayName>Stunning Diamond</DisplayName>
+		<CharmLevel>26</CharmLevel>
+		<UpgradeCharm>Trog07</UpgradeCharm>
+		<PrimaryType>Trog</PrimaryType>
+		<PrimaryCost>133</PrimaryCost>
+		<CharmSize>6</CharmSize>
+		<ItemDrop>0.06</ItemDrop>
+		<IconName>a_CharmIcon_Diamond6</IconName>
+		<Description>+6% Gear Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Infernal06">
+		<CharmID>32</CharmID>
+		<DisplayName>Stunning Amethyst</DisplayName>
+		<CharmLevel>27</CharmLevel>
+		<UpgradeCharm>Infernal07</UpgradeCharm>
+		<PrimaryType>Infernal</PrimaryType>
+		<PrimaryCost>141</PrimaryCost>
+		<CharmSize>6</CharmSize>
+		<ProcChanceUp>0.03</ProcChanceUp>
+		<IconName>a_CharmIcon_Amethyst6</IconName>
+		<Description>+3% Critical Chance</Description>
+	</CharmType>
+	<CharmType CharmName="Undead06">
+		<CharmID>33</CharmID>
+		<DisplayName>Stunning Topaz</DisplayName>
+		<CharmLevel>28</CharmLevel>
+		<UpgradeCharm>Undead07</UpgradeCharm>
+		<PrimaryType>Undead</PrimaryType>
+		<PrimaryCost>150</PrimaryCost>
+		<CharmSize>6</CharmSize>
+		<GoldDrop>0.06</GoldDrop>
+		<IconName>a_CharmIcon_Topaz6</IconName>
+		<Description>+6% Gold</Description>
+	</CharmType>
+	<CharmType CharmName="Mythic06">
+		<CharmID>34</CharmID>
+		<DisplayName>Stunning Zircon</DisplayName>
+		<CharmLevel>29</CharmLevel>
+		<UpgradeCharm>Mythic07</UpgradeCharm>
+		<PrimaryType>Mythic</PrimaryType>
+		<PrimaryCost>159</PrimaryCost>
+		<CharmSize>6</CharmSize>
+		<CraftDrop>0.06</CraftDrop>
+		<IconName>a_CharmIcon_Sapphire6</IconName>
+		<Description>+6% Material Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Draconic06">
+		<CharmID>35</CharmID>
+		<DisplayName>Stunning Ruby</DisplayName>
+		<CharmLevel>30</CharmLevel>
+		<UpgradeCharm>Draconic07</UpgradeCharm>
+		<PrimaryType>Draconic</PrimaryType>
+		<PrimaryCost>168</PrimaryCost>
+		<CharmSize>6</CharmSize>
+		<PowerBonus>0.03</PowerBonus>
+		<IconName>a_CharmIcon_Ruby6</IconName>
+		<Description>+3% Critical Bonus</Description>
+	</CharmType>
+	<CharmType CharmName="Sylvan06">
+		<CharmID>36</CharmID>
+		<DisplayName>Stunning Emerald</DisplayName>
+		<CharmLevel>31</CharmLevel>
+		<UpgradeCharm>Sylvan07</UpgradeCharm>
+		<PrimaryType>Sylvan</PrimaryType>
+		<PrimaryCost>177</PrimaryCost>
+		<CharmSize>6</CharmSize>
+		<HitPointBoost>1134</HitPointBoost>
+		<IconName>a_CharmIcon_Emerald6</IconName>
+		<Description>+1134 Health</Description>
+	</CharmType>
+	<CharmType CharmName="Trog07">
+		<CharmID>37</CharmID>
+		<DisplayName>Radiant Diamond</DisplayName>
+		<CharmLevel>32</CharmLevel>
+		<UpgradeCharm>Trog08</UpgradeCharm>
+		<PrimaryType>Trog</PrimaryType>
+		<PrimaryCost>187</PrimaryCost>
+		<CharmSize>7</CharmSize>
+		<ItemDrop>0.07</ItemDrop>
+		<IconName>a_CharmIcon_Diamond7</IconName>
+		<Description>+7% Gear Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Infernal07">
+		<CharmID>38</CharmID>
+		<DisplayName>Radiant Amethyst</DisplayName>
+		<CharmLevel>33</CharmLevel>
+		<UpgradeCharm>Infernal08</UpgradeCharm>
+		<PrimaryType>Infernal</PrimaryType>
+		<PrimaryCost>197</PrimaryCost>
+		<CharmSize>7</CharmSize>
+		<ProcChanceUp>0.035</ProcChanceUp>
+		<IconName>a_CharmIcon_Amethyst7</IconName>
+		<Description>+3.5% Critical Chance</Description>
+	</CharmType>
+	<CharmType CharmName="Undead07">
+		<CharmID>39</CharmID>
+		<DisplayName>Radiant Topaz</DisplayName>
+		<CharmLevel>34</CharmLevel>
+		<UpgradeCharm>Undead08</UpgradeCharm>
+		<PrimaryType>Undead</PrimaryType>
+		<PrimaryCost>207</PrimaryCost>
+		<CharmSize>7</CharmSize>
+		<GoldDrop>0.07</GoldDrop>
+		<IconName>a_CharmIcon_Topaz7</IconName>
+		<Description>+7% Gold</Description>
+	</CharmType>
+	<CharmType CharmName="Mythic07">
+		<CharmID>40</CharmID>
+		<DisplayName>Radiant Zircon</DisplayName>
+		<CharmLevel>35</CharmLevel>
+		<UpgradeCharm>Mythic08</UpgradeCharm>
+		<PrimaryType>Mythic</PrimaryType>
+		<PrimaryCost>217</PrimaryCost>
+		<CharmSize>7</CharmSize>
+		<CraftDrop>0.07</CraftDrop>
+		<IconName>a_CharmIcon_Sapphire7</IconName>
+		<Description>+7% Material Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Draconic07">
+		<CharmID>41</CharmID>
+		<DisplayName>Radiant Ruby</DisplayName>
+		<CharmLevel>36</CharmLevel>
+		<UpgradeCharm>Draconic08</UpgradeCharm>
+		<PrimaryType>Draconic</PrimaryType>
+		<PrimaryCost>228</PrimaryCost>
+		<CharmSize>7</CharmSize>
+		<PowerBonus>0.035</PowerBonus>
+		<IconName>a_CharmIcon_Ruby7</IconName>
+		<Description>+3.5% Critical Bonus</Description>
+	</CharmType>
+	<CharmType CharmName="Sylvan07">
+		<CharmID>42</CharmID>
+		<DisplayName>Radiant Emerald</DisplayName>
+		<CharmLevel>37</CharmLevel>
+		<UpgradeCharm>Sylvan08</UpgradeCharm>
+		<PrimaryType>Sylvan</PrimaryType>
+		<PrimaryCost>238</PrimaryCost>
+		<CharmSize>7</CharmSize>
+		<HitPointBoost>1423</HitPointBoost>
+		<IconName>a_CharmIcon_Emerald7</IconName>
+		<Description>+1423 Health</Description>
+	</CharmType>
+	<CharmType CharmName="Trog08">
+		<CharmID>43</CharmID>
+		<DisplayName>Celestial Diamond</DisplayName>
+		<CharmLevel>38</CharmLevel>
+		<UpgradeCharm>Trog09</UpgradeCharm>
+		<PrimaryType>Trog</PrimaryType>
+		<PrimaryCost>249</PrimaryCost>
+		<CharmSize>8</CharmSize>
+		<ItemDrop>0.08</ItemDrop>
+		<IconName>a_CharmIcon_Diamond8</IconName>
+		<Description>+8% Gear Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Infernal08">
+		<CharmID>44</CharmID>
+		<DisplayName>Celestial Amethyst</DisplayName>
+		<CharmLevel>39</CharmLevel>
+		<UpgradeCharm>Infernal09</UpgradeCharm>
+		<PrimaryType>Infernal</PrimaryType>
+		<PrimaryCost>261</PrimaryCost>
+		<CharmSize>8</CharmSize>
+		<ProcChanceUp>0.04</ProcChanceUp>
+		<IconName>a_CharmIcon_Amethyst8</IconName>
+		<Description>+4% Critical Chance</Description>
+	</CharmType>
+	<CharmType CharmName="Undead08">
+		<CharmID>45</CharmID>
+		<DisplayName>Celestial Topaz</DisplayName>
+		<CharmLevel>40</CharmLevel>
+		<UpgradeCharm>Undead09</UpgradeCharm>
+		<PrimaryType>Undead</PrimaryType>
+		<PrimaryCost>272</PrimaryCost>
+		<CharmSize>8</CharmSize>
+		<GoldDrop>0.08</GoldDrop>
+		<IconName>a_CharmIcon_Topaz8</IconName>
+		<Description>+8% Gold</Description>
+	</CharmType>
+	<CharmType CharmName="Mythic08">
+		<CharmID>46</CharmID>
+		<DisplayName>Celestial Zircon</DisplayName>
+		<CharmLevel>41</CharmLevel>
+		<UpgradeCharm>Mythic09</UpgradeCharm>
+		<PrimaryType>Mythic</PrimaryType>
+		<PrimaryCost>284</PrimaryCost>
+		<CharmSize>8</CharmSize>
+		<CraftDrop>0.08</CraftDrop>
+		<IconName>a_CharmIcon_Sapphire8</IconName>
+		<Description>+8% Material Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Draconic08">
+		<CharmID>47</CharmID>
+		<DisplayName>Celestial Ruby</DisplayName>
+		<CharmLevel>42</CharmLevel>
+		<UpgradeCharm>Draconic09</UpgradeCharm>
+		<PrimaryType>Draconic</PrimaryType>
+		<PrimaryCost>296</PrimaryCost>
+		<CharmSize>8</CharmSize>
+		<PowerBonus>0.04</PowerBonus>
+		<IconName>a_CharmIcon_Ruby8</IconName>
+		<Description>+4% Critical Bonus</Description>
+	</CharmType>
+	<CharmType CharmName="Sylvan08">
+		<CharmID>48</CharmID>
+		<DisplayName>Celestial Emerald</DisplayName>
+		<CharmLevel>43</CharmLevel>
+		<UpgradeCharm>Sylvan09</UpgradeCharm>
+		<PrimaryType>Sylvan</PrimaryType>
+		<PrimaryCost>308</PrimaryCost>
+		<CharmSize>8</CharmSize>
+		<HitPointBoost>1789</HitPointBoost>
+		<IconName>a_CharmIcon_Emerald8</IconName>
+		<Description>+1789 Health</Description>
+	</CharmType>
+	<CharmType CharmName="Trog09">
+		<CharmID>49</CharmID>
+		<DisplayName>Goddess Diamond</DisplayName>
+		<CharmLevel>44</CharmLevel>
+		<UpgradeCharm>Trog10</UpgradeCharm>
+		<PrimaryType>Trog</PrimaryType>
+		<PrimaryCost>320</PrimaryCost>
+		<CharmSize>9</CharmSize>
+		<ItemDrop>0.09</ItemDrop>
+		<IconName>a_CharmIcon_Diamond9</IconName>
+		<Description>+9% Gear Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Infernal09">
+		<CharmID>50</CharmID>
+		<DisplayName>Goddess Amethyst</DisplayName>
+		<CharmLevel>45</CharmLevel>
+		<UpgradeCharm>Infernal10</UpgradeCharm>
+		<PrimaryType>Infernal</PrimaryType>
+		<PrimaryCost>333</PrimaryCost>
+		<CharmSize>9</CharmSize>
+		<ProcChanceUp>0.045</ProcChanceUp>
+		<IconName>a_CharmIcon_Amethyst9</IconName>
+		<Description>+4.5% Critical Chance</Description>
+	</CharmType>
+	<CharmType CharmName="Undead09">
+		<CharmID>51</CharmID>
+		<DisplayName>Goddess Topaz</DisplayName>
+		<CharmLevel>46</CharmLevel>
+		<UpgradeCharm>Undead10</UpgradeCharm>
+		<PrimaryType>Undead</PrimaryType>
+		<PrimaryCost>346</PrimaryCost>
+		<CharmSize>9</CharmSize>
+		<GoldDrop>0.09</GoldDrop>
+		<IconName>a_CharmIcon_Topaz9</IconName>
+		<Description>+9% Gold</Description>
+	</CharmType>
+	<CharmType CharmName="Mythic09">
+		<CharmID>52</CharmID>
+		<DisplayName>Goddess Zircon</DisplayName>
+		<CharmLevel>47</CharmLevel>
+		<UpgradeCharm>Mythic10</UpgradeCharm>
+		<PrimaryType>Mythic</PrimaryType>
+		<PrimaryCost>359</PrimaryCost>
+		<CharmSize>9</CharmSize>
+		<CraftDrop>0.09</CraftDrop>
+		<IconName>a_CharmIcon_Sapphire9</IconName>
+		<Description>+9% Material Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Draconic09">
+		<CharmID>53</CharmID>
+		<DisplayName>Goddess Ruby</DisplayName>
+		<CharmLevel>48</CharmLevel>
+		<UpgradeCharm>Draconic10</UpgradeCharm>
+		<PrimaryType>Draconic</PrimaryType>
+		<PrimaryCost>372</PrimaryCost>
+		<CharmSize>9</CharmSize>
+		<PowerBonus>0.045</PowerBonus>
+		<IconName>a_CharmIcon_Ruby9</IconName>
+		<Description>+4.5% Critical Bonus</Description>
+	</CharmType>
+	<CharmType CharmName="Sylvan09">
+		<CharmID>54</CharmID>
+		<DisplayName>Goddess Emerald</DisplayName>
+		<CharmLevel>49</CharmLevel>
+		<UpgradeCharm>Sylvan10</UpgradeCharm>
+		<PrimaryType>Sylvan</PrimaryType>
+		<PrimaryCost>386</PrimaryCost>
+		<CharmSize>9</CharmSize>
+		<HitPointBoost>2252</HitPointBoost>
+		<IconName>a_CharmIcon_Emerald9</IconName>
+		<Description>+2252 Health</Description>
+	</CharmType>
+	<CharmType CharmName="Trog10">
+		<CharmID>55</CharmID>
+		<DisplayName>Infinite Diamond</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>Trog</PrimaryType>
+		<PrimaryCost>400</PrimaryCost>
+		<CharmSize>10</CharmSize>
+		<ItemDrop>0.1</ItemDrop>
+		<IconName>a_CharmIcon_Diamond10</IconName>
+		<Description>+10% Gear Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Infernal10">
+		<CharmID>56</CharmID>
+		<DisplayName>Infinite Amethyst</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>Infernal</PrimaryType>
+		<PrimaryCost>400</PrimaryCost>
+		<CharmSize>10</CharmSize>
+		<ProcChanceUp>0.05</ProcChanceUp>
+		<IconName>a_CharmIcon_Amethyst10</IconName>
+		<Description>+5% Critical Chance</Description>
+	</CharmType>
+	<CharmType CharmName="Undead10">
+		<CharmID>57</CharmID>
+		<DisplayName>Infinite Topaz</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>Undead</PrimaryType>
+		<PrimaryCost>400</PrimaryCost>
+		<CharmSize>10</CharmSize>
+		<GoldDrop>0.1</GoldDrop>
+		<IconName>a_CharmIcon_Topaz10</IconName>
+		<Description>+10% Gold</Description>
+	</CharmType>
+	<CharmType CharmName="Mythic10">
+		<CharmID>58</CharmID>
+		<DisplayName>Infinite Zircon</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>Mythic</PrimaryType>
+		<PrimaryCost>400</PrimaryCost>
+		<CharmSize>10</CharmSize>
+		<CraftDrop>0.1</CraftDrop>
+		<IconName>a_CharmIcon_Sapphire10</IconName>
+		<Description>+10% Material Finding</Description>
+	</CharmType>
+	<CharmType CharmName="Draconic10">
+		<CharmID>59</CharmID>
+		<DisplayName>Infinite Ruby</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>Draconic</PrimaryType>
+		<PrimaryCost>400</PrimaryCost>
+		<CharmSize>10</CharmSize>
+		<PowerBonus>0.05</PowerBonus>
+		<IconName>a_CharmIcon_Ruby10</IconName>
+		<Description>+5% Critical Bonus</Description>
+	</CharmType>
+	<CharmType CharmName="Sylvan10">
+		<CharmID>60</CharmID>
+		<DisplayName>Infinite Emerald</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>Sylvan</PrimaryType>
+		<PrimaryCost>400</PrimaryCost>
+		<CharmSize>10</CharmSize>
+		<HitPointBoost>2838</HitPointBoost>
+		<IconName>a_CharmIcon_Emerald10</IconName>
+		<Description>+2838 Health</Description>
+	</CharmType>
+	<CharmType CharmName="Melee01">
+		<CharmID>61</CharmID>
+		<DisplayName>Chipped Citrine</DisplayName>
+		<CharmLevel>1</CharmLevel>
+		<UpgradeCharm>Melee02</UpgradeCharm>
+		<PrimaryType>Melee</PrimaryType>
+		<PrimaryCost>1</PrimaryCost>
+		<CharmSize>1</CharmSize>
+		<MeleeBonus>10</MeleeBonus>
+		<IconName>a_CharmIcon_Citrine1</IconName>
+		<Description>+10 Attack</Description>
+	</CharmType>
+	<CharmType CharmName="Melee02">
+		<CharmID>62</CharmID>
+		<DisplayName>Dim Citrine</DisplayName>
+		<CharmLevel>2</CharmLevel>
+		<UpgradeCharm>Melee03</UpgradeCharm>
+		<PrimaryType>Melee</PrimaryType>
+		<PrimaryCost>6</PrimaryCost>
+		<CharmSize>2</CharmSize>
+		<MeleeBonus>13</MeleeBonus>
+		<IconName>a_CharmIcon_Citrine2</IconName>
+		<Description>+13 Attack</Description>
+	</CharmType>
+	<CharmType CharmName="Melee03">
+		<CharmID>63</CharmID>
+		<DisplayName>Streaked Citrine</DisplayName>
+		<CharmLevel>8</CharmLevel>
+		<UpgradeCharm>Melee04</UpgradeCharm>
+		<PrimaryType>Melee</PrimaryType>
+		<PrimaryCost>24</PrimaryCost>
+		<CharmSize>3</CharmSize>
+		<MeleeBonus>16</MeleeBonus>
+		<IconName>a_CharmIcon_Citrine3</IconName>
+		<Description>+16 Attack</Description>
+	</CharmType>
+	<CharmType CharmName="Melee04">
+		<CharmID>64</CharmID>
+		<DisplayName>Unflawed Citrine</DisplayName>
+		<CharmLevel>14</CharmLevel>
+		<UpgradeCharm>Melee05</UpgradeCharm>
+		<PrimaryType>Melee</PrimaryType>
+		<PrimaryCost>52</PrimaryCost>
+		<CharmSize>4</CharmSize>
+		<MeleeBonus>20</MeleeBonus>
+		<IconName>a_CharmIcon_Citrine4</IconName>
+		<Description>+20 Attack</Description>
+	</CharmType>
+	<CharmType CharmName="Melee05">
+		<CharmID>65</CharmID>
+		<DisplayName>Superb Citrine</DisplayName>
+		<CharmLevel>20</CharmLevel>
+		<UpgradeCharm>Melee06</UpgradeCharm>
+		<PrimaryType>Melee</PrimaryType>
+		<PrimaryCost>88</PrimaryCost>
+		<CharmSize>5</CharmSize>
+		<MeleeBonus>26</MeleeBonus>
+		<IconName>a_CharmIcon_Citrine5</IconName>
+		<Description>+26 Attack</Description>
+	</CharmType>
+	<CharmType CharmName="Melee06">
+		<CharmID>66</CharmID>
+		<DisplayName>Stunning Citrine</DisplayName>
+		<CharmLevel>26</CharmLevel>
+		<UpgradeCharm>Melee07</UpgradeCharm>
+		<PrimaryType>Melee</PrimaryType>
+		<PrimaryCost>133</PrimaryCost>
+		<CharmSize>6</CharmSize>
+		<MeleeBonus>33</MeleeBonus>
+		<IconName>a_CharmIcon_Citrine6</IconName>
+		<Description>+33 Attack</Description>
+	</CharmType>
+	<CharmType CharmName="Melee07">
+		<CharmID>67</CharmID>
+		<DisplayName>Radiant Citrine</DisplayName>
+		<CharmLevel>32</CharmLevel>
+		<UpgradeCharm>Melee08</UpgradeCharm>
+		<PrimaryType>Melee</PrimaryType>
+		<PrimaryCost>187</PrimaryCost>
+		<CharmSize>7</CharmSize>
+		<MeleeBonus>41</MeleeBonus>
+		<IconName>a_CharmIcon_Citrine7</IconName>
+		<Description>+41 Attack</Description>
+	</CharmType>
+	<CharmType CharmName="Melee08">
+		<CharmID>68</CharmID>
+		<DisplayName>Celestial Citrine</DisplayName>
+		<CharmLevel>38</CharmLevel>
+		<UpgradeCharm>Melee09</UpgradeCharm>
+		<PrimaryType>Melee</PrimaryType>
+		<PrimaryCost>249</PrimaryCost>
+		<CharmSize>8</CharmSize>
+		<MeleeBonus>52</MeleeBonus>
+		<IconName>a_CharmIcon_Citrine8</IconName>
+		<Description>+52 Attack</Description>
+	</CharmType>
+	<CharmType CharmName="Melee09">
+		<CharmID>69</CharmID>
+		<DisplayName>Goddess Citrine</DisplayName>
+		<CharmLevel>44</CharmLevel>
+		<UpgradeCharm>Melee10</UpgradeCharm>
+		<PrimaryType>Melee</PrimaryType>
+		<PrimaryCost>320</PrimaryCost>
+		<CharmSize>9</CharmSize>
+		<MeleeBonus>66</MeleeBonus>
+		<IconName>a_CharmIcon_Citrine9</IconName>
+		<Description>+66 Attack</Description>
+	</CharmType>
+	<CharmType CharmName="Melee10">
+		<CharmID>70</CharmID>
+		<DisplayName>Infinite Citrine</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>Melee</PrimaryType>
+		<PrimaryCost>400</PrimaryCost>
+		<CharmSize>10</CharmSize>
+		<MeleeBonus>84</MeleeBonus>
+		<IconName>a_CharmIcon_Citrine10</IconName>
+		<Description>+84 Attack</Description>
+	</CharmType>
+	<CharmType CharmName="Magic01">
+		<CharmID>71</CharmID>
+		<DisplayName>Chipped Sapphire</DisplayName>
+		<CharmLevel>1</CharmLevel>
+		<UpgradeCharm>Magic02</UpgradeCharm>
+		<PrimaryType>Magic</PrimaryType>
+		<PrimaryCost>1</PrimaryCost>
+		<CharmSize>1</CharmSize>
+		<MagicBonus>10</MagicBonus>
+		<IconName>a_CharmIcon_Zircon1</IconName>
+		<Description>+10 Expertise</Description>
+	</CharmType>
+	<CharmType CharmName="Magic02">
+		<CharmID>72</CharmID>
+		<DisplayName>Dim Sapphire</DisplayName>
+		<CharmLevel>2</CharmLevel>
+		<UpgradeCharm>Magic03</UpgradeCharm>
+		<PrimaryType>Magic</PrimaryType>
+		<PrimaryCost>6</PrimaryCost>
+		<CharmSize>2</CharmSize>
+		<MagicBonus>13</MagicBonus>
+		<IconName>a_CharmIcon_Zircon2</IconName>
+		<Description>+13 Expertise</Description>
+	</CharmType>
+	<CharmType CharmName="Magic03">
+		<CharmID>73</CharmID>
+		<DisplayName>Streaked Sapphire</DisplayName>
+		<CharmLevel>8</CharmLevel>
+		<UpgradeCharm>Magic04</UpgradeCharm>
+		<PrimaryType>Magic</PrimaryType>
+		<PrimaryCost>24</PrimaryCost>
+		<CharmSize>3</CharmSize>
+		<MagicBonus>16</MagicBonus>
+		<IconName>a_CharmIcon_Zircon3</IconName>
+		<Description>+16 Expertise</Description>
+	</CharmType>
+	<CharmType CharmName="Magic04">
+		<CharmID>74</CharmID>
+		<DisplayName>Unflawed Sapphire</DisplayName>
+		<CharmLevel>14</CharmLevel>
+		<UpgradeCharm>Magic05</UpgradeCharm>
+		<PrimaryType>Magic</PrimaryType>
+		<PrimaryCost>52</PrimaryCost>
+		<CharmSize>4</CharmSize>
+		<MagicBonus>20</MagicBonus>
+		<IconName>a_CharmIcon_Zircon4</IconName>
+		<Description>+20 Expertise</Description>
+	</CharmType>
+	<CharmType CharmName="Magic05">
+		<CharmID>75</CharmID>
+		<DisplayName>Superb Sapphire</DisplayName>
+		<CharmLevel>20</CharmLevel>
+		<UpgradeCharm>Magic06</UpgradeCharm>
+		<PrimaryType>Magic</PrimaryType>
+		<PrimaryCost>88</PrimaryCost>
+		<CharmSize>5</CharmSize>
+		<MagicBonus>26</MagicBonus>
+		<IconName>a_CharmIcon_Zircon5</IconName>
+		<Description>+26 Expertise</Description>
+	</CharmType>
+	<CharmType CharmName="Magic06">
+		<CharmID>76</CharmID>
+		<DisplayName>Stunning Sapphire</DisplayName>
+		<CharmLevel>26</CharmLevel>
+		<UpgradeCharm>Magic07</UpgradeCharm>
+		<PrimaryType>Magic</PrimaryType>
+		<PrimaryCost>133</PrimaryCost>
+		<CharmSize>6</CharmSize>
+		<MagicBonus>33</MagicBonus>
+		<IconName>a_CharmIcon_Zircon6</IconName>
+		<Description>+33 Expertise</Description>
+	</CharmType>
+	<CharmType CharmName="Magic07">
+		<CharmID>77</CharmID>
+		<DisplayName>Radiant Sapphire</DisplayName>
+		<CharmLevel>32</CharmLevel>
+		<UpgradeCharm>Magic08</UpgradeCharm>
+		<PrimaryType>Magic</PrimaryType>
+		<PrimaryCost>187</PrimaryCost>
+		<CharmSize>7</CharmSize>
+		<MagicBonus>41</MagicBonus>
+		<IconName>a_CharmIcon_Zircon7</IconName>
+		<Description>+41 Expertise</Description>
+	</CharmType>
+	<CharmType CharmName="Magic08">
+		<CharmID>78</CharmID>
+		<DisplayName>Celestial Sapphire</DisplayName>
+		<CharmLevel>38</CharmLevel>
+		<UpgradeCharm>Magic09</UpgradeCharm>
+		<PrimaryType>Magic</PrimaryType>
+		<PrimaryCost>249</PrimaryCost>
+		<CharmSize>8</CharmSize>
+		<MagicBonus>52</MagicBonus>
+		<IconName>a_CharmIcon_Zircon8</IconName>
+		<Description>+52 Expertise</Description>
+	</CharmType>
+	<CharmType CharmName="Magic09">
+		<CharmID>79</CharmID>
+		<DisplayName>Goddess Sapphire</DisplayName>
+		<CharmLevel>44</CharmLevel>
+		<UpgradeCharm>Magic10</UpgradeCharm>
+		<PrimaryType>Magic</PrimaryType>
+		<PrimaryCost>320</PrimaryCost>
+		<CharmSize>9</CharmSize>
+		<MagicBonus>66</MagicBonus>
+		<IconName>a_CharmIcon_Zircon9</IconName>
+		<Description>+66 Expertise</Description>
+	</CharmType>
+	<CharmType CharmName="Magic10">
+		<CharmID>80</CharmID>
+		<DisplayName>Infinite Sapphire</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>Magic</PrimaryType>
+		<PrimaryCost>400</PrimaryCost>
+		<CharmSize>10</CharmSize>
+		<MagicBonus>84</MagicBonus>
+		<IconName>a_CharmIcon_Zircon10</IconName>
+		<Description>+84 Expertise</Description>
+	</CharmType>
+	<CharmType CharmName="Armor01">
+		<CharmID>81</CharmID>
+		<DisplayName>Chipped Onyx</DisplayName>
+		<CharmLevel>1</CharmLevel>
+		<UpgradeCharm>Armor02</UpgradeCharm>
+		<PrimaryType>Armor</PrimaryType>
+		<PrimaryCost>1</PrimaryCost>
+		<CharmSize>1</CharmSize>
+		<ArmorBonus>3</ArmorBonus>
+		<IconName>a_CharmIcon_Onyx1</IconName>
+		<Description>+3 Defense</Description>
+	</CharmType>
+	<CharmType CharmName="Armor02">
+		<CharmID>82</CharmID>
+		<DisplayName>Dim Onyx</DisplayName>
+		<CharmLevel>2</CharmLevel>
+		<UpgradeCharm>Armor03</UpgradeCharm>
+		<PrimaryType>Armor</PrimaryType>
+		<PrimaryCost>6</PrimaryCost>
+		<CharmSize>2</CharmSize>
+		<ArmorBonus>4</ArmorBonus>
+		<IconName>a_CharmIcon_Onyx2</IconName>
+		<Description>+4 Defense</Description>
+	</CharmType>
+	<CharmType CharmName="Armor03">
+		<CharmID>83</CharmID>
+		<DisplayName>Streaked Onyx</DisplayName>
+		<CharmLevel>8</CharmLevel>
+		<UpgradeCharm>Armor04</UpgradeCharm>
+		<PrimaryType>Armor</PrimaryType>
+		<PrimaryCost>24</PrimaryCost>
+		<CharmSize>3</CharmSize>
+		<ArmorBonus>5</ArmorBonus>
+		<IconName>a_CharmIcon_Onyx3</IconName>
+		<Description>+5 Defense</Description>
+	</CharmType>
+	<CharmType CharmName="Armor04">
+		<CharmID>84</CharmID>
+		<DisplayName>Unflawed Onyx</DisplayName>
+		<CharmLevel>14</CharmLevel>
+		<UpgradeCharm>Armor05</UpgradeCharm>
+		<PrimaryType>Armor</PrimaryType>
+		<PrimaryCost>52</PrimaryCost>
+		<CharmSize>4</CharmSize>
+		<ArmorBonus>7</ArmorBonus>
+		<IconName>a_CharmIcon_Onyx4</IconName>
+		<Description>+7 Defense</Description>
+	</CharmType>
+	<CharmType CharmName="Armor05">
+		<CharmID>85</CharmID>
+		<DisplayName>Superb Onyx</DisplayName>
+		<CharmLevel>20</CharmLevel>
+		<UpgradeCharm>Armor06</UpgradeCharm>
+		<PrimaryType>Armor</PrimaryType>
+		<PrimaryCost>88</PrimaryCost>
+		<CharmSize>5</CharmSize>
+		<ArmorBonus>9</ArmorBonus>
+		<IconName>a_CharmIcon_Onyx5</IconName>
+		<Description>+9 Defense</Description>
+	</CharmType>
+	<CharmType CharmName="Armor06">
+		<CharmID>86</CharmID>
+		<DisplayName>Stunning Onyx</DisplayName>
+		<CharmLevel>26</CharmLevel>
+		<UpgradeCharm>Armor07</UpgradeCharm>
+		<PrimaryType>Armor</PrimaryType>
+		<PrimaryCost>133</PrimaryCost>
+		<CharmSize>6</CharmSize>
+		<ArmorBonus>11</ArmorBonus>
+		<IconName>a_CharmIcon_Onyx6</IconName>
+		<Description>+11 Defense</Description>
+	</CharmType>
+	<CharmType CharmName="Armor07">
+		<CharmID>87</CharmID>
+		<DisplayName>Radiant Onyx</DisplayName>
+		<CharmLevel>32</CharmLevel>
+		<UpgradeCharm>Armor08</UpgradeCharm>
+		<PrimaryType>Armor</PrimaryType>
+		<PrimaryCost>187</PrimaryCost>
+		<CharmSize>7</CharmSize>
+		<ArmorBonus>14</ArmorBonus>
+		<IconName>a_CharmIcon_Onyx7</IconName>
+		<Description>+14 Defense</Description>
+	</CharmType>
+	<CharmType CharmName="Armor08">
+		<CharmID>88</CharmID>
+		<DisplayName>Celestial Onyx</DisplayName>
+		<CharmLevel>38</CharmLevel>
+		<UpgradeCharm>Armor09</UpgradeCharm>
+		<PrimaryType>Armor</PrimaryType>
+		<PrimaryCost>249</PrimaryCost>
+		<CharmSize>8</CharmSize>
+		<ArmorBonus>17</ArmorBonus>
+		<IconName>a_CharmIcon_Onyx8</IconName>
+		<Description>+17 Defense</Description>
+	</CharmType>
+	<CharmType CharmName="Armor09">
+		<CharmID>89</CharmID>
+		<DisplayName>Goddess Onyx</DisplayName>
+		<CharmLevel>44</CharmLevel>
+		<UpgradeCharm>Armor10</UpgradeCharm>
+		<PrimaryType>Armor</PrimaryType>
+		<PrimaryCost>320</PrimaryCost>
+		<CharmSize>9</CharmSize>
+		<ArmorBonus>22</ArmorBonus>
+		<IconName>a_CharmIcon_Onyx9</IconName>
+		<Description>+22 Defense</Description>
+	</CharmType>
+	<CharmType CharmName="Armor10">
+		<CharmID>90</CharmID>
+		<DisplayName>Infinite Onyx</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>Armor</PrimaryType>
+		<PrimaryCost>400</PrimaryCost>
+		<CharmSize>10</CharmSize>
+		<ArmorBonus>28</ArmorBonus>
+		<IconName>a_CharmIcon_Onyx10</IconName>
+		<Description>+28 Defense</Description>
+	</CharmType>
+	<CharmType CharmName="RespecStone">
+		<CharmID>91</CharmID>
+		<DisplayName>Respec Stone</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>RespecStone</PrimaryType>
+		<PrimaryCost>400</PrimaryCost>
+		<CharmSize>10</CharmSize>
+		<IconName>a_RespecStone</IconName>
+		<Description>Resets your talent stones.</Description>
+	</CharmType>
+	<CharmType CharmName="TripleFind">
+		<CharmID>92</CharmID>
+		<DisplayName>Eye of Discovery</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>Undead;Trog;Infernal</PrimaryType>
+		<CharmSize>8</CharmSize>
+		<GoldDrop>0.08</GoldDrop>
+		<ItemDrop>0.08</ItemDrop>
+		<ProcChanceUp>0.04</ProcChanceUp>
+		<IconName>a_RewardTypeIcon_EyeOfDiscovery</IconName>
+		<Description>+8% Gold Finding;+8% Gear Find;+4% Critical Chance</Description>
+		<DisallowCrafting>True</DisallowCrafting>
+	</CharmType>
+	<CharmType CharmName="DoubleFind1">
+		<CharmID>93</CharmID>
+		<DisplayName>Gleaming Shard</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>Undead;Trog</PrimaryType>
+		<CharmSize>8</CharmSize>
+		<GoldDrop>0.08</GoldDrop>
+		<ItemDrop>0.08</ItemDrop>
+		<IconName>a_RewardTypeIcon_GleamingShard</IconName>
+		<Description>+8% Gold Finding;+8% Gear Find</Description>
+		<DisallowCrafting>True</DisallowCrafting>
+	</CharmType>
+	<CharmType CharmName="DoubleFind2">
+		<CharmID>94</CharmID>
+		<DisplayName>Shimmering Fragment</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>Undead;Infernal</PrimaryType>
+		<CharmSize>8</CharmSize>
+		<GoldDrop>0.08</GoldDrop>
+		<ProcChanceUp>0.04</ProcChanceUp>
+		<IconName>a_RewardTypeIcon_ShimmeringFragment</IconName>
+		<Description>+8% Gold Finding;+4% Critical Chance</Description>
+		<DisallowCrafting>True</DisallowCrafting>
+	</CharmType>
+	<CharmType CharmName="DoubleFind3">
+		<CharmID>95</CharmID>
+		<DisplayName>Twilight Sliver</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>Trog;Infernal</PrimaryType>
+		<CharmSize>8</CharmSize>
+		<ItemDrop>0.08</ItemDrop>
+		<ProcChanceUp>0.04</ProcChanceUp>
+		<IconName>a_RewardTypeIcon_TwilightSliver</IconName>
+		<Description>+8% Gear Find;+4% Critical Chance</Description>
+		<DisallowCrafting>True</DisallowCrafting>
+	</CharmType>
+	<CharmType CharmName="CharmRemover">
+		<CharmID>96</CharmID>
+		<DisplayName>Charm Remover</DisplayName>
+		<CharmLevel>50</CharmLevel>
+		<PrimaryType>CharmRemover</PrimaryType>
+		<PrimaryCost>400</PrimaryCost>
+		<CharmSize>10</CharmSize>
+		<IconName>a_Icon_CharmRemover</IconName>
+		<Description>Removes a Charm from an item.</Description>
+	</CharmType>
+</CharmTypes>

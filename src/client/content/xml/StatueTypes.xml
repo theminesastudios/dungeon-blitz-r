@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<StatueTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Statue StatueName="Template">
+		<StatueID>0</StatueID>
+		<DisplayName>----</DisplayName>
+		<Class>----</Class>
+		<Gender>----</Gender>
+		<Headset>----</Headset>
+		<Hairset>----</Hairset>
+		<Mouthset>----</Mouthset>
+		<Faceset>----</Faceset>
+		<Armor>0</Armor>
+		<Gloves>0</Gloves>
+		<Boots>0</Boots>
+		<Hat>0</Hat>
+		<Sword>0</Sword>
+		<Shield>0</Shield>
+		<AnimationPose>----</AnimationPose>
+		<AnimationFrame>0</AnimationFrame>
+		<FlipAnimation>False</FlipAnimation>
+		<XOffset>0</XOffset>
+		<YOffset>0</YOffset>
+		<FlavorText>---</FlavorText>
+	</Statue>
+	<Statue StatueName="Clintt">
+		<StatueID>1</StatueID>
+		<DisplayName>Clintt</DisplayName>
+		<Class>Mage</Class>
+		<Gender>Female</Gender>
+		<Headset>Head01</Headset>
+		<Hairset>Do11</Hairset>
+		<Mouthset>M02</Mouthset>
+		<Faceset>F07</Faceset>
+		<Armor>881</Armor>
+		<Gloves>1064</Gloves>
+		<Boots>1057</Boots>
+		<Hat>1068</Hat>
+		<Sword>866</Sword>
+		<Shield>154</Shield>
+		<AnimationPose>Read</AnimationPose>
+		<AnimationFrame>26</AnimationFrame>
+		<FlipAnimation>false</FlipAnimation>
+		<YOffset>5</YOffset>
+		<FlavorText>First Place, Clintt=Her mastery of magic...=And prowess with a staff.=Shamed the Green Knight...=And gave her the last laugh.</FlavorText>
+	</Statue>
+	<Statue StatueName="PurpleRed">
+		<StatueID>2</StatueID>
+		<DisplayName>PurpleRed</DisplayName>
+		<Class>Mage</Class>
+		<Gender>Female</Gender>
+		<Headset>Head03</Headset>
+		<Hairset>Do12</Hairset>
+		<Mouthset>M02</Mouthset>
+		<Faceset>F09</Faceset>
+		<Armor>701</Armor>
+		<Gloves>704</Gloves>
+		<Boots>336</Boots>
+		<Hat>798</Hat>
+		<Sword>952</Sword>
+		<Shield>424</Shield>
+		<AnimationPose>Relaxed</AnimationPose>
+		<AnimationFrame>30</AnimationFrame>
+		<FlipAnimation>false</FlipAnimation>
+		<YOffset>5</YOffset>
+		<FlavorText>First Place, PurpleRed=With arcane power and skill...=The Green Knight did she slay.=Now Purple and Red...=Are the colors of the day.</FlavorText>
+	</Statue>
+	<Statue StatueName="LuBu">
+		<StatueID>3</StatueID>
+		<DisplayName>LuBu</DisplayName>
+		<Class>Paladin</Class>
+		<Gender>Male</Gender>
+		<Headset>Basic</Headset>
+		<Hairset>Do01</Hairset>
+		<Mouthset>M10</Mouthset>
+		<Faceset>F12</Faceset>
+		<Armor>1000</Armor>
+		<Gloves>824</Gloves>
+		<Boots>817</Boots>
+		<Hat>1007</Hat>
+		<Sword>1075</Sword>
+		<Shield>543</Shield>
+		<AnimationPose>Flex2</AnimationPose>
+		<AnimationFrame>12</AnimationFrame>
+		<FlipAnimation>false</FlipAnimation>
+		<XOffset>-15</XOffset>
+		<FlavorText>Third Place, LuBu=With divine might in his arms...=And holy vengeance in his swing...=LuBu cut down the Green Knight.=For glory and his King.</FlavorText>
+	</Statue>
+	<Statue StatueName="JeromeLin">
+		<StatueID>4</StatueID>
+		<DisplayName>JeromeLin</DisplayName>
+		<Class>Rogue</Class>
+		<Gender>Male</Gender>
+		<Headset>MaleHead02</Headset>
+		<Hairset>Do16</Hairset>
+		<Mouthset>Mouth11</Mouthset>
+		<Faceset>Face14</Faceset>
+		<Armor>219</Armor>
+		<Gloves>853</Gloves>
+		<Boots>225</Boots>
+		<Hat>1109</Hat>
+		<Sword>303</Sword>
+		<Shield>1113</Shield>
+		<AnimationPose>Point</AnimationPose>
+		<AnimationFrame>21</AnimationFrame>
+		<FlipAnimation>false</FlipAnimation>
+		<XOffset>-30</XOffset>
+		<YOffset>15</YOffset>
+		<FlavorText>Fourth Place, JeromeLin=From the shadows he struck...=His blade quick and true.=JeromeLin beat the Green Knight...=Many more time than did you.</FlavorText>
+	</Statue>
+</StatueTypes>

@@ -1,0 +1,1637 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<DoorTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<DoorType>
+		<MapName>NewbieRoad</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>SwampRoadNorth</TargetMapName>
+		<TargetDoorID>2</TargetDoorID>
+		<RequiredMissions>DeliverToSwamp</RequiredMissions>
+		<LockedMessage>^tI need to secure Wolf's End first.=^tOnce the goblins and undead are under control...=^tI'll be able to head inland to the rest of Ellyria.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>NewbieRoad</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>TutorialDungeon</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>RescueAnna</RequiredMissions>
+		<LockedMessage>^tI should go back to town=^tI should talk to the villagers in the town</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>TutorialDungeon</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>NewbieRoad</TargetMapName>
+		<TargetDoorID>1001</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>NewbieRoad</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>GoblinRiverDungeon</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GoblinRiver</RequiredMissions>
+		<LockedMessage>^tThat path leads to the river=^tWith goblin tracks in and out=^tThe villagers might know more about this</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>NewbieRoad</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>GhostBossDungeon</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>KillNephit</RequiredMissions>
+		<LockedMessage>^tA dank tomb=^tWith goblin tracks in and out=^tThe villagers to the west might know more about this</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>NewbieRoad</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>DreamDragonDungeon</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SlayTheDragon</RequiredMissions>
+		<LockedMessage>^tIt's closed and locked=^tNo one has been here in a long, long time.=^tMaybe someone in Wolf's End knows more about it.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>NewbieRoad</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>TutorialBoat</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CraftTownTutorial</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>CraftTown</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorth</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>SwampRoadConnectionMission</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>ClearTheBridge</RequiredMissions>
+		<LockedMessage>^tDark and impassable=^tAre those spider webs?=^tIck=^tNo one's going to Felbridge that way yet.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorth</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>NewbieRoad</TargetMapName>
+		<TargetDoorID>2</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorth</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>SRN_Mission1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>StopCastout</RequiredMissions>
+		<LockedMessage>^tSomeone has fortified this tower.=^tI should check in with the soldiers from Wolf's End.=^tThey've had time to scout the area.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorth</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>SRN_Mission2</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SlayYornak</RequiredMissions>
+		<LockedMessage>^tA tower of a happier time=^tThose villagers can help me plan my plundering</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorth</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>SRN_Mission3</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SlaySvar</RequiredMissions>
+		<LockedMessage>^tA Tuatara fort.=^tI should see if my allies know more about it.=^tSo I know what I'm getting into.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorth</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>SRN_Mission4</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SlayOoyak</RequiredMissions>
+		<LockedMessage>^tLots of big animal tracks around here.=^tI should see if the scouts know more about what's inside.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorth</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>SRN_Mission5</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>StopBroodvictor</RequiredMissions>
+		<LockedMessage>^tThe Citadel of Wissen.=^tI need to check with the scouts and see if they know more about who's inside.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorth</MapName>
+		<DoorID>106</DoorID>
+		<TargetMapName>SRN_Mission6</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SlayMindlessQueen</RequiredMissions>
+		<LockedMessage>^tThis granary used to feed thousands.=^tSome of the soldiers from Wolf's End will know more about it.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorth</MapName>
+		<DoorID>107</DoorID>
+		<TargetMapName>SRN_Mission7</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SlaySvath</RequiredMissions>
+		<LockedMessage>^tThis old citadel is stranger than the others.=^tI wonder what the scouts have learned about it.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadConnectionMission</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>BridgeTown</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadConnection</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>SwampRoadNorth</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadConnection</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>BridgeTown</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadConnection</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>SwampRoadConnectionMission</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTown</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>SwampRoadConnectionMission</TargetMapName>
+		<TargetDoorID>2</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTown</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>CemeteryHill</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>FindTheOutpost</RequiredMissions>
+		<LockedMessage>^tThere is a huge graveyard behind this gate.=^tThe Felbridge folk might know more about this.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTown</MapName>
+		<DoorID>3</DoorID>
+		<TargetMapName>AC_Mission1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DeepgardDragon</RequiredMissions>
+		<LockedMessage>^tA powerful magic barrier blocks the way.=^tThis bridge leads to the Castle Hocke=^tI need to figure out how to get in there.=^tAnd how to be ready for what's inside.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTown</MapName>
+		<DoorID>5</DoorID>
+		<TargetMapName>CemeteryHill</TargetMapName>
+		<TargetDoorID>3</TargetDoorID>
+		<LockedMessage>^tThe gate seems to be locked=^tMaybe the other entrance is open</LockedMessage>
+		<CompletedMissions>FindTheOutpost</CompletedMissions>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTown</MapName>
+		<DoorID>6</DoorID>
+		<TargetMapName>OldMineMountain</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>HeadToTheMountains</RequiredMissions>
+		<LockedMessage>^tThis road leads into the Stormshard Mountains.=^tIt is little used except by monsters now.=^tI may find need to go there.=^tBut first let's get Felbridge sorted.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTown</MapName>
+		<DoorID>300</DoorID>
+		<TargetMapName>BridgeTownHard</TargetMapName>
+		<TargetDoorID>300</TargetDoorID>
+		<LockedMessage>^tA powerful magic seals this entrance.=^tI still need to learn more about the Sleeping Lands.</LockedMessage>
+		<CompletedMissions>Capstone</CompletedMissions>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTown</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>BT_Mission1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DefeatBanditCamp</RequiredMissions>
+		<LockedMessage>^tMaybe I should head to town to find out more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTown</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>BT_Mission2</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>OldHeroesNeverDie</RequiredMissions>
+		<LockedMessage>^tDeep woods.=^tThere are bandit tracks all over this forest.=^tMany tracks go east from here.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTown</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>BT_Mission3</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>MouthOfMeylour</RequiredMissions>
+		<LockedMessage>^tA dark cavern.=^tNowhere I want to go right now.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>BT_Mission3</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>BridgeTown</TargetMapName>
+		<TargetDoorID>104</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTown</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>BT_Mission4</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DerelictionOfDuty</RequiredMissions>
+		<LockedMessage>^tThe Steward's house.=^tIt looks neat and clean inside.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>BridgeTown</TargetMapName>
+		<TargetDoorID>2</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>3</DoorID>
+		<TargetMapName>BridgeTown</TargetMapName>
+		<TargetDoorID>5</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>CH_Mission1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>RescueYagaga</RequiredMissions>
+		<LockedMessage>^tA closed mausoleum.=^tIt looks like someone lives here.=^tI'll check with my friend from Wolf's End andfind the outpost to the west and ask them.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>CH_Mission2</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>JackalTreasure</RequiredMissions>
+		<LockedMessage>^tAnother dusty mausoleum.=^tI wonder if they know more at the outpost.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>CH_Mission3</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DefeatCrovnag</RequiredMissions>
+		<LockedMessage>^tAnother grim tomb.=^tIt says 'Here lies Lord Crovnag.'=^tI wonder who that was.=^tThe witch Yagarah might know.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>CH_Mission4</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>MissingPappy</RequiredMissions>
+		<LockedMessage>^tA grim, dark tomb.=^tI wonder if they know more at the outpost.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>CH_Mission5</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DestroyTheIdol</RequiredMissions>
+		<LockedMessage>^tYet another dark dungeon door.=^tLike so many on this hill.=^tThe witch Yagarah could tell me more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>106</DoorID>
+		<TargetMapName>CH_Mission6</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DiscoverSecret</RequiredMissions>
+		<LockedMessage>^tIt's closed and locked.=^tAnd grim and dark.=^tThe witch Yagarah can help me figure out which mausoleums Nephit might be in.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>107</DoorID>
+		<TargetMapName>CH_Mission7</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SealTheWisps</RequiredMissions>
+		<LockedMessage>^tIt's closed and locked=^tI wonder if that witch can help me learn more about this place.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>108</DoorID>
+		<TargetMapName>CH_Mission8</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DefeatDogfather</RequiredMissions>
+		<LockedMessage>^tNice waterfall.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>201</DoorID>
+		<TargetMapName>CH_MiniMission1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>202</DoorID>
+		<TargetMapName>CH_MiniMission2</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>203</DoorID>
+		<TargetMapName>CH_MiniMission3</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>204</DoorID>
+		<TargetMapName>CH_MiniMission4</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>205</DoorID>
+		<TargetMapName>CH_MiniMission5</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>206</DoorID>
+		<TargetMapName>CH_MiniMission6</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>207</DoorID>
+		<TargetMapName>CH_MiniMission7</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>208</DoorID>
+		<TargetMapName>CH_MiniMission8</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHill</MapName>
+		<DoorID>209</DoorID>
+		<TargetMapName>CH_MiniMission9</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>BridgeTown</TargetMapName>
+		<TargetDoorID>6</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>EmeraldGlades</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>HeadToTheGlades</RequiredMissions>
+		<LockedMessage>^tThe path is crumbled and impassable.=^tIt heads around the mountainside.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>OMM_Mission1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GiveVoiceToStone</RequiredMissions>
+		<LockedMessage>^tA dark cavern.=^tGoblin tracks lead in.=^tThe villagers might be able to tell me more.=^tBetter find out what I'm getting into...=^tBefore I tear these goblins up.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>OMM_Mission2</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GardenOfTheLost</RequiredMissions>
+		<LockedMessage>^tA crevice in the mountainside.=^tProbably certain death in there.=^tTheexpeditin from Felbridge might know this mountain better.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>OMM_Mission3</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>EyeOfTheTyrant</RequiredMissions>
+		<LockedMessage>^tAnother tunnel into the mountain.=^tLike many.=^tI should check with the expedition from Felbridge.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>OMM_Mission4</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AbandonedArmory</RequiredMissions>
+		<LockedMessage>^tA mysterious doorway.=^tI wonder why that statue is here.=^tThe Felbridge folk could tell me more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>OMM_Mission5</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>HuntedToTheEdge</RequiredMissions>
+		<LockedMessage>^tThe river leads up into the rocks.=^tThe Moai could tell me where in these mountains Meylour's followers are.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>106</DoorID>
+		<TargetMapName>OMM_Mission6</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>ForgottenForge</RequiredMissions>
+		<LockedMessage>^tIt's locked.=^tThe expedition from Felbridge might be able to tell more more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>107</DoorID>
+		<TargetMapName>OMM_Mission7</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GriffinsRedoubt</RequiredMissions>
+		<LockedMessage>^tA tunnel.=^tThe expedition member may know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>108</DoorID>
+		<TargetMapName>OMM_Mission8</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>BloodInTheVeins</RequiredMissions>
+		<LockedMessage>^tAbandoned mineshaft.=^tProbably nothing in there.=^tThe expedition might know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OMM_Mission8</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>OMM_Mission9</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GrahlsRebellion</RequiredMissions>
+		<LockedMessage>^tI'm going to clear these caves before I leave.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>109</DoorID>
+		<TargetMapName>OMM_Mission9</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GrahlsRebellion</RequiredMissions>
+		<LockedMessage>^tAbandoned mineshaft.=^tProbably nothing in there.=^tThe expedition might know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OMM_Mission9</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>OMM_Mission10</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DragonsQuarry</RequiredMissions>
+		<LockedMessage>^tI'm going to clear this cave before I leave.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>110</DoorID>
+		<TargetMapName>OMM_Mission10</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DragonsQuarry</RequiredMissions>
+		<LockedMessage>^tDeep abandoned mineshaft.=^tProbably nothing in there.=^tThe expedition might know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OMM_Mission10</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>OMM_Mission11</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>CutToTheHeart</RequiredMissions>
+		<LockedMessage>^tI'm going to clear this cave before I leave.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>111</DoorID>
+		<TargetMapName>OMM_Mission11</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>CutToTheHeart</RequiredMissions>
+		<LockedMessage>^tDeeper abandoned mineshaft.=^tProbably nothing in there.=^tThe expedition might know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OMM_Mission11</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>EmeraldGlades</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>HeadToTheGlades</RequiredMissions>
+		<LockedMessage>^tI'm going to clear this cave before I leave.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountain</MapName>
+		<DoorID>112</DoorID>
+		<TargetMapName>OMM_Mission12</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>MeylourFinale</RequiredMissions>
+		<LockedMessage>^tMysterious cavern=^tHalf collapsed=^tDo I see glowing rock?=^tI hope I never have need to go in there</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGlades</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>OldMineMountain</TargetMapName>
+		<TargetDoorID>2</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGlades</MapName>
+		<DoorID>300</DoorID>
+		<TargetMapName>EmeraldGladesHard</TargetMapName>
+		<TargetDoorID>300</TargetDoorID>
+		<RequiredMissions>HeadToTheGlades,HeadToTheGladesHard</RequiredMissions>
+		<LockedMessage>^tAnother Dreadfold Portal. Like the one in Felbridge, but closed.=^tA shortcut to the Dread doppelganger of these Glades?=^tTo open this gate, I must cross into the Dreadfold by the Felbridge Portal.=^tAnd find this portal's twin in Dread Emerald Glades.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGlades</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>EG_Mission1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>TheAshenDryad</RequiredMissions>
+		<LockedMessage>^tA strange side path.=^tMaybe that dryad back west can tell me more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGlades</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>EG_Mission2</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>OutOnALimb</RequiredMissions>
+		<LockedMessage>^tA hole in the trunk.=^tThose dryads might be able to tell me more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGlades</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>EG_Mission3</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>RottenToTheRoots</RequiredMissions>
+		<LockedMessage>^tA hole in the roots.=^tThese dryads might know where it leads.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGlades</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>EG_Mission4</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>HopeSpringsEternal</RequiredMissions>
+		<LockedMessage>^tA strange temple.=^tThe dryads might tell a bit more about what I'm getting into here.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGlades</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>EG_Mission5</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>RefugeOfTheDamned</RequiredMissions>
+		<LockedMessage>^tA strange ruin=^tThe dryads might tell a bit more about what I'm getting into here</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>AC_Mission1</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>Castle</TargetMapName>
+		<TargetDoorID>101</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>Castle</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>BridgeTown</TargetMapName>
+		<TargetDoorID>3</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>Castle</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>AC_Mission1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>Castle</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>AC_Mission2</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>EmeraldThrone</RequiredMissions>
+		<LockedMessage>^tA dark sidedoor.=^tI should ask the survivors where it leads.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>Castle</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>AC_Mission3</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>BattlesLostAndWon</RequiredMissions>
+		<LockedMessage>^tA side path to the other side of the battlefield.=^tThe survivors in the courtyard might know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>Castle</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>AC_Mission4</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AethericObservatory</RequiredMissions>
+		<LockedMessage>^tThe door to this ancient tower is barred.=^tI need the password.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>Castle</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>AC_Mission5</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>LastStand</RequiredMissions>
+		<LockedMessage>^tA dark passage.=^tMaybe the wizard Titus will know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>Castle</MapName>
+		<DoorID>106</DoorID>
+		<TargetMapName>AC_Mission6</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>Capstone</RequiredMissions>
+		<LockedMessage>^tA dungeon entrance.=^tMaybe Titus can tell me where it leads.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>Castle</MapName>
+		<DoorID>4</DoorID>
+		<TargetMapName>ShazariDesert</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>IntoTheDepths</RequiredMissions>
+		<LockedMessage>^tWhoa, hot magic.=^tI should ask Titus about this.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesert</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>Castle</TargetMapName>
+		<TargetDoorID>4</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesert</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>JC_Mission1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>HeadToValhaven</RequiredMissions>
+		<LockedMessage>^tI'm not ready yet.=^tI should take care of things here first.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesert</MapName>
+		<DoorID>300</DoorID>
+		<TargetMapName>ShazariDesertHard</TargetMapName>
+		<TargetDoorID>300</TargetDoorID>
+		<RequiredMissions>IntoTheDepths,IntoTheDepthsHard</RequiredMissions>
+		<LockedMessage>^tAnother Dreadfold Portal. Like the one in Felbridge, but closed=^tA shortcut to Dread Shazari, no doubt=^tTo open this gate, I can cross into the Dreadfold by the Felbridge Portal=^tThen make my way to this portal's twin in Dread Shazari=^tDo I dare?</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesert</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>SD_Mission1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>TempleOfShadows</RequiredMissions>
+		<LockedMessage>^tTitus should be able to tell me about this strange door.=^tI saw him back west.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesert</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>SD_Mission2</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>ScarabInvasion</RequiredMissions>
+		<LockedMessage>^tA strange passage down.=^tI hear strange chittering.=^tI can ask those desert folk what's inside.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesert</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>SD_Mission3</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>BloodAndSand</RequiredMissions>
+		<LockedMessage>^tI hear the clash of arms below.=^tI bet the desert townsfolk can tell me more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesert</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>SD_Mission4</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GoblinDiplomacy</RequiredMissions>
+		<LockedMessage>^tA strange gate.=^tGzarek and his nomads might know where it leads.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesert</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>SD_Mission5</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AncientBurialGrounds</RequiredMissions>
+		<LockedMessage>^tA mysterious burial ground.=^tI'll ask the guy with the dog head what he knows.=^tNaturally.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesert</MapName>
+		<DoorID>106</DoorID>
+		<TargetMapName>SD_Mission6</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AttuneTheAnchor</RequiredMissions>
+		<LockedMessage>^tThat is one colossal pyramid.=^tPerhaps Titus can tell me the lore of this place.=^tI will ask him what he can tell me.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>ShazariDesert</TargetMapName>
+		<TargetDoorID>2</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>300</DoorID>
+		<TargetMapName>JadeCityHard</TargetMapName>
+		<TargetDoorID>300</TargetDoorID>
+		<RequiredMissions>HeadToValhaven,HeadToValhavenHard</RequiredMissions>
+		<LockedMessage>^tAnother Dreadfold Portal. Like the one in Felbridge, but closed=^tA shortcut to Dread Valhaven, no doubt=^tTo open this gate, I can cross into the Dreadfold by the Felbridge Portal=^tThen make my way to this portal's twin in Dread Valhaven=^tDo I dare?</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>JC_Mission1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>JC_Mission1</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>JadeCity</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>JC_Mission2</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>BackAlleyDeals</RequiredMissions>
+		<LockedMessage>^tThis is one shady alley.=^tI shouldn't be here.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JC_Mission2</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>JC_Mission3</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>TheProdigalSon</RequiredMissions>
+		<LockedMessage>^tLooks like he went this way.=^tBetter take care of this mess first.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>JC_Mission3</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>TheProdigalSon</RequiredMissions>
+		<LockedMessage>^tI wonder why this tea shop is locked.=^tMaybe someone in town knows.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>JC_Mission4</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SewerSurfin</RequiredMissions>
+		<LockedMessage>^tThe sewer opening is cold and dark.=^tI hear eerie voices echo from within.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>JC_Mission5</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>TempleOfLostDreams</RequiredMissions>
+		<LockedMessage>^tI have strayed to far from town.=^tI should head back.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>106</DoorID>
+		<TargetMapName>JC_Mission6</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>Inception</RequiredMissions>
+		<LockedMessage>^tThese doors must enclose great secrets.=^tSomeone has to know how to get in.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>107</DoorID>
+		<TargetMapName>JC_Mission7</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>Intervention</RequiredMissions>
+		<LockedMessage>^tThis palace is impressive and uninviting.=^tI better go before the guards comes.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>108</DoorID>
+		<TargetMapName>JC_Mission8</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AttackOfOpportunity</RequiredMissions>
+		<LockedMessage>^tThis must be the city barracks.=^tThe imperial army is huge.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>109</DoorID>
+		<TargetMapName>JC_Mission9</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>ShadowsOfThePast</RequiredMissions>
+		<LockedMessage>^tThe door creaks and cracks from age.=^tThis door seems out of place.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>110</DoorID>
+		<TargetMapName>JC_Mission10</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<LockedMessage>^tLooks like an ancient vault.=^tBetter turn back before I get lost.</LockedMessage>
+		<CompletedMissions>TempleOfLostDreams</CompletedMissions>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>111</DoorID>
+		<TargetMapName>JC_Mission11</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>RingOfFire</RequiredMissions>
+		<LockedMessage>^tWord on the street is some pretty bad people roam these parts.=^tI should go search for more information.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>201</DoorID>
+		<TargetMapName>JC_Mini1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AttackOfOpportunity</RequiredMissions>
+		<LockedMessage>^tLooks like one of the emperor's guard towers.=^tThey sure do keep a tight watch.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCity</MapName>
+		<DoorID>202</DoorID>
+		<TargetMapName>JC_Mini2</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AttackOfOpportunity</RequiredMissions>
+		<LockedMessage>^tLooks like one of the emperor's guard towers.=^tThere is so much security here.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>NewbieRoadHard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>SwampRoadNorthHard</TargetMapName>
+		<TargetDoorID>2</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>NewbieRoadHard</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>TutorialDungeonHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>RescueAnnaHard</RequiredMissions>
+		<LockedMessage>^tThis seems better fortified than before=^tMaybe the villagers know more about this</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>NewbieRoadHard</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>GoblinRiverDungeonHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GoblinRiverHard</RequiredMissions>
+		<LockedMessage>^tThat path leads to the river=^tWith goblin tracks in and out=^tThe villagers might know more about this</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>NewbieRoadHard</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>GhostBossDungeonHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>KillNephitHard</RequiredMissions>
+		<LockedMessage>^tA dank tomb=^tWith goblin tracks in and out=^tThe villagers to the west might know more about this</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>NewbieRoadHard</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>DreamDragonDungeonHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SlayTheDragonHard</RequiredMissions>
+		<LockedMessage>^tIt's closed and locked=^tI think I can see evil seeping out=^tMaybe these villagers know whether it holds plunder=^t..Or certain death</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorthHard</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>SwampRoadConnectionHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorthHard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>NewbieRoadHard</TargetMapName>
+		<TargetDoorID>2</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorthHard</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>SRN_Mission1Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>StopCastoutHard</RequiredMissions>
+		<LockedMessage>^tSomeone has fortified this tower.=^tI should check in with the soldiers from Wolf's End.=^tThey've had time to scout the area.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorthHard</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>SRN_Mission2Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SlayYornakHard</RequiredMissions>
+		<LockedMessage>^tA tower of a happier time=^tThose villagers can help me plan my plundering</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorthHard</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>SRN_Mission3Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SlaySvarHard</RequiredMissions>
+		<LockedMessage>^tA Tuatara fort.=^tI should see if my allies know more about it.=^tSo I know what I'm getting into.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorthHard</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>SRN_Mission4Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SlayOoyakHard</RequiredMissions>
+		<LockedMessage>^tLots of big animal tracks around here.=^tI should see if the scouts know more about what's inside.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorthHard</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>SRN_Mission5Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>StopBroodvictorHard</RequiredMissions>
+		<LockedMessage>^tThe Citadel of Wissen.=^tI need to check with the scouts and see if they know more about who's inside.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorthHard</MapName>
+		<DoorID>106</DoorID>
+		<TargetMapName>SRN_Mission6Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SlayMindlessQueenHard</RequiredMissions>
+		<LockedMessage>^tThis granary used to feed thousands.=^tSome of the soldiers from Wolf's End will know more about it.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorthHard</MapName>
+		<DoorID>107</DoorID>
+		<TargetMapName>SRN_Mission7Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SlaySvathHard</RequiredMissions>
+		<LockedMessage>^tThis old citadel is stranger than the others.=^tI wonder what the scouts have learned about it.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadConnectionMissionHard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>BridgeTownHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadConnectionHard</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>SwampRoadNorthHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadConnectionHard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>BridgeTownHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadConnectionHard</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>SwampRoadConnectionMissionHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>ClearTheBridgeHard</RequiredMissions>
+		<LockedMessage>^tDark and impassable=^tAre those spider webs?=^tIck=^tNo one's going to Felbridge that way.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTownHard</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>SwampRoadConnectionHard</TargetMapName>
+		<TargetDoorID>2</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTownHard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>CemeteryHillHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>FindTheOutpostHard</RequiredMissions>
+		<LockedMessage>^tThere is too much evil behind this gate.=^tThe Felbridge folk might know more about this.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTownHard</MapName>
+		<DoorID>3</DoorID>
+		<TargetMapName>AC_Mission1Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DeepgardDragonHard</RequiredMissions>
+		<LockedMessage>^tThe way is blocked by powerful magic.=^tThis bridge leads to Castle Hocke.=^tI need to figure out how to get in there.=^tAnd how to be ready for what's inside.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTownHard</MapName>
+		<DoorID>5</DoorID>
+		<TargetMapName>CemeteryHillHard</TargetMapName>
+		<TargetDoorID>3</TargetDoorID>
+		<LockedMessage>^tThe gate seems to be locked.=^tMaybe the other entrance is open.</LockedMessage>
+		<CompletedMissions>FindTheOutpostHard</CompletedMissions>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTownHard</MapName>
+		<DoorID>6</DoorID>
+		<TargetMapName>OldMineMountainHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>HeadToTheMountainsHard</RequiredMissions>
+		<LockedMessage>^This road leads into the Stormshard Mountains=^tIt is little used except by monsters now=^tI may find need to go there=^tBut first let's get Felbridge sorted</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTownHard</MapName>
+		<DoorID>300</DoorID>
+		<TargetMapName>BridgeTown</TargetMapName>
+		<TargetDoorID>300</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTownHard</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>BT_Mission1Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DefeatBanditCampHard</RequiredMissions>
+		<LockedMessage>^tMaybe I should head to town to find out more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTownHard</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>BT_Mission2Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>OldHeroesNeverDieHard</RequiredMissions>
+		<LockedMessage>^tDeep woods.=^tThere are bandit tracks all over this forest.=^tMany tracks go east from here.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTownHard</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>BT_Mission3Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>MouthOfMeylourHard</RequiredMissions>
+		<LockedMessage>^tA dark cavern.=^tNowhere I want to go right now.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>BT_Mission3Hard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>BridgeTownHard</TargetMapName>
+		<TargetDoorID>104</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>BridgeTownHard</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>BT_Mission4Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DerelictionOfDutyHard</RequiredMissions>
+		<LockedMessage>^tThe Steward's house.=^tIt looks neat and clean inside.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>BridgeTownHard</TargetMapName>
+		<TargetDoorID>2</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>3</DoorID>
+		<TargetMapName>BridgeTownHard</TargetMapName>
+		<TargetDoorID>5</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>CH_Mission1Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>RescueYagagaHard</RequiredMissions>
+		<LockedMessage>^tA closed mausoleum.=^tIt looks like someone lives here.=^tI'll check with my friend from Wolf's End andfind the outpost to the west and ask them.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>CH_Mission2Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>JackalTreasureHard</RequiredMissions>
+		<LockedMessage>^tAnother dusty mausoleum.=^tI wonder if they know more at the outpost.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>CH_Mission3Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DefeatCrovnagHard</RequiredMissions>
+		<LockedMessage>^tAnother grim tomb.=^tIt says 'Here lies Lord Crovnag.'=^tI wonder who that was.=^tThe witch Yagarah might know.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>CH_Mission4Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>MissingPappyHard</RequiredMissions>
+		<LockedMessage>^tA grim, dark tomb.=^tI wonder if they know more at the outpost.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>CH_Mission5Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DestroyTheIdolHard</RequiredMissions>
+		<LockedMessage>^tYet another dark dungeon door.=^tLike so many on this hill.=^tThe witch Yagarah could tell me more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>106</DoorID>
+		<TargetMapName>CH_Mission6Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DiscoverSecretHard</RequiredMissions>
+		<LockedMessage>^tIt's closed and locked.=^tAnd grim and dark.=^tThe witch Yagarah can help me figure out which mausoleums Nephit might be in.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>107</DoorID>
+		<TargetMapName>CH_Mission7Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SealTheWispsHard</RequiredMissions>
+		<LockedMessage>^tIt's closed and locked=^tI wonder if that witch can help me learn more about this place.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>108</DoorID>
+		<TargetMapName>CH_Mission8Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DefeatDogfatherHard</RequiredMissions>
+		<LockedMessage>^tNice waterfall.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>201</DoorID>
+		<TargetMapName>CH_MiniMission1Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>202</DoorID>
+		<TargetMapName>CH_MiniMission2Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>203</DoorID>
+		<TargetMapName>CH_MiniMission3Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>204</DoorID>
+		<TargetMapName>CH_MiniMission4Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>205</DoorID>
+		<TargetMapName>CH_MiniMission5Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>206</DoorID>
+		<TargetMapName>CH_MiniMission6Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>207</DoorID>
+		<TargetMapName>CH_MiniMission7Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>208</DoorID>
+		<TargetMapName>CH_MiniMission8Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CemeteryHillHard</MapName>
+		<DoorID>209</DoorID>
+		<TargetMapName>CH_MiniMission9Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>BridgeTownHard</TargetMapName>
+		<TargetDoorID>6</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>EmeraldGladesHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>HeadToTheGladesHard</RequiredMissions>
+		<LockedMessage>^tThe path is crumbled and impassable.=^tIt heads around the mountainside.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>OMM_Mission1Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GiveVoiceToStoneHard</RequiredMissions>
+		<LockedMessage>^tA dark cavern.=^tGoblin tracks lead in.=^tThe villagers might be able to tell me more.=^tBetter find out what I'm getting into...=^tBefore I tear these goblins up.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>OMM_Mission2Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GardenOfTheLostHard</RequiredMissions>
+		<LockedMessage>^tA crevice in the mountainside.=^tProbably certain death in there.=^tTheexpeditin from Felbridge might know this mountain better.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>OMM_Mission3Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>EyeOfTheTyrantHard</RequiredMissions>
+		<LockedMessage>^tAnother tunnel into the mountain.=^tLike many.=^tI should check with the expedition from Felbridge.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>OMM_Mission4Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AbandonedArmoryHard</RequiredMissions>
+		<LockedMessage>^tA mysterious doorway.=^tI wonder why that statue is here.=^tThe Felbridge folk could tell me more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>OMM_Mission5Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>HuntedToTheEdgeHard</RequiredMissions>
+		<LockedMessage>^tThe river leads up into the rocks.=^tThe Moai could tell me where in these mountains Meylour's followers are.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>106</DoorID>
+		<TargetMapName>OMM_Mission6Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>ForgottenForgeHard</RequiredMissions>
+		<LockedMessage>^tIt's locked.=^tThe expedition from Felbridge might be able to tell more more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>107</DoorID>
+		<TargetMapName>OMM_Mission7Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GriffinsRedoubtHard</RequiredMissions>
+		<LockedMessage>^tA tunnel.=^tThe expedition member may know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>108</DoorID>
+		<TargetMapName>OMM_Mission8Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>BloodInTheVeinsHard</RequiredMissions>
+		<LockedMessage>^tAbandoned mineshaft.=^tProbably nothing in there.=^tThe expedition might know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OMM_Mission8Hard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>OMM_Mission9Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GrahlsRebellionHard</RequiredMissions>
+		<LockedMessage>^tI'm going to clear these caves before I leave.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>109</DoorID>
+		<TargetMapName>OMM_Mission9Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GrahlsRebellionHard</RequiredMissions>
+		<LockedMessage>^tAbandoned mineshaft.=^tProbably nothing in there.=^tThe expedition might know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OMM_Mission9Hard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>OMM_Mission10Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DragonsQuarryHard</RequiredMissions>
+		<LockedMessage>^tI'm going to clear this cave before I leave.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>110</DoorID>
+		<TargetMapName>OMM_Mission10Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>DragonsQuarryHard</RequiredMissions>
+		<LockedMessage>^tDeep abandoned mineshaft.=^tProbably nothing in there.=^tThe expedition might know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OMM_Mission10Hard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>OMM_Mission11Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>CutToTheHeartHard</RequiredMissions>
+		<LockedMessage>^tI'm going to clear this cave before I leave.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>111</DoorID>
+		<TargetMapName>OMM_Mission11Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>CutToTheHeartHard</RequiredMissions>
+		<LockedMessage>^tDeeper abandoned mineshaft.=^tProbably nothing in there.=^tThe expedition might know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OMM_Mission11Hard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>EmeraldGladesHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>HeadToTheGladesHard</RequiredMissions>
+		<LockedMessage>^tI'm going to clear this dungeon before I leave.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>OldMineMountainHard</MapName>
+		<DoorID>112</DoorID>
+		<TargetMapName>OMM_Mission12Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>MeylourFinaleHard</RequiredMissions>
+		<LockedMessage>^tMysterious cavern=^tHalf collapsed=^tDo I see glowing rock?=^tI hope I never have need to go in there</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGladesHard</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>OldMineMountainHard</TargetMapName>
+		<TargetDoorID>2</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGladesHard</MapName>
+		<DoorID>300</DoorID>
+		<TargetMapName>EmeraldGlades</TargetMapName>
+		<TargetDoorID>300</TargetDoorID>
+		<RequiredMissions>HeadToTheGlades,HeadToTheGladesHard</RequiredMissions>
+		<LockedMessage>^tAnother Dreadfold Portal. Like the one in Felbridge, but closed=^tA shortcut to the Dread doppelganger of these Glades?=^tTo open this gate, I must cross into the Dreadfold by the Felbridge Portal=^tAnd find this portal's twin in Dread Emerald Glades</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGladesHard</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>EG_Mission1Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>TheAshenDryadHard</RequiredMissions>
+		<LockedMessage>^tA strange side path=^tMaybe that dryad back west can tell me more</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGladesHard</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>EG_Mission2Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>OutOnALimbHard</RequiredMissions>
+		<LockedMessage>^tA hole in the trunk=^tThose dryads might be able to tell me more</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGladesHard</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>EG_Mission3Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>RottenToTheRootsHard</RequiredMissions>
+		<LockedMessage>^tA hole in the roots=^tThese dryads might know where it leads</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGladesHard</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>EG_Mission4Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>HopeSpringsEternalHard</RequiredMissions>
+		<LockedMessage>^tA strange temple=^tThe dryads might tell a bit more about what I'm getting into here=^tMany ruined temples have more death than treasure=^tA little preparation goes a long way=^tMy grandpappy used to say</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>EmeraldGladesHard</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>EG_Mission5Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>RefugeOfTheDamnedHard</RequiredMissions>
+		<LockedMessage>^tA strange ruin=^tThe dryads might tell a bit more about what I'm getting into here=^tMany ruined temples have more death than treasure=^tA little preparation goes a long way=^tMy grandpappy used to say</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>AC_Mission1Hard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>CastleHard</TargetMapName>
+		<TargetDoorID>101</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CastleHard</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>BridgeTownHard</TargetMapName>
+		<TargetDoorID>3</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CastleHard</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>AC_Mission1Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>CastleHard</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>AC_Mission2Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>EmeraldThroneHard</RequiredMissions>
+		<LockedMessage>^tA dark sidedoor.=^tI should ask the survivors where it leads.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CastleHard</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>AC_Mission3Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>BattlesLostAndWonHard</RequiredMissions>
+		<LockedMessage>^tA side path to the other side of the battlefield.=^tThe survivors in the courtyard might know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CastleHard</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>AC_Mission4Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AethericObservatoryHard</RequiredMissions>
+		<LockedMessage>^tThe door to this ancient tower is barred.=^tI need the password.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CastleHard</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>AC_Mission5Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>LastStandHard</RequiredMissions>
+		<LockedMessage>^tA dark passage.=^tMaybe the wizard Titus will know more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CastleHard</MapName>
+		<DoorID>106</DoorID>
+		<TargetMapName>AC_Mission6Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>CapstoneHard</RequiredMissions>
+		<LockedMessage>^tA dungeon entrance.=^tMaybe Titus can tell me where it leads.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>CastleHard</MapName>
+		<DoorID>4</DoorID>
+		<TargetMapName>ShazariDesertHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>IntoTheDepthsHard</RequiredMissions>
+		<LockedMessage>^tWhoa, hot magic.=^tI should ask Titus about this.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesertHard</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>CastleHard</TargetMapName>
+		<TargetDoorID>4</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesertHard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>JC_Mission1Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>HeadToValhavenHard</RequiredMissions>
+		<LockedMessage>^tI'm not ready yet.=^tI should take care of things here first.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesertHard</MapName>
+		<DoorID>300</DoorID>
+		<TargetMapName>ShazariDesert</TargetMapName>
+		<TargetDoorID>300</TargetDoorID>
+		<RequiredMissions>IntoTheDepths,IntoTheDepthsHard</RequiredMissions>
+		<LockedMessage>^tTitus should be able to tell me about this strange door.=^tI saw him back west.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesertHard</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>SD_Mission1Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>TempleOfShadowsHard</RequiredMissions>
+		<LockedMessage>^tA strange passage down.=^tI hear strange chittering.=^tI can ask those desert folk what's inside.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesertHard</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>SD_Mission2Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>ScarabInvasionHard</RequiredMissions>
+		<LockedMessage>^tI hear the clash of arms below.=^tI bet the desert townsfolk can tell me more.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesertHard</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>SD_Mission3Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>BloodAndSandHard</RequiredMissions>
+		<LockedMessage>^tA strange gate.=^tGzarek and his nomads might know where it leads.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesertHard</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>SD_Mission4Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>GoblinDiplomacyHard</RequiredMissions>
+		<LockedMessage>^tA mysterious burial ground.=^tI'll ask the guy with the dog head what he knows.=^tNaturally.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesertHard</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>SD_Mission5Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AncientBurialGroundsHard</RequiredMissions>
+		<LockedMessage>^tThat is one colossal pyramid.=^tPerhaps Titus can tell me the lore of this place.=^tI will ask him what he can tell me.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>ShazariDesertHard</MapName>
+		<DoorID>106</DoorID>
+		<TargetMapName>SD_Mission6Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AttuneTheAnchorHard</RequiredMissions>
+		<LockedMessage>^tThat is one colossal pyramid=^tPerhaps Titus can tell me the lore of this place=^tI will ask him what he can tell me</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>1</DoorID>
+		<TargetMapName>ShazariDesertHard</TargetMapName>
+		<TargetDoorID>2</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>300</DoorID>
+		<TargetMapName>JadeCity</TargetMapName>
+		<TargetDoorID>300</TargetDoorID>
+		<RequiredMissions>HeadToValhaven,HeadToValhavenHard</RequiredMissions>
+		<LockedMessage>^tAnother Dreadfold Portal. Like the one in Felbridge, but closed=^tA shortcut to Dread Valhaven, no doubt=^tTo open this gate, I can cross into the Dreadfold by the Felbridge Portal=^tThen make my way to this portal's twin in Dread Valhaven=^tDo I dare?</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>101</DoorID>
+		<TargetMapName>JC_Mission1Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>JC_Mission1Hard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>JadeCityHard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>102</DoorID>
+		<TargetMapName>JC_Mission2Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>BackAlleyDealsHard</RequiredMissions>
+		<LockedMessage>^tThis is one shady alley.=^tI shouldn't be here.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JC_Mission2Hard</MapName>
+		<DoorID>2</DoorID>
+		<TargetMapName>JC_Mission3Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>TheProdigalSonHard</RequiredMissions>
+		<LockedMessage>^tLooks like he went this way.=^tBetter take care of this mess first.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>103</DoorID>
+		<TargetMapName>JC_Mission3Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>TheProdigalSonHard</RequiredMissions>
+		<LockedMessage>^tI wonder why this tea shop is locked.=^tMaybe someone in town knows.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>104</DoorID>
+		<TargetMapName>JC_Mission4Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>SewerSurfinHard</RequiredMissions>
+		<LockedMessage>^tThe sewer opening is cold and dark.=^tI hear eerie voices echo from within.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>105</DoorID>
+		<TargetMapName>JC_Mission5Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>TempleOfLostDreamsHard</RequiredMissions>
+		<LockedMessage>^tI have strayed to far from town.=^tI should head back.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>106</DoorID>
+		<TargetMapName>JC_Mission6Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>InceptionHard</RequiredMissions>
+		<LockedMessage>^tThese doors must enclose great secrets.=^tSomeone has to know how to get in.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>107</DoorID>
+		<TargetMapName>JC_Mission7Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>InterventionHard</RequiredMissions>
+		<LockedMessage>^tThis palace is impressive and uninviting.=^tI better go before the guards comes.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>108</DoorID>
+		<TargetMapName>JC_Mission8Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AttackOfOpportunityHard</RequiredMissions>
+		<LockedMessage>^tThis must be the city barracks.=^tThe imperial army is huge.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>109</DoorID>
+		<TargetMapName>JC_Mission9Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>ShadowsOfThePastHard</RequiredMissions>
+		<LockedMessage>^tThe door creaks and cracks from age.=^tThis door seems out of place.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>110</DoorID>
+		<TargetMapName>JC_Mission10Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<LockedMessage>^tLooks like an ancient vault.=^tBetter turn back before I get lost.</LockedMessage>
+		<CompletedMissions>TempleOfLostDreamsHard</CompletedMissions>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>111</DoorID>
+		<TargetMapName>JC_Mission11Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>RingOfFireHard</RequiredMissions>
+		<LockedMessage>^tWord on the street is some pretty bad people roam these parts.=^tI should go search for more information.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>201</DoorID>
+		<TargetMapName>JC_Mini1Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AttackOfOpportunityHard</RequiredMissions>
+		<LockedMessage>^tLooks like one of the emperor's guard towers.=^tThey sure do keep a tight watch.</LockedMessage>
+	</DoorType>
+	<DoorType>
+		<MapName>JadeCityHard</MapName>
+		<DoorID>202</DoorID>
+		<TargetMapName>JC_Mini2Hard</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+		<RequiredMissions>AttackOfOpportunityHard</RequiredMissions>
+		<LockedMessage>^tLooks like one of the emperor's guard towers.=^tThere is so much security here.</LockedMessage>
+	</DoorType>
+</DoorTypes>

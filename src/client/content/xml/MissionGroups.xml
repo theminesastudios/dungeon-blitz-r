@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MissionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<MissionGroup GroupName="Slaying">
+		<DisplayName>Combat Achievements</DisplayName>
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>AvoidDamage100000,AvoidDamage10000000,AvoidDamage100000000</Mission1>
+		<Mission2>ProcKillTrog1000,ProcKillTrog5000,ProcKillTrog10000</Mission2>
+		<Mission3>SlayJackal1000,SlayJackal5000,SlayJackalHard10000</Mission3>
+		<Mission4>KillWith2ndPower1250,KillWith2ndPower3000,KillWith2ndPowerHard8000</Mission4>
+		<Mission5>KillBossIn10SecondsHard</Mission5>
+		<Mission6>ProcKillUndead1000,ProcKillUndead5000,ProcKillUndead10000</Mission6>
+		<Mission7>HealFromProc10000,HealFromProc100000,HealFromProc1000000</Mission7>
+		<Mission8>KillDaylight5000,KillDaylight8000,KillDaylight15000</Mission8>
+		<Mission9>TotalRangeDamage300000,TotalRangeDamage10000000,TotalRangeDamage300000000</Mission9>
+		<Mission10>HealFromOrbs100000,HealFromOrbs1000000,HealFromOrbs100000000</Mission10>
+		<Mission11>SlayLizard1000,SlayLizard5000,SlayLizardHard10000</Mission11>
+	</MissionGroup>
+	<MissionGroup GroupName="Slaying">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>KillWhileMeleeBuff500,KillWhileMeleeBuff2000,KillWhileMeleeBuff6000</Mission1>
+		<Mission2>KillCrowdControl1000,KillCrowdControl5000,KillCrowdControlHard10000</Mission2>
+		<Mission3>GainTotalProc800,GainTotalProc3000,GainTotalProc12000</Mission3>
+		<Mission4>SlayGoblin1000,SlayGoblin5000,SlayGoblinHard10000</Mission4>
+		<Mission5>SlayGhost1000,SlayGhost5000,SlayGhostHard10000</Mission5>
+		<Mission6>ProcKillSylvan1000,ProcKillSylvan5000,ProcKillSylvan10000</Mission6>
+		<Mission7>ApexAdventurer</Mission7>
+		<Mission8>TotalPowerDamage300000,TotalPowerDamage10000000,TotalPowerDamage300000000</Mission8>
+		<Mission9>KillInOneBlow10,KillInOneBlow15,KillInOneBlow20</Mission9>
+		<Mission10>TakeTotalDamage100000,TakeTotalDamage1000000,TakeTotalDamage100000000</Mission10>
+		<Mission11>KillWith1stPower1250,KillWith1stPower3000,KillWith1stPowerHard8000</Mission11>
+	</MissionGroup>
+	<MissionGroup GroupName="Slaying">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>AllBossesWakingHard</Mission1>
+		<Mission2>MasterTotal</Mission2>
+		<Mission3>KillWhile20HP500,KillWhile20HP2000,KillWhile20HPHard6000</Mission3>
+		<Mission4>SlayDevourer1000,SlayDevourer5000,SlayDevourerHard10000</Mission4>
+		<Mission5>ProcKillInfernal1000,ProcKillInfernal5000,ProcKillInfernal10000</Mission5>
+		<Mission6>KillWhileMagicBuff500,KillWhileMagicBuff2000,KillWhileMagicBuff6000</Mission6>
+		<Mission7>SlayGriffin100,SlayGriffin500,SlayGriffinHard1000</Mission7>
+		<Mission8>SlaySpider1000,SlaySpider5000,SlaySpiderHard10000</Mission8>
+		<Mission9>KillBossesHard500,KillBossesHard1000,KillBossesHard5000</Mission9>
+		<Mission10>SlayKrakensHard100</Mission10>
+		<Mission11>ProcKillDraconic1000,ProcKillDraconic5000,ProcKillDraconic10000</Mission11>
+	</MissionGroup>
+	<MissionGroup GroupName="Slaying">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>SlayPsychophage1000,SlayPsychophage5000,SlayPsychophageHard10000</Mission1>
+		<Mission2>KillWithRanged2000,KillWithRanged6000,KillWithRangedHard12000</Mission2>
+		<Mission3>KillBossInAirHard</Mission3>
+		<Mission4>KillWith3rdPower1250,KillWith3rdPower3000,KillWith3rdPowerHard8000</Mission4>
+		<Mission5>WithGreatPower</Mission5>
+		<Mission6>AllBossesWaking</Mission6>
+		<Mission7>KillOfEachType10000,KillOfEachType50000,KillOfEachType100000</Mission7>
+		<Mission8>ActiveProcsSec5,ActiveProcsSec8,ActiveProcsSec12</Mission8>
+		<Mission9>TheProcDoctor</Mission9>
+		<Mission10>SlaySkeletons1000,SlaySkeletons5000,SlaySkeletonsHard10000</Mission10>
+		<Mission11>TotalMeleeDamage300000,TotalMeleeDamage10000000,TotalMeleeDamage300000000</Mission11>
+	</MissionGroup>
+	<MissionGroup GroupName="Slaying">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>ReignInBlood</Mission1>
+		<Mission2>KillBossesNormal500,KillBossesNormal1000,KillBossesNormal5000</Mission2>
+		<Mission3>KillNightfall5000,KillNightfall8000,KillNightfall15000</Mission3>
+		<Mission4>KillBossIn10Seconds</Mission4>
+		<Mission5>ProcKillMythic1000,ProcKillMythic5000,ProcKillMythic10000</Mission5>
+		<Mission6>KillWhileSpeedBuff500,KillWhileSpeedBuff2000,KillWhileSpeedBuff6000</Mission6>
+		<Mission7>SlayGnome1000,SlayGnome5000,SlayGnomeHard10000</Mission7>
+		<Mission8>KillBuffed9001</Mission8>
+		<Mission9>KillWhileFullHP1000,KillWhileFullHP5000,KillWhileFullHPHard10000</Mission9>
+		<Mission10>SlayDragon500,SlayDragon1000,SlayDragonHard5000</Mission10>
+		<Mission11>MasterType</Mission11>
+	</MissionGroup>
+	<MissionGroup GroupName="Exploration">
+		<DisplayName>Exploration Achievements</DisplayName>
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>OhThePlacesYouWillGo</Mission1>
+		<Mission2>CompleteQuestWolfsEnd</Mission2>
+		<Mission3>CompleteQuestEmeraldGlades</Mission3>
+		<Mission4>OpenChestA,OpenChestB,OpenChestC</Mission4>
+		<Mission5>VisitAllOfFelbridge</Mission5>
+		<Mission6>FallForSecondA,FallForSecondB,FallForSecondC</Mission6>
+		<Mission7>VisitEveryZone</Mission7>
+	</MissionGroup>
+	<MissionGroup GroupName="Exploration">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission2>CompleteQuestBlackRoseMire</Mission2>
+		<Mission3>CompleteQuestDeepgardCastle</Mission3>
+		<Mission4>LootGoldTutorialMisisons</Mission4>
+		<Mission5>VisitAllOfCemeteryHill</Mission5>
+		<Mission6>OpenYourMapTimes</Mission6>
+		<Mission7>Get5StarBoat</Mission7>
+	</MissionGroup>
+	<MissionGroup GroupName="Exploration">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission2>CompleteQuestFelbridge</Mission2>
+		<Mission3>CompleteQuestA,CompleteQuestB,CompleteQuestC</Mission3>
+		<Mission4>CompleteAllQuestWaking</Mission4>
+		<Mission5>VisitAllOfStormshardMountain</Mission5>
+		<Mission6>EncounterEveryMonsterWaking</Mission6>
+		<Mission7>RelaxInThrone</Mission7>
+	</MissionGroup>
+	<MissionGroup GroupName="Exploration">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission2>CompleteQuestCemeteryHill</Mission2>
+		<Mission3>KingOfTheWorldNew</Mission3>
+		<Mission4>VisitAllOfWolfsEnd</Mission4>
+		<Mission5>VisitAllOfEmeraldGlades</Mission5>
+		<Mission6>EncounterEveryBossWaking</Mission6>
+		<Mission7>VisitEveryVendorWaking</Mission7>
+	</MissionGroup>
+	<MissionGroup GroupName="Exploration">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission2>CompleteQuestStormshardMountain</Mission2>
+		<Mission3>DanceOnTheMoai</Mission3>
+		<Mission4>VisitAllOfBlackRoseMire</Mission4>
+		<Mission5>VisitAllOfDeepgardCastle</Mission5>
+		<Mission6>InspectPlayers</Mission6>
+		<Mission7>MountThroughWolfsEnd</Mission7>
+	</MissionGroup>
+	<MissionGroup GroupName="Dungeon">
+		<DisplayName>Dungeon Achievements</DisplayName>
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>dunreward1</Mission1>
+		<Mission2>CompleteDungeonStormshardMountain</Mission2>
+		<Mission3>CompleteDungeonBlackRoseMire</Mission3>
+		<Mission4>CompleteDungeonDeepgardCastleHard</Mission4>
+		<Mission5>CompleteAllDungeonWakingHard</Mission5>
+		<Mission6>NephitsDungeonKill40MonstersAtSameTime</Mission6>
+		<Mission7>SvarsSpiteFullPartyNoPoisonDamageTakenHard</Mission7>
+		<Mission8>MindlessQueensGladeFullClearWithoutGettingWet</Mission8>
+		<Mission9>BanditCampKillBothBossesAtTheSameTimeHard</Mission9>
+		<Mission10>TheMouthOfMeylourKill30RockHulksAtSameTime</Mission10>
+		<Mission11>PappysBonesKillBossOnlyUsingBasicRangedHard</Mission11>
+	</MissionGroup>
+	<MissionGroup GroupName="Dungeon">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>dunreward2</Mission1>
+		<Mission2>CompleteDungeonEmeraldGlades</Mission2>
+		<Mission3>CompleteDungeonWolfsEnd</Mission3>
+		<Mission4>CompleteDungeonCemeteryHillHard</Mission4>
+		<Mission5>Get5StarsEveryDungeon</Mission5>
+		<Mission6>NephitsDungeonKillBoss15SecHard</Mission6>
+		<Mission7>LairOfTheOoyakKill6BabyOoyakAtSameTime</Mission7>
+		<Mission8>MindlessQueensGladeKillBossWithoutGettingHitByHerProjectilesHard</Mission8>
+		<Mission9>SvaggsLastStandKill20SpidersAtSameTime</Mission9>
+		<Mission10>DerelictionOfDutyFullPartyFullClearNoVigilHitsHard</Mission10>
+		<Mission11>YagagasJailbreakDefeatBoss30SecAfterEnteringDungeonHardNoDeaths</Mission11>
+	</MissionGroup>
+	<MissionGroup GroupName="Dungeon">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>dunreward3</Mission1>
+		<Mission2>CompleteDungeonDeepgardCastle</Mission2>
+		<Mission3>CompleteAllDungeonWaking</Mission3>
+		<Mission4>CompleteDungeonFelbridgeHard</Mission4>
+		<Mission5>RunRamparts</Mission5>
+		<Mission6>DreamDragonsLairFullPartyKillBossNoManaHard</Mission6>
+		<Mission7>LairOfTheOoyakDefeatBoss30SecAfterEnteringDungeonHardNoDeaths</Mission7>
+		<Mission8>ArachnaesSwampSpeedRun4MinNoWetHard</Mission8>
+		<Mission9>SvaggsLastStandKillBothBossesBefreKillingTheTwoHenchmenHard</Mission9>
+		<Mission10>DerelictionOfDutyKillAllSpawnersBeforeTheySummonTotal15Ghosts</Mission10>
+		<Mission11>KamaksIdolCrowdControlBoss3TimesHard</Mission11>
+	</MissionGroup>
+	<MissionGroup GroupName="Dungeon">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>dunreward4</Mission1>
+		<Mission2>CompleteDungeonCemeteryHill</Mission2>
+		<Mission3>CompleteDungeonStormshardMountainHard</Mission3>
+		<Mission4>CompleteDungeonBlackRoseMireHard</Mission4>
+		<Mission5>CompleteDungeonA,CompleteDungeonB,CompleteDungeonC</Mission5>
+		<Mission6>LairOfTheCastoutSpeedRun4MinHardNoDeaths</Mission6>
+		<Mission7>BroodvictorsChallengePerfectAccuracy</Mission7>
+		<Mission8>TheGreatGreenSvathBossDontGetHitWithFireBallsHard</Mission8>
+		<Mission9>TheMouthOfMeylourFullPartyCheerAtSword</Mission9>
+		<Mission10>JackalsStorehouseDefeatBossOnlyUsingBasicMelee</Mission10>
+		<Mission11>RevenantOfTheWarslainKillBossAnd12GhostAtSameTime</Mission11>
+	</MissionGroup>
+	<MissionGroup GroupName="Dungeon">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>dunreward5</Mission1>
+		<Mission2>CompleteDungeonFelbridge</Mission2>
+		<Mission3>CompleteDungeonEmeraldGladesHard</Mission3>
+		<Mission4>CompleteDungeonWolfsEndHard</Mission4>
+		<Mission5>CompleteDungeonHardA,CompleteDungeonHardB,CompleteDungeonHardC</Mission5>
+		<Mission6>SvarsSpiteFullPartyCheerWithDragonPetsAtStatue</Mission6>
+		<Mission7>BroodvictorsChallengeKillAllPsychophagesOnPlatformsWithoutBeingHit</Mission7>
+		<Mission8>MysteryOfTheYornakKillBossBeforeAnyFliersHard</Mission8>
+		<Mission9>TheMouthOfMeylourOpen2Chest1SecApartHard</Mission9>
+		<Mission10>PappysBonesKnockAMonsterIntoAPit</Mission10>
+		<Mission11>SecretOfTheWispsKill60MonstersWithWispBuffsActiveHard</Mission11>
+	</MissionGroup>
+	<MissionGroup GroupName="Crafting">
+		<DisplayName>Craft and Collection Achievements</DisplayName>
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>MasterCrafter</Mission1>
+		<Mission2>MineDragonoreA,MineDragonoreB,MineDragonoreC</Mission2>
+		<Mission3>FindAllItemFelbridge</Mission3>
+		<Mission4>FindAllItemsWaking</Mission4>
+		<Mission5>FindMaterialInfernalA,FindMaterialInfernalB,FindMaterialInfernalC</Mission5>
+		<Mission6>CraftCharmBlueA,CraftCharmBlueB,CraftCharmBlueC</Mission6>
+		<Mission7>CraftCharmWhiteA,CraftCharmWhiteB,CraftCharmWhiteC</Mission7>
+		<Mission8>ReachCraftingLevel25</Mission8>
+		<Mission9>CollectAllRunes</Mission9>
+		<Mission10>EnhanceItemToA,EnhanceItemToB,EnhanceItemToC</Mission10>
+	</MissionGroup>
+	<MissionGroup GroupName="Crafting">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>MasterRelicHunter</Mission1>
+		<Mission2>CollectGoldFromMonstersA,CollectGoldFromMonstersB,CollectGoldFromMonstersC</Mission2>
+		<Mission3>FindAllItemCemeteryHill</Mission3>
+		<Mission4>GrabHealthOrbsA,GrabHealthOrbsB,GrabHealthOrbsC</Mission4>
+		<Mission5>FindMaterialUndeadA,FindMaterialUndeadB,FindMaterialUndeadC</Mission5>
+		<Mission6>CraftCharmRedA,CraftCharmRedB,CraftCharmRedC</Mission6>
+		<Mission7>MineDragonOreInOneDay</Mission7>
+		<Mission8>ReachCraftingLevel10</Mission8>
+		<Mission9>CraftCharmLevelA,CraftCharmLevelB,CraftCharmLevelC</Mission9>
+	</MissionGroup>
+	<MissionGroup GroupName="Crafting">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>MasterMoney</Mission1>
+		<Mission2>CollectGoldFromChestsA,CollectGoldFromChestsB,CollectGoldFromChestsC</Mission2>
+		<Mission3>FindAllItemStormshardMountain</Mission3>
+		<Mission4>SpendDragonoreA,SpendDragonoreB,SpendDragonoreC</Mission4>
+		<Mission5>FindMaterialSylvanA,FindMaterialSylvanB,FindMaterialSylvanC</Mission5>
+		<Mission6>CraftCharmGreenA,CraftCharmGreenB,CraftCharmGreenC</Mission6>
+		<Mission7>BuyVendorItemsA,BuyVendorItemsB,BuyVendorItemsC</Mission7>
+		<Mission8>GetGoldQuestsA,GetGoldQuestsB,GetGoldQuestsC</Mission8>
+		<Mission9>SocketCharmsA,SocketCharmsB,SocketCharmsC</Mission9>
+	</MissionGroup>
+	<MissionGroup GroupName="Crafting">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>MasterMatierlas</Mission1>
+		<Mission2>FindAllItemWolfsEnd</Mission2>
+		<Mission3>FindAllItemEmeraldGlades</Mission3>
+		<Mission4>SpendGoldA,SpendGoldB,SpendGoldC</Mission4>
+		<Mission5>FindMaterialDraconicA,FindMaterialDraconicB,FindMaterialDraconicC</Mission5>
+		<Mission6>CraftCharmYellowA,CraftCharmYellowB,CraftCharmYellowC</Mission6>
+		<Mission7>ObtainPetsA,ObtainPetsB,ObtainPetsC</Mission7>
+		<Mission8>SocketCharmLevelA,SocketCharmLevelB,SocketCharmLevelC</Mission8>
+		<Mission9>ReplaceCharmsA,ReplaceCharmsB</Mission9>
+	</MissionGroup>
+	<MissionGroup GroupName="Crafting">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>MasterColor</Mission1>
+		<Mission2>FindAllItemBlackRoseMire</Mission2>
+		<Mission3>FindAllItemDeepgardCastle</Mission3>
+		<Mission4>FindMaterialTrogA,FindMaterialTrogB,FindMaterialTrogC</Mission4>
+		<Mission5>FindMaterialMythicA,FindMaterialMythicB,FindMaterialMythicC</Mission5>
+		<Mission6>CraftCharmPurpleA,CraftCharmPurpleB,CraftCharmPurpleC</Mission6>
+		<Mission7>ObtainMountsA,ObtainMountsB,ObtainMountsC</Mission7>
+		<Mission8>CraftCharmsA,CraftCharmsB,CraftCharmsC</Mission8>
+		<Mission9>EnhanceTotalItems25</Mission9>
+	</MissionGroup>
+	<MissionGroup GroupName="Blitzing">
+		<DisplayName>Blitzing Achievements</DisplayName>
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission2>FallInToAPit</Mission2>
+		<Mission3>CompletePvP</Mission3>
+		<Mission4>CompleteClass</Mission4>
+		<Mission5>ChangeDirections1000000000</Mission5>
+		<Mission6>DieInPartyAsTheLeader</Mission6>
+	</MissionGroup>
+	<MissionGroup GroupName="Blitzing">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission2>MountRemountAirborn</Mission2>
+		<Mission3>CompleteDungeon</Mission3>
+		<Mission4>CompleteSlaying</Mission4>
+		<Mission5>DanceNude</Mission5>
+		<Mission6>WearFullItemLevel25</Mission6>
+	</MissionGroup>
+	<MissionGroup GroupName="Blitzing">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission2>DieInWater(They All Float)</Mission2>
+		<Mission3>CompleteCrafting</Mission3>
+		<Mission4>ReviveFullHP100Times</Mission4>
+		<Mission5>GetSnared100000</Mission5>
+		<Mission6>WearFullItemLevel50</Mission6>
+	</MissionGroup>
+	<MissionGroup GroupName="Blitzing">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission2>Die100Times</Mission2>
+		<Mission3>CompleteExploration</Mission3>
+		<Mission4>EatVigilDamage100000</Mission4>
+		<Mission5>KillInNude1000</Mission5>
+		<Mission6>CompleteAchievoX</Mission6>
+	</MissionGroup>
+	<MissionGroup GroupName="Blitzing">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission2>GetKilledByUndead</Mission2>
+		<Mission3>CompleteSocial</Mission3>
+		<Mission4>WalkBackwardsSteps1000</Mission4>
+		<Mission5>FullPartyDies5Seconds</Mission5>
+		<Mission6>PappysBoneGetHitBy3StairVigilsInARow</Mission6>
+	</MissionGroup>
+	<MissionGroup GroupName="PvP">
+		<DisplayName>Player vs. Player Achievements</DisplayName>
+		<ProgressReward>GeneralReward</ProgressReward>
+	</MissionGroup>
+	<MissionGroup GroupName="PvP">
+		<ProgressReward>GeneralReward</ProgressReward>
+	</MissionGroup>
+	<MissionGroup GroupName="PvP">
+		<ProgressReward>GeneralReward</ProgressReward>
+	</MissionGroup>
+	<MissionGroup GroupName="PvP">
+		<ProgressReward>GeneralReward</ProgressReward>
+	</MissionGroup>
+	<MissionGroup GroupName="PvP">
+		<ProgressReward>GeneralReward</ProgressReward>
+	</MissionGroup>
+	<MissionGroup GroupName="Rogue">
+		<DisplayName>Rogue Achievements</DisplayName>
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>UseClassPower400,UseClassPower1200,UseClassPower3200</Mission1>
+		<Mission2>KillWithHawkStrike1000,KillWithHawkStrike3000,KillWithHawkStrikeHard5000</Mission2>
+		<Mission3>KillStunWith2nd500,KillStunWith2nd1100,KillStunWith2ndHard3000</Mission3>
+		<Mission4>RespecFirstTime</Mission4>
+		<Mission5>KillWithMaces10000,KillWithMaces50000,KillWithMacesHard100000</Mission5>
+		<Mission6>KillWith1stWhileStealthed3000,KillWith1stWhileStealthed7000,KillWith1stWhileStealthedHard15000</Mission6>
+	</MissionGroup>
+	<MissionGroup GroupName="Rogue">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>KillWithTripleStrike3000,KillWithTripleStrike8000,KillWithTripleStrikeHard12000</Mission1>
+		<Mission2>ReachLevel5</Mission2>
+		<Mission3>KillWeakWith1st800,KillWeakWith1st1800,KillWeakWith1stHard3600</Mission3>
+		<Mission4>KillWith2ndWhileStealthed1000,KillWith2ndWhileStealthed3000,KillWith2ndWhileStealthedHard7000</Mission4>
+		<Mission5>KillWithWeaken2000,KillWithWeaken6000,KillWithWeakenHard10000</Mission5>
+		<Mission6>ReachLevel25</Mission6>
+	</MissionGroup>
+	<MissionGroup GroupName="Rogue">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>KillWithPoisonDoT500,KillWithPoisonDoT800,KillWithPoisonDoTHard1200</Mission1>
+		<Mission2>KillWithArmorBreak2000,KillWithArmorBreak6000,KillWithArmorBreakHard10000</Mission2>
+		<Mission3>KillRooted2000,KillRooted6000,KillRootedHard12000</Mission3>
+		<Mission4>TravelStealthed10000,TravelStealthed100000,TravelStealthed1000000</Mission4>
+		<Mission5>UnlockSubClass</Mission5>
+	</MissionGroup>
+	<MissionGroup GroupName="Rogue">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>ReachLevel50</Mission1>
+		<Mission2>Root6000,Root12000,RootHard25000</Mission2>
+		<Mission3>KillWithRogueStun3000,KillWithRogueStun8000,KillWithRogueStunHard12000</Mission3>
+		<Mission4>KillWithPoisonStrike3000,KillWithPoisonStrike8000,KillWithPoisonStrikeHard12000</Mission4>
+		<Mission5>KillArmorBroken1000,KillArmorBroken4000,KillArmorBrokenHard10000</Mission5>
+	</MissionGroup>
+	<MissionGroup GroupName="Rogue">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>KillWithSteelWhirlwind6000,KillWithSteelWhirlwind12000,KillWithSteelWhirlwindHard20000</Mission1>
+		<Mission2>Stun3000,Stun7000,StunHard14000</Mission2>
+		<Mission3>StealthBelow20HP100,StealthBelow20HP300,StealthBelow20HP650</Mission3>
+		<Mission4>KillWithClassPower5000,KillWithClassPower15000,KillWithClassPowerHard45000</Mission4>
+		<Mission5>Respec20Times</Mission5>
+	</MissionGroup>
+	<MissionGroup GroupName="Mage">
+		<DisplayName>Mage Achievements</DisplayName>
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>KillWithMageFire3000,KillWithMageFire8000,KillWithMageFireHard12000</Mission1>
+		<Mission2>KillWithHailStorm3000,KillWithHailStorm7000,KillWithHailStormHard15000</Mission2>
+		<Mission3>SummonHelpers1000,SummonHelpers5000,SummonHelpers10000</Mission3>
+		<Mission4>KillDoTWithPower3000,KillDoTWithPower7000,KillDoTWithPowerHard15000</Mission4>
+		<Mission5>KillWithStaff100,KillWithStaff1000,KillWithStaffHard5000</Mission5>
+		<Mission6>Respec20Times</Mission6>
+	</MissionGroup>
+	<MissionGroup GroupName="Mage">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>KillWithPoisonCloud2000,KillWithPoisonCloud6000,KillWithPoisonCloudHard10000</Mission1>
+		<Mission2>KillWithFirePillar3000,KillWithFirePillar7000,KillWithFirePillarHard15000</Mission2>
+		<Mission3>SnareWithMagic3000,SnareWithMagic7000,SnareWithMagicHard15000</Mission3>
+		<Mission4>UseClassPower400,UseClassPower1200,UseClassPower3200</Mission4>
+		<Mission5>ReachLevel5</Mission5>
+		<Mission6>RespecFirstTime</Mission6>
+	</MissionGroup>
+	<MissionGroup GroupName="Mage">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>KillWithMagePoisonDoT500,KillWithMagePoisonDoT800,KillWithMagePoisonDoTHard1200</Mission1>
+		<Mission2>KillWithVineLance3000,KillWithVineLance7000,KillWithVineLanceHard15000</Mission2>
+		<Mission3>TravelWithMageFire10000,TravelWithMageFire100000,TravelWithMageFire1000000</Mission3>
+		<Mission4>KillWithClassPower5000,KillWithClassPower15000,KillWithClassPowerHard45000</Mission4>
+		<Mission5>UnlockSubClass</Mission5>
+	</MissionGroup>
+	<MissionGroup GroupName="Mage">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>KillWithHelper3000,KillWithHelper7000,KillWithHelperHard15000</Mission1>
+		<Mission2>FreezeWithIceNova6000,FreezeWithIceNova12000,FreezeWithIceNovaHard20000</Mission2>
+		<Mission3>TravelWithIceLance10000,TravelWithIceLance100000,TravelWithIceLance1000000</Mission3>
+		<Mission4>KillSnaredWithPower5000,KillSnaredWithPower10000,KillSnaredWithPower20000</Mission4>
+		<Mission5>ReachLevel25</Mission5>
+	</MissionGroup>
+	<MissionGroup GroupName="Mage">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>KillWithMeteor3000,KillWithMeteor7000,KillWithMeteorHard15000</Mission1>
+		<Mission2>FreezeWithIceLance3000,FreezeWithIceLance7000,FreezeWithIceLanceHard15000</Mission2>
+		<Mission3>HelperTakeDamage100000,HelperTakeDamage10000000,HelperTakeDamage100000000</Mission3>
+		<Mission4>KillFrozenWithPower3000,KillFrozenWithPower7000,KillFrozenWithPowerHard12000</Mission4>
+		<Mission5>ReachLevel50</Mission5>
+	</MissionGroup>
+	<MissionGroup GroupName="Paladin">
+		<DisplayName>Paladin Achievements</DisplayName>
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>KillWithCleave3000,KillWithCleave8000,KillWithCleaveHard12000</Mission1>
+		<Mission2>HealWithHealingTouch100000,HealWithHealingTouch1000000,HealWithHealingTouch100000000</Mission2>
+		<Mission3>StunWithShieldSlam5000,StunWithShieldSlam10000,StunWithShieldSlamHard20000</Mission3>
+		<Mission4>HealNumPlayerWithHealTeam1000,HealNumPlayerWithHealTeam5000,HealNumPlayerWithHealTeamHard10000</Mission4>
+		<Mission5>ReachLevel5</Mission5>
+		<Mission6>RespecFirstTime</Mission6>
+	</MissionGroup>
+	<MissionGroup GroupName="Paladin">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>KillWithSmash3000,KillWithSmash8000,KillWithSmashHard12000</Mission1>
+		<Mission2>UseHealingTouch20HP2000,UseHealingTouch20HP6000,UseHealingTouch20HP12000</Mission2>
+		<Mission3>KillStunWith1st3000,KillStunWith1st7000,KillStunWith1stHard12000</Mission3>
+		<Mission4>UseHealTeamNumPlayer20HP500,UseHealTeamNumPlayer20HP2000,UseHealTeamNumPlayer20HPHard5000</Mission4>
+		<Mission5>ReachLevel25</Mission5>
+		<Mission6>KillTauntedWithBasicRange2000,KillTauntedWithBasicRange6000,KillTauntedWithBasicRange12000</Mission6>
+	</MissionGroup>
+	<MissionGroup GroupName="Paladin">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>KillWithShieldSlam3000,KillWithShieldSlam8000,KillWithShieldSlamHard12000</Mission1>
+		<Mission2>TauntWithWarcry5000,TauntWithWarcry12000,TauntWithWarcryHard26000</Mission2>
+		<Mission3>KillWithJumpSlam5000,KillWithJumpSlam12000,KillWithJumpSlamHard28000</Mission3>
+		<Mission4>UseClassPower400,UseClassPower1200,UseClassPower3200</Mission4>
+		<Mission5>ReachLevel50</Mission5>
+	</MissionGroup>
+	<MissionGroup GroupName="Paladin">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>KillWithSkewer3000,KillWithSkewer8000,KillWithSkewerHard12000</Mission1>
+		<Mission2>KillWithWarcry3000,KillWithWarcry8000,KillWithWarcryHard12000</Mission2>
+		<Mission3>UseGuardOfTheWarrior2000,UseGuardOfTheWarrior6000,UseGuardOfTheWarrior12000</Mission3>
+		<Mission4>KillWithClassPower5000,KillWithClassPower15000,KillWithClassPowerHard45000</Mission4>
+		<Mission5>UnlockSubClass</Mission5>
+	</MissionGroup>
+	<MissionGroup GroupName="Paladin">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>HealTotalWithHealTeam500000,HealTotalWithHealTeam50000000,HealTotalWithHealTeam500000000</Mission1>
+		<Mission2>KillTauntedWith1st5000,KillTauntedWith1st12000,KillTauntedWith1stHard25000</Mission2>
+		<Mission3>AbosrbDamageWithGOTW100000,AbosrbDamageWithGOTW10000000,AbosrbDamageWithGOTW100000000</Mission3>
+		<Mission4>KillWithAxes10000,KillWithAxes50000,KillWithAxes100000</Mission4>
+		<Mission5>Respec20Times</Mission5>
+	</MissionGroup>
+	<MissionGroup GroupName="Social">
+		<DisplayName>Social Achievements</DisplayName>
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>PartyWithPlayersA,PartyWithPlayersB,PartyWithPlayersC</Mission1>
+		<Mission2>JoinAGuild</Mission2>
+		<Mission3>PartyAllPaladins</Mission3>
+		<Mission4>DefeatBossesAllRogues</Mission4>
+		<Mission5>PartyWithPlayersHardA,PartyWithPlayersHardB,PartyWithPlayersHardC</Mission5>
+		<Mission6>MrPopular</Mission6>
+		<Mission7>WitnessPlayersGetAchievementsA,WitnessPlayersGetAchievementsB,WitnessPlayersGetAchievementsC</Mission7>
+		<Mission8>Have20OfEachClassInYourGuild</Mission8>
+		<Mission9>FullPartyMounted</Mission9>
+		<Mission10>HaveGuildmatesA,HaveGuildmatesB,HaveGuildmatesC</Mission10>
+		<Mission11>RelaxWhileSomeoneDances</Mission11>
+	</MissionGroup>
+	<MissionGroup GroupName="Social">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>GainFriendsA,GainFriendsB,GainFriendsC</Mission1>
+		<Mission2>HelpPlayersQuestA,HelpPlayersQuestB,HelpPlayersQuestC</Mission2>
+		<Mission3>PartyAllRogues</Mission3>
+		<Mission4>FarmUpCraftingInGroupA,FarmUpCraftingInGroupB,FarmUpCraftingInGroupC</Mission4>
+		<Mission5>PartyWithGuildMatesHardA,PartyWithGuildMatesHardB,PartyWithGuildMatesHardC</Mission5>
+		<Mission6>TeamHelper</Mission6>
+		<Mission7>WitnessPlayersGetItemsA,WitnessPlayersGetItemsB,WitnessPlayersGetItemsC</Mission7>
+		<Mission8>HaveLevel50InGuildA,HaveLevel50InGuildB,HaveLevel50InGuildC</Mission8>
+		<Mission9>EveryOneInPartyBeLevel50</Mission9>
+		<Mission10>DealMostDamageInAGroupA,DealMostDamageInAGroupB,DealMostDamageInAGroupC</Mission10>
+		<Mission11>PartyWithAllOfTheSameEliteClassA,PartyWithAllOfTheSameEliteClassB,PartyWithAllOfTheSameEliteClassC</Mission11>
+	</MissionGroup>
+	<MissionGroup GroupName="Social">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>LetOthersGetChestA,LetOthersGetChestB,LetOthersGetChestC</Mission1>
+		<Mission2>PartyWithGuildMatesA,PartyWithGuildMatesB,PartyWithGuildMatesC</Mission2>
+		<Mission3>FriendADev</Mission3>
+		<Mission4>FarmUpGoldInGroupA,FarmUpGoldInGroupB,FarmUpGoldInGroupC</Mission4>
+		<Mission5>DefeatBossesAllMagesHard</Mission5>
+		<Mission6>PartyAnimal</Mission6>
+		<Mission7>BeFriendsWith10OfEachClass</Mission7>
+		<Mission8>DefeatBossesWithGuildmates</Mission8>
+		<Mission9>PartyWithSamePlayerA,PartyWithSamePlayerB,PartyWithSamePlayerC</Mission9>
+		<Mission10>WaveToPlayersA,WaveToPlayersB,WaveToPlayersC</Mission10>
+	</MissionGroup>
+	<MissionGroup GroupName="Social">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>InviteToPartyA,InviteToPartyB,InviteToPartyC</Mission1>
+		<Mission2>RunDungeonInARowWithParty5</Mission2>
+		<Mission3>DefeatBossesAllMages</Mission3>
+		<Mission4>SlayDragonsAsGroupHardA,SlayDragonsAsGroupHardB,SlayDragonsAsGroupHardC</Mission4>
+		<Mission5>DefeatBossesAllPaladinsHard</Mission5>
+		<Mission6>AFamilyThatSlaysTogether</Mission6>
+		<Mission7>HaveMagesInYourGuildA,HaveMagesInYourGuildB</Mission7>
+		<Mission8>DefeatBossesWithGuildmatesHard</Mission8>
+		<Mission9>HavePaladinsInYourGuildA,HavePaladinsInYourGuildB</Mission9>
+		<Mission10>VisitFriendsHouseA,VisitFriendsHouseB,VisitFriendsHouseC</Mission10>
+	</MissionGroup>
+	<MissionGroup GroupName="Social">
+		<ProgressReward>GeneralReward</ProgressReward>
+		<Mission1>TeleportToFriendsA,TeleportToFriendsB,TeleportToFriendsC</Mission1>
+		<Mission2>PartyAllMages</Mission2>
+		<Mission3>DefeatBossesAllPaladins</Mission3>
+		<Mission4>BeInvitedToGroupA,BeInvitedToGroupB,BeInvitedToGroupC</Mission4>
+		<Mission5>DefeatBossesAllRoguesHard</Mission5>
+		<Mission6>SomeoneIsWatching</Mission6>
+		<Mission7>HaveRoguesInYourGuildA,HaveRoguesInYourGuildB</Mission7>
+		<Mission8>FullPartyDancingDuringBossFight</Mission8>
+		<Mission9>WitnessPlayersLevelUpA,WitnessPlayersLevelUpB,WitnessPlayersLevelUpC</Mission9>
+		<Mission10>CheerToPlayersA,CheerToPlayersB,CheerToPlayersC</Mission10>
+	</MissionGroup>
+</MissionGroups>

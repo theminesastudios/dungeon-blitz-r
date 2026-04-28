@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SoundConfig>
+  <ChangeGear>a_Sound_ChangeGear</ChangeGear>
+  <LevelComplete>a_Sound_LevelUp</LevelComplete>
+  <PickUpGear>snd_ui_pickup_gear</PickUpGear>
+  <PickUpGold>snd_ui_pickup_gold</PickUpGold>
+  <PickUpHealth>snd_ui_pickup_health</PickUpHealth>
+  <CompleteAchievement>a_Sound_GetAchievement</CompleteAchievement>
+  <CompleteMission>a_Sound_CompleteMission</CompleteMission>
+  <GetMission>a_Sound_GetMission</GetMission>
+  <LevelUp>a_Sound_LevelUp</LevelUp>
+  <Teleport>a_Sound_Teleport</Teleport>
+  <Revive>a_Sound_PickUpGear</Revive>
+  <HealthLow>snd_ui_health_low</HealthLow>
+  <HealthCritical>snd_ui_health_low</HealthCritical>
+  <MeleeMiss></MeleeMiss>
+  <MeleeHit></MeleeHit>
+  <MeleeBackMiss></MeleeBackMiss>
+  <MeleeBackHit></MeleeBackHit>
+  <MeleeThreeMiss></MeleeThreeMiss>
+  <MeleeThreeHit></MeleeThreeHit>
+  <Plummet>a_Sound_Fall</Plummet>
+  <RunPaladin>snd_mvt_footsteps_grass</RunPaladin>
+  <RunMage>snd_mvt_footsteps_grass</RunMage>
+  <RunRogue>snd_mvt_footsteps_grass</RunRogue>
+  <RunWater>snd_mvt_footsteps_water_deep</RunWater>
+  <RunMetal>snd_mvt_footsteps_metal</RunMetal>
+  <RunWood>snd_mvt_footsteps_wood</RunWood>
+  <RunPuddle>snd_mvt_footsteps_water_shallow</RunPuddle>
+  <RunRopeBridge>snd_mvt_footsteps_wood</RunRopeBridge>
+  <LandOnGeneral>snd_mvt_landOn_grass</LandOnGeneral>
+  <LandOnWater>snd_mvt_landOn_water_deep</LandOnWater>
+  <LandOnMetal>snd_mvt_landOn_wood</LandOnMetal>
+  <LandOnWood>snd_mvt_landOn_wood</LandOnWood>
+  <LandOnPuddle>snd_mvt_landOn_water_deep</LandOnPuddle>
+  <LandOnRopeBridge>snd_mvt_landOn_wood</LandOnRopeBridge>
+  <StorePurchase>a_Sound_PickUpGear</StorePurchase>
+  <StoreConsider>snd_ui_pickup_gear</StoreConsider>
+  <ForgeOpen>DB_Forge_Activate</ForgeOpen>
+  <ForgeSelect>DB_Forge_SelectItem</ForgeSelect>
+  <ForgeCraft>DB_Forge_Craft</ForgeCraft>
+  <ForgeEmerge>DB_Forge_Reveal</ForgeEmerge>
+  <ForgeLevelUp>DB_Forge_LevelUp</ForgeLevelUp>
+  <TrainSkill>a_Sound_PickUpSkill</TrainSkill>
+  <Vengeance>NPC_Boss_Kraken_Smash</Vengeance>
+
+  <NewGroupmate>a_Sound_PickUpSkill</NewGroupmate>
+    <Soundscape name="BaseMusic" loop="snd_env_river_day_loop.mp3" intro="snd_env_river_day_bird_01.mp3">
+	</Soundscape>
+  	<Soundscape name="Boat" loop="SND_ENV_OpenSea.mp3" loopVol = "0.4" intro="">
+	</Soundscape>	
+  	<Soundscape name="River" loop="snd_env_river_day_loop.mp3" loopVol = "1.2" intro="snd_env_river_day_bird_01.mp3">
+		<Sound>snd_env_river_day_bird_01.mp3</Sound>
+		<Sound>snd_env_river_day_bird_02.mp3</Sound>
+		<Sound>snd_env_river_day_bird_03.mp3</Sound>
+		<Sound>snd_env_river_day_bird_04.mp3</Sound>
+		<Sound>snd_env_river_day_bird_05.mp3</Sound>
+	</Soundscape>
+   	<Soundscape name="River:Night" loop="snd_env_river_night.mp3">
+	</Soundscape>
+	<Soundscape name="Cave" loopVol="1.0" loop="" intro="">
+		<Sound>SND_ENV_DB_Cave_OneShot_01.mp3</Sound>
+		<Sound>SND_ENV_DB_Cave_OneShot_02.mp3</Sound>
+		<Sound>SND_ENV_DB_Cave_OneShot_03.mp3</Sound>
+		<Sound>SND_ENV_DB_Cave_OneShot_04.mp3</Sound>
+		<Sound>SND_ENV_DB_Cave_OneShot_05.mp3</Sound>
+		<Sound>SND_ENV_DB_Cave_OneShot_06.mp3</Sound>
+	</Soundscape>
+	<Soundscape name="CaveWaterfall" loop="SND_ENV_DB_Cave_Waterfall.mp3">
+	</Soundscape>
+	<Soundscape name="Cemetery" loop="SND_ENV_Cemetery_Day_LP.mp3">
+		<Sound>SND_ENV_Cemetery_Day_OneShot_01.mp3</Sound>
+		<Sound>SND_ENV_Cemetery_Day_OneShot_02.mp3</Sound>
+		<Sound>SND_ENV_Cemetery_Day_OneShot_03.mp3</Sound>
+		<Sound>SND_ENV_Cemetery_Day_OneShot_04.mp3</Sound>
+		<Sound>SND_ENV_Cemetery_Day_OneShot_05.mp3</Sound>
+	</Soundscape>
+	<Soundscape name="Cemetery:Night" loop="SND_ENV_Cemetery_Day_LP.mp3">
+		<Sound>SND_ENV_Cemetery_Night_OneShot_01.mp3</Sound>
+		<Sound>SND_ENV_Cemetery_Night_OneShot_02.mp3</Sound>
+		<Sound>SND_ENV_Cemetery_Night_OneShot_03.mp3</Sound>
+		<Sound>SND_ENV_Cemetery_Night_OneShot_04.mp3</Sound>
+		<Sound>SND_ENV_Cemetery_Night_OneShot_05.mp3</Sound>
+	</Soundscape>
+	<Soundscape name="Crypt" loop="" loopVol = "1.7" >
+		<Sound>SND_ENV_Crypt_OnShot_01.mp3</Sound>
+		<Sound>SND_ENV_Crypt_OnShot_02.mp3</Sound>
+		<Sound>SND_ENV_Crypt_OnShot_03.mp3</Sound>
+		<Sound>SND_ENV_Crypt_OnShot_04.mp3</Sound>
+		<Sound>SND_ENV_Crypt_OnShot_05.mp3</Sound>
+	</Soundscape>
+	<Soundscape name="Dungeon" loopVol = "1.5" loop="" intro="">
+		<Sound>SND_ENV_DB_Dungeon_OneShot_01.mp3</Sound>
+		<Sound>SND_ENV_DB_Dungeon_OneShot_02.mp3</Sound>
+		<Sound>SND_ENV_DB_Dungeon_OneShot_03.mp3</Sound>
+		<Sound>SND_ENV_DB_Dungeon_OneShot_04.mp3</Sound>
+		<Sound>SND_ENV_DB_Dungeon_OneShot_05.mp3</Sound>
+		<Sound>SND_ENV_DB_Dungeon_OneShot_06.mp3</Sound>
+		<Sound>SND_ENV_DB_Dungeon_OneShot_07.mp3</Sound>
+		<Sound>SND_ENV_DB_Dungeon_OneShot_08.mp3</Sound>
+		<Sound>SND_ENV_DB_Dungeon_OneShot_09.mp3</Sound>
+		<Sound>SND_ENV_DB_Dungeon_OneShot_10.mp3</Sound>
+		<Sound>SND_ENV_DB_Dungeon_OneShot_11.mp3</Sound>
+		<Sound>SND_ENV_DB_Dungeon_OneShot_12.mp3</Sound>
+		<Sound>SND_ENV_DB_Dungeon_OneShot_13.mp3</Sound>
+		<Sound>SND_ENV_DB_Dungeon_OneShot_14.mp3</Sound>
+	</Soundscape>
+	<Soundscape name="Forest" loop="snd_env_forest_day_loop.mp3">
+	</Soundscape>
+	<Soundscape name="Forest:Night" loop="SND_ENV_Forest_Night_LP.mp3">
+		<Sound>SND_ENV_Forest_Night_OneShot_01.mp3</Sound>
+		<Sound>SND_ENV_Forest_Night_OneShot_02.mp3</Sound>
+		<Sound>SND_ENV_Forest_Night_OneShot_03.mp3</Sound>
+	</Soundscape>
+	<Soundscape name="Mountain" loop="SND_ENV_Mountain_Day_LP.mp3">
+		<Sound>SND_ENV_Mountain_Day_OneShot_01.mp3</Sound>
+		<Sound>SND_ENV_Mountain_Day_OneShot_02.mp3</Sound>
+		<Sound>SND_ENV_Mountain_Day_OneShot_03.mp3</Sound>
+		<Sound>SND_ENV_Mountain_Day_OneShot_04.mp3</Sound>
+		<Sound>SND_ENV_Mountain_Day_OneShot_05.mp3</Sound>
+		<Sound>SND_ENV_Mountain_Day_OneShot_06.mp3</Sound>
+		<Sound>SND_ENV_Mountain_Day_OneShot_07.mp3</Sound>
+	</Soundscape>
+	<Soundscape name="Mountain:Night" loop="SND_ENV_Mountain_Night_LP.mp3">
+		<Sound>SND_ENV_Mountain_Night_OneShot_01.mp3</Sound>
+		<Sound>SND_ENV_Mountain_Night_OneShot_02.mp3</Sound>
+		<Sound>SND_ENV_Mountain_Night_OneShot_03.mp3</Sound>
+		<Sound>SND_ENV_Mountain_Night_OneShot_04.mp3</Sound>
+		<Sound>SND_ENV_Mountain_Night_OneShot_05.mp3</Sound>
+	</Soundscape>
+	<Soundscape name="MountainWaterfall" loop="SND_ENV_Mountain_Waterfall.mp3">
+	</Soundscape>
+	<Soundscape name="Swamp" loop="snd_env_swamp_loop.mp3">
+	</Soundscape>
+	<Soundscape name="Swamp:Night" loop="SND_ENV_Swamp_Night_LP.mp3">
+		<Sound>SND_ENV_Swamp_Night_OneShot_01.mp3</Sound>
+		<Sound>SND_ENV_Swamp_Night_OneShot_02.mp3</Sound>
+		<Sound>SND_ENV_Swamp_Night_OneShot_03.mp3</Sound>
+		<Sound>SND_ENV_Swamp_Night_OneShot_04.mp3</Sound>
+		<Sound>SND_ENV_Swamp_Night_OneShot_05.mp3</Sound>
+		<Sound>SND_ENV_Swamp_Night_OneShot_06.mp3</Sound>
+		<Sound>SND_ENV_Swamp_Night_OneShot_07.mp3</Sound>
+	</Soundscape>
+	<Soundscape name="Town" loop="SND_ENV_Town_Day_LP.mp3">
+		<Sound>SND_ENV_Town_Day_OneShot_01.mp3</Sound>
+		<Sound>SND_ENV_Town_Day_OneShot_02.mp3</Sound>
+		<Sound>SND_ENV_Town_Day_OneShot_03.mp3</Sound>
+		<Sound>SND_ENV_Town_Day_OneShot_04.mp3</Sound>
+		<Sound>SND_ENV_Town_Day_OneShot_05.mp3</Sound>
+		<Sound>SND_ENV_Town_Day_OneShot_06.mp3</Sound>
+		<Sound>SND_ENV_Town_Day_OneShot_07.mp3</Sound>
+		<Sound>SND_ENV_Town_Day_OneShot_08.mp3</Sound>
+		<Sound>SND_ENV_Town_Day_OneShot_09.mp3</Sound>
+		<Sound>SND_ENV_Town_Day_OneShot_10.mp3</Sound>
+		<Sound>SND_ENV_Town_Day_OneShot_11.mp3</Sound>
+		<Sound>SND_ENV_Town_Day_OneShot_12.mp3</Sound>
+	</Soundscape>
+	<Soundscape name="Town:Night" loop="SND_ENV_Town_Night_LP.mp3">
+		<Sound>SND_ENV_Town_Night_OneShot_01.mp3</Sound>
+		<Sound>SND_ENV_Town_Night_OneShot_02.mp3</Sound>
+		<Sound>SND_ENV_Town_Night_OneShot_03.mp3</Sound>
+	</Soundscape>
+	<Soundscape name="Glade:Night" loop="SND_ENV_EmeraldGlade_Night_LP.mp3">
+		<Sound>SND_ENV_EmeraldGlade_OneShot_01.mp3</Sound>
+		<Sound>SND_ENV_EmeraldGlade_OneShot_02.mp3</Sound>
+		<Sound>SND_ENV_EmeraldGlade_OneShot_03.mp3</Sound>
+		<Sound>SND_ENV_EmeraldGlade_OneShot_04.mp3</Sound>
+		<Sound>SND_ENV_EmeraldGlade_OneShot_05.mp3</Sound>
+	</Soundscape>
+</SoundConfig>

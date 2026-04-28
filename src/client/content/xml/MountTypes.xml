@@ -1,0 +1,873 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MountTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<MountType MountName="---Template---">
+		<MountID>0</MountID>
+		<MountLevel>0</MountLevel>
+		<IdolCost>0</IdolCost>
+		<DisplayName>Name</DisplayName>
+		<Description>ThisPetIs</Description>
+		<DisplayRarity>Rarity</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDraftHorse">
+		<MountID>1</MountID>
+		<MountLevel>20</MountLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Buckskin Horse</DisplayName>
+		<Description>The Buckskin Pony regards you patiently.  He knows the trail, won't wear down, and never misses his chance to eat.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDestrier">
+		<MountID>2</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>150</IdolCost>
+		<DisplayName>Destrier</DisplayName>
+		<Description>Proud bearing, immaculate coat, rich barding. The Destrier is a steed for kings and kings at heart.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountStallion">
+		<MountID>3</MountID>
+		<MountLevel>20</MountLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>Black Stallion</DisplayName>
+		<Description>Faded battle scars criss-cross the stallion's black coat. This is a sturdy companion in your fight.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountLightHorse">
+		<MountID>4</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>150</IdolCost>
+		<DisplayName>Light Horse</DisplayName>
+		<Description>She's a regal horse and a trusty steed. A natural unicorn? Only her groomer knows for sure.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountMare">
+		<MountID>5</MountID>
+		<MountLevel>20</MountLevel>
+		<IdolCost>100</IdolCost>
+		<DisplayName>White Mare</DisplayName>
+		<Description>The Mare stamps with impatience. Her restlessness says "Adventure awaits. Why are we still standing here?"</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountKirin">
+		<MountID>6</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>150</IdolCost>
+		<DisplayName>Kirin</DisplayName>
+		<Description>This elegant creature roams the plain lands and has become very popular and domesticated.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountLongma">
+		<MountID>7</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>999999999</IdolCost>
+		<DisplayName>Longma</DisplayName>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountMojack">
+		<MountID>8</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Mojack</DisplayName>
+		<Description>This best-in-show breed is stalwart and wise. Due to its rarity if you have mo money you can get Mojack.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDrakon">
+		<MountID>9</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>150</IdolCost>
+		<DisplayName>Red Water Drakken</DisplayName>
+		<Description>A cautionary tale for those brave enough to ride this beast; treat it well or red is the last color you will ever see.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountNightmare">
+		<MountID>10</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>999999999</IdolCost>
+		<DisplayName>The Nightmare</DisplayName>
+		<Description>Legend has it that these entities guard the realm of the Shadowlands. Once a year when the moons align they can be spotted in the darkest of corners.</Description>
+		<DisplayRarity>R</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountWolfBear">
+		<MountID>11</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Short Coat Wolfbear</DisplayName>
+		<Description>A Creature that is part wolf, part bear, all Wolfbear.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountBearCat">
+		<MountID>12</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>150</IdolCost>
+		<DisplayName>Arctic Megalynx</DisplayName>
+		<Description>Not quite man's best friend, but if well fed the Megalynx purr heavily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDrake">
+		<MountID>13</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>150</IdolCost>
+		<DisplayName>Brimstone Fangrasaur</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountBeast">
+		<MountID>14</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>150</IdolCost>
+		<DisplayName>Snarglak</DisplayName>
+		<Description>You can see this beast was once ridden by Desert Orcs. How it came to this land is anyone's guess.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountBunnyBear">
+		<MountID>15</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Albino Wolfhare</DisplayName>
+		<Description>Remarkably, this beast lays eggs. You should under no circumstance attempt to dye them.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDeathMask">
+		<MountID>16</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>999999999</IdolCost>
+		<DisplayName>Masked Crypthound</DisplayName>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountInfernal">
+		<MountID>17</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>Little is known about these re-animated constructs. Mysteriously, they pierce the veil with a cold lifeless stare.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountBearCat2">
+		<MountID>18</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountBearCat3">
+		<MountID>19</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountBeast2">
+		<MountID>20</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountBeast3">
+		<MountID>21</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountBunnyBear2">
+		<MountID>22</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountBunnyBear3">
+		<MountID>23</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDeathMask2">
+		<MountID>24</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDeathMask3">
+		<MountID>25</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDrake2">
+		<MountID>26</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDrake3">
+		<MountID>27</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountInfernal2">
+		<MountID>28</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountInfernal3">
+		<MountID>29</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountWolfBear2">
+		<MountID>30</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountWolfBear3">
+		<MountID>31</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonSnap">
+		<MountID>32</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonSnap2">
+		<MountID>33</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonSnap3">
+		<MountID>34</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonBoar">
+		<MountID>35</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonBoar2">
+		<MountID>36</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonBoar3">
+		<MountID>37</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonRhino">
+		<MountID>38</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonRhino2">
+		<MountID>39</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonRhino3">
+		<MountID>40</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonSnapTurtle">
+		<MountID>41</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonSnapTurtle2">
+		<MountID>42</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonSnapTurtle3">
+		<MountID>43</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonTiger">
+		<MountID>44</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonTiger2">
+		<MountID>45</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonTiger3">
+		<MountID>46</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonPolarBear">
+		<MountID>47</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonPolarBear2">
+		<MountID>48</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonPolarBear3">
+		<MountID>49</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonTusker">
+		<MountID>50</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonTusker2">
+		<MountID>51</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonTusker3">
+		<MountID>52</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonDewback">
+		<MountID>53</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonDewback2">
+		<MountID>54</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonDewback3">
+		<MountID>55</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonBaku">
+		<MountID>56</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonBaku2">
+		<MountID>57</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonBaku3">
+		<MountID>58</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountFangDragon">
+		<MountID>59</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountFangDragon2">
+		<MountID>60</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountFangDragon3">
+		<MountID>61</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountHorseDragon">
+		<MountID>62</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountHorseDragon2">
+		<MountID>63</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountHorseDragon3">
+		<MountID>64</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonHaku">
+		<MountID>65</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonHaku2">
+		<MountID>66</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonHaku3">
+		<MountID>67</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDestrier2">
+		<MountID>68</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDestrier3">
+		<MountID>69</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDraftHorse2">
+		<MountID>70</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDraftHorse3">
+		<MountID>71</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDrakon2">
+		<MountID>72</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDrakon3">
+		<MountID>73</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountKirin2">
+		<MountID>74</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountKirin3">
+		<MountID>75</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountLightHorse2">
+		<MountID>76</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountLightHorse3">
+		<MountID>77</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountLongma2">
+		<MountID>78</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountLongma3">
+		<MountID>79</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountMare2">
+		<MountID>80</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountMare3">
+		<MountID>81</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountMojack2">
+		<MountID>82</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountMojack3">
+		<MountID>83</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountNightmare2">
+		<MountID>84</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountNightmare3">
+		<MountID>85</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountStallion2">
+		<MountID>86</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountStallion3">
+		<MountID>87</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragon">
+		<MountID>88</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragon2">
+		<MountID>89</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragon3">
+		<MountID>90</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountToothDragon">
+		<MountID>91</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountToothDragon2">
+		<MountID>92</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountToothDragon3">
+		<MountID>93</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonClassic">
+		<MountID>94</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonClassic2">
+		<MountID>95</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonClassic3">
+		<MountID>96</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonArmored">
+		<MountID>97</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonArmored2">
+		<MountID>98</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonArmored3">
+		<MountID>99</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonZombie">
+		<MountID>100</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonZombie2">
+		<MountID>101</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonZombie3">
+		<MountID>102</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonSmaug">
+		<MountID>103</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonSmaug2">
+		<MountID>104</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountDragonSmaug3">
+		<MountID>105</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>340</IdolCost>
+		<DisplayName>Ancient Crypt Walker</DisplayName>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
+		<DisplayRarity>M</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountLockbox01L01">
+		<MountID>106</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>999999999</IdolCost>
+		<DisplayName>Ivorystorm Guardian</DisplayName>
+		<Description>Born of holy ritual, these creatures are said to have fallen from the heavens of the ancient gods.</Description>
+		<DisplayRarity>L</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountLockbox01L02">
+		<MountID>107</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>999999999</IdolCost>
+		<DisplayName>Hatebreed Charger</DisplayName>
+		<Description>These baneful creatures stampede the land between the living and the dead, feasting on wandering souls.</Description>
+		<DisplayRarity>L</DisplayRarity>
+	</MountType>
+	<MountType MountName="MountLockbox01R01">
+		<MountID>108</MountID>
+		<MountLevel>40</MountLevel>
+		<IdolCost>999999999</IdolCost>
+		<DisplayName>Stormhoof Stallion</DisplayName>
+		<Description>These elven-trained warhorses can gallop faster than an Eastern wind and are just as temperamental.</Description>
+		<DisplayRarity>R</DisplayRarity>
+	</MountType>
+</MountTypes>

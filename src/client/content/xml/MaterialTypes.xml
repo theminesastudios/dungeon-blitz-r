@@ -1,0 +1,1060 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MaterialTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<MaterialType MaterialName="---Template---">
+		<MaterialID>0</MaterialID>
+		<DisplayName>---Template---</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Kingdom</Kingdom>
+		<DropRealm>Realm</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Goblin</IconName>
+		<FromRoyalStore>False</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicDragonM">
+		<MaterialID>1</MaterialID>
+		<DisplayName>Massive Scale</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Dragon</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Dragon1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicDragonR">
+		<MaterialID>2</MaterialID>
+		<DisplayName>Dragon Talon</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Dragon</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Dragon2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicDragonL">
+		<MaterialID>3</MaterialID>
+		<DisplayName>Skull of the Gods</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Dragon</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Dragon3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicHumanM">
+		<MaterialID>4</MaterialID>
+		<DisplayName>Conjured Flame</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Human</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Human1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicHumanR">
+		<MaterialID>5</MaterialID>
+		<DisplayName>Ruby Charm</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Human</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Human2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicHumanL">
+		<MaterialID>6</MaterialID>
+		<DisplayName>Drakefire Talisman</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Human</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Human3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicLizardM">
+		<MaterialID>7</MaterialID>
+		<DisplayName>Smooth Scales</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Lizard</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Lizard1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicLizardR">
+		<MaterialID>8</MaterialID>
+		<DisplayName>Lizard Tooth</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Lizard</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Lizard2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicLizardL">
+		<MaterialID>9</MaterialID>
+		<DisplayName>Bloodguard Bracers</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Lizard</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Lizard3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicRaptorM">
+		<MaterialID>10</MaterialID>
+		<DisplayName>Raptor Scales</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Raptor</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Raptor1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicRaptorR">
+		<MaterialID>11</MaterialID>
+		<DisplayName>Severed Talon</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Raptor</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Raptor2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicRaptorL">
+		<MaterialID>12</MaterialID>
+		<DisplayName>Eye of the Wild</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Raptor</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Raptor3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicWyrmM">
+		<MaterialID>13</MaterialID>
+		<DisplayName>Wyrm Tail</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Wyrm</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Wyrm1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicWyrmR">
+		<MaterialID>14</MaterialID>
+		<DisplayName>Thick Hide</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Wyrm</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Wyrm2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicWyrmL">
+		<MaterialID>15</MaterialID>
+		<DisplayName>Bellow Gland</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>Wyrm</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Wyrm3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalAbominationM">
+		<MaterialID>16</MaterialID>
+		<DisplayName>Unholy Sutures</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Abomination</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Abomination1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalAbominationR">
+		<MaterialID>17</MaterialID>
+		<DisplayName>Accursed Heart</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Abomination</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Abomination2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalAbominationL">
+		<MaterialID>18</MaterialID>
+		<DisplayName>Maw of Madness</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Abomination</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Abomination3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalConstructM">
+		<MaterialID>19</MaterialID>
+		<DisplayName>Construct Gear</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Construct</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Construct1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalConstructR">
+		<MaterialID>20</MaterialID>
+		<DisplayName>Construct Oil</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Construct</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Construct2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalConstructL">
+		<MaterialID>21</MaterialID>
+		<DisplayName>Ancient Power Core</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Construct</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Construct3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalDemonM">
+		<MaterialID>22</MaterialID>
+		<DisplayName>Demonic Fur</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Demon</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Demon1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalDemonR">
+		<MaterialID>23</MaterialID>
+		<DisplayName>Brutal Horns</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Demon</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Demon2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalDemonL">
+		<MaterialID>24</MaterialID>
+		<DisplayName>Bitter Soul</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Demon</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Demon3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalDreadM">
+		<MaterialID>25</MaterialID>
+		<DisplayName>Dread Steel</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Dread</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Dread1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalDreadR">
+		<MaterialID>26</MaterialID>
+		<DisplayName>Ancient Emblem</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Dread</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Dread2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalDreadL">
+		<MaterialID>27</MaterialID>
+		<DisplayName>Dreadnaught Doubloon</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Dread</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Dread3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalHumanM">
+		<MaterialID>28</MaterialID>
+		<DisplayName>Runed Pages</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Human</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Human1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalHumanR">
+		<MaterialID>29</MaterialID>
+		<DisplayName>Profane Sigil</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Human</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Human2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalHumanL">
+		<MaterialID>30</MaterialID>
+		<DisplayName>Infernal Focus</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Human</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Human3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalImpM">
+		<MaterialID>31</MaterialID>
+		<DisplayName>Sharp Claw</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Imp</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Imp1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalImpR">
+		<MaterialID>32</MaterialID>
+		<DisplayName>Broken Spear Tip</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Imp</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Imp2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalImpL">
+		<MaterialID>33</MaterialID>
+		<DisplayName>Lucky Imp's Foot</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Imp</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Imp3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalPsychophageM">
+		<MaterialID>34</MaterialID>
+		<DisplayName>Little Wing</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Psychophage</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Psychophage1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalPsychophageR">
+		<MaterialID>35</MaterialID>
+		<DisplayName>Acrid Ichor</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Psychophage</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Psychophage2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalPsychophageL">
+		<MaterialID>36</MaterialID>
+		<DisplayName>Extract of the Third Eye</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Psychophage</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Psychophage3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalRockHulkM">
+		<MaterialID>37</MaterialID>
+		<DisplayName>Dolcite</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>RockHulk</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_RockHulk1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalRockHulkR">
+		<MaterialID>38</MaterialID>
+		<DisplayName>Woomerite</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>RockHulk</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_RockHulk2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalRockHulkL">
+		<MaterialID>39</MaterialID>
+		<DisplayName>Hamilite</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>RockHulk</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_RockHulk3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalShadeM">
+		<MaterialID>40</MaterialID>
+		<DisplayName>Shade Stone</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Shade</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Shade1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalShadeR">
+		<MaterialID>41</MaterialID>
+		<DisplayName>Dark Talisman</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Shade</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Shade2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalShadeL">
+		<MaterialID>42</MaterialID>
+		<DisplayName>Void Matter</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Shade</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Shade3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalWispM">
+		<MaterialID>43</MaterialID>
+		<DisplayName>Black Soot</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Wisp</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Wisp1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalWispR">
+		<MaterialID>44</MaterialID>
+		<DisplayName>Emberheart</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Wisp</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Wisp2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalWispL">
+		<MaterialID>45</MaterialID>
+		<DisplayName>Everburning Stone</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>Wisp</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Wisp3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="MythicGiantM">
+		<MaterialID>46</MaterialID>
+		<DisplayName>Oasis Water</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Giant</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Giant1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicGiantR">
+		<MaterialID>47</MaterialID>
+		<DisplayName>Giant's Shard</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Giant</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Giant2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicGiantL">
+		<MaterialID>48</MaterialID>
+		<DisplayName>Moonglow Harvest</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Giant</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Giant3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="MythicGriffonM">
+		<MaterialID>49</MaterialID>
+		<DisplayName>Brilliant Feather</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Griffon</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Griffon1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicGriffonR">
+		<MaterialID>50</MaterialID>
+		<DisplayName>Griffon Talon</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Griffon</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Griffon2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicGriffonL">
+		<MaterialID>51</MaterialID>
+		<DisplayName>Mysterious Griffon Egg</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Griffon</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Griffon3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="MythicHumanM">
+		<MaterialID>52</MaterialID>
+		<DisplayName>Plate Steel</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Human</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Human1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicHumanR">
+		<MaterialID>53</MaterialID>
+		<DisplayName>Defused Bomb</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Human</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Human2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicHumanL">
+		<MaterialID>54</MaterialID>
+		<DisplayName>Mithian Parchment</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Human</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Human3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="MythicImperialM">
+		<MaterialID>55</MaterialID>
+		<DisplayName>Worn Leather</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Imperial</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Imperial1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicImperialR">
+		<MaterialID>56</MaterialID>
+		<DisplayName>Imperial Talisman</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Imperial</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Imperial2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicImperialL">
+		<MaterialID>57</MaterialID>
+		<DisplayName>Lost Imperial Coin</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Imperial</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Imperial3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="MythicLionM">
+		<MaterialID>58</MaterialID>
+		<DisplayName>Lion Pelt</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Lion</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Lion1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicLionR">
+		<MaterialID>59</MaterialID>
+		<DisplayName>Ring of Pride</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Lion</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Lion2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicLionL">
+		<MaterialID>60</MaterialID>
+		<DisplayName>Regal Pendant</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Lion</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Lion3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="MythicMinotaurM">
+		<MaterialID>61</MaterialID>
+		<DisplayName>Shattered Hoof</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Minotaur</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Minotaur1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicMinotaurR">
+		<MaterialID>62</MaterialID>
+		<DisplayName>Minotaur Horn</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Minotaur</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Minotaur2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicMinotaurL">
+		<MaterialID>63</MaterialID>
+		<DisplayName>Golden Nosering</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Minotaur</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Minotaur3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="MythicWolfM">
+		<MaterialID>64</MaterialID>
+		<DisplayName>Wolf Pelt</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Wolf</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Wolf1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicWolfR">
+		<MaterialID>65</MaterialID>
+		<DisplayName>Black Talon</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Wolf</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Wolf2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicWolfL">
+		<MaterialID>66</MaterialID>
+		<DisplayName>Golden Earring</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>Wolf</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Wolf3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanBatM">
+		<MaterialID>67</MaterialID>
+		<DisplayName>Cavebat Fur</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Bat</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Bat1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanBatR">
+		<MaterialID>68</MaterialID>
+		<DisplayName>Bloodbat Fathom</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Bat</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Bat2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanBatL">
+		<MaterialID>69</MaterialID>
+		<DisplayName>Duskwing Talons</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Bat</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Bat3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanDevourerM">
+		<MaterialID>70</MaterialID>
+		<DisplayName>Devourer Pulp</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Devourer</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Devourer1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanDevourerR">
+		<MaterialID>71</MaterialID>
+		<DisplayName>Medicinal Root</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Devourer</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Devourer2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanDevourerL">
+		<MaterialID>72</MaterialID>
+		<DisplayName>Magic Bean</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Devourer</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Devourer3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanDryadM">
+		<MaterialID>73</MaterialID>
+		<DisplayName>Charred Bark</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Dryad</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Dryad1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanDryadR">
+		<MaterialID>74</MaterialID>
+		<DisplayName>Singed Staffhead</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Dryad</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Dryad2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanDryadL">
+		<MaterialID>75</MaterialID>
+		<DisplayName>Wildgrowth Blossom</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Dryad</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Dryad3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanScarabM">
+		<MaterialID>76</MaterialID>
+		<DisplayName>Carapace</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Scarab</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Scarab1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanScarabR">
+		<MaterialID>77</MaterialID>
+		<DisplayName>Scarab Horn</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Scarab</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Scarab2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanScarabL">
+		<MaterialID>78</MaterialID>
+		<DisplayName>Vision of the Tomb</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Scarab</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Scarab3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanSpiderM">
+		<MaterialID>79</MaterialID>
+		<DisplayName>Spider Leg</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Spider</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Spider1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanSpiderR">
+		<MaterialID>80</MaterialID>
+		<DisplayName>Poison Gland</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Spider</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Spider2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanSpiderL">
+		<MaterialID>81</MaterialID>
+		<DisplayName>Death Silk</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Spider</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Spider3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanTreantM">
+		<MaterialID>82</MaterialID>
+		<DisplayName>Efflorescence Roots</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Treant</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Treant1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanTreantR">
+		<MaterialID>83</MaterialID>
+		<DisplayName>Golden Leaf</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Treant</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Treant2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanTreantL">
+		<MaterialID>84</MaterialID>
+		<DisplayName>Seed of Seasons</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>Treant</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Treant3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="TrogCyclopsM">
+		<MaterialID>85</MaterialID>
+		<DisplayName>Bone Zemi Fragment</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Cyclops</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Cyclops1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="TrogCyclopsR">
+		<MaterialID>86</MaterialID>
+		<DisplayName>Earthen Phylactery</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Cyclops</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Cyclops2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="TrogCyclopsL">
+		<MaterialID>87</MaterialID>
+		<DisplayName>Hand of the Mountain</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Cyclops</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Cyclops3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="TrogGnomeM">
+		<MaterialID>88</MaterialID>
+		<DisplayName>Tiny Teeth</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Gnome</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Gnome1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="TrogGnomeR">
+		<MaterialID>89</MaterialID>
+		<DisplayName>Pure Obsidilite</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Gnome</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Gnome2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="TrogGnomeL">
+		<MaterialID>90</MaterialID>
+		<DisplayName>Shadow Ring</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Gnome</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Gnome3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="TrogGoblinM">
+		<MaterialID>91</MaterialID>
+		<DisplayName>Yak Jerky</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Goblin</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Goblin1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="TrogGoblinR">
+		<MaterialID>92</MaterialID>
+		<DisplayName>Felsilk Bolt</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Goblin</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Goblin2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="TrogGoblinL">
+		<MaterialID>93</MaterialID>
+		<DisplayName>Onyx Goblin Dagger</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Goblin</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Goblin3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="TrogHumanM">
+		<MaterialID>94</MaterialID>
+		<DisplayName>Silver Nugget</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Human</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Human1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="TrogHumanR">
+		<MaterialID>95</MaterialID>
+		<DisplayName>Gold Nugget</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Human</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Human2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="TrogHumanL">
+		<MaterialID>96</MaterialID>
+		<DisplayName>Korgold Ingot</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Human</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Human3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="TrogImpM">
+		<MaterialID>97</MaterialID>
+		<DisplayName>Tattered Rags</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Imp</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Imp1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="TrogImpR">
+		<MaterialID>98</MaterialID>
+		<DisplayName>Imp Tail</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Imp</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Imp2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="TrogImpL">
+		<MaterialID>99</MaterialID>
+		<DisplayName>Abyssal Fang</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Imp</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Imp3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="TrogRatlingM">
+		<MaterialID>100</MaterialID>
+		<DisplayName>Tuft of Hair</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Ratling</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Ratling1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="TrogRatlingR">
+		<MaterialID>101</MaterialID>
+		<DisplayName>Ratling Tail</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Ratling</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Ratling2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="TrogRatlingL">
+		<MaterialID>102</MaterialID>
+		<DisplayName>Troglodyte Talisman</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>Ratling</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Ratling3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadDragonM">
+		<MaterialID>103</MaterialID>
+		<DisplayName>Ivory Scale</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Dragon</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Dragon1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadDragonR">
+		<MaterialID>104</MaterialID>
+		<DisplayName>Emerald Dream</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Dragon</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Dragon2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadDragonL">
+		<MaterialID>105</MaterialID>
+		<DisplayName>Stone of Whispers</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Dragon</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Dragon3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadGhostM">
+		<MaterialID>106</MaterialID>
+		<DisplayName>Chilling Air</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Ghost</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Ghost1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadGhostR">
+		<MaterialID>107</MaterialID>
+		<DisplayName>Banshee Scream</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Ghost</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Ghost2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadGhostL">
+		<MaterialID>108</MaterialID>
+		<DisplayName>Phantom Heart</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Ghost</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Ghost3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadMummyM">
+		<MaterialID>109</MaterialID>
+		<DisplayName>Timeworn Flax</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Mummy</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Mummy1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadMummyR">
+		<MaterialID>110</MaterialID>
+		<DisplayName>Ancient Linen</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Mummy</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Mummy2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadMummyL">
+		<MaterialID>111</MaterialID>
+		<DisplayName>Sand of the Ancients</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Mummy</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Mummy3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadSkeletonM">
+		<MaterialID>112</MaterialID>
+		<DisplayName>Splintered Bone</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Skeleton</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Skeleton1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadSkeletonR">
+		<MaterialID>113</MaterialID>
+		<DisplayName>Spellbonded Femur</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Skeleton</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Skeleton2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadSkeletonL">
+		<MaterialID>114</MaterialID>
+		<DisplayName>Laughing Skull</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Skeleton</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Skeleton3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadSpiritM">
+		<MaterialID>115</MaterialID>
+		<DisplayName>Aetheric Heart</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Spirit</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Spirit1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadSpiritR">
+		<MaterialID>116</MaterialID>
+		<DisplayName>Ethereal Strands</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Spirit</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Spirit2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadSpiritL">
+		<MaterialID>117</MaterialID>
+		<DisplayName>Spirit Stone</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Spirit</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Spirit3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadWispM">
+		<MaterialID>118</MaterialID>
+		<DisplayName>Ectoplasm</DisplayName>
+		<Rarity>M</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Wisp</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Wisp1</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadWispR">
+		<MaterialID>119</MaterialID>
+		<DisplayName>Spectral Essence</DisplayName>
+		<Rarity>R</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Wisp</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Wisp2</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadWispL">
+		<MaterialID>120</MaterialID>
+		<DisplayName>Vehement Netherstone</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>Wisp</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Wisp3</IconName>
+		<FromRoyalStore>True</FromRoyalStore>
+	</MaterialType>
+	<MaterialType MaterialName="InfernalSpecialHalloweenL">
+		<MaterialID>121</MaterialID>
+		<DisplayName>Candy Corn</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Infernal</Kingdom>
+		<DropRealm>SpecialHalloween</DropRealm>
+		<IconName>a_MaterialIcon_Infernal_Halloween</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="TrogSpecialHalloweenL">
+		<MaterialID>122</MaterialID>
+		<DisplayName>Candy Corn</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Trog</Kingdom>
+		<DropRealm>SpecialHalloween</DropRealm>
+		<IconName>a_MaterialIcon_Trog_Halloween</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="MythicSpecialHalloweenL">
+		<MaterialID>123</MaterialID>
+		<DisplayName>Candy Corn</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Mythic</Kingdom>
+		<DropRealm>SpecialHalloween</DropRealm>
+		<IconName>a_MaterialIcon_Mythic_Halloween</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="UndeadSpecialHalloweenL">
+		<MaterialID>124</MaterialID>
+		<DisplayName>Candy Corn</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Undead</Kingdom>
+		<DropRealm>SpecialHalloween</DropRealm>
+		<IconName>a_MaterialIcon_Undead_Halloween</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="SylvanSpecialHalloweenL">
+		<MaterialID>125</MaterialID>
+		<DisplayName>Candy Corn</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Sylvan</Kingdom>
+		<DropRealm>SpecialHalloween</DropRealm>
+		<IconName>a_MaterialIcon_Sylvan_Halloween</IconName>
+	</MaterialType>
+	<MaterialType MaterialName="DraconicSpecialHalloweenL">
+		<MaterialID>126</MaterialID>
+		<DisplayName>Candy Corn</DisplayName>
+		<Rarity>L</Rarity>
+		<Kingdom>Draconic</Kingdom>
+		<DropRealm>SpecialHalloween</DropRealm>
+		<IconName>a_MaterialIcon_Draconic_Halloween</IconName>
+	</MaterialType>
+</MaterialTypes>

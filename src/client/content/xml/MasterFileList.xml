@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MasterFileList>
+  <File  Version="cbp" Stage="Required"	Size="340" Name="UI_0.swf" />
+  
+  <File  Version="caa" Stage="Init"  Size="2"	 Name="Init.swz" />
+  <File  Version="caf" Stage="Init"  Size="583"	 Name="Animation_Paladin.swf" />
+  <File  Version="cbp" Stage="Init"  Size="559"	 Name="Animation_Mage.swf" />
+  <File  Version="cbp" Stage="Init"  Size="642"	 Name="Animation_Rogue.swf" />
+  
+  <File  Version="cbp" Stage="Login" Size="312"	 Name="Login.swz" />
+  <File  Version="cbp" Stage="Login" Size="2189" Name="Gfx_Paladin_1.swf" />
+  <File  Version="cbp" Stage="Login" Size="669"	 Name="Gfx_Rogue_1.swf" />
+  <File  Version="cbp" Stage="Login" Size="1747" Name="Gfx_Mage_1.swf" />
+  
+  <File  Version="cam" Stage="Lib"   Size="396"	 Name="Utilities.swf" />
+  <File  Version="caa" Stage="Lib"   Size="1180" Name="UI_Library.swf" />
+  <File  Version="caa" Stage="Lib"   Size="365"  Name="Library01.swf" />
+  
+  <File  Version="cbp" Stage="Core"  Size="3678" Name="SFX_1.swf" />
+  <File  Version="cbp" Stage="Core"  Size="3149" Name="SFX_2.swf" />
+  <File  Version="cbp" Stage="Core"  Size="716"  Name="SFX_3.swf" />
+  <File  Version="cbp" Stage="Core"  Size="1588" Name="UI_1.swf" />
+  <File  Version="cbp" Stage="Core"  Size="366"  Name="UI_2.swf" />
+  <File  Version="caa" Stage="Core"  Size="98"   Name="UI_3.swf" />
+  <File  Version="cbp" Stage="Core"  Size="411"  Name="UI_4.swf" />
+  <File  Version="cbo" Stage="Core"  Size="411"  Name="UI_Seasonal.swf" />
+  <File  Version="cbp" Stage="Core"  Size="5072" Name="sounds/Sound.swf" />
+  
+  <File  Version="cbq" Stage="Game"  Size="233"	 Name="Game.swz" />
+  <File  Version="cbp" Stage="Game"  Size="885"	 Name="GlobalMap01.swf" />
+  <File  Version="caa" Stage="Game"  Size="133"	 Name="GlobalMap02.swf" />
+  <File  Version="caf" Stage="Game"  Size="360"	 Name="Animation_Abomination.swf" />
+  <File  Version="cam" Stage="Game"  Size="331"	 Name="Animation_AbominationSpider.swf" />
+  <File  Version="caa" Stage="Game"  Size="62"	 Name="Animation_AreaEffect.swf" />
+  <File  Version="caa" Stage="Game"  Size="187"	 Name="Animation_Brute.swf" />
+  <File  Version="caa" Stage="Game"  Size="24"	 Name="Animation_Cannonball.swf" />
+  <File  Version="cam" Stage="Game"  Size="727"	 Name="Animation_Cyclops.swf" />
+  <File  Version="caa" Stage="Game"  Size="156"	 Name="Animation_Demonhead.swf" />
+  <File  Version="cam" Stage="Game"  Size="91"	 Name="Animation_Devourer.swf" />
+  <File  Version="caa" Stage="Game"  Size="235"	 Name="Animation_DireMount.swf" />
+  <File  Version="cam" Stage="Game"  Size="792"	 Name="Animation_Dragon.swf" />
+  <File  Version="cbp" Stage="Game"  Size="937"	 Name="Animation_Environmentals.swf" />
+  <File  Version="cam" Stage="Game"  Size="286"	 Name="Animation_Ghost.swf" />
+  <File  Version="cam" Stage="Game"  Size="434"	 Name="Animation_Goblin.swf" />
+  <File  Version="cbp" Stage="Game"  Size="229"	 Name="Animation_HorseMount.swf" />
+  <File  Version="cam" Stage="Game"  Size="140"	 Name="Animation_Imp.swf" />
+  <File  Version="caa" Stage="Game"  Size="27"	 Name="Animation_Larva.swf" />
+  <File  Version="caa" Stage="Game"  Size="30"	 Name="Animation_Mimic.swf" />
+  <File  Version="caa" Stage="Game"  Size="429"	 Name="Animation_Nephit.swf" />
+  <File  Version="caf" Stage="Game"  Size="812"	 Name="Animation_NPC.swf" />
+  <File  Version="cbp" Stage="Game"  Size="285"	 Name="Animation_Pets.swf" />
+  <File  Version="caa" Stage="Game"  Size="57"	 Name="Animation_Psychophage.swf" />
+  <File  Version="caa" Stage="Game"  Size="89"	 Name="Animation_Puck.swf" />
+  <File  Version="caa" Stage="Game"  Size="219"	 Name="Animation_Raptor.swf" />
+  <File  Version="caa" Stage="Game"  Size="155"	 Name="Animation_RockHulk.swf" />
+  <File  Version="caa" Stage="Game"  Size="142"	 Name="Animation_SandWorm.swf" />
+  <File  Version="caa" Stage="Game"  Size="199"	 Name="Animation_Scorpion.swf" />
+  <File  Version="caa" Stage="Game"  Size="203"	 Name="Animation_ShieldTank.swf" />
+  <File  Version="cam" Stage="Game"  Size="75"	 Name="Animation_Tentacle.swf" />
+  <File  Version="caa" Stage="Game"  Size="58"	 Name="Animation_Vigil.swf" />
+  <File  Version="caa" Stage="Game"  Size="142"	 Name="Animation_Warlock.swf" />
+  <File  Version="caa" Stage="Game"  Size="39"	 Name="Animation_Weapon1.swf" />
+  
+  <Level Version="cbp"				 Size="2194" Name="LevelsAC.swf" />
+  <Level Version="cam"				 Size="466"  Name="LevelsBT.swf" />
+  <Level Version="cam"				 Size="1560" Name="LevelsCH.swf" />
+  <Level Version="cam"				 Size="1481" Name="LevelsEG.swf" />
+  <Level Version="cbp"				 Size="2658" Name="LevelsHome.swf" />
+  <Level Version="cbp"				 Size="3728" Name="LevelsJC.swf" />
+  <Level Version="cam"				 Size="1337" Name="LevelsLD.swf" />
+  <Level Version="cbp"				 Size="1337" Name="LevelsNR.swf" />
+  <Level Version="cbp"				 Size="1967" Name="LevelsOMM.swf" />
+  <Level Version="cam"				 Size="1792" Name="LevelsSD.swf" />
+  <Level Version="cbp"				 Size="797"	 Name="LevelsSRN.swf" />
+  <Level Version="cbp"				 Size="165"	 Name="LevelsTut.swf" />
+  
+</MasterFileList>

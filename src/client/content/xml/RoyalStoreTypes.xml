@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RoyalStoreTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<RoyalStoreType RoyalStoreName="---Template---">
+		<RoyalStoreID>0</RoyalStoreID>
+		<DisplayName>Template</DisplayName>
+		<IconName>text</IconName>
+		<Quantity>10</Quantity>
+		<SigilCost>10</SigilCost>
+		<GoldCost>10</GoldCost>
+		<Description>WhatIDo</Description>
+		<Category>Potions</Category>
+		<Type>Template</Type>
+		<DisallowDupes>False</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="MountLockbox01L02">
+		<RoyalStoreID>1</RoyalStoreID>
+		<DisplayName>Hatebreed Charger</DisplayName>
+		<IconName>a_royalsigil_item1_icon</IconName>
+		<Quantity>1</Quantity>
+		<SigilCost>3200</SigilCost>
+		<Description>Temp</Description>
+		<Category>Special</Category>
+		<Type>Mount</Type>
+		<DisallowDupes>True</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="MountLockbox01R01">
+		<RoyalStoreID>2</RoyalStoreID>
+		<DisplayName>Stormhoof Stallion</DisplayName>
+		<IconName>a_royalsigil_item2_icon</IconName>
+		<Quantity>1</Quantity>
+		<SigilCost>640</SigilCost>
+		<Description>Temp</Description>
+		<Category>Special</Category>
+		<Type>Mount</Type>
+		<DisallowDupes>True</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="Lockbox01L02">
+		<RoyalStoreID>3</RoyalStoreID>
+		<DisplayName>Darkheart Apparition</DisplayName>
+		<IconName>a_royalsigil_item3_icon</IconName>
+		<Quantity>1</Quantity>
+		<SigilCost>2400</SigilCost>
+		<Description>Temp</Description>
+		<Category>Special</Category>
+		<Type>Pet</Type>
+		<DisallowDupes>True</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="Lockbox01RRed">
+		<RoyalStoreID>4</RoyalStoreID>
+		<DisplayName>Accursed Counselor</DisplayName>
+		<IconName>a_royalsigil_item4_icon</IconName>
+		<Quantity>1</Quantity>
+		<SigilCost>320</SigilCost>
+		<Description>Temp</Description>
+		<Category>Special</Category>
+		<Type>Pet</Type>
+		<DisallowDupes>True</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="Lockbox01RYellow">
+		<RoyalStoreID>5</RoyalStoreID>
+		<DisplayName>Ruined Counselor</DisplayName>
+		<IconName>a_royalsigil_item5_icon</IconName>
+		<Quantity>1</Quantity>
+		<SigilCost>320</SigilCost>
+		<Description>Temp</Description>
+		<Category>Special</Category>
+		<Type>Pet</Type>
+		<DisallowDupes>True</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="Lockbox01RBlue">
+		<RoyalStoreID>6</RoyalStoreID>
+		<DisplayName>Hexed Counselor</DisplayName>
+		<IconName>a_royalsigil_item6_icon</IconName>
+		<Quantity>1</Quantity>
+		<SigilCost>320</SigilCost>
+		<Description>Temp</Description>
+		<Category>Special</Category>
+		<Type>Pet</Type>
+		<DisallowDupes>True</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="Lockbox01RGreen">
+		<RoyalStoreID>7</RoyalStoreID>
+		<DisplayName>Doomed Counselor</DisplayName>
+		<IconName>a_royalsigil_item6_icon</IconName>
+		<Quantity>1</Quantity>
+		<SigilCost>320</SigilCost>
+		<Description>Temp</Description>
+		<Category>Special</Category>
+		<Type>Pet</Type>
+		<DisallowDupes>True</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="RespecStone">
+		<RoyalStoreID>8</RoyalStoreID>
+		<DisplayName>Respec Stone</DisplayName>
+		<IconName>a_Icon_RespecStone</IconName>
+		<Quantity>1</Quantity>
+		<SigilCost>320</SigilCost>
+		<Description>Temp</Description>
+		<Category>Potions</Category>
+		<Type>RespecStone</Type>
+		<DisallowDupes>False</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="XPFindRegular">
+		<RoyalStoreID>9</RoyalStoreID>
+		<DisplayName>Potion of XP Boost x3</DisplayName>
+		<IconName>a_Icon_PotionXP</IconName>
+		<Quantity>15000</Quantity>
+		<SigilCost>16</SigilCost>
+		<Description>Temp</Description>
+		<Category>Potions</Category>
+		<Type>Consumable</Type>
+		<DisallowDupes>False</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="MaterialFindRegular">
+		<RoyalStoreID>10</RoyalStoreID>
+		<DisplayName>Potion of Material Find x3</DisplayName>
+		<IconName>a_Icon_PotionMaterial</IconName>
+		<Quantity>15000</Quantity>
+		<SigilCost>16</SigilCost>
+		<Description>Temp</Description>
+		<Category>Potions</Category>
+		<Type>Consumable</Type>
+		<DisallowDupes>False</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="GoldFindRegular">
+		<RoyalStoreID>11</RoyalStoreID>
+		<DisplayName>Potion of Gold Find x3</DisplayName>
+		<IconName>a_Icon_PotionGoldFind</IconName>
+		<Quantity>15000</Quantity>
+		<SigilCost>16</SigilCost>
+		<Description>Temp</Description>
+		<Category>Potions</Category>
+		<Type>Consumable</Type>
+		<DisallowDupes>False</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="GearFindRegular">
+		<RoyalStoreID>12</RoyalStoreID>
+		<DisplayName>Potion of Gear Find x3</DisplayName>
+		<IconName>a_Icon_PotionGearFind</IconName>
+		<Quantity>15000</Quantity>
+		<SigilCost>16</SigilCost>
+		<Description>Temp</Description>
+		<Category>Potions</Category>
+		<Type>Consumable</Type>
+		<DisallowDupes>false</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="Resurrection">
+		<RoyalStoreID>13</RoyalStoreID>
+		<DisplayName>Vengeance Potion x5</DisplayName>
+		<IconName>a_Icon_PotionVeng</IconName>
+		<Quantity>5</Quantity>
+		<SigilCost>32</SigilCost>
+		<Description>Temp</Description>
+		<Category>Potions</Category>
+		<Type>Consumable</Type>
+		<DisallowDupes>False</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="ForgeXP">
+		<RoyalStoreID>14</RoyalStoreID>
+		<DisplayName>Tinkerer's Soul</DisplayName>
+		<IconName>a_Icon_Anvil</IconName>
+		<Quantity>1</Quantity>
+		<SigilCost>112</SigilCost>
+		<Description>Temp</Description>
+		<Category>Potions</Category>
+		<Type>Consumable</Type>
+		<DisallowDupes>false</DisallowDupes>
+	</RoyalStoreType>
+	<RoyalStoreType RoyalStoreName="CharmRemover">
+		<RoyalStoreID>15</RoyalStoreID>
+		<DisplayName>Charm Remover</DisplayName>
+		<IconName>a_Icon_CharmRemover</IconName>
+		<Quantity>1</Quantity>
+		<SigilCost>80</SigilCost>
+		<Description>Temp</Description>
+		<Category>Potions</Category>
+		<Type>CharmRemover</Type>
+		<DisallowDupes>false</DisallowDupes>
+	</RoyalStoreType>
+</RoyalStoreTypes>
