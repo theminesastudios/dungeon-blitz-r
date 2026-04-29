@@ -1229,6 +1229,88 @@ function testSoloDungeonNpcReferencePromotesToPartyJoinerSeed(): void {
     assert.equal(joiner.knownEntityIds.has(canonical.id), true);
 }
 
+function testTutorialDungeonTraversalParrotStartsWhenPlayerReachesRoom(): void {
+    const client = createFakeClient('Alpha');
+    client.currentLevel = 'TutorialDungeon';
+    client.currentRoomId = 0;
+    client.clientEntID = 101;
+    (client as any).character = {
+        name: 'Alpha',
+        CurrentLevel: { name: 'TutorialDungeon', x: 100, y: 2100 }
+    };
+
+    const player = { id: 101, name: 'Alpha', isPlayer: true, x: 100, y: 2100, team: 1 };
+    const parrot = {
+        id: 384606,
+        name: 'IntroParrot',
+        isPlayer: false,
+        x: 7271,
+        y: 2074,
+        v: 0,
+        team: 3,
+        entState: 0,
+        facingLeft: false
+    };
+
+    client.entities.set(player.id, player);
+    client.entities.set(parrot.id, { ...parrot });
+    client.knownEntityIds.add(parrot.id);
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    GlobalState.levelEntities.set('TutorialDungeon', new Map<number, any>([
+        [player.id, player],
+        [parrot.id, parrot]
+    ]));
+
+    LevelHandler.primeTutorialRoomEvents(client as never);
+
+    assert.equal(
+        client.startedRoomEvents.has('TutorialDungeon:4'),
+        false,
+        'traversal tutorial room should not be consumed at dungeon entry'
+    );
+
+    player.x = 7200;
+    player.y = 2100;
+    client.sentPackets.length = 0;
+    (LevelHandler as any).maybeTriggerTutorialDungeonDropTutorial(client as never, 7200, 2100, {});
+
+    assert.deepEqual(
+        client.sentPackets.filter((packet) => packet.id === 0xA5),
+        [],
+        'server should not synthesize the traversal room before the client reports it'
+    );
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x07),
+        false,
+        'known TutorialDungeon parrot should not receive incremental movement before its display object is ready'
+    );
+    assert.equal(client.currentRoomId, 0);
+    assert.equal(client.entities.get(384606)?.x, 7271);
+    assert.equal(client.entities.get(384606)?.y, 2074);
+
+    player.x = 7400;
+    player.y = 2210;
+    client.currentRoomId = 4;
+    client.sentPackets.length = 0;
+    (LevelHandler as any).maybeTriggerTutorialDungeonDropTutorial(
+        client as never,
+        7400,
+        2210,
+        { bJumping: true }
+    );
+
+    const followupRooms = client.sentPackets
+        .filter((packet) => packet.id === 0xA5)
+        .map((packet) => parseRoomEventStart(packet.payload).roomId);
+
+    assert.deepEqual(followupRooms, [5]);
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x76),
+        false,
+        'TutorialDungeon traversal should not inject server-authored parrot dialog over the client tutorial scripts'
+    );
+}
+
 function testConflictingLocalIdsStillTriggerRemotePlayerSeed(): void {
     const sender = createFakeClient('Alpha');
     const watcher = createFakeClient('Beta');
@@ -2012,6 +2094,11 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         testSoloDungeonNpcReferencePromotesToPartyJoinerSeed();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testTutorialDungeonTraversalParrotStartsWhenPlayerReachesRoom();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();

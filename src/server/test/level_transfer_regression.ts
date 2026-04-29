@@ -808,8 +808,8 @@ function testTutorialDungeonTransferredRoomProgressIsIgnored(): void {
 
     assert.equal(client.startedRoomEvents.has('TutorialDungeon:0'), true);
     assert.equal(client.startedRoomEvents.has('TutorialDungeon:1'), true);
-    assert.equal(client.startedRoomEvents.has('TutorialDungeon:4'), true);
-    assert.deepEqual(client.sentPackets.map((packet: { id: number }) => packet.id), [0xA5, 0xA5, 0xA5]);
+    assert.equal(client.startedRoomEvents.has('TutorialDungeon:4'), false);
+    assert.deepEqual(client.sentPackets.map((packet: { id: number }) => packet.id), [0xA5, 0xA5]);
 }
 
 function testGoblinRiverTransferredRoomProgressIsIgnored(): void {
@@ -929,7 +929,7 @@ async function testPrepareCraftTownTutorialEntryResetsActiveKeepQuestProgress():
     assert.equal(client.sentPackets.some((packet: { id: number }) => packet.id === 0xB7), true);
 }
 
-function testPrimeTutorialRoomEventsSeedsTutorialDungeonIntroThought(): void {
+function testPrimeTutorialRoomEventsDoesNotConsumeTutorialDungeonTraversal(): void {
     const client = createClient();
     client.token = 8001;
     client.currentLevel = 'TutorialDungeon';
@@ -940,10 +940,10 @@ function testPrimeTutorialRoomEventsSeedsTutorialDungeonIntroThought(): void {
 
     assert.equal(client.startedRoomEvents.has('TutorialDungeon:0'), true);
     assert.equal(client.startedRoomEvents.has('TutorialDungeon:1'), true);
-    assert.equal(client.startedRoomEvents.has('TutorialDungeon:4'), true);
+    assert.equal(client.startedRoomEvents.has('TutorialDungeon:4'), false);
     assert.deepEqual(
         client.sentPackets.map((packet: { id: number }) => packet.id),
-        [0xA5, 0xA5, 0xA5, 0x76]
+        [0xA5, 0xA5]
     );
 }
 
@@ -1437,7 +1437,7 @@ async function main(): Promise<void> {
 
         testTutorialDungeonTransferredRoomProgressIsIgnored();
 
-        testPrimeTutorialRoomEventsSeedsTutorialDungeonIntroThought();
+        testPrimeTutorialRoomEventsDoesNotConsumeTutorialDungeonTraversal();
 
         testTutorialDungeonTraversalTutorialStartsOnRoomFourEntry();
 

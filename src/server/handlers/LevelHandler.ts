@@ -713,13 +713,10 @@ export class LevelHandler {
     private static readonly KEEP_TUTORIAL_BOSS_NAME = 'Ranik, The Geomancer';
     private static readonly KEEP_TUTORIAL_FIRST_PARROT_X = 7271;
     private static readonly KEEP_TUTORIAL_SECOND_PARROT_X = 17981;
-    private static readonly TUTORIAL_DUNGEON_INTRO_PARROT_ID = 384606;
     private static readonly TUTORIAL_DUNGEON_TRAVERSAL_ROOM_ID = 4;
     private static readonly TUTORIAL_DUNGEON_JUMP_X_THRESHOLD = 7350;
     private static readonly TUTORIAL_DUNGEON_DROP_Y_THRESHOLD = 2150;
     private static readonly TUTORIAL_DUNGEON_DROP_ROOM_EVENT = 5;
-    private static readonly TUTORIAL_DUNGEON_INTRO_LINE =
-        'Squawk! Goblins! Goblins everywhere! Help Pecky!';
 
     static resetCraftTownTutorialInstance(): void {
         const levelName = 'CraftTownTutorial';
@@ -1658,7 +1655,7 @@ export class LevelHandler {
 
                 const entityName = String(entity?.name ?? entity?.props?.name ?? '');
                 const entityTeam = Number(entity?.team ?? entity?.props?.team ?? 0);
-                if (entityName !== 'IntroParrot' || entityTeam !== 3) {
+                if (entityName !== 'IntroParrot' || (entityTeam !== 0 && entityTeam !== 3)) {
                     continue;
                 }
 
@@ -1749,6 +1746,12 @@ export class LevelHandler {
     }
 
     private static teleportParrot(client: Client, parrotId: number, x: number, y: number): void {
+        const levelMap = LevelHandler.getCurrentLevelMap(client);
+        const levelParrot = levelMap?.get(parrotId);
+        if (!client.entities.has(parrotId) && levelParrot) {
+            client.entities.set(parrotId, { ...levelParrot });
+        }
+
         const parrotEnt = client.entities.get(parrotId);
         if (parrotEnt) {
             const dx = Math.round(x - parrotEnt.x);
@@ -1759,7 +1762,6 @@ export class LevelHandler {
             parrotEnt.x = x;
             parrotEnt.y = y;
             
-            const levelMap = LevelHandler.getCurrentLevelMap(client);
             const globalParrot = levelMap?.get(parrotId);
             if (globalParrot) {
                 globalParrot.x = x;
@@ -1772,7 +1774,10 @@ export class LevelHandler {
 
             // 3. If it WAS already known, send an incremental move (0x07) to the client
             // This avoids Error #2015: Invalid BitmapData from Destroy+Spawn cycles.
-            if (wasKnown && (dx !== 0 || dy !== 0)) {
+            const suppressIncrementalMove =
+                client.currentLevel === 'TutorialDungeon' &&
+                String(parrotEnt.name ?? '') === 'IntroParrot';
+            if (wasKnown && (dx !== 0 || dy !== 0) && !suppressIncrementalMove) {
                 EntityHandler.sendNpcMove(client, parrotId, dx, dy, parrotEnt.entState ?? 0, parrotEnt.facingLeft ?? false);
             }
         }
@@ -2329,16 +2334,6 @@ export class LevelHandler {
             return;
         }
 
-        const player = client.entities.get(client.clientEntID);
-        const playerX = Number(player?.x ?? client.character?.CurrentLevel?.x ?? 0);
-        const playerY = Number(player?.y ?? client.character?.CurrentLevel?.y ?? 0);
-        const parrotId = LevelHandler.findTutorialDungeonParrotId(client, playerX);
-        if (parrotId !== null) {
-            const parrot = client.entities.get(parrotId);
-            const parrotX = Number(parrot?.x ?? playerX);
-            LevelHandler.teleportParrot(client, parrotId, parrotX, playerY - 100);
-        }
-
         LevelHandler.sendRoomEventStart(client, roomId, true);
     }
 
@@ -2348,8 +2343,11 @@ export class LevelHandler {
         currentY: number,
         flags?: { bJumping?: boolean; bDropping?: boolean }
     ): void {
-        const roomId = client.currentRoomId;
-        if (client.currentLevel !== 'TutorialDungeon' || roomId !== LevelHandler.TUTORIAL_DUNGEON_TRAVERSAL_ROOM_ID) {
+        if (client.currentLevel !== 'TutorialDungeon') {
+            return;
+        }
+
+        if (client.currentRoomId !== LevelHandler.TUTORIAL_DUNGEON_TRAVERSAL_ROOM_ID) {
             return;
         }
 
@@ -2362,17 +2360,6 @@ export class LevelHandler {
             !LevelHandler.hasRoomEventStarted(client, LevelHandler.TUTORIAL_DUNGEON_DROP_ROOM_EVENT)
         ) {
             LevelHandler.sendRoomEventStart(client, LevelHandler.TUTORIAL_DUNGEON_DROP_ROOM_EVENT, true);
-
-            const parrotId = LevelHandler.findTutorialDungeonParrotId(client, currentX);
-            if (parrotId !== null) {
-                LevelHandler.teleportParrot(client, parrotId, currentX, currentY - 100);
-                LevelHandler.sendRoomThought(
-                    client.currentLevel,
-                    parrotId,
-                    LevelHandler.TUTORIAL_DUNGEON_INTRO_LINE,
-                    client.levelInstanceId
-                );
-            }
         }
     }
 
@@ -2853,9 +2840,7 @@ export class LevelHandler {
             return;
         }
 
-        const initialRoomIds = client.currentLevel === 'TutorialDungeon'
-            ? [0, 1, LevelHandler.TUTORIAL_DUNGEON_TRAVERSAL_ROOM_ID]
-            : [0, 1];
+        const initialRoomIds = [0, 1];
 
         for (const roomId of initialRoomIds) {
             if (!LevelHandler.hasRoomEventStarted(client, roomId)) {
@@ -2863,14 +2848,6 @@ export class LevelHandler {
             }
         }
 
-        if (client.currentLevel === 'TutorialDungeon') {
-            LevelHandler.sendRoomThought(
-                client.currentLevel,
-                LevelHandler.TUTORIAL_DUNGEON_INTRO_PARROT_ID,
-                LevelHandler.TUTORIAL_DUNGEON_INTRO_LINE,
-                client.levelInstanceId
-            );
-        }
     }
 
     static restoreTransferredRoomProgress(
