@@ -1,0 +1,202 @@
+// TrainingController AS2 - Complete dropping detection with door training state machine
+// State machine: IDLE → DROPPING → LANDED → SHOW_DOOR_TRAINING
+// Continuous tracking via onEnterFrame, movement-based dropping detection
+
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+
+// Ground level configuration
+var groundY:Number = 400;
+if (_root.groundY != undefined) {
+  groundY = _root.groundY;
+} else if (_root.ground != undefined && _root.ground._y != undefined) {
+  groundY = _root.ground._y;
+}
+
+// Door training trigger zone configuration
+var doorTriggerX:Number = 500;
+var doorTriggerY:Number = 350;
+var doorTriggerRadius:Number = 80;
+
+// Check if these are defined in _root and override
+if (_root.doorTriggerX != undefined) {
+  doorTriggerX = _root.doorTriggerX;
+}
+if (_root.doorTriggerY != undefined) {
+  doorTriggerY = _root.doorTriggerY;
+}
+if (_root.doorTriggerRadius != undefined) {
+  doorTriggerRadius = _root.doorTriggerRadius;
+}
+
+// ============================================================================
+// PLAYER REFERENCE (Robust lookup)
+// ============================================================================
+
+var player:MovieClip = _root["player"];
+if (player == undefined) {
+  for (var n in _root) {
+    if (_root[n] instanceof MovieClip && _root[n]._name == "player") {
+      player = _root[n];
+      break;
+    }
+  }
+}
+if (player == undefined) {
+  trace("TrainingController: Player not found.");
+}
+
+// ============================================================================
+// STATE MACHINE VARIABLES
+// ============================================================================
+
+var state:String = "IDLE"; // "IDLE", "DROPPING", "LANDED", "SHOW_DOOR_TRAINING"
+var dropStarted:Boolean = false;
+var dropCompleted:Boolean = false;
+var wasOnGround:Boolean = (player != undefined) ? (player._y >= groundY) : true;
+
+// Export state to _root for access from other scripts
+_root.trainingState = "IDLE";
+_root.dropStarted = false;
+_root.dropCompleted = false;
+
+// UI References (set as needed)
+var droppingTrainingUI:MovieClip = _root.droppingTrainingUI;
+var doorTrainingUI:MovieClip = _root.doorTrainingUI;
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+function resolvePlayerReference():Void {
+  if (player == undefined) {
+    if (_root["player"] != undefined) {
+      player = _root["player"];
+    } else {
+      for (var i in _root) {
+        if (_root[i] instanceof MovieClip && _root[i]._name == "player") {
+          player = _root[i];
+          break;
+        }
+      }
+    }
+  }
+}
+
+function updateUIReferences():Void {
+  if (droppingTrainingUI == undefined && _root.droppingTrainingUI != undefined) {
+    droppingTrainingUI = _root.droppingTrainingUI;
+  }
+  if (doorTrainingUI == undefined && _root.doorTrainingUI != undefined) {
+    doorTrainingUI = _root.doorTrainingUI;
+  }
+}
+
+function isPlayerAtDoorTriggerPosition():Boolean {
+  if (player == undefined) {
+    return false;
+  }
+  var dx:Number = player._x - doorTriggerX;
+  var dy:Number = player._y - doorTriggerY;
+  var distance:Number = Math.sqrt(dx * dx + dy * dy);
+  return distance <= doorTriggerRadius;
+}
+
+function showDroppingTrainingUI():Void {
+  if (droppingTrainingUI != undefined) {
+    droppingTrainingUI._visible = true;
+  }
+}
+
+function hideDroppingTrainingUI():Void {
+  if (droppingTrainingUI != undefined) {
+    droppingTrainingUI._visible = false;
+  }
+}
+
+function showDoorTrainingUI():Void {
+  if (doorTrainingUI != undefined) {
+    doorTrainingUI._visible = true;
+  }
+}
+
+function hideDoorTrainingUI():Void {
+  if (doorTrainingUI != undefined) {
+    doorTrainingUI._visible = false;
+  }
+}
+
+// ============================================================================
+// MAIN STATE MACHINE LOGIC (onEnterFrame)
+// ============================================================================
+
+this.onEnterFrame = function() {
+  // Resolve player reference if missing
+  resolvePlayerReference();
+  if (player == undefined) {
+    return;
+  }
+
+  // Update UI references
+  updateUIReferences();
+
+  // ========================================================================
+  // MOVEMENT-BASED DROPPING DETECTION
+  // ========================================================================
+
+  var isInAir:Boolean = (player._y < groundY);
+  var isOnGround:Boolean = (player._y >= groundY);
+
+  // Detect start of drop: was on ground and now in air
+  if (wasOnGround && isInAir && !dropStarted) {
+    dropStarted = true;
+    _root.dropStarted = true;
+  }
+
+  // Detect completion of drop: was dropping and now on ground
+  if (dropStarted && isOnGround && !dropCompleted) {
+    dropCompleted = true;
+    _root.dropCompleted = true;
+  }
+
+  // ========================================================================
+  // STATE MACHINE
+  // ========================================================================
+
+  if (state == "IDLE") {
+    // IDLE → DROPPING transition
+    if (dropStarted) {
+      state = "DROPPING";
+      _root.trainingState = "DROPPING";
+      showDroppingTrainingUI();
+    }
+  }
+  else if (state == "DROPPING") {
+    // DROPPING → LANDED transition
+    if (dropCompleted) {
+      state = "LANDED";
+      _root.trainingState = "LANDED";
+    }
+  }
+  else if (state == "LANDED") {
+    // LANDED → SHOW_DOOR_TRAINING transition
+    // Only trigger if player is at the door training position
+    if (isPlayerAtDoorTriggerPosition()) {
+      state = "SHOW_DOOR_TRAINING";
+      _root.trainingState = "SHOW_DOOR_TRAINING";
+      hideDroppingTrainingUI();
+      showDoorTrainingUI();
+    }
+  }
+  else if (state == "SHOW_DOOR_TRAINING") {
+    // Maintain door training UI visibility
+    _root.trainingState = "SHOW_DOOR_TRAINING";
+  }
+
+  // ========================================================================
+  // UPDATE TRACKING STATE FOR NEXT FRAME
+  // ========================================================================
+
+  wasOnGround = isOnGround;
+};
