@@ -1,0 +1,36 @@
+FROM debian:trixie-slim
+
+# Main port
+EXPOSE 80/tcp
+EXPOSE 80/udp
+EXPOSE 8080/tcp
+EXPOSE 8080/udp
+EXPOSE 843/tcp
+EXPOSE 843/udp
+
+# Env vars
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Dependencies
+RUN apt-get update && apt-get install -y \
+    sudo \
+    nano \
+    vim \
+    git \
+    htop \
+    btop \
+    npm
+
+# Run
+RUN echo "alias btop='btop --utf-force'" >> $HOME/.bashrc
+
+# games dir
+RUN sudo mkdir -p /opt/games \
+ && sudo chmod 777 /opt/games
+
+WORKDIR /opt/games
+
+# entrypoint.sh
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh && \
+    sed -i -e 's/\r$//' /usr/local/bin/entrypoint.sh

@@ -61,7 +61,7 @@ function createRewardClient(): FakeClient {
         equippedGears: [],
         OwnedDyes: [],
         pets: [
-            { typeID: 15, special_id: 7, level: 10, xp: 0 }
+            { typeID: 15, special_id: 7, level: 1, xp: 0 }
         ],
         activePet: {
             typeID: 15,
