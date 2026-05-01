@@ -1,30 +1,1356 @@
 {
   "levels": {
-    "NewbieRoad": {
-      "nrcaptfink": {
-        "displayName": "Captain Fink",
+    "BridgeTown": {
+      "btgreeter": {
         "defaultLines": [
+          "Please go back and get rid of Arachnae",
+          "Hold there, stanger. Who are you?",
+          "You've made some tremendous changes in these parts.",
+          "We're wise to your kind's tricks. Present yourself to the Warden or taste steel.",
+          "The Warden must approve all outsiders.",
+          "And so are you, that don't mean we're friends.",
+          "I was born here.",
+          "Don't know nothing about no hordes.",
+          "You either check in with the Warden or off with you.",
+          "Although the Warden will no doubt send you on your way.",
+          "We're not looking for your kind of trouble."
+        ]
+      },
+      "btmayor01": {
+        "defaultLines": [
+          "Oh, glorious gods! Just what we don't need, more outsiders…",
+          "Well, stranger, I'm surprised. You've done our fair town a service.",
+          "The bandits say they're soldiers from your homeland.",
+          "You claim to be from some kingdom across the sea.",
+          "I don't know any kings, but these other men said the same.",
+          "No, no, we're doing just fine.",
+          "Except for looters and raiders from across the sea.",
+          "Apparently from your kingdom.",
+          "Which I'll answer once you take care of your fellow bandits.",
+          "Well, they are, and they're from your land.",
+          "You've returned? So perhaps you aren't like the others.",
+          "I sent your friends from Wolf's End to Cemetery Hill. They can settle there if they like.",
+          "There's no room for you Wolf's End folk here.",
+          "My people settled here 40 years ago.",
+          "We came from a far, far land, where we were slaves.",
+          "Now we live free and prosperous lives.",
+          "We protect our own.",
+          "I sent your friends from Wolf's End to Cemetery Hill.",
+          "If they're looking for new lands to settle, they can have those.",
+          "Beggars can't be choosers."
+        ]
+      },
+      "btmerchant01": {
+        "displayName": "Hector",
+        "defaultLines": [
+          "No one else will trade with the Gnoles.",
+          "But I remember when they weren't so bad.",
+          "I can't imagine why they're so angry now!"
+        ]
+      },
+      "btsubwarden": {
+        "defaultLines": [
+          "The bandit camp was just back the other way",
+          "These bandits never bothered us before. Did you rile them up?",
+          "The Steward went into that cave to prepare for the Harvest Ritual.",
+          "You shouldn't disturb the Steward.",
+          "I think so.",
+          "Only the Steward knows how it works.",
+          "The Steward has long protected our people, ever since we came here.",
+          "Well, he's in there.",
+          "But don't bother him if he seems too busy.",
+          "He's doing important work."
+        ]
+      },
+      "bttrainer01": {
+        "displayName": "Kellah",
+        "defaultLines": [
+          "Time for a lesson?"
+        ]
+      },
+      "btwarden": {
+        "defaultLines": [
+          "Please go back and get rid of Arachnae",
+          "You're a better class of hero",
+          "One we need badly",
+          "The dead of Cemetery Hill are rising",
+          "Bandits still plague us",
+          "And we live in the shadow of Castle Hocke",
+          "That fortress was shut to us years ago",
+          "But the evil that shut it still pervades this land",
+          "Have you seen the Steward yet.",
+          "You've changed this land for the better.",
+          "But I fear our troubles have just begun.",
+          "We've had our fill of looters and bandits.",
+          "You behave, stranger.",
+          "Stranger, I know your type. We've no patience for you here.",
+          "I don't know you, but you'd best be on your way.",
+          "Your king has nothing to do with us.",
+          "And we've had plenty of bandits say the same story.",
+          "I don't want trouble, so go onto the woods with the others.",
+          "Aye, you'll find plenty of your kind there.",
+          "So you say.",
+          "I'll believe it when I see it.",
+          "The Steward isn't here right now, stranger.",
+          "You're back.",
+          "Only The Steward knows how the magical shield works.",
+          "That shield is our main protection against our enemies.",
+          "I don't know, that's his doing.",
+          "But he's kept us mostly safe for years.",
+          "A few people disappear every year, but not much.",
+          "The Steward is gathering material for the Harvest Ritual.",
+          "Go talk to his bodyguard Gunter if you want to find him.",
+          "You say the Steward worships dark powers?",
+          "I had no idea!",
+          "Right over there, off the town square.",
+          "Hurry, you've got to find out who else is helping him.",
+          "The Steward, making pacts with evil gods...",
+          "I never imagined it.",
+          "With the Steward's evil unveiled, we have a lot to figure out.",
+          "According to the Steward's journal, his cult took sacrifices to the mountain peak.",
+          "There's a chance the Cult left survivors on the mountain.",
+          "I'm sending some of my people to investigate.",
+          "Then meet my people in the mountains.",
+          "But tread lightly, we don't know what's up there.",
+          "You've returned once again. Whatever you did out there, it's done something here.",
+          "Thank you for everything you have done here!",
+          "By destroying Meylour, you've left the path to the Sleeping Lands unblocked.",
+          "With Meylour's barrier gone, the path to the castle is open.",
+          "My people came up from there decades ago.",
+          "We were fleeing a life of slavery in The Sleeping Lands.",
+          "The Dragons and Goblins kept us in chains.",
+          "There's no knowing what's there now.",
+          "Meylour's barrier kept the Sleeping Lands locked away from this world.",
+          "The magic barrier that sealed Castle Hocke is dispelled."
+        ]
+      },
+      "earl": {
+        "displayName": "Earl",
+        "defaultLines": [
+          "Another stranger...",
+          "We've no room for strangers here.",
+          "None of your concern, stranger."
+        ]
+      },
+      "emma": {
+        "displayName": "Emma",
+        "defaultLines": [
+          "There are people living south of the swamp?",
+          "Amazing, I didn't even know there were other humans.",
+          "I grew up here.",
+          "It's the best place in the world."
+        ]
+      },
+      "felguard": {
+        "displayName": "Felguard",
+        "defaultLines": [
+          "The woods are full of bandits.",
+          "But they'd never come here."
+        ]
+      },
+      "franny": {
+        "displayName": "Franny",
+        "defaultLines": [
+          "Here for the harvest festival?",
+          "The Steward makes sure every year is better than the last.",
+          "That man works wonders.",
+          "Don't even know why we need a Warden."
+        ]
+      },
+      "grahm": {
+        "displayName": "Grahm",
+        "defaultLines": [
+          "The Gnoles never come into town.",
+          "But they'll attack if you leave the city limits."
+        ]
+      },
+      "jema": {
+        "displayName": "Jema",
+        "defaultLines": [
+          "An outsider! Wow!",
+          "I wish my brother Karl were here.",
+          "He ran away last harvest.",
+          "But he always said there were other people.",
+          "And he was right.",
+          "Guess the Steward don't know all."
+        ]
+      },
+      "laura": {
+        "displayName": "Laura",
+        "defaultLines": [
+          "Who are you?",
+          "I've never seen someone from outside the town.",
+          "Are you allowed to be here?"
+        ]
+      },
+      "lucy": {
+        "displayName": "Lucy",
+        "defaultLines": [
+          "Gnoles and bandits out there.",
+          "Stay alert."
+        ]
+      },
+      "meylourmagenpc": {
+        "displayName": "Ilvia",
+        "defaultLines": [
+          "Stranger.",
+          "What are you selling?",
+          "Protection services?",
+          "Proven remedies?",
+          "Magic beans?",
+          "We've had our fill of strangers."
+        ]
+      },
+      "meylourmagenpc2": {
+        "displayName": "Savva",
+        "defaultLines": [
+          "Let me guess...",
+          "You're a thief?",
+          "Or maybe a charlatan?",
+          "I know!",
+          "You're a #tc#.",
+          "Even worse."
+        ]
+      },
+      "npctraveller": {
+        "displayName": "Bella Sagesword",
+        "defaultLines": [
+          "Have a care! Did I restore the Dreadfold Gate so you could stumble to your doom?",
+          "Long ago, the wizard Caphrax sundered the world into two time-rivers",
+          "The two branches are close but separated",
+          "Into one branch the wizard channeled the dread magic of the Sleeping Lands, creating The Dreadfold",
+          "Yes, a dark, magic-drenched mirror of our world lies through this gate",
+          "Are you mad? Only a battle-hardened team of adventurers stands any chance through that gate",
+          "I'd suggest you master the perils of this world first"
+        ]
+      },
+      "rodgert": {
+        "displayName": "Rodgert",
+        "defaultLines": [
+          "Our harvest festival begins soon!",
+          "It's my favorite time of year.",
+          "Although something sad always happens too.",
+          "My nephew disappeared last festival.",
+          "My daughter disappeared ten years back.",
+          "Still, it's a happy time!"
+        ]
+      },
+      "samuel": {
+        "displayName": "Samuel",
+        "defaultLines": [
+          "Felbridge is a nice place.",
+          "We don't need outsiders messing things up."
+        ]
+      },
+      "smiddy": {
+        "displayName": "Smiddy",
+        "defaultLines": [
+          "*grumble*%Lotta work to do%*mumble*%*grumble* Move along, kido.%Not makin' anything fancy. Just a shovel.%*mumble grumble*%^tNosy #tc#'s!"
+        ]
+      }
+    },
+    "BridgeTownHard": {
+      "btgreeterhard": {
+        "defaultLines": [
+          "Please go back and get rid of Arachnae",
+          "We're wise to your kind's tricks. Present yourself to the Warden or taste steel.",
+          "The Warden must approve all outsiders.",
+          "And so are you, that don't mean we're friends.",
+          "I was born here.",
+          "Don't know nothing about no hordes.",
+          "You either check in with the Warden or off with you.",
+          "Although the Warden will no doubt send you on your way.",
+          "We're not looking for your kind of trouble.",
+          "Hold there, stanger. Who are you?",
+          "You've made some tremendous changes in these parts."
+        ]
+      },
+      "btmayor01hard": {
+        "defaultLines": [
+          "Oh, glorious gods! Just what we don't need, more outsiders…",
+          "Well, stranger, I'm surprised. You've done our fair town a service.",
+          "The bandits say they're soldiers from your homeland.",
+          "You claim to be from some kingdom across the sea.",
+          "I don't know any kings, but these other men said the same.",
+          "No, no, we're doing just fine.",
+          "Except for looters and raiders from across the sea.",
+          "Apparently from your kingdom.",
+          "Which I'll answer once you take care of your fellow bandits.",
+          "Well, they are, and they're from your land.",
+          "You've returned? So perhaps you aren't like the others.",
+          "I sent your friends from Wolf's End to Cemetery Hill. They can settle there if they like.",
+          "There's no room for you Wolf's End folk here.",
+          "My people settled here 40 years ago.",
+          "We came from a far, far land, where we were slaves.",
+          "Now we live free and prosperous lives.",
+          "We protect our own.",
+          "I sent your friends from Wolf's End to Cemetery Hill.",
+          "If they're looking for new lands to settle, they can have those.",
+          "Beggars can't be choosers."
+        ]
+      },
+      "btmerchant01hard": {
+        "displayName": "Hector",
+        "defaultLines": [
+          "No one else will trade with the Gnoles.",
+          "But I remember when they weren't so bad.",
+          "I can't imagine why they're so angry now!"
+        ]
+      },
+      "btsubwardenhard": {
+        "defaultLines": [
+          "The bandit camp was just back the other way",
+          "These bandits never bothered us before. Did you rile them up?",
+          "The Steward went into that cave to prepare for the Harvest Ritual.",
+          "You shouldn't disturb the Steward.",
+          "I think so.",
+          "Only the Steward knows how it works.",
+          "The Steward has long protected our people, ever since we came here.",
+          "Well, he's in there.",
+          "But don't bother him if he seems too busy.",
+          "He's doing important work."
+        ]
+      },
+      "bttrainer01hard": {
+        "displayName": "Kellah",
+        "defaultLines": [
+          "Time for a lesson?"
+        ]
+      },
+      "btwardenhard": {
+        "defaultLines": [
+          "Please go back and get rid of Arachnae",
+          "You're a better class of hero",
+          "One we need badly",
+          "The dead of Cemetery Hill are rising",
+          "Bandits still plague us",
+          "And we live in the shadow of Castle Hocke",
+          "That fortress was shut to us years ago",
+          "But the evil that shut it still pervades this land",
+          "Have you seen the Steward yet.",
+          "You've changed this land for the better.",
+          "But I fear our troubles have just begun.",
+          "Halt, outsider, we've had our fill of looters and bandits.",
+          "How would we see this?",
+          "Stranger, I know your type. We've no patience for you here.",
+          "I don't know you, but you'd best be on your way.",
+          "Your king has nothing to do with us.",
+          "And we've had plenty of bandits say the same story.",
+          "I don't want trouble, so go onto the woods with the others.",
+          "Aye, you'll find plenty of your kind there.",
+          "So you say.",
+          "I'll believe it when I see it.",
+          "The Steward isn't here right now, stranger.",
+          "You're back.",
+          "Only The Steward knows how the magical shield works.",
+          "That shield is our main protection against our enemies.",
+          "I don't know, that's his doing.",
+          "But he's kept us mostly safe for years.",
+          "A few people disappear every year, but not much.",
+          "The Steward is gathering material for the Harvest Ritual.",
+          "Go talk to his bodyguard Gunter if you want to find him.",
+          "You say the Steward worships dark powers?",
+          "I had no idea!",
+          "Right over there, off the town square.",
+          "Hurry, you've got to find out who else is helping him.",
+          "The Steward, making pacts with evil gods...",
+          "I never imagined it.",
+          "With the Steward's evil unveiled, we have a lot to figure out.",
+          "According to the Steward's journal, his cult took sacrifices to the mountain peak.",
+          "There's a chance the Cult left survivors on the mountain.",
+          "I'm sending some of my people to investigate.",
+          "Then meet my people in the mountains.",
+          "But tread lightly, we don't know what's up there.",
+          "You've returned once again. Whatever you did out there, it's done something here.",
+          "Thank you for everything you have done here!",
+          "By destroying Meylour, you've left the path to the Sleeping Lands unblocked.",
+          "With Meylour's barrier gone, the path to the castle is open.",
+          "My people came up from there decades ago.",
+          "We were fleeing a life of slavery in The Sleeping Lands.",
+          "The Dragons and Goblins kept us in chains.",
+          "There's no knowing what's there now.",
+          "Meylour's barrier kept the Sleeping Lands locked away from this world.",
+          "The magic barrier that sealed Castle Hocke is dispelled.",
+          "We've had our fill of looters and bandits.",
+          "You behave, stranger."
+        ]
+      },
+      "earlhard": {
+        "displayName": "Earl",
+        "defaultLines": [
+          "Another stranger...",
+          "We've no room for strangers here.",
+          "None of your concern, stranger."
+        ]
+      },
+      "emmahard": {
+        "displayName": "Emma",
+        "defaultLines": [
+          "There are people living south of the swamp?",
+          "Amazing, I didn't even know there were other humans.",
+          "I grew up here.",
+          "It's the best place in the world."
+        ]
+      },
+      "felguardhard": {
+        "displayName": "Felguard",
+        "defaultLines": [
+          "The woods are full of bandits.",
+          "But they'd never come here."
+        ]
+      },
+      "frannyhard": {
+        "displayName": "Franny",
+        "defaultLines": [
+          "Here for the harvest festival?",
+          "The Steward makes sure every year is better than the last.",
+          "That man works wonders.",
+          "Don't even know why we need a Warden."
+        ]
+      },
+      "grahmhard": {
+        "displayName": "Grahm",
+        "defaultLines": [
+          "The Gnoles never come into town.",
+          "But they'll attack if you leave the city limits."
+        ]
+      },
+      "jemahard": {
+        "displayName": "Jema",
+        "defaultLines": [
+          "An outsider! Wow!",
+          "I wish my brother Karl were here.",
+          "He ran away last harvest.",
+          "But he always said there were other people.",
+          "And he was right.",
+          "Guess the Steward don't know all."
+        ]
+      },
+      "laurahard": {
+        "displayName": "Laura",
+        "defaultLines": [
+          "Who are you?",
+          "I've never seen someone from outside the town.",
+          "Are you allowed to be here?"
+        ]
+      },
+      "lucyhard": {
+        "displayName": "Lucy",
+        "defaultLines": [
+          "Gnoles and bandits out there.",
+          "Stay alert."
+        ]
+      },
+      "meylourmagenpc2hard": {
+        "displayName": "Savva",
+        "defaultLines": [
+          "Let me guess...",
+          "You're a thief?",
+          "Or maybe a charlatan?",
+          "I know!",
+          "You're a #tc#.",
+          "Even worse."
+        ]
+      },
+      "meylourmagenpchard": {
+        "displayName": "Ilvia",
+        "defaultLines": [
+          "Stranger.",
+          "What are you selling?",
+          "Protection services?",
+          "Proven remedies?",
+          "Magic beans?",
+          "We've had our fill of strangers."
+        ]
+      },
+      "rodgerthard": {
+        "displayName": "Rodgert",
+        "defaultLines": [
+          "Our harvest festival begins soon!",
+          "It's my favorite time of year.",
+          "Although something sad always happens too.",
+          "My nephew disappeared last festival.",
+          "My daughter disappeared ten years back.",
+          "Still, it's a happy time!"
+        ]
+      },
+      "samuelhard": {
+        "displayName": "Samuel",
+        "defaultLines": [
+          "Felbridge is a nice place.",
+          "We don't need outsiders messing things up."
+        ]
+      },
+      "smiddyhard": {
+        "displayName": "Smiddy",
+        "defaultLines": [
+          "*grumble*%Lotta work to do%*mumble*%*grumble* Move along, kido.%Not makin' anything fancy. Just a shovel.%*mumble grumble*%^tNosy #tc#'s!"
+        ]
+      }
+    },
+    "Castle": {
+      "acmayor01": {
+        "defaultLines": [
+          "Marshal Sythokahn is defeated, not just his dream this time.",
+          "You've stopped the dragons from invading again.",
+          "But who knows what else is down there.",
+          "Our leader, Titus, went to the Observatory looking for some way to fight the dragons.",
+          "Thank you for slaying that dragon.",
+          "We were with Sigismund Hocke's expedition.",
+          "Yes, the very same.",
+          "We fought through the goblins and into the castle.",
+          "Sigismund left us to guard the camp.",
+          "He and his knights went down below.",
+          "They passed through the portal.",
+          "The Sage Titus helped us.",
+          "When the dragon legion came, he went to find a way to stop them.",
+          "You should find find him."
+        ]
+      },
+      "actitus01": {
+        "defaultLines": [
+          "How is it you see me?",
+          "Nephit seeks an ancient ritual from the Aetheric Observatory.",
+          "When we were both alive, he asked for it.",
+          "I never trusted him with such power.",
+          "It contacts terrible, ancient gods.",
+          "I don't know, but it's a bad idea.",
+          "A really, really bad idea.",
+          "Terrible idea.",
+          "Stop Nephit from using the ritual.",
+          "Nephit materialized on the ramparts after you fought him.",
+          "I take it Nephit found the ritual?",
+          "I don't know why, but he's going to use it.",
+          "Maybe he hopes it will restore him to life.",
+          "Maybe, but it would be a monstrous existence.",
+          "Hurry now, stop him before he can find out."
+        ]
+      },
+      "actitus02": {
+        "defaultLines": [
+          "Hurry! Nephit went this way!",
+          "Beyond lies the portal to the Sleeping Lands",
+          "Baron Hocke's sages created a powerful Capstone to seal the portal.",
+          "It limits the travel between worlds.",
+          "Nephit will try and break the Capstone and use its energy for his ritual.",
+          "Travel between the realms will be unstoppable.",
+          "Assuming Nephit's ritual doesn't kill us all."
+        ]
+      },
+      "actitus03": {
+        "defaultLines": [
+          "He's headed towards the Capstone!",
+          "At least, Nephit is no more.",
+          "It's coming",
+          "Everything",
+          "Riches and Nightmares",
+          "Monsters and Magic",
+          "Good and Evil",
+          "It's all down there, and it's all awake now",
+          "Nephit is defeated, but the Capstone is destroyed. The link to the Sleeping Lands lies open",
+          "What are the Sleeping Lands?",
+          "Ha, you are still an adventurer",
+          "You are going down there, aren't you?",
+          "Well, then, I will accompany you",
+          "That gate should take us there",
+          "Or else tear us to pieces"
+        ]
+      },
+      "acvillager01": {
+        "displayName": "Jawen",
+        "defaultLines": [
+          "These dragon-soldiers came up from below!",
+          "I'll explain later!",
+          "Hurry, we need help in the courtyard!",
+          "Thank you valiant hero, for slaying the dragon!"
+        ]
+      },
+      "acvillager02": {
+        "displayName": "Toraes",
+        "defaultLines": [
+          "We were hiding here for so long.",
+          "Then the dragon warriors came from below.",
+          "They took control of the Dread Paladins."
+        ]
+      },
+      "acvillager03": {
+        "defaultLines": [
+          "So many Tuatara soldiers, can you trim their numbers?",
+          "They are all over the castle",
+          "They came from below",
+          "Thank you, maybe we can finally rebuild here.",
+          "Thanks, I already feel safer here."
+        ]
+      },
+      "acvillager04": {
+        "defaultLines": [
+          "There is a secret door in the throne room that leads to the cave",
+          "Some of the dragon's soldiers are holed up down there.",
+          "Be careful, they have one of Baron Hocke's golems at their command."
+        ]
+      },
+      "acvillager05": {
+        "defaultLines": [
+          "The Dread Paladin masks are the secret to controlling these golems.",
+          "The dragon general took control of the Dread Paladin Golems.",
+          "They used to be Baron Hocke's private bodyguard.",
+          "Their masks are the key to controlling them.",
+          "If you bring me any you find, perhaps I can restore control.",
+          "Thanks, I will get started on deconstructing these right away.",
+          "Thanks again for gathering the masks."
+        ]
+      }
+    },
+    "CastleHard": {
+      "acmayor01hard": {
+        "defaultLines": [
+          "Marshal Sythokahn is defeated, not just his dream this time.",
+          "You've stopped the dragons from invading again.",
+          "But who knows what else is down there.",
+          "Our leader, Titus, went to the Observatory looking for some way to fight the dragons.",
+          "Thank you for slaying that dragon.",
+          "We were with Sigismund Hocke's expedition.",
+          "Yes, the very same.",
+          "We fought through the goblins and into the castle.",
+          "Sigismund left us to guard the camp.",
+          "He and his knights went down below.",
+          "They passed through the portal.",
+          "The Sage Titus helped us.",
+          "When the dragon legion came, he went to find a way to stop them.",
+          "You should find find him."
+        ]
+      },
+      "actitus01hard": {
+        "defaultLines": [
+          "How is it you see me?",
+          "Nephit seeks an ancient ritual from the Aetheric Observatory.",
+          "When we were both alive, he asked for it.",
+          "I never trusted him with such power.",
+          "It contacts terrible, ancient gods.",
+          "I don't know, but it's a bad idea.",
+          "A really, really bad idea.",
+          "Terrible idea.",
+          "Stop Nephit from using the ritual.",
+          "Nephit materialized on the ramparts after you fought him.",
+          "I take it Nephit found the ritual?",
+          "I don't know why, but he's going to use it.",
+          "Maybe he hopes it will restore him to life.",
+          "Maybe, but it would be a monstrous existence.",
+          "Hurry now, stop him before he can find out."
+        ]
+      },
+      "actitus02hard": {
+        "defaultLines": [
+          "Hurry! Nephit went this way!",
+          "Beyond lies the portal to the Sleeping Lands",
+          "Baron Hocke's sages created a powerful Capstone to seal the portal.",
+          "It limits the travel between worlds.",
+          "Nephit will try and break the Capstone and use its energy for his ritual.",
+          "Travel between the realms will be unstoppable.",
+          "Assuming Nephit's ritual doesn't kill us all."
+        ]
+      },
+      "actitus03hard": {
+        "defaultLines": [
+          "He's headed towards the Capstone!",
+          "At least, Nephit is no more.",
+          "It's coming",
+          "Everything",
+          "Riches and Nightmares",
+          "Monsters and Magic",
+          "Good and Evil",
+          "It's all down there, and it's all awake now",
+          "Nephit is defeated, but the Capstone is destroyed. The link to the Sleeping Lands lies open",
+          "What are the Sleeping Lands?",
+          "Ha, you are still an adventurer",
+          "You are going down there, aren't you?",
+          "Well, then, I will accompany you",
+          "That gate should take us there",
+          "Or else tear us to pieces"
+        ]
+      },
+      "acvillager01hard": {
+        "displayName": "Jawen",
+        "defaultLines": [
+          "These dragon-soldiers came up from below!",
+          "I'll explain later!",
+          "Hurry, we need help in the courtyard!",
+          "Thank you valiant hero, for slaying the dragon!"
+        ]
+      },
+      "acvillager02hard": {
+        "displayName": "Toraes",
+        "defaultLines": [
+          "We were hiding here for so long.",
+          "Then the dragon warriors came from below.",
+          "They took control of the Dread Paladins."
+        ]
+      },
+      "acvillager03hard": {
+        "defaultLines": [
+          "So many Tuatara soldiers, can you trim their numbers?",
+          "They are all over the castle",
+          "They came from below",
+          "Thank you, maybe we can finally rebuild here.",
+          "Thanks, I already feel safer here."
+        ]
+      },
+      "acvillager04hard": {
+        "defaultLines": [
+          "There is a secret door in the throne room that leads to the cave",
+          "Some of the dragon's soldiers are holed up down there.",
+          "Be careful, they have one of Baron Hocke's golems at their command."
+        ]
+      },
+      "acvillager05hard": {
+        "defaultLines": [
+          "The Dread Paladin masks are the secret to controlling these golems.",
+          "The dragon general took control of the Dread Paladin Golems.",
+          "They used to be Baron Hocke's private bodyguard.",
+          "Their masks are the key to controlling them.",
+          "If you bring me any you find, perhaps I can restore control.",
+          "Thanks, I will get started on deconstructing these right away.",
+          "Thanks again for gathering the masks."
+        ]
+      }
+    },
+    "EmeraldGlades": {
+      "egmayor01": {
+        "defaultLines": [
+          "Have you seen Wildbark? She left our tree headed west",
+          "Thank you, and thank Wildbark for sending you!",
+          "Thank you for helping our people!",
+          "Meylour's corrupted Dryads have infested the Ur-Tree!",
+          "Meylour's fiends drove us from the tree.",
+          "His corrupted plants and flames are everywhere.",
+          "You must hurry, I smell smoke!",
+          "Thank you, but the tree isn't safe yet.",
+          "Meylour's abominations tunneled in from the roots.",
+          "The Priests of Meylour will just send more fire.",
+          "They burrowed here from their temples.",
+          "Meylour wants everything dead. Everything.",
+          "Head to the ancient temple and defeat the Meylour's cultists",
+          "The priests of Meylour are preparing yet another ritual.",
+          "You need to find a way to Meylour's Heart.",
+          "It is where Meylour's power lies.",
+          "Only his priests know its location.",
+          "The Cult of Meylour is almost defeated!",
+          "The last of Meylour's cult cowers in fear.",
+          "You've almost beaten them.",
+          "Now you can finally strike down Meylour forever.",
+          "Meylour's followers got what they deserved.",
+          "Meylour will not rest until all life in Ellyria burns.",
+          "The Meylour ritual is disrupted?",
+          "Meylour's foul magic leaves a trace.",
+          "The cult tried to unleash his power.",
+          "Now I can help you follow that power to its source.",
+          "Follow the trail deep into the mountain's heart.",
+          "There you'll find Meylour."
+        ]
+      },
+      "egscout01": {
+        "defaultLines": [
+          "Meylour's secrets are in Stormshard Mountain.",
+          "You must be a powerful hero to have come through the mines!",
+          "Thank you for reuniting our people!",
+          "Meylour's Ashen Dryads are besieging the Ur-Tree!",
+          "One of Meylour's Ashen Dryads fled to the East.",
+          "I take it he was running from you?",
+          "The Living Mountain has already destroyed most of my kind.",
+          "Follow that Ashen Dryad.",
+          "Capturing him will reveal more of Meylour's plans."
+        ]
+      },
+      "egvillager02": {
+        "defaultLines": [
+          "Help us gather the Dark Totems from the Ashen Dryads",
+          "You can find them on the Ashen Dryads",
+          "We need them for a protection from fire spell.",
+          "Perfect, I'll get the protection spell started.",
+          "We also need Meylour's Masks for the protection spell",
+          "Please hurry, the priests attacks need to be repelled.",
+          "Just what we needed. Thank you!",
+          "We should be protected now. Thanks again!"
+        ]
+      },
+      "egvillager03": {
+        "defaultLines": [
+          "Can you help us put out the fires plaguing our land?",
+          "Living fire is everywhere, please destroy it.",
+          "Thank you. I can breath better already.",
+          "Hopefully our land will grow green once more!"
+        ]
+      },
+      "oakfrost": {
+        "displayName": "Oakfrost",
+        "defaultLines": [
+          "This used to be a paradise."
+        ]
+      }
+    },
+    "JadeCity": {
+      "bako": {
+        "displayName": "Bako",
+        "defaultLines": [
+          "You're not from around here, are you?"
+        ]
+      },
+      "citypete": {
+        "displayName": "Pete the Ferry Man",
+        "defaultLines": [
+          "It might not look like much, but it'll get you across the lake",
+          "No charge. I actually enjoy the exercise",
+          "The Temple Isle is peaceful, even with all that is going on",
+          "Heading Over?"
+        ]
+      },
+      "islandpete": {
+        "displayName": "Pete the Ferry Man",
+        "defaultLines": [
+          "Heading back already?",
+          "I'll bet you have some wild stories to tell",
+          "Did you hear that?",
+          "I'll be right here when you are ready to go back to the city"
+        ]
+      },
+      "kala": {
+        "displayName": "Kala",
+        "defaultLines": [
+          "With everything that has been going on...",
+          "It's just better to keep off the streets"
+        ]
+      },
+      "vhfabmab01": {
+        "defaultLines": [
+          "Hello, young man|lady",
+          "The Emperor sold his soul to the Seelie to secure his throne.",
+          "The Seelie were the first to awake in the Sleeping Lands.",
+          "They were once wise and generous…",
+          "But time made them cruel and jealous of others.",
+          "They lost power to the Goblins and Dragons…",
+          "Sigismund Hocke turned to them to help defeat the Goblin Kings.",
+          "And now they prop up his rule in Valhaven.",
+          "It takes Seelie magic to counter Seelie magic.",
+          "Go to the Temple of Lost Dreams...",
+          "There you might find something I can use to counter the Emperor's wards.",
+          "Sounds like the Temple was more dangerous than suspected.",
+          "The Emperor must have been protecting his secrets well.",
+          "Now I know a great deal more about his Seelie magic.",
+          "I should be able to get you past the outer wards of his palace.",
+          "But you will be on your own when you face him.",
+          "He is vulnerable, but still very dangerous."
+        ]
+      },
+      "vhfabmab02": {
+        "defaultLines": [
+          "You have left your mark on the Sleeping Lands.",
+          "Now you are a part of the fate of The Sleeping Lands.",
+          "Your actions reverberate through the world of dreams.",
+          "If you dare face your fate…",
+          "You can enter the Primal Dream and learn the truth.",
+          "The truth about yourself and your place in the world.",
+          "You have returned. I hope you learned much.",
+          "It seems a dragon was hiding in your dreams.",
+          "You will find many strange things are possible.",
+          "You have seen but a sliver of the Sleeping Lands.",
+          "You'll be lucky if that's your only problem.",
+          "This world knows you now.",
+          "And I'm not sure it means you well."
+        ]
+      },
+      "vhjackal02": {
+        "defaultLines": [
+          "Now that you can get past the Seelie wards, it's time to strike.",
+          "Before confronting The Emperor, we need to weaken him.",
+          "Take out all his support before you confront him.",
+          "His daughters command his army and secret police.",
+          "You can find them in the East and West wings of the palace.",
+          "You also need to defeat the Imperial Guard Commander.",
+          "He lives in the barracks.",
+          "Now The Emperor's defenses are in disarray.",
+          "The time to strike has come!",
+          "You never fail to impress, #tn#."
+        ]
+      },
+      "vhmonk01": {
+        "defaultLines": [
+          "It is a tragedy what the Emperor has done here, but all is not lost",
+          "I can feel the city crying out from beneath the weight of Seelie filth that has tainted it.",
+          "As venom is key to making anti-venom, demon tears are key to cleanse Valhaven's aura.",
+          "Bless you, friend.",
+          "I will begin the long process of setting things right…",
+          "It gladens my heart to meet a noble soul such as you"
+        ]
+      },
+      "vhodin01": {
+        "defaultLines": [
+          "You must be the Traveller Rathbone spoke of. Welcome.",
+          "The Emperor knows your name and want you dead.",
+          "I wonder what you did to earn his wrath?",
+          "That could not have pleased him.",
+          "But he would never admit to scheming against Shazari.",
+          "And he has put a public price on your head.",
+          "His son, the High Mage, will know the truth.",
+          "He seems to be out of favor with his father.",
+          "Find him while he's outside the palace and he might talk.",
+          "He frequents the alleys, cultivating thieves to his cause.",
+          "So, the Emperor is from your world!",
+          "His origins were always a mystery.",
+          "He overthrew the Goblins and set himself up ten years ago.",
+          "Thanks to his Seelie allies, he's been unstoppable.",
+          "I can sense you're destined to do great things here",
+          "Work with Mab to find a chink in the Emperor's armor",
+          "Now we need Ma Mab's help figuring out what to do next.",
+          "Sigismund Hocke became Emperor thanks to the Seelie.",
+          "Their dark magicks protect him and secure his throne.",
+          "We need a counter to their wards.",
+          "Ma Mab knows more about Seelie than anyone I know.",
+          "Talk to her and see if she has any ideas.",
+          "The Vermyn gangs helped The Emperor overthrow the Goblins.",
+          "I see now why the Emperor hates you.",
+          "Do you? You took his Barony.",
+          "Well, he's angered people here too.",
+          "The Vermyn gangs chafe under the Emperor's rule.",
+          "They would rise up against him…",
+          "Except the Gutter Lord remains loyal to the Emperor.",
+          "Go down and take out the Gutter Lord.",
+          "Then the Vermyn will join us for sure.",
+          "The Vermyn gangs are in an uproar!",
+          "With the Gutter Lord gone, some are already on our side.",
+          "Now for the hard part.",
+          "The Emperor cowers in his palace.",
+          "You've taken out all his support.",
+          "The people rally against him.",
+          "Emperor Sigismund's reign of terror ends today.",
+          "Liberty!",
+          "What you have done here…",
+          "I cannot thank you enough",
+          "Valhaven is free for the first time in centuries.",
+          "Goblins, Dragons, and Seelie are all defeated.",
+          "At last we shall know peace.",
+          "If you hadn't stopped the gang leaders,, I'd be dead.",
+          "This city's gangs are mostly human and are loyal to the Emperor.",
+          "But I hear from Skitts they might be won over.",
+          "Humans usually support The Emperor.",
+          "But he relies too much on The Seelie now.",
+          "The human gangs will fight him…",
+          "If we can knock out their leaders.",
+          "But I don't know who the leaders are.",
+          "My contact Skitts will know.",
+          "Go see what he suggests."
+        ]
+      },
+      "vhrebel01": {
+        "defaultLines": [
+          "I used to be an Imperial…",
+          "Back before the Emperor lost his mind and started associating with Seelie.",
+          "I followed my conscience and it cost me everything.",
+          "Now I watch them terrorize these streets we used to protect.",
+          "I'll pay for any Imperial you take off the streets.",
+          "That's so many…Take this.",
+          "That's all the money I had left",
+          "No, Take it. You are fighting for a cause that is just",
+          "I'd trade all the gold in the world for things to return to the way they were",
+          "I guess the time for that has passed",
+          "Things will never be the same again."
+        ]
+      },
+      "vhrebel02": {
+        "defaultLines": [
+          "The Imperials are bad enough, but the gangs are the worst kinds of opportunists.",
+          "They are running a protection and extortion racket.",
+          "Preying off innocent civilians that can't defend themselves.",
+          "I think it's time someone showed them that their days are finished.",
+          "Thank you traveler.",
+          "That is one less threat the people have to worry about."
+        ]
+      },
+      "vhskitts01": {
+        "defaultLines": [
+          "The human gangs here have high standards.",
+          "You got the Vermyn gangs on your side...",
+          "That's impressive.",
+          "But the human gangs are different.",
+          "If you want to get close to the leaders…",
+          "You're going to have to prove yourself to them.",
+          "Be ready for a brutal fight.",
+          "They'll gang up on you in that fighting pit.",
+          "Everyone's talkin' about you now, #tn#.",
+          "It was a trick! They're onto you and your rebel friends!",
+          "The gang leaders set us up.",
+          "While you were in the ring, they were on the move.",
+          "The gangs are heading for the rebel hideout.",
+          "You have to hurry back…",
+          "Cut them off before they kill Odryn!",
+          "So you're the troublemaker, eh?"
+        ]
+      },
+      "vhvagrant01": {
+        "defaultLines": [
+          "What's that?! Yep! They've robbed meh blind!",
+          "Vermyn raided mah garden and stole mah mushrooms.",
+          "I use those mushrooms to make stew and mah hearty mushroom pie.",
+          "With all this Imperial nonsense, people on the streets need mah shrooms to get by!",
+          "I don't wanna see anyone starve, do you?",
+          "Hoo-yeah! You found mah shrooms!",
+          "Now I can go back to baking mushroom pie",
+          "And Mushroom Gumbo",
+          "And Mushroom Stew",
+          "And Mushroom Soufflé",
+          "And Stuffed Mushroom Saffron Surprise",
+          "And Mushroom ala Kelp",
+          "And, let's see. I know there's more I can make with shrooms"
+        ]
+      }
+    },
+    "JadeCityHard": {
+      "bakohard": {
+        "displayName": "Bako",
+        "defaultLines": [
+          "You're not from around here, are you?"
+        ]
+      },
+      "citypetehard": {
+        "displayName": "Pete the Ferry Man",
+        "defaultLines": [
+          "It might not look like much, but it'll get you across the lake",
+          "No charge. I actually enjoy the exercise",
+          "The Temple Isle is peaceful, even with all that is going on",
+          "Heading Over?"
+        ]
+      },
+      "islandpetehard": {
+        "displayName": "Pete the Ferry Man",
+        "defaultLines": [
+          "Heading back already?",
+          "I'll bet you have some wild stories to tell",
+          "Did you hear that?",
+          "I'll be right here when you are ready to go back to the city"
+        ]
+      },
+      "kalahard": {
+        "displayName": "Kala",
+        "defaultLines": [
+          "With everything that has been going on...",
+          "It's just better to keep off the streets"
+        ]
+      },
+      "vhfabmab01hard": {
+        "defaultLines": [
+          "Hello, young man|lady",
+          "The Emperor sold his soul to the Seelie to secure his throne.",
+          "The Seelie were the first to awake in the Sleeping Lands.",
+          "They were once wise and generous…",
+          "But time made them cruel and jealous of others.",
+          "They lost power to the Goblins and Dragons…",
+          "Sigismund Hocke turned to them to help defeat the Goblin Kings.",
+          "And now they prop up his rule in Valhaven.",
+          "It takes Seelie magic to counter Seelie magic.",
+          "Go to the Temple of Lost Dreams...",
+          "There you might find something I can use to counter the Emperor's wards.",
+          "Sounds like the Temple was more dangerous than suspected.",
+          "The Emperor must have been protecting his secrets well.",
+          "Now I know a great deal more about his Seelie magic.",
+          "I should be able to get you past the outer wards of his palace.",
+          "But you will be on your own when you face him.",
+          "He is vulnerable, but still very dangerous."
+        ]
+      },
+      "vhfabmab02hard": {
+        "defaultLines": [
+          "You have left your mark on the Sleeping Lands.",
+          "Now you are a part of the fate of The Sleeping Lands.",
+          "Your actions reverberate through the world of dreams.",
+          "If you dare face your fate…",
+          "You can enter the Primal Dream and learn the truth.",
+          "The truth about yourself and your place in the world.",
+          "You have returned. I hope you learned much.",
+          "It seems a dragon was hiding in your dreams.",
+          "You will find many strange things are possible.",
+          "You have seen but a sliver of the Sleeping Lands.",
+          "You'll be lucky if that's your only problem.",
+          "This world knows you now.",
+          "And I'm not sure it means you well."
+        ]
+      },
+      "vhjackal02hard": {
+        "defaultLines": [
+          "Now that you can get past the Seelie wards, it's time to strike.",
+          "Before confronting The Emperor, we need to weaken him.",
+          "Take out all his support before you confront him.",
+          "His daughters command his army and secret police.",
+          "You can find them in the East and West wings of the palace.",
+          "You also need to defeat the Imperial Guard Commander.",
+          "He lives in the barracks.",
+          "Now The Emperor's defenses are in disarray.",
+          "The time to strike has come!",
+          "You never fail to impress, #tn#."
+        ]
+      },
+      "vhmonk01hard": {
+        "defaultLines": [
+          "It is a tragedy what the Emperor has done here, but all is not lost",
+          "I can feel the city crying out from beneath the weight of Seelie filth that has tainted it.",
+          "As venom is key to making anti-venom, demon tears are key to cleanse Valhaven's aura.",
+          "Bless you, friend.",
+          "I will begin the long process of setting things right…",
+          "It gladens my heart to meet a noble soul such as you"
+        ]
+      },
+      "vhodin01hard": {
+        "defaultLines": [
+          "You must be the Traveller Rathbone spoke of. Welcome.",
+          "The Emperor knows your name and want you dead.",
+          "I wonder what you did to earn his wrath?",
+          "That could not have pleased him.",
+          "But he would never admit to scheming against Shazari.",
+          "And he has put a public price on your head.",
+          "His son, the High Mage, will know the truth.",
+          "He seems to be out of favor with his father.",
+          "Find him while he's outside the palace and he might talk.",
+          "He frequents the alleys, cultivating thieves to his cause.",
+          "So, the Emperor is from your world!",
+          "His origins were always a mystery.",
+          "He overthrew the Goblins and set himself up ten years ago.",
+          "Thanks to his Seelie allies, he's been unstoppable.",
+          "I can sense you're destined to do great things here",
+          "Work with Mab to find a chink in the Emperor's armor",
+          "Now we need Ma Mab's help figuring out what to do next.",
+          "Sigismund Hocke became Emperor thanks to the Seelie.",
+          "Their dark magicks protect him and secure his throne.",
+          "We need a counter to their wards.",
+          "Ma Mab knows more about Seelie than anyone I know.",
+          "Talk to her and see if she has any ideas.",
+          "The Vermyn gangs helped The Emperor overthrow the Goblins.",
+          "I see now why the Emperor hates you.",
+          "Do you? You took his Barony.",
+          "Well, he's angered people here too.",
+          "The Vermyn gangs chafe under the Emperor's rule.",
+          "They would rise up against him…",
+          "Except the Gutter Lord remains loyal to the Emperor.",
+          "Go down and take out the Gutter Lord.",
+          "Then the Vermyn will join us for sure.",
+          "The Vermyn gangs are in an uproar!",
+          "With the Gutter Lord gone, some are already on our side.",
+          "Now for the hard part.",
+          "The Emperor cowers in his palace.",
+          "You've taken out all his support.",
+          "The people rally against him.",
+          "Emperor Sigismund's reign of terror ends today.",
+          "Liberty!",
+          "What you have done here…",
+          "I cannot thank you enough",
+          "Valhaven is free for the first time in centuries.",
+          "Goblins, Dragons, and Seelie are all defeated.",
+          "At last we shall know peace.",
+          "If you hadn't stopped the gang leaders,, I'd be dead.",
+          "This city's gangs are mostly human and are loyal to the Emperor.",
+          "But I hear from Skitts they might be won over.",
+          "Humans usually support The Emperor.",
+          "But he relies too much on The Seelie now.",
+          "The human gangs will fight him…",
+          "If we can knock out their leaders.",
+          "But I don't know who the leaders are.",
+          "My contact Skitts will know.",
+          "Go see what he suggests."
+        ]
+      },
+      "vhrebel01hard": {
+        "defaultLines": [
+          "I used to be an Imperial…",
+          "Back before the Emperor lost his mind and started associating with Seelie.",
+          "I followed my conscience and it cost me everything.",
+          "Now I watch them terrorize these streets we used to protect.",
+          "I'll pay for any Imperial you take off the streets.",
+          "That's so many…Take this.",
+          "That's all the money I had left",
+          "No, Take it. You are fighting for a cause that is just",
+          "I'd trade all the gold in the world for things to return to the way they were",
+          "I guess the time for that has passed",
+          "Things will never be the same again."
+        ]
+      },
+      "vhrebel02hard": {
+        "defaultLines": [
+          "The Imperials are bad enough, but the gangs are the worst kinds of opportunists.",
+          "They are running a protection and extortion racket.",
+          "Preying off innocent civilians that can't defend themselves.",
+          "I think it's time someone showed them that their days are finished.",
+          "Thank you traveler.",
+          "That is one less threat the people have to worry about."
+        ]
+      },
+      "vhskitts01hard": {
+        "defaultLines": [
+          "The human gangs here have high standards.",
+          "You got the Vermyn gangs on your side...",
+          "That's impressive.",
+          "But the human gangs are different.",
+          "If you want to get close to the leaders…",
+          "You're going to have to prove yourself to them.",
+          "Be ready for a brutal fight.",
+          "They'll gang up on you in that fighting pit.",
+          "Everyone's talkin' about you now, #tn#.",
+          "It was a trick! They're onto you and your rebel friends!",
+          "The gang leaders set us up.",
+          "While you were in the ring, they were on the move.",
+          "The gangs are heading for the rebel hideout.",
+          "You have to hurry back…",
+          "Cut them off before they kill Odryn!",
+          "So you're the troublemaker, eh?"
+        ]
+      },
+      "vhvagrant01hard": {
+        "defaultLines": [
+          "What's that?! Yep! They've robbed meh blind!",
+          "Vermyn raided mah garden and stole mah mushrooms.",
+          "I use those mushrooms to make stew and mah hearty mushroom pie.",
+          "With all this Imperial nonsense, people on the streets need mah shrooms to get by!",
+          "I don't wanna see anyone starve, do you?",
+          "Hoo-yeah! You found mah shrooms!",
+          "Now I can go back to baking mushroom pie",
+          "And Mushroom Gumbo",
+          "And Mushroom Stew",
+          "And Mushroom Soufflé",
+          "And Stuffed Mushroom Saffron Surprise",
+          "And Mushroom ala Kelp",
+          "And, let's see. I know there's more I can make with shrooms"
+        ]
+      }
+    },
+    "NewbieRoad": {
+      "annaoutside": {
+        "displayName": "Anna",
+        "defaultLines": [
+          "Thank you for freeing me!",
+          "Our fighters need their leader.",
+          "Someone named 'Nephit' is trying to control the goblins.",
+          "My father read through the old reports from when we landed 50 years ago.",
+          "There is another tomb. Maybe what Nephit sought is in there.",
+          "Help! Break me out of these chains!",
+          "Who are you, anyway?",
+          "You're not from around here.",
+          "Thanks! We haven't had goblins in over a year.",
+          "I know where the Goblin Chief's camp is.",
+          "The goblins are hiding on the other side of the forest.",
+          "Hiding, like I said.",
+          "The goblins are running scared.",
+          "But there are way more of them than we can handle.",
+          "Especially with all these undead suddenly rising up.",
+          "Head through the woods and follow the river.",
+          "You'll find your fill of goblins there.",
+          "Once you finish I'll catch up.",
+          "My new house is finished, you should come to dinner.",
+          "I built a new house by the waterfall.",
+          "Yes! But I cleaned out all the goblin nastiness.",
+          "Come on over whenever.",
+          "It's going to take weeks to get rid of these weeds.",
+          "Where did the devourers come from?@There was some stranger there.",
+          "Sounds like someone’s raiding Hsalt’s secret labs."
+        ]
+      },
+      "captainfink": {
+        "defaultLines": [
+          "You've saved us!",
           "We need to find that village.",
           "You can find the village on the map.",
           "Just head east and you'll find it.",
-          "I'll try to repair the Niobe.",
-          "I must get word to the king!"
+          "I'll try to repair the Niobe."
         ]
       },
-      "nrintrovillager": {
+      "nraffric": {
+        "displayName": "Affric",
         "defaultLines": [
-          "We thought the beach goblins would finish us for sure.",
-          "Seeing a fresh face from the sea still feels like a miracle.",
-          "If you plan to stay, Wolf's End can use another brave soul."
+          "Are you friend or foe?",
+          "Do you bring message from our friends in Sark?",
+          "We cannot trust strangers.",
+          "Did the King really send you?",
+          "I didn't know there was a king.",
+          "I didn't know there were other humans besides us.",
+          "I thought it was all made up."
+        ]
+      },
+      "nrcartguy": {
+        "defaultLines": [
+          "There are goblin raiders holed up in that farm.",
+          "We've got the trogs cornered.",
+          "You've got the goblins on the run.",
+          "As long as we keep up the pressure...",
+          "We can reclaim this land.",
+          "But they've got some tough commander in there.",
+          "If you take care of him, I can hold the line here.",
+          "You showed him!",
+          "We can keep them bottled up in there,",
+          "No problem.",
+          "As long as we keep up the presure…"
+        ],
+        "conditionalLines": [
+          {
+            "missionId": 13,
+            "minState": 0,
+            "maxState": 2,
+            "lines": [
+              "Looters scattered my cargo all over that farm.",
+              "I'd settle for my supplies and one day without goblins.",
+              "Bring my things back and I can keep these people fed."
+            ]
+          }
         ]
       },
       "nrelric": {
+        "displayName": "Ehric",
         "defaultLines": [
           "Living out here toughens you up.",
           "Watch out for wolves near the old road.",
           "It's not safe to travel alone after dark.",
           "I've been in these parts for years.",
-          "If you're heading east, be careful."
+          "If you're heading east, be careful.",
+          "I've never seen humans from outside Wolf's End.",
+          "We thought we were alone.",
+          "Spent my whole life fearing goblins.",
+          "And worse things.",
+          "Can't even swim, what with the krakens."
+        ]
+      },
+      "nrhermit": {
+        "defaultLines": [
+          "The undead just keep rising from that crypt.",
+          "The old shrine up there is where the undead first came from.",
+          "They've been coming ever since.",
+          "I'll keep fighting them.",
+          "I'll never get used to their smell.",
+          "If you can help me destroy some of the worst of them…",
+          "We can keep them from spreading to Wolf's End.",
+          "You have my thanks.",
+          "But I'll never get used to them.",
+          "Or their smell.",
+          "Or the creepy things they say.",
+          "But mostly their smell."
+        ],
+        "conditionalLines": [
+          {
+            "missionId": 14,
+            "minState": 0,
+            "maxState": 2,
+            "lines": [
+              "The old graveyard was bad enough before the bones started walking.",
+              "Something in that crypt keeps stirring them up.",
+              "Put the worst of them down and maybe the rest will remember they're dead."
+            ]
+          }
+        ]
+      },
+      "nrintrovillager": {
+        "displayName": "Tyna",
+        "defaultLines": [
+          "We thought the beach goblins would finish us for sure.",
+          "Seeing a fresh face from the sea still feels like a miracle.",
+          "If you plan to stay, Wolf's End can use another brave soul.",
+          "We've fought the goblins for 50 years.",
+          "I thought other humans were a fairytale.",
+          "But you're real.",
+          "And you're really good at killing goblins.",
+          "I like that in a person."
         ]
       },
       "nrmayor01": {
@@ -34,33 +1360,48 @@
           "The goblins have been more aggressive lately.",
           "We need brave heroes to protect these lands.",
           "I do what I can for the people here.",
-          "Stay a while, adventurer. You're safe here."
+          "Stay a while, adventurer. You're safe here.",
+          "It cannot be! Has someone from the homeland finally returned to Ellyria?",
+          "I must get word to the king!",
+          "I'm amazed there are still humans here.",
+          "Thanks to hard fighters like Anna, we've held our own",
+          "Who are you? Where did you come from?",
+          "We came over with Sigismund Hocke fifty years ago.",
+          "I was a drummer boy in his army.",
+          "Part of an expedition to save his father's barony when the goblins invaded",
+          "Thanks to two generations of fighters like Anna.",
+          "But goblins surprised her on the beach.",
+          "Just over the hill there, an old smuggler's hideout.",
+          "Thank you for freeing Anna! Our fighters need their leader.",
+          "Yes, your sea captain has been telling me about the Goblin wars.",
+          "Fifty years ago we had Wolf's End Keep to protect us.",
+          "Sigismund Hocke built the keep as a base for his expedition.",
+          "But goblins and worse drove us out decades ago.",
+          "With your goblin-slaying skills…",
+          "Well, it's in pretty bad shape, just a ruin now.",
+          "If you can drive away the goblins, we'll help as best we can to rebuild it.",
+          "You cleared the old keep? Then it is yours. We will help make it a proper home again.",
+          "Some goblin merchants have moved into the smuggler’s cave.",
+          "They say they’re friendly goblin merchants.",
+          "Well, I don’t trust them.",
+          "Can you go see what they’re doing in that cave?",
+          "Hmm. Careful.",
+          "They’re tricky.",
+          "There really are nice goblins? Huh.",
+          "I suppose I’ll learn to like them.",
+          "That’s what you said last time.",
+          "You’re positive it’s the last Kraken?"
         ]
       },
       "nrmerchant01": {
+        "displayName": "Galrius",
         "defaultLines": [
           "Best prices in the realm!",
           "Fresh goods, just arrived!",
           "Can I interest you in something?",
           "I have rare items from the east.",
-          "Business is good."
-        ]
-      },
-      "nrtrainer01": {
-        "defaultLines": [
-          "Keep your guard up!",
-          "Again! With more feeling!",
-          "Pain is weakness leaving the body.",
-          "Focus on your breathing.",
-          "You have potential, recruit."
-        ]
-      },
-      "nraffric": {
-        "displayName": "Affric",
-        "defaultLines": [
-          "Are you friend or foe?",
-          "Do you bring message from our friends in Sark?",
-          "We cannot trust strangers."
+          "Business is good.",
+          "The goblins haven't gotten everything"
         ]
       },
       "nrodem": {
@@ -70,17 +1411,11 @@
           "Something stirs in the old ruins to the south.",
           "Did you see those lights last night?",
           "I used to be a soldier, you know.",
-          "Stay sharp, friend."
-        ]
-      },
-      "annaoutside": {
-        "displayName": "Anna",
-        "defaultLines": [
-          "Thank you for freeing me!",
-          "Our fighters need their leader.",
-          "Someone named 'Nephit' is trying to control the goblins.",
-          "My father read through the old reports from when we landed 50 years ago.",
-          "There is another tomb. Maybe what Nephit sought is in there."
+          "Stay sharp, friend.",
+          "Had to stop our patrols.",
+          "Too many goblins...",
+          "Too many undead.",
+          "My Rangers would be slaughtered out there."
         ]
       },
       "nrquestanna01": {
@@ -88,7 +1423,21 @@
         "defaultLines": [
           "Someone named 'Nephit' is trying to control the goblins.",
           "We've seen a lot of undead coming from the Tomb of the Slumbering King.",
-          "Baron Hocke employed the wisest men in the world for his research."
+          "Baron Hocke employed the wisest men in the world for his research.",
+          "Someone named \"Nephit\" is trying to control the goblins and the undead.",
+          "My father read through the old reports from when we landed 50 years ago.",
+          "Nephit was one of the best. He was excavating a tomb when the goblins invaded.",
+          "Okay I'll meet you again when the dust settles.",
+          "You beat the big bad goblin? Nice work, champ!",
+          "With the Goblin Chief cut down, we can reclaim this land.",
+          "That piece of property by the river is lovely.",
+          "Maybe I'll build a house there.",
+          "Raise some sheep or something.",
+          "Or start an adventurer's guild.",
+          "Or maybe an inn.",
+          "It would be a nice place for a little keep.",
+          "I could be a Baroness.",
+          "Why not?"
         ],
         "conditionalLines": [
           {
@@ -108,7 +1457,13 @@
         "defaultLines": [
           "There is another tomb. Maybe what Nephit sought is in there.",
           "Nephit might've wanted dragon bones.",
-          "The tomb is to the south, through the woods."
+          "The tomb is to the south, through the woods.",
+          "With Nephit driven off, maybe we'll have fewer undead and goblins both.",
+          "You said Nephit mentioned a \"Dream Dragon.\"",
+          "This other tomb has been here longer than that.",
+          "Baron Hocke was obsessed with these old crypts.",
+          "The tomb is to the south, through the woods. If Nephit can rise a second time...",
+          "Clear a path and I'll follow."
         ],
         "conditionalLines": [
           {
@@ -128,7 +1483,14 @@
         "defaultLines": [
           "With Wolf's End secure, we can reclaim more of the land from evil.",
           "We've got a lot of hard fighting ahead, but we can do it.",
-          "This whole land was once green pasture."
+          "This whole land was once green pasture.",
+          "A dragon! Amazing, even if it’s only a kind of dream phantom.",
+          "Thanks to you, we're back on our feet and ready to fight!",
+          "Of course! Abbod's family is from the area to the East of here.",
+          "He's eager to reclaim his heritage.",
+          "I've never heard of them.",
+          "But the archives in the Citadel of Wissen might have some record.",
+          "I'll tell him as soon as I get back to town Champ."
         ],
         "conditionalLines": [
           {
@@ -143,6 +1505,18 @@
           }
         ]
       },
+      "nrtrainer01": {
+        "displayName": "Tess",
+        "defaultLines": [
+          "Keep your guard up!",
+          "Again! With more feeling!",
+          "Pain is weakness leaving the body.",
+          "Focus on your breathing.",
+          "You have potential, recruit.",
+          "You've got a lot of potential, #tc#.",
+          "I've got an eye for this kind of thing."
+        ]
+      },
       "nrvillager02": {
         "defaultLines": [
           "Goblins stole all our horseshoes and made noserings.",
@@ -150,7 +1524,14 @@
           "If there were fewer goblins, we could reclaim this land.",
           "I haven't seen the goblins this excited in years.",
           "You're one tough goblin fighter.",
-          "This place might be saved yet."
+          "This place might be saved yet.",
+          "I've been on duty for three days.",
+          "Goblins stole all our horseshoes and made noserings",
+          "To mock us, I think.",
+          "But we need horseshoes if we're going to rebuild our army and economy.",
+          "Thanks! I'll just get these rings cleaned off…",
+          "They're in a panic.",
+          "Probably because of you."
         ],
         "conditionalLines": [
           {
@@ -180,7 +1561,15 @@
           "The goblin shamans use their wands to control Death Eyes.",
           "It will be nice not to have those evil things spying on us.",
           "I hate the way those Death Eyes look at me.",
-          "Thanks again for your help."
+          "Thanks again for your help.",
+          "If you bring me the wands of goblin shamans, I can use them to drive off Death Eyes.",
+          "Especially at night.",
+          "While we sleep.",
+          "Thanks! I should be able to ward off any Death Eyes with these.",
+          "Thanks again.",
+          "Wow,  you're a mighty goblin-slayer!",
+          "You're one tough goblin fighter.",
+          "This place might be saved yet."
         ],
         "conditionalLines": [
           {
@@ -204,57 +1593,1715 @@
             ]
           }
         ]
+      }
+    },
+    "NewbieRoadHard": {
+      "annaoutsidehard": {
+        "defaultLines": [
+          "Help! Break me out of these chains!",
+          "Who are you, anyway?",
+          "You're not from around here.",
+          "I know where the Goblin Chief's camp is.",
+          "The goblins are hiding on the other side of the forest.",
+          "Hiding, like I said.",
+          "The goblins are running scared.",
+          "But there are way more of them than we can handle.",
+          "Especially with all these undead suddenly rising up.",
+          "Head through the woods and follow the river.",
+          "You'll find your fill of goblins there.",
+          "Once you finish I'll catch up.",
+          "Thanks! We haven't had goblins in over a year.",
+          "My new house is finished, you should come to dinner.",
+          "I built a new house by the waterfall.",
+          "Yes! But I cleaned out all the goblin nastiness.",
+          "Come on over whenever.",
+          "It's going to take weeks to get rid of these weeds.",
+          "Where did the devourers come from?@There was some stranger there.",
+          "Sounds like someone’s raiding Hsalt’s secret labs."
+        ]
       },
-      "nrcartguy": {
+      "nraffrichard": {
+        "displayName": "Affric",
+        "defaultLines": [
+          "Did the King really send you?",
+          "I didn't know there was a king.",
+          "I didn't know there were other humans besides us.",
+          "I thought it was all made up."
+        ]
+      },
+      "nrcartguyhard": {
         "defaultLines": [
           "There are goblin raiders holed up in that farm.",
           "We've got the trogs cornered.",
+          "But they've got some tough commander in there.",
+          "If you take care of him, I can hold the line here.",
+          "You showed him!",
+          "We can keep them bottled up in there,",
+          "No problem.",
           "You've got the goblins on the run.",
-          "As long as we keep up the pressure...",
+          "As long as we keep up the presure…",
           "We can reclaim this land."
-        ],
-        "conditionalLines": [
-          {
-            "missionId": 13,
-            "minState": 0,
-            "maxState": 2,
-            "lines": [
-              "Looters scattered my cargo all over that farm.",
-              "I'd settle for my supplies and one day without goblins.",
-              "Bring my things back and I can keep these people fed."
-            ]
-          }
         ]
       },
-      "nrhermit": {
+      "nrelrichard": {
+        "displayName": "Ehric",
+        "defaultLines": [
+          "I've never seen humans from outside Wolf's End.",
+          "We thought we were alone.",
+          "Spent my whole life fearing goblins.",
+          "And worse things.",
+          "Can't even swim, what with the krakens."
+        ]
+      },
+      "nrhermithard": {
         "defaultLines": [
           "The undead just keep rising from that crypt.",
           "The old shrine up there is where the undead first came from.",
           "They've been coming ever since.",
+          "If you can help me destroy some of the worst of them…",
+          "We can keep them from spreading to Wolf's End.",
+          "You have my thanks.",
           "I'll keep fighting them.",
-          "I'll never get used to their smell."
-        ],
-        "conditionalLines": [
-          {
-            "missionId": 14,
-            "minState": 0,
-            "maxState": 2,
-            "lines": [
-              "The old graveyard was bad enough before the bones started walking.",
-              "Something in that crypt keeps stirring them up.",
-              "Put the worst of them down and maybe the rest will remember they're dead."
-            ]
-          }
+          "But I'll never get used to them.",
+          "Or their smell.",
+          "Or the creepy things they say.",
+          "But mostly their smell."
+        ]
+      },
+      "nrintrovillagerhard": {
+        "displayName": "Tyna",
+        "defaultLines": [
+          "We've fought the goblins for 50 years.",
+          "I thought other humans were a fairytale.",
+          "But you're real.",
+          "And you're really good at killing goblins.",
+          "I like that in a person."
+        ]
+      },
+      "nrmayor01hard": {
+        "defaultLines": [
+          "Thanks to hard fighters like Anna, we've held our own",
+          "Who are you? Where did you come from?",
+          "We came over with Sigismund Hocke fifty years ago.",
+          "I was a drummer boy in his army.",
+          "Part of an expedition to save his father's barony when the goblins invaded",
+          "Thanks to two generations of fighters like Anna.",
+          "But goblins surprised her on the beach.",
+          "Just over the hill there, an old smuggler's hideout.",
+          "It cannot be! Has someone from the homeland finally returned to Ellyria?",
+          "I must get word to the king!",
+          "I'm amazed there are still humans here.",
+          "Thank you for freeing Anna! Our fighters need their leader.",
+          "Yes, your sea captain has been telling me about the Goblin wars.",
+          "Fifty years ago we had Wolf's End Keep to protect us.",
+          "Sigismund Hocke built the keep as a base for his expedition.",
+          "But goblins and worse drove us out decades ago.",
+          "With your goblin-slaying skills…",
+          "Well, it's in pretty bad shape, just a ruin now.",
+          "If you can drive away the goblins, we'll help as best we can to rebuild it.",
+          "You cleared the old keep? Then it is yours. We will help make it a proper home again.",
+          "Some goblin merchants have moved into the smuggler’s cave.",
+          "They say they’re friendly goblin merchants.",
+          "Well, I don’t trust them.",
+          "Can you go see what they’re doing in that cave?",
+          "Hmm. Careful.",
+          "They’re tricky.",
+          "There really are nice goblins? Huh.",
+          "I suppose I’ll learn to like them.",
+          "That’s what you said last time.",
+          "You’re positive it’s the last Kraken?"
+        ]
+      },
+      "nrmerchant01hard": {
+        "displayName": "Galrius",
+        "defaultLines": [
+          "The goblins haven't gotten everything"
+        ]
+      },
+      "nrodemhard": {
+        "displayName": "Odem",
+        "defaultLines": [
+          "Had to stop our patrols.",
+          "Too many goblins...",
+          "Too many undead.",
+          "My Rangers would be slaughtered out there."
+        ]
+      },
+      "nrquestanna01hard": {
+        "defaultLines": [
+          "Someone named \"Nephit\" is trying to control the goblins and the undead.",
+          "My father read through the old reports from when we landed 50 years ago.",
+          "Baron Hocke employed the wisest men in the world for his research.",
+          "Nephit was one of the best. He was excavating a tomb when the goblins invaded.",
+          "We've seen a lot of undead coming from the Tomb of the Slumbering King.",
+          "Okay I'll meet you again when the dust settles.",
+          "You beat the big bad goblin? Nice work, champ!",
+          "With the Goblin Chief cut down, we can reclaim this land.",
+          "That piece of property by the river is lovely.",
+          "Maybe I'll build a house there.",
+          "Raise some sheep or something.",
+          "Or start an adventurer's guild.",
+          "Or maybe an inn.",
+          "It would be a nice place for a little keep.",
+          "I could be a Baroness.",
+          "Why not?"
+        ]
+      },
+      "nrquestanna02hard": {
+        "defaultLines": [
+          "With Nephit driven off, maybe we'll have fewer undead and goblins both.",
+          "There is another tomb. Maybe what Nephit sought is in there.",
+          "You said Nephit mentioned a \"Dream Dragon.\"",
+          "This other tomb has been here longer than that.",
+          "Baron Hocke was obsessed with these old crypts.",
+          "The tomb is to the south, through the woods. If Nephit can rise a second time...",
+          "Clear a path and I'll follow."
+        ]
+      },
+      "nrquestanna03hard": {
+        "defaultLines": [
+          "A dragon! Amazing, even if it’s only a kind of dream phantom.",
+          "With Wolf's End secure, we can reclaim more of the land from evil.",
+          "Thanks to you, we're back on our feet and ready to fight!",
+          "Of course! Abbod's family is from the area to the East of here.",
+          "He's eager to reclaim his heritage.",
+          "I've never heard of them.",
+          "But the archives in the Citadel of Wissen might have some record.",
+          "I'll tell him as soon as I get back to town Champ."
+        ]
+      },
+      "nrtrainer01hard": {
+        "displayName": "Tess",
+        "defaultLines": [
+          "You've got a lot of potential, #tc#.",
+          "I've got an eye for this kind of thing."
+        ]
+      },
+      "nrvillager02hard": {
+        "defaultLines": [
+          "I'm on duty soon",
+          "Goblins steal anything metal",
+          "They kill what they can't take%What are they doing here?",
+          "I've been on duty for three days.",
+          "Goblins stole all our horseshoes and made noserings",
+          "The big goblins wear horseshoes as noserings.",
+          "To mock us, I think.",
+          "But we need horseshoes if we're going to rebuild our army and economy.",
+          "Thanks! I'll just get these rings cleaned off…",
+          "The goblin shamans use their wands to control Death Eyes.",
+          "If you bring me the wands of goblin shamans, I can use them to drive off Death Eyes.",
+          "It will be nice not to have those evil things spying on us.",
+          "Especially at night.",
+          "While we sleep.",
+          "Thanks! I should be able to ward off any Death Eyes with these.",
+          "I hate the way those Death Eyes look at me.",
+          "Thanks again",
+          "If there were fewer goblins, we could reclaim this land.",
+          "I haven't seen the goblins this excited in years.",
+          "They're in a panic.",
+          "Probably because of you."
+        ]
+      },
+      "nrvillager03hard": {
+        "defaultLines": [
+          "If there were fewer goblins, we could clear the east road",
+          "Goblins keep the roads closed",
+          "I wonder about my friends in the eastern villages",
+          "Wow, the Mayor gave that homestead to the right dude|lady!",
+          "You're one tough goblin fighter",
+          "This place might be saved yet",
+          "The goblin shamans use their wands to control Death Eyes.",
+          "If you bring me the wands of goblin shamans, I can use them to drive off Death Eyes.",
+          "It will be nice not to have those evil things spying on us.",
+          "Especially at night.",
+          "While we sleep.",
+          "Thanks! I should be able to ward off any Death Eyes with these.",
+          "I hate the way those Death Eyes look at me.",
+          "Thanks again.",
+          "Wow,  you're a mighty goblin-slayer!",
+          "You're one tough goblin fighter.",
+          "This place might be saved yet."
+        ]
+      }
+    },
+    "OldMineMountain": {
+      "ommmayor01": {
+        "defaultLines": [
+          "Check in with Shamar and makes sure the road is clear.",
+          "You made it. Good. We need an experienced goblin fighter.",
+          "Thanks for clearing the way!",
+          "Before we search for survivors, we need to secure this area from goblins.",
+          "There's a large force of goblins in those nearby tunnels.",
+          "What are they doing here, I wonder.",
+          "The Moai have awakened!",
+          "Removing that sword made these statues start talking!",
+          "They're ancient stone elementals, silenced by Meylour.",
+          "They say Meylour's cult is doing terrible things to our people.",
+          "Talk to the Moai.",
+          "Each one has revealed something important.",
+          "Those Moai spirits really hate Meylour.",
+          "The Gnole chief worships Meylour  on the mountain peak.",
+          "You can finish off the gnoles for good.",
+          "But you should know…",
+          "I believe Meylour has done something strange to the gnole leader.",
+          "Gnoles who live long enough can become monstrously powerful.",
+          "Meylour's followers are digging furiously into the mountain.",
+          "The goblins and cyclopses are digging away in the mountain.",
+          "There are some abandoned mines in the area.",
+          "The goblins are expanding them…",
+          "But they don't seem to be digging for gold.",
+          "No, they seem to have some Great Work in mind.",
+          "Known as the Veins of Meylour, these mines once belonged to the Earth Titan",
+          "Now Vezrinn's devotees have seized them",
+          "They seek the magic ore Alurite, and the Heart",
+          "You will need to defeat them all to seize the artifact and activate The Sword of Meylour",
+          "They seek the magic ore Alumite, and the Heart",
+          "Head down the first path east of here to get to the Emerald Glades",
+          "Keep heading east"
+        ]
+      },
+      "ommmoai01": {
+        "defaultLines": [
+          "Some of your kind might yet live as they once were.",
+          "I know where some of your kind were taken.",
+          "We are the ancient protectors of this mountain.",
+          "Meylour toppled us from our thrones.",
+          "If they live, they're in one of Meylour's foul shrines.",
+          "You must hurry, lest their time come."
+        ]
+      },
+      "ommmoai02": {
+        "defaultLines": [
+          "If you would know your people's fate, you must confront them.",
+          "The Cyclopses were not always thus.",
+          "Meylour has corrupted their old forms.",
+          "They are his high priests and devoted acolytes.",
+          "Seek Meylour's secrets in their stronghold."
+        ]
+      },
+      "ommmoai03": {
+        "defaultLines": [
+          "The gnoles turn to Meylour in desparation.",
+          "The gnoles normally have no love for gods.",
+          "But they hate humans for betraying them.",
+          "The humans of Felbridge were once their allies.",
+          "The Steward betrayed them.",
+          "Now they turn to Meylour for revenge.",
+          "Evil gods corrupt all."
+        ]
+      },
+      "ommscout01": {
+        "defaultLines": [
+          "Stormshard Mountains are too dangerous to go farther up",
+          "The expedition is up ahead.",
+          "Be careful, there are goblins everywhere.",
+          "There are goblins aplenty in the nearby caves.",
+          "Do you think they're in league with the Cult of Meylour?"
+        ]
+      },
+      "ommstatue01": {
+        "defaultLines": [
+          "Uthor's Exquisite Creations",
+          "Closed",
+          "Trespassers Will Be Annihilated"
+        ]
+      },
+      "ommvillager01": {
+        "defaultLines": [
+          "More goblins, more problems.",
+          "Those goblin noserings are made from fine steel.",
+          "You can find noserings on the goblin Brutes.",
+          "I'll pay you well for them.",
+          "Thanks, I know just the guy to clean these.",
+          "These mountains are rich in the mineral Alurite.",
+          "The strange rock creatures contain Alurite.",
+          "We can use it for enchanted weapons…",
+          "Enchanted armor…",
+          "Enchanted cookware…",
+          "Enchanted everything!",
+          "Felbridge will sparkle.",
+          "And we'll both make a profit.",
+          "Thank you! The smith in Felbridge will pay a nice price for this.",
+          "Thanks again for your help!"
+        ]
+      },
+      "ommvillager02": {
+        "defaultLines": [
+          "Have you noticed those creepy gnomes?",
+          "These Gnomes are driving me crazy!",
+          "Those pesky Gnomes hide out in the caves.",
+          "They come at night and steal our supplies.",
+          "Thank you, maybe now they will bug someone else!",
+          "Please help us with our spider problem",
+          "Seems like the spiders are everywhere!",
+          "Please help us!",
+          "Thank you, maybe now I can sleep at night",
+          "Thanks again for your help!"
+        ]
+      },
+      "ommvillager03": {
+        "defaultLines": [
+          "My cousin was lost up here ten years ago.",
+          "It's horrible, what Meylour did to our people.",
+          "I can't believe those cyclopses were once my neighbors.",
+          "The Steward's horror went on for decades.",
+          "Please, put their tortured souls to rest.",
+          "Only death will free them from Meylour.",
+          "I'm glad to hear they are free at last, thank you.",
+          "TheGnoles have been stealing left and right.",
+          "The Gnoles love shiny things.",
+          "They've been stealing from us for years.",
+          "Wow, look how much you found! Thanks so much!",
+          "Thanks again for your help!"
+        ]
+      }
+    },
+    "OldMineMountainHard": {
+      "ommmayor01hard": {
+        "defaultLines": [
+          "Check in with Shamar and makes sure the road is clear.",
+          "Good, you made it through the goblins.",
+          "Thanks for clearing the way!",
+          "Before we search for survivors, we need to secure this area from goblins.",
+          "There's a large force of goblins in those nearby tunnels.",
+          "What are they doing here, I wonder.",
+          "The Moai have awakened!",
+          "Removing that sword made these statues start talking!",
+          "They're ancient stone elementals, silenced by Meylour.",
+          "They say Meylour's cult is doing terrible things to our people.",
+          "Talk to the Moai.",
+          "Each one has revealed something important.",
+          "Those Moai spirits really hate Meylour.",
+          "The Gnole chief worships Meylour  on the mountain peak.",
+          "You can finish off the gnoles for good.",
+          "But you should know…",
+          "I believe Meylour has done something strange to the gnole leader.",
+          "Gnoles who live long enough can become monstrously powerful.",
+          "Meylour's followers are digging furiously into the mountain.",
+          "The goblins and cyclopses are digging away in the mountain.",
+          "There are some abandoned mines in the area.",
+          "The goblins are expanding them…",
+          "But they don't seem to be digging for gold.",
+          "No, they seem to have some Great Work in mind.",
+          "Known as the Veins of Meylour, these mines once belonged to the Earth Titan",
+          "Now Vezrinn's devotees have seized them",
+          "They seek the magic ore Alurite, and the Heart",
+          "You will need to defeat them all to seize the artifact and activate The Sword of Meylour",
+          "They seek the magic ore Alumite, and the Heart",
+          "Head down the first path east of here to get to the Emerald Glades",
+          "Keep heading east",
+          "You made it. Good. We need an experienced goblin fighter."
+        ]
+      },
+      "ommmoai01hard": {
+        "defaultLines": [
+          "Some of your kind might yet live as they once were.",
+          "I know where some of your kind were taken.",
+          "We are the ancient protectors of this mountain.",
+          "Meylour toppled us from our thrones.",
+          "If they live, they're in one of Meylour's foul shrines.",
+          "You must hurry, lest their time come."
+        ]
+      },
+      "ommmoai02hard": {
+        "defaultLines": [
+          "If you would know your people's fate, you must confront them.",
+          "The Cyclopses were not always thus.",
+          "Meylour has corrupted their old forms.",
+          "They are his high priests and devoted acolytes.",
+          "Seek Meylour's secrets in their stronghold."
+        ]
+      },
+      "ommmoai03hard": {
+        "defaultLines": [
+          "The gnoles turn to Meylour in desparation.",
+          "The gnoles normally have no love for gods.",
+          "But they hate humans for betraying them.",
+          "The humans of Felbridge were once their allies.",
+          "The Steward betrayed them.",
+          "Now they turn to Meylour for revenge.",
+          "Evil gods corrupt all."
+        ]
+      },
+      "ommscout01hard": {
+        "defaultLines": [
+          "Stormshard Mountains are too dangerous to go farther up",
+          "The rest of the expedition is futher up the mountain.",
+          "Be careful, there are goblins everywhere.",
+          "There are goblins aplenty in the nearby caves.",
+          "Do you think they're in league with the Cult of Meylour?",
+          "The expedition is up ahead."
+        ]
+      },
+      "ommstatue01hard": {
+        "defaultLines": [
+          "Uthor's Exquisite Creations",
+          "Closed",
+          "Trespassers Will Be Annihilated"
+        ]
+      },
+      "ommvillager01hard": {
+        "defaultLines": [
+          "More goblins, more problems.",
+          "Those goblin noserings are made from fine steel.",
+          "You can find noserings on the goblin Brutes.",
+          "I'll pay you well for them.",
+          "Thanks, I know just the guy to clean these.",
+          "These mountains are rich in the mineral Alurite.",
+          "The strange rock creatures contain Alurite.",
+          "We can use it for enchanted weapons…",
+          "Enchanted armor…",
+          "Enchanted cookware…",
+          "Enchanted everything!",
+          "Felbridge will sparkle.",
+          "And we'll both make a profit.",
+          "Thank you! The smith in Felbridge will pay a nice price for this.",
+          "Thanks again for your help!"
+        ]
+      },
+      "ommvillager02hard": {
+        "defaultLines": [
+          "Have you noticed those creepy gnomes?",
+          "These Gnomes are driving me crazy!",
+          "Those pesky Gnomes hide out in the caves.",
+          "They come at night and steal our supplies.",
+          "Thank you, maybe now they will bug someone else!",
+          "Please help us with our spider problem",
+          "Seems like the spiders are everywhere!",
+          "Please help us!",
+          "Thank you, maybe now I can sleep at night.",
+          "Thanks again for your help!",
+          "Thank you, maybe now I can sleep at night"
+        ]
+      },
+      "ommvillager03hard": {
+        "defaultLines": [
+          "My cousin was lost up here 10 years ago.",
+          "My cousin was lost up here ten years ago.",
+          "It's horrible, what Meylour did to our people.",
+          "I can't believe those cyclopses were once my neighbors.",
+          "The Steward's horror went on for decades.",
+          "Please, put their tortured souls to rest.",
+          "Only death will free them from Meylour.",
+          "I'm glad to hear they are free at last, thank you.",
+          "TheGnoles have been stealing left and right.",
+          "The Gnoles love shiny things.",
+          "They've been stealing from us for years.",
+          "Wow, look how much you found! Thanks so much!",
+          "Thanks again for your help!"
+        ]
+      }
+    },
+    "ShazariDesert": {
+      "npcdune04": {
+        "displayName": "Gul",
+        "defaultLines": [
+          "This is our first taste of freedom!",
+          "It's amazing.",
+          "Except for all the monstrous insects that have appeared.",
+          "Still, I love Freedom.",
+          "I hope the Emperor lets us keep it."
+        ]
+      },
+      "npcdune05": {
+        "displayName": "Saggi",
+        "defaultLines": [
+          "Welcome, #tn#!",
+          "All Shazari knows of the hero who defeted the Dragon Legions.",
+          "You've done more than the Emperor ever could."
+        ]
+      },
+      "npcdune06": {
+        "displayName": "Boudar",
+        "defaultLines": [
+          "The monstrous vermin are a new plague.",
+          "I suspect an evil hand behind them.",
+          "The dragons never would have tolerated such things."
+        ]
+      },
+      "npcdune07": {
+        "displayName": "Hitti",
+        "defaultLines": [
+          "Did you know this wasn't always desert?",
+          "When the Magi built these temples...",
+          "This was a verdant land.",
+          "A thousand years of dragons turned it into this."
+        ]
+      },
+      "npcdune08": {
+        "displayName": "Oorka",
+        "defaultLines": [
+          "Spent my whole life trying to fight the Dragons.",
+          "Then some surface world hero does it.",
+          "That's great.",
+          "Really, I'm being sincere.",
+          "Juuuust great.",
+          "Really.",
+          "Great."
+        ]
+      },
+      "npcdune09": {
+        "displayName": "Beull",
+        "defaultLines": [
+          "I'll not bend knee to The Emperor of Valhaven.",
+          "He may not be a dragon...",
+          "But I still don't trust him.",
+          "Valhaven's changed for the worse under his reign."
+        ]
+      },
+      "npcgoblinnomad01": {
+        "displayName": "Gafik",
+        "defaultLines": [
+          "Oooh, human!",
+          "A pleasure to meet ye!",
+          "Is it so strange to be polite?",
+          "You've met the wrong kind of goblins then.",
+          "Well, you're welcome here, stranger."
+        ]
+      },
+      "npcgoblinnomad02": {
+        "displayName": "Givitz",
+        "defaultLines": [
+          "The dragons are gone...",
+          "Maybe someone will do the same for the Emperor."
+        ]
+      },
+      "npcgoblinnomad04": {
+        "displayName": "Yaku",
+        "defaultLines": [
+          "Hello friend!",
+          "A warm goblin welcome to you!",
+          "Would you like some water?",
+          "Perhaps some fresh dates?"
+        ]
+      },
+      "npcgoblinnomad06": {
+        "displayName": "Gettika Wanoo",
+        "defaultLines": [
+          "The Seelie don't seem interested in trade.",
+          "They seem interested in bossing us around."
+        ]
+      },
+      "npckasa": {
+        "displayName": "Kasa",
+        "defaultLines": [
+          "My family fled Valhaven when the Emperor came.",
+          "He hates goblins.",
+          "Really, really hates them."
+        ]
+      },
+      "npckevah": {
+        "displayName": "Kevah",
+        "defaultLines": [
+          "I'm glad we goblins gave up on war.",
+          "I just wish the Emperor hadn't killed so many of us.",
+          "My whole famly fell to the Emperor's army."
+        ]
+      },
+      "npckohken": {
+        "displayName": "Kohken",
+        "defaultLines": [
+          "The Emperor's tax policies are insane!",
+          "How does he expect trade to flourish?"
+        ]
+      },
+      "npcnorgog": {
+        "displayName": "Norgog",
+        "defaultLines": [
+          "The Emperor took Valhaven from my people.",
+          "Although the goblins weren't much better.",
+          "All beings can be cruel."
+        ]
+      },
+      "sdacolyte01": {
+        "defaultLines": [
+          "Even without the threat of drought, travel just isn't safe anymore",
+          "There are so many dangers on the roads these days",
+          "People are turning up with nasty stings from scarab scorpions",
+          "I can't do anything about the Outlander problem, but I could at least solve the scorpion problem",
+          "If you bring me enough stingers I could make as anti-venom",
+          "Oh excellent! This is more than enough!",
+          "This anti-venom will save a lot of lives",
+          "You look like you took quite a few stings yourself",
+          "You must be made of tougher stuff than your average traveler to still be walking around",
+          "Thank you for all you've done for us!",
+          "The Sky bless you on your journey"
+        ]
+      },
+      "sdacolyte02": {
+        "defaultLines": [
+          "Perhaps you could do something else for us",
+          "You see these wasp hives?",
+          "They've really gotten out of hand and the wasps attack people that get too near",
+          "The roads would be much safer if you could knock a few of them down",
+          "Great!",
+          "Looks like you took a sting or two",
+          "Let me take care of that for you",
+          "We really appreciate your sacrifice",
+          "The Sky bless you on your journey."
+        ]
+      },
+      "sdchief01": {
+        "defaultLines": [
+          "A new force seeks to replace the dragon legions here in Shazari.",
+          "Just when I thought we could resume normal trading.",
+          "Human! I want to be free to trade with my friends and allies.",
+          "Strange new warriors, taller than men.",
+          "I believe they might be Seelie Ogres.",
+          "An ancient faerie race, expert in magicks.",
+          "They corrupt all they touch.",
+          "They're encamped beyond the wall to the East.",
+          "Thank you, hero! Good luck!",
+          "So, it was Seelie. We shall need the Emperor's help for sure!",
+          "Find someone from Valhaven.",
+          "We need the Emperor's aid against a foe like the Seelie.",
+          "We stand no chance!",
+          "My thanks! We have much less to fear now that the Seelie are defeated.",
+          "I think now we goblins can return to our peaceful ways.",
+          "Long ago we did.",
+          "I think we shall again.",
+          "Ahh, welcome, friend! Thank you for coming."
+        ]
+      },
+      "sdemissary02": {
+        "defaultLines": [
+          "Some of my people fled West when the Seelie came.",
+          "If you see my fearful messengers in other towns…",
+          "Could you tell them it's safe to come back?",
+          "Thanks to you, my friend.",
+          "Well, friends we are!"
+        ]
+      },
+      "sdgladiator01": {
+        "defaultLines": [
+          "The other dragons are gone, but the foul Pit Lord remains.",
+          "Watch yourself, stranger…",
+          "The Pit Lord enslaves all who come in his grasp.",
+          "Well, that's a rare skill indeed.",
+          "But this wily old wyrm isn't alone.",
+          "He has slaves who fight for him, which is bad enough.",
+          "Recently he got some other monsters as well.",
+          "I don't know where his reinforcements came from.",
+          "But they've got strange magicks.",
+          "The Pit Lord slain! We are a free realm at last.",
+          "I still wonder where The Pit Lord got his reinforcements from.",
+          "Someone was trying to prop him up.",
+          "Someone is causing trouble for the free peoples of Shazari.",
+          "Stay alert stranger, the Pit Lord's men are everywhere.",
+          "I've heard that the goblins might know who has been causing our recent troubles.",
+          "You should talk to the goblin elder.",
+          "No, friend, no!",
+          "These goblins are peaceful.",
+          "These do, trust me.",
+          "Speak to them if you want to learn the true source of evil here."
+        ]
+      },
+      "sdjackal01": {
+        "defaultLines": [
+          "The goblin elder sent you to find a Valhaven ambassador, right?",
+          "I'm certainly not the ambassador.",
+          "I believe the Emperor himself is behind the Seelie.",
+          "Which is why I need proof.",
+          "With the dragons gone, he seeks to add Shazari to his empire.",
+          "The ancient burial grounds seem the source of the trouble.",
+          "See if you find any sign of Imperial meddling.",
+          "I thought as much! The Emperor is ever pitiless and vile.",
+          "Meet me by the docks.",
+          "So I can sneak you into Valhaven of course.",
+          "You've foiled the Emperor's plans here.",
+          "You're going to need help fighting your newest foe.",
+          "I have some very capable friends.",
+          "Come to the boat.",
+          "You'll have to come with me to Valhaven to stop the Emperor and his Seelie allies.",
+          "The Emperor will be after you now.",
+          "He was a great man once.",
+          "Came out of nowhere and kicked out the Goblins.",
+          "Then he held off the dragons.",
+          "But in recent years he's grown cruel.",
+          "Yes, that's true.",
+          "I didn't know how evil they were until today.",
+          "Come, we must hurry.",
+          "If we're lucky, The Emperor won't know we're coming."
+        ]
+      },
+      "sdmatron01": {
+        "defaultLines": [
+          "We may be able to keep this from happening again",
+          "Bring me enough mucus glands and I can mix up an repellent",
+          "That will keep the bugs out of the temple",
+          "This will do nicely. Take this for your trouble",
+          "Wow, this stuff smells horrid",
+          "It'll scare away the bugs though, so it's worth it",
+          "The Sky bless you on your journey"
+        ]
+      },
+      "sdmayor01": {
+        "defaultLines": [
+          "I hope we find some way to avoid falling under The Emperor's power.",
+          "Thank you for coming, #tn#. We need your help.",
+          "Welcome to humble Kovah.",
+          "The honor is all mine.",
+          "Slayer of the dragons and Opener of the Path…",
+          "You have accomplished true wonders.",
+          "We will speak more on these matters…",
+          "But now I beg your help.",
+          "Seelie magicks plague our temple, filling it with abominations.",
+          "Centuries under dragon rule left us with no warriors to fight them.",
+          "Now our village will survive!",
+          "You defeated Grand Marshal Sythokahn, but one dragon remains.",
+          "The dragon Sythokahn ruled this land for centuries.",
+          "Thanks to you.",
+          "But one dragon remains, The Pit Lord.",
+          "He runs the Arena, where slaves fight for his pleasure.",
+          "Go see Zumwalt, he used to fight in the arena.",
+          "He can tell you more.",
+          "Someone is destroying our plans to revive the desert",
+          "We’ve been using  water from the Ogre Magi oasis to revive Shazari.",
+          "We were successfully undoing the damage the dragons wrought.",
+          "But now someone is siphoning off our water.",
+          "And there are carnivorous plants everywhere!",
+          "The water’s flowing again, thank you!",
+          "Thank you!",
+          "What’s a water titan?"
+        ]
+      },
+      "sdnomad01": {
+        "defaultLines": [
+          "Those Seelie bracers fascinate me",
+          "If had a bunch of those Seelie bracers...",
+          "I could break them down and start replicating them.",
+          "Smaller size of course.",
+          "But Goblins would pay well for something like those.",
+          "Bring me what you can.",
+          "Hmm. Not exactly new anymore. Ah well, here's your pay.",
+          "See?",
+          "Everyone profits!"
+        ]
+      },
+      "sdsage01": {
+        "defaultLines": [
+          "These grand pyramids are not the work of our people.",
+          "The Magi who built the pyramids left this land long ago.",
+          "We have taken some of their ruins as our own.",
+          "But others remain guarded by powerful spirits.",
+          "If it's ancient knowledge you seek…",
+          "And you're daring enough to face ancient magics…",
+          "Then you should plumb the depths of the Umbral Temple to the West.",
+          "You are a survivor and a scholar. I hope you learned much of value.",
+          "Some of my brethren in the desert need help!",
+          "A group of settlers went into the desert two months ago.",
+          "They hope to open trade with Bitterfrost.",
+          "They found a good site for a caravanserai...",
+          "But now monsters besiege them from all sides.",
+          "The caravanserai is secure.",
+          "Many thanks for your help.",
+          "Their smoked fish is said to be exquisite."
+        ]
+      },
+      "sdslave01": {
+        "defaultLines": [
+          "Our escape plan failed. None of the goblin slaves made it out",
+          "Find their memory charms and I can take them to their families",
+          "They fought bravely, but they just weren't strong enough",
+          "Their families deserve some closure",
+          "You found them all?",
+          "I'll make sure their families know they fought bravely",
+          "I'd come to know them all in the slave pits",
+          "They are all really great guys",
+          "Thank you for what you've done"
+        ]
+      },
+      "sdtitus01": {
+        "defaultLines": [
+          "Ah. You made it over and appear to be in one piece. Excellent!",
+          "Go to the near by village and meet the Town Elder.",
+          "Welcome to the Sleeping Lands, #tn#.",
+          "This country is called Shazari.",
+          "For centuries the dragons ruled here.",
+          "Terrible and cruel, yes.",
+          "But the people here are free now.",
+          "Go introduce yourself to the town elder."
+        ]
+      },
+      "sdtitus02": {
+        "defaultLines": [
+          "The old pyramids around here might hold something of interest.",
+          "The ancient Seelie built these pyramids.",
+          "One of them remains sealed still.",
+          "I imagine there are wonders and dangers inside.",
+          "The Seelie were always cruel that way.",
+          "It sounds more wondrous than I imagined!",
+          "And you took care of the dangers as well.",
+          "Now that you've defeated the defenses…",
+          "I'm going to spend some time plumbing its secrets."
+        ]
+      }
+    },
+    "ShazariDesertHard": {
+      "npcdune04hard": {
+        "displayName": "Gul",
+        "defaultLines": [
+          "This is our first taste of freedom!",
+          "It's amazing.",
+          "Except for all the monstrous insects that have appeared.",
+          "Still, I love Freedom.",
+          "I hope the Emperor lets us keep it."
+        ]
+      },
+      "npcdune05hard": {
+        "displayName": "Saggi",
+        "defaultLines": [
+          "Welcome, #tn#!",
+          "All Shazari knows of the hero who defeted the Dragon Legions.",
+          "You've done more than the Emperor ever could."
+        ]
+      },
+      "npcdune06hard": {
+        "displayName": "Boudar",
+        "defaultLines": [
+          "The monstrous vermin are a new plague.",
+          "I suspect an evil hand behind them.",
+          "The dragons never would have tolerated such things."
+        ]
+      },
+      "npcdune07hard": {
+        "displayName": "Hitti",
+        "defaultLines": [
+          "Did you know this wasn't always desert?",
+          "When the Magi built these temples...",
+          "This was a verdant land.",
+          "A thousand years of dragons turned it into this."
+        ]
+      },
+      "npcdune08hard": {
+        "displayName": "Oorka",
+        "defaultLines": [
+          "Spent my whole life trying to fight the Dragons.",
+          "Then some surface world hero does it.",
+          "That's great.",
+          "Really, I'm being sincere.",
+          "Juuuust great.",
+          "Really.",
+          "Great."
+        ]
+      },
+      "npcdune09hard": {
+        "displayName": "Beull",
+        "defaultLines": [
+          "I'll not bend knee to The Emperor of Valhaven.",
+          "He may not be a dragon...",
+          "But I still don't trust him.",
+          "Valhaven's changed for the worse under his reign."
+        ]
+      },
+      "npcgoblinnomad01hard": {
+        "displayName": "Gafik",
+        "defaultLines": [
+          "Oooh, human!",
+          "A pleasure to meet ye!",
+          "Is it so strange to be polite?",
+          "You've met the wrong kind of goblins then.",
+          "Well, you're welcome here, stranger."
+        ]
+      },
+      "npcgoblinnomad02hard": {
+        "displayName": "Givitz",
+        "defaultLines": [
+          "The dragons are gone...",
+          "Maybe someone will do the same for the Emperor."
+        ]
+      },
+      "npcgoblinnomad04hard": {
+        "displayName": "Yaku",
+        "defaultLines": [
+          "Hello friend!",
+          "A warm goblin welcome to you!",
+          "Would you like some water?",
+          "Perhaps some fresh dates?"
+        ]
+      },
+      "npcgoblinnomad06hard": {
+        "displayName": "Gettika Wanoo",
+        "defaultLines": [
+          "The Seelie don't seem interested in trade.",
+          "They seem interested in bossing us around."
+        ]
+      },
+      "npckasahard": {
+        "displayName": "Kasa",
+        "defaultLines": [
+          "My family fled Valhaven when the Emperor came.",
+          "He hates goblins.",
+          "Really, really hates them."
+        ]
+      },
+      "npckevahhard": {
+        "displayName": "Kevah",
+        "defaultLines": [
+          "I'm glad we goblins gave up on war.",
+          "I just wish the Emperor hadn't killed so many of us.",
+          "My whole famly fell to the Emperor's army."
+        ]
+      },
+      "npckohkenhard": {
+        "displayName": "Kohken",
+        "defaultLines": [
+          "The Emperor's tax policies are insane!",
+          "How does he expect trade to flourish?"
+        ]
+      },
+      "npcnorgoghard": {
+        "displayName": "Norgog",
+        "defaultLines": [
+          "The Emperor took Valhaven from my people.",
+          "Although the goblins weren't much better.",
+          "All beings can be cruel."
+        ]
+      },
+      "sdacolyte01hard": {
+        "defaultLines": [
+          "Even without the threat of drought, travel just isn't safe anymore",
+          "There are so many dangers on the roads these days",
+          "People are turning up with nasty stings from scarab scorpions",
+          "I can't do anything about the Outlander problem, but I could at least solve the scorpion problem",
+          "If you bring me enough stingers I could make as anti-venom",
+          "Oh excellent! This is more than enough!",
+          "This anti-venom will save a lot of lives",
+          "You look like you took quite a few stings yourself",
+          "You must be made of tougher stuff than your average traveler to still be walking around",
+          "Thank you for all you've done for us!",
+          "The Sky bless you on your journey"
+        ]
+      },
+      "sdacolyte02hard": {
+        "defaultLines": [
+          "Perhaps you could do something else for us",
+          "You see these wasp hives?",
+          "They've really gotten out of hand and the wasps attack people that get too near",
+          "The roads would be much safer if you could knock a few of them down",
+          "Great!",
+          "Looks like you took a sting or two",
+          "Let me take care of that for you",
+          "We really appreciate your sacrifice",
+          "The Sky bless you on your journey."
+        ]
+      },
+      "sdchief01hard": {
+        "defaultLines": [
+          "A new force seeks to replace the dragon legions here in Shazari.",
+          "Just when I thought we could resume normal trading.",
+          "Human! I want to be free to trade with my friends and allies.",
+          "Strange new warriors, taller than men.",
+          "I believe they might be Seelie Ogres.",
+          "An ancient faerie race, expert in magicks.",
+          "They corrupt all they touch.",
+          "They're encamped beyond the wall to the East.",
+          "Thank you, hero! Good luck!",
+          "So, it was Seelie. We shall need the Emperor's help for sure!",
+          "Find someone from Valhaven.",
+          "We need the Emperor's aid against a foe like the Seelie.",
+          "We stand no chance!",
+          "My thanks! We have much less to fear now that the Seelie are defeated.",
+          "I think now we goblins can return to our peaceful ways.",
+          "Long ago we did.",
+          "I think we shall again.",
+          "Ahh, welcome, friend! Thank you for coming."
+        ]
+      },
+      "sdemissary02hard": {
+        "defaultLines": [
+          "Some of my people fled West when the Seelie came.",
+          "If you see my fearful messengers in other towns…",
+          "Could you tell them it's safe to come back?",
+          "Thanks to you, my friend.",
+          "Well, friends we are!"
+        ]
+      },
+      "sdgladiator01hard": {
+        "defaultLines": [
+          "The other dragons are gone, but the foul Pit Lord remains.",
+          "Watch yourself, stranger…",
+          "The Pit Lord enslaves all who come in his grasp.",
+          "Well, that's a rare skill indeed.",
+          "But this wily old wyrm isn't alone.",
+          "He has slaves who fight for him, which is bad enough.",
+          "Recently he got some other monsters as well.",
+          "I don't know where his reinforcements came from.",
+          "But they've got strange magicks.",
+          "The Pit Lord slain! We are a free realm at last.",
+          "I still wonder where The Pit Lord got his reinforcements from.",
+          "Someone was trying to prop him up.",
+          "Someone is causing trouble for the free peoples of Shazari.",
+          "Stay alert stranger, the Pit Lord's men are everywhere.",
+          "I've heard that the goblins might know who has been causing our recent troubles.",
+          "You should talk to the goblin elder.",
+          "No, friend, no!",
+          "These goblins are peaceful.",
+          "These do, trust me.",
+          "Speak to them if you want to learn the true source of evil here."
+        ]
+      },
+      "sdjackal01hard": {
+        "defaultLines": [
+          "The goblin elder sent you to find a Valhaven ambassador, right?",
+          "I'm certainly not the ambassador.",
+          "I believe the Emperor himself is behind the Seelie.",
+          "Which is why I need proof.",
+          "With the dragons gone, he seeks to add Shazari to his empire.",
+          "The ancient burial grounds seem the source of the trouble.",
+          "See if you find any sign of Imperial meddling.",
+          "I thought as much! The Emperor is ever pitiless and vile.",
+          "Meet me by the docks.",
+          "So I can sneak you into Valhaven of course.",
+          "You've foiled the Emperor's plans here.",
+          "You're going to need help fighting your newest foe.",
+          "I have some very capable friends.",
+          "Come to the boat.",
+          "You'll have to come with me to Valhaven to stop the Emperor and his Seelie allies.",
+          "The Emperor will be after you now.",
+          "He was a great man once.",
+          "Came out of nowhere and kicked out the Goblins.",
+          "Then he held off the dragons.",
+          "But in recent years he's grown cruel.",
+          "Yes, that's true.",
+          "I didn't know how evil they were until today.",
+          "Come, we must hurry.",
+          "If we're lucky, The Emperor won't know we're coming."
+        ]
+      },
+      "sdmatron01hard": {
+        "defaultLines": [
+          "We may be able to keep this from happening again",
+          "Bring me enough mucus glands and I can mix up an repellent",
+          "That will keep the bugs out of the temple",
+          "This will do nicely. Take this for your trouble",
+          "Wow, this stuff smells horrid",
+          "It'll scare away the bugs though, so it's worth it",
+          "The Sky bless you on your journey"
+        ]
+      },
+      "sdmayor01hard": {
+        "defaultLines": [
+          "I hope we find some way to avoid falling under The Emperor's power.",
+          "Thank you for coming, #tn#. We need your help.",
+          "Welcome to humble Kovah.",
+          "The honor is all mine.",
+          "Slayer of the dragons and Opener of the Path…",
+          "You have accomplished true wonders.",
+          "We will speak more on these matters…",
+          "But now I beg your help.",
+          "Seelie magicks plague our temple, filling it with abominations.",
+          "Centuries under dragon rule left us with no warriors to fight them.",
+          "Now our village will survive!",
+          "You defeated Grand Marshal Sythokahn, but one dragon remains.",
+          "The dragon Sythokahn ruled this land for centuries.",
+          "Thanks to you.",
+          "But one dragon remains, The Pit Lord.",
+          "He runs the Arena, where slaves fight for his pleasure.",
+          "Go see Zumwalt, he used to fight in the arena.",
+          "He can tell you more.",
+          "Someone is destroying our plans to revive the desert",
+          "We’ve been using  water from the Ogre Magi oasis to revive Shazari.",
+          "We were successfully undoing the damage the dragons wrought.",
+          "But now someone is siphoning off our water.",
+          "And there are carnivorous plants everywhere!",
+          "The water’s flowing again, thank you!",
+          "Thank you!",
+          "What’s a water titan?"
+        ]
+      },
+      "sdnomad01hard": {
+        "defaultLines": [
+          "The Seelie bracers are fascinating to me",
+          "If had a bunch of those Seelie bracers...",
+          "I could break them down and start replicating them.",
+          "Smaller size of course.",
+          "But Goblins would pay well for something like those.",
+          "Bring me what you can.",
+          "Hmm. Not exactly new anymore. Ah well, he's your pay",
+          "See?",
+          "Everyone profits!",
+          "Those Seelie bracers fascinate me",
+          "Hmm. Not exactly new anymore. Ah well, here's your pay."
+        ]
+      },
+      "sdsage01hard": {
+        "defaultLines": [
+          "These grand pyramids are not the work of our people.",
+          "The Magi who built the pyramids left this land long ago.",
+          "We have taken some of their ruins as our own.",
+          "But others remain guarded by powerful spirits.",
+          "If it's ancient knowledge you seek…",
+          "And you're daring enough to face ancient magics…",
+          "Then you should plumb the depths of the Umbral Temple to the West.",
+          "You are a survivor and a scholar. I hope you learned much of value.",
+          "Some of my brethren in the desert need help!",
+          "A group of settlers went into the desert two months ago.",
+          "They hope to open trade with Bitterfrost.",
+          "They found a good site for a caravanserai...",
+          "But now monsters besiege them from all sides.",
+          "The caravanserai is secure.",
+          "Many thanks for your help.",
+          "Their smoked fish is said to be exquisite."
+        ]
+      },
+      "sdslave01hard": {
+        "defaultLines": [
+          "Our escape plan failed. None of the goblin slaves made it out",
+          "Find their memory charms and I can take them to their families",
+          "They fought bravely, but they just weren't strong enough",
+          "Their families deserve some closure",
+          "You found them all?",
+          "I'll make sure their families know they fought bravely",
+          "I'd come to know them all in the slave pits",
+          "They are all really great guys",
+          "Thank you for what you've done"
+        ]
+      },
+      "sdtitus01hard": {
+        "defaultLines": [
+          "Ah. You made it over and appear to be in one piece. Excellent!",
+          "Go to the near by village and meet the Town Elder",
+          "Welcome to the Sleeping Lands, #tn#.",
+          "This country is called Shazari.",
+          "For centuries the dragons ruled here.",
+          "Terrible and cruel, yes.",
+          "But the people here are free now.",
+          "Go introduce yourself to the town elder.",
+          "Go to the near by village and meet the Town Elder."
+        ]
+      },
+      "sdtitus02hard": {
+        "defaultLines": [
+          "The old pyramids around here might hold something of interest.",
+          "The ancient Seelie built these pyramids.",
+          "One of them remains sealed still.",
+          "I imagine there are wonders and dangers inside.",
+          "The Seelie were always cruel that way.",
+          "It sounds more wondrous than I imagined!",
+          "And you took care of the dangers as well.",
+          "Now that you've defeated the defenses…",
+          "I'm going to spend some time plumbing its secrets."
         ]
       }
     },
     "SwampRoadNorth": {
+      "bede": {
+        "displayName": "Bede",
+        "defaultLines": [
+          "That used to be the road to Felbridge",
+          "Now it's the road to certain death",
+          "I hope you can clear the way"
+        ]
+      },
+      "dane": {
+        "defaultLines": [
+          "The castle of Lord Yornak seems still inhabited although not by men.",
+          "Castle Yornak was the home of this region's lords.",
+          "The last Lord and Lady Yornak built the magnificent granary, palace, and university.",
+          "Indeed they were, but…",
+          "They always kept their ancient castle in good repair.",
+          "It was their safe retreat.",
+          "There's someone in there.",
+          "Someone the Tuatara call Yornak.",
+          "You survived Castle Yornak.",
+          "The Yornak family is another tragic tale."
+        ]
+      },
+      "gran": {
+        "defaultLines": [
+          "Will you help us push back the Tuatara soldiers?",
+          "Bring me the Helms of the Tuatara Commanders.",
+          "First, to show them we're taking over. They love their helms.",
+          "Second, we can use the metal to forge our own armor.",
+          "Exactly.",
+          "Thank you! Those lizards know we're not fooling around now!",
+          "A real hero on our side!",
+          "Maybe we can take the fight to these beasties.",
+          "And not just the Tuatara.",
+          "Imagine this land free of monster rule!"
+        ]
+      },
+      "gretta": {
+        "defaultLines": [
+          "My antidote for spider poison needs spider fangs",
+          "If you bring me spider fangs, I'd be able to make an antidote.",
+          "These big spiders didn't used to live here.",
+          "That's why I hate magic, always corrupting things.",
+          "I much prefer alchemy.",
+          "Thank you, now I can finish the antidote",
+          "It will take years to get rid of these spiders.",
+          "If we can ever figure out where they come from."
+        ]
+      },
+      "ield": {
+        "defaultLines": [
+          "Those lizards put a lot of stock in those banners",
+          "The Tuatara rally around their war banners.",
+          "They're ferocious when their banner is up.",
+          "The banners are enchanted in some way.",
+          "If you capture some of them, I might be able to use their magic against them.",
+          "Perfect. I think I can sew our own enchanted banners now.",
+          "Now I just need a good design.",
+          "Um, thanks, I'll consider it.",
+          "Uh, you do?",
+          "Yes, well, I'll come up with a few options."
+        ]
+      },
+      "kenelm": {
+        "displayName": "Kenelm",
+        "defaultLines": [
+          "It's dark down here.",
+          "And wet.",
+          "I miss the beach."
+        ]
+      },
+      "odem": {
+        "defaultLines": [
+          "The ruins of the Royal Granary is the source of the devourers.",
+          "The Royal Granary used to be a wonder of the world.",
+          "But now the ruined granary is corrupted.",
+          "The devourers seem to all come from there.",
+          "If we can recover the grain fields, we can support a whole army.",
+          "You cleared the Royal Granary!",
+          "These murderous plants are intriguing.",
+          "We need to learn more about the Devourers.",
+          "Yes, but they grow like weeds.",
+          "If we're going to heal the land, I to know more.",
+          "Collect teeth from the big ones.",
+          "I can use them to concoct a potion to poison them.",
+          "Well done, thank you!",
+          "I hate to think what Hsalt did to give plants teeth.",
+          "It's terrifying to contemplate.",
+          "But it's all I can think about.",
+          "What else did he give teeth to?",
+          "Mushrooms?",
+          "Jellyfish?",
+          "Rocks?"
+        ]
+      },
+      "palok": {
+        "defaultLines": [
+          "A Tuatara squad has set up in an abandoned farm.",
+          "The lizards took over this old house.",
+          "They're using it as a base to launch raids from.",
+          "They store supplies there too.",
+          "Mostly dried beetles and rancid meat.",
+          "So you can maybe leave that there.",
+          "Unless you're into that kind of food.",
+          "I'm not judging.",
+          "Thank you!",
+          "We'll keep an eye on that place.",
+          "If any more show up, we'll take care of them.",
+          "Thanks for not bringing me the dried beetles.",
+          "Although my cousin says they're tasty.",
+          "I guess I should try one before I judge."
+        ]
+      },
+      "rose": {
+        "defaultLines": [
+          "Devourers are everywhere! I can't get to the well",
+          "Can you get the devourers away from the well?",
+          "It’s the only source of fresh water anywhere near here.",
+          "These monster have corrupted the river.",
+          "And the ponds.",
+          "They'd corrupt the rain if they could.",
+          "Whew, thanks!",
+          "Thanks for clearing the well.",
+          "We really need a reliable water source."
+        ]
+      },
+      "srnmayor01": {
+        "defaultLines": [
+          "We will fortify our camp here, hero. My thanks for leading us.",
+          "This village will be the first of several we reclaim.",
+          "This whole land was once green pasture.",
+          "The goblins and their magic have turned it into a swamp.",
+          "Mostly would be more than I ever expected.",
+          "Some new kind of monstrous warrior stands against us now.",
+          "These aren't goblins we're fighting.",
+          "Some kind of reptile-men. They call themselves Tuatara.",
+          "That sounds like them, they're very organized.",
+          "They've taken over a tower nearby.",
+          "We can't get past them.",
+          "I hope so.",
+          "You showed the Tuatara how humans fight!",
+          "Ranger Affric has led a party to scout the old university district.",
+          "Affric thinks the source of the corruption is to the east.",
+          "Someone named Hsalt has set up in the Citadel of Wissen.",
+          "Be careful, the road is overrung with Tuatara and Devourers.",
+          "The Tuatara general has set up his base in the castle nearby",
+          "The Tuatara General, Svar, is based in that old castle.",
+          "What is an army doing in this swamp anyway?",
+          "As the nearest other, that's worrisome to me.",
+          "General Svar was a dragon!",
+          "The Tuatara are led by real, live dragons.",
+          "That means there are more dragons.",
+          "Good luck with that.",
+          "Glad it's not me in your boots."
+        ]
+      },
       "srnmayor02": {
         "displayName": "Affric",
         "defaultLines": [
           "Are you friend or foe?",
           "Do you bring message from our friends in Sark?",
-          "We cannot trust strangers."
+          "We cannot trust strangers.",
+          "We cannot trust strangers",
+          "It's good to see you again, friend.",
+          "Your legend grows.",
+          "Soon this region will follow you anywhere.",
+          "The Vizier of the Tuatara is breeding carnisaurs.",
+          "The Vizier may work for the dragon generals…",
+          "But we now know he's the real power behind the corruption.",
+          "The Vizier's magical experiments are breeding carnasaurs.",
+          "He's breeding them to serve as mounts for Tuatara soldiers.",
+          "You did it! No carnasaur knights will plague us.",
+          "Vizier Hsalt is using the Citadel's library for evil",
+          "The Vizier will be incredibly angry at you.",
+          "I assume you're going after him.",
+          "Be careful, the Vizier's magic makes him as dangerous as the dragons he serves.",
+          "The library is liberated!",
+          "Gehrin and Odem think they know where the Tuatara General is.",
+          "We have more soldiers scouting the mire.",
+          "Gehrin and Odem think they know where the other Tuatara general is.",
+          "Probably.",
+          "Go see them, they know more than I."
+        ]
+      },
+      "srnmayor03": {
+        "defaultLines": [
+          "We're still scouting this area.",
+          "We'll send word when we know more.",
+          "Glad you could make it.",
+          "The Tuatara's other general is nearby.",
+          "But he's different than Svath.",
+          "We've seen signs of the undead in his service.",
+          "There's another General, called Svath. He's in the old palace.",
+          "General Svath commands all these Tuatara.",
+          "Probably so, but this sounds like the big brother.",
+          "And Svath doesn't just command Tuatara soldiers.",
+          "He's into scarier stuff.",
+          "I mean like undead.",
+          "You stopped the dragon invasion in its tracks!",
+          "What's next for you, #tn#?",
+          "Now that the Tuatara are defeated…",
+          "What is your plan?",
+          "I can't imagine anyone survived the Tuatara Legion passing through."
+        ]
+      },
+      "srnmerchant01": {
+        "displayName": "Caravan Dan",
+        "defaultLines": [
+          "Hail. I have a few small things the lizards haven't stolen yet"
+        ]
+      },
+      "srnmerchant03": {
+        "displayName": "Cynric",
+        "defaultLines": [
+          "Don't venture into the wilds unprepared!"
+        ]
+      },
+      "srntrainer01": {
+        "displayName": "Sara",
+        "defaultLines": [
+          "Heard about you from my sister",
+          "You are one vicious goblin-slayer"
+        ]
+      },
+      "srntrainer03": {
+        "displayName": "Gina",
+        "defaultLines": [
+          "Up for a lesson, #tc#?"
+        ]
+      },
+      "sugh": {
+        "defaultLines": [
+          "There's something big up in that old farm.",
+          "I don't know what it is.",
+          "I don't think it's Tuatara though.",
+          "I figured you would want to check it out.",
+          "Because I really don't want to.",
+          "Did I mention it sounded big?",
+          "Ooo! I hate spiders! Thanks!",
+          "A colossal spider, it was?",
+          "I hate spiders.",
+          "I'm glad it was you and not me!"
+        ]
+      },
+      "yolaf": {
+        "displayName": "Yolaf",
+        "defaultLines": [
+          "My mother came from this land.",
+          "She said it was the pride of Ellyria.",
+          "Now it's a swamp full of ruins.",
+          "I want to fix it.",
+          "Make it like it is in my dreams."
+        ]
+      }
+    },
+    "SwampRoadNorthHard": {
+      "bedehard": {
+        "displayName": "Bede",
+        "defaultLines": [
+          "That used to be the road to Felbridge",
+          "Now it's the road to certain death",
+          "I hope you can clear the way"
+        ]
+      },
+      "danehard": {
+        "defaultLines": [
+          "The castle of Lord Yornak seems still inhabited although not by men.",
+          "Castle Yornak was the home of this region's lords.",
+          "The last Lord and Lady Yornak built the magnificent granary, palace, and university.",
+          "Indeed they were, but…",
+          "They always kept their ancient castle in good repair.",
+          "It was their safe retreat.",
+          "There's someone in there.",
+          "Someone the Tuatara call Yornak.",
+          "You survived Castle Yornak.",
+          "The Yornak family is another tragic tale."
+        ]
+      },
+      "granhard": {
+        "defaultLines": [
+          "Will you help us push back the Tuatara soldiers?",
+          "Bring me the Helms of the Tuatara Commanders.",
+          "First, to show them we're taking over. They love their helms.",
+          "Second, we can use the metal to forge our own armor.",
+          "Exactly.",
+          "Thank you! Those lizards know we're not fooling around now!",
+          "A real hero on our side!",
+          "Maybe we can take the fight to these beasties.",
+          "And not just the Tuatara.",
+          "Imagine this land free of monster rule!"
+        ]
+      },
+      "grettahard": {
+        "defaultLines": [
+          "My antidote for spider poison needs spider fangs",
+          "If you bring me spider fangs, I'd be able to make an antidote.",
+          "These big spiders didn't used to live here.",
+          "That's why I hate magic, always corrupting things.",
+          "I much prefer alchemy.",
+          "Thank you, now I can finish the antidote",
+          "It will take years to get rid of these spiders.",
+          "If we can ever figure out where they come from."
+        ]
+      },
+      "ieldhard": {
+        "defaultLines": [
+          "Those lizards put a lot of stock in those banners",
+          "The Tuatara rally around their war banners.",
+          "They're ferocious when their banner is up.",
+          "The banners are enchanted in some way.",
+          "If you capture some of them, I might be able to use their magic against them.",
+          "Perfect. I think I can sew our own enchanted banners now.",
+          "Now I just need a good design.",
+          "Um, thanks, I'll consider it.",
+          "Uh, you do?",
+          "Yes, well, I'll come up with a few options."
+        ]
+      },
+      "kenelmhard": {
+        "displayName": "Kenelm",
+        "defaultLines": [
+          "It's dark down here.",
+          "And wet.",
+          "I miss the beach."
+        ]
+      },
+      "odemhard": {
+        "defaultLines": [
+          "The ruins of the Royal Granary is the source of the devourers.",
+          "The Royal Granary used to be a wonder of the world.",
+          "But now the ruined granary is corrupted.",
+          "The devourers seem to all come from there.",
+          "If we can recover the grain fields, we can support a whole army.",
+          "You cleared the Royal Granary!",
+          "These murderous plants are intriguing.",
+          "We need to learn more about the Devourers.",
+          "Yes, but they grow like weeds.",
+          "If we're going to heal the land, I to know more.",
+          "Collect teeth from the big ones.",
+          "I can use them to concoct a potion to poison them.",
+          "Well done, thank you!",
+          "I hate to think what Hsalt did to give plants teeth.",
+          "It's terrifying to contemplate.",
+          "But it's all I can think about.",
+          "What else did he give teeth to?",
+          "Mushrooms?",
+          "Jellyfish?",
+          "Rocks?"
+        ]
+      },
+      "palokhard": {
+        "defaultLines": [
+          "A Tuatara squad has set up in an abandoned farm.",
+          "The lizards took over this old house.",
+          "They're using it as a base to launch raids from.",
+          "They store supplies there too.",
+          "Mostly dried beetles and rancid meat.",
+          "So you can maybe leave that there.",
+          "Unless you're into that kind of food.",
+          "I'm not judging.",
+          "Thank you!",
+          "We'll keep an eye on that place.",
+          "If any more show up, we'll take care of them.",
+          "Thanks for not bringing me the dried beetles.",
+          "Although my cousin says they're tasty.",
+          "I guess I should try one before I judge."
+        ]
+      },
+      "rosehard": {
+        "defaultLines": [
+          "Devourers are everywhere! I can't get to the well",
+          "Can you get the devourers away from the well?",
+          "It’s the only source of fresh water anywhere near here.",
+          "These monster have corrupted the river.",
+          "And the ponds.",
+          "They'd corrupt the rain if they could.",
+          "Whew, thanks!",
+          "Thanks for clearing the well.",
+          "We really need a reliable water source."
+        ]
+      },
+      "srnmayor01hard": {
+        "defaultLines": [
+          "Some new kind of monstrous warrior stands against us now.",
+          "These aren't goblins we're fighting.",
+          "Some kind of reptile-men. They call themselves Tuatara.",
+          "That sounds like them, they're very organizard.",
+          "They've taken over a tower nearby.",
+          "We can't get past them.",
+          "I hope so.",
+          "You showed the Tuatara how humans fight!",
+          "Ranger Affric has led a party to scout the old university district.",
+          "Affric thinks the source of the corruption is to the east.",
+          "Someone named Hsalt has set up in the Citadel of Wissen.",
+          "Be careful, the road is overrung with Tuatara and Devourers.",
+          "The Tuatara general has set up his base in the castle nearby",
+          "The Tuatara General, Svar, is based in that old castle.",
+          "What is an army doing in this swamp anyway?",
+          "As the nearest other, that's worrisome to me.",
+          "General Svar was a dragon!",
+          "The Tuatara are led by real, live dragons.",
+          "That means there are more dragons.",
+          "Good luck with that.",
+          "Glad it's not me in your boots.",
+          "We will fortify our camp here, hero. My thanks for leading us.",
+          "This village will be the first of several we reclaim.",
+          "This whole land was once green pasture.",
+          "The goblins and their magic have turned it into a swamp.",
+          "Mostly would be more than I ever expected.",
+          "That sounds like them, they're very organized."
+        ]
+      },
+      "srnmayor02hard": {
+        "defaultLines": [
+          "Are you friend or foe?",
+          "Do you bring message from our friends in Sark?",
+          "We cannot trust strangers",
+          "It's good to see you again, friend.",
+          "Your legend grows.",
+          "Soon this region will follow you anywhere.",
+          "The Vizier of the Tuatara is breeding carnisaurs.",
+          "The Vizier may work for the dragon generals…",
+          "But we now know he's the real power behind the corruption.",
+          "The Vizier's magical experiments are breeding carnasaurs.",
+          "He's breeding them to serve as mounts for Tuatara soldiers.",
+          "You did it! No carnasaur knights will plague us.",
+          "Vizier Hsalt is using the Citadel's library for evil",
+          "The Vizier will be incredibly angry at you.",
+          "I assume you're going after him.",
+          "Be careful, the Vizier's magic makes him as dangerous as the dragons he serves.",
+          "The library is liberated!",
+          "Gehrin and Odem think they know where the Tuatara General is.",
+          "We have more soldiers scouting the mire.",
+          "Gehrin and Odem think they know where the other Tuatara general is.",
+          "Probably.",
+          "Go see them, they know more than I."
+        ]
+      },
+      "srnmayor03hard": {
+        "defaultLines": [
+          "We're still scouting this area.",
+          "We'll send word when we know more.",
+          "Glad you could make it.",
+          "The Tuatara's other general is nearby.",
+          "But he's different than Svath.",
+          "We've seen signs of the undead in his service.",
+          "There's another General, called Svath. He's in the old palace.",
+          "General Svath commands all these Tuatara.",
+          "Probably so, but this sounds like the big brother.",
+          "And Svath doesn't just command Tuatara soldiers.",
+          "He's into scarier stuff.",
+          "I mean like undead.",
+          "You stopped the dragon invasion in its tracks!",
+          "What's next for you, #tn#?",
+          "Now that the Tuatara are defeated…",
+          "What is your plan?",
+          "I can't imagine anyone survived the Tuatara Legion passing through."
+        ]
+      },
+      "srnmerchant01hard": {
+        "displayName": "Caravan Dan",
+        "defaultLines": [
+          "Hail. I have a few small things the lizards haven't stolen yet"
+        ]
+      },
+      "srnmerchant03hard": {
+        "displayName": "Cynric",
+        "defaultLines": [
+          "Don't venture into the wilds unprepared!"
+        ]
+      },
+      "srntrainer01hard": {
+        "displayName": "Sara",
+        "defaultLines": [
+          "Heard about you from my sister",
+          "You are one vicious goblin-slayer"
+        ]
+      },
+      "srntrainer03hard": {
+        "displayName": "Gina",
+        "defaultLines": [
+          "Up for a lesson, #tc#?"
+        ]
+      },
+      "sughhard": {
+        "defaultLines": [
+          "There's something big up in that old farm.",
+          "I don't know what it is.",
+          "I don't think it's Tuatara though.",
+          "I figured you would want to check it out.",
+          "Because I really don't want to.",
+          "Did I mention it sounded big?",
+          "Ooo! I hate spiders! Thanks!",
+          "A colossal spider, it was?",
+          "I hate spiders.",
+          "I'm glad it was you and not me!"
+        ]
+      },
+      "yolafhard": {
+        "displayName": "Yolaf",
+        "defaultLines": [
+          "My mother came from this land.",
+          "She said it was the pride of Ellyria.",
+          "Now it's a swamp full of ruins.",
+          "I want to fix it.",
+          "Make it like it is in my dreams."
+        ]
+      }
+    },
+    "TutorialBoat": {
+      "captainfink": {
+        "defaultLines": [
+          "You've saved us!",
+          "We need to find that village.",
+          "You can find the village on the map.",
+          "Just head east and you'll find it.",
+          "I'll try to repair the Niobe."
         ]
       }
     }
