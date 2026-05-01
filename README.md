@@ -13,8 +13,8 @@ _This is required to play singleplayer._
 
 ### 2. Clone Repository
 ```sh
-git clone https://github.com/minesa-org/dungeon-blitz-typescript.git
-cd dungeon-blitz-typescript
+git clone https://github.com/minesa-org/dungeon-blitz-r.git
+cd dungeon-blitz-r
 ```
 
 ### 3. Install Depencies
