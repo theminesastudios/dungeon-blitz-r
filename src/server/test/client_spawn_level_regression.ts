@@ -2379,6 +2379,46 @@ function testDungeonClientSpawnHostilesUsePlayerRuntimeLevel(): void {
     assert.equal(hostile?.level, 37, 'dungeon client-spawn hostiles should use the player runtime level');
 }
 
+function testServerNpcSeedWaitsForPlayerSpawn(): void {
+    const client = createFakeClient('Iondoblack');
+    client.currentLevel = 'BT_Mission4';
+    client.levelInstanceId = '62415';
+    client.playerSpawned = false;
+    client.clientEntID = 0;
+    client.character = {
+        ...client.character,
+        class: 'Mage',
+        level: 4
+    } as any;
+
+    LevelHandler.spawnLevelNpcs(client as never, 'BT_Mission4');
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x0F),
+        false,
+        'server NPC spawns should not be sent before the player entity initializes'
+    );
+
+    const payload = (EntityHandler as any).buildEntityFullUpdatePayload({
+        id: 6241501,
+        name: 'Iondoblack',
+        isPlayer: true,
+        x: 100,
+        y: 200,
+        v: 0,
+        team: 1,
+        entState: 0
+    });
+
+    EntityHandler.handleEntityFullUpdate(client as never, payload);
+
+    assert.equal(client.playerSpawned, true, 'player full update should mark the client spawned');
+    assert.equal(
+        client.sentPackets.filter((packet) => packet.id === 0x0F).length,
+        140,
+        'server NPC spawns should be sent after the player entity initializes'
+    );
+}
+
 async function main(): Promise<void> {
     ensureLevelConfigLoaded();
 
@@ -2646,6 +2686,11 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         testDungeonClientSpawnHostilesUsePlayerRuntimeLevel();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testServerNpcSeedWaitsForPlayerSpawn();
     } finally {
         GlobalState.levelEntities = levelEntities;
         GlobalState.levelQuestProgress = levelQuestProgress;

@@ -1373,6 +1373,7 @@ export class EntityHandler {
              EntityHandler.sendExistingPlayersToJoiner(client);
              EntityHandler.broadcastPlayerSpawn(client, props);
              EntityHandler.broadcastPlayerMountState(client, props.id, equippedMountId);
+             EntityHandler.sendInitialLevelEntities(client, client.currentLevel);
              BuildingHandler.refreshCraftTownBuildingsOnSpawn(client);
         }
     }

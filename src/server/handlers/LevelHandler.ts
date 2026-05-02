@@ -3007,6 +3007,10 @@ export class LevelHandler {
     }
 
     static spawnLevelNpcs(client: Client, levelName: string): void {
+        if (!client.playerSpawned) {
+            return;
+        }
+
         EntityHandler.sendInitialLevelEntities(client, levelName);
     }
 
