@@ -91,6 +91,36 @@ export class Entity {
     static readonly TEAM_BITS = 2;
     static readonly STATE_BITS = 2; // const_316
     static readonly MAX_CHAR_LEVEL_BITS = 6;
+    private static readonly DEFAULT_CLASS = 'Paladin';
+    private static readonly DEFAULT_APPEARANCE: Record<string, string | number> = {
+        gender: 'Male',
+        headSet: 'Short',
+        hairSet: 'Do10',
+        mouthSet: 'M08',
+        faceSet: 'F13',
+        hairColor: 10325505,
+        skinColor: 10060614,
+        shirtColor: 3273228,
+        pantColor: 208786
+    };
+
+    private static normalizeClassName(value: unknown): string {
+        const raw = String(value ?? '').trim().toLowerCase();
+        if (raw === 'mage') return 'Mage';
+        if (raw === 'rogue') return 'Rogue';
+        if (raw === 'paladin') return 'Paladin';
+        return Entity.DEFAULT_CLASS;
+    }
+
+    private static appearanceString(value: unknown, fallbackKey: keyof typeof Entity.DEFAULT_APPEARANCE): string {
+        const normalized = String(value ?? '').trim();
+        return normalized || String(Entity.DEFAULT_APPEARANCE[fallbackKey]);
+    }
+
+    private static appearanceColor(value: unknown, fallbackKey: keyof typeof Entity.DEFAULT_APPEARANCE): number {
+        const numeric = Number(value ?? NaN);
+        return Number.isFinite(numeric) ? numeric : Number(Entity.DEFAULT_APPEARANCE[fallbackKey]);
+    }
     
     // Helper to build entity dict from Character (mirroring `build_entity_dict`)
     static fromCharacter(eid: number, char: Character, props: any = {}): EntityProps {
@@ -114,16 +144,16 @@ export class Entity {
         } as any;
 
         // Player specific fields
-        ent.class = char.class || "";
-        ent.gender = normalizeGender(char.gender || "");
-        ent.headSet = char.headSet || "";
-        ent.hairSet = char.hairSet || "";
-        ent.mouthSet = char.mouthSet || "";
-        ent.faceSet = char.faceSet || "";
-        ent.hairColor = char.hairColor || 0;
-        ent.skinColor = char.skinColor || 0;
-        ent.shirtColor = char.shirtColor || 0;
-        ent.pantColor = char.pantColor || 0;
+        ent.class = Entity.normalizeClassName(char.class);
+        ent.gender = normalizeGender(Entity.appearanceString(char.gender, 'gender'));
+        ent.headSet = Entity.appearanceString(char.headSet, 'headSet');
+        ent.hairSet = Entity.appearanceString(char.hairSet, 'hairSet');
+        ent.mouthSet = Entity.appearanceString(char.mouthSet, 'mouthSet');
+        ent.faceSet = Entity.appearanceString(char.faceSet, 'faceSet');
+        ent.hairColor = Entity.appearanceColor(char.hairColor, 'hairColor');
+        ent.skinColor = Entity.appearanceColor(char.skinColor, 'skinColor');
+        ent.shirtColor = Entity.appearanceColor(char.shirtColor, 'shirtColor');
+        ent.pantColor = Entity.appearanceColor(char.pantColor, 'pantColor');
         
         ent.equippedGears = char.equippedGears || [];
         ent.abilities = char.learnedAbilities || [];

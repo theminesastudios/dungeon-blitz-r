@@ -156,7 +156,7 @@ function resolveDefaultMultiplayerHost(): string {
 const MULTIPLAYER_MODE = parseBooleanEnv('MULTIPLAYER_MODE', false);
 const LOCAL_HOST = 'localhost';
 const MULTIPLAYER_HOST = normalizeHostValue(
-    parseStringEnv('MULTIPLAYER_BASE_IP', resolveDefaultMultiplayerHost()),
+    parseStringEnv('MULTIPLAYER_BASE_IP', '172.16.30.1'),
     LOCAL_HOST
 );
 const DEFAULT_STATIC_PORT = MULTIPLAYER_MODE ? 80 : 8000;

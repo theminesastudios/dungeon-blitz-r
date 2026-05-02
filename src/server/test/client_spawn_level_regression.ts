@@ -195,6 +195,53 @@ function decodeNewlyRelevantNpcPayload(payload: Buffer): {
     return { id, name, x, y, v, team, isPlayer, entState, facingLeft, healthDelta, buffCount };
 }
 
+function decodeNewlyRelevantPlayerAppearance(payload: Buffer): {
+    id: number;
+    name: string;
+    className: string;
+    gender: string;
+    headSet: string;
+    hairSet: string;
+    mouthSet: string;
+    faceSet: string;
+    hairColor: number;
+    skinColor: number;
+    shirtColor: number;
+    pantColor: number;
+} {
+    const br = new BitReader(payload);
+    const id = br.readMethod4();
+    const name = br.readMethod13();
+    const hasPlayerOptions = br.readMethod15();
+    assert.equal(hasPlayerOptions, true, 'player spawn payload should include appearance options');
+
+    const className = br.readMethod13();
+    const gender = br.readMethod13();
+    const headSet = br.readMethod13();
+    const hairSet = br.readMethod13();
+    const mouthSet = br.readMethod13();
+    const faceSet = br.readMethod13();
+    const hairColor = br.readMethod6(24);
+    const skinColor = br.readMethod6(24);
+    const shirtColor = br.readMethod6(24);
+    const pantColor = br.readMethod6(24);
+
+    for (let slot = 0; slot < 6; slot++) {
+        if (!br.readMethod15()) {
+            continue;
+        }
+        br.readMethod6(11); // gear id
+        br.readMethod6(2); // tier
+        br.readMethod6(16); // rune 1
+        br.readMethod6(16); // rune 2
+        br.readMethod6(16); // rune 3
+        br.readMethod6(8); // color 1
+        br.readMethod6(8); // color 2
+    }
+
+    return { id, name, className, gender, headSet, hairSet, mouthSet, faceSet, hairColor, skinColor, shirtColor, pantColor };
+}
+
 function createGoblinRiverHostile(
     id: number,
     name: string,
@@ -1894,6 +1941,48 @@ function testDungeonJoinerReplaysStartedRoomEventsFromPartyAnchor(): void {
     assert.equal(joiner.startedRoomEvents.has('TutorialBoat:5'), true);
 }
 
+function testIncompleteRemotePlayerSaveSerializesSafeAppearance(): void {
+    const anchor = createFakeClient('Incomplete');
+    const joiner = createFakeClient('Viewer');
+
+    anchor.currentLevel = 'NewbieRoad';
+    joiner.currentLevel = 'NewbieRoad';
+    anchor.clientEntID = 8101;
+    joiner.clientEntID = 8102;
+    anchor.character = { name: 'Incomplete' };
+    anchor.entities.set(anchor.clientEntID, {
+        id: anchor.clientEntID,
+        name: 'Incomplete',
+        isPlayer: true,
+        x: 100,
+        y: 200,
+        team: 1,
+        entState: 0
+    });
+
+    GlobalState.sessionsByToken.set(anchor.token, anchor as never);
+    GlobalState.sessionsByToken.set(joiner.token, joiner as never);
+
+    (EntityHandler as any).sendExistingPlayersToJoiner(joiner as never);
+
+    const spawnPacket = joiner.sentPackets.find((packet) => packet.id === 0x0F);
+    assert.ok(spawnPacket, 'joiner should receive the existing player spawn');
+    const decoded = decodeNewlyRelevantPlayerAppearance(spawnPacket.payload);
+
+    assert.equal(decoded.id, anchor.clientEntID);
+    assert.equal(decoded.name, 'Incomplete');
+    assert.equal(decoded.className, 'Paladin');
+    assert.equal(decoded.gender, 'Male');
+    assert.equal(decoded.headSet, 'Short');
+    assert.equal(decoded.hairSet, 'Do10');
+    assert.equal(decoded.mouthSet, 'M08');
+    assert.equal(decoded.faceSet, 'F13');
+    assert.equal(decoded.hairColor, 10325505);
+    assert.equal(decoded.skinColor, 10060614);
+    assert.equal(decoded.shirtColor, 3273228);
+    assert.equal(decoded.pantColor, 208786);
+}
+
 function testGoblinRiverDungeonLeaderHostilesSeedToPartyJoinersOnly(): void {
     for (const levelName of GOBLIN_RIVER_LEVELS) {
         const owner = createFakeClient('Alpha');
@@ -2464,6 +2553,11 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         testDungeonJoinerReplaysStartedRoomEventsFromPartyAnchor();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testIncompleteRemotePlayerSaveSerializesSafeAppearance();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();

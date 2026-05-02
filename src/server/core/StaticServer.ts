@@ -78,7 +78,7 @@ export class StaticServer {
     private renderDevSettings(devSettingsPath: string): string {
         const contents = fs.readFileSync(devSettingsPath, 'utf8');
         return contents.replace(
-            /value="(?:100\.100\.146\.54|127\.0\.0\.1|localhost)"/g,
+            /value="(?:100\.100\.146\.54|10\.179\.241\.95|127\.0\.0\.1|localhost)"/g,
             `value="${Config.HOST}"`
         );
     }
