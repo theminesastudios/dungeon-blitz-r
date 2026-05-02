@@ -19,6 +19,8 @@ export class EntityHandler {
         'CraftTown',
         'NewbieRoad',
         'NewbieRoadHard',
+        'AC_Mission1',
+        'AC_Mission1Hard',
         'GoblinRiverDungeon',
         'GoblinRiverDungeonHard',
         'SwampRoadNorth',
@@ -51,6 +53,33 @@ export class EntityHandler {
         'GoblinRiverDungeon',
         'GoblinRiverDungeonHard'
     ]);
+    private static readonly CASTLE_HOCKE_BOSS_LEVELS = new Set<string>([
+        'Castle',
+        'CastleHard',
+        'AC_Mission1',
+        'AC_Mission1Hard'
+    ]);
+    private static readonly CASTLE_HOCKE_BOSS_NAMES = new Set<string>([
+        'CastleLizardCarnisaur1',
+        'CastleLizardCarnisaur1Hard'
+    ]);
+    private static readonly CASTLE_HOCKE_BOSS_DISPLAY_NAME = "Hocke's Gatekeeper";
+    private static readonly CASTLE_HOCKE_BOSS_MUSIC = 'D01_DramaLoop_DreamDragonLair';
+    private static readonly CASTLE_HOCKE_BOSS_RANGE_X = 6500;
+    private static readonly CASTLE_HOCKE_BOSS_RANGE_Y = 3200;
+    private static readonly CASTLE_HOCKE_BOSS_DIALOGUE_START_MS = 1800;
+    private static readonly CASTLE_HOCKE_BOSS_INTRO_TOTAL_MS = 11000;
+    private static readonly CASTLE_HOCKE_BOSS_DIALOGUE: Array<{
+        delayMs: number;
+        speaker: 'boss' | 'player';
+        text: string;
+    }> = [
+        { delayMs: 0, speaker: 'boss', text: "{playerName}, you've come at last." },
+        { delayMs: 2000, speaker: 'player', text: 'Who are you?' },
+        { delayMs: 3900, speaker: 'boss', text: "Hocke's gate belongs to the Dragon Legion." },
+        { delayMs: 5900, speaker: 'player', text: 'I need to get into Castle Hocke.' },
+        { delayMs: 7800, speaker: 'boss', text: 'Then you must go through me.' }
+    ];
     private static craftTownTutorialHelperIdsCache: Set<number> | null = null;
 
     private static normalizeIdentityName(value: unknown): string {
@@ -909,6 +938,389 @@ export class EntityHandler {
         client.sendBitBuffer(0xAE, bb);
     }
 
+    private static sendClientRoomCutSceneStart(client: Client, roomId: number, allowRoomInput: boolean): void {
+        const normalizedRoomId = Math.max(0, roomId);
+        const bb = new BitBuffer(false);
+        bb.writeMethod9(normalizedRoomId);
+        bb.writeMethod15(allowRoomInput);
+        client.sendBitBuffer(0xA5, bb);
+
+        const levelName = LevelConfig.normalizeLevelName(client.currentLevel);
+        if (levelName) {
+            client.startedRoomEvents.add(`${levelName}:${normalizedRoomId}`);
+        }
+        client.activeDungeonCutsceneScope = getClientLevelScope(client) ?? '';
+        client.activeDungeonCutsceneRoomId = normalizedRoomId;
+        client.lastDungeonCutsceneStartScope = client.activeDungeonCutsceneScope;
+        client.lastDungeonCutsceneStartAt = Date.now();
+    }
+
+    private static sendClientRoomCutSceneEnd(client: Client, roomId: number): void {
+        const normalizedRoomId = Math.max(0, roomId);
+        const bb = new BitBuffer(false);
+        bb.writeMethod9(normalizedRoomId);
+        client.sendBitBuffer(0xA6, bb);
+
+        const scope = getClientLevelScope(client) ?? '';
+        client.lastDungeonCutsceneEndScope = scope;
+        client.lastDungeonCutsceneEndAt = Date.now();
+        if (client.activeDungeonCutsceneScope === scope && client.activeDungeonCutsceneRoomId === normalizedRoomId) {
+            client.activeDungeonCutsceneScope = '';
+            client.activeDungeonCutsceneRoomId = 0;
+        }
+    }
+
+    private static sendClientRoomCamera(client: Client, roomId: number, cameraId: number): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod9(Math.max(0, roomId));
+        bb.writeMethod9(Math.max(0, cameraId));
+        client.sendBitBuffer(0xA9, bb);
+    }
+
+    private static sendClientRoomBossInfo(client: Client, roomId: number, bossId: number, bossName: string): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod9(Math.max(0, roomId));
+        bb.writeMethod9(bossId);
+        bb.writeMethod26(bossName);
+        bb.writeMethod9(0);
+        bb.writeMethod26('');
+        client.sendBitBuffer(0xAC, bb);
+        noteDungeonRunBossCutscene(getClientLevelScope(client), roomId, bossId);
+    }
+
+    private static sendClientRoomSound(client: Client, roomId: number, soundName: string, volume: number): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod9(Math.max(0, roomId));
+        bb.writeMethod26(soundName);
+        bb.writeMethod9(Math.max(0, Math.min(100, Math.round(volume * 100))));
+        client.sendBitBuffer(0xA8, bb);
+    }
+
+    private static sendClientRoomThought(client: Client, entityId: number, text: string): void {
+        if (entityId <= 0 || !text) {
+            return;
+        }
+
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(entityId);
+        bb.writeMethod13(text);
+        client.sendBitBuffer(0x76, bb);
+    }
+
+    static isCastleHockeBossLevel(levelName: string | null | undefined): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        return EntityHandler.CASTLE_HOCKE_BOSS_LEVELS.has(normalizedLevel);
+    }
+
+    private static canUseCastleHockeRoomCutscene(levelName: string | null | undefined): boolean {
+        return EntityHandler.isCastleHockeBossLevel(levelName);
+    }
+
+    private static isCastleHockeBossName(entityName: string | null | undefined): boolean {
+        return EntityHandler.CASTLE_HOCKE_BOSS_NAMES.has(String(entityName ?? '').trim());
+    }
+
+    private static getCastleHockePlayerName(client: Client): string {
+        const characterName = String(client.character?.name ?? '').trim();
+        if (characterName) {
+            return characterName;
+        }
+
+        const entityName = String(client.entities.get(client.clientEntID)?.name ?? '').trim();
+        return entityName || 'Hero';
+    }
+
+    private static formatCastleHockeDialogueText(client: Client, text: string): string {
+        return text.replace(/\{playerName\}/g, EntityHandler.getCastleHockePlayerName(client));
+    }
+
+    private static getCastleHockeStaticBossCandidates(levelName: string | null | undefined): Array<{ entityId: number; entity: any }> {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        if (!normalizedLevel) {
+            return [];
+        }
+
+        return NpcLoader.getRawNpcsForLevel(normalizedLevel)
+            .filter((npc) => EntityHandler.isCastleHockeBossName(npc.name))
+            .map((npc) => ({
+                entityId: Number(npc.id ?? 0),
+                entity: {
+                    ...npc,
+                    id: Number(npc.id ?? 0),
+                    name: String(npc.name ?? ''),
+                    x: Number(npc.x ?? 0),
+                    y: Number(npc.y ?? 0),
+                    team: Number(npc.team ?? 2),
+                    entState: Number(npc.entState ?? 1),
+                    ent_state: Number(npc.entState ?? 1),
+                    facingLeft: Boolean(npc.facing_left),
+                    untargetable: Boolean(npc.untargetable)
+                }
+            }))
+            .filter((candidate) => candidate.entityId > 0);
+    }
+
+    private static getCastleHockePlayerPosition(client: Client): { x: number; y: number } | null {
+        const playerEntity = client.clientEntID > 0 ? client.entities.get(client.clientEntID) : null;
+        const x = Number(playerEntity?.x ?? client.character?.CurrentLevel?.x);
+        const y = Number(playerEntity?.y ?? client.character?.CurrentLevel?.y);
+        if (!Number.isFinite(x) || !Number.isFinite(y)) {
+            return null;
+        }
+
+        return { x, y };
+    }
+
+    private static isCastleHockeBossCloseToPlayer(client: Client, entity: any): boolean {
+        const playerPos = EntityHandler.getCastleHockePlayerPosition(client);
+        if (!playerPos) {
+            return false;
+        }
+
+        const bossX = Number(entity?.x ?? entity?.props?.x);
+        const bossY = Number(entity?.y ?? entity?.props?.y);
+        if (!Number.isFinite(bossX) || !Number.isFinite(bossY)) {
+            return false;
+        }
+
+        return Math.abs(playerPos.x - bossX) <= EntityHandler.CASTLE_HOCKE_BOSS_RANGE_X &&
+            Math.abs(playerPos.y - bossY) <= EntityHandler.CASTLE_HOCKE_BOSS_RANGE_Y;
+    }
+
+    private static isCastleHockeBossAlive(entity: any): boolean {
+        if (!entity) {
+            return false;
+        }
+
+        const entState = Number(entity?.entState ?? entity?.ent_state ?? 0);
+        return !Boolean(entity?.dead) && entState !== 3 && entState !== 6;
+    }
+
+    private static findCastleHockeBossIntroCandidate(
+        client: Client,
+        preferredBossId: number = 0
+    ): { entityId: number; entity: any } | null {
+        if (!EntityHandler.isCastleHockeBossLevel(client.currentLevel)) {
+            return null;
+        }
+
+        const requireProximity = true;
+        const sources: Array<Map<number, any> | null | undefined> = [
+            client.entities,
+            EntityHandler.getLevelMapForClient(client)
+        ];
+        const staticCandidates = EntityHandler.getCastleHockeStaticBossCandidates(client.currentLevel);
+
+        if (preferredBossId > 0) {
+            for (const source of sources) {
+                const entity = source?.get(preferredBossId);
+                if (
+                    entity &&
+                    EntityHandler.isCastleHockeBossName(entity.name) &&
+                    EntityHandler.isCastleHockeBossAlive(entity) &&
+                    (!requireProximity || EntityHandler.isCastleHockeBossCloseToPlayer(client, entity))
+                ) {
+                    return { entityId: preferredBossId, entity };
+                }
+            }
+
+            for (const candidate of staticCandidates) {
+                if (
+                    candidate.entityId === preferredBossId &&
+                    EntityHandler.isCastleHockeBossAlive(candidate.entity) &&
+                    (!requireProximity || EntityHandler.isCastleHockeBossCloseToPlayer(client, candidate.entity))
+                ) {
+                    return candidate;
+                }
+            }
+            return null;
+        }
+
+        const playerPos = EntityHandler.getCastleHockePlayerPosition(client);
+        if (!playerPos && requireProximity) {
+            return null;
+        }
+
+        const seen = new Set<number>();
+        let best: { entityId: number; entity: any; distanceSq: number } | null = null;
+        for (const source of sources) {
+            if (!source) {
+                continue;
+            }
+
+            for (const [entityId, entity] of source.entries()) {
+                if (seen.has(entityId)) {
+                    continue;
+                }
+                seen.add(entityId);
+
+                if (
+                    !EntityHandler.isCastleHockeBossName(entity?.name) ||
+                    !EntityHandler.isCastleHockeBossAlive(entity) ||
+                    (requireProximity && !EntityHandler.isCastleHockeBossCloseToPlayer(client, entity))
+                ) {
+                    continue;
+                }
+
+                const dx = Number(entity.x ?? 0) - Number(playerPos?.x ?? entity.x ?? 0);
+                const dy = Number(entity.y ?? 0) - Number(playerPos?.y ?? entity.y ?? 0);
+                const distanceSq = (dx * dx) + (dy * dy);
+                if (!best || distanceSq < best.distanceSq) {
+                    best = { entityId, entity, distanceSq };
+                }
+            }
+        }
+
+        for (const candidate of staticCandidates) {
+            if (seen.has(candidate.entityId)) {
+                continue;
+            }
+            seen.add(candidate.entityId);
+
+            if (
+                !EntityHandler.isCastleHockeBossAlive(candidate.entity) ||
+                (requireProximity && !EntityHandler.isCastleHockeBossCloseToPlayer(client, candidate.entity))
+            ) {
+                continue;
+            }
+
+            const dx = Number(candidate.entity.x ?? 0) - Number(playerPos?.x ?? candidate.entity.x ?? 0);
+            const dy = Number(candidate.entity.y ?? 0) - Number(playerPos?.y ?? candidate.entity.y ?? 0);
+            const distanceSq = (dx * dx) + (dy * dy);
+            if (!best || distanceSq < best.distanceSq) {
+                best = { entityId: candidate.entityId, entity: candidate.entity, distanceSq };
+            }
+        }
+
+        return best ? { entityId: best.entityId, entity: best.entity } : null;
+    }
+
+    private static setCastleHockeBossIntroLock(
+        client: Client,
+        bossId: number,
+        bossEntity: any,
+        locked: boolean
+    ): void {
+        const targetState = locked ? 2 : 0;
+        const apply = (entity: any): void => {
+            if (!entity) {
+                return;
+            }
+            entity.untargetable = locked;
+            entity.entState = targetState;
+            entity.ent_state = targetState;
+        };
+
+        apply(bossEntity);
+        apply(client.entities.get(bossId));
+        apply(EntityHandler.getLevelMapForClient(client)?.get(bossId));
+
+        EntityHandler.sendSetUntargetable(client, bossId, locked);
+    }
+
+    private static scheduleCastleHockeBossIntroStep(
+        client: Client,
+        scopeKey: string,
+        delayMs: number,
+        callback: () => void
+    ): void {
+        let timer: NodeJS.Timeout | null = null;
+        timer = setTimeout(() => {
+            if (timer) {
+                client.castleHockeBossIntroTimers = client.castleHockeBossIntroTimers.filter((entry) => entry !== timer);
+            }
+            if (getClientLevelScope(client) !== scopeKey || !EntityHandler.isCastleHockeBossLevel(client.currentLevel)) {
+                return;
+            }
+            callback();
+        }, Math.max(0, Math.round(delayMs)));
+        client.castleHockeBossIntroTimers.push(timer);
+        timer.unref?.();
+    }
+
+    private static resolveCastleHockeBossIntroRoomId(client: Client, bossEntity: any): number {
+        const bossRoomId = Number(bossEntity?.roomId ?? bossEntity?.room_id ?? -1);
+        if (Number.isFinite(bossRoomId) && bossRoomId >= 0) {
+            return Math.round(bossRoomId);
+        }
+
+        const clientRoomId = Number(client.currentRoomId ?? -1);
+        if (Number.isFinite(clientRoomId) && clientRoomId >= 0) {
+            return Math.round(clientRoomId);
+        }
+
+        return 0;
+    }
+
+    static maybeTriggerCastleHockeBossIntro(client: Client, preferredBossId: number = 0): void {
+        if (!client.playerSpawned || client.clientEntID <= 0 || !EntityHandler.isCastleHockeBossLevel(client.currentLevel)) {
+            return;
+        }
+
+        const scopeKey = getClientLevelScope(client);
+        if (!scopeKey) {
+            return;
+        }
+
+        const triggerKey = `${scopeKey}:castle-hocke-first-boss-intro`;
+        if (client.castleHockeBossIntroTriggeredScopes.has(triggerKey)) {
+            return;
+        }
+
+        const candidate = EntityHandler.findCastleHockeBossIntroCandidate(client, preferredBossId);
+        if (!candidate) {
+            return;
+        }
+
+        client.castleHockeBossIntroTriggeredScopes.add(triggerKey);
+        const bossId = candidate.entityId;
+        const bossEntity = candidate.entity;
+        const roomId = EntityHandler.resolveCastleHockeBossIntroRoomId(client, bossEntity);
+        if (!Number.isFinite(Number(client.currentRoomId)) || Number(client.currentRoomId) <= 0) {
+            client.currentRoomId = roomId;
+        }
+        const playerId = Math.max(0, Math.round(Number(client.clientEntID ?? 0)));
+        const useRoomCutscene = EntityHandler.canUseCastleHockeRoomCutscene(client.currentLevel);
+        const useBossDialogueEntity = useRoomCutscene;
+        const introStartDelayMs = 0;
+
+        if (useRoomCutscene) {
+            EntityHandler.scheduleCastleHockeBossIntroStep(client, scopeKey, introStartDelayMs, () => {
+                EntityHandler.sendClientRoomCutSceneStart(client, roomId, true);
+                EntityHandler.sendClientRoomCamera(client, roomId, 1);
+                EntityHandler.setCastleHockeBossIntroLock(client, bossId, bossEntity, true);
+                EntityHandler.sendClientRoomBossInfo(client, roomId, bossId, EntityHandler.CASTLE_HOCKE_BOSS_DISPLAY_NAME);
+                EntityHandler.sendClientRoomSound(client, roomId, EntityHandler.CASTLE_HOCKE_BOSS_MUSIC, 0.85);
+            });
+        }
+
+        for (const line of EntityHandler.CASTLE_HOCKE_BOSS_DIALOGUE) {
+            EntityHandler.scheduleCastleHockeBossIntroStep(client, scopeKey, introStartDelayMs + EntityHandler.CASTLE_HOCKE_BOSS_DIALOGUE_START_MS + line.delayMs, () => {
+                const speakerId = line.speaker === 'boss' && useBossDialogueEntity ? bossId : playerId;
+                EntityHandler.sendClientRoomThought(client, speakerId, EntityHandler.formatCastleHockeDialogueText(client, line.text));
+            });
+        }
+
+        EntityHandler.scheduleCastleHockeBossIntroStep(
+            client,
+            scopeKey,
+            introStartDelayMs + EntityHandler.CASTLE_HOCKE_BOSS_INTRO_TOTAL_MS,
+            () => {
+                const currentBoss =
+                    client.entities.get(bossId) ??
+                    EntityHandler.getLevelMapForClient(client)?.get(bossId) ??
+                    bossEntity;
+                if (useRoomCutscene && EntityHandler.isCastleHockeBossAlive(currentBoss)) {
+                    EntityHandler.setCastleHockeBossIntroLock(client, bossId, currentBoss, false);
+                }
+                if (useRoomCutscene) {
+                    EntityHandler.sendClientRoomCamera(client, roomId, 0);
+                    EntityHandler.sendClientRoomCutSceneEnd(client, roomId);
+                }
+            }
+        );
+    }
+
     private static sendDestroyEntity(client: Client, entityId: number): void {
         client.send(0x0D, EntityHandler.buildDestroyEntityPayload(entityId));
     }
@@ -1358,6 +1770,10 @@ export class EntityHandler {
             levelMap.set(entityId, props);
         }
 
+        if (!isPlayer) {
+            EntityHandler.maybeTriggerCastleHockeBossIntro(client, entityId);
+        }
+
         // Broadcast the normalized snapshot so remote clients receive canonical state.
         EntityHandler.broadcastToLevel(client, EntityHandler.buildEntityFullUpdatePayload(props), props);
 
@@ -1417,6 +1833,8 @@ export class EntityHandler {
             noteDungeonRunEntitySeen(client, id, entityProps);
             EntityHandler.sendEntity(client, entityProps);
         }
+
+        EntityHandler.maybeTriggerCastleHockeBossIntro(client);
     }
 
     static removeOwnedEntities(client: Client): number[] {

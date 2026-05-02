@@ -3470,6 +3470,10 @@ export class LevelHandler {
                     }
                 );
             }
+
+            if (EntityHandler.isCastleHockeBossLevel(currentLevel)) {
+                EntityHandler.maybeTriggerCastleHockeBossIntro(client);
+            }
         }
 
         if (!client.playerSpawned || !client.currentLevel) {

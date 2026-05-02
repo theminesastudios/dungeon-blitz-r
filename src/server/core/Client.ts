@@ -180,6 +180,8 @@ export class Client {
     public keepTutorialState: KeepTutorialState | null = null;
     public goblinRiverBossIntroLockUntil: number = 0;
     public goblinRiverBossIntroUnlockTimer: NodeJS.Timeout | null = null;
+    public castleHockeBossIntroTriggeredScopes: Set<string> = new Set();
+    public castleHockeBossIntroTimers: NodeJS.Timeout[] = [];
     public forcedDungeonCompletionScope: string = "";
     public pendingDungeonCompletionScope: string = "";
     public pendingDungeonCompletionRequestedAt: number = 0;
@@ -361,6 +363,11 @@ export class Client {
             this.goblinRiverBossIntroUnlockTimer = null;
         }
         this.goblinRiverBossIntroLockUntil = 0;
+        for (const timer of this.castleHockeBossIntroTimers) {
+            clearTimeout(timer);
+        }
+        this.castleHockeBossIntroTimers = [];
+        this.castleHockeBossIntroTriggeredScopes.clear();
         this.forcedDungeonCompletionScope = "";
         this.pendingDungeonCompletionScope = "";
         this.pendingDungeonCompletionRequestedAt = 0;

@@ -25,7 +25,13 @@ export interface NpcDef {
 export class NpcLoader {
     private static levelsFiltered: Map<string, NpcDef[]> = new Map();
     private static levelsRaw: Map<string, NpcDef[]> = new Map();
+    private static readonly NPC_SOURCE_ALIASES: Record<string, string> = {
+        AC_Mission1: 'Castle',
+        AC_Mission1Hard: 'CastleHard'
+    };
     private static readonly SERVER_HOSTILE_LEVELS = new Set<string>([
+        'AC_Mission1',
+        'AC_Mission1Hard',
         'GoblinRiverDungeon',
         'GoblinRiverDungeonHard'
     ]);
@@ -36,6 +42,11 @@ export class NpcLoader {
 
     private static resolveFallbackLevelName(levelName: string): string | null {
         const normalizedLevel = this.normalizeLevelName(levelName);
+        const explicitAlias = this.NPC_SOURCE_ALIASES[normalizedLevel];
+        if (explicitAlias && this.levelsRaw.has(explicitAlias)) {
+            return explicitAlias;
+        }
+
         if (!normalizedLevel.endsWith('Hard')) {
             return null;
         }
@@ -149,7 +160,19 @@ export class NpcLoader {
     }
 
     static getNpcsForLevel(levelName: string): NpcDef[] {
-        return this.getLevelNpcList(this.levelsFiltered, levelName);
+        const normalizedLevel = this.normalizeLevelName(levelName);
+        const direct = this.levelsFiltered.get(normalizedLevel);
+        if (direct) {
+            return direct.map((npc) => this.cloneNpcDef(npc));
+        }
+
+        const fallbackLevel = this.resolveFallbackLevelName(normalizedLevel);
+        if (!fallbackLevel) {
+            return [];
+        }
+
+        const fallbackRaw = this.levelsRaw.get(fallbackLevel) ?? [];
+        return this.normalizeNpcList(this.filterLevelNpcs(normalizedLevel, fallbackRaw));
     }
 
     static getRawNpcsForLevel(levelName: string): NpcDef[] {

@@ -10,6 +10,7 @@ import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { NpcLoader } from '../data/NpcLoader';
 import { getClientLevelScope } from '../core/LevelScope';
+import { WorldEnter } from '../utils/WorldEnter';
 
 type SentPacket = {
     id: number;
@@ -33,6 +34,8 @@ type FakeClient = {
     keepTutorialState?: ReturnType<typeof createKeepTutorialState> | null;
     clientSpawnConfirmed?: boolean;
     clientSpawnFallbackTimer?: NodeJS.Timeout | null;
+    castleHockeBossIntroTriggeredScopes: Set<string>;
+    castleHockeBossIntroTimers: NodeJS.Timeout[];
     sentPackets: SentPacket[];
     send: (id: number, payload: Buffer) => void;
     sendBitBuffer: (id: number, bb: BitBuffer) => void;
@@ -79,6 +82,8 @@ function createFakeClient(name: string): FakeClient {
         keepTutorialState: null,
         clientSpawnConfirmed: false,
         clientSpawnFallbackTimer: null,
+        castleHockeBossIntroTriggeredScopes: new Set<string>(),
+        castleHockeBossIntroTimers: [],
         sentPackets,
         send(id: number, payload: Buffer) {
             sentPackets.push({ id, payload: Buffer.from(payload) });
@@ -115,6 +120,44 @@ function decodeNpcBubblePacket(payload: Buffer): { npcId: number; text: string }
         npcId: br.readMethod4(),
         text: br.readMethod13()
     };
+}
+
+function decodeRoomBossInfoPacket(payload: Buffer): { roomId: number; bossId: number; bossName: string } {
+    const br = new BitReader(payload);
+    return {
+        roomId: br.readMethod9(),
+        bossId: br.readMethod9(),
+        bossName: br.readMethod26()
+    };
+}
+
+function decodeRoomCameraPacket(payload: Buffer): { roomId: number; cameraId: number } {
+    const br = new BitReader(payload);
+    return {
+        roomId: br.readMethod9(),
+        cameraId: br.readMethod9()
+    };
+}
+
+function decodeEnterWorldDungeonFlag(payload: Buffer): boolean {
+    const br = new BitReader(payload);
+    br.readMethod4(); // transfer token
+    br.readMethod4(); // old level id
+    br.readMethod13(); // old swf
+    const hasOldCoord = br.readMethod6(1) === 1;
+    if (hasOldCoord) {
+        br.readMethod4();
+        br.readMethod4();
+    }
+    br.readMethod13(); // host
+    br.readMethod4(); // port
+    br.readMethod13(); // new swf
+    br.readMethod6(6); // new map level
+    br.readMethod6(6); // new base level
+    br.readMethod13(); // internal level
+    br.readMethod13(); // moment
+    br.readMethod13(); // alter
+    return br.readMethod6(1) === 1;
 }
 
 function createGoblinRiverHostile(
@@ -1156,6 +1199,300 @@ function testCraftTownTutorialClientSourceBossWoundedThoughtsPlay(): void {
     assert.equal(thoughts.includes('I will not fall! To me, brothers!'), true);
 }
 
+function createCastleHockeBossIntroClient(levelName: string = 'AC_Mission1', x: number = 1200, y: number = 500): FakeClient {
+    const client = createFakeClient('Alpha');
+    client.currentLevel = levelName;
+    client.currentRoomId = 3;
+    client.clientEntID = 101;
+    client.playerSpawned = true;
+    (client as any).character = {
+        name: 'Alpha',
+        CurrentLevel: { name: levelName, x, y }
+    };
+
+    client.entities.set(client.clientEntID, {
+        id: client.clientEntID,
+        name: 'Alpha',
+        isPlayer: true,
+        x,
+        y,
+        entState: 0
+    });
+
+    return client;
+}
+
+function testCastleHockeGatePositionStartsIntroAndBossBar(): void {
+    const client = createCastleHockeBossIntroClient('AC_Mission1', 12100, -1500);
+    const boss = {
+        id: 478957,
+        name: 'CastleLizardCarnisaur1',
+        isPlayer: false,
+        x: 16054,
+        y: -1981,
+        team: 2,
+        entState: 1,
+        facingLeft: true,
+        untargetable: false,
+        clientSpawned: true,
+        ownerToken: client.token,
+        roomId: client.currentRoomId
+    };
+    client.entities.set(boss.id, boss);
+    GlobalState.levelEntities.set('AC_Mission1', new Map<number, any>([[boss.id, boss]]));
+
+    EntityHandler.maybeTriggerCastleHockeBossIntro(client as never, boss.id);
+
+    const introPacketIds = client.sentPackets
+        .map((packet) => packet.id)
+        .filter((id) => [0xA5, 0xA9, 0xAC, 0xA8, 0x76, 0xA6].includes(id));
+    assert.deepEqual(introPacketIds, [0xA5, 0xA9, 0xAC, 0xA8, 0x76, 0x76, 0x76, 0x76, 0x76, 0xA9, 0xA6]);
+
+    const roomEventStart = parseRoomEventStart(client.sentPackets.find((packet) => packet.id === 0xA5)!.payload);
+    assert.deepEqual(roomEventStart, { roomId: client.currentRoomId, flag: true });
+
+    const cameras = client.sentPackets
+        .filter((packet) => packet.id === 0xA9)
+        .map((packet) => decodeRoomCameraPacket(packet.payload));
+    assert.deepEqual(cameras, [
+        { roomId: client.currentRoomId, cameraId: 1 },
+        { roomId: client.currentRoomId, cameraId: 0 }
+    ]);
+}
+
+function testCastleHockeGatePositionUsesStaticBossFallback(): void {
+    const client = createCastleHockeBossIntroClient('AC_Mission1', 12100, -1500);
+    client.currentRoomId = 0;
+
+    EntityHandler.maybeTriggerCastleHockeBossIntro(client as never);
+
+    const bossInfo = client.sentPackets
+        .filter((packet) => packet.id === 0xAC)
+        .map((packet) => decodeRoomBossInfoPacket(packet.payload));
+    assert.equal(bossInfo.length, 1);
+    assert.equal(bossInfo[0].roomId, 0);
+    assert.equal(bossInfo[0].bossName, "Hocke's Gatekeeper");
+    assert.equal([478957, 544493, 610029].includes(bossInfo[0].bossId), true);
+
+    const thoughts = client.sentPackets
+        .filter((packet) => packet.id === 0x76)
+        .map((packet) => decodeNpcBubblePacket(packet.payload));
+    assert.equal(thoughts[0].npcId, bossInfo[0].bossId);
+    assert.equal(thoughts[0].text, "Alpha, you've come at last.");
+}
+
+function testCastleHockeDialogSchedulesAfterCutsceneStart(): void {
+    const originalSetTimeout = global.setTimeout;
+    const scheduledDelays: number[] = [];
+    global.setTimeout = ((fn: any, delay: number) => {
+        scheduledDelays.push(Number(delay ?? 0));
+        return { unref() {} } as any;
+    }) as any;
+
+    try {
+        const client = createCastleHockeBossIntroClient('AC_Mission1', 12100, -1500);
+        const boss = {
+            id: 478957,
+            name: 'CastleLizardCarnisaur1',
+            isPlayer: false,
+            x: 16054,
+            y: -1981,
+            team: 2,
+            entState: 1,
+            facingLeft: true,
+            untargetable: false,
+            roomId: client.currentRoomId
+        };
+        client.entities.set(boss.id, boss);
+        GlobalState.levelEntities.set('AC_Mission1', new Map<number, any>([[boss.id, boss]]));
+
+        EntityHandler.maybeTriggerCastleHockeBossIntro(client as never, boss.id);
+    } finally {
+        global.setTimeout = originalSetTimeout;
+    }
+
+    assert.equal(scheduledDelays[0], 0);
+    assert.equal(Math.min(...scheduledDelays.filter((delay) => delay > 0)), 1800);
+}
+
+function testCastleHockeCarnisaurStartsIntroAndBossBarWhenNear(): void {
+    const client = createCastleHockeBossIntroClient();
+    const boss = {
+        id: 478957,
+        name: 'CastleLizardCarnisaur1',
+        isPlayer: false,
+        x: 2200,
+        y: 500,
+        team: 2,
+        entState: 1,
+        facingLeft: true,
+        untargetable: false,
+        clientSpawned: true,
+        ownerToken: client.token,
+        roomId: client.currentRoomId
+    };
+    client.entities.set(boss.id, boss);
+    GlobalState.levelEntities.set('AC_Mission1', new Map<number, any>([[boss.id, boss]]));
+
+    EntityHandler.maybeTriggerCastleHockeBossIntro(client as never, boss.id);
+
+    assert.equal(LevelConfig.isDungeonLevel('AC_Mission1'), true);
+    assert.equal(LevelConfig.isDungeonLevel('AC_Mission1Hard'), true);
+    assert.equal(LevelConfig.isDungeonLevel('Castle'), true);
+    assert.equal(LevelConfig.isDungeonLevel('CastleHard'), true);
+    const enterWorld = WorldEnter.buildEnterWorldPacket(
+        999,
+        0,
+        '',
+        false,
+        0,
+        0,
+        'localhost',
+        8000,
+        LevelConfig.get('AC_Mission1').swf,
+        50,
+        50,
+        'AC_Mission1',
+        '',
+        '',
+        LevelConfig.isDungeonLevel('AC_Mission1'),
+        false,
+        0,
+        0,
+        client.character as never
+    );
+    assert.equal(decodeEnterWorldDungeonFlag(enterWorld.toBuffer()), true);
+
+    const bossInfo = client.sentPackets
+        .filter((packet) => packet.id === 0xAC)
+        .map((packet) => decodeRoomBossInfoPacket(packet.payload));
+    assert.deepEqual(bossInfo, [
+        {
+            roomId: client.currentRoomId,
+            bossId: boss.id,
+            bossName: "Hocke's Gatekeeper"
+        }
+    ]);
+
+    const introPacketIds = client.sentPackets
+        .map((packet) => packet.id)
+        .filter((id) => [0xA5, 0xA9, 0xAC, 0xA8, 0x76, 0xA6].includes(id));
+    assert.deepEqual(introPacketIds, [0xA5, 0xA9, 0xAC, 0xA8, 0x76, 0x76, 0x76, 0x76, 0x76, 0xA9, 0xA6]);
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x07),
+        false,
+        'boss intro lock should not send early incremental updates before the client entity link is ready'
+    );
+
+    const thoughts = client.sentPackets
+        .filter((packet) => packet.id === 0x76)
+        .map((packet) => decodeNpcBubblePacket(packet.payload));
+    assert.equal(thoughts.some((line) => line.npcId === boss.id && line.text === "Alpha, you've come at last."), true);
+    assert.equal(thoughts.some((line) => line.npcId === client.clientEntID && line.text === 'Who are you?'), true);
+    assert.equal(thoughts.some((line) => line.npcId === boss.id && line.text === "Hocke's gate belongs to the Dragon Legion."), true);
+    assert.equal(thoughts.some((line) => line.npcId === client.clientEntID && line.text === 'I need to get into Castle Hocke.'), true);
+    assert.equal(thoughts.some((line) => line.npcId === boss.id && line.text === 'Then you must go through me.'), true);
+    assert.equal(thoughts.some((line) => line.text.includes('<Goto')), false);
+    assert.equal(client.castleHockeBossIntroTriggeredScopes.has('AC_Mission1:castle-hocke-first-boss-intro'), true);
+    assert.equal(boss.untargetable, false);
+    assert.equal(boss.entState, 0);
+}
+
+function testCastleHockeCarnisaurIntroKeepsRoomZero(): void {
+    const client = createCastleHockeBossIntroClient();
+    client.currentRoomId = 0;
+    const boss = {
+        id: 478957,
+        name: 'CastleLizardCarnisaur1',
+        isPlayer: false,
+        x: 2200,
+        y: 500,
+        team: 2,
+        entState: 1,
+        facingLeft: true,
+        untargetable: false,
+        clientSpawned: true,
+        ownerToken: client.token,
+        roomId: -1
+    };
+    client.entities.set(boss.id, boss);
+    GlobalState.levelEntities.set('AC_Mission1', new Map<number, any>([[boss.id, boss]]));
+
+    EntityHandler.maybeTriggerCastleHockeBossIntro(client as never, boss.id);
+
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0xAC), true);
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0xA8), true);
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0xA5), true);
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0xA6), true);
+    assert.equal(client.currentRoomId, 0);
+}
+
+function testCastleHockeCarnisaurIntroDoesNotTriggerWhenFar(): void {
+    const client = createCastleHockeBossIntroClient('Castle');
+    const boss = {
+        id: 478957,
+        name: 'CastleLizardCarnisaur1',
+        isPlayer: false,
+        x: 9000,
+        y: 500,
+        team: 2,
+        entState: 1,
+        facingLeft: true,
+        untargetable: false,
+        clientSpawned: true,
+        ownerToken: client.token,
+        roomId: client.currentRoomId
+    };
+    client.entities.set(boss.id, boss);
+    GlobalState.levelEntities.set('Castle', new Map<number, any>([[boss.id, boss]]));
+
+    EntityHandler.maybeTriggerCastleHockeBossIntro(client as never, boss.id);
+
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0xAC), false);
+    assert.equal(client.castleHockeBossIntroTriggeredScopes.size, 0);
+}
+
+function testCastleHockeMissionIntroWaitsForReliablePlayerPosition(): void {
+    const client = createCastleHockeBossIntroClient();
+    client.entities.delete(client.clientEntID);
+    (client as any).character.CurrentLevel.x = undefined;
+    (client as any).character.CurrentLevel.y = undefined;
+    const boss = {
+        id: 478957,
+        name: 'CastleLizardCarnisaur1',
+        isPlayer: false,
+        x: 16054,
+        y: -1981,
+        team: 2,
+        entState: 1,
+        facingLeft: true,
+        untargetable: false
+    };
+    GlobalState.levelEntities.set('AC_Mission1', new Map<number, any>([[boss.id, boss]]));
+
+    EntityHandler.maybeTriggerCastleHockeBossIntro(client as never);
+
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0x76), false);
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0xA5), false);
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0xAC), false);
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0xA6), false);
+    assert.equal(client.castleHockeBossIntroTriggeredScopes.has('AC_Mission1:castle-hocke-first-boss-intro'), false);
+}
+
+function testCastleHockeMissionUsesClientAuthoredBossEntities(): void {
+    const missionNpcs = NpcLoader.getNpcsForLevel('AC_Mission1');
+    assert.equal(missionNpcs.some((npc) => npc.name === 'CastleLizardCarnisaur1'), true);
+
+    const client = createCastleHockeBossIntroClient();
+    EntityHandler.sendInitialLevelEntities(client as never, 'AC_Mission1');
+
+    assert.equal(
+        Array.from(client.entities.values()).some((entity) => entity.name === 'CastleLizardCarnisaur1'),
+        false
+    );
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0x08), false);
+}
+
 function testSoloDungeonHostileReferencePromotesToPartyJoinerSeed(): void {
     const owner = createFakeClient('Alpha');
     const joiner = createFakeClient('Beta');
@@ -2114,6 +2451,46 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         testCraftTownTutorialClientSourceBossWoundedThoughtsPlay();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testCastleHockeGatePositionStartsIntroAndBossBar();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testCastleHockeGatePositionUsesStaticBossFallback();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testCastleHockeDialogSchedulesAfterCutsceneStart();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testCastleHockeCarnisaurStartsIntroAndBossBarWhenNear();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testCastleHockeCarnisaurIntroKeepsRoomZero();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testCastleHockeCarnisaurIntroDoesNotTriggerWhenFar();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testCastleHockeMissionIntroWaitsForReliablePlayerPosition();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testCastleHockeMissionUsesClientAuthoredBossEntities();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
