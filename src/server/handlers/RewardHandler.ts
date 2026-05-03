@@ -7,7 +7,7 @@ import { JsonAdapter } from '../database/JsonAdapter';
 import { noteDungeonRunChestOpened, noteDungeonRunTreasure } from '../core/DungeonRunStats';
 import { CombatHandler } from './CombatHandler';
 import { getClientCharacterKey, getPartyIdForClient } from '../core/PartySync';
-import { areClientsInSameLevelScope, getClientLevelScope, getScopeLevelName } from '../core/LevelScope';
+import { areClientsInSameLevelScope, getClientLevelScope, getScopeLevelInstanceId, getScopeLevelName } from '../core/LevelScope';
 import { upsertInventoryGear } from '../utils/GearInventory';
 import { getEquippedCharmBonuses } from '../utils/CharmBonuses';
 import { getEquippedGearGoldFind } from '../utils/GearGoldBonuses';
@@ -290,7 +290,7 @@ export class RewardHandler {
                 continue;
             }
 
-            markCharacterDungeonEnemyDead(other.character, levelName, deadEntity, progress);
+            markCharacterDungeonEnemyDead(other.character, levelName, deadEntity, progress, getScopeLevelInstanceId(levelScope));
             saves.push(db.saveCharacterSnapshot(other.userId, other.character).catch((error) => {
                 console.error(`[DerelictionSnapshot] Failed to save reward defeat for ${other.character?.name ?? 'unknown'}:`, error);
             }));

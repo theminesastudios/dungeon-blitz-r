@@ -1107,7 +1107,10 @@ export class CharacterHandler {
             y: entry.newY ?? 0,
             hasCoord: entry.newHasCoord ?? false
         };
-        LevelHandler.prepareGoblinRiverDungeonEntryState(client);
+        const resetPersistentDungeonSnapshot = LevelHandler.prepareGoblinRiverDungeonEntryState(client);
+        if (resetPersistentDungeonSnapshot) {
+            await CharacterHandler.saveCharacterSnapshot(client);
+        }
 
         // Send Player Data (0x10)
         const pdPkt = WorldEnter.buildPlayerDataPacket(

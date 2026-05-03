@@ -3,6 +3,7 @@ import { LevelConfig } from './LevelConfig';
 
 export type PersistentDungeonSnapshot = {
     levelName: string;
+    levelInstanceId?: string;
     progress: number;
     deadSpawnKeys: string[];
     updatedAt: number;
@@ -20,6 +21,10 @@ export function isPersistentDungeonSnapshotLevel(levelName: string | null | unde
 
 export function getDungeonSnapshotKey(levelName: string | null | undefined): string {
     return LevelConfig.normalizeLevelName(levelName) || String(levelName ?? '').trim();
+}
+
+function normalizeSnapshotInstanceId(value: unknown): string {
+    return String(value ?? '').trim();
 }
 
 export function getDungeonSnapshotSpawnKey(entity: any): string {
@@ -58,6 +63,7 @@ export function getCharacterDungeonSnapshot(
     if (!snapshot && create) {
         snapshot = {
             levelName: key,
+            levelInstanceId: '',
             progress: 0,
             deadSpawnKeys: [],
             updatedAt: Date.now()
@@ -70,16 +76,46 @@ export function getCharacterDungeonSnapshot(
     }
 
     snapshot.levelName = key;
+    if (Object.prototype.hasOwnProperty.call(snapshot, 'levelInstanceId')) {
+        snapshot.levelInstanceId = normalizeSnapshotInstanceId(snapshot.levelInstanceId);
+    }
     snapshot.progress = Math.max(0, Math.min(100, Math.round(Number(snapshot.progress ?? 0) || 0)));
     snapshot.deadSpawnKeys = Array.from(new Set(Array.isArray(snapshot.deadSpawnKeys) ? snapshot.deadSpawnKeys.map(String) : []));
     snapshot.updatedAt = Math.round(Number(snapshot.updatedAt ?? 0) || Date.now());
     return snapshot;
 }
 
+export function ensureCharacterDungeonSnapshotForInstance(
+    character: Character | null | undefined,
+    levelName: string | null | undefined,
+    levelInstanceId: string | null | undefined
+): boolean {
+    const snapshot = getCharacterDungeonSnapshot(character, levelName, true);
+    if (!snapshot) {
+        return false;
+    }
+
+    const normalizedInstanceId = normalizeSnapshotInstanceId(levelInstanceId);
+    if (snapshot.levelInstanceId === normalizedInstanceId) {
+        return false;
+    }
+
+    snapshot.levelInstanceId = normalizedInstanceId;
+    snapshot.progress = 0;
+    snapshot.deadSpawnKeys = [];
+    snapshot.updatedAt = Date.now();
+    return true;
+}
+
 export function getCharacterDungeonDeadSpawnKeys(
     character: Character | null | undefined,
-    levelName: string | null | undefined
+    levelName: string | null | undefined,
+    levelInstanceId?: string | null | undefined
 ): Set<string> {
+    if (levelInstanceId !== undefined) {
+        ensureCharacterDungeonSnapshotForInstance(character, levelName, levelInstanceId);
+    }
+
     return new Set(getCharacterDungeonSnapshot(character, levelName)?.deadSpawnKeys ?? []);
 }
 
@@ -87,11 +123,16 @@ export function markCharacterDungeonEnemyDead(
     character: Character | null | undefined,
     levelName: string | null | undefined,
     entity: any,
-    progress?: number
+    progress?: number,
+    levelInstanceId?: string | null | undefined
 ): boolean {
     const snapshot = getCharacterDungeonSnapshot(character, levelName, true);
     if (!snapshot) {
         return false;
+    }
+
+    if (levelInstanceId !== undefined) {
+        ensureCharacterDungeonSnapshotForInstance(character, levelName, levelInstanceId);
     }
 
     const spawnKey = getDungeonSnapshotSpawnKey(entity);
@@ -113,11 +154,16 @@ export function markCharacterDungeonEnemyDead(
 export function updateCharacterDungeonSnapshotProgress(
     character: Character | null | undefined,
     levelName: string | null | undefined,
-    progress: number
+    progress: number,
+    levelInstanceId?: string | null | undefined
 ): boolean {
     const snapshot = getCharacterDungeonSnapshot(character, levelName, true);
     if (!snapshot) {
         return false;
+    }
+
+    if (levelInstanceId !== undefined) {
+        ensureCharacterDungeonSnapshotForInstance(character, levelName, levelInstanceId);
     }
 
     const nextProgress = Math.max(0, Math.min(100, Math.round(Number(progress ?? 0) || 0)));

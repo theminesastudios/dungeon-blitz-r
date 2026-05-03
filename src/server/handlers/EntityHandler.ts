@@ -1392,7 +1392,7 @@ export class EntityHandler {
 
         if (!EntityHandler.usesClientSpawn(levelName)) {
             const npcs = NpcLoader.getNpcsForLevel(levelName);
-            const deadSpawnKeys = getCharacterDungeonDeadSpawnKeys(client.character, levelName);
+            const deadSpawnKeys = getCharacterDungeonDeadSpawnKeys(client.character, levelName, client.levelInstanceId);
             const levelScope = getLevelScopeKey(levelName, client.levelInstanceId);
             const trackSharedProgress = usesSharedDungeonProgress(levelName);
             let initializedCount = 0;

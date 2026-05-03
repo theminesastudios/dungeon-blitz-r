@@ -47,11 +47,13 @@ import {
     areClientsInSameLevelScope,
     createDungeonInstanceId,
     getClientLevelScope,
+    getScopeLevelInstanceId,
     getScopeLevelName,
     getLevelScopeKey,
     normalizeLevelInstanceId
 } from '../core/LevelScope';
 import {
+    ensureCharacterDungeonSnapshotForInstance,
     isPersistentDungeonSnapshotLevel,
     markCharacterDungeonEnemyDead,
     updateCharacterDungeonSnapshotProgress
@@ -843,7 +845,7 @@ export class LevelHandler {
                 continue;
             }
 
-            updateCharacterDungeonSnapshotProgress(other.character, levelName, progress);
+            updateCharacterDungeonSnapshotProgress(other.character, levelName, progress, getScopeLevelInstanceId(levelScope));
             void db.saveCharacterSnapshot(other.userId, other.character).catch((error) => {
                 console.error(`[DerelictionSnapshot] Failed to save progress for ${other.character?.name ?? 'unknown'}:`, error);
             });
@@ -864,7 +866,7 @@ export class LevelHandler {
                 continue;
             }
 
-            markCharacterDungeonEnemyDead(other.character, levelName, entity, progress);
+            markCharacterDungeonEnemyDead(other.character, levelName, entity, progress, getScopeLevelInstanceId(scopeKey));
             saves.push(db.saveCharacterSnapshot(other.userId, other.character).catch((error) => {
                 console.error(`[DerelictionSnapshot] Failed to save defeated enemy for ${other.character?.name ?? 'unknown'}:`, error);
             }));
@@ -965,28 +967,38 @@ export class LevelHandler {
             normalizedLevel === 'CraftTownTutorial';
     }
 
-    static prepareGoblinRiverDungeonEntryState(client: Client): void {
+    static prepareGoblinRiverDungeonEntryState(client: Client): boolean {
         if (!client.character || !LevelHandler.shouldSkipDungeonRoomProgressSync(client.currentLevel)) {
-            return;
+            return false;
+        }
+
+        const resetPersistentSnapshot = isPersistentDungeonSnapshotLevel(client.currentLevel)
+            ? ensureCharacterDungeonSnapshotForInstance(client.character, client.currentLevel, client.levelInstanceId)
+            : false;
+        if (resetPersistentSnapshot) {
+            console.log(
+                `[DerelictionSnapshot] Reset stale snapshot for ${client.character.name} in ${client.currentLevel} instance '${client.levelInstanceId}'`
+            );
         }
 
         if (client.currentLevel === 'TutorialDungeon') {
             client.currentRoomId = 0;
             client.startedRoomEvents.clear();
             client.character.questTrackerState = LevelHandler.TUTORIAL_DUNGEON_INITIAL_PROGRESS;
-            return;
+            return resetPersistentSnapshot;
         }
 
         if (client.currentLevel === 'CraftTownTutorial') {
             client.currentRoomId = 0;
             client.startedRoomEvents.clear();
             client.character.questTrackerState = 0;
-            return;
+            return resetPersistentSnapshot;
         }
 
         client.currentRoomId = 0;
         client.startedRoomEvents.clear();
         client.character.questTrackerState = getSharedDungeonInitialProgress(client.currentLevel);
+        return resetPersistentSnapshot;
     }
 
     private static shouldClampTutorialDungeonToIntroProgress(client: Client): boolean {

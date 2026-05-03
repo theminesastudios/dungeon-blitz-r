@@ -462,6 +462,7 @@ function testDerelictionCharacterSnapshotSkipsDefeatedServerSpawn(): void {
         dungeonSnapshots: {
             BT_Mission4: {
                 levelName: 'BT_Mission4',
+                levelInstanceId: 'snapshot-instance',
                 progress: 1,
                 deadSpawnKeys: [firstNpc.spawnKey],
                 updatedAt: Date.now()
@@ -476,6 +477,39 @@ function testDerelictionCharacterSnapshotSkipsDefeatedServerSpawn(): void {
     assert.equal(levelMap?.has(firstNpc.id), false, 'defeated snapshot enemy should not be re-seeded');
     assert.equal(levelMap?.size, 139, 'only living Dereliction enemies should be spawned');
     assert.equal(client.sentPackets.filter((packet) => packet.id === 0x0F).length, 139);
+}
+
+function testDerelictionNewInstanceResetsStaleCharacterSnapshot(): void {
+    const firstNpc = NpcLoader.getNpcsForLevel('BT_Mission4')[0];
+    assert.ok(firstNpc?.spawnKey, 'Dereliction NPC data should include stable spawn keys');
+
+    const client = createFakeClient('Watcher');
+    client.currentLevel = 'BT_Mission4';
+    client.levelInstanceId = 'fresh-instance';
+    client.character = {
+        name: 'Watcher',
+        level: 15,
+        dungeonSnapshots: {
+            BT_Mission4: {
+                levelName: 'BT_Mission4',
+                levelInstanceId: 'old-instance',
+                progress: 100,
+                deadSpawnKeys: [firstNpc.spawnKey],
+                updatedAt: Date.now()
+            }
+        }
+    } as any;
+
+    EntityHandler.sendInitialLevelEntities(client as never, 'BT_Mission4');
+
+    const snapshot = (client.character as any).dungeonSnapshots.BT_Mission4;
+    const levelMap = GlobalState.levelEntities.get('BT_Mission4#fresh-instance');
+    assert.ok(levelMap, 'fresh Dereliction instance should create a scoped server entity map');
+    assert.equal(levelMap?.size, 140, 'fresh Dereliction instance should not inherit stale defeated enemies');
+    assert.equal(client.sentPackets.filter((packet) => packet.id === 0x0F).length, 140);
+    assert.equal(snapshot.levelInstanceId, 'fresh-instance');
+    assert.equal(snapshot.progress, 0);
+    assert.deepEqual(snapshot.deadSpawnKeys, []);
 }
 
 function testDerelictionExistingEmptyScopeStillSeedsServerHostiles(): void {
@@ -2473,6 +2507,12 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         testDerelictionCharacterSnapshotSkipsDefeatedServerSpawn();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testDerelictionNewInstanceResetsStaleCharacterSnapshot();
 
         GlobalState.levelEntities.clear();
         GlobalState.levelQuestProgress.clear();
