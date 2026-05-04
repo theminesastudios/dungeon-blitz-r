@@ -4,18 +4,23 @@ import { LevelConfig } from './LevelConfig';
 import { getClientLevelScope, getScopeLevelName } from './LevelScope';
 import { getClientCharacterKey, getPartyLeaderCharacterKeyForClient } from './PartySync';
 import { normalizeCharacterKey } from './SocialState';
+import { NpcLoader } from '../data/NpcLoader';
 import {
     isWolfsEndDungeonLevel,
     isDungeonStatsDefeated,
     isDungeonStatsHostile
 } from './WolfsEndDungeonStatsPolicy';
-import { isPersistentDungeonSnapshotLevel } from './PersistentDungeonSnapshot';
+import { getDungeonSnapshotSpawnKey, isPersistentDungeonSnapshotLevel } from './PersistentDungeonSnapshot';
 
 const GOBLIN_RIVER_INITIAL_PROGRESS = 11;
 const SHARED_DUNGEON_PROGRESS_EXCLUDED_LEVELS = new Set<string>([
     'TutorialBoat',
     'TutorialDungeon',
     'TutorialDungeonHard'
+]);
+const DERELICTION_LEVELS = new Set<string>([
+    'BT_Mission4',
+    'BT_Mission4Hard'
 ]);
 
 function normalizeAuthorityToken(value: unknown): number {
@@ -30,6 +35,18 @@ function clampProgress(value: unknown): number {
     }
 
     return Math.max(0, Math.min(100, Math.round(progress)));
+}
+
+function normalizeStringSet(value: unknown): Set<string> {
+    if (value instanceof Set) {
+        return new Set(Array.from(value.values()).map(String).filter(Boolean));
+    }
+
+    if (Array.isArray(value)) {
+        return new Set(value.map(String).filter(Boolean));
+    }
+
+    return new Set<string>();
 }
 
 export function usesSharedDungeonProgress(levelName: string | null | undefined): boolean {
@@ -68,6 +85,7 @@ export function getSharedDungeonProgressState(
     state.authorityToken = normalizeAuthorityToken(state.authorityToken);
     state.trackedHostileIds ??= new Set<number>();
     state.defeatedHostileIds ??= new Set<number>();
+    state.defeatedSpawnKeys = normalizeStringSet(state.defeatedSpawnKeys);
     return state;
 }
 
@@ -89,6 +107,7 @@ export function getOrCreateSharedDungeonProgressState(
         authorityToken: 0,
         trackedHostileIds: new Set<number>(),
         defeatedHostileIds: new Set<number>(),
+        defeatedSpawnKeys: new Set<string>(),
         liveStatsByCharacter: new Map()
     };
     GlobalState.levelQuestProgress.set(scopeKey, created);
@@ -141,6 +160,33 @@ function isSharedDungeonTrackedHostile(entity: any): boolean {
 
 function isEntityDefeated(entity: any): boolean {
     return isDungeonStatsDefeated(entity);
+}
+
+function getPersistentDungeonSpawnKey(levelScope: string | null | undefined, entity: any): string {
+    if (!isPersistentDungeonSnapshotLevel(getScopeLevelName(levelScope))) {
+        return '';
+    }
+
+    return getDungeonSnapshotSpawnKey(entity);
+}
+
+function getPersistentDungeonReferenceSpawnKeys(levelScope: string | null | undefined): Set<string> {
+    const levelName = getScopeLevelName(levelScope);
+    if (!isPersistentDungeonSnapshotLevel(levelName)) {
+        return new Set<string>();
+    }
+
+    return new Set(
+        NpcLoader.getNpcsForLevel(levelName)
+            .filter((npc) => Number(npc?.team ?? 0) === 2)
+            .map((npc) => String(npc?.spawnKey ?? '').trim())
+            .filter(Boolean)
+    );
+}
+
+export function getSharedDungeonDefeatedSpawnKeys(levelScope: string | null | undefined): Set<string> {
+    const state = getSharedDungeonProgressState(levelScope);
+    return new Set(state?.defeatedSpawnKeys ?? []);
 }
 
 export function resolveSharedDungeonProgressAuthorityToken(levelScope: string | null | undefined): number {
@@ -229,6 +275,10 @@ export function noteSharedDungeonHostileState(levelScope: string | null | undefi
     state.trackedHostileIds?.add(entityId);
     if (isEntityDefeated(entity)) {
         state.defeatedHostileIds?.add(entityId);
+        const spawnKey = getPersistentDungeonSpawnKey(levelScope, entity);
+        if (spawnKey) {
+            state.defeatedSpawnKeys?.add(spawnKey);
+        }
     } else {
         state.defeatedHostileIds?.delete(entityId);
     }
@@ -247,6 +297,10 @@ export function noteSharedDungeonHostileDestroyed(levelScope: string | null | un
     state.trackedHostileIds?.add(entityId);
     if (isEntityDefeated(entity)) {
         state.defeatedHostileIds?.add(entityId);
+        const spawnKey = getPersistentDungeonSpawnKey(levelScope, entity);
+        if (spawnKey) {
+            state.defeatedSpawnKeys?.add(spawnKey);
+        }
     }
 }
 
@@ -266,6 +320,7 @@ export function getSharedDungeonProgressTotals(
     const tracked = state.trackedHostileIds ?? new Set<number>();
     const defeated = state.defeatedHostileIds ?? new Set<number>();
     const levelMap = GlobalState.levelEntities.get(scopeKey);
+    const referenceSpawnKeys = getPersistentDungeonReferenceSpawnKeys(scopeKey);
 
     for (const [entityId, entity] of levelMap?.entries() ?? []) {
         if (!isSharedDungeonTrackedHostile(entity)) {
@@ -275,9 +330,28 @@ export function getSharedDungeonProgressTotals(
         tracked.add(entityId);
         if (isEntityDefeated(entity)) {
             defeated.add(entityId);
+            const spawnKey = getPersistentDungeonSpawnKey(scopeKey, entity);
+            if (spawnKey) {
+                state.defeatedSpawnKeys?.add(spawnKey);
+            }
         } else {
             defeated.delete(entityId);
         }
+    }
+
+    if (referenceSpawnKeys.size > 0) {
+        const defeatedSpawnKeys = state.defeatedSpawnKeys ?? new Set<string>();
+        let defeatedReferenceCount = 0;
+        for (const spawnKey of defeatedSpawnKeys.values()) {
+            if (referenceSpawnKeys.has(spawnKey)) {
+                defeatedReferenceCount++;
+            }
+        }
+
+        return {
+            total: referenceSpawnKeys.size,
+            defeated: defeatedReferenceCount
+        };
     }
 
     let defeatedCount = 0;
@@ -307,6 +381,12 @@ export function recomputeSharedDungeonProgress(levelScope: string | null | undef
         state.progress = totals.total > 0
             ? clampProgress(initialProgress + ((totals.defeated / totals.total) * (100 - initialProgress)))
             : initialProgress;
+        if (DERELICTION_LEVELS.has(levelName)) {
+            console.log(
+                `[SharedDungeonProgress] ${scopeKey} progress=${state.progress}% defeated=${totals.defeated}/${totals.total} ` +
+                `trackedIds=${state.trackedHostileIds?.size ?? 0} defeatedSpawnKeys=${state.defeatedSpawnKeys?.size ?? 0}`
+            );
+        }
         refreshSharedDungeonLiveStats(state, scopeKey);
         return state;
     }

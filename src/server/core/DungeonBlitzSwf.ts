@@ -41,7 +41,7 @@ function getReplacements(mode: DungeonBlitzSwfMode): StringReplacement[] {
 
     return [
         { oldValue: LOCAL_HOST, newValue: REMOTE_HOST },
-        { oldValue: '10.179.241.95', newValue: REMOTE_HOST },
+        { oldValue: '35.202.139.197', newValue: REMOTE_HOST },
         { oldValue: LOCAL_ASSET_PATH, newValue: REMOTE_ASSET_PATH },
         { oldValue: LOCAL_REFRESH_URL, newValue: REMOTE_REFRESH_URL },
         { oldValue: LOCAL_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL }

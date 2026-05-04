@@ -10,8 +10,8 @@ import { LevelConfig } from '../core/LevelConfig';
 import { PetHandler } from './PetHandler';
 import { BuildingHandler } from './BuildingHandler';
 import { noteDungeonRunBossCutscene, noteDungeonRunEntitySeen } from '../core/DungeonRunStats';
-import { getCharacterDungeonDeadSpawnKeys, getDungeonSnapshotSpawnKey } from '../core/PersistentDungeonSnapshot';
-import { noteSharedDungeonHostileState, usesSharedDungeonProgress } from '../core/SharedDungeonProgress';
+import { getCharacterDungeonDeadSpawnKeys, getDungeonSnapshotSpawnKey, isPersistentDungeonSnapshotLevel } from '../core/PersistentDungeonSnapshot';
+import { getSharedDungeonDefeatedSpawnKeys, noteSharedDungeonHostileState, usesSharedDungeonProgress } from '../core/SharedDungeonProgress';
 import { areClientsInSameParty, getPartyIdForClient, isClientPartyLeader, sharesRoomIds } from '../core/PartySync';
 import { areClientsInSameLevelScope, getClientLevelScope, getLevelScopeKey } from '../core/LevelScope';
 
@@ -21,8 +21,6 @@ export class EntityHandler {
         'CraftTown',
         'NewbieRoad',
         'NewbieRoadHard',
-        'GoblinRiverDungeon',
-        'GoblinRiverDungeonHard',
         'SwampRoadNorth',
         'SwampRoadNorthHard',
         'SwampRoadConnection',
@@ -45,8 +43,6 @@ export class EntityHandler {
     private static readonly MOUNT_SYNC_RETRY_DELAYS_MS = [0, 300, 1200, 2500, 4000];
     private static readonly CLIENT_SPAWN_JOINER_SEED_DELAYS_MS = [2500, 4500];
     private static readonly LEADER_AUTHORITATIVE_CLIENT_SPAWN_LEVELS = new Set<string>([
-        'GoblinRiverDungeon',
-        'GoblinRiverDungeonHard'
     ]);
     private static readonly GOBLIN_RIVER_ROOM_SYNC_SKIP_LEVELS = new Set<string>([
         'TutorialDungeon',
@@ -691,6 +687,46 @@ export class EntityHandler {
             return sharesRoomIds(client.currentRoomId, entityRoomId);
         }
 
+        return true;
+    }
+
+    private static suppressClientSpawnedServerDungeonHostile(
+        client: Client,
+        levelName: string | null | undefined,
+        levelMap: Map<number, any> | null,
+        entity: any
+    ): boolean {
+        if (
+            !levelName ||
+            !levelMap ||
+            EntityHandler.usesClientSpawn(levelName) ||
+            !isPersistentDungeonSnapshotLevel(levelName) ||
+            !entity?.clientSpawned ||
+            entity?.isPlayer ||
+            Number(entity?.team ?? 0) !== 2
+        ) {
+            return false;
+        }
+
+        const canonical = EntityHandler.findLeaderAuthoritativeClientSpawnMatch(levelMap, entity);
+        const duplicateId = Number(entity?.id ?? 0);
+        if (duplicateId > 0) {
+            client.entities.delete(duplicateId);
+            client.knownEntityIds.delete(duplicateId);
+            EntityHandler.sendDestroyEntity(client, duplicateId);
+        }
+
+        if (canonical && !canonical?.clientSpawned && !canonical?.dead) {
+            EntityHandler.ensureEntityKnown(client, levelName, Number(canonical.id ?? 0));
+        }
+
+        if (levelName === 'BT_Mission4' || levelName === 'BT_Mission4Hard') {
+            console.log(
+                `[ServerSpawn] Destroyed client duplicate hostile id=${duplicateId || 'unknown'} ` +
+                `in ${getClientLevelScope(client)} from ${client.character?.name ?? 'unknown'}; ` +
+                `canonical=${Number(canonical?.id ?? 0) || 'none'}`
+            );
+        }
         return true;
     }
 
@@ -1347,6 +1383,10 @@ export class EntityHandler {
             return;
         }
 
+        if (EntityHandler.suppressClientSpawnedServerDungeonHostile(client, levelName, levelMap, props)) {
+            return;
+        }
+
         if (!isPlayer && levelName && DebugConfig.enabled) {
             console.log(`[EntityHandler] Non-player entity ACCEPTED: id=${entityId} name=${entName} team=${team} from ${client.character?.name} in ${levelName} scope=${getClientLevelScope(client)} levelMap.size=${levelMap?.size ?? 'null'}`);
         }
@@ -1392,10 +1432,16 @@ export class EntityHandler {
 
         if (!EntityHandler.usesClientSpawn(levelName)) {
             const npcs = NpcLoader.getNpcsForLevel(levelName);
-            const deadSpawnKeys = getCharacterDungeonDeadSpawnKeys(client.character, levelName, client.levelInstanceId);
             const levelScope = getLevelScopeKey(levelName, client.levelInstanceId);
+            const characterDeadSpawnKeys = getCharacterDungeonDeadSpawnKeys(client.character, levelName, client.levelInstanceId);
+            const sharedDeadSpawnKeys = getSharedDungeonDefeatedSpawnKeys(levelScope);
+            const deadSpawnKeys = new Set<string>([
+                ...Array.from(characterDeadSpawnKeys),
+                ...Array.from(sharedDeadSpawnKeys)
+            ]);
             const trackSharedProgress = usesSharedDungeonProgress(levelName);
             let initializedCount = 0;
+            let skippedDeadCount = 0;
 
             for (const npc of npcs) {
                 const entityProps = {
@@ -1407,6 +1453,7 @@ export class EntityHandler {
 
                 if (deadSpawnKeys.has(spawnKey)) {
                     levelMap.delete(entityProps.id);
+                    skippedDeadCount++;
                     if (trackSharedProgress) {
                         noteSharedDungeonHostileState(levelScope, entityProps.id, {
                             ...entityProps,
@@ -1433,6 +1480,14 @@ export class EntityHandler {
 
             if (initializedCount > 0) {
                 console.log(`[EntityHandler] Initialized ${initializedCount}/${npcs.length} missing server NPCs for ${levelName}`);
+            }
+            if (levelName === 'BT_Mission4' || levelName === 'BT_Mission4Hard') {
+                console.log(
+                    `[ServerSpawn] ${levelScope} -> ${client.character?.name ?? 'unknown'} ` +
+                    `reference=${npcs.length} initialized=${initializedCount} skippedDead=${skippedDeadCount} ` +
+                    `characterDead=${characterDeadSpawnKeys.size} sharedDead=${sharedDeadSpawnKeys.size} ` +
+                    `scopeEntities=${levelMap.size}`
+                );
             }
         }
 
@@ -1465,7 +1520,10 @@ export class EntityHandler {
         }
 
         if (levelName === 'BT_Mission4' || levelName === 'BT_Mission4Hard') {
-            console.log(`[EntityHandler] Sent ${sentCount} server NPC spawn packets for ${levelName} to ${client.character?.name}`);
+            console.log(
+                `[ServerSpawn] Sent ${sentCount} server NPC spawn packets for ${getLevelScopeKey(levelName, client.levelInstanceId)} ` +
+                `to ${client.character?.name ?? 'unknown'}`
+            );
         }
     }
 

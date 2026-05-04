@@ -23,7 +23,7 @@ import { Config } from '../core/config';
 import { MissionLoader } from '../data/MissionLoader';
 import { NpcLoader, NpcDef } from '../data/NpcLoader';
 import { MissionID } from '../data/runtime';
-import { Entity, EntityTeam } from '../core/Entity';
+import { Entity, EntityState, EntityTeam } from '../core/Entity';
 import { Character } from '../database/Database';
 import { EntityHandler } from './EntityHandler';
 import { MissionHandler } from './MissionHandler';
@@ -35,10 +35,12 @@ import { areClientsInSameParty, getPartyIdForClient, sharesRoomIds } from '../co
 import { syncPotionReservationForLevelTransition } from '../utils/ConsumableState';
 import {
     getSharedDungeonInitialProgress,
+    getSharedDungeonDefeatedSpawnKeys,
     getOrCreateSharedDungeonProgressState,
     getSharedDungeonProgressState,
     getSharedDungeonProgressTotals,
     hasSharedDungeonProgressHostiles,
+    noteSharedDungeonHostileDestroyed,
     recomputeSharedDungeonProgress,
     resolveSharedDungeonProgressAuthorityToken,
     usesSharedDungeonProgress
@@ -54,6 +56,8 @@ import {
 } from '../core/LevelScope';
 import {
     ensureCharacterDungeonSnapshotForInstance,
+    getDungeonSnapshotSpawnKey,
+    getReusableIncompleteDungeonSnapshotInstanceId,
     isPersistentDungeonSnapshotLevel,
     markCharacterDungeonEnemyDead,
     updateCharacterDungeonSnapshotProgress
@@ -656,6 +660,8 @@ export class LevelHandler {
         }
 
         if (shouldSyncDungeonProgress) {
+            levelInstanceId = levelInstanceId ||
+                getReusableIncompleteDungeonSnapshotInstanceId(client.character, normalizedTargetLevel);
             syncAnchorStartedAt = syncAnchorStartedAt ?? Date.now();
             // Dungeon start position is authored by the dungeon SWF; never force coordinates on entry.
             hasCoord = false;
@@ -852,6 +858,39 @@ export class LevelHandler {
         }
     }
 
+    static syncCharacterSnapshotFromSharedDungeonScope(client: Client): boolean {
+        const levelScope = getClientLevelScope(client);
+        const levelName = getScopeLevelName(levelScope);
+        if (!levelScope || !client.character || !isPersistentDungeonSnapshotLevel(levelName)) {
+            return false;
+        }
+
+        const defeatedSpawnKeys = getSharedDungeonDefeatedSpawnKeys(levelScope);
+        if (defeatedSpawnKeys.size === 0) {
+            return false;
+        }
+
+        const progress = Number(getSharedDungeonProgressState(levelScope)?.progress ?? client.character.questTrackerState ?? 0);
+        let changed = false;
+        for (const spawnKey of defeatedSpawnKeys) {
+            changed = markCharacterDungeonEnemyDead(
+                client.character,
+                levelName,
+                { spawnKey },
+                progress,
+                getScopeLevelInstanceId(levelScope)
+            ) || changed;
+        }
+
+        if (changed && (levelName === 'BT_Mission4' || levelName === 'BT_Mission4Hard')) {
+            console.log(
+                `[DungeonSnapshot] Synced ${defeatedSpawnKeys.size} shared defeated enemies into ` +
+                `${client.character.name}'s ${levelScope} snapshot at progress=${progress}`
+            );
+        }
+        return changed;
+    }
+
     static async persistDungeonEnemyDestroyed(levelScope: string | null | undefined, entity: any): Promise<void> {
         const scopeKey = String(levelScope ?? '').trim();
         const levelName = getScopeLevelName(scopeKey);
@@ -859,14 +898,32 @@ export class LevelHandler {
             return;
         }
 
+        const deadEntity = {
+            ...entity,
+            dead: true,
+            hp: 0,
+            entState: EntityState.DEAD
+        };
+        const entityId = Math.round(Number(deadEntity.id ?? 0) || 0);
+        if (entityId > 0) {
+            noteSharedDungeonHostileDestroyed(scopeKey, entityId, deadEntity);
+        }
+
         const progress = Number(getSharedDungeonProgressState(scopeKey)?.progress ?? 0);
+        const spawnKey = getDungeonSnapshotSpawnKey(deadEntity);
+        if (levelName === 'BT_Mission4' || levelName === 'BT_Mission4Hard') {
+            console.log(
+                `[DungeonSnapshot] Persisting defeated enemy id=${entityId || 'unknown'} spawnKey=${spawnKey || 'none'} ` +
+                `scope=${scopeKey} progress=${progress}`
+            );
+        }
         const saves: Promise<unknown>[] = [];
         for (const other of GlobalState.sessionsByToken.values()) {
             if (!other.playerSpawned || getClientLevelScope(other) !== scopeKey || !other.userId || !other.character) {
                 continue;
             }
 
-            markCharacterDungeonEnemyDead(other.character, levelName, entity, progress, getScopeLevelInstanceId(scopeKey));
+            markCharacterDungeonEnemyDead(other.character, levelName, deadEntity, progress, getScopeLevelInstanceId(scopeKey));
             saves.push(db.saveCharacterSnapshot(other.userId, other.character).catch((error) => {
                 console.error(`[DerelictionSnapshot] Failed to save defeated enemy for ${other.character?.name ?? 'unknown'}:`, error);
             }));
@@ -981,28 +1038,29 @@ export class LevelHandler {
             : false;
         if (resetPersistentSnapshot) {
             console.log(
-                `[DerelictionSnapshot] Reset stale snapshot for ${client.character.name} in ${client.currentLevel} instance '${client.levelInstanceId}'`
+                `[DungeonSnapshot] Reset stale snapshot for ${client.character.name} in ${client.currentLevel} instance '${client.levelInstanceId}'`
             );
         }
+        const syncedPersistentSnapshot = LevelHandler.syncCharacterSnapshotFromSharedDungeonScope(client);
 
         if (client.currentLevel === 'TutorialDungeon') {
             client.currentRoomId = 0;
             client.startedRoomEvents.clear();
             client.character.questTrackerState = LevelHandler.TUTORIAL_DUNGEON_INITIAL_PROGRESS;
-            return resetPersistentSnapshot;
+            return resetPersistentSnapshot || syncedPersistentSnapshot;
         }
 
         if (client.currentLevel === 'CraftTownTutorial') {
             client.currentRoomId = 0;
             client.startedRoomEvents.clear();
             client.character.questTrackerState = 0;
-            return resetPersistentSnapshot;
+            return resetPersistentSnapshot || syncedPersistentSnapshot;
         }
 
         client.currentRoomId = 0;
         client.startedRoomEvents.clear();
         client.character.questTrackerState = getSharedDungeonInitialProgress(client.currentLevel);
-        return resetPersistentSnapshot;
+        return resetPersistentSnapshot || syncedPersistentSnapshot;
     }
 
     private static shouldClampTutorialDungeonToIntroProgress(client: Client): boolean {
@@ -3120,6 +3178,13 @@ export class LevelHandler {
                 progress = sharedState.progress;
             } else {
                 progress = getSharedDungeonInitialProgress(currentLevel);
+            }
+            if (currentLevel === 'BT_Mission4' || currentLevel === 'BT_Mission4Hard') {
+                const totals = getSharedDungeonProgressTotals(levelScope);
+                console.log(
+                    `[SharedDungeonProgress] Quest update ${levelScope} from ${client.character?.name ?? 'unknown'} ` +
+                    `requested=${requestedProgress} applied=${progress} defeated=${totals.defeated}/${totals.total}`
+                );
             }
         }
 

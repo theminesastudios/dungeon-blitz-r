@@ -29,6 +29,7 @@ export type SharedDungeonProgressState = {
     completionRequested?: boolean;
     trackedHostileIds?: Set<number>;
     defeatedHostileIds?: Set<number>;
+    defeatedSpawnKeys?: Set<string>;
     liveStatsByCharacter?: Map<string, {
         updatedAt: number;
         levelName: string;

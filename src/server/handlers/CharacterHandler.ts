@@ -34,6 +34,7 @@ import {
     getScopeLevelName,
     normalizeLevelInstanceId
 } from '../core/LevelScope';
+import { getReusableIncompleteDungeonSnapshotInstanceId } from '../core/PersistentDungeonSnapshot';
 
 const db = new JsonAdapter();
 
@@ -881,7 +882,8 @@ export class CharacterHandler {
                  }
 
                  if (!levelInstanceId) {
-                     levelInstanceId = createDungeonInstanceId(token);
+                     levelInstanceId = getReusableIncompleteDungeonSnapshotInstanceId(char, currentLevelName) ||
+                         createDungeonInstanceId(token);
                  }
              }
 

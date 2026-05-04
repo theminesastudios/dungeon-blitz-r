@@ -14,7 +14,8 @@ import { NpcLoader } from '../data/NpcLoader';
 import { getClientLevelScope } from '../core/LevelScope';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { Config } from '../core/config';
-import { recomputeSharedDungeonProgress } from '../core/SharedDungeonProgress';
+import { getSharedDungeonDefeatedSpawnKeys, getSharedDungeonProgressTotals, recomputeSharedDungeonProgress } from '../core/SharedDungeonProgress';
+import { getDungeonSnapshotSpawnKey, getReusableIncompleteDungeonSnapshotInstanceId } from '../core/PersistentDungeonSnapshot';
 
 type SentPacket = {
     id: number;
@@ -137,6 +138,43 @@ function buildPowerHitPayload(targetId: number, sourceId: number, damage: number
     bb.writeMethod9(sourceId);
     bb.writeMethod24(damage);
     bb.writeMethod9(powerId);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    return bb.toBuffer();
+}
+
+function buildClientEntityFullUpdatePayload(entity: {
+    id: number;
+    name: string;
+    isPlayer: boolean;
+    x: number;
+    y: number;
+    v: number;
+    team: number;
+    entState: number;
+    renderDepthOffset?: number;
+}): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod9(entity.id);
+    bb.writeMethod24(Math.round(Number(entity.x ?? 0)));
+    bb.writeMethod24(Math.round(Number(entity.y ?? 0)));
+    bb.writeMethod24(Math.round(Number(entity.v ?? 0)));
+    bb.writeMethod26(entity.name ?? '');
+    bb.writeMethod20(Entity.TEAM_BITS, Number(entity.team ?? 0));
+    bb.writeMethod15(Boolean(entity.isPlayer));
+    const renderDepthOffset = Math.round(Number(entity.renderDepthOffset ?? 0));
+    const renderMagnitude = Math.abs(renderDepthOffset);
+    const renderBits = Math.max(2, ((renderMagnitude > 0 ? Math.floor(Math.log2(renderMagnitude)) + 1 : 1) + 1) & ~1);
+    bb.writeMethod15(renderDepthOffset < 0);
+    bb.writeMethod6((renderBits / 2) - 1, 3);
+    bb.writeMethod6(renderMagnitude, renderBits);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod20(Entity.STATE_BITS, Number(entity.entState ?? 0));
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
     bb.writeMethod15(false);
     bb.writeMethod15(false);
     bb.writeMethod15(false);
@@ -325,7 +363,6 @@ function testConfiguredLevelsUseClientSpawn(): void {
         'CraftTown',
         'BridgeTown',
         'BridgeTownHard',
-        ...GOBLIN_RIVER_LEVELS,
         'SwampRoadNorth',
         'SwampRoadConnection',
         'OldMineMountain',
@@ -338,6 +375,9 @@ function testConfiguredLevelsUseClientSpawn(): void {
     }
 
     assert.equal(EntityHandler.isClientSpawnLevel('TutorialDungeon'), false);
+    for (const levelName of GOBLIN_RIVER_LEVELS) {
+        assert.equal(EntityHandler.isClientSpawnLevel(levelName), false, `${levelName} should use server-spawn NPC sync`);
+    }
 }
 
 function testClientSpawnLevelsDoNotSendServerNpcCopies(): void {
@@ -370,40 +410,146 @@ function testClientSpawnLevelsStartEmptyWithoutServerNpcInit(): void {
     assert.equal(client.sentPackets.length, 0);
 }
 
-function testGoblinRiverClientSpawnLevelsPruneServerNpcCopies(): void {
+function testGoblinRiverUsesServerSpawnedHostiles(): void {
     for (const levelName of GOBLIN_RIVER_LEVELS) {
         const client = createFakeClient('Watcher');
         client.currentLevel = levelName;
+        client.levelInstanceId = `${levelName}-instance`;
+        client.character = { name: 'Watcher', level: 15 } as any;
 
-        const levelMap = new Map<number, any>([
-            [9101, { id: 9101, name: 'ServerGoblin', isPlayer: false, clientSpawned: false }],
-            [9102, { id: 9102, name: 'ClientGoblin', isPlayer: false, clientSpawned: true }],
-            [9103, { id: 9103, name: 'OtherPlayer', isPlayer: true }]
-        ]);
-
-        GlobalState.levelEntities.set(levelName, levelMap);
+        const npcs = NpcLoader.getNpcsForLevel(levelName);
+        assert.equal(npcs.length, 102, `${levelName} should load Goblin Camp hostile reference spawns`);
+        assert.equal(npcs.every((npc) => Number(npc.team) === 2), true, `${levelName} should keep server hostile NPCs`);
 
         EntityHandler.sendInitialLevelEntities(client as never, levelName);
 
-        assert.equal(levelMap.has(9101), false, `${levelName} should prune stale server-seeded hostiles`);
-        assert.equal(levelMap.has(9102), true, `${levelName} should preserve canonical client-spawn hostiles`);
-        assert.equal(levelMap.has(9103), true, `${levelName} should preserve players`);
-        assert.equal(client.sentPackets.length, 0, `${levelName} should not seed server NPC packets`);
+        const scopeKey = `${levelName}#${client.levelInstanceId}`;
+        const levelMap = GlobalState.levelEntities.get(scopeKey);
+        assert.ok(levelMap, `${levelName} should create a scoped server entity map`);
+        assert.equal(levelMap?.size, 102, `${levelName} should seed canonical server NPCs`);
+        assert.equal(client.sentPackets.filter((packet) => packet.id === 0x0F).length, 102, `${levelName} should send server spawn packets`);
     }
 }
 
-function testGoblinRiverClientSpawnLevelsStartEmptyWithoutServerNpcInit(): void {
-    for (const levelName of GOBLIN_RIVER_LEVELS) {
-        const client = createFakeClient('Watcher');
-        client.currentLevel = levelName;
+function testGoblinRiverCharacterSnapshotSkipsDefeatedServerSpawn(): void {
+    const firstNpc = NpcLoader.getNpcsForLevel('GoblinRiverDungeon')[0];
+    const firstSpawnKey = getDungeonSnapshotSpawnKey(Entity.fromNpc(firstNpc));
+    assert.ok(firstSpawnKey, 'Goblin Camp NPC data should resolve stable spawn keys');
 
-        EntityHandler.sendInitialLevelEntities(client as never, levelName);
+    const client = createFakeClient('Watcher');
+    client.currentLevel = 'GoblinRiverDungeon';
+    client.levelInstanceId = 'goblin-snapshot-instance';
+    client.character = {
+        name: 'Watcher',
+        level: 15,
+        dungeonSnapshots: {
+            GoblinRiverDungeon: {
+                levelName: 'GoblinRiverDungeon',
+                levelInstanceId: 'goblin-snapshot-instance',
+                progress: 1,
+                deadSpawnKeys: [firstSpawnKey],
+                updatedAt: Date.now()
+            }
+        }
+    } as any;
 
-        const levelMap = GlobalState.levelEntities.get(levelName);
-        assert.ok(levelMap, `${levelName} should create a level state bucket`);
-        assert.equal(levelMap?.size, 0, `${levelName} should start empty until the leader client spawns hostiles`);
-        assert.equal(client.sentPackets.length, 0, `${levelName} should not send server NPCs on join`);
+    EntityHandler.sendInitialLevelEntities(client as never, 'GoblinRiverDungeon');
+
+    const levelMap = GlobalState.levelEntities.get('GoblinRiverDungeon#goblin-snapshot-instance');
+    assert.ok(levelMap, 'Goblin Camp should create a scoped server entity map from snapshot state');
+    assert.equal(levelMap?.has(firstNpc.id), false, 'defeated snapshot enemy should not be re-seeded');
+    assert.equal(levelMap?.size, 101, 'only living Goblin Camp enemies should be spawned');
+    assert.equal(client.sentPackets.filter((packet) => packet.id === 0x0F).length, 101);
+}
+
+function testGoblinRiverClientHostileFullUpdateIsSuppressedInServerDungeon(): void {
+    const firstNpc = NpcLoader.getNpcsForLevel('GoblinRiverDungeon')[0];
+    const client = createFakeClient('Watcher');
+    client.currentLevel = 'GoblinRiverDungeon';
+    client.levelInstanceId = 'goblin-server-authority';
+    client.character = { name: 'Watcher', level: 15 } as any;
+
+    EntityHandler.sendInitialLevelEntities(client as never, 'GoblinRiverDungeon');
+    client.sentPackets.length = 0;
+
+    const duplicateId = 777001;
+    const suppressed = (EntityHandler as any).suppressClientSpawnedServerDungeonHostile(
+        client as never,
+        'GoblinRiverDungeon',
+        GlobalState.levelEntities.get('GoblinRiverDungeon#goblin-server-authority'),
+        {
+            id: duplicateId,
+            name: firstNpc.name,
+            isPlayer: false,
+            x: firstNpc.x,
+            y: firstNpc.y,
+            v: 0,
+            team: 2,
+            entState: 0,
+            clientSpawned: true
+        }
+    );
+
+    const levelMap = GlobalState.levelEntities.get('GoblinRiverDungeon#goblin-server-authority');
+    assert.equal(suppressed, true, 'client-spawn duplicate should be suppressed in a server-authoritative Goblin Camp scope');
+    assert.equal(levelMap?.has(duplicateId), false, 'client-spawn duplicate should not enter a server-authoritative Goblin Camp scope');
+    assert.equal(parseDestroyEntityId(client.sentPackets[0]!.payload), duplicateId, 'client-spawn duplicate should be destroyed locally');
+    assert.equal(client.knownEntityIds.has(firstNpc.id), true, 'client should keep the canonical server-spawn enemy');
+}
+
+async function testGoblinRiverPowerHitKillPersistsBeforeSpawnRetry(): Promise<void> {
+    const firstNpc = NpcLoader.getNpcsForLevel('GoblinRiverDungeon')[0];
+    const firstSpawnKey = getDungeonSnapshotSpawnKey(Entity.fromNpc(firstNpc));
+    assert.ok(firstSpawnKey, 'Goblin Camp NPC data should resolve stable spawn keys');
+
+    const client = createFakeClient('Watcher');
+    client.currentLevel = 'GoblinRiverDungeon';
+    client.levelInstanceId = 'goblin-hit-persist-instance';
+    client.userId = 42;
+    client.clientEntID = 18074;
+    client.character = { name: 'Watcher', class: 'Mage', level: 15 } as any;
+
+    const scopeKey = 'GoblinRiverDungeon#goblin-hit-persist-instance';
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    EntityHandler.sendInitialLevelEntities(client as never, 'GoblinRiverDungeon');
+    const liveEnemy = GlobalState.levelEntities.get(scopeKey)?.get(firstNpc.id);
+    assert.ok(liveEnemy, 'Goblin Camp server enemy should exist before combat damage');
+    liveEnemy.maxHp = 10;
+    liveEnemy.hp = 10;
+
+    let savedUserId = 0;
+    let savedCharacter: any = null;
+    const originalSaveCharacterSnapshot = JsonAdapter.prototype.saveCharacterSnapshot;
+    JsonAdapter.prototype.saveCharacterSnapshot = async function(userId: number, character: any): Promise<any[]> {
+        savedUserId = userId;
+        savedCharacter = character;
+        return [character];
+    };
+
+    try {
+        await CombatHandler.handlePowerHit(
+            client as never,
+            buildPowerHitPayload(firstNpc.id, client.clientEntID, 999999, 77)
+        );
+    } finally {
+        JsonAdapter.prototype.saveCharacterSnapshot = originalSaveCharacterSnapshot;
     }
+
+    assert.equal(savedUserId, 42);
+    assert.deepEqual(savedCharacter?.dungeonSnapshots?.GoblinRiverDungeon?.deadSpawnKeys, [firstSpawnKey]);
+
+    client.sentPackets.length = 0;
+    EntityHandler.sendInitialLevelEntities(client as never, 'GoblinRiverDungeon');
+
+    const levelMap = GlobalState.levelEntities.get(scopeKey);
+    assert.equal(levelMap?.has(firstNpc.id), false, 'server spawn retry should not re-seed a killed Goblin Camp enemy');
+    assert.equal(
+        client.sentPackets
+            .filter((packet) => packet.id === 0x0F)
+            .some((packet) => decodeNewlyRelevantNpcPayload(packet.payload).id === firstNpc.id),
+        false,
+        'server spawn retry should not resend the killed Goblin Camp enemy'
+    );
 }
 
 function testDerelictionUsesServerSpawnedHostiles(): void {
@@ -492,6 +638,146 @@ function testDerelictionCharacterSnapshotSkipsDefeatedServerSpawn(): void {
     assert.equal(client.sentPackets.filter((packet) => packet.id === 0x0F).length, 139);
 }
 
+function testDerelictionProgressUsesReferenceSpawnCountBeforeSeeding(): void {
+    const firstNpc = NpcLoader.getNpcsForLevel('BT_Mission4')[0];
+    assert.ok(firstNpc?.spawnKey, 'Dereliction NPC data should include stable spawn keys');
+
+    const scopeKey = 'BT_Mission4#partial-known-dead';
+    GlobalState.levelQuestProgress.set(scopeKey, {
+        progress: 0,
+        authorityToken: 0,
+        trackedHostileIds: new Set([firstNpc.id]),
+        defeatedHostileIds: new Set([firstNpc.id]),
+        defeatedSpawnKeys: new Set([firstNpc.spawnKey]),
+        liveStatsByCharacter: new Map()
+    });
+
+    const sharedState = recomputeSharedDungeonProgress(scopeKey);
+    const totals = getSharedDungeonProgressTotals(scopeKey);
+
+    assert.equal(totals.total, 140, 'Dereliction progress should count against the full server NPC reference set before spawn seeding finishes');
+    assert.equal(totals.defeated, 1, 'only the known defeated Dereliction spawn should count as defeated');
+    assert.ok(Number(sharedState?.progress ?? 100) < 100, 'one defeated Dereliction enemy must not complete the dungeon before all server hostiles are defeated');
+}
+
+async function testDerelictionLatePartyJoinerUsesSharedDefeatedRegistry(): Promise<void> {
+    const firstNpc = NpcLoader.getNpcsForLevel('BT_Mission4')[0];
+    assert.ok(firstNpc?.spawnKey, 'Dereliction NPC data should include stable spawn keys');
+
+    const scopeKey = 'BT_Mission4#party-shared-defeats';
+    const leader = createFakeClient('Alpha');
+    leader.currentLevel = 'BT_Mission4';
+    leader.levelInstanceId = 'party-shared-defeats';
+    leader.userId = 42;
+    leader.clientEntID = 18074;
+    leader.character = { name: 'Alpha', class: 'Mage', level: 15 } as any;
+
+    GlobalState.sessionsByToken.set(leader.token, leader as never);
+    EntityHandler.sendInitialLevelEntities(leader as never, 'BT_Mission4');
+    const liveEnemy = GlobalState.levelEntities.get(scopeKey)?.get(firstNpc.id);
+    assert.ok(liveEnemy, 'Dereliction leader should have a canonical server enemy before the kill');
+    liveEnemy.maxHp = 10;
+    liveEnemy.hp = 10;
+
+    const originalSaveCharacterSnapshot = JsonAdapter.prototype.saveCharacterSnapshot;
+    JsonAdapter.prototype.saveCharacterSnapshot = async function(userId: number, character: any): Promise<any[]> {
+        return [character];
+    };
+
+    try {
+        await CombatHandler.handlePowerHit(
+            leader as never,
+            buildPowerHitPayload(firstNpc.id, leader.clientEntID, 999999, 77)
+        );
+    } finally {
+        JsonAdapter.prototype.saveCharacterSnapshot = originalSaveCharacterSnapshot;
+    }
+
+    assert.equal(
+        getSharedDungeonDefeatedSpawnKeys(scopeKey).has(firstNpc.spawnKey),
+        true,
+        'Dereliction kill should register the stable spawn key on the shared instance'
+    );
+
+    const joiner = createFakeClient('Beta');
+    joiner.currentLevel = 'BT_Mission4';
+    joiner.levelInstanceId = 'party-shared-defeats';
+    joiner.userId = 43;
+    joiner.clientEntID = 18075;
+    joiner.character = { name: 'Beta', class: 'Mage', level: 15 } as any;
+
+    GlobalState.sessionsByToken.set(joiner.token, joiner as never);
+    GlobalState.partyGroups.set(3901, {
+        id: 3901,
+        leader: 'Alpha',
+        members: ['Alpha', 'Beta'],
+        locked: false
+    });
+    GlobalState.partyByMember.set('alpha', 3901);
+    GlobalState.partyByMember.set('beta', 3901);
+
+    assert.equal(
+        LevelHandler.prepareGoblinRiverDungeonEntryState(joiner as never),
+        true,
+        'late Dereliction party joiner should sync shared defeated enemies into its snapshot on entry'
+    );
+    assert.deepEqual(
+        (joiner.character as any).dungeonSnapshots?.BT_Mission4?.deadSpawnKeys,
+        [firstNpc.spawnKey],
+        'late party joiner snapshot should receive already-defeated shared enemies'
+    );
+
+    joiner.sentPackets.length = 0;
+    EntityHandler.sendInitialLevelEntities(joiner as never, 'BT_Mission4');
+
+    const levelMap = GlobalState.levelEntities.get(scopeKey);
+    assert.equal(levelMap?.has(firstNpc.id), false, 'late party joiner should not resurrect the defeated Dereliction enemy');
+    assert.equal(
+        joiner.sentPackets
+            .filter((packet) => packet.id === 0x0F)
+            .some((packet) => decodeNewlyRelevantNpcPayload(packet.payload).id === firstNpc.id),
+        false,
+        'late party joiner should not receive a spawn packet for the defeated Dereliction enemy'
+    );
+}
+
+function testDerelictionClientHostileFullUpdateIsSuppressedInServerDungeon(): void {
+    const firstNpc = NpcLoader.getNpcsForLevel('BT_Mission4')[0];
+    assert.ok(firstNpc?.spawnKey, 'Dereliction NPC data should include stable spawn keys');
+
+    const client = createFakeClient('Watcher');
+    client.currentLevel = 'BT_Mission4';
+    client.levelInstanceId = 'dereliction-server-authority';
+    client.character = { name: 'Watcher', level: 15 } as any;
+
+    EntityHandler.sendInitialLevelEntities(client as never, 'BT_Mission4');
+    client.sentPackets.length = 0;
+
+    const duplicateId = 777101;
+    const suppressed = (EntityHandler as any).suppressClientSpawnedServerDungeonHostile(
+        client as never,
+        'BT_Mission4',
+        GlobalState.levelEntities.get('BT_Mission4#dereliction-server-authority'),
+        {
+            id: duplicateId,
+            name: firstNpc.name,
+            isPlayer: false,
+            x: firstNpc.x,
+            y: firstNpc.y,
+            v: 0,
+            team: 2,
+            entState: 0,
+            clientSpawned: true
+        }
+    );
+
+    const levelMap = GlobalState.levelEntities.get('BT_Mission4#dereliction-server-authority');
+    assert.equal(suppressed, true, 'client-spawn duplicate should be suppressed in a server-authoritative Dereliction scope');
+    assert.equal(levelMap?.has(duplicateId), false, 'client-spawn duplicate should not enter a server-authoritative Dereliction scope');
+    assert.equal(parseDestroyEntityId(client.sentPackets[0]!.payload), duplicateId, 'client-spawn duplicate should be destroyed locally');
+    assert.equal(client.knownEntityIds.has(firstNpc.id), true, 'client should keep the canonical server-spawn Dereliction enemy');
+}
+
 function testDerelictionNewInstanceResetsStaleCharacterSnapshot(): void {
     const firstNpc = NpcLoader.getNpcsForLevel('BT_Mission4')[0];
     assert.ok(firstNpc?.spawnKey, 'Dereliction NPC data should include stable spawn keys');
@@ -523,6 +809,37 @@ function testDerelictionNewInstanceResetsStaleCharacterSnapshot(): void {
     assert.equal(snapshot.levelInstanceId, 'fresh-instance');
     assert.equal(snapshot.progress, 0);
     assert.deepEqual(snapshot.deadSpawnKeys, []);
+}
+
+function testDerelictionIncompleteSnapshotReusesInstanceOnReentry(): void {
+    const firstNpc = NpcLoader.getNpcsForLevel('BT_Mission4')[0];
+    assert.ok(firstNpc?.spawnKey, 'Dereliction NPC data should include stable spawn keys');
+
+    const client = createFakeClient('Watcher');
+    client.currentLevel = 'BridgeTown';
+    client.levelInstanceId = '';
+    client.character = {
+        name: 'Watcher',
+        level: 15,
+        dungeonSnapshots: {
+            BT_Mission4: {
+                levelName: 'BT_Mission4',
+                levelInstanceId: 'saved-dereliction-run',
+                progress: 2,
+                deadSpawnKeys: [firstNpc.spawnKey],
+                updatedAt: Date.now()
+            }
+        }
+    } as any;
+
+    assert.equal(
+        getReusableIncompleteDungeonSnapshotInstanceId(client.character as any, 'BT_Mission4'),
+        'saved-dereliction-run',
+        'incomplete Dereliction snapshots should be eligible for re-entry'
+    );
+
+    const syncState = (LevelHandler as any).buildTransferSyncState(client as never, 'BT_Mission4', null);
+    assert.equal(syncState?.levelInstanceId, 'saved-dereliction-run', 'Dereliction re-entry should reuse the incomplete snapshot instance');
 }
 
 function testDerelictionFreshRunReplacesStaleDeadServerScope(): void {
@@ -627,6 +944,11 @@ async function testDerelictionDestroyedServerEnemyPersistsCharacterSnapshot(): P
     assert.equal(savedUserId, 42);
     assert.equal(savedCharacter?.dungeonSnapshots?.BT_Mission4?.progress, 12);
     assert.deepEqual(savedCharacter?.dungeonSnapshots?.BT_Mission4?.deadSpawnKeys, [firstNpc.spawnKey]);
+    assert.equal(
+        getSharedDungeonDefeatedSpawnKeys('BT_Mission4#persist-instance').has(firstNpc.spawnKey),
+        true,
+        'persisting a Dereliction enemy death should update the shared defeated-spawn registry'
+    );
 }
 
 async function testDerelictionRewardPacketPersistsDefeatedServerEnemySnapshot(): Promise<void> {
@@ -677,6 +999,11 @@ async function testDerelictionRewardPacketPersistsDefeatedServerEnemySnapshot():
 
     assert.equal(savedUserId, 42);
     assert.deepEqual(savedCharacter?.dungeonSnapshots?.BT_Mission4?.deadSpawnKeys, [firstNpc.spawnKey]);
+    assert.equal(
+        getSharedDungeonDefeatedSpawnKeys(scopeKey).has(firstNpc.spawnKey),
+        true,
+        'reward-proven Dereliction defeat should update the shared defeated-spawn registry'
+    );
     assert.notEqual(GlobalState.levelEntities.get(scopeKey)?.has(firstNpc.id), true, 'reward-proven defeated Dereliction enemy should be removed from canonical scope');
 }
 
@@ -719,8 +1046,13 @@ async function testDerelictionPowerHitKillPersistsBeforeSpawnRetry(): Promise<vo
 
     assert.equal(savedUserId, 42);
     assert.deepEqual(savedCharacter?.dungeonSnapshots?.BT_Mission4?.deadSpawnKeys, [firstNpc.spawnKey]);
+    assert.equal(
+        getSharedDungeonDefeatedSpawnKeys(scopeKey).has(firstNpc.spawnKey),
+        true,
+        'combat-killed Dereliction enemy should update the shared defeated-spawn registry'
+    );
 
-    client.sentPackets = [];
+    client.sentPackets.length = 0;
     EntityHandler.sendInitialLevelEntities(client as never, 'BT_Mission4');
 
     const levelMap = GlobalState.levelEntities.get(scopeKey);
@@ -2502,7 +2834,7 @@ function testGoblinRiverDungeonJoinerSkipsStartedRoomReplayFromPartyAnchor(): vo
     }
 }
 
-function testDungeonClientSpawnHostilesUsePlayerRuntimeLevel(): void {
+function testDungeonServerSpawnHostilesUsePlayerRuntimeLevel(): void {
     const client = createFakeClient('Scaler');
     client.currentLevel = 'GoblinRiverDungeon';
     client.levelInstanceId = 'scaled-run';
@@ -2513,22 +2845,12 @@ function testDungeonClientSpawnHostilesUsePlayerRuntimeLevel(): void {
     } as any;
     client.clientEntID = 9001;
 
-    const payload = (EntityHandler as any).buildEntityFullUpdatePayload({
-        id: 9002,
-        name: 'GoblinDagger',
-        isPlayer: false,
-        x: 200,
-        y: 300,
-        v: 0,
-        team: 2,
-        entState: 0
-    });
-
-    EntityHandler.handleEntityFullUpdate(client as never, payload);
+    EntityHandler.sendInitialLevelEntities(client as never, 'GoblinRiverDungeon');
 
     const levelScope = getClientLevelScope(client as never);
-    const hostile = GlobalState.levelEntities.get(levelScope)?.get(9002);
-    assert.equal(hostile?.level, 37, 'dungeon client-spawn hostiles should use the player runtime level');
+    const firstNpc = NpcLoader.getNpcsForLevel('GoblinRiverDungeon')[0];
+    const hostile = GlobalState.levelEntities.get(levelScope)?.get(firstNpc.id);
+    assert.equal(hostile?.level, 37, 'dungeon server-spawn hostiles should use the player runtime level');
 }
 
 function testServerNpcSeedWaitsForPlayerSpawn(): void {
@@ -2550,7 +2872,7 @@ function testServerNpcSeedWaitsForPlayerSpawn(): void {
         'server NPC spawns should not be sent before the player entity initializes'
     );
 
-    const payload = (EntityHandler as any).buildEntityFullUpdatePayload({
+    const payload = buildClientEntityFullUpdatePayload({
         id: 6241501,
         name: 'Iondoblack',
         isPlayer: true,
@@ -2601,12 +2923,25 @@ async function main(): Promise<void> {
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
-        testGoblinRiverClientSpawnLevelsPruneServerNpcCopies();
+        testGoblinRiverUsesServerSpawnedHostiles();
 
         GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
-        testGoblinRiverClientSpawnLevelsStartEmptyWithoutServerNpcInit();
+        testGoblinRiverCharacterSnapshotSkipsDefeatedServerSpawn();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testGoblinRiverClientHostileFullUpdateIsSuppressedInServerDungeon();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        await testGoblinRiverPowerHitKillPersistsBeforeSpawnRetry();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
@@ -2628,7 +2963,33 @@ async function main(): Promise<void> {
         GlobalState.levelQuestProgress.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
+        testDerelictionProgressUsesReferenceSpawnCountBeforeSeeding();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        await testDerelictionLatePartyJoinerUsesSharedDefeatedRegistry();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        testDerelictionClientHostileFullUpdateIsSuppressedInServerDungeon();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
         testDerelictionNewInstanceResetsStaleCharacterSnapshot();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testDerelictionIncompleteSnapshotReusesInstanceOnReentry();
 
         GlobalState.levelEntities.clear();
         GlobalState.levelQuestProgress.clear();
@@ -2678,34 +3039,12 @@ async function main(): Promise<void> {
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
-        testGoblinRiverDungeonLeaderHostilesSeedToPartyJoinersOnly();
-
-        GlobalState.levelEntities.clear();
-        GlobalState.sessionsByToken.clear();
-        GlobalState.partyByMember.clear();
-        GlobalState.partyGroups.clear();
-        testGoblinRiverDungeonAllowsFollowerFirstCanonicalHostileSpawn();
-
-        GlobalState.levelEntities.clear();
-        GlobalState.sessionsByToken.clear();
-        GlobalState.partyByMember.clear();
         testDungeonPartyAuthoritySuppressesDuplicateHostileSpawns();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         testDungeonPartyAuthoritySuppressesDuplicateHostileSpawnsAcrossUnsyncedRooms();
-
-        GlobalState.levelEntities.clear();
-        GlobalState.sessionsByToken.clear();
-        GlobalState.partyByMember.clear();
-        testGoblinRiverDungeonSuppressesFollowerClientHostileSpawns();
-
-        GlobalState.levelEntities.clear();
-        GlobalState.sessionsByToken.clear();
-        GlobalState.partyByMember.clear();
-        GlobalState.partyGroups.clear();
-        testGoblinRiverDungeonLeaderLateSpawnDedupesToFollowerCanonical();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
@@ -2855,7 +3194,7 @@ async function main(): Promise<void> {
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
-        testDungeonClientSpawnHostilesUsePlayerRuntimeLevel();
+        testDungeonServerSpawnHostilesUsePlayerRuntimeLevel();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();

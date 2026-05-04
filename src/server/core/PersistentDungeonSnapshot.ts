@@ -11,7 +11,9 @@ export type PersistentDungeonSnapshot = {
 
 const PERSISTENT_DUNGEON_SNAPSHOT_LEVELS = new Set<string>([
     'BT_Mission4',
-    'BT_Mission4Hard'
+    'BT_Mission4Hard',
+    'GoblinRiverDungeon',
+    'GoblinRiverDungeonHard'
 ]);
 
 export function isPersistentDungeonSnapshotLevel(levelName: string | null | undefined): boolean {
@@ -117,6 +119,25 @@ export function getCharacterDungeonDeadSpawnKeys(
     }
 
     return new Set(getCharacterDungeonSnapshot(character, levelName)?.deadSpawnKeys ?? []);
+}
+
+export function getReusableIncompleteDungeonSnapshotInstanceId(
+    character: Character | null | undefined,
+    levelName: string | null | undefined
+): string {
+    const snapshot = getCharacterDungeonSnapshot(character, levelName);
+    if (!snapshot) {
+        return '';
+    }
+
+    const progress = Math.max(0, Math.min(100, Math.round(Number(snapshot.progress ?? 0) || 0)));
+    const hasPartialDefeats = Array.isArray(snapshot.deadSpawnKeys) && snapshot.deadSpawnKeys.length > 0;
+    const instanceId = normalizeSnapshotInstanceId(snapshot.levelInstanceId);
+    if (!instanceId || progress >= 100 || (!hasPartialDefeats && progress <= 0)) {
+        return '';
+    }
+
+    return instanceId;
 }
 
 export function markCharacterDungeonEnemyDead(

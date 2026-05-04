@@ -543,6 +543,14 @@ export class MissionHandler {
                         client.character.questTrackerState = 100;
                         MissionHandler.broadcastSharedDungeonQuestProgress(levelScope, 100);
                     } else {
+                        if (currentLevel === 'BT_Mission4' || currentLevel === 'BT_Mission4Hard') {
+                            const totals = getSharedDungeonProgressTotals(levelScope);
+                            console.log(
+                                `[SharedDungeonProgress] Blocked premature completion for ${levelScope} from ` +
+                                `${client.character?.name ?? 'unknown'} clientProgress=${completionPercent} ` +
+                                `serverProgress=${sharedState.progress} defeated=${totals.defeated}/${totals.total}`
+                            );
+                        }
                         if (!hasSharedDungeonProgressHostiles(levelScope)) {
                             return;
                         }

@@ -9,7 +9,7 @@ const DEFAULT_INPUT_FALLBACK = path.join('src', 'client', 'content', 'localhost'
 const DEFAULT_OUTPUT = path.join('src', 'client', 'content', 'localhost', 'p', 'cbp', 'DungeonBlitz.swf');
 const DEFAULT_EXISTING_OUTPUT = path.join('src', 'client', 'content', 'localhost', 'p', 'cbp', 'DungeonBlitz.swf');
 const CLASS_NAMES = ['DungeonBlitz', 'class_67', 'Game'];
-const MULTIPLAYER_BASE_IP = String(process.env.MULTIPLAYER_BASE_IP || '10.179.241.95').trim() || '10.179.241.95';
+const MULTIPLAYER_BASE_IP = String(process.env.MULTIPLAYER_BASE_IP || '35.202.139.197').trim() || '35.202.139.197';
 
 function parseArgs(argv) {
     const args = {
