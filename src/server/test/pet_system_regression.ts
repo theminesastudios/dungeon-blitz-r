@@ -209,6 +209,48 @@ function createConsumableClient(): FakeClient {
     };
 }
 
+function createHatcheryClient(): FakeClient {
+    const sentPackets: SentPacket[] = [];
+    const character: any = {
+        name: 'Delta',
+        class: 'Mage',
+        gender: 'female',
+        level: 20,
+        gold: 0,
+        mammothIdols: 0,
+        showHigher: false,
+        pets: [],
+        activePet: {},
+        OwnedEggsID: [],
+        EggResetTime: 0
+    };
+
+    return {
+        token: 4,
+        userId: null,
+        currentLevel: 'CraftTown',
+        levelInstanceId: '',
+        currentRoomId: 1,
+        playerSpawned: true,
+        clientEntID: 1004,
+        character,
+        characters: [character],
+        authoritativeMaxHp: 100,
+        authoritativeCurrentHp: 100,
+        processedRewardSources: new Set<string>(),
+        pendingLoot: new Map<number, any>(),
+        knownEntityIds: new Set<number>(),
+        entities: new Map<number, any>(),
+        sentPackets,
+        send(id: number, payload: Buffer) {
+            sentPackets.push({ id, payload: Buffer.from(payload) });
+        },
+        sendBitBuffer(id: number, payload: BitBuffer) {
+            sentPackets.push({ id, payload: payload.toBuffer() });
+        }
+    };
+}
+
 function buildGrantRewardPayload(sourceId: number, gold: number, exp: number): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod4(0);
@@ -318,6 +360,23 @@ async function withMockedCharacterSave<T>(fn: () => Promise<T>): Promise<T> {
     }
 }
 
+async function withPatchedRandom<T>(values: number[], fn: () => Promise<T>): Promise<T> {
+    const originalRandom = Math.random;
+    let index = 0;
+
+    Math.random = () => {
+        const value = values[index] ?? values[values.length - 1] ?? 0;
+        index += 1;
+        return value;
+    };
+
+    try {
+        return await fn();
+    } finally {
+        Math.random = originalRandom;
+    }
+}
+
 async function testRewardHandlerAppliesEquippedPetBonuses(): Promise<void> {
     const client = createRewardClient();
     GlobalState.sessionsByToken.set(client.token, client as never);
@@ -419,6 +478,30 @@ async function testPetFoodUsageLevelsAndUpdatesActivePet(): Promise<void> {
     assert.equal(petXpReader.readMethod4(), 60000, 'pet XP update should send XP delta, not total XP');
 }
 
+async function testHatcheryUsesRankWeightedEggRolls(): Promise<void> {
+    const client = createHatcheryClient();
+
+    await withPatchedRandom([
+        0,
+        0,
+        0.051,
+        0,
+        0.151,
+        0
+    ], async () => {
+        await PetHandler.handleRequestHatcheryEggs(client as never, Buffer.alloc(0));
+    });
+
+    assert.deepEqual(
+        client.character.OwnedEggsID,
+        [21, 5, 1],
+        'hatchery should roll rank 2, rank 1, and rank 0 from the weighted rank bands'
+    );
+
+    const refreshPacket = client.sentPackets.find((packet) => packet.id === 0xE5);
+    assert.ok(refreshPacket, 'hatchery request should refresh egg slots');
+}
+
 async function main(): Promise<void> {
     ensureDataLoaded();
 
@@ -431,6 +514,7 @@ async function main(): Promise<void> {
         await testRewardHandlerAppliesEquippedCharmFindBonuses();
         testPetCollectionNormalizationRemovesTransferDuplicates();
         await testPetFoodUsageLevelsAndUpdatesActivePet();
+        await testHatcheryUsesRankWeightedEggRolls();
         console.log('pet_system_regression: ok');
     } finally {
         GlobalState.sessionsByToken = sessionsByToken;

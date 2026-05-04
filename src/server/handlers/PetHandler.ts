@@ -15,6 +15,9 @@ export class PetHandler {
     private static readonly PET_ACTIVE_BONUS_BASE_RATE = 0.09;
     private static readonly PET_BONUS_RATE_PER_LEVEL = 0.01;
     private static readonly MAX_PASSIVE_PET_SLOTS = 3;
+    private static readonly HATCHERY_RANK0_WEIGHT = 0.85;
+    private static readonly HATCHERY_RANK1_WEIGHT = 0.1;
+    private static readonly HATCHERY_RANK2_WEIGHT = 0.05;
 
     private static sendMammothIdolUpdate(client: Client): void {
         if (!client.character) {
@@ -535,15 +538,38 @@ export class PetHandler {
     }
 
     private static pickDailyEggs(count: number): number[] {
-        const validEggs = PetConfig.EGG_TYPES.filter(e => e.EggID > 0);
         const chosen: number[] = [];
         for (let i = 0; i < count; i++) {
-            if (validEggs.length > 0) {
-                const idx = Math.floor(Math.random() * validEggs.length);
-                chosen.push(validEggs[idx].EggID);
+            const eggId = PetHandler.pickDailyEggId();
+            if (eggId > 0) {
+                chosen.push(eggId);
             }
         }
         return chosen;
+    }
+
+    private static pickDailyEggId(): number {
+        const validEggs = PetConfig.EGG_TYPES.filter((egg) => Number(egg?.EggID ?? 0) > 0);
+        if (validEggs.length === 0) {
+            return 0;
+        }
+
+        const rank = PetHandler.pickDailyEggRank(Math.random());
+        const rankEggs = validEggs.filter((egg) => Number(egg?.EggRank ?? 0) === rank);
+        const pool = rankEggs.length > 0 ? rankEggs : validEggs;
+        const idx = Math.floor(Math.random() * pool.length);
+        return Number(pool[idx]?.EggID ?? 0);
+    }
+
+    private static pickDailyEggRank(randomValue: number): number {
+        const roll = Number.isFinite(randomValue) ? Math.max(0, Math.min(randomValue, 0.999999999)) : 0;
+        if (roll < PetHandler.HATCHERY_RANK2_WEIGHT) {
+            return 2;
+        }
+        if (roll < PetHandler.HATCHERY_RANK2_WEIGHT + PetHandler.HATCHERY_RANK1_WEIGHT) {
+            return 1;
+        }
+        return 0;
     }
 
     private static buildHatcheryPacket(eggs: number[], resetTime: number): BitBuffer {
