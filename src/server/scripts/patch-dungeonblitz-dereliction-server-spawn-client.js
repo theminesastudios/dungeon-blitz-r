@@ -5,7 +5,6 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const DEFAULT_SWF = path.join('src', 'client', 'content', 'localhost', 'p', 'cbp', 'DungeonBlitz.swf');
-const ROOM_GUARD = 'if(this.var_1.level.internalName.indexOf("BT_Mission4") == 0)';
 const ROOM_BRIDGE_FLAG = 'public static var derelictionServerSpawnBridge:Boolean = false;';
 const LINKUPDATER_SUPPRESSOR = 'if(this.var_1.level.internalName.indexOf("BT_Mission4") == 0 && _loc8_ == Entity.BADGUY)';
 const LINKUPDATER_BRIDGE_METHOD = 'private function method_derelictionServerSpawnBridge';
