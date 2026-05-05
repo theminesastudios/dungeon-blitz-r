@@ -28,6 +28,7 @@ import { LockboxHandler } from './handlers/LockboxHandler';
 import { NpcHandler } from './handlers/NpcHandler';
 import { RewardHandler } from './handlers/RewardHandler';
 import { EquipmentHandler } from './handlers/EquipmentHandler';
+import { GearSetHandler } from './handlers/GearSetHandler';
 import { AbilityHandler } from './handlers/AbilityHandler';
 import { DebugLogger } from './core/Debug';
 import { GuildHandler } from './handlers/GuildHandler';
@@ -77,6 +78,9 @@ router.register(0x38, RewardHandler.handlePickupLootdrop); // Pickup Lootdrop
 router.register(0x30, EquipmentHandler.handleUpdateEquipment); // Update Equipment
 router.register(0x31, EquipmentHandler.handleUpdateSingleGear); // Update Single Gear
 router.register(0xB0, EquipmentHandler.handleSocketCharm); // Socket / Unsocket Charm
+router.register(0xC6, GearSetHandler.handleOverwriteGearSet); // Gear Manager Save / Overwrite Set
+router.register(0xC7, GearSetHandler.handleCreateGearSet); // Gear Manager Create Set
+router.register(0xC8, GearSetHandler.handleRenameGearSet); // Gear Manager Rename Set
 router.register(0x105, LockboxHandler.handleBuyLockboxKeys); // Buy Dragon Keys
 router.register(0x107, LockboxHandler.handleLockboxReward); // Open Lockbox / Treasure Trove
 router.register(0x114, LockboxHandler.handleBuyTreasureTrove); // Buy Treasure Trove

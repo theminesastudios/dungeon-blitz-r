@@ -103,6 +103,15 @@ export class MissionHandler {
         CH_Mission1Hard: new Set(['QuestTreasureChest'])
     };
     private static readonly dungeonCompletionObjectiveProgress = new Map<string, DungeonCompletionObjectiveProgress>();
+    // These boss kills intentionally open a post-death room cutscene before the stats screen.
+    private static readonly DUNGEONS_WITH_POST_DEATH_BOSS_CUTSCENE = new Set([
+        'GoblinRiverDungeon',
+        'GoblinRiverDungeonHard',
+        'GhostBossDungeon',
+        'GhostBossDungeonHard',
+        'DreamDragonDungeon',
+        'DreamDragonDungeonHard'
+    ]);
     private static readonly NEWBIE_ROAD_GOBLIN_KILL_NAMES = new Set([
         'GoblinArmorSword',
         'GoblinBrute',
@@ -570,13 +579,28 @@ export class MissionHandler {
         const bossCutsceneEndAt = String(client.lastDungeonCutsceneEndScope ?? '').trim() === levelScope
             ? Math.max(0, Number(client.lastDungeonCutsceneEndAt ?? 0))
             : 0;
+        const bossCutsceneStartAt = String(client.lastDungeonCutsceneStartScope ?? '').trim() === levelScope
+            ? Math.max(0, Number(client.lastDungeonCutsceneStartAt ?? 0))
+            : 0;
+        const postDeathCutsceneStarted =
+            bossDefeatAt > 0 &&
+            bossCutsceneStartAt >= bossDefeatAt;
         const shouldWaitForDefeatedBossCutscene =
             defeatedDungeonBossForcesCompletion &&
             (
                 activeCutsceneScope === levelScope ||
-                bossDefeatAt <= 0 ||
-                bossCutsceneEndAt <= 0 ||
-                bossCutsceneEndAt < bossDefeatAt
+                (
+                    postDeathCutsceneStarted &&
+                    (bossCutsceneEndAt <= 0 || bossCutsceneEndAt < bossCutsceneStartAt)
+                ) ||
+                (
+                    MissionHandler.hasPostDeathBossCutscene(currentLevel) &&
+                    (
+                        bossDefeatAt <= 0 ||
+                        bossCutsceneEndAt <= 0 ||
+                        bossCutsceneEndAt < bossDefeatAt
+                    )
+                )
             );
         if (
             levelScope &&
@@ -924,7 +948,7 @@ export class MissionHandler {
         const isCutsceneActive = String(client.activeDungeonCutsceneScope ?? '').trim() === levelScope;
         const isBossEntity = MissionHandler.isDungeonCompletionBossEntity(triggerEntity);
         const waitForCutsceneEnd = isCutsceneActive ||
-            isBossEntity;
+            (isBossEntity && MissionHandler.hasPostDeathBossCutscene(currentLevel));
         MissionHandler.scheduleDungeonCompletion(
             client,
             MissionHandler.buildSyntheticLevelCompletePacket(100),
@@ -1875,6 +1899,11 @@ export class MissionHandler {
             Number(npc?.team ?? 0) === EntityTeam.ENEMY &&
             MissionHandler.isDungeonCompletionBossEntity(npc)
         );
+    }
+
+    private static hasPostDeathBossCutscene(levelName: string | null | undefined): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        return Boolean(normalizedLevel && MissionHandler.DUNGEONS_WITH_POST_DEATH_BOSS_CUTSCENE.has(normalizedLevel));
     }
 
     private static isRequiredDungeonBossEntity(levelName: string | null | undefined, entity: any): boolean {
