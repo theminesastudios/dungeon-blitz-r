@@ -78,7 +78,11 @@ function parseLevelConfigEntry(value) {
         return null;
     }
 
+    const [swfAndSymbol] = parts;
+    const symbolName = String(swfAndSymbol ?? '').split('/').pop() || '';
+
     return {
+        symbolName,
         isDungeon: parts[3].toLowerCase() === 'true',
         isHard: parts.includes('Hard')
     };
@@ -104,15 +108,24 @@ function hasHostileNpcData(repoRoot, levelName) {
 
 function getServerDungeonSpawnLevels(repoRoot) {
     const levelConfig = readJson(path.join(repoRoot, 'src', 'server', 'data', 'level_config.json'), {});
-    return Object.entries(levelConfig)
-        .filter(([levelName, spec]) => {
-            const parsed = parseLevelConfigEntry(spec);
-            return parsed?.isDungeon &&
-                !SERVER_SPAWN_EXCLUDED_LEVELS.has(levelName) &&
-                hasHostileNpcData(repoRoot, levelName);
-        })
-        .map(([levelName]) => levelName)
-        .sort();
+    const names = new Set();
+
+    for (const [levelName, spec] of Object.entries(levelConfig)) {
+        const parsed = parseLevelConfigEntry(spec);
+        if (
+            parsed?.isDungeon &&
+            !SERVER_SPAWN_EXCLUDED_LEVELS.has(levelName) &&
+            hasHostileNpcData(repoRoot, levelName)
+        ) {
+            names.add(levelName);
+            if (parsed.symbolName) {
+                names.add(parsed.symbolName);
+                names.add(parsed.symbolName.replace(/^a_Level_/, ''));
+            }
+        }
+    }
+
+    return Array.from(names).sort();
 }
 
 function formatActionScriptString(value) {

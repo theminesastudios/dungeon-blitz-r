@@ -21,6 +21,8 @@ export class EntityHandler {
         'CraftTown',
         'NewbieRoad',
         'NewbieRoadHard',
+        'TutorialDungeon',
+        'TutorialDungeonHard',
         'SwampRoadNorth',
         'SwampRoadNorthHard',
         'SwampRoadConnection',
@@ -43,6 +45,10 @@ export class EntityHandler {
     private static readonly MOUNT_SYNC_RETRY_DELAYS_MS = [0, 300, 1200, 2500, 4000];
     private static readonly CLIENT_SPAWN_JOINER_SEED_DELAYS_MS = [2500, 4500];
     private static readonly LEADER_AUTHORITATIVE_CLIENT_SPAWN_LEVELS = new Set<string>([
+    ]);
+    private static readonly PRIVATE_CLIENT_SPAWN_DUNGEON_LEVELS = new Set<string>([
+        'TutorialDungeon',
+        'TutorialDungeonHard'
     ]);
     private static readonly GOBLIN_RIVER_ROOM_SYNC_SKIP_LEVELS = new Set<string>([
         'TutorialDungeon',
@@ -122,7 +128,7 @@ export class EntityHandler {
         return (
             (team === 2 || team === 3) &&
             EntityHandler.usesClientSpawn(levelName) &&
-            !LevelConfig.isDungeonLevel(levelName)
+            (!LevelConfig.isDungeonLevel(levelName) || EntityHandler.PRIVATE_CLIENT_SPAWN_DUNGEON_LEVELS.has(levelName))
         );
     }
 
@@ -250,7 +256,7 @@ export class EntityHandler {
             return false;
         }
 
-        EntityHandler.sendDestroyEntity(client, Number(entity.id ?? 0));
+        EntityHandler.sendDuplicateDestroySequence(client, Number(entity.id ?? 0));
         EntityHandler.ensureEntityKnown(client, String(levelName ?? ''), Number(canonical.id ?? 0));
         return true;
     }
@@ -405,7 +411,7 @@ export class EntityHandler {
 
         client.knownEntityIds.delete(duplicateId);
 
-        EntityHandler.sendDestroyEntity(client, duplicateId);
+        EntityHandler.sendDuplicateDestroySequence(client, duplicateId);
         
         if (client.knownEntityIds.has(canonicalId)) {
             return true;
@@ -763,7 +769,7 @@ export class EntityHandler {
         if (duplicateId > 0) {
             client.entities.delete(duplicateId);
             client.knownEntityIds.delete(duplicateId);
-            EntityHandler.sendDestroyEntity(client, duplicateId);
+            EntityHandler.sendDuplicateDestroySequence(client, duplicateId);
         }
 
         if (canonical && !canonical?.clientSpawned && !canonical?.dead) {
@@ -999,6 +1005,31 @@ export class EntityHandler {
 
     private static sendDestroyEntity(client: Client, entityId: number): void {
         client.send(0x0D, EntityHandler.buildDestroyEntityPayload(entityId));
+    }
+
+    private static sendDuplicateDestroySequence(client: Client, entityId: number): void {
+        if (entityId <= 0) {
+            return;
+        }
+
+        const token = client.token;
+        const levelScope = getClientLevelScope(client);
+        EntityHandler.sendDestroyEntity(client, entityId);
+
+        for (const delayMs of [250, 750]) {
+            setTimeout(() => {
+                if (
+                    client.token !== token ||
+                    getClientLevelScope(client) !== levelScope ||
+                    client.socket?.destroyed
+                ) {
+                    return;
+                }
+
+                client.send(0x07, EntityHandler.buildEntityStateDeadPayload(entityId));
+                EntityHandler.sendDestroyEntity(client, entityId);
+            }, delayMs);
+        }
     }
 
     private static buildEntityStateDeadPayload(entityId: number): Buffer {

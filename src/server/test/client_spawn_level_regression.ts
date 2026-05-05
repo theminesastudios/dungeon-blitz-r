@@ -105,6 +105,14 @@ function parseDestroyEntityId(payload: Buffer): number {
     return br.readMethod4();
 }
 
+function expectedDuplicateDestroyPacketIds(withCanonicalSeed: boolean = true): number[] {
+    const ids = [0x0D, 0x07, 0x0D, 0x07, 0x0D];
+    if (withCanonicalSeed) {
+        ids.push(0x0F);
+    }
+    return ids;
+}
+
 function buildDestroyEntityPayload(entityId: number): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod4(entityId);
@@ -374,7 +382,7 @@ function testConfiguredLevelsUseClientSpawn(): void {
         assert.equal(EntityHandler.isClientSpawnLevel(levelName), true, `${levelName} should use client-spawn NPC sync`);
     }
 
-    assert.equal(EntityHandler.isClientSpawnLevel('TutorialDungeon'), false);
+    assert.equal(EntityHandler.isClientSpawnLevel('TutorialDungeon'), true, 'TutorialDungeon should keep local cue-driven spawns');
     for (const levelName of GOBLIN_RIVER_LEVELS) {
         assert.equal(EntityHandler.isClientSpawnLevel(levelName), false, `${levelName} should use server-spawn NPC sync`);
     }
@@ -1234,8 +1242,8 @@ function testDungeonHostileClientSpawnSeedsToPartyPeersOnly(): void {
     const partyKnown = EntityHandler.ensureEntityKnown(partyWatcher as never, 'TutorialDungeon', hostile.id);
     const strangerKnown = EntityHandler.ensureEntityKnown(stranger as never, 'TutorialDungeon', hostile.id);
 
-    assert.equal(partyKnown, true, 'dungeon hostile sync should now reach party peers');
-    assert.deepEqual(partyWatcher.sentPackets.map((packet) => packet.id), [0x0F]);
+    assert.equal(partyKnown, false, 'TutorialDungeon hostiles should stay private so joiners do not see duplicate local tutorial enemies');
+    assert.deepEqual(partyWatcher.sentPackets.map((packet) => packet.id), []);
     assert.equal(strangerKnown, false, 'non-party dungeon viewers should not receive hostile seeds');
     assert.equal(stranger.sentPackets.length, 0);
 }
@@ -1293,11 +1301,10 @@ function testDungeonPartyAuthoritySuppressesDuplicateHostileSpawns(): void {
     );
 
     const levelMap = GlobalState.levelEntities.get('TutorialDungeon');
-    assert.equal(suppressed, true, 'follower hostile spawn should be suppressed when a party authority already owns the room');
+    assert.equal(suppressed, false, 'TutorialDungeon follower hostiles should stay local to preserve tutorial cue scripts');
     assert.equal(levelMap?.size, 1, 'duplicate dungeon hostile should not be added as a second shared entity');
-    assert.deepEqual(follower.sentPackets.map((packet) => packet.id), [0x0D, 0x0F]);
-    assert.equal(parseDestroyEntityId(follower.sentPackets[0]!.payload), 3301);
-    assert.equal(follower.knownEntityIds.has(canonical.id), true);
+    assert.deepEqual(follower.sentPackets.map((packet) => packet.id), []);
+    assert.equal(follower.knownEntityIds.has(canonical.id), false);
     assert.equal(follower.knownEntityIds.has(3301), false);
     assert.equal(follower.entities.has(3301), false);
 }
@@ -1355,11 +1362,10 @@ function testDungeonPartyAuthoritySuppressesDuplicateHostileSpawnsAcrossUnsynced
     );
 
     const levelMap = GlobalState.levelEntities.get('TutorialDungeon');
-    assert.equal(suppressed, true, 'follower hostile spawn should still be suppressed while the joiner room state is unsynced');
+    assert.equal(suppressed, false, 'TutorialDungeon follower hostiles should stay local while room state is unsynced');
     assert.equal(levelMap?.size, 1, 'cross-room dungeon hostile should still collapse to the existing shared entity');
-    assert.deepEqual(follower.sentPackets.map((packet) => packet.id), [0x0D, 0x0F]);
-    assert.equal(parseDestroyEntityId(follower.sentPackets[0]!.payload), 3302);
-    assert.equal(follower.knownEntityIds.has(canonical.id), true);
+    assert.deepEqual(follower.sentPackets.map((packet) => packet.id), []);
+    assert.equal(follower.knownEntityIds.has(canonical.id), false);
     assert.equal(follower.knownEntityIds.has(3302), false);
     assert.equal(follower.entities.has(3302), false);
 }
@@ -1540,10 +1546,9 @@ function testDungeonPartyAuthoritySuppressesDuplicateTargetDummySpawns(): void {
         duplicate
     );
 
-    assert.equal(suppressed, true, 'target dummy spawns should collapse to the first shared authority');
-    assert.deepEqual(follower.sentPackets.map((packet) => packet.id), [0x0D, 0x0F]);
-    assert.equal(parseDestroyEntityId(follower.sentPackets[0]!.payload), 3450);
-    assert.equal(follower.knownEntityIds.has(canonical.id), true);
+    assert.equal(suppressed, false, 'TutorialDungeon target dummy spawns should remain local to each tutorial client');
+    assert.deepEqual(follower.sentPackets.map((packet) => packet.id), []);
+    assert.equal(follower.knownEntityIds.has(canonical.id), false);
     assert.equal(follower.entities.has(3450), false);
 }
 
@@ -2092,9 +2097,9 @@ function testSoloDungeonHostileReferencePromotesToPartyJoinerSeed(): void {
 
     (EntityHandler as any).sendExistingVisibleClientSpawnEntitiesToJoiner(joiner as never);
 
-    assert.deepEqual(joiner.sentPackets.map((packet) => packet.id), [0x0F]);
-    assert.equal(canonical.ownerPartyId, 96, 'solo hostile reference should be promoted to party ownership once the dungeon becomes party-shared');
-    assert.equal(joiner.knownEntityIds.has(canonical.id), true);
+    assert.deepEqual(joiner.sentPackets.map((packet) => packet.id), []);
+    assert.equal(canonical.ownerPartyId, 0, 'TutorialDungeon hostile references should not be promoted into party-shared enemies');
+    assert.equal(joiner.knownEntityIds.has(canonical.id), false);
 }
 
 function testSoloDungeonNpcReferencePromotesToPartyJoinerSeed(): void {
@@ -2129,9 +2134,9 @@ function testSoloDungeonNpcReferencePromotesToPartyJoinerSeed(): void {
 
     (EntityHandler as any).sendExistingVisibleClientSpawnEntitiesToJoiner(joiner as never);
 
-    assert.deepEqual(joiner.sentPackets.map((packet) => packet.id), [0x0F]);
-    assert.equal(canonical.ownerPartyId, 97, 'solo NPC reference should be promoted to party ownership once the dungeon becomes party-shared');
-    assert.equal(joiner.knownEntityIds.has(canonical.id), true);
+    assert.deepEqual(joiner.sentPackets.map((packet) => packet.id), []);
+    assert.equal(canonical.ownerPartyId, 0, 'TutorialDungeon NPC references should not be promoted into party-shared NPCs');
+    assert.equal(joiner.knownEntityIds.has(canonical.id), false);
 }
 
 function testTutorialDungeonTraversalParrotStartsWhenPlayerReachesRoom(): void {
@@ -2703,7 +2708,7 @@ function testGoblinRiverDungeonSuppressesFollowerClientHostileSpawns(): void {
         assert.equal(levelMap?.size, 1, `${levelName} should keep a single canonical hostile`);
         assert.deepEqual(
             follower.sentPackets.map((packet) => packet.id),
-            [0x0D, 0x0F],
+            expectedDuplicateDestroyPacketIds(),
             `${levelName} follower should destroy its duplicate and adopt the leader hostile`
         );
         assert.equal(parseDestroyEntityId(follower.sentPackets[0]!.payload), 6302);
@@ -2836,7 +2841,7 @@ function testGoblinRiverDungeonLeaderLateSpawnDedupesToFollowerCanonical(): void
         assert.equal(suppressed, true, `${levelName} leader should adopt existing follower-authored canonical hostile`);
         assert.deepEqual(
             leader.sentPackets.map((packet) => packet.id),
-            [0x0D, 0x0F],
+            expectedDuplicateDestroyPacketIds(),
             `${levelName} late leader should destroy its duplicate and receive the follower canonical hostile`
         );
         assert.equal(parseDestroyEntityId(leader.sentPackets[0]!.payload), 7402);
