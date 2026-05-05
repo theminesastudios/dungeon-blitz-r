@@ -159,6 +159,11 @@ function parsePowerHitDamage(payload: Buffer): number {
     return br.readMethod24();
 }
 
+function parsePowerHitTargetId(payload: Buffer): number {
+    const br = new BitReader(payload);
+    return br.readMethod4();
+}
+
 function parsePowerCastPayload(payload: Buffer): {
     sourceId: number;
     powerId: number;
@@ -343,10 +348,10 @@ async function testPowerHitFollowsPartyAudience(): Promise<void> {
     const sameRoomStranger = createFakeClient(202, 'Gamma', 1);
     const otherRoomStranger = createFakeClient(203, 'Delta', 8);
 
-    sender.currentLevel = 'TutorialDungeon';
-    partyOtherRoom.currentLevel = 'TutorialDungeon';
-    sameRoomStranger.currentLevel = 'TutorialDungeon';
-    otherRoomStranger.currentLevel = 'TutorialDungeon';
+    sender.currentLevel = 'GoblinRiverDungeon';
+    partyOtherRoom.currentLevel = 'GoblinRiverDungeon';
+    sameRoomStranger.currentLevel = 'GoblinRiverDungeon';
+    otherRoomStranger.currentLevel = 'GoblinRiverDungeon';
 
     attachPlayerEntity(sender);
     attachPlayerEntity(partyOtherRoom);
@@ -689,6 +694,168 @@ async function testOutdoorEntityDestroyStaysOwnerLocal(): Promise<void> {
     assert.equal(sameRoomStranger.entities.has(hostile.id), true, 'non-party local hostile should stay untouched');
 }
 
+async function testTutorialDungeonLocalEnemyKillSyncsToPartyEquivalent(): Promise<void> {
+    const sender = createFakeClient(430, 'Alpha', 1);
+    const watcher = createFakeClient(431, 'Beta', 1);
+
+    sender.currentLevel = 'TutorialDungeon';
+    watcher.currentLevel = 'TutorialDungeon';
+    sender.levelInstanceId = 'tutorial-shared';
+    watcher.levelInstanceId = 'tutorial-shared';
+
+    attachPlayerEntity(sender);
+    attachPlayerEntity(watcher);
+    GlobalState.partyByMember.set('alpha', 8);
+    GlobalState.partyByMember.set('beta', 8);
+
+    const senderHostile = {
+        id: 7301,
+        name: 'IntroGoblinClub',
+        isPlayer: false,
+        x: 100,
+        y: 200,
+        v: 0,
+        team: 2,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: sender.token,
+        roomId: sender.currentRoomId,
+        hp: 50,
+        maxHp: 50
+    };
+    const watcherHostile = {
+        ...senderHostile,
+        id: 8301,
+        ownerToken: watcher.token,
+        hp: 50,
+        maxHp: 50
+    };
+
+    sender.entities.set(senderHostile.id, senderHostile);
+    watcher.entities.set(watcherHostile.id, watcherHostile);
+    GlobalState.levelEntities.get(getClientLevelScope(sender as never))?.set(senderHostile.id, senderHostile);
+    GlobalState.sessionsByToken.set(sender.token, sender as never);
+    GlobalState.sessionsByToken.set(watcher.token, watcher as never);
+
+    await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(senderHostile.id, sender.clientEntID, 9999, 77));
+
+    assert.equal(watcher.sentPackets.some((packet) => packet.id === 0x07), true);
+    assert.equal(
+        watcher.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntityId(packet.payload) === watcherHostile.id),
+        true,
+        'party watcher should receive destroy for its own matching local tutorial enemy id'
+    );
+    assert.equal(watcher.entities.get(watcherHostile.id)?.dead, true);
+}
+
+async function testTutorialDungeonLocalEnemyHitUsesAttackersLocalEntityWhenIdsCollide(): Promise<void> {
+    const sender = createFakeClient(435, 'Alpha', 1);
+    const watcher = createFakeClient(436, 'Beta', 1);
+
+    sender.currentLevel = 'TutorialDungeon';
+    watcher.currentLevel = 'TutorialDungeon';
+    sender.levelInstanceId = 'tutorial-shared';
+    watcher.levelInstanceId = 'tutorial-shared';
+
+    attachPlayerEntity(sender);
+    attachPlayerEntity(watcher);
+    GlobalState.partyByMember.set('alpha', 88);
+    GlobalState.partyByMember.set('beta', 88);
+
+    const sharedLocalId = 7351;
+    const senderHostile = {
+        id: sharedLocalId,
+        name: 'IntroGoblinClub',
+        isPlayer: false,
+        x: 100,
+        y: 200,
+        v: 0,
+        team: 2,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: sender.token,
+        roomId: sender.currentRoomId,
+        hp: 50,
+        maxHp: 50
+    };
+    const watcherHostile = {
+        ...senderHostile,
+        ownerToken: watcher.token,
+        hp: 50,
+        maxHp: 50
+    };
+
+    sender.entities.set(sharedLocalId, senderHostile);
+    watcher.entities.set(sharedLocalId, watcherHostile);
+    GlobalState.levelEntities.get(getClientLevelScope(sender as never))?.set(sharedLocalId, watcherHostile);
+    GlobalState.sessionsByToken.set(sender.token, sender as never);
+    GlobalState.sessionsByToken.set(watcher.token, watcher as never);
+
+    await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(sharedLocalId, sender.clientEntID, 20, 77));
+
+    assert.equal(sender.entities.get(sharedLocalId)?.hp, 30, 'attacker local enemy should receive the hit even when the global id points at another owner');
+    assert.equal(watcher.entities.get(sharedLocalId)?.hp, 30, 'party local equivalent should receive the same hit');
+    const hitPacket = watcher.sentPackets.find((packet) => packet.id === 0x0A);
+    assert.notEqual(hitPacket, undefined, 'party watcher should receive a rewritten hit for its own local enemy');
+    assert.equal(parsePowerHitTargetId(hitPacket!.payload), sharedLocalId);
+    assert.equal(parsePowerHitDamage(hitPacket!.payload), 20);
+}
+
+async function testTutorialDungeonLocalEnemyDestroySyncsToPartyEquivalent(): Promise<void> {
+    const sender = createFakeClient(440, 'Alpha', 1);
+    const watcher = createFakeClient(441, 'Beta', 1);
+    const stranger = createFakeClient(442, 'Gamma', 1);
+
+    sender.currentLevel = 'TutorialDungeon';
+    watcher.currentLevel = 'TutorialDungeon';
+    stranger.currentLevel = 'TutorialDungeon';
+    sender.levelInstanceId = 'tutorial-shared';
+    watcher.levelInstanceId = 'tutorial-shared';
+    stranger.levelInstanceId = 'tutorial-shared';
+
+    attachPlayerEntity(sender);
+    attachPlayerEntity(watcher);
+    attachPlayerEntity(stranger);
+    GlobalState.partyByMember.set('alpha', 9);
+    GlobalState.partyByMember.set('beta', 9);
+
+    const senderHostile = {
+        id: 7401,
+        name: 'IntroGoblinDagger',
+        isPlayer: false,
+        x: 140,
+        y: 220,
+        v: 0,
+        team: 2,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: sender.token,
+        roomId: sender.currentRoomId
+    };
+    const watcherHostile = { ...senderHostile, id: 8401, ownerToken: watcher.token };
+    const strangerHostile = { ...senderHostile, id: 9401, ownerToken: stranger.token };
+
+    sender.entities.set(senderHostile.id, senderHostile);
+    watcher.entities.set(watcherHostile.id, watcherHostile);
+    stranger.entities.set(strangerHostile.id, strangerHostile);
+    GlobalState.levelEntities.get(getClientLevelScope(sender as never))?.set(senderHostile.id, senderHostile);
+    GlobalState.sessionsByToken.set(sender.token, sender as never);
+    GlobalState.sessionsByToken.set(watcher.token, watcher as never);
+    GlobalState.sessionsByToken.set(stranger.token, stranger as never);
+
+    const destroy = new BitBuffer(false);
+    destroy.writeMethod4(senderHostile.id);
+    destroy.writeMethod15(false);
+    await CombatHandler.handleEntityDestroy(sender as never, destroy.toBuffer());
+
+    assert.equal(
+        watcher.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntityId(packet.payload) === watcherHostile.id),
+        true,
+        'party watcher should receive destroy for its own matching local tutorial enemy id'
+    );
+    assert.equal(stranger.sentPackets.some((packet) => packet.id === 0x0D), false);
+}
+
 async function testDungeonCombatDoesNotCrossInstanceScopes(): Promise<void> {
     const sender = createFakeClient(500, 'Alpha', 1);
     const stranger = createFakeClient(501, 'Beta', 1);
@@ -821,6 +988,33 @@ async function main(): Promise<void> {
         GlobalState.entityLastRewardNonces.clear();
 
         await testOutdoorEntityDestroyStaysOwnerLocal();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testTutorialDungeonLocalEnemyKillSyncsToPartyEquivalent();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testTutorialDungeonLocalEnemyHitUsesAttackersLocalEntityWhenIdsCollide();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testTutorialDungeonLocalEnemyDestroySyncsToPartyEquivalent();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.levelEntities.clear();

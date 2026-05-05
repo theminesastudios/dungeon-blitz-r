@@ -9,6 +9,7 @@ import {
     noteDungeonRunKill
 } from '../core/DungeonRunStats';
 import { LevelHandler } from './LevelHandler';
+import { LevelConfig } from '../core/LevelConfig';
 import { EntityState, EntityTeam } from '../core/Entity';
 import { EntityHandler } from './EntityHandler';
 import { MissionHandler } from './MissionHandler';
@@ -78,9 +79,15 @@ type PlayerHitResolution = {
 type NpcHitResolution = {
     entity: any | null;
     killed: boolean;
+    appliedDamage: number;
 };
 
 export class CombatHandler {
+    private static readonly PRIVATE_LOCAL_SHARED_STATE_LEVELS = new Set<string>([
+        'TutorialDungeon',
+        'TutorialDungeonHard'
+    ]);
+    private static readonly LOCAL_ENTITY_MATCH_DISTANCE_SQ = 180 * 180;
     private static readonly PLAYER_OUT_OF_COMBAT_REGEN_DELAY_MS = 5_000;
     private static readonly PLAYER_OUT_OF_COMBAT_REGEN_INTERVAL_MS = 1_000;
     private static readonly HOSTILE_OUT_OF_COMBAT_REGEN_DELAY_MS = 5_500;
@@ -765,6 +772,161 @@ export class CombatHandler {
         return EntityHandler.shouldMirrorClientSpawnEntityToParty(levelName, entity);
     }
 
+    private static normalizeLocalEntityName(value: unknown): string {
+        return String(value ?? '')
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '');
+    }
+
+    private static shouldSyncPrivateLocalEntityState(levelName: string | null | undefined, entity: any): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        return Boolean(
+            normalizedLevel &&
+            CombatHandler.PRIVATE_LOCAL_SHARED_STATE_LEVELS.has(normalizedLevel) &&
+            entity &&
+            !entity.isPlayer &&
+            entity.clientSpawned &&
+            Number(entity.team ?? 0) === EntityTeam.ENEMY
+        );
+    }
+
+    private static resolveClientScopedCombatEntity(levelScope: string, client: Client, entityId: number): any {
+        const localEntity = client.entities.get(entityId);
+        if (CombatHandler.shouldSyncPrivateLocalEntityState(client.currentLevel, localEntity)) {
+            return localEntity;
+        }
+
+        return CombatHandler.resolveLevelEntity(levelScope, entityId);
+    }
+
+    private static findMatchingPrivateLocalEntity(viewer: Client, sourceEntity: any): any | null {
+        if (!viewer?.entities || !sourceEntity) {
+            return null;
+        }
+
+        const sourceName = CombatHandler.normalizeLocalEntityName(sourceEntity.name);
+        const sourceTeam = Number(sourceEntity.team ?? 0);
+        const sourcePos = CombatHandler.getEntityPosition(sourceEntity);
+        let bestMatch: any | null = null;
+        let bestDistanceSq = Number.POSITIVE_INFINITY;
+
+        for (const candidate of viewer.entities.values()) {
+            if (!CombatHandler.shouldSyncPrivateLocalEntityState(viewer.currentLevel, candidate)) {
+                continue;
+            }
+            if (Number(candidate?.ownerToken ?? 0) && Number(candidate.ownerToken) !== viewer.token) {
+                continue;
+            }
+            if (Number(candidate?.team ?? 0) !== sourceTeam) {
+                continue;
+            }
+            if (CombatHandler.normalizeLocalEntityName(candidate?.name) !== sourceName) {
+                continue;
+            }
+            if (Boolean(candidate?.dead) || Number(candidate?.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
+                continue;
+            }
+
+            const candidatePos = CombatHandler.getEntityPosition(candidate);
+            const distanceSq = sourcePos && candidatePos
+                ? ((candidatePos.x - sourcePos.x) * (candidatePos.x - sourcePos.x)) +
+                    ((candidatePos.y - sourcePos.y) * (candidatePos.y - sourcePos.y))
+                : 0;
+            if (distanceSq > CombatHandler.LOCAL_ENTITY_MATCH_DISTANCE_SQ) {
+                continue;
+            }
+            if (distanceSq < bestDistanceSq) {
+                bestDistanceSq = distanceSq;
+                bestMatch = candidate;
+            }
+        }
+
+        return bestMatch;
+    }
+
+    private static syncPrivateLocalEntityDefeat(anchor: Client, levelScope: string, sourceEntity: any): void {
+        if (!CombatHandler.shouldSyncPrivateLocalEntityState(anchor.currentLevel, sourceEntity)) {
+            return;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (
+                other === anchor ||
+                !other.playerSpawned ||
+                getClientLevelScope(other) !== levelScope ||
+                !areClientsInSameParty(anchor, other)
+            ) {
+                continue;
+            }
+
+            const localEntity = CombatHandler.findMatchingPrivateLocalEntity(other, sourceEntity);
+            const localEntityId = Number(localEntity?.id ?? 0);
+            if (localEntityId <= 0) {
+                continue;
+            }
+
+            localEntity.dead = true;
+            localEntity.hp = 0;
+            localEntity.entState = EntityState.DEAD;
+            other.entities.set(localEntityId, localEntity);
+            other.send(0x07, CombatHandler.buildEntityStatePayload(localEntityId, EntityState.DEAD, Boolean(localEntity.facingLeft)));
+
+            const destroy = new BitBuffer(false);
+            destroy.writeMethod4(localEntityId);
+            destroy.writeMethod15(true);
+            other.send(0x0D, destroy.toBuffer());
+            other.knownEntityIds.delete(localEntityId);
+        }
+    }
+
+    private static syncPrivateLocalEntityHit(
+        anchor: Client,
+        levelScope: string,
+        sourceEntity: any,
+        info: PowerHitRelayInfo,
+        damage: number
+    ): void {
+        if (!CombatHandler.shouldSyncPrivateLocalEntityState(anchor.currentLevel, sourceEntity) || damage <= 0) {
+            return;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (
+                other === anchor ||
+                !other.playerSpawned ||
+                getClientLevelScope(other) !== levelScope ||
+                !areClientsInSameParty(anchor, other)
+            ) {
+                continue;
+            }
+
+            const localEntity = CombatHandler.findMatchingPrivateLocalEntity(other, sourceEntity);
+            const localEntityId = Number(localEntity?.id ?? 0);
+            if (localEntityId <= 0) {
+                continue;
+            }
+
+            const rewrittenInfo: PowerHitRelayInfo = {
+                ...info,
+                targetId: localEntityId
+            };
+            const resolution = CombatHandler.updateNpcTargetEntityAfterHit(levelScope, localEntityId, localEntity, damage);
+            other.entities.set(localEntityId, localEntity);
+            other.send(0x0A, CombatHandler.buildPowerHitPayload(rewrittenInfo, resolution.appliedDamage || damage));
+
+            if (resolution.killed) {
+                other.send(0x07, CombatHandler.buildEntityStatePayload(localEntityId, EntityState.DEAD, Boolean(localEntity.facingLeft)));
+
+                const destroy = new BitBuffer(false);
+                destroy.writeMethod4(localEntityId);
+                destroy.writeMethod15(true);
+                other.send(0x0D, destroy.toBuffer());
+                other.knownEntityIds.delete(localEntityId);
+            }
+        }
+    }
+
     private static getCombatRecipients(anchor: Client, includeAnchor: boolean = false): Client[] {
         const recipients: Client[] = [];
         const levelScope = getClientLevelScope(anchor);
@@ -1266,19 +1428,20 @@ export class CombatHandler {
         };
     }
 
-    private static updateNpcTargetAfterHit(levelName: string, targetId: number, damage: number): NpcHitResolution {
+    private static updateNpcTargetEntityAfterHit(levelName: string, targetId: number, entity: any, damage: number): NpcHitResolution {
         if (!levelName || targetId <= 0 || damage <= 0) {
             return {
                 entity: null,
-                killed: false
+                killed: false,
+                appliedDamage: 0
             };
         }
 
-        const entity = CombatHandler.resolveLevelEntity(levelName, targetId);
         if (!entity || entity.isPlayer) {
             return {
                 entity: null,
-                killed: false
+                killed: false,
+                appliedDamage: 0
             };
         }
 
@@ -1286,7 +1449,8 @@ export class CombatHandler {
         if (!healthState) {
             return {
                 entity,
-                killed: false
+                killed: false,
+                appliedDamage: 0
             };
         }
 
@@ -1309,8 +1473,14 @@ export class CombatHandler {
             entity,
             killed: healthState.authoritativeKill &&
                 wasAlive &&
-                (Boolean(entity.dead) || Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD)
+                (Boolean(entity.dead) || Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD),
+            appliedDamage
         };
+    }
+
+    private static updateNpcTargetAfterHit(levelName: string, targetId: number, damage: number): NpcHitResolution {
+        const entity = CombatHandler.resolveLevelEntity(levelName, targetId);
+        return CombatHandler.updateNpcTargetEntityAfterHit(levelName, targetId, entity, damage);
     }
 
     private static markEnemyDefeatProcessed(levelScope: string, entityId: number, entity: any): void {
@@ -1505,13 +1675,14 @@ export class CombatHandler {
         const { targetId, sourceId, damage } = info;
         const currentLevel = client.currentLevel;
         const levelScope = getClientLevelScope(client);
-        const targetEntity = CombatHandler.resolveLevelEntity(levelScope, targetId);
-        const sourceEntity = CombatHandler.resolveLevelEntity(levelScope, sourceId);
+        const targetEntity = CombatHandler.resolveClientScopedCombatEntity(levelScope, client, targetId);
+        const sourceEntity = CombatHandler.resolveClientScopedCombatEntity(levelScope, client, sourceId);
         const isHostileNpcSource = Boolean(
             sourceEntity &&
             !sourceEntity.isPlayer &&
             Number(sourceEntity.team ?? 0) === EntityTeam.ENEMY
         );
+        const isPrivateLocalHostileTarget = CombatHandler.shouldSyncPrivateLocalEntityState(currentLevel, targetEntity);
         if (targetEntity && !targetEntity.isPlayer && Boolean(targetEntity.untargetable)) {
             return;
         }
@@ -1567,8 +1738,20 @@ export class CombatHandler {
                 EquipmentHandler.broadcastGearChange(targetSession, true);
             }
         } else {
-            const resolution = CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage);
+            const resolution = isPrivateLocalHostileTarget
+                ? CombatHandler.updateNpcTargetEntityAfterHit(levelScope, targetId, targetEntity, damage)
+                : CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage);
+            if (isPrivateLocalHostileTarget && resolution.entity) {
+                client.entities.set(targetId, resolution.entity);
+                CombatHandler.syncPrivateLocalEntityHit(client, levelScope, resolution.entity, info, resolution.appliedDamage || damage);
+                if (resolution.killed) {
+                    await CombatHandler.persistSharedDungeonEnemyDefeat(levelScope, targetId, resolution.entity);
+                    await CombatHandler.handleEnemyDefeatState(sourceSession ?? client, levelScope, targetId, resolution.entity);
+                }
+                return;
+            }
             if (resolution.killed && resolution.entity) {
+                CombatHandler.syncPrivateLocalEntityDefeat(client, levelScope, resolution.entity);
                 await CombatHandler.persistSharedDungeonEnemyDefeat(levelScope, targetId, resolution.entity);
                 await CombatHandler.handleEnemyDefeatState(sourceSession ?? client, levelScope, targetId, resolution.entity);
             }
@@ -1645,6 +1828,7 @@ export class CombatHandler {
         }
 
         if (destroyedEntity && !destroyedEntity.isPlayer && Number(destroyedEntity.team ?? 0) === EntityTeam.ENEMY) {
+            CombatHandler.syncPrivateLocalEntityDefeat(client, levelScope, destroyedEntity);
             await CombatHandler.handleEnemyDefeatState(client, levelScope, entityId, destroyedEntity);
         }
 

@@ -679,7 +679,8 @@ class LocalDiscordBridge {
             activity.partyMax = payload.partyMax ?? PARTY_MAX_MEMBERS;
         }
 
-        if (payload.joinSecret) {
+        const hasJoinSecret = Boolean(payload.joinSecret);
+        if (hasJoinSecret) {
             activity.joinSecret = payload.joinSecret;
         }
 
@@ -699,15 +700,17 @@ class LocalDiscordBridge {
             activity.largeImageText = payload.levelName || this.config.largeImageText;
         }
 
-        // Add Buttons
-        const buttons: any[] = [];
-        const baseUrl = this.getActivePresenceUrl().split('/api/')[0];
-        if (baseUrl) {
-            buttons.push({ label: 'Play Game', url: baseUrl });
-        }
-        
-        if (buttons.length > 0) {
-            activity.buttons = buttons;
+        // Discord rejects activities that combine join secrets with URL buttons.
+        if (!hasJoinSecret) {
+            const buttons: any[] = [];
+            const baseUrl = this.getActivePresenceUrl().split('/api/')[0];
+            if (baseUrl) {
+                buttons.push({ label: 'Play Game', url: baseUrl });
+            }
+
+            if (buttons.length > 0) {
+                activity.buttons = buttons;
+            }
         }
 
         const nextHash = JSON.stringify(activity);
