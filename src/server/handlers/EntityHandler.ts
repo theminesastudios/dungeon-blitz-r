@@ -45,6 +45,8 @@ export class EntityHandler {
     private static readonly MOUNT_SYNC_RETRY_DELAYS_MS = [0, 300, 1200, 2500, 4000];
     private static readonly CLIENT_SPAWN_JOINER_SEED_DELAYS_MS = [2500, 4500];
     private static readonly LEADER_AUTHORITATIVE_CLIENT_SPAWN_LEVELS = new Set<string>([
+        'GoblinRiverDungeon',
+        'GoblinRiverDungeonHard'
     ]);
     private static readonly PRIVATE_CLIENT_SPAWN_DUNGEON_LEVELS = new Set<string>([
     ]);
@@ -505,6 +507,41 @@ export class EntityHandler {
 
     static shouldMirrorClientSpawnEntityToParty(levelName: string | null | undefined, entity: any): boolean {
         return EntityHandler.isPartySharedClientSpawnHostile(levelName, entity);
+    }
+
+    static shouldPreserveTeamOwnedClientSpawnEntity(owner: Client, levelName: string | null | undefined, entity: any): boolean {
+        if (!owner || !levelName || !EntityHandler.isPartySharedClientSpawnHostile(levelName, entity)) {
+            return false;
+        }
+
+        const partyId = EntityHandler.getSharedClientSpawnOwnerPartyId(entity) || getPartyIdForClient(owner);
+        if (partyId <= 0) {
+            return false;
+        }
+
+        const ownerScope = getClientLevelScope(owner);
+        if (!ownerScope) {
+            return false;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (
+                other === owner ||
+                !other?.playerSpawned ||
+                other.socket?.destroyed ||
+                getClientLevelScope(other) !== ownerScope ||
+                getPartyIdForClient(other) !== partyId
+            ) {
+                continue;
+            }
+
+            entity.ownerPartyId = partyId;
+            entity.ownerToken = 0;
+            entity.ownerUserId = 0;
+            return true;
+        }
+
+        return false;
     }
 
     static shouldTrackKnownEntity(levelName: string | null | undefined, entity: any): boolean {
@@ -1703,6 +1740,13 @@ export class EntityHandler {
                     (charNameNorm && entityNameNorm === charNameNorm)
                 );
                 const isOwnedClientSpawn = Boolean(entityProps?.clientSpawned) && Number(entityProps?.ownerToken ?? 0) === client.token;
+
+                if (
+                    isOwnedClientSpawn &&
+                    EntityHandler.shouldPreserveTeamOwnedClientSpawnEntity(client, levelName, entityProps)
+                ) {
+                    continue;
+                }
 
                 if (isOwnedPlayer || isOwnedClientSpawn) {
                     levelMap.delete(entityId);

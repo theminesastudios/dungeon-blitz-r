@@ -2906,6 +2906,47 @@ function testGoblinRiverDungeonLeaderLateSpawnDedupesToFollowerCanonical(): void
     }
 }
 
+function testDungeonTeamOwnedHostilesSurviveCreatorDisconnect(): void {
+    for (const levelName of GOBLIN_RIVER_LEVELS) {
+        const owner = createFakeClient('Alpha');
+        const follower = createFakeClient('Beta');
+        owner.currentLevel = levelName;
+        follower.currentLevel = levelName;
+        owner.levelInstanceId = 'team-owned-disconnect';
+        follower.levelInstanceId = 'team-owned-disconnect';
+        owner.currentRoomId = 4;
+        follower.currentRoomId = 4;
+        owner.clientEntID = 7501;
+        follower.clientEntID = 7502;
+
+        const hostile = createGoblinRiverHostile(7601, 'GoblinArmorAxe', owner.token, 241, owner.currentRoomId);
+        const levelMap = new Map<number, any>([
+            [owner.clientEntID, { id: owner.clientEntID, name: 'Alpha', isPlayer: true }],
+            [follower.clientEntID, { id: follower.clientEntID, name: 'Beta', isPlayer: true }],
+            [hostile.id, hostile]
+        ]);
+
+        GlobalState.levelEntities.set(`${levelName}#team-owned-disconnect`, levelMap);
+        GlobalState.sessionsByToken.set(owner.token, owner as never);
+        GlobalState.sessionsByToken.set(follower.token, follower as never);
+        GlobalState.partyByMember.set('alpha', 241);
+        GlobalState.partyByMember.set('beta', 241);
+        GlobalState.partyGroups.set(241, { id: 241, leader: 'Alpha', members: ['Alpha', 'Beta'], locked: false });
+
+        const removed = EntityHandler.removeOwnedEntities(owner as never);
+
+        assert.deepEqual(removed, [owner.clientEntID], `${levelName} creator disconnect should only remove the creator player entity`);
+        assert.equal(levelMap.has(hostile.id), true, `${levelName} team hostile should stay alive after its original owner leaves`);
+        assert.equal(levelMap.get(hostile.id)?.ownerToken, 0, `${levelName} preserved hostile should no longer belong to the departed token`);
+        assert.equal(levelMap.get(hostile.id)?.ownerPartyId, 241, `${levelName} preserved hostile should remain party-owned`);
+        assert.deepEqual(
+            follower.sentPackets.filter((packet) => packet.id === 0x0D).map((packet) => parseDestroyEntityId(packet.payload)),
+            [owner.clientEntID],
+            `${levelName} follower should not receive a destroy packet for the preserved hostile`
+        );
+    }
+}
+
 function testGoblinRiverDungeonJoinerSkipsStartedRoomReplayFromPartyAnchor(): void {
     for (const levelName of GOBLIN_RIVER_LEVELS) {
         const anchor = createFakeClient('Alpha');
@@ -3335,6 +3376,31 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         testTutorialDungeonJoinerSkipsStartedRoomReplayFromPartyAnchor();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testGoblinRiverDungeonLeaderHostilesSeedToPartyJoinersOnly();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testGoblinRiverDungeonSuppressesFollowerClientHostileSpawns();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testGoblinRiverDungeonAllowsFollowerFirstCanonicalHostileSpawn();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testGoblinRiverDungeonLeaderLateSpawnDedupesToFollowerCanonical();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testDungeonTeamOwnedHostilesSurviveCreatorDisconnect();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
