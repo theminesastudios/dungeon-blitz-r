@@ -585,6 +585,35 @@ function testResolveDungeonExitSpawnIgnoresStaleCraftTownTutorialSavedCoords(): 
     assert.deepEqual(spawn, { x: -6886, y: 1623, hasCoord: true });
 }
 
+function testCemeteryHillSpawnUsesAuthoredPlayerSpawn(): void {
+    const character = createCharacter('HillScout');
+    character.CurrentLevel = { name: 'BridgeTown', x: 10400, y: 520 };
+
+    assert.deepEqual(
+        LevelConfig.getSpawn('CemeteryHill'),
+        { x: 7469, y: 385 },
+        'Cemetery Hill should have an authored spawn instead of falling back to the SWF sky origin'
+    );
+
+    assert.deepEqual(
+        LevelConfig.getSpawnCoordinates(character, 'BridgeTown', 'CemeteryHill'),
+        { x: 7469, y: 385, hasCoord: true },
+        'BridgeTown -> Cemetery Hill should land beside the Cemetery Hill entrance'
+    );
+}
+
+function testCemeteryHillZeroSavedCoordsFallBackToAuthoredSpawn(): void {
+    const character = createCharacter('HillScout');
+    character.CurrentLevel = { name: 'CemeteryHill', x: 0, y: 0 };
+    character.PreviousLevel = { name: 'BridgeTown', x: 3944, y: 838 };
+
+    assert.deepEqual(
+        LevelConfig.getSpawnCoordinates(character, 'BridgeTown', 'CemeteryHill'),
+        { x: 7469, y: 385, hasCoord: true },
+        'stale Cemetery Hill (0, 0) saves should not keep centering the camera in the sky'
+    );
+}
+
 function testRecoverTransferSessionStateRepairsCraftTownEntryLoop(): void {
     const client = createClient();
     const character = createCharacter('KeepRunner');
@@ -1389,6 +1418,8 @@ async function main(): Promise<void> {
         testResolveDungeonExitSpawnUsesRecordedDungeonEntryCoords();
         testResolveDungeonExitSpawnUsesCraftTownTutorialStartPoint();
         testResolveDungeonExitSpawnIgnoresStaleCraftTownTutorialSavedCoords();
+        testCemeteryHillSpawnUsesAuthoredPlayerSpawn();
+        testCemeteryHillZeroSavedCoordsFallBackToAuthoredSpawn();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.sessionsByUserId.clear();

@@ -49,6 +49,8 @@ export class LevelConfig {
         "SwampRoadNorthHard_SwampRoadConnectionHard": { x: 325, y: 368 },
         "BridgeTown_SwampRoadConnection": { x: 10533, y: 461 },
         "BridgeTownHard_SwampRoadConnectionHard": { x: 10533, y: 461 },
+        "BridgeTown_CemeteryHill": { x: 7469, y: 385 },
+        "BridgeTownHard_CemeteryHillHard": { x: 7469, y: 385 },
         "OldMineMountain_BridgeTown": { x: 16986, y: -296 },
         "OldMineMountainHard_BridgeTownHard": { x: 16986, y: -296 },
         "BridgeTown_BridgeTownHard": { x: 11439, y: 2199 },
@@ -73,6 +75,8 @@ export class LevelConfig {
         "SwampRoadNorthHard": { x: 4360, y: 595 },
         "OldMineMountain": { x: 189, y: 1335 },
         "OldMineMountainHard": { x: 189, y: 1335 },
+        "CemeteryHill": { x: 7469, y: 385 },
+        "CemeteryHillHard": { x: 7469, y: 385 },
         "EmeraldGlades": { x: -1433, y: -1883 },
         "EmeraldGladesHard": { x: -1433, y: -1883 },
         "Castle": { x: -1280, y: -1941 },
@@ -97,6 +101,18 @@ export class LevelConfig {
             x: Number(record.x ?? 0),
             y: Number(record.y ?? 0)
         };
+    }
+
+    private static isMissingAuthoredSpawn(levelName: string, x: number, y: number): boolean {
+        return (
+            (levelName === 'CemeteryHill' || levelName === 'CemeteryHillHard') &&
+            Math.round(Number(x)) === 0 &&
+            Math.round(Number(y)) === 0
+        );
+    }
+
+    private static hasDefaultSpawn(levelName: string): boolean {
+        return Boolean(this.DEFAULT_SPAWNS[levelName]);
     }
 
     static load(dataDir: string) {
@@ -291,7 +307,8 @@ export class LevelConfig {
         if (
             this.normalizeLevelName(currentRecord.name) === entryLevel &&
             Number.isFinite(currentRecord.x) &&
-            Number.isFinite(currentRecord.y)
+            Number.isFinite(currentRecord.y) &&
+            !this.isMissingAuthoredSpawn(entryLevel, Number(currentRecord.x), Number(currentRecord.y))
         ) {
             return {
                 x: Math.round(Number(currentRecord.x)),
@@ -304,13 +321,19 @@ export class LevelConfig {
         if (
             this.normalizeLevelName(previousRecord.name) === entryLevel &&
             Number.isFinite(previousRecord.x) &&
-            Number.isFinite(previousRecord.y)
+            Number.isFinite(previousRecord.y) &&
+            !this.isMissingAuthoredSpawn(entryLevel, Number(previousRecord.x), Number(previousRecord.y))
         ) {
             return {
                 x: Math.round(Number(previousRecord.x)),
                 y: Math.round(Number(previousRecord.y)),
                 hasCoord: true
             };
+        }
+
+        if (this.hasDefaultSpawn(entryLevel)) {
+            const spawn = this.getSpawn(entryLevel);
+            return { x: Math.round(spawn.x), y: Math.round(spawn.y), hasCoord: true };
         }
 
         return { x: 0, y: 0, hasCoord: false };
@@ -346,7 +369,8 @@ export class LevelConfig {
         if (
             this.normalizeLevelName(currentRecord.name) === targetLevel &&
             Number.isFinite(currentRecord.x) &&
-            Number.isFinite(currentRecord.y)
+            Number.isFinite(currentRecord.y) &&
+            !this.isMissingAuthoredSpawn(targetLevel, Number(currentRecord.x), Number(currentRecord.y))
         ) {
             return {
                 x: Math.round(Number(currentRecord.x)),
@@ -359,7 +383,8 @@ export class LevelConfig {
         if (
             this.normalizeLevelName(previousRecord.name) === targetLevel &&
             Number.isFinite(previousRecord.x) &&
-            Number.isFinite(previousRecord.y)
+            Number.isFinite(previousRecord.y) &&
+            !this.isMissingAuthoredSpawn(targetLevel, Number(previousRecord.x), Number(previousRecord.y))
         ) {
             return {
                 x: Math.round(Number(previousRecord.x)),
