@@ -8,6 +8,8 @@ import { Entity, EntityState } from '../core/Entity';
 import { LevelConfig } from '../core/LevelConfig';
 import { getClientLevelScope } from '../core/LevelScope';
 
+const NEPHIT_QUEST_LEVELS = ['GhostBossDungeon', 'GhostBossDungeonHard'] as const;
+
 type SentPacket = {
     id: number;
     payload: Buffer;
@@ -339,6 +341,31 @@ async function testUnsafeRangedDirectTargetPowerCastStillSuppresses(): Promise<v
         sameRoomStranger.sentPackets.some((packet) => packet.id === 0x09 || packet.id === 0x0F),
         false,
         'same-room viewers should also skip unsafe target-dependent ranged casts'
+    );
+}
+
+async function testTutorialDungeonUnknownSourcePowerCastIsIgnored(): Promise<void> {
+    const roomCreator = createFakeClient(116, 'Alpha', 1);
+    const joiner = createFakeClient(117, 'Beta', 1);
+
+    roomCreator.currentLevel = 'TutorialDungeon';
+    joiner.currentLevel = 'TutorialDungeon';
+    roomCreator.levelInstanceId = 'tutorial-shared';
+    joiner.levelInstanceId = 'tutorial-shared';
+
+    attachPlayerEntity(roomCreator);
+    attachPlayerEntity(joiner);
+    GlobalState.partyByMember.set('alpha', 6);
+    GlobalState.partyByMember.set('beta', 6);
+    GlobalState.sessionsByToken.set(roomCreator.token, roomCreator as never);
+    GlobalState.sessionsByToken.set(joiner.token, joiner as never);
+
+    await CombatHandler.handlePowerCast(roomCreator as never, buildPowerCastPayload(991001, 77));
+
+    assert.equal(
+        joiner.sentPackets.some((packet) => packet.id === 0x09 || packet.id === 0x0F),
+        false,
+        'tutorial remote-cast re-entry with an unknown helper/projectile source should not be relayed again'
     );
 }
 
@@ -998,8 +1025,219 @@ async function testTutorialDungeonLocalEnemyHitUsesAttackersLocalEntityWhenIdsCo
     assert.equal(watcher.entities.get(sharedLocalId)?.hp, 30, 'party local equivalent should receive the same hit');
     assert.equal(
         watcher.sentPackets.some((packet) => packet.id === 0x0A),
+        true,
+        'party watcher should receive a translated authoritative hit for its matching local tutorial enemy'
+    );
+    assert.equal(
+        watcher.sentPackets.some((packet) =>
+            packet.id === 0x0A &&
+            parsePowerHitTargetId(packet.payload) === sharedLocalId &&
+            parsePowerHitDamage(packet.payload) === 20
+        ),
+        true,
+        'translated tutorial hit should target the watcher local enemy id with authoritative damage'
+    );
+}
+
+async function testNephitsQuestLocalEnemyHitUsesPrivateLocalSync(): Promise<void> {
+    for (const [index, levelName] of NEPHIT_QUEST_LEVELS.entries()) {
+        const sender = createFakeClient(455 + (index * 10), `Alpha${index}`, 1);
+        const watcher = createFakeClient(456 + (index * 10), `Beta${index}`, 1);
+        const instanceId = `nephit-shared-${index}`;
+
+        sender.currentLevel = levelName;
+        watcher.currentLevel = levelName;
+        sender.levelInstanceId = instanceId;
+        watcher.levelInstanceId = instanceId;
+
+        attachPlayerEntity(sender);
+        attachPlayerEntity(watcher);
+        GlobalState.partyByMember.set(sender.character!.name.toLowerCase(), 93 + index);
+        GlobalState.partyByMember.set(watcher.character!.name.toLowerCase(), 93 + index);
+
+        const senderHostile = {
+            id: 7400 + index,
+            name: index === 0 ? 'NephitLargeEye' : 'NephitLargeEyeHard',
+            isPlayer: false,
+            x: 500,
+            y: 300,
+            v: 0,
+            team: 2,
+            entState: EntityState.ACTIVE,
+            clientSpawned: true,
+            ownerToken: sender.token,
+            roomId: sender.currentRoomId,
+            hp: 80,
+            maxHp: 80
+        };
+        const watcherHostile = {
+            ...senderHostile,
+            id: 8400 + index,
+            ownerToken: watcher.token,
+            hp: 80,
+            maxHp: 80
+        };
+
+        sender.entities.set(senderHostile.id, senderHostile);
+        watcher.entities.set(watcherHostile.id, watcherHostile);
+        GlobalState.levelEntities.get(getClientLevelScope(sender as never))?.set(senderHostile.id, senderHostile);
+        GlobalState.sessionsByToken.set(sender.token, sender as never);
+        GlobalState.sessionsByToken.set(watcher.token, watcher as never);
+
+        await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(senderHostile.id, sender.clientEntID, 25, 77));
+
+        assert.equal(sender.entities.get(senderHostile.id)?.hp, 55, `${levelName} attacker local enemy should receive authoritative damage`);
+        assert.equal(watcher.entities.get(watcherHostile.id)?.hp, 55, `${levelName} party local equivalent should receive the same authoritative damage`);
+        assert.equal(
+            watcher.sentPackets.some((packet) =>
+                packet.id === 0x0A &&
+                parsePowerHitTargetId(packet.payload) === watcherHostile.id &&
+                parsePowerHitDamage(packet.payload) === 25
+            ),
+            true,
+            `${levelName} watcher should receive a translated hit for its local Nephit enemy id`
+        );
+    }
+}
+
+async function testTutorialDungeonPrivateLocalHitDoesNotRetargetDeadEquivalent(): Promise<void> {
+    const sender = createFakeClient(445, 'Alpha', 1);
+    const watcher = createFakeClient(446, 'Beta', 1);
+
+    sender.currentLevel = 'TutorialDungeon';
+    watcher.currentLevel = 'TutorialDungeon';
+    sender.levelInstanceId = 'tutorial-shared';
+    watcher.levelInstanceId = 'tutorial-shared';
+
+    attachPlayerEntity(sender);
+    attachPlayerEntity(watcher);
+    GlobalState.partyByMember.set('alpha', 91);
+    GlobalState.partyByMember.set('beta', 91);
+
+    const senderHostile = {
+        id: 7381,
+        name: 'IntroGoblinClub',
+        isPlayer: false,
+        x: 100,
+        y: 200,
+        v: 0,
+        team: 2,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: sender.token,
+        roomId: sender.currentRoomId,
+        hp: 50,
+        maxHp: 50
+    };
+    const watcherDeadEquivalent = {
+        ...senderHostile,
+        id: 8381,
+        ownerToken: watcher.token,
+        hp: 0,
+        maxHp: 50,
+        dead: true,
+        entState: EntityState.DEAD
+    };
+    const watcherNearbyHostile = {
+        ...senderHostile,
+        id: 8382,
+        ownerToken: watcher.token,
+        x: 120,
+        hp: 50,
+        maxHp: 50
+    };
+
+    sender.entities.set(senderHostile.id, senderHostile);
+    watcher.entities.set(watcherDeadEquivalent.id, watcherDeadEquivalent);
+    watcher.entities.set(watcherNearbyHostile.id, watcherNearbyHostile);
+    GlobalState.levelEntities.get(getClientLevelScope(sender as never))?.set(senderHostile.id, senderHostile);
+    GlobalState.sessionsByToken.set(sender.token, sender as never);
+    GlobalState.sessionsByToken.set(watcher.token, watcher as never);
+
+    await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(senderHostile.id, sender.clientEntID, 20, 77));
+
+    assert.equal(sender.entities.get(senderHostile.id)?.hp, 30);
+    assert.equal(watcher.entities.get(watcherDeadEquivalent.id)?.dead, true);
+    assert.equal(
+        watcher.entities.get(watcherNearbyHostile.id)?.hp,
+        50,
+        'private-local sync should not redirect damage from a dead equivalent to another nearby same-name enemy'
+    );
+    assert.equal(
+        watcher.sentPackets.some((packet) => packet.id === 0x0A && parsePowerHitTargetId(packet.payload) === watcherNearbyHostile.id),
         false,
-        'party watcher already simulates the remote player power cast and should not receive a duplicate damage packet'
+        'watcher should not receive a translated hit for the nearby unhit enemy'
+    );
+}
+
+async function testTutorialDungeonPrivateLocalRepeatedDeadHitDoesNotApplyRequestedDamage(): Promise<void> {
+    const sender = createFakeClient(447, 'Alpha', 1);
+    const watcher = createFakeClient(448, 'Beta', 1);
+
+    sender.currentLevel = 'TutorialDungeon';
+    watcher.currentLevel = 'TutorialDungeon';
+    sender.levelInstanceId = 'tutorial-shared';
+    watcher.levelInstanceId = 'tutorial-shared';
+
+    attachPlayerEntity(sender);
+    attachPlayerEntity(watcher);
+    GlobalState.partyByMember.set('alpha', 92);
+    GlobalState.partyByMember.set('beta', 92);
+
+    const senderHostile = {
+        id: 7391,
+        name: 'IntroGoblinDagger',
+        isPlayer: false,
+        x: 140,
+        y: 220,
+        v: 0,
+        team: 2,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: sender.token,
+        roomId: sender.currentRoomId,
+        hp: 20,
+        maxHp: 20
+    };
+    const watcherEquivalent = {
+        ...senderHostile,
+        id: 8391,
+        ownerToken: watcher.token,
+        hp: 20,
+        maxHp: 20
+    };
+    const watcherNearbyHostile = {
+        ...senderHostile,
+        id: 8392,
+        ownerToken: watcher.token,
+        x: 155,
+        hp: 60,
+        maxHp: 60
+    };
+
+    sender.entities.set(senderHostile.id, senderHostile);
+    watcher.entities.set(watcherEquivalent.id, watcherEquivalent);
+    watcher.entities.set(watcherNearbyHostile.id, watcherNearbyHostile);
+    GlobalState.levelEntities.get(getClientLevelScope(sender as never))?.set(senderHostile.id, senderHostile);
+    GlobalState.sessionsByToken.set(sender.token, sender as never);
+    GlobalState.sessionsByToken.set(watcher.token, watcher as never);
+
+    await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(senderHostile.id, sender.clientEntID, 9999, 77));
+    watcher.sentPackets.length = 0;
+
+    await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(senderHostile.id, sender.clientEntID, 9999, 77));
+
+    assert.equal(sender.entities.get(senderHostile.id)?.dead, true);
+    assert.equal(watcher.entities.get(watcherEquivalent.id)?.dead, true);
+    assert.equal(
+        watcher.entities.get(watcherNearbyHostile.id)?.hp,
+        60,
+        'a repeated dead-target hit should not apply requested damage to the next nearby same-name enemy'
+    );
+    assert.equal(
+        watcher.sentPackets.some((packet) => packet.id === 0x0A || packet.id === 0x07 || packet.id === 0x0D),
+        false,
+        'repeated dead-target hit should not emit another damage/death sync'
     );
 }
 
@@ -1071,6 +1309,52 @@ async function testTutorialDungeonLocalEnemyHitSuppressesNonPlayerSourceDamageEc
         roomCreator.sentPackets.some((packet) => packet.id === 0x0A),
         false,
         'room creator should not receive a second private-local tutorial hit when the joiner hit source is a helper/projectile'
+    );
+}
+
+async function testTutorialDungeonUnknownSourcePowerHitIsIgnored(): Promise<void> {
+    const roomCreator = createFakeClient(439, 'Alpha', 1);
+    const joiner = createFakeClient(443, 'Beta', 1);
+
+    roomCreator.currentLevel = 'TutorialDungeon';
+    joiner.currentLevel = 'TutorialDungeon';
+    roomCreator.levelInstanceId = 'tutorial-shared';
+    joiner.levelInstanceId = 'tutorial-shared';
+
+    attachPlayerEntity(roomCreator);
+    attachPlayerEntity(joiner);
+    GlobalState.partyByMember.set('alpha', 90);
+    GlobalState.partyByMember.set('beta', 90);
+
+    const creatorHostile = {
+        id: 8371,
+        name: 'IntroGoblinClub',
+        isPlayer: false,
+        x: 100,
+        y: 200,
+        v: 0,
+        team: 2,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: roomCreator.token,
+        roomId: roomCreator.currentRoomId,
+        hp: 50,
+        maxHp: 50
+    };
+
+    roomCreator.entities.set(creatorHostile.id, creatorHostile);
+    GlobalState.levelEntities.get(getClientLevelScope(roomCreator as never))?.set(creatorHostile.id, creatorHostile);
+    GlobalState.sessionsByToken.set(roomCreator.token, roomCreator as never);
+    GlobalState.sessionsByToken.set(joiner.token, joiner as never);
+
+    await CombatHandler.handlePowerHit(roomCreator as never, buildPowerHitPayload(creatorHostile.id, 991002, 20, 77));
+
+    assert.equal(roomCreator.entities.get(creatorHostile.id)?.hp, 50);
+    assert.equal(creatorHostile.hp, 50);
+    assert.equal(
+        roomCreator.sentPackets.some((packet) => packet.id === 0x0A),
+        false,
+        'tutorial remote-hit re-entry with an unknown helper/projectile source should not apply a second hit'
     );
 }
 
@@ -1215,6 +1499,15 @@ async function main(): Promise<void> {
         GlobalState.entityLifeNonces.clear();
         GlobalState.entityLastRewardNonces.clear();
 
+        await testTutorialDungeonUnknownSourcePowerCastIsIgnored();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
         await testPowerHitFollowsPartyAudience();
 
         GlobalState.sessionsByToken.clear();
@@ -1323,7 +1616,43 @@ async function main(): Promise<void> {
         GlobalState.entityLifeNonces.clear();
         GlobalState.entityLastRewardNonces.clear();
 
+        await testNephitsQuestLocalEnemyHitUsesPrivateLocalSync();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testTutorialDungeonPrivateLocalHitDoesNotRetargetDeadEquivalent();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testTutorialDungeonPrivateLocalRepeatedDeadHitDoesNotApplyRequestedDamage();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
         await testTutorialDungeonLocalEnemyHitSuppressesNonPlayerSourceDamageEcho();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testTutorialDungeonUnknownSourcePowerHitIsIgnored();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.levelEntities.clear();

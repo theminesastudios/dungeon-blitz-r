@@ -40,7 +40,15 @@ export class EntityHandler {
         'ShazariDesert',
         'ShazariDesertHard',
         'JadeCity',
-        'JadeCityHard'
+        'JadeCityHard',
+        'GhostBossDungeon',
+        'GhostBossDungeonHard'
+    ]);
+    private static readonly SAME_ID_SHARED_HOSTILE_DUPLICATE_DESTROY_LEVELS = new Set<string>([
+        'GhostBossDungeon',
+        'GhostBossDungeonHard',
+        'TutorialDungeon',
+        'TutorialDungeonHard'
     ]);
     private static readonly MOUNT_SYNC_RETRY_DELAYS_MS = [0, 300, 1200, 2500, 4000];
     private static readonly CLIENT_SPAWN_JOINER_SEED_DELAYS_MS = [2500, 4500];
@@ -208,6 +216,16 @@ export class EntityHandler {
 
     private static isPartySharedClientSpawnHostile(levelName: string | null | undefined, entity: any): boolean {
         return EntityHandler.isSharedClientSpawnRegionActor(levelName, entity) && Number(entity?.team ?? 0) === 2;
+    }
+
+    private static shouldDestroySameIdSharedHostileDuplicate(levelName: string | null | undefined, entity: any): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        return Boolean(normalizedLevel) &&
+            EntityHandler.SAME_ID_SHARED_HOSTILE_DUPLICATE_DESTROY_LEVELS.has(normalizedLevel) &&
+            Boolean(entity?.clientSpawned) &&
+            !Boolean(entity?.isPlayer) &&
+            Number(entity?.team ?? 0) === 2 &&
+            LevelConfig.isDungeonLevel(normalizedLevel);
     }
 
     private static findLeaderAuthoritativeClientSpawnMatch(
@@ -421,7 +439,7 @@ export class EntityHandler {
         client.entities.delete(duplicateId);
 
         if (canonicalId === duplicateId) {
-            if (Number(entity?.team ?? 0) === 2 && (levelName === 'TutorialDungeon' || levelName === 'TutorialDungeonHard')) {
+            if (EntityHandler.shouldDestroySameIdSharedHostileDuplicate(levelName, entity)) {
                 client.knownEntityIds.delete(duplicateId);
                 EntityHandler.sendDuplicateDestroySequence(client, duplicateId);
                 EntityHandler.resendCanonicalAfterDuplicateDestroy(client, canonical);
@@ -1369,7 +1387,7 @@ export class EntityHandler {
     // Server -> Client: Spawn Entity (Packet 0xF)
     private static shouldWipeLocalDuplicateBeforeCanonicalSeed(client: Client, entity: EntityProps): boolean {
         const levelName = client.currentLevel;
-        if (levelName !== 'TutorialDungeon' && levelName !== 'TutorialDungeonHard') {
+        if (!EntityHandler.shouldDestroySameIdSharedHostileDuplicate(levelName, entity)) {
             return false;
         }
         const rawEntity = entity as any;

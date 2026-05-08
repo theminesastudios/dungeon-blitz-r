@@ -34,6 +34,7 @@ export const DebugConfig = {
     enabled: parseBooleanEnv('DEBUG_ENABLED', false),
     packets: parseBooleanEnv('DEBUG_PACKETS', parseBooleanEnv('DEBUG_ENABLED', false)),
     progress: parseBooleanEnv('DEBUG_PROGRESS', parseBooleanEnv('DEBUG_ENABLED', false)),
+    combatDamage: parseBooleanEnv('DEBUG_COMBAT_DAMAGE', parseBooleanEnv('DEBUG_ENABLED', false)),
     packetPayloads: parseBooleanEnv('DEBUG_PACKET_PAYLOADS', false),
     unhandledPackets: parseBooleanEnv('DEBUG_UNHANDLED_PACKETS', parseBooleanEnv('DEBUG_ENABLED', false)),
     router: parseBooleanEnv('DEBUG_ROUTER', parseBooleanEnv('DEBUG_ENABLED', false)),
@@ -231,7 +232,7 @@ export class DebugLogger {
         }
 
         console.log(
-            `[Debug] enabled packets=${DebugConfig.packets} progress=${DebugConfig.progress} router=${DebugConfig.router} unhandled=${DebugConfig.unhandledPackets} payloads=${DebugConfig.packetPayloads}`
+            `[Debug] enabled packets=${DebugConfig.packets} progress=${DebugConfig.progress} combatDamage=${DebugConfig.combatDamage} router=${DebugConfig.router} unhandled=${DebugConfig.unhandledPackets} payloads=${DebugConfig.packetPayloads}`
         );
     }
 }

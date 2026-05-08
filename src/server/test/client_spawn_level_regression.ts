@@ -48,6 +48,7 @@ type FakeClient = {
 
 let nextFakeToken = 1000;
 const GOBLIN_RIVER_LEVELS = ['GoblinRiverDungeon', 'GoblinRiverDungeonHard'] as const;
+const NEPHIT_QUEST_LEVELS = ['GhostBossDungeon', 'GhostBossDungeonHard'] as const;
 const CRAFT_TOWN_HELPER_IDS = [1073605, 1139141, 1335749, 1401285, 1270213, 1532357, 1597893, 1466821];
 
 
@@ -377,7 +378,8 @@ function testConfiguredLevelsUseClientSpawn(): void {
         'EmeraldGlades',
         'Castle',
         'ShazariDesert',
-        'JadeCityHard'
+        'JadeCityHard',
+        ...NEPHIT_QUEST_LEVELS
     ]) {
         assert.equal(EntityHandler.isClientSpawnLevel(levelName), true, `${levelName} should use client-spawn NPC sync`);
     }
@@ -1651,6 +1653,109 @@ function testTutorialDungeonSameIdHostileDuplicateDestroysAndReseedsCanonical():
     assert.equal(parseDestroyEntityId(follower.sentPackets[0]!.payload), canonical.id);
     assert.equal(follower.knownEntityIds.has(canonical.id), true);
     assert.equal(follower.entities.has(canonical.id), false);
+}
+
+function testNephitsQuestHostileClientSpawnsUsePartySharedAuthority(): void {
+    for (const [index, levelName] of NEPHIT_QUEST_LEVELS.entries()) {
+        const owner = createFakeClient(`Alpha${index}`);
+        const follower = createFakeClient(`Beta${index}`);
+        const stranger = createFakeClient(`Gamma${index}`);
+        const instanceId = `nephit-client-spawn-${index}`;
+
+        owner.currentLevel = levelName;
+        follower.currentLevel = levelName;
+        stranger.currentLevel = levelName;
+        owner.levelInstanceId = instanceId;
+        follower.levelInstanceId = instanceId;
+        stranger.levelInstanceId = instanceId;
+        owner.currentRoomId = 4;
+        follower.currentRoomId = 0;
+        stranger.currentRoomId = 4;
+
+        const partyId = 295 + index;
+        const canonical = createGoblinRiverHostile(
+            8601 + index,
+            index === 0 ? 'NephitLargeEye' : 'NephitLargeEyeHard',
+            owner.token,
+            partyId,
+            owner.currentRoomId,
+            300,
+            410
+        );
+
+        GlobalState.levelEntities.set(`${levelName}#${instanceId}`, new Map([[canonical.id, canonical]]));
+        GlobalState.sessionsByToken.set(owner.token, owner as never);
+        GlobalState.sessionsByToken.set(follower.token, follower as never);
+        GlobalState.sessionsByToken.set(stranger.token, stranger as never);
+        GlobalState.partyByMember.set(owner.character.name.toLowerCase(), partyId);
+        GlobalState.partyByMember.set(follower.character.name.toLowerCase(), partyId);
+
+        const partyKnown = EntityHandler.ensureEntityKnown(follower as never, levelName, canonical.id);
+        const strangerKnown = EntityHandler.ensureEntityKnown(stranger as never, levelName, canonical.id);
+
+        assert.equal(partyKnown, true, `${levelName} should seed Nephit hostiles to party joiners`);
+        assert.deepEqual(
+            follower.sentPackets.map((packet) => packet.id),
+            expectedDuplicateDestroyPacketIds(),
+            `${levelName} party joiner should destroy any local duplicate before the canonical hostile is re-seeded`
+        );
+        assert.equal(strangerKnown, false, `${levelName} should not seed Nephit hostiles to non-party viewers`);
+        assert.equal(stranger.sentPackets.length, 0);
+    }
+}
+
+function testNephitsQuestSameIdHostileDuplicateDestroysAndReseedsCanonical(): void {
+    for (const [index, levelName] of NEPHIT_QUEST_LEVELS.entries()) {
+        const owner = createFakeClient(`Alpha${index}`);
+        const follower = createFakeClient(`Beta${index}`);
+        const instanceId = `nephit-same-id-${index}`;
+        const partyId = 305 + index;
+
+        owner.currentLevel = levelName;
+        follower.currentLevel = levelName;
+        owner.levelInstanceId = instanceId;
+        follower.levelInstanceId = instanceId;
+        owner.currentRoomId = 1;
+        follower.currentRoomId = 1;
+
+        const canonical = createGoblinRiverHostile(
+            8701 + index,
+            index === 0 ? 'NephitLargeEye' : 'NephitLargeEyeHard',
+            owner.token,
+            partyId,
+            owner.currentRoomId,
+            300,
+            410
+        );
+
+        GlobalState.levelEntities.set(`${levelName}#${instanceId}`, new Map([[canonical.id, canonical]]));
+        GlobalState.sessionsByToken.set(owner.token, owner as never);
+        GlobalState.sessionsByToken.set(follower.token, follower as never);
+        GlobalState.partyByMember.set(owner.character.name.toLowerCase(), partyId);
+        GlobalState.partyByMember.set(follower.character.name.toLowerCase(), partyId);
+        follower.knownEntityIds.add(canonical.id);
+        follower.entities.set(canonical.id, { ...canonical, ownerToken: follower.token });
+
+        const suppressed = (EntityHandler as any).suppressDuplicateSharedClientSpawn(
+            follower as never,
+            levelName,
+            GlobalState.levelEntities.get(`${levelName}#${instanceId}`),
+            {
+                ...canonical,
+                ownerToken: follower.token
+            }
+        );
+
+        assert.equal(suppressed, true, `${levelName} same-id hostile duplicates should lose authority`);
+        assert.deepEqual(
+            follower.sentPackets.map((packet) => packet.id),
+            expectedDuplicateDestroyPacketIds(),
+            `${levelName} same-id hostile duplicate should be destroyed before the canonical is re-seeded`
+        );
+        assert.equal(parseDestroyEntityId(follower.sentPackets[0]!.payload), canonical.id);
+        assert.equal(follower.knownEntityIds.has(canonical.id), true);
+        assert.equal(follower.entities.has(canonical.id), false);
+    }
 }
 
 function testCraftTownTutorialTracksClientSpawnBoardHelpers(): void {
@@ -3225,6 +3330,11 @@ async function main(): Promise<void> {
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
+        testNephitsQuestHostileClientSpawnsUsePartySharedAuthority();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
         testDungeonPartyAuthoritySuppressesDuplicateHostileSpawns();
 
         GlobalState.levelEntities.clear();
@@ -3256,6 +3366,11 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         testTutorialDungeonSameIdHostileDuplicateDestroysAndReseedsCanonical();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testNephitsQuestSameIdHostileDuplicateDestroysAndReseedsCanonical();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
