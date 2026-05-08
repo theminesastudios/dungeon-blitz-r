@@ -11,6 +11,7 @@ import { PetHandler } from '../handlers/PetHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { LevelConfig } from '../core/LevelConfig';
+import { MissionID } from '../data/runtime';
 
 function createCharacter(name: string): Character {
     return {
@@ -65,6 +66,42 @@ function createOpenDoorPacket(doorId: number): Buffer {
     const bb = new BitBuffer();
     bb.writeMethod9(doorId);
     return bb.toBuffer();
+}
+
+function createDoorStateRequestPacket(doorId: number): Buffer {
+    const bb = new BitBuffer();
+    bb.writeMethod9(doorId);
+    return bb.toBuffer();
+}
+
+function readMethod91(br: BitReader): number {
+    const prefix = br.readMethod20(3);
+    return br.readMethod20((prefix + 1) * 2);
+}
+
+function parseDoorStatePacket(payload: Buffer): { doorId: number; state: number; target: string } {
+    const br = new BitReader(payload);
+    return {
+        doorId: br.readMethod4(),
+        state: readMethod91(br),
+        target: br.readMethod13()
+    };
+}
+
+function parseDoorTargetPacket(payload: Buffer): { doorId: number; target: string } {
+    const br = new BitReader(payload);
+    return {
+        doorId: br.readMethod4(),
+        target: br.readMethod13()
+    };
+}
+
+function parseRoomThoughtPacket(payload: Buffer): { entityId: number; text: string } {
+    const br = new BitReader(payload);
+    return {
+        entityId: br.readMethod4(),
+        text: br.readMethod13()
+    };
 }
 
 function parseMountEquipPacket(payload: Buffer): { entityId: number; mountId: number } {
@@ -713,6 +750,102 @@ function testCraftTownTutorialDoorFallsBackToPreviousOverworld(): void {
 
     assert.equal(client.lastDoorId, 0);
     assert.equal(client.lastDoorTargetLevel, 'NewbieRoad');
+}
+
+function testFelbridgeDreadGateRequiresCapstoneClaim(): void {
+    const client = createClient();
+    client.currentLevel = 'BridgeTown';
+    client.clientEntID = 451;
+    client.character = createCharacter('FelbridgeRunner');
+    client.character.level = 50;
+
+    LevelHandler.handleRequestDoorState(client as never, createDoorStateRequestPacket(300));
+
+    const doorStatePacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x42);
+    assert.ok(doorStatePacket);
+    assert.deepEqual(parseDoorStatePacket(doorStatePacket.payload), {
+        doorId: 300,
+        state: 4,
+        target: 'BridgeTownHard'
+    });
+
+    client.sentPackets.length = 0;
+    LevelHandler.handleOpenDoor(client as never, createOpenDoorPacket(300));
+
+    assert.equal(client.lastDoorId, -1);
+    assert.equal(client.lastDoorTargetLevel, '');
+    assert.equal(
+        client.sentPackets.some((packet: { id: number }) => packet.id === 0x2E),
+        false,
+        'locked Felbridge dread gate must not start a transfer'
+    );
+    const blockedDoorStatePacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x42);
+    assert.ok(blockedDoorStatePacket);
+    assert.deepEqual(parseDoorStatePacket(blockedDoorStatePacket.payload), {
+        doorId: 300,
+        state: 4,
+        target: 'BridgeTownHard'
+    });
+    const lockedDialoguePacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x76);
+    assert.ok(lockedDialoguePacket);
+    assert.deepEqual(parseRoomThoughtPacket(lockedDialoguePacket.payload), {
+        entityId: 451,
+        text: '^tA powerful magic seals this entrance.=^tI still need to learn more about the Sleeping Lands.'
+    });
+}
+
+function testFelbridgeDreadGateReadyToTurnInDoesNotUnlock(): void {
+    const client = createClient();
+    client.currentLevel = 'BridgeTown';
+    client.character = createCharacter('FelbridgeRunner');
+    client.character.missions = {
+        [String(MissionID.Capstone)]: {
+            state: 2,
+            currCount: 1
+        }
+    };
+
+    LevelHandler.handleRequestDoorState(client as never, createDoorStateRequestPacket(300));
+
+    const doorStatePacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x42);
+    assert.ok(doorStatePacket);
+    assert.deepEqual(parseDoorStatePacket(doorStatePacket.payload), {
+        doorId: 300,
+        state: 4,
+        target: 'BridgeTownHard'
+    });
+}
+
+function testFelbridgeDreadGateOpensAfterCapstoneClaimedWithoutLevelRequirement(): void {
+    const client = createClient();
+    client.currentLevel = 'BridgeTown';
+    client.character = createCharacter('FelbridgeRunner');
+    client.character.level = 1;
+    client.character.missions = {
+        [String(MissionID.Capstone)]: {
+            state: 3,
+            currCount: 1,
+            claimed: 1,
+            complete: 1
+        }
+    };
+
+    LevelHandler.handleRequestDoorState(client as never, createDoorStateRequestPacket(300));
+
+    const doorStatePacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x42);
+    assert.ok(doorStatePacket);
+    assert.deepEqual(parseDoorStatePacket(doorStatePacket.payload), {
+        doorId: 300,
+        state: 1,
+        target: 'BridgeTownHard'
+    });
+
+    client.sentPackets.length = 0;
+    LevelHandler.handleOpenDoor(client as never, createOpenDoorPacket(300));
+
+    assert.equal(client.lastDoorId, 300);
+    assert.equal(client.lastDoorTargetLevel, 'BridgeTownHard');
+    assert.equal(client.sentPackets.some((packet: { id: number }) => packet.id === 0x2E), true);
 }
 
 function testDisconnectRecoverySnapshotRepairsCraftTownEntryLoop(): void {
@@ -1446,6 +1579,9 @@ async function main(): Promise<void> {
         testHomeTransferRedirectsToKeepTutorialWhileQuestActive();
         testHomeTransferStaysInCraftTownAfterKeepQuestCompletion();
         testCraftTownTutorialDoorFallsBackToPreviousOverworld();
+        testFelbridgeDreadGateRequiresCapstoneClaim();
+        testFelbridgeDreadGateReadyToTurnInDoesNotUnlock();
+        testFelbridgeDreadGateOpensAfterCapstoneClaimedWithoutLevelRequirement();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.sessionsByUserId.clear();

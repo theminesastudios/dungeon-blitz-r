@@ -80,6 +80,9 @@ export class LevelHandler {
     private static readonly DOORSTATE_CLOSED = 0;
     private static readonly DOORSTATE_STATIC = 1;
     private static readonly DOORSTATE_MISSIONREPEAT = 3;
+    private static readonly DOORSTATE_LOCKED = 4;
+    private static readonly FELBRIDGE_DREAD_GATE_LOCKED_MESSAGE =
+        '^tA powerful magic seals this entrance.=^tI still need to learn more about the Sleeping Lands.';
     private static readonly GOBLIN_RIVER_INITIAL_PROGRESS = 11;
     private static readonly TUTORIAL_DUNGEON_INITIAL_PROGRESS = 11;
     private static readonly KEEP_TUTORIAL_HELPER_RESPAWN_DELAY_MS = 1200;
@@ -721,6 +724,7 @@ export class LevelHandler {
     private static readonly MISSION_IN_PROGRESS = 1;
     private static readonly MISSION_READY_TO_TURN_IN = 2;
     private static readonly MISSION_CLAIMED = 3;
+    private static readonly FELBRIDGE_DREAD_GATE_DOOR_ID = 300;
     private static readonly KEEP_TUTORIAL_BOSS_TRIGGER_X = Number.MAX_SAFE_INTEGER;
     private static readonly KEEP_TUTORIAL_CUTSCENE_STEP_MS = 250;
     private static readonly KEEP_TUTORIAL_BOSS_INTRO_TOTAL_MS = 14750;
@@ -2531,6 +2535,66 @@ export class LevelHandler {
         return LevelHandler.getMissionState(client, missionDef.MissionID) > LevelHandler.MISSION_NOT_STARTED;
     }
 
+    private static isFelbridgeDreadGateUnlocked(
+        client: Client,
+        currentLevel: string,
+        doorId: number,
+        targetLevelRaw: string | null
+    ): boolean {
+        if (doorId !== LevelHandler.FELBRIDGE_DREAD_GATE_DOOR_ID) {
+            return true;
+        }
+
+        const normalizedCurrentLevel =
+            LevelConfig.normalizeLevelName(currentLevel) ||
+            String(currentLevel ?? '').trim();
+        const targetLevel =
+            LevelConfig.normalizeLevelName(targetLevelRaw || '') ||
+            String(targetLevelRaw || '').trim();
+
+        if (normalizedCurrentLevel !== 'BridgeTown' || targetLevel !== 'BridgeTownHard') {
+            return true;
+        }
+
+        return LevelHandler.getMissionState(client, MissionID.Capstone) >= LevelHandler.MISSION_CLAIMED;
+    }
+
+    private static isFelbridgeDreadGateTransferUnlocked(client: Client, targetLevelRaw: string | null): boolean {
+        const currentLevel =
+            LevelConfig.normalizeLevelName(client.currentLevel || String(client.character?.CurrentLevel?.name ?? '')) ||
+            String(client.currentLevel || client.character?.CurrentLevel?.name || '').trim();
+
+        return LevelHandler.isFelbridgeDreadGateUnlocked(
+            client,
+            currentLevel,
+            LevelHandler.FELBRIDGE_DREAD_GATE_DOOR_ID,
+            targetLevelRaw
+        );
+    }
+
+    private static sendDoorState(client: Client, doorId: number, state: number, targetLevel: string): void {
+        const bb = new BitBuffer();
+        bb.writeMethod4(doorId);
+        bb.writeMethod91(state);
+        bb.writeMethod13(targetLevel);
+        client.sendBitBuffer(0x42, bb);
+    }
+
+    private static sendDoorTarget(client: Client, doorId: number, targetLevel: string): void {
+        const bb = new BitBuffer();
+        bb.writeMethod4(doorId);
+        bb.writeMethod13(targetLevel);
+        client.sendBitBuffer(0x2E, bb);
+    }
+
+    private static sendLockedDoorThought(client: Client, doorId: number, text: string): void {
+        const bb = new BitBuffer();
+        const entityId = Number(client.clientEntID) > 0 ? Math.round(Number(client.clientEntID)) : doorId;
+        bb.writeMethod4(entityId);
+        bb.writeMethod13(text);
+        client.sendBitBuffer(0x76, bb);
+    }
+
     private static resolveKeepTutorialTransferTarget(client: Client, targetLevel: string): string {
         if (
             targetLevel === 'CraftTown' &&
@@ -2921,11 +2985,17 @@ export class LevelHandler {
         const currentLevel = client.currentLevel || "NewbieRoad";
         const target = LevelHandler.resolveDoorTarget(client, currentLevel, doorId);
         const isUnlocked = LevelHandler.isBlackRoseMireMissionDoorUnlocked(client, currentLevel, target);
+        const isFelbridgeDreadGateLocked =
+            Boolean(target) &&
+            !LevelHandler.isFelbridgeDreadGateUnlocked(client, currentLevel, doorId, target);
         
         const bb = new BitBuffer();
         bb.writeMethod4(doorId);
         
-        if (target && isUnlocked) {
+        if (target && isFelbridgeDreadGateLocked) {
+            bb.writeMethod91(LevelHandler.DOORSTATE_LOCKED);
+            bb.writeMethod13(target);
+        } else if (target && isUnlocked) {
             const completedStars = LevelHandler.getCompletedDungeonDoorStars(client, target);
             const doorState = completedStars > 0
                 ? LevelHandler.DOORSTATE_MISSIONREPEAT
@@ -2974,6 +3044,25 @@ export class LevelHandler {
         const currentLevel = LevelConfig.normalizeLevelName(client.currentLevel || "NewbieRoad") || "NewbieRoad";
         const rawTargetLevel = LevelHandler.resolveDoorTarget(client, currentLevel, doorId);
         let targetLevel = LevelConfig.normalizeLevelName(rawTargetLevel);
+
+        if (
+            rawTargetLevel &&
+            !LevelHandler.isFelbridgeDreadGateUnlocked(client, currentLevel, doorId, rawTargetLevel)
+        ) {
+            console.log(`[Level] Open Door ${doorId} in ${currentLevel} blocked until Capstone is completed`);
+            LevelHandler.sendDoorState(
+                client,
+                doorId,
+                LevelHandler.DOORSTATE_LOCKED,
+                LevelConfig.normalizeLevelName(rawTargetLevel) || rawTargetLevel
+            );
+            LevelHandler.sendLockedDoorThought(
+                client,
+                doorId,
+                LevelHandler.FELBRIDGE_DREAD_GATE_LOCKED_MESSAGE
+            );
+            return;
+        }
 
         if (
             rawTargetLevel &&
@@ -3250,6 +3339,11 @@ export class LevelHandler {
             const safeFallback = LevelConfig.normalizeLevelName(client.currentLevel || "NewbieRoad") || "NewbieRoad";
             console.log(`[Level] Unresolved transfer target '${targetLevel}', staying in ${safeFallback}`);
             targetLevel = safeFallback;
+        }
+
+        if (!teleportOverride && !LevelHandler.isFelbridgeDreadGateTransferUnlocked(client, targetLevel)) {
+            console.log(`[Level] Transfer to ${targetLevel} blocked until Capstone is completed`);
+            return;
         }
 
         const syncState = LevelHandler.buildTransferSyncState(client, targetLevel, teleportOverride ?? null);
