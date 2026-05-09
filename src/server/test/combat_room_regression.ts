@@ -154,6 +154,11 @@ function parseDestroyEntityId(payload: Buffer): number {
     return br.readMethod4();
 }
 
+function parseEntityStateId(payload: Buffer): number {
+    const br = new BitReader(payload);
+    return br.readMethod4();
+}
+
 function parsePowerHitDamage(payload: Buffer): number {
     const br = new BitReader(payload);
     br.readMethod4();
@@ -525,7 +530,7 @@ async function testForeignOwnedPowerHitSourceIsIgnored(): Promise<void> {
     assert.equal(joiner.sentPackets.some((packet) => packet.id === 0x0A), false);
 }
 
-async function testPartySharedHostileHitEchoesToNonOwnerAttacker(): Promise<void> {
+async function testPartySharedHostileHitDoesNotEchoToNonOwnerAttacker(): Promise<void> {
     const creator = createFakeClient(209, 'Creator', 1);
     const joiner = createFakeClient(210, 'Joiner', 1);
 
@@ -552,8 +557,8 @@ async function testPartySharedHostileHitEchoesToNonOwnerAttacker(): Promise<void
         ownerToken: creator.token,
         ownerPartyId: 20,
         roomId: creator.currentRoomId,
-        hp: 50,
-        maxHp: 50
+        hp: 1000,
+        maxHp: 1000
     };
 
     GlobalState.levelEntities.get(getClientLevelScope(creator as never))?.set(hostile.id, hostile);
@@ -562,19 +567,71 @@ async function testPartySharedHostileHitEchoesToNonOwnerAttacker(): Promise<void
     GlobalState.sessionsByToken.set(creator.token, creator as never);
     GlobalState.sessionsByToken.set(joiner.token, joiner as never);
 
-    await CombatHandler.handlePowerHit(joiner as never, buildPowerHitPayload(hostile.id, joiner.clientEntID, 50, 77));
+    await CombatHandler.handlePowerHit(joiner as never, buildPowerHitPayload(hostile.id, joiner.clientEntID, 400, 77));
 
-    assert.equal(hostile.hp, 0);
-    assert.equal((hostile as any).dead, true);
+    assert.equal(hostile.hp, 600);
+    assert.equal((hostile as any).dead, false);
     assert.equal(
         joiner.sentPackets.some((packet) => packet.id === 0x0A && parsePowerHitTargetId(packet.payload) === hostile.id),
-        true,
-        'non-owner attacker must receive the authoritative hit for the shared hostile it attacked'
+        false,
+        'non-owner attacker should not receive its own hit back and double-apply local damage'
     );
     assert.equal(
         creator.sentPackets.some((packet) => packet.id === 0x0A && parsePowerHitTargetId(packet.payload) === hostile.id),
         true,
         'room creator still receives the shared hostile hit'
+    );
+}
+
+async function testPrematureSharedHostileDestroyIsRejectedWhileServerHpPositive(): Promise<void> {
+    const creator = createFakeClient(211, 'Creator', 1);
+    const joiner = createFakeClient(212, 'Joiner', 1);
+
+    creator.currentLevel = 'GoblinRiverDungeon';
+    joiner.currentLevel = 'GoblinRiverDungeon';
+    creator.levelInstanceId = 'party-run';
+    joiner.levelInstanceId = 'party-run';
+
+    attachPlayerEntity(creator);
+    attachPlayerEntity(joiner);
+    GlobalState.partyByMember.set('creator', 21);
+    GlobalState.partyByMember.set('joiner', 21);
+
+    const hostile = {
+        id: 5074,
+        name: 'GoblinClub',
+        isPlayer: false,
+        x: 140,
+        y: 200,
+        v: 0,
+        team: 2,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: creator.token,
+        ownerPartyId: 21,
+        roomId: creator.currentRoomId,
+        hp: 600,
+        maxHp: 1000
+    };
+
+    GlobalState.levelEntities.get(getClientLevelScope(creator as never))?.set(hostile.id, hostile);
+    creator.knownEntityIds.add(hostile.id);
+    joiner.knownEntityIds.add(hostile.id);
+    GlobalState.sessionsByToken.set(creator.token, creator as never);
+    GlobalState.sessionsByToken.set(joiner.token, joiner as never);
+
+    const destroy = new BitBuffer(false);
+    destroy.writeMethod4(hostile.id);
+    destroy.writeMethod15(false);
+    await CombatHandler.handleEntityDestroy(joiner as never, destroy.toBuffer());
+
+    assert.equal(GlobalState.levelEntities.get(getClientLevelScope(creator as never))?.has(hostile.id), true);
+    assert.equal(hostile.hp, 600);
+    assert.equal((hostile as any).dead, undefined);
+    assert.equal(
+        creator.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntityId(packet.payload) === hostile.id),
+        false,
+        'premature client destroy should not be relayed while authoritative enemy HP is still positive'
     );
 }
 
@@ -862,7 +919,8 @@ async function testEntityDestroyClearsKnownEntityCache(): Promise<void> {
     bb.writeMethod15(false);
     await CombatHandler.handleEntityDestroy(sender as never, bb.toBuffer());
 
-    assert.equal(watcher.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntityId(packet.payload) === hostile.id), true);
+    assert.equal(watcher.sentPackets.some((packet) => packet.id === 0x07 && parseEntityStateId(packet.payload) === hostile.id), true);
+    assert.equal(watcher.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntityId(packet.payload) === hostile.id), false);
     assert.equal(watcher.knownEntityIds.has(hostile.id), false);
 }
 
@@ -967,11 +1025,11 @@ async function testTutorialDungeonLocalEnemyKillSyncsToPartyEquivalent(): Promis
 
     await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(senderHostile.id, sender.clientEntID, 9999, 77));
 
-    assert.equal(watcher.sentPackets.some((packet) => packet.id === 0x07), true);
+    assert.equal(watcher.sentPackets.some((packet) => packet.id === 0x07 && parseEntityStateId(packet.payload) === watcherHostile.id), true);
     assert.equal(
         watcher.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntityId(packet.payload) === watcherHostile.id),
-        true,
-        'party watcher should receive destroy for its own matching local tutorial enemy id'
+        false,
+        'party watcher should not receive immediate destroy before its local death animation can play'
     );
     assert.equal(watcher.entities.get(watcherHostile.id)?.dead, true);
 }
@@ -1406,9 +1464,14 @@ async function testTutorialDungeonLocalEnemyDestroySyncsToPartyEquivalent(): Pro
     await CombatHandler.handleEntityDestroy(sender as never, destroy.toBuffer());
 
     assert.equal(
-        watcher.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntityId(packet.payload) === watcherHostile.id),
+        watcher.sentPackets.some((packet) => packet.id === 0x07 && parseEntityStateId(packet.payload) === watcherHostile.id),
         true,
-        'party watcher should receive destroy for its own matching local tutorial enemy id'
+        'party watcher should receive death state for its own matching local tutorial enemy id'
+    );
+    assert.equal(
+        watcher.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntityId(packet.payload) === watcherHostile.id),
+        false,
+        'party watcher should not receive immediate destroy before its local death animation can play'
     );
     assert.equal(stranger.sentPackets.some((packet) => packet.id === 0x0D), false);
 }
@@ -1535,7 +1598,16 @@ async function main(): Promise<void> {
         GlobalState.entityLifeNonces.clear();
         GlobalState.entityLastRewardNonces.clear();
 
-        await testPartySharedHostileHitEchoesToNonOwnerAttacker();
+        await testPartySharedHostileHitDoesNotEchoToNonOwnerAttacker();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testPrematureSharedHostileDestroyIsRejectedWhileServerHpPositive();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.levelEntities.clear();

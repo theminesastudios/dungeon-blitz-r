@@ -95,6 +95,7 @@ export class CombatHandler {
     private static readonly PLAYER_OUT_OF_COMBAT_REGEN_INTERVAL_MS = 1_000;
     private static readonly HOSTILE_OUT_OF_COMBAT_REGEN_DELAY_MS = 5_500;
     private static readonly HOSTILE_OUT_OF_COMBAT_REGEN_INTERVAL_MS = 500;
+    private static readonly REMOTE_ENEMY_DESTROY_DELAY_MS = 2_200;
     private static readonly PLAYER_REGEN_RATE = 0.1;
     private static readonly HOSTILE_REGEN_RATE = 0.01;
     private static readonly HOSTILE_BASE_HITPOINTS = [
@@ -369,6 +370,95 @@ export class CombatHandler {
         bb.writeMethod15(false);
         bb.writeMethod15(false);
         return bb.toBuffer();
+    }
+
+    private static buildDestroyEntityPayload(entityId: number, includeLoot: boolean = true): Buffer {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(entityId);
+        bb.writeMethod15(includeLoot);
+        return bb.toBuffer();
+    }
+
+    private static scheduleRemoteEntityDestroy(client: Client, levelScope: string, entityId: number, payload: Buffer): void {
+        if (!client || entityId <= 0) {
+            return;
+        }
+
+        const token = client.token;
+        const timer = setTimeout(() => {
+            if (
+                client.token !== token ||
+                getClientLevelScope(client) !== levelScope ||
+                client.socket?.destroyed
+            ) {
+                return;
+            }
+
+            client.send(0x0D, payload);
+        }, CombatHandler.REMOTE_ENEMY_DESTROY_DELAY_MS);
+
+        timer.unref?.();
+    }
+
+    private static sendRemoteEnemyDeathThenDestroy(
+        client: Client,
+        levelScope: string,
+        entityId: number,
+        facingLeft: boolean,
+        destroyPayload: Buffer = CombatHandler.buildDestroyEntityPayload(entityId)
+    ): void {
+        if (entityId <= 0) {
+            return;
+        }
+
+        client.send(0x07, CombatHandler.buildEntityStatePayload(entityId, EntityState.DEAD, facingLeft));
+        CombatHandler.scheduleRemoteEntityDestroy(client, levelScope, entityId, destroyPayload);
+    }
+
+    private static shouldRejectPrematureEnemyDestroy(entity: any): boolean {
+        if (
+            !entity ||
+            entity.isPlayer ||
+            Number(entity.team ?? 0) !== EntityTeam.ENEMY ||
+            CombatHandler.isEntityDead(entity)
+        ) {
+            return false;
+        }
+
+        const explicitMaxHp = Math.max(0, Math.round(Number(entity.maxHp ?? 0)));
+        if (explicitMaxHp <= 0 || !Number.isFinite(Number(entity.hp ?? NaN))) {
+            return false;
+        }
+
+        const healthState = CombatHandler.getNpcHealthState(entity);
+        return Boolean(healthState?.authoritativeKill && healthState.currentHp > 0);
+    }
+
+    private static scheduleAliveEntityResync(client: Client, levelScope: string, entityId: number, entity: any): void {
+        if (!client || !levelScope || entityId <= 0 || !entity) {
+            return;
+        }
+
+        client.entities.set(entityId, entity);
+        client.knownEntityIds.delete(entityId);
+
+        const token = client.token;
+        const timer = setTimeout(() => {
+            if (
+                client.token !== token ||
+                getClientLevelScope(client) !== levelScope ||
+                client.socket?.destroyed
+            ) {
+                return;
+            }
+
+            const snapshot = GlobalState.levelEntities.get(levelScope)?.get(entityId) ?? entity;
+            if (!CombatHandler.isEntityDead(snapshot)) {
+                EntityHandler.sendEntity(client, snapshot, { skipDuplicateWipe: true });
+            }
+        }, 250);
+
+        timer.unref?.();
     }
 
     private static getEntityCombatActivityAt(entity: any): number {
@@ -933,12 +1023,12 @@ export class CombatHandler {
             localEntity.hp = 0;
             localEntity.entState = EntityState.DEAD;
             other.entities.set(localEntityId, localEntity);
-            other.send(0x07, CombatHandler.buildEntityStatePayload(localEntityId, EntityState.DEAD, Boolean(localEntity.facingLeft)));
-
-            const destroy = new BitBuffer(false);
-            destroy.writeMethod4(localEntityId);
-            destroy.writeMethod15(true);
-            other.send(0x0D, destroy.toBuffer());
+            CombatHandler.sendRemoteEnemyDeathThenDestroy(
+                other,
+                levelScope,
+                localEntityId,
+                Boolean(localEntity.facingLeft)
+            );
             other.knownEntityIds.delete(localEntityId);
         }
     }
@@ -1013,12 +1103,12 @@ export class CombatHandler {
             });
 
             if (resolution.killed) {
-                other.send(0x07, CombatHandler.buildEntityStatePayload(localEntityId, EntityState.DEAD, Boolean(localEntity.facingLeft)));
-
-                const destroy = new BitBuffer(false);
-                destroy.writeMethod4(localEntityId);
-                destroy.writeMethod15(true);
-                other.send(0x0D, destroy.toBuffer());
+                CombatHandler.sendRemoteEnemyDeathThenDestroy(
+                    other,
+                    levelScope,
+                    localEntityId,
+                    Boolean(localEntity.facingLeft)
+                );
                 other.knownEntityIds.delete(localEntityId);
             }
         }
@@ -1091,9 +1181,16 @@ export class CombatHandler {
                 continue;
             }
 
+            const localEntity = other.entities.get(entityId);
             other.entities.delete(entityId);
             other.knownEntityIds.delete(entityId);
-            other.send(0x0D, data);
+            CombatHandler.sendRemoteEnemyDeathThenDestroy(
+                other,
+                levelScope,
+                entityId,
+                Boolean(localEntity?.facingLeft),
+                data
+            );
         }
     }
 
@@ -1775,23 +1872,6 @@ export class CombatHandler {
         return null;
     }
 
-    private static shouldEchoSharedHostileHitToAttacker(client: Client, levelName: string | null | undefined, targetEntity: any): boolean {
-        if (
-            !targetEntity ||
-            targetEntity.isPlayer ||
-            !EntityHandler.shouldMirrorClientSpawnEntityToParty(levelName, targetEntity)
-        ) {
-            return false;
-        }
-
-        const ownerToken = Number(targetEntity.ownerToken ?? 0);
-        if (ownerToken > 0) {
-            return ownerToken !== client.token;
-        }
-
-        return Number(targetEntity.ownerPartyId ?? 0) > 0;
-    }
-
     private static shouldRejectUnknownPrivateLocalCombatSource(client: Client, sourceId: number, sourceEntity: any): boolean {
         const normalizedLevel = LevelConfig.normalizeLevelName(client.currentLevel);
         if (
@@ -2138,7 +2218,6 @@ export class CombatHandler {
             return;
         }
 
-        const includeAnchor = CombatHandler.shouldEchoSharedHostileHitToAttacker(client, currentLevel, targetEntity);
         CombatHandler.traceCombatDamage(currentLevel, 'hit:relay', {
             packetId: '0x0A',
             path: 'combat-room',
@@ -2148,12 +2227,11 @@ export class CombatHandler {
             sourceId,
             requestedDamage: damage,
             relayDamage,
-            includeAnchor,
+            includeAnchor: false,
             source: CombatHandler.traceEntity(sourceEntity),
             target: CombatHandler.traceEntity(targetEntity)
         });
         CombatHandler.broadcastCombatPacket(client, 0x0A, relayPayload, {
-            includeAnchor,
             referencedEntityIds: [targetId, sourceId]
         });
     }
@@ -2172,9 +2250,24 @@ export class CombatHandler {
         const entityId = br.readMethod9();
         const levelName = client.currentLevel;
         const levelScope = getClientLevelScope(client);
+        const authoritativeEntity = levelScope ? GlobalState.levelEntities.get(levelScope)?.get(entityId) ?? null : null;
         const destroyedEntity =
             client.entities.get(entityId) ??
-            (levelScope ? GlobalState.levelEntities.get(levelScope)?.get(entityId) : null);
+            authoritativeEntity;
+
+        if (CombatHandler.shouldRejectPrematureEnemyDestroy(authoritativeEntity ?? destroyedEntity)) {
+            CombatHandler.traceCombatDamage(levelName, 'destroy:drop', {
+                reason: 'authoritative-enemy-still-alive',
+                client: CombatHandler.traceClient(client),
+                levelScope,
+                entityId,
+                localEntity: CombatHandler.traceEntity(destroyedEntity),
+                authoritativeEntity: CombatHandler.traceEntity(authoritativeEntity)
+            });
+            CombatHandler.scheduleAliveEntityResync(client, levelScope, entityId, authoritativeEntity ?? destroyedEntity);
+            return;
+        }
+
         const contributionSnapshot = destroyedEntity && !destroyedEntity.isPlayer && Number(destroyedEntity.team ?? 0) === EntityTeam.ENEMY
             ? CombatHandler.getContributionSnapshot(levelScope, entityId)
             : null;
@@ -2221,7 +2314,23 @@ export class CombatHandler {
             await CombatHandler.handleEnemyDefeatState(client, levelScope, entityId, destroyedEntity);
         }
 
-        if (shouldRelayDestroy) {
+        const destroyedEnemy = Boolean(destroyedEntity && !destroyedEntity.isPlayer && Number(destroyedEntity.team ?? 0) === EntityTeam.ENEMY);
+
+        if (shouldRelayDestroy && destroyedEnemy) {
+            for (const other of GlobalState.sessionsByToken.values()) {
+                if (!other.playerSpawned || getClientLevelScope(other) !== levelScope || other === client) {
+                    continue;
+                }
+
+                CombatHandler.sendRemoteEnemyDeathThenDestroy(
+                    other,
+                    levelScope,
+                    entityId,
+                    Boolean(destroyedEntity?.facingLeft),
+                    data
+                );
+            }
+        } else if (shouldRelayDestroy) {
             CombatHandler.broadcastToSameLevel(levelScope, 0x0D, data, [], client);
         } else if (shouldMirrorClientSpawnEntity) {
             CombatHandler.relayPartyLocalEntityDestroy(client, levelScope, entityId, data);
@@ -2358,7 +2467,6 @@ export class CombatHandler {
         }
 
         CombatHandler.broadcastCombatPacket(client, 0x79, data, {
-            includeAnchor: CombatHandler.shouldEchoSharedHostileHitToAttacker(client, client.currentLevel, targetEntity),
             referencedEntityIds: [targetId, sourceId]
         });
     }
