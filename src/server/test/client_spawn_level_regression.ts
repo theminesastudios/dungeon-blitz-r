@@ -3107,23 +3107,35 @@ function testGoblinRiverDungeonJoinerSkipsStartedRoomReplayFromPartyAnchor(): vo
     }
 }
 
-function testDungeonServerSpawnHostilesUsePlayerRuntimeLevel(): void {
+function testDungeonServerSpawnHostilesUseTeamScaledRuntimeLevel(): void {
     const client = createFakeClient('Scaler');
+    const anchor = createFakeClient('Anchor');
     client.currentLevel = 'GoblinRiverDungeon';
+    anchor.currentLevel = 'GoblinRiverDungeon';
     client.levelInstanceId = 'scaled-run';
+    anchor.levelInstanceId = 'scaled-run';
     client.character = {
         ...client.character,
-        level: 37,
+        level: 18,
+        xp: 0
+    } as any;
+    anchor.character = {
+        ...anchor.character,
+        level: 30,
         xp: 0
     } as any;
     client.clientEntID = 9001;
+    anchor.clientEntID = 9002;
+    GlobalState.sessionsByToken.set(anchor.token, anchor as never);
+    GlobalState.partyByMember.set('scaler', 277);
+    GlobalState.partyByMember.set('anchor', 277);
 
     EntityHandler.sendInitialLevelEntities(client as never, 'GoblinRiverDungeon');
 
     const levelScope = getClientLevelScope(client as never);
     const firstNpc = NpcLoader.getNpcsForLevel('GoblinRiverDungeon')[0];
     const hostile = GlobalState.levelEntities.get(levelScope)?.get(firstNpc.id);
-    assert.equal(hostile?.level, 37, 'dungeon server-spawn hostiles should use the player runtime level');
+    assert.equal(hostile?.level, 60, 'dungeon hostiles should use twice the highest party player runtime level');
 }
 
 function testServerNpcSeedWaitsForPlayerSpawn(): void {
@@ -3525,7 +3537,7 @@ async function main(): Promise<void> {
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
-        testDungeonServerSpawnHostilesUsePlayerRuntimeLevel();
+        testDungeonServerSpawnHostilesUseTeamScaledRuntimeLevel();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();

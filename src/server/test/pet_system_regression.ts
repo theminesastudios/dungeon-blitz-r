@@ -258,25 +258,6 @@ function assertNear(actual: number, expected: number, message: string): void {
     assert.ok(Math.abs(actual - expected) < 0.000001, message);
 }
 
-async function captureRewardRollDebug(fn: () => Promise<void>): Promise<any[]> {
-    const originalLog = console.log;
-    const debugLogs: any[] = [];
-    console.log = (...args: any[]) => {
-        if (args[0] === '[RewardRollDebug]') {
-            debugLogs.push(args[1]);
-        }
-        originalLog(...args);
-    };
-
-    try {
-        await fn();
-    } finally {
-        console.log = originalLog;
-    }
-
-    return debugLogs;
-}
-
 function testPetCollectionNormalizationRemovesTransferDuplicates(): void {
     const character: any = {
         pets: [
@@ -357,20 +338,11 @@ async function testRewardHandlerAppliesEquippedPetBonuses(): Promise<void> {
     });
     setContributors(getClientLevelScope(client as never), sourceId, ['alpha']);
 
-    const debugLogs = await captureRewardRollDebug(async () => {
-        await RewardHandler.handleGrantReward(client as never, buildGrantRewardPayload(sourceId, 25, 20));
-    });
+    await RewardHandler.handleGrantReward(client as never, buildGrantRewardPayload(sourceId, 25, 20));
 
     const loot = Array.from(client.pendingLoot.values())[0];
     assert.equal(loot?.gold, 28, 'passive gold-find pet should increase gold rewards by pet level percent');
     assert.equal(client.character.xp, 22, 'passive XP pet should increase XP rewards by pet level percent');
-
-    const rewardDebug = debugLogs.find((entry) => Number(entry?.sourceId ?? 0) === sourceId);
-    assert.ok(rewardDebug?.rolls?.exp, 'reward debug should include XP roll details');
-    assert.equal(rewardDebug.rolls.exp.packetExp, 20);
-    assert.equal(rewardDebug.rolls.exp.baseExp, 20);
-    assertNear(rewardDebug.rolls.exp.petBonus, 0.1, 'XP debug should include passive pet XP bonus');
-    assert.equal(rewardDebug.rolls.exp.finalExp, 22);
 }
 
 async function testRewardHandlerAppliesEquippedCharmFindBonuses(): Promise<void> {

@@ -28,6 +28,7 @@ import { DebugConfig } from '../core/Debug';
 
 type CombatRelayOptions = {
     includeAnchor?: boolean;
+    excludedClients?: Client[];
     referencedEntityIds?: number[];
 };
 
@@ -415,7 +416,7 @@ export class CombatHandler {
         CombatHandler.scheduleRemoteEntityDestroy(client, levelScope, entityId, destroyPayload);
     }
 
-    private static shouldRejectPrematureEnemyDestroy(entity: any): boolean {
+    private static shouldRejectPrematureEnemyDestroy(entity: any, levelName: string | null | undefined = null): boolean {
         if (
             !entity ||
             entity.isPlayer ||
@@ -425,12 +426,14 @@ export class CombatHandler {
             return false;
         }
 
-        const explicitMaxHp = Math.max(0, Math.round(Number(entity.maxHp ?? 0)));
-        if (explicitMaxHp <= 0 || !Number.isFinite(Number(entity.hp ?? NaN))) {
+        const hasTrackedHealth = Math.max(0, Math.round(Number(entity.maxHp ?? 0))) > 0 ||
+            Number.isFinite(Number(entity.hp ?? NaN)) ||
+            Number.isFinite(Number(entity.healthDelta ?? entity.health_delta ?? NaN));
+        if (!hasTrackedHealth) {
             return false;
         }
 
-        const healthState = CombatHandler.getNpcHealthState(entity);
+        const healthState = CombatHandler.getNpcHealthState(entity, levelName);
         return Boolean(healthState?.authoritativeKill && healthState.currentHp > 0);
     }
 
@@ -558,7 +561,10 @@ export class CombatHandler {
         return Math.max(1, Math.round(CombatHandler.getHostileBaseHpForLevel(rawLevel) * hitPointScale));
     }
 
-    private static getNpcHealthState(entity: any): { maxHp: number; currentHp: number; authoritativeKill: boolean } | null {
+    private static getNpcHealthState(
+        entity: any,
+        levelName: string | null | undefined = null
+    ): { maxHp: number; currentHp: number; authoritativeKill: boolean } | null {
         if (!entity || entity.isPlayer) {
             return null;
         }
@@ -566,6 +572,13 @@ export class CombatHandler {
         const explicitMaxHp = Math.max(0, Math.round(Number(entity.maxHp ?? 0)));
         const rawHp = Number(entity.hp ?? NaN);
         const estimatedMaxHp = CombatHandler.estimateHostileMaxHp(entity);
+        const normalizedLevel = LevelConfig.normalizeLevelName(getScopeLevelName(levelName ?? ''));
+        const isAuthoritativeDungeonHostile = Boolean(
+            normalizedLevel &&
+            LevelConfig.isDungeonLevel(normalizedLevel) &&
+            Number(entity.team ?? 0) === EntityTeam.ENEMY &&
+            estimatedMaxHp > 0
+        );
         const maxHp = explicitMaxHp > 0
             ? explicitMaxHp
             : estimatedMaxHp > 0
@@ -586,7 +599,9 @@ export class CombatHandler {
         return {
             maxHp,
             currentHp: Math.max(0, Math.min(maxHp, currentHp)),
-            authoritativeKill: !Boolean(entity.clientSpawned) || (explicitMaxHp > 0 && Number.isFinite(rawHp))
+            authoritativeKill: !Boolean(entity.clientSpawned) ||
+                (explicitMaxHp > 0 && Number.isFinite(rawHp)) ||
+                isAuthoritativeDungeonHostile
         };
     }
 
@@ -729,7 +744,7 @@ export class CombatHandler {
             return;
         }
 
-        const healthState = CombatHandler.getNpcHealthState(entity);
+        const healthState = CombatHandler.getNpcHealthState(entity, levelScope);
         if (!healthState || CombatHandler.isEntityDead(entity) || healthState.currentHp <= 0 || healthState.currentHp >= healthState.maxHp) {
             return;
         }
@@ -946,6 +961,27 @@ export class CombatHandler {
         }
 
         return CombatHandler.resolveLevelEntity(levelScope, entityId);
+    }
+
+    private static resolveCanonicalDungeonCombatTarget(levelScope: string, client: Client, entityId: number, targetEntity: any): any | null {
+        const localEntity = client.entities.get(entityId);
+        const candidate = targetEntity ?? localEntity;
+        if (!candidate || candidate.isPlayer || Number(candidate.team ?? 0) !== EntityTeam.ENEMY) {
+            return null;
+        }
+
+        const levelMap = levelScope ? GlobalState.levelEntities.get(levelScope) ?? null : null;
+        const canonical = EntityHandler.resolveLeaderAuthoritativeClientSpawnCanonical(
+            client,
+            client.currentLevel,
+            candidate,
+            levelMap
+        );
+        if (!canonical || canonical.isPlayer || Number(canonical.team ?? 0) !== EntityTeam.ENEMY) {
+            return null;
+        }
+
+        return canonical;
     }
 
     private static findMatchingPrivateLocalEntity(viewer: Client, sourceEntity: any): any | null {
@@ -1263,13 +1299,25 @@ export class CombatHandler {
         }
     }
 
-    static broadcastToCombatRoom(anchor: Client, packetId: number, data: Buffer, includeAnchor: boolean = false, referencedEntityIds: number[] = []): void {
+    static broadcastToCombatRoom(
+        anchor: Client,
+        packetId: number,
+        data: Buffer,
+        includeAnchor: boolean = false,
+        referencedEntityIds: number[] = [],
+        excludedClients: Client[] = []
+    ): void {
         const levelScope = getClientLevelScope(anchor);
         if (!levelScope || !anchor.playerSpawned) {
             return;
         }
 
+        const excluded = new Set(excludedClients);
         for (const other of CombatHandler.getCombatRecipients(anchor, includeAnchor)) {
+            if (excluded.has(other)) {
+                continue;
+            }
+
             let missingEntity = false;
             for (const entityId of referencedEntityIds) {
                 if (!CombatHandler.canViewerResolveAnchoredCombatEntity(other, anchor, levelScope, entityId)) {
@@ -1287,7 +1335,7 @@ export class CombatHandler {
 
     private static broadcastCombatPacket(anchor: Client, packetId: number, data: Buffer, options: CombatRelayOptions = {}): void {
         const referencedEntityIds = Array.from(new Set((options.referencedEntityIds ?? []).filter((id) => Number.isFinite(id) && id > 0)));
-        CombatHandler.broadcastToCombatRoom(anchor, packetId, data, Boolean(options.includeAnchor), referencedEntityIds);
+        CombatHandler.broadcastToCombatRoom(anchor, packetId, data, Boolean(options.includeAnchor), referencedEntityIds, options.excludedClients ?? []);
     }
 
     private static canViewerResolveCombatEntity(viewer: Client, levelScope: string, entityId: number): boolean {
@@ -1312,13 +1360,73 @@ export class CombatHandler {
         return isRoomScopedClientNpc;
     }
 
-    private static broadcastPlayerHpDelta(targetSession: Client, delta: number): void {
+    private static broadcastPlayerHpDelta(
+        targetSession: Client,
+        delta: number,
+        excludedClient: Client | null = null,
+        sourceEntity: any = null
+    ): void {
         if (!targetSession.playerSpawned || !targetSession.currentLevel || targetSession.clientEntID <= 0) {
             return;
         }
 
         const payload = CombatHandler.buildHpDeltaPayload(targetSession.clientEntID, delta);
-        CombatHandler.broadcastToCombatRoom(targetSession, 0x3A, payload, true, [targetSession.clientEntID]);
+        const levelScope = getClientLevelScope(targetSession);
+        const sourceRoomId = Number.isFinite(Number(sourceEntity?.roomId)) ? Number(sourceEntity.roomId) : -1;
+        for (const other of CombatHandler.getCombatRecipients(targetSession, true)) {
+            if (other === excludedClient) {
+                continue;
+            }
+            if (sourceRoomId >= 0 && !sharesRoomIds(other.currentRoomId, sourceRoomId)) {
+                continue;
+            }
+            if (!CombatHandler.canViewerResolveAnchoredCombatEntity(other, targetSession, levelScope, targetSession.clientEntID)) {
+                continue;
+            }
+
+            other.send(0x3A, payload);
+        }
+    }
+
+    private static sendNpcHpDelta(client: Client | null, entityId: number, delta: number): void {
+        if (!client || entityId <= 0 || delta === 0) {
+            return;
+        }
+
+        client.send(0x3A, CombatHandler.buildHpDeltaPayload(entityId, delta));
+    }
+
+    private static broadcastEnemyDeathThenDestroy(
+        anchor: Client,
+        levelScope: string,
+        entityId: number,
+        entity: any,
+        excludedClients: Client[] = []
+    ): void {
+        if (!levelScope || entityId <= 0 || !entity || entity.isPlayer || Number(entity.team ?? 0) !== EntityTeam.ENEMY) {
+            return;
+        }
+
+        const excluded = new Set(excludedClients);
+        const sourceRoomId = Number.isFinite(Number(entity?.roomId)) ? Number(entity.roomId) : -1;
+        for (const other of CombatHandler.getCombatRecipients(anchor, false)) {
+            if (excluded.has(other)) {
+                continue;
+            }
+            if (sourceRoomId >= 0 && !sharesRoomIds(other.currentRoomId, sourceRoomId)) {
+                continue;
+            }
+            if (!CombatHandler.canViewerResolveCombatEntity(other, levelScope, entityId)) {
+                continue;
+            }
+
+            CombatHandler.sendRemoteEnemyDeathThenDestroy(
+                other,
+                levelScope,
+                entityId,
+                Boolean(entity.facingLeft)
+            );
+        }
     }
 
     private static broadcastPlayerState(targetSession: Client, entState: number): void {
@@ -1639,7 +1747,7 @@ export class CombatHandler {
             };
         }
 
-        const healthState = CombatHandler.getNpcHealthState(entity);
+        const healthState = CombatHandler.getNpcHealthState(entity, levelName);
         if (!healthState) {
             return {
                 entity,
@@ -1801,6 +1909,42 @@ export class CombatHandler {
         }
 
         CombatHandler.recordContribution(levelScope, targetId, sourceSession, damage);
+    }
+
+    private static resolvePartySharedHostileHitEchoClient(
+        anchor: Client,
+        levelScope: string,
+        targetEntity: any,
+        sourceSession: Client | null
+    ): Client | null {
+        if (
+            !levelScope ||
+            !targetEntity ||
+            Boolean(targetEntity.isPlayer) ||
+            Number(targetEntity.team ?? 0) !== EntityTeam.ENEMY ||
+            !EntityHandler.shouldMirrorClientSpawnEntityToParty(anchor.currentLevel, targetEntity)
+        ) {
+            return null;
+        }
+
+        const ownerToken = Math.round(Number(targetEntity.ownerToken ?? 0));
+        if (ownerToken <= 0) {
+            return null;
+        }
+
+        const ownerSession = GlobalState.sessionsByToken.get(ownerToken) ?? null;
+        if (
+            !ownerSession ||
+            ownerSession === anchor ||
+            ownerSession === sourceSession ||
+            !ownerSession.playerSpawned ||
+            getClientLevelScope(ownerSession) !== levelScope ||
+            !areClientsInSameParty(anchor, ownerSession)
+        ) {
+            return null;
+        }
+
+        return ownerSession;
     }
 
     private static resolveCombatSourceSession(levelScope: string, sourceId: number, fallbackClient: Client): Client | null {
@@ -1994,10 +2138,20 @@ export class CombatHandler {
             return;
         }
 
-        const { targetId, sourceId, damage } = info;
+        const originalTargetId = info.targetId;
+        let targetId = info.targetId;
+        const { sourceId, damage } = info;
         const currentLevel = client.currentLevel;
         const levelScope = getClientLevelScope(client);
-        const targetEntity = CombatHandler.resolveClientScopedCombatEntity(levelScope, client, targetId);
+        let targetEntity = CombatHandler.resolveClientScopedCombatEntity(levelScope, client, targetId);
+        const canonicalTarget = CombatHandler.resolveCanonicalDungeonCombatTarget(levelScope, client, targetId, targetEntity);
+        if (canonicalTarget) {
+            const canonicalTargetId = Number(canonicalTarget.id ?? 0);
+            if (canonicalTargetId > 0) {
+                targetId = canonicalTargetId;
+                targetEntity = canonicalTarget;
+            }
+        }
         const sourceEntity = CombatHandler.resolveClientScopedCombatEntity(levelScope, client, sourceId);
         const isHostileNpcSource = Boolean(
             sourceEntity &&
@@ -2009,6 +2163,7 @@ export class CombatHandler {
         CombatHandler.traceCombatDamage(currentLevel, 'hit:in', {
             client: CombatHandler.traceClient(client),
             levelScope,
+            originalTargetId,
             targetId,
             sourceId,
             damage,
@@ -2115,6 +2270,7 @@ export class CombatHandler {
         }
 
         let relayDamage = damage;
+        let npcResolution: NpcHitResolution | null = null;
         if (targetSession && areClientsInSameLevelScope(client, targetSession)) {
             const hpBefore = targetSession.authoritativeCurrentHp;
             const preventDeath = CombatHandler.shouldPreventHostilePlayerDeath(levelScope, sourceId, targetSession);
@@ -2135,8 +2291,13 @@ export class CombatHandler {
                 source: CombatHandler.traceEntity(sourceEntity)
             });
 
-            if (resolution.appliedDamage > 0 && !isHostileNpcSource) {
-                CombatHandler.broadcastPlayerHpDelta(targetSession, -resolution.appliedDamage);
+            if (resolution.appliedDamage > 0) {
+                CombatHandler.broadcastPlayerHpDelta(
+                    targetSession,
+                    -resolution.appliedDamage,
+                    isHostileNpcSource ? targetSession : null,
+                    isHostileNpcSource ? sourceEntity : null
+                );
             }
 
             if (resolution.killed) {
@@ -2158,6 +2319,8 @@ export class CombatHandler {
             const resolution = isPrivateLocalHostileTarget
                 ? CombatHandler.updateNpcTargetEntityAfterHit(levelScope, targetId, targetEntity, damage)
                 : CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage);
+            npcResolution = resolution;
+            relayDamage = resolution.appliedDamage;
             CombatHandler.traceCombatDamage(currentLevel, 'hit:apply-npc', {
                 client: CombatHandler.traceClient(client),
                 sourceOwner: CombatHandler.traceClient(sourceSession),
@@ -2198,7 +2361,10 @@ export class CombatHandler {
             }
         }
 
-        const relayPayload = relayDamage === damage ? data : CombatHandler.buildPowerHitPayload(info, relayDamage);
+        const relayInfo = targetId === originalTargetId ? info : { ...info, targetId };
+        const relayPayload = relayDamage === damage && targetId === originalTargetId
+            ? data
+            : CombatHandler.buildPowerHitPayload(relayInfo, relayDamage);
         if (isHostileNpcSource) {
             const excludeLocalVictim = targetSession === client && relayDamage === damage ? client : null;
             CombatHandler.traceCombatDamage(currentLevel, 'hit:relay', {
@@ -2231,9 +2397,22 @@ export class CombatHandler {
             source: CombatHandler.traceEntity(sourceEntity),
             target: CombatHandler.traceEntity(targetEntity)
         });
+        const skippedOwnerEchoClient = CombatHandler.resolvePartySharedHostileHitEchoClient(
+            client,
+            levelScope,
+            targetEntity,
+            sourceSession
+        );
+        if (skippedOwnerEchoClient && relayDamage > 0) {
+            CombatHandler.sendNpcHpDelta(skippedOwnerEchoClient, targetId, -relayDamage);
+        }
         CombatHandler.broadcastCombatPacket(client, 0x0A, relayPayload, {
+            excludedClients: skippedOwnerEchoClient ? [skippedOwnerEchoClient] : [],
             referencedEntityIds: [targetId, sourceId]
         });
+        if (npcResolution?.killed && npcResolution.entity) {
+            CombatHandler.broadcastEnemyDeathThenDestroy(client, levelScope, targetId, npcResolution.entity);
+        }
     }
 
     static async handleProjectileExplode(client: Client, data: Buffer): Promise<void> {
@@ -2247,19 +2426,49 @@ export class CombatHandler {
 
     static async handleEntityDestroy(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
-        const entityId = br.readMethod9();
+        let entityId = br.readMethod9();
+        const originalEntityId = entityId;
         const levelName = client.currentLevel;
         const levelScope = getClientLevelScope(client);
-        const authoritativeEntity = levelScope ? GlobalState.levelEntities.get(levelScope)?.get(entityId) ?? null : null;
-        const destroyedEntity =
+        const levelMap = levelScope ? GlobalState.levelEntities.get(levelScope) ?? null : null;
+        let authoritativeEntity = levelMap?.get(entityId) ?? null;
+        let destroyedEntity =
             client.entities.get(entityId) ??
             authoritativeEntity;
 
-        if (CombatHandler.shouldRejectPrematureEnemyDestroy(authoritativeEntity ?? destroyedEntity)) {
+        const canonicalDestroyTarget = !authoritativeEntity
+            ? CombatHandler.resolveCanonicalDungeonCombatTarget(levelScope, client, entityId, destroyedEntity)
+            : null;
+        const canonicalDestroyTargetId = Number(canonicalDestroyTarget?.id ?? 0);
+        if (canonicalDestroyTarget && canonicalDestroyTargetId > 0 && canonicalDestroyTargetId !== entityId) {
+            if (CombatHandler.shouldRejectPrematureEnemyDestroy(canonicalDestroyTarget, levelName)) {
+                CombatHandler.traceCombatDamage(levelName, 'destroy:drop', {
+                    reason: 'canonical-enemy-still-alive',
+                    client: CombatHandler.traceClient(client),
+                    levelScope,
+                    entityId,
+                    canonicalEntityId: canonicalDestroyTargetId,
+                    localEntity: CombatHandler.traceEntity(destroyedEntity),
+                    authoritativeEntity: CombatHandler.traceEntity(canonicalDestroyTarget)
+                });
+                client.entities.delete(entityId);
+                client.knownEntityIds.delete(entityId);
+                client.send(0x0D, CombatHandler.buildDestroyEntityPayload(entityId));
+                EntityHandler.sendEntity(client, canonicalDestroyTarget, { skipDuplicateWipe: true });
+                return;
+            }
+
+            entityId = canonicalDestroyTargetId;
+            authoritativeEntity = canonicalDestroyTarget;
+            destroyedEntity = canonicalDestroyTarget;
+        }
+
+        if (CombatHandler.shouldRejectPrematureEnemyDestroy(authoritativeEntity ?? destroyedEntity, levelName)) {
             CombatHandler.traceCombatDamage(levelName, 'destroy:drop', {
                 reason: 'authoritative-enemy-still-alive',
                 client: CombatHandler.traceClient(client),
                 levelScope,
+                originalEntityId,
                 entityId,
                 localEntity: CombatHandler.traceEntity(destroyedEntity),
                 authoritativeEntity: CombatHandler.traceEntity(authoritativeEntity)
@@ -2289,6 +2498,10 @@ export class CombatHandler {
         }
 
         client.entities.delete(entityId);
+        if (originalEntityId !== entityId) {
+            client.entities.delete(originalEntityId);
+            client.knownEntityIds.delete(originalEntityId);
+        }
 
         if (levelScope) {
             if (usesSharedDungeonProgress(getScopeLevelName(levelScope)) && destroyedEntity) {

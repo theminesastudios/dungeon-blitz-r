@@ -650,11 +650,6 @@ export class RewardHandler {
         const itemLootAllowedByClass = RewardHandler.rewardClassAllowsItemLoot(entType);
         const isDungeonEnemyReward = Boolean(entName) && Boolean(entType) && sourceEntity && !sourceEntity.isPlayer;
         const entRank = String(entType?.EntRank ?? 'Minion');
-        const baseMaterialChance = RewardHandler.MATERIAL_DROP_CHANCE_BY_RANK[entRank] ?? RewardHandler.MATERIAL_DROP_CHANCE_BY_RANK.Minion;
-        const packetMaterialMultiplier = RewardHandler.sanitizeDropMultiplier(reward.gearMultiplier);
-        const packetItemMultiplier = RewardHandler.sanitizeDropMultiplier(reward.itemMultiplier);
-        const materialFindRate = petBonuses.craftFind + charmBonuses.craftFind + potionBonuses.craftFind;
-        const itemFindRate = petBonuses.itemFind + charmBonuses.itemFind + potionBonuses.itemFind;
         const goldFindRate = petBonuses.goldFind + charmBonuses.goldFind + gearGoldFind + potionBonuses.goldFind;
         const shouldRollMaterial = Boolean(realm) && itemLootAllowedByClass && (reward.dropMaterial || isDungeonEnemyReward);
         const shouldRollGear = itemLootAllowedByClass && (reward.dropGear || isDungeonEnemyReward);
@@ -672,139 +667,26 @@ export class RewardHandler {
         const isLargeEnemy = entRank === 'Lieutenant' || entRank === 'MiniBoss' || entRank === 'Boss';
         const allowItemDrop = !isChainsEnemy && (!isIntroEnemy || isLargeEnemy);
 
-        let materialRoll: number | null = null;
         let materialRarity: 'M' | 'R' | 'L' | null = null;
-        let materialRarityRoll: number | null = null;
-        let materialRarityWeights = RewardHandler.getMaterialRarityWeights(client);
         if (realm && materialChance > 0) {
-            materialRoll = Math.random();
-            if (materialRoll < materialChance) {
+            if (Math.random() < materialChance) {
                 const rarityResult = RewardHandler.resolveMaterialDropRarityDebug(client);
                 materialRarity = rarityResult.rarity;
-                materialRarityRoll = rarityResult.rarityRoll;
-                materialRarityWeights = rarityResult.rarityWeights;
                 materialId = GameData.getRandomMaterialForRealm(realm, [materialRarity]);
             }
         }
         if (allowItemDrop && dyeDebug.rarity) {
             dyeId = GameData.getRandomDyeId([dyeDebug.rarity]);
         }
-        let gearRoll: number | null = null;
-        let gearTierRoll: number | null = null;
-        let gearTierWeights = RewardHandler.getGearTierWeights(client);
         if (allowItemDrop && gearChance > 0) {
-            gearRoll = Math.random();
-            if (gearRoll < gearChance) {
+            if (Math.random() < gearChance) {
                 gearId = GameData.getGearIdForEntity(entName, playerClass, ownedGearIds);
                 const tierResult = RewardHandler.resolveGearTierDebug(client);
                 gearTier = tierResult.tier;
-                gearTierRoll = tierResult.tierRoll;
-                gearTierWeights = tierResult.tierWeights;
             }
         }
-        let goldBeforeFind = gold;
-        let goldAfterFind = gold;
-        let goldFindApplied = false;
         if (gold > 0 && goldFindRate > 0) {
-            goldFindApplied = true;
-            goldAfterFind = Math.max(0, Math.round(gold * (1 + goldFindRate)));
-            gold = goldAfterFind;
-        }
-
-        const xpDebug = RewardHandler.resolveXpRewardDebug(client, exp, reward.exp);
-        const shouldLogRewardRoll = shouldRollMaterial || shouldRollGear || dyeDebug.eligible || packetGold > 0 || goldFindRate > 0 || xpDebug.attempted;
-        if (shouldLogRewardRoll) {
-            console.log('[RewardRollDebug]', {
-                character: client.character?.name ?? '',
-                level: client.currentLevel,
-                sourceId: reward.sourceId,
-                entName,
-                entRank,
-                rewardClass: String(entType?.RewardClass ?? ''),
-                playerClass,
-                realm,
-                allowItemDrop,
-                itemLootAllowedByClass,
-                rolls: {
-                    material: {
-                        attempted: shouldRollMaterial,
-                        baseChance: baseMaterialChance,
-                        packetMultiplier: packetMaterialMultiplier,
-                        petFind: petBonuses.craftFind,
-                        charmFind: charmBonuses.craftFind,
-                        potionFind: potionBonuses.craftFind,
-                        totalFindRate: materialFindRate,
-                        finalMultiplier: packetMaterialMultiplier,
-                        finalChance: materialChance,
-                        dropRoll: materialRoll,
-                        dropped: materialId > 0,
-                        rarityWeights: materialRarityWeights,
-                        rarityTotalChances: RewardHandler.buildRarityTotalChances(materialChance, materialRarityWeights),
-                        rarityRoll: materialRarityRoll,
-                        rarity: materialRarity,
-                        materialId
-                    },
-                    gear: {
-                        attempted: shouldRollGear,
-                        baseChance: Number(entType?.ItemDropChance ?? 0),
-                        packetMultiplier: packetItemMultiplier,
-                        packetRawMultiplier: reward.itemMultiplier,
-                        packetDropItem: reward.dropItem,
-                        petFind: petBonuses.itemFind,
-                        charmFind: charmBonuses.itemFind,
-                        potionFind: potionBonuses.itemFind,
-                        totalFindRate: itemFindRate,
-                        finalMultiplier: packetItemMultiplier,
-                        finalChance: gearChance,
-                        dropRoll: gearRoll,
-                        dropped: gearId > 0,
-                        rarityWeights: gearTierWeights,
-                        rarityTotalChances: RewardHandler.buildTierTotalChances(gearChance, gearTierWeights),
-                        rarityRoll: gearTierRoll,
-                        tier: gearId > 0 ? gearTier : null,
-                        gearId
-                    },
-                    dye: {
-                        attempted: dyeDebug.eligible,
-                        baseChance: dyeDebug.baseChance,
-                        finalChance: dyeDebug.finalChance,
-                        rankEligible: dyeDebug.eligible,
-                        affectedByFind: false,
-                        blockedByItemDropRules: dyeDebug.dropped && !allowItemDrop,
-                        dropRoll: dyeDebug.dropRoll,
-                        dropped: dyeId > 0,
-                        rarityWeights: dyeDebug.rarityWeights,
-                        rarityTotalChances: RewardHandler.buildRarityTotalChances(dyeDebug.finalChance, dyeDebug.rarityWeights),
-                        rarityRoll: dyeDebug.rarityRoll,
-                        rarity: dyeId > 0 ? dyeDebug.rarity : null,
-                        rolledRarityBeforeItemDropRules: dyeDebug.rarity,
-                        dyeId
-                    },
-                    gold: {
-                        attempted: packetGold > 0,
-                        packetGold,
-                        baseGold: goldBeforeFind,
-                        petFind: petBonuses.goldFind,
-                        charmFind: charmBonuses.goldFind,
-                        gearFind: gearGoldFind,
-                        potionFind: potionBonuses.goldFind,
-                        totalFindRate: goldFindRate,
-                        multiplier: 1 + goldFindRate,
-                        findApplied: goldFindApplied,
-                        finalGold: goldAfterFind
-                    },
-                    exp: {
-                        attempted: xpDebug.attempted,
-                        packetExp: xpDebug.packetExp,
-                        baseExp: xpDebug.baseExp,
-                        petBonus: xpDebug.petBonus,
-                        potionBonus: xpDebug.potionBonus,
-                        totalBonusRate: xpDebug.totalBonusRate,
-                        multiplier: xpDebug.multiplier,
-                        finalExp: xpDebug.finalExp
-                    }
-                }
-            });
+            gold = Math.max(0, Math.round(gold * (1 + goldFindRate)));
         }
 
         const needsFallback = gold <= 0 && !shouldRollGear && !shouldRollMaterial;

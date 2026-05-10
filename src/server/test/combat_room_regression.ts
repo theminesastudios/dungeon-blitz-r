@@ -171,6 +171,14 @@ function parsePowerHitTargetId(payload: Buffer): number {
     return br.readMethod4();
 }
 
+function parseHpDelta(payload: Buffer): { entityId: number; delta: number } {
+    const br = new BitReader(payload);
+    return {
+        entityId: br.readMethod4(),
+        delta: br.readMethod45()
+    };
+}
+
 function parsePowerCastPayload(payload: Buffer): {
     sourceId: number;
     powerId: number;
@@ -530,7 +538,7 @@ async function testForeignOwnedPowerHitSourceIsIgnored(): Promise<void> {
     assert.equal(joiner.sentPackets.some((packet) => packet.id === 0x0A), false);
 }
 
-async function testPartySharedHostileHitDoesNotEchoToNonOwnerAttacker(): Promise<void> {
+async function testPartySharedHostileHitSendsOwnerAuthoritativeHpDelta(): Promise<void> {
     const creator = createFakeClient(209, 'Creator', 1);
     const joiner = createFakeClient(210, 'Joiner', 1);
 
@@ -578,8 +586,192 @@ async function testPartySharedHostileHitDoesNotEchoToNonOwnerAttacker(): Promise
     );
     assert.equal(
         creator.sentPackets.some((packet) => packet.id === 0x0A && parsePowerHitTargetId(packet.payload) === hostile.id),
+        false,
+        'room creator owns the shared hostile and should not receive a teammate hit echo that double-applies local damage'
+    );
+    assert.deepEqual(
+        parseHpDelta(creator.sentPackets.find((packet) => packet.id === 0x3A)!.payload),
+        { entityId: hostile.id, delta: -400 },
+        'room creator should still receive the authoritative shared-hostile HP delta'
+    );
+}
+
+async function testPartySharedHostileKillBroadcastsDeathToOwner(): Promise<void> {
+    const creator = createFakeClient(213, 'Creator', 1);
+    const joiner = createFakeClient(214, 'Joiner', 1);
+
+    creator.currentLevel = 'GoblinRiverDungeon';
+    joiner.currentLevel = 'GoblinRiverDungeon';
+    creator.levelInstanceId = 'party-run-kill';
+    joiner.levelInstanceId = 'party-run-kill';
+
+    attachPlayerEntity(creator);
+    attachPlayerEntity(joiner);
+    GlobalState.partyByMember.set('creator', 23);
+    GlobalState.partyByMember.set('joiner', 23);
+
+    const hostile = {
+        id: 5075,
+        name: 'GoblinClub',
+        isPlayer: false,
+        x: 140,
+        y: 200,
+        v: 0,
+        team: 2,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: creator.token,
+        ownerPartyId: 23,
+        roomId: creator.currentRoomId,
+        hp: 300,
+        maxHp: 1000
+    };
+
+    GlobalState.levelEntities.get(getClientLevelScope(creator as never))?.set(hostile.id, hostile);
+    creator.knownEntityIds.add(hostile.id);
+    joiner.knownEntityIds.add(hostile.id);
+    GlobalState.sessionsByToken.set(creator.token, creator as never);
+    GlobalState.sessionsByToken.set(joiner.token, joiner as never);
+
+    await CombatHandler.handlePowerHit(joiner as never, buildPowerHitPayload(hostile.id, joiner.clientEntID, 400, 77));
+
+    assert.equal(hostile.hp, 0);
+    assert.equal((hostile as any).dead, true);
+    assert.deepEqual(
+        parseHpDelta(creator.sentPackets.find((packet) => packet.id === 0x3A)!.payload),
+        { entityId: hostile.id, delta: -300 },
+        'owner HP correction should use the server-applied kill damage, not the raw overkill value'
+    );
+    assert.equal(
+        creator.sentPackets.some((packet) => packet.id === 0x07 && parseEntityStateId(packet.payload) === hostile.id),
         true,
-        'room creator still receives the shared hostile hit'
+        'owner should receive the server-confirmed enemy death state immediately'
+    );
+    assert.equal(
+        creator.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntityId(packet.payload) === hostile.id),
+        false,
+        'enemy destroy should still be delayed so the death animation can finish'
+    );
+}
+
+async function testFollowerLocalDuplicateHitUsesCanonicalSharedHostile(): Promise<void> {
+    const creator = createFakeClient(215, 'Creator', 1);
+    const joiner = createFakeClient(216, 'Joiner', 1);
+
+    creator.currentLevel = 'GoblinRiverDungeon';
+    joiner.currentLevel = 'GoblinRiverDungeon';
+    creator.levelInstanceId = 'party-run-alias';
+    joiner.levelInstanceId = 'party-run-alias';
+
+    attachPlayerEntity(creator);
+    attachPlayerEntity(joiner);
+    GlobalState.partyByMember.set('creator', 24);
+    GlobalState.partyByMember.set('joiner', 24);
+
+    const canonical = {
+        id: 5076,
+        name: 'GoblinClub',
+        isPlayer: false,
+        x: 140,
+        y: 200,
+        v: 0,
+        team: 2,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: creator.token,
+        ownerPartyId: 24,
+        roomId: creator.currentRoomId,
+        hp: 1000,
+        maxHp: 1000
+    };
+    const duplicate = {
+        ...canonical,
+        id: 9076,
+        ownerToken: joiner.token
+    };
+
+    GlobalState.levelEntities.get(getClientLevelScope(creator as never))?.set(canonical.id, canonical);
+    creator.knownEntityIds.add(canonical.id);
+    joiner.entities.set(duplicate.id, duplicate);
+    joiner.knownEntityIds.add(duplicate.id);
+    GlobalState.sessionsByToken.set(creator.token, creator as never);
+    GlobalState.sessionsByToken.set(joiner.token, joiner as never);
+
+    await CombatHandler.handlePowerHit(joiner as never, buildPowerHitPayload(duplicate.id, joiner.clientEntID, 400, 77));
+
+    assert.equal(canonical.hp, 600, 'follower local duplicate hits should damage the canonical shared hostile');
+    assert.equal(GlobalState.levelEntities.get(getClientLevelScope(creator as never))?.has(duplicate.id), false);
+    assert.deepEqual(
+        parseHpDelta(creator.sentPackets.find((packet) => packet.id === 0x3A)!.payload),
+        { entityId: canonical.id, delta: -400 },
+        'owner HP correction should reference the canonical hostile id'
+    );
+}
+
+async function testFollowerLocalDuplicateDestroyReseedsAliveCanonical(): Promise<void> {
+    const creator = createFakeClient(217, 'Creator', 1);
+    const joiner = createFakeClient(218, 'Joiner', 1);
+
+    creator.currentLevel = 'GoblinRiverDungeon';
+    joiner.currentLevel = 'GoblinRiverDungeon';
+    creator.levelInstanceId = 'party-run-destroy-alias';
+    joiner.levelInstanceId = 'party-run-destroy-alias';
+
+    attachPlayerEntity(creator);
+    attachPlayerEntity(joiner);
+    GlobalState.partyByMember.set('creator', 25);
+    GlobalState.partyByMember.set('joiner', 25);
+
+    const canonical = {
+        id: 5077,
+        name: 'GoblinClub',
+        isPlayer: false,
+        x: 140,
+        y: 200,
+        v: 0,
+        team: 2,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: creator.token,
+        ownerPartyId: 25,
+        roomId: creator.currentRoomId,
+        hp: 600,
+        maxHp: 1000
+    };
+    const duplicate = {
+        ...canonical,
+        id: 9077,
+        ownerToken: joiner.token,
+        hp: 0,
+        dead: true,
+        entState: EntityState.DEAD
+    };
+
+    GlobalState.levelEntities.get(getClientLevelScope(creator as never))?.set(canonical.id, canonical);
+    creator.knownEntityIds.add(canonical.id);
+    joiner.entities.set(duplicate.id, duplicate);
+    joiner.knownEntityIds.add(duplicate.id);
+    GlobalState.sessionsByToken.set(creator.token, creator as never);
+    GlobalState.sessionsByToken.set(joiner.token, joiner as never);
+
+    const destroy = new BitBuffer(false);
+    destroy.writeMethod4(duplicate.id);
+    destroy.writeMethod15(false);
+    await CombatHandler.handleEntityDestroy(joiner as never, destroy.toBuffer());
+
+    assert.equal(GlobalState.levelEntities.get(getClientLevelScope(creator as never))?.has(canonical.id), true);
+    assert.equal(canonical.hp, 600);
+    assert.equal(joiner.knownEntityIds.has(duplicate.id), false);
+    assert.equal(joiner.knownEntityIds.has(canonical.id), true);
+    assert.equal(
+        joiner.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntityId(packet.payload) === duplicate.id),
+        true,
+        'follower local duplicate should be removed instead of deleting the live canonical hostile'
+    );
+    assert.equal(
+        creator.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntityId(packet.payload) === canonical.id),
+        false,
+        'premature duplicate destroy should not be relayed to the creator canonical enemy'
     );
 }
 
@@ -737,8 +929,12 @@ async function testHostileHitsLeavePlayersAliveAndStayRoomScoped(): Promise<void
     );
     assert.equal(
         sameRoomWatcher.sentPackets.some((packet) => packet.id === 0x3A),
-        false,
-        'hostile hits should not emit a separate HP delta because the power-hit packet already drives the client damage display'
+        true,
+        'same-room watchers should receive the authoritative player HP delta for hostile hits'
+    );
+    assert.deepEqual(
+        parseHpDelta(sameRoomWatcher.sentPackets.find((packet) => packet.id === 0x3A)!.payload),
+        { entityId: victim.clientEntID, delta: -99 }
     );
     assert.equal(sameRoomWatcher.sentPackets.some((packet) => packet.id === 0x0A), true);
     assert.equal(
@@ -835,6 +1031,11 @@ async function testHostileHitsDoNotEchoPowerHitBackToLocalVictimWhenDamageMatche
         sameRoomWatcher.sentPackets.some((packet) => packet.id === 0x0A),
         true,
         'same-room viewers still need the hostile hit for synchronization'
+    );
+    assert.deepEqual(
+        parseHpDelta(sameRoomWatcher.sentPackets.find((packet) => packet.id === 0x3A)!.payload),
+        { entityId: victim.clientEntID, delta: -1 },
+        'same-room viewers should receive the authoritative hostile HP delta'
     );
     assert.equal(
         otherRoomWatcher.sentPackets.some((packet) => packet.id === 0x0A || packet.id === 0x3A),
@@ -1598,7 +1799,34 @@ async function main(): Promise<void> {
         GlobalState.entityLifeNonces.clear();
         GlobalState.entityLastRewardNonces.clear();
 
-        await testPartySharedHostileHitDoesNotEchoToNonOwnerAttacker();
+        await testPartySharedHostileHitSendsOwnerAuthoritativeHpDelta();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testPartySharedHostileKillBroadcastsDeathToOwner();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testFollowerLocalDuplicateHitUsesCanonicalSharedHostile();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testFollowerLocalDuplicateDestroyReseedsAliveCanonical();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.levelEntities.clear();

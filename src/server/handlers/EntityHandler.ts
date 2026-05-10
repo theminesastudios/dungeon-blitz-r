@@ -5,8 +5,8 @@ import { BitReader } from '../network/protocol/bitReader';
 import { DebugConfig } from '../core/Debug';
 import { GlobalState } from '../core/GlobalState';
 import { Entity, EntityProps, EntityState } from '../core/Entity';
-import { GameData } from '../core/GameData';
 import { LevelConfig } from '../core/LevelConfig';
+import { resolveDungeonEnemyScaleLevel } from '../core/DungeonLevelScale';
 import { PetHandler } from './PetHandler';
 import { BuildingHandler } from './BuildingHandler';
 import { noteDungeonRunBossCutscene, noteDungeonRunEntitySeen } from '../core/DungeonRunStats';
@@ -117,23 +117,12 @@ export class EntityHandler {
         return Boolean(levelName) && EntityHandler.GOBLIN_RIVER_ROOM_SYNC_SKIP_LEVELS.has(String(levelName));
     }
 
-    private static resolveRuntimeDungeonEntityLevel(levelName: string | null | undefined, character: any, fallbackLevel: number = 1): number {
-        if (!LevelConfig.isDungeonLevel(levelName)) {
-            return Math.max(1, Math.min(50, Math.round(Number(fallbackLevel) || 1)));
-        }
-
-        const xpLevel = GameData.getPlayerLevelFromXp(Math.max(0, Number(character?.xp ?? 0)));
-        const characterLevel = Math.max(1, Number(character?.level ?? 0));
-        const resolvedLevel = xpLevel > 1 ? xpLevel : characterLevel;
-        return Math.max(1, Math.min(50, Math.round(resolvedLevel || fallbackLevel || 1)));
-    }
-
-    private static applyRuntimeDungeonEntityLevel(levelName: string | null | undefined, character: any, entity: any): void {
+    private static applyRuntimeDungeonEntityLevel(levelName: string | null | undefined, client: Client, entity: any): void {
         if (!entity || entity.isPlayer || !LevelConfig.isDungeonLevel(levelName)) {
             return;
         }
 
-        entity.level = EntityHandler.resolveRuntimeDungeonEntityLevel(levelName, character, entity.level);
+        entity.level = resolveDungeonEnemyScaleLevel(levelName, entity.level, client.character, client);
     }
 
     private static isPrivateClientSpawnOutdoorEntity(levelName: string | null | undefined, entity: any): boolean {
@@ -262,6 +251,36 @@ export class EntityHandler {
         }
 
         return bestMatch;
+    }
+
+    static resolveLeaderAuthoritativeClientSpawnCanonical(
+        client: Client,
+        levelName: string | null | undefined,
+        entity: any,
+        levelMap: Map<number, any> | null = null
+    ): any | null {
+        if (
+            !EntityHandler.usesLeaderAuthoritativeClientSpawns(levelName) ||
+            !client ||
+            !entity ||
+            entity.isPlayer ||
+            (Number(entity.team ?? 0) !== 2 && Number(entity.team ?? 0) !== 3) ||
+            getPartyIdForClient(client) <= 0
+        ) {
+            return null;
+        }
+
+        const resolvedMap = levelMap ?? EntityHandler.getLevelMapForClient(client);
+        if (!resolvedMap) {
+            return null;
+        }
+
+        const sameId = resolvedMap.get(Number(entity.id ?? 0));
+        if (sameId && sameId !== entity) {
+            return sameId;
+        }
+
+        return EntityHandler.findLeaderAuthoritativeClientSpawnMatch(resolvedMap, entity);
     }
 
     private static suppressFollowerLeaderAuthoritativeDungeonSpawn(
@@ -1566,7 +1585,7 @@ export class EntityHandler {
                 // bRunning etc are flags
             };
 
-        EntityHandler.applyRuntimeDungeonEntityLevel(levelName, client.character, props);
+        EntityHandler.applyRuntimeDungeonEntityLevel(levelName, client, props);
 
         if (!isPlayer) {
             client.clientSpawnConfirmed = true;
@@ -1660,7 +1679,7 @@ export class EntityHandler {
                     ...Entity.fromNpc(npc),
                     clientSpawned: false
                 };
-                EntityHandler.applyRuntimeDungeonEntityLevel(levelName, client.character, entityProps);
+                EntityHandler.applyRuntimeDungeonEntityLevel(levelName, client, entityProps);
                 const spawnKey = getDungeonSnapshotSpawnKey(entityProps);
 
                 if (deadSpawnKeys.has(spawnKey)) {
