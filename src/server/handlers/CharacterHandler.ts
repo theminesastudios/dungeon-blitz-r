@@ -41,7 +41,7 @@ export class CharacterHandler {
     private static readonly DYE_GOLD_COST = [0, 455, 550, 595, 650, 735, 795, 890, 965, 1075, 1155, 1285, 1385, 1520, 1685, 1810, 1985, 2180, 2380, 2600, 2845, 3090, 3375, 3710, 4025, 4410, 4790, 5225, 5705, 6215, 6750, 7340, 8020, 8690, 9455, 10300, 11230, 12185, 13255, 14405, 15635, 17010, 18475, 20050, 21725, 23650, 25640, 27835, 30165, 32730, 35540] as const;
     private static readonly DYE_IDOLS_COST = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7, 7, 8, 8, 9, 10, 11, 11, 12, 13, 14, 16, 17] as const;
 
-    private static resolveDungeonPacketLevel(levelName: string, configuredLevel: number, character: Character): number {
+    private static resolveDungeonMapPacketLevel(levelName: string, configuredLevel: number, character: Character): number {
         if (!LevelConfig.isDungeonLevel(levelName)) {
             return configuredLevel;
         }
@@ -907,8 +907,8 @@ export class CharacterHandler {
         // Get Level Config
         const levelSpec = LevelConfig.get(currentLevelName);
         const isHard = currentLevelName.endsWith("Hard");
-        const runtimeMapLevel = CharacterHandler.resolveDungeonPacketLevel(currentLevelName, levelSpec.mapId, char);
-        const runtimeBaseLevel = CharacterHandler.resolveDungeonPacketLevel(currentLevelName, levelSpec.baseId, char);
+        const runtimeMapLevel = CharacterHandler.resolveDungeonMapPacketLevel(currentLevelName, levelSpec.mapId, char);
+        const runtimeBaseLevel = levelSpec.baseId;
 
         const pendingEntry = GlobalState.pendingWorld.get(token);
         const resolvedTransferToken = pendingEntry?.syncAnchorToken || token;

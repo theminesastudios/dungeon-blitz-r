@@ -112,6 +112,26 @@ function parseMountEquipPacket(payload: Buffer): { entityId: number; mountId: nu
     };
 }
 
+function parseEnterWorldLevelPacket(payload: Buffer): { mapLevel: number; baseLevel: number; internalName: string } {
+    const br = new BitReader(payload);
+    br.readMethod4();
+    br.readMethod4();
+    br.readMethod13();
+    const hasOldCoord = br.readMethod15();
+    if (hasOldCoord) {
+        br.readMethod4();
+        br.readMethod4();
+    }
+    br.readMethod13();
+    br.readMethod4();
+    br.readMethod13();
+    const mapLevel = br.readMethod6(6);
+    const baseLevel = br.readMethod6(6);
+    const internalName = br.readMethod13();
+
+    return { mapLevel, baseLevel, internalName };
+}
+
 function withMockedRandom(values: number[], fn: () => void): void {
     const originalRandom = Math.random;
     let nextIndex = 0;
@@ -1399,6 +1419,29 @@ function testEnterWorldTokenSkipsTargetLevelEntityIds(): void {
     assert.equal(GlobalState.tokenChar.get(4097)?.character, character);
 }
 
+function testDungeonEnterWorldKeepsAuthoredBaseLevelForEnemyScaling(): void {
+    const client = createClient();
+    const character = createCharacter('Scaled');
+    character.level = 50;
+    character.CurrentLevel = { name: 'GoblinRiverDungeon', x: 0, y: 0 };
+    character.PreviousLevel = { name: 'NewbieRoad', x: 1421, y: 826 };
+
+    withMockedRandom(
+        [(4099.5 / 0x10000)],
+        () => {
+            (CharacterHandler as any).sendEnterWorld(client, character);
+        }
+    );
+
+    const enterWorldPacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x21);
+    assert.ok(enterWorldPacket, 'character selection should send an enter-world packet');
+
+    const decoded = parseEnterWorldLevelPacket(enterWorldPacket.payload);
+    assert.equal(decoded.internalName, 'GoblinRiverDungeon');
+    assert.equal(decoded.mapLevel, 50, 'dungeon map level should follow the player level');
+    assert.equal(decoded.baseLevel, 3, 'dungeon base level must stay authored so enemies receive the map/base scaling delta');
+}
+
 function testLevelTransferTokenSkipsTargetLevelEntityAndLivePlayerIds(): void {
     GlobalState.levelEntities.set('NewbieRoad', new Map<number, any>([
         [2701, { id: 2701, name: 'IntroGoblin', isPlayer: false, clientSpawned: true }]
@@ -1520,6 +1563,18 @@ async function main(): Promise<void> {
         GlobalState.levelEntities.clear();
 
         testEnterWorldTokenSkipsTargetLevelEntityIds();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.sessionsByUserId.clear();
+        GlobalState.sessionsByCharacterName.clear();
+        GlobalState.pendingWorld.clear();
+        GlobalState.pendingExtended.clear();
+        GlobalState.usedTransferTokens.clear();
+        GlobalState.tokenChar.clear();
+        GlobalState.transferTokenAliases.clear();
+        GlobalState.levelEntities.clear();
+
+        testDungeonEnterWorldKeepsAuthoredBaseLevelForEnemyScaling();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.sessionsByUserId.clear();
