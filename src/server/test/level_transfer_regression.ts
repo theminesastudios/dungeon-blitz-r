@@ -651,6 +651,31 @@ function testCemeteryHillZeroSavedCoordsFallBackToAuthoredSpawn(): void {
     );
 }
 
+function testCemeteryHillGeneralSvenDoorTargetsMiniMission9(): void {
+    const client = createClient();
+    client.currentLevel = 'CemeteryHill';
+    client.character = createCharacter('HillRunner');
+    client.character.CurrentLevel = { name: 'CemeteryHill', x: 12000, y: 900 };
+
+    assert.equal(LevelConfig.has('CH_MiniMission9'), true, 'General Sven Hocke dungeon must exist in level_config');
+    assert.equal(LevelConfig.isDungeonLevel('CH_MiniMission9'), true, 'General Sven Hocke should be treated as a dungeon');
+
+    LevelHandler.handleOpenDoor(client as never, createOpenDoorPacket(209));
+
+    assert.equal(client.lastDoorId, 209);
+    assert.equal(
+        client.lastDoorTargetLevel,
+        'CH_MiniMission9',
+        'Cemetery Hill door 209 should start a transfer to General Sven Hocke, not fall back to CemeteryHill'
+    );
+    const doorTargetPacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x2E);
+    assert.ok(doorTargetPacket);
+    assert.deepEqual(parseDoorTargetPacket(doorTargetPacket.payload), {
+        doorId: 209,
+        target: 'CH_MiniMission9'
+    });
+}
+
 function testRecoverTransferSessionStateRepairsCraftTownEntryLoop(): void {
     const client = createClient();
     const character = createCharacter('KeepRunner');
@@ -1553,6 +1578,7 @@ async function main(): Promise<void> {
         testResolveDungeonExitSpawnIgnoresStaleCraftTownTutorialSavedCoords();
         testCemeteryHillSpawnUsesAuthoredPlayerSpawn();
         testCemeteryHillZeroSavedCoordsFallBackToAuthoredSpawn();
+        testCemeteryHillGeneralSvenDoorTargetsMiniMission9();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.sessionsByUserId.clear();
