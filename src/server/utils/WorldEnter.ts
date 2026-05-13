@@ -3,6 +3,7 @@ import { normalizeCharacterInventoryGears } from './GearInventory';
 import { PetHandler } from '../handlers/PetHandler';
 import { Character } from '../database/Database';
 import { MissionDef, MissionLoader } from '../data/MissionLoader';
+import { MissionID } from '../data/runtime';
 import { BuildingID, ClassID, MasterClassID } from '../core/Enums';
 import { GameData } from '../core/GameData';
 import { GlobalState } from '../core/GlobalState';
@@ -84,6 +85,84 @@ export class WorldEnter {
 
     private static missionRequiresTurnIn(missionDef: MissionDef | undefined): boolean {
         return Boolean(String(missionDef?.ReturnName ?? '').trim());
+    }
+
+    private static getMissionState(missionsState: Record<string, any>, missionId: number): number {
+        const entry = WorldEnter.asRecord(missionsState[missionId.toString()]);
+        const state = Number(entry.state ?? 0);
+        return Number.isFinite(state) ? state : 0;
+    }
+
+    private static isMissionZoneUnlocked(missionsState: Record<string, any>, missionDef: MissionDef): boolean {
+        const zoneSet = String(missionDef.ZoneSet ?? '')
+            .split(',')
+            .map((entry) => entry.trim())
+            .filter(Boolean);
+
+        if (!zoneSet.length) {
+            return true;
+        }
+
+        if (zoneSet.some((zone) => zone.startsWith('NewbieRoad') || zone.startsWith('Tutorial') || zone === 'CraftTownTutorial')) {
+            return true;
+        }
+
+        return WorldEnter.getMissionState(missionsState, MissionID.DeliverToSwamp) >= 3;
+    }
+
+    private static canStartMission(missionsState: Record<string, any>, missionDef: MissionDef): boolean {
+        if (!WorldEnter.isMissionZoneUnlocked(missionsState, missionDef)) {
+            return false;
+        }
+
+        for (const prereqName of missionDef.PreReqMissions ?? []) {
+            const prereqId = MissionLoader.getMissionIdByName(prereqName);
+            if (!prereqId) {
+                continue;
+            }
+            if (WorldEnter.getMissionState(missionsState, prereqId) < 3) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static shouldExposeUnlockedDungeonMission(
+        missionsState: Record<string, any>,
+        missionDef: MissionDef | undefined
+    ): missionDef is MissionDef {
+        if (!missionDef || String(missionDef.Priority ?? '').trim() !== 'Dungeon') {
+            return false;
+        }
+        if (!String(missionDef.Dungeon ?? '').trim()) {
+            return false;
+        }
+
+        return WorldEnter.canStartMission(missionsState, missionDef);
+    }
+
+    private static buildSerializableMissionsState(character: Character): Record<string, any> {
+        const missionsState = { ...WorldEnter.asRecord(character.missions) };
+        const totalMissions = MissionLoader.getTotalMissions();
+
+        for (let missionId = 1; missionId <= totalMissions; missionId++) {
+            if (WorldEnter.getMissionState(missionsState, missionId) > 0) {
+                continue;
+            }
+
+            const missionDef = MissionLoader.getMissionDef(missionId);
+            if (!WorldEnter.shouldExposeUnlockedDungeonMission(missionsState, missionDef)) {
+                continue;
+            }
+
+            missionsState[missionId.toString()] = {
+                state: 1,
+                currCount: 0
+            };
+        }
+
+        return missionsState;
     }
 
     private static normalizeMissionEntry(
@@ -671,7 +750,7 @@ export class WorldEnter {
             }
             bb.writeMethod11(0, 1);
 
-            const missionsState = WorldEnter.asRecord(character.missions);
+            const missionsState = WorldEnter.buildSerializableMissionsState(character);
             const totalMissions = MissionLoader.getTotalMissions();
             bb.writeMethod4(totalMissions);
             for (let missionId = 1; missionId <= totalMissions; missionId++) {

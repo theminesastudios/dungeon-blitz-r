@@ -1066,6 +1066,48 @@ function testCompletedDungeonDoorShowsRepeatWithoutSavedTier(): void {
     });
 }
 
+function testUnlockedForgottenForgeDoorOpensWithoutPersistedMission(): void {
+    const client = createClient();
+    client.currentLevel = 'OldMineMountain';
+    client.character = createCharacter('ForgeRunner');
+    client.character.missions = {
+        [String(MissionID.DeliverToSwamp)]: {
+            state: 3,
+            currCount: 1,
+            claimed: 1,
+            complete: 1
+        },
+        [String(MissionID.AbandonedArmory)]: {
+            state: 3,
+            currCount: 1,
+            claimed: 1,
+            complete: 1
+        }
+    };
+
+    LevelHandler.handleRequestDoorState(client as never, createDoorStateRequestPacket(106));
+
+    const doorStatePacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x42);
+    assert.ok(doorStatePacket);
+    assert.deepEqual(parseDoorStatePacket(doorStatePacket.payload), {
+        doorId: 106,
+        state: 1,
+        target: 'OMM_Mission6'
+    });
+
+    client.sentPackets.length = 0;
+    LevelHandler.handleOpenDoor(client as never, createOpenDoorPacket(106));
+
+    assert.equal(client.lastDoorId, 106);
+    assert.equal(client.lastDoorTargetLevel, 'OMM_Mission6');
+    assert.equal(client.sentPackets.some((packet: { id: number }) => packet.id === 0x2E), true);
+    assert.equal(
+        client.character.missions[String(MissionID.ForgottenForge)],
+        undefined,
+        'opening an unlocked map dungeon should not persist a fake Forgotten Forge mission'
+    );
+}
+
 function testDisconnectRecoverySnapshotRepairsCraftTownEntryLoop(): void {
     const client = new Client(
         new net.Socket(),
@@ -1851,6 +1893,7 @@ async function main(): Promise<void> {
         testFelbridgeDreadGateReadyToTurnInDoesNotUnlock();
         testFelbridgeDreadGateOpensAfterCapstoneClaimedWithoutLevelRequirement();
         testCompletedDungeonDoorShowsRepeatWithoutSavedTier();
+        testUnlockedForgottenForgeDoorOpensWithoutPersistedMission();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.sessionsByUserId.clear();

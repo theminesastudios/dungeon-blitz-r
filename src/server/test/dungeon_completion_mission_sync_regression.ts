@@ -249,50 +249,79 @@ async function testLordTillyRestWaitsForNpcRewardClaim(): Promise<void> {
     );
 }
 
-async function testNoContactDungeonCompletionCreatesAndCompletesMission(): Promise<void> {
+async function testDungeonCompletionDoesNotCreateUnstartedMission(): Promise<void> {
     const client = createForgottenForgeClient();
 
     await MissionHandler.handleSetLevelComplete(client as never, createLevelCompletePacket(100, 0, 1));
 
     assert.equal(
         Number(client.character.missions[String(MissionID.ForgottenForge)]?.state ?? 0),
-        3,
-        'Forgotten Forge should be marked completed even though it has no contact NPC to pre-start the mission'
+        0,
+        'dungeon completion should not create a Forgotten Forge mission that the character never accepted'
+    );
+    assert.equal(
+        Number(client.character.missions[String(MissionID.ForgottenForge)]?.currCount ?? 0),
+        0,
+        'unstarted dungeon missions should not be shown as 1/1 after completion'
+    );
+    assert.equal(
+        client.character.lastCompletedDungeonLevel,
+        undefined,
+        'unstarted dungeon completion should not overwrite the last completed mission turn-in target'
+    );
+
+    const missionAdded = client.sentPackets.find((packet) => packet.id === 0x85);
+    assert.equal(
+        missionAdded,
+        undefined,
+        'unstarted dungeon completion should not send a surprise mission snapshot'
+    );
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x84),
+        false,
+        'unstarted dungeon completion should not emit a mission reward UI'
+    );
+}
+
+async function testAcceptedForgottenForgeCompletionWaitsForTurnIn(): Promise<void> {
+    const client = createForgottenForgeClient();
+    client.character.missions[String(MissionID.ForgottenForge)] = {
+        state: 1,
+        currCount: 0
+    };
+
+    await MissionHandler.handleSetLevelComplete(client as never, createLevelCompletePacket(100, 0, 1));
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.ForgottenForge)]?.state ?? 0),
+        2,
+        'accepted Forgotten Forge should become ready to turn in after completion'
     );
     assert.equal(
         Number(client.character.missions[String(MissionID.ForgottenForge)]?.currCount ?? 0),
         1,
-        'Forgotten Forge completion should persist completed objective count'
+        'accepted Forgotten Forge should persist completed objective count'
     );
     assert.equal(
         client.character.lastCompletedDungeonLevel,
         'OMM_Mission6',
-        'Forgotten Forge should store the completed dungeon level'
+        'accepted Forgotten Forge should remember the completed dungeon level for turn-in repair'
     );
 
     const missionAdded = client.sentPackets.find((packet) => packet.id === 0x85);
-    assert.ok(missionAdded, 'auto-completed no-contact dungeons should sync the mission snapshot immediately');
+    assert.ok(missionAdded, 'accepted dungeon completion should sync the ready-to-turn-in mission snapshot');
     assert.deepEqual(decodeMissionAddedPacket(missionAdded!.payload), {
         missionId: MissionID.ForgottenForge,
         active: 0
     });
-    assert.equal(
-        client.sentPackets.some((packet) => packet.id === 0x86),
-        true,
-        'Forgotten Forge should emit mission completion notification'
-    );
-    assert.equal(
-        client.sentPackets.some((packet) => packet.id === 0x84),
-        true,
-        'Forgotten Forge should emit dungeon stars and score for the map/client'
-    );
 }
 
 async function main(): Promise<void> {
     ensureDataLoaded();
     await testDungeonCompletionSyncsReadyMissionStateImmediately();
     await testLordTillyRestWaitsForNpcRewardClaim();
-    await testNoContactDungeonCompletionCreatesAndCompletesMission();
+    await testDungeonCompletionDoesNotCreateUnstartedMission();
+    await testAcceptedForgottenForgeCompletionWaitsForTurnIn();
     console.log('dungeon_completion_mission_sync_regression: ok');
 }
 

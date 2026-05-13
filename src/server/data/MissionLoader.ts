@@ -19,6 +19,7 @@ export interface MissionDef {
     PraiseText?: string;
     ContactName?: string;
     Dungeon?: string;
+    Priority?: string;
     ZoneSet?: string;
     MissionLevel?: number;
     PreReqMissions?: string[];
@@ -115,6 +116,7 @@ export class MissionLoader {
                         PraiseText: item.PraiseText || "",
                         ContactName: item.ContactName || "",
                         Dungeon: item.Dungeon || "",
+                        Priority: item.Priority || "",
                         ZoneSet: item.ZoneSet || "",
                         MissionLevel: parseInt(item.MissionLevel ?? "0", 10) || 0,
                         PreReqMissions: preReqMissions,

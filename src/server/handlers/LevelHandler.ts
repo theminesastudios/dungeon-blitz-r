@@ -2541,7 +2541,11 @@ export class LevelHandler {
             return true;
         }
 
-        return LevelHandler.getMissionState(client, missionDef.MissionID) > LevelHandler.MISSION_NOT_STARTED;
+        if (LevelHandler.getMissionState(client, missionDef.MissionID) > LevelHandler.MISSION_NOT_STARTED) {
+            return true;
+        }
+
+        return Boolean(client.character && MissionHandler.canStartMission(client.character, missionDef));
     }
 
     private static isFelbridgeDreadGateUnlocked(
