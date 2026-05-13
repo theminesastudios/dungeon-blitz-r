@@ -83,6 +83,7 @@ export class LevelHandler {
     private static readonly DOORSTATE_LOCKED = 4;
     private static readonly FELBRIDGE_DREAD_GATE_LOCKED_MESSAGE =
         '^tA powerful magic seals this entrance.=^tI still need to learn more about the Sleeping Lands.';
+    private static readonly LOCKED_DUNGEON_ENTRY_MESSAGE = "^tI haven't unlocked this dungeon yet.";
     private static readonly GOBLIN_RIVER_INITIAL_PROGRESS = 11;
     private static readonly TUTORIAL_DUNGEON_INITIAL_PROGRESS = 11;
     private static readonly KEEP_TUTORIAL_HELPER_RESPAWN_DELAY_MS = 1200;
@@ -2527,18 +2528,11 @@ export class LevelHandler {
         return Number(state ?? LevelHandler.MISSION_NOT_STARTED);
     }
 
-    private static isBlackRoseMireMissionDoorUnlocked(client: Client, currentLevel: string, targetLevelRaw: string | null): boolean {
-        const normalizedCurrentLevel =
-            LevelConfig.normalizeLevelName(currentLevel) ||
-            String(currentLevel ?? '').trim();
-        if (normalizedCurrentLevel !== 'SwampRoadNorth' && normalizedCurrentLevel !== 'SwampRoadNorthHard') {
-            return true;
-        }
-
+    private static isDungeonEntryUnlocked(client: Client, _currentLevel: string, targetLevelRaw: string | null): boolean {
         const targetLevel =
             LevelConfig.normalizeLevelName(targetLevelRaw || '') ||
             String(targetLevelRaw || '').trim();
-        if (!targetLevel.startsWith('SRN_Mission')) {
+        if (!targetLevel || !LevelConfig.isDungeonLevel(targetLevel)) {
             return true;
         }
 
@@ -2999,7 +2993,7 @@ export class LevelHandler {
         // Lookup door target in LevelConfig
         const currentLevel = client.currentLevel || "NewbieRoad";
         const target = LevelHandler.resolveDoorTarget(client, currentLevel, doorId);
-        const isUnlocked = LevelHandler.isBlackRoseMireMissionDoorUnlocked(client, currentLevel, target);
+        const isDungeonEntryUnlocked = LevelHandler.isDungeonEntryUnlocked(client, currentLevel, target);
         const isFelbridgeDreadGateLocked =
             Boolean(target) &&
             !LevelHandler.isFelbridgeDreadGateUnlocked(client, currentLevel, doorId, target);
@@ -3010,7 +3004,10 @@ export class LevelHandler {
         if (target && isFelbridgeDreadGateLocked) {
             bb.writeMethod91(LevelHandler.DOORSTATE_LOCKED);
             bb.writeMethod13(target);
-        } else if (target && isUnlocked) {
+        } else if (target && !isDungeonEntryUnlocked) {
+            bb.writeMethod91(LevelHandler.DOORSTATE_LOCKED);
+            bb.writeMethod13(target);
+        } else if (target) {
             const completedStars = LevelHandler.getCompletedDungeonDoorStars(client, target);
             const doorState = completedStars > 0
                 ? LevelHandler.DOORSTATE_MISSIONREPEAT
@@ -3081,9 +3078,20 @@ export class LevelHandler {
 
         if (
             rawTargetLevel &&
-            !LevelHandler.isBlackRoseMireMissionDoorUnlocked(client, currentLevel, rawTargetLevel)
+            !LevelHandler.isDungeonEntryUnlocked(client, currentLevel, rawTargetLevel)
         ) {
-            console.log(`[Level] Open Door ${doorId} in ${currentLevel} blocked until the matching Black Rose Mire quest is accepted`);
+            console.log(`[Level] Open Door ${doorId} in ${currentLevel} blocked until the matching dungeon quest is accepted`);
+            LevelHandler.sendDoorState(
+                client,
+                doorId,
+                LevelHandler.DOORSTATE_LOCKED,
+                LevelConfig.normalizeLevelName(rawTargetLevel) || rawTargetLevel
+            );
+            LevelHandler.sendLockedDoorThought(
+                client,
+                doorId,
+                LevelHandler.LOCKED_DUNGEON_ENTRY_MESSAGE
+            );
             return;
         }
 
@@ -3361,6 +3369,16 @@ export class LevelHandler {
 
         if (!teleportOverride && !LevelHandler.isFelbridgeDreadGateTransferUnlocked(client, targetLevel)) {
             console.log(`[Level] Transfer to ${targetLevel} blocked until Capstone is completed`);
+            return;
+        }
+
+        if (!LevelHandler.isDungeonEntryUnlocked(client, client.currentLevel || '', targetLevel)) {
+            console.log(`[Level] Transfer to ${targetLevel} blocked until the matching dungeon quest is accepted`);
+            LevelHandler.sendLockedDoorThought(
+                client,
+                client.lastDoorId,
+                LevelHandler.LOCKED_DUNGEON_ENTRY_MESSAGE
+            );
             return;
         }
 

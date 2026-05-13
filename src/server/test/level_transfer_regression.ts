@@ -75,6 +75,13 @@ function createDoorStateRequestPacket(doorId: number): Buffer {
     return bb.toBuffer();
 }
 
+function createLevelTransferPacket(token: number, targetLevel: string): Buffer {
+    const bb = new BitBuffer();
+    bb.writeMethod9(token);
+    bb.writeMethod13(targetLevel);
+    return bb.toBuffer();
+}
+
 function readMethod91(br: BitReader): number {
     const prefix = br.readMethod20(3);
     return br.readMethod20((prefix + 1) * 2);
@@ -741,6 +748,14 @@ function testCemeteryHillGeneralSvenDoorTargetsMiniMission9(): void {
     client.currentLevel = 'CemeteryHill';
     client.character = createCharacter('HillRunner');
     client.character.CurrentLevel = { name: 'CemeteryHill', x: 12000, y: 900 };
+    const missionDef = MissionLoader.findPrimaryMissionByDungeon('CH_MiniMission9');
+    assert.ok(missionDef);
+    client.character.missions = {
+        [String(missionDef.MissionID)]: {
+            state: 1,
+            currCount: 0
+        }
+    };
 
     assert.equal(LevelConfig.has('CH_MiniMission9'), true, 'General Sven Hocke dungeon must exist in level_config');
     assert.equal(LevelConfig.isDungeonLevel('CH_MiniMission9'), true, 'General Sven Hocke should be treated as a dungeon');
@@ -758,6 +773,76 @@ function testCemeteryHillGeneralSvenDoorTargetsMiniMission9(): void {
     assert.deepEqual(parseDoorTargetPacket(doorTargetPacket.payload), {
         doorId: 209,
         target: 'CH_MiniMission9'
+    });
+}
+
+function testLockedDungeonDoorReportsLockedAndDoesNotOpen(): void {
+    const client = createClient();
+    client.currentLevel = 'CemeteryHill';
+    client.clientEntID = 451;
+    client.character = createCharacter('HillRunner');
+    client.character.CurrentLevel = { name: 'CemeteryHill', x: 12000, y: 900 };
+
+    LevelHandler.handleRequestDoorState(client as never, createDoorStateRequestPacket(209));
+
+    const doorStatePacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x42);
+    assert.ok(doorStatePacket);
+    assert.deepEqual(parseDoorStatePacket(doorStatePacket.payload), {
+        doorId: 209,
+        state: 4,
+        target: 'CH_MiniMission9'
+    });
+
+    client.sentPackets.length = 0;
+    LevelHandler.handleOpenDoor(client as never, createOpenDoorPacket(209));
+
+    assert.equal(client.lastDoorId, -1);
+    assert.equal(client.lastDoorTargetLevel, '');
+    assert.equal(
+        client.sentPackets.some((packet: { id: number }) => packet.id === 0x2E),
+        false,
+        'locked dungeon door must not start a transfer'
+    );
+    const blockedDoorStatePacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x42);
+    assert.ok(blockedDoorStatePacket);
+    assert.deepEqual(parseDoorStatePacket(blockedDoorStatePacket.payload), {
+        doorId: 209,
+        state: 4,
+        target: 'CH_MiniMission9'
+    });
+    const lockedDialoguePacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x76);
+    assert.ok(lockedDialoguePacket);
+    assert.deepEqual(parseRoomThoughtPacket(lockedDialoguePacket.payload), {
+        entityId: 451,
+        text: "^tI haven't unlocked this dungeon yet."
+    });
+}
+
+async function testLockedDungeonTransferRequestIsBlocked(): Promise<void> {
+    const client = createClient();
+    client.token = 3001;
+    client.currentLevel = 'CemeteryHill';
+    client.lastDoorId = 209;
+    client.lastDoorTargetLevel = 'CH_MiniMission9';
+    client.clientEntID = 451;
+    client.character = createCharacter('HillRunner');
+    client.character.CurrentLevel = { name: 'CemeteryHill', x: 12000, y: 900 };
+
+    await LevelHandler.handleLevelTransferRequest(
+        client as never,
+        createLevelTransferPacket(3001, 'CH_MiniMission9')
+    );
+
+    assert.equal(
+        client.sentPackets.some((packet: { id: number }) => packet.id === 0x21),
+        false,
+        'locked dungeon transfer request must not send an enter-world packet'
+    );
+    const lockedDialoguePacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x76);
+    assert.ok(lockedDialoguePacket);
+    assert.deepEqual(parseRoomThoughtPacket(lockedDialoguePacket.payload), {
+        entityId: 451,
+        text: "^tI haven't unlocked this dungeon yet."
     });
 }
 
@@ -1734,6 +1819,8 @@ async function main(): Promise<void> {
         testCemeteryHillSpawnUsesAuthoredPlayerSpawn();
         testCemeteryHillZeroSavedCoordsFallBackToAuthoredSpawn();
         testCemeteryHillGeneralSvenDoorTargetsMiniMission9();
+        testLockedDungeonDoorReportsLockedAndDoesNotOpen();
+        await testLockedDungeonTransferRequestIsBlocked();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.sessionsByUserId.clear();
