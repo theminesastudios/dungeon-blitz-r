@@ -45,6 +45,8 @@ export class LevelConfig {
         "SwampRoadConnectionHard_SwampRoadNorthHard": { x: 193, y: 511 },
         "EmeraldGlades_OldMineMountain": { x: 18552, y: 4021 },
         "EmeraldGladesHard_OldMineMountainHard": { x: 18552, y: 4021 },
+        "EmeraldGlades_EmeraldGladesHard": { x: 2331, y: 2251 },
+        "EmeraldGladesHard_EmeraldGlades": { x: 2331, y: 2251 },
         "SwampRoadNorth_SwampRoadConnection": { x: 325, y: 368 },
         "SwampRoadNorthHard_SwampRoadConnectionHard": { x: 325, y: 368 },
         "BridgeTown_SwampRoadConnection": { x: 10533, y: 461 },

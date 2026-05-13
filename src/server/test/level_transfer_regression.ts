@@ -743,6 +743,30 @@ function testCemeteryHillZeroSavedCoordsFallBackToAuthoredSpawn(): void {
     );
 }
 
+function testEmeraldGladesDreadPortalSpawnsAtGate(): void {
+    const character = createCharacter('GladeScout');
+    character.CurrentLevel = { name: 'EmeraldGlades', x: 2200, y: 2300 };
+    character.PreviousLevel = { name: 'OldMineMountain', x: 18552, y: 4021 };
+
+    assert.deepEqual(
+        LevelConfig.getSpawnCoordinates(character, 'EmeraldGlades', 'EmeraldGladesHard'),
+        { x: 2331, y: 2251, hasCoord: true },
+        'Emerald Glades -> Dread Emerald Glades should land at the matching Dreadfold gate'
+    );
+}
+
+function testEmeraldGladesDreadPortalReturnSpawnsAtGate(): void {
+    const character = createCharacter('GladeScout');
+    character.CurrentLevel = { name: 'EmeraldGladesHard', x: 2200, y: 2300 };
+    character.PreviousLevel = { name: 'OldMineMountainHard', x: 18552, y: 4021 };
+
+    assert.deepEqual(
+        LevelConfig.getSpawnCoordinates(character, 'EmeraldGladesHard', 'EmeraldGlades'),
+        { x: 2331, y: 2251, hasCoord: true },
+        'Dread Emerald Glades -> Emerald Glades should land at the matching Dreadfold gate'
+    );
+}
+
 function testCemeteryHillGeneralSvenDoorTargetsMiniMission9(): void {
     const client = createClient();
     client.currentLevel = 'CemeteryHill';
@@ -1860,6 +1884,8 @@ async function main(): Promise<void> {
         testResolveDungeonExitSpawnIgnoresStaleCraftTownTutorialSavedCoords();
         testCemeteryHillSpawnUsesAuthoredPlayerSpawn();
         testCemeteryHillZeroSavedCoordsFallBackToAuthoredSpawn();
+        testEmeraldGladesDreadPortalSpawnsAtGate();
+        testEmeraldGladesDreadPortalReturnSpawnsAtGate();
         testCemeteryHillGeneralSvenDoorTargetsMiniMission9();
         testLockedDungeonDoorReportsLockedAndDoesNotOpen();
         await testLockedDungeonTransferRequestIsBlocked();
