@@ -610,7 +610,7 @@ export class RewardHandler {
         if (allowItemDrop && gearChance > 0) {
             gearRoll = Math.random();
             if (gearRoll < gearChance) {
-                gearId = GameData.getGearIdForEntity(entName, playerClass, ownedGearIds);
+                gearId = GameData.getGearIdForEntity(entName, playerClass, ownedGearIds, client.currentLevel);
                 const tierResult = RewardHandler.resolveGearTierDebug(client);
                 gearTier = tierResult.tier;
                 gearTierRoll = tierResult.tierRoll;
