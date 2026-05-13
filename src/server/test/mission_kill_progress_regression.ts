@@ -809,6 +809,65 @@ async function testLaterSideQuestCollectiblesProgressFromEnemyRealms(): Promise<
     }
 }
 
+async function testStormshardSideQuestKillsProgressFromExplicitTargets(): Promise<void> {
+    resetGlobalState();
+    const spiderClient = createClient({
+        [String(MissionID.SquashSomeSpiders)]: {
+            state: 1,
+            currCount: 14
+        }
+    }, 'OldMineMountain');
+
+    await destroyEnemy(spiderClient, 8781, 'AbominationSpider');
+
+    assert.equal(
+        Number(spiderClient.character.missions[String(MissionID.SquashSomeSpiders)]?.currCount ?? 0),
+        15,
+        'Spider Stomp should count Stormshard abomination spiders'
+    );
+    assert.equal(
+        Number(spiderClient.character.missions[String(MissionID.SquashSomeSpiders)]?.state ?? 0),
+        2,
+        'Spider Stomp should become ready to turn in once enough Stormshard spiders are defeated'
+    );
+    assert.deepEqual(
+        spiderClient.sentPackets
+            .filter((packet) => packet.id === 0x83)
+            .map((packet) => decodeMissionProgressPacket(packet.payload)),
+        [{ missionId: MissionID.SquashSomeSpiders, progress: 1 }],
+        'Spider Stomp should emit an additive mission progress packet on spider kills'
+    );
+
+    resetGlobalState();
+    const aluriteClient = createClient({
+        [String(MissionID.CollectRockShards)]: {
+            state: 1,
+            currCount: 9
+        }
+    }, 'OMM_Mission8');
+    aluriteClient.levelInstanceId = 'veins-alurite';
+
+    await killEnemyByState(aluriteClient, 8782, 'MeylourHulk');
+
+    assert.equal(
+        Number(aluriteClient.character.missions[String(MissionID.CollectRockShards)]?.currCount ?? 0),
+        10,
+        'Collect Alurite should count Meylour Hulks inside Stormshard dungeons'
+    );
+    assert.equal(
+        Number(aluriteClient.character.missions[String(MissionID.CollectRockShards)]?.state ?? 0),
+        2,
+        'Collect Alurite should become ready to turn in once enough hulks are defeated'
+    );
+    assert.deepEqual(
+        aluriteClient.sentPackets
+            .filter((packet) => packet.id === 0x83)
+            .map((packet) => decodeMissionProgressPacket(packet.payload)),
+        [{ missionId: MissionID.CollectRockShards, progress: 1 }],
+        'Collect Alurite should emit an additive mission progress packet on hulk kills'
+    );
+}
+
 async function testSideQuestEnemyKillsProgressInsideDungeonsOnDeadStateOnlyOnce(): Promise<void> {
     resetGlobalState();
     const client = createClient({
@@ -1273,6 +1332,7 @@ async function main(): Promise<void> {
     await testDevourerTeethProgressesFromDevourerRealmKills();
     await testHardDevourerTeethProgressesFromDevourerRealmKills();
     await testLaterSideQuestCollectiblesProgressFromEnemyRealms();
+    await testStormshardSideQuestKillsProgressFromExplicitTargets();
     await testSideQuestEnemyKillsProgressInsideDungeonsOnDeadStateOnlyOnce();
     await testSideQuestDotKillsProgressInsideDungeonsOnDeadStateOnlyOnce();
     await testSettleTheDeadProgressesOnCemeteryHillUndeadKills();
