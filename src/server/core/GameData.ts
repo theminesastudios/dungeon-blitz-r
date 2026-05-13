@@ -1,7 +1,26 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { MageGear, PaladinGear, RogueGear } from '../data/runtime';
+import { disassemble, parseAbc, parseSwf } from '../scripts/swfPatchUtils';
+import type { Instruction } from '../scripts/swfPatchUtils';
 import { readJsonFile } from '../utils/JsonFile';
+import { LevelConfig } from './LevelConfig';
+
+type GearDropSource = 'boss' | 'realm';
+
+interface GearDropRule {
+    gearId: number;
+    gearName: string;
+    realm: string;
+    bossName: string;
+    level: number;
+}
+
+interface GearDropContext {
+    entName: string;
+    realm: string;
+    currentLevel?: string | null;
+}
 
 export class GameData {
     static readonly MONSTER_GOLD_TABLE: number[] = [0, 43, 46, 49, 53, 57, 61, 65, 70, 75, 80, 86, 92, 98, 106, 113, 121, 130, 139, 149, 160, 171, 184, 197, 211, 226, 243, 260, 279, 299, 320, 343, 368, 394, 422, 453, 485, 520, 557, 597, 640, 686, 735, 788, 844, 905, 970, 1040, 1114, 1194, 1280];
@@ -27,6 +46,11 @@ export class GameData {
         boss_drops: {},
         global_drops: []
     };
+    private static GEAR_DROP_RULES_BY_ID: Record<number, GearDropRule[]> = {};
+    private static GEAR_DROP_RULES_LOADED = false;
+    private static BOSS_DROP_DUNGEON_BY_SOURCE: Record<string, string> = {};
+    private static REALM_DROP_DUNGEON_BY_SOURCE_LEVEL: Record<string, string> = {};
+    private static GEAR_DROP_LOCATION_MAPS_LOADED = false;
     private static readonly BOSS_ENTITY_NAME_ALIASES = new Set<string>([
         'AncientDragonDream',
         'DragonDream',
@@ -41,6 +65,14 @@ export class GameData {
     };
 
     static load(dataDir: string) {
+        try {
+            if (!LevelConfig.has('NewbieRoad') && fs.existsSync(path.join(dataDir, 'level_config.json'))) {
+                LevelConfig.load(dataDir);
+            }
+        } catch (err) {
+            console.error(`[GameData] Failed to ensure LevelConfig is loaded:`, err);
+        }
+
         // EntTypes
         try {
             const entPath = path.join(dataDir, 'EntTypes.json');
@@ -147,6 +179,9 @@ export class GameData {
         } catch (err) {
             console.error(`[GameData] Failed to load gear_data.json:`, err);
         }
+
+        GameData.loadGearDropRules(dataDir);
+        GameData.loadGearDropLocationMaps(dataDir);
     }
 
 
@@ -166,6 +201,19 @@ export class GameData {
             .trim()
             .toLowerCase()
             .replace(/[^a-z0-9]/g, '');
+    }
+
+    private static normalizeEntityDropName(value: string | null | undefined): string {
+        return String(value ?? '').trim().replace(/Hard$/i, '');
+    }
+
+    private static normalizeDungeonLevelKey(value: string | null | undefined): string {
+        const normalized = LevelConfig.normalizeLevelName(value);
+        return GameData.normalizeLookupKey(String(normalized || value || '').replace(/Hard$/i, ''));
+    }
+
+    private static buildRealmDropLocationKey(realm: string, level: number): string {
+        return GameData.normalizeLookupKey(`${realm}${Math.max(0, Math.round(level))}`);
     }
 
     private static buildEnumValueSet(enumObject: Record<string, string | number>): Set<number> {
@@ -212,13 +260,248 @@ export class GameData {
     private static pickRandomGearId(
         dropIds: number[] | undefined,
         className: string | null | undefined,
-        excludedGearIds?: Iterable<number>
+        excludedGearIds?: Iterable<number>,
+        context?: GearDropContext,
+        source?: GearDropSource
     ): number {
-        const filtered = GameData.filterGearDropsForClass(dropIds, className, excludedGearIds);
+        const classFiltered = GameData.filterGearDropsForClass(dropIds, className, excludedGearIds);
+        const filtered = source
+            ? classFiltered.filter((gearId) => GameData.isGearDropAllowedForSource(gearId, context, source))
+            : classFiltered;
         if (filtered.length === 0) {
             return 0;
         }
         return filtered[Math.floor(Math.random() * filtered.length)] ?? 0;
+    }
+
+    private static loadGearDropRules(dataDir: string): void {
+        GameData.GEAR_DROP_RULES_BY_ID = {};
+        GameData.GEAR_DROP_RULES_LOADED = false;
+
+        const xmlPath = GameData.findClientContentPath(dataDir, 'xml', 'GearTypes.xml');
+        if (!xmlPath) {
+            console.warn('[GameData] GearTypes.xml not found; gear source filtering will use legacy source buckets.');
+            return;
+        }
+
+        try {
+            const xml = fs.readFileSync(xmlPath, 'utf8');
+            const gearBlockPattern = /<Gear\s+([^>]*?)>([\s\S]*?)<\/Gear>/g;
+            let match: RegExpExecArray | null;
+
+            while ((match = gearBlockPattern.exec(xml)) !== null) {
+                const attrs = match[1] ?? '';
+                const body = match[2] ?? '';
+                const gearId = Number(GameData.getXmlAttribute(attrs, 'GearID') ?? 0);
+                if (!Number.isFinite(gearId) || gearId <= 0) {
+                    continue;
+                }
+
+                const realm = GameData.decodeXmlText(GameData.getXmlTagValue(body, 'Realm'));
+                const bossName = GameData.normalizeEntityDropName(GameData.decodeXmlText(GameData.getXmlTagValue(body, 'BossName')));
+                const level = Math.max(0, Math.round(Number(GameData.getXmlTagValue(body, 'Level') || 0)));
+                if ((!realm && !bossName) || level <= 0) {
+                    continue;
+                }
+
+                const rule: GearDropRule = {
+                    gearId: Math.round(gearId),
+                    gearName: GameData.decodeXmlText(GameData.getXmlAttribute(attrs, 'GearName') ?? ''),
+                    realm,
+                    bossName,
+                    level
+                };
+                const existing = GameData.GEAR_DROP_RULES_BY_ID[rule.gearId] ?? [];
+                const key = `${rule.realm}|${rule.bossName}|${rule.level}`;
+                if (!existing.some((item) => `${item.realm}|${item.bossName}|${item.level}` === key)) {
+                    existing.push(rule);
+                    GameData.GEAR_DROP_RULES_BY_ID[rule.gearId] = existing;
+                }
+            }
+
+            GameData.GEAR_DROP_RULES_LOADED = true;
+            console.log(`[GameData] Loaded gear source rules for ${Object.keys(GameData.GEAR_DROP_RULES_BY_ID).length} gear ids.`);
+        } catch (err) {
+            GameData.GEAR_DROP_RULES_BY_ID = {};
+            console.error('[GameData] Failed to load GearTypes.xml source rules:', err);
+        }
+    }
+
+    private static loadGearDropLocationMaps(dataDir: string): void {
+        GameData.BOSS_DROP_DUNGEON_BY_SOURCE = {};
+        GameData.REALM_DROP_DUNGEON_BY_SOURCE_LEVEL = {};
+        GameData.GEAR_DROP_LOCATION_MAPS_LOADED = false;
+
+        const swfPath = GameData.findClientContentPath(dataDir, 'localhost', 'p', 'cbp', 'DungeonBlitz.swf');
+        if (!swfPath) {
+            console.warn('[GameData] DungeonBlitz.swf not found; gear dungeon filtering will fall back to source rules only.');
+            return;
+        }
+
+        try {
+            const swf = parseSwf(swfPath);
+            const abc = parseAbc(swf);
+            let bossLocationCount = 0;
+            let realmLocationCount = 0;
+
+            for (const methodBody of abc.methodBodies.values()) {
+                const code = swf.body.subarray(methodBody.codeStart, methodBody.codeStart + methodBody.codeLen);
+                let instructions: Instruction[];
+                try {
+                    instructions = disassemble(code, `gear-drop-location:${methodBody.methodIdx}`);
+                } catch {
+                    continue;
+                }
+
+                for (let index = 0; index + 3 < instructions.length; index += 1) {
+                    const mapInstruction = instructions[index];
+                    const keyInstruction = instructions[index + 1];
+                    const levelInstruction = instructions[index + 2];
+                    const setInstruction = instructions[index + 3];
+                    if (
+                        mapInstruction.opcode !== 0x60 ||
+                        keyInstruction.opcode !== 0x2c ||
+                        levelInstruction.opcode !== 0x2c ||
+                        setInstruction.opcode !== 0x61
+                    ) {
+                        continue;
+                    }
+
+                    const mapName = abc.multinameNames[GameData.readInstructionOperand(mapInstruction) ?? -1] ?? '';
+                    if (mapName !== 'var_22' && mapName !== 'var_32') {
+                        continue;
+                    }
+
+                    const sourceKey = abc.stringValues[GameData.readInstructionOperand(keyInstruction) ?? -1] ?? '';
+                    const levelName = abc.stringValues[GameData.readInstructionOperand(levelInstruction) ?? -1] ?? '';
+                    const dungeonKey = GameData.normalizeDungeonLevelKey(levelName);
+                    if (!sourceKey || !dungeonKey) {
+                        continue;
+                    }
+
+                    if (mapName === 'var_22') {
+                        const bossKey = GameData.normalizeLookupKey(GameData.normalizeEntityDropName(sourceKey));
+                        if (bossKey && !GameData.BOSS_DROP_DUNGEON_BY_SOURCE[bossKey]) {
+                            bossLocationCount += 1;
+                        }
+                        GameData.BOSS_DROP_DUNGEON_BY_SOURCE[bossKey] = dungeonKey;
+                    } else {
+                        const realmKey = GameData.normalizeLookupKey(sourceKey);
+                        if (realmKey && !GameData.REALM_DROP_DUNGEON_BY_SOURCE_LEVEL[realmKey]) {
+                            realmLocationCount += 1;
+                        }
+                        GameData.REALM_DROP_DUNGEON_BY_SOURCE_LEVEL[realmKey] = dungeonKey;
+                    }
+                }
+            }
+
+            GameData.GEAR_DROP_LOCATION_MAPS_LOADED = bossLocationCount > 0 && realmLocationCount > 0;
+            console.log(`[GameData] Loaded ${realmLocationCount} realm and ${bossLocationCount} boss gear drop locations.`);
+        } catch (err) {
+            GameData.BOSS_DROP_DUNGEON_BY_SOURCE = {};
+            GameData.REALM_DROP_DUNGEON_BY_SOURCE_LEVEL = {};
+            console.error('[GameData] Failed to load gear drop location maps from DungeonBlitz.swf:', err);
+        }
+    }
+
+    private static findClientContentPath(dataDir: string, ...segments: string[]): string | null {
+        const candidates = [
+            path.resolve(dataDir, '..', '..', 'client', 'content', ...segments),
+            path.resolve(dataDir, '..', '..', '..', 'client', 'content', ...segments),
+            path.resolve(process.cwd(), 'src', 'client', 'content', ...segments),
+            path.resolve(process.cwd(), 'client', 'content', ...segments)
+        ];
+
+        for (const candidate of candidates) {
+            if (fs.existsSync(candidate)) {
+                return candidate;
+            }
+        }
+
+        return null;
+    }
+
+    private static readInstructionOperand(instruction: Instruction | undefined, operandIndex: number = 0): number | null {
+        const value = instruction?.operands?.[operandIndex]?.[1];
+        return Number.isFinite(value) ? Number(value) : null;
+    }
+
+    private static getXmlAttribute(attrs: string, name: string): string | null {
+        const match = attrs.match(new RegExp(`${name}="([^"]*)"`));
+        return match?.[1] ?? null;
+    }
+
+    private static getXmlTagValue(body: string, tagName: string): string {
+        const match = body.match(new RegExp(`<${tagName}>([\\s\\S]*?)<\\/${tagName}>`));
+        return String(match?.[1] ?? '').trim();
+    }
+
+    private static decodeXmlText(value: string): string {
+        return value
+            .replace(/&quot;/g, '"')
+            .replace(/&apos;/g, "'")
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&amp;/g, '&')
+            .trim();
+    }
+
+    private static isGearDropAllowedForSource(
+        gearId: number,
+        context: GearDropContext | undefined,
+        source: GearDropSource
+    ): boolean {
+        if (!context) {
+            return false;
+        }
+
+        if (!GameData.GEAR_DROP_RULES_LOADED) {
+            return true;
+        }
+
+        const rules = GameData.GEAR_DROP_RULES_BY_ID[gearId];
+        if (!rules?.length) {
+            return false;
+        }
+
+        if (source === 'boss') {
+            const entityKey = GameData.normalizeLookupKey(GameData.normalizeEntityDropName(context.entName));
+            return rules.some((rule) => {
+                if (!rule.bossName || GameData.normalizeLookupKey(rule.bossName) !== entityKey) {
+                    return false;
+                }
+                return GameData.isGearRuleAllowedInCurrentDungeon(rule, context, source);
+            });
+        }
+
+        const realmKey = GameData.normalizeLookupKey(context.realm);
+        return rules.some((rule) => {
+            if (rule.bossName || !rule.realm || GameData.normalizeLookupKey(rule.realm) !== realmKey) {
+                return false;
+            }
+            return GameData.isGearRuleAllowedInCurrentDungeon(rule, context, source);
+        });
+    }
+
+    private static isGearRuleAllowedInCurrentDungeon(
+        rule: GearDropRule,
+        context: GearDropContext,
+        source: GearDropSource
+    ): boolean {
+        const currentDungeonKey = GameData.normalizeDungeonLevelKey(context.currentLevel);
+        if (!currentDungeonKey) {
+            return false;
+        }
+
+        const expectedDungeonKey = source === 'boss'
+            ? GameData.BOSS_DROP_DUNGEON_BY_SOURCE[GameData.normalizeLookupKey(rule.bossName)]
+            : GameData.REALM_DROP_DUNGEON_BY_SOURCE_LEVEL[GameData.buildRealmDropLocationKey(rule.realm, rule.level)];
+
+        if (expectedDungeonKey) {
+            return expectedDungeonKey === currentDungeonKey;
+        }
+
+        return !GameData.GEAR_DROP_LOCATION_MAPS_LOADED;
     }
 
     static getEntType(name: string): any {
@@ -242,7 +525,8 @@ export class GameData {
             return true;
         }
 
-        return Boolean(entityName && GameData.GEAR_DATA.boss_drops?.[entityName]);
+        const baseEntityName = GameData.normalizeEntityDropName(entityName);
+        return Boolean(entityName && (GameData.GEAR_DATA.boss_drops?.[entityName] || GameData.GEAR_DATA.boss_drops?.[baseEntityName]));
     }
 
     static getMountId(name: string): number {
@@ -347,29 +631,38 @@ export class GameData {
         return Math.round(GameData.MONSTER_EXP_TABLE[index] * expMult);
     }
 
-    static getGearIdForEntity(entName: string, className?: string, excludedGearIds?: Iterable<number>): number {
+    static getGearIdForEntity(
+        entName: string,
+        className?: string,
+        excludedGearIds?: Iterable<number>,
+        currentLevel?: string | null
+    ): number {
         const entType = GameData.getEntType(entName);
         if (!entType) {
             return 0;
         }
 
-        const bossDrops = GameData.GEAR_DATA.boss_drops?.[entName];
-        const bossGearId = GameData.pickRandomGearId(bossDrops, className, excludedGearIds);
-        if (bossGearId > 0) {
-            return bossGearId;
+        const context: GearDropContext = {
+            entName,
+            realm: String(entType.Realm ?? '').trim(),
+            currentLevel
+        };
+
+        const baseEntName = GameData.normalizeEntityDropName(entName);
+        const bossDrops = GameData.GEAR_DATA.boss_drops?.[entName] ?? GameData.GEAR_DATA.boss_drops?.[baseEntName];
+        if (bossDrops) {
+            return GameData.pickRandomGearId(bossDrops, className, excludedGearIds, context, 'boss');
+        }
+
+        if (String(entType.EntRank ?? '').trim() === 'Boss') {
+            return 0;
         }
 
         const realm = String(entType.Realm ?? '');
         const realmDrops = GameData.GEAR_DATA.realm_drops?.[realm];
-        const realmGearId = GameData.pickRandomGearId(realmDrops, className, excludedGearIds);
+        const realmGearId = GameData.pickRandomGearId(realmDrops, className, excludedGearIds, context, 'realm');
         if (realmGearId > 0) {
             return realmGearId;
-        }
-
-        const globalDrops = GameData.GEAR_DATA.global_drops;
-        const globalGearId = GameData.pickRandomGearId(globalDrops, className, excludedGearIds);
-        if (globalGearId > 0) {
-            return globalGearId;
         }
 
         return 0;

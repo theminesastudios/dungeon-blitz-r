@@ -332,7 +332,7 @@ async function testGearRarityTracksValueTier(): Promise<void> {
     GlobalState.levelEntities.clear();
     addLevelEntity(alpha, {
         id: sourceId,
-        name: 'GoblinBoss1Hard',
+        name: 'GoblinBoss2Hard',
         isPlayer: false,
         team: 2,
         x: 120,
