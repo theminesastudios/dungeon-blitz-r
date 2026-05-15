@@ -75,6 +75,12 @@ function createAbilityStartPacket(abilityId: number, rank: number, payWithIdols 
     return bb.toBuffer();
 }
 
+function createSpeedupPacket(idolCost: number): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod9(idolCost);
+    return bb.toBuffer();
+}
+
 async function withMockedCharacterSave<T>(fn: () => Promise<T>): Promise<T> {
     const originalSaveCharacterSnapshot = JsonAdapter.prototype.saveCharacterSnapshot;
     JsonAdapter.prototype.saveCharacterSnapshot = async function(userId: number, character: Character): Promise<Character[]> {
@@ -191,10 +197,75 @@ async function testAnyActiveDisciplineSkillCanInferMissingSavedRank(): Promise<v
     assert.equal((client.character.SkillResearch as Record<string, unknown>).rank, 2);
 }
 
+async function testShadowWalkerDisciplineSkillsCanStartRankTwoResearch(): Promise<void> {
+    for (const abilityId of [74, 75, 76]) {
+        const client = createClient();
+        client.character.class = 'Rogue';
+        client.character.level = 50;
+        client.character.gold = 100000;
+        client.character.MasterClass = 2;
+        client.character.learnedAbilities = [
+            { abilityID: 3, rank: 1 },
+            { abilityID: 5, rank: 1 },
+            { abilityID: 68, rank: 10 },
+            { abilityID: 70, rank: 10 },
+            { abilityID: 72, rank: 10 }
+        ];
+        client.character.activeAbilities = [68, 70, 72];
+        client.character.SkillResearch = {};
+
+        await withMockedCharacterSave(async () => {
+            await AbilityHandler.handleStartAbilityResearch(client as never, createAbilityStartPacket(abilityId, 2));
+        });
+
+        assert.deepEqual(
+            client.character.learnedAbilities.find((ability: any) => ability.abilityID === abilityId),
+            { abilityID: abilityId, rank: 1 },
+            `server should infer ShadowWalker ability ${abilityId} rank one before accepting rank two`
+        );
+        assert.equal((client.character.SkillResearch as Record<string, unknown>).abilityID, abilityId);
+        assert.equal((client.character.SkillResearch as Record<string, unknown>).rank, 2);
+    }
+}
+
+async function testAbilitySpeedupAppliesCompletedRank(): Promise<void> {
+    const client = createClient();
+    client.character.class = 'Rogue';
+    client.character.level = 50;
+    client.character.gold = 100000;
+    client.character.mammothIdols = 100;
+    client.character.MasterClass = 2;
+    client.character.learnedAbilities = [
+        { abilityID: 3, rank: 1 },
+        { abilityID: 5, rank: 1 },
+        { abilityID: 68, rank: 10 },
+        { abilityID: 70, rank: 10 },
+        { abilityID: 72, rank: 10 }
+    ];
+    client.character.activeAbilities = [68, 70, 72];
+    client.character.SkillResearch = {};
+
+    await withMockedCharacterSave(async () => {
+        await AbilityHandler.handleStartAbilityResearch(client as never, createAbilityStartPacket(75, 2));
+        await AbilityHandler.handleSpeedupAbilityResearch(client as never, createSpeedupPacket(10));
+    });
+
+    assert.deepEqual(
+        client.character.learnedAbilities.find((ability: any) => ability.abilityID === 75),
+        { abilityID: 75, rank: 2 },
+        'speeding up a completed ability research should persist the upgraded rank immediately'
+    );
+    assert.deepEqual(client.character.SkillResearch, {});
+    assert.equal(client.character.mammothIdols, 90);
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0xBF), true);
+}
+
 async function main(): Promise<void> {
     await testDuplicateTutorialAbilityRequestCompletesWithoutGrantingExtraRank();
     await testDefaultMasterAbilityCanStartRankTwoResearch();
     await testAnyActiveDisciplineSkillCanInferMissingSavedRank();
+    await testShadowWalkerDisciplineSkillsCanStartRankTwoResearch();
+    await testAbilitySpeedupAppliesCompletedRank();
     console.log('ability_tutorial_compat_regression: ok');
 }
 

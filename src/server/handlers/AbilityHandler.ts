@@ -6,6 +6,7 @@ import { MasterClassID } from '../core/Enums';
 import { TalentConfig } from '../core/TalentConfig';
 import { BitReader } from '../network/protocol/bitReader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
+import { EntityHandler } from './EntityHandler';
 
 type AbilityDef = {
     AbilityID: string;
@@ -17,6 +18,13 @@ type AbilityDef = {
 
 type CharacterRecord = Record<string, unknown>;
 type SkillResearchRecord = Record<string, unknown>;
+type AbilityResearchClaimResult = {
+    abilityId: number;
+    targetRank: number;
+    currentRank: number;
+    tutorialEcho: boolean;
+    applied: boolean;
+};
 
 const db = new JsonAdapter();
 const abilityDefs = abilityTypes as AbilityDef[];
@@ -36,7 +44,7 @@ export class AbilityHandler {
 
     private static readonly MASTERCLASS_NAMES: Record<number, string> = {
         [MasterClassID.Executioner]: 'Executioner',
-        [MasterClassID.Shadowwalker]: 'Shadowwalker',
+        [MasterClassID.Shadowwalker]: 'ShadowWalker',
         [MasterClassID.Soulthief]: 'Soulthief',
         [MasterClassID.Sentinel]: 'Sentinel',
         [MasterClassID.Justicar]: 'Justicar',
@@ -247,35 +255,23 @@ export class AbilityHandler {
             return;
         }
 
-        const learnedAbilities = AbilityHandler.getLearnedAbilities(client.character);
-        const targetRank = Number(skillResearch.rank ?? AbilityHandler.getLearnedAbilityRank(client.character, abilityId) + 1);
-        const currentRank = AbilityHandler.getLearnedAbilityRank(client.character, abilityId);
-        const isTutorialEcho = Boolean(skillResearch.tutorialEcho);
-
-        if (isTutorialEcho && currentRank >= targetRank) {
-            client.character.SkillResearch = {};
-            await AbilityHandler.saveCharacter(client);
-            DebugLogger.logProgress('AbilityResearch:claimTutorialEcho', client, client.character, {
+        const claimResult = AbilityHandler.applyCompletedAbilityResearch(client.character);
+        if (!claimResult) {
+            DebugLogger.logProgress('AbilityResearch:claimRejected', client, client.character, {
                 abilityId,
-                targetRank,
-                currentRank
+                reason: 'invalid_completed_research'
             });
             return;
         }
 
-        const existing = learnedAbilities.find((ability) => Number(ability.abilityID ?? 0) === abilityId);
-        if (existing) {
-            existing.rank = Math.max(Number(existing.rank ?? 0), targetRank);
-        } else {
-            learnedAbilities.push({ abilityID: abilityId, rank: targetRank });
+        await AbilityHandler.saveCharacter(client);
+        if (claimResult.tutorialEcho && !claimResult.applied) {
+            DebugLogger.logProgress('AbilityResearch:claimTutorialEcho', client, client.character, claimResult);
+            return;
         }
 
-        client.character.SkillResearch = {};
-        await AbilityHandler.saveCharacter(client);
-        DebugLogger.logProgress('AbilityResearch:claimed', client, client.character, {
-            abilityId,
-            targetRank
-        });
+        DebugLogger.logProgress('AbilityResearch:claimed', client, client.character, claimResult);
+        AbilityHandler.refreshPlayerSnapshot(client);
     }
 
     static async handleClearAbilityResearch(client: Client): Promise<void> {
@@ -319,18 +315,33 @@ export class AbilityHandler {
             return;
         }
 
-        client.character.mammothIdols = idols - idolCost;
         client.character.SkillResearch = {
             ...skillResearch,
             ReadyTime: 0
         };
 
+        const claimResult = AbilityHandler.applyCompletedAbilityResearch(client.character);
+        if (!claimResult) {
+            DebugLogger.logProgress('AbilityResearch:speedupRejected', client, client.character, {
+                abilityId,
+                idolCost,
+                reason: 'invalid_completed_research',
+                raw: DebugLogger.previewBuffer(data)
+            });
+            return;
+        }
+
+        client.character.mammothIdols = idols - idolCost;
+
         await AbilityHandler.saveCharacter(client);
         DebugLogger.logProgress('AbilityResearch:speedupApplied', client, client.character, {
             abilityId,
-            idolCost
+            idolCost,
+            targetRank: claimResult.targetRank,
+            applied: claimResult.applied
         });
         AbilityHandler.sendAbilityResearchDone(client, abilityId);
+        AbilityHandler.refreshPlayerSnapshot(client);
     }
 
     static repairCharacterAbilityState(character: CharacterRecord): boolean {
@@ -505,6 +516,42 @@ export class AbilityHandler {
         learnedAbilities.push({ abilityID: abilityId, rank });
     }
 
+    private static applyCompletedAbilityResearch(character: CharacterRecord): AbilityResearchClaimResult | null {
+        const skillResearch = AbilityHandler.getSkillResearch(character);
+        const abilityId = Number(skillResearch.abilityID ?? 0);
+        if (abilityId <= 0) {
+            return null;
+        }
+
+        const currentRank = AbilityHandler.getLearnedAbilityRank(character, abilityId);
+        const targetRank = Number(skillResearch.rank ?? currentRank + 1);
+        if (!Number.isFinite(targetRank) || targetRank <= 0) {
+            return null;
+        }
+
+        const tutorialEcho = Boolean(skillResearch.tutorialEcho);
+        if (tutorialEcho && currentRank >= targetRank) {
+            character.SkillResearch = {};
+            return {
+                abilityId,
+                targetRank,
+                currentRank,
+                tutorialEcho,
+                applied: false
+            };
+        }
+
+        AbilityHandler.setLearnedAbilityRank(character, abilityId, targetRank);
+        character.SkillResearch = {};
+        return {
+            abilityId,
+            targetRank,
+            currentRank,
+            tutorialEcho,
+            applied: targetRank > currentRank
+        };
+    }
+
     private static isActiveMasterClassAbility(character: CharacterRecord, abilityId: number): boolean {
         const masterClassName = AbilityHandler.MASTERCLASS_NAMES[Number(character.MasterClass ?? 0)];
         if (!masterClassName) {
@@ -574,6 +621,12 @@ export class AbilityHandler {
         const bb = new BitBuffer();
         bb.writeMethod6(abilityId, 7);
         client.sendBitBuffer(0xBF, bb);
+    }
+
+    private static refreshPlayerSnapshot(client: Client): void {
+        if (client.playerSpawned && client.currentLevel) {
+            EntityHandler.refreshPlayerSnapshot(client);
+        }
     }
 
     private static async saveCharacter(client: Client): Promise<void> {
