@@ -3,12 +3,14 @@ import { Client } from '../core/Client';
 import { BitReader } from '../network/protocol/bitReader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { GlobalState } from '../core/GlobalState';
+import { EntityTeam } from '../core/Entity';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { LevelConfig } from '../core/LevelConfig';
 import { GuildHandler } from './GuildHandler';
 import { LevelHandler } from './LevelHandler';
 import { MissionHandler } from './MissionHandler';
 import { PetHandler } from './PetHandler';
+import { DialogueTranslationLoader } from '../data/DialogueTranslationLoader';
 import {
     ensureCharacterSocialState,
     FriendEntry,
@@ -496,6 +498,23 @@ export class SocialHandler {
         return bb.toBuffer();
     }
 
+    private static getDialogueLanguage(character: Character | null | undefined): string {
+        return String(character?.dialogueLanguage ?? '').trim().toLowerCase() || 'en';
+    }
+
+    private static isEnemyRoomThought(client: Client, entityId: number): boolean {
+        const entity = client.entities?.get?.(entityId);
+        return Number(entity?.team ?? 0) === EntityTeam.ENEMY;
+    }
+
+    private static translateRoomThought(client: Client, entityId: number, text: string): string {
+        return DialogueTranslationLoader.translateText(
+            text,
+            SocialHandler.getDialogueLanguage(client.character),
+            { fallbackToGeneric: SocialHandler.isEnemyRoomThought(client, entityId) }
+        );
+    }
+
     private static getPartyForName(name: string): { partyId: number; group: PartyGroup } | null {
         const key = SocialHandler.normalizeName(name);
         if (!key) {
@@ -872,7 +891,7 @@ export class SocialHandler {
         const message = String(br.readMethod13() ?? '').trim();
 
         if (client.character) {
-            const match = /^\/lang:(tr|en)\s*$/i.exec(message);
+            const match = /^\/lang:\s*(tr|en)\s*$/i.exec(message);
             if (match) {
                 const nextLanguage = match[1].toLowerCase();
                 client.character.dialogueLanguage = nextLanguage;
@@ -1605,7 +1624,10 @@ export class SocialHandler {
         const br = new BitReader(data);
         const entityId = br.readMethod4();
         const text = br.readMethod13();
-        const payload = SocialHandler.buildRoomThoughtPayload(entityId, text);
+        const payload = SocialHandler.buildRoomThoughtPayload(
+            entityId,
+            SocialHandler.translateRoomThought(client, entityId, text)
+        );
         LevelHandler.maybeStartGoblinRiverBossIntroLock(client, entityId, text);
         MissionHandler.noteDungeonSkitActivity(client);
 
@@ -1617,7 +1639,10 @@ export class SocialHandler {
         const entityId = br.readMethod9();
         br.readMethod15();
         const text = br.readMethod26();
-        const payload = SocialHandler.buildRoomThoughtPayload(entityId, text);
+        const payload = SocialHandler.buildRoomThoughtPayload(
+            entityId,
+            SocialHandler.translateRoomThought(client, entityId, text)
+        );
         LevelHandler.maybeStartGoblinRiverBossIntroLock(client, entityId, text);
         MissionHandler.noteDungeonSkitActivity(client);
 

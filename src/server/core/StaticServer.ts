@@ -7,6 +7,7 @@ import { Config } from './config';
 import { buildDungeonBlitzSwfVariantBuffer } from './DungeonBlitzSwf';
 import { PresenceService } from './PresenceService';
 import { SocialHandler } from '../handlers/SocialHandler';
+import { GlobalState } from './GlobalState';
 
 function resolveContentDir(relativeContentPath: string): string {
     const candidates = [
@@ -73,6 +74,84 @@ export class StaticServer {
 
     private getSelectedSwfUrl(): string {
         return `/p/cbp/DungeonBlitz.swf?fv=${this.flashVersion}&gv=${this.gameVersion}`;
+    }
+
+    private normalizeLocale(value: unknown): 'en' | 'tr' | null {
+        const normalized = String(value ?? '').trim().toLowerCase();
+        return normalized === 'en' || normalized === 'tr' ? normalized : null;
+    }
+
+    private parseCookies(header: string | string[] | undefined): Record<string, string> {
+        const source = Array.isArray(header) ? header.join(';') : String(header ?? '');
+        const cookies: Record<string, string> = {};
+
+        for (const part of source.split(';')) {
+            const [name, ...valueParts] = part.trim().split('=');
+            if (!name || valueParts.length === 0) {
+                continue;
+            }
+
+            cookies[name] = decodeURIComponent(valueParts.join('='));
+        }
+
+        return cookies;
+    }
+
+    private normalizeRemoteAddress(value: string | null | undefined): string {
+        const address = String(value ?? '').trim();
+        if (!address) {
+            return '';
+        }
+        if (address.startsWith('::ffff:')) {
+            return address.slice('::ffff:'.length);
+        }
+        return address === '::1' ? '127.0.0.1' : address;
+    }
+
+    private resolveSessionLocale(req: Request): 'en' | 'tr' | null {
+        const remoteAddress = this.normalizeRemoteAddress(this.resolveRequesterAddress(req));
+        if (!remoteAddress) {
+            return null;
+        }
+
+        const sessions = Array.from(GlobalState.sessionsByToken.values()).filter((client) => {
+            return this.normalizeRemoteAddress(client.socket.remoteAddress) === remoteAddress;
+        });
+        const activeSessions = sessions.filter((client) => client.playerSpawned);
+        const candidates = activeSessions.length > 0 ? activeSessions : sessions;
+        const locales = new Set(
+            candidates
+                .map((client) => this.normalizeLocale(client.character?.dialogueLanguage))
+                .filter((locale): locale is 'en' | 'tr' => Boolean(locale))
+        );
+
+        return locales.size === 1 ? [...locales][0] ?? null : null;
+    }
+
+    private resolveGameSwzLocale(req: Request): 'en' | 'tr' {
+        return (
+            this.normalizeLocale(req.query.lang) ??
+            this.normalizeLocale(this.parseCookies(req.headers.cookie).db_lang) ??
+            this.resolveSessionLocale(req) ??
+            'tr'
+        );
+    }
+
+    private getGameSwzPathForLocale(locale: 'en' | 'tr'): string {
+        const cbqDir = path.join(this.contentDir, 'p', 'cbq');
+        const variantPath = path.join(cbqDir, `Game.${locale}.swz`);
+        if (fs.existsSync(variantPath)) {
+            return variantPath;
+        }
+
+        if (locale === 'en') {
+            const backupPath = path.join(cbqDir, 'Game.swz.bak');
+            if (fs.existsSync(backupPath)) {
+                return backupPath;
+            }
+        }
+
+        return path.join(cbqDir, 'Game.swz');
     }
 
     private renderDevSettings(devSettingsPath: string): string {
@@ -154,6 +233,14 @@ export class StaticServer {
         this.app.get('/p/cbp/DungeonBlitz.swf', (_req, res) => {
             res.type('application/x-shockwave-flash');
             res.send(this.getSelectedSwfBuffer());
+        });
+
+        this.app.get('/p/cbq/Game.swz', (req, res) => {
+            const locale = this.resolveGameSwzLocale(req);
+            const swzPath = this.getGameSwzPathForLocale(locale);
+            res.type('application/x-shockwave-flash');
+            res.setHeader('X-DungeonBlitz-Language', locale);
+            res.sendFile(swzPath);
         });
 
         this.app.get('/DungeonBlitzRemote.swf', (_req, res) => {

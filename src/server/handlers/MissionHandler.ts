@@ -62,6 +62,7 @@ type CollectibleKillProgressRule = {
     ranks?: ReadonlySet<string>;
     names?: ReadonlySet<string>;
     namePrefixes?: readonly string[];
+    parents?: ReadonlySet<string>;
 };
 
 type DungeonCompletionObjectiveProgress = {
@@ -347,7 +348,7 @@ export class MissionHandler {
         },
         {
             progressText: 'Scorpion Stinger',
-            namePrefixes: ['Scarab', 'AbyssalStinger', 'GreaterAbyssalStinger']
+            parents: new Set(['ScorpionBase'])
         },
         {
             progressText: 'Goblin Memory Charm',
@@ -2239,8 +2240,12 @@ export class MissionHandler {
             return true;
         }
 
+        const entType = GameData.getEntType(name);
+        if (rule.parents?.has(String(entType?.parent ?? '').trim())) {
+            return true;
+        }
+
         if (rule.realm || rule.realms?.size) {
-            const entType = GameData.getEntType(name);
             const realm = String(entType?.Realm ?? '').trim();
             if (
                 (realm === rule.realm || Boolean(rule.realms?.has(realm))) &&

@@ -4,67 +4,1365 @@
       "ReturnText": "Bizi kurtardın!"
     },
     "2": {
-      "OfferText": "Şu köyü bulmamız gerekiyor.",
-      "ActiveText": "Köyü haritada bulabilirsin.=@Gerçekten hayatta kalanlar var mı diye bakmaya gidiyorum.=Doğuya doğru ilerle, köyü bulacaksın.=Ben de Niobe'yi onarmaya çalışırım.",
+      "OfferText": "Su köyü bulmamız gerekiyor.",
+      "ActiveText": "Köyü haritada bulabilirsin.=@Gerçekten hayatta kalanlar var mı diye bakmaya gidiyorum.=Doguya dogru ilerle, köyü bulacaksın.=Ben de Niobe'yi onarmaya çalısırım.",
       "ReturnText": "Bu da ne! Anavatandan biri sonunda Ellyria'ya geri mi döndü?=",
-      "PraiseText": "Krala haber ulaştırmam gerekiyor!=Burada hâlâ insanlar olduğuna inanamıyorum."
+      "PraiseText": "Krala haber ulastırmam gerekiyor!=Burada hâlâ insanlar olduguna inanamıyorum."
     },
     "3": {
-      "OfferText": "Anna gibi savaşçılar sayesinde hâlâ dayanıyoruz.",
-      "ActiveText": "Sen kimsin? Nereden geldin?=@Ben #tn#. Kral beni gönderdi.=@Ama burada hâlâ yaşayan insanlar bulduğuma şaşırdım.=Sigismund Hocke ile elli yıl önce geldik.= @Sigismund, Baron Hocke'un oğlu mu?!=Ben onun ordusunda davulcuydum.=Gobliler baronluğa saldırdığında babasının topraklarını kurtarmaya gelen bir seferin parçasıydık=@Ve bunca zaman hayatta kaldınız. İnanılmaz.=Anna gibi iki kuşak savaşçı sayesinde.= Ama goblinler onu sahilde gafil avlamış.=@Şu deniz goblinleri benden kaçıyordu. Demek ki Anna yollarına çıkmış.=Doğuya indiler. Oralarda mağara falan var mı?=Şu tepenin ötesinde, eski bir kaçakçı sığınağı var.=@O halde Anna oradadır. Tabii ben onu kurtarana kadar."
+      "OfferText": "Anna gibi savasçılar sayesinde hâlâ dayanıyoruz.",
+      "ActiveText": "Sen kimsin? Nereden geldin?=@Ben #tn#. Kral beni gönderdi.=@Ama burada hâlâ yasayan insanlar bulduguma sasırdım.=Sigismund Hocke ile elli yıl önce geldik.= @Sigismund, Baron Hocke'un oglu mu?!=Ben onun ordusunda davulcuydum.=Gobliler baronluga saldırdıgında babasının topraklarını kurtarmaya gelen bir seferin parçasıydık=@Ve bunca zaman hayatta kaldınız. İnanılmaz.=Anna gibi iki kusak savasçı sayesinde.= Ama goblinler onu sahilde gafil avlamıs.=@Su deniz goblinleri benden kaçıyordu. Demek ki Anna yollarına çıkmıs.=Doguya indiler. Oralarda magara falan var mı?=Su tepenin ötesinde, eski bir kaçakçı sıgınagı var.=@O halde Anna oradadır. Tabii ben onu kurtarana kadar."
     },
     "4": {
-      "OfferText": "Sağ ol! Bir yıldan uzun süredir goblin görmemiştik.",
-      "ReturnText": "Anna'yı kurtardığın için teşekkür ederim! Savaşçılarımızın liderine ihtiyacı var.=@Benim için zevkti. Hayatım boyunca goblinlerle savaştım.=Evet, deniz kaptanın bana Goblin Savaşları'nı anlatıyordu.=@Görünüşe göre zaferimiz henüz tam değil."
+      "OfferText": "Sag ol! Bir yıldan uzun süredir goblin görmemistik.",
+      "ReturnText": "Anna'yı kurtardıgın için tesekkür ederim! Savasçılarımızın liderine ihtiyacı var.=@Benim için zevkti. Hayatım boyunca goblinlerle savastım.=Evet, deniz kaptanın bana Goblin Savasları'nı anlatıyordu.=@Görünüse göre zaferimiz henüz tam degil."
     },
     "5": {
       "OfferText": "Elli yıl önce bizi koruyan yer Wolf's End Kalesi'ydi.",
-      "ActiveText": "Sigismund Hocke kaleyi seferi için üs olarak inşa etti.=Ama goblinler ve daha beterleri bizi onlarca yıl önce oradan sürdü.=Senin goblin doğrama yeteneğinle…=@Kaleyi geri alacak kişi ben olabilirim.=Doğrusu hâli pek iç açıcı değil, artık bir harabe sadece.=@Temizlerim ve yeniden kurmaya başlarım.=@Ellyria'da güvenli bir yere ihtiyacım var.=Eğer goblinleri sürüp atarsan, yeniden inşa için elimizden gelen desteği veririz.=@Goblinlerle ben ilgilenirim.=@Hatta bunu hemen şimdi yaparım."
+      "ActiveText": "Sigismund Hocke kaleyi seferi için üs olarak insa etti.=Ama goblinler ve daha beterleri bizi onlarca yıl önce oradan sürdü.=Senin goblin dograma yeteneginle…=@Kaleyi geri alacak kisi ben olabilirim.=Dogrusu hâli pek iç açıcı degil, artık bir harabe sadece.=@Temizlerim ve yeniden kurmaya baslarım.=@Ellyria'da güvenli bir yere ihtiyacım var.=Eger goblinleri sürüp atarsan, yeniden insa için elimizden gelen destegi veririz.=@Goblinlerle ben ilgilenirim.=@Hatta bunu hemen simdi yaparım.",
+      "ReturnText": "Eski kaleyi temizledin mi? O zaman senindir. Burayı yeniden düzgün bir yuva haline getirmeye yardımcı olacagız.=@Tesekkür ederim Belediye Baskanım. Bunu iyi bir sekilde kullanacagım."
     },
     "6": {
-      "OfferText": "Nephit adında biri goblinleri ve ölümsüzleri kontrol etmeye çalışıyor.",
-      "ActiveText": "Babam elli yıl önce karaya çıktığımız zamanki eski raporları inceledi.=@Ve orada Nephit adında birini mi buldu?=Baron Hocke araştırmaları için dünyanın en bilge adamlarını toplamıştı.=Nephit en iyilerden biriydi. Goblinler saldırdığında bir mezarı kazıyordu.=@Hangi mezar olduğunu biliyor musun?=Ölümsüzlerin çoğunun Uykudaki Kral'ın Mezarı'ndan geldiğini gördük.=@Araştırmaya oradan başlarım.=Peki. Ortalık yatışınca seninle buluşurum."
-      ,
-      "ReturnText": "Nephit kovulduğuna göre, belki hem ölümsüzler hem de goblinler azalır."
+      "OfferText": "Nephit adında biri goblinleri ve ölümsüzleri kontrol etmeye çalısıyor.",
+      "ActiveText": "Babam elli yıl önce karaya çıktıgımız zamanki eski raporları inceledi.=@Ve orada Nephit adında birini mi buldu?=Baron Hocke arastırmaları için dünyanın en bilge adamlarını toplamıstı.=Nephit en iyilerden biriydi. Goblinler saldırdıgında bir mezarı kazıyordu.=@Hangi mezar oldugunu biliyor musun?=Ölümsüzlerin çogunun Uykudaki Kral'ın Mezarı'ndan geldigini gördük.=@Arastırmaya oradan baslarım.=Peki. Ortalık yatısınca seninle bulusurum.",
+      "ReturnText": "Nephit kovulduguna göre, belki hem ölümsüzler hem de goblinler azalır."
     },
     "7": {
-      "OfferText": "Başka bir mezar daha var. Nephit'in aradığı şey orada olabilir.",
-      "ActiveText": "Nephit'in bir \"Rüya Ejderhası\"ndan söz ettiğini söylemiştin.=@Ejderhalar binlerce yıldır yok.=Bu diğer mezar ondan da eski.=Baron Hocke bu eski mezarlıklara takıntılıydı.=@Nephit ejderha kemiklerinin peşinde olabilir. Güçlü eserlerdir.=Mezar güneyde, ormanın ötesinde. Nephit ikinci kez yükselebilirse...=@Ondan önce oraya varmam gerek.=Yolu aç, ben de arkandan gelirim.",
+      "OfferText": "Baska bir mezar daha var. Nephit'in aradıgı sey orada olabilir.",
+      "ActiveText": "Nephit'in bir \"Rüya Ejderhası\"ndan söz ettigini söylemistin.=@Ejderhalar binlerce yıldır yok.=Bu diger mezar ondan da eski.=Baron Hocke bu eski mezarlıklara takıntılıydı.=@Nephit ejderha kemiklerinin pesinde olabilir. Güçlü eserlerdir.=Mezar güneyde, ormanın ötesinde. Nephit ikinci kez yükselebilirse...=@Ondan önce oraya varmam gerek.=Yolu aç, ben de arkandan gelirim.",
       "ReturnText": "Bir ejderha! Gerçek olmasa da böylesi bir rüya hayaleti bile inanılmaz."
     },
     "8": {
       "OfferText": "Wolf's End güvendeyken, bu toprakların daha fazlasını kötülükten geri alabiliriz.",
-      "ActiveText": "Sayende yeniden ayağa kalktık ve savaşmaya hazırız!=@Bunu duymak güzel. Okyanusun bu tarafındaki goblinleri bitirmeyi hedefliyorum.=@İnsanların bana yardım edecek mi?=Elbette! Abbod'un ailesi buranın doğusundaki topraklardan.= Ata mirasını geri almak için can atıyor.=@Harika. Bir de Uyuyan Topraklar hakkında daha fazlasını öğrenmem gerek.=Ben hiç duymadım.=Ama Wissen Kalesi'ndeki arşivlerde bir kayıt olabilir.=@O halde hem kaleyi hem Abbod'un topraklarını özgürleştireceğim.=@Abbod'a onu orada göreceğimi söyle!=Kasabaya döner dönmez söylerim, şampiyon.",
-      "ReturnText": "Burada kampımızı güçlendireceğiz kahraman. Bize önderlik ettiğin için teşekkürler.",
-      "PraiseText": "Bu köy geri alacağımız ilk yer olacak.=@Önümüzde daha çok çetin savaş var ama başarabiliriz.=Buralar bir zamanlar yemyeşil otlaklardı.=Goblinler ve büyüleri burayı bataklığa çevirdi.=@Büyüyle yapılan, büyüyle bozulabilir.=@Birlikte bu toprağı yeniden ayağa kaldıracağız.=@En azından büyük kısmını.=Büyük kısmı bile hayal ettiğimden fazla."
+      "ActiveText": "Sayende yeniden ayaga kalktık ve savasmaya hazırız!=@Bunu duymak güzel. Okyanusun bu tarafındaki goblinleri bitirmeyi hedefliyorum.=@İnsanların bana yardım edecek mi?=Elbette! Abbod'un ailesi buranın dogusundaki topraklardan.= Ata mirasını geri almak için can atıyor.=@Harika. Bir de Uyuyan Topraklar hakkında daha fazlasını ögrenmem gerek.=Ben hiç duymadım.=Ama Wissen Kalesi'ndeki arsivlerde bir kayıt olabilir.=@O halde hem kaleyi hem Abbod'un topraklarını özgürlestirecegim.=@Abbod'a onu orada görecegimi söyle!=Kasabaya döner dönmez söylerim, sampiyon.",
+      "ReturnText": "Burada kampımızı güçlendirecegiz kahraman. Bize önderlik ettigin için tesekkürler.",
+      "PraiseText": "Bu köy geri alacagımız ilk yer olacak.=@Önümüzde daha çok çetin savas var ama basarabiliriz.=Buralar bir zamanlar yemyesil otlaklardı.=Goblinler ve büyüleri burayı bataklıga çevirdi.=@Büyüyle yapılan, büyüyle bozulabilir.=@Birlikte bu topragı yeniden ayaga kaldıracagız.=@En azından büyük kısmını.=Büyük kısmı bile hayal ettigimden fazla."
     },
     "9": {
       "OfferText": "Goblinler tüm at nallarımızı çalıp burun halkası yaptı.",
-      "ActiveText": "Büyük goblinler nalları burun halkası diye takıyor.=Bence bizimle alay etmek için.=Ama ordumuzu ve ekonomimizi yeniden kuracaksak o nallara ihtiyacımız var.=@Goblinlerden bir şey geri almak için iyi bir fırsat.",
-      "ReturnText": "Sağ ol! Şu halkaları bir güzel temizlemem gerekecek…"
+      "ActiveText": "Büyük goblinler nalları burun halkası diye takıyor.=Bence bizimle alay etmek için.=Ama ordumuzu ve ekonomimizi yeniden kuracaksak o nallara ihtiyacımız var.=@Goblinlerden bir sey geri almak için iyi bir fırsat.",
+      "ReturnText": "Sag ol! Su halkaları bir güzel temizlemem gerekecek…"
     },
     "10": {
-      "OfferText": "Goblin şamanları Ölüm Gözleri'ni kontrol etmek için asalarını kullanıyor.",
-      "ActiveText": "Bana goblin şamanlarının asalarını getirirsen Ölüm Gözleri'ni kovabilirim.=O uğursuz şeylerin bizi gözetlememesi ne güzel olur.=Hele geceleri.=Biz uyurken.",
-      "ReturnText": "Teşekkürler! Bu asalarla Ölüm Gözleri'ni wardlayabilirim."
+      "OfferText": "Goblin samanları Ölüm Gözleri'ni kontrol etmek için asalarını kullanıyor.",
+      "ActiveText": "Bana goblin samanlarının asalarını getirirsen Ölüm Gözleri'ni kovabilirim.=O ugursuz seylerin bizi gözetlememesi ne güzel olur.=Hele geceleri.=Biz uyurken.",
+      "ReturnText": "Tesekkürler! Bu asalarla Ölüm Gözleri'ni wardlayabilirim.",
+      "PraiseText": "O Ölüm Gözlerinin bana bakısından nefret ediyorum.=Tekrar tesekkürler."
     },
     "12": {
       "OfferText": "Daha az goblin olsaydı bu toprakları geri alabilirdik.",
-      "ActiveText": "Yıllardır goblinleri böyle telaşlı görmemiştim.=Panik içindeler.=Muhtemelen senin yüzünden.=@Muhtemelen öyledir.",
+      "ActiveText": "Yıllardır goblinleri böyle telaslı görmemistim.=Panik içindeler.=Muhtemelen senin yüzünden.=@Muhtemelen öyledir.",
       "ReturnText": "Vay canına, sen tam bir goblin avcısısın!",
       "PraiseText": "Gerçekten sert bir goblin avcısısın.=Burası belki de kurtulabilir."
     },
     "13": {
-      "OfferText": "Şu çiftlikte goblin akıncılar mevzilenmiş.",
-      "ActiveText": "Trogları köşeye sıkıştırdık.=Ama içeride sağlam bir komutanları var.=Onunla sen ilgilenirsen hattı burada tutarım.",
-      "ReturnText": "Haddini bildirdin!=Onları orada tutmayı sürdürürüz.=Hiç sorun değil.",
-      "PraiseText": "Goblinleri kaçırıyorsun.=Baskıyı sürdürdüğümüz sürece…=Bu toprakları geri alabiliriz."
+      "OfferText": "Su çiftlikte goblin akıncılar mevzilenmis.",
+      "ActiveText": "Trogları köseye sıkıstırdık.=Ama içeride saglam bir komutanları var.=Onunla sen ilgilenirsen hattı burada tutarım.",
+      "ReturnText": "Haddini bildirdin!=Onları orada tutmayı sürdürürüz.=Hiç sorun degil.",
+      "PraiseText": "Goblinleri kaçırıyorsun.=Baskıyı sürdürdügümüz sürece…=Bu toprakları geri alabiliriz."
     },
     "14": {
-      "OfferText": "Şu mahzenden ölümsüzler durmadan yükseliyor.",
-      "ActiveText": "Ölümsüzlerin ilk çıktığı yer yukarıdaki eski mabet.=O günden beri gelmeye devam ediyorlar.=En tehlikelilerinden bazılarını yok etmeme yardım edersen…=Wolf's End'e yayılmalarını engelleyebiliriz.",
+      "OfferText": "Su mahzenden ölümsüzler durmadan yükseliyor.",
+      "ActiveText": "Ölümsüzlerin ilk çıktıgı yer yukarıdaki eski mabet.=O günden beri gelmeye devam ediyorlar.=En tehlikelilerinden bazılarını yok etmeme yardım edersen…=Wolf's End'e yayılmalarını engelleyebiliriz.",
       "ReturnText": "Minnettarım.",
-      "PraiseText": "Savaşmaya devam edeceğim.=Ama onlara asla alışamayacağım.=Ne kokularına.=Ne söyledikleri ürkütücü şeylere.=Ama en çok da kokularına."
+      "PraiseText": "Savasmaya devam edecegim.=Ama onlara asla alısamayacagım.=Ne kokularına.=Ne söyledikleri ürkütücü seylere.=Ama en çok da kokularına."
+    },
+    "15": {
+      "OfferText": "Artık yeni türde canavarca bir savasçı karsımızda duruyor.",
+      "ActiveText": "Bunlar bizim savastıgımız goblinler degil.=@Gobinler degil mi? O zaman neyle karsı karsıyayız?=Bir çesit sürüngen adam. Kendilerine Tuatara diyorlar.=@Tuatara. Adını eski hikayelerde okumustum. Korkunç askerler.=Bu onlara benziyor, çok organizeler.=Yakınlardaki bir kuleyi ele geçirdiler.=Onları geçemiyoruz.=@Onları geçebilirim.=Umarım.=@Ben de. Bunu ögrenmenin tek yolu var.",
+      "ReturnText": "Tuatara'ya insanların nasıl dövüstügünü gösterdin!"
+    },
+    "16": {
+      "OfferText": "Lord Yornak'ın kalesinde insanlar olmasa da hâlâ mesken varmıs gibi görünüyor.",
+      "ActiveText": "Yornak Kalesi bu bölgenin lordlarının eviydi.=Son Lord ve Leydi Yornak muhtesem tahıl ambarını, sarayı ve üniversiteyi insa etti.=@Zenginlikleri ve cömert harcamalarıyla ünlü olduklarını biliyorum.=Aslında öyleydiler ama…=Antik kalelerini her zaman iyi durumda tuttular.=Bu onların güvenli bir sıgınagıydı.=@Belki orada da hayatta kalanlar vardır.=İçeride birisi var.=Tuatara'nın Yornak dedigi biri.=@Yornak! Belki bir mirasçı? Gidip ögrenecegim.",
+      "ReturnText": "Yornak Kalesi'nden sag çıktın.",
+      "PraiseText": "Yornak ailesi de bir baska trajik hikaye.=@Uyuyan Topraklardan gelen istilalar her seyi bozdu.=@Sonunda onlara barıs getirdigime sevindim."
+    },
+    "17": {
+      "OfferText": "Korucu Affric, eski üniversite bölgesini arastırmak için bir partiye liderlik etti.",
+      "ActiveText": "Affric yolsuzlugun kaynagının dogu oldugunu düsünüyor.=Hsalt adında biri Wissen Kalesi'ne yerlesmis.=@Orayı kendim kurcalamak istedim.=@Gidip ne kesfettigini görecegim.=Dikkatli olun, yol Tuatara ve Devourers'la dolu.",
+      "ReturnText": "Seni tekrar görmek güzel dostum.",
+      "PraiseText": "Efsanen büyüyor.=Yakında bu bölge sizi her yerde takip edecek."
+    },
+    "18": {
+      "OfferText": "Tuatara'nın veziri etobur yetistiriyor.",
+      "ActiveText": "Vezir ejderha generalleri için çalısabilir…=Ama artık yolsuzlugun arkasındaki gerçek gücün o oldugunu biliyoruz.=Vezir'in büyülü deneyleri karnasaurların üremesine yöneliktir.=@Bu kertenkele atı seyleri mi?=Onları Tuatara askerlerine binek olarak hizmet etmeleri için yetistiriyor.=@Evdeki sövalyelerimiz için bir eslesmeden daha fazlası olurdu.=@Bu canavar yetistirme programını hemen bitirmem gerekiyor.",
+      "ReturnText": "Sen basardın! Hiçbir carnasaur sövalyesi basımıza bela olamayacak."
+    },
+    "19": {
+      "OfferText": "Vezir Hsalt, Kale'nin kütüphanesini kötülük için kullanıyor",
+      "ActiveText": "Vezir sana inanılmaz derecede kızacak.=@Ben ona daha da kızgınım.=@O, Kale'nin bilgeligini kötülük adına saptırdı.=Sanırım onun pesinden gidiyorsun.=@ben öyleyim. Kütüphaneyi hepimiz için geri alıyorum.=Dikkatli olun, Vezirin büyüsü onu hizmet ettigi ejderhalar kadar tehlikeli kılıyor.",
+      "ReturnText": "Kütüphane özgürlestirildi!"
+    },
+    "20": {
+      "OfferText": "Tuatara generali üssünü yakındaki kaleye kurdu",
+      "ActiveText": "Tuatara Generali Svar o eski kalede bulunuyor.=@Bu Svar onların önemli liderlerinden biri gibi görünüyor.=@Onu ele alacagım ve bu sürüngen askerlerin nereden geldigini ögrenecegim.=Zaten bir ordunun bu bataklıkta ne isi var?=@Emin degilim ama ordular tek bir yerde kalmıyor.=@Bu büyüklükteki ordular baskalarına saldırmak içindir.=En yakınım olarak bu benim için endise verici.",
+      "ReturnText": "General Svar bir ejderhaydı!",
+      "PraiseText": "Tuatara'lar gerçek, canlı ejderhalar tarafından yönetiliyor.=@Öyleler, bu iyi bir haber degil.=Bu, daha fazla ejderhanın oldugu anlamına gelir.=@Muhtemelen daha büyük olanlar da var.=Bu konuda iyi sanslar.=Çizmelerindekinin ben olmadıgıma sevindim."
+    },
+    "21": {
+      "OfferText": "Gehrin ve Odem, Tuatara General'in nerede oldugunu bildiklerini sanıyorlar.",
+      "ActiveText": "Çamurda gözcülük yapan daha fazla askerimiz var.=Gehrin ve Odem, diger Tuatara generalinin nerede oldugunu bildiklerini düsünüyor.=@Baska bir ejderha mı?=Muhtemelen.=Git onları gör, benden daha fazlasını biliyorlar.",
+      "ReturnText": "Bunu basarabildigine sevindim.",
+      "PraiseText": "Tuatara'nın diger generali yakında.=Ama o Svath'tan farklı.=@Farklı nasıl?=Onun hizmetinde ölümsüzlerin izlerini gördük.=@Harika. Bu iste Nephit'in parmagı oldugunu hissediyorum."
+    },
+    "22": {
+      "OfferText": "Svath adında baska bir General daha var. Kendisi eski sarayda.",
+      "ActiveText": "General Svath tüm bu Tuatara'ya komuta ediyor.=@Svath ve Svar? Kardes olmalılar.=Muhtemelen öyle, ama bu büyük birader gibi geliyor.=Ve Svath sadece Tuatara askerlerine komuta etmiyor.=Daha korkutucu seylerle ilgileniyor.=@Dev örümcekler ve etçil bitkilerin yanı sıra mı demek istiyorsun?=Yani ölümsüz gibi.=@Harika, Nephit gibi baska bir mezar kazıcı.=@Ejderhaların ve hayaletlerin istilası herkesin haftasını mahveder.",
+      "ReturnText": "Ejderha istilasını oldugu yerde durdurdunuz!"
+    },
+    "23": {
+      "OfferText": "Sırada ne var #tn#?",
+      "ActiveText": "Artık Tuatara yenildigine göre…=Planın nedir?=@Castle Hocke'a gidecegim.=@Eminim artık hepsi canavarlar ve harabelerdir.=Buradan geçen Tuatara Lejyonu'ndan kimsenin sag kurtulabilecegini hayal edemiyorum.=@Ve Nephit'in bir seylerin pesinde olduguna süphe yok.=@O kaleye girmem gerekiyor...=@Eger bu canavarların nereden geldigine dair gerçegi ögreneceksem.",
+      "ReturnText": "Dur orada, yabanci. Sen kimsin?",
+      "PraiseText": "Bu kısımlarda çok büyük degisiklikler yaptınız."
+    },
+    "24": {
+      "OfferText": "Kraliyet Tahıl Ambarı'nın kalıntıları, yiyip bitirenlerin kaynagıdır.",
+      "ActiveText": "Kraliyet Tahıl Ambarı eskiden bir dünya harikasıydı.=@Bütün bu bölge imparatorlugun ekmek sepetiydi.=Ama artık harap olmus tahıl ambarı da bozulmus durumda.=Yok edicilerin hepsi oradan gelmis gibi görünüyor.=@Sonra onları ayıklamak bir sonraki görevim olacak.=Tahıl tarlalarını kurtarabilirsek bütün bir orduyu destekleyebiliriz.=@Önce öldürücü bitkilerden olusan bir orduyu kesmem gerekiyor.",
+      "ReturnText": "Kraliyet Tahıl Ambarını temizlediniz!"
+    },
+    "25": {
+      "OfferText": "Bu kertenkeleler o pankartlara çok sey kattı",
+      "ActiveText": "Tuatara savas pankartlarının etrafında toplanıyor.=Bayrakları dikildiginde çok vahsi oluyorlar.=@Ve goblinlerin simdiye kadar oldugundan daha organize.=Sancaklar bir bakıma büyülü.=Eger onlardan bazılarını yakalarsan, büyülerini onlara karsı kullanabilirim.=@Topragı geri almak için kendi sihirli sancaklarımızı kullanabiliriz!",
+      "ReturnText": "Mükemmel. Sanırım artık kendi büyülü pankartlarımızı dikebilirim.",
+      "PraiseText": "Artık iyi bir tasarıma ihtiyacım var.=@Portremi kullanmak istersen kullanabilirsin.=Tesekkürler, dikkate alacagım.=@İlham verici bir profilim var.=Öyle mi?=Evet, birkaç seçenek sunacagım."
+    },
+    "26": {
+      "OfferText": "Terk edilmis bir çiftlikte bir Tuatara ekibi kuruldu.",
+      "ActiveText": "Kertenkeleler bu eski evi ele geçirdi.=Burayı baskınlar düzenlemek için bir üs olarak kullanıyorlar.=Malzemeleri de orada depoluyorlar.=Çogunlukla kurutulmus böcekler ve kokmus etler.=Yani belki bunu orada bırakabilirsin.=Tabii bu tür yiyeceklerle ilgilenmiyorsan.=Yargılamıyorum.",
+      "ReturnText": "Tesekkür ederim!",
+      "PraiseText": "Biz oraya dikkat edecegiz.=Baska biri gelirse onlarla ilgileniriz.=Bana kurutulmus böcekleri getirmedigin için tesekkürler.=Kuzenim lezzetli olduklarını söylese de.=Sanırım yargılamadan önce bir denemeliyim."
+    },
+    "27": {
+      "OfferText": "Yiyiciler her yerde! kuyuya ulasamıyorum",
+      "ActiveText": "Yok edicileri kuyudan uzaklastırabilir misin?=Yakınlardaki tek tatlı su kaynagı burası.=Bu canavarlar nehri bozdu.=Ve göletler.=Ellerinden gelse yagmuru bozarlardı.",
+      "ReturnText": "Vay, tesekkürler!",
+      "PraiseText": "Kuyuyu temizledigin için tesekkürler.=Gerçekten güvenilir bir su kaynagına ihtiyacımız var."
+    },
+    "28": {
+      "OfferText": "O eski çiftlikte büyük bir sey var.",
+      "ActiveText": "Ne oldugunu bilmiyorum.=Tuatara oldugunu sanmıyorum.=Kontrol etmek isteyeceginizi düsündüm.=Çünkü gerçekten istemiyorum.=Kulaga büyük geldigini söylemis miydim?",
+      "ReturnText": "Ah! Örümceklerden nefret ediyorum! Tesekkürler!",
+      "PraiseText": "Devasa bir örümcek miydi?=Örümceklerden nefret ediyorum.=Ben degil de sen olduguma sevindim!"
+    },
+    "29": {
+      "OfferText": "Bu öldürücü bitkiler ilgi çekicidir.",
+      "ActiveText": "Yok Ediciler hakkında daha fazla sey ögrenmemiz gerekiyor.=@Bu pis bitkilerin kaynagını yok ettim.=Evet ama yabani ot gibi büyüyorlar.=Eger topragı iyilestireceksek daha fazlasını bilmem gerekiyor.=Büyük olanlardan disleri toplayın.=Onları zehirleyecek bir iksir hazırlamak için kullanabilirim.=@Bitkilerin disleri olmasaydı hepimiz için daha iyi olacagını düsünüyorum.",
+      "ReturnText": "Aferin, tesekkürler!",
+      "PraiseText": "Hsalt'ın bitkilere dis vermek için ne yaptıgını düsünmekten nefret ediyorum.=Düsünmek korkutucu.=Ama düsünebildigim tek sey bu.=Baska neye dis verdi?=Mantarlar mı?=Denizanası?=Kayalar mı?"
+    },
+    "30": {
+      "OfferText": "Tuatara askerlerini geri püskürtmemize yardım eder misiniz?",
+      "ActiveText": "Bana Tuatara Komutanlarının Migferlerini getirin.=@Neden onların migferlerini istiyorsun?=İlk olarak, onlara yönetimi devraldıgımızı göstermek için. Migferlerini seviyorlar.=İkincisi, metali kendi zırhımızı yapmak için kullanabiliriz.=@Üçüncüsü, bu onları çok kızdıracak.=Kesinlikle.",
+      "ReturnText": "Tesekkür ederim! Bu kertenkeleler artık oyun oynamadıgımızı biliyor!",
+      "PraiseText": "Bizim tarafımızda gerçek bir kahraman!=Belki bu canavarlarla mücadele edebiliriz.=Ve sadece Tuatara degil.=Bu toprakların canavar yönetiminden arınmıs oldugunu hayal edin!"
+    },
+    "31": {
+      "OfferText": "Örümcek zehrine karsı panzehirimin örümcek dislerine ihtiyacı var",
+      "ActiveText": "Bana örümcek disleri getirirsen panzehir yapabilirim.=@Bu kesinlikle ise yarayacaktır.=Bu büyük örümcekler eskiden burada yasamıyordu.=@Bazı kötü büyüler yüzünden bozulmuslar.=Bu yüzden sihirden nefret ediyorum, her zaman bir seyleri bozar.=Simyayı daha çok tercih ederim.",
+      "ReturnText": "Tesekkür ederim, artık panzehiri bitirebilirim",
+      "PraiseText": "Bu örümceklerden kurtulmak yıllar alacak.=Eger nereden geldiklerini bulabilirsek."
+    },
+    "32": {
+      "OfferText": "Biz sizin türünüzün hilelerini anlıyoruz. Kendinizi Muhafız'a sunun ya da çeligin tadına bakın.",
+      "ActiveText": "Müdürün tüm yabancıları onaylaması gerekiyor.=@Sen insansın!=Sen de öylesin, bu arkadas oldugumuz anlamına gelmez.=@Ama buraya nasıl geldin?=Burada dogdum.=@Anlamıyorum, Goblin Sürüsü…=Hiçbir ordu hakkında hiçbir sey bilmiyorum.=Ya Müdür'le görüsürsünüz ya da sizinle ayrılırsınız.=Gerçi Müdür hiç süphesiz seni yollayacaktır.=Sizin türde bir sorun aramıyoruz.",
+      "ReturnText": "Yagmacılar ve haydutlarla doyduk.",
+      "PraiseText": "Uslu dur yabancı."
+    },
+    "33": {
+      "OfferText": "Yabancı, senin tipini biliyorum. Burada sana sabrımız yok.",
+      "ActiveText": "Seni tanımıyorum ama yoluna gitsen iyi olur.=@Ben Kral'dan geldim.=@Ellyria Baronlugunun yeniden kurulmasına yardım etmek için buradayım.=Kralınızın bizimle hiçbir ilgisi yok.=Ve aynı hikayeyi söyleyen pek çok haydut gördük.=Bela istemiyorum, bu yüzden digerleriyle birlikte ormana gidin.=@Ormanda insan haydutları mı var?=Evet, orada sizin türünüzden bolca bulacaksınız.=@Benim türüm degil.=Yani diyorsun.=Gördügümde inanacagım.",
+      "ReturnText": "Yabancı, sasırdım. Güzel kasabamıza bir hizmette bulundun."
+    },
+    "34": {
+      "OfferText": "Haydutlar onların sizin memleketinizden gelen askerler oldugunu söylüyor.",
+      "ActiveText": "Denizin ötesindeki bir krallıktan geldigini iddia ediyorsun.=@Bu dogru. Kral tarafından gönderildim.=Hiçbir kralı tanımıyorum ama diger adamlar da aynısını söyledi.=@Anlamıyorum, nereden geldin?=@Bu kasabanın yıkıldıgını sanıyordum.=Hayır, hayır, gayet iyi durumdayız.=Denizin öte yanından gelen yagmacılar ve akıncılar hariç.=Görünüse göre sizin krallıgınızdan.=@Daha fazla sorum var...=Haydut arkadaslarının icabına baktıgında buna cevap verecegim.=@Ben haydut degilim!=Evet, öyleler ve onlar sizin topraklarınızdan.=@Peki, onlarla ilgilenecegim.",
+      "ReturnText": "Geri döndün mü? Yani belki sen digerleri gibi degilsin."
+    },
+    "35": {
+      "OfferText": "Arkadaslarını Wolf's End'den Mezarlık Tepesi'ne gönderdim. İstedikleri takdirde oraya yerlesebilirler.",
+      "ActiveText": "Siz Kurt Burnu halkına burada yer yok.=@Nereden geldin peki?=Benim halkım 40 yıl önce buraya yerlesti.=Köle oldugumuz çok uzak bir ülkeden geldik.=Artık özgür ve müreffeh bir hayat yasıyoruz.=@Ama canavarlar! Goblinler, ejderhalar, ölümsüzler…=Biz kendi hakkımızı koruyoruz.=Arkadaslarını Wolf's End'den Mezarlık Tepesi'ne gönderdim.=Yerlesecek yeni topraklar arıyorlarsa, onlara sahip olabilirler.=@Bir Mezarlık mı?=Dilenciler seçici olamazlar.",
+      "ReturnText": "Burada oldugunuz için yıldızlara tesekkür edin! Nephit'in kara büyüsü geri döndü!",
+      "PraiseText": "Babam halkımızı kölelikten kurtardı.=@Nereden geldin?=Asla gidemeyecegin bir yere dostum.=Kelimelerin ötesinde korkunç bir yerde.=@Ejderhalardan ve goblinlerden nasıl kurtuldunuz ve…=Güvenligimiz bizim endisemizdir.=Büyük fedakarlıklar yaptık.=Ama bunlar gerekliydi.=Halkımı ne pahasına olursa olsun korudum.=Belki de kendi ailen için endiselenmelisin."
+    },
+    "36": {
+      "OfferText": "Komiser su anda burada degil yabancı.",
+      "ActiveText": "Geri döndün.=@Köprüyü geçerek kaleye girmem gerekiyor.=Büyülü kalkanın nasıl çalıstıgını yalnızca Komiser biliyor.=Bu kalkan düsmanlarımıza karsı ana korumamızdır.=@Kahya nasıl bu kadar güçlü bir büyü yarattı?=Bilmiyorum, bu onun isi.=Ama bizi yıllardır çogunlukla güvende tuttu.=@Çogunlukla güvenli mi?=Her yıl birkaç kisi kayboluyor ama çok fazla degil.=Komiser Hasat Ritüeli için malzeme topluyor.=Onu bulmak istiyorsan git koruması Gunter'la konus.",
+      "ReturnText": "Bu haydutlar bizi daha önce hiç rahatsız etmemisti. Onları kızdırdın mı?"
+    },
+    "37": {
+      "OfferText": "Komiser, Hasat Ritüeli'ne hazırlanmak için o magaraya gitti.",
+      "ActiveText": "Komiseri rahatsız etmemelisiniz.=@Bu ritüel köprüdeki kalkana güç veriyor mu?=Bence de.=Bunun nasıl çalıstıgını yalnızca Komiser biliyor.=@Bu güçlü bir büyü.=Komiser buraya geldigimizden beri halkımızı uzun süre korudu.=@Köprüyü geçme konusunda onunla konusmam gerekiyor.=O içeride.=Ama çok mesgul görünüyorsa onu rahatsız etmeyin.=Önemli isler yapıyor.",
+      "PraiseText": "Komiserle konustun mu?"
+    },
+    "38": {
+      "ActiveText": "Komiserin karanlık güçlere taptıgını mı söylüyorsunuz?=@O, insanlarınızı eski bir tanrıya kurban ediyor.=Hiç bir fikrim yoktu!=@Ögrenilecek daha çok sey var. Evi nerede?=Tam orada, kasaba meydanının dısında.=Acele edin, ona baska kimin yardım ettigini bulmalısınız.=Komiser, kötü tanrılarla anlasmalar yapıyor...=Bunu hiç hayal etmemistim.",
+      "ReturnText": "Komiserin kötülügü ortaya çıkınca çözmemiz gereken çok sey var."
+    },
+    "39": {
+      "OfferText": "Komiserin günlügüne göre tarikatı dagın zirvesine kurbanlar götürüyordu.",
+      "ActiveText": "Tarikatın hayatta kalanları dagda bırakma ihtimali var.=@Muhtemelen. En azından orada daha fazla tarikatçı var.=Adamlarımdan bazılarını arastırmaları için gönderiyorum.=@Ben de onlara katılacagım.=@Meylour'un tarikatı hâlâ o sihirli kalkanı koruyor.=@Köprüyü geçmek için Meylour'u yenmem gerekiyor.=O zaman daglarda halkımla bulus.=Ama dikkatli olun, orada ne oldugunu bilmiyoruz.",
+      "ReturnText": "Kesif ileride."
+    },
+    "40": {
+      "OfferText": "Cadı Yagarah, Nephit'le is birligi içinde olabilir!",
+      "ActiveText": "Felbridge Komiseri, Mezarlık Tepesi'ne yerlesmenin güvenli olacagını söyledi.=@Açıkçası öyle degil.=Ölüler bu sabah mezarlarından dirilmeye basladı!=@Nephit'in çalısmasına benziyor.=Evet öyle ama bir cadı hakkında bilgi aldık.=Adı Yagarah ve Nephit'le çalısıyor olabilir.=Buranın dogusundaki bir mozolede saklandıgını düsünüyoruz.=@Nephit'in herhangi bir arkadası benim düsmanımdır.",
+      "ReturnText": "Beni kurtardıgın için tesekkür ederim",
+      "PraiseText": "Gnole'lar onlarca yıldır insanlardan nefret ediyor.=Yardım için Nephit'e basvurmaları sürpriz degil."
+    },
+    "41": {
+      "OfferText": "Gnole'lar ve Hortlaklar korkutucu bir ittifak kurdular.",
+      "ActiveText": "Gnole'lar ve insanlar eskiden müttefikti.=Yıllar önce kölelikten kurtulmak için birbirimize yardım etmistik.=Ancak daha sonra her iki taraf da kontrolün kendisinde olmasını istedi.=O zamandan beri kavga ediyoruz.=@Ve simdi Nephit ile is birligi içindeler.=Ölümsüz müttefiklerin sonunda bizi tekrar kölelestirmelerine izin verecegini düsünüyor olmalılar.=@Onlar haklı olabilir.=Karl Tilly'nin mezarında daha fazla gnol ve daha fazla ölümsüz bulacaksınız.",
+      "ReturnText": "Harika is! Umarım bu Nephit'in ve Gnoles'un planlarını bosa çıkarır."
+    },
+    "42": {
+      "OfferText": "Nephit'in hayalet hizmetkarlarından birini Cornelius Hocke'nin mezarı hakkında sorguya çektim.",
+      "ActiveText": "Cornelius Hocke'nin mezarında bir ölümsüz faaliyet fırtınası var.=@Nephit'in eski mezarlara karsı bir ilgisi var ve Hocke ailesi için çalısıyordu.=Nephit'in son enkarnasyonunu yenmis olabilirsin...=Ancak ölümsüzlerin huzursuzlugu giderek artıyor.=@Nephit, fiziksel bir formu olmasa bile seytani büyüsünü kullanıyor.=Tüm isaretler Nephit'in Cornelius Hocke'nin mezarında bir seyler yaptıgını gösteriyor.=@O zaman bu benim bir sonraki duragım.",
+      "ReturnText": "Nephit gerçekten bir seytan, kendisi için kadim kan davasını yürütmeni sagladı."
+    },
+    "43": {
+      "OfferText": "Nephit'in ölüleri diriltmek için kullandıgı bu Periler konusunda endiseleniyorum.",
+      "ActiveText": "Hiç bu demetler gibi büyü görmemistim.=Faaliyet gösteren baska bir mezar daha var.=@Nephit'in baska bir numarası mı yoksa gerçek bir sey mi?=Oraya gitmeden söylemenin imkanı yok.=Oradayken perdeler hakkında daha fazla bilgi edinmeye çalısın.=@Ne yapabilecegime bakacagım."
+    },
+    "44": {
+      "ActiveText": "Nephit'in planının ne oldugunu anladın mı?",
+      "ReturnText": "Nephit'i durdurdugunuz için tesekkür ederiz. Umarım bir an önce isler normale döner"
+    },
+    "45": {
+      "OfferText": "Bu toprakları halkının adına geri almana yardım ettigim için gurur duyuyorum.",
+      "ActiveText": "Felbridge'deki eski dostlarıma burada senin adamlarınla ​​kalacagımı söyleyebilirsin.",
+      "ReturnText": "Bir kez daha geri döndün. Orada ne yaptıysan burada da bir seyler yapılmıs.",
+      "PraiseText": "Burada yaptıgınız her sey için tesekkür ederiz!"
+    },
+    "46": {
+      "OfferText": "Her yerde gnol'lar var! Daha güvenli bir yere ihtiyacımız var.",
+      "ActiveText": "Komiser bizi buraya göndererek bize hiçbir iyilik yapmadı.=Her yerde gnollar ve ölümsüzler var.=@Daha iyi bir operasyon tabanına ihtiyacınız var.=Yakınlarda saglam bir depo var…=Ama burası gnollarla dolu.=@Çok uzun sürmeyecek. Gnole'larla ben ilgilenecegim.",
+      "ReturnText": "Tesekkürler! O gnol'lar gittikten sonra depoyu devralacagız."
+    },
+    "47": {
+      "OfferText": "Tilly atalarım uzun zaman önce burada lordlardı ama simdi aile mezarlıgımda ölüler yükseliyor.",
+      "ActiveText": "Atalarıma saygılarımı sunmak istedim.=Ama Nephit'in kötü büyüsü digerlerini oldugu gibi benim ailemi de lanetledi.=@Nephit'in kötülügü derinlik tanımaz.=@Atalarınızı huzurlarına kavusturacagım.",
+      "ReturnText": "Tesekkür ederim. Ailemin huzur içinde olmasına sevindim.",
+      "PraiseText": "Aile mezarımı temizlediginiz için tekrar tesekkür ederim."
+    },
+    "48": {
+      "OfferText": "Nephit'in icabına bakılıyor ama Gnole'lar kalıyor.",
+      "ActiveText": "Gnole kalesi dogudadır.=@Nephit olmadan daha az tehdit olustururlar.=Ama hâlâ kristal madenlerine erisimleri var.=@Bu, Nephit'in demetlerini yeniden yaratabilecekleri anlamına geliyor.=Veya Nephit'i canlandırın.=@Her iki durumda da durdurulmaları gerekiyor.",
+      "PraiseText": "Kristaller güvende, artık ısık yok."
+    },
+    "49": {
+      "OfferText": "Gnole'ların onları ölümsüzlerden koruyan tuhaf eserleri var.",
+      "ActiveText": "Eger yapabilirsen, bana gnolları ölümsüzlerden koruyan o tuhaf eserleri getir.=Eger onlara sahip olsaydık bu bölgeye güvenli bir sekilde yerlesmemiz çok daha kolay olurdu.",
+      "ReturnText": "Tesekkürlerim! Bunlarla ölümsüzleri uzakta tutabiliriz.",
+      "PraiseText": "Tekrar tesekkürler, bu tuhaf yadigârlar gerçekten de ölümsüzleri uzaklastırıyor."
+    },
+    "50": {
+      "OfferText": "Burada da yükselen ölümsüzlerin sorunu ne?",
+      "ActiveText": "Yine Kurt Burnu gibi!=Burada da ölüler diriliyor.=@Bununla ugrasıyorum, korkma.",
+      "ReturnText": "Tesekkür ederim! Yardımınız için çok minnettarız",
+      "PraiseText": "Sen degerli bir kahramansın. Yardımın için tesekkürler"
+    },
+    "60": {
+      "OfferText": "Dikkatli olun, her yerde goblinler var.",
+      "ActiveText": "Yakındaki magaralarda bol miktarda goblin var.=@Daha fazla goblin! Ben onlarla ilgilenecegim.=Meylour Tarikatı ile isbirligi içinde olduklarını mı düsünüyorsun?=@Savasta kralları öldürüldügünden goblinler lidersizdir.=@Eminim onları alacak kadar kötü olan herkese hizmet edeceklerdir.",
+      "ReturnText": "Sen basardın. İyi. Tecrübeli bir goblin savasçısına ihtiyacımız var.",
+      "PraiseText": "Yolu açtıgın için tesekkürler!"
+    },
+    "61": {
+      "OfferText": "Hayatta kalanları aramadan önce bu bölgeyi goblinlerden korumamız gerekiyor.",
+      "ActiveText": "Yakındaki tünellerde büyük bir goblin gücü var.=@Birden fazla goblin warren'ı geçerek yoluma devam ettim.=Burada ne yapıyorlar, merak ediyorum.=@İddiaya girerim savası kaybettikleri için artık çaresizce müttefik arıyorlar.=@Meylour Kültü onları ele geçirmis olabilir.=@Onların pisligini arastıracagım ve gerçegi kesfedecegim.",
+      "ReturnText": "Moai uyandı!"
+    },
+    "62": {
+      "ActiveText": "O kılıcın çıkarılması heykellerin konusmaya baslamasına neden oldu!=@Gerçekten mi? Ne diyorlar?=Onlar Meylour tarafından susturulmus kadim tas elementaller.=Meylour tarikatının halkımıza korkunç seyler yaptıgını söylüyorlar.=@Nasıl yardımcı olabilirim?=Moai'yle konus.=Her biri önemli bir seyi ortaya çıkardı.=@Hemen onlara danısacagım!",
+      "ReturnText": "Bu Moai ruhları Meylour'dan gerçekten nefret ediyor."
+    },
+    "63": {
+      "OfferText": "Türünüzden bazıları hâlâ bir zamanlar oldugu gibi yasayabilir.",
+      "ActiveText": "Sizin türünüzden bazılarının nereye götürüldügünü biliyorum.=@Sen nesin? Biraz ruh mu?=Biz bu dagın kadim koruyucularıyız.=Meylour bizi tahtlarımızdan devirdi.=@Hayatta kalanlar nerede?=Eger yasıyorlarsa Meylour'un igrenç tapınaklarından birindeler demektir.=Acele etmelisin, yoksa onların zamanı gelir.=@Yoldayım!",
+      "ReturnText": "Meylour, elli yıl önceki derinliklerden öfkeyle yükseldi.",
+      "PraiseText": "Meylour, elli yıl önceki derinliklerden öfkeyle yükseldi."
+    },
+    "64": {
+      "OfferText": "Halkınızın kaderini bilmek istiyorsanız onlarla yüzlesmelisiniz.",
+      "ActiveText": "Tepegözler her zaman böyle degildi.=Meylour onların eski formlarını bozdu.=Onlar onun yüksek rahipleri ve sadık yardımcılarıdır.=Kalelerinde Meylour'un sırlarını arayın.",
+      "PraiseText": "Meylour sayılamayacak kadar eskidir ve tüm canlılardan nefret eder."
+    },
+    "65": {
+      "OfferText": "Gnole'lar çaresizlik içinde Meylour'a dönüyor.",
+      "ActiveText": "Gnole'ların normalde tanrılara sevgisi yoktur.=Ama onlara ihanet ettikleri için insanlardan nefret ediyorlar.=@Onlara kim ihanet etti?=Felbridge'in insanları bir zamanlar onların müttefikiydi.=Komiser onlara ihanet etti.=Simdi intikam için Meylour'a dönüyorlar.=@İronik. Komiser Meylour'a da tapıyordu.=Kötü tanrılar herkesi yozlastırır.",
+      "ReturnText": "Meylour umursamaz tasın özüdür, tüm yasamın lanetidir.",
+      "PraiseText": "Meylour umursamaz tasın özüdür, tüm yasamın lanetidir."
+    },
+    "66": {
+      "OfferText": "Gnole sefi dagın zirvesinde Meylour'a tapıyor.",
+      "ActiveText": "Gnole'ları tamamen bitirebilirsin.=Ama bilmelisin ki…=Meylour'un gnole liderine tuhaf bir sey yaptıgına inanıyorum.=Yeterince uzun yasayan Gnole'lar canavarca güçlere sahip olabilirler.=@O kadar fazla zamanı olmadıgından emin olmaya çalısacagım.",
+      "ReturnText": "Meylour'un takipçileri öfkeyle dagı kazıyorlar."
+    },
+    "67": {
+      "OfferText": "Goblinler ve tepegözler dagları kazıyorlar.",
+      "ActiveText": "Bölgede terk edilmis bazı madenler var.=Goblinler onları genisletiyor…=Ama altın aramıyorlar gibi görünüyor.=@Altın aramıyor musun?=Hayır, akıllarında Büyük Bir İs var gibi görünüyor.=@Meylour için herhangi bir goblin çalısması kötü haberdir.=@Buna bir son verecegim."
+    },
+    "68": {
+      "ActiveText": "Meylour Damarları olarak bilinen bu madenler bir zamanlar Dünya Titanına aitti.=Simdi Vezrinn'in adananları onları ele geçirdi=Büyülü cevher Alurit'i ve Kalbi arıyorlar=Eseri ele geçirmek ve Meylour Kılıcı'nı etkinlestirmek için hepsini yenmeniz gerekecek."
+    },
+    "69": {
+      "ActiveText": "Meylour Damarları olarak bilinen bu madenler bir zamanlar Dünya Titanına aitti.=Simdi Vezrinn'in adananları onları ele geçirdi=Büyülü cevher Alumite'yi ve Kalbi arıyorlar=Eseri ele geçirmek ve Meylour Kılıcı'nı etkinlestirmek için hepsini yenmeniz gerekecek."
+    },
+    "70": {
+      "ActiveText": "Meylour Damarları olarak bilinen bu madenler bir zamanlar Dünya Titanına aitti.=Simdi Vezrinn'in adananları onları ele geçirdi=Büyülü cevher Alumite'yi ve Kalbi arıyorlar=Eseri ele geçirmek ve Meylour Kılıcı'nı etkinlestirmek için hepsini yenmeniz gerekecek."
+    },
+    "71": {
+      "ActiveText": "Emerald Glades'e ulasmak için buranın dogusundaki ilk yoldan ilerleyin=Doguya dogru ilerlemeye devam edin",
+      "ReturnText": "Madenlerden geçtigine göre güçlü bir kahraman olmalısın!",
+      "PraiseText": "Halkımızı yeniden bir araya getirdiginiz için tesekkür ederiz!"
+    },
+    "72": {
+      "OfferText": "Uthor'un Enfes Kreasyonları",
+      "ActiveText": "Kapalı=İzinsiz girenler yok edilecek",
+      "ReturnText": "Uthor'un Enfes Kreasyonları=İzinsiz girenler yok edilecek=Kapalı",
+      "PraiseText": "Uthor'un Enfes Kreasyonları=İzinsiz girenler yok edilecek=Kapalı"
+    },
+    "73": {
+      "OfferText": "Uthor'un Enfes Kreasyonları",
+      "ActiveText": "Demir ocagı Stormshard Zirveleri'nde gizli kalıyor.",
+      "ReturnText": "Uthor'un Enfes Kreasyonları=Demirhane bulundu.",
+      "PraiseText": "Uthor'un Enfes Kreasyonları=Demirhane bulundu."
+    },
+    "74": {
+      "OfferText": "Bu goblin burun halkaları kaliteli çelikten yapılmıs.",
+      "ActiveText": "Goblin Brutes'ta burun halkaları bulabilirsiniz.=Bunlar için sana iyi para ödeyecegim.",
+      "ReturnText": "Tesekkürler, bunları temizleyecek adamı tanıyorum."
+    },
+    "75": {
+      "OfferText": "Bu daglar Alurit minerali bakımından zengindir.",
+      "ActiveText": "Tuhaf kaya yaratıkları Alurit içeriyor.=Büyülü silahlar için kullanabiliriz…=Büyülü zırh…=Büyülü tencere…=Her seyi büyüledi!=Felbridge parlayacak.=Ve ikimiz de kâr edecegiz.",
+      "ReturnText": "Tesekkür ederim! Felbridge'deki demirci bunun için güzel bir bedel ödeyecek.",
+      "PraiseText": "Yardımınız için tekrar tesekkürler!"
+    },
+    "76": {
+      "OfferText": "Bu Gnomlar beni delirtiyor!",
+      "ActiveText": "Bu sinir bozucu Gnomlar magaralarda saklanıyor.=Geceleri gelip malzemelerimizi çalıyorlar.",
+      "ReturnText": "Tesekkür ederim, belki simdi baskasını rahatsız ederler!"
+    },
+    "77": {
+      "OfferText": "Lütfen örümcek sorunumuzda bize yardım edin",
+      "ActiveText": "Örümcekler her yerdeymis gibi görünüyor!=Lütfen bize yardım edin!",
+      "ReturnText": "Tesekkür ederim belki artık geceleri uyuyabilirim",
+      "PraiseText": "Yardımınız için tekrar tesekkürler!"
+    },
+    "78": {
+      "OfferText": "Meylour'un insanlarımıza yaptıgı korkunç bir sey.",
+      "ActiveText": "O tepegözlerin bir zamanlar komsum olduguna inanamıyorum.=Komiserin dehseti on yıllar boyunca devam etti.=Lütfen onların acı çeken ruhlarını dinlendirin.=Onları Meylour'dan ancak ölüm kurtarabilir.",
+      "ReturnText": "Sonunda özgür olduklarını duyduguma sevindim, tesekkürler."
+    },
+    "79": {
+      "OfferText": "Gnole'lar saga sola hırsızlık yapıyor.",
+      "ActiveText": "Gnole'lar parlak seyleri sever.=Yıllardır bizden çalıyorlar.",
+      "ReturnText": "Vay, bak ne kadar buldun! Çok tesekkürler!",
+      "PraiseText": "Yardımınız için tekrar tesekkürler!"
+    },
+    "83": {
+      "OfferText": "Meylour'un Ashen Dryad'ları Ur-Tree'i kusatıyor!",
+      "ActiveText": "Meylour'un Ashen Dryad'larından biri Dogu'ya kaçtı.=Senden kaçtıgını mı anlıyorum?=@Dagdan yeni geldim.=@Meylour insanlarınızı canavarlara dönüstürüyor.=Yasayan Dag zaten türümün çogunu yok etti.=@Meylour istedigini yaparsa tüm yasamı yok edecek.=Ashen Dryad'ı takip et.=Onu yakalamak Meylour'un planlarını daha da açıga çıkaracak.",
+      "ReturnText": "Tesekkür ederim ve sizi gönderdigi için Wildbark'a tesekkür ederim!",
+      "PraiseText": "Halkımıza yardım ettiginiz için tesekkür ederiz!"
+    },
+    "84": {
+      "OfferText": "Meylour'un yozlasmıs Dryad'ları Ur-Tree'i istila etti!",
+      "ActiveText": "Meylour'un iblisleri bizi agaçtan sürdü.=Onun bozuk bitkileri ve alevleri her yerdedir.=@Meylour tarikatının bu agacı yok etmesine izin vermeyecegim.=Acele etmelisin, duman kokusu alıyorum!",
+      "ReturnText": "Tesekkür ederim ama agaç henüz güvende degil."
+    },
+    "85": {
+      "OfferText": "Meylour'un igrençlikleri köklerden içeri sızdı.",
+      "ActiveText": "Meylour Rahipleri daha fazla ates gönderecek.=@Nereden geldiler?=Tapınaklarından burayı kazdılar.=@Beni tünele dogru yönlendir.=:@Oradan artık gelmeyeceginden emin olacagım.",
+      "ReturnText": "Meylour her seyin ölmesini istiyor. Her sey."
+    },
+    "86": {
+      "OfferText": "Antik tapınaga gidin ve Meylour tarikatçılarını alt edin",
+      "ActiveText": "Meylour rahipleri baska bir ritüel daha hazırlıyorlar.=@Asla pes etmezler.=Meylour'un Kalbine giden bir yol bulmalısın.=@Meylour'un Kalbi? Bu da ne?=Meylour'un gücünün yattıgı yer burasıdır.=Yerini yalnızca rahipleri biliyor.=@O zaman bana sunu söylemelerini saglayacagım...=@Öyle ya da böyle.",
+      "ReturnText": "Meylour Kültü neredeyse yenilgiye ugratıldı!"
+    },
+    "88": {
+      "OfferText": "Meylour'un tarikatının sonuncusu korkuyla siniyor.",
+      "ActiveText": "Neredeyse onları yendin.=@Fakat Meylour'un Kalbi'nin nerede oldugunu hala bilmiyorum.=@Bu son tarikatçıların bana söylemesini saglayacagım.=@Meylour'un terörü sona erecek.",
+      "ReturnText": "Artık nihayet Meylour'u sonsuza dek yok edebilirsin.",
+      "PraiseText": "Meylour'un takipçileri hak ettiklerini buldu."
+    },
+    "89": {
+      "OfferText": "Kül Rengi Dryad'lardan Kara Totemleri toplamamıza yardım edin",
+      "ActiveText": "Onları Ashen Dryads'ta bulabilirsin=Yangın büyüsünden korunmak için onlara ihtiyacımız var.",
+      "ReturnText": "Mükemmel, koruma büyüsünü baslatacagım."
+    },
+    "90": {
+      "OfferText": "Koruma büyüsü için Meylour'un Maskelerine de ihtiyacımız var",
+      "ActiveText": "Lütfen acele edin, rahiplerin saldırılarının püskürtülmesi gerekiyor.",
+      "ReturnText": "Tam ihtiyacımız olan sey. Tesekkür ederim!",
+      "PraiseText": "Artık korunmamız lazım. Tekrar tesekkürler!"
+    },
+    "91": {
+      "OfferText": "Topraklarımızı saran yangınları söndürmemize yardım edebilir misiniz?",
+      "ActiveText": "Yasayan ates her yerde, lütfen onu yok edin.",
+      "ReturnText": "Tesekkür ederim. Simdiden daha iyi nefes alabiliyorum.",
+      "PraiseText": "Umarım topraklarımız bir kez daha yeserir!"
+    },
+    "92": {
+      "OfferText": "Meylour'u yok ederek Uyuyan Topraklar'a giden yolu açık bıraktınız.",
+      "ActiveText": "Meylour'un bariyeri kalkınca kaleye giden yol açıldı.=Benim halkım onlarca yıl önce oradan geldi.=Uyuyan Topraklar'daki kölelik hayatından kaçıyorduk.=Ejderhalar ve Goblinler bizi zincire vurdu.=Artık orada ne oldugunu bilmek mümkün degil.=Meylour'un bariyeri Uyuyan Toprakları bu dünyadan uzakta tutuyordu.",
+      "ReturnText": "Maresal Sythokahn bu kez sadece hayalini degil, yenilgiye ugradı.",
+      "PraiseText": "Ejderhaların tekrar istila etmesini engelledin.=Ama asagıda baska neler oldugunu kim bilebilir?"
+    },
+    "93": {
+      "OfferText": "Liderimiz Titus, ejderhalarla savasmanın bir yolunu bulmak için Gözlemevi'ne gitti.",
+      "ActiveText": "O ejderhayı öldürdügün için tesekkür ederim.=@Siz kimsiniz?=Sigismund Hocke'un kesif gezisindeydik.=@Kurt Burnu'nun insanları gibi mi?=Evet, tamamen aynı.=Goblinlerin arasından geçerek kaleye dogru savastık.=Sigismund kampı korumamız için bizi bıraktı.=O ve sövalyeleri asagıya indiler.=Portaldan geçtiler.=@Ve o zamandan beri burada sıkısıp kaldın.=Bilge Titus bize yardım etti.=Ejderha lejyonu geldiginde onları durdurmanın bir yolunu bulmaya gitti.=Onu bulmalısın.",
+      "PraiseText": "Uyuyan Topraklar'da Sigismund Hocke'ye ne oldugunu hâlâ merak ediyorum."
+    },
+    "94": {
+      "ActiveText": "Nephit, Eterik Gözlemevi'nden kadim bir ritüel arıyor.=İkimiz de hayattayken bunu istedi.=Böyle bir güce asla güvenmedim ona.=@Bu ritüel nedir?=Korkunç, kadim tanrılarla temasa geçer.=@Meylour gibi. Bunu neden istesin ki?=Bilmiyorum ama bu kötü bir fikir.=Gerçekten çok kötü bir fikir.=Berbat bir fikir.=@Anladım. Onu durduracagım.",
+      "ReturnText": "Nephit'in ritüeli kullanmasını engelleyin."
+    },
+    "95": {
+      "OfferText": "Sen onunla dövüstükten sonra Nephit surların üzerinde belirdi.",
+      "ActiveText": "Sanırım Nephit ritüeli buldu?=@Onda var, evet.=Nedenini bilmiyorum ama onu kullanacak.=Belki de bunun onu hayata döndürecegini umuyor.=@Bu mümkün mü?=Belki, ama bu canavarca bir varolus olurdu.=Acele edin, o ögrenmeden onu durdurun.",
+      "PraiseText": "Nephit batıya, Kaleye gitti!"
+    },
+    "96": {
+      "ActiveText": "Ötesinde Uyuyan Topraklara açılan kapı yatıyor=Baron Hocke'un bilgeleri, geçidi kapatmak için güçlü bir Kapak Tası yarattı.=Dünyalar arasındaki yolculugu sınırlandırır.=Nephit, Kapak Tası'nı kırmaya ve enerjisini ritüeli için kullanmaya çalısacak.=@Bunu yaparsa ne olur?=Diyarlar arası yolculuk durdurulamaz olacak.=@Daha fazla ejderha, goblin ve daha kötüsü.=Nephit'in ritüelinin hepimizi öldürmedigini varsayarsak.",
+      "ReturnText": "En azından Nephit artık yok.",
+      "PraiseText": "Geliyor=@Ne geliyor?=Hersey=Zenginlikler ve Kabuslar=Canavarlar ve Büyü=İyi ve Kötü=Hepsi asagıda ve simdi hepsi uyanık"
+    },
+    "97": {
+      "OfferText": "Taht odasında magaraya açılan gizli bir kapı var",
+      "ActiveText": "Ejderhanın askerlerinin bir kısmı orada saklanıyor.=Dikkatli olun, Baron Hocke'un golemlerinden biri onların emrinde.",
+      "PraiseText": "Bu Baron Hocke'un Bas Paladin'iydi.=Golem muhafızlarının ilki.=Böyle bir mucizenin saptırıldıgını görmek utanç verici."
+    },
+    "98": {
+      "OfferText": "O kadar çok Tuatara askeri var ki, sayılarını azaltabilir misin?",
+      "ActiveText": "Kalenin her yerindeler=Asagıdan geldiler=@Daha önce onların türüyle savasmıstım.=@Onlarla ben ilgilenecegim.",
+      "ReturnText": "Tesekkür ederim, belki sonunda burayı yeniden insa edebiliriz.",
+      "PraiseText": "Tesekkürler, burada kendimi daha güvende hissediyorum."
+    },
+    "99": {
+      "OfferText": "Dread Paladin maskeleri bu golemleri kontrol etmenin sırrıdır.",
+      "ActiveText": "Ejderha generali Dehset Paladin Golemlerinin kontrolünü ele geçirdi.=Baron Hocke'un özel korumasıydılar.=Maskeleri onları kontrol etmenin anahtarıdır.=Bulabildigin herhangi bir seyi bana getirirsen belki kontrolü yeniden saglayabilirim.",
+      "ReturnText": "Tesekkürler, hemen bunları sökmeye baslayacagım.",
+      "PraiseText": "Maskeleri topladıgınız için tekrar tesekkürler."
+    },
+    "100": {
+      "OfferText": "Nephit yenilir ancak Kapak Tası yok edilir. Uyuyan Topraklar'a baglantı açık",
+      "ActiveText": "Uyuyan Topraklar Nelerdir?=Hersey=Zenginlikler ve Kabuslar=Canavarlar ve Büyü=İyi ve Kötü=Hepsi asagıda ve simdi hepsi uyanık=@Zenginlik mi?=Ha, hâlâ bir maceracısın=Oraya gidiyorsun, degil mi?=Peki o zaman sana eslik edecegim=O kapı bizi oraya götürmeli=Yoksa bizi parçalara ayır=@Bu kadar konusma yeter, hadi gidelim",
+      "ReturnText": "Ah. Bunu basardın ve tek parça gibi görünüyorsun. Harika!"
+    },
+    "101": {
+      "OfferText": "Bu büyük piramitler halkımızın eseri degil.",
+      "ActiveText": "Piramitleri insa eden Magi bu toprakları uzun zaman önce terk etti.=Onların kalıntılarının bir kısmını kendimize aldık.=Ancak digerleri güçlü ruhlar tarafından korunmaya devam ediyor.=Eger aradıgınız kadim bilgiyse…=Ve kadim büyülerle yüzlesecek kadar cesursun…=O zaman Umbral Tapınagın derinliklerini batıya dogru çekmelisiniz.",
+      "ReturnText": "Sen bir hayatta kalansın ve bir alimsin. Umarım çok degerli seyler ögrenmissinizdir."
+    },
+    "102": {
+      "OfferText": "Yakındaki köye gidin ve Kasabanın Yaslısıyla tanısın.",
+      "ActiveText": "Uyuyan Topraklara hos geldiniz #tn#.=@Harika bir yere benziyor=Bu ülkeye Shazari denir.=Yüzyıllar boyunca ejderhalar burada hüküm sürdü.=@Ejderhaların zalim ustalar olduguna bahse girerim.=Korkunç ve zalimce, evet.=Ama buradaki insanlar artık özgür.=Git kendini kasabanın büyügüne tanıt.",
+      "ReturnText": "Umarım İmparator'un egemenligi altına girmekten kaçınmanın bir yolunu buluruz."
+    },
+    "104": {
+      "OfferText": "Geldiginiz için tesekkürler #tn#. Yardımına ihtiyacımız var.",
+      "ActiveText": "Mütevazı Kovah'a hos geldiniz.=@Sizinle tanısmak bir onur, Yaslı.=O seref tamamen bana ait.=Ejderhaların Katili ve Yolun Açıcısı…=Gerçek harikalar yarattın.=@Elimden geleni yapıyorum.=Bu konuları daha çok konusacagız…=Ama simdi yardımın için yalvarıyorum.=Seelie büyüleri tapınagımıza musallat oluyor ve orayı igrençliklerle dolduruyor.=Ejderha yönetimi altında geçen yüzyıllar, bize onlarla savasacak savasçı bırakmadı.=@Bununla ilgilenmek benim için bir zevk olacak, Yaslı.",
+      "ReturnText": "Artık köyümüz hayatta kalacak!"
+    },
+    "105": {
+      "OfferText": "Diger ejderhalar gitti ama pis Çukur Lordu kaldı.",
+      "ActiveText": "Kendine dikkat et yabancı...=Çukur Lordu eline geçen herkesi kölelestirir.=@Yaslı Kenken beni gönderdi.=@Ejderhaları öldürme konusunda biraz deneyimim var.=Aslında bu nadir görülen bir beceri.=Ancak bu kurnaz yaslı ejder yalnız degil.=Onun için savasan köleleri var ki bu yeterince kötü.=Son zamanlarda baska canavarlar da edindi.=Takviye kuvvetlerinin nereden geldigini bilmiyorum.=Ama tuhaf büyüleri var.",
+      "ReturnText": "Çukur Lordu öldürüldü! Nihayetinde özgür bir ülkeyiz.",
+      "PraiseText": "Hala Pit Lord'un takviyelerini nereden aldıgını merak ediyorum.=Birisi onu desteklemeye çalısıyordu.=Birisi Shazari'nin özgür halklarına sorun çıkarıyor."
+    },
+    "106": {
+      "OfferText": "Yeni bir güç burada, Shazari'deki ejderha lejyonlarının yerini almaya çalısıyor.",
+      "ActiveText": "Tam da normal ticarete devam edebilecegimizi düsündügüm sırada.=@Goblin. Ne istiyorsun?=İnsan! Arkadaslarım ve müttefiklerim ile özgürce ticaret yapmak istiyorum.=@Peki seni durduran ne?=Erkeklerden daha uzun olan tuhaf yeni savasçılar.=Onların Seelie Ogres olabilecegine inanıyorum.=@Selie nedir?=Büyü konusunda uzman, kadim bir peri ırkı.=Dokundukları her seyi bozuyorlar.=Dogudaki duvarın ötesinde kamp kurmuslar.=@Arastıracagım...=@Ama dogruyu söylesen iyi olur, goblin.=Tesekkür ederim kahraman! İyi sanlar!",
+      "ReturnText": "Demek Seelie'ydi. Kesinlikle İmparatorun yardımına ihtiyacımız olacak!",
+      "PraiseText": "Valhaven'dan birini bul.=Seelie gibi bir düsmana karsı İmparator'un yardımına ihtiyacımız var.=Hiç sansımız yok!"
+    },
+    "107": {
+      "OfferText": "Yaslı goblin seni bir Valhaven elçisi bulman için gönderdi, degil mi?",
+      "ActiveText": "Ben kesinlikle büyükelçi degilim.=@O zaman ne isimiz var yabancı?=Seelie'nin arkasında bizzat İmparatorun olduguna inanıyorum.=@Bu ciddi bir suçlama.=Bu yüzden kanıta ihtiyacım var.=@İmparator neden bu toprakları yozlastırsın?=Ejderhaların gitmesiyle Shazari'yi imparatorluguna eklemenin yollarını arar.=Antik mezarlıklar sorunun kaynagı gibi görünüyor.=Bakalım İmparatorluk'un müdahalesine dair herhangi bir isaret bulacak mısın?",
+      "ReturnText": "Ben de bu kadar düsündüm! İmparator her zaman acımasız ve asagılıktır.",
+      "PraiseText": "Benimle iskelede bulus.=@Neden?=Böylece seni gizlice Valhaven'a sokabilirim elbette.=İmparatorun planlarını burada bozdunuz.=En yeni düsmanınızla savasırken yardıma ihtiyacınız olacak.=@Ve sen o yardımcı mısın?=Çok yetenekli arkadaslarım var.=Tekneye gelin."
+    },
+    "108": {
+      "OfferText": "Buradaki eski piramitler ilgi çekici olabilir.",
+      "ActiveText": "Bu piramitleri antik Seelie insa etti.=Bunlardan biri hâlâ mühürlü durumda.=İçeride harikalar ve tehlikeler oldugunu hayal ediyorum.=@Harikalar neden her zaman tehlikeyle birlikte gelir?=Seelie'ler her zaman bu sekilde zalimdi.",
+      "ReturnText": "Kulaga hayal ettigimden daha muhtesem geliyor!",
+      "PraiseText": "Tehlikeleri de göze aldın.=@Çok tuhaf bir yerdi.=Artık savunmaları yendiginize göre…=Sırlarını arastırmak için biraz zaman harcayacagım.=@İyi sanlar.=@Burası benim için çok soguk ve sert."
+    },
+    "109": {
+      "OfferText": "Seelie geldiginde halkımdan bazıları Batı'ya kaçtı.",
+      "ActiveText": "Eger benim korkulu habercilerimi baska sehirlerde görürsen…=Onlara geri dönmenin güvenli oldugunu söyler misiniz?=Sayende dostum.=@Daha önce hiçbir goblin bana arkadasım demedi.=Peki biz arkadasız!=@Sanırım bu dogru.=@Garip ama gerçek.",
+      "ReturnText": "Tesekkürlerim! Artık Seelie'ler yenildigine göre korkacak daha az seyimiz var.",
+      "PraiseText": "Sanırım artık biz goblinler barısçıl yollarımıza dönebiliriz.=@Goblinler gerçekten barısı seviyor mu?=Uzun zaman önce bunu yapmıstık.=Sanırım yine yapacagız.=@ Kesinlikle öyle umuyorum."
+    },
+    "110": {
+      "OfferText": "Kuraklık tehdidi olmasa bile seyahat artık güvenli degil",
+      "ActiveText": "Bugünlerde yollarda o kadar çok tehlike var ki=İnsanlar bok böcegi akreplerinin kötü sokmalarıyla ortaya çıkıyor=Yabancı sorununa bir sey yapamam ama en azından akrep sorununu çözebilirim=Eger bana yeterince igne getirirsen panzehir olarak yapabilirim",
+      "ReturnText": "Ah mükemmel! Bu fazlasıyla yeterli!",
+      "PraiseText": "Bu anti-zehir birçok hayat kurtaracak=Sen de epeyce ısırık almıs gibi görünüyorsun=Hala etrafta dolasmak için ortalama bir gezginden daha sert malzemeden yapılmıs olmalısınız=Bizim için yaptıgınız her sey için tesekkür ederiz!=Gökyüzü yolculugunuzda sizi korusun"
+    },
+    "111": {
+      "OfferText": "Belki bizim için baska bir sey yapabilirsin",
+      "ActiveText": "Bu yaban arısı kovanlarını görüyor musun?=Gerçekten kontrolden çıktılar ve esekarısı çok yaklasan insanlara saldırıyor=Birkaçını yıkabilseydiniz yollar çok daha güvenli olurdu",
+      "ReturnText": "Harika!",
+      "PraiseText": "Görünüse göre bir iki ısırık almıssın=Senin için bununla ben ilgileneyim=Fedakarlıgınızı gerçekten takdir ediyoruz=Gökyüzü yolculugunuzda sizi kutsasın."
+    },
+    "112": {
+      "OfferText": "Kaçıs planımız basarısız oldu. Goblin kölelerin hiçbiri bunu basaramadı",
+      "ActiveText": "Hafıza tılsımlarını bulun ve onları ailelerine götüreyim=Cesurca savastılar ama yeterince güçlü degillerdi=Aileleri biraz kapanmayı hak ediyor",
+      "ReturnText": "Hepsini buldun mu?",
+      "PraiseText": "Ailelerinin cesurca savastıklarını bilmelerini saglayacagım=Köle çukurlarında hepsini tanırdım=Hepsi gerçekten harika adamlar=Yaptıkların için tesekkür ederim"
+    },
+    "113": {
+      "OfferText": "Bu Seelie destekleri beni büyülüyor",
+      "ActiveText": "Su Seelie korselerinden bir sürü olsaydı...=Onları parçalayıp kopyalamaya baslayabilirim.=Tabii ki daha küçük boyut.=Ama Goblinler böyle bir sey için iyi para öderler.=Bana elinden geleni getir.",
+      "ReturnText": "Hmm. Artık tam olarak yeni degil. Ah, iste maasın.",
+      "PraiseText": "Görmek?=Herkes kâr ediyor!"
+    },
+    "114": {
+      "OfferText": "Bunun bir daha olmasını önleyebiliriz",
+      "ActiveText": "Bana yeteri kadar mukus bezi getirin, ben de bir kovucu hazırlayabilirim=Bu böcekleri tapınaktan uzak tutacak",
+      "ReturnText": "Bu çok ise yarayacaktır. Bunu zahmetin için al",
+      "PraiseText": "Vay, bu sey berbat kokuyor=Yine de böcekleri korkutup kaçıracaktır, bu yüzden buna deger=Gökyüzü yolculugunuzda sizi korusun"
+    },
+    "116": {
+      "OfferText": "Anna gibi zorlu savasçılar sayesinde kendimizi koruduk",
+      "ActiveText": "Sen kimsin? Nereden geldin?=@Ben #tn#'im. Kral beni gönderdi.=@Ama hala burada yasayan bir insan bulduguma sasırdım.= Sigismund Hocke ile elli yıl önce geldik.= @Sigismund, Baron Hocke'nin oglu!=Ben onun ordusunda davulcu bir çocuktum.= Goblinler istila ettiginde babasının baronlugunu kurtarmak için yapılan kesif gezisinin bir parçası=@Ve bunca zaman hayatta kaldın. İnanılmaz!= Anna gibi iki nesil savasçıya tesekkürler.= Ama goblinler onu kumsalda sasırttı.=@O deniz goblinleri benden kaçıyorlardı. Yollarına çıkmıs olmalı.=@Buranın dogusuna indiler. Bu kısımlarda magara var mı?=Tepenin hemen arkasında eski bir kaçakçının saklandıgı yer var.=@O zaman orada olacak. Tabii onu kurtarana kadar."
+    },
+    "117": {
+      "OfferText": "\"Nephit\" adında biri goblinleri ve ölümsüzleri kontrol etmeye çalısıyor.",
+      "ActiveText": "Babam 50 yıl önce karaya çıktıgımızda eski raporları okudu.=@Ve Nephit adında birini mi buldu?=Baron Hocke, arastırması için dünyanın en bilge adamlarını görevlendirdi.=Nephit en iyilerden biriydi. Goblinler istila ettiginde bir mezar kazıyordu.=@Hangisi oldugu hakkında fikrin var mı?=Uyuyan Kralın Mezarı'ndan gelen pek çok ölümsüz gördük.=@Aramaya orada baslayacagım.=Tamam, ortalık yatısınca seninle tekrar görüsürüz.",
+      "ReturnText": "Nephit'in uzaklastırılmasıyla belki de daha az ölümsüzümüz ve goblinimiz olur."
+    },
+    "118": {
+      "OfferText": "Bir mezar daha var. Belki Nephit'in aradıgı sey oradadır.",
+      "ActiveText": "Nephit'in \"Rüya Ejderhası\"ndan bahsettigini söyledin.=@Ejderhalar binlerce yıldır yoklar.=Bu diger mezar bundan daha uzun süredir burada.=Baron Hocke bu eski mezarlara takıntılıydı.=@Nephit ejderha kemikleri istemis olabilir. Onlar güçlü eserler.=Mezar güneyde, ormanın içindedir. Eger Nephit ikinci kez dirilebilirse...=@O zaman ondan önce oraya varsam iyi olur.=Bir yol açın, ben de takip edecegim.",
+      "ReturnText": "Bir ejderha! Sadece bir tür rüya hayaleti olsa bile sasırtıcı."
+    },
+    "119": {
+      "OfferText": "Goblinler tüm at nallarımızı çaldılar ve burun halkaları yaptılar",
+      "ActiveText": "Büyük goblinler burun halkası olarak at nalı takarlar.=Bizimle dalga geçmek için sanırım.=Ama eger ordumuzu ve ekonomimizi yeniden insa edeceksek at nallarına ihtiyacımız var.=@Goblinlerden bir seyi geri alma sansın var mı?",
+      "ReturnText": "Tesekkürler! Bu halkaları temizletecegim..."
+    },
+    "120": {
+      "OfferText": "Goblin samanları Ölüm Gözlerini kontrol etmek için asalarını kullanırlar.",
+      "ActiveText": "Eger bana goblin samanlarının asalarını getirirsen onları Ölüm Gözlerini kovmak için kullanabilirim.=O kötü seylerin bizi gözetlememesi güzel olacak.=Özellikle geceleri.=Biz uyurken.",
+      "ReturnText": "Tesekkürler! Bunlarla herhangi bir Ölüm Gözünü savusturabilmeliyim.",
+      "PraiseText": "O Ölüm Gözlerinin bana bakısından nefret ediyorum.=Tekrar tesekkürler"
+    },
+    "122": {
+      "OfferText": "Daha az goblin olsaydı dogu yolunu temizleyebilirdik",
+      "ActiveText": "Goblinler yolları kapalı tutuyor=Dogu köylerindeki arkadaslarımı merak ediyorum=@^tOnların Goblin sorununu çözebilirim",
+      "ReturnText": "Vay canına, Belediye Baskanı bu çiftligi dogru adama/hanıma verdi!",
+      "PraiseText": "Sen zorlu bir goblin savasçısısın=Bu yer henüz kaydedilmis olabilir"
+    },
+    "123": {
+      "OfferText": "O çiftlikte goblin akıncıları saklanıyor.",
+      "ActiveText": "Trogları köseye sıkıstırdık.=Ama içlerinde sert bir komutan var.=Eger ona göz kulak olursan, ben burada kalabilirim.",
+      "ReturnText": "Ona gösterdin!:Onları orada kapalı tutabiliriz,: Sorun degil.",
+      "PraiseText": "Goblinler kaçıyor.=Baskıyı sürdürdügümüz sürece…=Bu toprakları geri alabiliriz."
+    },
+    "124": {
+      "OfferText": "Ölümsüzler o mahzenden yükselmeye devam ediyor.",
+      "ActiveText": "Yukarıdaki eski tapınak ölümsüzlerin ilk geldigi yer.=O zamandan beri geliyorlar.=Eger en kötülerinden bazılarını yok etmeme yardım edebilirsen...=Kurt Burnu'na yayılmalarını önleyebiliriz.",
+      "ReturnText": "Tesekkür ederim.",
+      "PraiseText": "Onlarla savasmaya devam edecegim.=Ama bunlara asla alısamayacagım.=Veya onların kokusu.=Ya da söyledikleri tüyler ürpertici seyler.=Ama çogunlukla onların kokusu."
+    },
+    "125": {
+      "OfferText": "Artık yeni türde canavarca bir savasçı karsımızda duruyor.",
+      "ActiveText": "Bunlar bizim savastıgımız goblinler degil.=@Gobinler degil mi? O zaman neyle karsı karsıyayız?=Bir çesit sürüngen adam. Kendilerine Tuatara diyorlar.=@Tuatara. Adını eski hikayelerde okumustum. Korkunç askerler.=Bu onlara benziyor, çok organizeler.=Yakınlardaki bir kuleyi ele geçirdiler.=Onları geçemiyoruz.=@Onları geçebilirim.=Umarım.=@Ben de. Bunu ögrenmenin tek yolu var.",
+      "ReturnText": "Tuatara'ya insanların nasıl dövüstügünü gösterdin!"
+    },
+    "126": {
+      "OfferText": "Lord Yornak'ın kalesinde insanlar olmasa da hâlâ mesken varmıs gibi görünüyor.",
+      "ActiveText": "Yornak Kalesi bu bölgenin lordlarının eviydi.=Son Lord ve Leydi Yornak muhtesem tahıl ambarını, sarayı ve üniversiteyi insa etti.=@Zenginlikleri ve cömert harcamalarıyla ünlü olduklarını biliyorum.=Aslında öyleydiler ama…=Antik kalelerini her zaman iyi durumda tuttular.=Bu onların güvenli bir sıgınagıydı.=@Belki orada da hayatta kalanlar vardır.=İçeride birisi var.=Tuatara'nın Yornak dedigi biri.=@Yornak! Belki bir mirasçı? Gidip ögrenecegim.",
+      "ReturnText": "Yornak Kalesi'nden sag çıktın.",
+      "PraiseText": "Yornak ailesi de bir baska trajik hikaye.=@Uyuyan Topraklardan gelen istilalar her seyi bozdu.=@Sonunda onlara barıs getirdigime sevindim."
+    },
+    "127": {
+      "OfferText": "Korucu Affric, eski üniversite bölgesini arastırmak için bir partiye liderlik etti.",
+      "ActiveText": "Affric yolsuzlugun kaynagının dogu oldugunu düsünüyor.=Hsalt adında biri Wissen Kalesi'ne yerlesmis.=@Orayı kendim kurcalamak istedim.=@Gidip ne kesfettigini görecegim.=Dikkatli olun, yol Tuatara ve Devourers'la dolu.",
+      "ReturnText": "Seni tekrar görmek güzel dostum.",
+      "PraiseText": "Efsanen büyüyor.=Yakında bu bölge sizi her yerde takip edecek."
+    },
+    "128": {
+      "OfferText": "Tuatara'nın veziri etobur yetistiriyor.",
+      "ActiveText": "Vezir ejderha generalleri için çalısabilir…=Ama artık yolsuzlugun arkasındaki gerçek gücün o oldugunu biliyoruz.=Vezir'in büyülü deneyleri karnasaurların üremesine yöneliktir.=@Bu kertenkele atı seyleri mi?=Onları Tuatara askerlerine binek olarak hizmet etmeleri için yetistiriyor.=@Evdeki sövalyelerimiz için bir eslesmeden daha fazlası olurdu.=@Bu canavar yetistirme programını hemen bitirmem gerekiyor.",
+      "ReturnText": "Sen basardın! Hiçbir carnasaur sövalyesi basımıza bela olamayacak."
+    },
+    "129": {
+      "OfferText": "Vezir Hsalt, Kale'nin kütüphanesini kötülük için kullanıyor",
+      "ActiveText": "Vezir sana inanılmaz derecede kızacak.=@Ben ona daha da kızgınım.=@O, Kale'nin bilgeligini kötülük adına saptırdı.=Sanırım onun pesinden gidiyorsun.=@ben öyleyim. Kütüphaneyi hepimiz için geri alıyorum.=Dikkatli olun, Vezirin büyüsü onu hizmet ettigi ejderhalar kadar tehlikeli kılıyor.",
+      "ReturnText": "Kütüphane özgürlestirildi!"
+    },
+    "130": {
+      "OfferText": "Tuatara generali üssünü yakındaki kaleye kurdu",
+      "ActiveText": "Tuatara Generali Svar o eski kalede bulunuyor.=@Bu Svar onların önemli liderlerinden biri gibi görünüyor.=@Onu ele alacagım ve bu sürüngen askerlerin nereden geldigini ögrenecegim.=Zaten bir ordunun bu bataklıkta ne isi var?=@Emin degilim ama ordular tek bir yerde kalmıyor.=@Bu büyüklükteki ordular baskalarına saldırmak içindir.=En yakınım olarak bu benim için endise verici.",
+      "ReturnText": "General Svar bir ejderhaydı!",
+      "PraiseText": "Tuatara'lar gerçek, canlı ejderhalar tarafından yönetiliyor.=@Öyleler, bu iyi bir haber degil.=Bu, daha fazla ejderhanın oldugu anlamına gelir.=@Muhtemelen daha büyük olanlar da var.=Bu konuda iyi sanslar.=Çizmelerindekinin ben olmadıgıma sevindim."
+    },
+    "131": {
+      "OfferText": "Gehrin ve Odem, Tuatara General'in nerede oldugunu bildiklerini sanıyorlar.",
+      "ActiveText": "Çamurda gözcülük yapan daha fazla askerimiz var.=Gehrin ve Odem, diger Tuatara generalinin nerede oldugunu bildiklerini düsünüyor.=@Baska bir ejderha mı?=Muhtemelen.=Git onları gör, benden daha fazlasını biliyorlar.",
+      "ReturnText": "Bunu basarabildigine sevindim.",
+      "PraiseText": "Tuatara'nın diger generali yakında.=Ama o Svath'tan farklı.=@Farklı nasıl?=Onun hizmetinde ölümsüzlerin izlerini gördük.=@Harika. Bu iste Nephit'in parmagı oldugunu hissediyorum."
+    },
+    "132": {
+      "OfferText": "Svath adında baska bir General daha var. Kendisi eski sarayda.",
+      "ActiveText": "General Svath tüm bu Tuatara'ya komuta ediyor.=@Svath ve Svar? Kardes olmalılar.=Muhtemelen öyle, ama bu büyük birader gibi geliyor.=Ve Svath sadece Tuatara askerlerine komuta etmiyor.=Daha korkutucu seylerle ilgileniyor.=@Dev örümcekler ve etçil bitkilerin yanı sıra mı demek istiyorsun?=Yani ölümsüz gibi.=@Harika, Nephit gibi baska bir mezar kazıcı.=@Ejderhaların ve hayaletlerin istilası herkesin haftasını mahveder.",
+      "ReturnText": "Ejderha istilasını oldugu yerde durdurdunuz!"
+    },
+    "133": {
+      "OfferText": "Sırada ne var #tn#?",
+      "ActiveText": "Artık Tuatara yenildigine göre…=Planın nedir?=@Castle Hocke'a gidecegim.=@Eminim artık hepsi canavarlar ve harabelerdir.=Buradan geçen Tuatara Lejyonu'ndan kimsenin sag kurtulabilecegini hayal edemiyorum.=@Ve Nephit'in bir seylerin pesinde olduguna süphe yok.=@O kaleye girmem gerekiyor...=@Eger bu canavarların nereden geldigine dair gerçegi ögreneceksem.",
+      "ReturnText": "Dur orada, yabanci. Sen kimsin?",
+      "PraiseText": "Bu kısımlarda çok büyük degisiklikler yaptınız."
+    },
+    "134": {
+      "OfferText": "Kraliyet Tahıl Ambarı'nın kalıntıları, yiyip bitirenlerin kaynagıdır.",
+      "ActiveText": "Kraliyet Tahıl Ambarı eskiden bir dünya harikasıydı.=@Bütün bu bölge imparatorlugun ekmek sepetiydi.=Ama artık harap olmus tahıl ambarı da bozulmus durumda.=Yok edicilerin hepsi oradan gelmis gibi görünüyor.=@Sonra onları ayıklamak bir sonraki görevim olacak.=Tahıl tarlalarını kurtarabilirsek bütün bir orduyu destekleyebiliriz.=@Önce öldürücü bitkilerden olusan bir orduyu kesmem gerekiyor.",
+      "ReturnText": "Kraliyet Tahıl Ambarını temizlediniz!"
+    },
+    "135": {
+      "OfferText": "Bu kertenkeleler o pankartlara çok sey kattı",
+      "ActiveText": "Tuatara savas pankartlarının etrafında toplanıyor.=Bayrakları dikildiginde çok vahsi oluyorlar.=@Ve goblinlerin simdiye kadar oldugundan daha organize.=Sancaklar bir bakıma büyülü.=Eger onlardan bazılarını yakalarsan, büyülerini onlara karsı kullanabilirim.=@Topragı geri almak için kendi sihirli sancaklarımızı kullanabiliriz!",
+      "ReturnText": "Mükemmel. Sanırım artık kendi büyülü pankartlarımızı dikebilirim.",
+      "PraiseText": "Artık iyi bir tasarıma ihtiyacım var.=@Portremi kullanmak istersen kullanabilirsin.=Tesekkürler, dikkate alacagım.=@Gerçekten ilham verici bir profilim var.=Öyle mi?= Evet, birkaç seçenek sunacagım."
+    },
+    "136": {
+      "OfferText": "Terk edilmis bir çiftlikte bir Tuatara ekibi kuruldu.",
+      "ActiveText": "Kertenkeleler bu eski evi ele geçirdi.=Burayı baskınlar düzenlemek için bir üs olarak kullanıyorlar.=Malzemeleri de orada depoluyorlar.=Çogunlukla kurutulmus böcekler ve kokmus etler.=Yani belki bunu orada bırakabilirsin.=Tabii bu tür yiyeceklerle ilgilenmiyorsan.=Yargılamıyorum.",
+      "ReturnText": "Tesekkür ederim!",
+      "PraiseText": "Biz oraya dikkat edecegiz.=Baska biri gelirse onlarla ilgileniriz.=Bana kurutulmus böcekleri getirmedigin için tesekkürler.=Kuzenim lezzetli olduklarını söylese de.=Sanırım yargılamadan önce bir denemeliyim."
+    },
+    "137": {
+      "OfferText": "Yiyiciler her yerde! kuyuya ulasamıyorum",
+      "ActiveText": "Yok edicileri kuyudan uzaklastırabilir misin?=Yakınlardaki tek tatlı su kaynagı burası.=Bu canavarlar nehri bozdu.=Ve göletler.=Ellerinden gelse yagmuru bozarlardı.",
+      "ReturnText": "Vay, tesekkürler!",
+      "PraiseText": "Kuyuyu temizledigin için tesekkürler.=Gerçekten güvenilir bir su kaynagına ihtiyacımız var."
+    },
+    "138": {
+      "OfferText": "O eski çiftlikte büyük bir sey var.",
+      "ActiveText": "Ne oldugunu bilmiyorum.=Tuatara oldugunu sanmıyorum.=Kontrol etmek isteyeceginizi düsündüm.=Çünkü gerçekten istemiyorum.=Kulaga büyük geldigini söylemis miydim?",
+      "ReturnText": "Ah! Örümceklerden nefret ediyorum! Tesekkürler!",
+      "PraiseText": "Devasa bir örümcek miydi?=Örümceklerden nefret ediyorum.=Ben degil de sen olduguma sevindim!"
+    },
+    "139": {
+      "OfferText": "Bu öldürücü bitkiler ilgi çekicidir.",
+      "ActiveText": "Yok Ediciler hakkında daha fazla sey ögrenmemiz gerekiyor.=@Bu pis bitkilerin kaynagını yok ettim.=Evet ama yabani ot gibi büyüyorlar.=Eger topragı iyilestireceksek daha fazlasını bilmem gerekiyor.=Büyük olanlardan disleri toplayın.=Onları zehirleyecek bir iksir hazırlamak için kullanabilirim.=@Bitkilerin disleri olmasaydı hepimiz için daha iyi olacagını düsünüyorum.",
+      "ReturnText": "Aferin, tesekkürler!",
+      "PraiseText": "Hsalt'ın bitkilere dis vermek için ne yaptıgını düsünmekten nefret ediyorum.=Düsünmek korkutucu.=Ama düsünebildigim tek sey bu.=Baska neye dis verdi?=Mantarlar mı?=Denizanası?=Kayalar mı?"
+    },
+    "140": {
+      "OfferText": "Tuatara askerlerini geri püskürtmemize yardım eder misiniz?",
+      "ActiveText": "Bana Tuatara Komutanlarının Migferlerini getirin.=@Neden onların migferlerini istiyorsun?=İlk olarak, onlara yönetimi devraldıgımızı göstermek için. Migferlerini seviyorlar.=İkincisi, metali kendi zırhımızı yapmak için kullanabiliriz.=@Üçüncüsü, bu onları çok kızdıracak.=Kesinlikle.",
+      "ReturnText": "Tesekkür ederim! Bu kertenkeleler artık oyun oynamadıgımızı biliyor!",
+      "PraiseText": "Bizim tarafımızda gerçek bir kahraman!=Belki bu canavarlarla mücadele edebiliriz.=Ve sadece Tuatara degil.=Bu toprakların canavar yönetiminden arınmıs oldugunu hayal edin!"
+    },
+    "141": {
+      "OfferText": "Örümcek zehrine karsı panzehirimin örümcek dislerine ihtiyacı var",
+      "ActiveText": "Bana örümcek disleri getirirsen panzehir yapabilirim.=@Bu kesinlikle ise yarayacaktır.=Bu büyük örümcekler eskiden burada yasamıyordu.=@Bazı kötü büyüler yüzünden bozulmuslar.=Bu yüzden sihirden nefret ediyorum, her zaman bir seyleri bozar.=Simyayı daha çok tercih ederim.",
+      "ReturnText": "Tesekkür ederim, artık panzehiri bitirebilirim",
+      "PraiseText": "Bu örümceklerden kurtulmak yıllar alacak.=Eger nereden geldiklerini bulabilirsek."
+    },
+    "142": {
+      "OfferText": "Biz sizin türünüzün hilelerini anlıyoruz. Kendinizi Muhafız'a sunun ya da çeligin tadına bakın.",
+      "ActiveText": "Müdürün tüm yabancıları onaylaması gerekiyor.=@Sen insansın!=Sen de öylesin, bu arkadas oldugumuz anlamına gelmez.=@Ama buraya nasıl geldin?=Burada dogdum.=@Anlamıyorum, Goblin Sürüsü…=Hiçbir ordu hakkında hiçbir sey bilmiyorum.=Ya Müdür'le görüsürsünüz ya da sizinle ayrılırsınız.=Gerçi Müdür hiç süphesiz seni yollayacaktır.=Sizin türde bir sorun aramıyoruz.",
+      "ReturnText": "Dur, yabancı, yagmacılar ve haydutlarla doyduk.",
+      "PraiseText": "Bunu nasıl görecegiz?"
+    },
+    "143": {
+      "OfferText": "Yabancı, senin tipini biliyorum. Burada sana sabrımız yok.",
+      "ActiveText": "Seni tanımıyorum ama yoluna gitsen iyi olur.=@Ben Kral'dan geldim.=@Ellyria Baronlugunun yeniden kurulmasına yardım etmek için buradayım.=Kralınızın bizimle hiçbir ilgisi yok.=Ve aynı hikayeyi söyleyen pek çok haydut gördük.=Bela istemiyorum, bu yüzden digerleriyle birlikte ormana gidin.=@Ormanda insan haydutları mı var?=Evet, orada sizin türünüzden bolca bulacaksınız.=@Benim türüm degil.=Yani diyorsun.=Gördügümde inanacagım.",
+      "ReturnText": "Yabancı, sasırdım. Güzel kasabamıza bir hizmette bulundun."
+    },
+    "144": {
+      "OfferText": "Haydutlar onların sizin memleketinizden gelen askerler oldugunu söylüyor.",
+      "ActiveText": "Denizin ötesindeki bir krallıktan geldigini iddia ediyorsun.=@Bu dogru. Kral tarafından gönderildim.=Hiçbir kralı tanımıyorum ama diger adamlar da aynısını söyledi.=@Anlamıyorum, nereden geldin?=@Bu kasabanın yıkıldıgını sanıyordum.=Hayır, hayır, gayet iyi durumdayız.=Denizin öte yanından gelen yagmacılar ve akıncılar hariç.=Görünüse göre sizin krallıgınızdan.=@Daha fazla sorum var...=Haydut arkadaslarının icabına baktıgında buna cevap verecegim.=@Ben haydut degilim!=Evet, öyleler ve onlar sizin topraklarınızdan.=@Peki, onlarla ilgilenecegim.",
+      "ReturnText": "Geri döndün mü? Yani belki sen digerleri gibi degilsin."
+    },
+    "145": {
+      "OfferText": "Arkadaslarını Wolf's End'den Mezarlık Tepesi'ne gönderdim. İstedikleri takdirde oraya yerlesebilirler.",
+      "ActiveText": "Siz Kurt Burnu halkına burada yer yok.=@Nereden geldin peki?=Benim halkım 40 yıl önce buraya yerlesti.=Köle oldugumuz çok uzak bir ülkeden geldik.=Artık özgür ve müreffeh bir hayat yasıyoruz.=@Ama canavarlar! Goblinler, ejderhalar, ölümsüzler…=Biz kendi hakkımızı koruyoruz.=Arkadaslarını Wolf's End'den Mezarlık Tepesi'ne gönderdim.=Yerlesecek yeni topraklar arıyorlarsa, onlara sahip olabilirler.=@Bir Mezarlık mı?=Dilenciler seçici olamazlar.",
+      "ReturnText": "Burada oldugunuz için yıldızlara tesekkür edin! Nephit'in kara büyüsü geri döndü!",
+      "PraiseText": "Babam halkımızı kölelikten kurtardı.=@Nereden geldin?=Asla gidemeyecegin bir yere dostum.=Kelimelerin ötesinde korkunç bir yerde.=@Ejderhalardan ve goblinlerden nasıl kurtuldunuz ve…=Güvenligimiz bizim endisemizdir.=Büyük fedakarlıklar yaptık.=Ama bunlar gerekliydi.=Halkımı ne pahasına olursa olsun korudum.=Belki de kendi ailen için endiselenmelisin."
+    },
+    "146": {
+      "OfferText": "Komiser su anda burada degil yabancı.",
+      "ActiveText": "Geri döndün.=@Köprüyü geçerek kaleye girmem gerekiyor.=Büyülü kalkanın nasıl çalıstıgını yalnızca Komiser biliyor.=Bu kalkan düsmanlarımıza karsı ana korumamızdır.=@Kahya nasıl bu kadar güçlü bir büyü yarattı?=Bilmiyorum, bu onun isi.=Ama bizi yıllardır çogunlukla güvende tuttu.=@Çogunlukla güvenli mi?=Her yıl birkaç kisi kayboluyor ama çok fazla degil.=Komiser Hasat Ritüeli için malzeme topluyor.=Onu bulmak istiyorsan git koruması Gunter'la konus.",
+      "ReturnText": "Bu haydutlar bizi daha önce hiç rahatsız etmemisti. Onları kızdırdın mı?"
+    },
+    "147": {
+      "OfferText": "Komiser, Hasat Ritüeli'ne hazırlanmak için o magaraya gitti.",
+      "ActiveText": "Komiseri rahatsız etmemelisiniz.=@Bu ritüel köprüdeki kalkana güç veriyor mu?=Bence de.=Bunun nasıl çalıstıgını yalnızca Komiser biliyor.=@Bu güçlü bir büyü.=Komiser buraya geldigimizden beri halkımızı uzun süre korudu.=@Köprüyü geçme konusunda onunla konusmam gerekiyor.=O içeride.=Ama çok mesgul görünüyorsa onu rahatsız etmeyin.=Önemli isler yapıyor.",
+      "PraiseText": "Komiserle konustun mu?"
+    },
+    "148": {
+      "ActiveText": "Komiserin karanlık güçlere taptıgını mı söylüyorsunuz?=@O, insanlarınızı eski bir tanrıya kurban ediyor.=Hiç bir fikrim yoktu!=@Ögrenilecek daha çok sey var. Evi nerede?=Tam orada, kasaba meydanının dısında.=Acele edin, ona baska kimin yardım ettigini bulmalısınız.=Komiser, kötü tanrılarla anlasmalar yapıyor...=Bunu hiç hayal etmemistim.",
+      "ReturnText": "Komiserin kötülügü ortaya çıkınca çözmemiz gereken çok sey var."
+    },
+    "149": {
+      "OfferText": "Komiserin günlügüne göre tarikatı dagın zirvesine kurbanlar götürüyordu.",
+      "ActiveText": "Tarikatın hayatta kalanları dagda bırakma ihtimali var.=@Muhtemelen. En azından orada daha fazla tarikatçı var.=Adamlarımdan bazılarını arastırmaları için gönderiyorum.=@Ben de onlara katılacagım.=@Meylour'un tarikatı hâlâ o sihirli kalkanı koruyor.=@Köprüyü geçmek için Meylour'u yenmem gerekiyor.=O zaman daglarda halkımla bulus.=Ama dikkatli olun, orada ne oldugunu bilmiyoruz.",
+      "ReturnText": "Kesif gezisinin geri kalanı dagın daha yukarısında."
+    },
+    "150": {
+      "OfferText": "Cadı Yagarah, Nephit'le is birligi içinde olabilir!",
+      "ActiveText": "Felbridge Komiseri, Mezarlık Tepesi'ne yerlesmenin güvenli olacagını söyledi.=@Açıkçası öyle degil.=Ölüler bu sabah mezarlarından dirilmeye basladı!=@Nephit'in çalısmasına benziyor.=Evet öyle ama bir cadı hakkında bilgi aldık.=Adı Yagarah ve Nephit'le çalısıyor olabilir.=Buranın dogusundaki bir mozolede saklandıgını düsünüyoruz.=@Nephit'in herhangi bir arkadası benim düsmanımdır.",
+      "ReturnText": "Beni kurtardıgın için tesekkür ederim",
+      "PraiseText": "Gnole'lar onlarca yıldır insanlardan nefret ediyor.=Yardım için Nephit'e basvurmaları sürpriz degil."
+    },
+    "151": {
+      "OfferText": "Gnole'lar ve Hortlaklar korkutucu bir ittifak kurdular.",
+      "ActiveText": "Gnole'lar ve insanlar eskiden müttefikti.=Yıllar önce kölelikten kurtulmak için birbirimize yardım etmistik.=Ancak daha sonra her iki taraf da kontrolün kendisinde olmasını istedi.=O zamandan beri kavga ediyoruz.=@Ve simdi Nephit ile is birligi içindeler.=Ölümsüz müttefiklerin sonunda bizi tekrar kölelestirmelerine izin verecegini düsünüyor olmalılar.=@Onlar haklı olabilir.=Karl Tilly'nin mezarında daha fazla gnol ve daha fazla ölümsüz bulacaksınız.",
+      "ReturnText": "Harika is! Umarım bu Nephit'in ve Gnoles'un planlarını bosa çıkarır."
+    },
+    "152": {
+      "OfferText": "Nephit'in hayalet hizmetkarlarından birini Cornelius Hocke'nin mezarı hakkında sorguya çektim.",
+      "ActiveText": "Cornelius Hocke'nin mezarında bir ölümsüz faaliyet fırtınası var.=@Nephit'in eski mezarlara karsı bir ilgisi var ve Hocke ailesi için çalısıyordu.=Nephit'in son enkarnasyonunu yenmis olabilirsin...=Ancak ölümsüzlerin huzursuzlugu giderek artıyor.=@Nephit, fiziksel bir formu olmasa bile seytani büyüsünü kullanıyor.=Tüm isaretler Nephit'in Cornelius Hocke'nin mezarında bir seyler yaptıgını gösteriyor.=@O zaman bu benim bir sonraki duragım.",
+      "ReturnText": "Nephit gerçekten bir seytan, kendisi için kadim kan davasını yürütmeni sagladı."
+    },
+    "153": {
+      "OfferText": "Nephit'in ölüleri diriltmek için kullandıgı bu Periler konusunda endiseleniyorum.",
+      "ActiveText": "Hiç bu demetler gibi büyü görmemistim.=Faaliyet gösteren baska bir mezar daha var.=@Nephit'in baska bir numarası mı yoksa gerçek bir sey mi?=Oraya gitmeden söylemenin imkanı yok.=Oradayken perdeler hakkında daha fazla bilgi edinmeye çalısın.=@Ne yapabilecegime bakacagım."
+    },
+    "154": {
+      "ActiveText": "Nephit'in planının ne oldugunu anladın mı?",
+      "ReturnText": "Nephit'i durdurdugunuz için tesekkür ederiz. Umarım bir an önce isler normale döner"
+    },
+    "155": {
+      "OfferText": "Bu toprakları halkının adına geri almana yardım ettigim için gurur duyuyorum.",
+      "ActiveText": "Felbridge'deki eski dostlarıma burada senin adamlarınla ​​kalacagımı söyleyebilirsin.",
+      "ReturnText": "Bir kez daha geri döndün. Orada ne yaptıysan burada da bir seyler yapılmıs.",
+      "PraiseText": "Burada yaptıgınız her sey için tesekkür ederiz!"
+    },
+    "156": {
+      "OfferText": "Her yerde gnol'lar var! Daha güvenli bir yere ihtiyacımız var.",
+      "ActiveText": "Komiser bizi buraya göndererek bize hiçbir iyilik yapmadı.=Her yerde gnollar ve ölümsüzler var.=@Daha iyi bir operasyon tabanına ihtiyacınız var.=Yakınlarda saglam bir depo var…=Ama burası gnollarla dolu.=@Çok uzun sürmeyecek. Gnole'larla ben ilgilenecegim.",
+      "ReturnText": "Tesekkürler! O gnol'lar gittikten sonra depoyu devralacagız."
+    },
+    "157": {
+      "OfferText": "Tilly atalarım uzun zaman önce burada lordlardı ama simdi aile mezarlıgımda ölüler yükseliyor.",
+      "ActiveText": "Atalarıma saygılarımı sunmak istedim.=Ama Nephit'in kötü büyüsü digerlerini oldugu gibi benim ailemi de lanetledi.=@Nephit'in kötülügü derinlik tanımaz.=@Atalarınızı huzurlarına kavusturacagım.",
+      "ReturnText": "Tesekkür ederim. Ailemin huzur içinde olmasına sevindim.",
+      "PraiseText": "Aile mezarımı temizlediginiz için tekrar tesekkür ederim."
+    },
+    "158": {
+      "OfferText": "Nephit'in icabına bakılıyor ama Gnole'lar kalıyor.",
+      "ActiveText": "Gnole kalesi dogudadır.=@Nephit olmadan daha az tehdit olustururlar.=Ama hâlâ kristal madenlerine erisimleri var.=@Bu, Nephit'in demetlerini yeniden yaratabilecekleri anlamına geliyor.=Veya Nephit'i canlandırın.=@Her iki durumda da durdurulmaları gerekiyor.",
+      "PraiseText": "Kristaller güvende, artık ısık yok."
+    },
+    "159": {
+      "OfferText": "Gnole'ların onları ölümsüzlerden koruyan tuhaf eserleri var.",
+      "ActiveText": "Eger yapabilirsen, bana gnolları ölümsüzlerden koruyan o tuhaf eserleri getir.=Eger onlara sahip olsaydık bu bölgeye güvenli bir sekilde yerlesmemiz çok daha kolay olurdu.",
+      "ReturnText": "Tesekkürlerim! Bunlarla ölümsüzleri uzakta tutabiliriz.",
+      "PraiseText": "Tekrar tesekkürler, bu tuhaf yadigârlar gerçekten de ölümsüzleri uzaklastırıyor."
+    },
+    "160": {
+      "OfferText": "Burada da yükselen ölümsüzlerin sorunu ne?",
+      "ActiveText": "Yine Kurt Burnu gibi!=Burada da ölüler diriliyor.=@Bununla ugrasıyorum, korkma.",
+      "ReturnText": "Tesekkür ederim! Yardımınız için çok minnettarız",
+      "PraiseText": "Sen degerli bir kahramansın. Yardımın için tesekkürler"
+    },
+    "170": {
+      "OfferText": "Dikkatli olun, her yerde goblinler var.",
+      "ActiveText": "Yakındaki magaralarda bol miktarda goblin var.=@Daha fazla goblin! Ben onlarla ilgilenecegim.=Meylour Tarikatı ile isbirligi içinde olduklarını mı düsünüyorsun?=@Savasta kralları öldürüldügünden goblinler lidersizdir.=@Eminim onları alacak kadar kötü olan herkese hizmet edeceklerdir.",
+      "ReturnText": "Güzel, goblinlerin arasından geçmeyi basardın.",
+      "PraiseText": "Yolu açtıgın için tesekkürler!"
+    },
+    "171": {
+      "OfferText": "Hayatta kalanları aramadan önce bu bölgeyi goblinlerden korumamız gerekiyor.",
+      "ActiveText": "Yakındaki tünellerde büyük bir goblin gücü var.=@Birden fazla goblin warren'ı geçerek yoluma devam ettim.=Burada ne yapıyorlar, merak ediyorum.=@İddiaya girerim savası kaybettikleri için artık çaresizce müttefik arıyorlar.=@Meylour Kültü onları ele geçirmis olabilir.=@Onların pisligini arastıracagım ve gerçegi kesfedecegim.",
+      "ReturnText": "Moai uyandı!"
+    },
+    "172": {
+      "ActiveText": "O kılıcın çıkarılması heykellerin konusmaya baslamasına neden oldu!=@Gerçekten mi? Ne diyorlar?=Onlar Meylour tarafından susturulmus kadim tas elementaller.=Meylour tarikatının halkımıza korkunç seyler yaptıgını söylüyorlar.=@Nasıl yardımcı olabilirim?=Moai'yle konus.=Her biri önemli bir seyi ortaya çıkardı.=@Hemen onlara danısacagım!",
+      "ReturnText": "Bu Moai ruhları Meylour'dan gerçekten nefret ediyor."
+    },
+    "173": {
+      "OfferText": "Türünüzden bazıları hâlâ bir zamanlar oldugu gibi yasayabilir.",
+      "ActiveText": "Sizin türünüzden bazılarının nereye götürüldügünü biliyorum.=@Sen nesin? Biraz ruh mu?=Biz bu dagın kadim koruyucularıyız.=Meylour bizi tahtlarımızdan devirdi.=@Hayatta kalanlar nerede?=Eger yasıyorlarsa Meylour'un igrenç tapınaklarından birindeler demektir.=Acele etmelisin, yoksa onların zamanı gelir.=@Yoldayım!",
+      "ReturnText": "Meylour, elli yıl önceki derinliklerden öfkeyle yükseldi.",
+      "PraiseText": "Meylour, elli yıl önceki derinliklerden öfkeyle yükseldi."
+    },
+    "174": {
+      "OfferText": "Halkınızın kaderini bilmek istiyorsanız onlarla yüzlesmelisiniz.",
+      "ActiveText": "Tepegözler her zaman böyle degildi.=Meylour onların eski formlarını bozdu.=Onlar onun yüksek rahipleri ve sadık yardımcılarıdır.=Kalelerinde Meylour'un sırlarını arayın.",
+      "PraiseText": "Meylour sayılamayacak kadar eskidir ve tüm canlılardan nefret eder."
+    },
+    "175": {
+      "OfferText": "Gnole'lar çaresizlik içinde Meylour'a dönüyor.",
+      "ActiveText": "Gnole'ların normalde tanrılara sevgisi yoktur.=Ama onlara ihanet ettikleri için insanlardan nefret ediyorlar.=@Onlara kim ihanet etti?=Felbridge'in insanları bir zamanlar onların müttefikiydi.=Komiser onlara ihanet etti.=Simdi intikam için Meylour'a dönüyorlar.=@İronik. Komiser Meylour'a da tapıyordu.=Kötü tanrılar herkesi yozlastırır.",
+      "ReturnText": "Meylour umursamaz tasın özüdür, tüm yasamın lanetidir.",
+      "PraiseText": "Meylour umursamaz tasın özüdür, tüm yasamın lanetidir."
+    },
+    "176": {
+      "OfferText": "Gnole sefi dagın zirvesinde Meylour'a tapıyor.",
+      "ActiveText": "Gnole'ları tamamen bitirebilirsin.=Ama bilmelisin ki…=Meylour'un gnole liderine tuhaf bir sey yaptıgına inanıyorum.=Yeterince uzun yasayan Gnole'lar canavarca güçlere sahip olabilirler.=@O kadar fazla zamanı olmadıgından emin olmaya çalısacagım.",
+      "ReturnText": "Meylour'un takipçileri öfkeyle dagı kazıyorlar."
+    },
+    "177": {
+      "OfferText": "Goblinler ve tepegözler dagları kazıyorlar.",
+      "ActiveText": "Bölgede terk edilmis bazı madenler var.=Goblinler onları genisletiyor…=Ama altın aramıyorlar gibi görünüyor.=@Altın aramıyor musun?=Hayır, akıllarında Büyük Bir İs var gibi görünüyor.=@Meylour için herhangi bir goblin çalısması kötü haberdir.=@Buna bir son verecegim."
+    },
+    "178": {
+      "ActiveText": "Meylour Damarları olarak bilinen bu madenler bir zamanlar Dünya Titanına aitti.=Simdi Vezrinn'in adananları onları ele geçirdi=Büyülü cevher Alurit'i ve Kalbi arıyorlar=Eseri ele geçirmek ve Meylour Kılıcı'nı etkinlestirmek için hepsini yenmeniz gerekecek."
+    },
+    "179": {
+      "ActiveText": "Meylour Damarları olarak bilinen bu madenler bir zamanlar Dünya Titanına aitti.=Simdi Vezrinn'in adananları onları ele geçirdi=Büyülü cevher Alumite'yi ve Kalbi arıyorlar=Eseri ele geçirmek ve Meylour Kılıcı'nı etkinlestirmek için hepsini yenmeniz gerekecek."
+    },
+    "180": {
+      "ActiveText": "Meylour Damarları olarak bilinen bu madenler bir zamanlar Dünya Titanına aitti.=Simdi Vezrinn'in adananları onları ele geçirdi=Büyülü cevher Alumite'yi ve Kalbi arıyorlar=Eseri ele geçirmek ve Meylour Kılıcı'nı etkinlestirmek için hepsini yenmeniz gerekecek."
+    },
+    "181": {
+      "ActiveText": "Emerald Glades'e ulasmak için buranın dogusundaki ilk yoldan ilerleyin=Doguya dogru ilerlemeye devam edin",
+      "ReturnText": "Madenlerden geçtigine göre güçlü bir kahraman olmalısın!",
+      "PraiseText": "Halkımızı yeniden bir araya getirdiginiz için tesekkür ederiz!"
+    },
+    "182": {
+      "OfferText": "Uthor'un Enfes Kreasyonları",
+      "ActiveText": "Kapalı=İzinsiz girenler yok edilecek",
+      "ReturnText": "Uthor'un Enfes Kreasyonları=İzinsiz girenler yok edilecek=Kapalı",
+      "PraiseText": "Uthor'un Enfes Kreasyonları=İzinsiz girenler yok edilecek=Kapalı"
+    },
+    "183": {
+      "OfferText": "Uthor'un Enfes Kreasyonları",
+      "ActiveText": "Demir ocagı Stormshard Zirveleri'nde gizli kalıyor.",
+      "ReturnText": "Uthor'un Enfes Kreasyonları=Demirhane bulundu.",
+      "PraiseText": "Uthor'un Enfes Kreasyonları=Demirhane bulundu."
+    },
+    "184": {
+      "OfferText": "Bu goblin burun halkaları kaliteli çelikten yapılmıs.",
+      "ActiveText": "Goblin Brutes'ta burun halkaları bulabilirsiniz.=Bunlar için sana iyi para ödeyecegim.",
+      "ReturnText": "Tesekkürler, bunları temizleyecek adamı tanıyorum."
+    },
+    "185": {
+      "OfferText": "Bu daglar Alurit minerali bakımından zengindir.",
+      "ActiveText": "Tuhaf kaya yaratıkları Alurit içeriyor.=Büyülü silahlar için kullanabiliriz…=Büyülü zırh…=Büyülü tencere…=Her seyi büyüledi!=Felbridge parlayacak.=Ve ikimiz de kâr edecegiz.",
+      "ReturnText": "Tesekkür ederim! Felbridge'deki demirci bunun için güzel bir bedel ödeyecek.",
+      "PraiseText": "Yardımınız için tekrar tesekkürler!"
+    },
+    "186": {
+      "OfferText": "Bu Gnomlar beni delirtiyor!",
+      "ActiveText": "Bu sinir bozucu Gnomlar magaralarda saklanıyor.=Geceleri gelip malzemelerimizi çalıyorlar.",
+      "ReturnText": "Tesekkür ederim, belki simdi baskasını rahatsız ederler!"
+    },
+    "187": {
+      "OfferText": "Lütfen örümcek sorunumuzda bize yardım edin",
+      "ActiveText": "Örümcekler her yerdeymis gibi görünüyor!=Lütfen bize yardım edin!",
+      "ReturnText": "Tesekkür ederim, belki artık geceleri uyuyabilirim.",
+      "PraiseText": "Yardımınız için tekrar tesekkürler!"
+    },
+    "188": {
+      "OfferText": "Meylour'un insanlarımıza yaptıgı korkunç bir sey.",
+      "ActiveText": "O tepegözlerin bir zamanlar komsum olduguna inanamıyorum.=Komiserin dehseti on yıllar boyunca devam etti.=Lütfen onların acı çeken ruhlarını dinlendirin.=Onları Meylour'dan ancak ölüm kurtarabilir.",
+      "ReturnText": "Sonunda özgür olduklarını duyduguma sevindim, tesekkürler."
+    },
+    "189": {
+      "OfferText": "Gnole'lar saga sola hırsızlık yapıyor.",
+      "ActiveText": "Gnole'lar parlak seyleri sever.=Yıllardır bizden çalıyorlar.",
+      "ReturnText": "Vay, bak ne kadar buldun! Çok tesekkürler!",
+      "PraiseText": "Yardımınız için tekrar tesekkürler!"
+    },
+    "190": {
+      "OfferText": "Meylour'un Ashen Dryad'ları Ur-Tree'i kusatıyor!",
+      "ActiveText": "Meylour'un Ashen Dryad'larından biri Dogu'ya kaçtı.=Senden kaçtıgını mı anlıyorum?=@Dagdan yeni geldim.=@Meylour insanlarınızı canavarlara dönüstürüyor.=Yasayan Dag zaten türümün çogunu yok etti.=@Meylour istedigini yaparsa tüm yasamı yok edecek.=Ashen Dryad'ı takip et.=Onu yakalamak Meylour'un planlarını daha da açıga çıkaracak.",
+      "ReturnText": "Tesekkür ederim ve sizi gönderdigi için Wildbark'a tesekkür ederim!",
+      "PraiseText": "Halkımıza yardım ettiginiz için tesekkür ederiz!"
+    },
+    "191": {
+      "OfferText": "Meylour'un yozlasmıs Dryad'ları Ur-Tree'i istila etti!",
+      "ActiveText": "Meylour'un iblisleri bizi agaçtan sürdü.=Onun bozuk bitkileri ve alevleri her yerdedir.=@Meylour tarikatının bu agacı yok etmesine izin vermeyecegim.=Acele etmelisin, duman kokusu alıyorum!",
+      "ReturnText": "Tesekkür ederim ama agaç henüz güvende degil."
+    },
+    "192": {
+      "OfferText": "Meylour'un igrençlikleri köklerden içeri sızdı.",
+      "ActiveText": "Meylour Rahipleri daha fazla ates gönderecek.=@Nereden geldiler?=Tapınaklarından burayı kazdılar.=@Beni tünele dogru yönlendir.=:@Oradan artık gelmeyeceginden emin olacagım.",
+      "ReturnText": "Meylour her seyin ölmesini istiyor. Her sey."
+    },
+    "193": {
+      "OfferText": "Antik tapınaga gidin ve Meylour tarikatçılarını alt edin",
+      "ActiveText": "Meylour rahipleri baska bir ritüel daha hazırlıyorlar.=@Asla pes etmezler.=Meylour'un Kalbine giden bir yol bulmalısın.=@Meylour'un Kalbi? Bu da ne?=Meylour'un gücünün yattıgı yer burasıdır.=Yerini yalnızca rahipleri biliyor.=@O zaman bana sunu söylemelerini saglayacagım...=@Öyle ya da böyle.",
+      "ReturnText": "Meylour Kültü neredeyse yenilgiye ugratıldı!"
+    },
+    "195": {
+      "OfferText": "Meylour'un tarikatının sonuncusu korkuyla siniyor.",
+      "ActiveText": "Neredeyse onları yendin.=@Fakat Meylour'un Kalbi'nin nerede oldugunu hala bilmiyorum.=@Bu son tarikatçıların bana söylemesini saglayacagım.=@Meylour'un terörü sona erecek.",
+      "ReturnText": "Artık nihayet Meylour'u sonsuza dek yok edebilirsin.",
+      "PraiseText": "Meylour'un takipçileri hak ettiklerini buldu."
+    },
+    "196": {
+      "OfferText": "Kül Rengi Dryad'lardan Kara Totemleri toplamamıza yardım edin",
+      "ActiveText": "Onları Ashen Dryads'ta bulabilirsin=Yangın büyüsünden korunmak için onlara ihtiyacımız var.",
+      "ReturnText": "Mükemmel, koruma büyüsünü baslatacagım."
+    },
+    "197": {
+      "OfferText": "Koruma büyüsü için Meylour'un Maskelerine de ihtiyacımız var",
+      "ActiveText": "Lütfen acele edin, rahiplerin saldırılarının püskürtülmesi gerekiyor.",
+      "ReturnText": "Tam ihtiyacımız olan sey. Tesekkür ederim!",
+      "PraiseText": "Artık korunmamız lazım. Tekrar tesekkürler!"
+    },
+    "198": {
+      "OfferText": "Topraklarımızı saran yangınları söndürmemize yardım edebilir misiniz?",
+      "ActiveText": "Yasayan ates her yerde, lütfen onu yok edin.",
+      "ReturnText": "Tesekkür ederim. Simdiden daha iyi nefes alabiliyorum.",
+      "PraiseText": "Umarım topraklarımız bir kez daha yeserir!"
+    },
+    "199": {
+      "OfferText": "Meylour'u yok ederek Uyuyan Topraklar'a giden yolu açık bıraktınız.",
+      "ActiveText": "Meylour'un bariyeri kalkınca kaleye giden yol açıldı.=Benim halkım onlarca yıl önce oradan geldi.=Uyuyan Topraklar'daki kölelik hayatından kaçıyorduk.=Ejderhalar ve Goblinler bizi zincire vurdu.=Artık orada ne oldugunu bilmek mümkün degil.=Meylour'un bariyeri Uyuyan Toprakları bu dünyadan uzakta tutuyordu.",
+      "ReturnText": "Maresal Sythokahn bu kez sadece hayalini degil, yenilgiye ugradı.",
+      "PraiseText": "Ejderhaların tekrar istila etmesini engelledin.=Ama asagıda baska neler oldugunu kim bilebilir?"
+    },
+    "200": {
+      "OfferText": "Liderimiz Titus, ejderhalarla savasmanın bir yolunu bulmak için Gözlemevi'ne gitti.",
+      "ActiveText": "O ejderhayı öldürdügün için tesekkür ederim.=@Siz kimsiniz?=Sigismund Hocke'un kesif gezisindeydik.=@Kurt Burnu'nun insanları gibi mi?=Evet, tamamen aynı.=Goblinlerin arasından geçerek kaleye dogru savastık.=Sigismund kampı korumamız için bizi bıraktı.=O ve sövalyeleri asagıya indiler.=Portaldan geçtiler.=@Ve o zamandan beri burada sıkısıp kaldın.=Bilge Titus bize yardım etti.=Ejderha lejyonu geldiginde onları durdurmanın bir yolunu bulmaya gitti.=Onu bulmalısın.",
+      "PraiseText": "Uyuyan Topraklar'da Sigismund Hocke'ye ne oldugunu hâlâ merak ediyorum."
+    },
+    "201": {
+      "ActiveText": "Nephit, Eterik Gözlemevi'nden kadim bir ritüel arıyor.=İkimiz de hayattayken bunu istedi.=Böyle bir güce asla güvenmedim ona.=@Bu ritüel nedir?=Korkunç, kadim tanrılarla temasa geçer.=@Meylour gibi. Bunu neden istesin ki?=Bilmiyorum ama bu kötü bir fikir.=Gerçekten çok kötü bir fikir.=Berbat bir fikir.=@Anladım. Onu durduracagım.",
+      "ReturnText": "Nephit'in ritüeli kullanmasını engelleyin."
+    },
+    "202": {
+      "OfferText": "Sen onunla dövüstükten sonra Nephit surların üzerinde belirdi.",
+      "ActiveText": "Sanırım Nephit ritüeli buldu?=@Onda var, evet.=Nedenini bilmiyorum ama onu kullanacak.=Belki de bunun onu hayata döndürecegini umuyor.=@Bu mümkün mü?=Belki, ama bu canavarca bir varolus olurdu.=Acele edin, o ögrenmeden onu durdurun.",
+      "PraiseText": "Nephit batıya, Kaleye gitti!"
+    },
+    "203": {
+      "ActiveText": "Ötesinde Uyuyan Topraklara açılan kapı yatıyor=Baron Hocke'un bilgeleri, geçidi kapatmak için güçlü bir Kapak Tası yarattı.=Dünyalar arasındaki yolculugu sınırlandırır.=Nephit, Kapak Tası'nı kırmaya ve enerjisini ritüeli için kullanmaya çalısacak.=@Bunu yaparsa ne olur?=Diyarlar arası yolculuk durdurulamaz olacak.=@Daha fazla ejderha, goblin ve daha kötüsü.=Nephit'in ritüelinin hepimizi öldürmedigini varsayarsak.",
+      "ReturnText": "En azından Nephit artık yok.",
+      "PraiseText": "Geliyor=@Ne geliyor?=Hersey=Zenginlikler ve Kabuslar=Canavarlar ve Büyü=İyi ve Kötü=Hepsi asagıda ve simdi hepsi uyanık"
+    },
+    "204": {
+      "OfferText": "Taht odasında magaraya açılan gizli bir kapı var",
+      "ActiveText": "Ejderhanın askerlerinin bir kısmı orada saklanıyor.=Dikkatli olun, Baron Hocke'un golemlerinden biri onların emrinde.",
+      "PraiseText": "Bu Baron Hocke'un Bas Paladin'iydi.=Golem muhafızlarının ilki.=Böyle bir mucizenin saptırıldıgını görmek utanç verici."
+    },
+    "205": {
+      "OfferText": "O kadar çok Tuatara askeri var ki, sayılarını azaltabilir misin?",
+      "ActiveText": "Kalenin her yerindeler=Asagıdan geldiler=@Daha önce onların türüyle savasmıstım.=@Onlarla ben ilgilenecegim.",
+      "ReturnText": "Tesekkür ederim, belki sonunda burayı yeniden insa edebiliriz.",
+      "PraiseText": "Tesekkürler, burada kendimi daha güvende hissediyorum."
+    },
+    "206": {
+      "OfferText": "Dread Paladin maskeleri bu golemleri kontrol etmenin sırrıdır.",
+      "ActiveText": "Ejderha generali Dehset Paladin Golemlerinin kontrolünü ele geçirdi.=Baron Hocke'un özel korumasıydılar.=Maskeleri onları kontrol etmenin anahtarıdır.=Bulabildigin herhangi bir seyi bana getirirsen belki kontrolü yeniden saglayabilirim.",
+      "ReturnText": "Tesekkürler, hemen bunları sökmeye baslayacagım.",
+      "PraiseText": "Maskeleri topladıgınız için tekrar tesekkürler."
+    },
+    "207": {
+      "OfferText": "Nephit yenilir ancak Kapak Tası yok edilir. Uyuyan Topraklar'a baglantı açık",
+      "ActiveText": "Uyuyan Topraklar Nelerdir?=Hersey=Zenginlikler ve Kabuslar=Canavarlar ve Büyü=İyi ve Kötü=Hepsi asagıda ve simdi hepsi uyanık=@Zenginlik mi?=Ha, hâlâ bir maceracısın=Oraya gidiyorsun, degil mi?=Peki o zaman sana eslik edecegim=O kapı bizi oraya götürmeli=Yoksa bizi parçalara ayır=@Bu kadar konusma yeter, hadi gidelim",
+      "ReturnText": "Ah. Bunu basardın ve tek parça gibi görünüyorsun. Harika!"
+    },
+    "208": {
+      "OfferText": "Bu büyük piramitler halkımızın eseri degil.",
+      "ActiveText": "Piramitleri insa eden Magi bu toprakları uzun zaman önce terk etti.=Onların kalıntılarının bir kısmını kendimize aldık.=Ancak digerleri güçlü ruhlar tarafından korunmaya devam ediyor.=Eger aradıgınız kadim bilgiyse…=Ve kadim büyülerle yüzlesecek kadar cesursun…=O zaman Umbral Tapınagın derinliklerini batıya dogru çekmelisiniz.",
+      "ReturnText": "Sen bir hayatta kalansın ve bir alimsin. Umarım çok degerli seyler ögrenmissinizdir."
+    },
+    "209": {
+      "OfferText": "Yakındaki köye gidin ve Kasabanın Yaslısıyla tanısın",
+      "ActiveText": "Uyuyan Topraklara hos geldiniz #tn#.=@Harika bir yere benziyor=Bu ülkeye Shazari denir.=Yüzyıllar boyunca ejderhalar burada hüküm sürdü.=@Ejderhaların zalim ustalar olduguna bahse girerim.=Korkunç ve zalimce, evet.=Ama buradaki insanlar artık özgür.=Git kendini kasabanın büyügüne tanıt.",
+      "ReturnText": "Umarım İmparator'un egemenligi altına girmekten kaçınmanın bir yolunu buluruz."
+    },
+    "211": {
+      "OfferText": "Geldiginiz için tesekkürler #tn#. Yardımına ihtiyacımız var.",
+      "ActiveText": "Mütevazı Kovah'a hos geldiniz.=@Sizinle tanısmak bir onur, Yaslı.=O seref tamamen bana ait.=Ejderhaların Katili ve Yolun Açıcısı…=Gerçek harikalar yarattın.=@Elimden geleni yapıyorum.=Bu konuları daha çok konusacagız…=Ama simdi yardımın için yalvarıyorum.=Seelie büyüleri tapınagımıza musallat oluyor ve orayı igrençliklerle dolduruyor.=Ejderha yönetimi altında geçen yüzyıllar, bize onlarla savasacak savasçı bırakmadı.=@Bununla ilgilenmek benim için bir zevk olacak, Yaslı.",
+      "ReturnText": "Artık köyümüz hayatta kalacak!"
+    },
+    "212": {
+      "OfferText": "Diger ejderhalar gitti ama pis Çukur Lordu kaldı.",
+      "ActiveText": "Kendine dikkat et yabancı...=Çukur Lordu eline geçen herkesi kölelestirir.=@Yaslı Kenken beni gönderdi.=@Ejderhaları öldürme konusunda biraz deneyimim var.=Aslında bu nadir görülen bir beceri.=Ancak bu kurnaz yaslı ejder yalnız degil.=Onun için savasan köleleri var ki bu yeterince kötü.=Son zamanlarda baska canavarlar da edindi.=Takviye kuvvetlerinin nereden geldigini bilmiyorum.=Ama tuhaf büyüleri var.",
+      "ReturnText": "Çukur Lordu öldürüldü! Nihayetinde özgür bir ülkeyiz.",
+      "PraiseText": "Hala Pit Lord'un takviyelerini nereden aldıgını merak ediyorum.=Birisi onu desteklemeye çalısıyordu.=Birisi Shazari'nin özgür halklarına sorun çıkarıyor."
+    },
+    "213": {
+      "OfferText": "Yeni bir güç burada, Shazari'deki ejderha lejyonlarının yerini almaya çalısıyor.",
+      "ActiveText": "Tam da normal ticarete devam edebilecegimizi düsündügüm sırada.=@Goblin. Ne istiyorsun?=İnsan! Arkadaslarım ve müttefiklerim ile özgürce ticaret yapmak istiyorum.=@Peki seni durduran ne?=Erkeklerden daha uzun olan tuhaf yeni savasçılar.=Onların Seelie Ogres olabilecegine inanıyorum.=@Selie nedir?=Büyü konusunda uzman, kadim bir peri ırkı.=Dokundukları her seyi bozuyorlar.=Dogudaki duvarın ötesinde kamp kurmuslar.=@Arastıracagım...=@Ama dogruyu söylesen iyi olur, goblin.=Tesekkür ederim kahraman! İyi sanlar!",
+      "ReturnText": "Demek Seelie'ydi. Kesinlikle İmparatorun yardımına ihtiyacımız olacak!",
+      "PraiseText": "Valhaven'dan birini bul.=Seelie gibi bir düsmana karsı İmparator'un yardımına ihtiyacımız var.=Hiç sansımız yok!"
+    },
+    "214": {
+      "OfferText": "Yaslı goblin seni bir Valhaven elçisi bulman için gönderdi, degil mi?",
+      "ActiveText": "Ben kesinlikle büyükelçi degilim.=@O zaman ne isimiz var yabancı?=Seelie'nin arkasında bizzat İmparatorun olduguna inanıyorum.=@Bu ciddi bir suçlama.=Bu yüzden kanıta ihtiyacım var.=@İmparator neden bu toprakları yozlastırsın?=Ejderhaların gitmesiyle Shazari'yi imparatorluguna eklemenin yollarını arar.=Antik mezarlıklar sorunun kaynagı gibi görünüyor.=Bakalım İmparatorluk'un müdahalesine dair herhangi bir isaret bulacak mısın?",
+      "ReturnText": "Ben de bu kadar düsündüm! İmparator her zaman acımasız ve asagılıktır.",
+      "PraiseText": "Benimle iskelede bulus.=@Neden?=Böylece seni gizlice Valhaven'a sokabilirim elbette.=İmparatorun planlarını burada bozdunuz.=En yeni düsmanınızla savasırken yardıma ihtiyacınız olacak.=@Ve sen o yardımcı mısın?=Çok yetenekli arkadaslarım var.=Tekneye gelin."
+    },
+    "215": {
+      "OfferText": "Buradaki eski piramitler ilgi çekici olabilir.",
+      "ActiveText": "Bu piramitleri antik Seelie insa etti.=Bunlardan biri hâlâ mühürlü durumda.=İçeride harikalar ve tehlikeler oldugunu hayal ediyorum.=@Harikalar neden her zaman tehlikeyle birlikte gelir?=Seelie'ler her zaman bu sekilde zalimdi.",
+      "ReturnText": "Kulaga hayal ettigimden daha muhtesem geliyor!",
+      "PraiseText": "Tehlikeleri de göze aldın.=@Çok tuhaf bir yerdi.=Artık savunmaları yendiginize göre…=Sırlarını arastırmak için biraz zaman harcayacagım.=@İyi sanlar.=@Burası benim için çok soguk ve sert."
+    },
+    "216": {
+      "OfferText": "Seelie geldiginde halkımdan bazıları Batı'ya kaçtı.",
+      "ActiveText": "Eger benim korkulu habercilerimi baska sehirlerde görürsen…=Onlara geri dönmenin güvenli oldugunu söyler misiniz?=Sayende dostum.=@Daha önce hiçbir goblin bana arkadasım demedi.=Peki biz arkadasız!=@Sanırım bu dogru.=@Garip ama gerçek.",
+      "ReturnText": "Tesekkürlerim! Artık Seelie'ler yenildigine göre korkacak daha az seyimiz var.",
+      "PraiseText": "Sanırım artık biz goblinler barısçıl yollarımıza dönebiliriz.=@Goblinler gerçekten barısı seviyor mu?=Uzun zaman önce bunu yapmıstık.=Sanırım yine yapacagız.=@ Kesinlikle öyle umuyorum."
+    },
+    "217": {
+      "OfferText": "Kuraklık tehdidi olmasa bile seyahat artık güvenli degil",
+      "ActiveText": "Bugünlerde yollarda o kadar çok tehlike var ki=İnsanlar bok böcegi akreplerinin kötü sokmalarıyla ortaya çıkıyor=Yabancı sorununa bir sey yapamam ama en azından akrep sorununu çözebilirim=Eger bana yeterince igne getirirsen panzehir olarak yapabilirim",
+      "ReturnText": "Ah mükemmel! Bu fazlasıyla yeterli!",
+      "PraiseText": "Bu anti-zehir birçok hayat kurtaracak=Sen de epeyce ısırık almıs gibi görünüyorsun=Hala etrafta dolasmak için ortalama bir gezginden daha sert malzemeden yapılmıs olmalısınız=Bizim için yaptıgınız her sey için tesekkür ederiz!=Gökyüzü yolculugunuzda sizi korusun"
+    },
+    "218": {
+      "OfferText": "Belki bizim için baska bir sey yapabilirsin",
+      "ActiveText": "Bu yaban arısı kovanlarını görüyor musun?=Gerçekten kontrolden çıktılar ve esekarısı çok yaklasan insanlara saldırıyor=Birkaçını yıkabilseydiniz yollar çok daha güvenli olurdu",
+      "ReturnText": "Harika!",
+      "PraiseText": "Görünüse göre bir iki ısırık almıssın=Senin için bununla ben ilgileneyim=Fedakarlıgınızı gerçekten takdir ediyoruz=Gökyüzü yolculugunuzda sizi kutsasın."
+    },
+    "219": {
+      "OfferText": "Kaçıs planımız basarısız oldu. Goblin kölelerin hiçbiri bunu basaramadı",
+      "ActiveText": "Hafıza tılsımlarını bulun ve onları ailelerine götüreyim=Cesurca savastılar ama yeterince güçlü degillerdi=Aileleri biraz kapanmayı hak ediyor",
+      "ReturnText": "Hepsini buldun mu?",
+      "PraiseText": "Ailelerinin cesurca savastıklarını bilmelerini saglayacagım=Köle çukurlarında hepsini tanırdım=Hepsi gerçekten harika adamlar=Yaptıkların için tesekkür ederim"
+    },
+    "220": {
+      "OfferText": "Seelie dis telleri beni büyülüyor",
+      "ActiveText": "Su Seelie korselerinden bir sürü olsaydı...=Onları parçalayıp kopyalamaya baslayabilirim.=Tabii ki daha küçük boyut.=Ama Goblinler böyle bir sey için iyi para öderler.=Bana elinden geleni getir.",
+      "ReturnText": "Hımm. Artık tam olarak yeni degil. Ah pekala, o senin maasın",
+      "PraiseText": "Görmek?=Herkes kâr ediyor!"
+    },
+    "221": {
+      "OfferText": "Bunun bir daha olmasını önleyebiliriz",
+      "ActiveText": "Bana yeteri kadar mukus bezi getirin, ben de bir kovucu hazırlayabilirim=Bu böcekleri tapınaktan uzak tutacak",
+      "ReturnText": "Bu çok ise yarayacaktır. Bunu zahmetin için al",
+      "PraiseText": "Vay, bu sey berbat kokuyor=Yine de böcekleri korkutup kaçıracaktır, bu yüzden buna deger=Gökyüzü yolculugunuzda sizi korusun"
+    },
+    "223": {
+      "OfferText": "İmparatoru ve onun Seelie müttefiklerini durdurmak için benimle Valhaven'a gelmeniz gerekecek.",
+      "ActiveText": "İmparator simdi senin pesinde olacak.=@İmparatorunuz entrikacı bir iblis gibi görünüyor.=Bir zamanlar harika bir adamdı.=Aniden ortaya çıktı ve Goblinleri kovdu.=Sonra ejderhaları durdurdu.=Ama son yıllarda zalimlesti.=@Ve Seelie ile is birligi içinde görünüyor.=Evet, bu dogru.=Bu güne kadar ne kadar kötü olduklarını bilmiyordum.=Gel, acele etmeliyiz.=Sanslıysak İmparator geldigimizi bilmez."
+    },
+    "224": {
+      "ReturnText": "Siz Rathbone'un bahsettigi Gezgin olmalısınız. Hos geldin."
+    },
+    "225": {
+      "OfferText": "İmparator adınızı biliyor ve ölmenizi istiyor.",
+      "ActiveText": "Acaba onun öfkesini kazanmak için ne yaptın?=@Shazari'deki planlarını bozdum.=Bu onu memnun edemezdi.=Ancak Shazari'ye karsı komplo kurdugunu asla kabul etmeyecekti.=Ve basınıza halka açık bir ödül koydu.=Oglu Yüce Büyücü gerçegi ögrenecek.=@Neden bana söylesin ki?=Babasının gözünden düsmüs gibi görünüyor.=Sarayın dısındayken onu bulun, konusabilir.=Sık sık sokakları dolasıyor, hırsızları kendi davasına yetistiriyor."
+    },
+    "226": {
+      "ReturnText": "Demek İmparator sizin dünyanızdan!=Kökenleri her zaman bir gizemdi.=On yıl önce Goblinleri devirip kendini kurdu.=Seelie müttefikleri sayesinde durdurulamaz oldu.",
+      "PraiseText": "Burada harika seyler yapmanın kaderinde oldugunu hissedebiliyorum=İmparator'un zırhında bir çatlak bulmak için Mab ile birlikte çalısın"
+    },
+    "227": {
+      "OfferText": "Simdi bundan sonra ne yapacagımıza karar vermek için Ma Mab'ın yardımına ihtiyacımız var.",
+      "ActiveText": "Sigismund Hocke, Seelie sayesinde İmparator oldu.=Kara büyüleri onu koruyor ve tahtını güvence altına alıyor.=Kogusları için bir sayaca ihtiyacımız var.=Ma Mab, Seelie hakkında tanıdıgım herkesten daha fazlasını biliyor.=Onunla konusun ve herhangi bir fikri olup olmadıgına bakın.",
+      "ReturnText": "Merhaba genç adam|hanımefendi"
+    },
+    "229": {
+      "OfferText": "Vermyn çeteleri İmparatorun Goblinleri devirmesine yardım etti.",
+      "ActiveText": "İmparatorun senden neden nefret ettigini simdi anlıyorum.=@Sigismund Hocke cesur bir kahramandı.=@Tahtını istedigimi düsünüyor.=Yapıyor musun? Onun Baronlugunu aldın.=@Baronlugunu goblinlere bıraktı.=Buradaki insanları da kızdırdı.= Vermyn çeteleri İmparator'un yönetimi altında sıkıntı yasıyor.=Ona karsı ayaklanacaklardı…=Oluk Lordu'nun İmparator'a sadık kalması dısında.=Asagı in ve Oluk Lordu'nu alt et.=O zaman Vermyn kesinlikle bize katılacak.",
+      "ReturnText": "Vermyn çeteleri kargasa içinde!=Oluk Lordu'nun gitmesiyle bazıları zaten bizim tarafımızda."
+    },
+    "230": {
+      "OfferText": "İmparator, tahtını güvence altına almak için ruhunu Seelie'ye sattı.",
+      "ActiveText": "Uyuyan Topraklar'da ilk uyananlar Seelie'lerdi.=Bir zamanlar bilge ve cömertlerdi…=Ancak zaman onları acımasız ve baskalarını kıskandırdı.=Güçlerini Goblinlere ve Ejderhalara kaptırdılar…=Sigismund Hocke, Goblin Krallarını yenmek için onlara basvurdu.=Ve simdi onun Valhaven'daki yönetimini destekliyorlar.=Seelie büyüsüne karsı koymak için Seelie büyüsü gerekir.=Kayıp Düsler Tapınagı'na gidin...=Orada İmparator'un korumalarına karsı kullanabilecegim bir sey bulabilirsin.",
+      "ReturnText": "Tapınak sanıldıgından daha tehlikeliymis gibi görünüyor.=İmparator sırlarını iyi koruyor olmalıydı.=Artık onun Seelie büyüsü hakkında çok daha fazla sey biliyorum.=Seni sarayının dıs muhafazalarından geçirebilmeliyim.=Ama onunla yüzlestiginde tek basına olacaksın.=Savunmasız ama yine de çok tehlikeli."
+    },
+    "231": {
+      "OfferText": "Uyuyan Topraklara izinizi bıraktınız.",
+      "ActiveText": "Artık Uyuyan Topraklar'ın kaderinin bir parçasısınız.=Eylemleriniz rüyalar dünyasında yankılanıyor.=Kaderinle yüzlesmeye cesaret edersen...=İlksel Rüyaya girebilir ve gerçegi ögrenebilirsiniz.=@Ne hakkındaki gerçek?=Kendiniz ve dünyadaki yeriniz hakkındaki gerçek.",
+      "ReturnText": "Geri döndün. Umarım çok sey ögrenmissindir.",
+      "PraiseText": "Görünüse göre rüyalarında bir ejderha saklanıyordu.=@Bunun mümkün oldugunu bile bilmiyordum.=Pek çok tuhaf seyin mümkün oldugunu göreceksiniz.=Uyuyan Topraklar'ın yalnızca küçük bir kısmını gördünüz.=@Ve daha fazlasını ziyaret etmeyi hedefliyorum.=@Aklımda ejderhalar olmadan uyuyabildigim sürece.=Tek sorununuz buysa sanslısınız.=Bu dünya artık seni tanıyor.=Ve bunun senin için iyi bir sey oldugundan emin degilim."
+    },
+    "232": {
+      "OfferText": "Simdi isin zor kısmına geçelim.",
+      "ActiveText": "İmparator sarayında siniyor.=Onun tüm destegini aldın.=Halk ona karsı ayaklanıyor.=İmparator Sigismund'un terör saltanatı bugün sona eriyor.",
+      "ReturnText": "Özgürlük!",
+      "PraiseText": "Burada ne yaptın…=sana yeterince tesekkür edemem=Valhaven yüzyıllardır ilk kez özgür.=Goblinler, Ejderhalar ve Seelie'nin hepsi yenildi.=Sonunda barısı ögrenecegiz."
+    },
+    "233": {
+      "OfferText": "Artık Seelie koguslarını geçebildiginize göre saldırı zamanı.",
+      "ActiveText": "İmparator'la yüzlesmeden önce onu zayıflatmamız gerekiyor.=Onunla yüzlesmeden önce tüm destegini alın.=Kızları onun ordusuna ve gizli polisine komuta ediyor.=Bunları sarayın dogu ve batı kanatlarında bulabilirsiniz.=Ayrıca İmparatorluk Muhafız Komutanı'nı da yenmeniz gerekiyor.=Kıslada yasıyor.",
+      "ReturnText": "Artık İmparator'un savunması kargasa içinde.=Saldırmanın zamanı geldi!",
+      "PraiseText": "Etkilemek konusunda asla basarısız olmuyorsun #tn#."
+    },
+    "237": {
+      "OfferText": "Buradaki insan çetelerinin yüksek standartları var.",
+      "ActiveText": "Vermyn çeteleri senin tarafında...=Bu çok etkileyici.=Ancak insan çeteleri farklıdır.=Liderlere yakın olmak istiyorsanız…=Onlara kendini kanıtlamak zorunda kalacaksın.=@Yeterince dayanıklıyım, endiselenme.=Acımasız bir mücadeleye hazır olun.=O dövüs çukurunda sana saldıracaklar.=@Ben halledebilirim.=@Muhtemelen.",
+      "ReturnText": "Artık herkes senden bahsediyor #tn#."
+    },
+    "238": {
+      "OfferText": "Bu bir hileydi! Senin ve asi arkadaslarının pesindeler!",
+      "ActiveText": "Çete liderleri bize tuzak kurdu.=@Neden bahsediyorsun?=Sen ringdeyken onlar hareket halindeydi.=Çeteler isyancıların sıgınagına dogru ilerliyor.=Acele ederek geri dönmelisiniz…=Odryn'i öldürmeden önce onları kesin!",
+      "ReturnText": "Çete liderlerini durdurmasaydın ölmüs olurdum."
+    },
+    "240": {
+      "OfferText": "Ben bir zamanlar imparatorluk mensubuydum…",
+      "ActiveText": "İmparator aklını kaybedip Seelie ile iliski kurmaya baslamadan önce.=Vicdanımın pesinden gittim ve bu bana her seye mal oldu.=Simdi korudugumuz bu sokakları terörize etmelerini izliyorum.=Sokaklardan çıkaracagın her Imperial'ın parasını ödeyecegim.",
+      "ReturnText": "Bu o kadar çok ki… Al sunu.",
+      "PraiseText": "Geriye kalan tüm param bu kadardı=Hayır, al. Adil bir amaç için savasıyorsun=Her seyin eski haline dönmesi için dünyadaki tüm altını takas ederdim=sanırım bunun zamanı geçti=Artık hiçbir sey eskisi gibi olmayacak."
+    },
+    "241": {
+      "OfferText": "Bu da ne?! Evet! Körü körüne soydular!",
+      "ActiveText": "Vermyn mah bahçesine baskın düzenledi ve mah mantarlarını çaldı.=Bu mantarları güveç ve doyurucu mantarlı turta yapmak için kullanıyorum.=Bütün bu İmparatorluk saçmalıklarıyla birlikte sokaklardaki insanların geçinmek için mantarlara ihtiyacı var!=Kimsenin açlıktan ölmesini istemiyorum, ya sen?",
+      "ReturnText": "Hoo-evet! Mah mantarları buldun!",
+      "PraiseText": "Artık mantarlı turta pisirmeye geri dönebilirim=Ve Mantarlı Bamya=Ve mantarlı güveç=Ve mantarlı sufle=Ve Mantar Dolması Safran Sürprizi=Ve Mantar ala Kelp=Ve bakalım. Mantarlarla yapabilecegim daha çok sey oldugunu biliyorum"
+    },
+    "242": {
+      "OfferText": "İmparatorluklar yeterince kötü ama çeteler en kötü fırsatçı türlerindendir.",
+      "ActiveText": "Koruma ve gasp santajı yürütüyorlar.=Kendilerini savunamayan masum sivilleri avlamak.=Sanırım birinin onlara günlerinin bittigini gösterme zamanı geldi.",
+      "ReturnText": "Tesekkür ederim gezgin.",
+      "PraiseText": "Bu, insanların endiselenmesi gereken bir tehditten daha az."
+    },
+    "243": {
+      "OfferText": "İmparatorun burada yaptıgı bir trajedi ama her sey kaybolmadı",
+      "ActiveText": "Sehrin kendisini lekeleyen Seelie pisliginin agırlıgı altından haykırdıgını hissedebiliyorum.=Zehir, panzehir yapmanın anahtarı oldugundan, iblis gözyasları da Valhaven'ın aurasını temizlemenin anahtarıdır.",
+      "ReturnText": "Çok yasa dostum.",
+      "PraiseText": "İsleri yoluna koymak için uzun bir sürece baslayacagım…=Senin gibi asil bir ruhla tanısmak kalbimi sevindiriyor"
+    },
+    "244": {
+      "OfferText": "İmparatoru ve onun Seelie müttefiklerini durdurmak için benimle Valhaven'a gelmeniz gerekecek.",
+      "ActiveText": "İmparator simdi senin pesinde olacak.=@İmparatorunuz entrikacı bir iblis gibi görünüyor.=Bir zamanlar harika bir adamdı.=Aniden ortaya çıktı ve Goblinleri kovdu.=Sonra ejderhaları durdurdu.=Ama son yıllarda zalimlesti.=@Ve Seelie ile is birligi içinde görünüyor.=Evet, bu dogru.=Bu güne kadar ne kadar kötü olduklarını bilmiyordum.=Gel, acele etmeliyiz.=Sanslıysak İmparator geldigimizi bilmez."
+    },
+    "245": {
+      "ReturnText": "Siz Rathbone'un bahsettigi Gezgin olmalısınız. Hos geldin."
+    },
+    "246": {
+      "OfferText": "İmparator adınızı biliyor ve ölmenizi istiyor.",
+      "ActiveText": "Acaba onun öfkesini kazanmak için ne yaptın?=@Shazari'deki planlarını bozdum.=Bu onu memnun edemezdi.=Ancak Shazari'ye karsı komplo kurdugunu asla kabul etmeyecekti.=Ve basınıza halka açık bir ödül koydu.=Oglu Yüce Büyücü gerçegi ögrenecek.=@Neden bana söylesin ki?=Babasının gözünden düsmüs gibi görünüyor.=Sarayın dısındayken onu bulun, konusabilir.=Sık sık sokakları dolasıyor, hırsızları kendi davasına yetistiriyor."
+    },
+    "247": {
+      "ReturnText": "Demek İmparator sizin dünyanızdan!=Kökenleri her zaman bir gizemdi.=On yıl önce Goblinleri devirip kendini kurdu.=Seelie müttefikleri sayesinde durdurulamaz oldu.",
+      "PraiseText": "Burada harika seyler yapmanın kaderinde oldugunu hissedebiliyorum=İmparator'un zırhında bir çatlak bulmak için Mab ile birlikte çalısın"
+    },
+    "248": {
+      "OfferText": "Simdi bundan sonra ne yapacagımıza karar vermek için Ma Mab'ın yardımına ihtiyacımız var.",
+      "ActiveText": "Sigismund Hocke, Seelie sayesinde İmparator oldu.=Kara büyüleri onu koruyor ve tahtını güvence altına alıyor.=Kogusları için bir sayaca ihtiyacımız var.=Ma Mab, Seelie hakkında tanıdıgım herkesten daha fazlasını biliyor.=Onunla konusun ve herhangi bir fikri olup olmadıgına bakın.",
+      "ReturnText": "Merhaba genç adam|hanımefendi"
+    },
+    "250": {
+      "OfferText": "Vermyn çeteleri İmparatorun Goblinleri devirmesine yardım etti.",
+      "ActiveText": "İmparatorun senden neden nefret ettigini simdi anlıyorum.=@Sigismund Hocke cesur bir kahramandı.=@Tahtını istedigimi düsünüyor.=Yapıyor musun? Onun Baronlugunu aldın.=@Baronlugunu goblinlere bıraktı.=Buradaki insanları da kızdırdı.= Vermyn çeteleri İmparator'un yönetimi altında sıkıntı yasıyor.=Ona karsı ayaklanacaklardı…=Oluk Lordu'nun İmparator'a sadık kalması dısında.=Asagı in ve Oluk Lordu'nu alt et.=O zaman Vermyn kesinlikle bize katılacak.",
+      "ReturnText": "Vermyn çeteleri kargasa içinde!=Oluk Lordu'nun gitmesiyle bazıları zaten bizim tarafımızda."
+    },
+    "251": {
+      "OfferText": "İmparator, tahtını güvence altına almak için ruhunu Seelie'ye sattı.",
+      "ActiveText": "Uyuyan Topraklar'da ilk uyananlar Seelie'lerdi.=Bir zamanlar bilge ve cömertlerdi…=Ancak zaman onları acımasız ve baskalarını kıskandırdı.=Güçlerini Goblinlere ve Ejderhalara kaptırdılar…=Sigismund Hocke, Goblin Krallarını yenmek için onlara basvurdu.=Ve simdi onun Valhaven'daki yönetimini destekliyorlar.=Seelie büyüsüne karsı koymak için Seelie büyüsü gerekir.=Kayıp Düsler Tapınagı'na gidin...=Orada İmparator'un korumalarına karsı kullanabilecegim bir sey bulabilirsin.",
+      "ReturnText": "Tapınak sanıldıgından daha tehlikeliymis gibi görünüyor.=İmparator sırlarını iyi koruyor olmalıydı.=Artık onun Seelie büyüsü hakkında çok daha fazla sey biliyorum.=Seni sarayının dıs muhafazalarından geçirebilmeliyim.=Ama onunla yüzlestiginde tek basına olacaksın.=Savunmasız ama yine de çok tehlikeli."
+    },
+    "252": {
+      "OfferText": "Uyuyan Topraklara izinizi bıraktınız.",
+      "ActiveText": "Artık Uyuyan Topraklar'ın kaderinin bir parçasısınız.=Eylemleriniz rüyalar dünyasında yankılanıyor.=Kaderinle yüzlesmeye cesaret edersen...=İlksel Rüyaya girebilir ve gerçegi ögrenebilirsiniz.=@Ne hakkındaki gerçek?=Kendiniz ve dünyadaki yeriniz hakkındaki gerçek.",
+      "ReturnText": "Geri döndün. Umarım çok sey ögrenmissindir.",
+      "PraiseText": "Görünüse göre rüyalarında bir ejderha saklanıyordu.=@Bunun mümkün oldugunu bile bilmiyordum.=Pek çok tuhaf seyin mümkün oldugunu göreceksiniz.=Uyuyan Topraklar'ın yalnızca küçük bir kısmını gördünüz.=@Ve daha fazlasını ziyaret etmeyi hedefliyorum.=@Aklımda ejderhalar olmadan uyuyabildigim sürece.=Tek sorununuz buysa sanslısınız.=Bu dünya artık seni tanıyor.=Ve bunun senin için iyi bir sey oldugundan emin degilim."
+    },
+    "253": {
+      "OfferText": "Simdi isin zor kısmına geçelim.",
+      "ActiveText": "İmparator sarayında siniyor.=Onun tüm destegini aldın.=Halk ona karsı ayaklanıyor.=İmparator Sigismund'un terör saltanatı bugün sona eriyor.",
+      "ReturnText": "Özgürlük!",
+      "PraiseText": "Burada ne yaptın…=sana yeterince tesekkür edemem=Valhaven yüzyıllardır ilk kez özgür.=Goblinler, Ejderhalar ve Seelie'nin hepsi yenildi.=Sonunda barısı ögrenecegiz."
+    },
+    "254": {
+      "OfferText": "Artık Seelie koguslarını geçebildiginize göre saldırı zamanı.",
+      "ActiveText": "İmparator'la yüzlesmeden önce onu zayıflatmamız gerekiyor.=Onunla yüzlesmeden önce tüm destegini alın.=Kızları onun ordusuna ve gizli polisine komuta ediyor.=Bunları sarayın dogu ve batı kanatlarında bulabilirsiniz.=Ayrıca İmparatorluk Muhafız Komutanı'nı da yenmeniz gerekiyor.=Kıslada yasıyor.",
+      "ReturnText": "Artık İmparator'un savunması kargasa içinde.=Saldırmanın zamanı geldi!",
+      "PraiseText": "Etkilemek konusunda asla basarısız olmuyorsun #tn#."
+    },
+    "258": {
+      "OfferText": "Buradaki insan çetelerinin yüksek standartları var.",
+      "ActiveText": "Vermyn çeteleri senin tarafında...=Bu çok etkileyici.=Ancak insan çeteleri farklıdır.=Liderlere yakın olmak istiyorsanız…=Onlara kendini kanıtlamak zorunda kalacaksın.=@Yeterince dayanıklıyım, endiselenme.=Acımasız bir mücadeleye hazır olun.=O dövüs çukurunda sana saldıracaklar.=@Ben halledebilirim.=@Muhtemelen.",
+      "ReturnText": "Artık herkes senden bahsediyor #tn#."
+    },
+    "259": {
+      "OfferText": "Bu bir hileydi! Senin ve asi arkadaslarının pesindeler!",
+      "ActiveText": "Çete liderleri bize tuzak kurdu.=@Neden bahsediyorsun?=Sen ringdeyken onlar hareket halindeydi.=Çeteler isyancıların sıgınagına dogru ilerliyor.=Acele ederek geri dönmelisiniz…=Odryn'i öldürmeden önce onları kesin!",
+      "ReturnText": "Çete liderlerini durdurmasaydın ölmüs olurdum."
+    },
+    "261": {
+      "OfferText": "Ben bir zamanlar imparatorluk mensubuydum…",
+      "ActiveText": "İmparator aklını kaybedip Seelie ile iliski kurmaya baslamadan önce.=Vicdanımın pesinden gittim ve bu bana her seye mal oldu.=Simdi korudugumuz bu sokakları terörize etmelerini izliyorum.=Sokaklardan çıkaracagın her Imperial'ın parasını ödeyecegim.",
+      "ReturnText": "Bu o kadar çok ki… Al sunu.",
+      "PraiseText": "Geriye kalan tüm param bu kadardı=Hayır, al. Adil bir amaç için savasıyorsun=Her seyin eski haline dönmesi için dünyadaki tüm altını takas ederdim=sanırım bunun zamanı geçti=Artık hiçbir sey eskisi gibi olmayacak."
+    },
+    "262": {
+      "OfferText": "Bu da ne?! Evet! Körü körüne soydular!",
+      "ActiveText": "Vermyn mah bahçesine baskın düzenledi ve mah mantarlarını çaldı.=Bu mantarları güveç ve doyurucu mantarlı turta yapmak için kullanıyorum.=Bütün bu İmparatorluk saçmalıklarıyla birlikte sokaklardaki insanların geçinmek için mantarlara ihtiyacı var!=Kimsenin açlıktan ölmesini istemiyorum, ya sen?",
+      "ReturnText": "Hoo-evet! Mah mantarları buldun!",
+      "PraiseText": "Artık mantarlı turta pisirmeye geri dönebilirim=Ve Mantarlı Bamya=Ve mantarlı güveç=Ve mantarlı sufle=Ve Mantar Dolması Safran Sürprizi=Ve Mantar ala Kelp=Ve bakalım. Mantarlarla yapabilecegim daha çok sey oldugunu biliyorum"
+    },
+    "263": {
+      "OfferText": "İmparatorluklar yeterince kötü ama çeteler en kötü fırsatçı türlerindendir.",
+      "ActiveText": "Koruma ve gasp santajı yürütüyorlar.=Kendilerini savunamayan masum sivilleri avlamak.=Sanırım birinin onlara günlerinin bittigini gösterme zamanı geldi.",
+      "ReturnText": "Tesekkür ederim gezgin.",
+      "PraiseText": "Bu, insanların endiselenmesi gereken bir tehditten daha az."
+    },
+    "264": {
+      "OfferText": "İmparatorun burada yaptıgı bir trajedi ama her sey kaybolmadı",
+      "ActiveText": "Sehrin kendisini lekeleyen Seelie pisliginin agırlıgı altından haykırdıgını hissedebiliyorum.=Zehir, panzehir yapmanın anahtarı oldugundan, iblis gözyasları da Valhaven'ın aurasını temizlemenin anahtarıdır.",
+      "ReturnText": "Çok yasa dostum.",
+      "PraiseText": "İsleri yoluna koymak için uzun bir sürece baslayacagım…=Senin gibi asil bir ruhla tanısmak kalbimi sevindiriyor"
+    },
+    "265": {
+      "OfferText": "Büyük Maresal Sythokahn'ı yendin ama geriye bir ejderha kaldı.",
+      "ActiveText": "Ejderha Sythokahn bu toprakları yüzyıllarca yönetti.=@O ve lejyonu artık toz ve kemikten ibaret.=Senin sayende.=@Bana tesekkür ederim.=Ama geriye bir ejderha kaldı, Çukur Lordu.=Kölelerin kendi zevki için dövüstügü Arena'yı yönetiyor.=@Sanırım bu Pit Lord'la tanısmamın zamanı geldi.=Git Zumwalt'ı gör, o arenada dövüsürdü.=O sana daha fazlasını söyleyebilir.",
+      "ReturnText": "Dikkatli ol yabancı, Pit Lord'un adamları her yerde."
+    },
+    "266": {
+      "OfferText": "Goblinlerin son sorunlarımıza kimin sebep oldugunu biliyor olabilecegini duydum.",
+      "ActiveText": "Yaslı goblinle konusmalısın.=@Goblinler! Sorundan baska bir seye neden olmuyorlar.=@Yakınlarda bir savas partisi varsa onlarla ilgilenecegim.=Hayır dostum, hayır!=Bu goblinler barısçıldır.=@Goblinler barıs kelimesini bilmiyor.=Bunlar öyle, güven bana.=Buradaki kötülügün gerçek kaynagını ögrenmek istiyorsanız onlarla konusun.=@Yargıyı saklı tutacagım.=@Ama bahse girerim bulacagımız tek sebep bunlardır.",
+      "ReturnText": "Ah, hos geldin dostum! Geldiginiz için tesekkür ederim."
+    },
+    "267": {
+      "OfferText": "Büyük Maresal Sythokahn'ı yendin ama geriye bir ejderha kaldı.",
+      "ActiveText": "Ejderha Sythokahn bu toprakları yüzyıllarca yönetti.=@O ve lejyonu artık toz ve kemikten ibaret.=Senin sayende.=@Bana tesekkür ederim.=Ama geriye bir ejderha kaldı, Çukur Lordu.=Kölelerin kendi zevki için dövüstügü Arena'yı yönetiyor.=@Sanırım bu Pit Lord'la tanısmamın zamanı geldi.=Git Zumwalt'ı gör, o arenada dövüsürdü.=O sana daha fazlasını söyleyebilir.",
+      "ReturnText": "Dikkatli ol yabancı, Pit Lord'un adamları her yerde."
+    },
+    "268": {
+      "OfferText": "Goblinlerin son sorunlarımıza kimin sebep oldugunu biliyor olabilecegini duydum.",
+      "ActiveText": "Yaslı goblinle konusmalısın.=@Goblinler! Sorundan baska bir seye neden olmuyorlar.=@Yakınlarda bir savas partisi varsa onlarla ilgilenecegim.=Hayır dostum, hayır!=Bu goblinler barısçıldır.=@Goblinler barıs kelimesini bilmiyor.=Bunlar öyle, güven bana.=Buradaki kötülügün gerçek kaynagını ögrenmek istiyorsanız onlarla konusun.=@Yargıyı saklı tutacagım.=@Ama bahse girerim bulacagımız tek sebep bunlardır.",
+      "ReturnText": "Ah, hos geldin dostum! Geldiginiz için tesekkür ederim."
+    },
+    "269": {
+      "OfferText": "Bu sehrin çetelerinin çogunlugu insandır ve İmparator'a sadıktır.",
+      "ActiveText": "Ama Skitts'ten onların kazanılabilecegini duydum.=İnsanlar genellikle İmparatoru destekler.=Ama artık Seelie'ye çok güveniyor.=İnsan çeteleri onunla savasacak…=Eger liderlerini devirebilirsek.=Ama liderlerin kim oldugunu bilmiyorum.=Baglantım Skitts bilecek.=Git bakalım ne öneriyor?",
+      "ReturnText": "Demek bas belası olan sensin, öyle mi?"
+    },
+    "270": {
+      "OfferText": "Bu sehrin çetelerinin çogunlugu insandır ve İmparator'a sadıktır.",
+      "ActiveText": "Ama Skitts'ten onların kazanılabilecegini duydum.=İnsanlar genellikle İmparatoru destekler.=Ama artık Seelie'ye çok güveniyor.=İnsan çeteleri onunla savasacak…=Eger liderlerini devirebilirsek.=Ama liderlerin kim oldugunu bilmiyorum.=Baglantım Skitts bilecek.=Git bakalım ne öneriyor?",
+      "ReturnText": "Demek bas belası olan sensin, öyle mi?"
+    },
+    "271": {
+      "OfferText": "Goblin Sefinin kampının nerede oldugunu biliyorum.",
+      "ActiveText": "Goblinler ormanın diger tarafında saklanıyor.=@Orada ne yapıyorlar?=Dedigim gibi saklanıyorum.=Goblinler korkuyla kosuyor.=Ama bas edebilecegimizden çok daha fazlası var.=Özellikle de tüm bu ölümsüzler aniden ayaga kalkarken.=@Yakında ölümsüzlere ulasacagım.=@Ama ilk önce ilgilenmem gereken goblin katliamı var.=Ormanın içinden ilerleyin ve nehri takip edin.=Orada goblinlerle dolusun.=Bitirince ben yetisirim.",
+      "ReturnText": "Büyük kötü goblini yendin mi? İyi is çıkardın sampiyon!",
+      "PraiseText": "Goblin Sefi'nin kesilmesiyle bu toprakları geri alabiliriz.=Nehrin kenarındaki o mülk çok hos.=Belki oraya bir ev yaparım.=Biraz koyun falan yetistir.=Veya bir maceracı loncası baslatın.=Ya da belki bir han.=Biraz saklanmak için güzel bir yer olurdu.=Barones olabilirim.=Neden?"
+    },
+    "272": {
+      "OfferText": "Goblin Sefinin kampının nerede oldugunu biliyorum.",
+      "ActiveText": "Goblinler ormanın diger tarafında saklanıyor.=@Orada ne yapıyorlar?=Dedigim gibi saklanıyorum.=Goblinler korkuyla kosuyor.=Ama bas edebilecegimizden çok daha fazlası var.=Özellikle de tüm bu ölümsüzler aniden ayaga kalkarken.=@Yakında ölümsüzlere ulasacagım.=@Ama ilk önce ilgilenmem gereken goblin katliamı var.=Ormanın içinden ilerleyin ve nehri takip edin.=Orada goblinlerle dolusun.=Bitirince ben yetisirim.",
+      "ReturnText": "Büyük kötü goblini yendin mi? İyi is çıkardın sampiyon!",
+      "PraiseText": "Goblin Sefi'nin kesilmesiyle bu toprakları geri alabiliriz.=Nehrin kenarındaki o mülk çok hos.=Belki oraya bir ev yaparım.=Biraz koyun falan yetistir.=Veya bir maceracı loncası baslatın.=Ya da belki bir han.=Biraz saklanmak için güzel bir yer olurdu.=Barones olabilirim.=Neden?"
+    },
+    "273": {
+      "OfferText": "Meylour, Ellyria'daki tüm yasam yanana kadar dinlenmeyecek.",
+      "ActiveText": "Meylour ritüeli bozuldu mu?=@Öyle. Meylour'u bulmak için yardımına ihtiyacım var.=Meylour'un kötü büyüsü iz bırakıyor.=Tarikat gücünü serbest bırakmaya çalıstı.=Artık bu gücü kaynagına kadar takip etmenize yardımcı olabilirim.=Dagın kalbinin derinliklerine giden yolu takip edin.=Orada Meylour'u bulacaksınız.=@Orada Meylour'u yok edecegim.",
+      "ReturnText": "Hocke Kalesi'ni mühürleyen sihirli bariyer kaldırıldı."
+    },
+    "274": {
+      "OfferText": "Meylour, Ellyria'daki tüm yasam yanana kadar dinlenmeyecek.",
+      "ActiveText": "Meylour ritüeli bozuldu mu?=@Öyle. Meylour'u bulmak için yardımına ihtiyacım var.=Meylour'un kötü büyüsü iz bırakıyor.=Tarikat gücünü serbest bırakmaya çalıstı.=Artık bu gücü kaynagına kadar takip etmenize yardımcı olabilirim.=Dagın kalbinin derinliklerine giden yolu takip edin.=Orada Meylour'u bulacaksınız.=@Orada Meylour'u yok edecegim.",
+      "ReturnText": "Hocke Kalesi'ni mühürleyen sihirli bariyer kaldırıldı."
+    },
+    "275": {
+      "OfferText": "Kalenizde bir casus yakaladık. Ama kaçtı.",
+      "ActiveText": "Kalenizde bir casus saklanıyordu.=@Ne casusu? Nereden?=Ögrenme sansımız olmadı.=@Nasıl kaçtı?= Bence Maxus Krong'a sormalısın.=@Maxus Krong da kim?= Sözde bir kahraman.=Tutukluyu sorguluyordu.=@Onunla biraz konusacagım.",
+      "ReturnText": "Casus bir kez daha hapiste güvende.",
+      "PraiseText": "Nereden geldigini hâlâ bilmiyoruz.=@Onu sorgulamaya devam et.=@Bu yeni düsmanların kim oldugunu ögrenmem gerekiyor."
+    },
+    "276": {
+      "OfferText": "Yeni evim bitti, yemege gelmelisin.",
+      "ActiveText": "Selalenin yanına yeni bir ev insa ettim. =@Goblin kampının nerede oldugunu mu kastediyorsun? =Evet! Ama tüm goblin pisligini temizledim.=@Kulaga hos geliyor, görmeyi çok isterim.=Ne zaman istersen gel.=@Biraz bal likörü getirecegim.",
+      "ReturnText": "Bu yabani otlardan kurtulmak haftalar alacak.",
+      "PraiseText": "Yok ediciler nereden geldi?@Orada bir yabancı vardı.=@Yiticileri silahlara dönüstürmüstü.=Birisi Hsalt'ın gizli laboratuvarlarına baskın yapıyor gibi görünüyor.=@Bu casuslara karsı tetikte olmam gerekecek."
+    },
+    "277": {
+      "OfferText": "Bazı goblin tüccarları kaçakçının magarasına tasındı.",
+      "ActiveText": "Dost canlısı goblin tüccarları olduklarını söylüyorlar.=@ Kulaga tuhaf geldigini biliyorum...=@Ama dost canlısı goblinler var.=Ben onlara güvenmiyorum.=Gidip o magarada ne yaptıklarını görebilir misin?=@Güven bana, gerçekten güzel goblinler var.=@Ama eger kendini daha iyi hissetmeni saglayacaksa...=@Onları kontrol edecegim.=Hmm. Dikkatli olmak.=Bunlar aldatıcıdır.",
+      "ReturnText": "Gerçekten güzel goblinler var mı? Ha.",
+      "PraiseText": "Sanırım onları sevmeyi ögrenecegim.=@Onları sevmek krakenlerden çok daha kolaydır.=@Ve son krakenin icabına baktım.=Geçen sefer de öyle demistin.=@Bu sefer sonuncusu oldugundan eminim.=Bunun son Kraken oldugundan emin misin?=@Evet, öyle oldugundan oldukça eminim.=@Muhtemelen."
+    },
+    "278": {
+      "OfferText": "Savant dostlarım baglantıyı kaybetti, en kötüsünden korkuyorum.",
+      "ActiveText": "Kral beni ve bilgin arkadaslarımı Nephit'i arastırmaya gönderdi.=@Bu tehlikeli bir konu.=Korkarım haklısın.=Arkadaslarımla irtibatımı kaybettim.=Nefit’in mezarını kazıyorlardı.=@ Bunu iyi biliyorum.=@Better bir bakayım.=@Eger sanslıysak harika bir sey kesfettiler...=@Ve sana haber veremeyecek kadar mesgulüm.=Belki de durum budur.=Belki de hayır.",
+      "ReturnText": "Ne büyük bir kesif!",
+      "PraiseText": "Bu kadim kütüphanenin harikalar ortaya çıkaracagına eminim.=@Görünüse göre bununla ilgilenen sadece biz degiliz.=@Bu casuslar her yerde ortaya çıkıyor."
+    },
+    "279": {
+      "OfferText": "Kayıp Kütüphane'de bir harita bulduk.",
+      "ActiveText": "Bilgin arkadaslarım kütüphanede bir sey kesfettiler.=Rüya mezarında bir çesit gizli oda var.=@Sythokahn'ın rüya formunu nerede yendim?=Evet kazılara basladık.=Buldukları sey ilginizi çekebilir.=@Gidip tehlikeli bir sey bulmadıklarından emin olsam iyi olur.=@Merakınız siz savantların öldürülmesine neden olacaktır.=Bizi korumak için burada oldugun sürece hayır!=@Bir gün kendinizi korumanız gerekecek.",
+      "ReturnText": "Uyuyamıyorum. Bu kabuslar…",
+      "PraiseText": "Tüm savantlar kabuslarla bogusuyor.=@Geçecek.=@Rüya ordularını yendim.=@Ama siz bilginlerin bu tür tehlikelerden uzak durmanız gerekiyor.=Belki de kitaplarımıza sadık kalmalıyız."
+    },
+    "280": {
+      "OfferText": "YAPILACAKLAR",
+      "ActiveText": "YAPILACAKLAR",
+      "ReturnText": "YAPILACAKLAR",
+      "PraiseText": "YAPILACAKLAR"
+    },
+    "281": {
+      "OfferText": "Sen büyük mezar yagmacısısın, degil mi?",
+      "ActiveText": "Firavunların Mezarı'na saygısızlık ettin. =@Orada yasayan seytanı yendim, evet.= İçinden geçtigin sey ailemin mezarıydı.=@Canavarlar onu kirletti, ben degil.=Belki öyledir ama oraya girmem gerekiyor.=Ama o canavarlar geri döndü.=Bana lahit'e kadar eslik et, ben de seni ödüllendirecegim.",
+      "ReturnText": "Sanırım biraz yardımcı oldun.",
+      "PraiseText": "Ne istiyorsun?=@Ben olmasaydım ölmüs olurdun!= Ama sen olmasaydın orada olmazdım.=@Sen olmasaydın orada olmazdım...=Neyi yanlıs yaptıgınızı tartısmayalım.=@Simdi burayı dinle...=İste ödülünüz.=Haydi, tadını çıkar.=Devam edin genç.=Yapacak daha önemli islerim var."
+    },
+    "282": {
+      "OfferText": "O kadar çok iyilik yaptın ki sana bir parti vermek istiyoruz.",
+      "ActiveText": "Kötü, zayıf goblinleri yenmek...=Ejderhaları öldürmek...=Sen gelmis geçmis en iyi kahramansın!=@Bunu söyledigin için tesekkür ederim.=Biz goblinler seni gerçekten takdir ediyoruz.=@Bir goblinin bunu söyledigini duyacagımı hiç düsünmezdim.=Size bir parti vermek istiyoruz.=Tatlılarımız ve bal likörümüz var.=Asagıya inin.=@Çok naziksiniz!",
+      "ReturnText": "Sen! Hayattasın.",
+      "PraiseText": "Hâlâ hayattasın, degil mi?=@Hayır, sana tesekkürler, trog!=Teslim oluyorum!=Bu sadece bir sakaydı!=Lütfen beni öldürme!=@Seni bagıslayacagım ama...=@Uzun bir süre hücrede kalacaksın."
+    },
+    "283": {
+      "OfferText": "Çarsıda büyük bir hasere sorunu yasıyoruz.",
+      "ActiveText": "Magazaları tekrar açmamıza yardım eder misiniz?=@Arenayı alısveris pazarına mı çevirdiniz?=Kan ve bagırsak yerine kilim ve sekerlenmis meyveler.=@Bu kulaga çok daha hos geliyor, iyi is!=Daha güzeldi ama her yerde hasereler var.=@Ne tür zararlılar?=Dev örümcekler, yarasalar, uçan yaratıklar.=Lütfen isimize geri dönmemize yardım edin!=@Burası zaten çok fazla ölüm gördü.=@Senin için isleri yoluna koyacagım.",
+      "ReturnText": "Çok tesekkürler! Senin için her seyin yarısı!",
+      "PraiseText": "Senin için her seyin yarısı!@Tesekkür ederim.=@Sekerlenmis meyveleri severim.=Taze inciri mutlaka denemelisiniz.=@Kalemime bir vaka gönder."
+    },
+    "284": {
+      "OfferText": "Birisi çölü canlandırma planlarımızı mahvediyor",
+      "ActiveText": "Shazari'yi canlandırmak için Ogre Magi vahasından gelen suyu kullanıyoruz.=@Çok akıllı ve cömertsin.=Ejderhaların verdigi hasarı basarıyla geri alıyorduk.=Ama simdi birileri suyumuzu çekiyor.=Ve her yerde etobur bitkiler var!=@Devourers çölde mi?=@Merak etme, onlara nasıl bakacagımı biliyorum.",
+      "ReturnText": "Su yeniden akıyor, tesekkürler!",
+      "PraiseText": "Tesekkür ederim!=@Simdilik sorununuz çözüldü.=@Ama dısarıda sorun yaratmaya çalısan bir su titanı var.=Su titanı nedir?=@Meylour'a benzer bir seyse, onunla tanısmak istemezsin.=@Baska titan konusması duyarsan bana haber ver."
+    },
+    "285": {
+      "OfferText": "Çöldeki bazı kardeslerimin yardıma ihtiyacı var!",
+      "ActiveText": "İki ay önce bir grup yerlesimci çöle gitti.=Bitterfrost ile ticareti açmayı umuyorlar.=Kervansaray için iyi bir yer buldular...=Ama simdi canavarlar onları her taraftan kusatıyor.=@Butterfrost ile ticaret yapmak hepimize fayda saglar.=@Yerlesimlerini güvence altına almalarına yardımcı olacagım.=@Artı, canavarlardan gerçekten nefret ediyorum.",
+      "ReturnText": "Kervansaray güvenlidir.",
+      "PraiseText": "Yardımınız için çok tesekkürler.=@Butterfrost hakkında daha fazla sey ögrenmeyi sabırsızlıkla bekliyorum.=Füme balıklarının enfes oldugu söyleniyor.=@Onların mücevher madenleriyle ilgili hikayelerle daha çok ilgileniyorum."
+    },
+    "286": {
+      "OfferText": "Arkadasın Titus'un piramidinde sorunlar var gibi görünüyor.",
+      "ActiveText": "Kral beni Titus'un yanında çalısmaya gönderdi.=Yapı piramidinde büyük kesifler yaptı.=Ama kontrolü kaybetmesinden korkuyorum.=Veya aklını bile kaybediyor.=@Onun nesi var?=Zamanla kendini kaybetmistir.=Onu ziyaret etmelisin, göreceksin.=@Titus'u hemen ziyaret edecegim.",
+      "ReturnText": "Titus'un zamanı yeniden kontrol altına mı aldı?",
+      "PraiseText": "Titus normale döndü mü?=@Umarım.=@Bu piramit diger çaglara açılan bir kapıdır.=@Kimse için güvenli oldugundan emin degilim."
+    },
+    "287": {
+      "OfferText": "YAPILACAKLAR",
+      "ActiveText": "YAPILACAKLAR",
+      "ReturnText": "YAPILACAKLAR",
+      "PraiseText": "YAPILACAKLAR"
+    },
+    "288": {
+      "OfferText": "YAPILACAKLAR",
+      "ActiveText": "YAPILACAKLAR",
+      "ReturnText": "YAPILACAKLAR",
+      "PraiseText": "YAPILACAKLAR"
+    },
+    "289": {
+      "OfferText": "YAPILACAKLAR",
+      "ActiveText": "YAPILACAKLAR",
+      "ReturnText": "YAPILACAKLAR",
+      "PraiseText": "YAPILACAKLAR"
+    },
+    "290": {
+      "OfferText": "YAPILACAKLAR",
+      "ActiveText": "YAPILACAKLAR",
+      "ReturnText": "YAPILACAKLAR",
+      "PraiseText": "YAPILACAKLAR"
+    },
+    "291": {
+      "OfferText": "YAPILACAKLAR",
+      "ActiveText": "YAPILACAKLAR",
+      "ReturnText": "YAPILACAKLAR",
+      "PraiseText": "YAPILACAKLAR"
+    },
+    "292": {
+      "OfferText": "YAPILACAKLAR",
+      "ActiveText": "YAPILACAKLAR",
+      "ReturnText": "YAPILACAKLAR",
+      "PraiseText": "YAPILACAKLAR"
+    },
+    "293": {
+      "OfferText": "YAPILACAKLAR",
+      "ActiveText": "YAPILACAKLAR",
+      "ReturnText": "YAPILACAKLAR",
+      "PraiseText": "YAPILACAKLAR"
     }
   }
 }

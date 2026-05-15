@@ -553,6 +553,71 @@ async function testExtinguishTheFireProgressesOnGladeEmberKills(): Promise<void>
     );
 }
 
+async function testIronicHuntProgressesOnScorpionKills(): Promise<void> {
+    resetGlobalState();
+    const client = createClient({
+        [String(MissionID.GatherScorpionStingers)]: {
+            state: 1,
+            currCount: 8
+        }
+    }, 'ShazariDesert');
+
+    await destroyEnemy(client, 8471, 'ScarabPredator');
+    await destroyEnemy(client, 8472, 'ScarabScorpion');
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.GatherScorpionStingers)]?.currCount ?? 0),
+        10,
+        'An Ironic Hunt should count scorpion-type enemies toward stingers'
+    );
+    assert.equal(
+        Number(client.character.missions[String(MissionID.GatherScorpionStingers)]?.state ?? 0),
+        2,
+        'An Ironic Hunt should become ready to turn in once enough scorpions are slain'
+    );
+    assert.deepEqual(
+        client.sentPackets
+            .filter((packet) => packet.id === 0x83)
+            .map((packet) => decodeMissionProgressPacket(packet.payload)),
+        [
+            { missionId: MissionID.GatherScorpionStingers, progress: 1 },
+            { missionId: MissionID.GatherScorpionStingers, progress: 1 }
+        ],
+        'An Ironic Hunt should emit additive mission progress packets for scorpion kills'
+    );
+    assert.equal(
+        decodeMissionCompletePacket(
+            client.sentPackets.find((packet) => packet.id === 0x86)!.payload
+        ),
+        MissionID.GatherScorpionStingers,
+        'An Ironic Hunt should notify the client once the stinger objective is complete'
+    );
+}
+
+async function testIronicHuntIgnoresNonScorpionScarabKills(): Promise<void> {
+    resetGlobalState();
+    const client = createClient({
+        [String(MissionID.GatherScorpionStingers)]: {
+            state: 1,
+            currCount: 0
+        }
+    }, 'ShazariDesert');
+
+    await destroyEnemy(client, 8473, 'ScarabSoldier');
+    await destroyEnemy(client, 8474, 'ScarabRogue');
+
+    assert.equal(
+        Number(client.character.missions[String(MissionID.GatherScorpionStingers)]?.currCount ?? 0),
+        0,
+        'An Ironic Hunt should ignore scarab enemies that are not scorpion type'
+    );
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x83 || packet.id === 0x86),
+        false,
+        'An Ironic Hunt should stay silent for unrelated scarab kills'
+    );
+}
+
 async function testHardExtinguishTheFireProgressesOnHardGladeEmberKills(): Promise<void> {
     resetGlobalState();
     const client = createClient({
@@ -1405,6 +1470,8 @@ async function main(): Promise<void> {
     await testRecoverWandsProgressesOnGoblinShamanKills();
     await testGetSpiderFangsProgressesOnSwampSpiderKills();
     await testExtinguishTheFireProgressesOnGladeEmberKills();
+    await testIronicHuntProgressesOnScorpionKills();
+    await testIronicHuntIgnoresNonScorpionScarabKills();
     await testHardExtinguishTheFireProgressesOnHardGladeEmberKills();
     await testBannersOfTheTuataraProgressesOnLizardBannerKills();
     await testHardBannersOfTheTuataraProgressesOnLizardBannerKills();

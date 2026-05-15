@@ -15,13 +15,13 @@
 	</LevelType>
 	<LevelType LevelName="TutorialDungeon">
 		<ZoneSet>NewbieRoad</ZoneSet>
-		<DisplayName>Goblin Kidnappers</DisplayName>
+		<DisplayName>Goblin Kaçıranlar</DisplayName>
 		<RankingsURL>kidnap</RankingsURL>
 		<MusicLoop>D02_MoodLoop_GoblinHideout.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="CraftTownTutorial">
 		<ZoneSet>NewbieRoad</ZoneSet>
-		<DisplayName>I Claim This Keep</DisplayName>
+		<DisplayName>Bu Kaleyi Talep Ediyorum</DisplayName>
 	</LevelType>
 	<LevelType LevelName="GoblinRiverDungeon">
 		<ZoneSet>NewbieRoad</ZoneSet>
@@ -31,13 +31,13 @@
 	</LevelType>
 	<LevelType LevelName="GhostBossDungeon">
 		<ZoneSet>NewbieRoad</ZoneSet>
-		<DisplayName>Nephit's Quest</DisplayName>
+		<DisplayName>Nephit'in Görevi</DisplayName>
 		<RankingsURL>nephit</RankingsURL>
 		<MusicLoop>D03_MoodLoop_Nephit.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="DreamDragonDungeon">
 		<ZoneSet>NewbieRoad</ZoneSet>
-		<DisplayName>The Dragon's Dream</DisplayName>
+		<DisplayName>Ejderhanın Rüyası</DisplayName>
 		<RankingsURL>dragonkey</RankingsURL>
 		<MusicLoop>D01_MoodLoop_DreamDragonLair.mp3</MusicLoop>
 	</LevelType>
@@ -47,49 +47,49 @@
 	</LevelType>
 	<LevelType LevelName="SRN_Mission1">
 		<ZoneSet>SwampRoadNorth</ZoneSet>
-		<DisplayName>Tower of the Tuatara</DisplayName>
+		<DisplayName>Tuatara Kulesi</DisplayName>
 		<RankingsURL>castout</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_09.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="SRN_Mission2">
 		<ZoneSet>SwampRoadNorth</ZoneSet>
-		<DisplayName>Mystery of the Yornak</DisplayName>
+		<DisplayName>Yornak'ın Gizemi</DisplayName>
 		<RankingsURL>yornak</RankingsURL>
 		<MusicLoop>D06_DramaLoop_General2.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="SRN_Mission3">
 		<ZoneSet>SwampRoadNorth</ZoneSet>
-		<DisplayName>Svar's Spite</DisplayName>
+		<DisplayName>Svar'ın Öfkesi</DisplayName>
 		<RankingsURL>svar</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="SRN_Mission4">
 		<ZoneSet>SwampRoadNorth</ZoneSet>
-		<DisplayName>Lair of the Ooyak</DisplayName>
+		<DisplayName>Ooyak İni</DisplayName>
 		<RankingsURL>ooyak</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="SRN_Mission5">
 		<ZoneSet>SwampRoadNorth</ZoneSet>
-		<DisplayName>Citadel of the Vizier</DisplayName>
+		<DisplayName>Vezir Kalesi</DisplayName>
 		<RankingsURL>broodvictor</RankingsURL>
 		<MusicLoop>D05_MoodLoop_General1.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="SRN_Mission6">
 		<ZoneSet>SwampRoadNorth</ZoneSet>
-		<DisplayName>Mindless Queen's Glade</DisplayName>
+		<DisplayName>Akılsız Kraliçe'nin Kayranı</DisplayName>
 		<RankingsURL>mindless</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_09.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="SRN_Mission7">
 		<ZoneSet>SwampRoadNorth</ZoneSet>
-		<DisplayName>The Great Green Svath</DisplayName>
+		<DisplayName>Büyük Yesil Svath</DisplayName>
 		<RankingsURL>svath</RankingsURL>
 		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="SwampRoadConnectionMission">
 		<ZoneSet>SwampRoadNorth</ZoneSet>
-		<DisplayName>Arachnae's Swamp</DisplayName>
+		<DisplayName>Arachnae Bataklıgı</DisplayName>
 		<RankingsURL>arachnae</RankingsURL>
 		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
 	</LevelType>
@@ -109,19 +109,19 @@
 	</LevelType>
 	<LevelType LevelName="BT_Mission2">
 		<ZoneSet>BridgeTown</ZoneSet>
-		<DisplayName>Svagg's Last Stand</DisplayName>
+		<DisplayName>Svagg'ın Son Direnisi</DisplayName>
 		<RankingsURL>svagg</RankingsURL>
 		<MusicLoop>D04_DramaLoop_SpookyForest.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="BT_Mission3">
 		<ZoneSet>BridgeTown</ZoneSet>
-		<DisplayName>The Mouth of Meylour</DisplayName>
+		<DisplayName>Meylour'un Agzı</DisplayName>
 		<RankingsURL>mouth</RankingsURL>
 		<MusicLoop>D04_DramaLoop_SpookyForest.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="BT_Mission4">
 		<ZoneSet>BridgeTown</ZoneSet>
-		<DisplayName>Dereliction of Duty</DisplayName>
+		<DisplayName>Görevi ihmal</DisplayName>
 		<RankingsURL>dereliction</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
 	</LevelType>
@@ -131,79 +131,79 @@
 	</LevelType>
 	<LevelType LevelName="CH_Mission1">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Wither the Witch?</DisplayName>
+		<DisplayName>Cadıyı Soldurmak mı?</DisplayName>
 		<RankingsURL>yagaga</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="CH_Mission2">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Gnole's Storehouse</DisplayName>
+		<DisplayName>Gnole'un Deposu</DisplayName>
 		<RankingsURL>storehouse</RankingsURL>
 		<MusicLoop>D05_MoodLoop_General1.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="CH_Mission3">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Undying Vendetta</DisplayName>
+		<DisplayName>Ölümsüz Kan Davası</DisplayName>
 		<RankingsURL>warslain</RankingsURL>
 		<MusicLoop>D01_MoodLoop_DreamDragonLair.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="CH_Mission4">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Lord Tilly's Rest</DisplayName>
+		<DisplayName>Lord Tilly'nin Dinlenme Yeri</DisplayName>
 		<RankingsURL>pappy</RankingsURL>
 		<MusicLoop>D05_MoodLoop_General1.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="CH_Mission5">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Embodiment of Evil</DisplayName>
+		<DisplayName>Kötülügün Somutlasmısı</DisplayName>
 		<RankingsURL>kamak</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_09.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="CH_Mission6">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Mausoleum of the Wise</DisplayName>
+		<DisplayName>Bilgelerin Mozolesi</DisplayName>
 		<RankingsURL>secret</RankingsURL>
 		<MusicLoop>D06_DramaLoop_General2.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="CH_Mission7">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Rising Damned</DisplayName>
+		<DisplayName>Lanetli Yükseliyor</DisplayName>
 		<RankingsURL>glimpse</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="CH_Mission8">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Gnole's Last Stand</DisplayName>
+		<DisplayName>Gnole'un Son Direnisi</DisplayName>
 		<RankingsURL>dogfather</RankingsURL>
 		<MusicLoop>D03_MoodLoop_Nephit.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="CH_MiniMission1">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Lady Ellen Tilly's Tomb</DisplayName>
+		<DisplayName>Leydi Ellen Tilly'nin Mezarı</DisplayName>
 		<RankingsURL>kyra</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="CH_MiniMission2">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Sir Edmund Tilly's Tomb</DisplayName>
+		<DisplayName>Sir Edmund Tilly'nin Mezarı</DisplayName>
 		<RankingsURL>dwarfkin</RankingsURL>
 		<MusicLoop>D01_MoodLoop_DreamDragonLair.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="CH_MiniMission3">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Lord Hugh Tilly's Tomb</DisplayName>
+		<DisplayName>Lord Hugh Tilly'nin Mezarı</DisplayName>
 		<RankingsURL>zed</RankingsURL>
 		<MusicLoop>D_dungeon_catacomb_v1.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="CH_MiniMission4">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Lord Peter Tilly's Tomb</DisplayName>
+		<DisplayName>Lord Peter Tilly'nin Mezarı</DisplayName>
 		<RankingsURL>warik</RankingsURL>
 		<MusicLoop>D05_MoodLoop_General1.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="CH_MiniMission5">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Baroness Julia Hocke</DisplayName>
+		<DisplayName>Barones Julia Hocke</DisplayName>
 		<RankingsURL>hal</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
 	</LevelType>
@@ -221,7 +221,7 @@
 	</LevelType>
 	<LevelType LevelName="CH_MiniMission8">
 		<ZoneSet>CemeteryHill</ZoneSet>
-		<DisplayName>Sir Edgar Hocke</DisplayName>
+		<DisplayName>Sör Edgar Hocke</DisplayName>
 		<RankingsURL>grond</RankingsURL>
 		<MusicLoop>D_dungeon_catacomb_v1.mp3</MusicLoop>
 	</LevelType>
@@ -237,141 +237,141 @@
 	</LevelType>
 	<LevelType LevelName="OMM_Mission1">
 		<ZoneSet>OldMineMountain</ZoneSet>
-		<DisplayName>Give Voice to Stone</DisplayName>
+		<DisplayName>Tasa Ses Ver</DisplayName>
 		<RankingsURL>voice</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="OMM_Mission2">
 		<ZoneSet>OldMineMountain</ZoneSet>
-		<DisplayName>Rock Hulk Garden</DisplayName>
+		<DisplayName>Kaya Hulk Bahçesi</DisplayName>
 		<RankingsURL>garden</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_06.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="OMM_Mission3">
 		<ZoneSet>OldMineMountain</ZoneSet>
-		<DisplayName>Eye of the Tyrant</DisplayName>
+		<DisplayName>Tiran'ın Gözü</DisplayName>
 		<RankingsURL>tyrant</RankingsURL>
 		<MusicLoop>D06_DramaLoop_General2.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="OMM_Mission4">
 		<ZoneSet>OldMineMountain</ZoneSet>
-		<DisplayName>Abandoned Armory</DisplayName>
+		<DisplayName>Terkedilmis Cephanelik</DisplayName>
 		<RankingsURL>armory</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_09.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="OMM_Mission5">
 		<ZoneSet>OldMineMountain</ZoneSet>
-		<DisplayName>Hunted to the Edge</DisplayName>
+		<DisplayName>Kenarına kadar avlandı</DisplayName>
 		<RankingsURL>hunted</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="OMM_Mission6">
 		<ZoneSet>OldMineMountain</ZoneSet>
-		<DisplayName>Forgotten Forge</DisplayName>
+		<DisplayName>Unutulmus Ocak</DisplayName>
 		<RankingsURL>forge</RankingsURL>
 		<MusicLoop>D06_DramaLoop_General2.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="OMM_Mission7">
 		<ZoneSet>OldMineMountain</ZoneSet>
-		<DisplayName>Gnole's Roost</DisplayName>
+		<DisplayName>Gnole'un Tünegi</DisplayName>
 		<RankingsURL>redoubt</RankingsURL>
 		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="OMM_Mission8">
 		<ZoneSet>OldMineMountain</ZoneSet>
-		<DisplayName>Veins of Meylour</DisplayName>
+		<DisplayName>Meylour Damarları</DisplayName>
 		<RankingsURL>veins</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="OMM_Mission9">
 		<ZoneSet>OldMineMountain</ZoneSet>
-		<DisplayName>The Growing Flame</DisplayName>
+		<DisplayName>Büyüyen Alev</DisplayName>
 		<RankingsURL>rebellion</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="OMM_Mission10">
 		<ZoneSet>OldMineMountain</ZoneSet>
-		<DisplayName>All Shall be Ashes</DisplayName>
+		<DisplayName>Hepsi Kül Olacak</DisplayName>
 		<RankingsURL>quary</RankingsURL>
 		<MusicLoop>D01_MoodLoop_DreamDragonLair.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="OMM_Mission11">
 		<ZoneSet>OldMineMountain</ZoneSet>
-		<DisplayName>Meylour's Embers</DisplayName>
+		<DisplayName>Meylour'un Közleri</DisplayName>
 		<RankingsURL>heart</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="OMM_Mission12">
 		<ZoneSet>OldMineMountain</ZoneSet>
-		<DisplayName>Death to Meylour</DisplayName>
+		<DisplayName>Meylour'a ölüm</DisplayName>
 		<RankingsURL>meylour</RankingsURL>
 		<MusicLoop>D_dungeon_catacomb_v1.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="EmeraldGlades">
 		<ZoneSet>EmeraldGlades</ZoneSet>
-		<DisplayName>Emerald Glades</DisplayName>
+		<DisplayName>Zümrüt Kayalar</DisplayName>
 	</LevelType>
 	<LevelType LevelName="EG_Mission1">
 		<ZoneSet>EmeraldGlades</ZoneSet>
-		<DisplayName>The Ashen Dryad</DisplayName>
+		<DisplayName>Kül Rengi Dryad</DisplayName>
 		<RankingsURL>ashen</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="EG_Mission2">
 		<ZoneSet>EmeraldGlades</ZoneSet>
-		<DisplayName>Out on a Limb</DisplayName>
+		<DisplayName>Bir Uzuvun Dısında</DisplayName>
 		<RankingsURL>limb</RankingsURL>
 		<MusicLoop>D_dungeon_cave_v1.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="EG_Mission3">
 		<ZoneSet>EmeraldGlades</ZoneSet>
-		<DisplayName>Rotten to the Roots</DisplayName>
+		<DisplayName>Köklerine Kadar Çürümüs</DisplayName>
 		<RankingsURL>rotten</RankingsURL>
 		<MusicLoop>D02_MoodLoop_GoblinHideout.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="EG_Mission4">
 		<ZoneSet>EmeraldGlades</ZoneSet>
-		<DisplayName>Hope Springs Eternal</DisplayName>
+		<DisplayName>Umut Baharları Ebedi</DisplayName>
 		<RankingsURL>hope</RankingsURL>
 		<MusicLoop>D_dungeon_open_area_v1.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="EG_Mission5">
 		<ZoneSet>EmeraldGlades</ZoneSet>
-		<DisplayName>Refuge of the Damned</DisplayName>
+		<DisplayName>Lanetlilerin Sıgınagı</DisplayName>
 		<RankingsURL>refuge</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="Castle">
 		<ZoneSet>Castle</ZoneSet>
-		<DisplayName>Castle Hocke</DisplayName>
+		<DisplayName>Hocke Kalesi</DisplayName>
 	</LevelType>
 	<LevelType LevelName="AC_Mission1">
 		<ZoneSet>Castle</ZoneSet>
-		<DisplayName>Castle Hocke</DisplayName>
+		<DisplayName>Hocke Kalesi</DisplayName>
 		<RankingsURL>deepgard</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="AC_Mission2">
 		<ZoneSet>Castle</ZoneSet>
-		<DisplayName>The Emerald Throne</DisplayName>
+		<DisplayName>Zümrüt Taht</DisplayName>
 		<RankingsURL>throne</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="AC_Mission3">
 		<ZoneSet>Castle</ZoneSet>
-		<DisplayName>Battles Lost and Won</DisplayName>
+		<DisplayName>Kaybedilen ve Kazanılan Savaslar</DisplayName>
 		<RankingsURL>battlefield</RankingsURL>
 		<MusicLoop>D03_MoodLoop_Nephit.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="AC_Mission4">
 		<ZoneSet>Castle</ZoneSet>
-		<DisplayName>Aetheric Observatory</DisplayName>
+		<DisplayName>Eterik Gözlemevi</DisplayName>
 		<RankingsURL>observatory</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_06.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="AC_Mission5">
 		<ZoneSet>Castle</ZoneSet>
-		<DisplayName>Last Stand</DisplayName>
+		<DisplayName>Son Direnis</DisplayName>
 		<RankingsURL>ramparts</RankingsURL>
 		<MusicLoop>D_dungeon_ruin_and_vault_v1.mp3</MusicLoop>
 	</LevelType>
@@ -387,37 +387,37 @@
 	</LevelType>
 	<LevelType LevelName="SD_Mission1">
 		<ZoneSet>ShazariDesert</ZoneSet>
-		<DisplayName>Unearthing the Past</DisplayName>
+		<DisplayName>Geçmisi Ortaya Çıkarmak</DisplayName>
 		<RankingsURL>temple</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="SD_Mission2">
 		<ZoneSet>ShazariDesert</ZoneSet>
-		<DisplayName>Scarab Invasion</DisplayName>
+		<DisplayName>Bokböcegi istilası</DisplayName>
 		<RankingsURL>scarab</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_10.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="SD_Mission3">
 		<ZoneSet>ShazariDesert</ZoneSet>
-		<DisplayName>Blood and Sand</DisplayName>
+		<DisplayName>Kan ve Kum</DisplayName>
 		<RankingsURL>gladiator</RankingsURL>
 		<MusicLoop>D03_MoodLoop_Nephit.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="SD_Mission4">
 		<ZoneSet>ShazariDesert</ZoneSet>
-		<DisplayName>Goblin Diplomacy</DisplayName>
+		<DisplayName>Goblin Diplomasisi</DisplayName>
 		<RankingsURL>oasis</RankingsURL>
 		<MusicLoop>D_dungeon_open_area_v1.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="SD_Mission5">
 		<ZoneSet>ShazariDesert</ZoneSet>
-		<DisplayName>Ancient Unrest</DisplayName>
+		<DisplayName>Antik Huzursuzluk</DisplayName>
 		<RankingsURL>sandworm</RankingsURL>
 		<MusicLoop>D03_MoodLoop_Nephit.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="SD_Mission6">
 		<ZoneSet>ShazariDesert</ZoneSet>
-		<DisplayName>Legacy of the Magi</DisplayName>
+		<DisplayName>Magi'nin Mirası</DisplayName>
 		<RankingsURL>anchor</RankingsURL>
 		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
 	</LevelType>
@@ -427,43 +427,43 @@
 	</LevelType>
 	<LevelType LevelName="JC_Mission1">
 		<ZoneSet>JadeCity</ZoneSet>
-		<DisplayName>The Welcome Party</DisplayName>
+		<DisplayName>Hosgeldin Partisi</DisplayName>
 		<RankingsURL>welcome</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopNoDrama_06.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="JC_Mission2">
 		<ZoneSet>JadeCity</ZoneSet>
-		<DisplayName>Back Alley Deals</DisplayName>
+		<DisplayName>Arka Sokak Fırsatları</DisplayName>
 		<RankingsURL>alley</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopFunky_26.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="JC_Mission3">
 		<ZoneSet>JadeCity</ZoneSet>
-		<DisplayName>The Prodigal Son</DisplayName>
+		<DisplayName>Savurgan Ogul</DisplayName>
 		<RankingsURL>prodigal</RankingsURL>
 		<MusicLoop>D03_MoodLoop_Nephit.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="JC_Mission4">
 		<ZoneSet>JadeCity</ZoneSet>
-		<DisplayName>Sewer Suffering</DisplayName>
+		<DisplayName>Kanalizasyon Sorunu</DisplayName>
 		<RankingsURL>sewer</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="JC_Mission5">
 		<ZoneSet>JadeCity</ZoneSet>
-		<DisplayName>Fable of the Lost Temple</DisplayName>
+		<DisplayName>Kayıp Tapınagın Masalı</DisplayName>
 		<RankingsURL>fable</RankingsURL>
 		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="JC_Mission6">
 		<ZoneSet>JadeCity</ZoneSet>
-		<DisplayName>Dream Within a Dream</DisplayName>
+		<DisplayName>Rüya İçinde Rüya</DisplayName>
 		<RankingsURL>dream</RankingsURL>
 		<MusicLoop>D_dungeon_forest_and_swamp_v1.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="JC_Mission7">
 		<ZoneSet>JadeCity</ZoneSet>
-		<DisplayName>Royal Intervention</DisplayName>
+		<DisplayName>Kraliyet Müdahalesi</DisplayName>
 		<RankingsURL>intervention</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopWithDrama_03.mp3</MusicLoop>
 	</LevelType>
@@ -475,31 +475,31 @@
 	</LevelType>
 	<LevelType LevelName="JC_Mission9">
 		<ZoneSet>JadeCity</ZoneSet>
-		<DisplayName>Hiding Out</DisplayName>
+		<DisplayName>Saklanmak</DisplayName>
 		<RankingsURL>shadows</RankingsURL>
 		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="JC_Mission10">
 		<ZoneSet>JadeCity</ZoneSet>
-		<DisplayName>Ancient Vault</DisplayName>
+		<DisplayName>Antik Kasa</DisplayName>
 		<RankingsURL>vault</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="JC_Mission11">
 		<ZoneSet>JadeCity</ZoneSet>
-		<DisplayName>Ring of Fire</DisplayName>
+		<DisplayName>Ates Çemberi</DisplayName>
 		<RankingsURL>ringoffire</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopWithDrama_17.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="JC_Mini1">
 		<ZoneSet>JadeCity</ZoneSet>
-		<DisplayName>The West Wing</DisplayName>
+		<DisplayName>Batı Kanadı</DisplayName>
 		<RankingsURL>westwing</RankingsURL>
 		<MusicLoop>D06_DramaLoop_General2.mp3</MusicLoop>
 	</LevelType>
 	<LevelType LevelName="JC_Mini2">
 		<ZoneSet>JadeCity</ZoneSet>
-		<DisplayName>The East Wing</DisplayName>
+		<DisplayName>Dogu Kanadı</DisplayName>
 		<RankingsURL>eastwing</RankingsURL>
 		<MusicLoop>OminousDungeonLongLoopWithSomeDrama_29.mp3</MusicLoop>
 	</LevelType>
@@ -883,7 +883,7 @@
 	</LevelType>
 	<LevelType LevelName="SD_Mission2Hard">
 		<ZoneSet>ShazariDesertHard</ZoneSet>
-		<DisplayName>Dread Scarab Invasion</DisplayName>
+		<DisplayName>Dehset Bokböcegi İstilası</DisplayName>
 		<RankingsURL>dread/scarab</RankingsURL>
 		<MusicLoop>LongLoopWithHornsAndSomeDrama_12.mp3</MusicLoop>
 	</LevelType>

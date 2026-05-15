@@ -6,8 +6,7 @@ const { execFileSync } = require('child_process');
 
 const TARGETS = [
     {
-        swf: path.join('src', 'client', 'content', 'localhost', 'p', 'cbp', 'DungeonBlitz.swf'),
-        scriptsDir: path.join('src', 'client', 'ffdec-patches', 'DungeonBlitz.multiplayer', 'scripts')
+        swf: path.join('src', 'client', 'content', 'localhost', 'p', 'cbp', 'DungeonBlitz.swf')
     }
 ];
 
@@ -50,8 +49,8 @@ function printHelp() {
             '  node src/server/scripts/patch-dungeonblitz-chat-commands.js [--verify] [--swf <path>] [--ffdec <path>]',
             '',
             'Defaults:',
-            '  imports the extracted ActionScript patches for class_127 into the served DungeonBlitz SWF',
-            '  so /lang:tr and /lang:en pass through the client slash-command parser to the server.'
+            '  exports and patches class_127 in the served DungeonBlitz SWF',
+            '  so /lang:tr, /lang: tr, /lang:en, and /lang: en pass through the client slash-command parser to the server.'
         ].join('\n')
     );
 }
@@ -127,6 +126,9 @@ function verifyPatchedClass127(source, swfPath) {
     if (!source.includes('private function method_1940(param1:String) : Boolean')) {
         throw new Error(`${path.basename(swfPath)} is missing the /lang passthrough helper.`);
     }
+    if (!source.includes('_loc2_ = "/lang:" + _loc2_.substr(6).split(" ").join("");')) {
+        throw new Error(`${path.basename(swfPath)} is missing whitespace-tolerant /lang normalization.`);
+    }
     if (!source.includes('var_1.linkUpdater.WriteChatMessage(param1,param2);')) {
         throw new Error(`${path.basename(swfPath)} is missing the /lang passthrough send path.`);
     }
@@ -135,7 +137,73 @@ function verifyPatchedClass127(source, swfPath) {
     }
 }
 
-function patchSwf(repoRoot, ffdecPath, swfPath, scriptsDir) {
+function patchClass127Source(source, swfPath) {
+    const oldReturn = 'return _loc2_ == "/lang:tr" || _loc2_ == "/lang:en" || _loc2_ == "\\\\lang:tr" || _loc2_ == "\\\\lang:en";';
+    const newBlock = [
+        'if(_loc2_.indexOf("/lang:") == 0)',
+        '         {',
+        '            _loc2_ = "/lang:" + _loc2_.substr(6).split(" ").join("");',
+        '         }',
+        '         else if(_loc2_.indexOf("\\\\lang:") == 0)',
+        '         {',
+        '            _loc2_ = "\\\\lang:" + _loc2_.substr(6).split(" ").join("");',
+        '         }',
+        '         return _loc2_ == "/lang:tr" || _loc2_ == "/lang:en" || _loc2_ == "\\\\lang:tr" || _loc2_ == "\\\\lang:en";'
+    ].join('\n');
+
+    const helper = [
+        'private function method_1940(param1:String) : Boolean',
+        '      {',
+        '         var _loc2_:String = null;',
+        '         if(!param1)',
+        '         {',
+        '            return false;',
+        '         }',
+        '         _loc2_ = param1.toLowerCase();',
+        '         while(_loc2_.length && _loc2_.charAt(_loc2_.length - 1) == " ")',
+        '         {',
+        '            _loc2_ = _loc2_.substr(0,_loc2_.length - 1);',
+        '         }',
+        `         ${newBlock}`,
+        '      }',
+        '      ',
+        '      '
+    ].join('\n');
+
+    if (source.includes(newBlock) && source.includes('if(this.method_1940(param2))')) {
+        return source;
+    }
+
+    if (source.includes('private function method_1940(param1:String) : Boolean')) {
+        if (!source.includes(oldReturn)) {
+            throw new Error(`${path.basename(swfPath)} has an unexpected method_1940 return block.`);
+        }
+        return source.replace(oldReturn, newBlock);
+    }
+
+    const methodStartPattern = /public function method_537\(param1:uint, param2:String, param3:Boolean = false\) : void\r?\n      \{\r?\n         if\(param3 \|\| !this\.TryToProcessChatAsLocalCommand\(param2\)\)/;
+    const patchedMethodStart = [
+        `${helper}public function method_537(param1:uint, param2:String, param3:Boolean = false) : void`,
+        '      {',
+        '         if(this.method_1940(param2))',
+        '         {',
+        '            if(var_1.CanSendPacket())',
+        '            {',
+        '               var_1.linkUpdater.WriteChatMessage(param1,param2);',
+        '            }',
+        '            return;',
+        '         }',
+        '         if(param3 || !this.TryToProcessChatAsLocalCommand(param2))'
+    ].join('\n');
+
+    if (!methodStartPattern.test(source)) {
+        throw new Error(`${path.basename(swfPath)} has an unexpected method_537 block.`);
+    }
+
+    return source.replace(methodStartPattern, patchedMethodStart);
+}
+
+function patchSwf(repoRoot, ffdecPath, swfPath) {
     const workRoot = path.join(
         repoRoot,
         'build',
@@ -146,6 +214,11 @@ function patchSwf(repoRoot, ffdecPath, swfPath, scriptsDir) {
     fs.rmSync(workRoot, { recursive: true, force: true });
     fs.mkdirSync(workRoot, { recursive: true });
 
+    const classPath = exportClass127(ffdecPath, workRoot, swfPath);
+    const patchedSource = patchClass127Source(fs.readFileSync(classPath, 'utf8'), swfPath);
+    fs.writeFileSync(classPath, patchedSource);
+
+    const scriptsDir = path.join(workRoot, 'scripts');
     runFfdec(ffdecPath, ['-importScript', swfPath, patchedSwfPath, scriptsDir]);
     fs.copyFileSync(patchedSwfPath, swfPath);
     console.log(`Patched chat command passthrough in ${swfPath}`);
@@ -175,8 +248,7 @@ function main() {
     const requestedSwfs = new Set((args.swfs.length ? args.swfs : TARGETS.map((target) => target.swf)).map((entry) => resolvePath(repoRoot, entry)));
     const selectedTargets = TARGETS
         .map((target) => ({
-            swfPath: resolvePath(repoRoot, target.swf),
-            scriptsDir: resolvePath(repoRoot, target.scriptsDir)
+            swfPath: resolvePath(repoRoot, target.swf)
         }))
         .filter((target) => requestedSwfs.has(target.swfPath));
 
@@ -188,9 +260,6 @@ function main() {
         if (!fs.existsSync(target.swfPath)) {
             throw new Error(`SWF not found: ${target.swfPath}`);
         }
-        if (!fs.existsSync(target.scriptsDir)) {
-            throw new Error(`Patch script directory not found: ${target.scriptsDir}`);
-        }
     }
 
     if (args.verify) {
@@ -201,7 +270,7 @@ function main() {
     }
 
     for (const target of selectedTargets) {
-        patchSwf(repoRoot, ffdecPath, target.swfPath, target.scriptsDir);
+        patchSwf(repoRoot, ffdecPath, target.swfPath);
     }
 }
 

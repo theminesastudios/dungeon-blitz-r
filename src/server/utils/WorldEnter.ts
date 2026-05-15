@@ -50,12 +50,12 @@ export class WorldEnter {
         value > 0 ? 3 : 0
     );
 
+    private static readonly NEWS_EVENT_REMAINING_SECONDS = 666 * 60 * 60;
     private static readonly DEFAULT_NEWS_EVENT = {
         icon: 'a_NewsPetXPIcon',
-        url: 'Double Pet XP Event',
-        body: 'Double Pet XP Event',
-        tooltip: 'http://www.dungeonblitz.com/',
-        startTs: 1786841238
+        url: 'https://theminesa.studio',
+        body: 'The Minesa Studios',
+        tooltip: 'https://theminesa.studio'
     };
 
     private static asRecord(value: unknown): Record<string, any> {
@@ -956,7 +956,7 @@ export class WorldEnter {
             bb.writeMethod13(WorldEnter.DEFAULT_NEWS_EVENT.url);
             bb.writeMethod13(WorldEnter.DEFAULT_NEWS_EVENT.body);
             bb.writeMethod13(WorldEnter.DEFAULT_NEWS_EVENT.tooltip);
-            bb.writeMethod4(WorldEnter.DEFAULT_NEWS_EVENT.startTs);
+            bb.writeMethod4(now + WorldEnter.NEWS_EVENT_REMAINING_SECONDS);
         } else {
             bb.writeMethod6(0, 1);
         }

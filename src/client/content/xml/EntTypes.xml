@@ -16303,7 +16303,7 @@
 		</GfxType>
 	</EntType>
 	<EntType EntName="LizardBanner" parent="PaladinBase">
-		<DisplayName>Lizard Banner</DisplayName>
+		<DisplayName>Kertenkele Banner</DisplayName>
 		<DevStatus>SwampRoad</DevStatus>
 		<RangedPower>LizardBannerArmor</RangedPower>
 		<Level>6</Level>
@@ -16554,7 +16554,7 @@
 		</GfxType>
 	</EntType>
 	<EntType EntName="LizardBannerHard" parent="PaladinBase">
-		<DisplayName>Lizard Banner</DisplayName>
+		<DisplayName>Kertenkele Banner</DisplayName>
 		<DevStatus>SwampRoad</DevStatus>
 		<RangedPower>LizardBannerArmor</RangedPower>
 		<Level>6</Level>

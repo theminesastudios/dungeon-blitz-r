@@ -1,21 +1,1270 @@
 {
   "levels": {
-    "NewbieRoad": {
-      "nrcaptfink": {
-        "displayName": "Kaptan Fink",
+    "BridgeTown": {
+      "btgreeter": {
         "defaultLines": [
-          "O koyu bulmamiz gerekiyor.",
-          "Koyu haritada bulabilirsin.",
-          "Doguya git, koyu bulacaksin.",
-          "Niobe'yi onarmaya calisacagim.",
-          "Krala haber ulastirmam gerekiyor!"
+          "Lütfen geri dönün ve Arachnae'den kurtulun",
+          "Dur orada, yabanci. Sen kimsin?",
+          "Bu kısımlarda çok büyük degisiklikler yaptınız.",
+          "Biz sizin türünüzün hilelerini anlıyoruz. Kendinizi Muhafız'a sunun ya da çeligin tadına bakın.",
+          "Müdürün tüm yabancıları onaylaması gerekiyor.",
+          "Sen de öylesin, bu arkadas oldugumuz anlamına gelmez.",
+          "Burada dogdum.",
+          "Hiçbir ordu hakkında hiçbir sey bilmiyorum.",
+          "Ya Müdür'le görüsürsünüz ya da sizinle ayrılırsınız.",
+          "Gerçi Müdür hiç süphesiz seni yollayacaktır.",
+          "Sizin türde bir sorun aramıyoruz."
         ]
       },
-      "nrintrovillager": {
+      "btmayor01": {
         "defaultLines": [
-          "Sahildeki goblinlerin bizi kesin bitireceğini sanmıştık.",
-          "Denizden yeni bir yüz görmek hâlâ mucize gibi geliyor.",
-          "Burada kalacaksan, Wolf's End bir cesur ele daha hayır demez."
+          "Ah, sanlı tanrılar! Tam da ihtiyacımız olmayan sey, daha fazla yabancı…",
+          "Yabancı, sasırdım. Güzel kasabamıza bir hizmette bulundun.",
+          "Haydutlar onların sizin memleketinizden gelen askerler oldugunu söylüyor.",
+          "Denizin ötesindeki bir krallıktan geldigini iddia ediyorsun.",
+          "Hiçbir kralı tanımıyorum ama diger adamlar da aynısını söyledi.",
+          "Hayır, hayır, gayet iyi durumdayız.",
+          "Denizin öte yanından gelen yagmacılar ve akıncılar hariç.",
+          "Görünüse göre sizin krallıgınızdan.",
+          "Haydut arkadaslarının icabına baktıgında buna cevap verecegim.",
+          "Evet, öyleler ve onlar sizin topraklarınızdan.",
+          "Geri döndün mü? Yani belki sen digerleri gibi degilsin.",
+          "Arkadaslarını Wolf's End'den Mezarlık Tepesi'ne gönderdim. İstedikleri takdirde oraya yerlesebilirler.",
+          "Siz Kurt Burnu halkına burada yer yok.",
+          "Benim halkım 40 yıl önce buraya yerlesti.",
+          "Köle oldugumuz çok uzak bir ülkeden geldik.",
+          "Artık özgür ve müreffeh bir hayat yasıyoruz.",
+          "Biz kendi hakkımızı koruyoruz.",
+          "Arkadaslarını Wolf's End'den Mezarlık Tepesi'ne gönderdim.",
+          "Yerlesecek yeni topraklar arıyorlarsa, onlara sahip olabilirler.",
+          "Dilenciler seçici olamazlar."
+        ]
+      },
+      "btmerchant01": {
+        "displayName": "Hector",
+        "defaultLines": [
+          "Baska hiç kimse Gnole'larla ticaret yapmayacak.",
+          "Ama o kadar da kötü olmadıklarını hatırlıyorum.",
+          "Simdi neden bu kadar kızgın olduklarını anlayamıyorum!"
+        ]
+      },
+      "btsubwarden": {
+        "defaultLines": [
+          "Haydut kampı tam diger taraftaydı",
+          "Bu haydutlar bizi daha önce hiç rahatsız etmemisti. Onları kızdırdın mı?",
+          "Komiser, Hasat Ritüeli'ne hazırlanmak için o magaraya gitti.",
+          "Komiseri rahatsız etmemelisiniz.",
+          "Bence de.",
+          "Bunun nasıl çalıstıgını yalnızca Komiser biliyor.",
+          "Komiser buraya geldigimizden beri halkımızı uzun süre korudu.",
+          "O içeride.",
+          "Ama çok mesgul görünüyorsa onu rahatsız etmeyin.",
+          "Önemli isler yapıyor."
+        ]
+      },
+      "bttrainer01": {
+        "displayName": "Kellah",
+        "defaultLines": [
+          "Ders zamanı mı?"
+        ]
+      },
+      "btwarden": {
+        "defaultLines": [
+          "Lütfen geri dönün ve Arachnae'den kurtulun",
+          "Sen daha iyi bir kahraman sınıfısın",
+          "Çok ihtiyacımız olan biri",
+          "Mezarlık Tepesi'ndeki ölüler diriliyor",
+          "Haydutlar hâlâ basımıza bela oluyor",
+          "Ve Hocke Kalesi'nin gölgesinde yasıyoruz",
+          "O kale yıllar önce bize kapatıldı",
+          "Ama onu kapatan kötülük hala bu topraklara yayılıyor",
+          "Komiseri henüz görmedin mi?",
+          "Bu toprakları daha iyiye dogru degistirdin.",
+          "Ama korkarım sorunlarımız daha yeni basladı.",
+          "Yagmacılar ve haydutlarla doyduk.",
+          "Uslu dur yabancı.",
+          "Yabancı, senin tipini biliyorum. Burada sana sabrımız yok.",
+          "Seni tanımıyorum ama yoluna gitsen iyi olur.",
+          "Kralınızın bizimle hiçbir ilgisi yok.",
+          "Ve aynı hikayeyi söyleyen pek çok haydut gördük.",
+          "Bela istemiyorum, bu yüzden digerleriyle birlikte ormana gidin.",
+          "Evet, orada sizin türünüzden bolca bulacaksınız.",
+          "Yani diyorsun.",
+          "Gördügümde inanacagım.",
+          "Komiser su anda burada degil yabancı.",
+          "Geri döndün.",
+          "Büyülü kalkanın nasıl çalıstıgını yalnızca Komiser biliyor.",
+          "Bu kalkan düsmanlarımıza karsı ana korumamızdır.",
+          "Bilmiyorum, bu onun isi.",
+          "Ama bizi yıllardır çogunlukla güvende tuttu.",
+          "Her yıl birkaç kisi kayboluyor ama çok fazla degil.",
+          "Komiser Hasat Ritüeli için malzeme topluyor.",
+          "Onu bulmak istiyorsan git koruması Gunter'la konus.",
+          "Komiserin karanlık güçlere taptıgını mı söylüyorsunuz?",
+          "Hiç bir fikrim yoktu!",
+          "Tam orada, kasaba meydanının dısında.",
+          "Acele edin, ona baska kimin yardım ettigini bulmalısınız.",
+          "Komiser, kötü tanrılarla anlasmalar yapıyor...",
+          "Bunu hiç hayal etmemistim.",
+          "Komiserin kötülügü ortaya çıkınca çözmemiz gereken çok sey var.",
+          "Komiserin günlügüne göre tarikatı dagın zirvesine kurbanlar götürüyordu.",
+          "Tarikatın hayatta kalanları dagda bırakma ihtimali var.",
+          "Adamlarımdan bazılarını arastırmaları için gönderiyorum.",
+          "O zaman daglarda halkımla bulus.",
+          "Ama dikkatli olun, orada ne oldugunu bilmiyoruz.",
+          "Bir kez daha geri döndün. Orada ne yaptıysan burada da bir seyler yapılmıs.",
+          "Burada yaptıgınız her sey için tesekkür ederiz!",
+          "Meylour'u yok ederek Uyuyan Topraklar'a giden yolu açık bıraktınız.",
+          "Meylour'un bariyeri kalkınca kaleye giden yol açıldı.",
+          "Benim halkım onlarca yıl önce oradan geldi.",
+          "Uyuyan Topraklar'daki kölelik hayatından kaçıyorduk.",
+          "Ejderhalar ve Goblinler bizi zincire vurdu.",
+          "Artık orada ne oldugunu bilmek mümkün degil.",
+          "Meylour'un bariyeri Uyuyan Toprakları bu dünyadan uzakta tutuyordu.",
+          "Hocke Kalesi'ni mühürleyen sihirli bariyer kaldırıldı."
+        ]
+      },
+      "earl": {
+        "displayName": "Earl",
+        "defaultLines": [
+          "Baska bir yabancı...",
+          "Burada yabancılara yerimiz yok.",
+          "Bu seni ilgilendirmez yabancı."
+        ]
+      },
+      "emma": {
+        "displayName": "Emma",
+        "defaultLines": [
+          "Bataklıgın güneyinde yasayan insanlar mı var?",
+          "Sasırtıcı, baska insanların oldugunu bile bilmiyordum.",
+          "Burada büyüdüm.",
+          "Dünyanın en iyi yeri orası."
+        ]
+      },
+      "felguard": {
+        "displayName": "Felguard",
+        "defaultLines": [
+          "Orman haydutlarla dolu.",
+          "Ama buraya asla gelmezlerdi."
+        ]
+      },
+      "franny": {
+        "displayName": "Franny",
+        "defaultLines": [
+          "Hasat festivali için mi buradasınız?",
+          "Komiser her yılın bir öncekinden daha iyi olmasını saglar.",
+          "Bu adam harikalar yaratıyor.",
+          "Neden bir Muhafız'a ihtiyacımız oldugunu bile bilmiyorum."
+        ]
+      },
+      "grahm": {
+        "displayName": "Grahm",
+        "defaultLines": [
+          "Gnole'lar asla sehre gelmezler.",
+          "Ama sehir sınırlarını terk ederseniz saldıracaklar."
+        ]
+      },
+      "jema": {
+        "displayName": "Jema",
+        "defaultLines": [
+          "Bir yabancı! Vay!",
+          "Keske kardesim Karl burada olsaydı.",
+          "Geçen hasattan kaçtı.",
+          "Ama her zaman baskalarının da oldugunu söylerdi.",
+          "Ve haklıydı.",
+          "Sanırım Komiser her seyi bilmiyor."
+        ]
+      },
+      "laura": {
+        "displayName": "Laura",
+        "defaultLines": [
+          "Sen kimsin?",
+          "Sehir dısından hiç kimseyi görmedim.",
+          "Burada olmana izin var mı?"
+        ]
+      },
+      "lucy": {
+        "displayName": "Lucy",
+        "defaultLines": [
+          "Gnole'lar ve haydutlar dısarıda.",
+          "Uyanık kalın."
+        ]
+      },
+      "meylourmagenpc": {
+        "displayName": "Ilvia",
+        "defaultLines": [
+          "Yabancı.",
+          "Ne satıyorsun?",
+          "Koruma hizmetleri?",
+          "Kanıtlanmıs çareler?",
+          "Sihirli fasulye mi?",
+          "Yabancılarla doyduk."
+        ]
+      },
+      "meylourmagenpc2": {
+        "displayName": "Savva",
+        "defaultLines": [
+          "Dur tahmin edeyim...",
+          "Sen hırsız mısın?",
+          "Ya da belki bir sarlatan?",
+          "Biliyorum!",
+          "Sen bir #tc#'sın.",
+          "Daha da kötüsü."
+        ]
+      },
+      "npctraveller": {
+        "displayName": "Bella Sagesword",
+        "defaultLines": [
+          "Kendine iyi bak! Ölümüne rastlayasın diye Dehset Katlı Kapıyı mı restore ettim?",
+          "Uzun zaman önce büyücü Caphrax dünyayı iki zaman nehrine ayırdı",
+          "İki dal yakın ama ayrı",
+          "Büyücü Uyuyan Toprakların korkunç büyüsünü tek bir dala aktararak Dreadfold'u yarattı.",
+          "Evet, bu kapının ardında dünyamızın karanlık, büyüyle ıslanmıs bir aynası yatıyor",
+          "Kızgın mısın? Yalnızca savasta tecrübeli maceracılardan olusan bir ekibin bu kapıdan geçme sansı var",
+          "İlk önce bu dünyanın tehlikelerinin üstesinden gelmeni öneririm"
+        ]
+      },
+      "rodgert": {
+        "displayName": "Rodgert",
+        "defaultLines": [
+          "Hasat festivalimiz yakında baslıyor!",
+          "Yılın en sevdigim zamanı.",
+          "Her ne kadar üzücü bir seyler de olsa her zaman olur.",
+          "Yegenim geçen festivalde ortadan kayboldu.",
+          "Kızım on yıl önce ortadan kayboldu.",
+          "Yine de mutlu bir zaman!"
+        ]
+      },
+      "samuel": {
+        "displayName": "Samuel",
+        "defaultLines": [
+          "Felbridge güzel bir yer.",
+          "Dısarıdakilerin isleri karıstırmasına ihtiyacımız yok."
+        ]
+      },
+      "smiddy": {
+        "displayName": "Smiddy",
+        "defaultLines": [
+          "*homurdan*%Yapılacak çok is var%*mumble*%*homurdanıyor* Devam et evlat.%Süslü bir sey yapmıyorum. Sadece bir kürek.%*mırıldanma homurdanma*%^tMeraklı #tc#'lar!"
+        ]
+      }
+    },
+    "BridgeTownHard": {
+      "btgreeterhard": {
+        "defaultLines": [
+          "Lütfen geri dönün ve Arachnae'den kurtulun",
+          "Biz sizin türünüzün hilelerini anlıyoruz. Kendinizi Muhafız'a sunun ya da çeligin tadına bakın.",
+          "Müdürün tüm yabancıları onaylaması gerekiyor.",
+          "Sen de öylesin, bu arkadas oldugumuz anlamına gelmez.",
+          "Burada dogdum.",
+          "Hiçbir ordu hakkında hiçbir sey bilmiyorum.",
+          "Ya Müdür'le görüsürsünüz ya da sizinle ayrılırsınız.",
+          "Gerçi Müdür hiç süphesiz seni yollayacaktır.",
+          "Sizin türde bir sorun aramıyoruz.",
+          "Dur orada, yabanci. Sen kimsin?",
+          "Bu kısımlarda çok büyük degisiklikler yaptınız."
+        ]
+      },
+      "btmayor01hard": {
+        "defaultLines": [
+          "Ah, sanlı tanrılar! Tam da ihtiyacımız olmayan sey, daha fazla yabancı…",
+          "Yabancı, sasırdım. Güzel kasabamıza bir hizmette bulundun.",
+          "Haydutlar onların sizin memleketinizden gelen askerler oldugunu söylüyor.",
+          "Denizin ötesindeki bir krallıktan geldigini iddia ediyorsun.",
+          "Hiçbir kralı tanımıyorum ama diger adamlar da aynısını söyledi.",
+          "Hayır, hayır, gayet iyi durumdayız.",
+          "Denizin öte yanından gelen yagmacılar ve akıncılar hariç.",
+          "Görünüse göre sizin krallıgınızdan.",
+          "Haydut arkadaslarının icabına baktıgında buna cevap verecegim.",
+          "Evet, öyleler ve onlar sizin topraklarınızdan.",
+          "Geri döndün mü? Yani belki sen digerleri gibi degilsin.",
+          "Arkadaslarını Wolf's End'den Mezarlık Tepesi'ne gönderdim. İstedikleri takdirde oraya yerlesebilirler.",
+          "Siz Kurt Burnu halkına burada yer yok.",
+          "Benim halkım 40 yıl önce buraya yerlesti.",
+          "Köle oldugumuz çok uzak bir ülkeden geldik.",
+          "Artık özgür ve müreffeh bir hayat yasıyoruz.",
+          "Biz kendi hakkımızı koruyoruz.",
+          "Arkadaslarını Wolf's End'den Mezarlık Tepesi'ne gönderdim.",
+          "Yerlesecek yeni topraklar arıyorlarsa, onlara sahip olabilirler.",
+          "Dilenciler seçici olamazlar."
+        ]
+      },
+      "btmerchant01hard": {
+        "displayName": "Hector",
+        "defaultLines": [
+          "Baska hiç kimse Gnole'larla ticaret yapmayacak.",
+          "Ama o kadar da kötü olmadıklarını hatırlıyorum.",
+          "Simdi neden bu kadar kızgın olduklarını anlayamıyorum!"
+        ]
+      },
+      "btsubwardenhard": {
+        "defaultLines": [
+          "Haydut kampı tam diger taraftaydı",
+          "Bu haydutlar bizi daha önce hiç rahatsız etmemisti. Onları kızdırdın mı?",
+          "Komiser, Hasat Ritüeli'ne hazırlanmak için o magaraya gitti.",
+          "Komiseri rahatsız etmemelisiniz.",
+          "Bence de.",
+          "Bunun nasıl çalıstıgını yalnızca Komiser biliyor.",
+          "Komiser buraya geldigimizden beri halkımızı uzun süre korudu.",
+          "O içeride.",
+          "Ama çok mesgul görünüyorsa onu rahatsız etmeyin.",
+          "Önemli isler yapıyor."
+        ]
+      },
+      "bttrainer01hard": {
+        "displayName": "Kellah",
+        "defaultLines": [
+          "Ders zamanı mı?"
+        ]
+      },
+      "btwardenhard": {
+        "defaultLines": [
+          "Lütfen geri dönün ve Arachnae'den kurtulun",
+          "Sen daha iyi bir kahraman sınıfısın",
+          "Çok ihtiyacımız olan biri",
+          "Mezarlık Tepesi'ndeki ölüler diriliyor",
+          "Haydutlar hâlâ basımıza bela oluyor",
+          "Ve Hocke Kalesi'nin gölgesinde yasıyoruz",
+          "O kale yıllar önce bize kapatıldı",
+          "Ama onu kapatan kötülük hala bu topraklara yayılıyor",
+          "Komiseri henüz görmedin mi?",
+          "Bu toprakları daha iyiye dogru degistirdin.",
+          "Ama korkarım sorunlarımız daha yeni basladı.",
+          "Dur, yabancı, yagmacılar ve haydutlarla doyduk.",
+          "Bunu nasıl görecegiz?",
+          "Yabancı, senin tipini biliyorum. Burada sana sabrımız yok.",
+          "Seni tanımıyorum ama yoluna gitsen iyi olur.",
+          "Kralınızın bizimle hiçbir ilgisi yok.",
+          "Ve aynı hikayeyi söyleyen pek çok haydut gördük.",
+          "Bela istemiyorum, bu yüzden digerleriyle birlikte ormana gidin.",
+          "Evet, orada sizin türünüzden bolca bulacaksınız.",
+          "Yani diyorsun.",
+          "Gördügümde inanacagım.",
+          "Komiser su anda burada degil yabancı.",
+          "Geri döndün.",
+          "Büyülü kalkanın nasıl çalıstıgını yalnızca Komiser biliyor.",
+          "Bu kalkan düsmanlarımıza karsı ana korumamızdır.",
+          "Bilmiyorum, bu onun isi.",
+          "Ama bizi yıllardır çogunlukla güvende tuttu.",
+          "Her yıl birkaç kisi kayboluyor ama çok fazla degil.",
+          "Komiser Hasat Ritüeli için malzeme topluyor.",
+          "Onu bulmak istiyorsan git koruması Gunter'la konus.",
+          "Komiserin karanlık güçlere taptıgını mı söylüyorsunuz?",
+          "Hiç bir fikrim yoktu!",
+          "Tam orada, kasaba meydanının dısında.",
+          "Acele edin, ona baska kimin yardım ettigini bulmalısınız.",
+          "Komiser, kötü tanrılarla anlasmalar yapıyor...",
+          "Bunu hiç hayal etmemistim.",
+          "Komiserin kötülügü ortaya çıkınca çözmemiz gereken çok sey var.",
+          "Komiserin günlügüne göre tarikatı dagın zirvesine kurbanlar götürüyordu.",
+          "Tarikatın hayatta kalanları dagda bırakma ihtimali var.",
+          "Adamlarımdan bazılarını arastırmaları için gönderiyorum.",
+          "O zaman daglarda halkımla bulus.",
+          "Ama dikkatli olun, orada ne oldugunu bilmiyoruz.",
+          "Bir kez daha geri döndün. Orada ne yaptıysan burada da bir seyler yapılmıs.",
+          "Burada yaptıgınız her sey için tesekkür ederiz!",
+          "Meylour'u yok ederek Uyuyan Topraklar'a giden yolu açık bıraktınız.",
+          "Meylour'un bariyeri kalkınca kaleye giden yol açıldı.",
+          "Benim halkım onlarca yıl önce oradan geldi.",
+          "Uyuyan Topraklar'daki kölelik hayatından kaçıyorduk.",
+          "Ejderhalar ve Goblinler bizi zincire vurdu.",
+          "Artık orada ne oldugunu bilmek mümkün degil.",
+          "Meylour'un bariyeri Uyuyan Toprakları bu dünyadan uzakta tutuyordu.",
+          "Hocke Kalesi'ni mühürleyen sihirli bariyer kaldırıldı.",
+          "Yagmacılar ve haydutlarla doyduk.",
+          "Uslu dur yabancı."
+        ]
+      },
+      "earlhard": {
+        "displayName": "Earl",
+        "defaultLines": [
+          "Baska bir yabancı...",
+          "Burada yabancılara yerimiz yok.",
+          "Bu seni ilgilendirmez yabancı."
+        ]
+      },
+      "emmahard": {
+        "displayName": "Emma",
+        "defaultLines": [
+          "Bataklıgın güneyinde yasayan insanlar mı var?",
+          "Sasırtıcı, baska insanların oldugunu bile bilmiyordum.",
+          "Burada büyüdüm.",
+          "Dünyanın en iyi yeri orası."
+        ]
+      },
+      "felguardhard": {
+        "displayName": "Felguard",
+        "defaultLines": [
+          "Orman haydutlarla dolu.",
+          "Ama buraya asla gelmezlerdi."
+        ]
+      },
+      "frannyhard": {
+        "displayName": "Franny",
+        "defaultLines": [
+          "Hasat festivali için mi buradasınız?",
+          "Komiser her yılın bir öncekinden daha iyi olmasını saglar.",
+          "Bu adam harikalar yaratıyor.",
+          "Neden bir Muhafız'a ihtiyacımız oldugunu bile bilmiyorum."
+        ]
+      },
+      "grahmhard": {
+        "displayName": "Grahm",
+        "defaultLines": [
+          "Gnole'lar asla sehre gelmezler.",
+          "Ama sehir sınırlarını terk ederseniz saldıracaklar."
+        ]
+      },
+      "jemahard": {
+        "displayName": "Jema",
+        "defaultLines": [
+          "Bir yabancı! Vay!",
+          "Keske kardesim Karl burada olsaydı.",
+          "Geçen hasattan kaçtı.",
+          "Ama her zaman baskalarının da oldugunu söylerdi.",
+          "Ve haklıydı.",
+          "Sanırım Komiser her seyi bilmiyor."
+        ]
+      },
+      "laurahard": {
+        "displayName": "Laura",
+        "defaultLines": [
+          "Sen kimsin?",
+          "Sehir dısından hiç kimseyi görmedim.",
+          "Burada olmana izin var mı?"
+        ]
+      },
+      "lucyhard": {
+        "displayName": "Lucy",
+        "defaultLines": [
+          "Gnole'lar ve haydutlar dısarıda.",
+          "Uyanık kalın."
+        ]
+      },
+      "meylourmagenpc2hard": {
+        "displayName": "Savva",
+        "defaultLines": [
+          "Dur tahmin edeyim...",
+          "Sen hırsız mısın?",
+          "Ya da belki bir sarlatan?",
+          "Biliyorum!",
+          "Sen bir #tc#'sın.",
+          "Daha da kötüsü."
+        ]
+      },
+      "meylourmagenpchard": {
+        "displayName": "Ilvia",
+        "defaultLines": [
+          "Yabancı.",
+          "Ne satıyorsun?",
+          "Koruma hizmetleri?",
+          "Kanıtlanmıs çareler?",
+          "Sihirli fasulye mi?",
+          "Yabancılarla doyduk."
+        ]
+      },
+      "rodgerthard": {
+        "displayName": "Rodgert",
+        "defaultLines": [
+          "Hasat festivalimiz yakında baslıyor!",
+          "Yılın en sevdigim zamanı.",
+          "Her ne kadar üzücü bir seyler de olsa her zaman olur.",
+          "Yegenim geçen festivalde ortadan kayboldu.",
+          "Kızım on yıl önce ortadan kayboldu.",
+          "Yine de mutlu bir zaman!"
+        ]
+      },
+      "samuelhard": {
+        "displayName": "Samuel",
+        "defaultLines": [
+          "Felbridge güzel bir yer.",
+          "Dısarıdakilerin isleri karıstırmasına ihtiyacımız yok."
+        ]
+      },
+      "smiddyhard": {
+        "displayName": "Smiddy",
+        "defaultLines": [
+          "*homurdan*%Yapılacak çok is var%*mumble*%*homurdanıyor* Devam et evlat.%Süslü bir sey yapmıyorum. Sadece bir kürek.%*mırıldanma homurdanma*%^tMeraklı #tc#'lar!"
+        ]
+      }
+    },
+    "Castle": {
+      "acmayor01": {
+        "defaultLines": [
+          "Maresal Sythokahn bu kez sadece hayalini degil, yenilgiye ugradı.",
+          "Ejderhaların tekrar istila etmesini engelledin.",
+          "Ama asagıda baska neler oldugunu kim bilebilir?",
+          "Liderimiz Titus, ejderhalarla savasmanın bir yolunu bulmak için Gözlemevi'ne gitti.",
+          "O ejderhayı öldürdügün için tesekkür ederim.",
+          "Sigismund Hocke'un kesif gezisindeydik.",
+          "Evet, tamamen aynı.",
+          "Goblinlerin arasından geçerek kaleye dogru savastık.",
+          "Sigismund kampı korumamız için bizi bıraktı.",
+          "O ve sövalyeleri asagıya indiler.",
+          "Portaldan geçtiler.",
+          "Bilge Titus bize yardım etti.",
+          "Ejderha lejyonu geldiginde onları durdurmanın bir yolunu bulmaya gitti.",
+          "Onu bulmalısın."
+        ]
+      },
+      "actitus01": {
+        "defaultLines": [
+          "Beni nasıl görüyorsun?",
+          "Nephit, Eterik Gözlemevi'nden kadim bir ritüel arıyor.",
+          "İkimiz de hayattayken bunu istedi.",
+          "Böyle bir güce asla güvenmedim ona.",
+          "Korkunç, kadim tanrılarla temasa geçer.",
+          "Bilmiyorum ama bu kötü bir fikir.",
+          "Gerçekten çok kötü bir fikir.",
+          "Berbat bir fikir.",
+          "Nephit'in ritüeli kullanmasını engelleyin.",
+          "Sen onunla dövüstükten sonra Nephit surların üzerinde belirdi.",
+          "Sanırım Nephit ritüeli buldu?",
+          "Nedenini bilmiyorum ama onu kullanacak.",
+          "Belki de bunun onu hayata döndürecegini umuyor.",
+          "Belki, ama bu canavarca bir varolus olurdu.",
+          "Acele edin, o ögrenmeden onu durdurun."
+        ]
+      },
+      "actitus02": {
+        "defaultLines": [
+          "Acele etmek! Nephit bu tarafa gitti!",
+          "Ötesinde Uyuyan Topraklara açılan kapı yatıyor",
+          "Baron Hocke'un bilgeleri, geçidi kapatmak için güçlü bir Kapak Tası yarattı.",
+          "Dünyalar arasındaki yolculugu sınırlandırır.",
+          "Nephit, Kapak Tası'nı kırmaya ve enerjisini ritüeli için kullanmaya çalısacak.",
+          "Diyarlar arası yolculuk durdurulamaz olacak.",
+          "Nephit'in ritüelinin hepimizi öldürmedigini varsayarsak."
+        ]
+      },
+      "actitus03": {
+        "defaultLines": [
+          "Capstone'a dogru gidiyor!",
+          "En azından Nephit artık yok.",
+          "Geliyor",
+          "Hersey",
+          "Zenginlikler ve Kabuslar",
+          "Canavarlar ve Büyü",
+          "İyi ve Kötü",
+          "Hepsi asagıda ve simdi hepsi uyanık",
+          "Nephit yenilir ancak Kapak Tası yok edilir. Uyuyan Topraklar'a baglantı açık",
+          "Uyuyan Topraklar Nelerdir?",
+          "Ha, hâlâ bir maceracısın",
+          "Oraya gidiyorsun, degil mi?",
+          "Peki o zaman sana eslik edecegim",
+          "O kapı bizi oraya götürmeli",
+          "Yoksa bizi parçalara ayır"
+        ]
+      },
+      "acvillager01": {
+        "displayName": "Jawen",
+        "defaultLines": [
+          "Bu ejderha askerler asagıdan geldi!",
+          "Daha sonra açıklayacagım!",
+          "Acele edin, avluda yardıma ihtiyacımız var!",
+          "Ejderhayı öldürdügün için tesekkürler yigit kahraman!"
+        ]
+      },
+      "acvillager02": {
+        "displayName": "Toraes",
+        "defaultLines": [
+          "Uzun zamandır burada saklanıyorduk.",
+          "Sonra asagıdan ejderha savasçıları geldi.",
+          "Dread Paladins'in kontrolünü ele geçirdiler."
+        ]
+      },
+      "acvillager03": {
+        "defaultLines": [
+          "O kadar çok Tuatara askeri var ki, sayılarını azaltabilir misin?",
+          "Kalenin her yerindeler",
+          "Asagıdan geldiler",
+          "Tesekkür ederim, belki sonunda burayı yeniden insa edebiliriz.",
+          "Tesekkürler, burada kendimi daha güvende hissediyorum."
+        ]
+      },
+      "acvillager04": {
+        "defaultLines": [
+          "Taht odasında magaraya açılan gizli bir kapı var",
+          "Ejderhanın askerlerinin bir kısmı orada saklanıyor.",
+          "Dikkatli olun, Baron Hocke'un golemlerinden biri onların emrinde."
+        ]
+      },
+      "acvillager05": {
+        "defaultLines": [
+          "Dread Paladin maskeleri bu golemleri kontrol etmenin sırrıdır.",
+          "Ejderha generali Dehset Paladin Golemlerinin kontrolünü ele geçirdi.",
+          "Baron Hocke'un özel korumasıydılar.",
+          "Maskeleri onları kontrol etmenin anahtarıdır.",
+          "Bulabildigin herhangi bir seyi bana getirirsen belki kontrolü yeniden saglayabilirim.",
+          "Tesekkürler, hemen bunları sökmeye baslayacagım.",
+          "Maskeleri topladıgınız için tekrar tesekkürler."
+        ]
+      }
+    },
+    "CastleHard": {
+      "acmayor01hard": {
+        "defaultLines": [
+          "Maresal Sythokahn bu kez sadece hayalini degil, yenilgiye ugradı.",
+          "Ejderhaların tekrar istila etmesini engelledin.",
+          "Ama asagıda baska neler oldugunu kim bilebilir?",
+          "Liderimiz Titus, ejderhalarla savasmanın bir yolunu bulmak için Gözlemevi'ne gitti.",
+          "O ejderhayı öldürdügün için tesekkür ederim.",
+          "Sigismund Hocke'un kesif gezisindeydik.",
+          "Evet, tamamen aynı.",
+          "Goblinlerin arasından geçerek kaleye dogru savastık.",
+          "Sigismund kampı korumamız için bizi bıraktı.",
+          "O ve sövalyeleri asagıya indiler.",
+          "Portaldan geçtiler.",
+          "Bilge Titus bize yardım etti.",
+          "Ejderha lejyonu geldiginde onları durdurmanın bir yolunu bulmaya gitti.",
+          "Onu bulmalısın."
+        ]
+      },
+      "actitus01hard": {
+        "defaultLines": [
+          "Beni nasıl görüyorsun?",
+          "Nephit, Eterik Gözlemevi'nden kadim bir ritüel arıyor.",
+          "İkimiz de hayattayken bunu istedi.",
+          "Böyle bir güce asla güvenmedim ona.",
+          "Korkunç, kadim tanrılarla temasa geçer.",
+          "Bilmiyorum ama bu kötü bir fikir.",
+          "Gerçekten çok kötü bir fikir.",
+          "Berbat bir fikir.",
+          "Nephit'in ritüeli kullanmasını engelleyin.",
+          "Sen onunla dövüstükten sonra Nephit surların üzerinde belirdi.",
+          "Sanırım Nephit ritüeli buldu?",
+          "Nedenini bilmiyorum ama onu kullanacak.",
+          "Belki de bunun onu hayata döndürecegini umuyor.",
+          "Belki, ama bu canavarca bir varolus olurdu.",
+          "Acele edin, o ögrenmeden onu durdurun."
+        ]
+      },
+      "actitus02hard": {
+        "defaultLines": [
+          "Acele etmek! Nephit bu tarafa gitti!",
+          "Ötesinde Uyuyan Topraklara açılan kapı yatıyor",
+          "Baron Hocke'un bilgeleri, geçidi kapatmak için güçlü bir Kapak Tası yarattı.",
+          "Dünyalar arasındaki yolculugu sınırlandırır.",
+          "Nephit, Kapak Tası'nı kırmaya ve enerjisini ritüeli için kullanmaya çalısacak.",
+          "Diyarlar arası yolculuk durdurulamaz olacak.",
+          "Nephit'in ritüelinin hepimizi öldürmedigini varsayarsak."
+        ]
+      },
+      "actitus03hard": {
+        "defaultLines": [
+          "Capstone'a dogru gidiyor!",
+          "En azından Nephit artık yok.",
+          "Geliyor",
+          "Hersey",
+          "Zenginlikler ve Kabuslar",
+          "Canavarlar ve Büyü",
+          "İyi ve Kötü",
+          "Hepsi asagıda ve simdi hepsi uyanık",
+          "Nephit yenilir ancak Kapak Tası yok edilir. Uyuyan Topraklar'a baglantı açık",
+          "Uyuyan Topraklar Nelerdir?",
+          "Ha, hâlâ bir maceracısın",
+          "Oraya gidiyorsun, degil mi?",
+          "Peki o zaman sana eslik edecegim",
+          "O kapı bizi oraya götürmeli",
+          "Yoksa bizi parçalara ayır"
+        ]
+      },
+      "acvillager01hard": {
+        "displayName": "Jawen",
+        "defaultLines": [
+          "Bu ejderha askerler asagıdan geldi!",
+          "Daha sonra açıklayacagım!",
+          "Acele edin, avluda yardıma ihtiyacımız var!",
+          "Ejderhayı öldürdügün için tesekkürler yigit kahraman!"
+        ]
+      },
+      "acvillager02hard": {
+        "displayName": "Toraes",
+        "defaultLines": [
+          "Uzun zamandır burada saklanıyorduk.",
+          "Sonra asagıdan ejderha savasçıları geldi.",
+          "Dread Paladins'in kontrolünü ele geçirdiler."
+        ]
+      },
+      "acvillager03hard": {
+        "defaultLines": [
+          "O kadar çok Tuatara askeri var ki, sayılarını azaltabilir misin?",
+          "Kalenin her yerindeler",
+          "Asagıdan geldiler",
+          "Tesekkür ederim, belki sonunda burayı yeniden insa edebiliriz.",
+          "Tesekkürler, burada kendimi daha güvende hissediyorum."
+        ]
+      },
+      "acvillager04hard": {
+        "defaultLines": [
+          "Taht odasında magaraya açılan gizli bir kapı var",
+          "Ejderhanın askerlerinin bir kısmı orada saklanıyor.",
+          "Dikkatli olun, Baron Hocke'un golemlerinden biri onların emrinde."
+        ]
+      },
+      "acvillager05hard": {
+        "defaultLines": [
+          "Dread Paladin maskeleri bu golemleri kontrol etmenin sırrıdır.",
+          "Ejderha generali Dehset Paladin Golemlerinin kontrolünü ele geçirdi.",
+          "Baron Hocke'un özel korumasıydılar.",
+          "Maskeleri onları kontrol etmenin anahtarıdır.",
+          "Bulabildigin herhangi bir seyi bana getirirsen belki kontrolü yeniden saglayabilirim.",
+          "Tesekkürler, hemen bunları sökmeye baslayacagım.",
+          "Maskeleri topladıgınız için tekrar tesekkürler."
+        ]
+      }
+    },
+    "EmeraldGlades": {
+      "egmayor01": {
+        "defaultLines": [
+          "Wildbark'ı gördün mü? Agacımızı batıya dogru bıraktı",
+          "Tesekkür ederim ve sizi gönderdigi için Wildbark'a tesekkür ederim!",
+          "Halkımıza yardım ettiginiz için tesekkür ederiz!",
+          "Meylour'un yozlasmıs Dryad'ları Ur-Tree'i istila etti!",
+          "Meylour'un iblisleri bizi agaçtan sürdü.",
+          "Onun bozuk bitkileri ve alevleri her yerdedir.",
+          "Acele etmelisin, duman kokusu alıyorum!",
+          "Tesekkür ederim ama agaç henüz güvende degil.",
+          "Meylour'un igrençlikleri köklerden içeri sızdı.",
+          "Meylour Rahipleri daha fazla ates gönderecek.",
+          "Tapınaklarından burayı kazdılar.",
+          "Meylour her seyin ölmesini istiyor. Her sey.",
+          "Antik tapınaga gidin ve Meylour tarikatçılarını alt edin",
+          "Meylour rahipleri baska bir ritüel daha hazırlıyorlar.",
+          "Meylour'un Kalbine giden bir yol bulmalısın.",
+          "Meylour'un gücünün yattıgı yer burasıdır.",
+          "Yerini yalnızca rahipleri biliyor.",
+          "Meylour Kültü neredeyse yenilgiye ugratıldı!",
+          "Meylour'un tarikatının sonuncusu korkuyla siniyor.",
+          "Neredeyse onları yendin.",
+          "Artık nihayet Meylour'u sonsuza dek yok edebilirsin.",
+          "Meylour'un takipçileri hak ettiklerini buldu.",
+          "Meylour, Ellyria'daki tüm yasam yanana kadar dinlenmeyecek.",
+          "Meylour ritüeli bozuldu mu?",
+          "Meylour'un kötü büyüsü iz bırakıyor.",
+          "Tarikat gücünü serbest bırakmaya çalıstı.",
+          "Artık bu gücü kaynagına kadar takip etmenize yardımcı olabilirim.",
+          "Dagın kalbinin derinliklerine giden yolu takip edin.",
+          "Orada Meylour'u bulacaksınız."
+        ]
+      },
+      "egscout01": {
+        "defaultLines": [
+          "Meylour'un sırları Stormshard Dagı'nda.",
+          "Madenlerden geçtigine göre güçlü bir kahraman olmalısın!",
+          "Halkımızı yeniden bir araya getirdiginiz için tesekkür ederiz!",
+          "Meylour'un Ashen Dryad'ları Ur-Tree'i kusatıyor!",
+          "Meylour'un Ashen Dryad'larından biri Dogu'ya kaçtı.",
+          "Senden kaçtıgını mı anlıyorum?",
+          "Yasayan Dag zaten türümün çogunu yok etti.",
+          "Ashen Dryad'ı takip et.",
+          "Onu yakalamak Meylour'un planlarını daha da açıga çıkaracak."
+        ]
+      },
+      "egvillager02": {
+        "defaultLines": [
+          "Kül Rengi Dryad'lardan Kara Totemleri toplamamıza yardım edin",
+          "Onları Ashen Dryads'ta bulabilirsin",
+          "Yangın büyüsünden korunmak için onlara ihtiyacımız var.",
+          "Mükemmel, koruma büyüsünü baslatacagım.",
+          "Koruma büyüsü için Meylour'un Maskelerine de ihtiyacımız var",
+          "Lütfen acele edin, rahiplerin saldırılarının püskürtülmesi gerekiyor.",
+          "Tam ihtiyacımız olan sey. Tesekkür ederim!",
+          "Artık korunmamız lazım. Tekrar tesekkürler!"
+        ]
+      },
+      "egvillager03": {
+        "defaultLines": [
+          "Topraklarımızı saran yangınları söndürmemize yardım edebilir misiniz?",
+          "Yasayan ates her yerde, lütfen onu yok edin.",
+          "Tesekkür ederim. Simdiden daha iyi nefes alabiliyorum.",
+          "Umarım topraklarımız bir kez daha yeserir!"
+        ]
+      },
+      "oakfrost": {
+        "displayName": "Oakfrost",
+        "defaultLines": [
+          "Burası eskiden bir cennetti."
+        ]
+      }
+    },
+    "JadeCity": {
+      "bako": {
+        "displayName": "Bako",
+        "defaultLines": [
+          "Buralı degilsin, degil mi?"
+        ]
+      },
+      "citypete": {
+        "displayName": "Pete the Ferry Man",
+        "defaultLines": [
+          "Pek fazla görünmeyebilir ama sizi gölün karsısına geçirecek",
+          "Hiçbir ücret yok. Aslında egzersizden keyif alıyorum",
+          "Temple Adası tüm olup bitenlere ragmen huzurlu",
+          "Yukarı mı çıkıyorsunuz?"
+        ]
+      },
+      "islandpete": {
+        "displayName": "Pete the Ferry Man",
+        "defaultLines": [
+          "Simdiden geri mi dönüyorsun?",
+          "Bahse girerim anlatacak çılgın hikayelerin vardır",
+          "Bunu duydun mu?",
+          "Sehre dönmeye hazır oldugunda tam burada olacagım"
+        ]
+      },
+      "kala": {
+        "displayName": "Kala",
+        "defaultLines": [
+          "Yasanan her seyle birlikte...",
+          "Sokaklardan uzak durmak daha iyi"
+        ]
+      },
+      "vhfabmab01": {
+        "defaultLines": [
+          "Merhaba genç adam|hanımefendi",
+          "İmparator, tahtını güvence altına almak için ruhunu Seelie'ye sattı.",
+          "Uyuyan Topraklar'da ilk uyananlar Seelie'lerdi.",
+          "Bir zamanlar bilge ve cömertlerdi…",
+          "Ancak zaman onları acımasız ve baskalarını kıskandırdı.",
+          "Güçlerini Goblinlere ve Ejderhalara kaptırdılar…",
+          "Sigismund Hocke, Goblin Krallarını yenmek için onlara basvurdu.",
+          "Ve simdi onun Valhaven'daki yönetimini destekliyorlar.",
+          "Seelie büyüsüne karsı koymak için Seelie büyüsü gerekir.",
+          "Kayıp Düsler Tapınagı'na gidin...",
+          "Orada İmparator'un korumalarına karsı kullanabilecegim bir sey bulabilirsin.",
+          "Tapınak sanıldıgından daha tehlikeliymis gibi görünüyor.",
+          "İmparator sırlarını iyi koruyor olmalıydı.",
+          "Artık onun Seelie büyüsü hakkında çok daha fazla sey biliyorum.",
+          "Seni sarayının dıs muhafazalarından geçirebilmeliyim.",
+          "Ama onunla yüzlestiginde tek basına olacaksın.",
+          "Savunmasız ama yine de çok tehlikeli."
+        ]
+      },
+      "vhfabmab02": {
+        "defaultLines": [
+          "Uyuyan Topraklara izinizi bıraktınız.",
+          "Artık Uyuyan Topraklar'ın kaderinin bir parçasısınız.",
+          "Eylemleriniz rüyalar dünyasında yankılanıyor.",
+          "Kaderinle yüzlesmeye cesaret edersen...",
+          "İlksel Rüyaya girebilir ve gerçegi ögrenebilirsiniz.",
+          "Kendiniz ve dünyadaki yeriniz hakkındaki gerçek.",
+          "Geri döndün. Umarım çok sey ögrenmissindir.",
+          "Görünüse göre rüyalarında bir ejderha saklanıyordu.",
+          "Pek çok tuhaf seyin mümkün oldugunu göreceksiniz.",
+          "Uyuyan Topraklar'ın yalnızca küçük bir kısmını gördünüz.",
+          "Tek sorununuz buysa sanslısınız.",
+          "Bu dünya artık seni tanıyor.",
+          "Ve bunun senin için iyi bir sey oldugundan emin degilim."
+        ]
+      },
+      "vhjackal02": {
+        "defaultLines": [
+          "Artık Seelie koguslarını geçebildiginize göre saldırı zamanı.",
+          "İmparator'la yüzlesmeden önce onu zayıflatmamız gerekiyor.",
+          "Onunla yüzlesmeden önce tüm destegini alın.",
+          "Kızları onun ordusuna ve gizli polisine komuta ediyor.",
+          "Bunları sarayın dogu ve batı kanatlarında bulabilirsiniz.",
+          "Ayrıca İmparatorluk Muhafız Komutanı'nı da yenmeniz gerekiyor.",
+          "Kıslada yasıyor.",
+          "Artık İmparator'un savunması kargasa içinde.",
+          "Saldırmanın zamanı geldi!",
+          "Etkilemek konusunda asla basarısız olmuyorsun #tn#."
+        ]
+      },
+      "vhmonk01": {
+        "defaultLines": [
+          "İmparatorun burada yaptıgı bir trajedi ama her sey kaybolmadı",
+          "Sehrin kendisini lekeleyen Seelie pisliginin agırlıgı altından haykırdıgını hissedebiliyorum.",
+          "Zehir, panzehir yapmanın anahtarı oldugundan, iblis gözyasları da Valhaven'ın aurasını temizlemenin anahtarıdır.",
+          "Çok yasa dostum.",
+          "İsleri yoluna koymak için uzun bir sürece baslayacagım…",
+          "Senin gibi asil bir ruhla tanısmak kalbimi sevindiriyor"
+        ]
+      },
+      "vhodin01": {
+        "defaultLines": [
+          "Siz Rathbone'un bahsettigi Gezgin olmalısınız. Hos geldin.",
+          "İmparator adınızı biliyor ve ölmenizi istiyor.",
+          "Acaba onun öfkesini kazanmak için ne yaptın?",
+          "Bu onu memnun edemezdi.",
+          "Ancak Shazari'ye karsı komplo kurdugunu asla kabul etmeyecekti.",
+          "Ve basınıza halka açık bir ödül koydu.",
+          "Oglu Yüce Büyücü gerçegi ögrenecek.",
+          "Babasının gözünden düsmüs gibi görünüyor.",
+          "Sarayın dısındayken onu bulun, konusabilir.",
+          "Sık sık sokakları dolasıyor, hırsızları kendi davasına yetistiriyor.",
+          "Demek İmparator sizin dünyanızdan!",
+          "Kökenleri her zaman bir gizemdi.",
+          "On yıl önce Goblinleri devirip kendini kurdu.",
+          "Seelie müttefikleri sayesinde durdurulamaz oldu.",
+          "Burada harika seyler yapmanın kaderinde oldugunu hissedebiliyorum",
+          "İmparator'un zırhında bir çatlak bulmak için Mab ile birlikte çalısın",
+          "Simdi bundan sonra ne yapacagımıza karar vermek için Ma Mab'ın yardımına ihtiyacımız var.",
+          "Sigismund Hocke, Seelie sayesinde İmparator oldu.",
+          "Kara büyüleri onu koruyor ve tahtını güvence altına alıyor.",
+          "Kogusları için bir sayaca ihtiyacımız var.",
+          "Ma Mab, Seelie hakkında tanıdıgım herkesten daha fazlasını biliyor.",
+          "Onunla konusun ve herhangi bir fikri olup olmadıgına bakın.",
+          "Vermyn çeteleri İmparatorun Goblinleri devirmesine yardım etti.",
+          "İmparatorun senden neden nefret ettigini simdi anlıyorum.",
+          "Yapıyor musun? Onun Baronlugunu aldın.",
+          "Buradaki insanları da kızdırdı.",
+          "Vermyn çeteleri İmparator'un yönetimi altında sıkıntı yasıyor.",
+          "Ona karsı ayaklanacaklardı…",
+          "Oluk Lordu'nun İmparator'a sadık kalması dısında.",
+          "Asagı in ve Oluk Lordu'nu alt et.",
+          "O zaman Vermyn kesinlikle bize katılacak.",
+          "Vermyn çeteleri kargasa içinde!",
+          "Oluk Lordu'nun gitmesiyle bazıları zaten bizim tarafımızda.",
+          "Simdi isin zor kısmına geçelim.",
+          "İmparator sarayında siniyor.",
+          "Onun tüm destegini aldın.",
+          "Halk ona karsı ayaklanıyor.",
+          "İmparator Sigismund'un terör saltanatı bugün sona eriyor.",
+          "Özgürlük!",
+          "Burada ne yaptın…",
+          "sana yeterince tesekkür edemem",
+          "Valhaven yüzyıllardır ilk kez özgür.",
+          "Goblinler, Ejderhalar ve Seelie'nin hepsi yenildi.",
+          "Sonunda barısı ögrenecegiz.",
+          "Çete liderlerini durdurmasaydın ölmüs olurdum.",
+          "Bu sehrin çetelerinin çogunlugu insandır ve İmparator'a sadıktır.",
+          "Ama Skitts'ten onların kazanılabilecegini duydum.",
+          "İnsanlar genellikle İmparatoru destekler.",
+          "Ama artık Seelie'ye çok güveniyor.",
+          "İnsan çeteleri onunla savasacak…",
+          "Eger liderlerini devirebilirsek.",
+          "Ama liderlerin kim oldugunu bilmiyorum.",
+          "Baglantım Skitts bilecek.",
+          "Git bakalım ne öneriyor?"
+        ]
+      },
+      "vhrebel01": {
+        "defaultLines": [
+          "Ben bir zamanlar imparatorluk mensubuydum…",
+          "İmparator aklını kaybedip Seelie ile iliski kurmaya baslamadan önce.",
+          "Vicdanımın pesinden gittim ve bu bana her seye mal oldu.",
+          "Simdi korudugumuz bu sokakları terörize etmelerini izliyorum.",
+          "Sokaklardan çıkaracagın her Imperial'ın parasını ödeyecegim.",
+          "Bu o kadar çok ki… Al sunu.",
+          "Geriye kalan tüm param bu kadardı",
+          "Hayır, al. Adil bir amaç için savasıyorsun",
+          "Her seyin eski haline dönmesi için dünyadaki tüm altını takas ederdim",
+          "sanırım bunun zamanı geçti",
+          "Artık hiçbir sey eskisi gibi olmayacak."
+        ]
+      },
+      "vhrebel02": {
+        "defaultLines": [
+          "İmparatorluklar yeterince kötü ama çeteler en kötü fırsatçı türlerindendir.",
+          "Koruma ve gasp santajı yürütüyorlar.",
+          "Kendilerini savunamayan masum sivilleri avlamak.",
+          "Sanırım birinin onlara günlerinin bittigini gösterme zamanı geldi.",
+          "Tesekkür ederim gezgin.",
+          "Bu, insanların endiselenmesi gereken bir tehditten daha az."
+        ]
+      },
+      "vhskitts01": {
+        "defaultLines": [
+          "Buradaki insan çetelerinin yüksek standartları var.",
+          "Vermyn çeteleri senin tarafında...",
+          "Bu çok etkileyici.",
+          "Ancak insan çeteleri farklıdır.",
+          "Liderlere yakın olmak istiyorsanız…",
+          "Onlara kendini kanıtlamak zorunda kalacaksın.",
+          "Acımasız bir mücadeleye hazır olun.",
+          "O dövüs çukurunda sana saldıracaklar.",
+          "Artık herkes senden bahsediyor #tn#.",
+          "Bu bir hileydi! Senin ve asi arkadaslarının pesindeler!",
+          "Çete liderleri bize tuzak kurdu.",
+          "Sen ringdeyken onlar hareket halindeydi.",
+          "Çeteler isyancıların sıgınagına dogru ilerliyor.",
+          "Acele ederek geri dönmelisiniz…",
+          "Odryn'i öldürmeden önce onları kesin!",
+          "Demek bas belası olan sensin, öyle mi?"
+        ]
+      },
+      "vhvagrant01": {
+        "defaultLines": [
+          "Bu da ne?! Evet! Körü körüne soydular!",
+          "Vermyn mah bahçesine baskın düzenledi ve mah mantarlarını çaldı.",
+          "Bu mantarları güveç ve doyurucu mantarlı turta yapmak için kullanıyorum.",
+          "Bütün bu İmparatorluk saçmalıklarıyla birlikte sokaklardaki insanların geçinmek için mantarlara ihtiyacı var!",
+          "Kimsenin açlıktan ölmesini istemiyorum, ya sen?",
+          "Hoo-evet! Mah mantarları buldun!",
+          "Artık mantarlı turta pisirmeye geri dönebilirim",
+          "Ve Mantarlı Bamya",
+          "Ve mantarlı güveç",
+          "Ve mantarlı sufle",
+          "Ve Mantar Dolması Safran Sürprizi",
+          "Ve Mantar ala Kelp",
+          "Ve bakalım. Mantarlarla yapabilecegim daha çok sey oldugunu biliyorum"
+        ]
+      }
+    },
+    "JadeCityHard": {
+      "bakohard": {
+        "displayName": "Bako",
+        "defaultLines": [
+          "Buralı degilsin, degil mi?"
+        ]
+      },
+      "citypetehard": {
+        "displayName": "Pete the Ferry Man",
+        "defaultLines": [
+          "Pek fazla görünmeyebilir ama sizi gölün karsısına geçirecek",
+          "Hiçbir ücret yok. Aslında egzersizden keyif alıyorum",
+          "Temple Adası tüm olup bitenlere ragmen huzurlu",
+          "Yukarı mı çıkıyorsunuz?"
+        ]
+      },
+      "islandpetehard": {
+        "displayName": "Pete the Ferry Man",
+        "defaultLines": [
+          "Simdiden geri mi dönüyorsun?",
+          "Bahse girerim anlatacak çılgın hikayelerin vardır",
+          "Bunu duydun mu?",
+          "Sehre dönmeye hazır oldugunda tam burada olacagım"
+        ]
+      },
+      "kalahard": {
+        "displayName": "Kala",
+        "defaultLines": [
+          "Yasanan her seyle birlikte...",
+          "Sokaklardan uzak durmak daha iyi"
+        ]
+      },
+      "vhfabmab01hard": {
+        "defaultLines": [
+          "Merhaba genç adam|hanımefendi",
+          "İmparator, tahtını güvence altına almak için ruhunu Seelie'ye sattı.",
+          "Uyuyan Topraklar'da ilk uyananlar Seelie'lerdi.",
+          "Bir zamanlar bilge ve cömertlerdi…",
+          "Ancak zaman onları acımasız ve baskalarını kıskandırdı.",
+          "Güçlerini Goblinlere ve Ejderhalara kaptırdılar…",
+          "Sigismund Hocke, Goblin Krallarını yenmek için onlara basvurdu.",
+          "Ve simdi onun Valhaven'daki yönetimini destekliyorlar.",
+          "Seelie büyüsüne karsı koymak için Seelie büyüsü gerekir.",
+          "Kayıp Düsler Tapınagı'na gidin...",
+          "Orada İmparator'un korumalarına karsı kullanabilecegim bir sey bulabilirsin.",
+          "Tapınak sanıldıgından daha tehlikeliymis gibi görünüyor.",
+          "İmparator sırlarını iyi koruyor olmalıydı.",
+          "Artık onun Seelie büyüsü hakkında çok daha fazla sey biliyorum.",
+          "Seni sarayının dıs muhafazalarından geçirebilmeliyim.",
+          "Ama onunla yüzlestiginde tek basına olacaksın.",
+          "Savunmasız ama yine de çok tehlikeli."
+        ]
+      },
+      "vhfabmab02hard": {
+        "defaultLines": [
+          "Uyuyan Topraklara izinizi bıraktınız.",
+          "Artık Uyuyan Topraklar'ın kaderinin bir parçasısınız.",
+          "Eylemleriniz rüyalar dünyasında yankılanıyor.",
+          "Kaderinle yüzlesmeye cesaret edersen...",
+          "İlksel Rüyaya girebilir ve gerçegi ögrenebilirsiniz.",
+          "Kendiniz ve dünyadaki yeriniz hakkındaki gerçek.",
+          "Geri döndün. Umarım çok sey ögrenmissindir.",
+          "Görünüse göre rüyalarında bir ejderha saklanıyordu.",
+          "Pek çok tuhaf seyin mümkün oldugunu göreceksiniz.",
+          "Uyuyan Topraklar'ın yalnızca küçük bir kısmını gördünüz.",
+          "Tek sorununuz buysa sanslısınız.",
+          "Bu dünya artık seni tanıyor.",
+          "Ve bunun senin için iyi bir sey oldugundan emin degilim."
+        ]
+      },
+      "vhjackal02hard": {
+        "defaultLines": [
+          "Artık Seelie koguslarını geçebildiginize göre saldırı zamanı.",
+          "İmparator'la yüzlesmeden önce onu zayıflatmamız gerekiyor.",
+          "Onunla yüzlesmeden önce tüm destegini alın.",
+          "Kızları onun ordusuna ve gizli polisine komuta ediyor.",
+          "Bunları sarayın dogu ve batı kanatlarında bulabilirsiniz.",
+          "Ayrıca İmparatorluk Muhafız Komutanı'nı da yenmeniz gerekiyor.",
+          "Kıslada yasıyor.",
+          "Artık İmparator'un savunması kargasa içinde.",
+          "Saldırmanın zamanı geldi!",
+          "Etkilemek konusunda asla basarısız olmuyorsun #tn#."
+        ]
+      },
+      "vhmonk01hard": {
+        "defaultLines": [
+          "İmparatorun burada yaptıgı bir trajedi ama her sey kaybolmadı",
+          "Sehrin kendisini lekeleyen Seelie pisliginin agırlıgı altından haykırdıgını hissedebiliyorum.",
+          "Zehir, panzehir yapmanın anahtarı oldugundan, iblis gözyasları da Valhaven'ın aurasını temizlemenin anahtarıdır.",
+          "Çok yasa dostum.",
+          "İsleri yoluna koymak için uzun bir sürece baslayacagım…",
+          "Senin gibi asil bir ruhla tanısmak kalbimi sevindiriyor"
+        ]
+      },
+      "vhodin01hard": {
+        "defaultLines": [
+          "Siz Rathbone'un bahsettigi Gezgin olmalısınız. Hos geldin.",
+          "İmparator adınızı biliyor ve ölmenizi istiyor.",
+          "Acaba onun öfkesini kazanmak için ne yaptın?",
+          "Bu onu memnun edemezdi.",
+          "Ancak Shazari'ye karsı komplo kurdugunu asla kabul etmeyecekti.",
+          "Ve basınıza halka açık bir ödül koydu.",
+          "Oglu Yüce Büyücü gerçegi ögrenecek.",
+          "Babasının gözünden düsmüs gibi görünüyor.",
+          "Sarayın dısındayken onu bulun, konusabilir.",
+          "Sık sık sokakları dolasıyor, hırsızları kendi davasına yetistiriyor.",
+          "Demek İmparator sizin dünyanızdan!",
+          "Kökenleri her zaman bir gizemdi.",
+          "On yıl önce Goblinleri devirip kendini kurdu.",
+          "Seelie müttefikleri sayesinde durdurulamaz oldu.",
+          "Burada harika seyler yapmanın kaderinde oldugunu hissedebiliyorum",
+          "İmparator'un zırhında bir çatlak bulmak için Mab ile birlikte çalısın",
+          "Simdi bundan sonra ne yapacagımıza karar vermek için Ma Mab'ın yardımına ihtiyacımız var.",
+          "Sigismund Hocke, Seelie sayesinde İmparator oldu.",
+          "Kara büyüleri onu koruyor ve tahtını güvence altına alıyor.",
+          "Kogusları için bir sayaca ihtiyacımız var.",
+          "Ma Mab, Seelie hakkında tanıdıgım herkesten daha fazlasını biliyor.",
+          "Onunla konusun ve herhangi bir fikri olup olmadıgına bakın.",
+          "Vermyn çeteleri İmparatorun Goblinleri devirmesine yardım etti.",
+          "İmparatorun senden neden nefret ettigini simdi anlıyorum.",
+          "Yapıyor musun? Onun Baronlugunu aldın.",
+          "Buradaki insanları da kızdırdı.",
+          "Vermyn çeteleri İmparator'un yönetimi altında sıkıntı yasıyor.",
+          "Ona karsı ayaklanacaklardı…",
+          "Oluk Lordu'nun İmparator'a sadık kalması dısında.",
+          "Asagı in ve Oluk Lordu'nu alt et.",
+          "O zaman Vermyn kesinlikle bize katılacak.",
+          "Vermyn çeteleri kargasa içinde!",
+          "Oluk Lordu'nun gitmesiyle bazıları zaten bizim tarafımızda.",
+          "Simdi isin zor kısmına geçelim.",
+          "İmparator sarayında siniyor.",
+          "Onun tüm destegini aldın.",
+          "Halk ona karsı ayaklanıyor.",
+          "İmparator Sigismund'un terör saltanatı bugün sona eriyor.",
+          "Özgürlük!",
+          "Burada ne yaptın…",
+          "sana yeterince tesekkür edemem",
+          "Valhaven yüzyıllardır ilk kez özgür.",
+          "Goblinler, Ejderhalar ve Seelie'nin hepsi yenildi.",
+          "Sonunda barısı ögrenecegiz.",
+          "Çete liderlerini durdurmasaydın ölmüs olurdum.",
+          "Bu sehrin çetelerinin çogunlugu insandır ve İmparator'a sadıktır.",
+          "Ama Skitts'ten onların kazanılabilecegini duydum.",
+          "İnsanlar genellikle İmparatoru destekler.",
+          "Ama artık Seelie'ye çok güveniyor.",
+          "İnsan çeteleri onunla savasacak…",
+          "Eger liderlerini devirebilirsek.",
+          "Ama liderlerin kim oldugunu bilmiyorum.",
+          "Baglantım Skitts bilecek.",
+          "Git bakalım ne öneriyor?"
+        ]
+      },
+      "vhrebel01hard": {
+        "defaultLines": [
+          "Ben bir zamanlar imparatorluk mensubuydum…",
+          "İmparator aklını kaybedip Seelie ile iliski kurmaya baslamadan önce.",
+          "Vicdanımın pesinden gittim ve bu bana her seye mal oldu.",
+          "Simdi korudugumuz bu sokakları terörize etmelerini izliyorum.",
+          "Sokaklardan çıkaracagın her Imperial'ın parasını ödeyecegim.",
+          "Bu o kadar çok ki… Al sunu.",
+          "Geriye kalan tüm param bu kadardı",
+          "Hayır, al. Adil bir amaç için savasıyorsun",
+          "Her seyin eski haline dönmesi için dünyadaki tüm altını takas ederdim",
+          "sanırım bunun zamanı geçti",
+          "Artık hiçbir sey eskisi gibi olmayacak."
+        ]
+      },
+      "vhrebel02hard": {
+        "defaultLines": [
+          "İmparatorluklar yeterince kötü ama çeteler en kötü fırsatçı türlerindendir.",
+          "Koruma ve gasp santajı yürütüyorlar.",
+          "Kendilerini savunamayan masum sivilleri avlamak.",
+          "Sanırım birinin onlara günlerinin bittigini gösterme zamanı geldi.",
+          "Tesekkür ederim gezgin.",
+          "Bu, insanların endiselenmesi gereken bir tehditten daha az."
+        ]
+      },
+      "vhskitts01hard": {
+        "defaultLines": [
+          "Buradaki insan çetelerinin yüksek standartları var.",
+          "Vermyn çeteleri senin tarafında...",
+          "Bu çok etkileyici.",
+          "Ancak insan çeteleri farklıdır.",
+          "Liderlere yakın olmak istiyorsanız…",
+          "Onlara kendini kanıtlamak zorunda kalacaksın.",
+          "Acımasız bir mücadeleye hazır olun.",
+          "O dövüs çukurunda sana saldıracaklar.",
+          "Artık herkes senden bahsediyor #tn#.",
+          "Bu bir hileydi! Senin ve asi arkadaslarının pesindeler!",
+          "Çete liderleri bize tuzak kurdu.",
+          "Sen ringdeyken onlar hareket halindeydi.",
+          "Çeteler isyancıların sıgınagına dogru ilerliyor.",
+          "Acele ederek geri dönmelisiniz…",
+          "Odryn'i öldürmeden önce onları kesin!",
+          "Demek bas belası olan sensin, öyle mi?"
+        ]
+      },
+      "vhvagrant01hard": {
+        "defaultLines": [
+          "Bu da ne?! Evet! Körü körüne soydular!",
+          "Vermyn mah bahçesine baskın düzenledi ve mah mantarlarını çaldı.",
+          "Bu mantarları güveç ve doyurucu mantarlı turta yapmak için kullanıyorum.",
+          "Bütün bu İmparatorluk saçmalıklarıyla birlikte sokaklardaki insanların geçinmek için mantarlara ihtiyacı var!",
+          "Kimsenin açlıktan ölmesini istemiyorum, ya sen?",
+          "Hoo-evet! Mah mantarları buldun!",
+          "Artık mantarlı turta pisirmeye geri dönebilirim",
+          "Ve Mantarlı Bamya",
+          "Ve mantarlı güveç",
+          "Ve mantarlı sufle",
+          "Ve Mantar Dolması Safran Sürprizi",
+          "Ve Mantar ala Kelp",
+          "Ve bakalım. Mantarlarla yapabilecegim daha çok sey oldugunu biliyorum"
+        ]
+      }
+    },
+    "NewbieRoad": {
+      "annaoutside": {
+        "displayName": "Anna",
+        "defaultLines": [
+          "Beni kurtardigin icin tesekkur ederim!",
+          "Savascilarimizin liderine ihtiyaci var.",
+          "Nephit adinda biri goblinleri kontrol etmeye calisiyor.",
+          "Babam elli yil once karaya ciktigimiz zamanki eski raporlari okudu.",
+          "Baska bir mezar daha var. Belki Nephit'in aradigi sey oradadir."
+        ]
+      },
+      "captainfink": {
+        "defaultLines": [
+          "Bizi kurtardın!",
+          "O köyü bulmalıyız.",
+          "Köyü haritada bulabilirsiniz.",
+          "Sadece doguya git ve onu bulacaksın.",
+          "Niobe'yi tamir etmeye çalısacagım."
+        ]
+      },
+      "nraffric": {
+        "displayName": "Affric",
+        "defaultLines": [
+          "Dost musun dusman mi?",
+          "Sark'taki dostlarimizdan mesaj mi getirdin?",
+          "Yabancilara guvenemeyiz."
+        ]
+      },
+      "nrcartguy": {
+        "defaultLines": [
+          "O ciftlikte yuvalanmis goblin akincilari var.",
+          "Troglari koseye sikistirdik.",
+          "Goblinleri geri cekilmeye zorluyorsun.",
+          "Baskiyi surdurdugumuz surece...",
+          "Bu topraklari geri alabiliriz."
+        ],
+        "conditionalLines": [
+          {
+            "missionId": 13,
+            "minState": 0,
+            "maxState": 2,
+            "lines": [
+              "Yagmacılar yükümü o çiftligin her yanına saçtı.",
+              "Tek istedigim malım ve goblinsiz tek bir gün.",
+              "Esyalarımı geri getirirsen bu insanları doyurmaya devam edebilirim."
+            ]
+          }
         ]
       },
       "nrelric": {
@@ -25,10 +1274,40 @@
           "Hava karardiktan sonra yalniz yolculuk etmek guvenli degil.",
           "Yillardir bu taraflardayim.",
           "Doguya gidiyorsan dikkatli ol."
+        ],
+        "displayName": "Ehric"
+      },
+      "nrhermit": {
+        "defaultLines": [
+          "Oluler o mahzenden durmadan cikiyor.",
+          "Yukaridaki eski tapinak, undead'lerin ilk geldigi yer.",
+          "O gunden beri geliyorlar.",
+          "Ben savasmaya devam edecegim.",
+          "Kokularina asla alisamayacagim."
+        ],
+        "conditionalLines": [
+          {
+            "missionId": 14,
+            "minState": 0,
+            "maxState": 2,
+            "lines": [
+              "Su eski mezarlık, kemikler yürümeye baslamadan önce bile yeterince kötüydü.",
+              "O mahzende bir sey onları durmadan ayaklandırıyor.",
+              "En beterlerini indir; belki geri kalanlar ölü olduklarını hatırlar."
+            ]
+          }
         ]
       },
+      "nrintrovillager": {
+        "defaultLines": [
+          "Sahildeki goblinlerin bizi kesin bitirecegini sanmıstık.",
+          "Denizden yeni bir yüz görmek hâlâ mucize gibi geliyor.",
+          "Burada kalacaksan, Wolf's End bir cesur ele daha hayır demez."
+        ],
+        "displayName": "Tyna"
+      },
       "nrmayor01": {
-        "displayName": "Belediye Başkanı Ristas",
+        "displayName": "Belediye Baskanı Ristas",
         "defaultLines": [
           "Koyumuz kucuk olabilir ama gucluyuz.",
           "Goblinler son zamanlarda daha saldirgan oldu.",
@@ -44,24 +1323,8 @@
           "Sana bir sey gostereyim mi?",
           "Dogudan gelen nadir esyalarim var.",
           "Isler fena gitmiyor."
-        ]
-      },
-      "nrtrainer01": {
-        "defaultLines": [
-          "Savunmani yukarida tut!",
-          "Bir daha! Daha hissederek!",
-          "Aci, zayifligin bedenden cikisidir.",
-          "Nefesine odaklan.",
-          "Potansiyelin var, acemi."
-        ]
-      },
-      "nraffric": {
-        "displayName": "Affric",
-        "defaultLines": [
-          "Dost musun dusman mi?",
-          "Sark'taki dostlarimizdan mesaj mi getirdin?",
-          "Yabancilara guvenemeyiz."
-        ]
+        ],
+        "displayName": "Galrius"
       },
       "nrodem": {
         "displayName": "Odem",
@@ -71,16 +1334,6 @@
           "Dun gece o isiklari gordun mu?",
           "Ben de bir zamanlar askerdim, bilirsin.",
           "Tetikte kal dostum."
-        ]
-      },
-      "annaoutside": {
-        "displayName": "Anna",
-        "defaultLines": [
-          "Beni kurtardigin icin tesekkur ederim!",
-          "Savascilarimizin liderine ihtiyaci var.",
-          "Nephit adinda biri goblinleri kontrol etmeye calisiyor.",
-          "Babam elli yil once karaya ciktigimiz zamanki eski raporlari okudu.",
-          "Baska bir mezar daha var. Belki Nephit'in aradigi sey oradadir."
         ]
       },
       "nrquestanna01": {
@@ -96,9 +1349,9 @@
             "minState": 0,
             "maxState": 2,
             "lines": [
-              "Nephit goblinleri oynatıyorsa, adını da toprağa gömmek isterim.",
-              "Eski raporlarda mezarlardan, krallardan ve fazla derine kazmış bir bilginden söz ediliyor.",
-              "Hazır olduğunda sana bulduklarımızı anlatırım."
+              "Nephit goblinleri oynatıyorsa, adını da topraga gömmek isterim.",
+              "Eski raporlarda mezarlardan, krallardan ve fazla derine kazmıs bir bilginden söz ediliyor.",
+              "Hazır oldugunda sana bulduklarımızı anlatırım."
             ]
           }
         ]
@@ -116,9 +1369,9 @@
             "minState": 0,
             "maxState": 2,
             "lines": [
-              "Bir mezar daha demek, Nephit'in istediği bir sır daha demek.",
-              "Aşağıda ne bekliyorsa huzur içinde uyumuyor.",
-              "İşin içinde bir ejderha varsa bunu söylentilerden değil senden duymayı tercih ederim."
+              "Bir mezar daha demek, Nephit'in istedigi bir sır daha demek.",
+              "Asagıda ne bekliyorsa huzur içinde uyumuyor.",
+              "İsin içinde bir ejderha varsa bunu söylentilerden degil senden duymayı tercih ederim."
             ]
           }
         ]
@@ -136,12 +1389,22 @@
             "minState": 0,
             "maxState": 2,
             "lines": [
-              "Doğu yolu açık olabilir ama bu güvenli olduğu anlamına gelmez.",
-              "Bu savaşı iç bölgelere taşıyacaksan tek başına gitme.",
+              "Dogu yolu açık olabilir ama bu güvenli oldugu anlamına gelmez.",
+              "Bu savası iç bölgelere tasıyacaksan tek basına gitme.",
               "Wolf's End sonunda nefes alabildi, ama ancak biraz."
             ]
           }
         ]
+      },
+      "nrtrainer01": {
+        "defaultLines": [
+          "Savunmani yukarida tut!",
+          "Bir daha! Daha hissederek!",
+          "Aci, zayifligin bedenden cikisidir.",
+          "Nefesine odaklan.",
+          "Potansiyelin var, acemi."
+        ],
+        "displayName": "Tess"
       },
       "nrvillager02": {
         "defaultLines": [
@@ -159,8 +1422,8 @@
             "maxState": 2,
             "lines": [
               "Goblinler nal halkalarımızı burunlarına taktıysa onları geri getir.",
-              "İnsan alay konusu olmayı, eritip yeniden kullanabildiğinde daha kolay hazmediyor.",
-              "Çalışan bir demirhanenin gururdan çok demire ihtiyacı var."
+              "İnsan alay konusu olmayı, eritip yeniden kullanabildiginde daha kolay hazmediyor.",
+              "Çalısan bir demirhanenin gururdan çok demire ihtiyacı var."
             ]
           },
           {
@@ -168,9 +1431,9 @@
             "minState": 0,
             "maxState": 2,
             "lines": [
-              "Şurayla tepeler arasında ne kadar az goblin kalırsa o kadar rahat uyurum.",
-              "Birileri şu haşereleri temizlemeye devam ederse geri alacağımız toprak var.",
-              "İndirdiğin her goblin bu kasabaya bir gün daha kazandırır."
+              "Surayla tepeler arasında ne kadar az goblin kalırsa o kadar rahat uyurum.",
+              "Birileri su hasereleri temizlemeye devam ederse geri alacagımız toprak var.",
+              "İndirdigin her goblin bu kasabaya bir gün daha kazandırır."
             ]
           }
         ]
@@ -188,8 +1451,8 @@
             "minState": 0,
             "maxState": 2,
             "lines": [
-              "Şu Ölüm Gözleri geceleri kasabaya fazla yaklaşıyor.",
-              "Bir goblin şaman asasının sonunda onları uzak tutması mümkün olabilir.",
+              "Su Ölüm Gözleri geceleri kasabaya fazla yaklasıyor.",
+              "Bir goblin saman asasının sonunda onları uzak tutması mümkün olabilir.",
               "Bir gece olsun penceremde parlayan gözler olmadan uyumayı çok isterim."
             ]
           },
@@ -198,63 +1461,1701 @@
             "minState": 0,
             "maxState": 2,
             "lines": [
-              "Goblinler iyice pervasızlaştı. Hata yaptıkları an da tam bu an.",
+              "Goblinler iyice pervasızlastı. Hata yaptıkları an da tam bu an.",
               "Biraz daha bastırırsan kırılacaklar.",
               "Panik, akıncı kampında çok hızlı yayılır."
             ]
           }
         ]
-      },
-      "nrcartguy": {
+      }
+    },
+    "NewbieRoadHard": {
+      "annaoutsidehard": {
         "defaultLines": [
-          "O ciftlikte yuvalanmis goblin akincilari var.",
-          "Troglari koseye sikistirdik.",
-          "Goblinleri geri cekilmeye zorluyorsun.",
-          "Baskiyi surdurdugumuz surece...",
-          "Bu topraklari geri alabiliriz."
-        ],
-        "conditionalLines": [
-          {
-            "missionId": 13,
-            "minState": 0,
-            "maxState": 2,
-            "lines": [
-              "Yağmacılar yükümü o çiftliğin her yanına saçtı.",
-              "Tek istediğim malım ve goblinsiz tek bir gün.",
-              "Eşyalarımı geri getirirsen bu insanları doyurmaya devam edebilirim."
-            ]
-          }
+          "Yardım! Beni bu zincirlerden kurtar!",
+          "Sen kimsin ki?",
+          "Sen buralı degilsin.",
+          "Goblin Sefinin kampının nerede oldugunu biliyorum.",
+          "Goblinler ormanın diger tarafında saklanıyor.",
+          "Dedigim gibi saklanıyorum.",
+          "Goblinler korkuyla kosuyor.",
+          "Ama bas edebilecegimizden çok daha fazlası var.",
+          "Özellikle de tüm bu ölümsüzler aniden ayaga kalkarken.",
+          "Ormanın içinden ilerleyin ve nehri takip edin.",
+          "Orada goblinlerle dolusun.",
+          "Bitirince ben yetisirim.",
+          "Tesekkürler! Bir yılı askın süredir goblinlerimiz olmadı.",
+          "Yeni evim bitti, yemege gelmelisin.",
+          "Selalenin yanına yeni bir ev insa ettim.",
+          "Evet! Ama tüm goblin pisligini temizledim.",
+          "Ne zaman istersen gel.",
+          "Bu yabani otlardan kurtulmak haftalar alacak.",
+          "Yok ediciler nereden geldi?@Orada bir yabancı vardı.",
+          "Birisi Hsalt'ın gizli laboratuvarlarına baskın yapıyor gibi görünüyor."
         ]
       },
-      "nrhermit": {
+      "nraffrichard": {
+        "displayName": "Affric",
         "defaultLines": [
-          "Oluler o mahzenden durmadan cikiyor.",
-          "Yukaridaki eski tapinak, undead'lerin ilk geldigi yer.",
-          "O gunden beri geliyorlar.",
-          "Ben savasmaya devam edecegim.",
-          "Kokularina asla alisamayacagim."
-        ],
-        "conditionalLines": [
-          {
-            "missionId": 14,
-            "minState": 0,
-            "maxState": 2,
-            "lines": [
-              "Şu eski mezarlık, kemikler yürümeye başlamadan önce bile yeterince kötüydü.",
-              "O mahzende bir şey onları durmadan ayaklandırıyor.",
-              "En beterlerini indir; belki geri kalanlar ölü olduklarını hatırlar."
-            ]
-          }
+          "Seni gerçekten Kral mı gönderdi?",
+          "Bir kralın oldugunu bilmiyordum.",
+          "Bizden baska insanların da oldugunu bilmiyordum.",
+          "Her seyin uydurulmus oldugunu sanıyordum."
+        ]
+      },
+      "nrcartguyhard": {
+        "defaultLines": [
+          "O çiftlikte goblin akıncıları saklanıyor.",
+          "Trogları köseye sıkıstırdık.",
+          "Ama içlerinde sert bir komutan var.",
+          "Eger ona göz kulak olursan, ben burada kalabilirim.",
+          "Ona gösterdin!",
+          "Onları orada siselenmis halde tutabiliriz.",
+          "Sorun degil.",
+          "Goblinler kaçıyor.",
+          "Baskıyı sürdürdügümüz sürece…",
+          "Bu toprakları geri alabiliriz."
+        ]
+      },
+      "nrelrichard": {
+        "displayName": "Ehric",
+        "defaultLines": [
+          "Kurt Burnu'nun dısından hiç insan görmedim.",
+          "Yalnız oldugumuzu sanıyorduk.",
+          "Bütün hayatımı goblinlerden korkarak geçirdim.",
+          "Ve daha kötü seyler.",
+          "Krakenler varken yüzmeyi bile bilmiyorum."
+        ]
+      },
+      "nrhermithard": {
+        "defaultLines": [
+          "Ölümsüzler o mahzenden yükselmeye devam ediyor.",
+          "Yukarıdaki eski tapınak ölümsüzlerin ilk geldigi yer.",
+          "O zamandan beri geliyorlar.",
+          "Eger en kötülerinden bazılarını yok etmeme yardım edebilirsen...",
+          "Kurt Burnu'na yayılmalarını önleyebiliriz.",
+          "Tesekkür ederim.",
+          "Onlarla savasmaya devam edecegim.",
+          "Ama bunlara asla alısamayacagım.",
+          "Veya onların kokusu.",
+          "Ya da söyledikleri tüyler ürpertici seyler.",
+          "Ama çogunlukla onların kokusu."
+        ]
+      },
+      "nrintrovillagerhard": {
+        "displayName": "Tyna",
+        "defaultLines": [
+          "50 yıldır goblinlerle savasıyoruz.",
+          "Diger insanların bir peri masalı oldugunu sanıyordum.",
+          "Ama sen gerçeksin.",
+          "Ve sen goblinleri öldürmede gerçekten iyisin.",
+          "Bir insanda bu hosuma gidiyor."
+        ]
+      },
+      "nrmayor01hard": {
+        "defaultLines": [
+          "Anna gibi zorlu savasçılar sayesinde kendimizi koruduk",
+          "Sen kimsin? Nereden geldin?",
+          "Sigismund Hocke ile elli yıl önce geldik.",
+          "Ben onun ordusunda davulcu bir çocuktum.",
+          "Goblinler istila ettiginde babasının baronlugunu kurtarmak için yapılan kesif gezisinin bir parçası",
+          "Anna gibi iki nesil savasçıya tesekkürler.",
+          "Ama goblinler onu kumsalda sasırttı.",
+          "Tepenin hemen arkasında eski bir kaçakçının saklandıgı yer var.",
+          "Bu olamaz! Anavatandan biri nihayet Ellyria'ya döndü mü?",
+          "Krala haber vermeliyim!",
+          "Burada hala insanların olduguna sasırıyorum.",
+          "Anna'yı serbest bıraktıgın için tesekkürler! Savasçılarımızın liderlerine ihtiyacı var.",
+          "Evet, deniz kaptanınız bana Goblin savaslarından bahsediyordu.",
+          "Elli yıl önce bizi koruyan Kurt Sonu Kalesi'miz vardı.",
+          "Sigismund Hocke, kaleyi kesif gezisi için bir üs olarak insa etti.",
+          "Ama goblinler ve daha kötüsü bizi onlarca yıl önce sürgüne gönderdi.",
+          "Goblin öldürme becerilerinle...",
+          "Oldukça kötü durumda, artık sadece bir harabe.",
+          "Eger goblinleri uzaklastırabilirsen, onu yeniden insa etmek için elimizden gelenin en iyisini yaparız.",
+          "Eski kaleyi temizledin mi? O zaman senindir. Burayı yeniden düzgün bir yuva haline getirmeye yardımcı olacagız.",
+          "Bazı goblin tüccarları kaçakçının magarasına tasındı.",
+          "Dost canlısı goblin tüccarları olduklarını söylüyorlar.",
+          "Ben onlara güvenmiyorum.",
+          "Gidip o magarada ne yaptıklarını görebilir misin?",
+          "Hmm. Dikkatli olmak.",
+          "Bunlar aldatıcıdır.",
+          "Gerçekten güzel goblinler var mı? Ha.",
+          "Sanırım onları sevmeyi ögrenecegim.",
+          "Geçen sefer de öyle demistin.",
+          "Bunun son Kraken oldugundan emin misin?"
+        ]
+      },
+      "nrmerchant01hard": {
+        "displayName": "Galrius",
+        "defaultLines": [
+          "Goblinler her seyi elde edemediler"
+        ]
+      },
+      "nrodemhard": {
+        "displayName": "Odem",
+        "defaultLines": [
+          "Devriyelerimizi durdurmak zorunda kaldık.",
+          "Çok fazla goblin...",
+          "Çok fazla ölümsüz var.",
+          "Ranger'larım orada katledilirdi."
+        ]
+      },
+      "nrquestanna01hard": {
+        "defaultLines": [
+          "\"Nephit\" adında biri goblinleri ve ölümsüzleri kontrol etmeye çalısıyor.",
+          "Babam 50 yıl önce karaya çıktıgımızda eski raporları okudu.",
+          "Baron Hocke, arastırması için dünyanın en bilge adamlarını görevlendirdi.",
+          "Nephit en iyilerden biriydi. Goblinler istila ettiginde bir mezar kazıyordu.",
+          "Uyuyan Kralın Mezarı'ndan gelen pek çok ölümsüz gördük.",
+          "Tamam, ortalık yatısınca seninle tekrar görüsürüz.",
+          "Büyük kötü goblini yendin mi? İyi is çıkardın sampiyon!",
+          "Goblin Sefi'nin kesilmesiyle bu toprakları geri alabiliriz.",
+          "Nehrin kenarındaki o mülk çok hos.",
+          "Belki oraya bir ev yaparım.",
+          "Biraz koyun falan yetistir.",
+          "Veya bir maceracı loncası baslatın.",
+          "Ya da belki bir han.",
+          "Biraz saklanmak için güzel bir yer olurdu.",
+          "Barones olabilirim.",
+          "Neden?"
+        ]
+      },
+      "nrquestanna02hard": {
+        "defaultLines": [
+          "Nephit'in uzaklastırılmasıyla belki de daha az ölümsüzümüz ve goblinimiz olur.",
+          "Bir mezar daha var. Belki Nephit'in aradıgı sey oradadır.",
+          "Nephit'in \"Rüya Ejderhası\"ndan bahsettigini söyledin.",
+          "Bu diger mezar bundan daha uzun süredir burada.",
+          "Baron Hocke bu eski mezarlara takıntılıydı.",
+          "Mezar güneyde, ormanın içindedir. Eger Nephit ikinci kez dirilebilirse...",
+          "Bir yol açın, ben de takip edecegim."
+        ]
+      },
+      "nrquestanna03hard": {
+        "defaultLines": [
+          "Bir ejderha! Sadece bir tür rüya hayaleti olsa bile sasırtıcı.",
+          "Kurt Burnu'nu güvende tuttugumuzda, toprakların çogunu kötülükten geri alabiliriz.",
+          "Sizin sayenizde yeniden ayaga kalktık ve savasmaya hazırız!",
+          "Elbette! Abbod'un ailesi buranın dogusundaki bölgeden.",
+          "Mirasını geri almak için sabırsızlanıyor.",
+          "Onları hiç duymadım.",
+          "Ancak Wissen Kalesi'ndeki arsivlerde bazı kayıtlar olabilir.",
+          "Kasabaya döner dönmez ona anlatacagım Sampiyon."
+        ]
+      },
+      "nrtrainer01hard": {
+        "displayName": "Tess",
+        "defaultLines": [
+          "Çok fazla potansiyelin var #tc#.",
+          "Bu tür seylere karsı gözüm var."
+        ]
+      },
+      "nrvillager02hard": {
+        "defaultLines": [
+          "yakında görevdeyim",
+          "Goblinler metal olan her seyi çalar",
+          "Alamadıklarını öldürüyorlar. Burada ne yapıyorlar?",
+          "Üç gündür görevdeyim.",
+          "Goblinler tüm at nallarımızı çaldılar ve burun halkaları yaptılar",
+          "Büyük goblinler burun halkası olarak at nalı takarlar.",
+          "Bizimle dalga geçmek için sanırım.",
+          "Ama eger ordumuzu ve ekonomimizi yeniden insa edeceksek at nallarına ihtiyacımız var.",
+          "Tesekkürler! Bu halkaları temizletecegim...",
+          "Goblin samanları Ölüm Gözlerini kontrol etmek için asalarını kullanırlar.",
+          "Eger bana goblin samanlarının asalarını getirirsen onları Ölüm Gözlerini kovmak için kullanabilirim.",
+          "O kötü seylerin bizi gözetlememesi güzel olacak.",
+          "Özellikle geceleri.",
+          "Biz uyurken.",
+          "Tesekkürler! Bunlarla herhangi bir Ölüm Gözünü savusturabilmeliyim.",
+          "O Ölüm Gözlerinin bana bakısından nefret ediyorum.",
+          "Tekrar tesekkürler",
+          "Daha az goblin olsaydı bu toprakları geri alabilirdik.",
+          "Yıllardır goblinleri bu kadar heyecanlı görmemistim.",
+          "Panik içindeler.",
+          "Muhtemelen senin yüzünden."
+        ]
+      },
+      "nrvillager03hard": {
+        "defaultLines": [
+          "Daha az goblin olsaydı dogu yolunu temizleyebilirdik",
+          "Goblinler yolları kapalı tutuyor",
+          "Dogu köylerindeki arkadaslarımı merak ediyorum",
+          "Vay canına, Belediye Baskanı bu çiftligi dogru adama/hanıma verdi!",
+          "Sen zorlu bir goblin savasçısısın",
+          "Bu yer henüz kaydedilmis olabilir",
+          "Goblin samanları Ölüm Gözlerini kontrol etmek için asalarını kullanırlar.",
+          "Eger bana goblin samanlarının asalarını getirirsen onları Ölüm Gözlerini kovmak için kullanabilirim.",
+          "O kötü seylerin bizi gözetlememesi güzel olacak.",
+          "Özellikle geceleri.",
+          "Biz uyurken.",
+          "Tesekkürler! Bunlarla herhangi bir Ölüm Gözünü savusturabilmeliyim.",
+          "O Ölüm Gözlerinin bana bakısından nefret ediyorum.",
+          "Tekrar tesekkürler.",
+          "Vay be, sen kudretli bir goblin avcısısın!",
+          "Sen zorlu bir goblin savasçısısın.",
+          "Burası henüz kurtarılmıs olabilir."
+        ]
+      }
+    },
+    "OldMineMountain": {
+      "ommmayor01": {
+        "defaultLines": [
+          "Shamar'a danısın ve yolun açık oldugundan emin olun.",
+          "Sen basardın. İyi. Tecrübeli bir goblin savasçısına ihtiyacımız var.",
+          "Yolu açtıgın için tesekkürler!",
+          "Hayatta kalanları aramadan önce bu bölgeyi goblinlerden korumamız gerekiyor.",
+          "Yakındaki tünellerde büyük bir goblin gücü var.",
+          "Burada ne yapıyorlar, merak ediyorum.",
+          "Moai uyandı!",
+          "O kılıcın çıkarılması heykellerin konusmaya baslamasına neden oldu!",
+          "Onlar Meylour tarafından susturulmus kadim tas elementaller.",
+          "Meylour tarikatının halkımıza korkunç seyler yaptıgını söylüyorlar.",
+          "Moai'yle konus.",
+          "Her biri önemli bir seyi ortaya çıkardı.",
+          "Bu Moai ruhları Meylour'dan gerçekten nefret ediyor.",
+          "Gnole sefi dagın zirvesinde Meylour'a tapıyor.",
+          "Gnole'ları tamamen bitirebilirsin.",
+          "Ama bilmelisin ki…",
+          "Meylour'un gnole liderine tuhaf bir sey yaptıgına inanıyorum.",
+          "Yeterince uzun yasayan Gnole'lar canavarca güçlere sahip olabilirler.",
+          "Meylour'un takipçileri öfkeyle dagı kazıyorlar.",
+          "Goblinler ve tepegözler dagları kazıyorlar.",
+          "Bölgede terk edilmis bazı madenler var.",
+          "Goblinler onları genisletiyor…",
+          "Ama altın aramıyorlar gibi görünüyor.",
+          "Hayır, akıllarında Büyük Bir İs var gibi görünüyor.",
+          "Meylour Damarları olarak bilinen bu madenler bir zamanlar Dünya Titanına aitti.",
+          "Simdi Vezrinn'in adananları onları ele geçirdi",
+          "Büyülü cevher Alurit'i ve Kalbi arıyorlar",
+          "Eseri ele geçirmek ve Meylour Kılıcı'nı etkinlestirmek için hepsini yenmeniz gerekecek.",
+          "Büyülü cevher Alumite'yi ve Kalbi arıyorlar",
+          "Emerald Glades'e ulasmak için buranın dogusundaki ilk yoldan ilerleyin",
+          "Doguya dogru ilerlemeye devam edin"
+        ]
+      },
+      "ommmoai01": {
+        "defaultLines": [
+          "Türünüzden bazıları hâlâ bir zamanlar oldugu gibi yasayabilir.",
+          "Sizin türünüzden bazılarının nereye götürüldügünü biliyorum.",
+          "Biz bu dagın kadim koruyucularıyız.",
+          "Meylour bizi tahtlarımızdan devirdi.",
+          "Eger yasıyorlarsa Meylour'un igrenç tapınaklarından birindeler demektir.",
+          "Acele etmelisin, yoksa onların zamanı gelir."
+        ]
+      },
+      "ommmoai02": {
+        "defaultLines": [
+          "Halkınızın kaderini bilmek istiyorsanız onlarla yüzlesmelisiniz.",
+          "Tepegözler her zaman böyle degildi.",
+          "Meylour onların eski formlarını bozdu.",
+          "Onlar onun yüksek rahipleri ve sadık yardımcılarıdır.",
+          "Kalelerinde Meylour'un sırlarını arayın."
+        ]
+      },
+      "ommmoai03": {
+        "defaultLines": [
+          "Gnole'lar çaresizlik içinde Meylour'a dönüyor.",
+          "Gnole'ların normalde tanrılara sevgisi yoktur.",
+          "Ama onlara ihanet ettikleri için insanlardan nefret ediyorlar.",
+          "Felbridge'in insanları bir zamanlar onların müttefikiydi.",
+          "Komiser onlara ihanet etti.",
+          "Simdi intikam için Meylour'a dönüyorlar.",
+          "Kötü tanrılar herkesi yozlastırır."
+        ]
+      },
+      "ommscout01": {
+        "defaultLines": [
+          "Stormshard Dagları daha yüksege çıkılamayacak kadar tehlikeli",
+          "Kesif ileride.",
+          "Dikkatli olun, her yerde goblinler var.",
+          "Yakındaki magaralarda bol miktarda goblin var.",
+          "Meylour Tarikatı ile isbirligi içinde olduklarını mı düsünüyorsun?"
+        ]
+      },
+      "ommstatue01": {
+        "defaultLines": [
+          "Uthor'un Enfes Kreasyonları",
+          "Kapalı",
+          "İzinsiz girenler yok edilecek"
+        ]
+      },
+      "ommvillager01": {
+        "defaultLines": [
+          "Daha fazla goblin, daha fazla sorun.",
+          "Bu goblin burun halkaları kaliteli çelikten yapılmıs.",
+          "Goblin Brutes'ta burun halkaları bulabilirsiniz.",
+          "Bunlar için sana iyi para ödeyecegim.",
+          "Tesekkürler, bunları temizleyecek adamı tanıyorum.",
+          "Bu daglar Alurit minerali bakımından zengindir.",
+          "Tuhaf kaya yaratıkları Alurit içeriyor.",
+          "Büyülü silahlar için kullanabiliriz…",
+          "Büyülü zırh…",
+          "Büyülü tencere…",
+          "Her seyi büyüledi!",
+          "Felbridge parlayacak.",
+          "Ve ikimiz de kâr edecegiz.",
+          "Tesekkür ederim! Felbridge'deki demirci bunun için güzel bir bedel ödeyecek.",
+          "Yardımınız için tekrar tesekkürler!"
+        ]
+      },
+      "ommvillager02": {
+        "defaultLines": [
+          "Bu tüyler ürpertici cüceleri fark ettiniz mi?",
+          "Bu Gnomlar beni delirtiyor!",
+          "Bu sinir bozucu Gnomlar magaralarda saklanıyor.",
+          "Geceleri gelip malzemelerimizi çalıyorlar.",
+          "Tesekkür ederim, belki simdi baskasını rahatsız ederler!",
+          "Lütfen örümcek sorunumuzda bize yardım edin",
+          "Örümcekler her yerdeymis gibi görünüyor!",
+          "Lütfen bize yardım edin!",
+          "Tesekkür ederim belki artık geceleri uyuyabilirim",
+          "Yardımınız için tekrar tesekkürler!"
+        ]
+      },
+      "ommvillager03": {
+        "defaultLines": [
+          "Kuzenim on yıl önce burada kaybolmustu.",
+          "Meylour'un insanlarımıza yaptıgı korkunç bir sey.",
+          "O tepegözlerin bir zamanlar komsum olduguna inanamıyorum.",
+          "Komiserin dehseti on yıllar boyunca devam etti.",
+          "Lütfen onların acı çeken ruhlarını dinlendirin.",
+          "Onları Meylour'dan ancak ölüm kurtarabilir.",
+          "Sonunda özgür olduklarını duyduguma sevindim, tesekkürler.",
+          "Gnole'lar saga sola hırsızlık yapıyor.",
+          "Gnole'lar parlak seyleri sever.",
+          "Yıllardır bizden çalıyorlar.",
+          "Vay, bak ne kadar buldun! Çok tesekkürler!",
+          "Yardımınız için tekrar tesekkürler!"
+        ]
+      }
+    },
+    "OldMineMountainHard": {
+      "ommmayor01hard": {
+        "defaultLines": [
+          "Shamar'a danısın ve yolun açık oldugundan emin olun.",
+          "Güzel, goblinlerin arasından geçmeyi basardın.",
+          "Yolu açtıgın için tesekkürler!",
+          "Hayatta kalanları aramadan önce bu bölgeyi goblinlerden korumamız gerekiyor.",
+          "Yakındaki tünellerde büyük bir goblin gücü var.",
+          "Burada ne yapıyorlar, merak ediyorum.",
+          "Moai uyandı!",
+          "O kılıcın çıkarılması heykellerin konusmaya baslamasına neden oldu!",
+          "Onlar Meylour tarafından susturulmus kadim tas elementaller.",
+          "Meylour tarikatının halkımıza korkunç seyler yaptıgını söylüyorlar.",
+          "Moai'yle konus.",
+          "Her biri önemli bir seyi ortaya çıkardı.",
+          "Bu Moai ruhları Meylour'dan gerçekten nefret ediyor.",
+          "Gnole sefi dagın zirvesinde Meylour'a tapıyor.",
+          "Gnole'ları tamamen bitirebilirsin.",
+          "Ama bilmelisin ki…",
+          "Meylour'un gnole liderine tuhaf bir sey yaptıgına inanıyorum.",
+          "Yeterince uzun yasayan Gnole'lar canavarca güçlere sahip olabilirler.",
+          "Meylour'un takipçileri öfkeyle dagı kazıyorlar.",
+          "Goblinler ve tepegözler dagları kazıyorlar.",
+          "Bölgede terk edilmis bazı madenler var.",
+          "Goblinler onları genisletiyor…",
+          "Ama altın aramıyorlar gibi görünüyor.",
+          "Hayır, akıllarında Büyük Bir İs var gibi görünüyor.",
+          "Meylour Damarları olarak bilinen bu madenler bir zamanlar Dünya Titanına aitti.",
+          "Simdi Vezrinn'in adananları onları ele geçirdi",
+          "Büyülü cevher Alurit'i ve Kalbi arıyorlar",
+          "Eseri ele geçirmek ve Meylour Kılıcı'nı etkinlestirmek için hepsini yenmeniz gerekecek.",
+          "Büyülü cevher Alumite'yi ve Kalbi arıyorlar",
+          "Emerald Glades'e ulasmak için buranın dogusundaki ilk yoldan ilerleyin",
+          "Doguya dogru ilerlemeye devam edin",
+          "Sen basardın. İyi. Tecrübeli bir goblin savasçısına ihtiyacımız var."
+        ]
+      },
+      "ommmoai01hard": {
+        "defaultLines": [
+          "Türünüzden bazıları hâlâ bir zamanlar oldugu gibi yasayabilir.",
+          "Sizin türünüzden bazılarının nereye götürüldügünü biliyorum.",
+          "Biz bu dagın kadim koruyucularıyız.",
+          "Meylour bizi tahtlarımızdan devirdi.",
+          "Eger yasıyorlarsa Meylour'un igrenç tapınaklarından birindeler demektir.",
+          "Acele etmelisin, yoksa onların zamanı gelir."
+        ]
+      },
+      "ommmoai02hard": {
+        "defaultLines": [
+          "Halkınızın kaderini bilmek istiyorsanız onlarla yüzlesmelisiniz.",
+          "Tepegözler her zaman böyle degildi.",
+          "Meylour onların eski formlarını bozdu.",
+          "Onlar onun yüksek rahipleri ve sadık yardımcılarıdır.",
+          "Kalelerinde Meylour'un sırlarını arayın."
+        ]
+      },
+      "ommmoai03hard": {
+        "defaultLines": [
+          "Gnole'lar çaresizlik içinde Meylour'a dönüyor.",
+          "Gnole'ların normalde tanrılara sevgisi yoktur.",
+          "Ama onlara ihanet ettikleri için insanlardan nefret ediyorlar.",
+          "Felbridge'in insanları bir zamanlar onların müttefikiydi.",
+          "Komiser onlara ihanet etti.",
+          "Simdi intikam için Meylour'a dönüyorlar.",
+          "Kötü tanrılar herkesi yozlastırır."
+        ]
+      },
+      "ommscout01hard": {
+        "defaultLines": [
+          "Stormshard Dagları daha yüksege çıkılamayacak kadar tehlikeli",
+          "Kesif gezisinin geri kalanı dagın daha yukarısında.",
+          "Dikkatli olun, her yerde goblinler var.",
+          "Yakındaki magaralarda bol miktarda goblin var.",
+          "Meylour Tarikatı ile isbirligi içinde olduklarını mı düsünüyorsun?",
+          "Kesif ileride."
+        ]
+      },
+      "ommstatue01hard": {
+        "defaultLines": [
+          "Uthor'un Enfes Kreasyonları",
+          "Kapalı",
+          "İzinsiz girenler yok edilecek"
+        ]
+      },
+      "ommvillager01hard": {
+        "defaultLines": [
+          "Daha fazla goblin, daha fazla sorun.",
+          "Bu goblin burun halkaları kaliteli çelikten yapılmıs.",
+          "Goblin Brutes'ta burun halkaları bulabilirsiniz.",
+          "Bunlar için sana iyi para ödeyecegim.",
+          "Tesekkürler, bunları temizleyecek adamı tanıyorum.",
+          "Bu daglar Alurit minerali bakımından zengindir.",
+          "Tuhaf kaya yaratıkları Alurit içeriyor.",
+          "Büyülü silahlar için kullanabiliriz…",
+          "Büyülü zırh…",
+          "Büyülü tencere…",
+          "Her seyi büyüledi!",
+          "Felbridge parlayacak.",
+          "Ve ikimiz de kâr edecegiz.",
+          "Tesekkür ederim! Felbridge'deki demirci bunun için güzel bir bedel ödeyecek.",
+          "Yardımınız için tekrar tesekkürler!"
+        ]
+      },
+      "ommvillager02hard": {
+        "defaultLines": [
+          "Bu tüyler ürpertici cüceleri fark ettiniz mi?",
+          "Bu Gnomlar beni delirtiyor!",
+          "Bu sinir bozucu Gnomlar magaralarda saklanıyor.",
+          "Geceleri gelip malzemelerimizi çalıyorlar.",
+          "Tesekkür ederim, belki simdi baskasını rahatsız ederler!",
+          "Lütfen örümcek sorunumuzda bize yardım edin",
+          "Örümcekler her yerdeymis gibi görünüyor!",
+          "Lütfen bize yardım edin!",
+          "Tesekkür ederim, belki artık geceleri uyuyabilirim.",
+          "Yardımınız için tekrar tesekkürler!",
+          "Tesekkür ederim belki artık geceleri uyuyabilirim"
+        ]
+      },
+      "ommvillager03hard": {
+        "defaultLines": [
+          "Kuzenim 10 yıl önce burada kaybolmustu.",
+          "Kuzenim on yıl önce burada kaybolmustu.",
+          "Meylour'un insanlarımıza yaptıgı korkunç bir sey.",
+          "O tepegözlerin bir zamanlar komsum olduguna inanamıyorum.",
+          "Komiserin dehseti on yıllar boyunca devam etti.",
+          "Lütfen onların acı çeken ruhlarını dinlendirin.",
+          "Onları Meylour'dan ancak ölüm kurtarabilir.",
+          "Sonunda özgür olduklarını duyduguma sevindim, tesekkürler.",
+          "Gnole'lar saga sola hırsızlık yapıyor.",
+          "Gnole'lar parlak seyleri sever.",
+          "Yıllardır bizden çalıyorlar.",
+          "Vay, bak ne kadar buldun! Çok tesekkürler!",
+          "Yardımınız için tekrar tesekkürler!"
+        ]
+      }
+    },
+    "ShazariDesert": {
+      "npcdune04": {
+        "displayName": "Gul",
+        "defaultLines": [
+          "Bu bizim özgürlügün ilk tadı!",
+          "Bu harika.",
+          "Ortaya çıkan tüm canavarca böcekler hariç.",
+          "Yine de Özgürlügü seviyorum.",
+          "Umarım İmparator bunu saklamamıza izin verir."
+        ]
+      },
+      "npcdune05": {
+        "displayName": "Saggi",
+        "defaultLines": [
+          "Hos geldin #tn#!",
+          "Bütün Shazari, Ejderha Lejyonlarını maglup eden kahramanı biliyor.",
+          "İmparatorun yapabileceginden fazlasını yaptın."
+        ]
+      },
+      "npcdune06": {
+        "displayName": "Boudar",
+        "defaultLines": [
+          "Canavar hasarat yeni bir vebadır.",
+          "Arkalarında kötü bir el oldugundan süpheleniyorum.",
+          "Ejderhalar bu tür seylere asla tolerans göstermezdi."
+        ]
+      },
+      "npcdune07": {
+        "displayName": "Hitti",
+        "defaultLines": [
+          "Buranın her zaman çöl olmadıgını biliyor muydun?",
+          "Magi bu tapınakları insa ettiginde...",
+          "Burası yemyesil bir araziydi.",
+          "Bin yıllık ejderhalar bunu buna dönüstürdü."
+        ]
+      },
+      "npcdune08": {
+        "displayName": "Oorka",
+        "defaultLines": [
+          "Bütün hayatımı Ejderhalarla savasmaya çalısarak geçirdim.",
+          "Sonra yüzeysel bir dünya kahramanı bunu yapıyor.",
+          "Bu harika.",
+          "Aslında samimiyim.",
+          "Harika.",
+          "Gerçekten mi.",
+          "Harika."
+        ]
+      },
+      "npcdune09": {
+        "displayName": "Beull",
+        "defaultLines": [
+          "Valhaven İmparatoru'nun önünde diz çökmeyecegim.",
+          "O bir ejderha olmayabilir...",
+          "Ama ona hâlâ güvenmiyorum.",
+          "Valhaven onun hükümdarlıgı döneminde daha da kötüye gitti."
+        ]
+      },
+      "npcgoblinnomad01": {
+        "displayName": "Gafik",
+        "defaultLines": [
+          "Ah, insan!",
+          "Tanıstıgımıza memnun oldum!",
+          "Kibar olmak çok mu tuhaf?",
+          "O halde yanlıs türde goblinlerle tanıstın.",
+          "Buraya hos geldin yabancı."
+        ]
+      },
+      "npcgoblinnomad02": {
+        "displayName": "Givitz",
+        "defaultLines": [
+          "Ejderhalar gitti...",
+          "Belki birisi İmparator için de aynısını yapar."
+        ]
+      },
+      "npcgoblinnomad04": {
+        "displayName": "Yaku",
+        "defaultLines": [
+          "Merhaba arkadasım!",
+          "Sıcak bir goblin size hos geldiniz!",
+          "Biraz su ister misin?",
+          "Belki biraz taze hurma?"
+        ]
+      },
+      "npcgoblinnomad06": {
+        "displayName": "Gettika Wanoo",
+        "defaultLines": [
+          "Seelie'ler ticaretle pek ilgilenmiyor gibi görünüyor.",
+          "Bize patronluk taslamakla ilgileniyorlar gibi görünüyor."
+        ]
+      },
+      "npckasa": {
+        "displayName": "Kasa",
+        "defaultLines": [
+          "İmparator geldiginde ailem Valhaven'dan kaçtı.",
+          "Goblinlerden nefret ediyor.",
+          "Gerçekten onlardan nefret ediyor."
+        ]
+      },
+      "npckevah": {
+        "displayName": "Kevah",
+        "defaultLines": [
+          "Biz goblinlerin savastan vazgeçtigine sevindim.",
+          "Keske İmparator bu kadar çogumuzu öldürmeseydi.",
+          "Bütün ailem İmparator'un ordusuna yenik düstü."
+        ]
+      },
+      "npckohken": {
+        "displayName": "Kohken",
+        "defaultLines": [
+          "İmparatorun vergi politikaları çılgınca!",
+          "Ticaretin nasıl gelismesini bekliyor?"
+        ]
+      },
+      "npcnorgog": {
+        "displayName": "Norgog",
+        "defaultLines": [
+          "İmparator Valhaven'i halkımdan aldı.",
+          "Gerçi goblinler çok daha iyi degildi.",
+          "Bütün varlıklar zalim olabilir."
+        ]
+      },
+      "sdacolyte01": {
+        "defaultLines": [
+          "Kuraklık tehdidi olmasa bile seyahat artık güvenli degil",
+          "Bugünlerde yollarda o kadar çok tehlike var ki",
+          "İnsanlar bok böcegi akreplerinin kötü sokmalarıyla ortaya çıkıyor",
+          "Yabancı sorununa bir sey yapamam ama en azından akrep sorununu çözebilirim",
+          "Eger bana yeterince igne getirirsen panzehir olarak yapabilirim",
+          "Ah mükemmel! Bu fazlasıyla yeterli!",
+          "Bu anti-zehir birçok hayat kurtaracak",
+          "Sen de epeyce ısırık almıs gibi görünüyorsun",
+          "Hala etrafta dolasmak için ortalama bir gezginden daha sert malzemeden yapılmıs olmalısınız",
+          "Bizim için yaptıgınız her sey için tesekkür ederiz!",
+          "Gökyüzü yolculugunuzda sizi korusun"
+        ]
+      },
+      "sdacolyte02": {
+        "defaultLines": [
+          "Belki bizim için baska bir sey yapabilirsin",
+          "Bu yaban arısı kovanlarını görüyor musun?",
+          "Gerçekten kontrolden çıktılar ve esekarısı çok yaklasan insanlara saldırıyor",
+          "Birkaçını yıkabilseydiniz yollar çok daha güvenli olurdu",
+          "Harika!",
+          "Görünüse göre bir iki ısırık almıssın",
+          "Senin için bununla ben ilgileneyim",
+          "Fedakarlıgınızı gerçekten takdir ediyoruz",
+          "Gökyüzü yolculugunuzda sizi kutsasın."
+        ]
+      },
+      "sdchief01": {
+        "defaultLines": [
+          "Yeni bir güç burada, Shazari'deki ejderha lejyonlarının yerini almaya çalısıyor.",
+          "Tam da normal ticarete devam edebilecegimizi düsündügüm sırada.",
+          "İnsan! Arkadaslarım ve müttefiklerim ile özgürce ticaret yapmak istiyorum.",
+          "Erkeklerden daha uzun olan tuhaf yeni savasçılar.",
+          "Onların Seelie Ogres olabilecegine inanıyorum.",
+          "Büyü konusunda uzman, kadim bir peri ırkı.",
+          "Dokundukları her seyi bozuyorlar.",
+          "Dogudaki duvarın ötesinde kamp kurmuslar.",
+          "Tesekkür ederim kahraman! İyi sanlar!",
+          "Demek Seelie'ydi. Kesinlikle İmparatorun yardımına ihtiyacımız olacak!",
+          "Valhaven'dan birini bul.",
+          "Seelie gibi bir düsmana karsı İmparator'un yardımına ihtiyacımız var.",
+          "Hiç sansımız yok!",
+          "Tesekkürlerim! Artık Seelie'ler yenildigine göre korkacak daha az seyimiz var.",
+          "Sanırım artık biz goblinler barısçıl yollarımıza dönebiliriz.",
+          "Uzun zaman önce bunu yapmıstık.",
+          "Sanırım yine yapacagız.",
+          "Ah, hos geldin dostum! Geldiginiz için tesekkür ederim."
+        ]
+      },
+      "sdemissary02": {
+        "defaultLines": [
+          "Seelie geldiginde halkımdan bazıları Batı'ya kaçtı.",
+          "Eger benim korkulu habercilerimi baska sehirlerde görürsen…",
+          "Onlara geri dönmenin güvenli oldugunu söyler misiniz?",
+          "Sayende dostum.",
+          "Peki biz arkadasız!"
+        ]
+      },
+      "sdgladiator01": {
+        "defaultLines": [
+          "Diger ejderhalar gitti ama pis Çukur Lordu kaldı.",
+          "Kendine dikkat et yabancı...",
+          "Çukur Lordu eline geçen herkesi kölelestirir.",
+          "Aslında bu nadir görülen bir beceri.",
+          "Ancak bu kurnaz yaslı ejder yalnız degil.",
+          "Onun için savasan köleleri var ki bu yeterince kötü.",
+          "Son zamanlarda baska canavarlar da edindi.",
+          "Takviye kuvvetlerinin nereden geldigini bilmiyorum.",
+          "Ama tuhaf büyüleri var.",
+          "Çukur Lordu öldürüldü! Nihayetinde özgür bir ülkeyiz.",
+          "Hala Pit Lord'un takviyelerini nereden aldıgını merak ediyorum.",
+          "Birisi onu desteklemeye çalısıyordu.",
+          "Birisi Shazari'nin özgür halklarına sorun çıkarıyor.",
+          "Dikkatli ol yabancı, Pit Lord'un adamları her yerde.",
+          "Goblinlerin son sorunlarımıza kimin sebep oldugunu biliyor olabilecegini duydum.",
+          "Yaslı goblinle konusmalısın.",
+          "Hayır dostum, hayır!",
+          "Bu goblinler barısçıldır.",
+          "Bunlar öyle, güven bana.",
+          "Buradaki kötülügün gerçek kaynagını ögrenmek istiyorsanız onlarla konusun."
+        ]
+      },
+      "sdjackal01": {
+        "defaultLines": [
+          "Yaslı goblin seni bir Valhaven elçisi bulman için gönderdi, degil mi?",
+          "Ben kesinlikle büyükelçi degilim.",
+          "Seelie'nin arkasında bizzat İmparatorun olduguna inanıyorum.",
+          "Bu yüzden kanıta ihtiyacım var.",
+          "Ejderhaların gitmesiyle Shazari'yi imparatorluguna eklemenin yollarını arar.",
+          "Antik mezarlıklar sorunun kaynagı gibi görünüyor.",
+          "Bakalım İmparatorluk'un müdahalesine dair herhangi bir isaret bulacak mısın?",
+          "Ben de bu kadar düsündüm! İmparator her zaman acımasız ve asagılıktır.",
+          "Benimle iskelede bulus.",
+          "Böylece seni gizlice Valhaven'a sokabilirim elbette.",
+          "İmparatorun planlarını burada bozdunuz.",
+          "En yeni düsmanınızla savasırken yardıma ihtiyacınız olacak.",
+          "Çok yetenekli arkadaslarım var.",
+          "Tekneye gelin.",
+          "İmparatoru ve onun Seelie müttefiklerini durdurmak için benimle Valhaven'a gelmeniz gerekecek.",
+          "İmparator simdi senin pesinde olacak.",
+          "Bir zamanlar harika bir adamdı.",
+          "Aniden ortaya çıktı ve Goblinleri kovdu.",
+          "Sonra ejderhaları durdurdu.",
+          "Ama son yıllarda zalimlesti.",
+          "Evet, bu dogru.",
+          "Bu güne kadar ne kadar kötü olduklarını bilmiyordum.",
+          "Gel, acele etmeliyiz.",
+          "Sanslıysak İmparator geldigimizi bilmez."
+        ]
+      },
+      "sdmatron01": {
+        "defaultLines": [
+          "Bunun bir daha olmasını önleyebiliriz",
+          "Bana yeteri kadar mukus bezi getirin, ben de bir kovucu hazırlayabilirim",
+          "Bu böcekleri tapınaktan uzak tutacak",
+          "Bu çok ise yarayacaktır. Bunu zahmetin için al",
+          "Vay, bu sey berbat kokuyor",
+          "Yine de böcekleri korkutup kaçıracaktır, bu yüzden buna deger",
+          "Gökyüzü yolculugunuzda sizi korusun"
+        ]
+      },
+      "sdmayor01": {
+        "defaultLines": [
+          "Umarım İmparator'un egemenligi altına girmekten kaçınmanın bir yolunu buluruz.",
+          "Geldiginiz için tesekkürler #tn#. Yardımına ihtiyacımız var.",
+          "Mütevazı Kovah'a hos geldiniz.",
+          "O seref tamamen bana ait.",
+          "Ejderhaların Katili ve Yolun Açıcısı…",
+          "Gerçek harikalar yarattın.",
+          "Bu konuları daha çok konusacagız…",
+          "Ama simdi yardımın için yalvarıyorum.",
+          "Seelie büyüleri tapınagımıza musallat oluyor ve orayı igrençliklerle dolduruyor.",
+          "Ejderha yönetimi altında geçen yüzyıllar, bize onlarla savasacak savasçı bırakmadı.",
+          "Artık köyümüz hayatta kalacak!",
+          "Büyük Maresal Sythokahn'ı yendin ama geriye bir ejderha kaldı.",
+          "Ejderha Sythokahn bu toprakları yüzyıllarca yönetti.",
+          "Senin sayende.",
+          "Ama geriye bir ejderha kaldı, Çukur Lordu.",
+          "Kölelerin kendi zevki için dövüstügü Arena'yı yönetiyor.",
+          "Git Zumwalt'ı gör, o arenada dövüsürdü.",
+          "O sana daha fazlasını söyleyebilir.",
+          "Birisi çölü canlandırma planlarımızı mahvediyor",
+          "Shazari'yi canlandırmak için Ogre Magi vahasından gelen suyu kullanıyoruz.",
+          "Ejderhaların verdigi hasarı basarıyla geri alıyorduk.",
+          "Ama simdi birileri suyumuzu çekiyor.",
+          "Ve her yerde etobur bitkiler var!",
+          "Su yeniden akıyor, tesekkürler!",
+          "Tesekkür ederim!",
+          "Su titanı nedir?"
+        ]
+      },
+      "sdnomad01": {
+        "defaultLines": [
+          "Bu Seelie destekleri beni büyülüyor",
+          "Su Seelie korselerinden bir sürü olsaydı...",
+          "Onları parçalayıp kopyalamaya baslayabilirim.",
+          "Tabii ki daha küçük boyut.",
+          "Ama Goblinler böyle bir sey için iyi para öderler.",
+          "Bana elinden geleni getir.",
+          "Hmm. Artık tam olarak yeni degil. Ah, iste maasın.",
+          "Görmek?",
+          "Herkes kâr ediyor!"
+        ]
+      },
+      "sdsage01": {
+        "defaultLines": [
+          "Bu büyük piramitler halkımızın eseri degil.",
+          "Piramitleri insa eden Magi bu toprakları uzun zaman önce terk etti.",
+          "Onların kalıntılarının bir kısmını kendimize aldık.",
+          "Ancak digerleri güçlü ruhlar tarafından korunmaya devam ediyor.",
+          "Eger aradıgınız kadim bilgiyse…",
+          "Ve kadim büyülerle yüzlesecek kadar cesursun…",
+          "O zaman Umbral Tapınagın derinliklerini batıya dogru çekmelisiniz.",
+          "Sen bir hayatta kalansın ve bir alimsin. Umarım çok degerli seyler ögrenmissinizdir.",
+          "Çöldeki bazı kardeslerimin yardıma ihtiyacı var!",
+          "İki ay önce bir grup yerlesimci çöle gitti.",
+          "Bitterfrost ile ticareti açmayı umuyorlar.",
+          "Kervansaray için iyi bir yer buldular...",
+          "Ama simdi canavarlar onları her taraftan kusatıyor.",
+          "Kervansaray güvenlidir.",
+          "Yardımınız için çok tesekkürler.",
+          "Füme balıklarının enfes oldugu söyleniyor."
+        ]
+      },
+      "sdslave01": {
+        "defaultLines": [
+          "Kaçıs planımız basarısız oldu. Goblin kölelerin hiçbiri bunu basaramadı",
+          "Hafıza tılsımlarını bulun ve onları ailelerine götüreyim",
+          "Cesurca savastılar ama yeterince güçlü degillerdi",
+          "Aileleri biraz kapanmayı hak ediyor",
+          "Hepsini buldun mu?",
+          "Ailelerinin cesurca savastıklarını bilmelerini saglayacagım",
+          "Köle çukurlarında hepsini tanırdım",
+          "Hepsi gerçekten harika adamlar",
+          "Yaptıkların için tesekkür ederim"
+        ]
+      },
+      "sdtitus01": {
+        "defaultLines": [
+          "Ah. Bunu basardın ve tek parça gibi görünüyorsun. Harika!",
+          "Yakındaki köye gidin ve Kasabanın Yaslısıyla tanısın.",
+          "Uyuyan Topraklara hos geldiniz #tn#.",
+          "Bu ülkeye Shazari denir.",
+          "Yüzyıllar boyunca ejderhalar burada hüküm sürdü.",
+          "Korkunç ve zalimce, evet.",
+          "Ama buradaki insanlar artık özgür.",
+          "Git kendini kasabanın büyügüne tanıt."
+        ]
+      },
+      "sdtitus02": {
+        "defaultLines": [
+          "Buradaki eski piramitler ilgi çekici olabilir.",
+          "Bu piramitleri antik Seelie insa etti.",
+          "Bunlardan biri hâlâ mühürlü durumda.",
+          "İçeride harikalar ve tehlikeler oldugunu hayal ediyorum.",
+          "Seelie'ler her zaman bu sekilde zalimdi.",
+          "Kulaga hayal ettigimden daha muhtesem geliyor!",
+          "Tehlikeleri de göze aldın.",
+          "Artık savunmaları yendiginize göre…",
+          "Sırlarını arastırmak için biraz zaman harcayacagım."
+        ]
+      }
+    },
+    "ShazariDesertHard": {
+      "npcdune04hard": {
+        "displayName": "Gul",
+        "defaultLines": [
+          "Bu bizim özgürlügün ilk tadı!",
+          "Bu harika.",
+          "Ortaya çıkan tüm canavarca böcekler hariç.",
+          "Yine de Özgürlügü seviyorum.",
+          "Umarım İmparator bunu saklamamıza izin verir."
+        ]
+      },
+      "npcdune05hard": {
+        "displayName": "Saggi",
+        "defaultLines": [
+          "Hos geldin #tn#!",
+          "Bütün Shazari, Ejderha Lejyonlarını maglup eden kahramanı biliyor.",
+          "İmparatorun yapabileceginden fazlasını yaptın."
+        ]
+      },
+      "npcdune06hard": {
+        "displayName": "Boudar",
+        "defaultLines": [
+          "Canavar hasarat yeni bir vebadır.",
+          "Arkalarında kötü bir el oldugundan süpheleniyorum.",
+          "Ejderhalar bu tür seylere asla tolerans göstermezdi."
+        ]
+      },
+      "npcdune07hard": {
+        "displayName": "Hitti",
+        "defaultLines": [
+          "Buranın her zaman çöl olmadıgını biliyor muydun?",
+          "Magi bu tapınakları insa ettiginde...",
+          "Burası yemyesil bir araziydi.",
+          "Bin yıllık ejderhalar bunu buna dönüstürdü."
+        ]
+      },
+      "npcdune08hard": {
+        "displayName": "Oorka",
+        "defaultLines": [
+          "Bütün hayatımı Ejderhalarla savasmaya çalısarak geçirdim.",
+          "Sonra yüzeysel bir dünya kahramanı bunu yapıyor.",
+          "Bu harika.",
+          "Aslında samimiyim.",
+          "Harika.",
+          "Gerçekten mi.",
+          "Harika."
+        ]
+      },
+      "npcdune09hard": {
+        "displayName": "Beull",
+        "defaultLines": [
+          "Valhaven İmparatoru'nun önünde diz çökmeyecegim.",
+          "O bir ejderha olmayabilir...",
+          "Ama ona hâlâ güvenmiyorum.",
+          "Valhaven onun hükümdarlıgı döneminde daha da kötüye gitti."
+        ]
+      },
+      "npcgoblinnomad01hard": {
+        "displayName": "Gafik",
+        "defaultLines": [
+          "Ah, insan!",
+          "Tanıstıgımıza memnun oldum!",
+          "Kibar olmak çok mu tuhaf?",
+          "O halde yanlıs türde goblinlerle tanıstın.",
+          "Buraya hos geldin yabancı."
+        ]
+      },
+      "npcgoblinnomad02hard": {
+        "displayName": "Givitz",
+        "defaultLines": [
+          "Ejderhalar gitti...",
+          "Belki birisi İmparator için de aynısını yapar."
+        ]
+      },
+      "npcgoblinnomad04hard": {
+        "displayName": "Yaku",
+        "defaultLines": [
+          "Merhaba arkadasım!",
+          "Sıcak bir goblin size hos geldiniz!",
+          "Biraz su ister misin?",
+          "Belki biraz taze hurma?"
+        ]
+      },
+      "npcgoblinnomad06hard": {
+        "displayName": "Gettika Wanoo",
+        "defaultLines": [
+          "Seelie'ler ticaretle pek ilgilenmiyor gibi görünüyor.",
+          "Bize patronluk taslamakla ilgileniyorlar gibi görünüyor."
+        ]
+      },
+      "npckasahard": {
+        "displayName": "Kasa",
+        "defaultLines": [
+          "İmparator geldiginde ailem Valhaven'dan kaçtı.",
+          "Goblinlerden nefret ediyor.",
+          "Gerçekten onlardan nefret ediyor."
+        ]
+      },
+      "npckevahhard": {
+        "displayName": "Kevah",
+        "defaultLines": [
+          "Biz goblinlerin savastan vazgeçtigine sevindim.",
+          "Keske İmparator bu kadar çogumuzu öldürmeseydi.",
+          "Bütün ailem İmparator'un ordusuna yenik düstü."
+        ]
+      },
+      "npckohkenhard": {
+        "displayName": "Kohken",
+        "defaultLines": [
+          "İmparatorun vergi politikaları çılgınca!",
+          "Ticaretin nasıl gelismesini bekliyor?"
+        ]
+      },
+      "npcnorgoghard": {
+        "displayName": "Norgog",
+        "defaultLines": [
+          "İmparator Valhaven'i halkımdan aldı.",
+          "Gerçi goblinler çok daha iyi degildi.",
+          "Bütün varlıklar zalim olabilir."
+        ]
+      },
+      "sdacolyte01hard": {
+        "defaultLines": [
+          "Kuraklık tehdidi olmasa bile seyahat artık güvenli degil",
+          "Bugünlerde yollarda o kadar çok tehlike var ki",
+          "İnsanlar bok böcegi akreplerinin kötü sokmalarıyla ortaya çıkıyor",
+          "Yabancı sorununa bir sey yapamam ama en azından akrep sorununu çözebilirim",
+          "Eger bana yeterince igne getirirsen panzehir olarak yapabilirim",
+          "Ah mükemmel! Bu fazlasıyla yeterli!",
+          "Bu anti-zehir birçok hayat kurtaracak",
+          "Sen de epeyce ısırık almıs gibi görünüyorsun",
+          "Hala etrafta dolasmak için ortalama bir gezginden daha sert malzemeden yapılmıs olmalısınız",
+          "Bizim için yaptıgınız her sey için tesekkür ederiz!",
+          "Gökyüzü yolculugunuzda sizi korusun"
+        ]
+      },
+      "sdacolyte02hard": {
+        "defaultLines": [
+          "Belki bizim için baska bir sey yapabilirsin",
+          "Bu yaban arısı kovanlarını görüyor musun?",
+          "Gerçekten kontrolden çıktılar ve esekarısı çok yaklasan insanlara saldırıyor",
+          "Birkaçını yıkabilseydiniz yollar çok daha güvenli olurdu",
+          "Harika!",
+          "Görünüse göre bir iki ısırık almıssın",
+          "Senin için bununla ben ilgileneyim",
+          "Fedakarlıgınızı gerçekten takdir ediyoruz",
+          "Gökyüzü yolculugunuzda sizi kutsasın."
+        ]
+      },
+      "sdchief01hard": {
+        "defaultLines": [
+          "Yeni bir güç burada, Shazari'deki ejderha lejyonlarının yerini almaya çalısıyor.",
+          "Tam da normal ticarete devam edebilecegimizi düsündügüm sırada.",
+          "İnsan! Arkadaslarım ve müttefiklerim ile özgürce ticaret yapmak istiyorum.",
+          "Erkeklerden daha uzun olan tuhaf yeni savasçılar.",
+          "Onların Seelie Ogres olabilecegine inanıyorum.",
+          "Büyü konusunda uzman, kadim bir peri ırkı.",
+          "Dokundukları her seyi bozuyorlar.",
+          "Dogudaki duvarın ötesinde kamp kurmuslar.",
+          "Tesekkür ederim kahraman! İyi sanlar!",
+          "Demek Seelie'ydi. Kesinlikle İmparatorun yardımına ihtiyacımız olacak!",
+          "Valhaven'dan birini bul.",
+          "Seelie gibi bir düsmana karsı İmparator'un yardımına ihtiyacımız var.",
+          "Hiç sansımız yok!",
+          "Tesekkürlerim! Artık Seelie'ler yenildigine göre korkacak daha az seyimiz var.",
+          "Sanırım artık biz goblinler barısçıl yollarımıza dönebiliriz.",
+          "Uzun zaman önce bunu yapmıstık.",
+          "Sanırım yine yapacagız.",
+          "Ah, hos geldin dostum! Geldiginiz için tesekkür ederim."
+        ]
+      },
+      "sdemissary02hard": {
+        "defaultLines": [
+          "Seelie geldiginde halkımdan bazıları Batı'ya kaçtı.",
+          "Eger benim korkulu habercilerimi baska sehirlerde görürsen…",
+          "Onlara geri dönmenin güvenli oldugunu söyler misiniz?",
+          "Sayende dostum.",
+          "Peki biz arkadasız!"
+        ]
+      },
+      "sdgladiator01hard": {
+        "defaultLines": [
+          "Diger ejderhalar gitti ama pis Çukur Lordu kaldı.",
+          "Kendine dikkat et yabancı...",
+          "Çukur Lordu eline geçen herkesi kölelestirir.",
+          "Aslında bu nadir görülen bir beceri.",
+          "Ancak bu kurnaz yaslı ejder yalnız degil.",
+          "Onun için savasan köleleri var ki bu yeterince kötü.",
+          "Son zamanlarda baska canavarlar da edindi.",
+          "Takviye kuvvetlerinin nereden geldigini bilmiyorum.",
+          "Ama tuhaf büyüleri var.",
+          "Çukur Lordu öldürüldü! Nihayetinde özgür bir ülkeyiz.",
+          "Hala Pit Lord'un takviyelerini nereden aldıgını merak ediyorum.",
+          "Birisi onu desteklemeye çalısıyordu.",
+          "Birisi Shazari'nin özgür halklarına sorun çıkarıyor.",
+          "Dikkatli ol yabancı, Pit Lord'un adamları her yerde.",
+          "Goblinlerin son sorunlarımıza kimin sebep oldugunu biliyor olabilecegini duydum.",
+          "Yaslı goblinle konusmalısın.",
+          "Hayır dostum, hayır!",
+          "Bu goblinler barısçıldır.",
+          "Bunlar öyle, güven bana.",
+          "Buradaki kötülügün gerçek kaynagını ögrenmek istiyorsanız onlarla konusun."
+        ]
+      },
+      "sdjackal01hard": {
+        "defaultLines": [
+          "Yaslı goblin seni bir Valhaven elçisi bulman için gönderdi, degil mi?",
+          "Ben kesinlikle büyükelçi degilim.",
+          "Seelie'nin arkasında bizzat İmparatorun olduguna inanıyorum.",
+          "Bu yüzden kanıta ihtiyacım var.",
+          "Ejderhaların gitmesiyle Shazari'yi imparatorluguna eklemenin yollarını arar.",
+          "Antik mezarlıklar sorunun kaynagı gibi görünüyor.",
+          "Bakalım İmparatorluk'un müdahalesine dair herhangi bir isaret bulacak mısın?",
+          "Ben de bu kadar düsündüm! İmparator her zaman acımasız ve asagılıktır.",
+          "Benimle iskelede bulus.",
+          "Böylece seni gizlice Valhaven'a sokabilirim elbette.",
+          "İmparatorun planlarını burada bozdunuz.",
+          "En yeni düsmanınızla savasırken yardıma ihtiyacınız olacak.",
+          "Çok yetenekli arkadaslarım var.",
+          "Tekneye gelin.",
+          "İmparatoru ve onun Seelie müttefiklerini durdurmak için benimle Valhaven'a gelmeniz gerekecek.",
+          "İmparator simdi senin pesinde olacak.",
+          "Bir zamanlar harika bir adamdı.",
+          "Aniden ortaya çıktı ve Goblinleri kovdu.",
+          "Sonra ejderhaları durdurdu.",
+          "Ama son yıllarda zalimlesti.",
+          "Evet, bu dogru.",
+          "Bu güne kadar ne kadar kötü olduklarını bilmiyordum.",
+          "Gel, acele etmeliyiz.",
+          "Sanslıysak İmparator geldigimizi bilmez."
+        ]
+      },
+      "sdmatron01hard": {
+        "defaultLines": [
+          "Bunun bir daha olmasını önleyebiliriz",
+          "Bana yeteri kadar mukus bezi getirin, ben de bir kovucu hazırlayabilirim",
+          "Bu böcekleri tapınaktan uzak tutacak",
+          "Bu çok ise yarayacaktır. Bunu zahmetin için al",
+          "Vay, bu sey berbat kokuyor",
+          "Yine de böcekleri korkutup kaçıracaktır, bu yüzden buna deger",
+          "Gökyüzü yolculugunuzda sizi korusun"
+        ]
+      },
+      "sdmayor01hard": {
+        "defaultLines": [
+          "Umarım İmparator'un egemenligi altına girmekten kaçınmanın bir yolunu buluruz.",
+          "Geldiginiz için tesekkürler #tn#. Yardımına ihtiyacımız var.",
+          "Mütevazı Kovah'a hos geldiniz.",
+          "O seref tamamen bana ait.",
+          "Ejderhaların Katili ve Yolun Açıcısı…",
+          "Gerçek harikalar yarattın.",
+          "Bu konuları daha çok konusacagız…",
+          "Ama simdi yardımın için yalvarıyorum.",
+          "Seelie büyüleri tapınagımıza musallat oluyor ve orayı igrençliklerle dolduruyor.",
+          "Ejderha yönetimi altında geçen yüzyıllar, bize onlarla savasacak savasçı bırakmadı.",
+          "Artık köyümüz hayatta kalacak!",
+          "Büyük Maresal Sythokahn'ı yendin ama geriye bir ejderha kaldı.",
+          "Ejderha Sythokahn bu toprakları yüzyıllarca yönetti.",
+          "Senin sayende.",
+          "Ama geriye bir ejderha kaldı, Çukur Lordu.",
+          "Kölelerin kendi zevki için dövüstügü Arena'yı yönetiyor.",
+          "Git Zumwalt'ı gör, o arenada dövüsürdü.",
+          "O sana daha fazlasını söyleyebilir.",
+          "Birisi çölü canlandırma planlarımızı mahvediyor",
+          "Shazari'yi canlandırmak için Ogre Magi vahasından gelen suyu kullanıyoruz.",
+          "Ejderhaların verdigi hasarı basarıyla geri alıyorduk.",
+          "Ama simdi birileri suyumuzu çekiyor.",
+          "Ve her yerde etobur bitkiler var!",
+          "Su yeniden akıyor, tesekkürler!",
+          "Tesekkür ederim!",
+          "Su titanı nedir?"
+        ]
+      },
+      "sdnomad01hard": {
+        "defaultLines": [
+          "Seelie dis telleri beni büyülüyor",
+          "Su Seelie korselerinden bir sürü olsaydı...",
+          "Onları parçalayıp kopyalamaya baslayabilirim.",
+          "Tabii ki daha küçük boyut.",
+          "Ama Goblinler böyle bir sey için iyi para öderler.",
+          "Bana elinden geleni getir.",
+          "Hımm. Artık tam olarak yeni degil. Ah pekala, o senin maasın",
+          "Görmek?",
+          "Herkes kâr ediyor!",
+          "Bu Seelie destekleri beni büyülüyor",
+          "Hmm. Artık tam olarak yeni degil. Ah, iste maasın."
+        ]
+      },
+      "sdsage01hard": {
+        "defaultLines": [
+          "Bu büyük piramitler halkımızın eseri degil.",
+          "Piramitleri insa eden Magi bu toprakları uzun zaman önce terk etti.",
+          "Onların kalıntılarının bir kısmını kendimize aldık.",
+          "Ancak digerleri güçlü ruhlar tarafından korunmaya devam ediyor.",
+          "Eger aradıgınız kadim bilgiyse…",
+          "Ve kadim büyülerle yüzlesecek kadar cesursun…",
+          "O zaman Umbral Tapınagın derinliklerini batıya dogru çekmelisiniz.",
+          "Sen bir hayatta kalansın ve bir alimsin. Umarım çok degerli seyler ögrenmissinizdir.",
+          "Çöldeki bazı kardeslerimin yardıma ihtiyacı var!",
+          "İki ay önce bir grup yerlesimci çöle gitti.",
+          "Bitterfrost ile ticareti açmayı umuyorlar.",
+          "Kervansaray için iyi bir yer buldular...",
+          "Ama simdi canavarlar onları her taraftan kusatıyor.",
+          "Kervansaray güvenlidir.",
+          "Yardımınız için çok tesekkürler.",
+          "Füme balıklarının enfes oldugu söyleniyor."
+        ]
+      },
+      "sdslave01hard": {
+        "defaultLines": [
+          "Kaçıs planımız basarısız oldu. Goblin kölelerin hiçbiri bunu basaramadı",
+          "Hafıza tılsımlarını bulun ve onları ailelerine götüreyim",
+          "Cesurca savastılar ama yeterince güçlü degillerdi",
+          "Aileleri biraz kapanmayı hak ediyor",
+          "Hepsini buldun mu?",
+          "Ailelerinin cesurca savastıklarını bilmelerini saglayacagım",
+          "Köle çukurlarında hepsini tanırdım",
+          "Hepsi gerçekten harika adamlar",
+          "Yaptıkların için tesekkür ederim"
+        ]
+      },
+      "sdtitus01hard": {
+        "defaultLines": [
+          "Ah. Bunu basardın ve tek parça gibi görünüyorsun. Harika!",
+          "Yakındaki köye gidin ve Kasabanın Yaslısıyla tanısın",
+          "Uyuyan Topraklara hos geldiniz #tn#.",
+          "Bu ülkeye Shazari denir.",
+          "Yüzyıllar boyunca ejderhalar burada hüküm sürdü.",
+          "Korkunç ve zalimce, evet.",
+          "Ama buradaki insanlar artık özgür.",
+          "Git kendini kasabanın büyügüne tanıt.",
+          "Yakındaki köye gidin ve Kasabanın Yaslısıyla tanısın."
+        ]
+      },
+      "sdtitus02hard": {
+        "defaultLines": [
+          "Buradaki eski piramitler ilgi çekici olabilir.",
+          "Bu piramitleri antik Seelie insa etti.",
+          "Bunlardan biri hâlâ mühürlü durumda.",
+          "İçeride harikalar ve tehlikeler oldugunu hayal ediyorum.",
+          "Seelie'ler her zaman bu sekilde zalimdi.",
+          "Kulaga hayal ettigimden daha muhtesem geliyor!",
+          "Tehlikeleri de göze aldın.",
+          "Artık savunmaları yendiginize göre…",
+          "Sırlarını arastırmak için biraz zaman harcayacagım."
         ]
       }
     },
     "SwampRoadNorth": {
+      "bede": {
+        "displayName": "Bede",
+        "defaultLines": [
+          "Bu bir zamanlar Felbridge'e giden yoldu",
+          "Artık kesin ölüme giden yol",
+          "umarım yolu açabilirsin"
+        ]
+      },
+      "dane": {
+        "defaultLines": [
+          "Lord Yornak'ın kalesinde insanlar olmasa da hâlâ mesken varmıs gibi görünüyor.",
+          "Yornak Kalesi bu bölgenin lordlarının eviydi.",
+          "Son Lord ve Leydi Yornak muhtesem tahıl ambarını, sarayı ve üniversiteyi insa etti.",
+          "Aslında öyleydiler ama…",
+          "Antik kalelerini her zaman iyi durumda tuttular.",
+          "Bu onların güvenli bir sıgınagıydı.",
+          "İçeride birisi var.",
+          "Tuatara'nın Yornak dedigi biri.",
+          "Yornak Kalesi'nden sag çıktın.",
+          "Yornak ailesi de bir baska trajik hikaye."
+        ]
+      },
+      "gran": {
+        "defaultLines": [
+          "Tuatara askerlerini geri püskürtmemize yardım eder misiniz?",
+          "Bana Tuatara Komutanlarının Migferlerini getirin.",
+          "İlk olarak, onlara yönetimi devraldıgımızı göstermek için. Migferlerini seviyorlar.",
+          "İkincisi, metali kendi zırhımızı yapmak için kullanabiliriz.",
+          "Kesinlikle.",
+          "Tesekkür ederim! Bu kertenkeleler artık oyun oynamadıgımızı biliyor!",
+          "Bizim tarafımızda gerçek bir kahraman!",
+          "Belki bu canavarlarla mücadele edebiliriz.",
+          "Ve sadece Tuatara degil.",
+          "Bu toprakların canavar yönetiminden arınmıs oldugunu hayal edin!"
+        ]
+      },
+      "gretta": {
+        "defaultLines": [
+          "Örümcek zehrine karsı panzehirimin örümcek dislerine ihtiyacı var",
+          "Bana örümcek disleri getirirsen panzehir yapabilirim.",
+          "Bu büyük örümcekler eskiden burada yasamıyordu.",
+          "Bu yüzden sihirden nefret ediyorum, her zaman bir seyleri bozar.",
+          "Simyayı daha çok tercih ederim.",
+          "Tesekkür ederim, artık panzehiri bitirebilirim",
+          "Bu örümceklerden kurtulmak yıllar alacak.",
+          "Eger nereden geldiklerini bulabilirsek."
+        ]
+      },
+      "ield": {
+        "defaultLines": [
+          "Bu kertenkeleler o pankartlara çok sey kattı",
+          "Tuatara savas pankartlarının etrafında toplanıyor.",
+          "Bayrakları dikildiginde çok vahsi oluyorlar.",
+          "Sancaklar bir bakıma büyülü.",
+          "Eger onlardan bazılarını yakalarsan, büyülerini onlara karsı kullanabilirim.",
+          "Mükemmel. Sanırım artık kendi büyülü pankartlarımızı dikebilirim.",
+          "Artık iyi bir tasarıma ihtiyacım var.",
+          "Tesekkürler, dikkate alacagım.",
+          "Öyle mi?",
+          "Evet, birkaç seçenek sunacagım."
+        ]
+      },
+      "kenelm": {
+        "displayName": "Kenelm",
+        "defaultLines": [
+          "Burası karanlık.",
+          "Ve ıslak.",
+          "Sahili özledim."
+        ]
+      },
+      "odem": {
+        "defaultLines": [
+          "Kraliyet Tahıl Ambarı'nın kalıntıları, yiyip bitirenlerin kaynagıdır.",
+          "Kraliyet Tahıl Ambarı eskiden bir dünya harikasıydı.",
+          "Ama artık harap olmus tahıl ambarı da bozulmus durumda.",
+          "Yok edicilerin hepsi oradan gelmis gibi görünüyor.",
+          "Tahıl tarlalarını kurtarabilirsek bütün bir orduyu destekleyebiliriz.",
+          "Kraliyet Tahıl Ambarını temizlediniz!",
+          "Bu öldürücü bitkiler ilgi çekicidir.",
+          "Yok Ediciler hakkında daha fazla sey ögrenmemiz gerekiyor.",
+          "Evet ama yabani ot gibi büyüyorlar.",
+          "Eger topragı iyilestireceksek daha fazlasını bilmem gerekiyor.",
+          "Büyük olanlardan disleri toplayın.",
+          "Onları zehirleyecek bir iksir hazırlamak için kullanabilirim.",
+          "Aferin, tesekkürler!",
+          "Hsalt'ın bitkilere dis vermek için ne yaptıgını düsünmekten nefret ediyorum.",
+          "Düsünmek korkutucu.",
+          "Ama düsünebildigim tek sey bu.",
+          "Baska neye dis verdi?",
+          "Mantarlar mı?",
+          "Denizanası?",
+          "Kayalar mı?"
+        ]
+      },
+      "palok": {
+        "defaultLines": [
+          "Terk edilmis bir çiftlikte bir Tuatara ekibi kuruldu.",
+          "Kertenkeleler bu eski evi ele geçirdi.",
+          "Burayı baskınlar düzenlemek için bir üs olarak kullanıyorlar.",
+          "Malzemeleri de orada depoluyorlar.",
+          "Çogunlukla kurutulmus böcekler ve kokmus etler.",
+          "Yani belki bunu orada bırakabilirsin.",
+          "Tabii bu tür yiyeceklerle ilgilenmiyorsan.",
+          "Yargılamıyorum.",
+          "Tesekkür ederim!",
+          "Biz oraya dikkat edecegiz.",
+          "Baska biri gelirse onlarla ilgileniriz.",
+          "Bana kurutulmus böcekleri getirmedigin için tesekkürler.",
+          "Kuzenim lezzetli olduklarını söylese de.",
+          "Sanırım yargılamadan önce bir denemeliyim."
+        ]
+      },
+      "rose": {
+        "defaultLines": [
+          "Yiyiciler her yerde! kuyuya ulasamıyorum",
+          "Yok edicileri kuyudan uzaklastırabilir misin?",
+          "Yakınlardaki tek tatlı su kaynagı burası.",
+          "Bu canavarlar nehri bozdu.",
+          "Ve göletler.",
+          "Ellerinden gelse yagmuru bozarlardı.",
+          "Vay, tesekkürler!",
+          "Kuyuyu temizledigin için tesekkürler.",
+          "Gerçekten güvenilir bir su kaynagına ihtiyacımız var."
+        ]
+      },
+      "srnmayor01": {
+        "defaultLines": [
+          "Buradaki kampımızı güçlendirecegiz kahraman. Bize öncülük ettiginiz için tesekkür ederim.",
+          "Bu köy, geri aldıgımız birkaç köyden ilki olacak.",
+          "Bütün bu topraklar bir zamanlar yemyesil bir meraydı.",
+          "Goblinler ve büyüleri orayı bataklıga dönüstürdü.",
+          "Çogunlukla bekledigimden daha fazlası olurdu.",
+          "Artık yeni türde canavarca bir savasçı karsımızda duruyor.",
+          "Bunlar bizim savastıgımız goblinler degil.",
+          "Bir çesit sürüngen adam. Kendilerine Tuatara diyorlar.",
+          "Bu onlara benziyor, çok organizeler.",
+          "Yakınlardaki bir kuleyi ele geçirdiler.",
+          "Onları geçemiyoruz.",
+          "Umarım.",
+          "Tuatara'ya insanların nasıl dövüstügünü gösterdin!",
+          "Korucu Affric, eski üniversite bölgesini arastırmak için bir partiye liderlik etti.",
+          "Affric yolsuzlugun kaynagının dogu oldugunu düsünüyor.",
+          "Hsalt adında biri Wissen Kalesi'ne yerlesmis.",
+          "Dikkatli olun, yol Tuatara ve Devourers'la dolu.",
+          "Tuatara generali üssünü yakındaki kaleye kurdu",
+          "Tuatara Generali Svar o eski kalede bulunuyor.",
+          "Zaten bir ordunun bu bataklıkta ne isi var?",
+          "En yakınım olarak bu benim için endise verici.",
+          "General Svar bir ejderhaydı!",
+          "Tuatara'lar gerçek, canlı ejderhalar tarafından yönetiliyor.",
+          "Bu, daha fazla ejderhanın oldugu anlamına gelir.",
+          "Bu konuda iyi sanslar.",
+          "Çizmelerindekinin ben olmadıgıma sevindim."
+        ]
+      },
       "srnmayor02": {
         "displayName": "Affric",
         "defaultLines": [
           "Dost musun dusman mi?",
           "Sark'taki dostlarimizdan mesaj mi getirdin?",
           "Yabancilara guvenemeyiz."
+        ]
+      },
+      "srnmayor03": {
+        "defaultLines": [
+          "Hala bu bölgeyi arastırıyoruz.",
+          "Daha fazlasını ögrendigimizde haber gönderecegiz.",
+          "Bunu basarabildigine sevindim.",
+          "Tuatara'nın diger generali yakında.",
+          "Ama o Svath'tan farklı.",
+          "Onun hizmetinde ölümsüzlerin izlerini gördük.",
+          "Svath adında baska bir General daha var. Kendisi eski sarayda.",
+          "General Svath tüm bu Tuatara'ya komuta ediyor.",
+          "Muhtemelen öyle, ama bu büyük birader gibi geliyor.",
+          "Ve Svath sadece Tuatara askerlerine komuta etmiyor.",
+          "Daha korkutucu seylerle ilgileniyor.",
+          "Yani ölümsüz gibi.",
+          "Ejderha istilasını oldugu yerde durdurdunuz!",
+          "Sırada ne var #tn#?",
+          "Artık Tuatara yenildigine göre…",
+          "Planın nedir?",
+          "Buradan geçen Tuatara Lejyonu'ndan kimsenin sag kurtulabilecegini hayal edemiyorum."
+        ]
+      },
+      "srnmerchant01": {
+        "displayName": "Caravan Dan",
+        "defaultLines": [
+          "Dolu. Kertenkelelerin henüz çalmadıgı birkaç küçük seyim var"
+        ]
+      },
+      "srnmerchant03": {
+        "displayName": "Cynric",
+        "defaultLines": [
+          "Vahsi dogaya hazırlıksız girmeyin!"
+        ]
+      },
+      "srntrainer01": {
+        "displayName": "Sara",
+        "defaultLines": [
+          "Seni kız kardesimden duydum",
+          "Sen acımasız bir goblin avcısısın"
+        ]
+      },
+      "srntrainer03": {
+        "displayName": "Gina",
+        "defaultLines": [
+          "Derse var mısın #tc#?"
+        ]
+      },
+      "sugh": {
+        "defaultLines": [
+          "O eski çiftlikte büyük bir sey var.",
+          "Ne oldugunu bilmiyorum.",
+          "Tuatara oldugunu sanmıyorum.",
+          "Kontrol etmek isteyeceginizi düsündüm.",
+          "Çünkü gerçekten istemiyorum.",
+          "Kulaga büyük geldigini söylemis miydim?",
+          "Ah! Örümceklerden nefret ediyorum! Tesekkürler!",
+          "Devasa bir örümcek miydi?",
+          "Örümceklerden nefret ediyorum.",
+          "Ben degil de sen olduguma sevindim!"
+        ]
+      },
+      "yolaf": {
+        "displayName": "Yolaf",
+        "defaultLines": [
+          "Annem bu topraklardan geldi.",
+          "Bunun Ellyria'nın gururu oldugunu söyledi.",
+          "Artık harabelerle dolu bir bataklık.",
+          "Bunu düzeltmek istiyorum.",
+          "Rüyalarımdaki gibi olsun."
+        ]
+      }
+    },
+    "SwampRoadNorthHard": {
+      "bedehard": {
+        "displayName": "Bede",
+        "defaultLines": [
+          "Bu bir zamanlar Felbridge'e giden yoldu",
+          "Artık kesin ölüme giden yol",
+          "umarım yolu açabilirsin"
+        ]
+      },
+      "danehard": {
+        "defaultLines": [
+          "Lord Yornak'ın kalesinde insanlar olmasa da hâlâ mesken varmıs gibi görünüyor.",
+          "Yornak Kalesi bu bölgenin lordlarının eviydi.",
+          "Son Lord ve Leydi Yornak muhtesem tahıl ambarını, sarayı ve üniversiteyi insa etti.",
+          "Aslında öyleydiler ama…",
+          "Antik kalelerini her zaman iyi durumda tuttular.",
+          "Bu onların güvenli bir sıgınagıydı.",
+          "İçeride birisi var.",
+          "Tuatara'nın Yornak dedigi biri.",
+          "Yornak Kalesi'nden sag çıktın.",
+          "Yornak ailesi de bir baska trajik hikaye."
+        ]
+      },
+      "granhard": {
+        "defaultLines": [
+          "Tuatara askerlerini geri püskürtmemize yardım eder misiniz?",
+          "Bana Tuatara Komutanlarının Migferlerini getirin.",
+          "İlk olarak, onlara yönetimi devraldıgımızı göstermek için. Migferlerini seviyorlar.",
+          "İkincisi, metali kendi zırhımızı yapmak için kullanabiliriz.",
+          "Kesinlikle.",
+          "Tesekkür ederim! Bu kertenkeleler artık oyun oynamadıgımızı biliyor!",
+          "Bizim tarafımızda gerçek bir kahraman!",
+          "Belki bu canavarlarla mücadele edebiliriz.",
+          "Ve sadece Tuatara degil.",
+          "Bu toprakların canavar yönetiminden arınmıs oldugunu hayal edin!"
+        ]
+      },
+      "grettahard": {
+        "defaultLines": [
+          "Örümcek zehrine karsı panzehirimin örümcek dislerine ihtiyacı var",
+          "Bana örümcek disleri getirirsen panzehir yapabilirim.",
+          "Bu büyük örümcekler eskiden burada yasamıyordu.",
+          "Bu yüzden sihirden nefret ediyorum, her zaman bir seyleri bozar.",
+          "Simyayı daha çok tercih ederim.",
+          "Tesekkür ederim, artık panzehiri bitirebilirim",
+          "Bu örümceklerden kurtulmak yıllar alacak.",
+          "Eger nereden geldiklerini bulabilirsek."
+        ]
+      },
+      "ieldhard": {
+        "defaultLines": [
+          "Bu kertenkeleler o pankartlara çok sey kattı",
+          "Tuatara savas pankartlarının etrafında toplanıyor.",
+          "Bayrakları dikildiginde çok vahsi oluyorlar.",
+          "Sancaklar bir bakıma büyülü.",
+          "Eger onlardan bazılarını yakalarsan, büyülerini onlara karsı kullanabilirim.",
+          "Mükemmel. Sanırım artık kendi büyülü pankartlarımızı dikebilirim.",
+          "Artık iyi bir tasarıma ihtiyacım var.",
+          "Tesekkürler, dikkate alacagım.",
+          "Öyle mi?",
+          "Evet, birkaç seçenek sunacagım."
+        ]
+      },
+      "kenelmhard": {
+        "displayName": "Kenelm",
+        "defaultLines": [
+          "Burası karanlık.",
+          "Ve ıslak.",
+          "Sahili özledim."
+        ]
+      },
+      "odemhard": {
+        "defaultLines": [
+          "Kraliyet Tahıl Ambarı'nın kalıntıları, yiyip bitirenlerin kaynagıdır.",
+          "Kraliyet Tahıl Ambarı eskiden bir dünya harikasıydı.",
+          "Ama artık harap olmus tahıl ambarı da bozulmus durumda.",
+          "Yok edicilerin hepsi oradan gelmis gibi görünüyor.",
+          "Tahıl tarlalarını kurtarabilirsek bütün bir orduyu destekleyebiliriz.",
+          "Kraliyet Tahıl Ambarını temizlediniz!",
+          "Bu öldürücü bitkiler ilgi çekicidir.",
+          "Yok Ediciler hakkında daha fazla sey ögrenmemiz gerekiyor.",
+          "Evet ama yabani ot gibi büyüyorlar.",
+          "Eger topragı iyilestireceksek daha fazlasını bilmem gerekiyor.",
+          "Büyük olanlardan disleri toplayın.",
+          "Onları zehirleyecek bir iksir hazırlamak için kullanabilirim.",
+          "Aferin, tesekkürler!",
+          "Hsalt'ın bitkilere dis vermek için ne yaptıgını düsünmekten nefret ediyorum.",
+          "Düsünmek korkutucu.",
+          "Ama düsünebildigim tek sey bu.",
+          "Baska neye dis verdi?",
+          "Mantarlar mı?",
+          "Denizanası?",
+          "Kayalar mı?"
+        ]
+      },
+      "palokhard": {
+        "defaultLines": [
+          "Terk edilmis bir çiftlikte bir Tuatara ekibi kuruldu.",
+          "Kertenkeleler bu eski evi ele geçirdi.",
+          "Burayı baskınlar düzenlemek için bir üs olarak kullanıyorlar.",
+          "Malzemeleri de orada depoluyorlar.",
+          "Çogunlukla kurutulmus böcekler ve kokmus etler.",
+          "Yani belki bunu orada bırakabilirsin.",
+          "Tabii bu tür yiyeceklerle ilgilenmiyorsan.",
+          "Yargılamıyorum.",
+          "Tesekkür ederim!",
+          "Biz oraya dikkat edecegiz.",
+          "Baska biri gelirse onlarla ilgileniriz.",
+          "Bana kurutulmus böcekleri getirmedigin için tesekkürler.",
+          "Kuzenim lezzetli olduklarını söylese de.",
+          "Sanırım yargılamadan önce bir denemeliyim."
+        ]
+      },
+      "rosehard": {
+        "defaultLines": [
+          "Yiyiciler her yerde! kuyuya ulasamıyorum",
+          "Yok edicileri kuyudan uzaklastırabilir misin?",
+          "Yakınlardaki tek tatlı su kaynagı burası.",
+          "Bu canavarlar nehri bozdu.",
+          "Ve göletler.",
+          "Ellerinden gelse yagmuru bozarlardı.",
+          "Vay, tesekkürler!",
+          "Kuyuyu temizledigin için tesekkürler.",
+          "Gerçekten güvenilir bir su kaynagına ihtiyacımız var."
+        ]
+      },
+      "srnmayor01hard": {
+        "defaultLines": [
+          "Artık yeni türde canavarca bir savasçı karsımızda duruyor.",
+          "Bunlar bizim savastıgımız goblinler degil.",
+          "Bir çesit sürüngen adam. Kendilerine Tuatara diyorlar.",
+          "Bu onlara benziyor, çok organizeler.",
+          "Yakınlardaki bir kuleyi ele geçirdiler.",
+          "Onları geçemiyoruz.",
+          "Umarım.",
+          "Tuatara'ya insanların nasıl dövüstügünü gösterdin!",
+          "Korucu Affric, eski üniversite bölgesini arastırmak için bir partiye liderlik etti.",
+          "Affric yolsuzlugun kaynagının dogu oldugunu düsünüyor.",
+          "Hsalt adında biri Wissen Kalesi'ne yerlesmis.",
+          "Dikkatli olun, yol Tuatara ve Devourers'la dolu.",
+          "Tuatara generali üssünü yakındaki kaleye kurdu",
+          "Tuatara Generali Svar o eski kalede bulunuyor.",
+          "Zaten bir ordunun bu bataklıkta ne isi var?",
+          "En yakınım olarak bu benim için endise verici.",
+          "General Svar bir ejderhaydı!",
+          "Tuatara'lar gerçek, canlı ejderhalar tarafından yönetiliyor.",
+          "Bu, daha fazla ejderhanın oldugu anlamına gelir.",
+          "Bu konuda iyi sanslar.",
+          "Çizmelerindekinin ben olmadıgıma sevindim.",
+          "Buradaki kampımızı güçlendirecegiz kahraman. Bize öncülük ettiginiz için tesekkür ederim.",
+          "Bu köy, geri aldıgımız birkaç köyden ilki olacak.",
+          "Bütün bu topraklar bir zamanlar yemyesil bir meraydı.",
+          "Goblinler ve büyüleri orayı bataklıga dönüstürdü.",
+          "Çogunlukla bekledigimden daha fazlası olurdu.",
+          "Bu onlara benziyor, çok organizeler."
+        ]
+      },
+      "srnmayor02hard": {
+        "defaultLines": [
+          "Dost musun, düsman mısın?",
+          "Sark'taki dostlarımızdan mesaj getiriyor musun?",
+          "Yabancılara güvenemeyiz",
+          "Seni tekrar görmek güzel dostum.",
+          "Efsanen büyüyor.",
+          "Yakında bu bölge sizi her yerde takip edecek.",
+          "Tuatara'nın veziri etobur yetistiriyor.",
+          "Vezir ejderha generalleri için çalısabilir…",
+          "Ama artık yolsuzlugun arkasındaki gerçek gücün o oldugunu biliyoruz.",
+          "Vezir'in büyülü deneyleri karnasaurların üremesine yöneliktir.",
+          "Onları Tuatara askerlerine binek olarak hizmet etmeleri için yetistiriyor.",
+          "Sen basardın! Hiçbir carnasaur sövalyesi basımıza bela olamayacak.",
+          "Vezir Hsalt, Kale'nin kütüphanesini kötülük için kullanıyor",
+          "Vezir sana inanılmaz derecede kızacak.",
+          "Sanırım onun pesinden gidiyorsun.",
+          "Dikkatli olun, Vezirin büyüsü onu hizmet ettigi ejderhalar kadar tehlikeli kılıyor.",
+          "Kütüphane özgürlestirildi!",
+          "Gehrin ve Odem, Tuatara General'in nerede oldugunu bildiklerini sanıyorlar.",
+          "Çamurda gözcülük yapan daha fazla askerimiz var.",
+          "Gehrin ve Odem, diger Tuatara generalinin nerede oldugunu bildiklerini düsünüyor.",
+          "Muhtemelen.",
+          "Git onları gör, benden daha fazlasını biliyorlar."
+        ]
+      },
+      "srnmayor03hard": {
+        "defaultLines": [
+          "Hala bu bölgeyi arastırıyoruz.",
+          "Daha fazlasını ögrendigimizde haber gönderecegiz.",
+          "Bunu basarabildigine sevindim.",
+          "Tuatara'nın diger generali yakında.",
+          "Ama o Svath'tan farklı.",
+          "Onun hizmetinde ölümsüzlerin izlerini gördük.",
+          "Svath adında baska bir General daha var. Kendisi eski sarayda.",
+          "General Svath tüm bu Tuatara'ya komuta ediyor.",
+          "Muhtemelen öyle, ama bu büyük birader gibi geliyor.",
+          "Ve Svath sadece Tuatara askerlerine komuta etmiyor.",
+          "Daha korkutucu seylerle ilgileniyor.",
+          "Yani ölümsüz gibi.",
+          "Ejderha istilasını oldugu yerde durdurdunuz!",
+          "Sırada ne var #tn#?",
+          "Artık Tuatara yenildigine göre…",
+          "Planın nedir?",
+          "Buradan geçen Tuatara Lejyonu'ndan kimsenin sag kurtulabilecegini hayal edemiyorum."
+        ]
+      },
+      "srnmerchant01hard": {
+        "displayName": "Caravan Dan",
+        "defaultLines": [
+          "Dolu. Kertenkelelerin henüz çalmadıgı birkaç küçük seyim var"
+        ]
+      },
+      "srnmerchant03hard": {
+        "displayName": "Cynric",
+        "defaultLines": [
+          "Vahsi dogaya hazırlıksız girmeyin!"
+        ]
+      },
+      "srntrainer01hard": {
+        "displayName": "Sara",
+        "defaultLines": [
+          "Seni kız kardesimden duydum",
+          "Sen acımasız bir goblin avcısısın"
+        ]
+      },
+      "srntrainer03hard": {
+        "displayName": "Gina",
+        "defaultLines": [
+          "Derse var mısın #tc#?"
+        ]
+      },
+      "sughhard": {
+        "defaultLines": [
+          "O eski çiftlikte büyük bir sey var.",
+          "Ne oldugunu bilmiyorum.",
+          "Tuatara oldugunu sanmıyorum.",
+          "Kontrol etmek isteyeceginizi düsündüm.",
+          "Çünkü gerçekten istemiyorum.",
+          "Kulaga büyük geldigini söylemis miydim?",
+          "Ah! Örümceklerden nefret ediyorum! Tesekkürler!",
+          "Devasa bir örümcek miydi?",
+          "Örümceklerden nefret ediyorum.",
+          "Ben degil de sen olduguma sevindim!"
+        ]
+      },
+      "yolafhard": {
+        "displayName": "Yolaf",
+        "defaultLines": [
+          "Annem bu topraklardan geldi.",
+          "Bunun Ellyria'nın gururu oldugunu söyledi.",
+          "Artık harabelerle dolu bir bataklık.",
+          "Bunu düzeltmek istiyorum.",
+          "Rüyalarımdaki gibi olsun."
+        ]
+      }
+    },
+    "TutorialBoat": {
+      "captainfink": {
+        "defaultLines": [
+          "Bizi kurtardın!",
+          "O köyü bulmalıyız.",
+          "Köyü haritada bulabilirsiniz.",
+          "Sadece doguya git ve onu bulacaksın.",
+          "Niobe'yi tamir etmeye çalısacagım."
         ]
       }
     }

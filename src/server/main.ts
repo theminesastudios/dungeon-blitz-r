@@ -18,6 +18,7 @@ import { GameData } from './core/GameData';
 import { MissionLoader } from './data/MissionLoader';
 import { MissionDialogueLoader } from './data/MissionDialogueLoader';
 import { NpcDialogueLoader } from './data/NpcDialogueLoader';
+import { DialogueTranslationLoader } from './data/DialogueTranslationLoader';
 import { NpcLoader } from './data/NpcLoader';
 import { CombatHandler } from './handlers/CombatHandler';
 import { BuildingHandler } from './handlers/BuildingHandler';
@@ -46,6 +47,7 @@ GameData.load(dataDir);
 MissionLoader.load(dataDir);
 MissionDialogueLoader.load(dataDir);
 NpcDialogueLoader.load(dataDir);
+DialogueTranslationLoader.load(dataDir);
 NpcLoader.load(dataDir);
 DebugLogger.logStartup();
 

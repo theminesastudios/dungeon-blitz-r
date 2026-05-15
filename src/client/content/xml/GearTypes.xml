@@ -13036,7 +13036,7 @@
 		</GfxType>
 	</Gear>
 	<Gear GearName="HelmDevourerBoss8" GearID="195" Type="Hat">
-		<DisplayName>Great Helm</DisplayName>
+		<DisplayName>Büyük Migfer</DisplayName>
 		<GearSet>2</GearSet>
 		<UsedBy>Paladin</UsedBy>
 		<MagicRune>CraftDrop</MagicRune>
