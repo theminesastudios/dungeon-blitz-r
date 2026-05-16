@@ -11,7 +11,7 @@ function testDevServerUsesFastLocalPolicyDefaults(): void {
 
     assert.equal(env.MULTIPLAYER_MODE, 'false');
     assert.equal(env.STATIC_PORT, '8000');
-    assert.equal(env.ENABLE_POLICY_SERVER, 'true');
+    assert.equal(env.ENABLE_POLICY_SERVER, 'false');
 }
 
 function testExplicitPolicyOverrideIsPreserved(): void {
