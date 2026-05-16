@@ -44,12 +44,27 @@ export interface InstanceInfo {
 
 export interface MethodBodyInfo {
   methodIdx: number;
+  maxStackPos: number;
+  localCountPos: number;
+  maxScopeDepthPos: number;
+  maxScopeDepth: number;
   codeLenPos: number;
   codeStart: number;
   codeLen: number;
+  exceptionCountPos: number;
+  exceptionCount: number;
+  exceptions: Array<{
+    from: number;
+    to: number;
+    target: number;
+    type: number;
+    name: number;
+  }>;
+  traitsCountPos: number;
 }
 
 export interface AbcParseResult {
+  intValues: number[];
   stringValues: string[];
   stringLenPositions: number[];
   stringDataPositions: number[];
@@ -311,8 +326,11 @@ export function parseAbc(ctx: SwfContext): AbcParseResult {
 
   let count: number;
   [count, pos] = readU30(data, pos, "abc.int_count");
+  const intValues = [0];
   for (let i = 1; i < count; i += 1) {
-    [, pos] = readS32(data, pos, `abc.int[${i}]`);
+    let value: number;
+    [value, pos] = readS32(data, pos, `abc.int[${i}]`);
+    intValues.push(value);
   }
 
   [count, pos] = readU30(data, pos, "abc.uint_count");
@@ -493,26 +511,53 @@ export function parseAbc(ctx: SwfContext): AbcParseResult {
   for (let i = 0; i < count; i += 1) {
     let methodIdx: number;
     [methodIdx, pos] = readU30(data, pos, `abc.body[${i}].method`);
+    const maxStackPos = pos;
     [, pos] = readU30(data, pos, `abc.body[${i}].max_stack`);
+    const localCountPos = pos;
     [, pos] = readU30(data, pos, `abc.body[${i}].local_count`);
     [, pos] = readU30(data, pos, `abc.body[${i}].init_scope_depth`);
-    [, pos] = readU30(data, pos, `abc.body[${i}].max_scope_depth`);
+    const maxScopeDepthPos = pos;
+    let maxScopeDepth: number;
+    [maxScopeDepth, pos] = readU30(data, pos, `abc.body[${i}].max_scope_depth`);
     const codeLenPos = pos;
     let codeLen: number;
     [codeLen, pos] = readU30(data, pos, `abc.body[${i}].code_length`);
     const codeStart = pos;
     pos += codeLen;
-    methodBodies.set(methodIdx, { methodIdx, codeLenPos, codeStart, codeLen });
 
+    const exceptionCountPos = pos;
     let exceptionCount: number;
     [exceptionCount, pos] = readU30(data, pos, `abc.body[${i}].exception_count`);
+    const exceptions: MethodBodyInfo["exceptions"] = [];
     for (let j = 0; j < exceptionCount; j += 1) {
-      [, pos] = readU30(data, pos, `abc.body[${i}].exception[${j}].from`);
-      [, pos] = readU30(data, pos, `abc.body[${i}].exception[${j}].to`);
-      [, pos] = readU30(data, pos, `abc.body[${i}].exception[${j}].target`);
-      [, pos] = readU30(data, pos, `abc.body[${i}].exception[${j}].type`);
-      [, pos] = readU30(data, pos, `abc.body[${i}].exception[${j}].name`);
+      let from: number;
+      let to: number;
+      let target: number;
+      let type: number;
+      let name: number;
+      [from, pos] = readU30(data, pos, `abc.body[${i}].exception[${j}].from`);
+      [to, pos] = readU30(data, pos, `abc.body[${i}].exception[${j}].to`);
+      [target, pos] = readU30(data, pos, `abc.body[${i}].exception[${j}].target`);
+      [type, pos] = readU30(data, pos, `abc.body[${i}].exception[${j}].type`);
+      [name, pos] = readU30(data, pos, `abc.body[${i}].exception[${j}].name`);
+      exceptions.push({ from, to, target, type, name });
     }
+
+    const traitsCountPos = pos;
+    methodBodies.set(methodIdx, {
+      methodIdx,
+      maxStackPos,
+      localCountPos,
+      maxScopeDepthPos,
+      maxScopeDepth,
+      codeLenPos,
+      codeStart,
+      codeLen,
+      exceptionCountPos,
+      exceptionCount,
+      exceptions,
+      traitsCountPos,
+    });
 
     let traitCount: number;
     [traitCount, pos] = readU30(data, pos, `abc.body[${i}].trait_count`);
@@ -522,6 +567,7 @@ export function parseAbc(ctx: SwfContext): AbcParseResult {
   }
 
   return {
+    intValues,
     stringValues,
     stringLenPositions,
     stringDataPositions,

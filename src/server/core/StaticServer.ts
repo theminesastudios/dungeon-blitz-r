@@ -5,6 +5,7 @@ import * as path from 'path';
 import type { Request } from 'express';
 import { Config } from './config';
 import { buildDungeonBlitzSwfVariantBuffer } from './DungeonBlitzSwf';
+import type { DungeonBlitzSwfMode } from './DungeonBlitzSwf';
 import { PresenceService } from './PresenceService';
 import { SocialHandler } from '../handlers/SocialHandler';
 import { GlobalState } from './GlobalState';
@@ -27,13 +28,21 @@ function resolveContentDir(relativeContentPath: string): string {
     return candidates[0];
 }
 
+type SelectedSwfCache = {
+    path: string;
+    mode: DungeonBlitzSwfMode;
+    mtimeMs: number;
+    size: number;
+    buffer: Buffer;
+};
+
 export class StaticServer {
     private app: express.Application;
     private server: HttpServer | null;
     private port: number;
     private contentDir: string;
     private host: string;
-    private selectedSwfBuffer: Buffer | null;
+    private selectedSwfCache: SelectedSwfCache | null;
     private readonly flashVersion = 'cbq';
     private readonly gameVersion = 'cbp';
 
@@ -46,7 +55,7 @@ export class StaticServer {
         this.host = host;
         this.app = express();
         this.server = null;
-        this.selectedSwfBuffer = null;
+        this.selectedSwfCache = null;
         
         // Resolve against the server root so dist and ts-node use the same content directory.
         this.contentDir = resolveContentDir(relativeContentPath);
@@ -59,17 +68,29 @@ export class StaticServer {
     }
 
     private getSelectedSwfBuffer(): Buffer {
-        if (this.selectedSwfBuffer) {
-            return this.selectedSwfBuffer;
+        const swfPath = this.getSelectedSwfPath();
+        const mode = Config.MULTIPLAYER_MODE ? 'multiplayer' : 'local';
+        const stat = fs.statSync(swfPath);
+        if (
+            this.selectedSwfCache &&
+            this.selectedSwfCache.path === swfPath &&
+            this.selectedSwfCache.mode === mode &&
+            this.selectedSwfCache.mtimeMs === stat.mtimeMs &&
+            this.selectedSwfCache.size === stat.size
+        ) {
+            return this.selectedSwfCache.buffer;
         }
 
-        const mode = Config.MULTIPLAYER_MODE ? 'multiplayer' : 'local';
-        this.selectedSwfBuffer = buildDungeonBlitzSwfVariantBuffer(
-            this.getSelectedSwfPath(),
-            mode
-        );
+        const buffer = buildDungeonBlitzSwfVariantBuffer(swfPath, mode);
+        this.selectedSwfCache = {
+            path: swfPath,
+            mode,
+            mtimeMs: stat.mtimeMs,
+            size: stat.size,
+            buffer
+        };
         console.log(`[StaticServer] Prepared DungeonBlitz.swf variant for ${mode} mode.`);
-        return this.selectedSwfBuffer;
+        return buffer;
     }
 
     private getSelectedSwfUrl(): string {

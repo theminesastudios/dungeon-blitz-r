@@ -66,6 +66,9 @@ function detectFfdec(repoRoot, preferred) {
     }
 
     candidates.push(
+        path.join(repoRoot, 'build', 'tools', 'ffdec_25.0.0', 'ffdec-cli.exe'),
+        path.join(repoRoot, 'build', 'tools', 'ffdec_25.0.0', 'ffdec-cli.jar'),
+        path.join(repoRoot, 'build', 'tools', 'ffdec_25.0.0', 'ffdec.sh'),
         path.join(repoRoot, 'build', 'ffdec_24.0.1', 'ffdec-cli.exe'),
         path.join(repoRoot, 'build', 'ffdec_24.0.1', 'ffdec-cli.jar'),
         path.join(repoRoot, 'build', 'ffdec_24.0.1', 'ffdec.sh'),
@@ -111,29 +114,50 @@ function exportGamePcode(ffdecPath, workRoot, swfPath) {
 }
 
 function patchPcode(source) {
-    if (source.includes('catch(_loc5_:Error)')) {
+    if (/try from ofs008[cd] to ofs009c target ofs011[bc] type QName\(PackageNamespace\(""\),"Error"\)/.test(source)) {
         return source;
     }
 
-    const localCountNeedle = 'localcount 5';
-    if (!source.includes(localCountNeedle)) {
-        throw new Error('Could not find method_1325 localcount marker.');
+    const methodStart = source.indexOf('public function method_1325() : void');
+    if (methodStart < 0) {
+        throw new Error('Could not find method_1325.');
     }
 
-    let patched = source.replace(localCountNeedle, 'localcount 6');
+    const nextMethodStart = source.indexOf('public function method_789() : Boolean', methodStart);
+    if (nextMethodStart < 0) {
+        throw new Error('Could not find method_1325 end marker.');
+    }
 
-    const methodCallPattern = /(ofs008c:\r?\n\s*label\r?\n\s*getlocal2\r?\n\s*callproperty QName\(PackageNamespace\(""\),"method_105"\), 0\r?\n\s*getlocal 4\r?\n\s*dup\r?\n\s*iffalse ofs009c\r?\n\s*pop\r?\n\s*getlocal2\r?\n\s*convert_b\r?\n\s*ofs009c:\r?\n)/;
-    if (!methodCallPattern.test(patched)) {
+    const beforeMethod = source.slice(0, methodStart);
+    const afterMethod = source.slice(nextMethodStart);
+    let methodSource = source.slice(methodStart, nextMethodStart);
+
+    const localCountNeedle = 'localcount 5';
+    if (!methodSource.includes(localCountNeedle)) {
+        throw new Error('Could not find method_1325 localcount marker.');
+    }
+    methodSource = methodSource.replace(localCountNeedle, 'localcount 6');
+
+    const methodCallPattern = /ofs008c:\r?\n\s*label\r?\n\s*getlocal2\r?\n\s*callproperty QName\(PackageNamespace\(""\),"method_105"\), 0\r?\n\s*getlocal 4\r?\n\s*dup\r?\n\s*iffalse ofs009c\r?\n\s*pop\r?\n\s*getlocal2\r?\n\s*convert_b\r?\n\s*ofs009c:/;
+    if (!methodCallPattern.test(methodSource)) {
         throw new Error('Could not find method_1325 method_105 block.');
     }
 
-    patched = patched.replace(
-        methodCallPattern,
+    const jumpNeedle = /ofs00ce:\r?\n\s*jump ofs008c/;
+    if (!jumpNeedle.test(methodSource)) {
+        throw new Error('Could not find method_1325 loop jump marker.');
+    }
+
+    const endCodePattern = /(ofs011a:\r?\n\s*returnvoid\r?\n\s*returnvoid\r?\n)(\s*end ; code\r?\n)(\s*end ; body)/;
+    if (!endCodePattern.test(methodSource)) {
+        throw new Error('Could not find method_1325 try insertion marker.');
+    }
+
+    methodSource = methodSource.replace(
+        endCodePattern,
         [
             '$1',
-            '                                                                                                                                                                                                                                                                                                                                                                                                               ofs00cf:',
-            '                                                                                                                                                                                                                                                                                                                                                                                                                        getlocal0',
-            '                                                                                                                                                                                                                                                                                                                                                                                                                        pushscope',
+            '                                                                                                                                                                                                                                                                                                                                                                                                               ofs011b:',
             '                                                                                                                                                                                                                                                                                                                                                                                                                        newcatch 0',
             '                                                                                                                                                                                                                                                                                                                                                                                                                        dup',
             '                                                                                                                                                                                                                                                                                                                                                                                                                        setlocal 5',
@@ -147,30 +171,14 @@ function patchPcode(source) {
             '                                                                                                                                                                                                                                                                                                                                                                                                                        pushtrue',
             '                                                                                                                                                                                                                                                                                                                                                                                                                        setproperty QName(PackageInternalNs(""),"m_bFinished")',
             '                                                                                                                                                                                                                                                                                                                                                                                                                        pushtrue',
-            '                                                                                                                                                                                                                                                                                                                                                                                                                        jump ofs00a1'
+            '                                                                                                                                                                                                                                                                                                                                                                                                                        jump ofs00a1',
+            '$2',
+            '                                                                                                                                                                                                                                                                                                                                                                                                                  try from ofs008c to ofs009c target ofs011b type QName(PackageNamespace(""),"Error") name QName(PackageNamespace(""),"error") end',
+            '$3'
         ].join('\r\n')
     );
 
-    const jumpNeedle = 'ofs00ce:\r\n                                                                                                                                                                                                                                                                                                                                                                                                                        jump ofs008c';
-    if (!patched.includes(jumpNeedle)) {
-        throw new Error('Could not find method_1325 loop jump marker.');
-    }
-
-    const tryNeedle = 'end ; code\r\n                                                                                                                                                                                                                                                                                                                                                                                                               end ; body';
-    if (!patched.includes(tryNeedle)) {
-        throw new Error('Could not find method_1325 try insertion marker.');
-    }
-
-    patched = patched.replace(
-        tryNeedle,
-        [
-            'end ; code',
-            '                                                                                                                                                                                                                                                                                                                                                                                                                  try from ofs008c to ofs009c target ofs00cf type QName(PackageNamespace(""),"Error") name QName(PackageNamespace(""),"error") end',
-            '                                                                                                                                                                                                                                                                                                                                                                                                               end ; body'
-        ].join('\r\n')
-    );
-
-    return patched;
+    return `${beforeMethod}${methodSource}${afterMethod}`;
 }
 
 function patchSwf(repoRoot, ffdecPath, swfPath) {
@@ -197,15 +205,18 @@ function verifySwf(repoRoot, ffdecPath, swfPath) {
     const source = fs.readFileSync(pcodePath, 'utf8');
     const requiredSnippets = [
         'localcount 6',
-        'catch(_loc5_:Error)',
-        'setproperty QName(PackageInternalNs(""),"m_bFinished")',
-        'try from ofs008c to ofs009c target ofs00cf type QName(PackageNamespace(""),"Error")'
+        'newcatch 0',
+        'setproperty QName(PackageInternalNs(""),"m_bFinished")'
     ];
 
     for (const snippet of requiredSnippets) {
         if (!source.includes(snippet)) {
             throw new Error(`Verification failed: missing snippet "${snippet}" in ${pcodePath}`);
         }
+    }
+
+    if (!/try from ofs008[cd] to ofs009c target ofs011[bc] type QName\(PackageNamespace\(""\),"Error"\)/.test(source)) {
+        throw new Error(`Verification failed: missing method_1325 SuperAnim try/catch in ${pcodePath}`);
     }
 
     console.log(`[superanim-crash-guard] verified ${path.relative(repoRoot, swfPath)}`);
