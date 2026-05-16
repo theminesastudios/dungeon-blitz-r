@@ -92,12 +92,16 @@ export class MissionHandler {
         'AC_Mission6Hard',
         'CH_Mission1',
         'CH_Mission1Hard',
+        'SD_Mission3',
+        'SD_Mission3Hard',
         'SRN_Mission4',
         'SRN_Mission4Hard'
     ]);
     private static readonly REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL: Record<string, ReadonlySet<string>> = {
         AC_Mission6: new Set(['NephitLargeEye']),
         AC_Mission6Hard: new Set(['NephitLargeEyeHard']),
+        SD_Mission3: new Set(['OutlanderWyrm']),
+        SD_Mission3Hard: new Set(['OutlanderWyrmHard']),
         SRN_Mission4: new Set(['WyrmGreat']),
         SRN_Mission4Hard: new Set(['WyrmGreatHard'])
     };
@@ -2413,10 +2417,24 @@ export class MissionHandler {
 
         const bossNames = MissionHandler.REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL[normalizedLevel];
         if (bossNames) {
-            return bossNames.has(String(entity?.name ?? '').trim());
+            return bossNames.has(String(entity?.name ?? entity?.EntName ?? entity?.entName ?? '').trim());
         }
 
         return MissionHandler.isDungeonCompletionBossEntity(entity);
+    }
+
+    private static isRequiredDungeonCompletionBossEntity(levelName: string | null | undefined, entity: any): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        const entityName = String(entity?.name ?? entity?.EntName ?? entity?.entName ?? '').trim();
+        const bossNames = normalizedLevel
+            ? MissionHandler.REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL[normalizedLevel]
+            : null;
+        if (bossNames?.has(entityName)) {
+            return true;
+        }
+
+        return MissionHandler.isDungeonCompletionBossEntity(entity) &&
+            MissionHandler.isRequiredDungeonBossEntity(levelName, entity);
     }
 
     private static isRequiredDungeonChestEntity(levelName: string | null | undefined, entity: any): boolean {
@@ -2506,16 +2524,13 @@ export class MissionHandler {
             return false;
         }
 
-        if (MissionHandler.isDungeonMiniBossEntity(entity)) {
-            return false;
-        }
-
-        if (MissionHandler.isDungeonCompletionBossEntity(entity)) {
-            if (!MissionHandler.isRequiredDungeonBossEntity(levelName, entity)) {
-                return false;
-            }
+        if (MissionHandler.isRequiredDungeonCompletionBossEntity(levelName, entity)) {
             MissionHandler.markRequiredDungeonBossDefeated(levelScope, levelName, entity);
             return MissionHandler.hasMetRequiredDungeonCompletionObjectives(null, levelName, levelScope);
+        }
+
+        if (MissionHandler.isDungeonMiniBossEntity(entity)) {
+            return false;
         }
 
         if (
@@ -2582,8 +2597,7 @@ export class MissionHandler {
                 entity &&
                 !entity.isPlayer &&
                 Number(entity.team ?? 0) === EntityTeam.ENEMY &&
-                MissionHandler.isDungeonCompletionBossEntity(entity) &&
-                MissionHandler.isRequiredDungeonBossEntity(levelName, entity) &&
+                MissionHandler.isRequiredDungeonCompletionBossEntity(levelName, entity) &&
                 MissionHandler.isAliveDungeonCompletionObjective(entity)
             ) {
                 const entityRoomId = MissionHandler.getEntityRoomId(entity);
@@ -2615,8 +2629,7 @@ export class MissionHandler {
                     entity &&
                     !entity.isPlayer &&
                     Number(entity.team ?? 0) === EntityTeam.ENEMY &&
-                    MissionHandler.isDungeonCompletionBossEntity(entity) &&
-                    MissionHandler.isRequiredDungeonBossEntity(levelName, entity) &&
+                    MissionHandler.isRequiredDungeonCompletionBossEntity(levelName, entity) &&
                     (
                         Boolean(entity.dead) ||
                         Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD ||

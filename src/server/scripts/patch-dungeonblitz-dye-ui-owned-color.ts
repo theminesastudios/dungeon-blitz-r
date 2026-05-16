@@ -100,7 +100,7 @@ function assembleInserted(instructions: InsertedInstruction[]): Buffer {
   let offset = 0;
 
   for (const inst of instructions) {
-    const parts = [Buffer.from([inst.opcode])];
+    const parts: Buffer[] = [Buffer.from([inst.opcode])];
     offset += 1;
 
     if (inst.branchToEnd) {
