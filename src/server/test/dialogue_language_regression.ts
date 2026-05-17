@@ -615,6 +615,57 @@ function testBlackRoseMireLiveSkitSegmentsUseTranslations(): void {
     assert.deepEqual(thoughts.map((thought) => thought.text), liveSkitSegments.map(([, expected]) => expected));
 }
 
+function testValhavenWelcomePartyLiveSkitSegmentsUseTranslations(): void {
+    const dataDir = path.resolve(__dirname, '../data');
+    DialogueTranslationLoader.load(dataDir);
+
+    const client = createFakeClient();
+    client.character.dialogueLanguage = 'tr';
+    client.token = 51011;
+    client.currentLevel = 'JC_Mission1';
+    client.levelInstanceId = '';
+    client.playerSpawned = true;
+    client.entities.set(705, {
+        id: 705,
+        name: 'ImperialCommanderGrahl',
+        team: EntityTeam.ENEMY
+    });
+
+    const liveSkitSegments: Array<[string, string]> = [
+        ["Uh-oh, what's going on? Guards everywhere...", 'Eyvah, neler oluyor? Her yerde muhafiz var...'],
+        ["It's an ambush!", 'Bu bir pusu!'],
+        ['Try and fight your way through them!', 'Onlari yara yara gecmeye calis!'],
+        ["I'll meet you at the Laughing Jester Inn!", "Gulen Soytari Hani'nda bulusalim!"],
+        ['You go no further outlaw!', 'Buradan ileri gidemezsin, kanun kacagi!'],
+        ['The Emperor has sentenced you to death.', 'Imparator seni olume mahkum etti.'],
+        ['I am your executioner!', 'Celladin benim!'],
+        ['Resistance is useless', 'Direnis ise yaramaz'],
+        ["Take the usurper's head!", 'Gaspcinin kafasini alin!'],
+        ['You dare defy the Emperor?', 'Imparatora meydan okumaya nasil cesaret edersin?'],
+        ['The Emperor knew you were coming.', 'Imparator gelecegini biliyordu.'],
+        ['And he wants you dead for some reason.', 'Ve nedense olmeni istiyor.'],
+        ["Meet with our leader, Odryn. He'll know more.", 'Liderimiz Odryn ile bulus. O daha fazlasini bilir.']
+    ];
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    try {
+        for (const [source] of liveSkitSegments) {
+            SocialHandler.handleStartSkit(
+                client as never,
+                createStartSkitPacket(705, source)
+            );
+        }
+    } finally {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+
+    const thoughts = client.sentPackets
+        .filter((entry) => entry.id === 0x76)
+        .map((entry) => decodeRoomThought(entry.payload));
+
+    assert.deepEqual(thoughts.map((thought) => thought.text), liveSkitSegments.map(([, expected]) => expected));
+}
+
 function testCapstoneRoomDialogueTranslationsCoverExtractedSource(): void {
     const dataDir = path.resolve(__dirname, '../data');
     const translations = JSON.parse(fs.readFileSync(path.join(dataDir, 'DialogueTranslations.tr.json'), 'utf8')) as {
@@ -896,6 +947,130 @@ function testWolfsEndEnemyRoomDialogueTranslationsCoverExtractedSource(): void {
     assert.deepEqual(missing, [], "Wolf's End enemy room dialogue should have Turkish translations");
 }
 
+function testValhavenWelcomePartyRoomDialogueTranslationsCoverExtractedSource(): void {
+    const dataDir = path.resolve(__dirname, '../data');
+    const translations = JSON.parse(fs.readFileSync(path.join(dataDir, 'DialogueTranslations.tr.json'), 'utf8')) as {
+        translations?: Record<string, string>;
+    };
+
+    const valhavenWelcomePartyLines = [
+        "6 OrderGuy Uh-oh, what's going on? Guards everywhere...",
+        "Uh-oh, what's going on? Guards everywhere...",
+        "10 OrderGuy It's an ambush!",
+        "It's an ambush!",
+        '8 OrderGuy Try and fight your way through them!',
+        'Try and fight your way through them!',
+        "10 OrderGuy I'll meet you at the Laughing Jester Inn!",
+        "I'll meet you at the Laughing Jester Inn!",
+        '7 Boss <Melee> You go no further outlaw!',
+        'You go no further outlaw!',
+        '10 Boss The Emperor has sentenced you to death.',
+        'The Emperor has sentenced you to death.',
+        '11 Boss <Melee> I am your executioner!',
+        'I am your executioner!',
+        '4 OrderGuy The Emperor knew you were coming.',
+        'The Emperor knew you were coming.',
+        '8 OrderGuy And he wants you dead for some reason.',
+        'And he wants you dead for some reason.',
+        "10 OrderGuy Meet with our leader, Odryn. He'll know more.",
+        "Meet with our leader, Odryn. He'll know more.",
+        '<Melee> Resistance is useless',
+        'Resistance is useless',
+        "<ShieldBash> Take the usurper's head!",
+        "Take the usurper's head!",
+        '0 Boss <Melee> You dare defy the Emperor?',
+        'You dare defy the Emperor?'
+    ];
+
+    const missing = valhavenWelcomePartyLines.filter((line) => !String(translations.translations?.[line] ?? '').trim());
+    assert.deepEqual(missing, [], 'Valhaven Welcome Party room dialogue should have Turkish translations');
+}
+
+function unescapeActionScriptString(raw: string): string {
+    return raw
+        .replace(/\\'/g, "'")
+        .replace(/\\"/g, '"')
+        .replace(/\\n/g, '\n')
+        .replace(/\\r/g, '\r')
+        .replace(/\\\\/g, '\\');
+}
+
+function looksLikeValhavenRoomDialogue(value: string): boolean {
+    if (!/[A-Za-z]{2,}/.test(value)) {
+        return false;
+    }
+    if (/^(?:am_|a_|symbol)/.test(value)) {
+        return false;
+    }
+    if (/^(?:default|neutral|enemy|Hard|Normal|Run|Bolster)$/.test(value)) {
+        return false;
+    }
+    if (/^(?:Gold_|Bronze|Silver|ImperialChanneling|ImperialHealing|OasisTeleportEffectLarge|Untouchable)$/.test(value)) {
+        return false;
+    }
+    if (/^(?:\d+\s+)?(?:Camera|Shake|End|SpawnCue|RemoveCue|QuickFirePower)\b/.test(value) && !/[.!?]|:|@/.test(value)) {
+        return false;
+    }
+
+    return /[.!?]|:|@|#|\b(?:kill|die|death|Emperor|human|outlaw|usurper|Odryn|Seelie|Jester|fight|ambush|guards|burn|fire|head|resistance|savior|come|stop|dead|fool|attack|defend|slay|thief|you|I|we|they|he|she|The|And|No|What|Where|Why|How|Looks)\b/i.test(value);
+}
+
+function addValhavenRoomDialogueCandidate(raw: string, out: Set<string>): void {
+    const value = unescapeActionScriptString(raw).trim();
+    if (!looksLikeValhavenRoomDialogue(value)) {
+        return;
+    }
+
+    for (const part of value.split(/=@|=|:/)) {
+        const clean = part
+            .replace(/^[@:]+/, '')
+            .replace(/^\d+\s+[A-Za-z0-9_]+\s+/, '')
+            .replace(/^(?:\s*<[^>]+>\s*)+/, '')
+            .replace(/^\^t\s*/, '')
+            .trim()
+            .replace(/\s+/g, ' ');
+        if (looksLikeValhavenRoomDialogue(clean)) {
+            out.add(clean);
+        }
+    }
+}
+
+function testValhavenRoomDialogueTranslationsCoverExtractedSource(): void {
+    const dataDir = path.resolve(__dirname, '../data');
+    const scriptRoot = path.resolve(__dirname, '../../../build/npc-dialogue-level-scripts/scripts');
+    if (!fs.existsSync(scriptRoot)) {
+        return;
+    }
+
+    const translations = JSON.parse(fs.readFileSync(path.join(dataDir, 'DialogueTranslations.tr.json'), 'utf8')) as {
+        translations?: Record<string, string>;
+    };
+    const required = new Set<string>();
+
+    for (const file of fs.readdirSync(scriptRoot)) {
+        if (!/^a_Room_JC(?:Mission\d+|Mini\d+)_.*\.as$/.test(file)) {
+            continue;
+        }
+
+        const source = fs.readFileSync(path.join(scriptRoot, file), 'utf8');
+        for (const match of source.matchAll(/\.(sayOn(?:Activate|Alert|Bloodied|Death|Interact|Spawn))\s*=\s*"((?:\\.|[^"\\])*)"/g)) {
+            addValhavenRoomDialogueCandidate(match[2] ?? '', required);
+        }
+        for (const match of source.matchAll(/(?:cutScene\w+|Script_\w+)\s*=\s*\[((?:.|\n)*?)\];/g)) {
+            for (const stringMatch of (match[1] ?? '').matchAll(/"((?:\\.|[^"\\])*)"/g)) {
+                addValhavenRoomDialogueCandidate(stringMatch[1] ?? '', required);
+            }
+        }
+        for (const match of source.matchAll(/\.Skit\("((?:\\.|[^"\\])*)"\)/g)) {
+            addValhavenRoomDialogueCandidate(match[1] ?? '', required);
+        }
+    }
+
+    const missing = [...required].filter((line) => !String(translations.translations?.[line] ?? '').trim()).sort();
+    assert.ok(required.size > 300, 'Valhaven room dialogue inventory should include all dungeon scripts');
+    assert.deepEqual(missing, [], 'Valhaven room dialogue should have Turkish translations');
+}
+
 async function main(): Promise<void> {
     await testLanguageCommandSwitchesToTurkishWithoutBroadcasting();
     await testLanguageCommandSwitchesBackToEnglish();
@@ -912,10 +1087,13 @@ async function main(): Promise<void> {
     testFelbridgeMeylourLiveSkitSegmentsUseTranslations();
     testBridgeTownMissionsLiveSkitSegmentsUseTranslations();
     testBlackRoseMireLiveSkitSegmentsUseTranslations();
+    testValhavenWelcomePartyLiveSkitSegmentsUseTranslations();
     testCapstoneRoomDialogueTranslationsCoverExtractedSource();
     testFelbridgeMeylourRoomDialogueTranslationsCoverExtractedSource();
     testBridgeTownMissionsRoomDialogueTranslationsCoverExtractedSource();
     testWolfsEndEnemyRoomDialogueTranslationsCoverExtractedSource();
+    testValhavenWelcomePartyRoomDialogueTranslationsCoverExtractedSource();
+    testValhavenRoomDialogueTranslationsCoverExtractedSource();
     console.log('dialogue_language_regression: ok');
 }
 
