@@ -26,7 +26,10 @@ const DEFAULT_SWF = path.resolve(
   "cbp",
   "DungeonBlitz.swf",
 );
-const METHOD982_SAFE_TOTAL_PIXELS = 262144;
+const METHOD982_SAFE_TOTAL_PIXELS = 65536;
+const METHOD982_PREVIOUS_SAFE_TOTAL_PIXELS = 262144;
+const METHOD200_SAFE_TOTAL_PIXELS = 65536;
+const METHOD200_PREVIOUS_SAFE_TOTAL_PIXELS = 16777215;
 
 type Operand = [Instruction["operands"][number][0], number];
 type InsertedInstruction =
@@ -251,11 +254,19 @@ function setLocal(localIndex: number): InsertedInstruction {
   return { opcode: 0x63, operands: [["u30", localIndex]] };
 }
 
+function pushInteger(value: number): InsertedInstruction {
+  if (value >= -128 && value <= 127) {
+    return { opcode: 0x24, operands: [["s8", value]] };
+  }
+  return { opcode: 0x25, operands: [["u30", value]] };
+}
+
 function dimensionGuard(
   widthLocal: number,
   heightLocal: number,
   invalidExtra: InsertedInstruction[] = [],
   totalPixelsIntIndex: number | null = null,
+  fallbackSize: number = 1,
 ): InsertedInstruction[] {
   const guard: InsertedInstruction[] = [
     getLocal(widthLocal),
@@ -299,10 +310,10 @@ function dimensionGuard(
 
   guard.push(
     { label: "invalid" },
-    { opcode: 0x24, operands: [["s8", 1]] },
+    pushInteger(fallbackSize),
     { opcode: 0x75 },
     setLocal(widthLocal),
-    { opcode: 0x24, operands: [["s8", 1]] },
+    pushInteger(fallbackSize),
     { opcode: 0x75 },
     setLocal(heightLocal),
     ...invalidExtra,
@@ -316,6 +327,10 @@ function croppedDimensionGuard(widthName: number, heightName: number): InsertedI
   return rectDimensionGuard(25, 26, 24, widthName, heightName);
 }
 
+function croppedDimensionGuardWithFallback(widthName: number, heightName: number, fallbackSize: number): InsertedInstruction[] {
+  return rectDimensionGuard(25, 26, 24, widthName, heightName, null, fallbackSize);
+}
+
 function rectDimensionGuard(
   widthLocal: number,
   heightLocal: number,
@@ -323,15 +338,16 @@ function rectDimensionGuard(
   widthName: number,
   heightName: number,
   totalPixelsIntIndex: number | null = null,
+  fallbackSize: number = 1,
 ): InsertedInstruction[] {
   return dimensionGuard(widthLocal, heightLocal, [
     getLocal(rectLocal),
-    { opcode: 0x24, operands: [["s8", 1]] },
+    pushInteger(fallbackSize),
     { opcode: 0x61, operands: [["u30", widthName]] },
     getLocal(rectLocal),
-    { opcode: 0x24, operands: [["s8", 1]] },
+    pushInteger(fallbackSize),
     { opcode: 0x61, operands: [["u30", heightName]] },
-  ], totalPixelsIntIndex);
+  ], totalPixelsIntIndex, fallbackSize);
 }
 
 function rectFallback(
@@ -357,16 +373,22 @@ function rectFallback(
   ];
 }
 
-function productDimensionGuard(widthLocal: number, heightLocal: number, totalPixelsIntIndex: number): InsertedInstruction[] {
-  return dimensionGuard(widthLocal, heightLocal, [], totalPixelsIntIndex);
+function productDimensionGuard(
+  widthLocal: number,
+  heightLocal: number,
+  totalPixelsIntIndex: number,
+  fallbackSize: number = 1,
+): InsertedInstruction[] {
+  return dimensionGuard(widthLocal, heightLocal, [], totalPixelsIntIndex, fallbackSize);
 }
 
 function productCroppedDimensionGuard(
   widthName: number,
   heightName: number,
   totalPixelsIntIndex: number,
+  fallbackSize: number = 1,
 ): InsertedInstruction[] {
-  return rectDimensionGuard(25, 26, 24, widthName, heightName, totalPixelsIntIndex);
+  return rectDimensionGuard(25, 26, 24, widthName, heightName, totalPixelsIntIndex, fallbackSize);
 }
 
 function pushshortProductDimensionGuard(
@@ -465,6 +487,45 @@ function findBitmapDataConstructor(
   throw new PatchError(`Could not find BitmapData constructor for locals ${widthLocal}/${heightLocal}`);
 }
 
+function findBitmapDataConstructorOrForced(
+  instructions: Instruction[],
+  abc: ReturnType<typeof parseAbc>,
+  widthLocal: number,
+  heightLocal: number,
+): { constructor: Instruction; width: Instruction; height: Instruction; forced: boolean } {
+  for (let index = 0; index < instructions.length - 5; index += 1) {
+    const inst = instructions[index];
+    if (inst.opcode !== 0x5d || u30OperandName(inst, abc.multinameNames) !== "BitmapData") {
+      continue;
+    }
+
+    const width = instructions[index + 1];
+    const height = instructions[index + 2];
+    const pushTrue = instructions[index + 3];
+    const pushZero = instructions[index + 4];
+    const construct = instructions[index + 5];
+    const usesLocals = getLocalOperand(width) === widthLocal && getLocalOperand(height) === heightLocal;
+    const forcedSmall =
+      width.opcode === 0x24 &&
+      width.operands[0]?.[1] === 1 &&
+      height.opcode === 0x24 &&
+      height.operands[0]?.[1] === 1;
+    if (
+      (usesLocals || forcedSmall) &&
+      pushTrue.opcode === 0x26 &&
+      pushZero.opcode === 0x24 &&
+      pushZero.operands[0]?.[1] === 0 &&
+      construct.opcode === 0x4a &&
+      u30OperandName(construct, abc.multinameNames) === "BitmapData" &&
+      construct.operands[1]?.[1] === 4
+    ) {
+      return { constructor: inst, width, height, forced: forcedSmall };
+    }
+  }
+
+  throw new PatchError(`Could not find BitmapData constructor for locals ${widthLocal}/${heightLocal}`);
+}
+
 function hasExactGuardBefore(code: Buffer, constructorOffset: number, guard: Buffer): boolean {
   return constructorOffset >= guard.length && code.subarray(constructorOffset - guard.length, constructorOffset).equals(guard);
 }
@@ -527,19 +588,26 @@ function patchMethod200(swfPath: string, verify: boolean): boolean {
   const croppedCtor = findBitmapDataConstructor(instructions, abc, 25, 26);
   const widthName = findRequiredMultiname(abc, "width");
   const heightName = findRequiredMultiname(abc, "height");
-  const totalPixelsIntIndex = findRequiredInt(abc, 16777215);
-  const directGuard = assembleInserted(productDimensionGuard(10, 11, totalPixelsIntIndex));
-  const croppedGuard = assembleInserted(productCroppedDimensionGuard(widthName, heightName, totalPixelsIntIndex));
+  const totalPixelsIntIndex = findRequiredInt(abc, METHOD200_SAFE_TOTAL_PIXELS);
+  const previousTotalPixelsIntIndex = findRequiredInt(abc, METHOD200_PREVIOUS_SAFE_TOTAL_PIXELS);
+  const directGuard = assembleInserted(productDimensionGuard(10, 11, totalPixelsIntIndex, 128));
+  const croppedGuard = assembleInserted(productCroppedDimensionGuard(widthName, heightName, totalPixelsIntIndex, 128));
+  const directPreviousGuard = assembleInserted(productDimensionGuard(10, 11, previousTotalPixelsIntIndex));
+  const croppedPreviousGuard = assembleInserted(productCroppedDimensionGuard(widthName, heightName, previousTotalPixelsIntIndex));
   const noProductDirectGuard = assembleInserted(dimensionGuard(10, 11));
   const noProductCroppedGuard = assembleInserted(croppedDimensionGuard(widthName, heightName));
+  const noProductCroppedFallbackGuard = assembleInserted(croppedDimensionGuardWithFallback(widthName, heightName, 128));
   const pushshortProductDirectGuard = assembleInserted(pushshortProductDimensionGuard(10, 11));
   const pushshortProductCroppedGuard = assembleInserted(pushshortProductCroppedDimensionGuard(widthName, heightName));
   const legacyPushshortProductCroppedGuard = assembleInserted(legacyPushshortProductCroppedDimensionGuard(widthName, heightName));
 
   const directPatched = hasExactGuardBefore(code, directCtor.offset, directGuard);
   const croppedPatched = hasExactGuardBefore(code, croppedCtor.offset, croppedGuard);
+  const directPreviousPatched = hasExactGuardBefore(code, directCtor.offset, directPreviousGuard);
+  const croppedPreviousPatched = hasExactGuardBefore(code, croppedCtor.offset, croppedPreviousGuard);
   const directNoProductPatched = hasExactGuardBefore(code, directCtor.offset, noProductDirectGuard);
   const croppedNoProductPatched = hasExactGuardBefore(code, croppedCtor.offset, noProductCroppedGuard);
+  const croppedNoProductFallbackPatched = hasExactGuardBefore(code, croppedCtor.offset, noProductCroppedFallbackGuard);
   const directPushshortProductPatched = hasExactGuardBefore(code, directCtor.offset, pushshortProductDirectGuard);
   const croppedPushshortProductPatched = hasExactGuardBefore(code, croppedCtor.offset, pushshortProductCroppedGuard);
   const croppedLegacyPushshortProductPatched = hasExactGuardBefore(
@@ -558,7 +626,13 @@ function patchMethod200(swfPath: string, verify: boolean): boolean {
 
   const edits: Array<{ start: number; end: number; data: Buffer }> = [];
   if (!directPatched) {
-    if (directNoProductPatched) {
+    if (directPreviousPatched) {
+      edits.push({
+        start: directCtor.offset - directPreviousGuard.length,
+        end: directCtor.offset,
+        data: directGuard,
+      });
+    } else if (directNoProductPatched) {
       edits.push({
         start: directCtor.offset - noProductDirectGuard.length,
         end: directCtor.offset,
@@ -575,7 +649,19 @@ function patchMethod200(swfPath: string, verify: boolean): boolean {
     }
   }
   if (!croppedPatched) {
-    if (croppedNoProductPatched) {
+    if (croppedPreviousPatched) {
+      edits.push({
+        start: croppedCtor.offset - croppedPreviousGuard.length,
+        end: croppedCtor.offset,
+        data: croppedGuard,
+      });
+    } else if (croppedNoProductFallbackPatched) {
+      edits.push({
+        start: croppedCtor.offset - noProductCroppedFallbackGuard.length,
+        end: croppedCtor.offset,
+        data: croppedGuard,
+      });
+    } else if (croppedNoProductPatched) {
       edits.push({
         start: croppedCtor.offset - noProductCroppedGuard.length,
         end: croppedCtor.offset,
@@ -605,10 +691,11 @@ function patchMethod200(swfPath: string, verify: boolean): boolean {
 
 function patchMethod982(swfPath: string, verify: boolean): boolean {
   const { ctx, abc, methodBody, code, instructions } = getStaticMethod(swfPath, "method_982");
-  const outputCtor = findBitmapDataConstructor(instructions, abc, 11, 12);
+  const outputCtor = findBitmapDataConstructorOrForced(instructions, abc, 11, 12);
   const widthName = findRequiredMultiname(abc, "width");
   const heightName = findRequiredMultiname(abc, "height");
   const totalPixelsIntIndex = findRequiredInt(abc, METHOD982_SAFE_TOTAL_PIXELS);
+  const previousTotalPixelsIntIndex = findRequiredInt(abc, METHOD982_PREVIOUS_SAFE_TOTAL_PIXELS);
   const hardTotalPixelsIntIndex = findRequiredInt(abc, 16777215);
   const forcedOutputFallback = assembleInserted(rectFallback(11, 12, 10, widthName, heightName));
   const legacyForcedOutputFallback = assembleInserted([
@@ -616,7 +703,11 @@ function patchMethod982(swfPath: string, verify: boolean): boolean {
     { opcode: 0x29 },
     ...rectFallback(11, 12, 10, widthName, heightName),
   ]);
-  const outputGuard = assembleInserted(rectDimensionGuard(11, 12, 10, widthName, heightName, totalPixelsIntIndex));
+  const outputGuard = assembleInserted(rectDimensionGuard(11, 12, 10, widthName, heightName, totalPixelsIntIndex, 128));
+  const onePixelOutputGuard = assembleInserted(rectDimensionGuard(11, 12, 10, widthName, heightName, totalPixelsIntIndex));
+  const previousOutputGuard = assembleInserted(
+    rectDimensionGuard(11, 12, 10, widthName, heightName, previousTotalPixelsIntIndex),
+  );
   const hardOutputGuard = assembleInserted(rectDimensionGuard(11, 12, 10, widthName, heightName, hardTotalPixelsIntIndex));
   const noProductOutputGuard = assembleInserted(rectDimensionGuard(11, 12, 10, widthName, heightName));
   const pushshortProductOutputGuard = assembleInserted(
@@ -630,14 +721,16 @@ function patchMethod982(swfPath: string, verify: boolean): boolean {
     ]),
   );
 
-  const outputForcedPatched = hasExactGuardBefore(code, outputCtor.offset, forcedOutputFallback);
-  const outputLegacyForcedPatched = hasExactGuardBefore(code, outputCtor.offset, legacyForcedOutputFallback);
-  const outputPatched = hasExactGuardBefore(code, outputCtor.offset, outputGuard);
-  const outputHardPatched = hasExactGuardBefore(code, outputCtor.offset, hardOutputGuard);
-  const outputNoProductPatched = hasExactGuardBefore(code, outputCtor.offset, noProductOutputGuard);
-  const outputPushshortProductPatched = hasExactGuardBefore(code, outputCtor.offset, pushshortProductOutputGuard);
+  const outputForcedPatched = hasExactGuardBefore(code, outputCtor.constructor.offset, forcedOutputFallback);
+  const outputLegacyForcedPatched = hasExactGuardBefore(code, outputCtor.constructor.offset, legacyForcedOutputFallback);
+  const outputPatched = hasExactGuardBefore(code, outputCtor.constructor.offset, outputGuard);
+  const outputOnePixelPatched = hasExactGuardBefore(code, outputCtor.constructor.offset, onePixelOutputGuard);
+  const outputPreviousPatched = hasExactGuardBefore(code, outputCtor.constructor.offset, previousOutputGuard);
+  const outputHardPatched = hasExactGuardBefore(code, outputCtor.constructor.offset, hardOutputGuard);
+  const outputNoProductPatched = hasExactGuardBefore(code, outputCtor.constructor.offset, noProductOutputGuard);
+  const outputPushshortProductPatched = hasExactGuardBefore(code, outputCtor.constructor.offset, pushshortProductOutputGuard);
 
-  if (outputPatched) {
+  if (outputPatched && !outputCtor.forced) {
     return false;
   }
 
@@ -646,38 +739,64 @@ function patchMethod982(swfPath: string, verify: boolean): boolean {
   }
 
   const edits: Array<{ start: number; end: number; data: Buffer }> = [];
+  if (outputCtor.forced) {
+    edits.push(
+      {
+        start: outputCtor.width.offset,
+        end: outputCtor.width.offset + outputCtor.width.size,
+        data: assembleInserted([getLocal(11)]),
+      },
+      {
+        start: outputCtor.height.offset,
+        end: outputCtor.height.offset + outputCtor.height.size,
+        data: assembleInserted([getLocal(12)]),
+      },
+    );
+  }
   if (outputForcedPatched) {
     edits.push({
-      start: outputCtor.offset - forcedOutputFallback.length,
-      end: outputCtor.offset,
+      start: outputCtor.constructor.offset - forcedOutputFallback.length,
+      end: outputCtor.constructor.offset,
       data: outputGuard,
     });
   } else if (outputLegacyForcedPatched) {
     edits.push({
-      start: outputCtor.offset - legacyForcedOutputFallback.length,
-      end: outputCtor.offset,
+      start: outputCtor.constructor.offset - legacyForcedOutputFallback.length,
+      end: outputCtor.constructor.offset,
+      data: outputGuard,
+    });
+  } else if (outputOnePixelPatched) {
+    edits.push({
+      start: outputCtor.constructor.offset - onePixelOutputGuard.length,
+      end: outputCtor.constructor.offset,
+      data: outputGuard,
+    });
+  } else if (outputPreviousPatched) {
+    edits.push({
+      start: outputCtor.constructor.offset - previousOutputGuard.length,
+      end: outputCtor.constructor.offset,
       data: outputGuard,
     });
   } else if (outputHardPatched) {
     edits.push({
-      start: outputCtor.offset - hardOutputGuard.length,
-      end: outputCtor.offset,
+      start: outputCtor.constructor.offset - hardOutputGuard.length,
+      end: outputCtor.constructor.offset,
       data: outputGuard,
     });
   } else if (outputNoProductPatched) {
     edits.push({
-      start: outputCtor.offset - noProductOutputGuard.length,
-      end: outputCtor.offset,
+      start: outputCtor.constructor.offset - noProductOutputGuard.length,
+      end: outputCtor.constructor.offset,
       data: outputGuard,
     });
   } else if (outputPushshortProductPatched) {
     edits.push({
-      start: outputCtor.offset - pushshortProductOutputGuard.length,
-      end: outputCtor.offset,
+      start: outputCtor.constructor.offset - pushshortProductOutputGuard.length,
+      end: outputCtor.constructor.offset,
       data: outputGuard,
     });
   } else {
-    edits.push({ start: outputCtor.offset, end: outputCtor.offset, data: outputGuard });
+    edits.push({ start: outputCtor.constructor.offset, end: outputCtor.constructor.offset, data: outputGuard });
   }
 
   const patchedCode = applyCodeEditsAndAdjustBranches(code, instructions, edits);

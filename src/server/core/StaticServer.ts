@@ -33,9 +33,10 @@ export class StaticServer {
     private port: number;
     private contentDir: string;
     private host: string;
-    private selectedSwfBuffer: Buffer | null;
+    private selectedSwfCache: { key: string; buffer: Buffer } | null;
     private readonly flashVersion = 'cbq';
     private readonly gameVersion = 'cbp';
+    private readonly runtimeVersion = '20260517-class82-bitmapdata';
 
     constructor(
         port: number = Config.STATIC_PORT,
@@ -46,7 +47,7 @@ export class StaticServer {
         this.host = host;
         this.app = express();
         this.server = null;
-        this.selectedSwfBuffer = null;
+        this.selectedSwfCache = null;
         
         // Resolve against the server root so dist and ts-node use the same content directory.
         this.contentDir = resolveContentDir(relativeContentPath);
@@ -59,21 +60,22 @@ export class StaticServer {
     }
 
     private getSelectedSwfBuffer(): Buffer {
-        if (this.selectedSwfBuffer) {
-            return this.selectedSwfBuffer;
+        const mode = Config.MULTIPLAYER_MODE ? 'multiplayer' : 'local';
+        const swfPath = this.getSelectedSwfPath();
+        const stats = fs.statSync(swfPath);
+        const cacheKey = `${mode}:${swfPath}:${stats.mtimeMs}:${stats.size}`;
+        if (this.selectedSwfCache?.key === cacheKey) {
+            return this.selectedSwfCache.buffer;
         }
 
-        const mode = Config.MULTIPLAYER_MODE ? 'multiplayer' : 'local';
-        this.selectedSwfBuffer = buildDungeonBlitzSwfVariantBuffer(
-            this.getSelectedSwfPath(),
-            mode
-        );
+        const buffer = buildDungeonBlitzSwfVariantBuffer(swfPath, mode);
+        this.selectedSwfCache = { key: cacheKey, buffer };
         console.log(`[StaticServer] Prepared DungeonBlitz.swf variant for ${mode} mode.`);
-        return this.selectedSwfBuffer;
+        return buffer;
     }
 
     private getSelectedSwfUrl(): string {
-        return `/p/cbp/DungeonBlitz.swf?fv=${this.flashVersion}&gv=${this.gameVersion}`;
+        return `/p/cbp/DungeonBlitz.swf?fv=${this.flashVersion}&gv=${this.gameVersion}&rv=${this.runtimeVersion}`;
     }
 
     private normalizeLocale(value: unknown): 'en' | 'tr' | null {
