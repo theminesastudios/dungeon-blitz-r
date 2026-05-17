@@ -11,9 +11,16 @@ type DialogueTranslationOptions = {
     fallbackToGeneric?: boolean;
 };
 
+type DialogueTranslationTemplate = {
+    pattern: RegExp;
+    placeholders: string[];
+    translation: string;
+};
+
 export class DialogueTranslationLoader {
     private static readonly DEFAULT_LOCALE = 'en';
     private static readonly translationsByLocale: Map<string, Map<string, string>> = new Map();
+    private static readonly translationTemplatesByLocale: Map<string, DialogueTranslationTemplate[]> = new Map();
     private static loaded = false;
     private static readonly HELP_FALLBACKS = [
         'Yardim edin!',
@@ -82,13 +89,100 @@ export class DialogueTranslationLoader {
         );
     }
 
-    private static getTranslation(translations: Map<string, string>, text: string): string {
-        const key = this.normalizeKey(text);
-        const strippedKey = this.stripClientDirectives(key);
-        return translations.get(key) ?? translations.get(strippedKey) ?? '';
+    private static escapeRegex(value: string): string {
+        return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    private static translateCompositeText(translations: Map<string, string>, text: string): string {
+    private static compileTranslationTemplate(source: string, translation: string): DialogueTranslationTemplate | null {
+        const sourceKey = this.normalizeKey(source);
+        if (!/#(?:tn|tc)#/i.test(sourceKey) && !/[A-Za-z][A-Za-z'!.?]*\|[A-Za-z][A-Za-z'!.?]*/.test(sourceKey)) {
+            return null;
+        }
+
+        const placeholders: string[] = [];
+        const pieces = sourceKey.split(/(#(?:tn|tc)#|[A-Za-z][A-Za-z'!.?]*\|[A-Za-z][A-Za-z'!.?]*)/gi);
+        const pattern = pieces.map((piece) => {
+            if (/^#(?:tn|tc)#$/i.test(piece)) {
+                placeholders.push(piece.toLowerCase());
+                return '(.+?)';
+            }
+            if (/^[A-Za-z][A-Za-z'!.?]*\|[A-Za-z][A-Za-z'!.?]*$/.test(piece)) {
+                const [left, right] = piece.split('|');
+                return `(?:${this.escapeRegex(left)}|${this.escapeRegex(right)})`;
+            }
+
+            return this.escapeRegex(piece);
+        }).join('');
+
+        return {
+            pattern: new RegExp(`^${pattern}$`),
+            placeholders,
+            translation
+        };
+    }
+
+    private static addTranslationTemplate(
+        templates: DialogueTranslationTemplate[],
+        source: string,
+        translation: string
+    ): void {
+        const sources = [this.normalizeKey(source), this.stripClientDirectives(source)];
+        const seen = new Set<string>();
+
+        for (const sourceVariant of sources) {
+            if (!sourceVariant || seen.has(sourceVariant)) {
+                continue;
+            }
+            seen.add(sourceVariant);
+
+            const template = this.compileTranslationTemplate(sourceVariant, translation);
+            if (template) {
+                templates.push(template);
+            }
+        }
+    }
+
+    private static translateTemplateText(templates: DialogueTranslationTemplate[], text: string): string {
+        const keys = [this.normalizeKey(text), this.stripClientDirectives(text)];
+        const seen = new Set<string>();
+
+        for (const key of keys) {
+            if (!key || seen.has(key)) {
+                continue;
+            }
+            seen.add(key);
+
+            for (const template of templates) {
+                const match = template.pattern.exec(key);
+                if (!match) {
+                    continue;
+                }
+
+                const valuesByPlaceholder = new Map<string, string>();
+                template.placeholders.forEach((placeholder, index) => {
+                    if (!valuesByPlaceholder.has(placeholder)) {
+                        valuesByPlaceholder.set(placeholder, match[index + 1] ?? '');
+                    }
+                });
+
+                return template.translation.replace(/#(?:tn|tc)#/gi, (placeholder) =>
+                    valuesByPlaceholder.get(placeholder.toLowerCase()) ?? placeholder
+                );
+            }
+        }
+
+        return '';
+    }
+
+    private static getTranslation(locale: string, translations: Map<string, string>, text: string): string {
+        const key = this.normalizeKey(text);
+        const strippedKey = this.stripClientDirectives(key);
+        return translations.get(key) ??
+            translations.get(strippedKey) ??
+            this.translateTemplateText(this.translationTemplatesByLocale.get(locale) ?? [], text);
+    }
+
+    private static translateCompositeText(locale: string, translations: Map<string, string>, text: string): string {
         const parts = String(text ?? '').split(/(=@|=)/);
         if (parts.length <= 1) {
             return '';
@@ -100,7 +194,7 @@ export class DialogueTranslationLoader {
                 return part;
             }
 
-            const replacement = this.getTranslation(translations, part);
+            const replacement = this.getTranslation(locale, translations, part);
             if (!replacement) {
                 return part;
             }
@@ -144,9 +238,6 @@ export class DialogueTranslationLoader {
         if (/\b(warning|beware)\b/i.test(clean)) {
             return this.pickFallback(clean, this.WARNING_FALLBACKS);
         }
-        if (/\b(Meylour)\b/i.test(clean)) {
-            return 'Meylour icin!';
-        }
         if (/\b(Nephit)\b/i.test(clean)) {
             return 'Nephit icin!';
         }
@@ -171,6 +262,7 @@ export class DialogueTranslationLoader {
 
     static load(dataDir: string): void {
         this.translationsByLocale.clear();
+        this.translationTemplatesByLocale.clear();
         this.loaded = false;
 
         try {
@@ -184,6 +276,7 @@ export class DialogueTranslationLoader {
                 const locale = this.normalizeLocale(match[1]);
                 const raw = JSON.parse(fs.readFileSync(path.join(dataDir, file), 'utf8')) as RawDialogueTranslationFile;
                 const translations = new Map<string, string>();
+                const templates: DialogueTranslationTemplate[] = [];
 
                 for (const [source, translated] of Object.entries(raw?.translations ?? {})) {
                     const key = this.normalizeKey(source);
@@ -193,9 +286,11 @@ export class DialogueTranslationLoader {
                     }
 
                     translations.set(key, value);
+                    this.addTranslationTemplate(templates, key, value);
                 }
 
                 this.translationsByLocale.set(locale, translations);
+                this.translationTemplatesByLocale.set(locale, templates);
             }
 
             this.loaded = true;
@@ -220,7 +315,8 @@ export class DialogueTranslationLoader {
             return text;
         }
 
-        const translated = this.getTranslation(translations, text) || this.translateCompositeText(translations, text);
+        const translated = this.getTranslation(normalizedLocale, translations, text) ||
+            this.translateCompositeText(normalizedLocale, translations, text);
         if (!translated) {
             if (options.fallbackToGeneric) {
                 return normalizeDialogueTextForClient(
