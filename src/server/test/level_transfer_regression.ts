@@ -1159,6 +1159,108 @@ function testFelbridgeDreadGateOpensAfterCapstoneClaimedWithoutLevelRequirement(
     assert.equal(client.sentPackets.some((packet: { id: number }) => packet.id === 0x2E), true);
 }
 
+function testOtherDreadfoldGatesRequireCapstoneClaim(): void {
+    const dreadfoldEntries = [
+        { currentLevel: 'EmeraldGlades', targetLevel: 'EmeraldGladesHard' },
+        { currentLevel: 'ShazariDesert', targetLevel: 'ShazariDesertHard' },
+        { currentLevel: 'JadeCity', targetLevel: 'JadeCityHard' }
+    ];
+
+    for (const entry of dreadfoldEntries) {
+        const client = createClient();
+        client.currentLevel = entry.currentLevel;
+        client.clientEntID = 451;
+        client.character = createCharacter(`${entry.currentLevel}Runner`);
+        client.character.level = 50;
+
+        LevelHandler.handleRequestDoorState(client as never, createDoorStateRequestPacket(300));
+
+        const doorStatePacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x42);
+        assert.ok(doorStatePacket);
+        assert.deepEqual(parseDoorStatePacket(doorStatePacket.payload), {
+            doorId: 300,
+            state: 4,
+            target: entry.targetLevel
+        });
+
+        client.sentPackets.length = 0;
+        LevelHandler.handleOpenDoor(client as never, createOpenDoorPacket(300));
+
+        assert.equal(client.lastDoorId, -1);
+        assert.equal(client.lastDoorTargetLevel, '');
+        assert.equal(
+            client.sentPackets.some((packet: { id: number }) => packet.id === 0x2E),
+            false,
+            `${entry.currentLevel} dread gate must not start a transfer before Capstone is claimed`
+        );
+    }
+}
+
+function testOtherDreadfoldGatesOpenAfterCapstoneClaimedWithoutLevelRequirement(): void {
+    const dreadfoldEntries = [
+        { currentLevel: 'EmeraldGlades', targetLevel: 'EmeraldGladesHard' },
+        { currentLevel: 'ShazariDesert', targetLevel: 'ShazariDesertHard' },
+        { currentLevel: 'JadeCity', targetLevel: 'JadeCityHard' }
+    ];
+
+    for (const entry of dreadfoldEntries) {
+        const client = createClient();
+        client.currentLevel = entry.currentLevel;
+        client.character = createCharacter(`${entry.currentLevel}Runner`);
+        client.character.level = 1;
+        client.character.missions = {
+            [String(MissionID.Capstone)]: {
+                state: 3,
+                currCount: 1,
+                claimed: 1,
+                complete: 1
+            }
+        };
+
+        LevelHandler.handleRequestDoorState(client as never, createDoorStateRequestPacket(300));
+
+        const doorStatePacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x42);
+        assert.ok(doorStatePacket);
+        assert.deepEqual(parseDoorStatePacket(doorStatePacket.payload), {
+            doorId: 300,
+            state: 1,
+            target: entry.targetLevel
+        });
+
+        client.sentPackets.length = 0;
+        LevelHandler.handleOpenDoor(client as never, createOpenDoorPacket(300));
+
+        assert.equal(client.lastDoorId, 300);
+        assert.equal(client.lastDoorTargetLevel, entry.targetLevel);
+        assert.equal(client.sentPackets.some((packet: { id: number }) => packet.id === 0x2E), true);
+    }
+}
+
+function testDreadfoldReturnGatesStayOpenWithoutCapstone(): void {
+    const dreadfoldReturns = [
+        { currentLevel: 'BridgeTownHard', targetLevel: 'BridgeTown' },
+        { currentLevel: 'EmeraldGladesHard', targetLevel: 'EmeraldGlades' },
+        { currentLevel: 'ShazariDesertHard', targetLevel: 'ShazariDesert' },
+        { currentLevel: 'JadeCityHard', targetLevel: 'JadeCity' }
+    ];
+
+    for (const entry of dreadfoldReturns) {
+        const client = createClient();
+        client.currentLevel = entry.currentLevel;
+        client.character = createCharacter(`${entry.currentLevel}Runner`);
+
+        LevelHandler.handleRequestDoorState(client as never, createDoorStateRequestPacket(300));
+
+        const doorStatePacket = client.sentPackets.find((packet: { id: number }) => packet.id === 0x42);
+        assert.ok(doorStatePacket);
+        assert.deepEqual(parseDoorStatePacket(doorStatePacket.payload), {
+            doorId: 300,
+            state: 1,
+            target: entry.targetLevel
+        });
+    }
+}
+
 function testCompletedDungeonDoorShowsRepeatWithoutSavedTier(): void {
     const client = createClient();
     client.currentLevel = 'OldMineMountain';
@@ -2070,6 +2172,9 @@ async function main(): Promise<void> {
         testFelbridgeDreadGateRequiresCapstoneClaim();
         testFelbridgeDreadGateReadyToTurnInDoesNotUnlock();
         testFelbridgeDreadGateOpensAfterCapstoneClaimedWithoutLevelRequirement();
+        testOtherDreadfoldGatesRequireCapstoneClaim();
+        testOtherDreadfoldGatesOpenAfterCapstoneClaimedWithoutLevelRequirement();
+        testDreadfoldReturnGatesStayOpenWithoutCapstone();
         testCompletedDungeonDoorShowsRepeatWithoutSavedTier();
         testUnlockedForgottenForgeDoorOpensWithoutPersistedMission();
         testUnearthingThePastDoorRequiresAcceptedSigginMission();
