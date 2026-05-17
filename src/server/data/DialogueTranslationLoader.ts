@@ -95,16 +95,20 @@ export class DialogueTranslationLoader {
 
     private static compileTranslationTemplate(source: string, translation: string): DialogueTranslationTemplate | null {
         const sourceKey = this.normalizeKey(source);
-        if (!/#(?:tn|tc)#/i.test(sourceKey)) {
+        if (!/#(?:tn|tc)#/i.test(sourceKey) && !/[A-Za-z][A-Za-z'!.?]*\|[A-Za-z][A-Za-z'!.?]*/.test(sourceKey)) {
             return null;
         }
 
         const placeholders: string[] = [];
-        const pieces = sourceKey.split(/(#(?:tn|tc)#)/gi);
+        const pieces = sourceKey.split(/(#(?:tn|tc)#|[A-Za-z][A-Za-z'!.?]*\|[A-Za-z][A-Za-z'!.?]*)/gi);
         const pattern = pieces.map((piece) => {
             if (/^#(?:tn|tc)#$/i.test(piece)) {
                 placeholders.push(piece.toLowerCase());
                 return '(.+?)';
+            }
+            if (/^[A-Za-z][A-Za-z'!.?]*\|[A-Za-z][A-Za-z'!.?]*$/.test(piece)) {
+                const [left, right] = piece.split('|');
+                return `(?:${this.escapeRegex(left)}|${this.escapeRegex(right)})`;
             }
 
             return this.escapeRegex(piece);

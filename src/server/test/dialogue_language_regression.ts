@@ -569,6 +569,52 @@ function testBridgeTownMissionsLiveSkitSegmentsUseTranslations(): void {
     );
 }
 
+function testBlackRoseMireLiveSkitSegmentsUseTranslations(): void {
+    const dataDir = path.resolve(__dirname, '../data');
+    DialogueTranslationLoader.load(dataDir);
+
+    const client = createFakeClient();
+    client.character.dialogueLanguage = 'tr';
+    client.token = 51010;
+    client.currentLevel = 'SRN_Mission4';
+    client.levelInstanceId = '';
+    client.playerSpawned = true;
+    client.entities.set(704, {
+        id: 704,
+        name: 'BlackRoseMireEnemy',
+        team: EntityTeam.ENEMY
+    });
+
+    const liveSkitSegments: Array<[string, string]> = [
+        ['You humans will be slaves once again...', 'Siz insanlar yine kole olacaksiniz...'],
+        ['She will make a nice snack for the herd.', 'Suru icin guzel bir atistirmalik olacak.'],
+        ['Kill her !', 'Oldurun onu!'],
+        ["She's here to steal the Legions wages!", 'Lejyonun maaslarini calmaya gelmis!'],
+        ['You shall not disturb the Vizier further Paladin.', 'Veziri daha fazla rahatsiz etmeyeceksin Paladin.'],
+        ['Protect the Seedlings!', 'Fideleri koruyun!'],
+        ['Tuatara! To Arms!', 'Tuatara! Silah basina!'],
+        ['The road\'s clear, now soldiers from Wolf\'s End can join me...', "Yol acildi, artik Kurtlarin Sonu'ndan askerler bana katilabilir..."]
+    ];
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    try {
+        for (const [source] of liveSkitSegments) {
+            SocialHandler.handleStartSkit(
+                client as never,
+                createStartSkitPacket(704, source)
+            );
+        }
+    } finally {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+
+    const thoughts = client.sentPackets
+        .filter((entry) => entry.id === 0x76)
+        .map((entry) => decodeRoomThought(entry.payload));
+
+    assert.deepEqual(thoughts.map((thought) => thought.text), liveSkitSegments.map(([, expected]) => expected));
+}
+
 function testCapstoneRoomDialogueTranslationsCoverExtractedSource(): void {
     const dataDir = path.resolve(__dirname, '../data');
     const translations = JSON.parse(fs.readFileSync(path.join(dataDir, 'DialogueTranslations.tr.json'), 'utf8')) as {
@@ -865,6 +911,7 @@ async function main(): Promise<void> {
     testFelbridgeMeylourRoomDialogueUsesExactTranslations();
     testFelbridgeMeylourLiveSkitSegmentsUseTranslations();
     testBridgeTownMissionsLiveSkitSegmentsUseTranslations();
+    testBlackRoseMireLiveSkitSegmentsUseTranslations();
     testCapstoneRoomDialogueTranslationsCoverExtractedSource();
     testFelbridgeMeylourRoomDialogueTranslationsCoverExtractedSource();
     testBridgeTownMissionsRoomDialogueTranslationsCoverExtractedSource();
