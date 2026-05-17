@@ -10,7 +10,7 @@ function testStaticServerServesSingleSwfByDefault(): void {
     const selectedSwfUrl = (server as any).getSelectedSwfUrl() as string;
 
     assert.equal(path.basename(selectedSwfPath), 'DungeonBlitz.swf');
-    assert.equal(selectedSwfUrl, '/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp&rv=20260517-superanim982-clean');
+    assert.equal(selectedSwfUrl, '/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp&rv=20260517-door-label-door-target');
     assert.equal(fs.existsSync(selectedSwfPath), true);
 }
 

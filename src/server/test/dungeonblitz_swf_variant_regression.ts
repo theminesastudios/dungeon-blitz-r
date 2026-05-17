@@ -16,7 +16,7 @@ import type { Instruction } from '../scripts/swfPatchUtils';
 
 const BASE_SWF_PATH = path.resolve(__dirname, '../../client/content/localhost/p/cbp/DungeonBlitz.swf');
 const MULTIPLAYER_HOST = Config.MULTIPLAYER_HOST;
-const SWF_RUNTIME_VERSION = '20260517-superanim982-clean';
+const SWF_RUNTIME_VERSION = '20260517-door-label-door-target';
 const LOCAL_REFRESH_URL = `http://localhost:8000/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp&rv=${SWF_RUNTIME_VERSION}`;
 const MULTIPLAYER_REFRESH_URL = `http://${MULTIPLAYER_HOST}/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp&rv=${SWF_RUNTIME_VERSION}`;
 const LEGACY_REFRESH_URL = '/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp';
@@ -412,6 +412,48 @@ function assertSuperAnimMethod806FullscreenBitmapData(swfPath: string): void {
     );
 }
 
+function assertDoorLabelPatchBranchTargets(swfPath: string): void {
+    const { abc, instructions } = getInstanceMethodCode(swfPath, 'Entity', 'method_579');
+    const byOffset = new Map(instructions.map((instruction) => [instruction.offset, instruction]));
+    const lastInstruction = instructions[instructions.length - 1];
+    assert.ok(lastInstruction, 'Entity.method_579 must contain bytecode');
+    const branchTargets = instructions
+        .filter((instruction) => instruction.opcode >= 0x0c && instruction.opcode <= 0x1a)
+        .map((instruction) => instruction.offset + instruction.size + instruction.operands[0][1]);
+
+    assert.equal(
+        branchTargets.every((target) => byOffset.has(target) || target === lastInstruction.offset + lastInstruction.size),
+        true,
+        'Entity.method_579 must not contain invalid branch targets'
+    );
+
+    for (const legacyEntryOffset of [1150, 1155, 1168, 1181]) {
+        assert.equal(
+            byOffset.get(legacyEntryOffset)?.opcode,
+            0x09,
+            `Entity.method_579 legacy branch target ${legacyEntryOffset} must stay label-aligned`
+        );
+    }
+
+    const local1PropertyReads = instructions
+        .filter((instruction, index) =>
+            instructions[index - 1]?.opcode === 0xd1 &&
+            instruction.opcode === 0x66
+        )
+        .map((instruction) => u30OperandName(instruction, abc.multinameNames));
+
+    assert.equal(
+        local1PropertyReads.includes('var_929'),
+        false,
+        'Entity.method_579 door label patch must not read missing Door.var_929'
+    );
+    assert.equal(
+        local1PropertyReads.includes('var_1260'),
+        true,
+        'Entity.method_579 door label patch must read Door.var_1260 target names'
+    );
+}
+
 function assertSuperAnimMethod982BitmapDataGuard(swfPath: string): void {
     const { abc, instructions } = getStaticMethodCode(swfPath, 'SuperAnimData', 'method_982');
     const widthLocal = 11;
@@ -537,6 +579,14 @@ function testBaseAndLocalVariantKeepGameMethod1947SafeScreenBitmapData(): void {
     });
 }
 
+function testBaseAndLocalVariantKeepDoorLabelPatchBranchTargets(): void {
+    assertDoorLabelPatchBranchTargets(BASE_SWF_PATH);
+    const buffer = buildDungeonBlitzSwfVariantBuffer(BASE_SWF_PATH, 'local');
+    withTempSwf(buffer, (tempPath) => {
+        assertDoorLabelPatchBranchTargets(tempPath);
+    });
+}
+
 function main(): void {
     testLocalVariantUsesLocalhostAndPort8000();
     testMultiplayerVariantUsesRemoteHostAndDefaultAssetPath();
@@ -547,6 +597,7 @@ function main(): void {
     testBaseAndLocalVariantKeepSuperAnimMethod806FullscreenBitmapData();
     testBaseAndLocalVariantKeepSuperAnimMethod982BitmapDataGuard();
     testBaseAndLocalVariantKeepGameMethod1947SafeScreenBitmapData();
+    testBaseAndLocalVariantKeepDoorLabelPatchBranchTargets();
     console.log('dungeonblitz_swf_variant_regression: ok');
 }
 
