@@ -1239,6 +1239,98 @@ function testCastleHockeRoomDialogueTranslationsCoverExtractedSource(): void {
     assert.deepEqual(missing, [], 'Castle Hocke room dialogue should have Turkish translations');
 }
 
+function looksLikeStormshardRoomDialogue(value: string): boolean {
+    if (!/[A-Za-z]{2,}/.test(value)) {
+        return false;
+    }
+    if (/^(?:am_|a_|symbol|instance|Symbol)/.test(value)) {
+        return false;
+    }
+    if (/^(?:default|neutral|enemy|Hard|Normal|Run|Bolster|Loop|Idle|Spawn|Windup|HitReact|BackToIdle|PoofInternal|HumanFireNova)$/.test(value)) {
+        return false;
+    }
+    if (/^(?:Gold_|Bronze|Silver|ImperialChanneling|ImperialHealing|OasisTeleportEffectLarge|Untouchable)$/.test(value)) {
+        return false;
+    }
+    if (/^(?:\d+\s+)?(?:Camera|Shake|End|SpawnCue|RemoveCue|QuickFirePower|FirePower|Revive|Collision(?:On|Off)?|SetLevelMoment|PlaySound|Sound|SetMusic)\b/.test(value) && !/[.!?]|:|@/.test(value)) {
+        return false;
+    }
+
+    return /[.!?]|:|@|#|\b(?:kill|die|death|Meylour|Mountain|Living Mountain|Stormshard|Storm|Uthor|forge|Forge|Armory|armory|gnole|gnoles|Gnole|Cyclops|cyclops|Ashen|Dryad|dryad|dragon|Dragon|Grail|Grahls|Magma|fire|ash|stone|rock|hulk|garden|voice|Silencing Blade|blade|weapon|weapons|sword|beast|beasts|human|humans|mortal|intruder|defiler|sacrifice|sacrifices|burn|flame|flames|embers|lava|heart|blood|veins|cave|bones|prey|master|Titan|titan|Mogul|Lord|Baron|Hocke|Titus|you|your|I|we|they|he|she|The|And|No|What|Where|Why|How|For|All|By|Prepare|Dangerous|Once|This|That|Such|A|With|Now|Come|Praise|Protect|Smite|Fight|Destroy|Defend|Attack)\b/i.test(value);
+}
+
+function addStormshardRoomDialogueCandidate(raw: string, out: Set<string>): void {
+    const value = unescapeActionScriptString(raw).trim();
+    if (!looksLikeStormshardRoomDialogue(value)) {
+        return;
+    }
+
+    for (const part of value.split(/=@|=|:/)) {
+        const clean = part
+            .replace(/^[@:]+/, '')
+            .replace(/^\d+\s+[A-Za-z0-9_]+\s+/, '')
+            .replace(/^(?:\s*<[^>]+>\s*)+/, '')
+            .replace(/^\^t\s*/, '')
+            .trim()
+            .replace(/\s+/g, ' ');
+        if (looksLikeStormshardRoomDialogue(clean)) {
+            out.add(clean);
+        }
+    }
+}
+
+function collectStormshardScriptFiles(root: string, out: string[] = []): string[] {
+    for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+        const entryPath = path.join(root, entry.name);
+        if (entry.isDirectory()) {
+            collectStormshardScriptFiles(entryPath, out);
+            continue;
+        }
+        if (!entry.name.endsWith('.as')) {
+            continue;
+        }
+
+        const relative = path.relative(path.resolve(__dirname, '../../../build/npc-dialogue-level-scripts/scripts'), entryPath).split(path.sep).join('/');
+        if (/^(?:a_Room_(?:SSM(?:\d+|_Armory|_Forge).*|OMM\d+_.*)|LevelsOMM_fla\/.*)\.as$/.test(relative)) {
+            out.push(entryPath);
+        }
+    }
+
+    return out;
+}
+
+function testStormshardRoomDialogueTranslationsCoverExtractedSource(): void {
+    const dataDir = path.resolve(__dirname, '../data');
+    const scriptRoot = path.resolve(__dirname, '../../../build/npc-dialogue-level-scripts/scripts');
+    if (!fs.existsSync(scriptRoot)) {
+        return;
+    }
+
+    const translations = JSON.parse(fs.readFileSync(path.join(dataDir, 'DialogueTranslations.tr.json'), 'utf8')) as {
+        translations?: Record<string, string>;
+    };
+    const required = new Set<string>();
+
+    for (const filePath of collectStormshardScriptFiles(scriptRoot)) {
+        const source = fs.readFileSync(filePath, 'utf8');
+        for (const match of source.matchAll(/\.(sayOn(?:Activate|Alert|Bloodied|Death|Interact|Spawn))\s*=\s*"((?:\\.|[^"\\])*)"/g)) {
+            addStormshardRoomDialogueCandidate(match[2] ?? '', required);
+        }
+        for (const match of source.matchAll(/(?:cutScene\w+|Script_\w+)\s*=\s*\[((?:.|\n)*?)\];/g)) {
+            for (const stringMatch of (match[1] ?? '').matchAll(/"((?:\\.|[^"\\])*)"/g)) {
+                addStormshardRoomDialogueCandidate(stringMatch[1] ?? '', required);
+            }
+        }
+        for (const match of source.matchAll(/\.Skit\("((?:\\.|[^"\\])*)"\)/g)) {
+            addStormshardRoomDialogueCandidate(match[1] ?? '', required);
+        }
+    }
+
+    const missing = [...required].filter((line) => !String(translations.translations?.[line] ?? '').trim()).sort();
+    assert.ok(required.size > 420, 'Stormshard room dialogue inventory should include all dungeon scripts');
+    assert.deepEqual(missing, [], 'Stormshard room dialogue should have Turkish translations');
+}
+
 async function main(): Promise<void> {
     await testLanguageCommandSwitchesToTurkishWithoutBroadcasting();
     await testLanguageCommandSwitchesBackToEnglish();
@@ -1264,6 +1356,7 @@ async function main(): Promise<void> {
     testValhavenRoomDialogueTranslationsCoverExtractedSource();
     testShazariRoomDialogueTranslationsCoverExtractedSource();
     testCastleHockeRoomDialogueTranslationsCoverExtractedSource();
+    testStormshardRoomDialogueTranslationsCoverExtractedSource();
     console.log('dialogue_language_regression: ok');
 }
 
