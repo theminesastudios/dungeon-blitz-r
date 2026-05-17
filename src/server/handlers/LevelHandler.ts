@@ -85,6 +85,7 @@ export class LevelHandler {
     private static readonly FELBRIDGE_DREAD_GATE_LOCKED_MESSAGE =
         '^tA powerful magic seals this entrance.=^tI still need to learn more about the Sleeping Lands.';
     private static readonly LOCKED_DUNGEON_ENTRY_MESSAGE = "^tI haven't unlocked this dungeon yet.";
+    private static readonly VALHAVEN_GATE_DOOR_ID = 2;
     private static readonly GOBLIN_RIVER_INITIAL_PROGRESS = 11;
     private static readonly TUTORIAL_DUNGEON_INITIAL_PROGRESS = 11;
     private static readonly KEEP_TUTORIAL_HELPER_RESPAWN_DELAY_MS = 1200;
@@ -2766,7 +2767,34 @@ export class LevelHandler {
             return arachnaeConnectorTarget;
         }
 
+        const valhavenGatewayTarget = LevelHandler.resolveValhavenGatewayDoorTarget(client, currentLevel, doorId);
+        if (valhavenGatewayTarget) {
+            return valhavenGatewayTarget;
+        }
+
         return LevelConfig.getDoorTarget(currentLevel, doorId);
+    }
+
+    private static resolveValhavenGatewayDoorTarget(client: Client, currentLevel: string, doorId: number): string | null {
+        if (doorId !== LevelHandler.VALHAVEN_GATE_DOOR_ID) {
+            return null;
+        }
+
+        if (
+            currentLevel === 'ShazariDesert' &&
+            LevelHandler.getMissionState(client, MissionID.HeadToValhaven) >= LevelHandler.MISSION_READY_TO_TURN_IN
+        ) {
+            return 'JadeCity';
+        }
+
+        if (
+            currentLevel === 'ShazariDesertHard' &&
+            LevelHandler.getMissionState(client, MissionID.HeadToValhavenHard) >= LevelHandler.MISSION_READY_TO_TURN_IN
+        ) {
+            return 'JadeCityHard';
+        }
+
+        return null;
     }
 
     private static resolveArachnaeConnectorDoorTarget(client: Client, currentLevel: string, doorId: number): string | null {

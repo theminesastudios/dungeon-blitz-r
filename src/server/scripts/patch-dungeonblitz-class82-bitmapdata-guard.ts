@@ -26,8 +26,11 @@ const DEFAULT_SWF = path.resolve(
   "cbp",
   "DungeonBlitz.swf",
 );
-const CLASS82_TARGET_TOTAL_PIXELS = 16777215;
-const CLASS82_TOO_LOW_TOTAL_PIXELS = 262144;
+const CLASS82_TARGET_TOTAL_PIXELS = 4194304;
+const CLASS82_LEGACY_TOTAL_PIXEL_GUARDS = [
+  16777215,
+  262144,
+];
 const SCALE_DIVISOR_PATCH = Buffer.from([0x24, 0x02, 0xa3]);
 
 type Operand = [Instruction["operands"][number][0], number];
@@ -300,6 +303,11 @@ function findRequiredInt(abc: ReturnType<typeof parseAbc>, value: number): numbe
   return index;
 }
 
+function findOptionalInt(abc: ReturnType<typeof parseAbc>, value: number): number | null {
+  const index = abc.intValues.findIndex((candidate) => candidate === value);
+  return index < 0 ? null : index;
+}
+
 function findBitmapDataConstructor(
   instructions: Instruction[],
   abc: ReturnType<typeof parseAbc>,
@@ -432,9 +440,11 @@ function patchSwf(swfPath: string, verify: boolean): void {
   const constructor = findBitmapDataConstructor(instructions, abc, 8, 9);
   const scaleInsertOffset = findScaleAssignmentInsertOffset(instructions, abc);
   const targetTotalPixelsIntIndex = findRequiredInt(abc, CLASS82_TARGET_TOTAL_PIXELS);
-  const tooLowTotalPixelsIntIndex = findRequiredInt(abc, CLASS82_TOO_LOW_TOTAL_PIXELS);
   const guard = assembleInserted(dimensionGuard(8, 9, targetTotalPixelsIntIndex));
-  const tooLowGuard = assembleInserted(dimensionGuard(8, 9, tooLowTotalPixelsIntIndex));
+  const legacyGuards = CLASS82_LEGACY_TOTAL_PIXEL_GUARDS
+    .map((totalPixels) => findOptionalInt(abc, totalPixels))
+    .filter((index): index is number => index !== null)
+    .map((index) => assembleInserted(dimensionGuard(8, 9, index)));
   const hasGuard = hasExactGuardBefore(code, constructor.offset, guard);
   const hasScalePatch = hasScaleDivisorPatch(code, scaleInsertOffset);
 
@@ -452,9 +462,10 @@ function patchSwf(swfPath: string, verify: boolean): void {
     edits.push({ start: scaleInsertOffset, end: scaleInsertOffset, data: SCALE_DIVISOR_PATCH });
   }
   if (!hasGuard) {
+    const legacyGuard = legacyGuards.find((candidate) => hasExactGuardBefore(code, constructor.offset, candidate));
     edits.push(
-      hasExactGuardBefore(code, constructor.offset, tooLowGuard)
-        ? { start: constructor.offset - tooLowGuard.length, end: constructor.offset, data: guard }
+      legacyGuard
+        ? { start: constructor.offset - legacyGuard.length, end: constructor.offset, data: guard }
         : { start: constructor.offset, end: constructor.offset, data: guard },
     );
   }

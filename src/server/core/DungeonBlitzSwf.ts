@@ -17,7 +17,7 @@ const LOCAL_HOST = 'localhost';
 const REMOTE_HOST = Config.MULTIPLAYER_HOST;
 const LOCAL_ASSET_PATH = ':8000/p/';
 const REMOTE_ASSET_PATH = '/p/';
-const SWF_RUNTIME_VERSION = '20260517-superanim982-scaled-cache-clean';
+const SWF_RUNTIME_VERSION = '20260517-class82-scene-cache-safe';
 const LOCAL_REFRESH_URL = `http://localhost:8000/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp&rv=${SWF_RUNTIME_VERSION}`;
 const LOCAL_REFRESH_URL_LEGACY = 'http://localhost/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp';
 const REMOTE_REFRESH_URL = `http://${REMOTE_HOST}/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp&rv=${SWF_RUNTIME_VERSION}`;

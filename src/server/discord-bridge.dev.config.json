@@ -3,6 +3,7 @@
   "port": 47631,
   "presenceUrl": "http://127.0.0.1:8000/api/presence/self",
   "joinUrl": "http://127.0.0.1:8000/api/presence/discord-join",
+  "playGameUrl": "https://theminesa.studio/dungeon-blitz-r",
   "characterName": "",
   "pollMs": 4000,
   "largeImageText": "Dungeon Blitz R",

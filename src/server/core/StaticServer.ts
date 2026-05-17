@@ -36,7 +36,7 @@ export class StaticServer {
     private selectedSwfCache: { key: string; buffer: Buffer } | null;
     private readonly flashVersion = 'cbq';
     private readonly gameVersion = 'cbp';
-    private readonly runtimeVersion = '20260517-superanim982-scaled-cache-clean';
+    private readonly runtimeVersion = '20260517-class82-scene-cache-safe';
 
     constructor(
         port: number = Config.STATIC_PORT,

@@ -79,12 +79,45 @@ function testCemeteryHillHardPresenceUsesCemeteryImage(): void {
     assert.equal(snapshot.areaKey, 'cemeteryhill');
 }
 
+function testJadeCityPresenceUsesValhavenName(): void {
+    const snapshot = (PresenceService as any).toSnapshot(
+        createFakeClient('JadeCity')
+    );
+
+    assert.ok(snapshot, 'presence snapshot should resolve for Valhaven clients');
+    assert.equal(snapshot.levelName, 'Valhaven');
+    assert.equal(snapshot.details, 'Valhaven');
+}
+
+function testJadeCityHardPresenceUsesValhavenName(): void {
+    const snapshot = (PresenceService as any).toSnapshot(
+        createFakeClient('JadeCityHard')
+    );
+
+    assert.ok(snapshot, 'presence snapshot should resolve for hard Valhaven clients');
+    assert.equal(snapshot.levelName, 'Valhaven (Hard)');
+    assert.equal(snapshot.details, 'Valhaven (Hard)');
+}
+
+function testJadeCityMissionFallbackUsesValhavenPrefix(): void {
+    const snapshot = (PresenceService as any).toSnapshot(
+        createFakeClient('JC_Mission99')
+    );
+
+    assert.ok(snapshot, 'presence snapshot should resolve for Valhaven mission fallback clients');
+    assert.equal(snapshot.levelName, 'Valhaven Mission 99');
+    assert.equal(snapshot.details, 'Valhaven Mission 99');
+}
+
 function main(): void {
     ensureDataLoaded();
     testTutorialDungeonUsesMissionDisplayNameAndStatus();
     testHomePresenceUsesHomeLabelAndStatus();
     testCemeteryHillPresenceUsesCemeteryImage();
     testCemeteryHillHardPresenceUsesCemeteryImage();
+    testJadeCityPresenceUsesValhavenName();
+    testJadeCityHardPresenceUsesValhavenName();
+    testJadeCityMissionFallbackUsesValhavenPrefix();
     console.log('presence_service_regression: ok');
 }
 

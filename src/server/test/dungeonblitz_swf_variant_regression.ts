@@ -27,11 +27,12 @@ function resolveBaseSwfPath(): string {
 
 const BASE_SWF_PATH = resolveBaseSwfPath();
 const MULTIPLAYER_HOST = Config.MULTIPLAYER_HOST;
-const SWF_RUNTIME_VERSION = '20260517-superanim982-scaled-cache-clean';
+const SWF_RUNTIME_VERSION = '20260517-class82-scene-cache-safe';
 const LOCAL_REFRESH_URL = `http://localhost:8000/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp&rv=${SWF_RUNTIME_VERSION}`;
 const MULTIPLAYER_REFRESH_URL = `http://${MULTIPLAYER_HOST}/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp&rv=${SWF_RUNTIME_VERSION}`;
 const LEGACY_REFRESH_URL = '/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp';
 const BITMAPDATA_TOTAL_PIXELS = 16777215;
+const CLASS82_SCENE_CACHE_SAFE_PIXELS = 4194304;
 const SUPERANIM_METHOD200_SAFE_PIXELS = 65536;
 const SUPERANIM_METHOD982_SAFE_PIXELS = 4194304;
 const SUPERANIM_METHOD982_SAFE_AXIS = 8191;
@@ -265,12 +266,12 @@ function assertClass82BitmapDataGuardWindow(swfPath: string): void {
                 guardWindow[index + 2]?.opcode === 0xa2 &&
                 guardWindow[index + 3]?.opcode === 0x2d &&
                 pushIntOperand?.[0] === 'u30' &&
-                abc.intValues[pushIntOperand[1]] === BITMAPDATA_TOTAL_PIXELS &&
+                abc.intValues[pushIntOperand[1]] === CLASS82_SCENE_CACHE_SAFE_PIXELS &&
                 guardWindow[index + 4]?.opcode === 0xaf
             );
         }),
         true,
-        'class_82.method_193 must enforce the BitmapData total pixel limit'
+        'class_82.method_193 must enforce the scene-cache BitmapData safe pixel limit'
     );
     assert.equal(
         instructions.some((instruction, index) =>

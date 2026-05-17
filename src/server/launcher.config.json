@@ -2,6 +2,7 @@
   "clientUrl": "http://127.0.0.1/",
   "presenceUrl": "http://127.0.0.1/api/presence/discord-target",
   "joinUrl": "http://127.0.0.1/api/presence/discord-join",
+  "playGameUrl": "https://theminesa.studio/dungeon-blitz-r",
   "characterName": "",
   "clientCommandMac": [],
   "clientCommandWindows": [],

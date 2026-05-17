@@ -35,6 +35,7 @@ function updateBridgeConfig(launcherConfig) {
     const bridgeConfig = readJson(BRIDGE_CONFIG_PATH);
     bridgeConfig.presenceUrl = String(launcherConfig.presenceUrl || bridgeConfig.presenceUrl || '').trim();
     bridgeConfig.joinUrl = String(launcherConfig.joinUrl || bridgeConfig.joinUrl || '').trim();
+    bridgeConfig.playGameUrl = String(launcherConfig.playGameUrl || bridgeConfig.playGameUrl || '').trim();
     bridgeConfig.characterName = String(launcherConfig.characterName || bridgeConfig.characterName || '').trim();
     writeJson(BRIDGE_CONFIG_PATH, bridgeConfig);
 }

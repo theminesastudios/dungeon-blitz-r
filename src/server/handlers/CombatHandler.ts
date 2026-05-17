@@ -87,6 +87,14 @@ export class CombatHandler {
     private static readonly HOSTILE_OUT_OF_COMBAT_REGEN_INTERVAL_MS = 500;
     private static readonly PLAYER_REGEN_RATE = 0.1;
     private static readonly HOSTILE_REGEN_RATE = 0.01;
+    private static readonly POWER_HIT_CLIENT_AUTHORITY_BOSS_LEVELS = new Set([
+        'JC_Mission1',
+        'JC_Mission1Hard'
+    ]);
+    private static readonly POWER_HIT_CLIENT_AUTHORITY_BOSS_NAMES = new Set([
+        'ImperialChampion',
+        'ImperialChampionHard'
+    ]);
     private static readonly HOSTILE_BASE_HITPOINTS = [
         100, 4920, 5580, 6020, 6520, 7040, 7580, 8180, 8800, 9480, 10180, 10960, 11740, 12640, 13540, 14540,
         15560, 16660, 17860, 19120, 20440, 21860, 23360, 24960, 26680, 28460, 30380, 32420, 34580, 36900, 39320,
@@ -457,6 +465,20 @@ export class CombatHandler {
         }
 
         return normalizedHp;
+    }
+
+    private static shouldDeferPowerHitKillToClient(levelScope: string, entity: any): boolean {
+        const levelName = getScopeLevelName(levelScope);
+        if (
+            !levelName ||
+            !CombatHandler.POWER_HIT_CLIENT_AUTHORITY_BOSS_LEVELS.has(levelName) ||
+            !Boolean(entity?.clientSpawned)
+        ) {
+            return false;
+        }
+
+        const entityName = String(entity?.name ?? entity?.EntName ?? entity?.entName ?? '').trim();
+        return CombatHandler.POWER_HIT_CLIENT_AUTHORITY_BOSS_NAMES.has(entityName);
     }
 
     private static noteCombatInteraction(levelScope: string, sourceId: number, targetId: number, fallbackClient: Client, atMs: number = Date.now()): void {
@@ -1335,12 +1357,15 @@ export class CombatHandler {
         const wasAlive = !Boolean(entity.dead) &&
             Number(entity.entState ?? EntityState.ACTIVE) !== EntityState.DEAD &&
             healthState.currentHp > 0;
+        const authoritativeKill =
+            healthState.authoritativeKill &&
+            !CombatHandler.shouldDeferPowerHitKillToClient(levelName, entity);
         const requestedDamage = Math.max(0, Math.round(damage));
-        const minHpAfterHit = healthState.authoritativeKill ? 0 : 1;
+        const minHpAfterHit = authoritativeKill ? 0 : 1;
         const appliedDamage = Math.max(0, Math.min(requestedDamage, healthState.currentHp - minHpAfterHit));
         const nextHp = Math.max(minHpAfterHit, healthState.currentHp - appliedDamage);
 
-        CombatHandler.applyNpcHealthState(entity, healthState.maxHp, nextHp, healthState.authoritativeKill);
+        CombatHandler.applyNpcHealthState(entity, healthState.maxHp, nextHp, authoritativeKill);
 
         if (usesSharedDungeonProgress(getScopeLevelName(levelName))) {
             noteSharedDungeonHostileState(levelName, targetId, entity);
@@ -1349,7 +1374,7 @@ export class CombatHandler {
 
         return {
             entity,
-            killed: healthState.authoritativeKill &&
+            killed: authoritativeKill &&
                 wasAlive &&
                 (Boolean(entity.dead) || Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD)
         };

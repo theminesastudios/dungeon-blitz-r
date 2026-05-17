@@ -92,6 +92,8 @@ export class MissionHandler {
         'AC_Mission6Hard',
         'CH_Mission1',
         'CH_Mission1Hard',
+        'JC_Mission1',
+        'JC_Mission1Hard',
         'SD_Mission3',
         'SD_Mission3Hard',
         'SRN_Mission4',
@@ -100,6 +102,8 @@ export class MissionHandler {
     private static readonly REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL: Record<string, ReadonlySet<string>> = {
         AC_Mission6: new Set(['NephitLargeEye']),
         AC_Mission6Hard: new Set(['NephitLargeEyeHard']),
+        JC_Mission1: new Set(['ImperialChampion', 'ImperialChampionHard']),
+        JC_Mission1Hard: new Set(['ImperialChampion', 'ImperialChampionHard']),
         SD_Mission3: new Set(['OutlanderWyrm']),
         SD_Mission3Hard: new Set(['OutlanderWyrmHard']),
         SRN_Mission4: new Set(['WyrmGreat']),
@@ -115,6 +119,8 @@ export class MissionHandler {
     private static readonly DUNGEONS_WITH_POST_DEATH_BOSS_CUTSCENE = new Set([
         'AC_Mission6',
         'AC_Mission6Hard',
+        'JC_Mission1',
+        'JC_Mission1Hard',
         'GoblinRiverDungeon',
         'GoblinRiverDungeonHard',
         'GhostBossDungeon',
@@ -1298,6 +1304,11 @@ export class MissionHandler {
                     didMutate = true;
                 }
 
+                const valhavenFollowupMissionId = MissionHandler.primeWelcomePartyFollowup(client, completedMissionId);
+                if (valhavenFollowupMissionId > 0) {
+                    didMutate = true;
+                }
+
                 if (
                     currentLevel === 'CraftTownTutorial' &&
                     completedMissionId === MissionID.ClearYourHouse &&
@@ -1993,6 +2004,38 @@ export class MissionHandler {
         );
         MissionHandler.sendMissionAdded(client, MissionID.FindAnnasFather, initialState);
         return MissionID.FindAnnasFather;
+    }
+
+    private static primeWelcomePartyFollowup(client: Client, completedMissionId: number): number {
+        if (!client.character) {
+            return 0;
+        }
+
+        const followupMissionId =
+            completedMissionId === MissionID.HeadToValhaven
+                ? MissionID.MeetWithOdin
+                : completedMissionId === MissionID.HeadToValhavenHard
+                    ? MissionID.MeetWithOdinHard
+                    : 0;
+        if (!followupMissionId) {
+            return 0;
+        }
+
+        if (MissionHandler.getMissionState(client.character, followupMissionId) !== MissionHandler.MISSION_NOT_STARTED) {
+            return 0;
+        }
+
+        const missionDef = MissionLoader.getMissionDef(followupMissionId);
+        if (!missionDef || !MissionHandler.canStartMission(client.character, missionDef)) {
+            return 0;
+        }
+
+        const initialState = MissionHandler.getInitialMissionState(missionDef);
+        MissionHandler.setMissionState(client.character, followupMissionId, initialState, missionDef, {
+            currCount: Math.max(0, Number(missionDef.CompleteCount ?? 0))
+        });
+        MissionHandler.sendMissionAdded(client, followupMissionId, initialState);
+        return followupMissionId;
     }
 
     private static autoAcceptFollowupMission(

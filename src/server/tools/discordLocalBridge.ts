@@ -28,6 +28,7 @@ interface BridgeConfig {
     port: number;
     presenceUrl: string;
     joinUrl: string;
+    playGameUrl: string;
     characterName: string;
     pollMs: number;
     largeImageText: string;
@@ -63,6 +64,7 @@ interface PresencePayload {
 
 const DEFAULT_PORT = 47631;
 const PARTY_MAX_MEMBERS = 4;
+const DEFAULT_PLAY_GAME_URL = 'https://theminesa.studio/dungeon-blitz-r';
 
 function buildLocalPresenceEndpoint(pathname: string): string {
     return `http://127.0.0.1:${Config.STATIC_PORT}${pathname}`;
@@ -701,9 +703,9 @@ class LocalDiscordBridge {
 
         // Add Buttons
         const buttons: any[] = [];
-        const baseUrl = this.getActivePresenceUrl().split('/api/')[0];
-        if (baseUrl) {
-            buttons.push({ label: 'Play Game', url: baseUrl });
+        const playGameUrl = String(this.config.playGameUrl || '').trim();
+        if (playGameUrl) {
+            buttons.push({ label: 'Play Game', url: playGameUrl });
         }
         
         if (buttons.length > 0) {
@@ -826,6 +828,7 @@ function readConfig(): BridgeConfig {
         port: DEFAULT_PORT,
         presenceUrl: buildLocalPresenceEndpoint('/api/presence/discord-target'),
         joinUrl: '',
+        playGameUrl: DEFAULT_PLAY_GAME_URL,
         characterName: '',
         pollMs: 4000,
         largeImageText: 'Dungeon Blitz: R',
@@ -854,6 +857,7 @@ function readConfig(): BridgeConfig {
             String(raw.joinUrl ?? defaults.joinUrl).trim(),
             '/api/presence/discord-join'
         ),
+        playGameUrl: String(raw.playGameUrl ?? defaults.playGameUrl).trim() || defaults.playGameUrl,
         characterName: String(raw.characterName ?? defaults.characterName).trim(),
         pollMs: Number.isFinite(Number(raw.pollMs)) ? Math.max(1000, Math.round(Number(raw.pollMs))) : defaults.pollMs,
         largeImageText: String(raw.largeImageText ?? defaults.largeImageText).trim(),
