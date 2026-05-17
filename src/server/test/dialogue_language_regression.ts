@@ -389,6 +389,60 @@ function testCapstoneBossDialogueTranslatesEnemyAndPlayerLines(): void {
     ]);
 }
 
+function testFelbridgeMeylourRoomDialogueUsesExactTranslations(): void {
+    const dataDir = path.resolve(__dirname, '../data');
+    DialogueTranslationLoader.load(dataDir);
+
+    const client = createFakeClient();
+    client.character.dialogueLanguage = 'tr';
+    client.token = 51007;
+    client.currentLevel = 'BT_Mission4';
+    client.levelInstanceId = '';
+    client.playerSpawned = true;
+    client.entities.set(701, {
+        id: 701,
+        name: 'StewardOfFelbridge',
+        team: EntityTeam.ENEMY
+    });
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    try {
+        SocialHandler.handleStartSkit(
+            client as never,
+            createStartSkitPacket(701, 'Meylour is our only savior!:The Living Mountain preserve me!')
+        );
+        SocialHandler.handleStartSkit(
+            client as never,
+            createStartSkitPacket(701, 'Meylour demands his sacrifices, #tn#!')
+        );
+        SocialHandler.handleStartSkit(
+            client as never,
+            createStartSkitPacket(701, '<Goto Red 1>And I will continue to give Meylour more!')
+        );
+    } finally {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+
+    const thoughts = client.sentPackets
+        .filter((entry) => entry.id === 0x76)
+        .map((entry) => decodeRoomThought(entry.payload));
+
+    assert.deepEqual(thoughts, [
+        {
+            entityId: 701,
+            text: 'Meylour tek kurtaricimiz!:Yasayan Dag beni korusun!'
+        },
+        {
+            entityId: 701,
+            text: 'Meylour kurbanlarini ister, #tn#!'
+        },
+        {
+            entityId: 701,
+            text: "<Goto Red 1>Ve Meylour'a daha fazlasini vermeye devam edecegim!"
+        }
+    ]);
+}
+
 function testCapstoneRoomDialogueTranslationsCoverExtractedSource(): void {
     const dataDir = path.resolve(__dirname, '../data');
     const translations = JSON.parse(fs.readFileSync(path.join(dataDir, 'DialogueTranslations.tr.json'), 'utf8')) as {
@@ -425,6 +479,57 @@ function testCapstoneRoomDialogueTranslationsCoverExtractedSource(): void {
 
     const missing = capstoneLines.filter((line) => !String(translations.translations?.[line] ?? '').trim());
     assert.deepEqual(missing, [], 'Capstone dungeon dialogue should have Turkish translations');
+}
+
+function testFelbridgeMeylourRoomDialogueTranslationsCoverExtractedSource(): void {
+    const dataDir = path.resolve(__dirname, '../data');
+    const translations = JSON.parse(fs.readFileSync(path.join(dataDir, 'DialogueTranslations.tr.json'), 'utf8')) as {
+        translations?: Record<string, string>;
+    };
+
+    const felbridgeMeylourLines = [
+        "You cannot stop the Harvest Ritual!:You'll doom us all!",
+        "@Looks like the Meylour's servants have gone wild.:@The Steward's house is being ruined.",
+        'We shall carry you to the dire peak, sacrifice!',
+        "Meylour's wrath will claim you!",
+        'This temple is sacred #tc#.',
+        "The Steward's ritual is complete...:Your doom is sealed, #tn#!",
+        'Meylour will devour you all...',
+        'For the Glory of Meylour, I give my life!',
+        "He's|She's here for The Steward!:Cut him|her down!",
+        'The Steward brought these.:They belong to Meylour now!',
+        'These caves are holy ground, intruder.:Begone!',
+        'These offerings are for Meylour!:Begone, heretic!',
+        'Meylour The Living Mountain codemns thee!',
+        'Meylour, I pray, devour my bones!',
+        "::Felbridge didn't need your meddling!",
+        "Meylour's Eternal Avalanche will crush you!",
+        "You snivelling worm!:You dare to defile Meylour's temple?",
+        'Meylour, my blood runs for thee!',
+        'More sacrifices for the Living Mountain::Meylour grant me your strength!',
+        'Oh that I shall be reborn as rock, Mighty Meylour!',
+        'Oh, you from Felbridge?:Come to the woods for some payback, have ye?',
+        'No wonder the people of Felbridge are so wary of strangers.',
+        'So, #tn#. The Steward was right about you.',
+        'Where is he? If you lot have hurt the Steward...',
+        'Every Harvest Ritual we sacrifice to Meylour.',
+        'Meylour demands blood. And this year he shall have yours!',
+        'The Steward and his evil cult have sacrificed innocents...',
+        'Time to put an end to the Steward and whoever is in league with him',
+        'Meylour is our only savior!:The Living Mountain preserve me!',
+        'Meylour demands his sacrifices, #tn#!',
+        "You've sacrificed scores of people to your dark god.",
+        '<Goto Red 1>And I will continue to give Meylour more!',
+        'And I will continue to give Meylour more!',
+        'Only The Living Mountain can protect us from the Sleeping Lands.',
+        'We will never go back there!',
+        'NEVER!',
+        'You will die on the peak, #tn#...',
+        'Your cult is finished, Steward.'
+    ];
+
+    const missing = felbridgeMeylourLines.filter((line) => !String(translations.translations?.[line] ?? '').trim());
+    assert.deepEqual(missing, [], 'Felbridge Meylour room dialogue should have exact Turkish translations');
 }
 
 function testWolfsEndEnemyRoomDialogueTranslationsCoverExtractedSource(): void {
@@ -501,7 +606,9 @@ async function main(): Promise<void> {
     testSplitDungeonRoomThoughtTranslation();
     testLevelHandlerRoomThoughtUsesRecipientLanguage();
     testCapstoneBossDialogueTranslatesEnemyAndPlayerLines();
+    testFelbridgeMeylourRoomDialogueUsesExactTranslations();
     testCapstoneRoomDialogueTranslationsCoverExtractedSource();
+    testFelbridgeMeylourRoomDialogueTranslationsCoverExtractedSource();
     testWolfsEndEnemyRoomDialogueTranslationsCoverExtractedSource();
     console.log('dialogue_language_regression: ok');
 }
