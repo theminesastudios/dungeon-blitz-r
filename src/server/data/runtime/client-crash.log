@@ -32,3 +32,27 @@
 	at Game/method_1636()
 	at Main/method_1284()
 
+[2026-05-17T00:03:52.846Z] User 10: PArgumentError: Error #2015: Invalid BitmapData.
+	at flash.display::BitmapData/ctor()
+	at flash.display::BitmapData()
+	at SuperAnimData$/method_200()
+	at SuperAnimData/method_902()
+	at SuperAnimData/method_866()
+	at SuperAnimInstance/method_105()
+	at Game/method_1325()
+	at Game/method_789()
+	at Game/method_1636()
+	at Main/method_1284()
+
+[2026-05-17T00:16:42.544Z] User 10: 9ArgumentError: Error #2015: Invalid BitmapData.
+	at flash.display::BitmapData/ctor()
+	at flash.display::BitmapData()
+	at class_82/method_193()
+	at class_123/method_1740()
+	at class_123/method_1604()
+	at Level/method_1195()
+	at Game/method_1445()
+	at Game/method_789()
+	at Game/method_1636()
+	at Main/method_1284()
+

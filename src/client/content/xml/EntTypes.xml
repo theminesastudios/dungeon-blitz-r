@@ -57626,4 +57626,31 @@
 			<Shadow>None</Shadow>
 		</GfxType>
 	</EntType>
+	<EntType EntName="PetCodexDragon" parent="Base">
+		<DisplayName>Evcil</DisplayName>
+		<DevStatus>Pet</DevStatus>
+		<MeleeDamage>1</MeleeDamage>
+		<MagicDamage>1</MagicDamage>
+		<ArmorClass>1</ArmorClass>
+		<HitPoints>1</HitPoints>
+		<Realm>Pet</Realm>
+		<Speed>12</Speed>
+		<Width>100</Width>
+		<Height>150</Height>
+		<Flying>True</Flying>
+		<Behavior>LittlePet</Behavior>
+		<EquippedGear/>
+		<GfxType>
+			<AnimClass>a__AnimationPetDragon3</AnimClass>
+			<AnimFile>Animation_Pets.swf</AnimFile>
+			<FlipAnim>FALSE</FlipAnim>
+			<Shadow>None</Shadow>
+			<RandomFrameStart>TRUE</RandomFrameStart>
+			<AnimScale>0.7</AnimScale>
+			<MoveAnimSpeed>0.8</MoveAnimSpeed>
+			<ColorSwap>0xcc66=0x55B7FF</ColorSwap>
+			<ColorSwap2>0xD3FF6F=0xE8F7FF</ColorSwap2>
+			<ColorSwap3>0xec0000=0x2647FF</ColorSwap3>
+		</GfxType>
+	</EntType>
 </EntTypes>

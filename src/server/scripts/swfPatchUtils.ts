@@ -50,6 +50,7 @@ export interface MethodBodyInfo {
 }
 
 export interface AbcParseResult {
+  intValues: number[];
   stringValues: string[];
   stringLenPositions: number[];
   stringDataPositions: number[];
@@ -311,8 +312,11 @@ export function parseAbc(ctx: SwfContext): AbcParseResult {
 
   let count: number;
   [count, pos] = readU30(data, pos, "abc.int_count");
+  const intValues = [0];
   for (let i = 1; i < count; i += 1) {
-    [, pos] = readS32(data, pos, `abc.int[${i}]`);
+    let value: number;
+    [value, pos] = readS32(data, pos, `abc.int[${i}]`);
+    intValues.push(value);
   }
 
   [count, pos] = readU30(data, pos, "abc.uint_count");
@@ -522,6 +526,7 @@ export function parseAbc(ctx: SwfContext): AbcParseResult {
   }
 
   return {
+    intValues,
     stringValues,
     stringLenPositions,
     stringDataPositions,

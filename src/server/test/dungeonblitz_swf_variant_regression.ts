@@ -12,10 +12,12 @@ import {
     parseSwf,
     u30OperandName
 } from '../scripts/swfPatchUtils';
+import type { Instruction } from '../scripts/swfPatchUtils';
 
 const BASE_SWF_PATH = path.resolve(__dirname, '../../client/content/localhost/p/cbp/DungeonBlitz.swf');
 const MULTIPLAYER_HOST = Config.MULTIPLAYER_HOST;
 const MULTIPLAYER_REFRESH_URL = `http://${MULTIPLAYER_HOST}/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp`;
+const BITMAPDATA_TOTAL_PIXELS = 16777215;
 
 function getStringMatches(swfPath: string, target: string): number[] {
     const ctx = parseSwf(swfPath);
@@ -64,6 +66,110 @@ function getMountedSpeedBranchOpcode(swfPath: string): number {
     return dungeonFlag ? dungeonFlag.opcode : -1;
 }
 
+function getLocalOperand(instruction: Instruction | undefined): number | null {
+    if (!instruction) {
+        return null;
+    }
+    if (instruction.opcode >= 0xd0 && instruction.opcode <= 0xd3) {
+        return instruction.opcode - 0xd0;
+    }
+    if (instruction.opcode === 0x62 && instruction.operands[0]?.[0] === 'u30') {
+        return instruction.operands[0][1];
+    }
+    return null;
+}
+
+function getStaticMethodCode(swfPath: string, className: string, methodName: string) {
+    const ctx = parseSwf(swfPath);
+    const abc = parseAbc(ctx);
+    const classIndex = classIndexByName(abc, className);
+    assert.notEqual(classIndex, null, `${className} class not found`);
+
+    const methodIdx = methodIdxForTrait(abc.classTraits[classIndex!], abc, methodName);
+    assert.notEqual(methodIdx, null, `${className}.${methodName} not found`);
+
+    const methodBody = abc.methodBodies.get(methodIdx!);
+    assert.ok(methodBody, `${className}.${methodName} body not found`);
+
+    const code = ctx.body.subarray(methodBody.codeStart, methodBody.codeStart + methodBody.codeLen);
+    return {
+        abc,
+        instructions: disassemble(code, `${className}.${methodName}`)
+    };
+}
+
+function findBitmapDataConstructorIndex(
+    instructions: Instruction[],
+    names: string[],
+    widthLocal: number,
+    heightLocal: number
+): number {
+    return instructions.findIndex((instruction, index) => {
+        const width = instructions[index + 1];
+        const height = instructions[index + 2];
+        const pushTrue = instructions[index + 3];
+        const pushZero = instructions[index + 4];
+        const construct = instructions[index + 5];
+
+        return (
+            instruction.opcode === 0x5d &&
+            u30OperandName(instruction, names) === 'BitmapData' &&
+            getLocalOperand(width) === widthLocal &&
+            getLocalOperand(height) === heightLocal &&
+            pushTrue?.opcode === 0x26 &&
+            pushZero?.opcode === 0x24 &&
+            pushZero.operands[0]?.[1] === 0 &&
+            construct?.opcode === 0x4a &&
+            u30OperandName(construct, names) === 'BitmapData' &&
+            construct.operands[1]?.[1] === 4
+        );
+    });
+}
+
+function assertBitmapDataGuardWindow(
+    swfPath: string,
+    widthLocal: number,
+    heightLocal: number,
+    label: string
+): void {
+    const { abc, instructions } = getStaticMethodCode(swfPath, 'SuperAnimData', 'method_200');
+    const constructorIndex = findBitmapDataConstructorIndex(
+        instructions,
+        abc.multinameNames,
+        widthLocal,
+        heightLocal
+    );
+    assert.notEqual(constructorIndex, -1, `${label} BitmapData constructor not found`);
+
+    const guardWindow = instructions.slice(Math.max(0, constructorIndex - 55), constructorIndex);
+    assert.equal(
+        guardWindow.filter((instruction) => instruction.opcode === 0x25 && instruction.operands[0]?.[1] === 8191).length >= 2,
+        true,
+        `${label} must enforce Flash's 8191 BitmapData axis limit`
+    );
+    assert.equal(
+        guardWindow.some((instruction, index) => {
+            const pushIntOperand = guardWindow[index + 3]?.operands[0];
+            return (
+                getLocalOperand(instruction) === widthLocal &&
+                getLocalOperand(guardWindow[index + 1]) === heightLocal &&
+                guardWindow[index + 2]?.opcode === 0xa2 &&
+                guardWindow[index + 3]?.opcode === 0x2d &&
+                pushIntOperand?.[0] === 'u30' &&
+                abc.intValues[pushIntOperand[1]] === BITMAPDATA_TOTAL_PIXELS &&
+                guardWindow[index + 4]?.opcode === 0xaf
+            );
+        }),
+        true,
+        `${label} must enforce the BitmapData total pixel limit`
+    );
+}
+
+function assertSuperAnimMethod200BitmapDataGuard(swfPath: string): void {
+    assertBitmapDataGuardWindow(swfPath, 10, 11, 'SuperAnimData.method_200 direct allocation');
+    assertBitmapDataGuardWindow(swfPath, 25, 26, 'SuperAnimData.method_200 cropped allocation');
+}
+
 function withTempSwf(buffer: Buffer, callback: (tempPath: string) => void): void {
     const tempPath = path.join(os.tmpdir(), `dungeonblitz-variant-${process.pid}-${Date.now()}-${Math.random()}.swf`);
     fs.writeFileSync(tempPath, buffer);
@@ -105,10 +211,19 @@ function testVariantRemovesDungeonMountSpeedGate(): void {
     });
 }
 
+function testBaseAndLocalVariantKeepSuperAnimMethod200BitmapDataGuard(): void {
+    assertSuperAnimMethod200BitmapDataGuard(BASE_SWF_PATH);
+    const buffer = buildDungeonBlitzSwfVariantBuffer(BASE_SWF_PATH, 'local');
+    withTempSwf(buffer, (tempPath) => {
+        assertSuperAnimMethod200BitmapDataGuard(tempPath);
+    });
+}
+
 function main(): void {
     testLocalVariantUsesLocalhostAndPort8000();
     testMultiplayerVariantUsesRemoteHostAndDefaultAssetPath();
     testVariantRemovesDungeonMountSpeedGate();
+    testBaseAndLocalVariantKeepSuperAnimMethod200BitmapDataGuard();
     console.log('dungeonblitz_swf_variant_regression: ok');
 }
 

@@ -71,4 +71,5 @@ export enum PetID {
     Lockbox01RYellow = 68,
     Lockbox01RBlue = 69,
     Lockbox01RGreen = 70,
+    CodexDragon = 71,
 }

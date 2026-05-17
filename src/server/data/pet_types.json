@@ -1075,5 +1075,21 @@
         "Color": "Green",
         "UseVanityPower": true,
         "DisplayRarity": "R"
+    },
+    {
+        "PetName": "CodexDragon",
+        "PetID": 71,
+        "PetLevel": 30,
+        "IdolCost": 500,
+        "DisplayName": "Codex Dragon",
+        "PetPower": "PetDragonGold",
+        "Kingdom": "Any",
+        "ExpBonus": true,
+        "BonusInfo": "Increase XP Gain by X Pet Level",
+        "ClassType": "Dragon",
+        "Color": "Blue",
+        "Description": "A bright dragon companion forged for Codex.",
+        "UseVanityPower": true,
+        "DisplayRarity": "L"
     }
 ]

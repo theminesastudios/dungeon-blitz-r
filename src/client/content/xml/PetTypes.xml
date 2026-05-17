@@ -1006,4 +1006,19 @@
 		<UseVanityPower>TRUE</UseVanityPower>
 		<DisplayRarity>R</DisplayRarity>
 	</PetType>
+	<PetType PetName="CodexDragon">
+		<PetID>71</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>500</IdolCost>
+		<DisplayName>Codex Ejderi</DisplayName>
+		<PetPower>PetDragonGold</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ExpBonus>true</ExpBonus>
+		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<ClassType>Dragon</ClassType>
+		<Color>Blue</Color>
+		<Description>Codex icin isildayan bir ejder dost.</Description>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>L</DisplayRarity>
+	</PetType>
 </PetTypes>
