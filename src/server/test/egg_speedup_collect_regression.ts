@@ -5,6 +5,8 @@ import { JsonAdapter } from '../database/JsonAdapter';
 import { PetConfig } from '../core/PetConfig';
 import { PetHandler } from '../handlers/PetHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
+import { BitReader } from '../network/protocol/bitReader';
+import { ConsumableID } from '../data/runtime/Consumables';
 
 type SentPacket = {
     id: number;
@@ -64,6 +66,41 @@ function createEggSpeedupPacket(idolCost: number): Buffer {
     return bb.toBuffer();
 }
 
+function parseConsumableUpdate(payload: Buffer): { consumableId: number; count: number } {
+    const br = new BitReader(payload);
+    return {
+        consumableId: br.readMethod6(5),
+        count: br.readMethod4()
+    };
+}
+
+function parseConsumableReward(payload: Buffer): { consumableId: number; amount: number; suppress: boolean } {
+    const br = new BitReader(payload);
+    return {
+        consumableId: br.readMethod6(5),
+        amount: br.readMethod4(),
+        suppress: br.readMethod15()
+    };
+}
+
+function getCompleteCollectiblePetCollection(): Array<{ typeID: number; special_id: number; level: number; xp: number }> {
+    const collectiblePetIds = PetConfig.PET_TYPES
+        .map((pet) => ({
+            id: Number(pet?.PetID ?? 0),
+            name: String(pet?.PetName ?? '')
+        }))
+        .filter((pet) => pet.id > 0 && pet.name !== 'CodexDragon')
+        .map((pet) => pet.id);
+
+    assert.equal(collectiblePetIds.length, 70, 'test fixture should match the 70 collectible pet types');
+    return collectiblePetIds.map((typeID, index) => ({
+        typeID,
+        special_id: index + 1,
+        level: 1,
+        xp: 0
+    }));
+}
+
 async function withMockedCharacterSave<T>(fn: () => Promise<T>): Promise<T> {
     const originalLoadCharacters = JsonAdapter.prototype.loadCharacters;
     const originalSaveCharacters = JsonAdapter.prototype.saveCharacters;
@@ -114,9 +151,53 @@ async function testEggSpeedupAndCollectAcceptStringBackedIds(): Promise<void> {
     assert.equal(client.sentPackets.some((packet) => packet.id === 0xE5), true, 'collect should refresh hatchery contents');
 }
 
+async function testCollectHatchedEggGrantsPetFoodWhenAllPetsOwned(): Promise<void> {
+    const client = createClient();
+    client.character.pets = getCompleteCollectiblePetCollection();
+    client.character.consumables = [];
+    client.character.EggHachery = {
+        EggID: 5,
+        ReadyTime: 0,
+        slotIndex: 1
+    };
+
+    const initialPetCount = client.character.pets.length;
+
+    await withMockedCharacterSave(async () => {
+        await PetHandler.handleCollectHatchedEgg(client as never, Buffer.alloc(0));
+    });
+
+    assert.equal(client.character.pets.length, initialPetCount, 'complete pet collections should not receive duplicate pets from eggs');
+    assert.deepEqual(client.character.OwnedEggsID, [1], 'hatched egg should still be consumed');
+    assert.equal(Number(client.character.EggHachery?.EggID ?? -1), 0, 'hatchery should reset after Pet Food fallback');
+    assert.deepEqual(client.character.consumables, [
+        {
+            consumableID: ConsumableID.PetFood,
+            count: 1
+        }
+    ]);
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0x37), false, 'Pet Food fallback should not send a new pet packet');
+
+    const updatePacket = client.sentPackets.find((packet) => packet.id === 0x10C);
+    const rewardPacket = client.sentPackets.find((packet) => packet.id === 0x10B);
+    assert.ok(updatePacket, 'Pet Food fallback should refresh consumable inventory');
+    assert.ok(rewardPacket, 'Pet Food fallback should send a reward packet');
+    assert.deepEqual(parseConsumableUpdate(updatePacket!.payload), {
+        consumableId: ConsumableID.PetFood,
+        count: 1
+    });
+    assert.deepEqual(parseConsumableReward(rewardPacket!.payload), {
+        consumableId: ConsumableID.PetFood,
+        amount: 1,
+        suppress: false
+    });
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0xE5), true, 'collect should refresh hatchery contents');
+}
+
 async function main(): Promise<void> {
     PetConfig.load(path.resolve(__dirname, '..', 'data'));
     await testEggSpeedupAndCollectAcceptStringBackedIds();
+    await testCollectHatchedEggGrantsPetFoodWhenAllPetsOwned();
     console.log('egg_speedup_collect_regression: ok');
 }
 

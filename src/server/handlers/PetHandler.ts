@@ -7,6 +7,7 @@ import { GameData } from '../core/GameData';
 import { GlobalState } from '../core/GlobalState';
 import { EntityHandler } from './EntityHandler';
 import { areClientsInSameLevelScope, getClientLevelScope } from '../core/LevelScope';
+import { ConsumableID } from '../data/runtime/Consumables';
 
 const db = new JsonAdapter();
 
@@ -18,6 +19,7 @@ export class PetHandler {
     private static readonly HATCHERY_RANK0_WEIGHT = 0.85;
     private static readonly HATCHERY_RANK1_WEIGHT = 0.1;
     private static readonly HATCHERY_RANK2_WEIGHT = 0.05;
+    private static readonly HATCHED_EGG_PET_FOOD_AMOUNT = 1;
 
     private static sendMammothIdolUpdate(client: Client): void {
         if (!client.character) {
@@ -46,6 +48,16 @@ export class PetHandler {
         bb.writeMethod6(Math.max(0, consumableId), 5);
         bb.writeMethod4(Math.max(0, count));
         client.sendBitBuffer(0x10C, bb);
+    }
+
+    private static sendConsumableReward(client: Client, consumableId: number, amount: number, newTotal: number): void {
+        PetHandler.sendConsumableUpdate(client, consumableId, newTotal);
+
+        const reward = new BitBuffer(false);
+        reward.writeMethod6(Math.max(0, consumableId), 5);
+        reward.writeMethod4(Math.max(0, amount));
+        reward.writeMethod15(false);
+        client.sendBitBuffer(0x10B, reward);
     }
 
     private static sendPetXpUpdate(client: Client, xpAmount: number): void {
@@ -200,6 +212,48 @@ export class PetHandler {
         }
 
         return normalized;
+    }
+
+    private static getOwnedPetTypeIds(character: any): Set<number> {
+        return new Set<number>(
+            PetHandler.normalizePetCollection(character)
+                .map((pet: any) => Number(pet?.typeID ?? 0))
+                .filter((typeId: number) => typeId > 0)
+        );
+    }
+
+    private static pickRandomPetDef(pets: any[]): any | undefined {
+        if (pets.length === 0) {
+            return undefined;
+        }
+
+        const roll = Math.random();
+        const randomValue = Math.max(0, Math.min(Number.isFinite(roll) ? roll : 0, 0.999999999));
+        return pets[Math.floor(randomValue * pets.length)] ?? pets[0];
+    }
+
+    private static addConsumable(character: any, consumableId: number, amount: number): number {
+        const consumables = Array.isArray(character?.consumables) ? character.consumables : [];
+        const entry = consumables.find((consumable: any) => Number(consumable?.consumableID ?? 0) === consumableId);
+        if (entry) {
+            entry.count = Math.max(0, Number(entry.count ?? 0) + amount);
+        } else {
+            consumables.push({
+                consumableID: consumableId,
+                count: Math.max(0, amount)
+            });
+        }
+        character.consumables = consumables;
+        return Number(consumables.find((consumable: any) => Number(consumable?.consumableID ?? 0) === consumableId)?.count ?? 0);
+    }
+
+    private static removeHatchedEggFromSlot(character: any, slotIndex: number): void {
+        const ownedEggs = PetHandler.normalizeOwnedEggIds(character);
+        if (slotIndex >= 0 && slotIndex < ownedEggs.length) {
+            ownedEggs.splice(slotIndex, 1);
+        }
+        character.OwnedEggsID = ownedEggs;
+        PetHandler.resetEggHatchery(character);
     }
 
     static getEquippedPetBonusRates(character: any): { goldFind: number; itemFind: number; craftFind: number; expBonus: number } {
@@ -824,13 +878,34 @@ export class PetHandler {
         }
 
         const eggID = Number(eggData.EggID ?? 0);
-        
-        const petDef = PetConfig.resolveRandomPetForEgg(eggID);
+        const slotIndex = Number(eggData.slotIndex ?? 0);
+        const ownedPetTypes = PetHandler.getOwnedPetTypeIds(client.character);
+        const unownedEggPets = PetConfig.getHatchablePetsForEgg(eggID).filter((pet) =>
+            !ownedPetTypes.has(Number(pet?.PetID ?? 0))
+        );
+
+        const petDef = PetHandler.pickRandomPetDef(unownedEggPets);
         if (!petDef) {
-            console.log(`[PetHandler] No hatchable pet found for EggID ${eggID}`);
+            const newTotal = PetHandler.addConsumable(
+                client.character,
+                ConsumableID.PetFood,
+                PetHandler.HATCHED_EGG_PET_FOOD_AMOUNT
+            );
+            PetHandler.removeHatchedEggFromSlot(client.character, slotIndex);
+
+            await PetHandler.saveCharacter(client);
+
+            PetHandler.sendConsumableReward(
+                client,
+                ConsumableID.PetFood,
+                PetHandler.HATCHED_EGG_PET_FOOD_AMOUNT,
+                newTotal
+            );
+            const pkt = PetHandler.buildHatcheryPacket(PetHandler.normalizeOwnedEggIds(client.character), client.character.EggResetTime || 0);
+            client.sendBitBuffer(0xE5, pkt);
             return;
         }
-        
+
         const petTypeID = Number(petDef.PetID ?? eggID);
         const startingRank = 1;
         
@@ -846,13 +921,7 @@ export class PetHandler {
         });
         client.character.pets = pets;
         
-        const slotIndex = Number(eggData.slotIndex ?? 0);
-        const ownedEggs = PetHandler.normalizeOwnedEggIds(client.character);
-        if (slotIndex >= 0 && slotIndex < ownedEggs.length) {
-            ownedEggs.splice(slotIndex, 1);
-        }
-        client.character.OwnedEggsID = ownedEggs;
-        PetHandler.resetEggHatchery(client.character);
+        PetHandler.removeHatchedEggFromSlot(client.character, slotIndex);
         
         await PetHandler.saveCharacter(client);
         
