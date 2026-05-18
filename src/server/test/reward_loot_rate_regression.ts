@@ -147,6 +147,73 @@ function getMaterialRarity(materialId: number): string {
     return String(GameData.MATERIALS.find((material) => Number(material.MaterialID ?? 0) === materialId)?.Rarity ?? '');
 }
 
+function assertTierWeights(
+    actual: Array<{ tier: number; weight: number }>,
+    expected: Array<{ tier: number; weight: number }>,
+    label: string
+): void {
+    assert.equal(actual.length, expected.length, `${label} should define the expected number of rarity bands`);
+    for (let index = 0; index < expected.length; index++) {
+        assert.equal(actual[index]?.tier, expected[index]?.tier, `${label} tier ${index} should match`);
+        assert.ok(
+            Math.abs(Number(actual[index]?.weight ?? 0) - expected[index]!.weight) < 1e-12,
+            `${label} tier ${index} weight should match`
+        );
+    }
+}
+
+function testGearRarityWeightsScaleByRank(): void {
+    const normal = createFakeClient(9, 'Iota');
+    const hard = createFakeClient(10, 'Kappa');
+    hard.currentLevel = 'GoblinRiverDungeonHard';
+
+    const getWeights = (client: FakeClient, rank: string) =>
+        (RewardHandler as any).getGearTierWeights(client as never, rank) as Array<{ tier: number; weight: number }>;
+
+    assertTierWeights(getWeights(normal, 'Lieutenant'), [
+        { tier: 0, weight: 1 - ((1 / 250) / 0.03) },
+        { tier: 1, weight: (1 / 250) / 0.03 },
+        { tier: 2, weight: 0 }
+    ], 'normal lieutenant gear');
+    assertTierWeights(getWeights(normal, 'MiniBoss'), [
+        { tier: 0, weight: 1 - ((1 / 60) / 0.10) },
+        { tier: 1, weight: (1 / 60) / 0.10 },
+        { tier: 2, weight: 0 }
+    ], 'normal miniboss gear');
+    assertTierWeights(getWeights(normal, 'Boss'), [
+        { tier: 0, weight: 1 - (1 / 15) },
+        { tier: 1, weight: 1 / 15 },
+        { tier: 2, weight: 0 }
+    ], 'normal boss gear');
+
+    assertTierWeights(getWeights(hard, 'Lieutenant'), [
+        { tier: 0, weight: 1 - ((1 / 100) / 0.03) - ((1 / 333) / 0.03) },
+        { tier: 1, weight: (1 / 100) / 0.03 },
+        { tier: 2, weight: (1 / 333) / 0.03 }
+    ], 'hard lieutenant gear');
+    assertTierWeights(getWeights(hard, 'MiniBoss'), [
+        { tier: 0, weight: 1 - ((1 / 40) / 0.10) - ((1 / 100) / 0.10) },
+        { tier: 1, weight: (1 / 40) / 0.10 },
+        { tier: 2, weight: (1 / 100) / 0.10 }
+    ], 'hard miniboss gear');
+    assertTierWeights(getWeights(hard, 'Boss'), [
+        { tier: 0, weight: 1 - (1 / 5) - (1 / 25) },
+        { tier: 1, weight: 1 / 5 },
+        { tier: 2, weight: 1 / 25 }
+    ], 'hard boss gear');
+
+    assertTierWeights(getWeights(normal, 'MysteryRank'), [
+        { tier: 0, weight: 1 },
+        { tier: 1, weight: 0 },
+        { tier: 2, weight: 0 }
+    ], 'normal fallback gear');
+    assertTierWeights(getWeights(hard, 'MysteryRank'), [
+        { tier: 0, weight: 0.65 },
+        { tier: 1, weight: 0.30 },
+        { tier: 2, weight: 0.05 }
+    ], 'hard fallback gear');
+}
+
 async function testSimpleLootMinionDoesNotDropGear(): Promise<void> {
     const alpha = createFakeClient(1, 'Alpha');
     GlobalState.sessionsByToken.set(alpha.token, alpha as never);
@@ -319,7 +386,7 @@ async function testGearRarityTracksValueTier(): Promise<void> {
     alpha.pendingLoot.clear();
     alpha.processedRewardSources.clear();
 
-    await withMockedRandom([0.5, 0.99, 0.02, 0.0, 0.92], async () => {
+    await withMockedRandom([0.5, 0.99, 0.02, 0.0, 0.80], async () => {
         await RewardHandler.handleGrantReward(alpha as never, buildGrantRewardPayload(sourceId, {
             dropGear: true
         }));
@@ -340,7 +407,7 @@ async function testGearRarityTracksValueTier(): Promise<void> {
     });
     setContributors(getClientLevelScope(alpha as never), sourceId, ['delta']);
 
-    await withMockedRandom([0.0, 0.99, 0.0, 0.0, 0.75], async () => {
+    await withMockedRandom([0.0, 0.99, 0.0, 0.0, 0.80], async () => {
         await RewardHandler.handleGrantReward(alpha as never, buildGrantRewardPayload(sourceId, {
             dropGear: true
         }));
@@ -350,7 +417,7 @@ async function testGearRarityTracksValueTier(): Promise<void> {
     alpha.pendingLoot.clear();
     alpha.processedRewardSources.clear();
 
-    await withMockedRandom([0.0, 0.99, 0.0, 0.0, 0.96], async () => {
+    await withMockedRandom([0.0, 0.99, 0.0, 0.0, 0.99], async () => {
         await RewardHandler.handleGrantReward(alpha as never, buildGrantRewardPayload(sourceId, {
             dropGear: true
         }));
@@ -473,6 +540,11 @@ async function main(): Promise<void> {
         GlobalState.levelEntities.clear();
         GlobalState.combatContributions.clear();
         await testEnemyMaterialDropsWithoutExplicitDropFlag();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.combatContributions.clear();
+        testGearRarityWeightsScaleByRank();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.levelEntities.clear();

@@ -91,7 +91,7 @@ export class LevelHandler {
     private static readonly DOORSTATE_DUNGEON = 2;
     private static readonly DOORSTATE_MISSIONREPEAT = 3;
     private static readonly DOORSTATE_LOCKED = 4;
-    private static readonly FELBRIDGE_DREAD_GATE_LOCKED_MESSAGE =
+    private static readonly DREADFOLD_GATE_LOCKED_MESSAGE =
         '^tA powerful magic seals this entrance.=^tI still need to learn more about the Sleeping Lands.';
     private static readonly LOCKED_DUNGEON_ENTRY_MESSAGE = "^tI haven't unlocked this dungeon yet.";
     private static readonly CASTLE_HOCKE_GATE_DOOR_ID = 3;
@@ -776,7 +776,13 @@ export class LevelHandler {
     private static readonly MISSION_IN_PROGRESS = 1;
     private static readonly MISSION_READY_TO_TURN_IN = 2;
     private static readonly MISSION_CLAIMED = 3;
-    private static readonly FELBRIDGE_DREAD_GATE_DOOR_ID = 300;
+    private static readonly DREADFOLD_GATE_DOOR_ID = 300;
+    private static readonly DREADFOLD_ENTRY_TRANSITIONS = new Set<string>([
+        'BridgeTown->BridgeTownHard',
+        'EmeraldGlades->EmeraldGladesHard',
+        'ShazariDesert->ShazariDesertHard',
+        'JadeCity->JadeCityHard'
+    ]);
     private static readonly KEEP_TUTORIAL_BOSS_TRIGGER_X = Number.MAX_SAFE_INTEGER;
     private static readonly KEEP_TUTORIAL_CUTSCENE_STEP_MS = 250;
     private static readonly KEEP_TUTORIAL_BOSS_INTRO_TOTAL_MS = 14750;
@@ -2767,13 +2773,13 @@ export class LevelHandler {
         return missionId === MissionID.TempleOfShadows || missionId === MissionID.TempleOfShadowsHard;
     }
 
-    private static isFelbridgeDreadGateUnlocked(
+    private static isDreadfoldGateUnlocked(
         client: Client,
         currentLevel: string,
         doorId: number,
         targetLevelRaw: string | null
     ): boolean {
-        if (doorId !== LevelHandler.FELBRIDGE_DREAD_GATE_DOOR_ID) {
+        if (doorId !== LevelHandler.DREADFOLD_GATE_DOOR_ID) {
             return true;
         }
 
@@ -2784,22 +2790,22 @@ export class LevelHandler {
             LevelConfig.normalizeLevelName(targetLevelRaw || '') ||
             String(targetLevelRaw || '').trim();
 
-        if (normalizedCurrentLevel !== 'BridgeTown' || targetLevel !== 'BridgeTownHard') {
+        if (!LevelHandler.DREADFOLD_ENTRY_TRANSITIONS.has(`${normalizedCurrentLevel}->${targetLevel}`)) {
             return true;
         }
 
         return LevelHandler.getMissionState(client, MissionID.Capstone) >= LevelHandler.MISSION_CLAIMED;
     }
 
-    private static isFelbridgeDreadGateTransferUnlocked(client: Client, targetLevelRaw: string | null): boolean {
+    private static isDreadfoldGateTransferUnlocked(client: Client, targetLevelRaw: string | null): boolean {
         const currentLevel =
             LevelConfig.normalizeLevelName(client.currentLevel || String(client.character?.CurrentLevel?.name ?? '')) ||
             String(client.currentLevel || client.character?.CurrentLevel?.name || '').trim();
 
-        return LevelHandler.isFelbridgeDreadGateUnlocked(
+        return LevelHandler.isDreadfoldGateUnlocked(
             client,
             currentLevel,
-            LevelHandler.FELBRIDGE_DREAD_GATE_DOOR_ID,
+            LevelHandler.DREADFOLD_GATE_DOOR_ID,
             targetLevelRaw
         );
     }
@@ -3271,14 +3277,14 @@ export class LevelHandler {
         const currentLevel = client.currentLevel || "NewbieRoad";
         const target = LevelHandler.resolveDoorTarget(client, currentLevel, doorId);
         const isDungeonEntryUnlocked = LevelHandler.isDungeonEntryUnlocked(client, currentLevel, target);
-        const isFelbridgeDreadGateLocked =
+        const isDreadfoldGateLocked =
             Boolean(target) &&
-            !LevelHandler.isFelbridgeDreadGateUnlocked(client, currentLevel, doorId, target);
+            !LevelHandler.isDreadfoldGateUnlocked(client, currentLevel, doorId, target);
         
         const bb = new BitBuffer();
         bb.writeMethod4(doorId);
         
-        if (target && isFelbridgeDreadGateLocked) {
+        if (target && isDreadfoldGateLocked) {
             bb.writeMethod91(LevelHandler.DOORSTATE_LOCKED);
             bb.writeMethod13(target);
         } else if (target && !isDungeonEntryUnlocked) {
@@ -3341,7 +3347,7 @@ export class LevelHandler {
 
         if (
             rawTargetLevel &&
-            !LevelHandler.isFelbridgeDreadGateUnlocked(client, currentLevel, doorId, rawTargetLevel)
+            !LevelHandler.isDreadfoldGateUnlocked(client, currentLevel, doorId, rawTargetLevel)
         ) {
             console.log(`[Level] Open Door ${doorId} in ${currentLevel} blocked until Capstone is completed`);
             LevelHandler.sendDoorState(
@@ -3353,7 +3359,7 @@ export class LevelHandler {
             LevelHandler.sendLockedDoorThought(
                 client,
                 doorId,
-                LevelHandler.FELBRIDGE_DREAD_GATE_LOCKED_MESSAGE
+                LevelHandler.DREADFOLD_GATE_LOCKED_MESSAGE
             );
             return;
         }
@@ -3660,7 +3666,7 @@ export class LevelHandler {
             targetLevel = safeFallback;
         }
 
-        if (!teleportOverride && !LevelHandler.isFelbridgeDreadGateTransferUnlocked(client, targetLevel)) {
+        if (!teleportOverride && !LevelHandler.isDreadfoldGateTransferUnlocked(client, targetLevel)) {
             console.log(`[Level] Transfer to ${targetLevel} blocked until Capstone is completed`);
             return;
         }

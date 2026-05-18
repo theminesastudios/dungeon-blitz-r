@@ -12473,7 +12473,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Goblin</Realm>
 		<Kingdom>Trog</Kingdom>
 		<Speed>6</Speed>
@@ -13072,7 +13072,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Goblin</Realm>
 		<Kingdom>Trog</Kingdom>
 		<Speed>6</Speed>
@@ -13478,7 +13478,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Skeleton</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>5.5</Speed>
@@ -13766,7 +13766,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Skeleton</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>5.5</Speed>
@@ -14752,7 +14752,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spider</Realm>
 		<Kingdom>Sylvan</Kingdom>
 		<Speed>5.5</Speed>
@@ -15025,7 +15025,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spider</Realm>
 		<Kingdom>Sylvan</Kingdom>
 		<Speed>5.5</Speed>
@@ -15703,7 +15703,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Devourer</Realm>
 		<Kingdom>Sylvan</Kingdom>
 		<Speed>6.5</Speed>
@@ -15935,7 +15935,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Devourer</Realm>
 		<Kingdom>Sylvan</Kingdom>
 		<Speed>6.5</Speed>
@@ -17069,7 +17069,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Lizard</Realm>
 		<Kingdom>Draconic</Kingdom>
 		<Speed>6.5</Speed>
@@ -17529,7 +17529,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Lizard</Realm>
 		<Kingdom>Draconic</Kingdom>
 		<Speed>6.5</Speed>
@@ -18484,7 +18484,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Mythic</Kingdom>
 		<Speed>7.4</Speed>
@@ -18530,7 +18530,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Mythic</Kingdom>
 		<Speed>6</Speed>
@@ -18580,7 +18580,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Mythic</Kingdom>
 		<Speed>7</Speed>
@@ -19046,7 +19046,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Mythic</Kingdom>
 		<Speed>7.4</Speed>
@@ -19094,7 +19094,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Mythic</Kingdom>
 		<Speed>6</Speed>
@@ -19144,7 +19144,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Mythic</Kingdom>
 		<Speed>7</Speed>
@@ -19456,7 +19456,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Life</Element>
@@ -19500,7 +19500,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Life</Element>
@@ -19547,7 +19547,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Life</Element>
@@ -19587,7 +19587,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Life</Element>
@@ -19634,7 +19634,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Life</Element>
@@ -19866,7 +19866,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Life</Element>
@@ -19911,7 +19911,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Life</Element>
@@ -19958,7 +19958,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Life</Element>
@@ -20000,7 +20000,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Life</Element>
@@ -20045,7 +20045,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Human</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Life</Element>
@@ -20588,7 +20588,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Skeleton</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>7.5</Speed>
@@ -20924,7 +20924,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Skeleton</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>7.5</Speed>
@@ -21259,7 +21259,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Skeleton</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>7.5</Speed>
@@ -21306,7 +21306,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Skeleton</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>7.5</Speed>
@@ -21594,7 +21594,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Skeleton</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>7.5</Speed>
@@ -21641,7 +21641,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Skeleton</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>7.5</Speed>
@@ -22620,7 +22620,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Ghost</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>6.2</Speed>
@@ -22778,7 +22778,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Ghost</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>6.2</Speed>
@@ -26269,7 +26269,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>RockHulk</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Earth</Element>
@@ -26575,7 +26575,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>RockHulk</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Earth</Element>
@@ -27285,7 +27285,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Cyclops</Realm>
 		<Kingdom>Trog</Kingdom>
 		<Element>Air</Element>
@@ -27459,7 +27459,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Cyclops</Realm>
 		<Kingdom>Trog</Kingdom>
 		<Element>Air</Element>
@@ -27955,7 +27955,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Ghost</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>6.2</Speed>
@@ -28115,7 +28115,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Ghost</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>6.2</Speed>
@@ -29575,7 +29575,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Lion</Realm>
 		<Kingdom>Mythic</Kingdom>
 		<Speed>6.1</Speed>
@@ -29864,7 +29864,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Lion</Realm>
 		<Kingdom>Mythic</Kingdom>
 		<Speed>6.1</Speed>
@@ -30538,7 +30538,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Lizard</Realm>
 		<Kingdom>Draconic</Kingdom>
 		<Speed>5.5</Speed>
@@ -30790,7 +30790,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Lizard</Realm>
 		<Kingdom>Draconic</Kingdom>
 		<Speed>5.5</Speed>
@@ -31507,7 +31507,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Raptor</Realm>
 		<Kingdom>Draconic</Kingdom>
 		<Speed>9</Speed>
@@ -31703,7 +31703,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Raptor</Realm>
 		<Kingdom>Draconic</Kingdom>
 		<Speed>9</Speed>
@@ -33319,7 +33319,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>RockHulk</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Speed>5.5</Speed>
@@ -33650,7 +33650,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>RockHulk</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Speed>5.5</Speed>
@@ -33856,7 +33856,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Dread</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Death</Element>
@@ -33902,7 +33902,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Dread</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Death</Element>
@@ -33948,7 +33948,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Dread</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Death</Element>
@@ -34166,7 +34166,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Dread</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Death</Element>
@@ -34212,7 +34212,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Dread</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Death</Element>
@@ -34260,7 +34260,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Dread</Realm>
 		<Kingdom>Infernal</Kingdom>
 		<Element>Death</Element>
@@ -35332,7 +35332,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Lizard</Realm>
 		<Kingdom>Draconic</Kingdom>
 		<Speed>6.5</Speed>
@@ -36388,7 +36388,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Lizard</Realm>
 		<Kingdom>Draconic</Kingdom>
 		<Speed>6.5</Speed>
@@ -37506,7 +37506,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>9</Speed>
@@ -37547,7 +37547,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>9</Speed>
@@ -37596,7 +37596,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>7.5</Speed>
@@ -37639,7 +37639,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>5.4</Speed>
@@ -38773,7 +38773,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2.0</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>9</Speed>
@@ -38814,7 +38814,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>9</Speed>
@@ -38863,7 +38863,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>7.5</Speed>
@@ -38906,7 +38906,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>5.4</Speed>
@@ -41910,7 +41910,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Scarab</Realm>
 		<Kingdom>Sylvan</Kingdom>
 		<Element>Earth</Element>
@@ -42464,7 +42464,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Scarab</Realm>
 		<Kingdom>Sylvan</Kingdom>
 		<Element>Earth</Element>
@@ -43421,7 +43421,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Giant</Realm>
 		<Kingdom>Mythic</Kingdom>
 		<Element>Air</Element>
@@ -43845,7 +43845,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Giant</Realm>
 		<Kingdom>Mythic</Kingdom>
 		<Element>Air</Element>
@@ -50302,7 +50302,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>5.5</Speed>
@@ -50353,7 +50353,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>2.8</Speed>
@@ -50394,7 +50394,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>8.5</Speed>
@@ -50448,7 +50448,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>8.6</Speed>
@@ -50859,7 +50859,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>5.5</Speed>
@@ -50910,7 +50910,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>2.8</Speed>
@@ -50951,7 +50951,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>8.5</Speed>
@@ -51005,7 +51005,7 @@
 		<RewardClass>RandomItem</RewardClass>
 		<ExpMult>2</ExpMult>
 		<GoldDrop>2</GoldDrop>
-		<ItemDropChance>0.2</ItemDropChance>
+		<ItemDropChance>0.1</ItemDropChance>
 		<Realm>Spirit</Realm>
 		<Kingdom>Undead</Kingdom>
 		<Speed>8.6</Speed>

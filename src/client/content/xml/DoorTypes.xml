@@ -519,8 +519,8 @@
 		<DoorID>300</DoorID>
 		<TargetMapName>EmeraldGladesHard</TargetMapName>
 		<TargetDoorID>300</TargetDoorID>
-		<RequiredMissions>HeadToTheGlades,HeadToTheGladesHard</RequiredMissions>
-		<LockedMessage>^t Another Dreadfold Portal. Like one icinde Fel Koprusu, but closed.=^t bir shortcut dehset doppelganger these cayirlar?=^t ac this gate, I must cross into Dreadfold by Fel Koprusu Portal.=^t ve bul this portal's twin icinde dehset Zumrut Cayirlari.</LockedMessage>
+		<LockedMessage>^t bir powerful buyu seals this entrance.=^t I still need ogren daha about uyuyan topraklar.</LockedMessage>
+		<CompletedMissions>Capstone</CompletedMissions>
 	</DoorType>
 	<DoorType>
 		<MapName>EmeraldGlades</MapName>
@@ -647,8 +647,8 @@
 		<DoorID>300</DoorID>
 		<TargetMapName>ShazariDesertHard</TargetMapName>
 		<TargetDoorID>300</TargetDoorID>
-		<RequiredMissions>IntoTheDepths,IntoTheDepthsHard</RequiredMissions>
-		<LockedMessage>^t Another Dreadfold Portal. Like one icinde Fel Koprusu, but closed=^t bir shortcut dehset Shazari, yok doubt=^t ac this gate, I can cross into Dreadfold by Fel Koprusu Portal=^t Then make benim way this portal's twin icinde dehset Shazari=^t Do I dare?</LockedMessage>
+		<LockedMessage>^t bir powerful buyu seals this entrance.=^t I still need ogren daha about uyuyan topraklar.</LockedMessage>
+		<CompletedMissions>Capstone</CompletedMissions>
 	</DoorType>
 	<DoorType>
 		<MapName>ShazariDesert</MapName>
@@ -709,8 +709,8 @@
 		<DoorID>300</DoorID>
 		<TargetMapName>JadeCityHard</TargetMapName>
 		<TargetDoorID>300</TargetDoorID>
-		<RequiredMissions>HeadToValhaven,HeadToValhavenHard</RequiredMissions>
-		<LockedMessage>^t Another Dreadfold Portal. Like one icinde Fel Koprusu, but closed=^t bir shortcut dehset Val Limani, yok doubt=^t ac this gate, I can cross into Dreadfold by Fel Koprusu Portal=^t Then make benim way this portal's twin icinde dehset Val Limani=^t Do I dare?</LockedMessage>
+		<LockedMessage>^t bir powerful buyu seals this entrance.=^t I still need ogren daha about uyuyan topraklar.</LockedMessage>
+		<CompletedMissions>Capstone</CompletedMissions>
 	</DoorType>
 	<DoorType>
 		<MapName>JadeCity</MapName>
@@ -1325,8 +1325,6 @@
 		<DoorID>300</DoorID>
 		<TargetMapName>EmeraldGlades</TargetMapName>
 		<TargetDoorID>300</TargetDoorID>
-		<RequiredMissions>HeadToTheGlades,HeadToTheGladesHard</RequiredMissions>
-		<LockedMessage>^t Another Dreadfold Portal. Like one icinde Fel Koprusu, but closed=^t bir shortcut dehset doppelganger these cayirlar?=^t ac this gate, I must cross into Dreadfold by Fel Koprusu Portal=^t ve bul this portal's twin icinde dehset Zumrut Cayirlari</LockedMessage>
 	</DoorType>
 	<DoorType>
 		<MapName>EmeraldGladesHard</MapName>
@@ -1453,8 +1451,6 @@
 		<DoorID>300</DoorID>
 		<TargetMapName>ShazariDesert</TargetMapName>
 		<TargetDoorID>300</TargetDoorID>
-		<RequiredMissions>IntoTheDepths,IntoTheDepthsHard</RequiredMissions>
-		<LockedMessage>^t Titus should be able tell beni about this strange door.=^t I saw him back west.</LockedMessage>
 	</DoorType>
 	<DoorType>
 		<MapName>ShazariDesertHard</MapName>
@@ -1515,8 +1511,6 @@
 		<DoorID>300</DoorID>
 		<TargetMapName>JadeCity</TargetMapName>
 		<TargetDoorID>300</TargetDoorID>
-		<RequiredMissions>HeadToValhaven,HeadToValhavenHard</RequiredMissions>
-		<LockedMessage>^t Another Dreadfold Portal. Like one icinde Fel Koprusu, but closed=^t bir shortcut dehset Val Limani, yok doubt=^t ac this gate, I can cross into Dreadfold by Fel Koprusu Portal=^t Then make benim way this portal's twin icinde dehset Val Limani=^t Do I dare?</LockedMessage>
 	</DoorType>
 	<DoorType>
 		<MapName>JadeCityHard</MapName>
