@@ -17,8 +17,15 @@ const EXACT_PHRASES = new Map(Object.entries({
     'Client Error': 'Istemci Hatasi',
     'Must be level': 'Seviye gerekli',
     'Busy upgrading': 'Yukseltme suruyor',
+    Template: 'Sablon',
+    template: 'Sablon',
+    Nothing: 'Yok',
+    UNUSED: 'Kullanilmiyor.',
+    Temp: 'Gecici aciklama.',
     'Party Chat': 'Grup Sohbeti',
     'Guild Chat': 'Lonca Sohbeti',
+    Name: 'Ad',
+    Description: 'Aciklama',
     'Left': 'Sol',
     'Right': 'Sag',
     'Jump': 'Zipla',
@@ -87,6 +94,19 @@ const EXACT_PHRASES = new Map(Object.entries({
     'Swift Poach': 'Cevik Avci',
     'Swift Artisan': 'Cevik Zanaatkar',
     'Treasure Hunter': 'Hazine Avcisi',
+    'Tome of Power': 'Guc Kitabi',
+    'Magic Forge': 'Buyu Ocagi',
+    'Flamefury Dais': 'Alev Ofkesi Kursusu',
+    'Stormgaze Refuge': 'Firtina Gozeri Siginagi',
+    'Templar Citadel': 'Tapinakci Hisari',
+    'Coldsnap Conduit': 'Ayaz Kanali',
+    'Magmaheart Furnace': 'Magma Yuregi Firini',
+    'Necromancer Tower': 'Olucagiran Kulesi',
+    'Elysian Soultrap': 'Elysian Ruh Tuzagi',
+    'Twisted Nethertotem': 'Carpik Nether Totemi',
+    'Soulthief Lair': 'Ruh Hirsizi Ini',
+    "Hero's Keep": 'Kahramanin Hisari',
+    Hatchery: 'Kuluckahane',
     '+2.3% Movement Speed': '+%2.3 hareket hizi',
     '+10% Gear Finding': '+%10 ekipman bulma sansi',
     '+10% Gold Finding': '+%10 altin bulma sansi',
@@ -105,10 +125,158 @@ const EXACT_PHRASES = new Map(Object.entries({
     'Resets your talent stones.': 'Yetenek taslarini sifirlar.',
     'Charm Remover': 'Tilsim Sokucu',
     'Removes a Charm from an item.': 'Bir esyadan tilsimi sokar.',
+    'Potion of Gold Find': 'Altin Bulma Iksiri',
+    'Potion of Material Find': 'Malzeme Bulma Iksiri',
+    'Potion of XP Boost': 'XP Artis Iksiri',
+    'Potion of Triple Find': 'Uclu Bulma Iksiri',
+    'Potion of Gear Find': 'Ekipman Bulma Iksiri',
+    'Potion of XP Boost x3': 'XP Artis Iksiri X3',
+    'Potion of Material Find x3': 'Malzeme Bulma Iksiri X3',
+    'Potion of Gold Find x3': 'Altin Bulma Iksiri X3',
+    'Potion of Gear Find x3': 'Ekipman Bulma Iksiri X3',
+    'Tinker\'s Spirit': 'Zanaatkar Ruhu',
+    'Heart Furnace': 'Yurek Firini',
+    'Arcane Chew Bone': 'Gizemli Cigneme Kemigi',
+    'Use in Forge to guarantee a <font color=\'#0099FF\'>Rare</font> charm': "Ocakta <font color='#0099FF'>nadir</font> bir tilsimi garanti eder",
+    'Use in Forge to guarantee <font color=\'#0099FF\'>Rare</font> charm and add a 50% chance to make it <font color=\'#F8DD45\'>Legendary</font>': "Ocakta <font color='#0099FF'>nadir</font> bir tilsimi garanti eder ve <font color='#F8DD45'>efsanevi</font> olmasi icin %50 sans ekler",
+    'Use in Forge to guarantee a <font color=\'#F8DD45\'>Legendary</font> charm': "Ocakta <font color='#F8DD45'>efsanevi</font> bir tilsimi garanti eder",
+    'Immediately gain 4000 Tinker XP': 'Hemen 4000 Zanaatkar XP kazanirsin',
+    'Adds 50% to your Gold Find for 1-2 dungeons': '1-2 zindan boyunca altin bulma sansini %50 artirir',
+    'Adds 50% to your Material Find for 1-2 dungeons': '1-2 zindan boyunca malzeme bulma sansini %50 artirir',
+    'Adds 50% to your XP Boost for 1-2 dungeons': '1-2 zindan boyunca XP kazancini %50 artirir',
+    'Adds 50% to your Gear Find for 1-2 dungeons': '1-2 zindan boyunca ekipman bulma sansini %50 artirir',
+    'Adds 75% to your XP, Material and Gold Find for 1-2 dungeons': '1-2 zindan boyunca XP, malzeme ve altin bulma sansini %75 artirir',
+    'Instantly revive with a Power Surge; a buff granting the user full mana and a boost in damage for a short period of time': 'Guc Dalgasi ile aninda diriltir; kisa sureligine tam mana ve hasar artisi verir',
+    'Gives your pet 60,000 XP and grants your pet a level.': 'Evcilline 60.000 XP verir ve bir seviye kazandirir.',
+    'Gives your pet 30,000 XP': 'Evcilline 30.000 XP verir',
+    'Owls like this are said to be able to read your fate. This owl\'s big eyes study you closely.': 'Bu tur baykuslarin kaderi okuyabildigi soylenir. Bu baykus iri gozleriyle seni dikkatle inceler.',
+    'Jack-Os have distinct personalities. This one seems menacing.': 'Jack-O\'larin kendine ozgu kisilikleri vardir. Bu biraz tehditkar gorunuyor.',
+    'Jack-Os have distinct personalities. This one keeps staring at you with its lazy eye.': 'Jack-O\'larin kendine ozgu kisilikleri vardir. Bu kayik gozuyla surekli sana bakiyor.',
+    'Jack-Os have distinct personalities. This one is happy way too much.': 'Jack-O\'larin kendine ozgu kisilikleri vardir. Bu gereginden fazla neseli.',
     'Eye of Discovery': 'Kesif Gozu',
     'Gleaming Shard': 'Parildayan Parca',
     'Shimmering Fragment': 'Isildayan Kirinti',
     'Twilight Sliver': 'Alacakaranlik Kiyimi',
+    'Massive Scale': 'Dev Pul',
+    'Dragon Talon': 'Ejderha Pencesi',
+    'Skull of the Gods': 'Tanrilarin Kafatasi',
+    'Conjured Flame': 'Cagrilmis Alev',
+    'Ruby Charm': 'Yakut Tilsim',
+    'Drakefire Talisman': 'Ejder Atesi Tilsimi',
+    'Smooth Scales': 'Duzgun Pullar',
+    'Lizard Tooth': 'Kertenkele Disi',
+    'Bloodguard Bracers': 'Kan Muhafizi Bileklikleri',
+    'Raptor Scales': 'Yirtici Pullari',
+    'Severed Talon': 'Kopmus Pence',
+    'Eye of the Wild': 'Vahsin Gozu',
+    'Wyrm Tail': 'Ejder Kuyrugu',
+    'Thick Hide': 'Kalin Deri',
+    'Bellow Gland': 'Kukreme Bezi',
+    'Unholy Sutures': 'Lanetli Dikisler',
+    'Accursed Heart': 'Lanetli Kalp',
+    'Maw of Madness': 'Delilik Agzi',
+    'Construct Gear': 'Yapi Dislisi',
+    'Construct Oil': 'Yapi Yagi',
+    'Ancient Power Core': 'Kadim Guc Cekirdegi',
+    'Demonic Fur': 'Iblis Kurku',
+    'Brutal Horns': 'Vahsi Boynuzlar',
+    'Bitter Soul': 'Aci Ruh',
+    'Dread Steel': 'Dehset Celigi',
+    'Ancient Emblem': 'Kadim Amblem',
+    'Dreadnaught Doubloon': 'Dehset Akcesi',
+    'Runed Pages': 'Runlu Sayfalar',
+    'Profane Sigil': 'Kutsal Olmayan Muhur',
+    'Infernal Focus': 'Cehennem Odagi',
+    'Sharp Claw': 'Keskin Pence',
+    'Broken Spear Tip': 'Kirik Mizrak Ucu',
+    "Lucky Imp's Foot": 'Sansli Imp Ayagi',
+    'Little Wing': 'Kucuk Kanat',
+    'Acrid Ichor': 'Keskin Ichor',
+    'Extract of the Third Eye': 'Ucuncu Goz Ozu',
+    Dolcite: 'Dolsit',
+    Woomerite: 'Woomerit',
+    Hamilite: 'Hamilit',
+    'Shade Stone': 'Golge Tasi',
+    'Dark Talisman': 'Kara Tilsim',
+    'Void Matter': 'Bosluk Maddesi',
+    'Black Soot': 'Kara Is',
+    Emberheart: 'Kor Yurek',
+    'Everburning Stone': 'Sonsuz Yanan Tas',
+    'Oasis Water': 'Vaha Suyu',
+    "Giant's Shard": 'Dev Parcasi',
+    'Moonglow Harvest': 'Ay Isigi Hasadi',
+    'Brilliant Feather': 'Parlak Tuy',
+    'Griffon Talon': 'Griffon Pencesi',
+    'Mysterious Griffon Egg': 'Gizemli Griffon Yumurtasi',
+    'Plate Steel': 'Levha Celik',
+    'Defused Bomb': 'Etkisizlestirilmis Bomba',
+    'Mithian Parchment': 'Mithian Parsomeni',
+    'Worn Leather': 'Yipranmis Deri',
+    'Imperial Talisman': 'Imparatorluk Tilsimi',
+    'Lost Imperial Coin': 'Kayip Imparatorluk Sikkesi',
+    'Lion Pelt': 'Aslan Postu',
+    'Ring of Pride': 'Gurur Yuzugu',
+    'Regal Pendant': 'Kraliyet Kolyesi',
+    'Shattered Hoof': 'Parcalanmis Toynak',
+    'Minotaur Horn': 'Minotor Boynuzu',
+    'Golden Nosering': 'Altin Burun Halkasi',
+    'Wolf Pelt': 'Kurt Postu',
+    'Black Talon': 'Kara Pence',
+    'Golden Earring': 'Altin Kupe',
+    'Cavebat Fur': 'Magara Yarasa Kurku',
+    'Bloodbat Fathom': 'Kan Yarasa Derinligi',
+    'Duskwing Talons': 'Alacak Kanat Penceleri',
+    'Devourer Pulp': 'Yutucu Oz',
+    'Medicinal Root': 'Sifali Kok',
+    'Magic Bean': 'Buyulu Fasulye',
+    'Charred Bark': 'Komurlesmis Kabuk',
+    'Singed Staffhead': 'Yanmis Asa Basi',
+    'Wildgrowth Blossom': 'Yaban Buyume Cicegi',
+    Carapace: 'Kabuk',
+    'Scarab Horn': 'Bokbocegi Boynuzu',
+    'Vision of the Tomb': 'Mezar Gorusu',
+    'Spider Leg': 'Orumcek Bacagi',
+    'Poison Gland': 'Zehir Bezi',
+    'Death Silk': 'Olum Ipegi',
+    'Efflorescence Roots': 'Ciceklenme Kokleri',
+    'Golden Leaf': 'Altin Yaprak',
+    'Seed of Seasons': 'Mevsimler Tohumu',
+    'Bone Zemi Fragment': 'Kemik Zemi Parcasi',
+    'Earthen Phylactery': 'Toprak Filakteri',
+    'Hand of the Mountain': 'Dagin Eli',
+    'Tiny Teeth': 'Minik Disler',
+    'Pure Obsidilite': 'Saf Obsidilit',
+    'Shadow Ring': 'Golge Yuzugu',
+    'Yak Jerky': 'Kurutulmus Yak Eti',
+    'Felsilk Bolt': 'Fel Ipegi Topu',
+    'Onyx Goblin Dagger': 'Oniks Goblin Hanceri',
+    'Silver Nugget': 'Gumus Parca',
+    'Gold Nugget': 'Altin Parca',
+    'Korgold Ingot': 'Korgold Kulcesi',
+    'Tattered Rags': 'Yirtik Caputlar',
+    'Imp Tail': 'Imp Kuyrugu',
+    'Abyssal Fang': 'Ucurum Disi',
+    'Tuft of Hair': 'Sac Tutami',
+    'Ratling Tail': 'Ratling Kuyrugu',
+    'Troglodyte Talisman': 'Troglodit Tilsimi',
+    'Ivory Scale': 'Fildisi Pul',
+    'Emerald Dream': 'Zumrut Ruya',
+    'Stone of Whispers': 'Fisildayan Tas',
+    'Chilling Air': 'Dondurucu Hava',
+    'Phantom Heart': 'Hayalet Kalbi',
+    'Timeworn Flax': 'Zamanla Eskimis Keten',
+    'Ancient Linen': 'Kadim Keten',
+    'Sand of the Ancients': 'Kadimlerin Kumu',
+    'Splintered Bone': 'Kiymikli Kemik',
+    'Spellbonded Femur': 'Buyu Bagli Uyluk Kemigi',
+    'Laughing Skull': 'Gulen Kafatasi',
+    'Aetheric Heart': 'Esir Kalbi',
+    'Ethereal Strands': 'Ruhani Lifler',
+    'Spirit Stone': 'Ruh Tasi',
+    Ectoplasm: 'Ektoplazma',
+    'Spectral Essence': 'Hayalet Ozu',
+    'Vehement Netherstone': 'Siddetli Nether Tasi',
+    'Candy Corn': 'Cadilar Sekeri',
     '+8% Gear Find': '+%8 ekipman bulma sansi',
     '+8% Gear Finding': '+%8 ekipman bulma sansi',
     '+8% Gold Finding;+8% Gear Find;+4% Critical Chance': '+%8 altin bulma sansi;+%8 ekipman bulma sansi;+%4 kritik sans',
@@ -1449,6 +1617,20 @@ function formatModifierAmount(amount) {
     return text.endsWith('%') ? `%${text.slice(0, -1)}` : text;
 }
 
+function localizeDamageSchool(source) {
+    const key = String(source ?? '').trim().toLowerCase();
+    const labels = new Map(Object.entries({
+        air: 'hava',
+        death: 'olum',
+        earth: 'toprak',
+        fire: 'ates',
+        ice: 'buz',
+        life: 'yasam',
+        mythic: 'efsanevi'
+    }));
+    return labels.get(key) || lowerFirst(localizePowerEffectLabel(source));
+}
+
 function modifierNoun(property) {
     const key = String(property ?? '').trim().toLowerCase();
     if (['damage', 'melee damage', 'poison damage', 'base damage', 'dot'].includes(key)) {
@@ -1558,6 +1740,22 @@ function localizePowerSentence(source) {
         'Enchant an ally with an aura that heals nearby friends and damages foes over time.': 'Bir muttefigi, yakindaki dostlari iyilestiren ve dusmanlara zamanla hasar veren bir aurayla guclendirir.',
         'Your basic attacks explode with energy, healing allies and harming foes': 'Temel saldirilar enerjiyle patlar; muttefikleri iyilestirir ve dusmanlara zarar verir',
         'Your basic attacks channel divine energy, healing allies and harming foes': 'Temel saldirilar ilahi enerji kanalize eder; muttefikleri iyilestirir ve dusmanlara zarar verir',
+        'Summon Mighty flaming fists to pummel your foes. Deals extra damage to Ignited targets.': 'Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.',
+        'Summon mighty flaming fists to pummel your foes. Deals extra damage to Ignited targets.': 'Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.',
+        'Smash and Taunt your foes with a wave attack.': 'Dalga saldirisiyla dusmanlari ezer ve kiskirtir.',
+        'Return some damage back to your attackers. Gain increased Hate for the duration.': 'Saldirganlara aldigin hasarin bir kismini geri yansitir. Sure boyunca nefret kazanimin artar.',
+        "Your party's attacks apply Scorched and gain bonus damage against Scorched targets.": 'Grubunun saldirilari Kavrulmus uygular ve Kavrulmus hedeflere karsi bonus hasar kazanir.',
+        'Shroud yourself with shadow energy. Your next attack will deal bonus damage and end the effect.': 'Kendini golge enerjisiyle sarar. Sonraki saldirin bonus hasar verir ve etkiyi bitirir.',
+        'Leaps to target dealing damage at take off and impact. Deals extra damage to Ignited targets.': 'Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.',
+        'Leaps to target dealing damage at take off and impact. Deals extra damage to Ignited targets': 'Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.',
+        'Enchant your basic attacks with powerful ice effects.': 'Temel saldirilarini guclu buz etkileriyle buyuler.',
+        'Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target.': 'Yakindaki dusmanlari keser ve hedef basina en fazla 3 Kanama yukunu kaldirir. Kaldirilan Kanama hedefe ek hasar verir.',
+        'Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets': 'Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Zehirlenmis hedeflere ek hasar verir.',
+        'Curse your foe from a distance and deal additional damage for conditions on it (positive and negative).': 'Dusmani uzaktan lanetler ve uzerindeki olumlu ya da olumsuz kosullara gore ek hasar verir.',
+        'Strike your foe from a distance and deal additional damage for conditions on it (positive and negative).': 'Dusmana uzaktan vurur ve uzerindeki olumlu ya da olumsuz kosullara gore ek hasar verir.',
+        'Enchant your staff to fire meteors for the next #dur# seconds. Meteors deal heavy damage on impact to all nearby foes.': 'Asani #dur# saniye boyunca meteor firlatacak sekilde buyuler. Meteorlar carptiginda yakindaki tum dusmanlara agir hasar verir.',
+        'Summon a Spirit of Flame that shoots at your targets. Gain increased Damage but reduced Defense for the duration.': 'Hedeflerine ates eden bir Alev Ruhu cagirir. Sure boyunca hasarin artar ama savunman azalir.',
+        'Stance: For duration, radiates Enfeeble. Attacks deal extra damage based on how hurt caster is. Caster is immune to heal while active.': 'Durus: Sure boyunca Gucsuzlestirme yayar. Saldirilar, kullananin yaralilik durumuna gore ek hasar verir. Aktifken iyilestirmeye bagisiktir.',
         'Heals allies in an area and Blinds foes': 'Alandaki muttefikleri iyilestirir ve dusmanlari kor eder',
         'Strike a foe with an explosive lance, bathing enemies in the area with Holy Fire': 'Patlayici bir mizrakla dusmana vurur ve alandaki dusmanlari kutsal atese bogar',
         'Strike a foe with an explosive lance, Staggering and bathing enemies in the area with Holy Fire': 'Patlayici bir mizrakla dusmana vurur; hedefi sarsar ve alandaki dusmanlari kutsal atese bogar',
@@ -1732,14 +1930,64 @@ function localizePowerSentence(source) {
         'Fires a projectile that applies Cripple, Bind, Weaken and Armor Bane.': 'Sakatlama, Baglama, Zayiflatma ve Zirh Kirici uygulayan bir mermi firlatir.',
         'Fires a projectile that applies Cripple, Bind, Weaken and Armor Bane. Dazes if cast out of Stealth': 'Sakatlama, Baglama, Zayiflatma ve Zirh Kirici uygulayan bir mermi firlatir. Gizlilikten cikarken kullanilirsa hedefi afallatir.',
         'Summon two Shadow Clones to fight alongside you.': 'Yaninda savasacak iki Golge Klonu cagirir.',
-        'Shroud yourself with shadow energy. Your next attack will deal bonus damage and end the effect.': 'Kendini golge enerjisiyle sarar. Sonraki saldirin bonus hasar verir ve etkiyi bitirir.',
+        'Summon a pair of melee Undead minions to fight at your command for 8 seconds': 'Emrinde 8 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir',
+        'Summon a pair of melee Undead minions to fight at your command for 10 seconds': 'Emrinde 10 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir',
+        'Summon a pair of melee Undead minions to fight at your command for 12 seconds': 'Emrinde 12 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir',
+        'Summon a ranged Undead minion to fight at your command for 8 seconds': 'Emrinde 8 saniye savasacak menzilli bir olumsuz hizmetkar cagirir',
+        'Summon a ranged Undead minion to fight at your command for 10 seconds': 'Emrinde 10 saniye savasacak menzilli bir olumsuz hizmetkar cagirir',
+        'Summon a ranged Undead minion to fight at your command for 12 seconds': 'Emrinde 12 saniye savasacak menzilli bir olumsuz hizmetkar cagirir',
+        'Summon a ranged Undead minion to fight at your command for 14 seconds': 'Emrinde 14 saniye savasacak menzilli bir olumsuz hizmetkar cagirir',
+        'Deliver an strike that Enfeebles your target, applying a 30% Strength Debuff': 'Hedefi Gucsuzlestiren ve %30 guc zayiflatmasi uygulayan bir darbe indirir',
+        'Stab your target and apply a 20% Defense Debuff': 'Hedefi bicaklar ve %20 savunma zayiflatmasi uygular',
+        'Strike your foes and apply Weaken, Cripple and Armor Bane.': 'Dusmanlara vurur; Zayiflatma, Sakatlama ve Zirh Kirici uygular.',
+        'Dash forward, damaging and applying 2 stacks of Bleed to every enemy in your path.': 'Ileri atilir; yolundaki her dusmana hasar verir ve 2 Kanama yuku uygular.',
+        'Deliver three slashing blows to your target for #dmg# damage.': 'Hedefe #dmg# hasar veren uc kesici darbe indirir.',
+        'Chance to increase your speed for a short time': 'Kisa sureligine hizini artirma sansi verir',
+        'Summons your pet.': 'Evcillini cagirir.',
+        'Dismisses your active pet.': 'Aktif evcillini gonderir.',
+        "Pecks at target's eyes, debilitating them.": 'Hedefin gozlerine saldirir ve onu gucsuzlestirir.',
+        'Creates a decoy that distracts your enemies.': 'Dusmanlarinin dikkatini dagitan bir sahte hedef olusturur.',
+        'Damages your foes with powerful Storm Breath.': 'Guclu Firtina Nefesiyle dusmanlara hasar verir.',
+        'Assaults your enemies with a barrage of fireballs.': 'Dusmanlara ates topu yagmuruyla saldirir.',
+        'Swoops past your enemies, damaging them.': 'Dusmanlarinin yanindan dalis yapar ve onlara hasar verir.',
+        'Frightens your enemies, Weakening them briefly.': 'Dusmanlarini korkutur ve kisa sureligine zayiflatir.',
+        'Makes you and your friends stronger and faster.': 'Seni ve dostlarini daha guclu ve daha hizli yapar.',
+        'Grants you and your allies extra Defense.': 'Sana ve muttefiklerine ek savunma verir.',
+        'Heals and Cleanses you and your allies.': 'Seni ve muttefiklerini iyilestirir ve arindirir.',
+        'Explodes, Burning your enemies.': 'Patlar ve dusmanlarini yakar.',
+        'Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health.': 'Zehir, Zirh Kirici ve Kanama uygular. Hedefin eksik canina gore bonus hasar verir.',
+        'Applies Poison, Armor Bane, and 3 stacks of Bleed. Deals bonus damage to target based on missing health.': 'Zehir, Zirh Kirici ve 3 Kanama yuku uygular. Hedefin eksik canina gore bonus hasar verir.',
+        'Version of FrostArmorIce that can be played upside-down and sideways.': 'Buz Zirhi etkisinin ters ve yan oynatilabilen surumudur.',
+    'Steal health from a nearby foe': 'Yakindaki bir dusmandan can emer',
+    'Deliver a venomous strike that applies Weaken, Cripple and Armor Bane.': 'Zayiflatma, Sakatlama ve Zirh Kirici uygulayan zehirli bir darbe indirir.',
+    'If Stealthed, Dazes the target.': 'Gizlilikteysen hedefi afallatir.',
+    'Call a Frost Troll to fight with you.': 'Seninle savasmasi icin bir Ayaz Trolu cagirir.',
+    'Proc used for melee crit damage.': 'Yakin dovus kritik hasari icin kullanilan tetikleme.',
+    'Proc used in place of standard damage when a glancing blow occurs.': 'Siyirma darbesi olustugunda standart hasar yerine kullanilan tetikleme.',
+    'Entangles nearby enemies in patchwork rags.': 'Yakindaki dusmanlari yamali caputlarla sarar.',
+    'Vampiric Proc used by Lifethirst': 'Yasam Susuzlugu tarafindan kullanilan vampirik tetikleme.',
+    'Vampiric pet heal Proc used by Lifethirst': 'Yasam Susuzlugu tarafindan kullanilan vampirik evcil iyilestirme tetiklemesi.',
+    'Vampiric Proc used by Devour': 'Yutma tarafindan kullanilan vampirik tetikleme.',
+    'Vampiric Proc used by Reaper': 'Bicakci tarafindan kullanilan vampirik tetikleme.',
+    'Vampiric Proc used by BloodBond talent': 'Kan Bagi yetenegi tarafindan kullanilan vampirik tetikleme.',
+    'Dash used by Shadow Clones': 'Golge Klonlari tarafindan kullanilan atilma.',
+    'Restore Health on critical hit': 'Kritik vurusta can yeniler',
+    'Chance to recover lost health': 'Kaybedilen cani geri kazanma sansi verir',
+    'Summons a Jack-O that follows you around.': 'Seni takip eden bir Jack-O cagirir.',
+    'Summons a gargoyle that follows you around.': 'Seni takip eden bir gargoyle cagirir.',
+    'Summons a Dragonette that follows you around.': 'Seni takip eden bir kucuk ejder cagirir.',
+    'Summons a Spirit that follows you around.': 'Seni takip eden bir ruh cagirir.',
+    'Summons a floating skull that follows you around.': 'Seni takip eden ucan bir kafatasi cagirir.',
+    'Shroud yourself with shadow energy. Your next attack will deal bonus damage and end the effect.': 'Kendini golge enerjisiyle sarar. Sonraki saldirin bonus hasar verir ve etkiyi bitirir.',
         'Release a debilitating cloud that Weakens and Blinds your foes.': 'Dusmanlarini zayiflatan ve kor eden gucsuzlestirici bir bulut salar.',
         'Release a debilitating cloud that Weakens your foes.': 'Dusmanlarini zayiflatan gucsuzlestirici bir bulut salar.',
         'Dash forward, leaving behind a debilitating cloud that slows and lowers enemy defenses.': 'Ileri atilir ve ardinda dusmanlari yavaslatip savunmalarini dusuren gucsuzlestirici bir bulut birakir.',
         'Create a Shadow Clone that launches an attack on foes around it': 'Etrafindaki dusmanlara saldiran bir Golge Klonu olusturur',
         'Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive.': 'Etrafindaki dusmanlara saldiran bir Golge Klonu olusturur. Bu dikkat daginikligini kullanarak yakalanmasi zor hale gelirsin.',
         'Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive.': 'Etrafindaki dusmanlara sarsici bir saldiri yapan Golge Klonu olusturur. Bu dikkat daginikligini kullanarak yakalanmasi zor hale gelirsin.',
-        'End Sacrifice stance.': 'Fedakarlik durusu biter.'
+        'End Sacrifice stance.': 'Fedakarlik durusu biter.',
+        'Stance: For duration, casts from health instead of mana. Immune to healing while active.': 'Durus: Sure boyunca mana yerine can harcar. Aktifken iyilestirmeye bagisik olur.',
+        'Not in use. Increased speed and melee damage.': 'Kullanimda degil. Hiz ve yakin dovus hasari artar.'
     }).map(([key, target]) => [key.replace(/\.$/, '').trim(), target]));
 
     const exactValue = exact.get(value.replace(/\.$/, '').trim());
@@ -1747,7 +1995,122 @@ function localizePowerSentence(source) {
         return normalizeAscii(exactValue);
     }
 
-    let match = value.match(/^Increases maximum number of (.+?) Stacks$/i)
+    let match = value.match(/^(-?\d+)\s+Second Cooldown\. (\d+)% Defense Boost\. \+(\d+)% Durability\.?$/i);
+    if (match) {
+        return cleanPowerText(`Bekleme suresi ${Math.abs(Number(match[1]))} saniye azalir. %${match[2]} savunma artisi ve %${match[3]} dayaniklilik kazanir.`);
+    }
+
+    match = value.match(/^(-?\d+)\s+Second Cooldown\. (\d+)% Bonus Damage\.?$/i);
+    if (match) {
+        return cleanPowerText(`Bekleme suresi ${Math.abs(Number(match[1]))} saniye azalir. Ek hasar %${match[2]} artar.`);
+    }
+
+    match = value.match(/^(-?\d+)\s+Second Cooldown\. Increased Explosion Damage\.?$/i);
+    if (match) {
+        return cleanPowerText(`Bekleme suresi ${Math.abs(Number(match[1]))} saniye azalir. Patlama hasari artar.`);
+    }
+
+    match = value.match(/^(-?\d+)\s+Second Cooldown\. Explosion Staggers targets\.?$/i);
+    if (match) {
+        return cleanPowerText(`Bekleme suresi ${Math.abs(Number(match[1]))} saniye azalir. Patlama hedefleri sarsar.`);
+    }
+
+    match = value.match(/^Increased Explosion Damage\.?$/i);
+    if (match) {
+        return 'Patlama hasari artar.';
+    }
+
+    match = value.match(/^(\d+)% Defense Boost from shield\. \+(\d+)% Shield Durability\.?$/i);
+    if (match) {
+        return cleanPowerText(`Kalkandan %${match[1]} savunma artisi ve %${match[2]} kalkan dayanikliligi kazanir.`);
+    }
+
+    match = value.match(/^\+(\d+)% Durability\.?$/i);
+    if (match) {
+        return cleanPowerText(`Dayaniklilik %${match[1]} artar.`);
+    }
+
+    match = value.match(/^([+-]?\d+)% Increased max HP\.?$/i);
+    if (match) {
+        return cleanPowerText(`Azami can %${match[1].replace(/^\+/, '')} artar.`);
+    }
+
+    match = value.match(/^([+-]?\d+)% Increased healing received\.?$/i);
+    if (match) {
+        return cleanPowerText(`Alinan iyilestirme %${match[1].replace(/^\+/, '')} artar.`);
+    }
+
+    match = value.match(/^([+-]?\d+)% Resist (Air|Death|Earth|Fire|Ice|Life) damage\.?$/i);
+    if (match) {
+        return cleanPowerText(`${localizeDamageSchool(match[2])} direnci %${match[1].replace(/^\+/, '')} artar.`);
+    }
+
+    match = value.match(/^([+-]?\d+)% Damage to (Air|Death|Earth|Fire|Ice|Life|Mythic) creatures\.?$/i);
+    if (match) {
+        return cleanPowerText(`${localizeDamageSchool(match[2])} yaratiklara karsi hasar %${match[1].replace(/^\+/, '')} artar.`);
+    }
+
+    match = value.match(/^Adds Chilblains to ice-debuffed targets\.?$/i);
+    if (match) {
+        return 'Buz zayiflatmasi altindaki hedeflere Soguk Yaralari ekler.';
+    }
+
+    match = value.match(/^Adds (?:a|another) stack of Chilblains (?:to|vs) ice-debuffed targets\.?$/i);
+    if (match) {
+        return 'Buz zayiflatmasi altindaki hedeflere bir Soguk Yaralari yuku ekler.';
+    }
+
+    match = value.match(/^Ice-debuffed targets gain Chilblains\.?$/i);
+    if (match) {
+        return 'Buz zayiflatmasi altindaki hedefler Soguk Yaralari kazanir.';
+    }
+
+    match = value.match(/^\+(\d+)% Wyrm HP\. \+(\d+)% Bonus Damage vs Ice-Debuffed targets\.?$/i);
+    if (match) {
+        return cleanPowerText(`Ejder cani %${match[1]} artar. Buz zayiflatmasi altindaki hedeflere karsi ek hasar %${match[2]} artar.`);
+    }
+
+    match = value.match(/^\+(\d+)% Wyrm Damage\. \+(\d+)% Bonus Damage vs Ice-Debuffed targets\.?$/i);
+    if (match) {
+        return cleanPowerText(`Ejder hasari %${match[1]} artar. Buz zayiflatmasi altindaki hedeflere karsi ek hasar %${match[2]} artar.`);
+    }
+
+    match = value.match(/^\+(\d+)% trail Damage\.?$/i);
+    if (match) {
+        return cleanPowerText(`Iz hasari %${match[1]} artar.`);
+    }
+
+    match = value.match(/^Increased trail distance\.?$/i);
+    if (match) {
+        return 'Iz mesafesi artar.';
+    }
+
+    match = value.match(/^Add Scorch to trail\.?$/i);
+    if (match) {
+        return 'Ize Kavurma etkisi ekler.';
+    }
+
+    match = value.match(/^Increased dash Damage\s*(#\w+#)?\.?$/i);
+    if (match) {
+        return cleanPowerText(`Atilma hasari${match[1] ? ` ${match[1]}` : ''} artar.`);
+    }
+
+    match = value.match(/^Increased bonus damage\.?$/i);
+    if (match) {
+        return 'Ek hasar artar.';
+    }
+
+    match = value.match(/^Adds Bleed to opening hit\.?$/i);
+    if (match) {
+        return 'Acilis vurusu Kanama uygular.';
+    }
+
+    match = value.match(/^\+(\d+)% Stealth Bonus Damage\.?$/i);
+    if (match) {
+        return cleanPowerText(`Gizlilik bonus hasari %${match[1]} artar.`);
+    }
+
+    match = value.match(/^Increases maximum number of (.+?) Stacks$/i)
         || value.match(/^Increases Maximum Number of (.+?) Stacks$/i)
         || value.match(/^Increases Maximum number of (.+?) Stacks$/i);
     if (match) {
@@ -1797,6 +2160,83 @@ function localizePowerSentence(source) {
     match = value.match(/^Increases Elemental Critical Effects$/i);
     if (match) {
         return 'Elemental kritik etkiler artar.';
+    }
+
+    match = value.match(/^([+-]?(?:\d+(?:\.\d+)?|\.\d+))\s+Seconds?\s+(.+?)\s+duration\s+and\s+Adds\s+(.+?)\.?$/i);
+    if (match) {
+        const amount = match[1].replace(/^\+/, '').replace(/^\./, '0.');
+        return cleanPowerText(`${localizePowerEffectLabel(match[2])} suresi ${amount} saniye artar ve ${lowerFirst(localizePowerEffectLabel(match[3]))} ekler.`);
+    }
+
+    match = value.match(/^Combo from (.+?)\.?$/i);
+    if (match) {
+        return cleanPowerText(`${localizePowerDisplayName(match[1])} kombosundan gelir.`);
+    }
+
+    match = value.match(/^Proc for damage from (.+?)\.?$/i);
+    if (match) {
+        return cleanPowerText(`${localizePowerDisplayName(match[1])} hasari icin tetiklenir.`);
+    }
+
+    match = value.match(/^Strength and Speed Debuff increased to\s+(.+?)%\.?$/i);
+    if (match) {
+        return cleanPowerText(`Guc ve hiz zayiflatmasi %${match[1]} olur.`);
+    }
+
+    match = value.match(/^(-?\d+)\s+Second Cooldown\. Strength and Speed Debuff increased to\s+(.+?)%\.?$/i);
+    if (match) {
+        return cleanPowerText(`Bekleme suresi ${Math.abs(Number(match[1]))} saniye azalir. Guc ve hiz zayiflatmasi %${match[2]} olur.`);
+    }
+
+    match = value.match(/^(\d+)% Defense Boost, (\d+)% Attack Boost, and increased Hate while transformed\.?$/i);
+    if (match) {
+        return cleanPowerText(`Donusmus halde %${match[1]} savunma artisi, %${match[2]} saldiri artisi ve ek nefret kazanir.`);
+    }
+
+    match = value.match(/^(\d+)% Defense Boost while Stealthed\. Speed Penalty (?:reduced to (.+?)|removed)\.?$/i);
+    if (match) {
+        const penalty = match[2] ? ` Hiz cezasi ${match[2]} olur.` : ' Hiz cezasi kalkar.';
+        return cleanPowerText(`Gizlilikteyken %${match[1]} savunma artisi kazanir.${penalty}`);
+    }
+
+    match = value.match(/^(\d+)% Defense Boost while Stealthed\.?$/i);
+    if (match) {
+        return cleanPowerText(`Gizlilikteyken %${match[1]} savunma artisi kazanir.`);
+    }
+
+    match = value.match(/^(\d+)% Defense boost while dashing\.?$/i);
+    if (match) {
+        return cleanPowerText(`Atilma sirasinda %${match[1]} savunma artisi kazanir.`);
+    }
+
+    match = value.match(/^Targets have\s+(\d+)%\s+reduced attack speed\.?$/i);
+    if (match) {
+        return cleanPowerText(`Hedeflerin saldiri hizi %${match[1]} azalir.`);
+    }
+
+    match = value.match(/^Unsummon your Ice Armor\.?$/i);
+    if (match) {
+        return 'Buz Zirhi cagrisini bitirir.';
+    }
+
+    match = value.match(/^(\d+)% Damage Boost while in Frost Shock\.?$/i);
+    if (match) {
+        return cleanPowerText(`Buz Soku etkisindeyken %${match[1]} hasar artisi kazanir.`);
+    }
+
+    match = value.match(/^(\d+)% Defense Boost and (\d+)% Speed Boost while firing\.?$/i);
+    if (match) {
+        return cleanPowerText(`Ates ederken %${match[1]} savunma ve %${match[2]} hiz artisi kazanir.`);
+    }
+
+    match = value.match(/^Increased to\s+(\d+)% Attack Boost while active\.?$/i);
+    if (match) {
+        return cleanPowerText(`Aktifken saldiri artisi %${match[1]} olur.`);
+    }
+
+    match = value.match(/^(-?\d+)\s+Mana Cost\. Speed Boost increased to\s+(\d+)%\.?$/i);
+    if (match) {
+        return cleanPowerText(`Mana bedeli ${Math.abs(Number(match[1]))} azalir. Hiz artisi %${match[2]} olur.`);
     }
 
     match = value.match(/^Deal extra damage to slowed and immobilized enemies$/i);
@@ -2388,7 +2828,113 @@ function localizePowerSentence(source) {
 
     match = value.match(/^Debuff increased to\s+(.+?)\.?$/i);
     if (match) {
-        return cleanPowerText(`Zayiflatma ${localizePowerLabel(match[1])} olur.`);
+        const debuff = match[1]
+            .replace(/Attack/gi, 'Saldiri')
+            .replace(/Speed/gi, 'Hiz')
+            .replace(/\band\b/gi, 've');
+        return cleanPowerText(`Zayiflatma ${debuff} olur.`);
+    }
+
+    match = value.match(/^Defense Buff increased to\s+(.+?)\s*and Increased Damage\s+(#\w+#)\.?$/i);
+    if (match) {
+        return cleanPowerText(`Savunma guclendirmesi ${match[1]} olur ve hasar ${match[2]} artar.`);
+    }
+
+    match = value.match(/^Defense Penalty reduced to\s+(.+?)\.?$/i);
+    if (match) {
+        return cleanPowerText(`Savunma cezasi ${match[1]} olur.`);
+    }
+
+    match = value.match(/^Increased Health Regen\. Defense Penalty removed\.?$/i);
+    if (match) {
+        return 'Can yenilenmesi artar. Savunma cezasi kalkar.';
+    }
+
+    match = value.match(/^Increased Health Regen\.?$/i);
+    if (match) {
+        return 'Can yenilenmesi artar.';
+    }
+
+    match = value.match(/^Defense Penalty removed\.?$/i);
+    if (match) {
+        return 'Savunma cezasi kalkar.';
+    }
+
+    match = value.match(/^Speed Penalty removed\.?$/i);
+    if (match) {
+        return 'Hiz cezasi kalkar.';
+    }
+
+    match = value.match(/^Speed Penalty reduced to\s+(.+?)\.?$/i);
+    if (match) {
+        return cleanPowerText(`Hiz cezasi ${match[1]} olur.`);
+    }
+
+    match = value.match(/^For damage from Retribution\. No longer a proc so it can have a cast time\.?$/i);
+    if (match) {
+        return 'Intikam hasari icindir. Artik tetikleme degil; bu yuzden kullanim suresi olabilir.';
+    }
+
+    match = value.match(/^(\d+)% Defense Boost from shield\. \+(\d+)% Shield Durability\.?$/i);
+    if (match) {
+        return cleanPowerText(`Kalkandan %${match[1]} savunma artisi ve %${match[2]} kalkan dayanikliligi kazanir.`);
+    }
+
+    match = value.match(/^(-?\d+)\s+Second Cooldown\. (\d+)% Defense Boost\. \+(\d+)% Durability\.?$/i);
+    if (match) {
+        return cleanPowerText(`Bekleme suresi ${Math.abs(Number(match[1]))} saniye azalir. %${match[2]} savunma artisi ve %${match[3]} dayaniklilik kazanir.`);
+    }
+
+    match = value.match(/^(\d+)% Defense Boost\.?$/i);
+    if (match) {
+        return cleanPowerText(`%${match[1]} savunma artisi kazanir.`);
+    }
+
+    match = value.match(/^\+(\d+)% Durability\.?$/i);
+    if (match) {
+        return cleanPowerText(`Dayaniklilik %${match[1]} artar.`);
+    }
+
+    match = value.match(/^\+(\d+)% Wyrm HP\. \+(\d+)% Bonus Damage vs Ice-Debuffed targets\.?$/i);
+    if (match) {
+        return cleanPowerText(`Ejder cani %${match[1]} artar. Buz zayiflatmasi altindaki hedeflere karsi %${match[2]} bonus hasar verir.`);
+    }
+
+    match = value.match(/^\+(\d+)% Wyrm HP\.?$/i);
+    if (match) {
+        return cleanPowerText(`Ejder cani %${match[1]} artar.`);
+    }
+
+    match = value.match(/^Clones have \+15% (HP|Defense) and increased Hate\.?$/i);
+    if (match) {
+        const stat = match[1].toLowerCase() === 'hp' ? 'can' : 'savunma';
+        return cleanPowerText(`Klonlar %15 ${stat} ve ek nefret kazanir.`);
+    }
+
+    match = value.match(/^Clones have \+15% (HP|Defense)\.?$/i);
+    if (match) {
+        const stat = match[1].toLowerCase() === 'hp' ? 'can' : 'savunma';
+        return cleanPowerText(`Klonlar %15 ${stat} kazanir.`);
+    }
+
+    match = value.match(/^increased Hate\.?$/i);
+    if (match) {
+        return 'Ek nefret kazanir.';
+    }
+
+    match = value.match(/^Speed Boost increased to\s+(\d+)%\.?$/i);
+    if (match) {
+        return cleanPowerText(`Hiz artisi %${match[1]} olur.`);
+    }
+
+    match = value.match(/^Cleanses Movement CC when cast\.?$/i);
+    if (match) {
+        return 'Kullanildiginda hareket kisitlamalarini arindirir.';
+    }
+
+    match = value.match(/^(\d+)% Speed Boost for 1 second\.?$/i);
+    if (match) {
+        return cleanPowerText(`1 saniye %${match[1]} hiz artisi verir.`);
     }
 
     return cleanPowerText(translateTokenized(value, { rootName: 'PlayerPowerTypes', tagName: 'Description' }));
@@ -2465,7 +3011,15 @@ function localizeText(source, options = {}) {
     const templateMatches = [
         [/^Must be level\s+(.+?)\s+to upgrade$/i, (_match, level) => `Yukseltmek icin seviye ${level} gerekli`],
         [/^Busy upgrading\s+(.+)$/i, (_match, thing) => `${localizeText(thing, options)} yukseltmesi suruyor`],
-        [/^Summon\s+(.+)$/i, (_match, thing) => `${localizeText(thing, options)} cagir`]
+        [/^Summon\s+(.+)$/i, (_match, thing) => `${localizeText(thing, options)} cagir`],
+        [/^Unlocks all Rank\s+(\d+)\s+abilities for training$/i, (_match, rank) => `Tum Kademe ${rank} yeteneklerinin egitimini acar`],
+        [/^Unlocks Rank\s+(\d+)\s+charm recipes$/i, (_match, rank) => `Kademe ${rank} tilsim tariflerini acar`],
+        [/^Unlocks the next\s+(\d+)\s+talent points for training$/i, (_match, count) => `Sonraki ${count} yetenek puaninin egitimini acar`],
+        [/^Increases the max pet level cap by\s+(\d+)$/i, (_match, amount) => `Azami evcil seviyesini ${amount} artirir`],
+        [/^Increase Gear Finding by X Pet Level$/i, () => 'Evcil seviyesine gore ekipman bulma sansini artirir'],
+        [/^Increase Gold Finding by X Pet Level$/i, () => 'Evcil seviyesine gore altin bulma sansini artirir'],
+        [/^Increase Material Finding by X Pet Level$/i, () => 'Evcil seviyesine gore malzeme bulma sansini artirir'],
+        [/^Increase XP Gain by X Pet Level$/i, () => 'Evcil seviyesine gore XP kazancini artirir']
     ];
 
     for (const [pattern, build] of templateMatches) {
@@ -2485,6 +3039,10 @@ function localizeText(source, options = {}) {
     }
 
     if (tag === 'DisplayName' && /CharmTypes|MagicTypes|GearTypes|ConsumableTypes|LockboxTypes|RoyalStoreTypes|EggTypes|MaterialTypes/i.test(root)) {
+        return titleCaseAscii(translated);
+    }
+
+    if (tag === 'DisplayName' && /BuildingTypes/i.test(root)) {
         return titleCaseAscii(translated);
     }
 

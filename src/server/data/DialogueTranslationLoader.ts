@@ -84,6 +84,7 @@ export class DialogueTranslationLoader {
         return this.normalizeKey(
             String(value ?? '')
                 .replace(/^[@:]+/, '')
+                .replace(/^\d+\s+[A-Za-z0-9_]+\s+/, '')
                 .replace(/^(?:\s*<[^>]+>\s*)+/, '')
                 .replace(/^\^t\s*/, '')
         );
@@ -183,14 +184,14 @@ export class DialogueTranslationLoader {
     }
 
     private static translateCompositeText(locale: string, translations: Map<string, string>, text: string): string {
-        const parts = String(text ?? '').split(/(=@|=)/);
+        const parts = String(text ?? '').split(/(=@|=|:|\+\d+)/);
         if (parts.length <= 1) {
             return '';
         }
 
         let changed = false;
         const translated = parts.map((part) => {
-            if (part === '=' || part === '=@') {
+            if (part === '=' || part === '=@' || /^\+\d+$/.test(part)) {
                 return part;
             }
 

@@ -18,7 +18,7 @@
 		<IconName>a_royalsigil_item1_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>3200</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Special</Category>
 		<Type>Mount</Type>
 		<DisallowDupes>True</DisallowDupes>
@@ -29,7 +29,7 @@
 		<IconName>a_royalsigil_item2_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>640</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Special</Category>
 		<Type>Mount</Type>
 		<DisallowDupes>True</DisallowDupes>
@@ -40,7 +40,7 @@
 		<IconName>a_royalsigil_item3_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>2400</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Special</Category>
 		<Type>Pet</Type>
 		<DisallowDupes>True</DisallowDupes>
@@ -51,7 +51,7 @@
 		<IconName>a_royalsigil_item4_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>320</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Special</Category>
 		<Type>Pet</Type>
 		<DisallowDupes>True</DisallowDupes>
@@ -62,7 +62,7 @@
 		<IconName>a_royalsigil_item5_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>320</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Special</Category>
 		<Type>Pet</Type>
 		<DisallowDupes>True</DisallowDupes>
@@ -73,7 +73,7 @@
 		<IconName>a_royalsigil_item6_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>320</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Special</Category>
 		<Type>Pet</Type>
 		<DisallowDupes>True</DisallowDupes>
@@ -84,7 +84,7 @@
 		<IconName>a_royalsigil_item6_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>320</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Special</Category>
 		<Type>Pet</Type>
 		<DisallowDupes>True</DisallowDupes>
@@ -95,51 +95,51 @@
 		<IconName>a_Icon_RespecStone</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>320</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Potions</Category>
 		<Type>RespecStone</Type>
 		<DisallowDupes>False</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="XPFindRegular">
 		<RoyalStoreID>9</RoyalStoreID>
-		<DisplayName>Potion XP Artis X3</DisplayName>
+		<DisplayName>XP Artis Iksiri X3</DisplayName>
 		<IconName>a_Icon_PotionXP</IconName>
 		<Quantity>15000</Quantity>
 		<SigilCost>16</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Potions</Category>
 		<Type>Consumable</Type>
 		<DisallowDupes>False</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="MaterialFindRegular">
 		<RoyalStoreID>10</RoyalStoreID>
-		<DisplayName>Potion Malzeme Bul X3</DisplayName>
+		<DisplayName>Malzeme Bulma Iksiri X3</DisplayName>
 		<IconName>a_Icon_PotionMaterial</IconName>
 		<Quantity>15000</Quantity>
 		<SigilCost>16</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Potions</Category>
 		<Type>Consumable</Type>
 		<DisallowDupes>False</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="GoldFindRegular">
 		<RoyalStoreID>11</RoyalStoreID>
-		<DisplayName>Potion Altin Bul X3</DisplayName>
+		<DisplayName>Altin Bulma Iksiri X3</DisplayName>
 		<IconName>a_Icon_PotionGoldFind</IconName>
 		<Quantity>15000</Quantity>
 		<SigilCost>16</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Potions</Category>
 		<Type>Consumable</Type>
 		<DisallowDupes>False</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="GearFindRegular">
 		<RoyalStoreID>12</RoyalStoreID>
-		<DisplayName>Potion Ekipman Bul X3</DisplayName>
+		<DisplayName>Ekipman Bulma Iksiri X3</DisplayName>
 		<IconName>a_Icon_PotionGearFind</IconName>
 		<Quantity>15000</Quantity>
 		<SigilCost>16</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Potions</Category>
 		<Type>Consumable</Type>
 		<DisallowDupes>false</DisallowDupes>
@@ -150,7 +150,7 @@
 		<IconName>a_Icon_PotionVeng</IconName>
 		<Quantity>5</Quantity>
 		<SigilCost>32</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Potions</Category>
 		<Type>Consumable</Type>
 		<DisallowDupes>False</DisallowDupes>
@@ -161,7 +161,7 @@
 		<IconName>a_Icon_Anvil</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>112</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Potions</Category>
 		<Type>Consumable</Type>
 		<DisallowDupes>false</DisallowDupes>
@@ -172,7 +172,7 @@
 		<IconName>a_Icon_CharmRemover</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>80</SigilCost>
-		<Description>Turkce aciklama A5FF1C.</Description>
+		<Description>Gecici aciklama.</Description>
 		<Category>Potions</Category>
 		<Type>CharmRemover</Type>
 		<DisallowDupes>false</DisallowDupes>

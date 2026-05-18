@@ -284,6 +284,23 @@ export class CommandHandler {
         const consumedDrainUnits = initialDrainUnits - remainingDrainUnits;
         client.activePotionDrainAtMs += Math.floor(consumedDrainUnits / POTION_DRAIN_STEP_UNITS) * POTION_DRAIN_STEP_MS;
 
+        if (
+            activeConsumableId > 0 &&
+            getActivePotionCharges(client.character) <= 0 &&
+            getStoredConsumableCount(client.character, activeConsumableId) <= 0
+        ) {
+            client.character.activeConsumableID = 0;
+            client.character.queuedConsumableID = 0;
+            client.character.activeConsumableCharges = 0;
+            client.activePotionDrainAtMs = 0;
+            CharacterSync.updateLiveActiveConsumable(client, 0);
+            CharacterSync.sendActiveConsumableUpdate(client, Math.max(0, client.clientEntID), 0);
+            client.combatStatsDirty = true;
+            client.lastCombatStatsRefreshRequestAt = Date.now();
+            CharacterSync.requestCombatStatsRefresh(client);
+            didChange = true;
+        }
+
         if (didChange) {
             sendConsumableUpdate(client, activeConsumableId);
         }

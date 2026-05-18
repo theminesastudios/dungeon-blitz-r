@@ -23,6 +23,7 @@ import {
 import { EquipmentHandler } from './EquipmentHandler';
 import { GameData } from '../core/GameData';
 import { CharacterSync } from '../utils/CharacterSync';
+import { sendConsumableUpdate } from '../utils/ConsumableState';
 
 type CombatRelayOptions = {
     includeAnchor?: boolean;
@@ -81,6 +82,64 @@ type NpcHitResolution = {
 };
 
 export class CombatHandler {
+    private static async tryConsumeRespawnPotion(client: Client): Promise<boolean> {
+        if (!client.character) {
+            return false;
+        }
+
+        const nowMs = Date.now();
+        const lastConsumeAtMs = Math.max(0, Number((client as any).lastRespawnPotionConsumeAtMs ?? 0));
+        if (nowMs - lastConsumeAtMs <= 1_500) {
+            return true;
+        }
+
+        const candidateIds = [
+            Math.max(0, Math.round(Number(client.character.activeConsumableID ?? 0))),
+            Math.max(0, Math.round(Number(client.character.queuedConsumableID ?? 0)))
+        ];
+        const consumables = Array.isArray(client.character.consumables) ? client.character.consumables : [];
+        for (const entry of consumables) {
+            const consumableId = Math.max(0, Math.round(Number(entry?.consumableID ?? 0)));
+            if (!candidateIds.includes(consumableId)) {
+                candidateIds.push(consumableId);
+            }
+        }
+
+        for (const consumableId of candidateIds) {
+            if (consumableId <= 0) {
+                continue;
+            }
+
+            const def = GameData.CONSUMABLES.find((entry) => Number(entry?.ConsumableID ?? 0) === consumableId);
+            if (String(def?.Type ?? '') !== 'ResPotion') {
+                continue;
+            }
+
+            const entry = consumables.find((item: any) => Number(item?.consumableID ?? 0) === consumableId);
+            const count = Math.max(0, Number(entry?.count ?? 0));
+            if (!entry || count <= 0) {
+                continue;
+            }
+
+            entry.count = count - 1;
+            if (entry.count <= 0) {
+                client.character.consumables = consumables.filter((item: any) => Number(item?.consumableID ?? 0) !== consumableId);
+                if (Math.max(0, Math.round(Number(client.character.activeConsumableID ?? 0))) === consumableId) {
+                    client.character.activeConsumableID = 0;
+                }
+                if (Math.max(0, Math.round(Number(client.character.queuedConsumableID ?? 0))) === consumableId) {
+                    client.character.queuedConsumableID = 0;
+                }
+            }
+
+            sendConsumableUpdate(client, consumableId);
+            (client as any).lastRespawnPotionConsumeAtMs = nowMs;
+            return true;
+        }
+
+        return false;
+    }
+
     private static readonly PLAYER_OUT_OF_COMBAT_REGEN_DELAY_MS = 5_000;
     private static readonly PLAYER_OUT_OF_COMBAT_REGEN_INTERVAL_MS = 1_000;
     private static readonly HOSTILE_OUT_OF_COMBAT_REGEN_DELAY_MS = 5_500;
@@ -1737,7 +1796,10 @@ export class CombatHandler {
 
     static async handleRequestRespawn(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
-        const usePotion = br.readMethod15();
+        let usePotion = br.readMethod15();
+        if (usePotion) {
+            usePotion = await CombatHandler.tryConsumeRespawnPotion(client);
+        }
 
         if (!usePotion) {
             noteDungeonRunDeath(client);
@@ -1759,7 +1821,10 @@ export class CombatHandler {
         const br = new BitReader(data);
         const entId = br.readMethod9();
         const healAmount = Math.max(0, Math.round(br.readMethod24()));
-        br.readMethod15();
+        const usedPotion = br.readMethod15();
+        if (usedPotion) {
+            await CombatHandler.tryConsumeRespawnPotion(client);
+        }
 
         const ent = client.entities.get(entId);
         if (ent) {

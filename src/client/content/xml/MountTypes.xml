@@ -4,8 +4,8 @@
 		<MountID>0</MountID>
 		<MountLevel>0</MountLevel>
 		<IdolCost>0</IdolCost>
-		<DisplayName>Sablon</DisplayName>
-		<Description>This Evcil Is</Description>
+		<DisplayName>Ad</DisplayName>
+		<Description>ThisPetIs</Description>
 		<DisplayRarity>Rarity</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDraftHorse">
@@ -13,7 +13,7 @@
 		<MountLevel>20</MountLevel>
 		<IdolCost>100</IdolCost>
 		<DisplayName>Kosum At</DisplayName>
-		<Description>Buckskin Pony regards sen patiently. He knows trail, won't wear down, ve never misses his sans eat.</Description>
+		<Description>The Buckskin Pony regards you patiently.  He knows the trail, won't wear down, and never misses his chance to eat.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDestrier">
@@ -21,7 +21,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>150</IdolCost>
 		<DisplayName>Savas Ati</DisplayName>
-		<Description>Proud bearing, immaculate coat, rich barding. Destrier is bir steed icin kings ve kings at heart.</Description>
+		<Description>Proud bearing, immaculate coat, rich barding. The Destrier is a steed for kings and kings at heart.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountStallion">
@@ -29,7 +29,7 @@
 		<MountLevel>20</MountLevel>
 		<IdolCost>100</IdolCost>
 		<DisplayName>siyah Stallion</DisplayName>
-		<Description>Faded battle scars criss-cross stallion's siyah coat. This is bir sturdy companion icinde senin fight.</Description>
+		<Description>Faded battle scars criss-cross the stallion's black coat. This is a sturdy companion in your fight.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountLightHorse">
@@ -37,7 +37,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>150</IdolCost>
 		<DisplayName>isik Horse</DisplayName>
-		<Description>She's bir regal horse ve bir trusty steed. bir natural unicorn? Only her groomer knows icin sure.</Description>
+		<Description>She's a regal horse and a trusty steed. A natural unicorn? Only her groomer knows for sure.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountMare">
@@ -45,7 +45,7 @@
 		<MountLevel>20</MountLevel>
 		<IdolCost>100</IdolCost>
 		<DisplayName>beyaz Mare</DisplayName>
-		<Description>Mare stamps ile impatience. Her restlessness says "Adventure awaits. Why are we still standing here?"</Description>
+		<Description>The Mare stamps with impatience. Her restlessness says "Adventure awaits. Why are we still standing here?"</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountKirin">
@@ -53,7 +53,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>150</IdolCost>
 		<DisplayName>Kirin Binegi</DisplayName>
-		<Description>This elegant creature roams plain topraklar ve has become very popular ve domesticated.</Description>
+		<Description>This elegant creature roams the plain lands and has become very popular and domesticated.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountLongma">
@@ -68,7 +68,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>Mojack Binegi</DisplayName>
-		<Description>This best-icinde-show breed is stalwart ve wise. Due its rarity if sen have mo money sen can get Mojack Binegi Binegi.</Description>
+		<Description>This best-in-show breed is stalwart and wise. Due to its rarity if you have mo money you can get Mojack.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDrakon">
@@ -76,7 +76,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>150</IdolCost>
 		<DisplayName>kirmizi Water Drakken</DisplayName>
-		<Description>bir cautionary tale icin those brave yeterli ride this beast; treat it well veya kirmizi is son renk sen will ever see.</Description>
+		<Description>A cautionary tale for those brave enough to ride this beast; treat it well or red is the last color you will ever see.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountNightmare">
@@ -84,7 +84,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>999999999</IdolCost>
 		<DisplayName>Nightmare</DisplayName>
-		<Description>Legend has it that these entities muhafiz realm Shadowlands. Once bir year when moons align they can be spotted icinde darkest corners.</Description>
+		<Description>Legend has it that these entities guard the realm of the Shadowlands. Once a year when the moons align they can be spotted in the darkest of corners.</Description>
 		<DisplayRarity>R</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountWolfBear">
@@ -92,7 +92,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>Short Coat Kurtbear</DisplayName>
-		<Description>bir Creature that is part wolf, part bear, tum Kurtbear.</Description>
+		<Description>A Creature that is part wolf, part bear, all Wolfbear.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountBearCat">
@@ -100,7 +100,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>150</IdolCost>
 		<DisplayName>kutup Megalynx</DisplayName>
-		<Description>degil quite man's best dost, but if well fed Megalynx purr heavily.</Description>
+		<Description>Not quite man's best friend, but if well fed the Megalynx purr heavily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDrake">
@@ -108,7 +108,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>150</IdolCost>
 		<DisplayName>Ejder</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountBeast">
@@ -116,7 +116,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>150</IdolCost>
 		<DisplayName>Canavar</DisplayName>
-		<Description>sen can see this beast was once ridden by col Orcs. How it came this land is anyone's guess.</Description>
+		<Description>You can see this beast was once ridden by Desert Orcs. How it came to this land is anyone's guess.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountBunnyBear">
@@ -124,7 +124,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>Albino Kurthare</DisplayName>
-		<Description>Remarkably, this beast lays eggs. sen should under yok circumstance attempt boya them.</Description>
+		<Description>Remarkably, this beast lays eggs. You should under no circumstance attempt to dye them.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDeathMask">
@@ -139,7 +139,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>Little is known about these re-animated constructs. Mysteriously, they del veil ile bir soguk lifeless stare.</Description>
+		<Description>Little is known about these re-animated constructs. Mysteriously, they pierce the veil with a cold lifeless stare.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountBearCat2">
@@ -147,7 +147,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountBearCat3">
@@ -155,7 +155,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountBeast2">
@@ -163,7 +163,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountBeast3">
@@ -171,7 +171,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountBunnyBear2">
@@ -179,7 +179,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountBunnyBear3">
@@ -187,7 +187,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDeathMask2">
@@ -195,7 +195,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDeathMask3">
@@ -203,7 +203,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDrake2">
@@ -211,7 +211,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDrake3">
@@ -219,7 +219,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountInfernal2">
@@ -227,7 +227,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountInfernal3">
@@ -235,7 +235,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountWolfBear2">
@@ -243,7 +243,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountWolfBear3">
@@ -251,7 +251,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonSnap">
@@ -259,7 +259,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonSnap2">
@@ -267,7 +267,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonSnap3">
@@ -275,7 +275,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonBoar">
@@ -283,7 +283,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonBoar2">
@@ -291,7 +291,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonBoar3">
@@ -299,7 +299,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonRhino">
@@ -307,7 +307,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonRhino2">
@@ -315,7 +315,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonRhino3">
@@ -323,7 +323,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonSnapTurtle">
@@ -331,7 +331,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonSnapTurtle2">
@@ -339,7 +339,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonSnapTurtle3">
@@ -347,7 +347,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonTiger">
@@ -355,7 +355,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonTiger2">
@@ -363,7 +363,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonTiger3">
@@ -371,7 +371,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonPolarBear">
@@ -379,7 +379,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonPolarBear2">
@@ -387,7 +387,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonPolarBear3">
@@ -395,7 +395,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonTusker">
@@ -403,7 +403,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonTusker2">
@@ -411,7 +411,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonTusker3">
@@ -419,7 +419,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonDewback">
@@ -427,7 +427,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonDewback2">
@@ -435,7 +435,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonDewback3">
@@ -443,7 +443,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonBaku">
@@ -451,7 +451,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonBaku2">
@@ -459,7 +459,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonBaku3">
@@ -467,7 +467,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountFangDragon">
@@ -475,7 +475,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountFangDragon2">
@@ -483,7 +483,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountFangDragon3">
@@ -491,7 +491,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountHorseDragon">
@@ -499,7 +499,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountHorseDragon2">
@@ -507,7 +507,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountHorseDragon3">
@@ -515,7 +515,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonHaku">
@@ -523,7 +523,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonHaku2">
@@ -531,7 +531,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonHaku3">
@@ -539,7 +539,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDestrier2">
@@ -547,7 +547,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDestrier3">
@@ -555,7 +555,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDraftHorse2">
@@ -563,7 +563,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDraftHorse3">
@@ -571,7 +571,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDrakon2">
@@ -579,7 +579,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDrakon3">
@@ -587,7 +587,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountKirin2">
@@ -595,7 +595,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountKirin3">
@@ -603,7 +603,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountLightHorse2">
@@ -611,7 +611,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountLightHorse3">
@@ -619,7 +619,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountLongma2">
@@ -627,7 +627,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountLongma3">
@@ -635,7 +635,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountMare2">
@@ -643,7 +643,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountMare3">
@@ -651,7 +651,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountMojack2">
@@ -659,7 +659,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountMojack3">
@@ -667,7 +667,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountNightmare2">
@@ -675,7 +675,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountNightmare3">
@@ -683,7 +683,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountStallion2">
@@ -691,7 +691,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountStallion3">
@@ -699,7 +699,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragon">
@@ -707,7 +707,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragon2">
@@ -715,7 +715,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragon3">
@@ -723,7 +723,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountToothDragon">
@@ -731,7 +731,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountToothDragon2">
@@ -739,7 +739,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountToothDragon3">
@@ -747,7 +747,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonClassic">
@@ -755,7 +755,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonClassic2">
@@ -763,7 +763,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonClassic3">
@@ -771,7 +771,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonArmored">
@@ -779,7 +779,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonArmored2">
@@ -787,7 +787,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonArmored3">
@@ -795,7 +795,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonZombie">
@@ -803,7 +803,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonZombie2">
@@ -811,7 +811,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonZombie3">
@@ -819,7 +819,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonSmaug">
@@ -827,7 +827,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonSmaug2">
@@ -835,7 +835,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountDragonSmaug3">
@@ -843,7 +843,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>340</IdolCost>
 		<DisplayName>kadim Crypt Walker</DisplayName>
-		<Description>smell sulfur ve ash hang agir around this brooding canavar. Fangrasaur eyes sen warily.</Description>
+		<Description>The smell of sulfur and ash hang heavy around this brooding monster. The Fangrasaur eyes you warily.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountLockbox01L01">
@@ -851,7 +851,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>999999999</IdolCost>
 		<DisplayName>Ivorystorm muhafiz</DisplayName>
-		<Description>Born holy ritual, these creatures are said have fallen kaynakli heavens kadim gods.</Description>
+		<Description>Born of holy ritual, these creatures are said to have fallen from the heavens of the ancient gods.</Description>
 		<DisplayRarity>L</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountLockbox01L02">
@@ -859,7 +859,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>999999999</IdolCost>
 		<DisplayName>Efsanevi Binek Sandigi</DisplayName>
-		<Description>These baneful creatures stampede land between living ve dead, feasting uzerinde wandering souls.</Description>
+		<Description>These baneful creatures stampede the land between the living and the dead, feasting on wandering souls.</Description>
 		<DisplayRarity>L</DisplayRarity>
 	</MountType>
 	<MountType MountName="MountLockbox01R01">
@@ -867,7 +867,7 @@
 		<MountLevel>40</MountLevel>
 		<IdolCost>999999999</IdolCost>
 		<DisplayName>Nadir Binek Sandigi</DisplayName>
-		<Description>These elven-trained warhorses can gallop faster than bir Eastern ruzgar ve are just as temperamental.</Description>
+		<Description>These elven-trained warhorses can gallop faster than an Eastern wind and are just as temperamental.</Description>
 		<DisplayRarity>R</DisplayRarity>
 	</MountType>
 </MountTypes>

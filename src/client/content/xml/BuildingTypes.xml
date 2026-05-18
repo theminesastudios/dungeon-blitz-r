@@ -12,11 +12,11 @@
 		<Art>a_Art</Art>
 		<BackgroundArt>a_bgart</BackgroundArt>
 		<UpgradeIcon>a_upgradeicon</UpgradeIcon>
-		<UpgradeDescription>Turkce aciklama 3226EC.</UpgradeDescription>
+		<UpgradeDescription>Sablon</UpgradeDescription>
 	</Building>
 	<Building BuildingName="Tome">
 		<BuildingID>1</BuildingID>
-		<DisplayName>Tome guc</DisplayName>
+		<DisplayName>Guc Kitabi</DisplayName>
 		<Type>Tome</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -26,100 +26,100 @@
 		<Art>a_Upgrade_Tome_0</Art>
 		<BackgroundArt>a_Upgrade_Tome_1</BackgroundArt>
 		<UpgradeIcon>a_TomeUpgradeIcon</UpgradeIcon>
-		<UpgradeDescription>Turkce aciklama 448194.</UpgradeDescription>
+		<UpgradeDescription>Hicbir sey.</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Tome guc seviye 1</DisplayName>
+		<DisplayName>Guc Kitabi Seviye 1</DisplayName>
 		<Rank>1</Rank>
 		<PlayerLevel>1</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
 		<UpgradeTime>45</UpgradeTime>
 		<Art>a_Upgrade_Tome_1</Art>
-		<UpgradeDescription>Unlocks tum Rank 2 yetenekler icin training</UpgradeDescription>
+		<UpgradeDescription>Tum Kademe 2 yeteneklerinin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Tome guc seviye 2</DisplayName>
+		<DisplayName>Guc Kitabi Seviye 2</DisplayName>
 		<Rank>2</Rank>
 		<PlayerLevel>5</PlayerLevel>
 		<GoldCost>5872</GoldCost>
 		<IdolCost>3</IdolCost>
 		<UpgradeTime>14400</UpgradeTime>
 		<Art>a_Upgrade_Tome_2</Art>
-		<UpgradeDescription>Unlocks tum Rank 3 yetenekler icin training</UpgradeDescription>
+		<UpgradeDescription>Tum Kademe 3 yeteneklerinin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Tome guc seviye 3</DisplayName>
+		<DisplayName>Guc Kitabi Seviye 3</DisplayName>
 		<Rank>3</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>32867</GoldCost>
 		<IdolCost>17</IdolCost>
 		<UpgradeTime>49200</UpgradeTime>
 		<Art>a_Upgrade_Tome_3</Art>
-		<UpgradeDescription>Unlocks tum Rank 4 yetenekler icin training</UpgradeDescription>
+		<UpgradeDescription>Tum Kademe 4 yeteneklerinin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Tome guc seviye 4</DisplayName>
+		<DisplayName>Guc Kitabi Seviye 4</DisplayName>
 		<Rank>4</Rank>
 		<PlayerLevel>15</PlayerLevel>
 		<GoldCost>91888</GoldCost>
 		<IdolCost>39</IdolCost>
 		<UpgradeTime>142800</UpgradeTime>
 		<Art>a_Upgrade_Tome_4</Art>
-		<UpgradeDescription>Unlocks tum Rank 5 yetenekler icin training</UpgradeDescription>
+		<UpgradeDescription>Tum Kademe 5 yeteneklerinin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Tome guc seviye 5</DisplayName>
+		<DisplayName>Guc Kitabi Seviye 5</DisplayName>
 		<Rank>5</Rank>
 		<PlayerLevel>20</PlayerLevel>
 		<GoldCost>209646</GoldCost>
 		<IdolCost>55</IdolCost>
 		<UpgradeTime>259200</UpgradeTime>
 		<Art>a_Upgrade_Tome_5</Art>
-		<UpgradeDescription>Unlocks tum Rank 6 yetenekler icin training</UpgradeDescription>
+		<UpgradeDescription>Tum Kademe 6 yeteneklerinin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Tome guc seviye 6</DisplayName>
+		<DisplayName>Guc Kitabi Seviye 6</DisplayName>
 		<Rank>6</Rank>
 		<PlayerLevel>25</PlayerLevel>
 		<GoldCost>432172</GoldCost>
 		<IdolCost>85</IdolCost>
 		<UpgradeTime>343800</UpgradeTime>
 		<Art>a_Upgrade_Tome_6</Art>
-		<UpgradeDescription>Unlocks tum Rank 7 yetenekler icin training</UpgradeDescription>
+		<UpgradeDescription>Tum Kademe 7 yeteneklerinin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Tome guc seviye 7</DisplayName>
+		<DisplayName>Guc Kitabi Seviye 7</DisplayName>
 		<Rank>7</Rank>
 		<PlayerLevel>30</PlayerLevel>
 		<GoldCost>835058</GoldCost>
 		<IdolCost>123</IdolCost>
 		<UpgradeTime>439200</UpgradeTime>
 		<Art>a_Upgrade_Tome_7</Art>
-		<UpgradeDescription>Unlocks tum Rank 8 yetenekler icin training</UpgradeDescription>
+		<UpgradeDescription>Tum Kademe 8 yeteneklerinin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Tome guc seviye 8</DisplayName>
+		<DisplayName>Guc Kitabi Seviye 8</DisplayName>
 		<Rank>8</Rank>
 		<PlayerLevel>35</PlayerLevel>
 		<GoldCost>1539532</GoldCost>
 		<IdolCost>158</IdolCost>
 		<UpgradeTime>634800</UpgradeTime>
 		<Art>a_Upgrade_Tome_8</Art>
-		<UpgradeDescription>Unlocks tum Rank 9 yetenekler icin training</UpgradeDescription>
+		<UpgradeDescription>Tum Kademe 9 yeteneklerinin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Tome guc seviye 9</DisplayName>
+		<DisplayName>Guc Kitabi Seviye 9</DisplayName>
 		<Rank>9</Rank>
 		<PlayerLevel>40</PlayerLevel>
 		<GoldCost>2748303</GoldCost>
 		<IdolCost>198</IdolCost>
 		<UpgradeTime>715200</UpgradeTime>
 		<Art>a_Upgrade_Tome_9</Art>
-		<UpgradeDescription>Unlocks tum Rank 10 yetenekler icin training</UpgradeDescription>
+		<UpgradeDescription>Tum Kademe 10 yeteneklerinin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Tome guc seviye 10</DisplayName>
+		<DisplayName>Guc Kitabi Seviye 10</DisplayName>
 		<Rank>10</Rank>
 		<PlayerLevel>45</PlayerLevel>
 		<GoldCost>4781913</GoldCost>
@@ -129,7 +129,7 @@
 	</Building>
 	<Building BuildingName="Forge">
 		<BuildingID>2</BuildingID>
-		<DisplayName>buyu Forge</DisplayName>
+		<DisplayName>Buyu Ocagi</DisplayName>
 		<Type>Forge</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -141,97 +141,97 @@
 		<UpgradeIcon>a_ForgeUpgradeIcon</UpgradeIcon>
 	</Building>
 	<Building>
-		<DisplayName>buyu Forge seviye 1</DisplayName>
+		<DisplayName>Buyu Ocagi Seviye 1</DisplayName>
 		<Rank>1</Rank>
 		<PlayerLevel>1</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
 		<UpgradeTime>45</UpgradeTime>
 		<Art>a_Upgrade_Forge_1</Art>
-		<UpgradeDescription>Unlocks Rank 2 tilsim recipes</UpgradeDescription>
+		<UpgradeDescription>Kademe 2 tilsim tariflerini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>buyu Forge seviye 2</DisplayName>
+		<DisplayName>Buyu Ocagi Seviye 2</DisplayName>
 		<Rank>2</Rank>
 		<PlayerLevel>5</PlayerLevel>
 		<GoldCost>5872</GoldCost>
 		<IdolCost>3</IdolCost>
 		<UpgradeTime>14400</UpgradeTime>
 		<Art>a_Upgrade_Forge_2</Art>
-		<UpgradeDescription>Unlocks Rank 3 tilsim recipes</UpgradeDescription>
+		<UpgradeDescription>Kademe 3 tilsim tariflerini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>buyu Forge seviye 3</DisplayName>
+		<DisplayName>Buyu Ocagi Seviye 3</DisplayName>
 		<Rank>3</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>32867</GoldCost>
 		<IdolCost>17</IdolCost>
 		<UpgradeTime>49200</UpgradeTime>
 		<Art>a_Upgrade_Forge_3</Art>
-		<UpgradeDescription>Unlocks Rank 4 tilsim recipes</UpgradeDescription>
+		<UpgradeDescription>Kademe 4 tilsim tariflerini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>buyu Forge seviye 4</DisplayName>
+		<DisplayName>Buyu Ocagi Seviye 4</DisplayName>
 		<Rank>4</Rank>
 		<PlayerLevel>15</PlayerLevel>
 		<GoldCost>91888</GoldCost>
 		<IdolCost>39</IdolCost>
 		<UpgradeTime>142800</UpgradeTime>
 		<Art>a_Upgrade_Forge_4</Art>
-		<UpgradeDescription>Unlocks Rank 5 tilsim recipes</UpgradeDescription>
+		<UpgradeDescription>Kademe 5 tilsim tariflerini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>buyu Forge seviye 5</DisplayName>
+		<DisplayName>Buyu Ocagi Seviye 5</DisplayName>
 		<Rank>5</Rank>
 		<PlayerLevel>20</PlayerLevel>
 		<GoldCost>209646</GoldCost>
 		<IdolCost>55</IdolCost>
 		<UpgradeTime>259200</UpgradeTime>
 		<Art>a_Upgrade_Forge_5</Art>
-		<UpgradeDescription>Unlocks Rank 6 tilsim recipes</UpgradeDescription>
+		<UpgradeDescription>Kademe 6 tilsim tariflerini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>buyu Forge seviye 6</DisplayName>
+		<DisplayName>Buyu Ocagi Seviye 6</DisplayName>
 		<Rank>6</Rank>
 		<PlayerLevel>25</PlayerLevel>
 		<GoldCost>432172</GoldCost>
 		<IdolCost>85</IdolCost>
 		<UpgradeTime>343800</UpgradeTime>
 		<Art>a_Upgrade_Forge_6</Art>
-		<UpgradeDescription>Unlocks Rank 7 tilsim recipes</UpgradeDescription>
+		<UpgradeDescription>Kademe 7 tilsim tariflerini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>buyu Forge seviye 7</DisplayName>
+		<DisplayName>Buyu Ocagi Seviye 7</DisplayName>
 		<Rank>7</Rank>
 		<PlayerLevel>30</PlayerLevel>
 		<GoldCost>835058</GoldCost>
 		<IdolCost>123</IdolCost>
 		<UpgradeTime>439200</UpgradeTime>
 		<Art>a_Upgrade_Forge_7</Art>
-		<UpgradeDescription>Unlocks Rank 8 tilsim recipes</UpgradeDescription>
+		<UpgradeDescription>Kademe 8 tilsim tariflerini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>buyu Forge seviye 8</DisplayName>
+		<DisplayName>Buyu Ocagi Seviye 8</DisplayName>
 		<Rank>8</Rank>
 		<PlayerLevel>35</PlayerLevel>
 		<GoldCost>1539532</GoldCost>
 		<IdolCost>158</IdolCost>
 		<UpgradeTime>634800</UpgradeTime>
 		<Art>a_Upgrade_Forge_8</Art>
-		<UpgradeDescription>Unlocks Rank 9 tilsim recipes</UpgradeDescription>
+		<UpgradeDescription>Kademe 9 tilsim tariflerini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>buyu Forge seviye 9</DisplayName>
+		<DisplayName>Buyu Ocagi Seviye 9</DisplayName>
 		<Rank>9</Rank>
 		<PlayerLevel>40</PlayerLevel>
 		<GoldCost>2748303</GoldCost>
 		<IdolCost>198</IdolCost>
 		<UpgradeTime>715200</UpgradeTime>
 		<Art>a_Upgrade_Forge_9</Art>
-		<UpgradeDescription>Unlocks Rank 10 tilsim recipes</UpgradeDescription>
+		<UpgradeDescription>Kademe 10 tilsim tariflerini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>buyu Forge seviye 10</DisplayName>
+		<DisplayName>Buyu Ocagi Seviye 10</DisplayName>
 		<Rank>10</Rank>
 		<PlayerLevel>45</PlayerLevel>
 		<GoldCost>4781913</GoldCost>
@@ -241,7 +241,7 @@
 	</Building>
 	<Building BuildingName="JusticarTower">
 		<BuildingID>3</BuildingID>
-		<DisplayName>Justicar Tower</DisplayName>
+		<DisplayName>Alev Ofkesi Kursusu</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -253,47 +253,47 @@
 		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
 	</Building>
 	<Building>
-		<DisplayName>Flamefury Dais seviye 1</DisplayName>
+		<DisplayName>Alev Ofkesi Kursusu Seviye 1</DisplayName>
 		<Rank>1</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
 		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Justicar1</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Flamefury Dais seviye 2</DisplayName>
+		<DisplayName>Alev Ofkesi Kursusu Seviye 2</DisplayName>
 		<Rank>2</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>32867</GoldCost>
 		<IdolCost>17</IdolCost>
 		<UpgradeTime>14400</UpgradeTime>
 		<Art>a_Upgrade_Tower_Justicar2</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Flamefury Dais seviye 3</DisplayName>
+		<DisplayName>Alev Ofkesi Kursusu Seviye 3</DisplayName>
 		<Rank>3</Rank>
 		<PlayerLevel>15</PlayerLevel>
 		<GoldCost>91888</GoldCost>
 		<IdolCost>39</IdolCost>
 		<UpgradeTime>49200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Justicar3</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Flamefury Dais seviye 4</DisplayName>
+		<DisplayName>Alev Ofkesi Kursusu Seviye 4</DisplayName>
 		<Rank>4</Rank>
 		<PlayerLevel>20</PlayerLevel>
 		<GoldCost>209646</GoldCost>
 		<IdolCost>55</IdolCost>
 		<UpgradeTime>142800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Justicar4</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Flamefury Dais seviye 5</DisplayName>
+		<DisplayName>Alev Ofkesi Kursusu Seviye 5</DisplayName>
 		<Rank>5</Rank>
 		<PlayerLevel>25</PlayerLevel>
 		<GoldCost>432172</GoldCost>
@@ -302,50 +302,50 @@
 		<Art>a_Upgrade_Tower_Justicar5</Art>
 		<BackgroundArt>a_Upgrade_ConduitBarbarian_5</BackgroundArt>
 		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Flamefury Dais seviye 6</DisplayName>
+		<DisplayName>Alev Ofkesi Kursusu Seviye 6</DisplayName>
 		<Rank>6</Rank>
 		<PlayerLevel>30</PlayerLevel>
 		<GoldCost>835058</GoldCost>
 		<IdolCost>123</IdolCost>
 		<UpgradeTime>343800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Justicar6</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Flamefury Dais seviye 7</DisplayName>
+		<DisplayName>Alev Ofkesi Kursusu Seviye 7</DisplayName>
 		<Rank>7</Rank>
 		<PlayerLevel>35</PlayerLevel>
 		<GoldCost>1539532</GoldCost>
 		<IdolCost>158</IdolCost>
 		<UpgradeTime>439200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Justicar7</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Flamefury Dais seviye 8</DisplayName>
+		<DisplayName>Alev Ofkesi Kursusu Seviye 8</DisplayName>
 		<Rank>8</Rank>
 		<PlayerLevel>40</PlayerLevel>
 		<GoldCost>2748303</GoldCost>
 		<IdolCost>198</IdolCost>
 		<UpgradeTime>634800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Justicar8</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Flamefury Dais seviye 9</DisplayName>
+		<DisplayName>Alev Ofkesi Kursusu Seviye 9</DisplayName>
 		<Rank>9</Rank>
 		<PlayerLevel>45</PlayerLevel>
 		<GoldCost>4781913</GoldCost>
 		<IdolCost>239</IdolCost>
 		<UpgradeTime>715200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Justicar9</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Flamefury Dais seviye 10</DisplayName>
+		<DisplayName>Alev Ofkesi Kursusu Seviye 10</DisplayName>
 		<Rank>10</Rank>
 		<PlayerLevel>50</PlayerLevel>
 		<GoldCost>8155866</GoldCost>
@@ -357,7 +357,7 @@
 	</Building>
 	<Building BuildingName="SentinelTower">
 		<BuildingID>4</BuildingID>
-		<DisplayName>Stormgaze siginak</DisplayName>
+		<DisplayName>Firtina Gozeri Siginagi</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -367,97 +367,97 @@
 		<Art>a_Upgrade_Tower</Art>
 	</Building>
 	<Building>
-		<DisplayName>Stormgaze siginak seviye 1</DisplayName>
+		<DisplayName>Firtina Gozeri Siginagi Seviye 1</DisplayName>
 		<Rank>1</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
 		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Sentinel1</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Stormgaze siginak seviye 2</DisplayName>
+		<DisplayName>Firtina Gozeri Siginagi Seviye 2</DisplayName>
 		<Rank>2</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>32867</GoldCost>
 		<IdolCost>17</IdolCost>
 		<UpgradeTime>14400</UpgradeTime>
 		<Art>a_Upgrade_Tower_Sentinel2</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Stormgaze siginak seviye 3</DisplayName>
+		<DisplayName>Firtina Gozeri Siginagi Seviye 3</DisplayName>
 		<Rank>3</Rank>
 		<PlayerLevel>15</PlayerLevel>
 		<GoldCost>91888</GoldCost>
 		<IdolCost>39</IdolCost>
 		<UpgradeTime>49200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Sentinel3</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Stormgaze siginak seviye 4</DisplayName>
+		<DisplayName>Firtina Gozeri Siginagi Seviye 4</DisplayName>
 		<Rank>4</Rank>
 		<PlayerLevel>20</PlayerLevel>
 		<GoldCost>209646</GoldCost>
 		<IdolCost>55</IdolCost>
 		<UpgradeTime>142800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Sentinel4</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Stormgaze siginak seviye 5</DisplayName>
+		<DisplayName>Firtina Gozeri Siginagi Seviye 5</DisplayName>
 		<Rank>5</Rank>
 		<PlayerLevel>25</PlayerLevel>
 		<GoldCost>432172</GoldCost>
 		<IdolCost>85</IdolCost>
 		<UpgradeTime>259200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Sentinel5</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Stormgaze siginak seviye 6</DisplayName>
+		<DisplayName>Firtina Gozeri Siginagi Seviye 6</DisplayName>
 		<Rank>6</Rank>
 		<PlayerLevel>30</PlayerLevel>
 		<GoldCost>835058</GoldCost>
 		<IdolCost>123</IdolCost>
 		<UpgradeTime>343800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Sentinel6</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Stormgaze siginak seviye 7</DisplayName>
+		<DisplayName>Firtina Gozeri Siginagi Seviye 7</DisplayName>
 		<Rank>7</Rank>
 		<PlayerLevel>35</PlayerLevel>
 		<GoldCost>1539532</GoldCost>
 		<IdolCost>158</IdolCost>
 		<UpgradeTime>439200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Sentinel7</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Stormgaze siginak seviye 8</DisplayName>
+		<DisplayName>Firtina Gozeri Siginagi Seviye 8</DisplayName>
 		<Rank>8</Rank>
 		<PlayerLevel>40</PlayerLevel>
 		<GoldCost>2748303</GoldCost>
 		<IdolCost>198</IdolCost>
 		<UpgradeTime>634800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Sentinel8</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Stormgaze siginak seviye 9</DisplayName>
+		<DisplayName>Firtina Gozeri Siginagi Seviye 9</DisplayName>
 		<Rank>9</Rank>
 		<PlayerLevel>45</PlayerLevel>
 		<GoldCost>4781913</GoldCost>
 		<IdolCost>239</IdolCost>
 		<UpgradeTime>715200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Sentinel9</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Stormgaze siginak seviye 10</DisplayName>
+		<DisplayName>Firtina Gozeri Siginagi Seviye 10</DisplayName>
 		<Rank>10</Rank>
 		<PlayerLevel>50</PlayerLevel>
 		<GoldCost>8155866</GoldCost>
@@ -467,7 +467,7 @@
 	</Building>
 	<Building BuildingName="TemplarTower">
 		<BuildingID>5</BuildingID>
-		<DisplayName>Templar Tower</DisplayName>
+		<DisplayName>Tapinakci Hisari</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -479,97 +479,97 @@
 		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
 	</Building>
 	<Building>
-		<DisplayName>Templar Citadel seviye 1</DisplayName>
+		<DisplayName>Tapinakci Hisari Seviye 1</DisplayName>
 		<Rank>1</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
 		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Templar1</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Templar Citadel seviye 2</DisplayName>
+		<DisplayName>Tapinakci Hisari Seviye 2</DisplayName>
 		<Rank>2</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>32867</GoldCost>
 		<IdolCost>17</IdolCost>
 		<UpgradeTime>14400</UpgradeTime>
 		<Art>a_Upgrade_Tower_Templar2</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Templar Citadel seviye 3</DisplayName>
+		<DisplayName>Tapinakci Hisari Seviye 3</DisplayName>
 		<Rank>3</Rank>
 		<PlayerLevel>15</PlayerLevel>
 		<GoldCost>91888</GoldCost>
 		<IdolCost>39</IdolCost>
 		<UpgradeTime>49200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Templar3</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Templar Citadel seviye 4</DisplayName>
+		<DisplayName>Tapinakci Hisari Seviye 4</DisplayName>
 		<Rank>4</Rank>
 		<PlayerLevel>20</PlayerLevel>
 		<GoldCost>209646</GoldCost>
 		<IdolCost>55</IdolCost>
 		<UpgradeTime>142800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Templar4</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Templar Citadel seviye 5</DisplayName>
+		<DisplayName>Tapinakci Hisari Seviye 5</DisplayName>
 		<Rank>5</Rank>
 		<PlayerLevel>25</PlayerLevel>
 		<GoldCost>432172</GoldCost>
 		<IdolCost>85</IdolCost>
 		<UpgradeTime>259200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Templar5</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Templar Citadel seviye 6</DisplayName>
+		<DisplayName>Tapinakci Hisari Seviye 6</DisplayName>
 		<Rank>6</Rank>
 		<PlayerLevel>30</PlayerLevel>
 		<GoldCost>835058</GoldCost>
 		<IdolCost>123</IdolCost>
 		<UpgradeTime>343800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Templar6</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Templar Citadel seviye 7</DisplayName>
+		<DisplayName>Tapinakci Hisari Seviye 7</DisplayName>
 		<Rank>7</Rank>
 		<PlayerLevel>35</PlayerLevel>
 		<GoldCost>1539532</GoldCost>
 		<IdolCost>158</IdolCost>
 		<UpgradeTime>439200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Templar7</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Templar Citadel seviye 8</DisplayName>
+		<DisplayName>Tapinakci Hisari Seviye 8</DisplayName>
 		<Rank>8</Rank>
 		<PlayerLevel>40</PlayerLevel>
 		<GoldCost>2748303</GoldCost>
 		<IdolCost>198</IdolCost>
 		<UpgradeTime>634800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Templar8</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Templar Citadel seviye 9</DisplayName>
+		<DisplayName>Tapinakci Hisari Seviye 9</DisplayName>
 		<Rank>9</Rank>
 		<PlayerLevel>45</PlayerLevel>
 		<GoldCost>4781913</GoldCost>
 		<IdolCost>239</IdolCost>
 		<UpgradeTime>715200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Templar9</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Templar Citadel seviye 10</DisplayName>
+		<DisplayName>Tapinakci Hisari Seviye 10</DisplayName>
 		<Rank>10</Rank>
 		<PlayerLevel>50</PlayerLevel>
 		<GoldCost>8155866</GoldCost>
@@ -579,7 +579,7 @@
 	</Building>
 	<Building BuildingName="FrostwardenTower">
 		<BuildingID>6</BuildingID>
-		<DisplayName>Frostwarden Tower</DisplayName>
+		<DisplayName>Ayaz Kanali</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -591,97 +591,97 @@
 		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
 	</Building>
 	<Building>
-		<DisplayName>Coldsnap Conduit seviye 1</DisplayName>
+		<DisplayName>Ayaz Kanali Seviye 1</DisplayName>
 		<Rank>1</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
 		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Frostwarden1</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Coldsnap Conduit seviye 2</DisplayName>
+		<DisplayName>Ayaz Kanali Seviye 2</DisplayName>
 		<Rank>2</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>32867</GoldCost>
 		<IdolCost>17</IdolCost>
 		<UpgradeTime>14400</UpgradeTime>
 		<Art>a_Upgrade_Tower_Frostwarden2</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Coldsnap Conduit seviye 3</DisplayName>
+		<DisplayName>Ayaz Kanali Seviye 3</DisplayName>
 		<Rank>3</Rank>
 		<PlayerLevel>15</PlayerLevel>
 		<GoldCost>91888</GoldCost>
 		<IdolCost>39</IdolCost>
 		<UpgradeTime>49200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Frostwarden3</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Coldsnap Conduit seviye 4</DisplayName>
+		<DisplayName>Ayaz Kanali Seviye 4</DisplayName>
 		<Rank>4</Rank>
 		<PlayerLevel>20</PlayerLevel>
 		<GoldCost>209646</GoldCost>
 		<IdolCost>55</IdolCost>
 		<UpgradeTime>142800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Frostwarden4</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Coldsnap Conduit seviye 5</DisplayName>
+		<DisplayName>Ayaz Kanali Seviye 5</DisplayName>
 		<Rank>5</Rank>
 		<PlayerLevel>25</PlayerLevel>
 		<GoldCost>432172</GoldCost>
 		<IdolCost>85</IdolCost>
 		<UpgradeTime>259200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Frostwarden5</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Coldsnap Conduit seviye 6</DisplayName>
+		<DisplayName>Ayaz Kanali Seviye 6</DisplayName>
 		<Rank>6</Rank>
 		<PlayerLevel>30</PlayerLevel>
 		<GoldCost>835058</GoldCost>
 		<IdolCost>123</IdolCost>
 		<UpgradeTime>343800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Frostwarden6</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Coldsnap Conduit seviye 7</DisplayName>
+		<DisplayName>Ayaz Kanali Seviye 7</DisplayName>
 		<Rank>7</Rank>
 		<PlayerLevel>35</PlayerLevel>
 		<GoldCost>1539532</GoldCost>
 		<IdolCost>158</IdolCost>
 		<UpgradeTime>439200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Frostwarden7</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Coldsnap Conduit seviye 8</DisplayName>
+		<DisplayName>Ayaz Kanali Seviye 8</DisplayName>
 		<Rank>8</Rank>
 		<PlayerLevel>40</PlayerLevel>
 		<GoldCost>2748303</GoldCost>
 		<IdolCost>198</IdolCost>
 		<UpgradeTime>634800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Frostwarden8</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Coldsnap Conduit seviye 9</DisplayName>
+		<DisplayName>Ayaz Kanali Seviye 9</DisplayName>
 		<Rank>9</Rank>
 		<PlayerLevel>45</PlayerLevel>
 		<GoldCost>4781913</GoldCost>
 		<IdolCost>239</IdolCost>
 		<UpgradeTime>715200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Frostwarden9</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Coldsnap Conduit seviye 10</DisplayName>
+		<DisplayName>Ayaz Kanali Seviye 10</DisplayName>
 		<Rank>10</Rank>
 		<PlayerLevel>50</PlayerLevel>
 		<GoldCost>8155866</GoldCost>
@@ -691,7 +691,7 @@
 	</Building>
 	<Building BuildingName="FlameseerTower">
 		<BuildingID>7</BuildingID>
-		<DisplayName>Flameseer Tower</DisplayName>
+		<DisplayName>Magma Yuregi Firini</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -703,97 +703,97 @@
 		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
 	</Building>
 	<Building>
-		<DisplayName>Magmaheart Furnace seviye 1</DisplayName>
+		<DisplayName>Magma Yuregi Firini Seviye 1</DisplayName>
 		<Rank>1</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
 		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Flameseer1</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Magmaheart Furnace seviye 2</DisplayName>
+		<DisplayName>Magma Yuregi Firini Seviye 2</DisplayName>
 		<Rank>2</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>32867</GoldCost>
 		<IdolCost>17</IdolCost>
 		<UpgradeTime>14400</UpgradeTime>
 		<Art>a_Upgrade_Tower_Flameseer2</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Magmaheart Furnace seviye 3</DisplayName>
+		<DisplayName>Magma Yuregi Firini Seviye 3</DisplayName>
 		<Rank>3</Rank>
 		<PlayerLevel>15</PlayerLevel>
 		<GoldCost>91888</GoldCost>
 		<IdolCost>39</IdolCost>
 		<UpgradeTime>49200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Flameseer3</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Magmaheart Furnace seviye 4</DisplayName>
+		<DisplayName>Magma Yuregi Firini Seviye 4</DisplayName>
 		<Rank>4</Rank>
 		<PlayerLevel>20</PlayerLevel>
 		<GoldCost>209646</GoldCost>
 		<IdolCost>55</IdolCost>
 		<UpgradeTime>142800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Flameseer4</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Magmaheart Furnace seviye 5</DisplayName>
+		<DisplayName>Magma Yuregi Firini Seviye 5</DisplayName>
 		<Rank>5</Rank>
 		<PlayerLevel>25</PlayerLevel>
 		<GoldCost>432172</GoldCost>
 		<IdolCost>85</IdolCost>
 		<UpgradeTime>259200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Flameseer5</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Magmaheart Furnace seviye 6</DisplayName>
+		<DisplayName>Magma Yuregi Firini Seviye 6</DisplayName>
 		<Rank>6</Rank>
 		<PlayerLevel>30</PlayerLevel>
 		<GoldCost>835058</GoldCost>
 		<IdolCost>123</IdolCost>
 		<UpgradeTime>343800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Flameseer6</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Magmaheart Furnace seviye 7</DisplayName>
+		<DisplayName>Magma Yuregi Firini Seviye 7</DisplayName>
 		<Rank>7</Rank>
 		<PlayerLevel>35</PlayerLevel>
 		<GoldCost>1539532</GoldCost>
 		<IdolCost>158</IdolCost>
 		<UpgradeTime>439200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Flameseer7</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Magmaheart Furnace seviye 8</DisplayName>
+		<DisplayName>Magma Yuregi Firini Seviye 8</DisplayName>
 		<Rank>8</Rank>
 		<PlayerLevel>40</PlayerLevel>
 		<GoldCost>2748303</GoldCost>
 		<IdolCost>198</IdolCost>
 		<UpgradeTime>634800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Flameseer8</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Magmaheart Furnace seviye 9</DisplayName>
+		<DisplayName>Magma Yuregi Firini Seviye 9</DisplayName>
 		<Rank>9</Rank>
 		<PlayerLevel>45</PlayerLevel>
 		<GoldCost>4781913</GoldCost>
 		<IdolCost>239</IdolCost>
 		<UpgradeTime>715200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Flameseer9</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Magmaheart Furnace seviye 10</DisplayName>
+		<DisplayName>Magma Yuregi Firini Seviye 10</DisplayName>
 		<Rank>10</Rank>
 		<PlayerLevel>50</PlayerLevel>
 		<GoldCost>8155866</GoldCost>
@@ -803,7 +803,7 @@
 	</Building>
 	<Building BuildingName="NecromancerTower">
 		<BuildingID>8</BuildingID>
-		<DisplayName>Necromancer kule</DisplayName>
+		<DisplayName>Olucagiran Kulesi</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -815,97 +815,97 @@
 		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
 	</Building>
 	<Building>
-		<DisplayName>Necromancer kule seviye 1</DisplayName>
+		<DisplayName>Olucagiran Kulesi Seviye 1</DisplayName>
 		<Rank>1</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
 		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Necromancer1</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Necromancer kule seviye 2</DisplayName>
+		<DisplayName>Olucagiran Kulesi Seviye 2</DisplayName>
 		<Rank>2</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>32867</GoldCost>
 		<IdolCost>17</IdolCost>
 		<UpgradeTime>14400</UpgradeTime>
 		<Art>a_Upgrade_Tower_Necromancer2</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Necromancer kule seviye 3</DisplayName>
+		<DisplayName>Olucagiran Kulesi Seviye 3</DisplayName>
 		<Rank>3</Rank>
 		<PlayerLevel>15</PlayerLevel>
 		<GoldCost>91888</GoldCost>
 		<IdolCost>39</IdolCost>
 		<UpgradeTime>49200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Necromancer3</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Necromancer kule seviye 4</DisplayName>
+		<DisplayName>Olucagiran Kulesi Seviye 4</DisplayName>
 		<Rank>4</Rank>
 		<PlayerLevel>20</PlayerLevel>
 		<GoldCost>209646</GoldCost>
 		<IdolCost>55</IdolCost>
 		<UpgradeTime>142800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Necromancer4</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Necromancer kule seviye 5</DisplayName>
+		<DisplayName>Olucagiran Kulesi Seviye 5</DisplayName>
 		<Rank>5</Rank>
 		<PlayerLevel>25</PlayerLevel>
 		<GoldCost>432172</GoldCost>
 		<IdolCost>85</IdolCost>
 		<UpgradeTime>259200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Necromancer5</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Necromancer kule seviye 6</DisplayName>
+		<DisplayName>Olucagiran Kulesi Seviye 6</DisplayName>
 		<Rank>6</Rank>
 		<PlayerLevel>30</PlayerLevel>
 		<GoldCost>835058</GoldCost>
 		<IdolCost>123</IdolCost>
 		<UpgradeTime>343800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Necromancer6</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Necromancer kule seviye 7</DisplayName>
+		<DisplayName>Olucagiran Kulesi Seviye 7</DisplayName>
 		<Rank>7</Rank>
 		<PlayerLevel>35</PlayerLevel>
 		<GoldCost>1539532</GoldCost>
 		<IdolCost>158</IdolCost>
 		<UpgradeTime>439200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Necromancer7</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Necromancer kule seviye 8</DisplayName>
+		<DisplayName>Olucagiran Kulesi Seviye 8</DisplayName>
 		<Rank>8</Rank>
 		<PlayerLevel>40</PlayerLevel>
 		<GoldCost>2748303</GoldCost>
 		<IdolCost>198</IdolCost>
 		<UpgradeTime>634800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Necromancer8</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Necromancer kule seviye 9</DisplayName>
+		<DisplayName>Olucagiran Kulesi Seviye 9</DisplayName>
 		<Rank>9</Rank>
 		<PlayerLevel>45</PlayerLevel>
 		<GoldCost>4781913</GoldCost>
 		<IdolCost>239</IdolCost>
 		<UpgradeTime>715200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Necromancer9</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Necromancer kule seviye 10</DisplayName>
+		<DisplayName>Olucagiran Kulesi Seviye 10</DisplayName>
 		<Rank>10</Rank>
 		<PlayerLevel>50</PlayerLevel>
 		<GoldCost>8155866</GoldCost>
@@ -915,7 +915,7 @@
 	</Building>
 	<Building BuildingName="ExecutionerTower">
 		<BuildingID>9</BuildingID>
-		<DisplayName>Executioner Tower</DisplayName>
+		<DisplayName>Elysian Ruh Tuzagi</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -927,97 +927,97 @@
 		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
 	</Building>
 	<Building>
-		<DisplayName>Elysian Soultrap seviye 1</DisplayName>
+		<DisplayName>Elysian Ruh Tuzagi Seviye 1</DisplayName>
 		<Rank>1</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
 		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Executioner1</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Elysian Soultrap seviye 2</DisplayName>
+		<DisplayName>Elysian Ruh Tuzagi Seviye 2</DisplayName>
 		<Rank>2</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>32867</GoldCost>
 		<IdolCost>17</IdolCost>
 		<UpgradeTime>14400</UpgradeTime>
 		<Art>a_Upgrade_Tower_Executioner2</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Elysian Soultrap seviye 3</DisplayName>
+		<DisplayName>Elysian Ruh Tuzagi Seviye 3</DisplayName>
 		<Rank>3</Rank>
 		<PlayerLevel>15</PlayerLevel>
 		<GoldCost>91888</GoldCost>
 		<IdolCost>39</IdolCost>
 		<UpgradeTime>49200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Executioner3</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Elysian Soultrap seviye 4</DisplayName>
+		<DisplayName>Elysian Ruh Tuzagi Seviye 4</DisplayName>
 		<Rank>4</Rank>
 		<PlayerLevel>20</PlayerLevel>
 		<GoldCost>209646</GoldCost>
 		<IdolCost>55</IdolCost>
 		<UpgradeTime>142800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Executioner4</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Elysian Soultrap seviye 5</DisplayName>
+		<DisplayName>Elysian Ruh Tuzagi Seviye 5</DisplayName>
 		<Rank>5</Rank>
 		<PlayerLevel>25</PlayerLevel>
 		<GoldCost>432172</GoldCost>
 		<IdolCost>85</IdolCost>
 		<UpgradeTime>259200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Executioner5</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Elysian Soultrap seviye 6</DisplayName>
+		<DisplayName>Elysian Ruh Tuzagi Seviye 6</DisplayName>
 		<Rank>6</Rank>
 		<PlayerLevel>30</PlayerLevel>
 		<GoldCost>835058</GoldCost>
 		<IdolCost>123</IdolCost>
 		<UpgradeTime>343800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Executioner6</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Elysian Soultrap seviye 7</DisplayName>
+		<DisplayName>Elysian Ruh Tuzagi Seviye 7</DisplayName>
 		<Rank>7</Rank>
 		<PlayerLevel>35</PlayerLevel>
 		<GoldCost>1539532</GoldCost>
 		<IdolCost>158</IdolCost>
 		<UpgradeTime>439200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Executioner7</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Elysian Soultrap seviye 8</DisplayName>
+		<DisplayName>Elysian Ruh Tuzagi Seviye 8</DisplayName>
 		<Rank>8</Rank>
 		<PlayerLevel>40</PlayerLevel>
 		<GoldCost>2748303</GoldCost>
 		<IdolCost>198</IdolCost>
 		<UpgradeTime>634800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Executioner8</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Elysian Soultrap seviye 9</DisplayName>
+		<DisplayName>Elysian Ruh Tuzagi Seviye 9</DisplayName>
 		<Rank>9</Rank>
 		<PlayerLevel>45</PlayerLevel>
 		<GoldCost>4781913</GoldCost>
 		<IdolCost>239</IdolCost>
 		<UpgradeTime>715200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Executioner9</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Elysian Soultrap seviye 10</DisplayName>
+		<DisplayName>Elysian Ruh Tuzagi Seviye 10</DisplayName>
 		<Rank>10</Rank>
 		<PlayerLevel>50</PlayerLevel>
 		<GoldCost>8155866</GoldCost>
@@ -1027,7 +1027,7 @@
 	</Building>
 	<Building BuildingName="ShadowwalkerTower">
 		<BuildingID>10</BuildingID>
-		<DisplayName>carpik Nethertotem</DisplayName>
+		<DisplayName>Carpik Nether Totemi</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -1039,97 +1039,97 @@
 		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
 	</Building>
 	<Building>
-		<DisplayName>carpik Nethertotem seviye 1</DisplayName>
+		<DisplayName>Carpik Nether Totemi Seviye 1</DisplayName>
 		<Rank>1</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
 		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Shadowwalker1</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>carpik Nethertotem seviye 2</DisplayName>
+		<DisplayName>Carpik Nether Totemi Seviye 2</DisplayName>
 		<Rank>2</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>32867</GoldCost>
 		<IdolCost>17</IdolCost>
 		<UpgradeTime>14400</UpgradeTime>
 		<Art>a_Upgrade_Tower_Shadowwalker2</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>carpik Nethertotem seviye 3</DisplayName>
+		<DisplayName>Carpik Nether Totemi Seviye 3</DisplayName>
 		<Rank>3</Rank>
 		<PlayerLevel>15</PlayerLevel>
 		<GoldCost>91888</GoldCost>
 		<IdolCost>39</IdolCost>
 		<UpgradeTime>49200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Shadowwalker3</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>carpik Nethertotem seviye 4</DisplayName>
+		<DisplayName>Carpik Nether Totemi Seviye 4</DisplayName>
 		<Rank>4</Rank>
 		<PlayerLevel>20</PlayerLevel>
 		<GoldCost>209646</GoldCost>
 		<IdolCost>55</IdolCost>
 		<UpgradeTime>142800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Shadowwalker4</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>carpik Nethertotem seviye 5</DisplayName>
+		<DisplayName>Carpik Nether Totemi Seviye 5</DisplayName>
 		<Rank>5</Rank>
 		<PlayerLevel>25</PlayerLevel>
 		<GoldCost>432172</GoldCost>
 		<IdolCost>85</IdolCost>
 		<UpgradeTime>259200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Shadowwalker5</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>carpik Nethertotem seviye 6</DisplayName>
+		<DisplayName>Carpik Nether Totemi Seviye 6</DisplayName>
 		<Rank>6</Rank>
 		<PlayerLevel>30</PlayerLevel>
 		<GoldCost>835058</GoldCost>
 		<IdolCost>123</IdolCost>
 		<UpgradeTime>343800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Shadowwalker6</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>carpik Nethertotem seviye 7</DisplayName>
+		<DisplayName>Carpik Nether Totemi Seviye 7</DisplayName>
 		<Rank>7</Rank>
 		<PlayerLevel>35</PlayerLevel>
 		<GoldCost>1539532</GoldCost>
 		<IdolCost>158</IdolCost>
 		<UpgradeTime>439200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Shadowwalker7</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>carpik Nethertotem seviye 8</DisplayName>
+		<DisplayName>Carpik Nether Totemi Seviye 8</DisplayName>
 		<Rank>8</Rank>
 		<PlayerLevel>40</PlayerLevel>
 		<GoldCost>2748303</GoldCost>
 		<IdolCost>198</IdolCost>
 		<UpgradeTime>634800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Shadowwalker8</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>carpik Nethertotem seviye 9</DisplayName>
+		<DisplayName>Carpik Nether Totemi Seviye 9</DisplayName>
 		<Rank>9</Rank>
 		<PlayerLevel>45</PlayerLevel>
 		<GoldCost>4781913</GoldCost>
 		<IdolCost>239</IdolCost>
 		<UpgradeTime>715200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Shadowwalker9</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>carpik Nethertotem seviye 10</DisplayName>
+		<DisplayName>Carpik Nether Totemi Seviye 10</DisplayName>
 		<Rank>10</Rank>
 		<PlayerLevel>50</PlayerLevel>
 		<GoldCost>8155866</GoldCost>
@@ -1139,7 +1139,7 @@
 	</Building>
 	<Building BuildingName="SoulthiefTower">
 		<BuildingID>11</BuildingID>
-		<DisplayName>Soulthief Tower</DisplayName>
+		<DisplayName>Ruh Hirsizi Ini</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -1151,97 +1151,97 @@
 		<UpgradeIcon>a_BuildingIcon_frostwarden1</UpgradeIcon>
 	</Building>
 	<Building>
-		<DisplayName>Soulthief Lair seviye 1</DisplayName>
+		<DisplayName>Ruh Hirsizi Ini Seviye 1</DisplayName>
 		<Rank>1</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
 		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Blademaster1</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Soulthief Lair seviye 2</DisplayName>
+		<DisplayName>Ruh Hirsizi Ini Seviye 2</DisplayName>
 		<Rank>2</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>32867</GoldCost>
 		<IdolCost>17</IdolCost>
 		<UpgradeTime>14400</UpgradeTime>
 		<Art>a_Upgrade_Tower_Blademaster2</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Soulthief Lair seviye 3</DisplayName>
+		<DisplayName>Ruh Hirsizi Ini Seviye 3</DisplayName>
 		<Rank>3</Rank>
 		<PlayerLevel>15</PlayerLevel>
 		<GoldCost>91888</GoldCost>
 		<IdolCost>39</IdolCost>
 		<UpgradeTime>49200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Blademaster3</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Soulthief Lair seviye 4</DisplayName>
+		<DisplayName>Ruh Hirsizi Ini Seviye 4</DisplayName>
 		<Rank>4</Rank>
 		<PlayerLevel>20</PlayerLevel>
 		<GoldCost>209646</GoldCost>
 		<IdolCost>55</IdolCost>
 		<UpgradeTime>142800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Blademaster4</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Soulthief Lair seviye 5</DisplayName>
+		<DisplayName>Ruh Hirsizi Ini Seviye 5</DisplayName>
 		<Rank>5</Rank>
 		<PlayerLevel>25</PlayerLevel>
 		<GoldCost>432172</GoldCost>
 		<IdolCost>85</IdolCost>
 		<UpgradeTime>259200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Blademaster5</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Soulthief Lair seviye 6</DisplayName>
+		<DisplayName>Ruh Hirsizi Ini Seviye 6</DisplayName>
 		<Rank>6</Rank>
 		<PlayerLevel>30</PlayerLevel>
 		<GoldCost>835058</GoldCost>
 		<IdolCost>123</IdolCost>
 		<UpgradeTime>343800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Blademaster6</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Soulthief Lair seviye 7</DisplayName>
+		<DisplayName>Ruh Hirsizi Ini Seviye 7</DisplayName>
 		<Rank>7</Rank>
 		<PlayerLevel>35</PlayerLevel>
 		<GoldCost>1539532</GoldCost>
 		<IdolCost>158</IdolCost>
 		<UpgradeTime>439200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Blademaster7</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Soulthief Lair seviye 8</DisplayName>
+		<DisplayName>Ruh Hirsizi Ini Seviye 8</DisplayName>
 		<Rank>8</Rank>
 		<PlayerLevel>40</PlayerLevel>
 		<GoldCost>2748303</GoldCost>
 		<IdolCost>198</IdolCost>
 		<UpgradeTime>634800</UpgradeTime>
 		<Art>a_Upgrade_Tower_Blademaster8</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Soulthief Lair seviye 9</DisplayName>
+		<DisplayName>Ruh Hirsizi Ini Seviye 9</DisplayName>
 		<Rank>9</Rank>
 		<PlayerLevel>45</PlayerLevel>
 		<GoldCost>4781913</GoldCost>
 		<IdolCost>239</IdolCost>
 		<UpgradeTime>715200</UpgradeTime>
 		<Art>a_Upgrade_Tower_Blademaster9</Art>
-		<UpgradeDescription>Unlocks next 5 yetenek points icin training</UpgradeDescription>
+		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Soulthief Lair seviye 10</DisplayName>
+		<DisplayName>Ruh Hirsizi Ini Seviye 10</DisplayName>
 		<Rank>10</Rank>
 		<PlayerLevel>50</PlayerLevel>
 		<GoldCost>8155866</GoldCost>
@@ -1251,7 +1251,7 @@
 	</Building>
 	<Building BuildingName="Keep">
 		<BuildingID>12</BuildingID>
-		<DisplayName>Kahraman's hisar</DisplayName>
+		<DisplayName>Kahramanin Hisari</DisplayName>
 		<Type>Keep</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -1264,7 +1264,7 @@
 	</Building>
 	<Building BuildingName="Barn">
 		<BuildingID>13</BuildingID>
-		<DisplayName>Barn</DisplayName>
+		<DisplayName>Kuluckahane</DisplayName>
 		<Type>Barn</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -1276,97 +1276,97 @@
 		<UpgradeIcon>a_BarnUpgradeIcon</UpgradeIcon>
 	</Building>
 	<Building>
-		<DisplayName>Hatchery seviye 1</DisplayName>
+		<DisplayName>Kuluckahane Seviye 1</DisplayName>
 		<Rank>1</Rank>
 		<PlayerLevel>5</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
 		<UpgradeTime>150</UpgradeTime>
 		<Art>a_Upgrade_Barn_1</Art>
-		<UpgradeDescription>artirir max evcil seviye cap by 2</UpgradeDescription>
+		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Hatchery seviye 2</DisplayName>
+		<DisplayName>Kuluckahane Seviye 2</DisplayName>
 		<Rank>2</Rank>
 		<PlayerLevel>5</PlayerLevel>
 		<GoldCost>5872</GoldCost>
 		<IdolCost>3</IdolCost>
 		<UpgradeTime>14400</UpgradeTime>
 		<Art>a_Upgrade_Barn_2</Art>
-		<UpgradeDescription>artirir max evcil seviye cap by 2</UpgradeDescription>
+		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Hatchery seviye 3</DisplayName>
+		<DisplayName>Kuluckahane Seviye 3</DisplayName>
 		<Rank>3</Rank>
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>32867</GoldCost>
 		<IdolCost>17</IdolCost>
 		<UpgradeTime>49200</UpgradeTime>
 		<Art>a_Upgrade_Barn_3</Art>
-		<UpgradeDescription>artirir max evcil seviye cap by 2</UpgradeDescription>
+		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Hatchery seviye 4</DisplayName>
+		<DisplayName>Kuluckahane Seviye 4</DisplayName>
 		<Rank>4</Rank>
 		<PlayerLevel>15</PlayerLevel>
 		<GoldCost>91888</GoldCost>
 		<IdolCost>39</IdolCost>
 		<UpgradeTime>142800</UpgradeTime>
 		<Art>a_Upgrade_Barn_4</Art>
-		<UpgradeDescription>artirir max evcil seviye cap by 2</UpgradeDescription>
+		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Hatchery seviye 5</DisplayName>
+		<DisplayName>Kuluckahane Seviye 5</DisplayName>
 		<Rank>5</Rank>
 		<PlayerLevel>20</PlayerLevel>
 		<GoldCost>209646</GoldCost>
 		<IdolCost>55</IdolCost>
 		<UpgradeTime>259200</UpgradeTime>
 		<Art>a_Upgrade_Barn_5</Art>
-		<UpgradeDescription>artirir max evcil seviye cap by 2</UpgradeDescription>
+		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Hatchery seviye 6</DisplayName>
+		<DisplayName>Kuluckahane Seviye 6</DisplayName>
 		<Rank>6</Rank>
 		<PlayerLevel>25</PlayerLevel>
 		<GoldCost>432172</GoldCost>
 		<IdolCost>85</IdolCost>
 		<UpgradeTime>343800</UpgradeTime>
 		<Art>a_Upgrade_Barn_6</Art>
-		<UpgradeDescription>artirir max evcil seviye cap by 2</UpgradeDescription>
+		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Hatchery seviye 7</DisplayName>
+		<DisplayName>Kuluckahane Seviye 7</DisplayName>
 		<Rank>7</Rank>
 		<PlayerLevel>30</PlayerLevel>
 		<GoldCost>835058</GoldCost>
 		<IdolCost>123</IdolCost>
 		<UpgradeTime>439200</UpgradeTime>
 		<Art>a_Upgrade_Barn_7</Art>
-		<UpgradeDescription>artirir max evcil seviye cap by 2</UpgradeDescription>
+		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Hatchery seviye 8</DisplayName>
+		<DisplayName>Kuluckahane Seviye 8</DisplayName>
 		<Rank>8</Rank>
 		<PlayerLevel>35</PlayerLevel>
 		<GoldCost>1539532</GoldCost>
 		<IdolCost>158</IdolCost>
 		<UpgradeTime>634800</UpgradeTime>
 		<Art>a_Upgrade_Barn_8</Art>
-		<UpgradeDescription>artirir max evcil seviye cap by 2</UpgradeDescription>
+		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Hatchery seviye 9</DisplayName>
+		<DisplayName>Kuluckahane Seviye 9</DisplayName>
 		<Rank>9</Rank>
 		<PlayerLevel>40</PlayerLevel>
 		<GoldCost>2748303</GoldCost>
 		<IdolCost>198</IdolCost>
 		<UpgradeTime>715200</UpgradeTime>
 		<Art>a_Upgrade_Barn_9</Art>
-		<UpgradeDescription>artirir max evcil seviye cap by 2</UpgradeDescription>
+		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
 	</Building>
 	<Building>
-		<DisplayName>Hatchery seviye 10</DisplayName>
+		<DisplayName>Kuluckahane Seviye 10</DisplayName>
 		<Rank>10</Rank>
 		<PlayerLevel>45</PlayerLevel>
 		<GoldCost>4781913</GoldCost>

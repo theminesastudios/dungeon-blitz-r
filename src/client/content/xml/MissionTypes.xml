@@ -477,7 +477,7 @@
 		<MissionName>ClearTheBridge</MissionName>
 		<MissionID>23</MissionID>
 		<PreReqMissions>SlaySvath</PreReqMissions>
-		<ZoneSet>SwampRoadNorth,BridgeTown</ZoneSet>
+		<ZoneSet>SwampRoadNorth</ZoneSet>
 		<Priority>Story</Priority>
 		<ContactName>SRN_Mayor03</ContactName>
 		<ReturnName>BT_Greeter</ReturnName>
@@ -1988,7 +1988,7 @@
 	<MissionType>
 		<MissionName>TempleOfShadows</MissionName>
 		<MissionID>101</MissionID>
-		<PreReqMissions>Capstone</PreReqMissions>
+		<PreReqMissions>ScarabInvasion</PreReqMissions>
 		<ZoneSet>ShazariDesert</ZoneSet>
 		<Priority>Dungeon</Priority>
 		<ContactName>SD_Sage01</ContactName>
@@ -4102,7 +4102,7 @@
 	<MissionType>
 		<MissionName>TempleOfShadowsHard</MissionName>
 		<MissionID>208</MissionID>
-		<PreReqMissions>CapstoneHard</PreReqMissions>
+		<PreReqMissions>ScarabInvasionHard</PreReqMissions>
 		<ZoneSet>ShazariDesertHard</ZoneSet>
 		<Priority>Dungeon</Priority>
 		<ContactName>SD_Sage01Hard</ContactName>

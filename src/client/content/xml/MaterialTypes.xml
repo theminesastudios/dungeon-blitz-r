@@ -2,7 +2,7 @@
 <MaterialTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<MaterialType MaterialName="---Template---">
 		<MaterialID>0</MaterialID>
-		<DisplayName>Malzeme Sablonu</DisplayName>
+		<DisplayName>---Sablon---</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Kingdom</Kingdom>
 		<DropRealm>Realm</DropRealm>
@@ -11,7 +11,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicDragonM">
 		<MaterialID>1</MaterialID>
-		<DisplayName>Ejderha Parcasi</DisplayName>
+		<DisplayName>Dev Pul</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Dragon</DropRealm>
@@ -19,7 +19,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicDragonR">
 		<MaterialID>2</MaterialID>
-		<DisplayName>Ejderha Talon</DisplayName>
+		<DisplayName>Ejderha Pencesi</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Dragon</DropRealm>
@@ -27,7 +27,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicDragonL">
 		<MaterialID>3</MaterialID>
-		<DisplayName>Skull Gods</DisplayName>
+		<DisplayName>Tanrilarin Kafatasi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Dragon</DropRealm>
@@ -36,7 +36,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicHumanM">
 		<MaterialID>4</MaterialID>
-		<DisplayName>Insan Parcasi</DisplayName>
+		<DisplayName>Cagrilmis Alev</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Human</DropRealm>
@@ -52,7 +52,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicHumanL">
 		<MaterialID>6</MaterialID>
-		<DisplayName>Efsanevi Insan Parcasi</DisplayName>
+		<DisplayName>Ejder Atesi Tilsimi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Human</DropRealm>
@@ -61,7 +61,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicLizardM">
 		<MaterialID>7</MaterialID>
-		<DisplayName>Kertenkele Parcasi</DisplayName>
+		<DisplayName>Duzgun Pullar</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Lizard</DropRealm>
@@ -69,7 +69,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicLizardR">
 		<MaterialID>8</MaterialID>
-		<DisplayName>Kertenkele Tooth</DisplayName>
+		<DisplayName>Kertenkele Disi</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Lizard</DropRealm>
@@ -77,7 +77,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicLizardL">
 		<MaterialID>9</MaterialID>
-		<DisplayName>Efsanevi Kertenkele Parcasi</DisplayName>
+		<DisplayName>Kan Muhafizi Bileklikleri</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Lizard</DropRealm>
@@ -86,7 +86,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicRaptorM">
 		<MaterialID>10</MaterialID>
-		<DisplayName>Yirtici Parcasi</DisplayName>
+		<DisplayName>Yirtici Pullari</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Raptor</DropRealm>
@@ -94,7 +94,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicRaptorR">
 		<MaterialID>11</MaterialID>
-		<DisplayName>Nadir Yirtici Parcasi</DisplayName>
+		<DisplayName>Kopmus Pence</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Raptor</DropRealm>
@@ -102,7 +102,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicRaptorL">
 		<MaterialID>12</MaterialID>
-		<DisplayName>Eye Wild</DisplayName>
+		<DisplayName>Vahsin Gozu</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Raptor</DropRealm>
@@ -111,7 +111,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicWyrmM">
 		<MaterialID>13</MaterialID>
-		<DisplayName>Ejder Tail</DisplayName>
+		<DisplayName>Ejder Kuyrugu</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Wyrm</DropRealm>
@@ -119,7 +119,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicWyrmR">
 		<MaterialID>14</MaterialID>
-		<DisplayName>Nadir Ejder Parcasi</DisplayName>
+		<DisplayName>Kalin Deri</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Wyrm</DropRealm>
@@ -127,7 +127,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicWyrmL">
 		<MaterialID>15</MaterialID>
-		<DisplayName>Efsanevi Ejder Parcasi</DisplayName>
+		<DisplayName>Kukreme Bezi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>Wyrm</DropRealm>
@@ -136,7 +136,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalAbominationM">
 		<MaterialID>16</MaterialID>
-		<DisplayName>Hilkat Garibesi Parcasi</DisplayName>
+		<DisplayName>Lanetli Dikisler</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Abomination</DropRealm>
@@ -144,7 +144,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalAbominationR">
 		<MaterialID>17</MaterialID>
-		<DisplayName>Nadir Hilkat Garibesi Parcasi</DisplayName>
+		<DisplayName>Lanetli Kalp</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Abomination</DropRealm>
@@ -152,7 +152,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalAbominationL">
 		<MaterialID>18</MaterialID>
-		<DisplayName>Maw Madness</DisplayName>
+		<DisplayName>Delilik Agzi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Abomination</DropRealm>
@@ -161,7 +161,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalConstructM">
 		<MaterialID>19</MaterialID>
-		<DisplayName>Construct Ekipman</DisplayName>
+		<DisplayName>Yapi Dislisi</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Construct</DropRealm>
@@ -169,7 +169,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalConstructR">
 		<MaterialID>20</MaterialID>
-		<DisplayName>Nadir Yapi Parcasi</DisplayName>
+		<DisplayName>Yapi Yagi</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Construct</DropRealm>
@@ -177,7 +177,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalConstructL">
 		<MaterialID>21</MaterialID>
-		<DisplayName>Kadim Guc Core</DisplayName>
+		<DisplayName>Kadim Guc Cekirdegi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Construct</DropRealm>
@@ -186,7 +186,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalDemonM">
 		<MaterialID>22</MaterialID>
-		<DisplayName>Iblis Parcasi</DisplayName>
+		<DisplayName>Iblis Kurku</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Demon</DropRealm>
@@ -194,7 +194,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalDemonR">
 		<MaterialID>23</MaterialID>
-		<DisplayName>Nadir Iblis Parcasi</DisplayName>
+		<DisplayName>Vahsi Boynuzlar</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Demon</DropRealm>
@@ -211,7 +211,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalDreadM">
 		<MaterialID>25</MaterialID>
-		<DisplayName>Dehset Celik</DisplayName>
+		<DisplayName>Dehset Celigi</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Dread</DropRealm>
@@ -219,7 +219,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalDreadR">
 		<MaterialID>26</MaterialID>
-		<DisplayName>Kadim Emblem</DisplayName>
+		<DisplayName>Kadim Amblem</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Dread</DropRealm>
@@ -227,7 +227,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalDreadL">
 		<MaterialID>27</MaterialID>
-		<DisplayName>Efsanevi Dread Parcasi</DisplayName>
+		<DisplayName>Dehset Akcesi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Dread</DropRealm>
@@ -236,7 +236,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalHumanM">
 		<MaterialID>28</MaterialID>
-		<DisplayName>Insan Parcasi</DisplayName>
+		<DisplayName>Runlu Sayfalar</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Human</DropRealm>
@@ -244,7 +244,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalHumanR">
 		<MaterialID>29</MaterialID>
-		<DisplayName>Nadir Insan Parcasi</DisplayName>
+		<DisplayName>Kutsal Olmayan Muhur</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Human</DropRealm>
@@ -252,7 +252,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalHumanL">
 		<MaterialID>30</MaterialID>
-		<DisplayName>Cehennem Odak</DisplayName>
+		<DisplayName>Cehennem Odagi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Human</DropRealm>
@@ -261,7 +261,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalImpM">
 		<MaterialID>31</MaterialID>
-		<DisplayName>Imp Parcasi</DisplayName>
+		<DisplayName>Keskin Pence</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Imp</DropRealm>
@@ -269,7 +269,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalImpR">
 		<MaterialID>32</MaterialID>
-		<DisplayName>Broken Mizrak Tip</DisplayName>
+		<DisplayName>Kirik Mizrak Ucu</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Imp</DropRealm>
@@ -277,7 +277,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalImpL">
 		<MaterialID>33</MaterialID>
-		<DisplayName>Efsanevi Imp Parcasi</DisplayName>
+		<DisplayName>Sansli Imp Ayagi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Imp</DropRealm>
@@ -286,7 +286,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalPsychophageM">
 		<MaterialID>34</MaterialID>
-		<DisplayName>Psychophage Parcasi</DisplayName>
+		<DisplayName>Kucuk Kanat</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Psychophage</DropRealm>
@@ -294,7 +294,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalPsychophageR">
 		<MaterialID>35</MaterialID>
-		<DisplayName>Nadir Psychophage Parcasi</DisplayName>
+		<DisplayName>Keskin Ichor</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Psychophage</DropRealm>
@@ -302,7 +302,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalPsychophageL">
 		<MaterialID>36</MaterialID>
-		<DisplayName>Extract Third Eye</DisplayName>
+		<DisplayName>Ucuncu Goz Ozu</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Psychophage</DropRealm>
@@ -311,7 +311,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalRockHulkM">
 		<MaterialID>37</MaterialID>
-		<DisplayName>Rock Hulk Parcasi</DisplayName>
+		<DisplayName>Dolsit</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>RockHulk</DropRealm>
@@ -319,7 +319,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalRockHulkR">
 		<MaterialID>38</MaterialID>
-		<DisplayName>Nadir Rock Hulk Parcasi</DisplayName>
+		<DisplayName>Woomerit</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>RockHulk</DropRealm>
@@ -327,7 +327,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalRockHulkL">
 		<MaterialID>39</MaterialID>
-		<DisplayName>Efsanevi Rock Hulk Parcasi</DisplayName>
+		<DisplayName>Hamilit</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>RockHulk</DropRealm>
@@ -336,7 +336,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalShadeM">
 		<MaterialID>40</MaterialID>
-		<DisplayName>Shade Tas</DisplayName>
+		<DisplayName>Golge Tasi</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Shade</DropRealm>
@@ -344,7 +344,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalShadeR">
 		<MaterialID>41</MaterialID>
-		<DisplayName>Koyu Talisman</DisplayName>
+		<DisplayName>Kara Tilsim</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Shade</DropRealm>
@@ -352,7 +352,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalShadeL">
 		<MaterialID>42</MaterialID>
-		<DisplayName>Efsanevi Shade Parcasi</DisplayName>
+		<DisplayName>Bosluk Maddesi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Shade</DropRealm>
@@ -361,7 +361,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalWispM">
 		<MaterialID>43</MaterialID>
-		<DisplayName>Siyah Soot</DisplayName>
+		<DisplayName>Kara Is</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Wisp</DropRealm>
@@ -369,7 +369,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalWispR">
 		<MaterialID>44</MaterialID>
-		<DisplayName>Nadir Wisp Parcasi</DisplayName>
+		<DisplayName>Kor Yurek</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Wisp</DropRealm>
@@ -377,7 +377,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalWispL">
 		<MaterialID>45</MaterialID>
-		<DisplayName>Everburning Tas</DisplayName>
+		<DisplayName>Sonsuz Yanan Tas</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>Wisp</DropRealm>
@@ -386,7 +386,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicGiantM">
 		<MaterialID>46</MaterialID>
-		<DisplayName>Giant Parcasi</DisplayName>
+		<DisplayName>Vaha Suyu</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Giant</DropRealm>
@@ -394,7 +394,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicGiantR">
 		<MaterialID>47</MaterialID>
-		<DisplayName>Giant's Parca</DisplayName>
+		<DisplayName>Dev Parcasi</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Giant</DropRealm>
@@ -402,7 +402,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicGiantL">
 		<MaterialID>48</MaterialID>
-		<DisplayName>Efsanevi Giant Parcasi</DisplayName>
+		<DisplayName>Ay Isigi Hasadi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Giant</DropRealm>
@@ -411,7 +411,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicGriffonM">
 		<MaterialID>49</MaterialID>
-		<DisplayName>Griffon Parcasi</DisplayName>
+		<DisplayName>Parlak Tuy</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Griffon</DropRealm>
@@ -419,7 +419,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicGriffonR">
 		<MaterialID>50</MaterialID>
-		<DisplayName>Nadir Griffon Parcasi</DisplayName>
+		<DisplayName>Griffon Pencesi</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Griffon</DropRealm>
@@ -427,7 +427,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicGriffonL">
 		<MaterialID>51</MaterialID>
-		<DisplayName>Mysterious Griffon Yumurta</DisplayName>
+		<DisplayName>Gizemli Griffon Yumurtasi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Griffon</DropRealm>
@@ -436,7 +436,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicHumanM">
 		<MaterialID>52</MaterialID>
-		<DisplayName>Plate Celik</DisplayName>
+		<DisplayName>Levha Celik</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Human</DropRealm>
@@ -444,7 +444,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicHumanR">
 		<MaterialID>53</MaterialID>
-		<DisplayName>Defused Bomba</DisplayName>
+		<DisplayName>Etkisizlestirilmis Bomba</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Human</DropRealm>
@@ -452,7 +452,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicHumanL">
 		<MaterialID>54</MaterialID>
-		<DisplayName>Efsanevi Insan Parcasi</DisplayName>
+		<DisplayName>Mithian Parsomeni</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Human</DropRealm>
@@ -461,7 +461,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicImperialM">
 		<MaterialID>55</MaterialID>
-		<DisplayName>Imparatorluk Parcasi</DisplayName>
+		<DisplayName>Yipranmis Deri</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Imperial</DropRealm>
@@ -469,7 +469,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicImperialR">
 		<MaterialID>56</MaterialID>
-		<DisplayName>Nadir Imparatorluk Parcasi</DisplayName>
+		<DisplayName>Imparatorluk Tilsimi</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Imperial</DropRealm>
@@ -477,7 +477,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicImperialL">
 		<MaterialID>57</MaterialID>
-		<DisplayName>Efsanevi Imparatorluk Parcasi</DisplayName>
+		<DisplayName>Kayip Imparatorluk Sikkesi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Imperial</DropRealm>
@@ -486,7 +486,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicLionM">
 		<MaterialID>58</MaterialID>
-		<DisplayName>Lion Parcasi</DisplayName>
+		<DisplayName>Aslan Postu</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Lion</DropRealm>
@@ -494,7 +494,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicLionR">
 		<MaterialID>59</MaterialID>
-		<DisplayName>Yuzuk Pride</DisplayName>
+		<DisplayName>Gurur Yuzugu</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Lion</DropRealm>
@@ -502,7 +502,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicLionL">
 		<MaterialID>60</MaterialID>
-		<DisplayName>Efsanevi Lion Parcasi</DisplayName>
+		<DisplayName>Kraliyet Kolyesi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Lion</DropRealm>
@@ -511,7 +511,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicMinotaurM">
 		<MaterialID>61</MaterialID>
-		<DisplayName>Minotaur Parcasi</DisplayName>
+		<DisplayName>Parcalanmis Toynak</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Minotaur</DropRealm>
@@ -519,7 +519,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicMinotaurR">
 		<MaterialID>62</MaterialID>
-		<DisplayName>Nadir Minotaur Parcasi</DisplayName>
+		<DisplayName>Minotor Boynuzu</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Minotaur</DropRealm>
@@ -527,7 +527,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicMinotaurL">
 		<MaterialID>63</MaterialID>
-		<DisplayName>Altin Nosering</DisplayName>
+		<DisplayName>Altin Burun Halkasi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Minotaur</DropRealm>
@@ -536,7 +536,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicWolfM">
 		<MaterialID>64</MaterialID>
-		<DisplayName>Kurt Pelt</DisplayName>
+		<DisplayName>Kurt Postu</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Wolf</DropRealm>
@@ -544,7 +544,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicWolfR">
 		<MaterialID>65</MaterialID>
-		<DisplayName>Siyah Talon</DisplayName>
+		<DisplayName>Kara Pence</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Wolf</DropRealm>
@@ -552,7 +552,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicWolfL">
 		<MaterialID>66</MaterialID>
-		<DisplayName>Altin Earring</DisplayName>
+		<DisplayName>Altin Kupe</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>Wolf</DropRealm>
@@ -561,7 +561,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanBatM">
 		<MaterialID>67</MaterialID>
-		<DisplayName>Bat Parcasi</DisplayName>
+		<DisplayName>Magara Yarasa Kurku</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Bat</DropRealm>
@@ -569,7 +569,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanBatR">
 		<MaterialID>68</MaterialID>
-		<DisplayName>Nadir Bat Parcasi</DisplayName>
+		<DisplayName>Kan Yarasa Derinligi</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Bat</DropRealm>
@@ -577,7 +577,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanBatL">
 		<MaterialID>69</MaterialID>
-		<DisplayName>Efsanevi Bat Parcasi</DisplayName>
+		<DisplayName>Alacak Kanat Penceleri</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Bat</DropRealm>
@@ -586,7 +586,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanDevourerM">
 		<MaterialID>70</MaterialID>
-		<DisplayName>Devourer Parcasi</DisplayName>
+		<DisplayName>Yutucu Oz</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Devourer</DropRealm>
@@ -594,7 +594,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanDevourerR">
 		<MaterialID>71</MaterialID>
-		<DisplayName>Medicinal Kok</DisplayName>
+		<DisplayName>Sifali Kok</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Devourer</DropRealm>
@@ -602,7 +602,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanDevourerL">
 		<MaterialID>72</MaterialID>
-		<DisplayName>Buyu Bean</DisplayName>
+		<DisplayName>Buyulu Fasulye</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Devourer</DropRealm>
@@ -611,7 +611,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanDryadM">
 		<MaterialID>73</MaterialID>
-		<DisplayName>Dryad Parcasi</DisplayName>
+		<DisplayName>Komurlesmis Kabuk</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Dryad</DropRealm>
@@ -619,7 +619,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanDryadR">
 		<MaterialID>74</MaterialID>
-		<DisplayName>Nadir Dryad Parcasi</DisplayName>
+		<DisplayName>Yanmis Asa Basi</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Dryad</DropRealm>
@@ -627,7 +627,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanDryadL">
 		<MaterialID>75</MaterialID>
-		<DisplayName>Efsanevi Dryad Parcasi</DisplayName>
+		<DisplayName>Yaban Buyume Cicegi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Dryad</DropRealm>
@@ -636,7 +636,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanScarabM">
 		<MaterialID>76</MaterialID>
-		<DisplayName>Scarab Parcasi</DisplayName>
+		<DisplayName>Kabuk</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Scarab</DropRealm>
@@ -644,7 +644,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanScarabR">
 		<MaterialID>77</MaterialID>
-		<DisplayName>Nadir Scarab Parcasi</DisplayName>
+		<DisplayName>Bokbocegi Boynuzu</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Scarab</DropRealm>
@@ -652,7 +652,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanScarabL">
 		<MaterialID>78</MaterialID>
-		<DisplayName>Vision Tomb</DisplayName>
+		<DisplayName>Mezar Gorusu</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Scarab</DropRealm>
@@ -661,7 +661,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanSpiderM">
 		<MaterialID>79</MaterialID>
-		<DisplayName>Orumcek Leg</DisplayName>
+		<DisplayName>Orumcek Bacagi</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Spider</DropRealm>
@@ -669,7 +669,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanSpiderR">
 		<MaterialID>80</MaterialID>
-		<DisplayName>Zehir Gland</DisplayName>
+		<DisplayName>Zehir Bezi</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Spider</DropRealm>
@@ -677,7 +677,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanSpiderL">
 		<MaterialID>81</MaterialID>
-		<DisplayName>Olum Silk</DisplayName>
+		<DisplayName>Olum Ipegi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Spider</DropRealm>
@@ -686,7 +686,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanTreantM">
 		<MaterialID>82</MaterialID>
-		<DisplayName>Efflorescence Kok Salar</DisplayName>
+		<DisplayName>Ciceklenme Kokleri</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Treant</DropRealm>
@@ -694,7 +694,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanTreantR">
 		<MaterialID>83</MaterialID>
-		<DisplayName>Altin Leaf</DisplayName>
+		<DisplayName>Altin Yaprak</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Treant</DropRealm>
@@ -702,7 +702,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanTreantL">
 		<MaterialID>84</MaterialID>
-		<DisplayName>Seed Seasons</DisplayName>
+		<DisplayName>Mevsimler Tohumu</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>Treant</DropRealm>
@@ -711,7 +711,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogCyclopsM">
 		<MaterialID>85</MaterialID>
-		<DisplayName>Kemik Zemi Kirinti</DisplayName>
+		<DisplayName>Kemik Zemi Parcasi</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Cyclops</DropRealm>
@@ -719,7 +719,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogCyclopsR">
 		<MaterialID>86</MaterialID>
-		<DisplayName>Nadir Cyclops Parcasi</DisplayName>
+		<DisplayName>Toprak Filakteri</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Cyclops</DropRealm>
@@ -727,7 +727,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogCyclopsL">
 		<MaterialID>87</MaterialID>
-		<DisplayName>Hand Binekain</DisplayName>
+		<DisplayName>Dagin Eli</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Cyclops</DropRealm>
@@ -736,7 +736,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogGnomeM">
 		<MaterialID>88</MaterialID>
-		<DisplayName>Gnome Parcasi</DisplayName>
+		<DisplayName>Minik Disler</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Gnome</DropRealm>
@@ -744,7 +744,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogGnomeR">
 		<MaterialID>89</MaterialID>
-		<DisplayName>Nadir Gnome Parcasi</DisplayName>
+		<DisplayName>Saf Obsidilit</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Gnome</DropRealm>
@@ -752,7 +752,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogGnomeL">
 		<MaterialID>90</MaterialID>
-		<DisplayName>Golge Yuzuk</DisplayName>
+		<DisplayName>Golge Yuzugu</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Gnome</DropRealm>
@@ -761,7 +761,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogGoblinM">
 		<MaterialID>91</MaterialID>
-		<DisplayName>Goblin Parcasi</DisplayName>
+		<DisplayName>Kurutulmus Yak Eti</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Goblin</DropRealm>
@@ -769,7 +769,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogGoblinR">
 		<MaterialID>92</MaterialID>
-		<DisplayName>Felsilk Ok</DisplayName>
+		<DisplayName>Fel Ipegi Topu</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Goblin</DropRealm>
@@ -777,7 +777,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogGoblinL">
 		<MaterialID>93</MaterialID>
-		<DisplayName>Oniks Goblin Dagger</DisplayName>
+		<DisplayName>Oniks Goblin Hanceri</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Goblin</DropRealm>
@@ -786,7 +786,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogHumanM">
 		<MaterialID>94</MaterialID>
-		<DisplayName>Gumus Nugget</DisplayName>
+		<DisplayName>Gumus Parca</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Human</DropRealm>
@@ -794,7 +794,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogHumanR">
 		<MaterialID>95</MaterialID>
-		<DisplayName>Altin Nugget</DisplayName>
+		<DisplayName>Altin Parca</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Human</DropRealm>
@@ -802,7 +802,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogHumanL">
 		<MaterialID>96</MaterialID>
-		<DisplayName>Efsanevi Insan Parcasi</DisplayName>
+		<DisplayName>Korgold Kulcesi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Human</DropRealm>
@@ -811,7 +811,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogImpM">
 		<MaterialID>97</MaterialID>
-		<DisplayName>Imp Parcasi</DisplayName>
+		<DisplayName>Yirtik Caputlar</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Imp</DropRealm>
@@ -819,7 +819,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogImpR">
 		<MaterialID>98</MaterialID>
-		<DisplayName>Nadir Imp Parcasi</DisplayName>
+		<DisplayName>Imp Kuyrugu</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Imp</DropRealm>
@@ -827,7 +827,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogImpL">
 		<MaterialID>99</MaterialID>
-		<DisplayName>Efsanevi Imp Parcasi</DisplayName>
+		<DisplayName>Ucurum Disi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Imp</DropRealm>
@@ -836,7 +836,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogRatlingM">
 		<MaterialID>100</MaterialID>
-		<DisplayName>Tuft Hair</DisplayName>
+		<DisplayName>Sac Tutami</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Ratling</DropRealm>
@@ -844,7 +844,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogRatlingR">
 		<MaterialID>101</MaterialID>
-		<DisplayName>Nadir Ratling Parcasi</DisplayName>
+		<DisplayName>Ratling Kuyrugu</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Ratling</DropRealm>
@@ -852,7 +852,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogRatlingL">
 		<MaterialID>102</MaterialID>
-		<DisplayName>Efsanevi Ratling Parcasi</DisplayName>
+		<DisplayName>Troglodit Tilsimi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>Ratling</DropRealm>
@@ -861,7 +861,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadDragonM">
 		<MaterialID>103</MaterialID>
-		<DisplayName>Ejderha Parcasi</DisplayName>
+		<DisplayName>Fildisi Pul</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Dragon</DropRealm>
@@ -877,7 +877,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadDragonL">
 		<MaterialID>105</MaterialID>
-		<DisplayName>Tas Whispers</DisplayName>
+		<DisplayName>Fisildayan Tas</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Dragon</DropRealm>
@@ -886,7 +886,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadGhostM">
 		<MaterialID>106</MaterialID>
-		<DisplayName>Chilling Hava</DisplayName>
+		<DisplayName>Dondurucu Hava</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Ghost</DropRealm>
@@ -902,7 +902,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadGhostL">
 		<MaterialID>108</MaterialID>
-		<DisplayName>Efsanevi Hayalet Parcasi</DisplayName>
+		<DisplayName>Hayalet Kalbi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Ghost</DropRealm>
@@ -911,7 +911,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadMummyM">
 		<MaterialID>109</MaterialID>
-		<DisplayName>Mummy Parcasi</DisplayName>
+		<DisplayName>Zamanla Eskimis Keten</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Mummy</DropRealm>
@@ -919,7 +919,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadMummyR">
 		<MaterialID>110</MaterialID>
-		<DisplayName>Kadim Linen</DisplayName>
+		<DisplayName>Kadim Keten</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Mummy</DropRealm>
@@ -927,7 +927,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadMummyL">
 		<MaterialID>111</MaterialID>
-		<DisplayName>Sand Ancients</DisplayName>
+		<DisplayName>Kadimlerin Kumu</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Mummy</DropRealm>
@@ -936,7 +936,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadSkeletonM">
 		<MaterialID>112</MaterialID>
-		<DisplayName>Splintered Kemik</DisplayName>
+		<DisplayName>Kiymikli Kemik</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Skeleton</DropRealm>
@@ -944,7 +944,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadSkeletonR">
 		<MaterialID>113</MaterialID>
-		<DisplayName>Nadir Iskelet Parcasi</DisplayName>
+		<DisplayName>Buyu Bagli Uyluk Kemigi</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Skeleton</DropRealm>
@@ -952,7 +952,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadSkeletonL">
 		<MaterialID>114</MaterialID>
-		<DisplayName>Efsanevi Iskelet Parcasi</DisplayName>
+		<DisplayName>Gulen Kafatasi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Skeleton</DropRealm>
@@ -961,7 +961,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadSpiritM">
 		<MaterialID>115</MaterialID>
-		<DisplayName>Spirit Parcasi</DisplayName>
+		<DisplayName>Esir Kalbi</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Spirit</DropRealm>
@@ -969,7 +969,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadSpiritR">
 		<MaterialID>116</MaterialID>
-		<DisplayName>Ruhani Strands</DisplayName>
+		<DisplayName>Ruhani Lifler</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Spirit</DropRealm>
@@ -977,7 +977,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadSpiritL">
 		<MaterialID>117</MaterialID>
-		<DisplayName>Ruh Tas</DisplayName>
+		<DisplayName>Ruh Tasi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Spirit</DropRealm>
@@ -986,7 +986,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadWispM">
 		<MaterialID>118</MaterialID>
-		<DisplayName>Wisp Parcasi</DisplayName>
+		<DisplayName>Ektoplazma</DisplayName>
 		<Rarity>M</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Wisp</DropRealm>
@@ -994,7 +994,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadWispR">
 		<MaterialID>119</MaterialID>
-		<DisplayName>Ruhani Essence</DisplayName>
+		<DisplayName>Hayalet Ozu</DisplayName>
 		<Rarity>R</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Wisp</DropRealm>
@@ -1002,7 +1002,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadWispL">
 		<MaterialID>120</MaterialID>
-		<DisplayName>Efsanevi Wisp Parcasi</DisplayName>
+		<DisplayName>Siddetli Nether Tasi</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>Wisp</DropRealm>
@@ -1011,7 +1011,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="InfernalSpecialHalloweenL">
 		<MaterialID>121</MaterialID>
-		<DisplayName>Efsanevi Special Halloween Parcasi</DisplayName>
+		<DisplayName>Cadilar Sekeri</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Infernal</Kingdom>
 		<DropRealm>SpecialHalloween</DropRealm>
@@ -1019,7 +1019,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="TrogSpecialHalloweenL">
 		<MaterialID>122</MaterialID>
-		<DisplayName>Efsanevi Special Halloween Parcasi</DisplayName>
+		<DisplayName>Cadilar Sekeri</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Trog</Kingdom>
 		<DropRealm>SpecialHalloween</DropRealm>
@@ -1027,7 +1027,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="MythicSpecialHalloweenL">
 		<MaterialID>123</MaterialID>
-		<DisplayName>Efsanevi Special Halloween Parcasi</DisplayName>
+		<DisplayName>Cadilar Sekeri</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Mythic</Kingdom>
 		<DropRealm>SpecialHalloween</DropRealm>
@@ -1035,7 +1035,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="UndeadSpecialHalloweenL">
 		<MaterialID>124</MaterialID>
-		<DisplayName>Efsanevi Special Halloween Parcasi</DisplayName>
+		<DisplayName>Cadilar Sekeri</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Undead</Kingdom>
 		<DropRealm>SpecialHalloween</DropRealm>
@@ -1043,7 +1043,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="SylvanSpecialHalloweenL">
 		<MaterialID>125</MaterialID>
-		<DisplayName>Efsanevi Special Halloween Parcasi</DisplayName>
+		<DisplayName>Cadilar Sekeri</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Sylvan</Kingdom>
 		<DropRealm>SpecialHalloween</DropRealm>
@@ -1051,7 +1051,7 @@
 	</MaterialType>
 	<MaterialType MaterialName="DraconicSpecialHalloweenL">
 		<MaterialID>126</MaterialID>
-		<DisplayName>Efsanevi Special Halloween Parcasi</DisplayName>
+		<DisplayName>Cadilar Sekeri</DisplayName>
 		<Rarity>L</Rarity>
 		<Kingdom>Draconic</Kingdom>
 		<DropRealm>SpecialHalloween</DropRealm>

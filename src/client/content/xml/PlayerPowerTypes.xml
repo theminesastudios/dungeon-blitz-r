@@ -2201,7 +2201,7 @@
 		<DisplayName>Savas Cigligi</DisplayName>
 		<BasePowerName>Warcry</BasePowerName>
 		<Description>Etki alanindaki dusmanlara hasar verir; onlari sarsar, morallerini bozar ve kiskirtir</Description>
-		<UpgradeDescription>Zayiflatma -20% Saldiri Ve -25% Speed olur.</UpgradeDescription>
+		<UpgradeDescription>Zayiflatma -20% Saldiri ve -25% Hiz olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningShieldBurst</IconName>
 		<RuneIcon>a_RuneIcon_05</RuneIcon>
 		<CastSound>snd_pwr_paladin_warcry_jumpland,snd_pwr_paladin_warcry_vox_01$[300]snd_pwr_paladin_warcry_woosh[400]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -2402,7 +2402,7 @@
 		<DisplayName>Kalkan Sersemletmesi</DisplayName>
 		<BasePowerName>ShieldStun</BasePowerName>
 		<Description>Hizli bir kalkan darbesiyle dusmani sersemletir, tutusturur ve hasar verir</Description>
-		<UpgradeDescription>Sersemlet sure ve adds tutustur. 1 saniye artar.</UpgradeDescription>
+		<UpgradeDescription>Sersemletme suresi 1 saniye artar ve tutusturma ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShieldStun</IconName>
 		<RuneIcon>a_RuneIcon_06</RuneIcon>
 		<CastSound>snd_pwr_paladin_shieldstun,snd_pwr_paladin_shieldstun_vox$</CastSound>
@@ -3765,7 +3765,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DivineBolt</PowerGroup>
 		<DisplayName>Ilahi Ok</DisplayName>
-		<Description>Bolts ilahi punishment granted Templar</Description>
+		<Description>Bolts ilahi punishment granted Gecici aciklama.lar</Description>
 		<IconName>a_PowerIcon_DivineBolt2</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -3796,7 +3796,7 @@
 		<PowerGroup>DivineBolt</PowerGroup>
 		<DisplayName>Ilahi Ok</DisplayName>
 		<BasePowerName>DivineBolt</BasePowerName>
-		<Description>Bolts ilahi punishment granted Templar</Description>
+		<Description>Bolts ilahi punishment granted Gecici aciklama.lar</Description>
 		<IconName>a_PowerIcon_DivineBolt2</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -9166,7 +9166,7 @@
 		<AddTargetBuff>Enfeeble</AddTargetBuff>
 		<AddSelfBuff>Berserk</AddSelfBuff>
 		<DisplayName>Aci Yiyen</DisplayName>
-		<Description>Stance: icin sure, radiates gucsuzlestirme Saldirilar ver ek hasar based uzerinde how hurt caster is Caster is immune iyilestir while active</Description>
+		<Description>Durus: Sure boyunca Gucsuzlestirme yayar. Saldirilar, kullananin yaralilik durumuna gore ek hasar verir. Aktifken iyilestirmeye bagisiktir.</Description>
 		<IconName>a_PowerIcon_LightningShieldBurst</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -9219,7 +9219,7 @@
 		<PowerGroup>Sacrifice</PowerGroup>
 		<AddSelfBuff>Sacrifice</AddSelfBuff>
 		<DisplayName>Fedakarlik</DisplayName>
-		<Description>Stance: icin sure, casts kaynakli can instead mana Immune iyilestirme while active</Description>
+		<Description>Durus: Sure boyunca mana yerine can harcar. Aktifken iyilestirmeye bagisik olur.</Description>
 		<IconName>a_PowerIcon_Retribution</IconName>
 		<CastGfx/>
 		<FireGfx/>
@@ -9667,7 +9667,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>JusticeFist</PowerGroup>
 		<DisplayName>Adalet Yumrugu</DisplayName>
-		<Description>Cagir Mighty flaming fists pummel senin dusmanlar. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.</Description>
 		<IconName>a_PowerIcon_JusticeFist</IconName>
 		<CastSound>CHR_Sentinel_RollingSmash[700]snd_pwr_lightning_shoot_new_01[330]snd_pwr_lightning_shoot_new_02[160]snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastAnimSource>Ground</CastAnimSource>
@@ -9705,8 +9705,8 @@
 		<PowerGroup>JusticeFist</PowerGroup>
 		<DisplayName>Adalet Yumrugu</DisplayName>
 		<BasePowerName>JusticeFist</BasePowerName>
-		<Description>Cagir mighty flaming fists pummel senin dusmanlar. verir ek hasar tutusmus hedefler.</Description>
-		<UpgradeDescription>Cagir mighty flaming fists pummel senin dusmanlar. verir ek hasar tutusmus hedefler.</UpgradeDescription>
+		<Description>Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.</Description>
+		<UpgradeDescription>Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.</UpgradeDescription>
 		<IconName>a_PowerIcon_JusticeFist</IconName>
 		<CastSound>CHR_Sentinel_RollingSmash[700]snd_pwr_lightning_shoot_new_01[330]snd_pwr_lightning_shoot_new_02[160]snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastAnimSource>Ground</CastAnimSource>
@@ -9744,7 +9744,7 @@
 		<PowerGroup>JusticeFist</PowerGroup>
 		<DisplayName>Adalet Yumrugu</DisplayName>
 		<BasePowerName>JusticeFist</BasePowerName>
-		<Description>Cagir mighty flaming fists pummel senin dusmanlar. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_JusticeFist</IconName>
 		<CastSound>CHR_Sentinel_RollingSmash[700]snd_pwr_lightning_shoot_new_01[330]snd_pwr_lightning_shoot_new_02[160]snd_pwr_lightning_shoot_new_03</CastSound>
@@ -9783,7 +9783,7 @@
 		<PowerGroup>JusticeFist</PowerGroup>
 		<DisplayName>Adalet Yumrugu</DisplayName>
 		<BasePowerName>JusticeFist</BasePowerName>
-		<Description>Cagir mighty flaming fists pummel senin dusmanlar. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_JusticeFist</IconName>
 		<CastSound>CHR_Sentinel_RollingSmash[700]snd_pwr_lightning_shoot_new_01[330]snd_pwr_lightning_shoot_new_02[160]snd_pwr_lightning_shoot_new_03</CastSound>
@@ -9822,7 +9822,7 @@
 		<PowerGroup>JusticeFist</PowerGroup>
 		<DisplayName>Adalet Yumrugu</DisplayName>
 		<BasePowerName>JusticeFist</BasePowerName>
-		<Description>Cagir mighty flaming fists pummel senin dusmanlar. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Tutusturma hasari %10 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_JusticeFist</IconName>
 		<CastSound>CHR_Sentinel_RollingSmash[700]snd_pwr_lightning_shoot_new_01[330]snd_pwr_lightning_shoot_new_02[160]snd_pwr_lightning_shoot_new_03</CastSound>
@@ -9861,7 +9861,7 @@
 		<PowerGroup>JusticeFist</PowerGroup>
 		<DisplayName>Adalet Yumrugu</DisplayName>
 		<BasePowerName>JusticeFist</BasePowerName>
-		<Description>Cagir mighty flaming fists pummel senin dusmanlar. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_JusticeFist</IconName>
 		<CastSound>CHR_Sentinel_RollingSmash[700]snd_pwr_lightning_shoot_new_01[330]snd_pwr_lightning_shoot_new_02[160]snd_pwr_lightning_shoot_new_03</CastSound>
@@ -9900,7 +9900,7 @@
 		<PowerGroup>JusticeFist</PowerGroup>
 		<DisplayName>Adalet Yumrugu</DisplayName>
 		<BasePowerName>JusticeFist</BasePowerName>
-		<Description>Cagir mighty flaming fists pummel senin dusmanlar. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 2 azalir. Tutusturma hasari %15 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_JusticeFist</IconName>
 		<CastSound>CHR_Sentinel_RollingSmash[700]snd_pwr_lightning_shoot_new_01[330]snd_pwr_lightning_shoot_new_02[160]snd_pwr_lightning_shoot_new_03</CastSound>
@@ -9939,7 +9939,7 @@
 		<PowerGroup>JusticeFist</PowerGroup>
 		<DisplayName>Adalet Yumrugu</DisplayName>
 		<BasePowerName>JusticeFist</BasePowerName>
-		<Description>Cagir mighty flaming fists pummel senin dusmanlar. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 1 azalir. Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_JusticeFist</IconName>
 		<CastSound>CHR_Sentinel_RollingSmash[700]snd_pwr_lightning_shoot_new_01[330]snd_pwr_lightning_shoot_new_02[160]snd_pwr_lightning_shoot_new_03</CastSound>
@@ -9978,7 +9978,7 @@
 		<PowerGroup>JusticeFist</PowerGroup>
 		<DisplayName>Adalet Yumrugu</DisplayName>
 		<BasePowerName>JusticeFist</BasePowerName>
-		<Description>Cagir mighty flaming fists pummel senin dusmanlar. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 1 azalir. Tutusturma hasari %20 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_JusticeFist</IconName>
 		<CastSound>CHR_Sentinel_RollingSmash[700]snd_pwr_lightning_shoot_new_01[330]snd_pwr_lightning_shoot_new_02[160]snd_pwr_lightning_shoot_new_03</CastSound>
@@ -10017,7 +10017,7 @@
 		<PowerGroup>JusticeFist</PowerGroup>
 		<DisplayName>Adalet Yumrugu</DisplayName>
 		<BasePowerName>JusticeFist</BasePowerName>
-		<Description>Cagir mighty flaming fists pummel senin dusmanlar. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Tutusturma hasari %25 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_JusticeFist</IconName>
 		<CastSound>CHR_Sentinel_RollingSmash[700]snd_pwr_lightning_shoot_new_01[330]snd_pwr_lightning_shoot_new_02[160]snd_pwr_lightning_shoot_new_03</CastSound>
@@ -10056,7 +10056,7 @@
 		<PowerGroup>JusticeFist</PowerGroup>
 		<DisplayName>Adalet Yumrugu</DisplayName>
 		<BasePowerName>JusticeFist</BasePowerName>
-		<Description>Cagir mighty flaming fists pummel senin dusmanlar. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Dusmanlarini ezen guclu alevli yumruklar cagirir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 1 azalir. Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_JusticeFist</IconName>
 		<CastSound>CHR_Sentinel_RollingSmash[700]snd_pwr_lightning_shoot_new_01[330]snd_pwr_lightning_shoot_new_02[160]snd_pwr_lightning_shoot_new_03</CastSound>
@@ -10408,7 +10408,7 @@
 		<PowerGroup>Fury</PowerGroup>
 		<AddSelfBuff>Fury</AddSelfBuff>
 		<DisplayName>Hiddet</DisplayName>
-		<Description>Degil icinde kullan. artan speed ve yakin dovus hasar.</Description>
+		<Description>Kullanimda degil. Hiz ve yakin dovus hasari artar.</Description>
 		<IconName>a_PowerIcon_Fury</IconName>
 		<CastGfx/>
 		<FireGfx/>
@@ -12758,7 +12758,7 @@
 		<DisplayName>Cengaver</DisplayName>
 		<BasePowerName>Berserker</BasePowerName>
 		<Description>Savunma azalirken hasar ve can yenilenmesi artar</Description>
-		<UpgradeDescription>Savunma ceza reduced -17%</UpgradeDescription>
+		<UpgradeDescription>Savunma cezasi -17% olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_Berserker</IconName>
 		<CastSound>[410]snd_pwr_paladin_warcry_vox_02$</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -12886,7 +12886,7 @@
 		<DisplayName>Cengaver</DisplayName>
 		<BasePowerName>Berserker</BasePowerName>
 		<Description>Savunma azalirken hasar ve can yenilenmesi artar</Description>
-		<UpgradeDescription>Savunma ceza reduced -15%</UpgradeDescription>
+		<UpgradeDescription>Savunma cezasi -15% olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_Berserker</IconName>
 		<CastSound>[410]snd_pwr_paladin_warcry_vox_02$</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -12982,7 +12982,7 @@
 		<DisplayName>Cengaver</DisplayName>
 		<BasePowerName>Berserker</BasePowerName>
 		<Description>Hasar ve can yenilenmesi artar</Description>
-		<UpgradeDescription>Can Regen artar. Savunma ceza removed</UpgradeDescription>
+		<UpgradeDescription>Can Regen artar. Savunma cezasi kalkar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Berserker</IconName>
 		<CastSound>[410]snd_pwr_paladin_warcry_vox_02$</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -13046,7 +13046,7 @@
 		<PowerGroup>LeapStrike</PowerGroup>
 		<ComboName>LeapStrikeClose</ComboName>
 		<DisplayName>Meteor Darbesi</DisplayName>
-		<Description>Leaps hedef dealing hasar at take off ve etki. verir ek hasar tutusmus hedefler</Description>
+		<Description>Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.</Description>
 		<IconName>a_PowerIcon_LeapStrike</IconName>
 		<CastSound>[375]CHR_Sentinel_Defiance</CastSound>
 		<CastGfx/>
@@ -13106,8 +13106,8 @@
 		<ComboName>LeapStrikeClose1</ComboName>
 		<DisplayName>Meteor Darbesi</DisplayName>
 		<BasePowerName>LeapStrike</BasePowerName>
-		<Description>Leaps hedef dealing hasar at take off ve etki. verir ek hasar tutusmus hedefler.</Description>
-		<UpgradeDescription>Leaps hedef dealing hasar at take off ve etki. verir ek hasar tutusmus hedefler.</UpgradeDescription>
+		<Description>Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.</Description>
+		<UpgradeDescription>Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.</UpgradeDescription>
 		<IconName>a_PowerIcon_LeapStrike</IconName>
 		<CastSound>[375]CHR_Sentinel_Defiance</CastSound>
 		<CastGfx/>
@@ -13140,7 +13140,7 @@
 		<ComboName>LeapStrikeClose2</ComboName>
 		<DisplayName>Meteor Darbesi</DisplayName>
 		<BasePowerName>LeapStrike</BasePowerName>
-		<Description>Leaps hedef dealing hasar at take off ve etki. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Bekleme. -2 saniye artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_LeapStrike</IconName>
 		<CastSound>[375]CHR_Sentinel_Defiance</CastSound>
@@ -13174,7 +13174,7 @@
 		<ComboName>LeapStrikeClose3</ComboName>
 		<DisplayName>Meteor Darbesi</DisplayName>
 		<BasePowerName>LeapStrike</BasePowerName>
-		<Description>Leaps hedef dealing hasar at take off ve etki. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_LeapStrike</IconName>
 		<CastSound>[375]CHR_Sentinel_Defiance</CastSound>
@@ -13208,7 +13208,7 @@
 		<ComboName>LeapStrikeClose4</ComboName>
 		<DisplayName>Meteor Darbesi</DisplayName>
 		<BasePowerName>LeapStrike</BasePowerName>
-		<Description>Leaps hedef dealing hasar at take off ve etki. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Bekleme. -2 saniye artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_LeapStrike</IconName>
 		<CastSound>[375]CHR_Sentinel_Defiance</CastSound>
@@ -13242,7 +13242,7 @@
 		<ComboName>LeapStrikeClose5</ComboName>
 		<DisplayName>Meteor Darbesi</DisplayName>
 		<BasePowerName>LeapStrike</BasePowerName>
-		<Description>Leaps hedef dealing hasar at take off ve etki. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Bekleme suresi -2 saniye artar. Tutusmus hedeflere karsi %70 bonus hasar verir.</UpgradeDescription>
 		<IconName>a_PowerIcon_LeapStrike</IconName>
 		<CastSound>[375]CHR_Sentinel_Defiance</CastSound>
@@ -13276,7 +13276,7 @@
 		<ComboName>LeapStrikeClose6</ComboName>
 		<DisplayName>Meteor Darbesi</DisplayName>
 		<BasePowerName>LeapStrike</BasePowerName>
-		<Description>Leaps hedef dealing hasar at take off ve etki. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Bekleme suresi -2 saniye artar. Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_LeapStrike</IconName>
 		<CastSound>[375]CHR_Sentinel_Defiance</CastSound>
@@ -13310,7 +13310,7 @@
 		<ComboName>LeapStrikeClose7</ComboName>
 		<DisplayName>Meteor Darbesi</DisplayName>
 		<BasePowerName>LeapStrike</BasePowerName>
-		<Description>Leaps hedef dealing hasar at take off ve etki. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_LeapStrike</IconName>
 		<CastSound>[375]CHR_Sentinel_Defiance</CastSound>
@@ -13344,7 +13344,7 @@
 		<ComboName>LeapStrikeClose8</ComboName>
 		<DisplayName>Meteor Darbesi</DisplayName>
 		<BasePowerName>LeapStrike</BasePowerName>
-		<Description>Leaps hedef dealing hasar at take off ve etki. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Bekleme suresi -2 saniye artar. Tutusmus hedeflere karsi %75 bonus hasar verir.</UpgradeDescription>
 		<IconName>a_PowerIcon_LeapStrike</IconName>
 		<CastSound>[375]CHR_Sentinel_Defiance</CastSound>
@@ -13378,7 +13378,7 @@
 		<ComboName>LeapStrikeClose9</ComboName>
 		<DisplayName>Meteor Darbesi</DisplayName>
 		<BasePowerName>LeapStrike</BasePowerName>
-		<Description>Leaps hedef dealing hasar at take off ve etki. verir ek hasar tutusmus hedefler.</Description>
+		<Description>Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_LeapStrike</IconName>
 		<CastSound>[375]CHR_Sentinel_Defiance</CastSound>
@@ -13412,8 +13412,8 @@
 		<ComboName>LeapStrikeClose10</ComboName>
 		<DisplayName>Meteor Darbesi</DisplayName>
 		<BasePowerName>LeapStrike</BasePowerName>
-		<Description>Leaps hedef dealing hasar at take off ve etki. verir ek hasar tutusmus hedefler.</Description>
-		<UpgradeDescription>Bekleme suresi -2 saniye artar. Bonus hasari %80 artar.</UpgradeDescription>
+		<Description>Hedefe sicrar; kalkista ve carpmada hasar verir. Tutusmus hedeflere ek hasar verir.</Description>
+		<UpgradeDescription>Bekleme suresi 2 saniye azalir. Ek hasar %80 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_LeapStrike</IconName>
 		<CastSound>[375]CHR_Sentinel_Defiance</CastSound>
 		<CastGfx/>
@@ -14325,7 +14325,7 @@
 		<PowerGroup>RollingSmash</PowerGroup>
 		<AggroBonus>1</AggroBonus>
 		<DisplayName>Kutsal Darbe</DisplayName>
-		<Description>Smash ve kiskirt senin dusmanlar ile bir dalga saldiri.</Description>
+		<Description>Dalga saldirisiyla dusmanlari ezer ve kiskirtir.</Description>
 		<IconName>a_PowerIcon_RollingSmash</IconName>
 		<CastSound>[200]CHR_Sentinel_RollingSmash</CastSound>
 		<CastGfx/>
@@ -14364,8 +14364,8 @@
 		<AggroBonus>0.7</AggroBonus>
 		<DisplayName>Kutsal Darbe</DisplayName>
 		<BasePowerName>RollingSmash</BasePowerName>
-		<Description>Smash ve kiskirt senin dusmanlar ile bir dalga saldiri.</Description>
-		<UpgradeDescription>Smash ve kiskirt senin dusmanlar ile bir dalga saldiri.</UpgradeDescription>
+		<Description>Dalga saldirisiyla dusmanlari ezer ve kiskirtir.</Description>
+		<UpgradeDescription>Dalga saldirisiyla dusmanlari ezer ve kiskirtir.</UpgradeDescription>
 		<IconName>a_PowerIcon_RollingSmash</IconName>
 		<CastSound>[200]CHR_Sentinel_RollingSmash</CastSound>
 		<CastGfx/>
@@ -14404,7 +14404,7 @@
 		<AggroBonus>0.7</AggroBonus>
 		<DisplayName>Kutsal Darbe</DisplayName>
 		<BasePowerName>RollingSmash</BasePowerName>
-		<Description>Smash ve kiskirt senin dusmanlar ile bir dalga saldiri.</Description>
+		<Description>Dalga saldirisiyla dusmanlari ezer ve kiskirtir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_RollingSmash</IconName>
 		<CastSound>[200]CHR_Sentinel_RollingSmash</CastSound>
@@ -14444,7 +14444,7 @@
 		<AggroBonus>1</AggroBonus>
 		<DisplayName>Kutsal Darbe</DisplayName>
 		<BasePowerName>RollingSmash</BasePowerName>
-		<Description>Smash ve kiskirt senin dusmanlar ile bir dalga saldiri.</Description>
+		<Description>Dalga saldirisiyla dusmanlari ezer ve kiskirtir.</Description>
 		<UpgradeDescription>Nefret +30%</UpgradeDescription>
 		<IconName>a_PowerIcon_RollingSmash</IconName>
 		<CastSound>[200]CHR_Sentinel_RollingSmash</CastSound>
@@ -14484,7 +14484,7 @@
 		<AggroBonus>1</AggroBonus>
 		<DisplayName>Kutsal Darbe</DisplayName>
 		<BasePowerName>RollingSmash</BasePowerName>
-		<Description>Smash ve kiskirt senin dusmanlar ile bir dalga saldiri.</Description>
+		<Description>Dalga saldirisiyla dusmanlari ezer ve kiskirtir.</Description>
 		<UpgradeDescription>Alan etkisi artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_RollingSmash</IconName>
 		<CastSound>[200]CHR_Sentinel_RollingSmash</CastSound>
@@ -14524,7 +14524,7 @@
 		<AggroBonus>1</AggroBonus>
 		<DisplayName>Kutsal Darbe</DisplayName>
 		<BasePowerName>RollingSmash</BasePowerName>
-		<Description>Smash ve kiskirt senin dusmanlar ile bir dalga saldiri.</Description>
+		<Description>Dalga saldirisiyla dusmanlari ezer ve kiskirtir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_RollingSmash</IconName>
 		<CastSound>[200]CHR_Sentinel_RollingSmash</CastSound>
@@ -14564,7 +14564,7 @@
 		<AggroBonus>1.2</AggroBonus>
 		<DisplayName>Kutsal Darbe</DisplayName>
 		<BasePowerName>RollingSmash</BasePowerName>
-		<Description>Smash ve kiskirt senin dusmanlar ile bir dalga saldiri.</Description>
+		<Description>Dalga saldirisiyla dusmanlari ezer ve kiskirtir.</Description>
 		<UpgradeDescription>+20% nefret.</UpgradeDescription>
 		<IconName>a_PowerIcon_RollingSmash</IconName>
 		<CastSound>[200]CHR_Sentinel_RollingSmash</CastSound>
@@ -14604,7 +14604,7 @@
 		<AggroBonus>1.2</AggroBonus>
 		<DisplayName>Kutsal Darbe</DisplayName>
 		<BasePowerName>RollingSmash</BasePowerName>
-		<Description>Smash ve kiskirt senin dusmanlar ile bir dalga saldiri.</Description>
+		<Description>Dalga saldirisiyla dusmanlari ezer ve kiskirtir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_RollingSmash</IconName>
 		<CastSound>[200]CHR_Sentinel_RollingSmash</CastSound>
@@ -14644,7 +14644,7 @@
 		<AggroBonus>1.2</AggroBonus>
 		<DisplayName>Kutsal Darbe</DisplayName>
 		<BasePowerName>RollingSmash</BasePowerName>
-		<Description>Smash ve kiskirt senin dusmanlar ile bir dalga saldiri.</Description>
+		<Description>Dalga saldirisiyla dusmanlari ezer ve kiskirtir.</Description>
 		<UpgradeDescription>Mana maliyeti 2 azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_RollingSmash</IconName>
 		<CastSound>[200]CHR_Sentinel_RollingSmash</CastSound>
@@ -14684,7 +14684,7 @@
 		<AggroBonus>1.2</AggroBonus>
 		<DisplayName>Kutsal Darbe</DisplayName>
 		<BasePowerName>RollingSmash</BasePowerName>
-		<Description>Smash ve kiskirt senin dusmanlar ile bir dalga saldiri.</Description>
+		<Description>Dalga saldirisiyla dusmanlari ezer ve kiskirtir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_RollingSmash</IconName>
 		<CastSound>[200]CHR_Sentinel_RollingSmash</CastSound>
@@ -14724,7 +14724,7 @@
 		<AggroBonus>1.2</AggroBonus>
 		<DisplayName>Kutsal Darbe</DisplayName>
 		<BasePowerName>RollingSmash</BasePowerName>
-		<Description>Smash ve kiskirt senin dusmanlar ile bir dalga saldiri.</Description>
+		<Description>Dalga saldirisiyla dusmanlari ezer ve kiskirtir.</Description>
 		<UpgradeDescription>Mana maliyeti 3 azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_RollingSmash</IconName>
 		<CastSound>[200]CHR_Sentinel_RollingSmash</CastSound>
@@ -14784,7 +14784,7 @@
 		<AggroBonus>1</AggroBonus>
 		<AddTargetBuff>Last:Weakened,Crippled</AddTargetBuff>
 		<DisplayName>Kalkan Firtinasi</DisplayName>
-		<Description>Kombo kaynakli kalkan firtina.</Description>
+		<Description>Kalkan Firtina kombosundan gelir.</Description>
 		<IconName>a_PowerIcon_Slam</IconName>
 		<CastSound>[10]CHR_Sentinel_ShieldFlurry</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -14847,7 +14847,7 @@
 		<AddTargetBuff>Last:Weakened</AddTargetBuff>
 		<DisplayName>Kalkan Firtinasi</DisplayName>
 		<BasePowerName>ShieldFlurryStrike</BasePowerName>
-		<Description>Kombo kaynakli kalkan firtina.</Description>
+		<Description>Kalkan Firtina kombosundan gelir.</Description>
 		<IconName>a_PowerIcon_Slam</IconName>
 		<CastSound>[10]CHR_Sentinel_ShieldFlurry</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -14910,7 +14910,7 @@
 		<AddTargetBuff>Last:Weakened</AddTargetBuff>
 		<DisplayName>Kalkan Firtinasi</DisplayName>
 		<BasePowerName>ShieldFlurryStrike</BasePowerName>
-		<Description>Kombo kaynakli kalkan firtina.</Description>
+		<Description>Kalkan Firtina kombosundan gelir.</Description>
 		<IconName>a_PowerIcon_Slam</IconName>
 		<CastSound>[10]CHR_Sentinel_ShieldFlurry</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -14973,7 +14973,7 @@
 		<AddTargetBuff>Last:Weakened,Crippled</AddTargetBuff>
 		<DisplayName>Kalkan Firtinasi</DisplayName>
 		<BasePowerName>ShieldFlurryStrike</BasePowerName>
-		<Description>Kombo kaynakli kalkan firtina.</Description>
+		<Description>Kalkan Firtina kombosundan gelir.</Description>
 		<IconName>a_PowerIcon_Slam</IconName>
 		<CastSound>[10]CHR_Sentinel_ShieldFlurry</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -15036,7 +15036,7 @@
 		<AddTargetBuff>Last:Weakened,Crippled</AddTargetBuff>
 		<DisplayName>Kalkan Firtinasi</DisplayName>
 		<BasePowerName>ShieldFlurryStrike</BasePowerName>
-		<Description>Kombo kaynakli kalkan firtina.</Description>
+		<Description>Kalkan Firtina kombosundan gelir.</Description>
 		<IconName>a_PowerIcon_Slam</IconName>
 		<CastSound>[10]CHR_Sentinel_ShieldFlurry</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -15099,7 +15099,7 @@
 		<AddTargetBuff>Last:Weakened,Crippled,Dazed</AddTargetBuff>
 		<DisplayName>Kalkan Firtinasi</DisplayName>
 		<BasePowerName>ShieldFlurryStrike</BasePowerName>
-		<Description>Kombo kaynakli kalkan firtina.</Description>
+		<Description>Kalkan Firtina kombosundan gelir.</Description>
 		<IconName>a_PowerIcon_Slam</IconName>
 		<CastSound>[10]CHR_Sentinel_ShieldFlurry</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -15162,7 +15162,7 @@
 		<AddTargetBuff>Last:Weakened,Crippled,Dazed</AddTargetBuff>
 		<DisplayName>Kalkan Firtinasi</DisplayName>
 		<BasePowerName>ShieldFlurryStrike</BasePowerName>
-		<Description>Kombo kaynakli kalkan firtina.</Description>
+		<Description>Kalkan Firtina kombosundan gelir.</Description>
 		<IconName>a_PowerIcon_Slam</IconName>
 		<CastSound>[10]CHR_Sentinel_ShieldFlurry</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -15225,7 +15225,7 @@
 		<AddTargetBuff>Last:Weakened,Crippled,Dazed</AddTargetBuff>
 		<DisplayName>Kalkan Firtinasi</DisplayName>
 		<BasePowerName>ShieldFlurryStrike</BasePowerName>
-		<Description>Kombo kaynakli kalkan firtina.</Description>
+		<Description>Kalkan Firtina kombosundan gelir.</Description>
 		<IconName>a_PowerIcon_Slam</IconName>
 		<CastSound>[10]CHR_Sentinel_ShieldFlurry</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -15288,7 +15288,7 @@
 		<AddTargetBuff>Last:Weakened,Crippled,Dazed</AddTargetBuff>
 		<DisplayName>Kalkan Firtinasi</DisplayName>
 		<BasePowerName>ShieldFlurryStrike</BasePowerName>
-		<Description>Kombo kaynakli kalkan firtina.</Description>
+		<Description>Kalkan Firtina kombosundan gelir.</Description>
 		<IconName>a_PowerIcon_Slam</IconName>
 		<CastSound>[10]CHR_Sentinel_ShieldFlurry</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -15351,7 +15351,7 @@
 		<AddTargetBuff>Last:Weakened,Crippled,Dazed</AddTargetBuff>
 		<DisplayName>Kalkan Firtinasi</DisplayName>
 		<BasePowerName>ShieldFlurryStrike</BasePowerName>
-		<Description>Kombo kaynakli kalkan firtina.</Description>
+		<Description>Kalkan Firtina kombosundan gelir.</Description>
 		<IconName>a_PowerIcon_Slam</IconName>
 		<CastSound>[10]CHR_Sentinel_ShieldFlurry</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -15414,7 +15414,7 @@
 		<AddTargetBuff>Last:Weakened,Crippled,StunStrike2000</AddTargetBuff>
 		<DisplayName>Kalkan Firtinasi</DisplayName>
 		<BasePowerName>ShieldFlurryStrike</BasePowerName>
-		<Description>Kombo kaynakli kalkan firtina.</Description>
+		<Description>Kalkan Firtina kombosundan gelir.</Description>
 		<IconName>a_PowerIcon_Slam</IconName>
 		<CastSound>[10]CHR_Sentinel_ShieldFlurry</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -15449,7 +15449,7 @@
 		<PowerGroup>Retribution</PowerGroup>
 		<AddSelfBuff>Hated,Retribution</AddSelfBuff>
 		<DisplayName>Intikam</DisplayName>
-		<Description>Don some hasar back senin attackers. kazan artan nefret icin sure.</Description>
+		<Description>Saldirganlara aldigin hasarin bir kismini geri yansitir. Sure boyunca nefret kazanimin artar.</Description>
 		<IconName>a_PowerIcon_Retribution</IconName>
 		<CastSound>CHR_Sentinel_Retribution</CastSound>
 		<CastGfx/>
@@ -15472,8 +15472,8 @@
 		<AddSelfBuff>Hated,Retribution1</AddSelfBuff>
 		<DisplayName>Intikam</DisplayName>
 		<BasePowerName>Retribution</BasePowerName>
-		<Description>Don some hasar back senin attackers. kazan artan nefret icin sure.</Description>
-		<UpgradeDescription>Don some hasar back senin attackers. kazan artan nefret icin sure.</UpgradeDescription>
+		<Description>Saldirganlara aldigin hasarin bir kismini geri yansitir. Sure boyunca nefret kazanimin artar.</Description>
+		<UpgradeDescription>Saldirganlara aldigin hasarin bir kismini geri yansitir. Sure boyunca nefret kazanimin artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Retribution</IconName>
 		<CastSound>CHR_Sentinel_Retribution</CastSound>
 		<CastGfx/>
@@ -15496,7 +15496,7 @@
 		<AddSelfBuff>Hated,Retribution1</AddSelfBuff>
 		<DisplayName>Intikam</DisplayName>
 		<BasePowerName>Retribution</BasePowerName>
-		<Description>Don some hasar back senin attackers. kazan artan nefret icin sure.</Description>
+		<Description>Saldirganlara aldigin hasarin bir kismini geri yansitir. Sure boyunca nefret kazanimin artar.</Description>
 		<UpgradeDescription>Her vurus. icin hasar artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Retribution</IconName>
 		<CastSound>CHR_Sentinel_Retribution</CastSound>
@@ -15520,7 +15520,7 @@
 		<AddSelfBuff>Hated,Retribution</AddSelfBuff>
 		<DisplayName>Intikam</DisplayName>
 		<BasePowerName>Retribution</BasePowerName>
-		<Description>Don some hasar back senin attackers. kazan artan nefret icin sure.</Description>
+		<Description>Saldirganlara aldigin hasarin bir kismini geri yansitir. Sure boyunca nefret kazanimin artar.</Description>
 		<UpgradeDescription>Sure. 3 saniye artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Retribution</IconName>
 		<CastSound>CHR_Sentinel_Retribution</CastSound>
@@ -15544,7 +15544,7 @@
 		<AddSelfBuff>Hated,Retribution</AddSelfBuff>
 		<DisplayName>Intikam</DisplayName>
 		<BasePowerName>Retribution</BasePowerName>
-		<Description>Don some hasar back senin attackers. kazan artan nefret icin sure.</Description>
+		<Description>Saldirganlara aldigin hasarin bir kismini geri yansitir. Sure boyunca nefret kazanimin artar.</Description>
 		<UpgradeDescription>+2 azami vuruslar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Retribution</IconName>
 		<CastSound>CHR_Sentinel_Retribution</CastSound>
@@ -15568,7 +15568,7 @@
 		<AddSelfBuff>Hated,Retribution</AddSelfBuff>
 		<DisplayName>Intikam</DisplayName>
 		<BasePowerName>Retribution</BasePowerName>
-		<Description>Don some hasar back senin attackers. kazan artan nefret icin sure.</Description>
+		<Description>Saldirganlara aldigin hasarin bir kismini geri yansitir. Sure boyunca nefret kazanimin artar.</Description>
 		<UpgradeDescription>Her vurus. icin hasar artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Retribution</IconName>
 		<CastSound>CHR_Sentinel_Retribution</CastSound>
@@ -15592,7 +15592,7 @@
 		<AddSelfBuff>Hated,Retribution</AddSelfBuff>
 		<DisplayName>Intikam</DisplayName>
 		<BasePowerName>Retribution</BasePowerName>
-		<Description>Don some hasar back senin attackers. kazan artan nefret icin sure.</Description>
+		<Description>Saldirganlara aldigin hasarin bir kismini geri yansitir. Sure boyunca nefret kazanimin artar.</Description>
 		<UpgradeDescription>Her vurus. icin hasar artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Retribution</IconName>
 		<CastSound>CHR_Sentinel_Retribution</CastSound>
@@ -15616,7 +15616,7 @@
 		<AddSelfBuff>Hated,Retribution7</AddSelfBuff>
 		<DisplayName>Intikam</DisplayName>
 		<BasePowerName>Retribution</BasePowerName>
-		<Description>Don some hasar back senin attackers. kazan artan nefret icin sure.</Description>
+		<Description>Saldirganlara aldigin hasarin bir kismini geri yansitir. Sure boyunca nefret kazanimin artar.</Description>
 		<UpgradeDescription>Sure. 4 saniye artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Retribution</IconName>
 		<CastSound>CHR_Sentinel_Retribution</CastSound>
@@ -15640,7 +15640,7 @@
 		<AddSelfBuff>Hated150,Retribution7</AddSelfBuff>
 		<DisplayName>Intikam</DisplayName>
 		<BasePowerName>Retribution</BasePowerName>
-		<Description>Don some hasar back senin attackers. kazan artan nefret icin sure.</Description>
+		<Description>Saldirganlara aldigin hasarin bir kismini geri yansitir. Sure boyunca nefret kazanimin artar.</Description>
 		<UpgradeDescription>Nefret icin sure. %50 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Retribution</IconName>
 		<CastSound>CHR_Sentinel_Retribution</CastSound>
@@ -15664,7 +15664,7 @@
 		<AddSelfBuff>Hated150,Retribution7</AddSelfBuff>
 		<DisplayName>Intikam</DisplayName>
 		<BasePowerName>Retribution</BasePowerName>
-		<Description>Don some hasar back senin attackers. kazan artan nefret icin sure.</Description>
+		<Description>Saldirganlara aldigin hasarin bir kismini geri yansitir. Sure boyunca nefret kazanimin artar.</Description>
 		<UpgradeDescription>+1 azami vuruslar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Retribution</IconName>
 		<CastSound>CHR_Sentinel_Retribution</CastSound>
@@ -15688,7 +15688,7 @@
 		<AddSelfBuff>Hated150,Retribution7</AddSelfBuff>
 		<DisplayName>Intikam</DisplayName>
 		<BasePowerName>Retribution</BasePowerName>
-		<Description>Don some hasar back senin attackers. kazan artan nefret icin sure.</Description>
+		<Description>Saldirganlara aldigin hasarin bir kismini geri yansitir. Sure boyunca nefret kazanimin artar.</Description>
 		<UpgradeDescription>Her vurus. icin hasar artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Retribution</IconName>
 		<CastSound>CHR_Sentinel_Retribution</CastSound>
@@ -15707,7 +15707,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
-		<Description>Tetik icin hasar kaynakli Retribution.</Description>
+		<Description>Intikam hasari icin tetiklenir.</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -15731,7 +15731,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Retribution</PowerGroup>
-		<Description>Icin hasar kaynakli Retribution. yok longer bir tetik so it can have bir kullanim sure.</Description>
+		<Description>Intikam hasari icindir. Artik tetikleme degil; bu yuzden kullanim suresi olabilir.</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -16223,7 +16223,7 @@
 		<DisplayName>Dengesiz Bariyer</DisplayName>
 		<BasePowerName>Barrier</BasePowerName>
 		<Description>Gecici can veren bir guc alani kazanir. Tukenince veya etkinlestirilince patlar.</Description>
-		<UpgradeDescription>Explosion Hasar artar.</UpgradeDescription>
+		<UpgradeDescription>Patlama hasari artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Barrier</IconName>
 		<CastSound>CHR_Sentinel_Barrier</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -16283,7 +16283,7 @@
 		<DisplayName>Dengesiz Bariyer</DisplayName>
 		<BasePowerName>Barrier</BasePowerName>
 		<Description>Gecici can veren bir guc alani kazanir. Tukenince veya etkinlestirilince patlar.</Description>
-		<UpgradeDescription>25% savunma artis kaynakli kalkan. +13% kalkan Durability.</UpgradeDescription>
+		<UpgradeDescription>Kalkandan %25 savunma artisi ve %13 kalkan dayanikliligi kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_Barrier</IconName>
 		<CastSound>CHR_Sentinel_Barrier</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -16313,7 +16313,7 @@
 		<DisplayName>Dengesiz Bariyer</DisplayName>
 		<BasePowerName>Barrier</BasePowerName>
 		<Description>Gecici can veren bir guc alani kazanir. Tukenince veya etkinlestirilince patlar ve dusmanlari sarsar.</Description>
-		<UpgradeDescription>Bekleme. Explosion Sarsar Hedefler. -2 saniye artar.</UpgradeDescription>
+		<UpgradeDescription>Bekleme suresi 2 saniye azalir. Patlama hedefleri sarsar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Barrier</IconName>
 		<CastSound>CHR_Sentinel_Barrier</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -16343,7 +16343,7 @@
 		<DisplayName>Dengesiz Bariyer</DisplayName>
 		<BasePowerName>Barrier</BasePowerName>
 		<Description>Gecici can veren bir guc alani kazanir. Tukenince veya etkinlestirilince patlar ve dusmanlari sarsar.</Description>
-		<UpgradeDescription>30% savunma artis kaynakli kalkan. +11% kalkan Durability.</UpgradeDescription>
+		<UpgradeDescription>Kalkandan %30 savunma artisi ve %11 kalkan dayanikliligi kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_Barrier</IconName>
 		<CastSound>CHR_Sentinel_Barrier</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -16373,7 +16373,7 @@
 		<DisplayName>Dengesiz Bariyer</DisplayName>
 		<BasePowerName>Barrier</BasePowerName>
 		<Description>Gecici can veren bir guc alani kazanir. Tukenince veya etkinlestirilince patlar ve dusmanlari sarsar.</Description>
-		<UpgradeDescription>Saniye Bekleme. Artan Explosion hasari -2 artar.</UpgradeDescription>
+		<UpgradeDescription>Bekleme suresi 2 saniye azalir. Patlama hasari artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Barrier</IconName>
 		<CastSound>CHR_Sentinel_Barrier</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -16403,7 +16403,7 @@
 		<DisplayName>Dengesiz Bariyer</DisplayName>
 		<BasePowerName>Barrier</BasePowerName>
 		<Description>Gecici can veren bir guc alani kazanir. Tukenince veya etkinlestirilince patlar ve dusmanlari sarsar.</Description>
-		<UpgradeDescription>Bekleme. 40% Savunma Artis. +10% Durability. -2 saniye artar.</UpgradeDescription>
+		<UpgradeDescription>Bekleme suresi 2 saniye azalir. %40 savunma artisi ve %10 dayaniklilik kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_Barrier</IconName>
 		<CastSound>CHR_Sentinel_Barrier</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -16433,7 +16433,7 @@
 		<DisplayName>Dengesiz Bariyer</DisplayName>
 		<BasePowerName>Barrier</BasePowerName>
 		<Description>Gecici can veren bir guc alani kazanir. Tukenince veya etkinlestirilince patlar ve dusmanlari sarsar.</Description>
-		<UpgradeDescription>Saniye Bekleme. Artan Explosion hasari -1 artar.</UpgradeDescription>
+		<UpgradeDescription>Bekleme suresi 1 saniye azalir. Patlama hasari artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Barrier</IconName>
 		<CastSound>CHR_Sentinel_Barrier</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -16463,7 +16463,7 @@
 		<DisplayName>Dengesiz Bariyer</DisplayName>
 		<BasePowerName>Barrier</BasePowerName>
 		<Description>Gecici can veren bir guc alani kazanir. Tukenince veya etkinlestirilince patlar ve dusmanlari sarsar.</Description>
-		<UpgradeDescription>Bekleme. 50% Savunma Artis. +10% Durability. -1 saniye artar.</UpgradeDescription>
+		<UpgradeDescription>Bekleme suresi 1 saniye azalir. %50 savunma artisi ve %10 dayaniklilik kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_Barrier</IconName>
 		<CastSound>CHR_Sentinel_Barrier</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -16868,7 +16868,7 @@
 		<PowerGroup>Juggernaut</PowerGroup>
 		<AggroBonus>1</AggroBonus>
 		<AddTargetBuff>Staggered</AddTargetBuff>
-		<Description>Kombo kaynakli Juggernaut</Description>
+		<Description>Ezici Guc kombosundan gelir.</Description>
 		<CastGfx/>
 		<FireSound>CHR_Sentinel_Juggernaut</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -16926,7 +16926,7 @@
 		<AggroBonus>1</AggroBonus>
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<BasePowerName>JuggernautCharge</BasePowerName>
-		<Description>Kombo kaynakli Juggernaut</Description>
+		<Description>Ezici Guc kombosundan gelir.</Description>
 		<CastGfx/>
 		<FireSound>CHR_Sentinel_Juggernaut</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -16984,7 +16984,7 @@
 		<AggroBonus>1</AggroBonus>
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<BasePowerName>JuggernautCharge</BasePowerName>
-		<Description>Kombo kaynakli Juggernaut</Description>
+		<Description>Ezici Guc kombosundan gelir.</Description>
 		<CastGfx/>
 		<FireSound>CHR_Sentinel_Juggernaut</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -17042,7 +17042,7 @@
 		<AggroBonus>1</AggroBonus>
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<BasePowerName>JuggernautCharge</BasePowerName>
-		<Description>Kombo kaynakli Juggernaut</Description>
+		<Description>Ezici Guc kombosundan gelir.</Description>
 		<CastGfx/>
 		<FireSound>CHR_Sentinel_Juggernaut</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -17100,7 +17100,7 @@
 		<AggroBonus>1</AggroBonus>
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<BasePowerName>JuggernautCharge</BasePowerName>
-		<Description>Kombo kaynakli Juggernaut</Description>
+		<Description>Ezici Guc kombosundan gelir.</Description>
 		<CastGfx/>
 		<FireSound>CHR_Sentinel_Juggernaut</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -17158,7 +17158,7 @@
 		<AggroBonus>1</AggroBonus>
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<BasePowerName>JuggernautCharge</BasePowerName>
-		<Description>Kombo kaynakli Juggernaut</Description>
+		<Description>Ezici Guc kombosundan gelir.</Description>
 		<CastGfx/>
 		<FireSound>CHR_Sentinel_Juggernaut</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -17216,7 +17216,7 @@
 		<AggroBonus>1</AggroBonus>
 		<AddTargetBuff>Staggered,Crippled</AddTargetBuff>
 		<BasePowerName>JuggernautCharge</BasePowerName>
-		<Description>Kombo kaynakli Juggernaut</Description>
+		<Description>Ezici Guc kombosundan gelir.</Description>
 		<CastGfx/>
 		<FireSound>CHR_Sentinel_Juggernaut</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -17274,7 +17274,7 @@
 		<AggroBonus>1</AggroBonus>
 		<AddTargetBuff>Staggered,Crippled</AddTargetBuff>
 		<BasePowerName>JuggernautCharge</BasePowerName>
-		<Description>Kombo kaynakli Juggernaut</Description>
+		<Description>Ezici Guc kombosundan gelir.</Description>
 		<CastGfx/>
 		<FireSound>CHR_Sentinel_Juggernaut</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -17332,7 +17332,7 @@
 		<AggroBonus>1.2</AggroBonus>
 		<AddTargetBuff>Staggered,Crippled</AddTargetBuff>
 		<BasePowerName>JuggernautCharge</BasePowerName>
-		<Description>Kombo kaynakli Juggernaut</Description>
+		<Description>Ezici Guc kombosundan gelir.</Description>
 		<CastGfx/>
 		<FireSound>CHR_Sentinel_Juggernaut</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -17390,7 +17390,7 @@
 		<AggroBonus>1.2</AggroBonus>
 		<AddTargetBuff>Staggered,Crippled</AddTargetBuff>
 		<BasePowerName>JuggernautCharge</BasePowerName>
-		<Description>Kombo kaynakli Juggernaut</Description>
+		<Description>Ezici Guc kombosundan gelir.</Description>
 		<CastGfx/>
 		<FireSound>CHR_Sentinel_Juggernaut</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -17448,7 +17448,7 @@
 		<AggroBonus>1.2</AggroBonus>
 		<AddTargetBuff>Staggered,Crippled,Crippled,Crippled</AddTargetBuff>
 		<BasePowerName>JuggernautCharge</BasePowerName>
-		<Description>Kombo kaynakli Juggernaut</Description>
+		<Description>Ezici Guc kombosundan gelir.</Description>
 		<CastGfx/>
 		<FireSound>CHR_Sentinel_Juggernaut</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -17980,7 +17980,7 @@
 		<DisplayName>Meydan Okuma</DisplayName>
 		<BasePowerName>Defiance</BasePowerName>
 		<Description>Dusmanlari yavaslatip hasarlarini azaltirken onlari kiskirtir</Description>
-		<UpgradeDescription>Guc ve Speed zayiflatma artan 15%.</UpgradeDescription>
+		<UpgradeDescription>Guc ve hiz zayiflatmasi %15 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_HeroStrength</IconName>
 		<CastSound>[300]CHR_Sentinel_Defiance</CastSound>
 		<CastGfx/>
@@ -18060,7 +18060,7 @@
 		<DisplayName>Meydan Okuma</DisplayName>
 		<BasePowerName>Defiance</BasePowerName>
 		<Description>Dusmanlari yavaslatip hasarlarini azaltirken onlari kiskirtir</Description>
-		<UpgradeDescription>Guc ve Speed zayiflatma artan 20%.</UpgradeDescription>
+		<UpgradeDescription>Guc ve hiz zayiflatmasi %20 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_HeroStrength</IconName>
 		<CastSound>[300]CHR_Sentinel_Defiance</CastSound>
 		<CastGfx/>
@@ -18140,7 +18140,7 @@
 		<DisplayName>Meydan Okuma</DisplayName>
 		<BasePowerName>Defiance</BasePowerName>
 		<Description>Dusmanlari yavaslatip hasarlarini azaltirken onlari kiskirtir</Description>
-		<UpgradeDescription>Guc ve Speed zayiflatma artan 25%.</UpgradeDescription>
+		<UpgradeDescription>Guc ve hiz zayiflatmasi %25 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_HeroStrength</IconName>
 		<CastSound>[300]CHR_Sentinel_Defiance</CastSound>
 		<CastGfx/>
@@ -18180,7 +18180,7 @@
 		<DisplayName>Meydan Okuma</DisplayName>
 		<BasePowerName>Defiance</BasePowerName>
 		<Description>Dusmanlari yavaslatip hasarlarini azaltirken onlari kiskirtir</Description>
-		<UpgradeDescription>Bekleme. guc ve speed zayiflatma artan 30%. -1 saniye artar.</UpgradeDescription>
+		<UpgradeDescription>Bekleme suresi 1 saniye azalir. Guc ve hiz zayiflatmasi %30 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_HeroStrength</IconName>
 		<CastSound>[300]CHR_Sentinel_Defiance</CastSound>
 		<CastGfx/>
@@ -18220,7 +18220,7 @@
 		<DisplayName>Meydan Okuma</DisplayName>
 		<BasePowerName>Defiance</BasePowerName>
 		<Description>Dusmanlari yavaslatip hasarlarini azaltirken onlari kiskirtir</Description>
-		<UpgradeDescription>Guc ve Speed zayiflatma artan 35%.</UpgradeDescription>
+		<UpgradeDescription>Guc ve hiz zayiflatmasi %35 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_HeroStrength</IconName>
 		<CastSound>[300]CHR_Sentinel_Defiance</CastSound>
 		<CastGfx/>
@@ -18260,7 +18260,7 @@
 		<DisplayName>Meydan Okuma</DisplayName>
 		<BasePowerName>Defiance</BasePowerName>
 		<Description>Dusmanlari yavaslatip hasarlarini azaltirken onlari kiskirtir</Description>
-		<UpgradeDescription>Bekleme. guc ve speed zayiflatma artan 40%. -1 saniye artar.</UpgradeDescription>
+		<UpgradeDescription>Bekleme suresi 1 saniye azalir. Guc ve hiz zayiflatmasi %40 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_HeroStrength</IconName>
 		<CastSound>[300]CHR_Sentinel_Defiance</CastSound>
 		<CastGfx/>
@@ -18452,7 +18452,7 @@
 		<DisplayName>Gozcu Formu</DisplayName>
 		<BasePowerName>SentinelForm</BasePowerName>
 		<Description>Guclu bir savas avatarina donusur.</Description>
-		<UpgradeDescription>Savunma %70 artar. 5% saldiri artis, Nefret While Transformed artar.</UpgradeDescription>
+		<UpgradeDescription>Donusmus halde %70 savunma artisi, %5 saldiri artisi ve ek nefret kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_SentinelForm01</IconName>
 		<CastSound>[415]CHR_Sentinel_SentinelFormStart</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -18548,7 +18548,7 @@
 		<DisplayName>Gozcu Formu</DisplayName>
 		<BasePowerName>SentinelForm</BasePowerName>
 		<Description>Guclu bir savas avatarina donusur.</Description>
-		<UpgradeDescription>Savunma %75 artar. 10% saldiri artis, Nefret While Transformed artar.</UpgradeDescription>
+		<UpgradeDescription>Donusmus halde %75 savunma artisi, %10 saldiri artisi ve ek nefret kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_SentinelForm01</IconName>
 		<CastSound>[415]CHR_Sentinel_SentinelFormStart</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -20166,7 +20166,7 @@
 		<DisplayName>Buz Mizragi</DisplayName>
 		<BasePowerName>IceSpike</BasePowerName>
 		<Description>Dusmanlarin arasindan atilir ve onlari dondurur. Buz zayiflatmasi altindaki hedeflere Soguk Yaralari uygular</Description>
-		<UpgradeDescription>Buz-debuffed hedefler icin soguk yaralari etkisi ekler.</UpgradeDescription>
+		<UpgradeDescription>Buz zayiflatmasi altindaki hedeflere Soguk Yaralari ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_IceSpike</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
 		<CastSound>snd_pwr_mage_iceSpike</CastSound>
@@ -20366,7 +20366,7 @@
 		<DisplayName>Buz Mizragi</DisplayName>
 		<BasePowerName>IceSpike</BasePowerName>
 		<Description>Dusmanlarin arasindan atilir ve onlari dondurur. Buz zayiflatmasi altindaki hedeflere Soguk Yaralari uygular</Description>
-		<UpgradeDescription>Buz-debuffed hedefler icin another yuk soguk yaralari etkisi ekler.</UpgradeDescription>
+		<UpgradeDescription>Buz zayiflatmasi altindaki hedeflere bir Soguk Yaralari yuku ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_IceSpike</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
 		<CastSound>snd_pwr_mage_iceSpike</CastSound>
@@ -21369,7 +21369,7 @@
 		<DisplayName>Buz Novasi</DisplayName>
 		<BasePowerName>IceNova</BasePowerName>
 		<Description>Yolundaki tum dusmanlari usuten ve kokleyen bir buz dalgasi cagirir. Buz zayiflatmasi altindaki hedeflere Soguk Yaralari uygular</Description>
-		<UpgradeDescription>Buz-debuffed hedefler icin soguk yaralari etkisi ekler.</UpgradeDescription>
+		<UpgradeDescription>Buz zayiflatmasi altindaki hedeflere Soguk Yaralari ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_IceNova</IconName>
 		<RuneIcon>a_RuneIcon_14</RuneIcon>
 		<CastSound>snd_pwr_mage_iceNova</CastSound>
@@ -21468,7 +21468,7 @@
 		<DisplayName>Buz Novasi</DisplayName>
 		<BasePowerName>IceNova</BasePowerName>
 		<Description>Yolundaki tum dusmanlari usuten ve kokleyen bir buz dalgasi cagirir. Buz zayiflatmasi altindaki hedeflere Soguk Yaralari uygular</Description>
-		<UpgradeDescription>Buz-debuffed hedefler icin yuk soguk yaralari etkisi ekler.</UpgradeDescription>
+		<UpgradeDescription>Buz zayiflatmasi altindaki hedeflere bir Soguk Yaralari yuku ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_IceNova</IconName>
 		<RuneIcon>a_RuneIcon_14</RuneIcon>
 		<CastSound>snd_pwr_mage_iceNova</CastSound>
@@ -21924,7 +21924,7 @@
 		<PowerGroup>Meteor</PowerGroup>
 		<AddTargetBuff>MeteorROR</AddTargetBuff>
 		<DisplayName>Meteor Odaklamasi</DisplayName>
-		<Description>Enchant senin asa ates meteors icin next #dur# saniye. Meteors ver agir hasar uzerinde etki tum yakindaki dusmanlar.</Description>
+		<Description>Asani #dur# saniye boyunca meteor firlatacak sekilde buyuler. Meteorlar carptiginda yakindaki tum dusmanlara agir hasar verir.</Description>
 		<IconName>a_PowerIcon_Meteor</IconName>
 		<RuneIcon>a_RuneIcon_16</RuneIcon>
 		<CastSound>snd_pwr_mage_meteor_staff[100]snd_pwr_mage_meteor_torch</CastSound>
@@ -21982,7 +21982,7 @@
 		<DisplayName>Meteor Odaklamasi</DisplayName>
 		<BasePowerName>Meteor</BasePowerName>
 		<Description>Asani, alana hasar veren meteorlar firlatacak sekilde guclendirir</Description>
-		<UpgradeDescription>Enchant senin asa ates meteors icin next #dur# saniye. Meteors ver agir hasar uzerinde etki tum yakindaki dusmanlar.</UpgradeDescription>
+		<UpgradeDescription>Asani #dur# saniye boyunca meteor firlatacak sekilde buyuler. Meteorlar carptiginda yakindaki tum dusmanlara agir hasar verir.</UpgradeDescription>
 		<IconName>a_PowerIcon_Meteor</IconName>
 		<RuneIcon>a_RuneIcon_16</RuneIcon>
 		<CastSound>snd_pwr_mage_meteor_staff[100]snd_pwr_mage_meteor_torch</CastSound>
@@ -22006,7 +22006,7 @@
 		<PowerGroup>Meteor</PowerGroup>
 		<DisplayName>Goktasi</DisplayName>
 		<BasePowerName>MeteorROR</BasePowerName>
-		<Description>Enchant senin asa ates meteors icin next #dur# saniye. Meteors ver agir hasar uzerinde etki tum yakindaki dusmanlar.</Description>
+		<Description>Asani #dur# saniye boyunca meteor firlatacak sekilde buyuler. Meteorlar carptiginda yakindaki tum dusmanlara agir hasar verir.</Description>
 		<IconName>a_PowerIcon_MeteorROR</IconName>
 		<CastSound>snd_pwr_mage_meteor_shoot</CastSound>
 		<CastGfx/>
@@ -22065,7 +22065,7 @@
 		<PowerGroup>Meteor</PowerGroup>
 		<DisplayName>Goktasi</DisplayName>
 		<BasePowerName>MeteorROR</BasePowerName>
-		<Description>Enchant senin asa ates meteors icin next #dur# saniye. Meteors ver agir hasar uzerinde etki tum yakindaki dusmanlar.</Description>
+		<Description>Asani #dur# saniye boyunca meteor firlatacak sekilde buyuler. Meteorlar carptiginda yakindaki tum dusmanlara agir hasar verir.</Description>
 		<IconName>a_PowerIcon_MeteorROR</IconName>
 		<CastSound>snd_pwr_mage_meteor_shoot</CastSound>
 		<CastGfx/>
@@ -22947,7 +22947,7 @@
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>30000</SpawnDuration>
 		<DisplayName>Muhafiz Cagir</DisplayName>
-		<Description>Cagir bir buz Troll fight ile sen.</Description>
+		<Description>Seninle savasmasi icin bir Ayaz Trolu cagirir.</Description>
 		<IconName>a_PowerIcon_SummonGuard</IconName>
 		<RuneIcon>a_RuneIcon_18</RuneIcon>
 		<CastSound>snd_pwr_mage_summonguard</CastSound>
@@ -22975,8 +22975,8 @@
 		<SpawnDuration>30000</SpawnDuration>
 		<DisplayName>Muhafiz Cagir</DisplayName>
 		<BasePowerName>SummonGuard</BasePowerName>
-		<Description>Cagir bir buz Troll fight ile sen.</Description>
-		<UpgradeDescription>Cagir bir buz Troll fight ile sen.</UpgradeDescription>
+		<Description>Seninle savasmasi icin bir Ayaz Trolu cagirir.</Description>
+		<UpgradeDescription>Seninle savasmasi icin bir Ayaz Trolu cagirir.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGuard</IconName>
 		<RuneIcon>a_RuneIcon_18</RuneIcon>
 		<CastSound>snd_pwr_mage_summonguard</CastSound>
@@ -23004,7 +23004,7 @@
 		<SpawnDuration>30000</SpawnDuration>
 		<DisplayName>Muhafiz Cagir</DisplayName>
 		<BasePowerName>SummonGuard</BasePowerName>
-		<Description>Cagir bir buz Troll fight ile sen.</Description>
+		<Description>Seninle savasmasi icin bir Ayaz Trolu cagirir.</Description>
 		<UpgradeDescription>Can +15%</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGuard</IconName>
 		<RuneIcon>a_RuneIcon_18</RuneIcon>
@@ -23033,7 +23033,7 @@
 		<SpawnDuration>30000</SpawnDuration>
 		<DisplayName>Muhafiz Cagir</DisplayName>
 		<BasePowerName>SummonGuard</BasePowerName>
-		<Description>Cagir bir buz Troll fight ile sen.</Description>
+		<Description>Seninle savasmasi icin bir Ayaz Trolu cagirir.</Description>
 		<UpgradeDescription>Savunma +15%</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGuard</IconName>
 		<RuneIcon>a_RuneIcon_18</RuneIcon>
@@ -23062,7 +23062,7 @@
 		<SpawnDuration>30000</SpawnDuration>
 		<DisplayName>Muhafiz Cagir</DisplayName>
 		<BasePowerName>SummonGuard</BasePowerName>
-		<Description>Cagir bir buz Troll fight ile sen.</Description>
+		<Description>Seninle savasmasi icin bir Ayaz Trolu cagirir.</Description>
 		<UpgradeDescription>Saldiri +15%</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGuard</IconName>
 		<RuneIcon>a_RuneIcon_18</RuneIcon>
@@ -23091,7 +23091,7 @@
 		<SpawnDuration>30000</SpawnDuration>
 		<DisplayName>Muhafiz Cagir</DisplayName>
 		<BasePowerName>SummonGuard</BasePowerName>
-		<Description>Cagir bir buz Troll fight ile sen.</Description>
+		<Description>Seninle savasmasi icin bir Ayaz Trolu cagirir.</Description>
 		<UpgradeDescription>Can +15%</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGuard</IconName>
 		<RuneIcon>a_RuneIcon_18</RuneIcon>
@@ -23120,7 +23120,7 @@
 		<SpawnDuration>30000</SpawnDuration>
 		<DisplayName>Muhafiz Cagir</DisplayName>
 		<BasePowerName>SummonGuard</BasePowerName>
-		<Description>Cagir bir buz Troll fight ile sen.</Description>
+		<Description>Seninle savasmasi icin bir Ayaz Trolu cagirir.</Description>
 		<UpgradeDescription>Savunma +15%</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGuard</IconName>
 		<RuneIcon>a_RuneIcon_18</RuneIcon>
@@ -23149,7 +23149,7 @@
 		<SpawnDuration>30000</SpawnDuration>
 		<DisplayName>Muhafiz Cagir</DisplayName>
 		<BasePowerName>SummonGuard</BasePowerName>
-		<Description>Cagir bir buz Troll fight ile sen.</Description>
+		<Description>Seninle savasmasi icin bir Ayaz Trolu cagirir.</Description>
 		<UpgradeDescription>Saldiri +15%</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGuard</IconName>
 		<RuneIcon>a_RuneIcon_18</RuneIcon>
@@ -23178,7 +23178,7 @@
 		<SpawnDuration>30000</SpawnDuration>
 		<DisplayName>Muhafiz Cagir</DisplayName>
 		<BasePowerName>SummonGuard</BasePowerName>
-		<Description>Cagir bir buz Troll fight ile sen.</Description>
+		<Description>Seninle savasmasi icin bir Ayaz Trolu cagirir.</Description>
 		<UpgradeDescription>Can +20%</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGuard</IconName>
 		<RuneIcon>a_RuneIcon_18</RuneIcon>
@@ -23207,7 +23207,7 @@
 		<SpawnDuration>30000</SpawnDuration>
 		<DisplayName>Muhafiz Cagir</DisplayName>
 		<BasePowerName>SummonGuard</BasePowerName>
-		<Description>Cagir bir buz Troll fight ile sen.</Description>
+		<Description>Seninle savasmasi icin bir Ayaz Trolu cagirir.</Description>
 		<UpgradeDescription>Savunma +20%</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGuard</IconName>
 		<RuneIcon>a_RuneIcon_18</RuneIcon>
@@ -23236,7 +23236,7 @@
 		<SpawnDuration>30000</SpawnDuration>
 		<DisplayName>Muhafiz Cagir</DisplayName>
 		<BasePowerName>SummonGuard</BasePowerName>
-		<Description>Cagir bir buz Troll fight ile sen.</Description>
+		<Description>Seninle savasmasi icin bir Ayaz Trolu cagirir.</Description>
 		<UpgradeDescription>Saldiri +20%</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGuard</IconName>
 		<RuneIcon>a_RuneIcon_18</RuneIcon>
@@ -23519,7 +23519,7 @@
 		<DisplayName>Dondurucu Kuyruklu Yildiz</DisplayName>
 		<BasePowerName>FrigidComet</BasePowerName>
 		<Description>Menzilli bir alan kuyruklu yildizi indirir ve dusmanlara hasar verir. Buz zayiflatmasi altindaki hedeflere Soguk Yaralari uygular</Description>
-		<UpgradeDescription>Buz-debuffed hedefler kazan soguk yaralari</UpgradeDescription>
+		<UpgradeDescription>Buz zayiflatmasi altindaki hedefler Soguk Yaralari kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_FrigidComet</IconName>
 		<CastSound>CHR_FrostWarden_FrigidComet_Fire</CastSound>
 		<CastAnimSource>Ground</CastAnimSource>
@@ -24137,7 +24137,7 @@
 		<DisplayName>Donmus Muhur</DisplayName>
 		<BasePowerName>FrozenWard</BasePowerName>
 		<Description>Patlayip dusmanlari zayiflatan, donduran ve saldiri hizlarini azaltan usutucu bir muhafaza olusturur.</Description>
-		<UpgradeDescription>Hedefler have 15% reduced saldiri speed.</UpgradeDescription>
+		<UpgradeDescription>Hedeflerin saldiri hizi %15 azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_FrozenWard</IconName>
 		<CastSound>CHR_FrostWarden_FrozenWard_Activate</CastSound>
 		<CastAnimSource>Ground</CastAnimSource>
@@ -24369,7 +24369,7 @@
 		<DisplayName>Kutup Patlamasi</DisplayName>
 		<BasePowerName>FrostBlast</BasePowerName>
 		<Description>Usutucu bir buz konisi yayar. Buz zayiflatmasi altindaki hedefler Soguk Yaralari kazanir</Description>
-		<UpgradeDescription>Buz-debuffed hedefler kazan soguk yaralari</UpgradeDescription>
+		<UpgradeDescription>Buz zayiflatmasi altindaki hedefler Soguk Yaralari kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_FrostBolt</IconName>
 		<CastGfx/>
 		<FireSound>CHR_FrostWarden_ArcticBlast_Fire</FireSound>
@@ -24646,7 +24646,7 @@
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrostArmor</PowerGroup>
 		<DisplayName>Dolu Sarmalini Bitir</DisplayName>
-		<Description>Unsummon senin buz zirh.</Description>
+		<Description>Buz Zirhi cagrisini bitirir.</Description>
 		<IconName>a_PowerIcon_FrozenWard</IconName>
 		<CastSound>CHR_FrostWarden_HailstormEmbrace_Activate</CastSound>
 		<CastAnimSource>Center</CastAnimSource>
@@ -24759,7 +24759,7 @@
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrostArmor</PowerGroup>
 		<AddTargetBuff>Chilled42</AddTargetBuff>
-		<Description>Version buz zirh buz that can be played upside-down ve sideways</Description>
+		<Description>Buz Zirhi etkisinin ters ve yan oynatilabilen surumudur.</Description>
 		<CastAnimSource>L:TargetPos</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_3.swf</AnimFile>
@@ -24809,8 +24809,8 @@
 		<ComboName>GrantFrostArmor</ComboName>
 		<DisplayName>Dolu Sarmali</DisplayName>
 		<BasePowerName>HailstoneEmbrace</BasePowerName>
-		<Description>Enchant senin temel saldirilar ile powerful buz effects.</Description>
-		<UpgradeDescription>Enchant senin temel saldirilar ile powerful buz effects.</UpgradeDescription>
+		<Description>Temel saldirilarini guclu buz etkileriyle buyuler.</Description>
+		<UpgradeDescription>Temel saldirilarini guclu buz etkileriyle buyuler.</UpgradeDescription>
 		<IconName>a_PowerIcon_FrostArmor</IconName>
 		<CastSound>[250]CHR_FrostWarden_HailstormEmbrace_Activate</CastSound>
 		<CastAnimSource>Center</CastAnimSource>
@@ -24842,7 +24842,7 @@
 		<ComboName>GrantFrostArmor</ComboName>
 		<DisplayName>Dolu Sarmali</DisplayName>
 		<BasePowerName>HailstoneEmbrace</BasePowerName>
-		<Description>Enchant senin temel saldirilar ile powerful buz effects.</Description>
+		<Description>Temel saldirilarini guclu buz etkileriyle buyuler.</Description>
 		<UpgradeDescription>Menzilli buz hasar. %5 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_FrostArmor</IconName>
 		<CastSound>[250]CHR_FrostWarden_HailstormEmbrace_Activate</CastSound>
@@ -24875,7 +24875,7 @@
 		<ComboName>GrantFrostArmor</ComboName>
 		<DisplayName>Dolu Sarmali</DisplayName>
 		<BasePowerName>HailstoneEmbrace</BasePowerName>
-		<Description>Enchant senin temel saldirilar ile powerful buz effects.</Description>
+		<Description>Temel saldirilarini guclu buz etkileriyle buyuler.</Description>
 		<UpgradeDescription>-10 mana Requirement ve bedel</UpgradeDescription>
 		<IconName>a_PowerIcon_FrostArmor</IconName>
 		<CastSound>[250]CHR_FrostWarden_HailstormEmbrace_Activate</CastSound>
@@ -24908,7 +24908,7 @@
 		<ComboName>GrantFrostArmor</ComboName>
 		<DisplayName>Dolu Sarmali</DisplayName>
 		<BasePowerName>HailstoneEmbrace</BasePowerName>
-		<Description>Enchant senin temel saldirilar ile powerful buz effects.</Description>
+		<Description>Temel saldirilarini guclu buz etkileriyle buyuler.</Description>
 		<UpgradeDescription>Yakin dovus buz saldirilar ver +30% hasar Zayiflatma etkisi ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_FrostArmor</IconName>
 		<CastSound>[250]CHR_FrostWarden_HailstormEmbrace_Activate</CastSound>
@@ -24941,8 +24941,8 @@
 		<ComboName>GrantFrostArmor</ComboName>
 		<DisplayName>Dolu Sarmali</DisplayName>
 		<BasePowerName>HailstoneEmbrace</BasePowerName>
-		<Description>Enchant senin temel saldirilar ile powerful buz effects.</Description>
-		<UpgradeDescription>Hasar Artis While Icinde Buz Shock 50%</UpgradeDescription>
+		<Description>Temel saldirilarini guclu buz etkileriyle buyuler.</Description>
+		<UpgradeDescription>Buz Soku etkisindeyken %50 hasar artisi kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_FrostArmor</IconName>
 		<CastSound>[250]CHR_FrostWarden_HailstormEmbrace_Activate</CastSound>
 		<CastAnimSource>Center</CastAnimSource>
@@ -24974,7 +24974,7 @@
 		<ComboName>GrantFrostArmor</ComboName>
 		<DisplayName>Dolu Sarmali</DisplayName>
 		<BasePowerName>HailstoneEmbrace</BasePowerName>
-		<Description>Enchant senin temel saldirilar ile powerful buz effects.</Description>
+		<Description>Temel saldirilarini guclu buz etkileriyle buyuler.</Description>
 		<UpgradeDescription>-10 mana Requirement ve bedel</UpgradeDescription>
 		<IconName>a_PowerIcon_FrostArmor</IconName>
 		<CastSound>[250]CHR_FrostWarden_HailstormEmbrace_Activate</CastSound>
@@ -25007,7 +25007,7 @@
 		<ComboName>GrantFrostArmor</ComboName>
 		<DisplayName>Dolu Sarmali</DisplayName>
 		<BasePowerName>HailstoneEmbrace</BasePowerName>
-		<Description>Enchant senin temel saldirilar ile powerful buz effects.</Description>
+		<Description>Temel saldirilarini guclu buz etkileriyle buyuler.</Description>
 		<UpgradeDescription>Menzilli buz hasar. %15 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_FrostArmor</IconName>
 		<CastSound>[250]CHR_FrostWarden_HailstormEmbrace_Activate</CastSound>
@@ -25040,7 +25040,7 @@
 		<ComboName>GrantFrostArmor</ComboName>
 		<DisplayName>Dolu Sarmali</DisplayName>
 		<BasePowerName>HailstoneEmbrace</BasePowerName>
-		<Description>Enchant senin temel saldirilar ile powerful buz effects.</Description>
+		<Description>Temel saldirilarini guclu buz etkileriyle buyuler.</Description>
 		<UpgradeDescription>Yakin dovus buz saldirilar ver +18% hasar 1 zayiflatma yuku ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_FrostArmor</IconName>
 		<CastSound>[250]CHR_FrostWarden_HailstormEmbrace_Activate</CastSound>
@@ -25073,7 +25073,7 @@
 		<ComboName>GrantFrostArmor</ComboName>
 		<DisplayName>Dolu Sarmali</DisplayName>
 		<BasePowerName>HailstoneEmbrace</BasePowerName>
-		<Description>Enchant senin temel saldirilar ile powerful buz effects.</Description>
+		<Description>Temel saldirilarini guclu buz etkileriyle buyuler.</Description>
 		<UpgradeDescription>Saldiri basina mana maliyeti 3 azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_FrostArmor</IconName>
 		<CastSound>[250]CHR_FrostWarden_HailstormEmbrace_Activate</CastSound>
@@ -25106,8 +25106,8 @@
 		<ComboName>GrantFrostArmor</ComboName>
 		<DisplayName>Dolu Sarmali</DisplayName>
 		<BasePowerName>HailstoneEmbrace</BasePowerName>
-		<Description>Enchant senin temel saldirilar ile powerful buz effects.</Description>
-		<UpgradeDescription>Menzilli Buz hasari %10 artar. Hasar Artis While Icinde Buz Shock 100%</UpgradeDescription>
+		<Description>Temel saldirilarini guclu buz etkileriyle buyuler.</Description>
+		<UpgradeDescription>Menzilli Buz hasari %10 artar. Buz Soku etkisindeyken %100 hasar artisi kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_FrostArmor</IconName>
 		<CastSound>[250]CHR_FrostWarden_HailstormEmbrace_Activate</CastSound>
 		<CastAnimSource>Center</CastAnimSource>
@@ -25595,7 +25595,7 @@
 		<PowerGroup>FrostArmor</PowerGroup>
 		<AddTargetBuff>Chilled42</AddTargetBuff>
 		<BasePowerName>FrostArmorIceWall</BasePowerName>
-		<Description>Version buz zirh buz that can be played upside-down ve sideways</Description>
+		<Description>Buz Zirhi etkisinin ters ve yan oynatilabilen surumudur.</Description>
 		<CastAnimSource>L:TargetPos</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_3.swf</AnimFile>
@@ -25621,7 +25621,7 @@
 		<PowerGroup>FrostArmor</PowerGroup>
 		<AddTargetBuff>Chilled42</AddTargetBuff>
 		<BasePowerName>FrostArmorIceWall</BasePowerName>
-		<Description>Version buz zirh buz that can be played upside-down ve sideways</Description>
+		<Description>Buz Zirhi etkisinin ters ve yan oynatilabilen surumudur.</Description>
 		<CastAnimSource>L:TargetPos</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_3.swf</AnimFile>
@@ -25647,7 +25647,7 @@
 		<PowerGroup>FrostArmor</PowerGroup>
 		<AddTargetBuff>Chilled42</AddTargetBuff>
 		<BasePowerName>FrostArmorIceWall</BasePowerName>
-		<Description>Version buz zirh buz that can be played upside-down ve sideways</Description>
+		<Description>Buz Zirhi etkisinin ters ve yan oynatilabilen surumudur.</Description>
 		<CastAnimSource>L:TargetPos</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_3.swf</AnimFile>
@@ -25673,7 +25673,7 @@
 		<PowerGroup>FrostArmor</PowerGroup>
 		<AddTargetBuff>Chilled42</AddTargetBuff>
 		<BasePowerName>FrostArmorIceWall</BasePowerName>
-		<Description>Version buz zirh buz that can be played upside-down ve sideways</Description>
+		<Description>Buz Zirhi etkisinin ters ve yan oynatilabilen surumudur.</Description>
 		<CastAnimSource>L:TargetPos</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_3.swf</AnimFile>
@@ -25699,7 +25699,7 @@
 		<PowerGroup>FrostArmor</PowerGroup>
 		<AddTargetBuff>Chilled42</AddTargetBuff>
 		<BasePowerName>FrostArmorIceWall</BasePowerName>
-		<Description>Version buz zirh buz that can be played upside-down ve sideways</Description>
+		<Description>Buz Zirhi etkisinin ters ve yan oynatilabilen surumudur.</Description>
 		<CastAnimSource>L:TargetPos</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_3.swf</AnimFile>
@@ -26401,7 +26401,7 @@
 		<DisplayName>Buzul Mizragi</DisplayName>
 		<BasePowerName>GlacialSpear</BasePowerName>
 		<Description>Buz zayiflatmasi altindaki hedeflere Soguk Yaralari uygulayan dev bir buz sarkiti olusturur.</Description>
-		<UpgradeDescription>Menzil iyilesir. 1 soguk yaralari vs buz-debuffed hedefler yuku ekler.</UpgradeDescription>
+		<UpgradeDescription>Menzil iyilesir. Buz zayiflatmasi altindaki hedeflere bir Soguk Yaralari yuku ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_IceSpire</IconName>
 		<CastSound>[500]CHR_FrostWarden_GlacialCrag_01</CastSound>
 		<CastGfx/>
@@ -26473,7 +26473,7 @@
 		<DisplayName>Buzul Mizragi</DisplayName>
 		<BasePowerName>GlacialSpear</BasePowerName>
 		<Description>Buz zayiflatmasi altindaki hedeflere Soguk Yaralari uygulayan dev bir buz sarkiti olusturur.</Description>
-		<UpgradeDescription>1 soguk yaralari vs buz-debuffed hedefler yuku ekler.</UpgradeDescription>
+		<UpgradeDescription>Buz zayiflatmasi altindaki hedeflere bir Soguk Yaralari yuku ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_IceSpire</IconName>
 		<CastSound>[500]CHR_FrostWarden_GlacialCrag_01</CastSound>
 		<CastGfx/>
@@ -26581,7 +26581,7 @@
 		<DisplayName>Buzul Mizragi</DisplayName>
 		<BasePowerName>GlacialSpear</BasePowerName>
 		<Description>Buz zayiflatmasi altindaki hedeflere Soguk Yaralari uygulayan dev bir buz sarkiti olusturur.</Description>
-		<UpgradeDescription>Buz-debuffed hedefler icin yuk soguk yaralari etkisi ekler.</UpgradeDescription>
+		<UpgradeDescription>Buz zayiflatmasi altindaki hedeflere bir Soguk Yaralari yuku ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_IceSpire</IconName>
 		<CastSound>[500]CHR_FrostWarden_GlacialCrag_01</CastSound>
 		<CastGfx/>
@@ -26653,7 +26653,7 @@
 		<DisplayName>Buzul Mizragi</DisplayName>
 		<BasePowerName>GlacialSpear</BasePowerName>
 		<Description>Buz zayiflatmasi altindaki hedeflere Soguk Yaralari uygulayan dev bir buz sarkiti olusturur.</Description>
-		<UpgradeDescription>Buz-debuffed hedefler icin yuk soguk yaralari etkisi ekler. Hasar #olddmg# artar.</UpgradeDescription>
+		<UpgradeDescription>Buz zayiflatmasi altindaki hedeflere bir Soguk Yaralari yuku ekler. Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_IceSpire</IconName>
 		<CastSound>[500]CHR_FrostWarden_GlacialCrag_01</CastSound>
 		<CastGfx/>
@@ -26870,7 +26870,7 @@
 		<DisplayName>Kalici Buz Klonu</DisplayName>
 		<BasePowerName>PermafrostClone</BasePowerName>
 		<Description>Dusman dikkatini ceken ve patlayan bir sahte hedef olusturur. Atilma sirasinda hasara bagisik olursun.</Description>
-		<UpgradeDescription>Buz-debuffed hedefler icin soguk yaralari etkisi ekler.</UpgradeDescription>
+		<UpgradeDescription>Buz zayiflatmasi altindaki hedeflere Soguk Yaralari ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGolem</IconName>
 		<CastSound>CHR_FrostWarden_PermafrostClone_Fire</CastSound>
 		<CastGfx/>
@@ -26930,7 +26930,7 @@
 		<DisplayName>Kalici Buz Klonu</DisplayName>
 		<BasePowerName>PermafrostClone</BasePowerName>
 		<Description>Dusman dikkatini ceken ve patlayan bir sahte hedef olusturur. Atilma sirasinda hasara bagisik olursun.</Description>
-		<UpgradeDescription>Buz-debuffed hedefler icin yuk soguk yaralari etkisi ekler.</UpgradeDescription>
+		<UpgradeDescription>Buz zayiflatmasi altindaki hedeflere bir Soguk Yaralari yuku ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGolem</IconName>
 		<CastSound>CHR_FrostWarden_PermafrostClone_Fire</CastSound>
 		<CastGfx/>
@@ -27020,7 +27020,7 @@
 		<DisplayName>Kalici Buz Klonu</DisplayName>
 		<BasePowerName>PermafrostClone</BasePowerName>
 		<Description>Dusman dikkatini ceken ve patlayan bir sahte hedef olusturur. Atilma sirasinda hasara bagisik olursun.</Description>
-		<UpgradeDescription>Mana maliyeti 1 azalir. Buz-debuffed hedefler icin yuk soguk yaralari etkisi ekler. Hasar #olddmg# artar.</UpgradeDescription>
+		<UpgradeDescription>Mana maliyeti 1 azalir. Buz zayiflatmasi altindaki hedeflere bir Soguk Yaralari yuku ekler. Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGolem</IconName>
 		<CastSound>CHR_FrostWarden_PermafrostClone_Fire</CastSound>
 		<CastGfx/>
@@ -27429,7 +27429,7 @@
 		<DisplayName>Tundra Ejderi</DisplayName>
 		<BasePowerName>PolarSentry</BasePowerName>
 		<Description>Yakindaki dusmanlara saldiran hareketsiz bir Tundra Ejderi cagirir. Buz zayiflatmasi olan dusmanlara ek hasar verir.</Description>
-		<UpgradeDescription>+15% ejder can.</UpgradeDescription>
+		<UpgradeDescription>Ejder cani %15 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_PolarSentry</IconName>
 		<CastGfx/>
 		<FireSound>snd_pwr_mage_iceNova</FireSound>
@@ -27510,7 +27510,7 @@
 		<DisplayName>Tundra Ejderi</DisplayName>
 		<BasePowerName>PolarSentry</BasePowerName>
 		<Description>Yakindaki dusmanlara saldiran hareketsiz bir Tundra Ejderi cagirir. Buz zayiflatmasi olan dusmanlara ek hasar verir.</Description>
-		<UpgradeDescription>Ejder can degeri %15 artar. Bonus hasar vs buz-debuffed hedefler %25 artar.</UpgradeDescription>
+		<UpgradeDescription>Ejder cani %15 artar. Buz zayiflatmasi altindaki hedeflere karsi ek hasar %25 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_PolarSentry</IconName>
 		<CastGfx/>
 		<FireSound>snd_pwr_mage_iceNova</FireSound>
@@ -27591,7 +27591,7 @@
 		<DisplayName>Tundra Ejderi</DisplayName>
 		<BasePowerName>PolarSentry</BasePowerName>
 		<Description>Yakindaki dusmanlara saldiran hareketsiz bir Tundra Ejderi cagirir. Buz zayiflatmasi olan dusmanlara ek hasar verir.</Description>
-		<UpgradeDescription>+30% ejder can.</UpgradeDescription>
+		<UpgradeDescription>Ejder cani %30 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_PolarSentry</IconName>
 		<CastGfx/>
 		<FireSound>snd_pwr_mage_iceNova</FireSound>
@@ -27645,7 +27645,7 @@
 		<DisplayName>Tundra Ejderi</DisplayName>
 		<BasePowerName>PolarSentry</BasePowerName>
 		<Description>Yakindaki dusmanlara saldiran hareketsiz bir Tundra Ejderi cagirir. Buz zayiflatmasi altindaki hedeflere ek hasar verir</Description>
-		<UpgradeDescription>Ejder hasari %20 artar. Bonus hasar vs buz-debuffed hedefler %25 artar.</UpgradeDescription>
+		<UpgradeDescription>Ejder hasari %20 artar. Buz zayiflatmasi altindaki hedeflere karsi ek hasar %25 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_PolarSentry</IconName>
 		<CastGfx/>
 		<FireSound>snd_pwr_mage_iceNova</FireSound>
@@ -28757,7 +28757,7 @@
 		<DisplayName>Buyuk Yangin</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
 		<Description>Dusmanlarin arasindan atilir, onlari kavurur ve ardinda ates izi birakir.</Description>
-		<UpgradeDescription>Trail hasari %5 artar.</UpgradeDescription>
+		<UpgradeDescription>Iz hasari %5 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_DragonWraith</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -28789,7 +28789,7 @@
 		<DisplayName>Buyuk Yangin</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
 		<Description>Dusmanlarin arasindan atilir, onlari kavurur ve ardinda ates izi birakir.</Description>
-		<UpgradeDescription>Trail Distance artar.</UpgradeDescription>
+		<UpgradeDescription>Iz mesafesi artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_DragonWraith</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -28822,7 +28822,7 @@
 		<DisplayName>Buyuk Yangin</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
 		<Description>Dusmanlarin arasindan atilir, onlari kavurur ve ardinda ates izi birakir.</Description>
-		<UpgradeDescription>Savunma Artis While Atilma 30%</UpgradeDescription>
+		<UpgradeDescription>Atilma sirasinda %30 savunma artisi kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_DragonWraith</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -28855,7 +28855,7 @@
 		<DisplayName>Buyuk Yangin</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
 		<Description>Dusmanlarin arasindan atilir, onlari kavurur ve ardinda ates izi birakir.</Description>
-		<UpgradeDescription>Trail icin kavurma etkisi ekler.</UpgradeDescription>
+		<UpgradeDescription>Ize Kavurma etkisi ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_DragonWraith</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -29020,7 +29020,7 @@
 		<DisplayName>Buyuk Yangin</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
 		<Description>Dusmanlarin arasindan atilir, onlari kavurur ve ardinda yakan bir ates izi birakir</Description>
-		<UpgradeDescription>Trail hasari %7 artar. Atilma Hasar #olddmg# artar.</UpgradeDescription>
+		<UpgradeDescription>Iz hasari %7 artar. Atilma hasari #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_DragonWraith</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -29501,7 +29501,7 @@
 		<DisplayName>Ejderha Ruhu</DisplayName>
 		<BasePowerName>SummonDragonSoul</BasePowerName>
 		<Description>Hedeflerine ates eden bir Alev Ruhu cagirir. Sure boyunca hasarin artar ama savunman azalir.</Description>
-		<UpgradeDescription>Cagir bir ruh Flame that shoots at senin hedefler Kazan artan hasar but reduced savunma icin sure</UpgradeDescription>
+		<UpgradeDescription>Hedeflerine ates eden bir Alev Ruhu cagirir. Sure boyunca hasarin artar ama savunman azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_DragonSoul</IconName>
 		<CastSound>CHR_FlameSeer_DraconicSoul_Summon</CastSound>
 		<CastGfx/>
@@ -29559,7 +29559,7 @@
 		<DisplayName>Ejderha Ruhu</DisplayName>
 		<BasePowerName>SummonDragonSoul</BasePowerName>
 		<Description>Hedeflerine ates eden bir Alev Ruhu cagirir. Sure boyunca hasarin artar ama savunman azalir.</Description>
-		<UpgradeDescription>Artan 20% saldiri artis while active</UpgradeDescription>
+		<UpgradeDescription>Aktifken saldiri artisi %20 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_DragonSoul</IconName>
 		<CastSound>CHR_FlameSeer_DraconicSoul_Summon</CastSound>
 		<CastGfx/>
@@ -29704,7 +29704,7 @@
 		<DisplayName>Ejderha Ruhu</DisplayName>
 		<BasePowerName>SummonDragonSoul</BasePowerName>
 		<Description>Hedeflerine ates eden bir Alev Ruhu cagirir. Sure boyunca hasarin artar ama savunman azalir.</Description>
-		<UpgradeDescription>Artan 30% saldiri artis while active</UpgradeDescription>
+		<UpgradeDescription>Aktifken saldiri artisi %30 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_DragonSoul</IconName>
 		<CastSound>CHR_FlameSeer_DraconicSoul_Summon</CastSound>
 		<CastGfx/>
@@ -30655,7 +30655,7 @@
 		<DisplayName>Piromani</DisplayName>
 		<BasePowerName>Pyromania</BasePowerName>
 		<Description>Temel saldirilari guclu bir alev puskurtucuyle degistiren durus.</Description>
-		<UpgradeDescription>Savunma %15 artar. Speed Artis While Firing 10%</UpgradeDescription>
+		<UpgradeDescription>Ates ederken %15 savunma ve %10 hiz artisi kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_FlameStrike</IconName>
 		<CastSound>CHR_FlameSeer_Pyromania_Activate</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -32833,7 +32833,7 @@
 		<SpawnLimit>2</SpawnLimit>
 		<SpawnDuration>10000</SpawnDuration>
 		<DisplayName>Suruyu Cagir</DisplayName>
-		<Description>Cagir bir pair yakin dovus Olumsuz hizmetkarlar fight at senin command icin 8 saniye</Description>
+		<Description>Emrinde 8 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir</Description>
 		<IconName>a_PowerIcon_SummonGhoul</IconName>
 		<CastSound>CHR_Necromancer_SummonGhoul_A[150]CHR_Necromancer_SummonGhoul_B</CastSound>
 		<CastGfx/>
@@ -32861,7 +32861,7 @@
 		<SpawnDuration>8000</SpawnDuration>
 		<DisplayName>Suruyu Cagir</DisplayName>
 		<BasePowerName>SummonGhoul</BasePowerName>
-		<Description>Cagir bir pair yakin dovus Olumsuz hizmetkarlar fight at senin command icin 8 saniye</Description>
+		<Description>Emrinde 8 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Cagir two yakin dovus Ghouls icin 8 saniye</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul</IconName>
 		<CastSound>CHR_Necromancer_SummonGhoul_A[150]CHR_Necromancer_SummonGhoul_B</CastSound>
@@ -32890,7 +32890,7 @@
 		<SpawnDuration>8000</SpawnDuration>
 		<DisplayName>Suruyu Cagir</DisplayName>
 		<BasePowerName>SummonGhoul</BasePowerName>
-		<Description>Cagir bir pair yakin dovus Olumsuz hizmetkarlar fight at senin command icin 8 saniye</Description>
+		<Description>Emrinde 8 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Ghoul saldiri ve can artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul</IconName>
 		<CastSound>CHR_Necromancer_SummonGhoul_A[150]CHR_Necromancer_SummonGhoul_B</CastSound>
@@ -32919,7 +32919,7 @@
 		<SpawnDuration>8000</SpawnDuration>
 		<DisplayName>Suruyu Cagir</DisplayName>
 		<BasePowerName>SummonGhoul</BasePowerName>
-		<Description>Cagir bir pair yakin dovus Olumsuz hizmetkarlar fight at senin command icin 8 saniye</Description>
+		<Description>Emrinde 8 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Mana maliyeti 5 azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul</IconName>
 		<CastSound>CHR_Necromancer_SummonGhoul_A[150]CHR_Necromancer_SummonGhoul_B</CastSound>
@@ -32948,7 +32948,7 @@
 		<SpawnDuration>8000</SpawnDuration>
 		<DisplayName>Suruyu Cagir</DisplayName>
 		<BasePowerName>SummonGhoul</BasePowerName>
-		<Description>Cagir bir pair yakin dovus Olumsuz hizmetkarlar fight at senin command icin 8 saniye</Description>
+		<Description>Emrinde 8 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Ghoul saldiri ve can artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul</IconName>
 		<CastSound>CHR_Necromancer_SummonGhoul_A[150]CHR_Necromancer_SummonGhoul_B</CastSound>
@@ -32977,7 +32977,7 @@
 		<SpawnDuration>10000</SpawnDuration>
 		<DisplayName>Suruyu Cagir</DisplayName>
 		<BasePowerName>SummonGhoul</BasePowerName>
-		<Description>Cagir bir pair yakin dovus Olumsuz hizmetkarlar fight at senin command icin 10 saniye</Description>
+		<Description>Emrinde 10 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Ghoul Sure. Can Control Four Yakin Dovus Ghouls 10 saniye artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul</IconName>
 		<CastSound>CHR_Necromancer_SummonGhoul_A[150]CHR_Necromancer_SummonGhoul_B</CastSound>
@@ -33006,7 +33006,7 @@
 		<SpawnDuration>10000</SpawnDuration>
 		<DisplayName>Suruyu Cagir</DisplayName>
 		<BasePowerName>SummonGhoul</BasePowerName>
-		<Description>Cagir bir pair yakin dovus Olumsuz hizmetkarlar fight at senin command icin 10 saniye</Description>
+		<Description>Emrinde 10 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Mana maliyeti 5 azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul</IconName>
 		<CastSound>CHR_Necromancer_SummonGhoul_A[150]CHR_Necromancer_SummonGhoul_B</CastSound>
@@ -33035,7 +33035,7 @@
 		<SpawnDuration>10000</SpawnDuration>
 		<DisplayName>Suruyu Cagir</DisplayName>
 		<BasePowerName>SummonGhoul</BasePowerName>
-		<Description>Cagir bir pair yakin dovus Olumsuz hizmetkarlar fight at senin command icin 10 saniye</Description>
+		<Description>Emrinde 10 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Ghoul saldiri ve can artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul</IconName>
 		<CastSound>CHR_Necromancer_SummonGhoul_A[150]CHR_Necromancer_SummonGhoul_B</CastSound>
@@ -33064,7 +33064,7 @@
 		<SpawnDuration>10000</SpawnDuration>
 		<DisplayName>Suruyu Cagir</DisplayName>
 		<BasePowerName>SummonGhoul</BasePowerName>
-		<Description>Cagir bir pair yakin dovus Olumsuz hizmetkarlar fight at senin command icin 10 saniye</Description>
+		<Description>Emrinde 10 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Mana maliyeti 5 azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul</IconName>
 		<CastSound>CHR_Necromancer_SummonGhoul_A[150]CHR_Necromancer_SummonGhoul_B</CastSound>
@@ -33093,7 +33093,7 @@
 		<SpawnDuration>10000</SpawnDuration>
 		<DisplayName>Suruyu Cagir</DisplayName>
 		<BasePowerName>SummonGhoul</BasePowerName>
-		<Description>Cagir bir pair yakin dovus Olumsuz hizmetkarlar fight at senin command icin 10 saniye</Description>
+		<Description>Emrinde 10 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Ghoul saldiri ve can artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul</IconName>
 		<CastSound>CHR_Necromancer_SummonGhoul_A[150]CHR_Necromancer_SummonGhoul_B</CastSound>
@@ -33122,7 +33122,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Suruyu Cagir</DisplayName>
 		<BasePowerName>SummonGhoul</BasePowerName>
-		<Description>Cagir bir pair yakin dovus Olumsuz hizmetkarlar fight at senin command icin 12 saniye</Description>
+		<Description>Emrinde 12 saniye savasacak iki yakin dovus olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Ghoul suresi 12 saniye artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul</IconName>
 		<CastSound>CHR_Necromancer_SummonGhoul_A[150]CHR_Necromancer_SummonGhoul_B</CastSound>
@@ -33282,7 +33282,7 @@
 		<SpawnLimit>2</SpawnLimit>
 		<SpawnDuration>8000</SpawnDuration>
 		<DisplayName>Suruyu Guclendir</DisplayName>
-		<Description>Cagir bir menzilli Olumsuz hizmetkar fight at senin command icin 8 saniye</Description>
+		<Description>Emrinde 8 saniye savasacak menzilli bir olumsuz hizmetkar cagirir</Description>
 		<IconName>a_PowerIcon_SummonGhoul2</IconName>
 		<CastGfx/>
 		<FireGfx/>
@@ -33309,7 +33309,7 @@
 		<SpawnDuration>8000</SpawnDuration>
 		<DisplayName>Suruyu Guclendir</DisplayName>
 		<BasePowerName>SummonRangedGhoul</BasePowerName>
-		<Description>Cagir bir menzilli Olumsuz hizmetkar fight at senin command icin 8 saniye</Description>
+		<Description>Emrinde 8 saniye savasacak menzilli bir olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Cagir bir menzilli ghoul icin 8 saniye</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul2</IconName>
 		<CastGfx/>
@@ -33337,7 +33337,7 @@
 		<SpawnDuration>8000</SpawnDuration>
 		<DisplayName>Suruyu Guclendir</DisplayName>
 		<BasePowerName>SummonRangedGhoul</BasePowerName>
-		<Description>Cagir bir menzilli Olumsuz hizmetkar fight at senin command icin 8 saniye</Description>
+		<Description>Emrinde 8 saniye savasacak menzilli bir olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Ghoul saldiri ve can artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul2</IconName>
 		<CastGfx/>
@@ -33365,7 +33365,7 @@
 		<SpawnDuration>8000</SpawnDuration>
 		<DisplayName>Suruyu Guclendir</DisplayName>
 		<BasePowerName>SummonRangedGhoul</BasePowerName>
-		<Description>Cagir bir menzilli Olumsuz hizmetkar fight at senin command icin 8 saniye</Description>
+		<Description>Emrinde 8 saniye savasacak menzilli bir olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Mana maliyeti 3 azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul2</IconName>
 		<CastGfx/>
@@ -33393,7 +33393,7 @@
 		<SpawnDuration>10000</SpawnDuration>
 		<DisplayName>Suruyu Guclendir</DisplayName>
 		<BasePowerName>SummonRangedGhoul</BasePowerName>
-		<Description>Cagir bir menzilli Olumsuz hizmetkar fight at senin command icin 10 saniye</Description>
+		<Description>Emrinde 10 saniye savasacak menzilli bir olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Ghoul Sure. Can Control Three Menzilli Ghouls 10 saniye artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul2</IconName>
 		<CastGfx/>
@@ -33421,7 +33421,7 @@
 		<SpawnDuration>10000</SpawnDuration>
 		<DisplayName>Suruyu Guclendir</DisplayName>
 		<BasePowerName>SummonRangedGhoul</BasePowerName>
-		<Description>Cagir bir menzilli Olumsuz hizmetkar fight at senin command icin 10 saniye</Description>
+		<Description>Emrinde 10 saniye savasacak menzilli bir olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Ghoul saldiri ve can artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul2</IconName>
 		<CastGfx/>
@@ -33449,7 +33449,7 @@
 		<SpawnDuration>10000</SpawnDuration>
 		<DisplayName>Suruyu Guclendir</DisplayName>
 		<BasePowerName>SummonRangedGhoul</BasePowerName>
-		<Description>Cagir bir menzilli Olumsuz hizmetkar fight at senin command icin 10 saniye</Description>
+		<Description>Emrinde 10 saniye savasacak menzilli bir olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Mana maliyeti 4 azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul2</IconName>
 		<CastGfx/>
@@ -33477,7 +33477,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Suruyu Guclendir</DisplayName>
 		<BasePowerName>SummonRangedGhoul</BasePowerName>
-		<Description>Cagir bir menzilli Olumsuz hizmetkar fight at senin command icin 12 saniye</Description>
+		<Description>Emrinde 12 saniye savasacak menzilli bir olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Ghoul suresi 12 saniye artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul2</IconName>
 		<CastGfx/>
@@ -33505,7 +33505,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Suruyu Guclendir</DisplayName>
 		<BasePowerName>SummonRangedGhoul</BasePowerName>
-		<Description>Cagir bir menzilli Olumsuz hizmetkar fight at senin command icin 12 saniye</Description>
+		<Description>Emrinde 12 saniye savasacak menzilli bir olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Mana maliyeti 3 azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul2</IconName>
 		<CastGfx/>
@@ -33533,7 +33533,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Suruyu Guclendir</DisplayName>
 		<BasePowerName>SummonRangedGhoul</BasePowerName>
-		<Description>Cagir bir menzilli Olumsuz hizmetkar fight at senin command icin 12 saniye</Description>
+		<Description>Emrinde 12 saniye savasacak menzilli bir olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Ghoul saldiri ve can artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul2</IconName>
 		<CastGfx/>
@@ -33561,7 +33561,7 @@
 		<SpawnDuration>14000</SpawnDuration>
 		<DisplayName>Suruyu Guclendir</DisplayName>
 		<BasePowerName>SummonRangedGhoul</BasePowerName>
-		<Description>Cagir bir menzilli Olumsuz hizmetkar fight at senin command icin 14 saniye</Description>
+		<Description>Emrinde 14 saniye savasacak menzilli bir olumsuz hizmetkar cagirir</Description>
 		<UpgradeDescription>Ghoul suresi 14 saniye artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SummonGhoul2</IconName>
 		<CastGfx/>
@@ -33583,7 +33583,7 @@
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Desecrate</PowerGroup>
 		<DisplayName>Kirlet</DisplayName>
-		<Description>Darbe senin dusman kaynakli bir distance ve ver additional hasar icin kosullar uzerinde it (positive ve negative).</Description>
+		<Description>Dusmana uzaktan vurur ve uzerindeki olumlu ya da olumsuz kosullara gore ek hasar verir.</Description>
 		<IconName>a_PowerIcon_Desecrate</IconName>
 		<CastSound>CHR_Necromancer_Desecrate</CastSound>
 		<CastGfx/>
@@ -33613,7 +33613,7 @@
 		<PowerGroup>Desecrate</PowerGroup>
 		<DisplayName>Kirlet</DisplayName>
 		<BasePowerName>Desecrate</BasePowerName>
-		<Description>Darbe senin dusman kaynakli bir distance ve ver additional hasar icin kosullar uzerinde it (positive ve negative).</Description>
+		<Description>Dusmana uzaktan vurur ve uzerindeki olumlu ya da olumsuz kosullara gore ek hasar verir.</Description>
 		<UpgradeDescription>Her farkli kosul icin %20 uzmanlik bonusu verir. Uzmanlik bonusu ust siniri %100 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_Desecrate</IconName>
 		<CastSound>CHR_Necromancer_Desecrate</CastSound>
@@ -33644,7 +33644,7 @@
 		<PowerGroup>Desecrate</PowerGroup>
 		<DisplayName>Kirlet</DisplayName>
 		<BasePowerName>Desecrate</BasePowerName>
-		<Description>Darbe senin dusman kaynakli bir distance ve ver additional hasar icin kosullar uzerinde it (positive ve negative).</Description>
+		<Description>Dusmana uzaktan vurur ve uzerindeki olumlu ya da olumsuz kosullara gore ek hasar verir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Desecrate</IconName>
 		<CastSound>CHR_Necromancer_Desecrate</CastSound>
@@ -33675,7 +33675,7 @@
 		<PowerGroup>Desecrate</PowerGroup>
 		<DisplayName>Kirlet</DisplayName>
 		<BasePowerName>Desecrate</BasePowerName>
-		<Description>Darbe senin dusman kaynakli bir distance ve ver additional hasar icin kosullar uzerinde it (positive ve negative).</Description>
+		<Description>Dusmana uzaktan vurur ve uzerindeki olumlu ya da olumsuz kosullara gore ek hasar verir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Desecrate</IconName>
 		<CastSound>CHR_Necromancer_Desecrate</CastSound>
@@ -33706,7 +33706,7 @@
 		<PowerGroup>Desecrate</PowerGroup>
 		<DisplayName>Kirlet</DisplayName>
 		<BasePowerName>Desecrate</BasePowerName>
-		<Description>Darbe senin dusman kaynakli bir distance ve ver additional hasar icin kosullar uzerinde it (positive ve negative).</Description>
+		<Description>Dusmana uzaktan vurur ve uzerindeki olumlu ya da olumsuz kosullara gore ek hasar verir.</Description>
 		<UpgradeDescription>Her farkli kosul icin %24 uzmanlik bonusu verir. Uzmanlik bonusu ust siniri %120 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_Desecrate</IconName>
 		<CastSound>CHR_Necromancer_Desecrate</CastSound>
@@ -33738,7 +33738,7 @@
 		<AddTargetBuff>Cursed</AddTargetBuff>
 		<DisplayName>Kirlet</DisplayName>
 		<BasePowerName>Desecrate</BasePowerName>
-		<Description>Lanet senin dusman kaynakli bir distance ve ver additional hasar icin kosullar uzerinde it (positive ve negative).</Description>
+		<Description>Dusmani uzaktan lanetler ve uzerindeki olumlu ya da olumsuz kosullara gore ek hasar verir.</Description>
 		<UpgradeDescription>Her farkli kosul icin %28 uzmanlik bonusu verir. Uzmanlik bonusu ust siniri %140 olur. Lanet etkisi ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_Desecrate</IconName>
 		<CastSound>CHR_Necromancer_Desecrate</CastSound>
@@ -33770,7 +33770,7 @@
 		<AddTargetBuff>Cursed</AddTargetBuff>
 		<DisplayName>Kirlet</DisplayName>
 		<BasePowerName>Desecrate</BasePowerName>
-		<Description>Lanet senin dusman kaynakli bir distance ve ver additional hasar icin kosullar uzerinde it (positive ve negative).</Description>
+		<Description>Dusmani uzaktan lanetler ve uzerindeki olumlu ya da olumsuz kosullara gore ek hasar verir.</Description>
 		<UpgradeDescription>Her farkli kosul icin %32 uzmanlik bonusu verir. Uzmanlik bonusu ust siniri %160 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_Desecrate</IconName>
 		<CastSound>CHR_Necromancer_Desecrate</CastSound>
@@ -33802,7 +33802,7 @@
 		<AddTargetBuff>Cursed</AddTargetBuff>
 		<DisplayName>Kirlet</DisplayName>
 		<BasePowerName>Desecrate</BasePowerName>
-		<Description>Lanet senin dusman kaynakli bir distance ve ver additional hasar icin kosullar uzerinde it (positive ve negative).</Description>
+		<Description>Dusmani uzaktan lanetler ve uzerindeki olumlu ya da olumsuz kosullara gore ek hasar verir.</Description>
 		<UpgradeDescription>Her farkli kosul icin %36 uzmanlik bonusu verir. Uzmanlik bonusu ust siniri %180 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_Desecrate</IconName>
 		<CastSound>CHR_Necromancer_Desecrate</CastSound>
@@ -33834,7 +33834,7 @@
 		<AddTargetBuff>Cursed</AddTargetBuff>
 		<DisplayName>Kirlet</DisplayName>
 		<BasePowerName>Desecrate</BasePowerName>
-		<Description>Lanet senin dusman kaynakli bir distance ve ver additional hasar icin kosullar uzerinde it (positive ve negative).</Description>
+		<Description>Dusmani uzaktan lanetler ve uzerindeki olumlu ya da olumsuz kosullara gore ek hasar verir.</Description>
 		<UpgradeDescription>Her farkli kosul icin %40 uzmanlik bonusu verir. Uzmanlik bonusu ust siniri %200 olur. Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Desecrate</IconName>
 		<CastSound>CHR_Necromancer_Desecrate</CastSound>
@@ -33866,7 +33866,7 @@
 		<AddTargetBuff>Cursed</AddTargetBuff>
 		<DisplayName>Kirlet</DisplayName>
 		<BasePowerName>Desecrate</BasePowerName>
-		<Description>Lanet senin dusman kaynakli bir distance ve ver additional hasar icin kosullar uzerinde it (positive ve negative).</Description>
+		<Description>Dusmani uzaktan lanetler ve uzerindeki olumlu ya da olumsuz kosullara gore ek hasar verir.</Description>
 		<UpgradeDescription>Her farkli kosul icin %45 uzmanlik bonusu verir. Uzmanlik bonusu ust siniri %225 olur. Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Desecrate</IconName>
 		<CastSound>CHR_Necromancer_Desecrate</CastSound>
@@ -33898,7 +33898,7 @@
 		<AddTargetBuff>Cursed</AddTargetBuff>
 		<DisplayName>Kirlet</DisplayName>
 		<BasePowerName>Desecrate</BasePowerName>
-		<Description>Lanet senin dusman kaynakli bir distance ve ver additional hasar icin kosullar uzerinde it (positive ve negative).</Description>
+		<Description>Dusmani uzaktan lanetler ve uzerindeki olumlu ya da olumsuz kosullara gore ek hasar verir.</Description>
 		<UpgradeDescription>Her farkli kosul icin %50 uzmanlik bonusu verir. Uzmanlik bonusu ust siniri %250 olur. Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_Desecrate</IconName>
 		<CastSound>CHR_Necromancer_Desecrate</CastSound>
@@ -35385,7 +35385,7 @@
 		<DamageType>Dark</DamageType>
 		<AddTargetBuff>Weakened,Crippled</AddTargetBuff>
 		<DisplayName>Can Susuzlugu</DisplayName>
-		<Description>Steal can kaynakli bir yakindaki dusman</Description>
+		<Description>Yakindaki bir dusmandan can emer</Description>
 		<IconName>a_PowerIcon_FeastOfAffliction</IconName>
 		<CastSound>CHR_Necromancer_LifeThirst_A[460]CHR_Necromancer_LifeThirst_B</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -35796,7 +35796,7 @@
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
 		<DisplayName>***CanavarTetik***</DisplayName>
-		<Description>Vampiric tetik used by yasam susuzlugu</Description>
+		<Description>Yasam Susuzlugu tarafindan kullanilan vampirik tetikleme.</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -35816,7 +35816,7 @@
 		<PowerGroup>Lifethirst</PowerGroup>
 		<AddTargetBuff>MinionHoT1</AddTargetBuff>
 		<BasePowerName>ProcLifethirstPets</BasePowerName>
-		<Description>Vampiric evcil iyilestir tetik used by yasam susuzlugu</Description>
+		<Description>Yasam Susuzlugu tarafindan kullanilan vampirik evcil iyilestirme tetiklemesi.</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetFeet</HitAnimSource>
@@ -35842,7 +35842,7 @@
 		<PowerGroup>Lifethirst</PowerGroup>
 		<AddTargetBuff>MinionHoT2</AddTargetBuff>
 		<BasePowerName>ProcLifethirstPets</BasePowerName>
-		<Description>Vampiric evcil iyilestir tetik used by yasam susuzlugu</Description>
+		<Description>Yasam Susuzlugu tarafindan kullanilan vampirik evcil iyilestirme tetiklemesi.</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetFeet</HitAnimSource>
@@ -35868,7 +35868,7 @@
 		<PowerGroup>Lifethirst</PowerGroup>
 		<AddTargetBuff>MinionHoT3</AddTargetBuff>
 		<BasePowerName>ProcLifethirstPets</BasePowerName>
-		<Description>Vampiric evcil iyilestir tetik used by yasam susuzlugu</Description>
+		<Description>Yasam Susuzlugu tarafindan kullanilan vampirik evcil iyilestirme tetiklemesi.</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetFeet</HitAnimSource>
@@ -37969,7 +37969,7 @@
 		<DisplayName>Zayiflat</DisplayName>
 		<BasePowerName>Enfeeble</BasePowerName>
 		<Description>Hedefi gucsuzlestiren bir darbe indirir</Description>
-		<UpgradeDescription>Deliver bir darbe that Enfeebles senin hedef, applying bir 30% guc zayiflatma</UpgradeDescription>
+		<UpgradeDescription>Hedefi Gucsuzlestiren ve %30 guc zayiflatmasi uygulayan bir darbe indirir</UpgradeDescription>
 		<IconName>a_PowerIcon_Enfeeble</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>snd_pwr_rogue_enfeeble_start[550]snd_pwr_rogue_enfeeble_end</CastSound>
@@ -39468,7 +39468,7 @@
 		<DisplayName>Zirh Kiran</DisplayName>
 		<BasePowerName>ReduceArmor</BasePowerName>
 		<Description>Hedefi bicaklar ve sonraki saldirilara karsi savunmasini azaltir</Description>
-		<UpgradeDescription>Stab senin hedef ve uygula bir 20% savunma zayiflatma</UpgradeDescription>
+		<UpgradeDescription>Hedefi bicaklar ve %20 savunma zayiflatmasi uygular</UpgradeDescription>
 		<IconName>a_PowerIcon_ReduceArmor</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
 		<CastSound>snd_pwr_rogue_reduceArmour_sword,snd_pwr_rogue_reduceArmour_maleVox</CastSound>
@@ -40886,7 +40886,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Koparan Darbe</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Verir ek hasar zehirlenmis hedefler</Description>
+		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Zehirlenmis hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Hasar Bonus Zehirlenmis Hedefler 10%</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -40921,7 +40921,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Koparan Darbe</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Verir ek hasar zehirlenmis hedefler</Description>
+		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Zehirlenmis hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -40956,7 +40956,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Koparan Darbe</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Verir ek hasar zehirlenmis hedefler</Description>
+		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Zehirlenmis hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 2 azalir. Ek bir kanama per vurus yuku ekler.</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -40991,7 +40991,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Koparan Darbe</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Verir ek hasar zehirlenmis hedefler</Description>
+		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Zehirlenmis hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 1 azalir. Hasar Bonus Vs Zehirlenmis Hedefler 15%</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41026,7 +41026,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Koparan Darbe</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Verir ek hasar zehirlenmis hedefler</Description>
+		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Zehirlenmis hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 1 azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41061,7 +41061,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Koparan Darbe</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Verir ek hasar zehirlenmis hedefler</Description>
+		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Zehirlenmis hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41096,7 +41096,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Koparan Darbe</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Verir ek hasar zehirlenmis hedefler</Description>
+		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Zehirlenmis hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 1 azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41131,7 +41131,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Koparan Darbe</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Verir ek hasar zehirlenmis hedefler</Description>
+		<Description>Her darbede Kanama uygulayan cok vuruslu yakin dovus kombosu yapar. Zehirlenmis hedeflere ek hasar verir.</Description>
 		<UpgradeDescription>Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41198,7 +41198,7 @@
 		<DisplayName>Akrep Ignesi</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
 		<Description>Dusmana vurur; Zayiflatma, Sakatlama ve Zirh Kirici uygular.</Description>
-		<UpgradeDescription>Darbe senin dusmanlar ve uygula Weaken, sakatla ve zirh kirici</UpgradeDescription>
+		<UpgradeDescription>Dusmanlara vurur; Zayiflatma, Sakatlama ve Zirh Kirici uygular.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
@@ -41503,7 +41503,7 @@
 		<AddTargetBuff>PoisonStrike,ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled</AddTargetBuff>
 		<DisplayName>Akrep Ignesi</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Deliver bir venomous darbe that uygular Weaken, sakatla ve zirh kirici</Description>
+		<Description>Zayiflatma, Sakatlama ve Zirh Kirici uygulayan zehirli bir darbe indirir.</Description>
 		<UpgradeDescription>Poisons hedef.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41585,8 +41585,8 @@
 		<PowerGroup>ShadowsBlade</PowerGroup>
 		<DisplayName>Kizil Kelebek</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash yakindaki dusmanlar ve remove up 3 yukler kanama per hedef Removed kanama verir ek hasar that hedef</Description>
-		<UpgradeDescription>Slash yakindaki dusmanlar ve remove up 3 yukler kanama per hedef Removed kanama verir ek hasar that hedef</UpgradeDescription>
+		<Description>Yakindaki dusmanlari keser ve hedef basina en fazla 3 Kanama yukunu kaldirir. Kaldirilan Kanama hedefe ek hasar verir.</Description>
+		<UpgradeDescription>Yakindaki dusmanlari keser ve hedef basina en fazla 3 Kanama yukunu kaldirir. Kaldirilan Kanama hedefe ek hasar verir.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
 		<CastSound>CHR_Executioner_CrimsonButterfly</CastSound>
@@ -41633,7 +41633,7 @@
 		<PowerGroup>ShadowsBlade</PowerGroup>
 		<DisplayName>Kizil Kelebek</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash yakindaki dusmanlar ve remove up 3 yukler kanama per hedef Removed kanama verir ek hasar that hedef</Description>
+		<Description>Yakindaki dusmanlari keser ve hedef basina en fazla 3 Kanama yukunu kaldirir. Kaldirilan Kanama hedefe ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 2 azalir. Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -41681,7 +41681,7 @@
 		<PowerGroup>ShadowsBlade</PowerGroup>
 		<DisplayName>Kizil Kelebek</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash yakindaki dusmanlar ve remove up 3 yukler kanama per hedef Removed kanama verir ek hasar that hedef</Description>
+		<Description>Yakindaki dusmanlari keser ve hedef basina en fazla 3 Kanama yukunu kaldirir. Kaldirilan Kanama hedefe ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 2 azalir. Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -41729,7 +41729,7 @@
 		<PowerGroup>ShadowsBlade</PowerGroup>
 		<DisplayName>Kizil Kelebek</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash yakindaki dusmanlar ve remove up 3 yukler kanama per hedef Removed kanama verir ek hasar that hedef</Description>
+		<Description>Yakindaki dusmanlari keser ve hedef basina en fazla 3 Kanama yukunu kaldirir. Kaldirilan Kanama hedefe ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 2 azalir. Hasar bonus caps at 4 yukler kanama</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -41777,7 +41777,7 @@
 		<PowerGroup>ShadowsBlade</PowerGroup>
 		<DisplayName>Kizil Kelebek</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash yakindaki dusmanlar ve remove up 3 yukler kanama per hedef Removed kanama verir ek hasar that hedef</Description>
+		<Description>Yakindaki dusmanlari keser ve hedef basina en fazla 3 Kanama yukunu kaldirir. Kaldirilan Kanama hedefe ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 2 azalir. Hasar bonus caps at 5 yukler kanama Alan etkisi iyilesir.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -41825,7 +41825,7 @@
 		<PowerGroup>ShadowsBlade</PowerGroup>
 		<DisplayName>Kizil Kelebek</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash yakindaki dusmanlar ve remove up 3 yukler kanama per hedef Removed kanama verir ek hasar that hedef</Description>
+		<Description>Yakindaki dusmanlari keser ve hedef basina en fazla 3 Kanama yukunu kaldirir. Kaldirilan Kanama hedefe ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 2 azalir. Hasar bonus caps at 6 yukler kanama</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -41873,7 +41873,7 @@
 		<PowerGroup>ShadowsBlade</PowerGroup>
 		<DisplayName>Kizil Kelebek</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash yakindaki dusmanlar ve remove up 3 yukler kanama per hedef Removed kanama verir ek hasar that hedef</Description>
+		<Description>Yakindaki dusmanlari keser ve hedef basina en fazla 3 Kanama yukunu kaldirir. Kaldirilan Kanama hedefe ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 5 azalir. Hasar bonus caps at 7 yukler kanama</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -41921,7 +41921,7 @@
 		<PowerGroup>ShadowsBlade</PowerGroup>
 		<DisplayName>Kizil Kelebek</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash yakindaki dusmanlar ve remove up 3 yukler kanama per hedef Removed kanama verir ek hasar that hedef</Description>
+		<Description>Yakindaki dusmanlari keser ve hedef basina en fazla 3 Kanama yukunu kaldirir. Kaldirilan Kanama hedefe ek hasar verir.</Description>
 		<UpgradeDescription>Hasar bonus caps at 8 yukler kanama Alan etkisi iyilesir.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -41969,7 +41969,7 @@
 		<PowerGroup>ShadowsBlade</PowerGroup>
 		<DisplayName>Kizil Kelebek</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash yakindaki dusmanlar ve remove up 3 yukler kanama per hedef Removed kanama verir ek hasar that hedef</Description>
+		<Description>Yakindaki dusmanlari keser ve hedef basina en fazla 3 Kanama yukunu kaldirir. Kaldirilan Kanama hedefe ek hasar verir.</Description>
 		<UpgradeDescription>Mana maliyeti 5 azalir.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -42017,7 +42017,7 @@
 		<PowerGroup>ShadowsBlade</PowerGroup>
 		<DisplayName>Kizil Kelebek</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash yakindaki dusmanlar ve remove up 3 yukler kanama per hedef Removed kanama verir ek hasar that hedef</Description>
+		<Description>Yakindaki dusmanlari keser ve hedef basina en fazla 3 Kanama yukunu kaldirir. Kaldirilan Kanama hedefe ek hasar verir.</Description>
 		<UpgradeDescription>Hasar bonus caps at 10 yukler kanama</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -42867,7 +42867,7 @@
 		<DisplayName>Suikast</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
 		<Description>Uygular zehir, zirh kirici, ve kanama Verir bonus hasar hedef based uzerinde missing can</Description>
-		<UpgradeDescription>6 kanama yuku uygular. Bonus Hasar artar. Hasar #olddmg# artar.</UpgradeDescription>
+		<UpgradeDescription>6 kanama yuku uygular. Ek hasar artar. Hasar #olddmg# artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
 		<CastSound>[150]CHR_Executioner_Assassinate</CastSound>
@@ -44492,7 +44492,7 @@
 		<DisplayName>Golge Yirtisi</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
 		<Description>Ileri atilir; yolundaki her dusmana hasar verir ve Kanama uygular.</Description>
-		<UpgradeDescription>Atilma forward, hasar veren ve applying 2 yukler kanama her dusman icinde senin path.</UpgradeDescription>
+		<UpgradeDescription>Ileri atilir; yolundaki her dusmana hasar verir ve 2 Kanama yuku uygular.</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_Executioner_ShadowRend</CastSound>
@@ -45371,7 +45371,7 @@
 		<DisplayName>Charon Bicaklari</DisplayName>
 		<BasePowerName>SeekingBlades</BasePowerName>
 		<Description>Olum Avatarina donusur. Sure boyunca saldiri hasarin artar.</Description>
-		<UpgradeDescription>Mana gereksinimi 5 azalir. Saldiri hasari %10 artar. Opening vurus icin kanama etkisi ekler.</UpgradeDescription>
+		<UpgradeDescription>Mana gereksinimi 5 azalir. Saldiri hasari %10 artar. Acilis vurusu Kanama uygular.</UpgradeDescription>
 		<IconName>a_PowerIcon_CharonBlade01</IconName>
 		<CastGfx/>
 		<FireGfx/>
@@ -45891,7 +45891,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<DisplayName>***CanavarTetik***</DisplayName>
-		<Description>Vampiric tetik used by yut</Description>
+		<Description>Yutma tarafindan kullanilan vampirik tetikleme.</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetFeet</HitAnimSource>
@@ -48937,7 +48937,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<DisplayName>***CanavarTetik***</DisplayName>
-		<Description>Vampiric tetik used by Reaper</Description>
+		<Description>Bicakci tarafindan kullanilan vampirik tetikleme.</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetFeet</HitAnimSource>
@@ -48959,7 +48959,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
-		<Description>Vampiric tetik used by kan Bond yetenek</Description>
+		<Description>Kan Bagi yetenegi tarafindan kullanilan vampirik tetikleme.</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetFeet</HitAnimSource>
@@ -50500,7 +50500,7 @@
 		<DisplayName>Kalp Avcisi</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
 		<Description>Tek, delici ve sarsici bir darbe indirir. Gizlilikten cikarken kullanilirsa hedefi afallatir.</Description>
-		<UpgradeDescription>If Stealthed, afallatir hedef.</UpgradeDescription>
+		<UpgradeDescription>Gizlilikteysen hedefi afallatir.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_ShadowWalker_HeartSeeker_A[450]CHR_ShadowWalker_HeartSeeker_B</CastSound>
@@ -51105,7 +51105,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
-		<Description>Tetik used icin yakin dovus kritik hasar.</Description>
+		<Description>Yakin dovus kritik hasari icin kullanilan tetikleme.</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -51126,7 +51126,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<Description>Tetik used icinde place standard hasar when bir glancing darbe occurs</Description>
+		<Description>Siyirma darbesi olustugunda standart hasar yerine kullanilan tetikleme.</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -51153,7 +51153,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>QuickStrike</PowerGroup>
 		<DisplayName>Uclu Darbe</DisplayName>
-		<Description>Deliver three slashing darbeler senin hedef icin #dmg# hasar</Description>
+		<Description>Hedefe #dmg# hasar veren uc kesici darbe indirir.</Description>
 		<IconName>a_PowerIcon_OpenDamage</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>[100]snd_pwr_rogue_openDamage_sword_01[270]snd_pwr_rogue_openDamage_sword_02[300]snd_pwr_rogue_openDamage_sword_03</CastSound>
@@ -51252,7 +51252,7 @@
 		<DisplayName>Golge Lejyonu</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
 		<Description>Yaninda savasacak iki Golge Klonu cagirir.</Description>
-		<UpgradeDescription>Mana maliyeti 2 azalir. Clones have +15% can Nefret artar.</UpgradeDescription>
+		<UpgradeDescription>Mana maliyeti 2 azalir. Klonlar %15 can kazanir. Nefret artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowLegion</FireSound>
@@ -51285,7 +51285,7 @@
 		<DisplayName>Golge Lejyonu</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
 		<Description>Yaninda savasacak iki Golge Klonu cagirir.</Description>
-		<UpgradeDescription>Mana maliyeti 2 azalir. Clones have +15% savunma Nefret artar.</UpgradeDescription>
+		<UpgradeDescription>Mana maliyeti 2 azalir. Klonlar %15 savunma kazanir. Nefret artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowLegion</FireSound>
@@ -51351,7 +51351,7 @@
 		<DisplayName>Golge Lejyonu</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
 		<Description>Yaninda savasacak iki Golge Klonu cagirir.</Description>
-		<UpgradeDescription>Mana maliyeti 2 azalir. Clones have +15% can Nefret artar.</UpgradeDescription>
+		<UpgradeDescription>Mana maliyeti 2 azalir. Klonlar %15 can kazanir. Nefret artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowLegion</FireSound>
@@ -51384,7 +51384,7 @@
 		<DisplayName>Golge Lejyonu</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
 		<Description>Yaninda savasacak iki Golge Klonu cagirir.</Description>
-		<UpgradeDescription>Mana maliyeti 2 azalir. Clones have +15% savunma Nefret artar.</UpgradeDescription>
+		<UpgradeDescription>Mana maliyeti 2 azalir. Klonlar %15 savunma kazanir. Nefret artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowLegion</FireSound>
@@ -51450,7 +51450,7 @@
 		<DisplayName>Golge Lejyonu</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
 		<Description>Yaninda savasacak iki Golge Klonu cagirir.</Description>
-		<UpgradeDescription>Mana maliyeti 3 azalir. Clones have +15% can Nefret artar.</UpgradeDescription>
+		<UpgradeDescription>Mana maliyeti 3 azalir. Klonlar %15 can kazanir. Nefret artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowLegion</FireSound>
@@ -51483,7 +51483,7 @@
 		<DisplayName>Golge Lejyonu</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
 		<Description>Yaninda savasacak iki Golge Klonu cagirir.</Description>
-		<UpgradeDescription>Mana maliyeti 4 azalir. Clones have +15% savunma Nefret artar.</UpgradeDescription>
+		<UpgradeDescription>Mana maliyeti 4 azalir. Klonlar %15 savunma kazanir. Nefret artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowLegion</FireSound>
@@ -51701,7 +51701,7 @@
 		<DisplayName>Gece Yarisi Ortusu</DisplayName>
 		<BasePowerName>ShadowArmor</BasePowerName>
 		<Description>Ortu yourself ile golge enerji Senin next saldiri will ver bonus hasar ve end etki</Description>
-		<UpgradeDescription>Savunma Artis While Stealthed 40% Speed ceza reduced -10%</UpgradeDescription>
+		<UpgradeDescription>Gizlilikteyken %40 savunma artisi kazanir. Hiz cezasi -10% olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowArmor</IconName>
 		<CastGfx/>
 		<FireSound>snd_pwr_rogue_stealth</FireSound>
@@ -51731,7 +51731,7 @@
 		<DisplayName>Gece Yarisi Ortusu</DisplayName>
 		<BasePowerName>ShadowArmor</BasePowerName>
 		<Description>Ortu yourself ile golge enerji Senin next saldiri will ver bonus hasar ve end etki</Description>
-		<UpgradeDescription>Mana maliyeti 5 azalir. Stealth Bonus hasari %10 artar.</UpgradeDescription>
+		<UpgradeDescription>Mana maliyeti 5 azalir. Gizlilik bonus hasari %10 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowArmor</IconName>
 		<CastGfx/>
 		<FireSound>snd_pwr_rogue_stealth</FireSound>
@@ -51761,7 +51761,7 @@
 		<DisplayName>Gece Yarisi Ortusu</DisplayName>
 		<BasePowerName>ShadowArmor</BasePowerName>
 		<Description>Ortu yourself ile golge enerji Senin next saldiri will ver bonus hasar ve end etki</Description>
-		<UpgradeDescription>Savunma Artis While Stealthed 45% Speed ceza reduced -5%</UpgradeDescription>
+		<UpgradeDescription>Gizlilikteyken %45 savunma artisi kazanir. Hiz cezasi -5% olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowArmor</IconName>
 		<CastGfx/>
 		<FireSound>snd_pwr_rogue_stealth</FireSound>
@@ -51791,7 +51791,7 @@
 		<DisplayName>Gece Yarisi Ortusu</DisplayName>
 		<BasePowerName>ShadowArmor</BasePowerName>
 		<Description>Ortu yourself ile golge enerji Senin next saldiri will ver bonus hasar ve end etki</Description>
-		<UpgradeDescription>5% Speed artis icin 1 saniye Savunma Artis While Stealthed 50% Speed ceza removed</UpgradeDescription>
+		<UpgradeDescription>1 saniye %5 hiz artisi verir. Gizlilikteyken %50 savunma artisi kazanir. Hiz cezasi kalkar.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowArmor</IconName>
 		<CastGfx/>
 		<FireSound>snd_pwr_rogue_stealth</FireSound>
@@ -51821,7 +51821,7 @@
 		<DisplayName>Gece Yarisi Ortusu</DisplayName>
 		<BasePowerName>ShadowArmor</BasePowerName>
 		<Description>Ortu yourself ile golge enerji Senin next saldiri will ver bonus hasar ve end etki</Description>
-		<UpgradeDescription>Mana maliyeti 5 azalir. Stealth Bonus hasari %10 artar.</UpgradeDescription>
+		<UpgradeDescription>Mana maliyeti 5 azalir. Gizlilik bonus hasari %10 artar.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowArmor</IconName>
 		<CastGfx/>
 		<FireSound>snd_pwr_rogue_stealth</FireSound>
@@ -51851,7 +51851,7 @@
 		<DisplayName>Gece Yarisi Ortusu</DisplayName>
 		<BasePowerName>ShadowArmor</BasePowerName>
 		<Description>Ortu yourself ile golge enerji Senin next saldiri will ver bonus hasar ve end etki</Description>
-		<UpgradeDescription>Savunma Artis While Stealthed 60%</UpgradeDescription>
+		<UpgradeDescription>Gizlilikteyken %60 savunma artisi kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowArmor</IconName>
 		<CastGfx/>
 		<FireSound>snd_pwr_rogue_stealth</FireSound>
@@ -51881,7 +51881,7 @@
 		<DisplayName>Gece Yarisi Ortusu</DisplayName>
 		<BasePowerName>ShadowArmor</BasePowerName>
 		<Description>Ortu yourself ile golge enerji Senin next saldiri will ver bonus hasar ve end etki</Description>
-		<UpgradeDescription>Mana maliyeti 5 azalir. Speed artis artan 10%</UpgradeDescription>
+		<UpgradeDescription>Mana maliyeti 5 azalir. Hiz artisi %10 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowArmor</IconName>
 		<CastGfx/>
 		<FireSound>snd_pwr_rogue_stealth</FireSound>
@@ -51911,7 +51911,7 @@
 		<DisplayName>Gece Yarisi Ortusu</DisplayName>
 		<BasePowerName>ShadowArmor</BasePowerName>
 		<Description>Ortu yourself ile golge enerji Senin next saldiri will ver bonus hasar ve end etki</Description>
-		<UpgradeDescription>Stealth hasar bonusu %10 artar. Savunma Artis While Stealthed 75%</UpgradeDescription>
+		<UpgradeDescription>Stealth hasar bonusu %10 artar. Gizlilikteyken %75 savunma artisi kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowArmor</IconName>
 		<CastGfx/>
 		<FireSound>snd_pwr_rogue_stealth</FireSound>
@@ -51941,7 +51941,7 @@
 		<DisplayName>Gece Yarisi Ortusu</DisplayName>
 		<BasePowerName>ShadowArmor</BasePowerName>
 		<Description>Ortu yourself ile golge enerji Senin next saldiri will ver bonus hasar ve end etki</Description>
-		<UpgradeDescription>Mana maliyeti 5 azalir. Cleanses Movement CC when kullanim Speed artis artan 15%</UpgradeDescription>
+		<UpgradeDescription>Mana maliyeti 5 azalir. Kullanildiginda hareket kisitlamalarini arindirir. Hiz artisi %15 olur.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowArmor</IconName>
 		<CastGfx/>
 		<FireSound>snd_pwr_rogue_stealth</FireSound>
@@ -52934,7 +52934,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
 		<AggroBonus>1</AggroBonus>
-		<Description>Atilma used by golge Clones</Description>
+		<Description>Golge Klonlari tarafindan kullanilan atilma.</Description>
 		<CastGfx/>
 		<FireSound>snd_pwr_aoe_magic_07</FireSound>
 		<FireGfx/>
@@ -53144,7 +53144,7 @@
 		<DisplayName>Kara Firtina</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
 		<Description>Etrafindaki dusmanlara saldiran bir Golge Klonu olusturur. Bu dikkat daginikligini kullanarak yakalanmasi zor hale gelirsin.</Description>
-		<UpgradeDescription>40% savunma artis.</UpgradeDescription>
+		<UpgradeDescription>%40 savunma artisi kazanir.</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
 		<CastAnimSource>Ground</CastAnimSource>
@@ -53406,7 +53406,7 @@
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>ProcSpeedBuff</AddTargetBuff>
 		<DisplayName>Cevik Ayak</DisplayName>
-		<Description>Sans artir senin speed icin bir short sure</Description>
+		<Description>Kisa sureligine hizini artirma sansi verir</Description>
 		<RuneIcon>a_RuneIcon_ProcSpeed</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -53423,7 +53423,7 @@
 		<BaseDamageMult>-1</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<DisplayName>Onarici Darbe</DisplayName>
-		<Description>Restore can uzerinde kritik vurus</Description>
+		<Description>Kritik vurusta can yeniler</Description>
 		<RuneIcon>a_RuneIcon_ProcHeal</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -53809,7 +53809,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Hava Avcisi</DisplayName>
-		<Description>Hasar Hava Creatures +10%</Description>
+		<Description>Hava yaratiklara karsi hasar %10 artar.</Description>
 		<RuneIcon>a_RuneIcon_ProcTrog</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -53826,7 +53826,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Toprak Avcisi</DisplayName>
-		<Description>Hasar Toprak Creatures +10%</Description>
+		<Description>Toprak yaratiklara karsi hasar %10 artar.</Description>
 		<RuneIcon>a_RuneIcon_ProcInfernal</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -53843,7 +53843,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Ates Avcisi</DisplayName>
-		<Description>Hasar Ates Creatures +10%</Description>
+		<Description>Ates yaratiklara karsi hasar %10 artar.</Description>
 		<RuneIcon>a_RuneIcon_ProcDraconic</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -53860,7 +53860,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Yasam Avcisi</DisplayName>
-		<Description>Hasar Yasam Creatures +10%</Description>
+		<Description>Yasam yaratiklara karsi hasar %10 artar.</Description>
 		<RuneIcon>a_RuneIcon_ProcSylvan</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -53877,7 +53877,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Buz Avcisi</DisplayName>
-		<Description>Hasar Buz Creatures +10%</Description>
+		<Description>Buz yaratiklara karsi hasar %10 artar.</Description>
 		<RuneIcon>a_RuneIcon_ProcMythic</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -53894,7 +53894,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Olum Avcisi</DisplayName>
-		<Description>Hasar Olum Creatures +10%</Description>
+		<Description>Olum yaratiklara karsi hasar %10 artar.</Description>
 		<RuneIcon>a_RuneIcon_ProcUndead</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -53945,7 +53945,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Can Bonusu</DisplayName>
-		<Description>Artan Max Can +15%</Description>
+		<Description>Azami can %15 artar.</Description>
 		<RuneIcon>a_RuneIcon_MagicTypeItemDrop_CraftDrop</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -53962,7 +53962,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Toparlanma Bonusu</DisplayName>
-		<Description>Artan iyilestirme received %10 artar.</Description>
+		<Description>Alinan iyilestirme %10 artar.</Description>
 		<RuneIcon>a_RuneIcon_MagicTypeItemDrop_GoldDrop</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -53979,7 +53979,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Hava Direnci</DisplayName>
-		<Description>Hava Direnci hasari %10 artar.</Description>
+		<Description>Hava direnci %10 artar.</Description>
 		<RuneIcon>a_RuneIcon_MagicTypeItemDrop_GoldDrop_CraftDrop</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -53996,7 +53996,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Toprak Direnci</DisplayName>
-		<Description>Toprak Direnci hasari %10 artar.</Description>
+		<Description>Toprak direnci %10 artar.</Description>
 		<RuneIcon>a_RuneIcon_MagicTypeSpeed_CraftDrop</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -54013,7 +54013,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Ates Direnci</DisplayName>
-		<Description>Ates Direnci hasari %10 artar.</Description>
+		<Description>Ates direnci %10 artar.</Description>
 		<RuneIcon>a_RuneIcon_MagicTypeSpeed_GoldDrop_CraftFind</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -54030,7 +54030,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Yasam Direnci</DisplayName>
-		<Description>Yasam Direnci hasari %10 artar.</Description>
+		<Description>Yasam direnci %10 artar.</Description>
 		<RuneIcon>a_RuneIcon_MagicTypeSpeed_ItemDrop</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -54047,7 +54047,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Buz Direnci</DisplayName>
-		<Description>Buz Direnci hasari %10 artar.</Description>
+		<Description>Buz direnci %10 artar.</Description>
 		<RuneIcon>a_RuneIcon_MagicTypeSpeed_ItemDrop_CraftDrop</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -54064,7 +54064,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Olum Direnci</DisplayName>
-		<Description>Olum Direnci hasari %10 artar.</Description>
+		<Description>Olum direnci %10 artar.</Description>
 		<RuneIcon>a_RuneIcon_MagicTypeSpeed_ItemDrop_GoldDrop</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -54316,7 +54316,7 @@
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>180000</SpawnDuration>
 		<DisplayName>Evcil Cagir</DisplayName>
-		<Description>Cagirir senin evcil.</Description>
+		<Description>Evcillini cagirir.</Description>
 		<IconName>a_PetIcon_Owl</IconName>
 		<CastGfx/>
 		<FireGfx/>
@@ -54354,7 +54354,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<DisplayName>Evcili Gonder</DisplayName>
-		<Description>Dismisses senin active evcil</Description>
+		<Description>Aktif evcillini gonderir.</Description>
 		<IconName>a_PetIcon_Dismiss</IconName>
 		<CastGfx/>
 		<FireAnimSource>Pet</FireAnimSource>
@@ -54411,7 +54411,7 @@
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PetCrow</PowerGroup>
 		<AddTargetBuff>PetCrowBlind</AddTargetBuff>
-		<Description>Pecks at hedef eyes, debilitating them</Description>
+		<Description>Hedefin gozlerine saldirir ve onu gucsuzlestirir.</Description>
 		<IconName>a_PetIcon_Crow</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -54444,7 +54444,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PetDjinn</PowerGroup>
 		<AggroBonus>11</AggroBonus>
-		<Description>Creates bir sahte hedef that distracts senin dusmanlar</Description>
+		<Description>Dusmanlarinin dikkatini dagitan bir sahte hedef olusturur.</Description>
 		<IconName>a_PetIcon_Djinn</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -54500,7 +54500,7 @@
 		<DamageType>Holy</DamageType>
 		<PowerGroup>PetDragonGold</PowerGroup>
 		<AddTargetBuff>Last:Dazed</AddTargetBuff>
-		<Description>Hasar verir senin dusmanlar ile powerful firtina Breath.</Description>
+		<Description>Guclu Firtina Nefesiyle dusmanlara hasar verir.</Description>
 		<IconName>a_PetIcon_Dragon3</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -54527,7 +54527,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>PetDragonRed</PowerGroup>
-		<Description>Assaults senin dusmanlar ile bir barrage fireballs.</Description>
+		<Description>Dusmanlara ates topu yagmuruyla saldirir.</Description>
 		<IconName>a_PetIcon_Dragonette</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -54593,7 +54593,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PetHawk</PowerGroup>
 		<AddTargetBuff>Staggered</AddTargetBuff>
-		<Description>Swoops past senin dusmanlar, hasar veren them</Description>
+		<Description>Dusmanlarinin yanindan dalis yapar ve onlara hasar verir.</Description>
 		<IconName>a_PetIcon_Falcon</IconName>
 		<CastAnimSource>L:Feet</CastAnimSource>
 		<CastGfx>
@@ -54627,7 +54627,7 @@
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PetGhost</PowerGroup>
 		<AddTargetBuff>PetGhostRoot</AddTargetBuff>
-		<Description>Entangles yakindaki dusmanlar icinde patchwork rags.</Description>
+		<Description>Yakindaki dusmanlari yamali caputlarla sarar.</Description>
 		<IconName>a_PetIcon_Ghost</IconName>
 		<CastGfx/>
 		<FireGfx/>
@@ -54648,7 +54648,7 @@
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PetGhoul</PowerGroup>
 		<AddTargetBuff>PetGhoulEnfeeble</AddTargetBuff>
-		<Description>Frightens senin dusmanlar, Weakening them kisa sure</Description>
+		<Description>Dusmanlarini korkutur ve kisa sureligine zayiflatir.</Description>
 		<IconName>a_PetIcon_Ghoul</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -54675,7 +54675,7 @@
 		<DamageType>Holy</DamageType>
 		<PowerGroup>PetMonkey</PowerGroup>
 		<AddTargetBuff>PetMonkeyHaste</AddTargetBuff>
-		<Description>Makes sen ve senin dostlar stronger ve faster.</Description>
+		<Description>Seni ve dostlarini daha guclu ve daha hizli yapar.</Description>
 		<IconName>a_PetIcon_Monkey</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -54702,7 +54702,7 @@
 		<DamageType>Holy</DamageType>
 		<PowerGroup>PetOwl</PowerGroup>
 		<AddTargetBuff>PetOwlDefense</AddTargetBuff>
-		<Description>Verir sen ve senin muttefikler ek savunma.</Description>
+		<Description>Sana ve muttefiklerine ek savunma verir.</Description>
 		<IconName>a_PetIcon_Owl</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -54729,7 +54729,7 @@
 		<DamageType>Holy</DamageType>
 		<PowerGroup>PetPhoenix</PowerGroup>
 		<AddTargetBuff>PetPhoenixCleanse</AddTargetBuff>
-		<Description>Iyilestirir ve Cleanses sen ve senin muttefikler.</Description>
+		<Description>Seni ve muttefiklerini iyilestirir ve arindirir.</Description>
 		<IconName>a_PetIcon_Phoenix</IconName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -54757,7 +54757,7 @@
 		<DamageType>Fire</DamageType>
 		<PowerGroup>PetSprite</PowerGroup>
 		<AddTargetBuff>PetSpriteBurn</AddTargetBuff>
-		<Description>Explodes, yanan senin dusmanlar</Description>
+		<Description>Patlar ve dusmanlarini yakar.</Description>
 		<IconName>a_PetIcon_Sprite</IconName>
 		<CastSound>CHR_FrostWarden_FrigidComet_Fire</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -54781,7 +54781,7 @@
 		<BaseDamageMult>-0.25</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<DisplayName>Can Calma Tetikle</DisplayName>
-		<Description>Sans recover lost can</Description>
+		<Description>Kaybedilen cani geri kazanma sansi verir</Description>
 		<RuneIcon>a_RuneIcon_ProcHeal</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>
@@ -54799,7 +54799,7 @@
 		<TargetMethod>VanityPet</TargetMethod>
 		<CastTime>800</CastTime>
 		<DisplayName>Jack-O Evcili Cagir</DisplayName>
-		<Description>Cagirir bir Jack-O that follows sen around</Description>
+		<Description>Seni takip eden bir Jack-O cagirir.</Description>
 		<IconName>a_PetIcon_Pumpkin</IconName>
 		<CastGfx/>
 		<FireGfx/>
@@ -54811,7 +54811,7 @@
 		<TargetMethod>VanityPet</TargetMethod>
 		<CastTime>800</CastTime>
 		<DisplayName>Gargoyle Evcili Cagir</DisplayName>
-		<Description>Cagirir bir gargoyle that follows sen around</Description>
+		<Description>Seni takip eden bir gargoyle cagirir.</Description>
 		<IconName>a_PetIcon_Gargoyle</IconName>
 		<CastGfx/>
 		<FireGfx/>
@@ -54823,7 +54823,7 @@
 		<TargetMethod>VanityPet</TargetMethod>
 		<CastTime>800</CastTime>
 		<DisplayName>Kucuk Ejder Cagir</DisplayName>
-		<Description>Cagirir bir Dragonette that follows sen around</Description>
+		<Description>Seni takip eden bir kucuk ejder cagirir.</Description>
 		<IconName>a_PetIcon_FairyDragon</IconName>
 		<CastGfx/>
 		<FireGfx/>
@@ -54835,7 +54835,7 @@
 		<TargetMethod>VanityPet</TargetMethod>
 		<CastTime>800</CastTime>
 		<DisplayName>Ruh Cagir</DisplayName>
-		<Description>Cagirir bir ruh that follows sen around</Description>
+		<Description>Seni takip eden bir ruh cagirir.</Description>
 		<IconName>a_PetIcon_LostSoul</IconName>
 		<CastGfx/>
 		<FireGfx/>
@@ -54847,7 +54847,7 @@
 		<TargetMethod>VanityPet</TargetMethod>
 		<CastTime>800</CastTime>
 		<DisplayName>Kafatasi Cagir</DisplayName>
-		<Description>Cagirir bir floating skull that follows sen around</Description>
+		<Description>Seni takip eden ucan bir kafatasi cagirir.</Description>
 		<IconName>a_PetIcon_Skull</IconName>
 		<CastGfx/>
 		<FireGfx/>

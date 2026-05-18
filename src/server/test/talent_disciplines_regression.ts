@@ -217,6 +217,23 @@ async function testAllocateTalentTreePreservesHighNodeTypeIdsAndClampsByStorageS
     assert.equal(nodes[4].filled, false);
 }
 
+async function testEmptyAllocateDoesNotClearSavedTalentTree(): Promise<void> {
+    const client = createClient();
+    const beforeNodes = JSON.stringify(client.character.TalentTree?.['5']?.nodes ?? []);
+    const slots: Array<{ nodeID: number; points: number } | null> =
+        new Array(TalentConfig.NUM_TALENT_SLOTS).fill(null);
+
+    await withMockedCharacterSave(async () => {
+        await TalentHandler.handleAllocateTalentTreePoints(client as never, createAllocateTalentPacket(slots));
+    });
+
+    assert.equal(
+        JSON.stringify(client.character.TalentTree?.['5']?.nodes ?? []),
+        beforeNodes,
+        'empty client refresh packets should not wipe a previously saved discipline tree'
+    );
+}
+
 async function testInstantResearchRequiresClaimLikePython(): Promise<void> {
     const client = createClient();
     const beforeStart = Math.floor(Date.now() / 1000);
@@ -439,6 +456,7 @@ function testCompletedClassZeroResearchSerializesAfterRestart(): void {
 async function main(): Promise<void> {
     await testRespecUsesPythonNodeMapping();
     await testAllocateTalentTreePreservesHighNodeTypeIdsAndClampsByStorageSlot();
+    await testEmptyAllocateDoesNotClearSavedTalentTree();
     await testInstantResearchRequiresClaimLikePython();
     await testTimedResearchSchedulesCompletionNotify();
     testEntityBuildsTalentsFromTalentTree();

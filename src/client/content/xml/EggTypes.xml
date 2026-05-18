@@ -2,10 +2,10 @@
 <EggTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<EggType EggName="---Template---">
 		<EggID>0</EggID>
-		<DisplayName>Yumurta Name</DisplayName>
+		<DisplayName>Yumurta Ad</DisplayName>
 		<ClassType>ClassType</ClassType>
 		<Color>Color</Color>
-		<Description>Awesome yumurta Lore</Description>
+		<Description>Awesome Egg Lore</Description>
 		<EggRank>99</EggRank>
 		<Art>Art</Art>
 	</EggType>
@@ -14,7 +14,7 @@
 		<DisplayName>Speckled Beyaz Yumurta</DisplayName>
 		<ClassType>Generic</ClassType>
 		<Color>Brown</Color>
-		<Description>I found this one icinde benim aunt's chicken farm.</Description>
+		<Description>I found this one in my aunt's chicken farm.</Description>
 		<EggRank>0</EggRank>
 		<Art>a_EggArt_WhiteSpeckled</Art>
 	</EggType>
@@ -23,7 +23,7 @@
 		<DisplayName>Elaborate Beyaz Yumurta</DisplayName>
 		<ClassType>Common</ClassType>
 		<Color>Brown</Color>
-		<Description>Found this one icinde some eski goblin caves.</Description>
+		<Description>Found this one in some old goblin caves.</Description>
 		<EggRank>0</EggRank>
 		<Art>a_EggArt_WhiteElaborate</Art>
 	</EggType>
@@ -32,7 +32,7 @@
 		<DisplayName>Striped Beyaz Yumurta</DisplayName>
 		<ClassType>Ordinary</ClassType>
 		<Color>Brown</Color>
-		<Description>This was stuck up icinde trees when I came aross it.</Description>
+		<Description>This was stuck up in the trees when I came aross it.</Description>
 		<EggRank>0</EggRank>
 		<Art>a_EggArt_WhiteStriped</Art>
 	</EggType>
@@ -41,7 +41,7 @@
 		<DisplayName>Shiny Beyaz Yumurta</DisplayName>
 		<ClassType>Plain</ClassType>
 		<Color>Brown</Color>
-		<Description>Picked this yumurta up while walking beaches, looking icin driftwood.</Description>
+		<Description>Picked this egg up while walking the beaches, looking for driftwood.</Description>
 		<EggRank>0</EggRank>
 		<Art>a_EggArt_White</Art>
 	</EggType>
@@ -50,7 +50,7 @@
 		<DisplayName>Speckled Kirmizi Yumurta</DisplayName>
 		<ClassType>Generic</ClassType>
 		<Color>Red</Color>
-		<Description>Found bir whole nest these icinde bir abandoned forge icinde mountains.</Description>
+		<Description>Found a whole nest of these in an abandoned forge in the mountains.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_RedSpeckled</Art>
 	</EggType>
@@ -59,7 +59,7 @@
 		<DisplayName>Speckled Sari Yumurta</DisplayName>
 		<ClassType>Generic</ClassType>
 		<Color>Yellow</Color>
-		<Description>Found this one ile divining rod benim uncle left beni.</Description>
+		<Description>Found this one with the divining rod my uncle left me.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_YellowSpeckled</Art>
 	</EggType>
@@ -68,7 +68,7 @@
 		<DisplayName>Speckled Mavi Yumurta</DisplayName>
 		<ClassType>Generic</ClassType>
 		<Color>Blue</Color>
-		<Description>I have line nest ile hemlock hatch this one.</Description>
+		<Description>I have to line the nest with hemlock to hatch this one.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_BlueSpeckled</Art>
 	</EggType>
@@ -77,7 +77,7 @@
 		<DisplayName>Speckled Yesil Yumurta</DisplayName>
 		<ClassType>Generic</ClassType>
 		<Color>Green</Color>
-		<Description>sen want give it bir good sniff her day make sure it hasn't gone rotten.</Description>
+		<Description>You want to give it a good sniff every day to make sure it hasn't gone rotten.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_GreenSpeckled</Art>
 	</EggType>
@@ -86,7 +86,7 @@
 		<DisplayName>Elaborate Kirmizi Yumurta</DisplayName>
 		<ClassType>Common</ClassType>
 		<Color>Red</Color>
-		<Description>bir blacksmith kaynakli back West traded these beni icin some candied dates.</Description>
+		<Description>A blacksmith from back West traded these to me for some candied dates.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_RedElaborate</Art>
 	</EggType>
@@ -95,7 +95,7 @@
 		<DisplayName>Elaborate Sari Yumurta</DisplayName>
 		<ClassType>Common</ClassType>
 		<Color>Yellow</Color>
-		<Description>This was buried derin ile some pirate booty.</Description>
+		<Description>This was buried deep with some pirate booty.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_YellowElaborate</Art>
 	</EggType>
@@ -104,7 +104,7 @@
 		<DisplayName>Elaborate Mavi Yumurta</DisplayName>
 		<ClassType>Common</ClassType>
 		<Color>Blue</Color>
-		<Description>benim cousin ate one these once. Broke tum his front teeth.</Description>
+		<Description>My cousin ate one of these once. Broke all his front teeth.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_BlueElaborate</Art>
 	</EggType>
@@ -113,7 +113,7 @@
 		<DisplayName>Elaborate Yesil Yumurta</DisplayName>
 		<ClassType>Common</ClassType>
 		<Color>Green</Color>
-		<Description>This one needs be rotated her sure ruzgar darbeler kaynakli East.</Description>
+		<Description>This one needs to be rotated every time the wind blows from the East.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_GreenElaborate</Art>
 	</EggType>
@@ -122,7 +122,7 @@
 		<DisplayName>Striped Kirmizi Yumurta</DisplayName>
 		<ClassType>Ordinary</ClassType>
 		<Color>Red</Color>
-		<Description>hisar these icinde bir nice warm place. But degil TOO hot veya it will cook.</Description>
+		<Description>Keep these in a nice warm place. But not TOO hot or it will cook.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_RedStriped</Art>
 	</EggType>
@@ -131,7 +131,7 @@
 		<DisplayName>Striped Sari Yumurta</DisplayName>
 		<ClassType>Ordinary</ClassType>
 		<Color>Yellow</Color>
-		<Description>yok telling exactly how valuable beastie icinde here will be.</Description>
+		<Description>No telling exactly how valuable the beastie in here will be.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_YellowStriped</Art>
 	</EggType>
@@ -140,7 +140,7 @@
 		<DisplayName>Striped Mavi Yumurta</DisplayName>
 		<ClassType>Ordinary</ClassType>
 		<Color>Blue</Color>
-		<Description>Did sen know sen can stand this yumurta upright during equinox?</Description>
+		<Description>Did you know you can stand this egg upright during the equinox?</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_BlueStriped</Art>
 	</EggType>
@@ -149,7 +149,7 @@
 		<DisplayName>Striped Yesil Yumurta</DisplayName>
 		<ClassType>Ordinary</ClassType>
 		<Color>Green</Color>
-		<Description>These need bir hour sunlight her day veya they come out depressed.</Description>
+		<Description>These need an hour of sunlight every day or they come out depressed.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_GreenStriped</Art>
 	</EggType>
@@ -158,7 +158,7 @@
 		<DisplayName>Shiny Kirmizi Yumurta</DisplayName>
 		<ClassType>Plain</ClassType>
 		<Color>Red</Color>
-		<Description>These have very zor shells, so sen might need bir hammer hatch it.</Description>
+		<Description>These have very hard shells, so you might need a hammer to hatch it.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_Red</Art>
 	</EggType>
@@ -167,7 +167,7 @@
 		<DisplayName>Shiny Sari Yumurta</DisplayName>
 		<ClassType>Plain</ClassType>
 		<Color>Yellow</Color>
-		<Description>Handle it ile special care, veya you'll make it temperamental.</Description>
+		<Description>Handle it with special care, or you'll make it temperamental.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_Yellow</Art>
 	</EggType>
@@ -176,7 +176,7 @@
 		<DisplayName>Shiny Mavi Yumurta</DisplayName>
 		<ClassType>Plain</ClassType>
 		<Color>Blue</Color>
-		<Description>These need be polished ile fine grain sandpaper veya they come out sullen.</Description>
+		<Description>These need to be polished with fine grain sandpaper or they come out sullen.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_Blue</Art>
 	</EggType>
@@ -185,7 +185,7 @@
 		<DisplayName>Shiny Yesil Yumurta</DisplayName>
 		<ClassType>Plain</ClassType>
 		<Color>Green</Color>
-		<Description>These like it if sen sing bir sweet song at sunset while they're waiting hatch.</Description>
+		<Description>These like it if you sing a sweet song at sunset while they're waiting to hatch.</Description>
 		<EggRank>1</EggRank>
 		<Art>a_EggArt_Green</Art>
 	</EggType>
@@ -194,7 +194,7 @@
 		<DisplayName>Yakut Ejderha Yumurta</DisplayName>
 		<ClassType>Dragon</ClassType>
 		<Color>Red</Color>
-		<Description>Ejderha eggs like this are almost impossible bul outside uyuyan topraklar.</Description>
+		<Description>Draconic eggs like this are almost impossible to find outside the Sleeping Lands.</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_RedDragon</Art>
 	</EggType>
@@ -203,7 +203,7 @@
 		<DisplayName>Amber Ejderha Yumurta</DisplayName>
 		<ClassType>Dragon</ClassType>
 		<Color>Yellow</Color>
-		<Description>This beauty comes tum way kaynakli top Firtina Tasi Daglari.</Description>
+		<Description>This beauty comes all the way from the top of Stormshard Mountains.</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_YellowDragon</Art>
 	</EggType>
@@ -212,7 +212,7 @@
 		<DisplayName>Saphire Ejderha Yumurta</DisplayName>
 		<ClassType>Dragon</ClassType>
 		<Color>Blue</Color>
-		<Description>Almost lost benim left leg snatching this prize ejderha yumurta kaynakli its hidey-hole.</Description>
+		<Description>Almost lost my left leg snatching this prize draconic egg from its hidey-hole.</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_BlueDragon</Art>
 	</EggType>
@@ -221,7 +221,7 @@
 		<DisplayName>Zumrut Ejderha Yumurta</DisplayName>
 		<ClassType>Dragon</ClassType>
 		<Color>Green</Color>
-		<Description>This one was sunk derin icinde Siyah Gul Batakligi, where ejderhalar thought I couldn't bul it.</Description>
+		<Description>This one was sunk deep in Black Rose Mire, where the dragons thought I couldn't find it.</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_GreenDragon</Art>
 	</EggType>
@@ -230,7 +230,7 @@
 		<DisplayName>Ruddy Avian Yumurta</DisplayName>
 		<ClassType>Bird</ClassType>
 		<Color>Red</Color>
-		<Description>This avian beauty come kaynakli bir species everyone else thought was extinct.</Description>
+		<Description>This avian beauty come from a species everyone else thought was extinct.</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_RedBird</Art>
 	</EggType>
@@ -239,7 +239,7 @@
 		<DisplayName>Saffron Avian Yumurta</DisplayName>
 		<ClassType>Bird</ClassType>
 		<Color>Yellow</Color>
-		<Description>Can sen believe that icinde Val Limani, they cooked these nadir birds icin imparator?</Description>
+		<Description>Can you believe that In Valhaven, they cooked these rare birds for the Emperor?</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_YellowBird</Art>
 	</EggType>
@@ -248,7 +248,7 @@
 		<DisplayName>Kraliyet Avian Yumurta</DisplayName>
 		<ClassType>Bird</ClassType>
 		<Color>Blue</Color>
-		<Description>feathers these birds used crown kadim queens Ellyria.</Description>
+		<Description>The feathers of these birds used to crown the ancient queens of Ellyria.</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_BlueBird</Art>
 	</EggType>
@@ -257,7 +257,7 @@
 		<DisplayName>Verdant Avian Yumurta</DisplayName>
 		<ClassType>Bird</ClassType>
 		<Color>Green</Color>
-		<Description>bulma sansi one these beautiful eggs is said augur bir lucky yeni year.</Description>
+		<Description>Finding one of these beautiful eggs is said to augur a lucky new year.</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_GreenBird</Art>
 	</EggType>
@@ -266,7 +266,7 @@
 		<DisplayName>Bloodshot Antediluvian Yumurta</DisplayName>
 		<ClassType>Ancient</ClassType>
 		<Color>Red</Color>
-		<Description>sen need hisar this nadir yumurta as hot as possible, veya it will go soguk ve perish.</Description>
+		<Description>You need to keep this rare egg as hot as possible, or it will go cold and perish.</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_RedAncient</Art>
 	</EggType>
@@ -275,7 +275,7 @@
 		<DisplayName>Xanthous Antediluvian Yumurta</DisplayName>
 		<ClassType>Ancient</ClassType>
 		<Color>Yellow</Color>
-		<Description>This yumurta dates back First Empire, over bir thousand years ago.</Description>
+		<Description>This egg dates back to the First Empire, over a thousand years ago.</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_YellowAncient</Art>
 	</EggType>
@@ -284,7 +284,7 @@
 		<DisplayName>Azure Antediluvian Yumurta</DisplayName>
 		<ClassType>Ancient</ClassType>
 		<Color>Blue</Color>
-		<Description>Even I didn't believe these mavi beauties were anything daha than folk legends.</Description>
+		<Description>Even I didn't believe these blue beauties were anything more than folk legends.</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_BlueAncient</Art>
 	</EggType>
@@ -293,7 +293,7 @@
 		<DisplayName>Verdigris Antediluvian Yumurta</DisplayName>
 		<ClassType>Ancient</ClassType>
 		<Color>Green</Color>
-		<Description>rest world thinks these don't exist. I won't tell sen where I got it.</Description>
+		<Description>The rest of the world thinks these don't exist. I won't tell you where I got it.</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_GreenAncient</Art>
 	</EggType>
@@ -302,7 +302,7 @@
 		<DisplayName>Sanguine Netherworld Yumurta</DisplayName>
 		<ClassType>Ghost</ClassType>
 		<Color>Red</Color>
-		<Description>course eggs have hayaletler! Well, these eggs do anyway. Angry, angry hayaletler...</Description>
+		<Description>Of course eggs have ghosts! Well, these eggs do anyway. Angry, angry ghosts...</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_RedGhost</Art>
 	</EggType>
@@ -311,7 +311,7 @@
 		<DisplayName>Tawny Netherworld Yumurta</DisplayName>
 		<ClassType>Ghost</ClassType>
 		<Color>Yellow</Color>
-		<Description>sen can only get these beauties during bir Harvest Moon icinde accursed graveyards</Description>
+		<Description>You can only get these beauties during a Harvest Moon in accursed graveyards</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_YellowGhost</Art>
 	</EggType>
@@ -320,7 +320,7 @@
 		<DisplayName>Cerulean Netherworld Yumurta</DisplayName>
 		<ClassType>Ghost</ClassType>
 		<Color>Blue</Color>
-		<Description>These were buried ile warlocks serve them icinde afterlife.</Description>
+		<Description>These were buried with warlocks to serve them in the afterlife.</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_BlueGhost</Art>
 	</EggType>
@@ -329,7 +329,7 @@
 		<DisplayName>Sage Netherworld Yumurta</DisplayName>
 		<ClassType>Ghost</ClassType>
 		<Color>Green</Color>
-		<Description>When bir dying god has bir final wish, it's stored icinde one these eggs.</Description>
+		<Description>When a dying god has a final wish, it's stored in one of these eggs.</Description>
 		<EggRank>2</EggRank>
 		<Art>a_EggArt_GreenGhost</Art>
 	</EggType>

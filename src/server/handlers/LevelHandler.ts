@@ -88,11 +88,13 @@ type LevelTriggerSpec = {
 export class LevelHandler {
     private static readonly DOORSTATE_CLOSED = 0;
     private static readonly DOORSTATE_STATIC = 1;
+    private static readonly DOORSTATE_DUNGEON = 2;
     private static readonly DOORSTATE_MISSIONREPEAT = 3;
     private static readonly DOORSTATE_LOCKED = 4;
     private static readonly FELBRIDGE_DREAD_GATE_LOCKED_MESSAGE =
         '^tA powerful magic seals this entrance.=^tI still need to learn more about the Sleeping Lands.';
     private static readonly LOCKED_DUNGEON_ENTRY_MESSAGE = "^tI haven't unlocked this dungeon yet.";
+    private static readonly CASTLE_HOCKE_GATE_DOOR_ID = 3;
     private static readonly VALHAVEN_GATE_DOOR_ID = 2;
     private static readonly GOBLIN_RIVER_INITIAL_PROGRESS = 11;
     private static readonly TUTORIAL_DUNGEON_INITIAL_PROGRESS = 11;
@@ -2868,12 +2870,39 @@ export class LevelHandler {
             return arachnaeConnectorTarget;
         }
 
+        const castleHockeGatewayTarget = LevelHandler.resolveCastleHockeGatewayDoorTarget(client, currentLevel, doorId);
+        if (castleHockeGatewayTarget) {
+            return castleHockeGatewayTarget;
+        }
+
         const valhavenGatewayTarget = LevelHandler.resolveValhavenGatewayDoorTarget(client, currentLevel, doorId);
         if (valhavenGatewayTarget) {
             return valhavenGatewayTarget;
         }
 
         return LevelConfig.getDoorTarget(currentLevel, doorId);
+    }
+
+    private static resolveCastleHockeGatewayDoorTarget(client: Client, currentLevel: string, doorId: number): string | null {
+        if (doorId !== LevelHandler.CASTLE_HOCKE_GATE_DOOR_ID) {
+            return null;
+        }
+
+        if (
+            currentLevel === 'BridgeTown' &&
+            LevelHandler.getMissionState(client, MissionID.DeepgardDragon) >= LevelHandler.MISSION_READY_TO_TURN_IN
+        ) {
+            return 'Castle';
+        }
+
+        if (
+            currentLevel === 'BridgeTownHard' &&
+            LevelHandler.getMissionState(client, MissionID.DeepgardDragonHard) >= LevelHandler.MISSION_READY_TO_TURN_IN
+        ) {
+            return 'CastleHard';
+        }
+
+        return null;
     }
 
     private static resolveValhavenGatewayDoorTarget(client: Client, currentLevel: string, doorId: number): string | null {
@@ -3257,9 +3286,14 @@ export class LevelHandler {
             bb.writeMethod13(target);
         } else if (target) {
             const completedStars = LevelHandler.getCompletedDungeonDoorStars(client, target);
-            const doorState = completedStars > 0
-                ? LevelHandler.DOORSTATE_MISSIONREPEAT
-                : LevelHandler.DOORSTATE_STATIC;
+            let doorState: number;
+            if (completedStars > 0) {
+                doorState = LevelHandler.DOORSTATE_MISSIONREPEAT;
+            } else if (LevelConfig.isDungeonLevel(target)) {
+                doorState = LevelHandler.DOORSTATE_DUNGEON;
+            } else {
+                doorState = LevelHandler.DOORSTATE_STATIC;
+            }
             bb.writeMethod91(doorState);
             bb.writeMethod13(target);
             if (doorState === LevelHandler.DOORSTATE_MISSIONREPEAT) {

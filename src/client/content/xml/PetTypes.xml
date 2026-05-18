@@ -4,7 +4,7 @@
 		<PetID>0</PetID>
 		<PetLevel>0</PetLevel>
 		<IdolCost>0</IdolCost>
-		<DisplayName>Sablon</DisplayName>
+		<DisplayName>Ad</DisplayName>
 		<PetPower>PowerName</PetPower>
 		<Kingdom>Draconic</Kingdom>
 		<ItemFind>bool</ItemFind>
@@ -14,7 +14,7 @@
 		<BonusInfo>bonus vs Ejderha</BonusInfo>
 		<ClassType>Class</ClassType>
 		<Color>Color</Color>
-		<Description>Turkce aciklama 55F8EB.</Description>
+		<Description>Description</Description>
 		<UseVanityPower>FALSE</UseVanityPower>
 		<DisplayRarity>Rarity</DisplayRarity>
 	</PetType>
@@ -26,10 +26,10 @@
 		<PetPower>PetOwl</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Red</Color>
-		<Description>Owls like this are said be able read senin fate. This owl's big eyes study sen closely.</Description>
+		<Description>Owls like this are said to be able to read your fate. This owl's big eyes study you closely.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="AngelRed">
@@ -40,10 +40,10 @@
 		<PetPower>PetAngel</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Red</Color>
-		<Description>Who wouldn't want their own muhafiz angel?</Description>
+		<Description>Who wouldn't want their own guardian angel?</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="FalconRed">
@@ -54,10 +54,10 @@
 		<PetPower>PetFalcon</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Red</Color>
-		<Description>Wings like ruzgar, claws like knives, brain like bir bag feathers. This falcon is bir perfect battle companion.</Description>
+		<Description>Wings like wind, claws like knives, brain like a bag of feathers. This falcon is a perfect battle companion.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="CrowRed">
@@ -68,10 +68,10 @@
 		<PetPower>PetCrow</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Red</Color>
-		<Description>bir crow is universally acknowledged throughout Kingdom as good luck.</Description>
+		<Description>A crow is universally acknowledged throughout the Kingdom as good luck.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="DjinnRed">
@@ -82,10 +82,10 @@
 		<PetPower>PetDjinn</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Red</Color>
-		<Description>denezins uyuyan topraklar are degil tum malign. This Djinn hails kaynakli derin places.</Description>
+		<Description>The denezins of the Sleeping Lands are not all malign. This Djinn hails from the deep places.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="Dragon2Red">
@@ -96,10 +96,10 @@
 		<PetPower>PetDragonBone</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Dragon</ClassType>
 		<Color>Red</Color>
-		<Description>perfect evcil icin person who can never remember feed their evcil.</Description>
+		<Description>The perfect pet for the person who can never remember to feed their pet.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="Dragon3Red">
@@ -110,10 +110,10 @@
 		<PetPower>PetDragonGold</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Dragon</ClassType>
 		<Color>Red</Color>
-		<Description>This kucuk serpentine hava ruh does degil speak, but he is always up icin perilous enterprise.</Description>
+		<Description>This small serpentine air spirit does not speak, but he is always up for perilous enterprise.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="DragonetteRed">
@@ -124,10 +124,10 @@
 		<PetPower>PetDragonRed</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Dragon</ClassType>
 		<Color>Red</Color>
-		<Description>These little guys come straight kaynakli ejderha toy groups ve are astonishingly energetic.</Description>
+		<Description>These little guys come straight from the draconic toy groups and are astonishingly energetic.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="FairyRed">
@@ -138,10 +138,10 @@
 		<PetPower>PetFairy</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Red</Color>
-		<Description>Forest sprites live derin icinde heavily wooded areas. It is said these creatures bring buyuk fortune.</Description>
+		<Description>Forest sprites live deep in heavily wooded areas. It is said these creatures bring great fortune.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="GhostRed">
@@ -152,10 +152,10 @@
 		<PetPower>PetGhost</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Ghost</ClassType>
 		<Color>Red</Color>
-		<Description>This ghastly fellow makes being dead look good! icinde it's spare sure it enjoys scaring kucuk children ve gazing at full moons.</Description>
+		<Description>This ghastly fellow makes being dead look good! In it's spare time it enjoys scaring small children and gazing at full moons.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="GhoulRed">
@@ -166,10 +166,10 @@
 		<PetPower>PetGhoul</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Ghost</ClassType>
 		<Color>Red</Color>
-		<Description>Indigenous crypts Mezarlik Tepesi, this little transparent bundle joy just wants say boo.</Description>
+		<Description>Indigenous to the crypts of Cemetery Hill, this little transparent bundle of joy just wants to say boo.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="MonkeyRed">
@@ -180,10 +180,10 @@
 		<PetPower>PetMonkey</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Ghost</ClassType>
 		<Color>Red</Color>
-		<Description>This strange flying mammal scolds sen furiously icinde bir strange language.</Description>
+		<Description>This strange flying mammal scolds you furiously in a strange language.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="PhoenixRed">
@@ -194,10 +194,10 @@
 		<PetPower>PetPhoenix</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Red</Color>
-		<Description>phoenix is bir enchanted creature born ash ve ember. They say it's tail feathers ve tears have buyulu iyilestirme gucler.</Description>
+		<Description>The phoenix is an enchanted creature born of ash and ember. They say it's tail feathers and tears have magical healing powers.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="SpriteRed">
@@ -208,10 +208,10 @@
 		<PetPower>PetSprite</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Red</Color>
-		<Description>What would it be like have bir fireball as bir dost? You'd just do stuff together. Hang out.</Description>
+		<Description>What would it be like to have a fireball as a friend? You'd just do stuff together. Hang out.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="OwlYellow">
@@ -222,10 +222,10 @@
 		<PetPower>PetOwl</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Yellow</Color>
-		<Description>Owls like this are said be able read senin fate. This owl's big eyes study sen closely.</Description>
+		<Description>Owls like this are said to be able to read your fate. This owl's big eyes study you closely.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="AngelYellow">
@@ -236,10 +236,10 @@
 		<PetPower>PetAngel</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Yellow</Color>
-		<Description>Who wouldn't want their own muhafiz angel?</Description>
+		<Description>Who wouldn't want their own guardian angel?</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="FalconYellow">
@@ -250,10 +250,10 @@
 		<PetPower>PetFalcon</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Yellow</Color>
-		<Description>Wings like ruzgar, claws like knives, brain like bir bag feathers. This falcon is bir perfect battle companion.</Description>
+		<Description>Wings like wind, claws like knives, brain like a bag of feathers. This falcon is a perfect battle companion.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="CrowYellow">
@@ -264,10 +264,10 @@
 		<PetPower>PetCrow</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Yellow</Color>
-		<Description>bir crow is universally acknowledged throughout Kingdom as good luck.</Description>
+		<Description>A crow is universally acknowledged throughout the Kingdom as good luck.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="DjinnYellow">
@@ -278,10 +278,10 @@
 		<PetPower>PetDjinn</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Yellow</Color>
-		<Description>denezins uyuyan topraklar are degil tum malign. This Djinn hails kaynakli derin places.</Description>
+		<Description>The denezins of the Sleeping Lands are not all malign. This Djinn hails from the deep places.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="Dragon2Yellow">
@@ -292,10 +292,10 @@
 		<PetPower>PetDragonBone</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Dragon</ClassType>
 		<Color>Yellow</Color>
-		<Description>perfect evcil icin person who can never remember feed their evcil.</Description>
+		<Description>The perfect pet for the person who can never remember to feed their pet.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="Dragon3Yellow">
@@ -306,10 +306,10 @@
 		<PetPower>PetDragonGold</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Dragon</ClassType>
 		<Color>Yellow</Color>
-		<Description>This kucuk serpentine hava ruh does degil speak, but he is always up icin perilous enterprise.</Description>
+		<Description>This small serpentine air spirit does not speak, but he is always up for perilous enterprise.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="DragonetteYellow">
@@ -320,10 +320,10 @@
 		<PetPower>PetDragonRed</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Dragon</ClassType>
 		<Color>Yellow</Color>
-		<Description>These little guys come straight kaynakli ejderha toy groups ve are astonishingly energetic.</Description>
+		<Description>These little guys come straight from the draconic toy groups and are astonishingly energetic.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="FairyYellow">
@@ -334,10 +334,10 @@
 		<PetPower>PetFairy</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Yellow</Color>
-		<Description>Forest sprites live derin icinde heavily wooded areas. It is said these creatures bring buyuk fortune.</Description>
+		<Description>Forest sprites live deep in heavily wooded areas. It is said these creatures bring great fortune.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="GhostYellow">
@@ -348,10 +348,10 @@
 		<PetPower>PetGhost</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Ghost</ClassType>
 		<Color>Yellow</Color>
-		<Description>This ghastly fellow makes being dead look good! icinde it's spare sure it enjoys scaring kucuk children ve gazing at full moons.</Description>
+		<Description>This ghastly fellow makes being dead look good! In it's spare time it enjoys scaring small children and gazing at full moons.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="GhoulYellow">
@@ -362,10 +362,10 @@
 		<PetPower>PetGhoul</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Ghost</ClassType>
 		<Color>Yellow</Color>
-		<Description>Indigenous crypts Mezarlik Tepesi, this little transparent bundle joy just wants say boo.</Description>
+		<Description>Indigenous to the crypts of Cemetery Hill, this little transparent bundle of joy just wants to say boo.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="MonkeyYellow">
@@ -376,10 +376,10 @@
 		<PetPower>PetMonkey</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Ghost</ClassType>
 		<Color>Yellow</Color>
-		<Description>This strange flying mammal scolds sen furiously icinde bir strange language.</Description>
+		<Description>This strange flying mammal scolds you furiously in a strange language.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="PhoenixYellow">
@@ -390,10 +390,10 @@
 		<PetPower>PetPhoenix</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Yellow</Color>
-		<Description>phoenix is bir enchanted creature born ash ve ember. They say it's tail feathers ve tears have buyulu iyilestirme gucler.</Description>
+		<Description>The phoenix is an enchanted creature born of ash and ember. They say it's tail feathers and tears have magical healing powers.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="SpriteYellow">
@@ -404,10 +404,10 @@
 		<PetPower>PetSprite</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Yellow</Color>
-		<Description>What would it be like have bir fireball as bir dost? You'd just do stuff together. Hang out.</Description>
+		<Description>What would it be like to have a fireball as a friend? You'd just do stuff together. Hang out.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="OwlBlue">
@@ -418,10 +418,10 @@
 		<PetPower>PetOwl</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Blue</Color>
-		<Description>Owls like this are said be able read senin fate. This owl's big eyes study sen closely.</Description>
+		<Description>Owls like this are said to be able to read your fate. This owl's big eyes study you closely.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="AngelBlue">
@@ -432,10 +432,10 @@
 		<PetPower>PetAngel</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Blue</Color>
-		<Description>Who wouldn't want their own muhafiz angel?</Description>
+		<Description>Who wouldn't want their own guardian angel?</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="FalconBlue">
@@ -446,10 +446,10 @@
 		<PetPower>PetFalcon</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Blue</Color>
-		<Description>Wings like ruzgar, claws like knives, brain like bir bag feathers. This falcon is bir perfect battle companion.</Description>
+		<Description>Wings like wind, claws like knives, brain like a bag of feathers. This falcon is a perfect battle companion.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="CrowBlue">
@@ -460,10 +460,10 @@
 		<PetPower>PetCrow</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Blue</Color>
-		<Description>bir crow is universally acknowledged throughout Kingdom as good luck.</Description>
+		<Description>A crow is universally acknowledged throughout the Kingdom as good luck.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="DjinnBlue">
@@ -474,10 +474,10 @@
 		<PetPower>PetDjinn</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Blue</Color>
-		<Description>denezins uyuyan topraklar are degil tum malign. This Djinn hails kaynakli derin places.</Description>
+		<Description>The denezins of the Sleeping Lands are not all malign. This Djinn hails from the deep places.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="Dragon2Blue">
@@ -488,10 +488,10 @@
 		<PetPower>PetDragonBone</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Dragon</ClassType>
 		<Color>Blue</Color>
-		<Description>perfect evcil icin person who can never remember feed their evcil.</Description>
+		<Description>The perfect pet for the person who can never remember to feed their pet.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="Dragon3Blue">
@@ -502,10 +502,10 @@
 		<PetPower>PetDragonGold</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Dragon</ClassType>
 		<Color>Blue</Color>
-		<Description>This kucuk serpentine hava ruh does degil speak, but he is always up icin perilous enterprise.</Description>
+		<Description>This small serpentine air spirit does not speak, but he is always up for perilous enterprise.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="DragonetteBlue">
@@ -516,10 +516,10 @@
 		<PetPower>PetDragonRed</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Dragon</ClassType>
 		<Color>Blue</Color>
-		<Description>These little guys come straight kaynakli ejderha toy groups ve are astonishingly energetic.</Description>
+		<Description>These little guys come straight from the draconic toy groups and are astonishingly energetic.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="FairyBlue">
@@ -530,10 +530,10 @@
 		<PetPower>PetFairy</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Blue</Color>
-		<Description>Forest sprites live derin icinde heavily wooded areas. It is said these creatures bring buyuk fortune.</Description>
+		<Description>Forest sprites live deep in heavily wooded areas. It is said these creatures bring great fortune.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="GhostBlue">
@@ -544,10 +544,10 @@
 		<PetPower>PetGhost</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Ghost</ClassType>
 		<Color>Blue</Color>
-		<Description>This ghastly fellow makes being dead look good! icinde it's spare sure it enjoys scaring kucuk children ve gazing at full moons.</Description>
+		<Description>This ghastly fellow makes being dead look good! In it's spare time it enjoys scaring small children and gazing at full moons.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="GhoulBlue">
@@ -558,10 +558,10 @@
 		<PetPower>PetGhoul</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Ghost</ClassType>
 		<Color>Blue</Color>
-		<Description>Indigenous crypts Mezarlik Tepesi, this little transparent bundle joy just wants say boo.</Description>
+		<Description>Indigenous to the crypts of Cemetery Hill, this little transparent bundle of joy just wants to say boo.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="MonkeyBlue">
@@ -572,10 +572,10 @@
 		<PetPower>PetMonkey</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Ghost</ClassType>
 		<Color>Blue</Color>
-		<Description>This strange flying mammal scolds sen furiously icinde bir strange language.</Description>
+		<Description>This strange flying mammal scolds you furiously in a strange language.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="PhoenixBlue">
@@ -586,10 +586,10 @@
 		<PetPower>PetPhoenix</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Blue</Color>
-		<Description>phoenix is bir enchanted creature born ash ve ember. They say it's tail feathers ve tears have buyulu iyilestirme gucler.</Description>
+		<Description>The phoenix is an enchanted creature born of ash and ember. They say it's tail feathers and tears have magical healing powers.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="SpriteBlue">
@@ -600,10 +600,10 @@
 		<PetPower>PetSprite</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Blue</Color>
-		<Description>What would it be like have bir fireball as bir dost? You'd just do stuff together. Hang out.</Description>
+		<Description>What would it be like to have a fireball as a friend? You'd just do stuff together. Hang out.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="OwlGreen">
@@ -614,10 +614,10 @@
 		<PetPower>PetOwl</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Green</Color>
-		<Description>Owls like this are said be able read senin fate. This owl's big eyes study sen closely.</Description>
+		<Description>Owls like this are said to be able to read your fate. This owl's big eyes study you closely.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="AngelGreen">
@@ -628,10 +628,10 @@
 		<PetPower>PetAngel</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Green</Color>
-		<Description>Who wouldn't want their own muhafiz angel?</Description>
+		<Description>Who wouldn't want their own guardian angel?</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="FalconGreen">
@@ -642,10 +642,10 @@
 		<PetPower>PetFalcon</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Green</Color>
-		<Description>Wings like ruzgar, claws like knives, brain like bir bag feathers. This falcon is bir perfect battle companion.</Description>
+		<Description>Wings like wind, claws like knives, brain like a bag of feathers. This falcon is a perfect battle companion.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="CrowGreen">
@@ -656,10 +656,10 @@
 		<PetPower>PetCrow</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Green</Color>
-		<Description>bir crow is universally acknowledged throughout Kingdom as good luck.</Description>
+		<Description>A crow is universally acknowledged throughout the Kingdom as good luck.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="DjinnGreen">
@@ -670,10 +670,10 @@
 		<PetPower>PetDjinn</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Green</Color>
-		<Description>denezins uyuyan topraklar are degil tum malign. This Djinn hails kaynakli derin places.</Description>
+		<Description>The denezins of the Sleeping Lands are not all malign. This Djinn hails from the deep places.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="Dragon2Green">
@@ -684,10 +684,10 @@
 		<PetPower>PetDragonBone</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Dragon</ClassType>
 		<Color>Green</Color>
-		<Description>perfect evcil icin person who can never remember feed their evcil.</Description>
+		<Description>The perfect pet for the person who can never remember to feed their pet.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="Dragon3Green">
@@ -698,10 +698,10 @@
 		<PetPower>PetDragonGold</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Dragon</ClassType>
 		<Color>Green</Color>
-		<Description>This kucuk serpentine hava ruh does degil speak, but he is always up icin perilous enterprise.</Description>
+		<Description>This small serpentine air spirit does not speak, but he is always up for perilous enterprise.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="DragonetteGreen">
@@ -712,10 +712,10 @@
 		<PetPower>PetDragonRed</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Dragon</ClassType>
 		<Color>Green</Color>
-		<Description>These little guys come straight kaynakli ejderha toy groups ve are astonishingly energetic.</Description>
+		<Description>These little guys come straight from the draconic toy groups and are astonishingly energetic.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="FairyGreen">
@@ -726,10 +726,10 @@
 		<PetPower>PetFairy</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Green</Color>
-		<Description>Forest sprites live derin icinde heavily wooded areas. It is said these creatures bring buyuk fortune.</Description>
+		<Description>Forest sprites live deep in heavily wooded areas. It is said these creatures bring great fortune.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="GhostGreen">
@@ -740,10 +740,10 @@
 		<PetPower>PetGhost</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Ghost</ClassType>
 		<Color>Green</Color>
-		<Description>This ghastly fellow makes being dead look good! icinde it's spare sure it enjoys scaring kucuk children ve gazing at full moons.</Description>
+		<Description>This ghastly fellow makes being dead look good! In it's spare time it enjoys scaring small children and gazing at full moons.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="GhoulGreen">
@@ -754,10 +754,10 @@
 		<PetPower>PetGhoul</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Ghost</ClassType>
 		<Color>Green</Color>
-		<Description>Indigenous crypts Mezarlik Tepesi, this little transparent bundle joy just wants say boo.</Description>
+		<Description>Indigenous to the crypts of Cemetery Hill, this little transparent bundle of joy just wants to say boo.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="MonkeyGreen">
@@ -768,10 +768,10 @@
 		<PetPower>PetMonkey</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Ghost</ClassType>
 		<Color>Green</Color>
-		<Description>This strange flying mammal scolds sen furiously icinde bir strange language.</Description>
+		<Description>This strange flying mammal scolds you furiously in a strange language.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="PhoenixGreen">
@@ -782,10 +782,10 @@
 		<PetPower>PetPhoenix</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Bird</ClassType>
 		<Color>Green</Color>
-		<Description>phoenix is bir enchanted creature born ash ve ember. They say it's tail feathers ve tears have buyulu iyilestirme gucler.</Description>
+		<Description>The phoenix is an enchanted creature born of ash and ember. They say it's tail feathers and tears have magical healing powers.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="SpriteGreen">
@@ -796,24 +796,24 @@
 		<PetPower>PetSprite</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Ancient</ClassType>
 		<Color>Green</Color>
-		<Description>What would it be like have bir fireball as bir dost? You'd just do stuff together. Hang out.</Description>
+		<Description>What would it be like to have a fireball as a friend? You'd just do stuff together. Hang out.</Description>
 		<DisplayRarity>M</DisplayRarity>
 	</PetType>
 	<PetType PetName="PumpkinRed">
 		<PetID>57</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Kirmizi Pumpkin</DisplayName>
+		<DisplayName>Kirmizi Bal Kabagi</DisplayName>
 		<PetPower>PetPumpkin</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>HalloweenNormal</ClassType>
 		<Color>Red</Color>
-		<Description>Jack-Os have distinct personalities. This one seems bir bit off.</Description>
+		<Description>Jack-Os have distinct personalities. This one seems a bit off.</Description>
 		<UseVanityPower>TRUE</UseVanityPower>
 		<DisplayRarity>R</DisplayRarity>
 	</PetType>
@@ -821,14 +821,14 @@
 		<PetID>58</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Sari Pumpkin</DisplayName>
+		<DisplayName>Sari Bal Kabagi</DisplayName>
 		<PetPower>PetPumpkin</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>HalloweenNormal</ClassType>
 		<Color>Yellow</Color>
-		<Description>Turkce aciklama 327773.</Description>
+		<Description>Jack-Os have distinct personalities. This one seems menacing.</Description>
 		<UseVanityPower>TRUE</UseVanityPower>
 		<DisplayRarity>R</DisplayRarity>
 	</PetType>
@@ -836,14 +836,14 @@
 		<PetID>59</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Mavi Pumpkin</DisplayName>
+		<DisplayName>Mavi Bal Kabagi</DisplayName>
 		<PetPower>PetPumpkin</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>HalloweenNormal</ClassType>
 		<Color>Blue</Color>
-		<Description>Jack-Os have distinct personalities. This one keeps staring at sen ile its lazy eye.</Description>
+		<Description>Jack-Os have distinct personalities. This one keeps staring at you with its lazy eye.</Description>
 		<UseVanityPower>TRUE</UseVanityPower>
 		<DisplayRarity>R</DisplayRarity>
 	</PetType>
@@ -851,14 +851,14 @@
 		<PetID>60</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Yesil Pumpkin</DisplayName>
+		<DisplayName>Yesil Bal Kabagi</DisplayName>
 		<PetPower>PetPumpkin</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>HalloweenNormal</ClassType>
 		<Color>Green</Color>
-		<Description>Turkce aciklama 8A146A.</Description>
+		<Description>Jack-Os have distinct personalities. This one is happy way too much.</Description>
 		<UseVanityPower>TRUE</UseVanityPower>
 		<DisplayRarity>R</DisplayRarity>
 	</PetType>
@@ -870,10 +870,10 @@
 		<PetPower>PetGargoyle</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>HalloweenHard</ClassType>
 		<Color>Red</Color>
-		<Description>kirmizi Gargoyle</Description>
+		<Description>Red Gargoyle</Description>
 		<UseVanityPower>TRUE</UseVanityPower>
 		<DisplayRarity>R</DisplayRarity>
 	</PetType>
@@ -885,10 +885,10 @@
 		<PetPower>PetGargoyle</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>HalloweenHard</ClassType>
 		<Color>Yellow</Color>
-		<Description>sari Gargoyle</Description>
+		<Description>Yellow Gargoyle</Description>
 		<UseVanityPower>TRUE</UseVanityPower>
 		<DisplayRarity>R</DisplayRarity>
 	</PetType>
@@ -900,10 +900,10 @@
 		<PetPower>PetGargoyle</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>HalloweenHard</ClassType>
 		<Color>Blue</Color>
-		<Description>mavi Gargoyle</Description>
+		<Description>Blue Gargoyle</Description>
 		<UseVanityPower>TRUE</UseVanityPower>
 		<DisplayRarity>R</DisplayRarity>
 	</PetType>
@@ -915,10 +915,10 @@
 		<PetPower>PetGargoyle</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>HalloweenHard</ClassType>
 		<Color>Green</Color>
-		<Description>yesil Gargoyle</Description>
+		<Description>Green Gargoyle</Description>
 		<UseVanityPower>TRUE</UseVanityPower>
 		<DisplayRarity>R</DisplayRarity>
 	</PetType>
@@ -930,7 +930,7 @@
 		<PetPower>PetLockbox01L01</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>SigilLegendary01</ClassType>
 		<Color>Red</Color>
 		<UseVanityPower>TRUE</UseVanityPower>
@@ -944,7 +944,7 @@
 		<PetPower>PetLockbox01L02</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>Lockbox01</ClassType>
 		<Color>Yellow</Color>
 		<UseVanityPower>TRUE</UseVanityPower>
@@ -958,7 +958,7 @@
 		<PetPower>PetLockbox01R01</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
-		<BonusInfo>artir Ekipman bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore ekipman bulma sansini artirir</BonusInfo>
 		<ClassType>SigilRare01</ClassType>
 		<Color>Red</Color>
 		<UseVanityPower>TRUE</UseVanityPower>
@@ -972,7 +972,7 @@
 		<PetPower>PetLockbox01R01</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
-		<BonusInfo>artir altin bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore altin bulma sansini artirir</BonusInfo>
 		<ClassType>SigilRare01</ClassType>
 		<Color>Yellow</Color>
 		<UseVanityPower>TRUE</UseVanityPower>
@@ -986,7 +986,7 @@
 		<PetPower>PetLockbox01R01</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
-		<BonusInfo>artir malzeme bulma sansi by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore malzeme bulma sansini artirir</BonusInfo>
 		<ClassType>SigilRare01</ClassType>
 		<Color>Blue</Color>
 		<UseVanityPower>TRUE</UseVanityPower>
@@ -1000,7 +1000,7 @@
 		<PetPower>PetLockbox01R01</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>SigilRare01</ClassType>
 		<Color>Green</Color>
 		<UseVanityPower>TRUE</UseVanityPower>
@@ -1010,14 +1010,14 @@
 		<PetID>71</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>500</IdolCost>
-		<DisplayName>Codex Ejderi</DisplayName>
+		<DisplayName>Codex ejderha</DisplayName>
 		<PetPower>PetDragonGold</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
-		<BonusInfo>artir XP kazan by X Evcil seviye</BonusInfo>
+		<BonusInfo>Evcil seviyesine gore XP kazancini artirir</BonusInfo>
 		<ClassType>Dragon</ClassType>
 		<Color>Blue</Color>
-		<Description>Codex icin isildayan bir ejder dost.</Description>
+		<Description>A bright dragon companion forged for Codex.</Description>
 		<UseVanityPower>TRUE</UseVanityPower>
 		<DisplayRarity>L</DisplayRarity>
 	</PetType>

@@ -12,6 +12,7 @@ import {
 import { Config } from './config';
 
 export type DungeonBlitzSwfMode = 'local' | 'multiplayer';
+export type DungeonBlitzSwfLocale = 'en' | 'tr';
 
 const LOCAL_HOST = 'localhost';
 const REMOTE_HOST = Config.MULTIPLAYER_HOST;
@@ -31,14 +32,68 @@ type StringReplacement = {
     newValue: string;
 };
 
-function getReplacements(mode: DungeonBlitzSwfMode): StringReplacement[] {
+const TURKISH_DISCIPLINE_REPLACEMENTS: StringReplacement[] = [
+    {
+        oldValue: 'Blessed by the Storm Gods, you draw enemy wrath upon your impregnable form and focus the tempest until you become the Lightning Avatar and smite all who stand before you.',
+        newValue: 'Firtina Tanrilari tarafindan kutsanmis olarak dusmanlarin ofkesini sarsilmaz bedenine cekersin; firtinayi odaklayip Simsek Avatarina donusur, karsina cikan herkesi cezalandirirsin.'
+    },
+    {
+        oldValue: 'With righteous fury from the Flame of Justice coursing through your body, you leap into the fray, a blaze of attacks swirling through the enemy ranks.',
+        newValue: 'Adalet Alevi bedeninde dolasan hakli ofkeyle savasa atlarsin; dusman saflarinin icinde alevli saldirilarla donersin.'
+    },
+    {
+        oldValue: 'Infused with the Numinous Essence, you shine a searing, sacred light into the darkest places, healing the worthy and inflicting blinding agony upon the wicked.',
+        newValue: 'Numinous Oz ile dolarak en karanlik yerlere yakici kutsal isik sacarsin; layik olanlari iyilestirir, kotulere kor edici aci verirsin.'
+    },
+    {
+        oldValue: 'You have forsaken all safety for the Pure Death; you know the perfect strike, the incurable venom, the hidden cut that dooms your chosen foe to certain annihilation.',
+        newValue: 'Saf Olum ugruna tum guvenligi biraktin; kusursuz darbeyi, caresiz zehri ve sectigin dusmani kesin yok olusa goturen gizli kesigi bilirsin.'
+    },
+    {
+        oldValue: 'You have sacrificed yourself to the Shadow Court, becoming a deadly trickster who strikes from afar, appears everywhere at once, and terrorizes enemies from the darkness.',
+        newValue: 'Kendini Golge Sarayi\'na adadin; uzaktan vuran, ayni anda her yerde beliren ve karanliktan dusmanlara dehset salan olumcul bir hilekara donustun.'
+    },
+    {
+        oldValue: 'You have mastered the heresies of the Codex Carnifex; you know that true pain comes with the death of the soul and that true victory takes a foe’s life force as your dark reward.',
+        newValue: 'Codex Carnifex\'in sapkin ogretilerinde ustalastin; gercek acinin ruhun olumunden geldigini ve gercek zaferin dusmanin yasam gucunu karanlik odul olarak almak oldugunu bilirsin.'
+    },
+    {
+        oldValue: 'Touched by an Essence of Fire, you throw caution to the wind with every explosive inferno you unleash upon the enemy, incinerating all but leaving you vulnerable among the ashes.',
+        newValue: 'Ates Ozunun dokundugu biri olarak, saldigin her patlayici cehennemle tedbiri elden birakirsin; dusmani yakip kul eder ama kullerin arasinda savunmasiz kalirsin.'
+    },
+    {
+        oldValue: 'Channeling the Eternal Winter, your icy conjurations keep the enemy hordes at bay and protect you from harm while a frozen doom descends upon all who oppose you.',
+        newValue: 'Ebedi Kisi kanalize ederek buzlu yaratilimlarinla dusman surulerini uzakta tutar, sana zarar gelmesini onlersin; karsi koyanlarin uzerine donmus bir son coker.'
+    },
+    {
+        oldValue: 'Tainted by the Curse of Undeath, you fear no foe, raising armies of hungry ghouls to feast upon your unfortunate enemies, your own power and immortal essence grows with every victim they claim.',
+        newValue: 'Olumsuzluk Lanetiyle lekelenmis olarak hicbir dusmandan korkmazsin; talihsiz dusmanlarina saldirdigin ac gulyabani ordulari kurarsin ve aldiklari her kurbanla gucun ve olumsuz ozun buyur.'
+    },
+    { oldValue: 'Wizardry Guild', newValue: 'Buyuculuk Loncasi' },
+    { oldValue: 'Winter Order', newValue: 'Kis Tarikati' },
+    { oldValue: 'Infernal Circle', newValue: 'Cehennem Cemberi' },
+    { oldValue: 'Accursed Coven', newValue: 'Lanetli Meclis' },
+    { oldValue: 'Tricks o’ Trade', newValue: 'Meslegin Hileleri' },
+    { oldValue: 'Ambush & Onslaught', newValue: 'Pusu ve Taarruz' },
+    { oldValue: 'From the Shadows', newValue: 'Golgelerden' },
+    { oldValue: 'The Dark Arts', newValue: 'Kara Sanatlar' },
+    { oldValue: 'Martial Techniques', newValue: 'Savas Teknikleri' },
+    { oldValue: 'Chivalric Prowess', newValue: 'Sovalye Mahareti' },
+    { oldValue: 'Sacred Castigations', newValue: 'Kutsal Cezalar' },
+    { oldValue: 'Theurgical Devotions', newValue: 'Ilahi Adanmalar' },
+    { oldValue: 'Discipline Masteries', newValue: 'Disiplin Ustaligi' }
+];
+
+function getReplacements(mode: DungeonBlitzSwfMode, locale: DungeonBlitzSwfLocale): StringReplacement[] {
+    const localeReplacements = locale === 'tr' ? TURKISH_DISCIPLINE_REPLACEMENTS : [];
     if (mode === 'local') {
         return [
             { oldValue: REMOTE_HOST, newValue: LOCAL_HOST },
             { oldValue: REMOTE_ASSET_PATH, newValue: LOCAL_ASSET_PATH },
             { oldValue: REMOTE_REFRESH_URL, newValue: LOCAL_REFRESH_URL },
             { oldValue: REMOTE_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
-            { oldValue: LOCAL_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL }
+            { oldValue: LOCAL_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
+            ...localeReplacements
         ];
     }
 
@@ -47,7 +102,8 @@ function getReplacements(mode: DungeonBlitzSwfMode): StringReplacement[] {
         { oldValue: LOCAL_ASSET_PATH, newValue: REMOTE_ASSET_PATH },
         { oldValue: LOCAL_REFRESH_URL, newValue: REMOTE_REFRESH_URL },
         { oldValue: REMOTE_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
-        { oldValue: LOCAL_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL }
+        { oldValue: LOCAL_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
+        ...localeReplacements
     ];
 }
 
@@ -109,13 +165,14 @@ function buildMountedSpeedPatch(ctx: ReturnType<typeof parseSwf>) {
 
 export function buildDungeonBlitzSwfVariantBuffer(
     swfPath: string,
-    mode: DungeonBlitzSwfMode
+    mode: DungeonBlitzSwfMode,
+    locale: DungeonBlitzSwfLocale = 'en'
 ): Buffer {
     const ctx = parseSwf(swfPath);
     const abc = parseAbc(ctx);
     const patches = [];
 
-    for (const replacement of getReplacements(mode)) {
+    for (const replacement of getReplacements(mode, locale)) {
         for (let index = 1; index < abc.stringValues.length; index++) {
             if (abc.stringValues[index] !== replacement.oldValue) {
                 continue;

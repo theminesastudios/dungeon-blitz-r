@@ -110,7 +110,13 @@ export class TalentHandler {
             client.character.TalentTree[masterClassKey] = {};
         }
 
+        const previousNodes = TalentHandler.getNormalizedTalentNodes(
+            client.character,
+            Number(client.character.MasterClass ?? 1)
+        );
+        const previousAllocatedPoints = TalentHandler.countAllocatedTalentPoints(previousNodes);
         const slots = TalentConfig.buildEmptyTalentNodes();
+        let incomingAllocatedPoints = 0;
 
         for (let index = 0; index < TalentConfig.NUM_TALENT_SLOTS; index += 1) {
             const hasNode = br.readMethod15();
@@ -125,6 +131,7 @@ export class TalentHandler {
                 points,
                 filled: true
             };
+            incomingAllocatedPoints += points;
         }
 
         while (br.readMethod15()) {
@@ -134,6 +141,10 @@ export class TalentHandler {
                 br.readMethod6(6);
                 br.readMethod6(6);
             }
+        }
+
+        if (incomingAllocatedPoints === 0 && previousAllocatedPoints > 0) {
+            return;
         }
 
         client.character.TalentTree[masterClassKey].nodes = TalentConfig.normalizeTalentNodes(slots);
@@ -337,6 +348,10 @@ export class TalentHandler {
             ? rawClassTree as Record<string, unknown>
             : {};
         return TalentConfig.normalizeTalentNodes(classTree.nodes);
+    }
+
+    private static countAllocatedTalentPoints(nodes: Array<{ filled: boolean; points: number }>): number {
+        return nodes.reduce((total, node) => total + (node.filled ? Number(node.points ?? 0) : 0), 0);
     }
 
     private static getTalentResearch(character: Record<string, unknown>): TalentResearchRecord {

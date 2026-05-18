@@ -447,7 +447,7 @@
         "MissionName": "ClearTheBridge",
         "MissionID": "23",
         "PreReqMissions": "SlaySvath",
-        "ZoneSet": "SwampRoadNorth,BridgeTown",
+        "ZoneSet": "SwampRoadNorth",
         "Priority": "Story",
         "ContactName": "SRN_Mayor03",
         "ReturnName": "BT_Greeter",

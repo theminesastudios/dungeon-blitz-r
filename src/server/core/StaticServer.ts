@@ -4,7 +4,7 @@ import type { Server as HttpServer } from 'http';
 import * as path from 'path';
 import type { Request } from 'express';
 import { Config } from './config';
-import { buildDungeonBlitzSwfVariantBuffer } from './DungeonBlitzSwf';
+import { buildDungeonBlitzSwfVariantBuffer, type DungeonBlitzSwfLocale } from './DungeonBlitzSwf';
 import { PresenceService } from './PresenceService';
 import { SocialHandler } from '../handlers/SocialHandler';
 import { GlobalState } from './GlobalState';
@@ -59,18 +59,18 @@ export class StaticServer {
         return path.join(this.contentDir, 'p', 'cbp', 'DungeonBlitz.swf');
     }
 
-    private getSelectedSwfBuffer(): Buffer {
+    private getSelectedSwfBuffer(locale: DungeonBlitzSwfLocale): Buffer {
         const mode = Config.MULTIPLAYER_MODE ? 'multiplayer' : 'local';
         const swfPath = this.getSelectedSwfPath();
         const stats = fs.statSync(swfPath);
-        const cacheKey = `${mode}:${swfPath}:${stats.mtimeMs}:${stats.size}`;
+        const cacheKey = `${mode}:${locale}:${swfPath}:${stats.mtimeMs}:${stats.size}`;
         if (this.selectedSwfCache?.key === cacheKey) {
             return this.selectedSwfCache.buffer;
         }
 
-        const buffer = buildDungeonBlitzSwfVariantBuffer(swfPath, mode);
+        const buffer = buildDungeonBlitzSwfVariantBuffer(swfPath, mode, locale);
         this.selectedSwfCache = { key: cacheKey, buffer };
-        console.log(`[StaticServer] Prepared DungeonBlitz.swf variant for ${mode} mode.`);
+        console.log(`[StaticServer] Prepared DungeonBlitz.swf variant for ${mode} mode (${locale}).`);
         return buffer;
     }
 
@@ -115,6 +115,14 @@ export class StaticServer {
     }
 
     private resolveGameSwzLocale(req: Request): 'en' | 'tr' {
+        return (
+            this.normalizeLocale(req.query.lang) ??
+            this.resolveSessionLocale(req) ??
+            'en'
+        );
+    }
+
+    private resolveSwfLocale(req: Request): DungeonBlitzSwfLocale {
         return (
             this.normalizeLocale(req.query.lang) ??
             this.resolveSessionLocale(req) ??
@@ -215,9 +223,11 @@ export class StaticServer {
             res.sendFile(path.join(this.contentDir, 'index.html'));
         });
 
-        this.app.get('/p/cbp/DungeonBlitz.swf', (_req, res) => {
+        this.app.get('/p/cbp/DungeonBlitz.swf', (req, res) => {
+            const locale = this.resolveSwfLocale(req);
             res.type('application/x-shockwave-flash');
-            res.send(this.getSelectedSwfBuffer());
+            res.setHeader('X-DungeonBlitz-Language', locale);
+            res.send(this.getSelectedSwfBuffer(locale));
         });
 
         this.app.get('/p/cbq/Game.swz', (req, res) => {
@@ -228,9 +238,11 @@ export class StaticServer {
             res.sendFile(swzPath);
         });
 
-        this.app.get('/DungeonBlitzRemote.swf', (_req, res) => {
+        this.app.get('/DungeonBlitzRemote.swf', (req, res) => {
+            const locale = this.resolveSwfLocale(req);
             res.type('application/x-shockwave-flash');
-            res.send(this.getSelectedSwfBuffer());
+            res.setHeader('X-DungeonBlitz-Language', locale);
+            res.send(this.getSelectedSwfBuffer(locale));
         });
 
         this.app.get('/p/cbq/devSettings.xml', (_req, res) => {

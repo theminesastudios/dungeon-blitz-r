@@ -22,7 +22,7 @@
 		<IconName>a_Icon_PrimordialHeart</IconName>
 		<RareBoost>100</RareBoost>
 		<LegendaryBoost>0</LegendaryBoost>
-		<Description>kullan icinde Forge guarantee bir &lt;font renk='#0099FF'&gt;nadir&lt;/font&gt; tilsim</Description>
+		<Description>Ocakta &lt;font color='#0099FF'&gt;nadir&lt;/font&gt; bir tilsimi garanti eder</Description>
 		<Type>Catalyst</Type>
 		<Rarity>M</Rarity>
 	</ConsumableType>
@@ -32,7 +32,7 @@
 		<IconName>a_Icon_PrimordialHeart</IconName>
 		<RareBoost>0</RareBoost>
 		<LegendaryBoost>0</LegendaryBoost>
-		<Description>Turkce aciklama FAAFCF.</Description>
+		<Description>Kullanilmiyor.</Description>
 		<Type>Catalyst</Type>
 		<Rarity>R</Rarity>
 	</ConsumableType>
@@ -42,7 +42,7 @@
 		<IconName>a_Icon_DragonfireTalisman</IconName>
 		<RareBoost>100</RareBoost>
 		<LegendaryBoost>50</LegendaryBoost>
-		<Description>kullan icinde Forge guarantee &lt;font renk='#0099FF'&gt;nadir&lt;/font&gt; tilsim ve add bir 50% sans make it &lt;font renk='#F8DD45'&gt;efsanevi&lt;/font&gt;</Description>
+		<Description>Ocakta &lt;font color='#0099FF'&gt;nadir&lt;/font&gt; bir tilsimi garanti eder ve &lt;font color='#F8DD45'&gt;efsanevi&lt;/font&gt; olmasi icin %50 sans ekler</Description>
 		<Type>Catalyst</Type>
 		<Rarity>R</Rarity>
 	</ConsumableType>
@@ -52,7 +52,7 @@
 		<IconName>a_Icon_HeartoftheFurnace</IconName>
 		<RareBoost>0</RareBoost>
 		<LegendaryBoost>100</LegendaryBoost>
-		<Description>kullan icinde Forge guarantee bir &lt;font renk='#F8DD45'&gt;efsanevi&lt;/font&gt; tilsim</Description>
+		<Description>Ocakta &lt;font color='#F8DD45'&gt;efsanevi&lt;/font&gt; bir tilsimi garanti eder</Description>
 		<Type>Catalyst</Type>
 		<Rarity>L</Rarity>
 	</ConsumableType>
@@ -67,28 +67,28 @@
 	</ConsumableType>
 	<ConsumableType ConsumableName="GoldFindRegular">
 		<ConsumableID>6</ConsumableID>
-		<DisplayName>Potion Altin Bul</DisplayName>
+		<DisplayName>Altin Bulma Iksiri</DisplayName>
 		<IconName>a_Icon_PotionGoldFind</IconName>
 		<GoldFind>0.5</GoldFind>
-		<Description>Adds 50% senin altin bul icin 1-2 zindanlar</Description>
+		<Description>1-2 zindan boyunca altin bulma sansini %50 artirir</Description>
 		<Type>Potion</Type>
 		<Rarity>M</Rarity>
 	</ConsumableType>
 	<ConsumableType ConsumableName="MaterialFindRegular">
 		<ConsumableID>7</ConsumableID>
-		<DisplayName>Potion Malzeme Bul</DisplayName>
+		<DisplayName>Malzeme Bulma Iksiri</DisplayName>
 		<IconName>a_Icon_PotionMaterial</IconName>
 		<MaterialFind>0.5</MaterialFind>
-		<Description>Adds 50% senin malzeme bul icin 1-2 zindanlar</Description>
+		<Description>1-2 zindan boyunca malzeme bulma sansini %50 artirir</Description>
 		<Type>Potion</Type>
 		<Rarity>M</Rarity>
 	</ConsumableType>
 	<ConsumableType ConsumableName="XPFindRegular">
 		<ConsumableID>8</ConsumableID>
-		<DisplayName>Potion XP Artis</DisplayName>
+		<DisplayName>XP Artis Iksiri</DisplayName>
 		<IconName>a_Icon_PotionXP</IconName>
 		<XP>0.5</XP>
-		<Description>Adds 50% senin XP artis icin 1-2 zindanlar</Description>
+		<Description>1-2 zindan boyunca XP kazancini %50 artirir</Description>
 		<Type>Potion</Type>
 		<Rarity>M</Rarity>
 	</ConsumableType>
@@ -96,16 +96,16 @@
 		<ConsumableID>9</ConsumableID>
 		<DisplayName>Dirilis Iksiri</DisplayName>
 		<IconName>a_Icon_PotionVeng</IconName>
-		<Description>Instantly revive ile bir guc dalga; bir buff granting user full mana ve bir artis icinde hasar icin bir short period sure</Description>
+		<Description>Guc Dalgasi ile aninda diriltir; kisa sureligine tam mana ve hasar artisi verir</Description>
 		<Type>ResPotion</Type>
 		<Rarity>R</Rarity>
 	</ConsumableType>
 	<ConsumableType ConsumableName="RarePetFood">
 		<ConsumableID>10</ConsumableID>
-		<DisplayName>Arcane Chew Kemik</DisplayName>
+		<DisplayName>Gizemli Cigneme Kemigi</DisplayName>
 		<IconName>a_Icon_LegendaryPetFood</IconName>
 		<Magnitude>60000</Magnitude>
-		<Description>Gives senin evcil 60,000 XP ve verir senin evcil bir seviye.</Description>
+		<Description>Evcilline 60.000 XP verir ve bir seviye kazandirir.</Description>
 		<Type>PetFood</Type>
 		<Rarity>L</Rarity>
 	</ConsumableType>
@@ -114,27 +114,27 @@
 		<DisplayName>Evcil Yemi</DisplayName>
 		<IconName>a_Icon_Petfood</IconName>
 		<Magnitude>30000</Magnitude>
-		<Description>Gives senin evcil 30,000 XP</Description>
+		<Description>Evcilline 30.000 XP verir</Description>
 		<Type>PetFood</Type>
 		<Rarity>M</Rarity>
 	</ConsumableType>
 	<ConsumableType ConsumableName="AwesomeCashShopBoost">
 		<ConsumableID>12</ConsumableID>
-		<DisplayName>Potion Uclu Bul</DisplayName>
+		<DisplayName>Uclu Bulma Iksiri</DisplayName>
 		<IconName>a_Icon_PotionGearFind</IconName>
 		<GoldFind>0.75</GoldFind>
 		<MaterialFind>0.75</MaterialFind>
 		<XP>0.75</XP>
-		<Description>Adds 75% senin XP, malzeme ve altin bul icin 1-2 zindanlar</Description>
+		<Description>1-2 zindan boyunca XP, malzeme ve altin bulma sansini %75 artirir</Description>
 		<Type>Potion</Type>
 		<Rarity>R</Rarity>
 	</ConsumableType>
 	<ConsumableType ConsumableName="GearFindRegular">
 		<ConsumableID>13</ConsumableID>
-		<DisplayName>Potion Ekipman Bul</DisplayName>
+		<DisplayName>Ekipman Bulma Iksiri</DisplayName>
 		<IconName>a_Icon_PotionGearFind</IconName>
 		<GearFind>0.5</GearFind>
-		<Description>Adds 50% senin Ekipman bul icin 1-2 zindanlar</Description>
+		<Description>1-2 zindan boyunca ekipman bulma sansini %50 artirir</Description>
 		<Type>Potion</Type>
 		<Rarity>M</Rarity>
 	</ConsumableType>

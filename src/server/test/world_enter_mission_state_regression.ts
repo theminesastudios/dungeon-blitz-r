@@ -61,7 +61,7 @@ function testClaimedEncodesAsClaimed(): void {
     assert.equal(br.readMethod15(), true, 'claimed story mission should serialize the claimed bit');
 }
 
-function testUnlockedDungeonMissionIsSerializedForMapWithoutPersisting(): void {
+function testUnlockedDungeonMissionIsNotSerializedBeforeNpcAcceptance(): void {
     const character: any = {
         missions: {
             [String(MissionID.DeliverToSwamp)]: {
@@ -82,23 +82,13 @@ function testUnlockedDungeonMissionIsSerializedForMapWithoutPersisting(): void {
     const serializable = (WorldEnter as any).buildSerializableMissionsState(character);
 
     assert.equal(
-        Number(serializable[String(MissionID.ForgottenForge)]?.state ?? 0),
-        1,
-        'unlocked dungeon missions should be sent as active so the map can display their dungeon entry'
-    );
-    assert.equal(
-        Number(serializable[String(MissionID.ForgottenForge)]?.currCount ?? 0),
-        0,
-        'map-only unlocked dungeon entries must not be serialized as 1/1 completion'
-    );
-    assert.equal(
-        character.missions[String(MissionID.ForgottenForge)],
+        serializable[String(MissionID.ForgottenForge)],
         undefined,
-        'serializing an unlocked dungeon marker must not persist a fake mission entry'
+        'unaccepted dungeon missions must not be sent as active before the NPC assigns them'
     );
 }
 
-function testLockedDungeonMissionIsNotSerializedForMap(): void {
+function testAcceptedDungeonMissionIsSerialized(): void {
     const character: any = {
         missions: {
             [String(MissionID.DeliverToSwamp)]: {
@@ -106,6 +96,10 @@ function testLockedDungeonMissionIsNotSerializedForMap(): void {
                 currCount: 1,
                 claimed: 1,
                 complete: 1
+            },
+            [String(MissionID.ForgottenForge)]: {
+                state: 1,
+                currCount: 0
             }
         }
     };
@@ -113,13 +107,13 @@ function testLockedDungeonMissionIsNotSerializedForMap(): void {
     const serializable = (WorldEnter as any).buildSerializableMissionsState(character);
 
     assert.equal(
-        serializable[String(MissionID.ForgottenForge)],
-        undefined,
-        'dungeon missions should stay hidden from the map until their prerequisites are met'
+        Number(serializable[String(MissionID.ForgottenForge)]?.state ?? 0),
+        1,
+        'accepted dungeon missions should still be sent as active'
     );
 }
 
-function testShazariUnearthingThePastRequiresNpcAcceptanceAfterCapstone(): void {
+function testDungeonOffersAcrossZonesRequireNpcAcceptance(): void {
     const character: any = {
         missions: {
             [String(MissionID.DeliverToSwamp)]: {
@@ -144,14 +138,24 @@ function testShazariUnearthingThePastRequiresNpcAcceptanceAfterCapstone(): void 
     const serializable = (WorldEnter as any).buildSerializableMissionsState(character);
 
     assert.equal(
-        serializable[String(MissionID.TempleOfShadows)],
+        serializable[String(MissionID.SlayMindlessQueen)],
         undefined,
-        'Unearthing the Past should stay closed until Siggin assigns the mission'
+        "Mindless Queen's Glade should stay unaccepted so Odem can show the offer marker"
     );
     assert.equal(
-        serializable[String(MissionID.ScarabInvasion)],
+        serializable[String(MissionID.ForgottenForge)],
         undefined,
-        'Unearthing the Past must not require Scarab Invasion before its dungeon marker can track stars'
+        'Forgotten Forge should stay unaccepted so Stormshard NPC icons remain offer markers'
+    );
+    assert.equal(
+        serializable[String(MissionID.EmeraldThrone)],
+        undefined,
+        'The Emerald Throne should stay unaccepted so Castle NPC icons remain offer markers'
+    );
+    assert.equal(
+        serializable[String(MissionID.TempleOfShadows)],
+        undefined,
+        'Unearthing the Past should stay unaccepted until Siggin assigns the mission'
     );
 }
 
@@ -159,9 +163,9 @@ function main(): void {
     ensureDataLoaded();
     testReadyToTurnInEncodesAsNotClaimed();
     testClaimedEncodesAsClaimed();
-    testUnlockedDungeonMissionIsSerializedForMapWithoutPersisting();
-    testLockedDungeonMissionIsNotSerializedForMap();
-    testShazariUnearthingThePastRequiresNpcAcceptanceAfterCapstone();
+    testUnlockedDungeonMissionIsNotSerializedBeforeNpcAcceptance();
+    testAcceptedDungeonMissionIsSerialized();
+    testDungeonOffersAcrossZonesRequireNpcAcceptance();
     console.log('world_enter_mission_state_regression: ok');
 }
 

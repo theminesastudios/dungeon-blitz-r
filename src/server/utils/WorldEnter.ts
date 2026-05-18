@@ -3,13 +3,12 @@ import { normalizeCharacterInventoryGears } from './GearInventory';
 import { PetHandler } from '../handlers/PetHandler';
 import { Character } from '../database/Database';
 import { MissionDef, MissionLoader } from '../data/MissionLoader';
-import { MissionID } from '../data/runtime';
 import { BuildingID, ClassID, MasterClassID } from '../core/Enums';
 import { GameData } from '../core/GameData';
 import { GlobalState } from '../core/GlobalState';
 import { normalizeFriendEntries } from '../core/SocialState';
 import { normalizeGender } from './normalizeGender';
-import { getVisibleConsumableCount } from './ConsumableState';
+import { getVisibleConsumableCount, reconcileConsumableSelectionState } from './ConsumableState';
 import { ensureSigilStoreAlertState } from './AlertState';
 import { writeSavedKeyBindings } from './KeyBindings';
 import { normalizeCharacterMaterials } from './MaterialInventory';
@@ -87,88 +86,8 @@ export class WorldEnter {
         return Boolean(String(missionDef?.ReturnName ?? '').trim());
     }
 
-    private static getMissionState(missionsState: Record<string, any>, missionId: number): number {
-        const entry = WorldEnter.asRecord(missionsState[missionId.toString()]);
-        const state = Number(entry.state ?? 0);
-        return Number.isFinite(state) ? state : 0;
-    }
-
-    private static isMissionZoneUnlocked(missionsState: Record<string, any>, missionDef: MissionDef): boolean {
-        const zoneSet = String(missionDef.ZoneSet ?? '')
-            .split(',')
-            .map((entry) => entry.trim())
-            .filter(Boolean);
-
-        if (!zoneSet.length) {
-            return true;
-        }
-
-        if (zoneSet.some((zone) => zone.startsWith('NewbieRoad') || zone.startsWith('Tutorial') || zone === 'CraftTownTutorial')) {
-            return true;
-        }
-
-        return WorldEnter.getMissionState(missionsState, MissionID.DeliverToSwamp) >= 3;
-    }
-
-    private static canStartMission(missionsState: Record<string, any>, missionDef: MissionDef): boolean {
-        if (!WorldEnter.isMissionZoneUnlocked(missionsState, missionDef)) {
-            return false;
-        }
-
-        for (const prereqName of missionDef.PreReqMissions ?? []) {
-            const prereqId = MissionLoader.getMissionIdByName(prereqName);
-            if (!prereqId) {
-                continue;
-            }
-            if (WorldEnter.getMissionState(missionsState, prereqId) < 3) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private static shouldExposeUnlockedDungeonMission(
-        missionsState: Record<string, any>,
-        missionDef: MissionDef | undefined
-    ): missionDef is MissionDef {
-        if (!missionDef || String(missionDef.Priority ?? '').trim() !== 'Dungeon') {
-            return false;
-        }
-        if (!String(missionDef.Dungeon ?? '').trim()) {
-            return false;
-        }
-        if (
-            Number(missionDef.MissionID ?? 0) === MissionID.TempleOfShadows ||
-            Number(missionDef.MissionID ?? 0) === MissionID.TempleOfShadowsHard
-        ) {
-            return false;
-        }
-
-        return WorldEnter.canStartMission(missionsState, missionDef);
-    }
-
     private static buildSerializableMissionsState(character: Character): Record<string, any> {
-        const missionsState = { ...WorldEnter.asRecord(character.missions) };
-        const totalMissions = MissionLoader.getTotalMissions();
-
-        for (let missionId = 1; missionId <= totalMissions; missionId++) {
-            if (WorldEnter.getMissionState(missionsState, missionId) > 0) {
-                continue;
-            }
-
-            const missionDef = MissionLoader.getMissionDef(missionId);
-            if (!WorldEnter.shouldExposeUnlockedDungeonMission(missionsState, missionDef)) {
-                continue;
-            }
-
-            missionsState[missionId.toString()] = {
-                state: 1,
-                currCount: 0
-            };
-        }
-
-        return missionsState;
+        return { ...WorldEnter.asRecord(character.missions) };
     }
 
     private static normalizeMissionEntry(
@@ -570,6 +489,7 @@ export class WorldEnter {
         if (Number(character.level ?? 1) !== normalizedLevel) {
             character.level = normalizedLevel;
         }
+        reconcileConsumableSelectionState(character);
         const equippedGears = WorldEnter.asArray(character.equippedGears);
         const safeStatsByBuilding = WorldEnter.getTutorialSafeBuildingStatsForLevel(character, targetLevel);
         const safeBuildingUpgrade = WorldEnter.getTutorialSafeBuildingUpgradeForLevel(character, targetLevel);
@@ -765,9 +685,13 @@ export class WorldEnter {
             for (const rawConsumable of consumables) {
                 const consumable = WorldEnter.asRecord(rawConsumable);
                 const consumableId = Number(consumable.consumableID ?? 0);
+                const visibleCount = getVisibleConsumableCount(character, consumableId);
+                if (visibleCount <= 0) {
+                    continue;
+                }
                 bb.writeMethod11(1, 1);
                 bb.writeMethod4(consumableId);
-                bb.writeMethod4(getVisibleConsumableCount(character, consumableId));
+                bb.writeMethod4(visibleCount);
             }
             bb.writeMethod11(0, 1);
 

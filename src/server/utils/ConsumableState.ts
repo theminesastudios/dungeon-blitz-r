@@ -52,6 +52,21 @@ export function getStoredConsumableEntry(character: any, consumableId: number): 
     ) ?? null;
 }
 
+export function compactConsumableInventory(character: any): boolean {
+    if (!character) {
+        return false;
+    }
+
+    const consumables = Array.isArray(character.consumables) ? character.consumables : [];
+    const filtered = consumables.filter((entry: any) => Math.max(0, Number(entry?.count ?? 0)) > 0);
+    if (filtered.length === consumables.length) {
+        return false;
+    }
+
+    character.consumables = filtered;
+    return true;
+}
+
 export function getStoredConsumableCount(character: any, consumableId: number): number {
     return Math.max(0, Number(getStoredConsumableEntry(character, consumableId)?.count ?? 0));
 }
@@ -176,6 +191,37 @@ export function syncPotionReservationForLevelTransition(
         didChange = true;
     }
 
+    return didChange;
+}
+
+export function reconcileConsumableSelectionState(character: any): boolean {
+    if (!character) {
+        return false;
+    }
+
+    let didChange = false;
+    const activeConsumableId = Math.max(0, Math.round(Number(character.activeConsumableID ?? 0)));
+    if (activeConsumableId > 0 && !hasAvailablePotionSelection(character, activeConsumableId)) {
+        character.activeConsumableID = 0;
+        character.activeConsumableCharges = 0;
+        didChange = true;
+    }
+
+    const queuedConsumableId = Math.max(0, Math.round(Number(character.queuedConsumableID ?? 0)));
+    if (queuedConsumableId > 0 && !hasAvailablePotionSelection(character, queuedConsumableId)) {
+        character.queuedConsumableID = 0;
+        didChange = true;
+    }
+
+    if (Math.max(0, Math.round(Number(character.activeConsumableID ?? 0))) === 0 && getActivePotionCharges(character) <= 0) {
+        const currentCharges = Math.max(0, Math.round(Number(character.activeConsumableCharges ?? 0)));
+        if (currentCharges !== 0) {
+            character.activeConsumableCharges = 0;
+            didChange = true;
+        }
+    }
+
+    didChange = compactConsumableInventory(character) || didChange;
     return didChange;
 }
 

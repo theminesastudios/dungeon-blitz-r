@@ -51,13 +51,13 @@ const TRANSLATABLE_TAGS_BY_ROOT = new Map([
     ['ConsumableTypes', new Set(['Description', 'DisplayName'])],
     ['CharmTypes', new Set(['Description', 'DisplayName'])],
     ['DyeTypes', new Set(['DisplayName'])],
-    ['EggTypes', new Set(['Description', 'DisplayName'])],
+    ['EggTypes', new Set(['DisplayName'])],
     ['GearTypes', new Set(['Description', 'DisplayName'])],
     ['LockboxTypes', new Set(['Description', 'DisplayName'])],
     ['MagicTypes', new Set(['Description', 'DisplayName'])],
     ['MaterialTypes', new Set(['DisplayName'])],
-    ['MountTypes', new Set(['Description', 'DisplayName'])],
-    ['PetTypes', new Set(['BonusInfo', 'Description', 'DisplayName'])],
+    ['MountTypes', new Set(['DisplayName'])],
+    ['PetTypes', new Set(['BonusInfo', 'DisplayName'])],
     ['RoyalStoreTypes', new Set(['Description', 'DisplayName'])],
     ['StatueTypes', new Set(['DisplayName', 'FlavorText'])]
 ]);
@@ -313,12 +313,14 @@ function splitIdentifier(value) {
         .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
         .replace(/[_-]+/g, ' ')
         .replace(/\b([A-Za-z]+)(\d+)\b/g, '$1 $2')
+        .replace(/\b(\d+)([A-Za-z]+)\b/g, '$1 $2')
         .replace(/\s+/g, ' ')
         .trim();
 }
 
 const SIMPLE_NAME_PARTS = new Map(Object.entries({
     Abomination: 'Hilkat Garibesi',
+    Abom: 'Hilkat',
     Ancient: 'Kadim',
     Angel: 'Melek',
     Armor: 'Zirh',
@@ -329,6 +331,7 @@ const SIMPLE_NAME_PARTS = new Map(Object.entries({
     Bird: 'Kus',
     Black: 'Siyah',
     Blue: 'Mavi',
+    Bio: 'Yasam',
     Bone: 'Kemik',
     Boat: 'Tekne',
     Bow: 'Yay',
@@ -336,51 +339,81 @@ const SIMPLE_NAME_PARTS = new Map(Object.entries({
     Bracers: 'Bileklik',
     Brown: 'Kahverengi',
     Boots: 'Cizme',
+    Boss: 'Lider',
+    Bridge: 'Kopru',
     Bunnybear: 'Kurt Tavsani',
     Cat: 'Kedi',
     Chain: 'Zincir',
     Cloth: 'Kumas',
     Construct: 'Yapi',
     Crow: 'Karga',
+    Cyclops: 'Tepegoz',
     Dagger: 'Hancer',
     Death: 'Olum',
     Deathmask: 'Olum Maskesi',
     Demon: 'Iblis',
     Destrier: 'Savas Ati',
+    Devourer: 'Yutucu',
     Djinn: 'Cin',
+    Dog: 'Kopek',
+    Dress: 'Elbise',
     Draconic: 'Ejderha',
     Dragon: 'Ejderha',
     Dragonette: 'Kucuk Ejder',
     Drake: 'Ejder',
     Drakon: 'Drakon',
     Draft: 'Kosum',
+    Dread: 'Dehset',
+    Dryad: 'Dryad',
     Earth: 'Toprak',
     Egg: 'Yumurta',
     Fairy: 'Peri',
     Falcon: 'Sahin',
     Fangrasaur: 'Disli Kerten',
+    Feet: 'Ayaklik',
+    Fiend: 'Iblis',
     Fire: 'Ates',
+    Flameseer: 'Alevgorur',
     Focus: 'Odak',
+    Forge: 'Ocak',
+    Frostwarden: 'Ayaz Muhafizi',
+    Gear: '',
     Ghost: 'Hayalet',
     Ghoul: 'Gulyabani',
+    Giant: 'Dev',
     Glove: 'Eldiven',
     Gloves: 'Eldiven',
     Gold: 'Altin',
+    Goblin: 'Goblin',
     Green: 'Yesil',
     Grey: 'Gri',
+    Griffon: 'Griffon',
     Hammer: 'Cekic',
+    Hands: 'El',
+    Halloween: 'Cadilar Bayrami',
     Hat: 'Baslik',
     Helm: 'Migfer',
+    Hero: 'Kahraman',
+    Hood: 'Kapuson',
     Horse: 'At',
+    Hulk: 'Dev',
     Human: 'Insan',
+    Ice: 'Buz',
     Imperial: 'Imparatorluk',
+    Imp: 'Imp',
     Infernal: 'Cehennem',
+    Intro: 'Giris',
     Iron: 'Demir',
+    Jackal: 'Cakal',
+    Jewelry: 'Mucevher',
+    Justicar: 'Adaletci',
+    Keep: 'Hisar',
     Kirin: 'Kirin',
     L: 'Efsanevi',
     Legendary: 'Efsanevi',
     Leather: 'Deri',
     Light: 'Isik',
+    Lion: 'Aslan',
     Lizard: 'Kertenkele',
     Lockbox: 'Sandik',
     Longma: 'Longma',
@@ -395,27 +428,48 @@ const SIMPLE_NAME_PARTS = new Map(Object.entries({
     Monkey: 'Maymun',
     Mount: '',
     Mythic: 'Efsanevi',
+    Minotaur: 'Minotor',
+    Mummy: 'Mumya',
+    Nature: 'Doga',
+    Necromancer: 'Olucagiran',
+    Nethertotem: 'Nether Totemi',
     Nightmare: 'Kabus',
     Non: '',
+    No: 'Yok',
+    Offhand: 'Yedek El',
     Owl: 'Baykus',
     Orange: 'Turuncu',
     Paladin: 'Sovalyeci',
     Pet: 'Evcil',
     Phoenix: 'Anka',
     Pony: 'Midilli',
+    Priest: 'Rahip',
+    Pumpkin: 'Bal Kabagi',
     Purple: 'Mor',
     R: 'Nadir',
     Rabbit: 'Tavsan',
     Raptor: 'Yirtici',
+    Rapier: 'Ince Kilic',
+    Ratling: 'Ratling',
     Red: 'Kirmizi',
     Rogue: 'Haydut',
     Robe: 'Cubbe',
+    Rock: 'Kaya',
+    Saber: 'Pala',
+    Sash: 'Kusak',
+    Scarab: 'Bokbocegi',
+    Scepter: 'Asa',
     Serpent: 'Yilan',
+    Shade: 'Golge',
     Shield: 'Kalkan',
     Silver: 'Gumus',
     Skeleton: 'Iskelet',
+    Shoes: 'Ayakkabi',
+    Soulthief: 'Ruh Hirsizi',
+    Special: 'Ozel',
     Spear: 'Mizrak',
     Spider: 'Orumcek',
+    Spirit: 'Ruh',
     Sprite: 'Pericik',
     Stallion: 'Aygir',
     Staff: 'Asa',
@@ -425,9 +479,14 @@ const SIMPLE_NAME_PARTS = new Map(Object.entries({
     Store: 'Magaza',
     Sword: 'Kilic',
     Sylvan: 'Orman',
+    Templar: 'Tapinakci',
+    Tome: 'Kitap',
+    Tower: 'Kule',
+    Treant: 'Agacadam',
     Trog: 'Trog',
     Tutorial: 'Egitim',
     Undead: 'Olumsuz',
+    Unique: 'Ozel',
     Water: 'Su',
     White: 'Beyaz',
     Wolf: 'Kurt',
@@ -500,6 +559,41 @@ function deriveLockboxName(name, type, rootName) {
     return colorizedIdentifier(raw, rootName);
 }
 
+function deriveGearDisplayName(entry) {
+    const gearName = getAttr(entry, 'GearName');
+    if (/^No(.+?)(Sword|Shield|Armor|Boots|Gloves|Hat)$/i.test(gearName)) {
+        const [, klass, slot] = gearName.match(/^No(.+?)(Sword|Shield|Armor|Boots|Gloves|Hat)$/i);
+        return titleCaseAscii(`${localizeIdentifier(klass, 'GearTypes')} ${localizeIdentifier(slot, 'GearTypes')} Yok`);
+    }
+
+    if (/Template/i.test(gearName)) {
+        return 'Sablon';
+    }
+
+    const rarity = getTag(entry, 'Rarity') || gearName.match(/(\d+)([RL])$/i)?.[2] || '';
+    const rarityText = rarityLabel(String(rarity).toUpperCase());
+    const level = getTag(entry, 'Level') || gearName.match(/(\d+)(?:[RL])?$/i)?.[1] || '';
+    const usedBy = getTag(entry, 'UsedBy');
+    const classText = /^(?:Paladin|Mage|Rogue)$/i.test(usedBy) && !new RegExp(usedBy, 'i').test(gearName)
+        ? localizeIdentifier(usedBy, 'GearTypes')
+        : '';
+    const baseName = gearName
+        .replace(/(\d+)([RL])$/i, '$1')
+        .replace(/\d+[A-Z]{0,2}$/i, '')
+        .replace(/Lockbox\d*/gi, '')
+        .replace(/\bGear\b/gi, '')
+        .replace(/^(?:Unique|Special)/i, (prefix) => `${prefix} `)
+        .replace(/\s+/g, ' ')
+        .trim();
+    const localizedBase = localizeIdentifier(baseName || getAttr(entry, 'Type') || 'Esya', 'GearTypes')
+        .replace(/\b01\b/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    const levelText = level && level !== '0' ? `Seviye ${level}` : '';
+
+    return titleCaseAscii([rarityText, classText, localizedBase, levelText].filter(Boolean).join(' '));
+}
+
 function deriveDisplayName(rootName, entry) {
     if (rootName === 'MaterialTypes') {
         const rarity = getTag(entry, 'Rarity');
@@ -528,12 +622,7 @@ function deriveDisplayName(rootName, entry) {
     }
 
     if (rootName === 'GearTypes') {
-        const gearName = getAttr(entry, 'GearName');
-        if (/^No(.+?)(Sword|Shield|Armor|Boots|Gloves|Hat)$/i.test(gearName)) {
-            const [, klass, slot] = gearName.match(/^No(.+?)(Sword|Shield|Armor|Boots|Gloves|Hat)$/i);
-            return titleCaseAscii(`${localizeIdentifier(klass, rootName)} ${localizeIdentifier(slot, rootName)} Yok`);
-        }
-        return localizeIdentifier(gearName || getAttr(entry, 'Type'), rootName);
+        return deriveGearDisplayName(entry);
     }
 
     if (rootName === 'ConsumableTypes') {
@@ -661,6 +750,8 @@ function shouldReplaceDisplayName(value) {
     return /\bYerel\b/i.test(value) || /^[\s,.-]*$/.test(normalizeKey(value));
 }
 
+const ALWAYS_DERIVE_DISPLAY_NAMES = new Set(['GearTypes']);
+
 const ENTRY_TAGS_BY_ROOT = new Map(Object.entries({
     BuildingTypes: 'Building',
     CharmTypes: 'CharmType',
@@ -687,7 +778,7 @@ function patchDerivedDisplayNames(xml, rootName, stats) {
     const entryRegex = new RegExp(`<${entryTag}\\b[\\s\\S]*?<\\/${entryTag}>`, 'g');
     return xml.replace(entryRegex, (entry) => {
         const current = getTag(entry, 'DisplayName');
-        if (!shouldReplaceDisplayName(current)) {
+        if (!ALWAYS_DERIVE_DISPLAY_NAMES.has(rootName) && !shouldReplaceDisplayName(current)) {
             return entry;
         }
 

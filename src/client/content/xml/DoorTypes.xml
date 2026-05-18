@@ -656,7 +656,7 @@
 		<TargetMapName>SD_Mission1</TargetMapName>
 		<TargetDoorID>1</TargetDoorID>
 		<RequiredMissions>TempleOfShadows</RequiredMissions>
-		<LockedMessage>^t Siggin should be able tell beni about this strange door.=^t I saw him nearby.</LockedMessage>
+		<LockedMessage>^t Titus should be able tell beni about this strange door.=^t I saw him back west.</LockedMessage>
 	</DoorType>
 	<DoorType>
 		<MapName>ShazariDesert</MapName>
@@ -1462,7 +1462,7 @@
 		<TargetMapName>SD_Mission1Hard</TargetMapName>
 		<TargetDoorID>1</TargetDoorID>
 		<RequiredMissions>TempleOfShadowsHard</RequiredMissions>
-		<LockedMessage>^t bir strange passage down.=^t I hear strange chittering.=^t I can ask Siggin what's inside.</LockedMessage>
+		<LockedMessage>^t bir strange passage down.=^t I hear strange chittering.=^t I can ask those col folk what's inside.</LockedMessage>
 	</DoorType>
 	<DoorType>
 		<MapName>ShazariDesertHard</MapName>

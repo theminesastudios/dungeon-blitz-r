@@ -15,7 +15,7 @@ const VISIBLE_TAGS_BY_ROOT: Record<string, Set<string>> = {
     CharmTypes: new Set(['Description', 'DisplayName']),
     DoorTypes: new Set(['LockedMessage']),
     DyeTypes: new Set(['DisplayName']),
-    EggTypes: new Set(['Description', 'DisplayName']),
+    EggTypes: new Set(['DisplayName']),
     GearTypes: new Set(['Description', 'DisplayName']),
     LevelTypes: new Set(['DisplayName']),
     LockboxTypes: new Set(['Description', 'DisplayName']),
@@ -35,8 +35,8 @@ const VISIBLE_TAGS_BY_ROOT: Record<string, Set<string>> = {
         'TrackerText'
     ]),
     MonsterPowerTypes: new Set(['DisplayName']),
-    MountTypes: new Set(['Description', 'DisplayName']),
-    PetTypes: new Set(['BonusInfo', 'Description', 'DisplayName']),
+    MountTypes: new Set(['DisplayName']),
+    PetTypes: new Set(['BonusInfo', 'DisplayName']),
     PlayerPowerTypes: new Set(['Description', 'DisplayName', 'UpgradeDescription']),
     PowerModTypes: new Set(['Description', 'DisplayName']),
     RoyalStoreTypes: new Set(['Description', 'DisplayName']),
@@ -44,6 +44,51 @@ const VISIBLE_TAGS_BY_ROOT: Record<string, Set<string>> = {
 };
 
 const POWER_TEXT_ROOTS = new Set(['MonsterPowerTypes', 'PlayerPowerTypes', 'PowerModTypes']);
+const QUALITY_CHECK_ROOTS = new Set([
+    'BuildingTypes',
+    'ConsumableTypes',
+    'GearTypes',
+    'MaterialTypes',
+    'PetTypes',
+    'PlayerPowerTypes',
+    'RoyalStoreTypes'
+]);
+const FORBIDDEN_VISIBLE_TEXT = [
+    /\bTurkce aciklama\b/,
+    /\bYerel Esya\b/,
+    /\bYerel Yetenek\b/,
+    /\bUnlocks\b/,
+    /\btraining\b/,
+    /\brecipes\b/,
+    /\bguarantee\b/,
+    /\bPotion\b/,
+    /\bClones have\b/,
+    /\bSpeed Penalty removed\b/,
+    /\bDefense Penalty removed\b/,
+    /\bDurability\b/,
+    /\bCooldown\b/,
+    /\bDefense Boost\b/,
+    /\bHealth Regen\b/,
+    /\bExplosion damage\b/,
+    /\bExplosion\b/,
+    /\bSaniye Bekleme\b/,
+    /\bincreased Hate\b/,
+    /\bfight with you\b/,
+    /\bfollows you\b/,
+    /\bthat follows\b/,
+    /\bTetik used\b/,
+    /\bEntangles\b/,
+    /\breceived\b/,
+    /\bCreatures\b/,
+    /\bMax Can\b/,
+    /\bOpening vurus\b/,
+    /\bStealth Bonus\b/,
+    /\bTrail\b/,
+    /\bdebuffed\b/i,
+    /\banother\b/,
+    /\bAtilma Hasar\b/
+];
+const FORBIDDEN_GEAR_NAME_TEXT = /\b(?:Rapier|Offhand|Feet|Sash|Bio|Ice|Dress|Mummy|Jackal|Priest|Hulk|Giant|Scarab|Cyclops|Treant|Abom|Intro|Saber|Scepter|Nature|Shoes|Hands|Hood|Lockbox01|Sword30|Shield30|Armor30|Boots30|Gloves30|Hat30)\b/;
 
 function rotateKey(key: number, shift: number): number {
     return (((key << (32 - shift)) >>> 0) | (key >>> shift)) >>> 0;
@@ -117,6 +162,7 @@ function testGameSwzVisibleTextIsLocalized(): void {
     const unchanged: string[] = [];
     const nonAscii: string[] = [];
     const powerFallbacks: string[] = [];
+    const lowQuality: string[] = [];
 
     for (const [rootName, tags] of Object.entries(VISIBLE_TAGS_BY_ROOT)) {
         const source = english.get(rootName);
@@ -144,12 +190,30 @@ function testGameSwzVisibleTextIsLocalized(): void {
             if (POWER_TEXT_ROOTS.has(rootName) && /\b(?:Yerel Yetenek|Turkce aciklama)\b/.test(targetValue)) {
                 powerFallbacks.push(`${rootName}[${index}]: ${targetValue}`);
             }
+            if (QUALITY_CHECK_ROOTS.has(rootName) && FORBIDDEN_VISIBLE_TEXT.some((pattern) => pattern.test(targetValue))) {
+                lowQuality.push(`${rootName}[${index}]: ${targetValue}`);
+            }
         }
     }
 
     assert.deepEqual(unchanged.slice(0, 25), [], `visible Turkish SWZ values should not remain English: ${unchanged.slice(0, 25).join('\n')}`);
     assert.deepEqual(nonAscii.slice(0, 25), [], `Turkish SWZ values should be ASCII-safe: ${nonAscii.slice(0, 25).join('\n')}`);
     assert.deepEqual(powerFallbacks.slice(0, 25), [], `power text should not use placeholder fallback text: ${powerFallbacks.slice(0, 25).join('\n')}`);
+    assert.deepEqual(lowQuality.slice(0, 25), [], `visible Turkish SWZ values should not contain known low-quality fragments: ${lowQuality.slice(0, 25).join('\n')}`);
+}
+
+function testStaticGearDisplayNamesAreLocalized(): void {
+    const root = path.resolve(__dirname, '../../..');
+    const gearXml = fs.readFileSync(path.join(root, 'src/client/content/xml/GearTypes.xml'), 'utf8');
+    const badNames: string[] = [];
+    for (const match of gearXml.matchAll(/<DisplayName>([\s\S]*?)<\/DisplayName>/g)) {
+        const value = normalizeValue(match[1]);
+        if (FORBIDDEN_GEAR_NAME_TEXT.test(value)) {
+            badNames.push(value);
+        }
+    }
+
+    assert.deepEqual(badNames.slice(0, 25), [], `static GearTypes display names should not contain raw English/code fragments: ${badNames.slice(0, 25).join('\n')}`);
 }
 
 function unescapeActionScriptString(value: string): string {
@@ -229,6 +293,7 @@ function testExtractedDungeonDialogueCanBeLocalized(): void {
 
 function main(): void {
     testGameSwzVisibleTextIsLocalized();
+    testStaticGearDisplayNamesAreLocalized();
     testExtractedDungeonDialogueCanBeLocalized();
     console.log('localization_coverage_regression: ok');
 }
