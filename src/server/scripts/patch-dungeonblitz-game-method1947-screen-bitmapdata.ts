@@ -25,8 +25,8 @@ const DEFAULT_SWF = path.resolve(
   "cbp",
   "DungeonBlitz.swf",
 );
-const SAFE_SCREEN_BITMAP_WIDTH = 1440;
-const SAFE_SCREEN_BITMAP_HEIGHT = 835;
+const SAFE_SCREEN_BITMAP_WIDTH = 2048;
+const SAFE_SCREEN_BITMAP_HEIGHT = 1152;
 
 function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
   let swfPath = DEFAULT_SWF;
@@ -151,7 +151,7 @@ function patchSwf(swfPath: string, verify: boolean): void {
       start: methodBody.codeStart + constructorArgsStart,
       end: methodBody.codeStart + constructorArgsEnd,
       data: replacement,
-      detail: "force screen BitmapData dimensions to 1440x835",
+      detail: "force screen BitmapData dimensions to 2048x1152",
     },
   ];
 

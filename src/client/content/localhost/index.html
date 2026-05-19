@@ -15,7 +15,29 @@
       overflow: hidden;
     }
 
-    #game-container {
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #game-shell {
+      --game-fill: 1.04;
+      flex: 0 0 auto;
+      position: relative;
+      width: min(100vw, calc(100vh * 3 / 2));
+      height: min(100vh, calc(100vw * 2 / 3));
+      width: min(100dvw, calc(100dvh * 3 / 2));
+      height: min(100dvh, calc(100dvw * 2 / 3));
+      aspect-ratio: 3 / 2;
+      transform: scale(var(--game-fill));
+      transform-origin: center;
+    }
+
+    #game-container,
+    #game-shell object,
+    #game-shell embed {
+      display: block;
       width: 100%;
       height: 100%;
     }
@@ -33,6 +55,8 @@
     }
 
     #fallback {
+      position: absolute;
+      inset: 0;
       display: none;
       color: #ccc;
       font-family: sans-serif;
@@ -46,7 +70,9 @@
 
 <body>
 
-  <div id="game-container"></div>
+  <div id="game-shell">
+    <div id="game-container"></div>
+  </div>
 
   <div id="flash-hint">
     <div>
@@ -81,7 +107,7 @@
     document.cookie = "db_lang=; path=/; max-age=0; SameSite=Lax";
 
     const languageParam = urlLanguage ? `&lang=${urlLanguage}` : "";
-    const swfUrl = `p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp${languageParam}`;
+    const swfUrl = `p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp&layout=fit-center-buffer${languageParam}`;
     const localBridgeBaseUrl = "http://127.0.0.1:47631";
     const selfPresenceUrl = "/api/presence/self";
     const discordJoinUrl = "/api/presence/discord-join";

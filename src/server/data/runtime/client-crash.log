@@ -1,0 +1,11 @@
+[2026-05-19T02:07:50.285Z] User 10: 1ArgumentError: Error #2015: Invalid BitmapData.
+	at flash.display::BitmapData/ctor()
+	at flash.display::BitmapData()
+	at SuperAnimData$/method_982()
+	at SuperAnimData/method_866()
+	at SuperAnimInstance/method_105()
+	at Game/method_1325()
+	at Game/method_789()
+	at Game/method_1636()
+	at Main/method_1284()
+
