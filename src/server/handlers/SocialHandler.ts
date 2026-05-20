@@ -1060,6 +1060,8 @@ export class SocialHandler {
                 scope: 'public',
                 senderName: client.character.name,
                 message,
+                accountEmail: client.account?.email,
+                userId: client.userId,
                 levelName: client.currentLevel || undefined
             });
         }
@@ -1665,6 +1667,8 @@ export class SocialHandler {
             scope: 'party',
             senderName: client.character.name,
             message,
+            accountEmail: client.account?.email,
+            userId: client.userId,
             levelName: client.currentLevel || undefined,
             partyId: party.partyId
         });

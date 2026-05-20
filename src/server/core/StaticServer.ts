@@ -8,6 +8,7 @@ import { buildDungeonBlitzSwfVariantBuffer, type DungeonBlitzSwfLocale } from '.
 import { PresenceService } from './PresenceService';
 import { SocialHandler } from '../handlers/SocialHandler';
 import { GlobalState } from './GlobalState';
+import { DiscordAccountLinkService } from '../integrations/DiscordAccountLinkService';
 
 function resolveContentDir(relativeContentPath: string): string {
     const candidates = [
@@ -27,6 +28,15 @@ function resolveContentDir(relativeContentPath: string): string {
     return candidates[0];
 }
 
+function escapeHtml(value: string | null | undefined): string {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 export class StaticServer {
     private app: express.Application;
     private server: HttpServer | null;
@@ -34,6 +44,7 @@ export class StaticServer {
     private contentDir: string;
     private host: string;
     private selectedSwfCache: { key: string; buffer: Buffer } | null;
+    private readonly discordAccountLinks: DiscordAccountLinkService;
     private readonly flashVersion = 'cbq';
     private readonly gameVersion = 'cbp';
 
@@ -47,6 +58,7 @@ export class StaticServer {
         this.app = express();
         this.server = null;
         this.selectedSwfCache = null;
+        this.discordAccountLinks = new DiscordAccountLinkService();
         
         // Resolve against the server root so dist and ts-node use the same content directory.
         this.contentDir = resolveContentDir(relativeContentPath);
@@ -111,6 +123,26 @@ export class StaticServer {
         );
 
         return locales.size === 1 ? [...locales][0] ?? null : null;
+    }
+
+    private resolveRequesterAccountEmail(req: Request): string {
+        const remoteAddress = this.normalizeRemoteAddress(this.resolveRequesterAddress(req));
+        if (!remoteAddress) {
+            return '';
+        }
+
+        const sessions = Array.from(GlobalState.sessionsByToken.values()).filter((client) => {
+            return this.normalizeRemoteAddress(client.socket.remoteAddress) === remoteAddress;
+        });
+        const activeSessions = sessions.filter((client) => client.playerSpawned);
+        const candidates = activeSessions.length > 0 ? activeSessions : sessions;
+        const emails = new Set(
+            candidates
+                .map((client) => String(client.account?.email ?? '').trim().toLowerCase())
+                .filter(Boolean)
+        );
+
+        return emails.size === 1 ? [...emails][0] ?? '' : '';
     }
 
     private resolveGameSwzLocale(req: Request): 'en' | 'tr' {
@@ -294,6 +326,51 @@ export class StaticServer {
                 availableCharacters: selection.availableCharacters,
                 session: selection.snapshot
             });
+        });
+
+        this.app.get('/discord/link', async (req, res) => {
+            const requestedEmail = String(req.query.email ?? '').trim() || this.resolveRequesterAccountEmail(req);
+            const result = await this.discordAccountLinks.createAuthorizeUrl(requestedEmail);
+            if (!result.ok || !result.authorizeUrl) {
+                res.status(result.reason === 'not-configured' ? 503 : 400).type('text/plain').send(result.message ?? result.reason);
+                return;
+            }
+
+            res.redirect(result.authorizeUrl);
+        });
+
+        this.app.get('/api/discord/link/start', async (req, res) => {
+            const requestedEmail = String(req.query.email ?? '').trim() || this.resolveRequesterAccountEmail(req);
+            const result = await this.discordAccountLinks.createAuthorizeUrl(requestedEmail);
+            const statusCode = result.ok ? 200 : result.reason === 'not-configured' ? 503 : 400;
+
+            res.setHeader('Cache-Control', 'no-store');
+            if (result.ok && result.authorizeUrl && req.query.redirect === '1') {
+                res.redirect(result.authorizeUrl);
+                return;
+            }
+
+            res.status(statusCode).json(result);
+        });
+
+        this.app.get('/api/discord/link/callback', async (req, res) => {
+            const code = String(req.query.code ?? '').trim();
+            const state = String(req.query.state ?? '').trim();
+            const result = await this.discordAccountLinks.completeLink(code, state);
+            const statusCode = result.ok ? 200 : 400;
+
+            res.setHeader('Cache-Control', 'no-store');
+            if (!result.ok || !result.link) {
+                res.status(statusCode).type('text/html').send(
+                    `<h1>Discord link failed</h1><p>${escapeHtml(result.message ?? result.reason)}</p>`
+                );
+                return;
+            }
+
+            const discordName = result.link.discordGlobalName || result.link.discordUsername || result.link.discordUserId;
+            res.type('text/html').send(
+                `<h1>Discord linked</h1><p>${escapeHtml(discordName)} is now linked to ${escapeHtml(result.link.email)}.</p>`
+            );
         });
 
         this.app.post('/api/presence/discord-join', (req, res) => {

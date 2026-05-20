@@ -1,3 +1,5 @@
+import './core/loadEnv';
+
 import { GameServer } from './core/server';
 import { PolicyServer } from './network/policyServer';
 import { Config } from './core/config';

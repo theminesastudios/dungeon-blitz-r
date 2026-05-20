@@ -934,6 +934,7 @@ export class CharacterHandler {
                 levelInstanceId: levelInstanceId || undefined,
                 previousLevel: previousLevelName,
                 userId: client.userId,
+                accountEmail: client.account?.email,
                 newX: spawn.x,
                 newY: spawn.y,
                 newHasCoord: spawn.hasCoord,
@@ -1015,6 +1016,9 @@ export class CharacterHandler {
             : null;
         PetHandler.normalizeMountState(client.character);
         client.userId = entry.userId;
+        client.account = entry.accountEmail
+            ? { email: entry.accountEmail, user_id: entry.userId }
+            : null;
         client.token = token;
         client.clientEntID = 0;
         client.currentLevel = entry.targetLevel;

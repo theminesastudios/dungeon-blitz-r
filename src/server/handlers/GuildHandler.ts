@@ -959,6 +959,8 @@ export class GuildHandler {
             scope: 'guild',
             senderName: client.character.name,
             message,
+            accountEmail: client.account?.email,
+            userId: client.userId,
             guildName
         });
         GuildHandler.sendGuildMessage(targets, 0x60, client.character.name, message);
@@ -995,6 +997,8 @@ export class GuildHandler {
             scope: 'officer',
             senderName: client.character.name,
             message,
+            accountEmail: client.account?.email,
+            userId: client.userId,
             guildName
         });
         GuildHandler.sendGuildMessage(targets, 0x62, client.character.name, message);

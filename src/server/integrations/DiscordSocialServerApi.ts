@@ -11,6 +11,48 @@ export class DiscordSocialServerApi {
         return this.enabled;
     }
 
+    public async sendChannelMessage(channelId: string, content: string): Promise<boolean> {
+        if (!this.enabled) {
+            console.warn('[DiscordSocialServerApi] DISCORD_BOT_TOKEN is missing; cannot send Discord channel message.');
+            return false;
+        }
+
+        const targetChannelId = String(channelId ?? '').trim();
+        const targetContent = String(content ?? '').trim();
+        if (!targetChannelId || !targetContent) {
+            return false;
+        }
+
+        try {
+            const response = await fetch(`https://discord.com/api/v10/channels/${targetChannelId}/messages`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bot ${this.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    content: targetContent.slice(0, 2000),
+                    allowed_mentions: {
+                        parse: []
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text().catch(() => '');
+                console.error(
+                    `[DiscordSocialServerApi] Failed to send channel message: ${response.status} ${response.statusText}${errorText ? `: ${errorText}` : ''}`
+                );
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error('[DiscordSocialServerApi] sendChannelMessage request failed:', error);
+            return false;
+        }
+    }
+
     public async grantCanLinkLobby(lobbyId: string, userId: string): Promise<boolean> {
         if (!this.enabled) {
             console.warn('[DiscordSocialServerApi] DISCORD_BOT_TOKEN is missing; cannot grant CanLinkLobby.');

@@ -9,6 +9,7 @@ export interface PendingTransfer {
     levelInstanceId?: string;
     previousLevel: string;
     userId: number;
+    accountEmail?: string;
     newX?: number;
     newY?: number;
     newHasCoord?: boolean;

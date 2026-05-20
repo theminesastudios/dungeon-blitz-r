@@ -9,6 +9,7 @@ temp
 build/
 logs/
 src/server/data/runtime/*crash*.log
+src/server/data/discord_account_links.json
 .env
 src/server/.env
 src/server/.discord-social-token.json

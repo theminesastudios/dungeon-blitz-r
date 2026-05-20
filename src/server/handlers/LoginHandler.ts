@@ -80,6 +80,7 @@ export class LoginHandler {
         }
         
         client.userId = userId;
+        client.account = { email, user_id: userId };
         client.authenticated = true;
         client.characters = await db.loadCharacters(userId);
 
@@ -111,6 +112,7 @@ export class LoginHandler {
         // It just `load_accounts()` and checks if email exists.
         
         client.userId = userId;
+        client.account = { email, user_id: userId };
         client.authenticated = true;
         client.characters = await db.loadCharacters(userId);
 

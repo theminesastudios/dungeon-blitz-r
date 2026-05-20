@@ -6,6 +6,7 @@ import * as readline from 'readline';
 import { Client as GameClient } from '../core/Client';
 import { GlobalState } from '../core/GlobalState';
 import { BitBuffer } from '../network/protocol/bitBuffer';
+import { DiscordAccountLinkStore } from './DiscordAccountLinkStore';
 import { DiscordSocialServerApi } from './DiscordSocialServerApi';
 
 export type DiscordChatScope = 'public' | 'party' | 'guild' | 'officer';
@@ -28,6 +29,8 @@ interface DiscordRelayPayload {
     scope: DiscordChatScope;
     senderName: string;
     message: string;
+    accountEmail?: string;
+    userId?: number | null;
     levelName?: string;
     guildName?: string;
     partyId?: number;
@@ -156,6 +159,7 @@ class DiscordSocialBridge {
     private readonly logPayloads: boolean;
     private readonly inboundPrefix: string;
     private readonly serverApi: DiscordSocialServerApi;
+    private readonly accountLinks: DiscordAccountLinkStore;
     private child: ChildProcessWithoutNullStreams | null = null;
     private ready = false;
     private started = false;
@@ -179,6 +183,7 @@ class DiscordSocialBridge {
         this.logPayloads = parseBoolean(process.env.DISCORD_SOCIAL_BRIDGE_LOG_PAYLOADS, Boolean(this.config.logPayloads));
         this.inboundPrefix = String(this.config.inboundPrefix ?? '[Discord]').trim() || '[Discord]';
         this.serverApi = new DiscordSocialServerApi();
+        this.accountLinks = new DiscordAccountLinkStore();
     }
 
     public initialize(): void {
@@ -239,7 +244,7 @@ class DiscordSocialBridge {
     }
 
     public relay(payload: DiscordRelayPayload): void {
-        if (!this.enabled || !this.ready || !this.child) {
+        if (!this.enabled) {
             return;
         }
 
@@ -250,6 +255,16 @@ class DiscordSocialBridge {
         const senderName = String(payload.senderName ?? '').trim();
         const message = String(payload.message ?? '').trim();
         if (!senderName || !message) {
+            return;
+        }
+
+        void this.forwardToDiscordChannel({
+            ...payload,
+            senderName,
+            message
+        });
+
+        if (!this.ready || !this.child) {
             return;
         }
 
@@ -268,6 +283,45 @@ class DiscordSocialBridge {
         }
 
         this.sendControlMessage(outbound);
+    }
+
+    private async forwardToDiscordChannel(payload: DiscordRelayPayload): Promise<void> {
+        if (!this.channelId || !this.serverApi.isEnabled()) {
+            return;
+        }
+
+        try {
+            const content = await this.formatDiscordChannelMessage(payload);
+            if (!content) {
+                return;
+            }
+
+            await this.serverApi.sendChannelMessage(this.channelId, content);
+        } catch (error) {
+            console.error('[DiscordSocialBridge] Failed to forward game chat to Discord channel:', error);
+        }
+    }
+
+    private async formatDiscordChannelMessage(payload: DiscordRelayPayload): Promise<string> {
+        const senderName = DiscordSocialBridge.cleanDiscordText(payload.senderName, 80);
+        const message = DiscordSocialBridge.cleanDiscordText(payload.message, 1800);
+        if (!senderName || !message) {
+            return '';
+        }
+
+        const link = await this.accountLinks.findByEmail(payload.accountEmail);
+        const linkedDiscord = link?.discordUserId ? ` (<@${link.discordUserId}>)` : '';
+        const levelName = DiscordSocialBridge.cleanDiscordText(payload.levelName, 80);
+        const context = levelName ? ` [${levelName}]` : '';
+        return `**${senderName}${linkedDiscord}**${context}: ${message}`;
+    }
+
+    private static cleanDiscordText(value: string | null | undefined, maxLength: number): string {
+        return String(value ?? '')
+            .replace(/[\r\n]+/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .slice(0, maxLength);
     }
 
     private sendControlMessage(payload: Record<string, unknown>): void {
