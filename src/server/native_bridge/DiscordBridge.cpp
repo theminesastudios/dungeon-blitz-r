@@ -147,11 +147,6 @@ bool DiscordBridge::tryRestoreSession() {
         return false;
     }
 
-    if (!accessToken_.empty()) {
-        connectWithToken(discordpp::AuthorizationTokenType::Bearer, accessToken_);
-        return true;
-    }
-
     if (!refreshToken_.empty()) {
         client_->RefreshToken(
             std::strtoull(config_.appId.c_str(), nullptr, 10),
@@ -176,6 +171,11 @@ bool DiscordBridge::tryRestoreSession() {
                 connectWithToken(tokenType, accessToken_);
             }
         );
+        return true;
+    }
+
+    if (!accessToken_.empty()) {
+        connectWithToken(discordpp::AuthorizationTokenType::Bearer, accessToken_);
         return true;
     }
 
