@@ -128,7 +128,8 @@ function resolveExecutablePath(config: DiscordSocialBridgeConfig): string {
         return configured;
     }
 
-    return path.resolve(process.cwd(), 'native_bridge', 'build', 'discord_social_bridge');
+    const executableName = process.platform === 'win32' ? 'discord_social_bridge.exe' : 'discord_social_bridge';
+    return path.resolve(process.cwd(), 'native_bridge', 'build', executableName);
 }
 
 class DiscordSocialBridge {

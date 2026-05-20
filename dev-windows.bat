@@ -56,8 +56,24 @@ if not exist src\server\node_modules (
     echo.
 )
 
+echo Building Discord Social SDK native bridge...
+call src\server\native_bridge\build-windows.bat
+set BRIDGE_BUILD_CODE=%errorlevel%
+cd /d "%~dp0"
+if %BRIDGE_BUILD_CODE% neq 0 (
+    echo.
+    echo ERROR: Discord Social SDK native bridge build failed.
+    pause
+    exit /b %BRIDGE_BUILD_CODE%
+)
+echo.
+
+if not defined DISCORD_SOCIAL_BRIDGE_ENABLED set DISCORD_SOCIAL_BRIDGE_ENABLED=true
+if not defined DISCORD_SOCIAL_BRIDGE_EXECUTABLE set DISCORD_SOCIAL_BRIDGE_EXECUTABLE=%CD%\src\server\native_bridge\build\discord_social_bridge.exe
+
 :: SERVER BASLAT
 echo Starting server with Discord RPC ^(npm run dev:discord^)^...
+echo Discord Social SDK bridge: %DISCORD_SOCIAL_BRIDGE_EXECUTABLE%
 echo When it's ready, open the URL shown in the logs.
 echo.
 
