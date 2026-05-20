@@ -16,9 +16,9 @@ export class PetHandler {
     private static readonly PET_ACTIVE_BONUS_BASE_RATE = 0.09;
     private static readonly PET_BONUS_RATE_PER_LEVEL = 0.01;
     private static readonly MAX_PASSIVE_PET_SLOTS = 3;
-    private static readonly HATCHERY_RANK0_WEIGHT = 0.85;
-    private static readonly HATCHERY_RANK1_WEIGHT = 0.1;
-    private static readonly HATCHERY_RANK2_WEIGHT = 0.05;
+    private static readonly HATCHERY_RANK0_WEIGHT = 0.75;
+    private static readonly HATCHERY_RANK1_WEIGHT = 0.175;
+    private static readonly HATCHERY_RANK2_WEIGHT = 0.075;
     private static readonly HATCHED_EGG_PET_FOOD_AMOUNT = 1;
 
     private static sendMammothIdolUpdate(client: Client): void {
