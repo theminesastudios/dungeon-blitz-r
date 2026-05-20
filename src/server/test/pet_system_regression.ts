@@ -484,9 +484,9 @@ async function testHatcheryUsesRankWeightedEggRolls(): Promise<void> {
     await withPatchedRandom([
         0,
         0,
-        0.051,
+        0.076,
         0,
-        0.151,
+        0.251,
         0
     ], async () => {
         await PetHandler.handleRequestHatcheryEggs(client as never, Buffer.alloc(0));
