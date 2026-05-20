@@ -8,3 +8,4 @@ temp
 .DS_Store
 build/
 logs/
+client-crash.log
