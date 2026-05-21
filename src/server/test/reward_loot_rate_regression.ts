@@ -143,6 +143,10 @@ function hasItemLoot(client: FakeClient): boolean {
     );
 }
 
+function hasGoldLoot(client: FakeClient): boolean {
+    return Array.from(client.pendingLoot.values()).some((reward) => Number(reward?.gold ?? 0) > 0);
+}
+
 function getMaterialRarity(materialId: number): string {
     return String(GameData.MATERIALS.find((material) => Number(material.MaterialID ?? 0) === materialId)?.Rarity ?? '');
 }
@@ -364,7 +368,7 @@ async function testEnemyMaterialDropsWithoutExplicitDropFlag(): Promise<void> {
     assert.ok(findLoot(alpha, 'material'), 'enemy material should still drop when the boss roll succeeds and the packet omitted the material flag');
 }
 
-async function testLiveEnemyDoesNotDropItemLootForDefeatedPlayer(): Promise<void> {
+async function testLiveEnemyStillUsesDungeonDropTablesForDefeatedPlayer(): Promise<void> {
     const alpha = createFakeClient(9, 'Iota');
     alpha.authoritativeCurrentHp = 0;
     GlobalState.sessionsByToken.set(alpha.token, alpha as never);
@@ -393,10 +397,11 @@ async function testLiveEnemyDoesNotDropItemLootForDefeatedPlayer(): Promise<void
         }));
     });
 
-    assert.equal(hasItemLoot(alpha), false, 'live enemy reward packets should not create ghost item loot while the player is defeated');
+    assert.equal(hasItemLoot(alpha), true, 'live dungeon enemies should still use server-side item/material drop tables even when the player is defeated');
+    assert.equal(hasGoldLoot(alpha), false, 'false reward packets should not fall through to fallback gold');
 }
 
-async function testLiveFixedItemEnemyDoesNotDropWhenPacketHasNoItemFlags(): Promise<void> {
+async function testLiveFixedItemEnemyStillUsesDungeonDropTablesWhenPacketHasNoItemFlags(): Promise<void> {
     const alpha = createFakeClient(10, 'Kappa');
     GlobalState.sessionsByToken.set(alpha.token, alpha as never);
 
@@ -424,7 +429,8 @@ async function testLiveFixedItemEnemyDoesNotDropWhenPacketHasNoItemFlags(): Prom
         }));
     });
 
-    assert.equal(hasItemLoot(alpha), false, 'live FixedItem enemies should not create ghost item loot from packets with no item flags');
+    assert.equal(hasItemLoot(alpha), true, 'FixedItem dungeon enemies should still use server-side item/material drop tables when packet flags are false');
+    assert.equal(hasGoldLoot(alpha), false, 'false FixedItem reward packets should not fall through to fallback gold');
 }
 
 async function testGearRarityTracksValueTier(): Promise<void> {
@@ -619,13 +625,13 @@ async function main(): Promise<void> {
         GlobalState.levelEntities.clear();
         GlobalState.combatContributions.clear();
         GlobalState.entityLastRewardNonces.clear();
-        await testLiveEnemyDoesNotDropItemLootForDefeatedPlayer();
+        await testLiveEnemyStillUsesDungeonDropTablesForDefeatedPlayer();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.levelEntities.clear();
         GlobalState.combatContributions.clear();
         GlobalState.entityLastRewardNonces.clear();
-        await testLiveFixedItemEnemyDoesNotDropWhenPacketHasNoItemFlags();
+        await testLiveFixedItemEnemyStillUsesDungeonDropTablesWhenPacketHasNoItemFlags();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.levelEntities.clear();
