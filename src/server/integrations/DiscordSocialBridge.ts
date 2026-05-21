@@ -423,6 +423,13 @@ class DiscordSocialBridge {
             .slice(0, maxLength);
     }
 
+    private static escapeGameStatusText(value: string | null | undefined): string {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
     private sendControlMessage(payload: Record<string, unknown>): void {
         if (!this.child?.stdin.writable) {
             return;
@@ -501,8 +508,9 @@ class DiscordSocialBridge {
                 return;
             case 'chat':
                 {
-                    const username = String(payload.username ?? '').trim() || 'Discord';
-                    this.broadcastStatus(`${this.inboundPrefix} <${username}>: ${payload.message}`);
+                    const username = DiscordSocialBridge.escapeGameStatusText(String(payload.username ?? '').trim() || 'Discord');
+                    const message = DiscordSocialBridge.escapeGameStatusText(payload.message);
+                    this.broadcastStatus(`${this.inboundPrefix} &lt;${username}&gt;: ${message}`);
                 }
                 return;
             case 'lobby_ready':
