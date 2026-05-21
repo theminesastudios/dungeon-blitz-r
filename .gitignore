@@ -11,6 +11,9 @@ logs/
 src/server/data/runtime/*crash*.log
 src/server/data/discord_account_links.json
 .env
+.discord-social-token.json
+.discord-social-channel-link.json
 src/server/.env
 src/server/.discord-social-token.json
+src/server/.discord-social-channel-link.json
 src/server/native_bridge/build/

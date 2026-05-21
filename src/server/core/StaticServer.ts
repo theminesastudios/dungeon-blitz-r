@@ -331,6 +331,14 @@ export class StaticServer {
         this.app.get('/discord/link', async (req, res) => {
             const requestedEmail = String(req.query.email ?? '').trim() || this.resolveRequesterAccountEmail(req);
             const result = await this.discordAccountLinks.createAuthorizeUrl(requestedEmail);
+            if (result.ok && result.reason === 'already-linked' && result.link) {
+                const discordName = result.link.discordGlobalName || result.link.discordUsername || result.link.discordUserId;
+                res.type('text/html').send(
+                    `<h1>Discord already linked</h1><p>${escapeHtml(discordName)} is already linked to ${escapeHtml(result.link.email)}.</p>`
+                );
+                return;
+            }
+
             if (!result.ok || !result.authorizeUrl) {
                 res.status(result.reason === 'not-configured' ? 503 : 400).type('text/plain').send(result.message ?? result.reason);
                 return;
@@ -345,6 +353,11 @@ export class StaticServer {
             const statusCode = result.ok ? 200 : result.reason === 'not-configured' ? 503 : 400;
 
             res.setHeader('Cache-Control', 'no-store');
+            if (result.ok && result.reason === 'already-linked') {
+                res.status(200).json(result);
+                return;
+            }
+
             if (result.ok && result.authorizeUrl && req.query.redirect === '1') {
                 res.redirect(result.authorizeUrl);
                 return;

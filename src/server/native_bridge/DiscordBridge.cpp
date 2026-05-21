@@ -316,8 +316,21 @@ bool DiscordBridge::joinOrCreateLobby() {
             if (config_.enableChannelLinking) {
                 auto currentUser = client_->GetCurrentUserV2();
                 if (currentUser) {
+                    std::string linkedChannelId;
+                    bool alreadyLinked = false;
+                    const auto lobby = client_->GetLobbyHandle(lobbyId);
+                    if (lobby) {
+                        const auto linkedChannel = lobby->LinkedChannel();
+                        if (linkedChannel) {
+                            linkedChannelId = std::to_string(linkedChannel->Id());
+                            alreadyLinked = linkedChannelId == config_.linkedChannelId;
+                        }
+                    }
+
                     std::cout << "{\"type\":\"lobby_ready\",\"lobbyId\":\"" << lobbyId_
-                              << "\",\"userId\":\"" << currentUser->Id() << "\"}" << std::endl;
+                              << "\",\"userId\":\"" << currentUser->Id()
+                              << "\",\"alreadyLinked\":" << (alreadyLinked ? "true" : "false")
+                              << ",\"linkedChannelId\":\"" << jsonEscape(linkedChannelId) << "\"}" << std::endl;
                 }
             } else if (!config_.linkedChannelId.empty()) {
                 std::cerr << "[DiscordBridge] Channel linking disabled; lobby chat will stay in SDK lobby only." << std::endl;

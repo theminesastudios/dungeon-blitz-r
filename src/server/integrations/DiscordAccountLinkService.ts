@@ -28,6 +28,7 @@ export interface DiscordLinkStartResult {
     ok: boolean;
     reason: string;
     authorizeUrl?: string;
+    link?: DiscordAccountLinkRecord;
     message?: string;
 }
 
@@ -93,6 +94,16 @@ export class DiscordAccountLinkService {
                 ok: false,
                 reason: 'account-not-found',
                 message: 'No game account exists for that email.'
+            };
+        }
+
+        const existingLink = await this.store.findByEmail(normalizedEmail);
+        if (existingLink && existingLink.userId === userId) {
+            return {
+                ok: true,
+                reason: 'already-linked',
+                link: existingLink,
+                message: 'Discord account is already linked.'
             };
         }
 

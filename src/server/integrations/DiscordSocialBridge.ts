@@ -24,6 +24,7 @@ interface DiscordSocialBridgeConfig {
     executablePath?: string;
     workingDirectory?: string;
     tokenCachePath?: string;
+    channelLinkCachePath?: string;
     logPayloads?: boolean;
     inboundPrefix?: string;
 }
@@ -68,6 +69,8 @@ interface NativeBridgeInboundLobbyReady extends NativeBridgeInboundBase {
     type: 'lobby_ready';
     lobbyId: string;
     userId: string;
+    alreadyLinked?: boolean;
+    linkedChannelId?: string;
 }
 
 interface NativeBridgeInboundChannelLinked extends NativeBridgeInboundBase {
@@ -95,6 +98,13 @@ interface NativeBridgeInboundSendResult extends NativeBridgeInboundBase {
     ok: boolean;
     messageId?: string;
     error?: string;
+}
+
+interface DiscordChannelLinkCache {
+    appId: string;
+    channelId: string;
+    lobbyId: string;
+    linkedAt: string;
 }
 
 type NativeBridgeInbound =
@@ -217,6 +227,7 @@ class DiscordSocialBridge {
     private readonly executablePath: string;
     private readonly workingDirectory: string;
     private readonly tokenCachePath: string;
+    private readonly channelLinkCachePath: string;
     private readonly logPayloads: boolean;
     private readonly inboundPrefix: string;
     private readonly serverApi: DiscordSocialServerApi;
@@ -225,7 +236,6 @@ class DiscordSocialBridge {
     private nativeLobbyReady = false;
     private nativeChannelLinked = false;
     private nativeChannelLinkFailed = false;
-    private currentDiscordUserId = '';
     private started = false;
     private readonly pendingNativeOutbound: Array<Record<string, unknown>> = [];
 
@@ -254,6 +264,12 @@ class DiscordSocialBridge {
         this.tokenCachePath =
             String(this.config.tokenCachePath ?? path.resolve(process.cwd(), '.discord-social-token.json')).trim() ||
             path.resolve(process.cwd(), '.discord-social-token.json');
+        this.channelLinkCachePath =
+            String(
+                process.env.DISCORD_SOCIAL_CHANNEL_LINK_CACHE_PATH ??
+                this.config.channelLinkCachePath ??
+                path.resolve(process.cwd(), '.discord-social-channel-link.json')
+            ).trim() || path.resolve(process.cwd(), '.discord-social-channel-link.json');
         this.logPayloads = parseBoolean(process.env.DISCORD_SOCIAL_BRIDGE_LOG_PAYLOADS, Boolean(this.config.logPayloads));
         this.inboundPrefix = String(this.config.inboundPrefix ?? '[Discord]').trim() || '[Discord]';
         this.serverApi = new DiscordSocialServerApi();
@@ -292,7 +308,6 @@ class DiscordSocialBridge {
             this.nativeLobbyReady = false;
             this.nativeChannelLinked = false;
             this.nativeChannelLinkFailed = false;
-            this.currentDiscordUserId = '';
             this.child = null;
             console.warn(`[DiscordSocialBridge] Native bridge exited (code=${code ?? 'null'}, signal=${signal ?? 'null'}).`);
         });
@@ -496,6 +511,7 @@ class DiscordSocialBridge {
             case 'channel_linked':
                 this.nativeChannelLinked = true;
                 this.nativeChannelLinkFailed = false;
+                this.saveChannelLinkCache(payload.lobbyId ?? '', payload.channelId ?? this.channelId);
                 console.log(
                     `[DiscordSocialBridge] Discord Social SDK lobby ${payload.lobbyId ?? 'unknown'} ${payload.reusedExisting ? 'reused existing link for' : 'linked to'} channel ${payload.channelId ?? 'unknown'}.`
                 );
@@ -522,8 +538,22 @@ class DiscordSocialBridge {
     private async handleLobbyReady(payload: NativeBridgeInboundLobbyReady): Promise<void> {
         this.nativeLobbyReady = true;
         this.nativeChannelLinkFailed = false;
-        this.currentDiscordUserId = String(payload.userId ?? '').trim();
         if (!this.enableChannelLinking) {
+            this.flushPendingNativeOutbound();
+            return;
+        }
+
+        if (payload.alreadyLinked && String(payload.linkedChannelId ?? '').trim() === this.channelId) {
+            this.nativeChannelLinked = true;
+            this.saveChannelLinkCache(payload.lobbyId, this.channelId);
+            console.log(`[DiscordSocialBridge] Discord lobby ${payload.lobbyId} is already linked to channel ${this.channelId}; skipping channel link request.`);
+            this.flushPendingNativeOutbound();
+            return;
+        }
+
+        if (this.hasCachedChannelLink()) {
+            this.nativeChannelLinked = true;
+            console.log(`[DiscordSocialBridge] Discord channel ${this.channelId} is already linked; skipping channel link request.`);
             this.flushPendingNativeOutbound();
             return;
         }
@@ -559,32 +589,25 @@ class DiscordSocialBridge {
             return;
         }
 
-        if (!this.currentDiscordUserId) {
-            this.nativeChannelLinkFailed = true;
-            this.pendingNativeOutbound.splice(0);
-            this.broadcastStatus('Discord channel is already linked, but the bridge could not identify the authorized Discord user.');
-            return;
-        }
-
-        const granted = await this.serverApi.grantCanLinkLobby(existingLobbyId, this.currentDiscordUserId);
-        if (!granted) {
-            this.nativeChannelLinkFailed = true;
-            this.pendingNativeOutbound.splice(0);
-            this.broadcastStatus('Discord channel is already linked, and the bridge could not grant access to the existing lobby.');
-            return;
-        }
-
+        this.nativeChannelLinked = true;
+        this.nativeChannelLinkFailed = false;
+        this.saveChannelLinkCache(existingLobbyId, payload.channelId ?? this.channelId);
         console.warn(
-            `[DiscordSocialBridge] Channel ${payload.channelId ?? this.channelId} is already linked to lobby ${existingLobbyId}; trying to reuse that lobby.`
+            `[DiscordSocialBridge] Channel ${payload.channelId ?? this.channelId} is already linked to lobby ${existingLobbyId}; accepting existing link.`
         );
-        this.sendControlMessage({
-            type: 'use_lobby',
-            lobbyId: existingLobbyId,
-            channelId: payload.channelId ?? this.channelId
-        });
+        this.flushPendingNativeOutbound();
     }
 
     private handleChannelLinkFailed(payload: NativeBridgeInboundChannelLinkFailure): void {
+        if (payload.errorCode === 50237) {
+            this.nativeChannelLinked = true;
+            this.nativeChannelLinkFailed = false;
+            this.saveChannelLinkCache(payload.lobbyId ?? '', payload.channelId ?? this.channelId);
+            console.warn('[DiscordSocialBridge] Discord channel is already linked; accepting existing lobby chat link.');
+            this.flushPendingNativeOutbound();
+            return;
+        }
+
         this.nativeChannelLinkFailed = true;
         this.pendingNativeOutbound.splice(0);
         const code = Number.isFinite(payload.errorCode) && payload.errorCode ? ` code=${payload.errorCode}` : '';
@@ -593,6 +616,54 @@ class DiscordSocialBridge {
             ? ' The Discord channel is already linked to another lobby; use the same DISCORD_SOCIAL_LOBBY_SECRET or unlink that lobby before retrying.'
             : '';
         this.broadcastStatus(`Discord lobby channel linking failed${code}: ${summary}${conflictHint}`);
+    }
+
+    private hasCachedChannelLink(): boolean {
+        const cached = this.readChannelLinkCache();
+        return Boolean(cached && cached.appId === this.appId && cached.channelId === this.channelId);
+    }
+
+    private readChannelLinkCache(): DiscordChannelLinkCache | null {
+        if (!this.channelLinkCachePath || !fs.existsSync(this.channelLinkCachePath)) {
+            return null;
+        }
+
+        try {
+            const parsed = JSON.parse(fs.readFileSync(this.channelLinkCachePath, 'utf8')) as DiscordChannelLinkCache;
+            if (!parsed || typeof parsed !== 'object') {
+                return null;
+            }
+            return {
+                appId: String(parsed.appId ?? '').trim(),
+                channelId: String(parsed.channelId ?? '').trim(),
+                lobbyId: String(parsed.lobbyId ?? '').trim(),
+                linkedAt: String(parsed.linkedAt ?? '').trim()
+            };
+        } catch (error) {
+            console.warn('[DiscordSocialBridge] Failed to read Discord channel link cache:', error);
+            return null;
+        }
+    }
+
+    private saveChannelLinkCache(lobbyId: string, channelId: string): void {
+        const targetChannelId = String(channelId || this.channelId).trim();
+        if (!this.channelLinkCachePath || !this.appId || !targetChannelId) {
+            return;
+        }
+
+        const payload: DiscordChannelLinkCache = {
+            appId: this.appId,
+            channelId: targetChannelId,
+            lobbyId: String(lobbyId ?? '').trim(),
+            linkedAt: new Date().toISOString()
+        };
+
+        try {
+            fs.mkdirSync(path.dirname(this.channelLinkCachePath), { recursive: true });
+            fs.writeFileSync(this.channelLinkCachePath, JSON.stringify(payload, null, 2));
+        } catch (error) {
+            console.warn('[DiscordSocialBridge] Failed to write Discord channel link cache:', error);
+        }
     }
 
     private broadcastStatus(text: string): void {
