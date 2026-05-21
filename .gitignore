@@ -8,3 +8,5 @@ temp
 .DS_Store
 build/
 logs/
+src/server/data/runtime/client-crash.log
+src/server/test/.tmp/
