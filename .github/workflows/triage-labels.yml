@@ -139,9 +139,9 @@ jobs:
               const labels = collectAreaLabels(`${pr.title}\n${pr.body ?? ''}`, { includeTypeLikeLabels: true });
               const title = pr.title.toLowerCase();
 
-              if (/^(fix|bugfix|hotfix)(\(|:|!|\s)/.test(title)) labels.add('bugfix');
-              if (/^(feat|feature)(\(|:|!|\s)/.test(title)) labels.add('enhancement');
-              if (/^(docs|doc)(\(|:|!|\s)/.test(title)) labels.add('documentation');
+              if (/^(fix|bugfix|hotfix)[(:!\s]/.test(title)) labels.add('bugfix');
+              if (/^(feat|feature)[(:!\s]/.test(title)) labels.add('enhancement');
+              if (/^(docs|doc)[(:!\s]/.test(title)) labels.add('documentation');
 
               await addLabels(pr.number, labels);
               return;
