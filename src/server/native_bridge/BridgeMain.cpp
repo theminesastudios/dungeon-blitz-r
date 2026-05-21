@@ -172,7 +172,11 @@ int main() {
         emitJson(
             "{\"type\":\"chat\",\"username\":\"" + jsonEscape(message.username) +
             "\",\"authorId\":\"" + jsonNumberString(message.playerId) +
-            "\",\"message\":\"" + jsonEscape(message.message) + "\"}"
+            "\",\"channelId\":\"" + jsonNumberString(message.channelId) +
+            "\",\"messageId\":\"" + jsonNumberString(message.messageId) +
+            "\",\"sentTimestamp\":\"" + jsonNumberString(message.sentTimestamp) +
+            "\",\"message\":\"" + jsonEscape(message.message) +
+            "\",\"rawMessage\":\"" + jsonEscape(message.rawMessage) + "\"}"
         );
     });
 

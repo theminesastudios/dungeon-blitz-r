@@ -81,8 +81,12 @@ std::optional<ChatMessage> PacketParser::parsePublicChat(std::span<const std::ui
 
     return ChatMessage {
         .playerId = *playerId,
+        .channelId = 0,
+        .messageId = 0,
+        .sentTimestamp = 0,
         .username = *username,
         .message = *message,
+        .rawMessage = *message,
     };
 }
 

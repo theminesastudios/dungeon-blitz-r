@@ -389,12 +389,14 @@ bool DiscordBridge::joinOrCreateLobby() {
                 auto currentUser = client_->GetCurrentUserV2();
                 if (currentUser) {
                     std::string linkedChannelId;
+                    std::string linkedGuildId;
                     bool alreadyLinked = false;
                     const auto lobby = client_->GetLobbyHandle(lobbyId);
                     if (lobby) {
                         const auto linkedChannel = lobby->LinkedChannel();
                         if (linkedChannel) {
                             linkedChannelId = std::to_string(linkedChannel->Id());
+                            linkedGuildId = std::to_string(linkedChannel->GuildId());
                             alreadyLinked = linkedChannelId == config_.linkedChannelId;
                         }
                     }
@@ -402,7 +404,8 @@ bool DiscordBridge::joinOrCreateLobby() {
                     std::cout << "{\"type\":\"lobby_ready\",\"lobbyId\":\"" << lobbyId_
                               << "\",\"userId\":\"" << currentUser->Id()
                               << "\",\"alreadyLinked\":" << (alreadyLinked ? "true" : "false")
-                              << ",\"linkedChannelId\":\"" << jsonEscape(linkedChannelId) << "\"}" << std::endl;
+                              << ",\"linkedChannelId\":\"" << jsonEscape(linkedChannelId)
+                              << "\",\"linkedGuildId\":\"" << jsonEscape(linkedGuildId) << "\"}" << std::endl;
                 }
             } else if (!config_.linkedChannelId.empty()) {
                 std::cerr << "[DiscordBridge] Channel linking disabled; lobby chat will stay in SDK lobby only." << std::endl;
@@ -604,11 +607,13 @@ void DiscordBridge::handleIncomingDiscordMessage(const discordpp::MessageHandle&
     }
 
     std::string username;
+    auto authorId = message.AuthorId();
     if (const auto author = message.Author()) {
         username = resolveUserName(*author);
+        if (authorId == 0) {
+            authorId = author->Id();
+        }
     }
-
-    const auto authorId = message.AuthorId();
 
     if (username.empty() && client_ != nullptr && authorId != 0) {
         const auto author = client_->GetUser(authorId);
@@ -636,8 +641,12 @@ void DiscordBridge::handleIncomingDiscordMessage(const discordpp::MessageHandle&
 
     ChatMessage normalized {
         .playerId = authorId,
+        .channelId = message.ChannelId(),
+        .messageId = message.Id(),
+        .sentTimestamp = message.SentTimestamp(),
         .username = username,
         .message = message.Content(),
+        .rawMessage = message.RawContent(),
     };
 
     onDiscordMessage_(normalized);

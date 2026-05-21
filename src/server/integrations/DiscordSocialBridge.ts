@@ -53,7 +53,11 @@ interface NativeBridgeInboundChat extends NativeBridgeInboundBase {
     type: 'chat';
     username: string;
     authorId?: string;
+    channelId?: string;
+    messageId?: string;
+    sentTimestamp?: string;
     message: string;
+    rawMessage?: string;
 }
 
 interface NativeBridgeInboundReady extends NativeBridgeInboundBase {
@@ -72,6 +76,7 @@ interface NativeBridgeInboundLobbyReady extends NativeBridgeInboundBase {
     userId: string;
     alreadyLinked?: boolean;
     linkedChannelId?: string;
+    linkedGuildId?: string;
 }
 
 interface NativeBridgeInboundChannelLinked extends NativeBridgeInboundBase {
@@ -238,6 +243,7 @@ class DiscordSocialBridge {
     private nativeChannelLinked = false;
     private nativeChannelLinkFailed = false;
     private currentDiscordUserId = '';
+    private currentDiscordGuildId = '';
     private started = false;
     private readonly pendingNativeOutbound: Array<Record<string, unknown>> = [];
 
@@ -311,6 +317,7 @@ class DiscordSocialBridge {
             this.nativeChannelLinked = false;
             this.nativeChannelLinkFailed = false;
             this.currentDiscordUserId = '';
+            this.currentDiscordGuildId = '';
             this.child = null;
             console.warn(`[DiscordSocialBridge] Native bridge exited (code=${code ?? 'null'}, signal=${signal ?? 'null'}).`);
         });
@@ -421,10 +428,29 @@ class DiscordSocialBridge {
     private static cleanDiscordText(value: string | null | undefined, maxLength: number): string {
         return String(value ?? '')
             .replace(/[\r\n]+/g, ' ')
-            .replace(/[\u0000-\u001F\u007F-\u009F\u200B-\u200D\uFEFF]/g, '')
+            .replace(/[\u0000-\u001F\u007F-\u009F\u034F\u061C\u115F\u1160\u17B4\u17B5\u180E\u2000-\u200F\u2028-\u202F\u205F-\u206F\u2800\u3000\u3164\uFE00-\uFE0F\uFEFF\uFFA0]/g, '')
             .replace(/\s+/g, ' ')
             .trim()
             .slice(0, maxLength);
+    }
+
+    private static cleanGameDisplayName(value: string | null | undefined, maxLength = 80): string {
+        const raw = String(value ?? '');
+        const hadDecorativeCharacters = /[^\x20-\x7E]/.test(raw);
+        const cleaned = raw
+            .normalize('NFKC')
+            .replace(/[\r\n]+/g, ' ')
+            .replace(/[\u0000-\u001F\u007F-\u009F\u034F\u061C\u115F\u1160\u17B4\u17B5\u180E\u2000-\u200F\u2028-\u202F\u205F-\u206F\u2800\u3000\u3164\uFE00-\uFE0F\uFEFF\uFFA0]/g, '')
+            .replace(/[^A-Za-z0-9_. -]+/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .slice(0, maxLength);
+
+        if (hadDecorativeCharacters && /^[a-z][a-z0-9_. -]*$/.test(cleaned)) {
+            return cleaned[0].toUpperCase() + cleaned.slice(1);
+        }
+
+        return cleaned;
     }
 
     private static isResolvableDiscordUserId(value: string): boolean {
@@ -432,7 +458,7 @@ class DiscordSocialBridge {
     }
 
     private static needsDiscordNameResolution(value: string): boolean {
-        return !value || value === 'Discord' || /^DiscordUser#\d+$/.test(value);
+        return !value || value === 'Discord' || /^DiscordUser#\d+$/.test(value) || DiscordSocialBridge.isResolvableDiscordUserId(value);
     }
 
     private static escapeGameStatusText(value: string | null | undefined): string {
@@ -555,6 +581,7 @@ class DiscordSocialBridge {
         this.nativeLobbyReady = true;
         this.nativeChannelLinkFailed = false;
         this.currentDiscordUserId = String(payload.userId ?? '').trim();
+        this.currentDiscordGuildId = DiscordSocialBridge.cleanDiscordText(payload.linkedGuildId, 40);
         if (!this.enableChannelLinking) {
             this.flushPendingNativeOutbound();
             return;
@@ -595,13 +622,53 @@ class DiscordSocialBridge {
 
     private async handleDiscordChat(payload: NativeBridgeInboundChat): Promise<void> {
         const authorId = DiscordSocialBridge.cleanDiscordText(payload.authorId, 40);
+        const payloadChannelId = DiscordSocialBridge.cleanDiscordText(payload.channelId, 40);
+        const configuredChannelId = DiscordSocialBridge.cleanDiscordText(this.channelId, 40);
+        const sourceChannelId = configuredChannelId || (DiscordSocialBridge.isResolvableDiscordUserId(payloadChannelId) ? payloadChannelId : '');
+        const messageId = DiscordSocialBridge.cleanDiscordText(payload.messageId, 40);
+        const sentTimestamp = DiscordSocialBridge.cleanDiscordText(payload.sentTimestamp, 40);
         const canResolveAuthor = DiscordSocialBridge.isResolvableDiscordUserId(authorId);
-        let username = DiscordSocialBridge.cleanDiscordText(payload.username, 80);
+        let username = DiscordSocialBridge.cleanGameDisplayName(payload.username);
+        let resolvedFromDiscord = false;
 
-        if (canResolveAuthor) {
+        if (sourceChannelId && DiscordSocialBridge.isResolvableDiscordUserId(messageId)) {
+            const resolvedUsername = await this.serverApi.fetchMessageAuthorDisplayName(sourceChannelId, messageId, authorId);
+            if (resolvedUsername) {
+                username = DiscordSocialBridge.cleanGameDisplayName(resolvedUsername);
+                resolvedFromDiscord = true;
+            }
+        }
+
+        if (!resolvedFromDiscord && sourceChannelId) {
+            const resolvedUsername = await this.serverApi.fetchRecentChannelMessageAuthorDisplayName(
+                sourceChannelId,
+                payload.rawMessage || payload.message,
+                sentTimestamp
+            );
+            if (resolvedUsername) {
+                username = DiscordSocialBridge.cleanGameDisplayName(resolvedUsername);
+                resolvedFromDiscord = true;
+            }
+        }
+
+        if (DiscordSocialBridge.needsDiscordNameResolution(username) && canResolveAuthor) {
+            const resolvedUsername = await this.serverApi.fetchGuildMemberDisplayName(this.currentDiscordGuildId, authorId);
+            if (resolvedUsername) {
+                username = DiscordSocialBridge.cleanGameDisplayName(resolvedUsername);
+            }
+        }
+
+        if (DiscordSocialBridge.needsDiscordNameResolution(username) && canResolveAuthor) {
+            const resolvedUsername = await this.serverApi.fetchChannelMemberDisplayName(this.channelId, authorId);
+            if (resolvedUsername) {
+                username = DiscordSocialBridge.cleanGameDisplayName(resolvedUsername);
+            }
+        }
+
+        if (DiscordSocialBridge.needsDiscordNameResolution(username) && canResolveAuthor) {
             const resolvedUsername = await this.serverApi.fetchUserDisplayName(authorId);
             if (resolvedUsername) {
-                username = DiscordSocialBridge.cleanDiscordText(resolvedUsername, 80);
+                username = DiscordSocialBridge.cleanGameDisplayName(resolvedUsername);
             }
         }
 
