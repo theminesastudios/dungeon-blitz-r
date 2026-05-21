@@ -18,7 +18,20 @@ Active files:
 - `src/server/native_bridge/build-macos.sh`
 - `src/server/native_bridge/BridgeMain.cpp`
 - `src/server/native_bridge/DiscordBridge.cpp`
+
+Optional local files:
+
 - `src/server/native_bridge/discord_social_sdk/`
+
+The Discord Social SDK folder is intentionally not tracked on normal game branches.
+Single-player and regular local development do not need to download the SDK payload.
+Install it only when you want to build or run the native Discord Social SDK bridge:
+
+```bash
+npm run install:discord-social-sdk
+```
+
+Use `npm run install:discord-social-sdk -- --force` to replace an existing local copy.
 
 ## Architecture
 
@@ -52,7 +65,7 @@ The inbound message is still a status line rather than a true world-chat bubble 
 
 ## Build
 
-1. Place Discord Social SDK files in `src/server/native_bridge/discord_social_sdk/`
+1. Install Discord Social SDK files with `npm run install:discord-social-sdk`
 2. Build the bridge:
 
 ```bash

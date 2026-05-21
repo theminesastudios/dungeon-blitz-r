@@ -17,3 +17,4 @@ src/server/.env
 src/server/.discord-social-token.json
 src/server/.discord-social-channel-link.json
 src/server/native_bridge/build/
+src/server/native_bridge/discord_social_sdk/
