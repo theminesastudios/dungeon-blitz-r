@@ -6,7 +6,6 @@ import * as readline from 'readline';
 import { Client as GameClient } from '../core/Client';
 import { GlobalState } from '../core/GlobalState';
 import { BitBuffer } from '../network/protocol/bitBuffer';
-import { DiscordAccountLinkStore } from './DiscordAccountLinkStore';
 import { DiscordSocialServerApi } from './DiscordSocialServerApi';
 
 export type DiscordChatScope = 'public' | 'party' | 'guild' | 'officer';
@@ -221,7 +220,6 @@ class DiscordSocialBridge {
     private readonly logPayloads: boolean;
     private readonly inboundPrefix: string;
     private readonly serverApi: DiscordSocialServerApi;
-    private readonly accountLinks: DiscordAccountLinkStore;
     private child: ChildProcessWithoutNullStreams | null = null;
     private ready = false;
     private nativeLobbyReady = false;
@@ -259,7 +257,6 @@ class DiscordSocialBridge {
         this.logPayloads = parseBoolean(process.env.DISCORD_SOCIAL_BRIDGE_LOG_PAYLOADS, Boolean(this.config.logPayloads));
         this.inboundPrefix = String(this.config.inboundPrefix ?? '[Discord]').trim() || '[Discord]';
         this.serverApi = new DiscordSocialServerApi();
-        this.accountLinks = new DiscordAccountLinkStore();
     }
 
     public initialize(): void {
@@ -395,17 +392,12 @@ class DiscordSocialBridge {
     }
 
     private async formatDiscordChannelMessage(payload: DiscordRelayPayload): Promise<string> {
-        const senderName = DiscordSocialBridge.cleanDiscordText(payload.senderName, 80);
         const message = DiscordSocialBridge.cleanDiscordText(payload.message, 1800);
-        if (!senderName || !message) {
+        if (!message) {
             return '';
         }
 
-        const link = await this.accountLinks.findByEmail(payload.accountEmail);
-        const linkedDiscord = link?.discordUserId ? ` (<@${link.discordUserId}>)` : '';
-        const levelName = DiscordSocialBridge.cleanDiscordText(payload.levelName, 80);
-        const context = levelName ? ` [${levelName}]` : '';
-        return `**${senderName}${linkedDiscord}**${context}: ${message}`;
+        return message;
     }
 
     private static cleanDiscordText(value: string | null | undefined, maxLength: number): string {
@@ -495,7 +487,7 @@ class DiscordSocialBridge {
             case 'chat':
                 {
                     const username = String(payload.username ?? '').trim() || 'Discord';
-                    this.broadcastStatus(`${this.inboundPrefix} ${username}: ${payload.message}`);
+                    this.broadcastStatus(`${this.inboundPrefix} <${username}>: ${payload.message}`);
                 }
                 return;
             case 'lobby_ready':

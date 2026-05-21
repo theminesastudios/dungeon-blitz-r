@@ -376,13 +376,10 @@ bool DiscordBridge::sendToLobby(const ChatMessage& message) {
 
     std::unordered_map<std::string, std::string> metadata;
     metadata.emplace("character_name", message.username);
-    const auto content = message.username.empty()
-        ? message.message
-        : message.username + ": " + message.message;
 
     client_->SendLobbyMessageWithMetadata(
         lobbyId_,
-        content,
+        message.message,
         metadata,
         [](discordpp::ClientResult result, std::uint64_t messageId) {
             if (!result.Successful()) {
