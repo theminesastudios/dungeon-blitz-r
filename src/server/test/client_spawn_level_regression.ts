@@ -1576,6 +1576,49 @@ function testTutorialDungeonTraversalParrotStartsWhenPlayerReachesRoom(): void {
     );
 }
 
+function testParrotTeleportSkipsMovementWhenEnsureRespawnsKnownConflict(): void {
+    const client = createFakeClient('Alpha');
+    client.currentLevel = 'BridgeTown';
+    client.clientEntID = 101;
+
+    const parrot = {
+        id: 384606,
+        name: 'TravelParrot',
+        isPlayer: false,
+        x: 200,
+        y: 300,
+        v: 0,
+        team: 3,
+        entState: 0,
+        facingLeft: false
+    };
+    const conflictingLocalEntity = {
+        id: parrot.id,
+        name: 'LocalConflict',
+        isPlayer: true,
+        x: 150,
+        y: 260,
+        v: 0,
+        team: 1,
+        entState: 0
+    };
+
+    client.entities.set(parrot.id, conflictingLocalEntity);
+    client.knownEntityIds.add(parrot.id);
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    GlobalState.levelEntities.set('BridgeTown', new Map<number, any>([
+        [parrot.id, parrot]
+    ]));
+
+    (LevelHandler as any).teleportParrot(client as never, parrot.id, 500, 600);
+
+    assert.deepEqual(
+        client.sentPackets.map((packet) => packet.id),
+        [0x0F],
+        'parrot conflict recovery should respawn without same-tick 0x07 movement'
+    );
+}
+
 async function testDeepgardDragonMiniBossIntroStartsOnTriggerCrossing(): Promise<void> {
     const roomId = 2003367144;
     const leader = createFakeClient('Alpha');
@@ -1892,8 +1935,21 @@ function testSafeRemotePlayerIdsRelayMovementWithoutCollision(): void {
 
     assert.deepEqual(
         watcher.sentPackets.map((packet) => packet.id),
-        [0x0F, 0x07],
-        'safe remote player ids should still seed and relay movement even when the watcher has local outdoor mobs'
+        [0x0F],
+        'first safe remote player movement should seed but skip same-tick 0x07 to avoid LinkUpdater races'
+    );
+
+    watcher.sentPackets.length = 0;
+
+    LevelHandler.handleEntityIncrementalUpdate(
+        sender as never,
+        buildIncrementalUpdatePayload(remotePlayer.id, 2, 1, 0)
+    );
+
+    assert.deepEqual(
+        watcher.sentPackets.map((packet) => packet.id),
+        [0x07],
+        'safe remote player ids should relay movement after the viewer already knows the entity'
     );
 }
 
@@ -2822,6 +2878,11 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         testTutorialDungeonTraversalParrotStartsWhenPlayerReachesRoom();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        testParrotTeleportSkipsMovementWhenEnsureRespawnsKnownConflict();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();

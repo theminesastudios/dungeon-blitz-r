@@ -1988,6 +1988,12 @@ export class LevelHandler {
 
             // 2. Ensure client knows it. If not known, this sends a Spawn (0x0F).
             const wasKnown = client.knownEntityIds.has(parrotId);
+            const canSendMoveWithoutSeed = wasKnown && EntityHandler.canClientReceiveIncrementalEntityUpdate(
+                client,
+                client.currentLevel,
+                parrotId,
+                globalParrot ?? parrotEnt
+            );
             EntityHandler.ensureEntityKnown(client, client.currentLevel, parrotId);
 
             // 3. If it WAS already known, send an incremental move (0x07) to the client
@@ -1995,7 +2001,7 @@ export class LevelHandler {
             const suppressIncrementalMove =
                 client.currentLevel === 'TutorialDungeon' &&
                 String(parrotEnt.name ?? '') === 'IntroParrot';
-            if (wasKnown && (dx !== 0 || dy !== 0) && !suppressIncrementalMove) {
+            if (canSendMoveWithoutSeed && (dx !== 0 || dy !== 0) && !suppressIncrementalMove) {
                 EntityHandler.sendNpcMove(client, parrotId, dx, dy, parrotEnt.entState ?? 0, parrotEnt.facingLeft ?? false);
             }
         }
@@ -4201,7 +4207,8 @@ export class LevelHandler {
                 // Relaying remote movement into a joiner's local enemy can make
                 // LinkUpdater touch gfx before the client has built it.
                 continue;
-            } else if (!EntityHandler.ensureEntityKnown(other, client.currentLevel, entityId)) {
+            } else if (!EntityHandler.canClientResolveCanonicalEntity(other, entityId)) {
+                EntityHandler.ensureEntityKnown(other, client.currentLevel, entityId);
                 continue;
             }
 

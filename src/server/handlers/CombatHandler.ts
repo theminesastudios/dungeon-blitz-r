@@ -1198,7 +1198,11 @@ export class CombatHandler {
                 localEntity.health_delta = -maxHp;
             }
             other.entities.set(localEntityId, localEntity);
+            const canReceiveDefeatState = CombatHandler.canViewerReceiveIncrementalUpdate(other, levelScope, entityId, localEntity);
             other.knownEntityIds.delete(entityId);
+            if (!canReceiveDefeatState) {
+                continue;
+            }
             other.send(0x07, CombatHandler.buildEntityStatePayload(localEntityId, EntityState.DEAD, Boolean(localEntity.facingLeft)));
         }
     }
@@ -1221,7 +1225,10 @@ export class CombatHandler {
 
             let missingEntity = false;
             for (const entityId of referencedEntityIds) {
-                if (!CombatHandler.canViewerResolveCombatEntity(other, levelScope, entityId)) {
+                const canReceive = packetId === 0x07
+                    ? CombatHandler.canViewerReceiveIncrementalUpdate(other, levelScope, entityId)
+                    : CombatHandler.canViewerResolveCombatEntity(other, levelScope, entityId);
+                if (!canReceive) {
                     missingEntity = true;
                     break;
                 }
@@ -1259,7 +1266,10 @@ export class CombatHandler {
 
             let missingEntity = false;
             for (const entityId of dedupedRefs) {
-                if (!CombatHandler.canViewerResolveCombatEntity(other, levelScope, entityId)) {
+                const canReceive = packetId === 0x07
+                    ? CombatHandler.canViewerReceiveIncrementalUpdate(other, levelScope, entityId)
+                    : CombatHandler.canViewerResolveCombatEntity(other, levelScope, entityId);
+                if (!canReceive) {
                     missingEntity = true;
                     break;
                 }
@@ -1281,7 +1291,10 @@ export class CombatHandler {
         for (const other of CombatHandler.getCombatRecipients(anchor, includeAnchor)) {
             let missingEntity = false;
             for (const entityId of referencedEntityIds) {
-                if (!CombatHandler.canViewerResolveAnchoredCombatEntity(other, anchor, levelScope, entityId)) {
+                const canReceive = packetId === 0x07
+                    ? CombatHandler.canViewerReceiveIncrementalUpdate(other, levelScope, entityId)
+                    : CombatHandler.canViewerResolveAnchoredCombatEntity(other, anchor, levelScope, entityId);
+                if (!canReceive) {
                     missingEntity = true;
                     break;
                 }
@@ -1325,6 +1338,29 @@ export class CombatHandler {
         return isRoomScopedClientNpc;
     }
 
+    private static canViewerReceiveIncrementalUpdate(
+        viewer: Client,
+        levelScope: string,
+        entityId: number,
+        entitySnapshot: any = null
+    ): boolean {
+        if (entityId <= 0) {
+            return true;
+        }
+
+        const entity = entitySnapshot ?? GlobalState.levelEntities.get(levelScope)?.get(entityId);
+        if (!entity || !EntityHandler.canClientSeeEntity(viewer, entity)) {
+            return false;
+        }
+
+        return EntityHandler.canClientReceiveIncrementalEntityUpdate(
+            viewer,
+            getScopeLevelName(levelScope),
+            entityId,
+            entity
+        );
+    }
+
     private static broadcastPlayerHpDelta(
         targetSession: Client,
         delta: number,
@@ -1363,7 +1399,8 @@ export class CombatHandler {
         if (statusScoped) {
             const levelScope = getClientLevelScope(targetSession);
             for (const other of CombatHandler.getPlayerStatusRecipients(targetSession)) {
-                if (!CombatHandler.canViewerResolveAnchoredCombatEntity(other, targetSession, levelScope, targetSession.clientEntID)) {
+                if (!CombatHandler.canViewerReceiveIncrementalUpdate(other, levelScope, targetSession.clientEntID)) {
+                    EntityHandler.ensureEntityKnown(other, targetSession.currentLevel, targetSession.clientEntID);
                     continue;
                 }
 

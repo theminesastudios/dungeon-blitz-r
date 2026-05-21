@@ -784,6 +784,10 @@ async function testClientReportedDeadPoseDoesNotZeroPositiveHp(): Promise<void> 
     GlobalState.sessionsByToken.set(partyOtherRoom.token, partyOtherRoom as never);
     GlobalState.sessionsByToken.set(otherRoomWatcher.token, otherRoomWatcher as never);
 
+    sameRoomWatcher.knownEntityIds.add(victim.clientEntID);
+    partyOtherRoom.knownEntityIds.add(victim.clientEntID);
+    otherRoomWatcher.knownEntityIds.add(victim.clientEntID);
+
     await LevelHandler.handleEntityIncrementalUpdate(
         victim as never,
         buildIncrementalStatePayload(victim.clientEntID, EntityState.DEAD)
@@ -938,6 +942,7 @@ async function testHostileDeathStateDoesNotEchoBackToLocalVictim(): Promise<void
 
     GlobalState.sessionsByToken.set(victim.token, victim as never);
     GlobalState.sessionsByToken.set(sameRoomWatcher.token, sameRoomWatcher as never);
+    sameRoomWatcher.knownEntityIds.add(victim.clientEntID);
 
     await CombatHandler.handlePowerHit(victim as never, buildPowerHitPayload(victim.clientEntID, npc.id, 10, 55));
 

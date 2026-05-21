@@ -500,6 +500,34 @@ export class EntityHandler {
         return localId !== canonicalId && Boolean(client.entities?.has(localId));
     }
 
+    static canClientReceiveIncrementalEntityUpdate(
+        client: Client,
+        levelName: string | null | undefined,
+        canonicalEntityId: number,
+        entitySnapshot: any = null
+    ): boolean {
+        const canonicalId = Math.max(0, Math.round(Number(canonicalEntityId) || 0));
+        if (canonicalId <= 0) {
+            return true;
+        }
+
+        if (!EntityHandler.canClientResolveCanonicalEntity(client, canonicalId)) {
+            return false;
+        }
+
+        const resolvedLevelName = levelName || client.currentLevel || '';
+        const entity = entitySnapshot ?? EntityHandler.getLevelMap(resolvedLevelName, client.levelInstanceId)?.get(canonicalId);
+        if (!entity) {
+            return true;
+        }
+
+        if (!EntityHandler.canClientSeeEntity(client, entity)) {
+            return false;
+        }
+
+        return !EntityHandler.hasConflictingLocalKnownEntity(client, resolvedLevelName, canonicalId, entity);
+    }
+
     static resolveEntityAlias(client: Client, entityId: number): number {
         const localId = Math.max(0, Math.round(Number(entityId) || 0));
         if (localId <= 0) {
