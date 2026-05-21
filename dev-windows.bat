@@ -56,24 +56,47 @@ if not exist src\server\node_modules (
     echo.
 )
 
-echo Building Discord Social SDK native bridge...
-call src\server\native_bridge\build-windows.bat
-set BRIDGE_BUILD_CODE=%errorlevel%
-cd /d "%~dp0"
-if %BRIDGE_BUILD_CODE% neq 0 (
-    echo.
-    echo ERROR: Discord Social SDK native bridge build failed.
-    pause
-    exit /b %BRIDGE_BUILD_CODE%
-)
-echo.
+set BRIDGE_DIR=%CD%\src\server\native_bridge
+set BRIDGE_SDK_DIR=%BRIDGE_DIR%\discord_social_sdk
+set BRIDGE_EXECUTABLE=%BRIDGE_DIR%\build\discord_social_bridge.exe
+set BRIDGE_BUILD_READY=false
 
-if not defined DISCORD_SOCIAL_BRIDGE_ENABLED set DISCORD_SOCIAL_BRIDGE_ENABLED=true
-if not defined DISCORD_SOCIAL_NATIVE_BRIDGE_ENABLED set DISCORD_SOCIAL_NATIVE_BRIDGE_ENABLED=true
-if not defined DISCORD_SOCIAL_CHAT_RELAY_MODE set DISCORD_SOCIAL_CHAT_RELAY_MODE=native
+if exist "%BRIDGE_DIR%\build-windows.bat" if exist "%BRIDGE_SDK_DIR%" set BRIDGE_BUILD_READY=true
+
+if "%BRIDGE_BUILD_READY%"=="true" (
+    echo Building Discord Social SDK native bridge...
+    call "%BRIDGE_DIR%\build-windows.bat"
+    set BRIDGE_BUILD_CODE=!errorlevel!
+    cd /d "%~dp0"
+    if !BRIDGE_BUILD_CODE! neq 0 (
+        echo.
+        echo ERROR: Discord Social SDK native bridge build failed.
+        pause
+        exit /b !BRIDGE_BUILD_CODE!
+    )
+    echo.
+) else if exist "%BRIDGE_EXECUTABLE%" (
+    echo Discord Social SDK folder not installed; reusing existing native bridge build.
+    echo.
+) else (
+    echo Discord Social SDK native bridge is not installed; skipping native bridge build.
+    echo Run npm run install:discord-social-sdk to install the optional SDK files.
+    echo.
+)
+
+if not defined DISCORD_SOCIAL_BRIDGE_EXECUTABLE set DISCORD_SOCIAL_BRIDGE_EXECUTABLE=%BRIDGE_EXECUTABLE%
+
+if exist "%DISCORD_SOCIAL_BRIDGE_EXECUTABLE%" (
+    if not defined DISCORD_SOCIAL_BRIDGE_ENABLED set DISCORD_SOCIAL_BRIDGE_ENABLED=true
+    if not defined DISCORD_SOCIAL_NATIVE_BRIDGE_ENABLED set DISCORD_SOCIAL_NATIVE_BRIDGE_ENABLED=true
+    if not defined DISCORD_SOCIAL_CHAT_RELAY_MODE set DISCORD_SOCIAL_CHAT_RELAY_MODE=native
+) else (
+    set DISCORD_SOCIAL_BRIDGE_ENABLED=false
+    set DISCORD_SOCIAL_NATIVE_BRIDGE_ENABLED=false
+    set DISCORD_SOCIAL_CHAT_RELAY_MODE=off
+)
 set DISCORD_SOCIAL_APP_ID=1447954255452311695
 set DISCORD_SOCIAL_DEVICE_FLOW=false
-if not defined DISCORD_SOCIAL_BRIDGE_EXECUTABLE set DISCORD_SOCIAL_BRIDGE_EXECUTABLE=%CD%\src\server\native_bridge\build\discord_social_bridge.exe
 
 :: SERVER BASLAT
 echo Starting server with Discord RPC ^(npm run dev:discord^)^...
