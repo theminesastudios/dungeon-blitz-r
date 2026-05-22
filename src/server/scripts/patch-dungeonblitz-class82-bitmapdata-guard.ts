@@ -26,10 +26,11 @@ const DEFAULT_SWF = path.resolve(
   "cbp",
   "DungeonBlitz.swf",
 );
-const CLASS82_TARGET_TOTAL_PIXELS = 4194304;
+const CLASS82_TARGET_TOTAL_PIXELS = 65536;
 const CLASS82_LEGACY_TOTAL_PIXEL_GUARDS = [
   16777215,
   262144,
+  4194304,
 ];
 const SCALE_DIVISOR_PATCH = Buffer.from([0x24, 0x02, 0xa3]);
 

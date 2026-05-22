@@ -31,7 +31,7 @@ const LOCAL_REFRESH_URL = 'http://localhost:8000/p/cbp/DungeonBlitz.swf?fv=cbq&g
 const MULTIPLAYER_REFRESH_URL = `http://${MULTIPLAYER_HOST}/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp`;
 const LEGACY_REFRESH_URL = '/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp';
 const BITMAPDATA_TOTAL_PIXELS = 16777215;
-const CLASS82_SCENE_CACHE_SAFE_PIXELS = 4194304;
+const CLASS82_SCENE_CACHE_SAFE_PIXELS = 65536;
 const SUPERANIM_METHOD200_SAFE_PIXELS = 65536;
 const SUPERANIM_METHOD982_SAFE_PIXELS = 65536;
 const SUPERANIM_METHOD982_SAFE_AXIS = 8191;
