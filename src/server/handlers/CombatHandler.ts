@@ -155,11 +155,15 @@ export class CombatHandler {
     private static readonly HOSTILE_REGEN_RATE = CombatHandler.ORIGINAL_BRAIN_REGEN_RATE;
     private static readonly POWER_HIT_CLIENT_AUTHORITY_BOSS_LEVELS = new Set([
         'JC_Mission1',
-        'JC_Mission1Hard'
+        'JC_Mission1Hard',
+        'SRN_Mission1',
+        'SRN_Mission1Hard'
     ]);
     private static readonly POWER_HIT_CLIENT_AUTHORITY_BOSS_NAMES = new Set([
         'ImperialChampion',
-        'ImperialChampionHard'
+        'ImperialChampionHard',
+        'LizardLord',
+        'LizardLordHard'
     ]);
     private static readonly HOSTILE_BASE_HITPOINTS = [
         100, 4920, 5580, 6020, 6520, 7040, 7580, 8180, 8800, 9480, 10180, 10960, 11740, 12640, 13540, 14540,
@@ -1958,6 +1962,9 @@ export class CombatHandler {
             CombatHandler.shouldMirrorClientSpawnEntityToParty(levelName, destroyedEntity)
         );
         const shouldRelayDestroy = EntityHandler.shouldRelayEntityToOtherClients(levelName, destroyedEntity);
+        if (destroyedEntity && contributionSnapshot?.contributors?.length) {
+            destroyedEntity.clientDefeatVerified = true;
+        }
 
         const isUnverifiedDungeonBossDestroy =
             destroyedEntity &&

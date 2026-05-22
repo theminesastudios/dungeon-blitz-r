@@ -66,6 +66,18 @@ function createEntityDestroyPacket(entityId: number): Buffer {
     return bb.toBuffer();
 }
 
+function createPowerHitPacket(targetId: number, sourceId: number, damage: number): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(targetId);
+    bb.writeMethod4(sourceId);
+    bb.writeMethod24(damage);
+    bb.writeMethod4(77);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    return bb.toBuffer();
+}
+
 function createEntityStatePacket(entityId: number, entState: number): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod4(entityId);
@@ -216,6 +228,113 @@ async function testLiveRequiredBossDeadStateIsIgnored(): Promise<void> {
     assert.equal(Number(GlobalState.levelEntities.get(levelScope)?.get(bossId)?.entState), EntityState.ACTIVE);
 }
 
+async function testContributedClientSpawnedBossDestroyCompletes(): Promise<void> {
+    ensureLevelConfigLoaded();
+
+    const client = createClient(5005);
+    client.currentLevel = 'SRN_Mission1';
+    client.character.CurrentLevel = { name: 'SRN_Mission1', x: 0, y: 0 };
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    const levelScope = `${client.currentLevel}#${client.levelInstanceId}`;
+    const bossId = 603;
+    const bossEntity = {
+        id: bossId,
+        name: 'LizardLord',
+        isPlayer: false,
+        clientSpawned: true,
+        team: EntityTeam.ENEMY,
+        entRank: 'Boss',
+        hp: 100,
+        maxHp: 100,
+        entState: EntityState.ACTIVE,
+        dead: false,
+        ownerToken: client.token
+    };
+    const playerEntity = {
+        id: client.clientEntID,
+        name: client.character.name,
+        isPlayer: true,
+        team: EntityTeam.PLAYER,
+        entState: EntityState.ACTIVE,
+        dead: false
+    };
+
+    client.entities.set(client.clientEntID!, playerEntity);
+    GlobalState.levelEntities.set(levelScope, new Map<number, any>([
+        [client.clientEntID!, playerEntity],
+        [bossId, bossEntity]
+    ]));
+
+    const originalEnemyDefeat = MissionHandler.handleEnemyDefeatMissionProgress;
+    const originalForcedCompletion = MissionHandler.handleForcedDungeonBossCompletion;
+    const invokedTokens: number[] = [];
+
+    MissionHandler.handleEnemyDefeatMissionProgress = async () => undefined;
+    MissionHandler.handleForcedDungeonBossCompletion = async (completionClient: any) => {
+        invokedTokens.push(Number(completionClient?.token ?? 0));
+    };
+
+    try {
+        await CombatHandler.handlePowerHit(client as never, createPowerHitPacket(bossId, client.clientEntID!, 5));
+        await CombatHandler.handleEntityDestroy(client as never, createEntityDestroyPacket(bossId));
+    } finally {
+        MissionHandler.handleEnemyDefeatMissionProgress = originalEnemyDefeat;
+        MissionHandler.handleForcedDungeonBossCompletion = originalForcedCompletion;
+    }
+
+    assert.deepEqual(invokedTokens, [client.token]);
+    assert.notEqual(GlobalState.levelEntities.get(levelScope)?.has(bossId), true);
+}
+
+async function testTowerTuataraOneHpBossDestroyCompletes(): Promise<void> {
+    ensureLevelConfigLoaded();
+
+    const client = createClient(6006);
+    client.currentLevel = 'SRN_Mission1';
+    client.character.CurrentLevel = { name: 'SRN_Mission1', x: 0, y: 0 };
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    const levelScope = `${client.currentLevel}#${client.levelInstanceId}`;
+    const bossId = 604;
+    const bossEntity = {
+        id: bossId,
+        name: 'LizardLord',
+        isPlayer: false,
+        clientSpawned: true,
+        team: EntityTeam.ENEMY,
+        entRank: 'Boss',
+        hp: 1,
+        maxHp: 100,
+        entState: EntityState.ACTIVE,
+        dead: false,
+        ownerToken: client.token
+    };
+
+    GlobalState.levelEntities.set(levelScope, new Map<number, any>([[bossId, bossEntity]]));
+
+    const originalEnemyDefeat = MissionHandler.handleEnemyDefeatMissionProgress;
+    const originalForcedCompletion = MissionHandler.handleForcedDungeonBossCompletion;
+    const invokedTokens: number[] = [];
+
+    MissionHandler.handleEnemyDefeatMissionProgress = async () => undefined;
+    MissionHandler.handleForcedDungeonBossCompletion = async (completionClient: any) => {
+        invokedTokens.push(Number(completionClient?.token ?? 0));
+    };
+
+    try {
+        await CombatHandler.handleEntityDestroy(client as never, createEntityDestroyPacket(bossId));
+    } finally {
+        MissionHandler.handleEnemyDefeatMissionProgress = originalEnemyDefeat;
+        MissionHandler.handleForcedDungeonBossCompletion = originalForcedCompletion;
+    }
+
+    assert.deepEqual(invokedTokens, [client.token]);
+    assert.notEqual(GlobalState.levelEntities.get(levelScope)?.has(bossId), true);
+}
+
 async function main(): Promise<void> {
     const sessionsByToken = new Map(GlobalState.sessionsByToken);
     const levelEntities = new Map(GlobalState.levelEntities);
@@ -226,6 +345,8 @@ async function main(): Promise<void> {
         await testBossCompletionUsesAuthorityClientWhenKillerIsNotAuthority();
         await testLiveRequiredBossDestroyIsIgnored();
         await testLiveRequiredBossDeadStateIsIgnored();
+        await testContributedClientSpawnedBossDestroyCompletes();
+        await testTowerTuataraOneHpBossDestroyCompletes();
     } finally {
         GlobalState.sessionsByToken = sessionsByToken;
         GlobalState.levelEntities = levelEntities;

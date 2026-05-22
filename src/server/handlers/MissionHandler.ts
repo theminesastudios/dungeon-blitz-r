@@ -90,11 +90,15 @@ export class MissionHandler {
     static readonly DUNGEON_COMPLETION_SKIT_SETTLE_MS = 1500;
     private static readonly CLIENT_AUTHORITY_REQUIRED_BOSS_LEVELS = new Set([
         'JC_Mission1',
-        'JC_Mission1Hard'
+        'JC_Mission1Hard',
+        'SRN_Mission1',
+        'SRN_Mission1Hard'
     ]);
     private static readonly CLIENT_AUTHORITY_REQUIRED_BOSS_NAMES = new Set([
         'ImperialChampion',
-        'ImperialChampionHard'
+        'ImperialChampionHard',
+        'LizardLord',
+        'LizardLordHard'
     ]);
     static readonly DUNGEON_COMPLETION_MAX_DEFER_MS = 15000;
     static readonly CRAFT_TOWN_TUTORIAL_COMPLETION_DELAY_MS = 43 * 250;
@@ -125,6 +129,8 @@ export class MissionHandler {
         'JC_Mission1Hard',
         'SD_Mission3',
         'SD_Mission3Hard',
+        'SRN_Mission1',
+        'SRN_Mission1Hard',
         'SRN_Mission4',
         'SRN_Mission4Hard'
     ]);
@@ -135,6 +141,8 @@ export class MissionHandler {
         JC_Mission1Hard: new Set(['ImperialChampion', 'ImperialChampionHard']),
         SD_Mission3: new Set(['OutlanderWyrm']),
         SD_Mission3Hard: new Set(['OutlanderWyrmHard']),
+        SRN_Mission1: new Set(['LizardLord']),
+        SRN_Mission1Hard: new Set(['LizardLordHard']),
         SRN_Mission4: new Set(['WyrmGreat']),
         SRN_Mission4Hard: new Set(['WyrmGreatHard'])
     };
@@ -2967,6 +2975,10 @@ export class MissionHandler {
 
     static shouldIgnoreUnverifiedDungeonBossDefeat(levelName: string | null | undefined, entity: any): boolean {
         if (!MissionHandler.isRequiredDungeonCompletionBossEntity(levelName, entity)) {
+            return false;
+        }
+
+        if (Boolean(entity?.clientDefeatVerified)) {
             return false;
         }
 

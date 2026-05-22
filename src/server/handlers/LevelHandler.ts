@@ -4141,6 +4141,16 @@ export class LevelHandler {
             !isSelf &&
             !ent.isPlayer &&
             Number(ent.team ?? 0) === EntityTeam.ENEMY;
+        if (isEnemyEntity && entState === EntityState.DEAD) {
+            const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+            const contributionSnapshot = CombatHandler.getContributionSnapshot(getClientLevelScope(client), entityId);
+            if (contributionSnapshot.contributors.length) {
+                ent.clientDefeatVerified = true;
+                if (levelEntity && levelEntity !== ent) {
+                    levelEntity.clientDefeatVerified = true;
+                }
+            }
+        }
         const shouldIgnoreUnverifiedDungeonBossDeadState =
             isEnemyEntity &&
             entState === EntityState.DEAD &&
