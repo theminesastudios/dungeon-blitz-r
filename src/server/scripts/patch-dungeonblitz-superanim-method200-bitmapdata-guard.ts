@@ -32,8 +32,9 @@ const METHOD982_OLDER_SAFE_TOTAL_PIXELS = 4096;
 const METHOD982_OLDEST_SAFE_TOTAL_PIXELS = 16384;
 const METHOD982_FORCED_BITMAP_SIZE = 1;
 const METHOD982_PREVIOUS_FORCED_BITMAP_SIZES = [64, 128, 256, 512, 2048];
-const METHOD200_SAFE_TOTAL_PIXELS = 65536;
-const METHOD200_PREVIOUS_SAFE_TOTAL_PIXELS = 16777215;
+const METHOD200_SAFE_TOTAL_PIXELS = 16384;
+const METHOD200_PREVIOUS_SAFE_TOTAL_PIXELS = 65536;
+const METHOD200_OLDER_SAFE_TOTAL_PIXELS = 16777215;
 
 type Operand = [Instruction["operands"][number][0], number];
 type InsertedInstruction =
@@ -803,10 +804,13 @@ function patchMethod200(swfPath: string, verify: boolean): boolean {
   const heightName = findRequiredMultiname(abc, "height");
   const totalPixelsIntIndex = findRequiredInt(abc, METHOD200_SAFE_TOTAL_PIXELS);
   const previousTotalPixelsIntIndex = findRequiredInt(abc, METHOD200_PREVIOUS_SAFE_TOTAL_PIXELS);
+  const olderTotalPixelsIntIndex = findRequiredInt(abc, METHOD200_OLDER_SAFE_TOTAL_PIXELS);
   const directGuard = assembleInserted(productDimensionGuard(10, 11, totalPixelsIntIndex, 128));
   const croppedGuard = assembleInserted(productCroppedDimensionGuard(widthName, heightName, totalPixelsIntIndex, 128));
   const directPreviousGuard = assembleInserted(productDimensionGuard(10, 11, previousTotalPixelsIntIndex));
   const croppedPreviousGuard = assembleInserted(productCroppedDimensionGuard(widthName, heightName, previousTotalPixelsIntIndex));
+  const directOlderGuard = assembleInserted(productDimensionGuard(10, 11, olderTotalPixelsIntIndex));
+  const croppedOlderGuard = assembleInserted(productCroppedDimensionGuard(widthName, heightName, olderTotalPixelsIntIndex));
   const noProductDirectGuard = assembleInserted(dimensionGuard(10, 11));
   const noProductCroppedGuard = assembleInserted(croppedDimensionGuard(widthName, heightName));
   const noProductCroppedFallbackGuard = assembleInserted(croppedDimensionGuardWithFallback(widthName, heightName, 128));
@@ -818,6 +822,8 @@ function patchMethod200(swfPath: string, verify: boolean): boolean {
   const croppedPatched = hasExactGuardBefore(code, croppedCtor.offset, croppedGuard);
   const directPreviousPatched = hasExactGuardBefore(code, directCtor.offset, directPreviousGuard);
   const croppedPreviousPatched = hasExactGuardBefore(code, croppedCtor.offset, croppedPreviousGuard);
+  const directOlderPatched = hasExactGuardBefore(code, directCtor.offset, directOlderGuard);
+  const croppedOlderPatched = hasExactGuardBefore(code, croppedCtor.offset, croppedOlderGuard);
   const directNoProductPatched = hasExactGuardBefore(code, directCtor.offset, noProductDirectGuard);
   const croppedNoProductPatched = hasExactGuardBefore(code, croppedCtor.offset, noProductCroppedGuard);
   const croppedNoProductFallbackPatched = hasExactGuardBefore(code, croppedCtor.offset, noProductCroppedFallbackGuard);
@@ -845,6 +851,12 @@ function patchMethod200(swfPath: string, verify: boolean): boolean {
         end: directCtor.offset,
         data: directGuard,
       });
+    } else if (directOlderPatched) {
+      edits.push({
+        start: directCtor.offset - directOlderGuard.length,
+        end: directCtor.offset,
+        data: directGuard,
+      });
     } else if (directNoProductPatched) {
       edits.push({
         start: directCtor.offset - noProductDirectGuard.length,
@@ -865,6 +877,12 @@ function patchMethod200(swfPath: string, verify: boolean): boolean {
     if (croppedPreviousPatched) {
       edits.push({
         start: croppedCtor.offset - croppedPreviousGuard.length,
+        end: croppedCtor.offset,
+        data: croppedGuard,
+      });
+    } else if (croppedOlderPatched) {
+      edits.push({
+        start: croppedCtor.offset - croppedOlderGuard.length,
         end: croppedCtor.offset,
         data: croppedGuard,
       });

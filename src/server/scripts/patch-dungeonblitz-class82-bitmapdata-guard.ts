@@ -31,6 +31,7 @@ const CLASS82_LEGACY_TOTAL_PIXEL_GUARDS = [
   16777215,
   262144,
 ];
+const CLASS82_MAX_SCENE_CACHE_SCALE = 16;
 const SCALE_DIVISOR_PATCH = Buffer.from([0x24, 0x02, 0xa3]);
 
 type Operand = [Instruction["operands"][number][0], number];
@@ -57,8 +58,8 @@ function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
         "Usage:",
         "  ts-node src/server/scripts/patch-dungeonblitz-class82-bitmapdata-guard.ts [--verify] [--swf <path>]",
         "",
-        "Patches class_82.method_193 so oversized scene cache BitmapData",
-        "allocations are reduced to a safe 1x1 transparent bitmap instead of crashing Flash.",
+        "Patches class_82.method_193 so invalid scene cache scale/dimensions",
+        "are reduced to a safe 1x1 transparent bitmap instead of crashing Flash.",
       ].join("\n"));
       process.exit(0);
     }
@@ -295,6 +296,29 @@ function dimensionGuard(widthLocal: number, heightLocal: number, totalPixelsIntI
   ];
 }
 
+function scaleGuard(scaleLocal: number): InsertedInstruction[] {
+  return [
+    getLocal(scaleLocal),
+    getLocal(scaleLocal),
+    { opcode: 0xab },
+    { opcode: 0x12, branchTo: "invalid" },
+    getLocal(scaleLocal),
+    { opcode: 0x24, operands: [["s8", 0]] },
+    { opcode: 0xaf },
+    { opcode: 0x12, branchTo: "invalid" },
+    getLocal(scaleLocal),
+    { opcode: 0x24, operands: [["s8", CLASS82_MAX_SCENE_CACHE_SCALE]] },
+    { opcode: 0xaf },
+    { opcode: 0x11, branchTo: "invalid" },
+    { opcode: 0x10, branchTo: "ok" },
+    { label: "invalid" },
+    { opcode: 0x24, operands: [["s8", 1]] },
+    { opcode: 0x75 },
+    setLocal(scaleLocal),
+    { label: "ok" },
+  ];
+}
+
 function findRequiredInt(abc: ReturnType<typeof parseAbc>, value: number): number {
   const index = abc.intValues.findIndex((candidate) => candidate === value);
   if (index < 0) {
@@ -342,7 +366,10 @@ function findBitmapDataConstructor(
   throw new PatchError(`Could not find BitmapData constructor for locals ${widthLocal}/${heightLocal}`);
 }
 
-function findScaleAssignmentInsertOffset(instructions: Instruction[], abc: ReturnType<typeof parseAbc>): number {
+function findScaleAssignmentOffsets(
+  instructions: Instruction[],
+  abc: ReturnType<typeof parseAbc>,
+): { divisorInsertOffset: number; guardInsertOffset: number } {
   for (let index = 0; index < instructions.length - 7; index += 1) {
     const self = instructions[index];
     const var1 = instructions[index + 1];
@@ -368,7 +395,10 @@ function findScaleAssignmentInsertOffset(instructions: Instruction[], abc: Retur
       setScale.opcode === 0x63 &&
       setScale.operands[0]?.[1] === 6
     ) {
-      return convert.offset;
+      return {
+        divisorInsertOffset: convert.offset,
+        guardInsertOffset: setScale.offset + setScale.size,
+      };
     }
   }
 
@@ -382,6 +412,10 @@ function hasExactGuardBefore(code: Buffer, constructorOffset: number, guard: Buf
 function hasScaleDivisorPatch(code: Buffer, insertOffset: number): boolean {
   return insertOffset >= SCALE_DIVISOR_PATCH.length &&
     code.subarray(insertOffset - SCALE_DIVISOR_PATCH.length, insertOffset).equals(SCALE_DIVISOR_PATCH);
+}
+
+function hasScaleGuardPatch(code: Buffer, insertOffset: number, guard: Buffer): boolean {
+  return code.subarray(insertOffset, insertOffset + guard.length).equals(guard);
 }
 
 function getInstanceMethod(swfPath: string, className: string, methodName: string) {
@@ -438,28 +472,33 @@ function writePatchedMethod(
 function patchSwf(swfPath: string, verify: boolean): void {
   const { ctx, abc, methodBody, code, instructions } = getInstanceMethod(swfPath, "class_82", "method_193");
   const constructor = findBitmapDataConstructor(instructions, abc, 8, 9);
-  const scaleInsertOffset = findScaleAssignmentInsertOffset(instructions, abc);
+  const scaleOffsets = findScaleAssignmentOffsets(instructions, abc);
   const targetTotalPixelsIntIndex = findRequiredInt(abc, CLASS82_TARGET_TOTAL_PIXELS);
   const guard = assembleInserted(dimensionGuard(8, 9, targetTotalPixelsIntIndex));
+  const cacheScaleGuard = assembleInserted(scaleGuard(6));
   const legacyGuards = CLASS82_LEGACY_TOTAL_PIXEL_GUARDS
     .map((totalPixels) => findOptionalInt(abc, totalPixels))
     .filter((index): index is number => index !== null)
     .map((index) => assembleInserted(dimensionGuard(8, 9, index)));
   const hasGuard = hasExactGuardBefore(code, constructor.offset, guard);
-  const hasScalePatch = hasScaleDivisorPatch(code, scaleInsertOffset);
+  const hasScalePatch = hasScaleDivisorPatch(code, scaleOffsets.divisorInsertOffset);
+  const hasScaleGuard = hasScaleGuardPatch(code, scaleOffsets.guardInsertOffset, cacheScaleGuard);
 
-  if (hasGuard && hasScalePatch) {
+  if (hasGuard && hasScalePatch && hasScaleGuard) {
     console.log(`${swfPath}: already patched (class_82.method_193 BitmapData guard present).`);
     return;
   }
 
   if (verify) {
-    throw new PatchError(`${swfPath}: verify failed; class_82.method_193 BitmapData guard or scale divisor is missing.`);
+    throw new PatchError(`${swfPath}: verify failed; class_82.method_193 BitmapData guard, scale divisor, or scale guard is missing.`);
   }
 
   const edits: Array<{ start: number; end: number; data: Buffer }> = [];
   if (!hasScalePatch) {
-    edits.push({ start: scaleInsertOffset, end: scaleInsertOffset, data: SCALE_DIVISOR_PATCH });
+    edits.push({ start: scaleOffsets.divisorInsertOffset, end: scaleOffsets.divisorInsertOffset, data: SCALE_DIVISOR_PATCH });
+  }
+  if (!hasScaleGuard) {
+    edits.push({ start: scaleOffsets.guardInsertOffset, end: scaleOffsets.guardInsertOffset, data: cacheScaleGuard });
   }
   if (!hasGuard) {
     const legacyGuard = legacyGuards.find((candidate) => hasExactGuardBefore(code, constructor.offset, candidate));

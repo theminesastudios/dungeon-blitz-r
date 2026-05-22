@@ -2718,13 +2718,18 @@ export class LevelHandler {
         const insideTriggerBand =
             currentY >= LevelHandler.BACK_ALLEY_DEALS_BOSS_TRIGGER_MIN_Y &&
             currentY <= LevelHandler.BACK_ALLEY_DEALS_BOSS_TRIGGER_MAX_Y;
+        const alreadyPastTrigger = currentX >= LevelHandler.BACK_ALLEY_DEALS_BOSS_TRIGGER_X;
 
-        if (!crossedTrigger || !insideTriggerBand) {
+        if (!(crossedTrigger || alreadyPastTrigger) || !insideTriggerBand) {
             return;
         }
 
         for (const other of LevelHandler.forLevelRecipients(client, true)) {
             if (!other.triggeredLevelStates.has(triggerKey)) {
+                other.currentRoomId = roomId;
+                if (!LevelHandler.hasRoomEventStarted(other, roomId)) {
+                    LevelHandler.sendRoomEventStart(other, roomId, true);
+                }
                 other.triggeredLevelStates.add(triggerKey);
                 LevelHandler.sendRoomTriggerState(other, roomId, 'am_Trigger_Boss');
             }

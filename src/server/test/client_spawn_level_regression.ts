@@ -1708,6 +1708,118 @@ async function testDeepgardDragonMiniBossIntroIgnoresWrongVerticalBand(): Promis
     assert.equal(client.triggeredLevelStates.has('AC_Mission1Hard:2003367144:am_Trigger_Cutscene'), false);
 }
 
+async function testBackAlleyDealsBossIntroStartsArenaRoomBeforeTrigger(): Promise<void> {
+    const roomId = 2553897284;
+    const leader = createFakeClient('Alpha');
+    const follower = createFakeClient('Beta');
+    leader.currentLevel = 'JC_Mission2';
+    follower.currentLevel = 'JC_Mission2';
+    leader.levelInstanceId = 'back-alley-run';
+    follower.levelInstanceId = 'back-alley-run';
+    leader.currentRoomId = 0;
+    follower.currentRoomId = 0;
+    leader.clientEntID = 9301;
+    follower.clientEntID = 9302;
+    leader.entities.set(leader.clientEntID, {
+        id: leader.clientEntID,
+        name: 'Alpha',
+        isPlayer: true,
+        x: 25360,
+        y: 3259,
+        v: 0,
+        team: 1
+    });
+    follower.entities.set(follower.clientEntID, {
+        id: follower.clientEntID,
+        name: 'Beta',
+        isPlayer: true,
+        x: 25300,
+        y: 3259,
+        v: 0,
+        team: 1
+    });
+    GlobalState.sessionsByToken.set(leader.token, leader as never);
+    GlobalState.sessionsByToken.set(follower.token, follower as never);
+
+    await LevelHandler.handleEntityIncrementalUpdate(
+        leader as never,
+        buildIncrementalUpdatePayload(leader.clientEntID, 160, 0, 0)
+    );
+
+    const leaderRoomStarts = leader.sentPackets
+        .filter((packet) => packet.id === 0xA5)
+        .map((packet) => parseRoomEventStart(packet.payload));
+    const followerRoomStarts = follower.sentPackets
+        .filter((packet) => packet.id === 0xA5)
+        .map((packet) => parseRoomEventStart(packet.payload));
+    const leaderTriggers = leader.sentPackets
+        .filter((packet) => packet.id === 0x40)
+        .map((packet) => parseLevelState(packet.payload));
+    const followerTriggers = follower.sentPackets
+        .filter((packet) => packet.id === 0x40)
+        .map((packet) => parseLevelState(packet.payload));
+
+    assert.deepEqual(leaderRoomStarts, [{ roomId, flag: true }]);
+    assert.deepEqual(followerRoomStarts, [{ roomId, flag: true }]);
+    assert.deepEqual(leaderTriggers, [{ key: `${roomId}^Trigger^am_Trigger_Boss`, value: '' }]);
+    assert.deepEqual(followerTriggers, [{ key: `${roomId}^Trigger^am_Trigger_Boss`, value: '' }]);
+    assert.equal(leader.currentRoomId, roomId);
+    assert.equal(follower.currentRoomId, roomId);
+    assert.equal(leader.startedRoomEvents.has(`JC_Mission2:${roomId}`), true);
+    assert.equal(follower.startedRoomEvents.has(`JC_Mission2:${roomId}`), true);
+    assert.equal(leader.triggeredLevelStates.has(`JC_Mission2:${roomId}:am_Trigger_Boss`), true);
+    assert.equal(follower.triggeredLevelStates.has(`JC_Mission2:${roomId}:am_Trigger_Boss`), true);
+
+    leader.sentPackets.length = 0;
+    follower.sentPackets.length = 0;
+    await LevelHandler.handleEntityIncrementalUpdate(
+        leader as never,
+        buildIncrementalUpdatePayload(leader.clientEntID, 80, 0, 0)
+    );
+
+    assert.deepEqual(leader.sentPackets.filter((packet) => packet.id === 0xA5), []);
+    assert.deepEqual(leader.sentPackets.filter((packet) => packet.id === 0x40), []);
+    assert.deepEqual(follower.sentPackets.filter((packet) => packet.id === 0xA5), []);
+    assert.deepEqual(follower.sentPackets.filter((packet) => packet.id === 0x40), []);
+}
+
+async function testBackAlleyDealsBossIntroStartsWhenAlreadyPastTrigger(): Promise<void> {
+    const roomId = 2553897284;
+    const client = createFakeClient('Alpha');
+    client.currentLevel = 'JC_Mission2';
+    client.levelInstanceId = 'back-alley-run';
+    client.currentRoomId = 0;
+    client.clientEntID = 9401;
+    client.entities.set(client.clientEntID, {
+        id: client.clientEntID,
+        name: 'Alpha',
+        isPlayer: true,
+        x: 25520,
+        y: 3259,
+        v: 0,
+        team: 1
+    });
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    await LevelHandler.handleEntityIncrementalUpdate(
+        client as never,
+        buildIncrementalUpdatePayload(client.clientEntID, 0, 0, 0)
+    );
+
+    const roomStarts = client.sentPackets
+        .filter((packet) => packet.id === 0xA5)
+        .map((packet) => parseRoomEventStart(packet.payload));
+    const triggers = client.sentPackets
+        .filter((packet) => packet.id === 0x40)
+        .map((packet) => parseLevelState(packet.payload));
+
+    assert.deepEqual(roomStarts, [{ roomId, flag: true }]);
+    assert.deepEqual(triggers, [{ key: `${roomId}^Trigger^am_Trigger_Boss`, value: '' }]);
+    assert.equal(client.currentRoomId, roomId);
+    assert.equal(client.startedRoomEvents.has(`JC_Mission2:${roomId}`), true);
+    assert.equal(client.triggeredLevelStates.has(`JC_Mission2:${roomId}:am_Trigger_Boss`), true);
+}
+
 async function testProdigalSonDefectorMomentsStartOnTriggerCrossing(): Promise<void> {
     const triggers = [
         { roomId: 1971923064, startX: 9700, deltaX: 160, y: -1450 },
@@ -2877,6 +2989,16 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         await testDeepgardDragonMiniBossIntroIgnoresWrongVerticalBand();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        await testBackAlleyDealsBossIntroStartsArenaRoomBeforeTrigger();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        await testBackAlleyDealsBossIntroStartsWhenAlreadyPastTrigger();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();

@@ -32,10 +32,13 @@ const MULTIPLAYER_REFRESH_URL = `http://${MULTIPLAYER_HOST}/p/cbp/DungeonBlitz.s
 const LEGACY_REFRESH_URL = '/p/cbp/DungeonBlitz.swf?fv=cbq&gv=cbp';
 const BITMAPDATA_TOTAL_PIXELS = 16777215;
 const CLASS82_SCENE_CACHE_SAFE_PIXELS = 4194304;
-const SUPERANIM_METHOD200_SAFE_PIXELS = 65536;
+const CLASS82_MAX_SCENE_CACHE_SCALE = 16;
+const SUPERANIM_METHOD200_SAFE_PIXELS = 16384;
 const SUPERANIM_METHOD982_SAFE_PIXELS = 65536;
 const SUPERANIM_METHOD982_SAFE_AXIS = 8191;
 const SUPERANIM_METHOD806_FULLSCREEN_ENTITY_BITMAP_SIZE = 3072;
+const SAFE_SCREEN_BITMAP_WIDTH = 2048;
+const SAFE_SCREEN_BITMAP_HEIGHT = 1152;
 
 function getStringMatches(swfPath: string, target: string): number[] {
     const ctx = parseSwf(swfPath);
@@ -297,6 +300,26 @@ function assertClass82BitmapDataGuardWindow(swfPath: string): void {
         true,
         'class_82.method_193 must halve cache render scale before BitmapData allocation'
     );
+    assert.equal(
+        instructions.some((instruction, index) =>
+            getLocalOperand(instruction) === 6 &&
+            getLocalOperand(instructions[index + 1]) === 6 &&
+            instructions[index + 2]?.opcode === 0xab &&
+            instructions[index + 3]?.opcode === 0x12 &&
+            getLocalOperand(instructions[index + 4]) === 6 &&
+            instructions[index + 5]?.opcode === 0x24 &&
+            instructions[index + 5]?.operands[0]?.[1] === 0 &&
+            instructions[index + 6]?.opcode === 0xaf &&
+            instructions[index + 7]?.opcode === 0x12 &&
+            getLocalOperand(instructions[index + 8]) === 6 &&
+            instructions[index + 9]?.opcode === 0x24 &&
+            instructions[index + 9]?.operands[0]?.[1] === CLASS82_MAX_SCENE_CACHE_SCALE &&
+            instructions[index + 10]?.opcode === 0xaf &&
+            instructions[index + 11]?.opcode === 0x11
+        ),
+        true,
+        'class_82.method_193 must clamp invalid transition cache scale before width/height calculation'
+    );
 }
 
 function assertClass23BitmapDataGuardWindow(swfPath: string): void {
@@ -395,15 +418,33 @@ function assertGameMethod1947SafeScreenBitmapData(swfPath: string): void {
         instruction.opcode === 0x5d &&
         u30OperandName(instruction, abc.multinameNames) === 'BitmapData' &&
         instructions[index + 1]?.opcode === 0x25 &&
-        instructions[index + 1]?.operands[0]?.[1] === 1440 &&
+        instructions[index + 1]?.operands[0]?.[1] === SAFE_SCREEN_BITMAP_WIDTH &&
         instructions[index + 2]?.opcode === 0x25 &&
-        instructions[index + 2]?.operands[0]?.[1] === 835
+        instructions[index + 2]?.operands[0]?.[1] === SAFE_SCREEN_BITMAP_HEIGHT
     );
 
     assert.notEqual(
         constructorIndex,
         -1,
         'Game.method_1947 screen BitmapData allocation must use safe fixed dimensions'
+    );
+}
+
+function assertMainMethod561DoesNotClampMaxScale(swfPath: string): void {
+    const { instructions } = getInstanceMethodCode(swfPath, 'Main', 'method_561');
+    const maxScaleAssignment = instructions.find((instruction, index) =>
+        instruction.opcode === 0x2f &&
+        instructions[index + 1]?.opcode === 0x75 &&
+        instructions[index + 2]?.opcode === 0xd7 &&
+        instructions[index + 3]?.opcode === 0xd3 &&
+        instructions[index + 4]?.opcode === 0x2f &&
+        instructions[index + 5]?.opcode === 0x0c
+    );
+
+    assert.equal(
+        maxScaleAssignment,
+        undefined,
+        'Main.method_561 must not clamp centered fullscreen scale back to 1.25'
     );
 }
 
@@ -632,6 +673,14 @@ function testBaseAndLocalVariantKeepGameMethod1947SafeScreenBitmapData(): void {
     });
 }
 
+function testBaseAndLocalVariantKeepMainMethod561UnclampedScale(): void {
+    assertMainMethod561DoesNotClampMaxScale(BASE_SWF_PATH);
+    const buffer = buildDungeonBlitzSwfVariantBuffer(BASE_SWF_PATH, 'local');
+    withTempSwf(buffer, (tempPath) => {
+        assertMainMethod561DoesNotClampMaxScale(tempPath);
+    });
+}
+
 function testBaseAndLocalVariantKeepDungeonQuestHelperGuard(): void {
     assertDungeonQuestHelperPrefersDungeonProgress(BASE_SWF_PATH);
     const buffer = buildDungeonBlitzSwfVariantBuffer(BASE_SWF_PATH, 'local');
@@ -650,6 +699,7 @@ function main(): void {
     testBaseAndLocalVariantKeepSuperAnimMethod806FullscreenBitmapData();
     testBaseAndLocalVariantKeepSuperAnimMethod982BitmapDataGuard();
     testBaseAndLocalVariantKeepGameMethod1947SafeScreenBitmapData();
+    testBaseAndLocalVariantKeepMainMethod561UnclampedScale();
     testBaseAndLocalVariantKeepDungeonQuestHelperGuard();
     console.log('dungeonblitz_swf_variant_regression: ok');
 }
