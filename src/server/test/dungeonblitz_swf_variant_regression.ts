@@ -112,6 +112,7 @@ function getStaticMethodCode(swfPath: string, className: string, methodName: str
     const code = ctx.body.subarray(methodBody.codeStart, methodBody.codeStart + methodBody.codeLen);
     return {
         abc,
+        methodBody,
         instructions: disassemble(code, `${className}.${methodName}`)
     };
 }
@@ -131,6 +132,7 @@ function getInstanceMethodCode(swfPath: string, className: string, methodName: s
     const code = ctx.body.subarray(methodBody.codeStart, methodBody.codeStart + methodBody.codeLen);
     return {
         abc,
+        methodBody,
         instructions: disassemble(code, `${className}.${methodName}`)
     };
 }
@@ -504,6 +506,37 @@ function assertSuperAnimMethod866LiveFallbackCleanup(swfPath: string): void {
     );
 }
 
+function assertGameMethod1325SuperAnimCrashGuard(swfPath: string): void {
+    const { abc, methodBody, instructions } = getInstanceMethodCode(swfPath, 'Game', 'method_1325');
+    const method105 = instructions.find(
+        (instruction) =>
+            instruction.opcode === 0x46 &&
+            u30OperandName(instruction, abc.multinameNames) === 'method_105' &&
+            instruction.operands[1]?.[1] === 0
+    );
+    assert.ok(method105, 'Game.method_1325 SuperAnimInstance.method_105 call not found');
+
+    const finishSet = instructions.find(
+        (instruction, index) =>
+            instructions[index - 1]?.opcode === 0x27 &&
+            instruction.opcode === 0x61 &&
+            u30OperandName(instruction, abc.multinameNames) === 'm_bFinished'
+    );
+    assert.ok(finishSet, 'Game.method_1325 must mark the crashing SuperAnimInstance finished');
+
+    assert.equal(
+        methodBody.exceptions.some(
+            (exception) =>
+                abc.multinameNames[exception.type] === 'Error' &&
+                exception.from <= method105!.offset &&
+                exception.to >= method105!.offset + method105!.size &&
+                exception.target <= finishSet!.offset
+        ),
+        true,
+        'Game.method_1325 must catch SuperAnimInstance.method_105 render errors'
+    );
+}
+
 function withTempSwf(buffer: Buffer, callback: (tempPath: string) => void): void {
     const tempPath = path.join(os.tmpdir(), `dungeonblitz-variant-${process.pid}-${Date.now()}-${Math.random()}.swf`);
     fs.writeFileSync(tempPath, buffer);
@@ -603,6 +636,14 @@ function testBaseAndLocalVariantKeepDungeonQuestHelperGuard(): void {
     });
 }
 
+function testBaseAndLocalVariantKeepGameMethod1325SuperAnimCrashGuard(): void {
+    assertGameMethod1325SuperAnimCrashGuard(BASE_SWF_PATH);
+    const buffer = buildDungeonBlitzSwfVariantBuffer(BASE_SWF_PATH, 'local');
+    withTempSwf(buffer, (tempPath) => {
+        assertGameMethod1325SuperAnimCrashGuard(tempPath);
+    });
+}
+
 function main(): void {
     testLocalVariantUsesLocalhostAndPort8000();
     testMultiplayerVariantUsesRemoteHostAndDefaultAssetPath();
@@ -612,6 +653,7 @@ function main(): void {
     testBaseAndLocalVariantKeepClass23BitmapDataGuard();
     testBaseAndLocalVariantKeepSuperAnimMethod806FullscreenBitmapData();
     testBaseAndLocalVariantKeepSuperAnimMethod982BitmapDataGuard();
+    testBaseAndLocalVariantKeepGameMethod1325SuperAnimCrashGuard();
     testBaseAndLocalVariantKeepGameMethod1947SafeScreenBitmapData();
     testBaseAndLocalVariantKeepDungeonQuestHelperGuard();
     console.log('dungeonblitz_swf_variant_regression: ok');
