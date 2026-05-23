@@ -12,7 +12,7 @@ import {
 import { Config } from './config';
 
 export type DungeonBlitzSwfMode = 'local' | 'multiplayer';
-export type DungeonBlitzSwfLocale = 'en' | 'tr';
+export type DungeonBlitzSwfLocale = 'en' | 'tr' | 'pt-br';
 
 const LOCAL_HOST = 'localhost';
 const REMOTE_HOST = Config.MULTIPLAYER_HOST;
@@ -35,8 +35,10 @@ const CURRENT_LOCAL_REFRESH_URL_LEGACY = 'http://localhost/p/cbp/DungeonBlitz.sw
 const CURRENT_REMOTE_REFRESH_URL = `http://${REMOTE_HOST}/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbv`;
 const CURRENT_REMOTE_REFRESH_URL_LEGACY = `http://${REMOTE_HOST}/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbv`;
 const LOCAL_REFRESH_URL = 'http://localhost:8000/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbw';
+const LOCAL_PORTUGUESE_REFRESH_URL = 'http://localhost:8000/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbw&lang=pt-br';
 const LOCAL_REFRESH_URL_LEGACY = 'http://localhost/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbw';
 const REMOTE_REFRESH_URL = `http://${REMOTE_HOST}/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbw`;
+const REMOTE_PORTUGUESE_REFRESH_URL = `http://${REMOTE_HOST}/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbw&lang=pt-br`;
 const REMOTE_REFRESH_URL_LEGACY = `http://${REMOTE_HOST}/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbw`;
 const MOUNT_SPEED_PATCH_CLASS = 'CombatState';
 const MOUNT_SPEED_PATCH_METHOD = 'method_960';
@@ -46,6 +48,8 @@ type StringReplacement = {
     oldValue: string;
     newValue: string;
 };
+
+type StringInterner = (value: string) => number;
 
 const TURKISH_DISCIPLINE_REPLACEMENTS: StringReplacement[] = [
     {
@@ -107,33 +111,45 @@ const DISCONNECT_SCREEN_RESTORE_ENGLISH: StringReplacement[] = [
     { oldValue: 'Istemci Hatasi', newValue: 'Client Error' },
 ];
 
+function writeS24(value: number): Buffer {
+    const buffer = Buffer.alloc(3);
+    buffer.writeIntLE(value, 0, 3);
+    return buffer;
+}
+
+function pushStringInstruction(stringIndex: number): Buffer {
+    return Buffer.concat([Buffer.from([0x2c]), writeU30(stringIndex)]);
+}
+
 function getReplacements(mode: DungeonBlitzSwfMode, locale: DungeonBlitzSwfLocale): StringReplacement[] {
     const localeReplacements = locale === 'tr'
         ? TURKISH_DISCIPLINE_REPLACEMENTS
         : DISCONNECT_SCREEN_RESTORE_ENGLISH;
+    const localRefreshUrl = locale === 'pt-br' ? LOCAL_PORTUGUESE_REFRESH_URL : LOCAL_REFRESH_URL;
+    const remoteRefreshUrl = locale === 'pt-br' ? REMOTE_PORTUGUESE_REFRESH_URL : REMOTE_REFRESH_URL;
     if (mode === 'local') {
         return [
             { oldValue: REMOTE_HOST, newValue: LOCAL_HOST },
             { oldValue: REMOTE_ASSET_PATH, newValue: LOCAL_ASSET_PATH },
-            { oldValue: OLD_REMOTE_REFRESH_URL, newValue: LOCAL_REFRESH_URL },
-            { oldValue: OLD_REMOTE_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
-            { oldValue: OLD_LOCAL_REFRESH_URL, newValue: LOCAL_REFRESH_URL },
-            { oldValue: OLD_LOCAL_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
-            { oldValue: PREVIOUS_REMOTE_REFRESH_URL, newValue: LOCAL_REFRESH_URL },
-            { oldValue: PREVIOUS_REMOTE_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
-            { oldValue: PREVIOUS_LOCAL_REFRESH_URL, newValue: LOCAL_REFRESH_URL },
-            { oldValue: PREVIOUS_LOCAL_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
-            { oldValue: CURRENT_PREVIOUS_REMOTE_REFRESH_URL, newValue: LOCAL_REFRESH_URL },
-            { oldValue: CURRENT_PREVIOUS_REMOTE_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
-            { oldValue: CURRENT_PREVIOUS_LOCAL_REFRESH_URL, newValue: LOCAL_REFRESH_URL },
-            { oldValue: CURRENT_PREVIOUS_LOCAL_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
-            { oldValue: CURRENT_REMOTE_REFRESH_URL, newValue: LOCAL_REFRESH_URL },
-            { oldValue: CURRENT_REMOTE_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
-            { oldValue: CURRENT_LOCAL_REFRESH_URL, newValue: LOCAL_REFRESH_URL },
-            { oldValue: CURRENT_LOCAL_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
-            { oldValue: REMOTE_REFRESH_URL, newValue: LOCAL_REFRESH_URL },
-            { oldValue: REMOTE_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
-            { oldValue: LOCAL_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
+            { oldValue: OLD_REMOTE_REFRESH_URL, newValue: localRefreshUrl },
+            { oldValue: OLD_REMOTE_REFRESH_URL_LEGACY, newValue: localRefreshUrl },
+            { oldValue: OLD_LOCAL_REFRESH_URL, newValue: localRefreshUrl },
+            { oldValue: OLD_LOCAL_REFRESH_URL_LEGACY, newValue: localRefreshUrl },
+            { oldValue: PREVIOUS_REMOTE_REFRESH_URL, newValue: localRefreshUrl },
+            { oldValue: PREVIOUS_REMOTE_REFRESH_URL_LEGACY, newValue: localRefreshUrl },
+            { oldValue: PREVIOUS_LOCAL_REFRESH_URL, newValue: localRefreshUrl },
+            { oldValue: PREVIOUS_LOCAL_REFRESH_URL_LEGACY, newValue: localRefreshUrl },
+            { oldValue: CURRENT_PREVIOUS_REMOTE_REFRESH_URL, newValue: localRefreshUrl },
+            { oldValue: CURRENT_PREVIOUS_REMOTE_REFRESH_URL_LEGACY, newValue: localRefreshUrl },
+            { oldValue: CURRENT_PREVIOUS_LOCAL_REFRESH_URL, newValue: localRefreshUrl },
+            { oldValue: CURRENT_PREVIOUS_LOCAL_REFRESH_URL_LEGACY, newValue: localRefreshUrl },
+            { oldValue: CURRENT_REMOTE_REFRESH_URL, newValue: localRefreshUrl },
+            { oldValue: CURRENT_REMOTE_REFRESH_URL_LEGACY, newValue: localRefreshUrl },
+            { oldValue: CURRENT_LOCAL_REFRESH_URL, newValue: localRefreshUrl },
+            { oldValue: CURRENT_LOCAL_REFRESH_URL_LEGACY, newValue: localRefreshUrl },
+            { oldValue: REMOTE_REFRESH_URL, newValue: localRefreshUrl },
+            { oldValue: REMOTE_REFRESH_URL_LEGACY, newValue: localRefreshUrl },
+            { oldValue: LOCAL_REFRESH_URL_LEGACY, newValue: localRefreshUrl },
             ...localeReplacements
         ];
     }
@@ -141,25 +157,25 @@ function getReplacements(mode: DungeonBlitzSwfMode, locale: DungeonBlitzSwfLocal
     return [
         { oldValue: LOCAL_HOST, newValue: REMOTE_HOST },
         { oldValue: LOCAL_ASSET_PATH, newValue: REMOTE_ASSET_PATH },
-        { oldValue: OLD_LOCAL_REFRESH_URL, newValue: REMOTE_REFRESH_URL },
-        { oldValue: OLD_LOCAL_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
-        { oldValue: OLD_REMOTE_REFRESH_URL, newValue: REMOTE_REFRESH_URL },
-        { oldValue: OLD_REMOTE_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
-        { oldValue: PREVIOUS_LOCAL_REFRESH_URL, newValue: REMOTE_REFRESH_URL },
-        { oldValue: PREVIOUS_LOCAL_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
-        { oldValue: PREVIOUS_REMOTE_REFRESH_URL, newValue: REMOTE_REFRESH_URL },
-        { oldValue: PREVIOUS_REMOTE_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
-        { oldValue: CURRENT_PREVIOUS_LOCAL_REFRESH_URL, newValue: REMOTE_REFRESH_URL },
-        { oldValue: CURRENT_PREVIOUS_LOCAL_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
-        { oldValue: CURRENT_PREVIOUS_REMOTE_REFRESH_URL, newValue: REMOTE_REFRESH_URL },
-        { oldValue: CURRENT_PREVIOUS_REMOTE_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
-        { oldValue: CURRENT_LOCAL_REFRESH_URL, newValue: REMOTE_REFRESH_URL },
-        { oldValue: CURRENT_LOCAL_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
-        { oldValue: CURRENT_REMOTE_REFRESH_URL, newValue: REMOTE_REFRESH_URL },
-        { oldValue: CURRENT_REMOTE_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
-        { oldValue: LOCAL_REFRESH_URL, newValue: REMOTE_REFRESH_URL },
-        { oldValue: REMOTE_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
-        { oldValue: LOCAL_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
+        { oldValue: OLD_LOCAL_REFRESH_URL, newValue: remoteRefreshUrl },
+        { oldValue: OLD_LOCAL_REFRESH_URL_LEGACY, newValue: remoteRefreshUrl },
+        { oldValue: OLD_REMOTE_REFRESH_URL, newValue: remoteRefreshUrl },
+        { oldValue: OLD_REMOTE_REFRESH_URL_LEGACY, newValue: remoteRefreshUrl },
+        { oldValue: PREVIOUS_LOCAL_REFRESH_URL, newValue: remoteRefreshUrl },
+        { oldValue: PREVIOUS_LOCAL_REFRESH_URL_LEGACY, newValue: remoteRefreshUrl },
+        { oldValue: PREVIOUS_REMOTE_REFRESH_URL, newValue: remoteRefreshUrl },
+        { oldValue: PREVIOUS_REMOTE_REFRESH_URL_LEGACY, newValue: remoteRefreshUrl },
+        { oldValue: CURRENT_PREVIOUS_LOCAL_REFRESH_URL, newValue: remoteRefreshUrl },
+        { oldValue: CURRENT_PREVIOUS_LOCAL_REFRESH_URL_LEGACY, newValue: remoteRefreshUrl },
+        { oldValue: CURRENT_PREVIOUS_REMOTE_REFRESH_URL, newValue: remoteRefreshUrl },
+        { oldValue: CURRENT_PREVIOUS_REMOTE_REFRESH_URL_LEGACY, newValue: remoteRefreshUrl },
+        { oldValue: CURRENT_LOCAL_REFRESH_URL, newValue: remoteRefreshUrl },
+        { oldValue: CURRENT_LOCAL_REFRESH_URL_LEGACY, newValue: remoteRefreshUrl },
+        { oldValue: CURRENT_REMOTE_REFRESH_URL, newValue: remoteRefreshUrl },
+        { oldValue: CURRENT_REMOTE_REFRESH_URL_LEGACY, newValue: remoteRefreshUrl },
+        { oldValue: LOCAL_REFRESH_URL, newValue: remoteRefreshUrl },
+        { oldValue: REMOTE_REFRESH_URL_LEGACY, newValue: remoteRefreshUrl },
+        { oldValue: LOCAL_REFRESH_URL_LEGACY, newValue: remoteRefreshUrl },
         ...localeReplacements
     ];
 }
@@ -220,6 +236,152 @@ function buildMountedSpeedPatch(ctx: ReturnType<typeof parseSwf>) {
     ];
 }
 
+function requireMultinameIndex(abc: ReturnType<typeof parseAbc>, name: string): number {
+    const index = abc.multinameNames.findIndex((value) => value === name);
+    if (index < 0) {
+        throw new Error(`DungeonBlitz.swf missing multiname ${name}`);
+    }
+    return index;
+}
+
+function buildCallPropertyInstruction(opcode: number, multinameIndex: number, argumentCount: number): Buffer {
+    return Buffer.concat([Buffer.from([opcode]), writeU30(multinameIndex), writeU30(argumentCount)]);
+}
+
+function buildLocalizationReloadStatusPatch(
+    ctx: ReturnType<typeof parseSwf>,
+    abc: ReturnType<typeof parseAbc>,
+    internString: StringInterner
+) {
+    const linkUpdaterClassIndex = classIndexByName(abc, 'LinkUpdater');
+    if (linkUpdaterClassIndex === null) {
+        throw new Error('LinkUpdater class not found in DungeonBlitz.swf');
+    }
+
+    const methodIdx = methodIdxForTrait(abc.instances[linkUpdaterClassIndex].traits, abc, 'method_1844');
+    if (methodIdx === null) {
+        throw new Error('LinkUpdater.method_1844 not found in DungeonBlitz.swf');
+    }
+
+    const methodBody = abc.methodBodies.get(methodIdx);
+    if (!methodBody) {
+        throw new Error('LinkUpdater.method_1844 body not found in DungeonBlitz.swf');
+    }
+
+    const currentCode = ctx.body.subarray(methodBody.codeStart, methodBody.codeStart + methodBody.codeLen);
+    const expectedPrefix = Buffer.from([
+        0xd0, 0x30, 0xef, 0x01, 0x98, 0x75, 0x00, 0x00, 0xef, 0x01, 0xc8, 0x76, 0x01, 0xa3, 0x15,
+        0xd1
+    ]);
+    if (!currentCode.subarray(0, expectedPrefix.length).equals(expectedPrefix)) {
+        throw new Error('LinkUpdater.method_1844 has an unexpected status-message prologue');
+    }
+
+    const reloadPrefixIndex = internString('DB_LOCALIZATION_RELOAD:');
+    const topIndex = internString('_top');
+    const method13Index = requireMultinameIndex(abc, 'method_13');
+    const indexOfIndex = requireMultinameIndex(abc, 'indexOf');
+    const externalInterfaceIndex = requireMultinameIndex(abc, 'ExternalInterface');
+    const availableIndex = requireMultinameIndex(abc, 'available');
+    const navigateToUrlIndex = requireMultinameIndex(abc, 'navigateToURL');
+    const urlRequestIndex = requireMultinameIndex(abc, 'URLRequest');
+    const substrIndex = requireMultinameIndex(abc, 'substr');
+    const var1Index = requireMultinameIndex(abc, 'var_1');
+    const screenChatIndex = requireMultinameIndex(abc, 'screenChat');
+    const readUnsafeStatusTextIndex = requireMultinameIndex(abc, 'ReadUnsafeStatusText');
+
+    const navigateBlock = Buffer.concat([
+        Buffer.from([0x5d]), writeU30(navigateToUrlIndex),
+        Buffer.from([0x5d]), writeU30(urlRequestIndex),
+        Buffer.from([0xd2, 0x24, 23]),
+        buildCallPropertyInstruction(0x46, substrIndex, 1),
+        buildCallPropertyInstruction(0x4a, urlRequestIndex, 1),
+        pushStringInstruction(topIndex),
+        buildCallPropertyInstruction(0x4f, navigateToUrlIndex, 2),
+        Buffer.from([0x47])
+    ]);
+    const reloadBlock = Buffer.concat([
+        Buffer.from([0x60]), writeU30(externalInterfaceIndex),
+        Buffer.from([0x66]), writeU30(availableIndex),
+        Buffer.from([0x12]),
+        writeS24(navigateBlock.length),
+        navigateBlock,
+        Buffer.from([0x47])
+    ]);
+    const normalStatusBlock = Buffer.concat([
+        Buffer.from([0xd0, 0x66]), writeU30(var1Index),
+        Buffer.from([0x66]), writeU30(screenChatIndex),
+        Buffer.from([0xd2]),
+        buildCallPropertyInstruction(0x4f, readUnsafeStatusTextIndex, 1),
+        Buffer.from([0x47])
+    ]);
+    const newCode = Buffer.concat([
+        currentCode.subarray(0, 15),
+        Buffer.from([0xd1]),
+        buildCallPropertyInstruction(0x46, method13Index, 0),
+        Buffer.from([0x85, 0xd6, 0xd2]),
+        pushStringInstruction(reloadPrefixIndex),
+        buildCallPropertyInstruction(0x46, indexOfIndex, 1),
+        Buffer.from([0x24, 0x00, 0x14]),
+        writeS24(reloadBlock.length),
+        reloadBlock,
+        normalStatusBlock
+    ]);
+
+    return [
+        {
+            key: 'localization-reload-status-max-stack',
+            start: methodBody.maxStackPos,
+            end: methodBody.maxStackPos + 1,
+            data: writeU30(4),
+            detail: 'allow LinkUpdater.method_1844 to construct a URLRequest for browser localization reloads'
+        },
+        {
+            key: 'localization-reload-status-code-length',
+            start: methodBody.codeLenPos,
+            end: methodBody.codeStart,
+            data: writeU30(newCode.length),
+            detail: 'increase LinkUpdater.method_1844 code length for localization reload handling'
+        },
+        {
+            key: 'localization-reload-status-handler',
+            start: methodBody.codeStart,
+            end: methodBody.codeStart + methodBody.codeLen,
+            data: newCode,
+            detail: 'hard reload in browser Flash, but ignore the hidden reload marker in standalone Flash'
+        }
+    ];
+}
+
+function buildAppendedStringPatches(abc: ReturnType<typeof parseAbc>, appendedStrings: Map<string, number>) {
+    if (appendedStrings.size === 0) {
+        return [];
+    }
+
+    const stringBytes = [];
+    for (const value of appendedStrings.keys()) {
+        const bytes = Buffer.from(value, 'utf8');
+        stringBytes.push(writeU30(bytes.length), bytes);
+    }
+
+    return [
+        {
+            key: 'dungeonblitz-runtime-strings-count',
+            start: abc.stringCountPos,
+            end: abc.stringLenPositions[1],
+            data: writeU30(abc.stringValues.length + appendedStrings.size),
+            detail: 'increase ABC string pool count for runtime DungeonBlitz patches'
+        },
+        {
+            key: 'dungeonblitz-runtime-strings',
+            start: abc.stringPoolEndPos,
+            end: abc.stringPoolEndPos,
+            data: Buffer.concat(stringBytes),
+            detail: 'append runtime DungeonBlitz patch strings to ABC string pool'
+        }
+    ];
+}
+
 export function buildDungeonBlitzSwfVariantBuffer(
     swfPath: string,
     mode: DungeonBlitzSwfMode,
@@ -228,6 +390,20 @@ export function buildDungeonBlitzSwfVariantBuffer(
     const ctx = parseSwf(swfPath);
     const abc = parseAbc(ctx);
     const patches = [];
+    const appendedStrings = new Map<string, number>();
+    const internString = (value: string): number => {
+        const existingIndex = abc.stringValues.indexOf(value);
+        if (existingIndex > 0) {
+            return existingIndex;
+        }
+        const appendedIndex = appendedStrings.get(value);
+        if (appendedIndex !== undefined) {
+            return appendedIndex;
+        }
+        const nextIndex = abc.stringValues.length + appendedStrings.size;
+        appendedStrings.set(value, nextIndex);
+        return nextIndex;
+    };
 
     for (const replacement of getReplacements(mode, locale)) {
         for (let index = 1; index < abc.stringValues.length; index++) {
@@ -248,6 +424,8 @@ export function buildDungeonBlitzSwfVariantBuffer(
     }
 
     patches.push(...buildMountedSpeedPatch(ctx));
+    patches.push(...buildLocalizationReloadStatusPatch(ctx, abc, internString));
+    patches.push(...buildAppendedStringPatches(abc, appendedStrings));
 
     const { body, delta } = applyPatchesToBody(ctx.body, patches);
     const outBody = Buffer.from(body);

@@ -72,6 +72,21 @@ export class CharacterHandler {
         client.characters = await db.saveCharacterSnapshot(client.userId, client.character);
     }
 
+    private static async getAccountDialogueLanguage(userId: number | null | undefined): Promise<string> {
+        if (!userId) {
+            return 'en';
+        }
+        return db.getDialogueLanguage(userId);
+    }
+
+    private static applyDialogueLanguage(characters: Character[], language: string): void {
+        for (const character of characters) {
+            if (character) {
+                character.dialogueLanguage = language;
+            }
+        }
+    }
+
     private static initializeFreshCharacterProgress(character: Character): void {
         const newbieSpawn = LevelConfig.getSpawn("NewbieRoad");
 
@@ -280,6 +295,9 @@ export class CharacterHandler {
         );
 
         if (loadedCharacter) {
+            const accountLanguage = await CharacterHandler.getAccountDialogueLanguage(client.userId);
+            client.dialogueLanguage = accountLanguage;
+            CharacterHandler.applyDialogueLanguage(loadedCharacters, accountLanguage);
             client.character = loadedCharacter;
             WorldEnter.ensureSelectedDisciplineTower(client.character);
             PetHandler.normalizePetCollection(client.character);
@@ -293,6 +311,10 @@ export class CharacterHandler {
             return;
         }
 
+        const accountLanguage = await CharacterHandler.getAccountDialogueLanguage(client.userId);
+        client.dialogueLanguage = accountLanguage;
+        client.character.dialogueLanguage = accountLanguage;
+        CharacterHandler.applyDialogueLanguage(loadedCharacters, accountLanguage);
         client.characters = CharacterHandler.upsertCharacterList(loadedCharacters, client.character);
         DebugLogger.logProgress('CharacterReload:missingOnDisk', client, client.character, {
             source: 'memory'
@@ -816,6 +838,8 @@ export class CharacterHandler {
         newChar.pantColor = pantColor;
 
         CharacterHandler.initializeFreshCharacterProgress(newChar);
+        client.dialogueLanguage = await CharacterHandler.getAccountDialogueLanguage(client.userId);
+        newChar.dialogueLanguage = client.dialogueLanguage;
         AbilityHandler.repairCharacterAbilityState(newChar);
         
         // Initialize arrays if missing
@@ -843,6 +867,9 @@ export class CharacterHandler {
         }
 
         client.characters = await db.loadCharacters(client.userId);
+        const accountLanguage = await CharacterHandler.getAccountDialogueLanguage(client.userId);
+        client.dialogueLanguage = accountLanguage;
+        CharacterHandler.applyDialogueLanguage(client.characters, accountLanguage);
         const requestedName = CharacterHandler.normalizeCharacterName(charName);
         let char = client.characters.find((entry) => CharacterHandler.normalizeCharacterName(entry.name) === requestedName);
 

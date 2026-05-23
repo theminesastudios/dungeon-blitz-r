@@ -66,6 +66,12 @@ function decodeChatStatus(payload: Buffer): string {
     return br.readMethod13();
 }
 
+function getChatStatusTexts(client: FakeClient): string[] {
+    return client.sentPackets
+        .filter((packet) => packet.id === 0x44)
+        .map((packet) => decodeChatStatus(packet.payload));
+}
+
 function createRoomThoughtPacket(entityId: number, text: string): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod4(entityId);
@@ -103,6 +109,14 @@ async function testLanguageCommandSwitchesToTurkishWithoutBroadcasting(): Promis
         decodeChatStatus(statusPacket!.payload),
         'NPC dialog dili Turkce olarak ayarlandi.'
     );
+    assert.ok(
+        getChatStatusTexts(client).includes('DB_LOCALIZATION_RELOAD:http://localhost:8000/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbv&lang=tr'),
+        'language command should ask the patched client to reload the Turkish SWF variant'
+    );
+    assert.ok(
+        getChatStatusTexts(client).includes('Language saved. In Adobe Flash Player, restart the game to apply everything.'),
+        'language command should tell standalone Flash users to restart after saving the preference'
+    );
 }
 
 async function testLanguageCommandSwitchesBackToEnglish(): Promise<void> {
@@ -119,6 +133,43 @@ async function testLanguageCommandSwitchesBackToEnglish(): Promise<void> {
         decodeChatStatus(statusPacket!.payload),
         'NPC dialog language set to English.'
     );
+    assert.ok(
+        getChatStatusTexts(client).includes('DB_LOCALIZATION_RELOAD:http://localhost:8000/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbv&lang=en'),
+        'language command should ask the patched client to reload the English SWF variant'
+    );
+    assert.ok(
+        getChatStatusTexts(client).includes('Language saved. In Adobe Flash Player, restart the game to apply everything.'),
+        'language command should tell standalone Flash users to restart after saving the preference'
+    );
+}
+
+async function testPortugueseLanguageCommandAliasesSwitchToBrazilianPortuguese(): Promise<void> {
+    for (const command of ['/lang:br', '/lang:ptbr']) {
+        const client = createFakeClient();
+
+        await SocialHandler.handlePublicChat(client as never, createPublicChatPacket(command));
+
+        assert.equal(client.character.dialogueLanguage, 'pt-br');
+        const statusTexts = getChatStatusTexts(client);
+        assert.ok(statusTexts.includes('Dialogos de NPC definidos para Portugues do Brasil.'), `${command} should acknowledge the language switch`);
+        assert.ok(
+            statusTexts.includes('Idioma salvo. No Adobe Flash Player, reinicie o jogo para aplicar tudo.'),
+            `${command} should tell standalone Flash users to restart after saving the preference`
+        );
+        assert.ok(
+            statusTexts.includes('DB_LOCALIZATION_RELOAD:http://localhost:8000/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbv&lang=pt-br'),
+            `${command} should request a hard reload with the current PT-BR SWF URL`
+        );
+    }
+}
+
+async function testPortuguesePortugalAliasIsNotAcceptedAsBrazilianPortuguese(): Promise<void> {
+    const client = createFakeClient();
+
+    await SocialHandler.handlePublicChat(client as never, createPublicChatPacket('/lang:pt'));
+
+    assert.equal(client.character.dialogueLanguage, 'en');
+    assert.equal(getChatStatusTexts(client).some((text) => text.includes('DB_LOCALIZATION_RELOAD:')), false);
 }
 
 function testTurkishDialogueFilesCoverAllSourceDialogue(): void {
@@ -1890,6 +1941,8 @@ function testEmeraldGladesRoomDialogueTranslationsCoverExtractedSource(): void {
 async function main(): Promise<void> {
     await testLanguageCommandSwitchesToTurkishWithoutBroadcasting();
     await testLanguageCommandSwitchesBackToEnglish();
+    await testPortugueseLanguageCommandAliasesSwitchToBrazilianPortuguese();
+    await testPortuguesePortugalAliasIsNotAcceptedAsBrazilianPortuguese();
     testTurkishDialogueFilesCoverAllSourceDialogue();
     testTurkishRoomThoughtUsesTranslationTable();
     testTurkishRoomThoughtFallbackPreventsEnemyEnglish();

@@ -139,12 +139,13 @@
 
   <script>
     function normalizeGameLanguage(value) {
-      const normalized = String(value || "").trim().toLowerCase();
-      return normalized === "en" || normalized === "tr" ? normalized : "";
+      const normalized = String(value || "").trim().toLowerCase().replace("_", "-");
+      if (normalized === "en" || normalized === "tr") return normalized;
+      if (normalized === "br" || normalized === "pt" || normalized === "ptbr" || normalized === "pt-br") return "pt-br";
+      return "";
     }
 
     const urlLanguage = normalizeGameLanguage(new URLSearchParams(window.location.search).get("lang"));
-    document.cookie = "db_lang=; path=/; max-age=0; SameSite=Lax";
 
     const languageParam = urlLanguage ? `&lang=${urlLanguage}` : "";
     const swfUrl = `p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbw${languageParam}`;

@@ -38,12 +38,15 @@ export interface BuildingUpgrade {
 
 export interface UserSaveData {
     user_id: number;
+    dialogueLanguage?: string;
     characters: Character[];
 }
 
 export interface IDatabase {
     getAccountId(email: string): Promise<number | null>;
     createAccount(email: string): Promise<number>;
+    getDialogueLanguage(userId: number): Promise<string>;
+    setDialogueLanguage(userId: number, language: string): Promise<void>;
     loadCharacters(userId: number): Promise<Character[]>;
     saveCharacters(userId: number, characters: Character[]): Promise<void>;
     isCharacterNameTaken(name: string): Promise<boolean>;

@@ -6,6 +6,7 @@ import { GlobalState } from '../core/GlobalState';
 import { EntityTeam } from '../core/Entity';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { LevelConfig } from '../core/LevelConfig';
+import { Config } from '../core/config';
 import { GuildHandler } from './GuildHandler';
 import { LevelHandler } from './LevelHandler';
 import { MissionHandler } from './MissionHandler';
@@ -54,6 +55,7 @@ export interface DiscordPartyJoinResult {
 
 export class SocialHandler {
     private static readonly MAX_PARTY_SIZE = 4;
+    private static readonly LOCALIZATION_RELOAD_PREFIX = 'DB_LOCALIZATION_RELOAD:';
     private static readonly FRIEND_REQUEST_PROMPT_TTL_MS = 5 * 60_000;
     private static readonly pendingFriendRequestPrompts: Map<number, PendingFriendRequestPrompt> = new Map();
 
@@ -139,6 +141,22 @@ export class SocialHandler {
         const bb = new BitBuffer(false);
         bb.writeMethod13(text);
         target.sendBitBuffer(0x44, bb);
+    }
+
+    private static buildLocalizationReloadUrl(language: string): string {
+        const portSuffix = Config.STATIC_PORT === 80 ? '' : `:${Config.STATIC_PORT}`;
+        const url = new URL(`http://${Config.HOST}${portSuffix}/p/cbp/DungeonBlitz.swf`);
+        url.searchParams.set('fv', 'cbw');
+        url.searchParams.set('gv', 'cbv');
+        url.searchParams.set('lang', language);
+        return url.toString();
+    }
+
+    private static sendLocalizationReload(target: Client | null | undefined, language: string): void {
+        SocialHandler.sendChatStatus(
+            target,
+            `${SocialHandler.LOCALIZATION_RELOAD_PREFIX}${SocialHandler.buildLocalizationReloadUrl(language)}`
+        );
     }
 
     private static sendQueryMessageQuestion(target: Client, token: number, name: string, message: string): void {
@@ -1040,12 +1058,30 @@ export class SocialHandler {
         const message = String(br.readMethod13() ?? '').trim();
 
         if (client.character) {
-            const match = /^\/lang:\s*(tr|en)\s*$/i.exec(message);
+            const match = /^\/lang:\s*(tr|en|br|ptbr)\s*$/i.exec(message);
             if (match) {
-                const nextLanguage = match[1].toLowerCase();
+                const requestedLanguage = match[1].toLowerCase();
+                const nextLanguage = /^(?:br|ptbr)$/.test(requestedLanguage) ? 'pt-br' : requestedLanguage;
                 client.character.dialogueLanguage = nextLanguage;
 
                 if (client.userId) {
+                    for (const session of GlobalState.getActiveSessionsByUserId(client.userId)) {
+                        session.dialogueLanguage = nextLanguage;
+                        if (session.character) {
+                            session.character.dialogueLanguage = nextLanguage;
+                        }
+                        for (const character of session.characters) {
+                            character.dialogueLanguage = nextLanguage;
+                        }
+                        const currentName = SocialHandler.normalizeName(session.character?.name);
+                        const characterIndex = session.characters.findIndex((character) =>
+                            SocialHandler.normalizeName(character.name) === currentName
+                        );
+                        if (session.character && characterIndex >= 0) {
+                            session.characters[characterIndex] = session.character;
+                        }
+                    }
+                    await db.setDialogueLanguage(client.userId, nextLanguage);
                     await db.saveCharacters(client.userId, client.characters);
                 }
 
@@ -1053,8 +1089,17 @@ export class SocialHandler {
                     client,
                     nextLanguage === 'tr'
                         ? 'NPC dialog dili Turkce olarak ayarlandi.'
+                        : nextLanguage === 'pt-br'
+                            ? 'Dialogos de NPC definidos para Portugues do Brasil.'
                         : 'NPC dialog language set to English.'
                 );
+                SocialHandler.sendChatStatus(
+                    client,
+                    nextLanguage === 'pt-br'
+                        ? 'Idioma salvo. No Adobe Flash Player, reinicie o jogo para aplicar tudo.'
+                        : 'Language saved. In Adobe Flash Player, restart the game to apply everything.'
+                );
+                SocialHandler.sendLocalizationReload(client, nextLanguage);
                 return;
             }
         }

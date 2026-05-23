@@ -256,6 +256,30 @@ async function testLoadCharactersNormalizesLevelFromXp(): Promise<void> {
     });
 }
 
+async function testDialogueLanguageDefaultsToEnglishAndPersistsAtAccountLevel(): Promise<void> {
+    await withTempDataDir('dialogue_language_account_preference', async (adapter, tempDir) => {
+        assert.equal(await adapter.getDialogueLanguage(21), 'en');
+
+        const character = createCharacter('LocaleHero');
+        character.dialogueLanguage = 'pt-br';
+        await adapter.saveCharacters(21, [character]);
+        assert.equal(
+            await adapter.getDialogueLanguage(21),
+            'en',
+            'legacy per-character language should not silently become the account preference'
+        );
+
+        await adapter.setDialogueLanguage(21, 'ptbr');
+        assert.equal(await adapter.getDialogueLanguage(21), 'pt-br');
+        await adapter.saveCharacters(21, [character]);
+
+        const savedPath = path.join(tempDir, 'data', 'saves', '21.json');
+        const saved = JSON.parse(await fs.readFile(savedPath, 'utf8')) as { dialogueLanguage?: string; characters: Character[] };
+        assert.equal(saved.dialogueLanguage, 'pt-br');
+        assert.equal(saved.characters[0]?.name, 'LocaleHero');
+    });
+}
+
 async function main(): Promise<void> {
     await testSaveCharactersRetriesTransientRenameLock();
     await testSaveCharactersSerializesConcurrentWrites();
@@ -263,6 +287,7 @@ async function main(): Promise<void> {
     await testSaveCharactersMergesLiveSessionCharacter();
     await testSaveCharactersMergesAllLiveSameAccountCharacters();
     await testLoadCharactersNormalizesLevelFromXp();
+    await testDialogueLanguageDefaultsToEnglishAndPersistsAtAccountLevel();
     console.log('json_adapter_save_regression: ok');
 }
 

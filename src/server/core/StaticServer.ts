@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type Response } from 'express';
 import * as fs from 'fs';
 import type { Server as HttpServer } from 'http';
 import * as path from 'path';
@@ -118,8 +118,11 @@ export class StaticServer {
             String(req.query.gv ?? '') === this.gameVersion;
     }
 
-    private normalizeLocale(value: unknown): 'en' | 'tr' | null {
-        const normalized = String(value ?? '').trim().toLowerCase();
+    private normalizeLocale(value: unknown): DungeonBlitzSwfLocale | null {
+        const normalized = String(value ?? '').trim().toLowerCase().replace('_', '-');
+        if (normalized === 'br' || normalized === 'pt' || normalized === 'ptbr' || normalized === 'pt-br') {
+            return 'pt-br';
+        }
         return normalized === 'en' || normalized === 'tr' ? normalized : null;
     }
 
@@ -134,7 +137,66 @@ export class StaticServer {
         return address === '::1' ? '127.0.0.1' : address;
     }
 
-    private resolveSessionLocale(req: Request): 'en' | 'tr' | null {
+    private resolveCookieLocale(req: Request): DungeonBlitzSwfLocale | null {
+        const cookieHeader = req.headers.cookie;
+        if (typeof cookieHeader !== 'string' || !cookieHeader.trim()) {
+            return null;
+        }
+
+        for (const entry of cookieHeader.split(';')) {
+            const separatorIndex = entry.indexOf('=');
+            if (separatorIndex === -1) {
+                continue;
+            }
+
+            const name = entry.slice(0, separatorIndex).trim();
+            if (name !== 'db_lang') {
+                continue;
+            }
+
+            try {
+                return this.normalizeLocale(decodeURIComponent(entry.slice(separatorIndex + 1).trim()));
+            } catch (_error) {
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    private resolveReferrerLocale(req: Request): DungeonBlitzSwfLocale | null {
+        const referrer = req.headers.referer ?? req.headers.referrer;
+        const rawReferrer = Array.isArray(referrer) ? referrer[0] : referrer;
+        if (typeof rawReferrer !== 'string' || !rawReferrer.trim()) {
+            return null;
+        }
+
+        try {
+            const parsed = new URL(rawReferrer);
+            return this.normalizeLocale(parsed.searchParams.get('lang'));
+        } catch (_error) {
+            return null;
+        }
+    }
+
+    private resolveLocalFallbackSessionLocale(): DungeonBlitzSwfLocale | null {
+        if (Config.MULTIPLAYER_MODE) {
+            return null;
+        }
+
+        const sessions = Array.from(GlobalState.sessionsByToken.values());
+        const activeSessions = sessions.filter((client) => client.playerSpawned);
+        const candidates = activeSessions.length > 0 ? activeSessions : sessions;
+        const locales = new Set(
+            candidates
+                .map((client) => this.normalizeLocale(client.character?.dialogueLanguage ?? client.dialogueLanguage))
+                .filter((locale): locale is DungeonBlitzSwfLocale => Boolean(locale))
+        );
+
+        return locales.size === 1 ? [...locales][0] ?? null : null;
+    }
+
+    private resolveSessionLocale(req: Request): DungeonBlitzSwfLocale | null {
         const remoteAddress = this.normalizeRemoteAddress(this.resolveRequesterAddress(req));
         if (!remoteAddress) {
             return null;
@@ -147,8 +209,8 @@ export class StaticServer {
         const candidates = activeSessions.length > 0 ? activeSessions : sessions;
         const locales = new Set(
             candidates
-                .map((client) => this.normalizeLocale(client.character?.dialogueLanguage))
-                .filter((locale): locale is 'en' | 'tr' => Boolean(locale))
+                .map((client) => this.normalizeLocale(client.character?.dialogueLanguage ?? client.dialogueLanguage))
+                .filter((locale): locale is DungeonBlitzSwfLocale => Boolean(locale))
         );
 
         return locales.size === 1 ? [...locales][0] ?? null : null;
@@ -174,10 +236,13 @@ export class StaticServer {
         return emails.size === 1 ? [...emails][0] ?? '' : '';
     }
 
-    private resolveGameSwzLocale(req: Request): 'en' | 'tr' {
+    private resolveGameSwzLocale(req: Request): DungeonBlitzSwfLocale {
         return (
             this.normalizeLocale(req.query.lang) ??
+            this.resolveReferrerLocale(req) ??
             this.resolveSessionLocale(req) ??
+            this.resolveLocalFallbackSessionLocale() ??
+            this.resolveCookieLocale(req) ??
             'en'
         );
     }
@@ -185,12 +250,42 @@ export class StaticServer {
     private resolveSwfLocale(req: Request): DungeonBlitzSwfLocale {
         return (
             this.normalizeLocale(req.query.lang) ??
+            this.resolveReferrerLocale(req) ??
             this.resolveSessionLocale(req) ??
+            this.resolveLocalFallbackSessionLocale() ??
+            this.resolveCookieLocale(req) ??
             'en'
         );
     }
 
-    private getGameSwzPathForLocale(locale: 'en' | 'tr'): string {
+    private resolveLocalizationStatus(req: Request): {
+        locale: DungeonBlitzSwfLocale;
+        source: 'query' | 'session' | 'local-session' | 'cookie' | 'default';
+    } {
+        const queryLocale = this.normalizeLocale(req.query.lang);
+        if (queryLocale) {
+            return { locale: queryLocale, source: 'query' };
+        }
+
+        const sessionLocale = this.resolveSessionLocale(req);
+        if (sessionLocale) {
+            return { locale: sessionLocale, source: 'session' };
+        }
+
+        const localSessionLocale = this.resolveLocalFallbackSessionLocale();
+        if (localSessionLocale) {
+            return { locale: localSessionLocale, source: 'local-session' };
+        }
+
+        const cookieLocale = this.resolveCookieLocale(req);
+        if (cookieLocale) {
+            return { locale: cookieLocale, source: 'cookie' };
+        }
+
+        return { locale: 'en', source: 'default' };
+    }
+
+    private getGameSwzPathForLocale(locale: DungeonBlitzSwfLocale): string {
         const cbqDir = path.join(this.contentDir, 'p', 'cbq');
         const variantPath = path.join(cbqDir, `Game.${locale}.swz`);
         if (fs.existsSync(variantPath)) {
@@ -219,6 +314,20 @@ export class StaticServer {
         }
 
         return path.join(this.contentDir, 'p', 'cbq', normalizedAssetPath);
+    }
+
+    private rememberQueryLocale(req: Request, res: Response): void {
+        const locale = this.normalizeLocale(req.query.lang);
+        if (!locale) {
+            return;
+        }
+
+        res.cookie('db_lang', locale, {
+            httpOnly: false,
+            maxAge: 365 * 24 * 60 * 60 * 1000,
+            sameSite: 'lax',
+            path: '/'
+        });
     }
 
     private renderDevSettings(devSettingsPath: string): string {
@@ -304,6 +413,7 @@ export class StaticServer {
             }
 
             const locale = this.resolveSwfLocale(req);
+            this.rememberQueryLocale(req, res);
             res.type('application/x-shockwave-flash');
             res.setHeader('X-DungeonBlitz-Language', locale);
             res.send(this.getSelectedSwfBuffer(locale));
@@ -311,6 +421,7 @@ export class StaticServer {
 
         this.app.get('/p/cbq/Game.swz', (req, res) => {
             const locale = this.resolveGameSwzLocale(req);
+            this.rememberQueryLocale(req, res);
             const swzPath = this.getGameSwzPathForLocale(locale);
             res.type('application/x-shockwave-flash');
             res.setHeader('X-DungeonBlitz-Language', locale);
@@ -319,6 +430,7 @@ export class StaticServer {
 
         this.app.get('/DungeonBlitzRemote.swf', (req, res) => {
             const locale = this.resolveSwfLocale(req);
+            this.rememberQueryLocale(req, res);
             res.type('application/x-shockwave-flash');
             res.setHeader('X-DungeonBlitz-Language', locale);
             res.send(this.getSelectedSwfBuffer(locale));
@@ -394,6 +506,16 @@ export class StaticServer {
                 remoteAddress: selection.remoteAddress,
                 availableCharacters: selection.availableCharacters,
                 session: selection.snapshot
+            });
+        });
+
+        this.app.get('/api/localization/self', (req, res) => {
+            const status = this.resolveLocalizationStatus(req);
+            res.setHeader('Cache-Control', 'no-store');
+            res.json({
+                serverTime: new Date().toISOString(),
+                locale: status.locale,
+                source: status.source
             });
         });
 

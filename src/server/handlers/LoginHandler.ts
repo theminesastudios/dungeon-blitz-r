@@ -82,7 +82,11 @@ export class LoginHandler {
         client.userId = userId;
         client.account = { email, user_id: userId };
         client.authenticated = true;
+        client.dialogueLanguage = await db.getDialogueLanguage(userId);
         client.characters = await db.loadCharacters(userId);
+        for (const character of client.characters) {
+            character.dialogueLanguage = client.dialogueLanguage;
+        }
 
         LoginHandler.sendCharacterList(client);
     }
@@ -114,7 +118,11 @@ export class LoginHandler {
         client.userId = userId;
         client.account = { email, user_id: userId };
         client.authenticated = true;
+        client.dialogueLanguage = await db.getDialogueLanguage(userId);
         client.characters = await db.loadCharacters(userId);
+        for (const character of client.characters) {
+            character.dialogueLanguage = client.dialogueLanguage;
+        }
 
         LoginHandler.sendCharacterList(client);
     }

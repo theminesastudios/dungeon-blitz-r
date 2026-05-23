@@ -25,6 +25,14 @@ export class JsonAdapter implements IDatabase {
         return String(value ?? '').trim().toLowerCase();
     }
 
+    private normalizeDialogueLanguage(value: unknown): string {
+        const normalized = String(value ?? '').trim().toLowerCase().replace('_', '-');
+        if (normalized === 'br' || normalized === 'pt' || normalized === 'ptbr' || normalized === 'pt-br') {
+            return 'pt-br';
+        }
+        return normalized === 'tr' ? 'tr' : 'en';
+    }
+
     private normalizeCharacterProgress(character: Character | null | undefined): Character | null | undefined {
         if (!character) {
             return character;
@@ -123,7 +131,11 @@ export class JsonAdapter implements IDatabase {
             return;
         }
 
-        const saveData: UserSaveData = { user_id: userId, characters: normalizedCharacters };
+        const saveData: UserSaveData = {
+            user_id: userId,
+            dialogueLanguage: this.normalizeDialogueLanguage(existing?.dialogueLanguage),
+            characters: normalizedCharacters
+        };
         const tmpPath = `${savePath}.${process.pid}.${Date.now()}.${Math.random().toString(16).slice(2)}.tmp`;
 
         try {
@@ -218,10 +230,52 @@ export class JsonAdapter implements IDatabase {
         await fs.writeFile(this.accountsPath, JSON.stringify(accounts, null, 2));
 
         // Create empty save file
-        const saveData: UserSaveData = { user_id: newId, characters: [] };
+        const saveData: UserSaveData = { user_id: newId, dialogueLanguage: 'en', characters: [] };
         await fs.writeFile(path.join(this.savesDir, `${newId}.json`), JSON.stringify(saveData, null, 2));
 
         return newId;
+    }
+
+    private async performSetDialogueLanguage(userId: number, language: string, savePath: string): Promise<void> {
+        await this.ensureSavesDir();
+        const existing = await this.readSaveFile(userId);
+        const saveData: UserSaveData = {
+            user_id: userId,
+            dialogueLanguage: this.normalizeDialogueLanguage(language),
+            characters: Array.isArray(existing?.characters) ? existing.characters : []
+        };
+        const tmpPath = `${savePath}.${process.pid}.${Date.now()}.${Math.random().toString(16).slice(2)}.tmp`;
+
+        try {
+            await fs.writeFile(tmpPath, JSON.stringify(saveData, null, 2));
+            await this.renameWithRetry(tmpPath, savePath);
+        } finally {
+            await fs.rm(tmpPath, { force: true }).catch(() => undefined);
+        }
+    }
+
+    public async getDialogueLanguage(userId: number): Promise<string> {
+        await JsonAdapter.waitForQueuedSave(path.join(this.savesDir, `${userId}.json`));
+        const save = await this.readSaveFile(userId);
+        return this.normalizeDialogueLanguage(save?.dialogueLanguage);
+    }
+
+    public async setDialogueLanguage(userId: number, language: string): Promise<void> {
+        const savePath = path.join(this.savesDir, `${userId}.json`);
+        const previousWrite = JsonAdapter.saveQueues.get(savePath) ?? Promise.resolve();
+        const currentWrite = previousWrite
+            .catch(() => undefined)
+            .then(() => this.performSetDialogueLanguage(userId, language, savePath));
+
+        JsonAdapter.saveQueues.set(savePath, currentWrite);
+
+        try {
+            await currentWrite;
+        } finally {
+            if (JsonAdapter.saveQueues.get(savePath) === currentWrite) {
+                JsonAdapter.saveQueues.delete(savePath);
+            }
+        }
     }
 
     public async loadCharacters(userId: number): Promise<Character[]> {

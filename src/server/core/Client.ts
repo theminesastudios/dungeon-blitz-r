@@ -139,6 +139,7 @@ export class Client {
     public account: UserAccount | null = null;
     public characters: Character[] = [];
     public character: Character | null = null;
+    public dialogueLanguage: string = "en";
     public challengeStr: string = "";
 
     // Entity State
