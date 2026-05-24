@@ -3,7 +3,6 @@ import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { GameData } from '../core/GameData';
 import { GlobalState } from '../core/GlobalState';
-import { JsonAdapter } from '../database/JsonAdapter';
 import { noteDungeonRunChestOpened, noteDungeonRunTreasure } from '../core/DungeonRunStats';
 import { CombatHandler } from './CombatHandler';
 import { getClientCharacterKey, getPartyIdForClient } from '../core/PartySync';
@@ -15,8 +14,6 @@ import { getEquippedGearGoldFind } from '../utils/GearGoldBonuses';
 import { getActivePotionBonuses } from '../utils/ConsumableState';
 import { normalizeCharacterMaterials } from '../utils/MaterialInventory';
 import { PetHandler } from './PetHandler';
-
-const db = new JsonAdapter();
 
 interface RewardRequest {
     receiverId: number;
@@ -802,7 +799,7 @@ export class RewardHandler {
         return result;
     }
 
-    private static async persistCharacter(client: Client): Promise<void> {
+    private static persistCharacter(client: Client, reason: string): void {
         if (!client.userId || !client.character) {
             return;
         }
@@ -812,7 +809,9 @@ export class RewardHandler {
         } else {
             client.characters.push(client.character);
         }
-        await db.saveCharacters(client.userId, client.characters);
+        if (typeof client.scheduleCharacterSave === 'function') {
+            client.scheduleCharacterSave(reason);
+        }
     }
 
     private static findOnlineContributor(levelName: string, contributorKey: string): Client | null {
@@ -945,7 +944,7 @@ export class RewardHandler {
         }
 
         if (shouldSave) {
-            await RewardHandler.persistCharacter(client);
+            RewardHandler.persistCharacter(client, 'reward grant');
         }
     }
 
@@ -1054,7 +1053,7 @@ export class RewardHandler {
         }
 
         if (shouldSave) {
-            await RewardHandler.persistCharacter(client);
+            RewardHandler.persistCharacter(client, 'loot pickup');
         }
     }
 }

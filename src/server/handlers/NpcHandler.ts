@@ -2,7 +2,6 @@ import { Client } from '../core/Client';
 import { GlobalState } from '../core/GlobalState';
 import { GameData } from '../core/GameData';
 import { Character } from '../database/Database';
-import { JsonAdapter } from '../database/JsonAdapter';
 import { MissionDialogueLoader } from '../data/MissionDialogueLoader';
 import { NpcDialogueLoader } from '../data/NpcDialogueLoader';
 import { MissionDef, MissionLoader } from '../data/MissionLoader';
@@ -14,8 +13,6 @@ import { BitReader } from '../network/protocol/bitReader';
 import { getClientLevelScope } from '../core/LevelScope';
 import { RewardHandler } from './RewardHandler';
 import { MissionHandler } from './MissionHandler';
-
-const db = new JsonAdapter();
 
 type MissionEntry = Record<string, any>;
 type ResolvedNpc = Record<string, any>;
@@ -45,12 +42,20 @@ export class NpcHandler {
         ommmoai03hard: { missionId: MissionID.StoneOraclesSpeakHard, bit: 4 }
     };
 
-    private static async persistCharacter(client: Client): Promise<void> {
+    private static persistCharacter(client: Client, reason: string): void {
         if (!client.userId || !client.character) {
             return;
         }
 
-        client.characters = await db.saveCharacterSnapshot(client.userId, client.character);
+        const index = client.characters.findIndex((entry) => entry.name === client.character?.name);
+        if (index >= 0) {
+            client.characters[index] = client.character;
+        } else {
+            client.characters.push(client.character);
+        }
+        if (typeof client.scheduleCharacterSave === 'function') {
+            client.scheduleCharacterSave(reason);
+        }
     }
 
     static async handleTalkToNpc(client: Client, data: Buffer): Promise<void> {
@@ -193,7 +198,7 @@ export class NpcHandler {
 
                         // Сохраняем прогресс
                         if (client.userId) {
-                            await NpcHandler.persistCharacter(client);
+                            NpcHandler.persistCharacter(client, 'npc mission turn-in');
                         }
 
                         const followupMissionId = NpcHandler.autoAcceptFollowupMission(
@@ -232,7 +237,7 @@ export class NpcHandler {
         }
 
         if (didMutate && client.userId) {
-            await NpcHandler.persistCharacter(client);
+            NpcHandler.persistCharacter(client, 'npc dialogue mission update');
         }
 
         NpcHandler.sendResolvedDialogue(client, npcId, dialogueId, missionId);
@@ -845,7 +850,7 @@ export class NpcHandler {
 
             // Сохраняем прогресс
             if (client.userId) {
-                await NpcHandler.persistCharacter(client);
+                NpcHandler.persistCharacter(client, 'first mission turn-in');
             }
         } finally {
             client.pendingMissionTurnIns.delete(NpcHandler.FIRST_MISSION_ID);

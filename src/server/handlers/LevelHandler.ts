@@ -2431,6 +2431,20 @@ export class LevelHandler {
         client.characters = await db.saveCharacterSnapshot(client.userId, client.character);
     }
 
+    private static scheduleCurrentCharacterSnapshot(client: Client, reason: string): void {
+        if (!client.userId || !client.character) {
+            return;
+        }
+
+        const index = client.characters.findIndex((entry) => entry.name === client.character?.name);
+        if (index >= 0) {
+            client.characters[index] = client.character;
+        } else {
+            client.characters.push(client.character);
+        }
+        client.scheduleCharacterSave(reason);
+    }
+
     private static getLevelMap(
         levelName: string | null | undefined,
         levelInstanceId: string = '',
@@ -3697,8 +3711,12 @@ export class LevelHandler {
         });
 
         if (client.character && client.userId && progress !== previousProgress) {
-            await LevelHandler.saveCurrentCharacterSnapshot(client);
-            DebugLogger.logProgress('QuestProgress:saved', client, client.character, {
+            if (typeof client.scheduleCharacterSave === 'function') {
+                LevelHandler.scheduleCurrentCharacterSnapshot(client, 'quest progress update');
+            } else {
+                await LevelHandler.saveCurrentCharacterSnapshot(client);
+            }
+            DebugLogger.logProgress('QuestProgress:saveQueued', client, client.character, {
                 previousProgress,
                 progress
             });

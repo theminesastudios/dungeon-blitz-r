@@ -23,15 +23,12 @@ import {
     usesSharedDungeonProgress
 } from '../core/SharedDungeonProgress';
 import { Character } from '../database/Database';
-import { JsonAdapter } from '../database/JsonAdapter';
 import { MissionDef, MissionLoader } from '../data/MissionLoader';
 import { NpcLoader } from '../data/NpcLoader';
 import { MissionID } from '../data/runtime';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { RewardHandler } from './RewardHandler';
-
-const db = new JsonAdapter();
 
 type MissionEntry = Record<string, any>;
 type DungeonCompletionResult = {
@@ -1002,7 +999,7 @@ export class MissionHandler {
                     MissionHandler.sendQuestProgress(client, 0);
                 }
                 if (client.userId) {
-                    await MissionHandler.saveCharacter(client);
+                    MissionHandler.saveCharacter(client, 'full-clear mission entry reset');
                 }
             }
             return;
@@ -1035,7 +1032,7 @@ export class MissionHandler {
         }
 
         if (client.userId) {
-            await MissionHandler.saveCharacter(client);
+            MissionHandler.saveCharacter(client, 'full-clear mission start');
         }
     }
 
@@ -1224,7 +1221,7 @@ export class MissionHandler {
         }
 
         if (didMutate) {
-            await MissionHandler.saveCharacter(client);
+            MissionHandler.saveCharacter(client, 'enemy kill mission progress');
         }
     }
 
@@ -1536,7 +1533,7 @@ export class MissionHandler {
         }
 
         if (didMutate) {
-            await MissionHandler.saveCharacter(client);
+            MissionHandler.saveCharacter(client, 'level completion mission update');
         }
 
         if (clearedDungeon) {
@@ -2227,7 +2224,7 @@ export class MissionHandler {
         MissionHandler.sendMissionProgress(client, missionId, 1);
         MissionHandler.sendMammothIdolUpdate(client);
         MissionHandler.sendAchievementCompleteUi(client, missionId);
-        await MissionHandler.saveCharacter(client);
+        MissionHandler.saveCharacter(client, 'badge mission claim');
     }
 
     private static updateDungeonMissionResult(
@@ -3656,12 +3653,12 @@ export class MissionHandler {
         return didMutate;
     }
 
-    private static async saveCharacter(client: Client): Promise<void> {
+    private static saveCharacter(client: Client, reason: string = 'mission update'): void {
         if (!client.userId || !client.character) {
             return;
         }
 
-        const chars = await db.loadCharacters(client.userId);
+        const chars = Array.isArray(client.characters) ? client.characters : [];
         const idx = chars.findIndex((entry) => entry.name === client.character?.name);
         if (idx !== -1) {
             chars[idx] = client.character;
@@ -3669,7 +3666,9 @@ export class MissionHandler {
             chars.push(client.character);
         }
         client.characters = chars;
-        await db.saveCharacters(client.userId, chars);
+        if (typeof client.scheduleCharacterSave === 'function') {
+            client.scheduleCharacterSave(reason);
+        }
     }
 
     private static setMissionState(

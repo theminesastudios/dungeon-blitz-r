@@ -200,6 +200,8 @@ export class Client {
     public pendingDungeonCompletionTimer: NodeJS.Timeout | null = null;
     public pendingDungeonCompletionFlushActive: boolean = false;
     public pendingDungeonCompletionWaitForCutsceneEnd: boolean = false;
+    public deferredCharacterSaveTimer: NodeJS.Timeout | null = null;
+    public deferredCharacterSaveReason: string = "";
     public activeDungeonCutsceneScope: string = "";
     public activeDungeonCutsceneRoomId: number = 0;
     public lastDungeonCutsceneStartScope: string = "";
@@ -283,6 +285,36 @@ export class Client {
 
     public sendBitBuffer(packetId: number, bb: BitBuffer): void {
         this.send(packetId, bb.toBuffer());
+    }
+
+    public scheduleCharacterSave(reason: string, delayMs: number = 150): void {
+        if (!this.userId || !this.character) {
+            return;
+        }
+
+        this.deferredCharacterSaveReason = reason;
+        if (this.deferredCharacterSaveTimer) {
+            clearTimeout(this.deferredCharacterSaveTimer);
+        }
+
+        const safeDelay = Math.max(0, Math.round(Number(delayMs ?? 0)));
+        this.deferredCharacterSaveTimer = setTimeout(() => {
+            this.deferredCharacterSaveTimer = null;
+            const userId = this.userId;
+            const character = this.character;
+            if (!userId || !character) {
+                return;
+            }
+
+            void db.saveCharacterSnapshot(userId, character).then((characters) => {
+                if (this.userId === userId && this.character === character) {
+                    this.characters = characters;
+                }
+            }).catch((err) => {
+                console.error(`[Client] Deferred character save failed after ${this.deferredCharacterSaveReason || reason}:`, err);
+            });
+        }, safeDelay);
+        this.deferredCharacterSaveTimer.unref?.();
     }
 
     public armPendingTransferGrace(durationMs: number = Client.PENDING_TRANSFER_GRACE_MS): void {
@@ -401,6 +433,11 @@ export class Client {
     }
 
     private clearIdentityState(): void {
+        if (this.deferredCharacterSaveTimer) {
+            clearTimeout(this.deferredCharacterSaveTimer);
+            this.deferredCharacterSaveTimer = null;
+        }
+        this.deferredCharacterSaveReason = "";
         this.userId = null;
         this.authenticated = false;
         this.account = null;
@@ -635,6 +672,10 @@ export class Client {
         const persistSnapshot = options?.persistSnapshot !== false;
 
         if (persistSnapshot && snapshot.userId && this.character) {
+            if (this.deferredCharacterSaveTimer) {
+                clearTimeout(this.deferredCharacterSaveTimer);
+                this.deferredCharacterSaveTimer = null;
+            }
             this.repairDungeonLocationBeforeSave();
             await db.saveCharacterSnapshot(snapshot.userId, this.character).catch((err) => {
                 console.error(`[Client] Failed to persist character before ${reason}:`, err);
@@ -661,6 +702,10 @@ export class Client {
         const snapshot = this.createSessionCleanupSnapshot();
 
         if (snapshot.userId && this.character) {
+            if (this.deferredCharacterSaveTimer) {
+                clearTimeout(this.deferredCharacterSaveTimer);
+                this.deferredCharacterSaveTimer = null;
+            }
             this.repairDungeonLocationBeforeSave();
             void db.saveCharacterSnapshot(snapshot.userId, this.character).catch((err) => {
                 console.error('[Client] Failed to persist character on disconnect:', err);
