@@ -4094,6 +4094,10 @@ export class LevelHandler {
         }
     }
 
+    private static isDefeatedEntityStateValue(entState: number): boolean {
+        return entState === EntityState.DEAD || entState === 6;
+    }
+
     // 0x07: Incremental Update (Movement)
     static async handleEntityIncrementalUpdate(client: Client, data: Buffer): Promise<void> {
         // data passed from Client is already the payload (header stripped)
@@ -4111,6 +4115,7 @@ export class LevelHandler {
 
         const STATE_BITS = 2; // Entity.const_316
         const entState = br.readMethod6(STATE_BITS);
+        const isDefeatEntState = LevelHandler.isDefeatedEntityStateValue(entState);
 
         const flags = {
             bLeft: br.readMethod15(),
@@ -4146,7 +4151,7 @@ export class LevelHandler {
             !isSelf &&
             !ent.isPlayer &&
             Number(ent.team ?? 0) === EntityTeam.ENEMY;
-        if (isEnemyEntity && entState === EntityState.DEAD) {
+        if (isEnemyEntity && isDefeatEntState) {
             const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
             const contributionSnapshot = CombatHandler.getContributionSnapshot(getClientLevelScope(client), entityId);
             if (contributionSnapshot.contributors.length) {
@@ -4158,18 +4163,19 @@ export class LevelHandler {
         }
         const shouldIgnoreUnverifiedDungeonBossDeadState =
             isEnemyEntity &&
-            entState === EntityState.DEAD &&
+            isDefeatEntState &&
             MissionHandler.shouldIgnoreUnverifiedDungeonBossDefeat(currentLevel, levelEntity ?? ent);
         const canonicalEntState = shouldIgnoreUnverifiedDungeonBossDeadState
             ? EntityState.ACTIVE
             : entState;
+        const canonicalIsDefeatState = LevelHandler.isDefeatedEntityStateValue(canonicalEntState);
 
         const previousX = Number(ent.x ?? 0);
         ent.x += deltaX;
         ent.y += deltaY;
         ent.v = Number(ent.v ?? 0) + deltaVX;
         ent.entState = canonicalEntState;
-        ent.dead = canonicalEntState === EntityState.DEAD ? true : Boolean(ent.dead);
+        ent.dead = canonicalIsDefeatState ? true : Boolean(ent.dead);
         ent.facingLeft = flags.bLeft;
         ent.bRunning = flags.bRunning;
         ent.bJumping = flags.bJumping;
@@ -4183,7 +4189,7 @@ export class LevelHandler {
             levelEntity.y = ent.y;
             levelEntity.v = ent.v;
             levelEntity.entState = canonicalEntState;
-            levelEntity.dead = canonicalEntState === EntityState.DEAD ? true : Boolean(levelEntity.dead);
+            levelEntity.dead = canonicalIsDefeatState ? true : Boolean(levelEntity.dead);
             levelEntity.facingLeft = flags.bLeft;
             levelEntity.bRunning = flags.bRunning;
             levelEntity.bJumping = flags.bJumping;
@@ -4247,26 +4253,31 @@ export class LevelHandler {
 
         if (
             isEnemyEntity &&
-            canonicalEntState === EntityState.DEAD &&
-            MissionHandler.shouldWaitForEnemyKillStateMissionProgress(client, ent) &&
+            canonicalIsDefeatState &&
             !Boolean(ent.questDefeatProcessed)
         ) {
-            LevelHandler.markEnemyDefeatProcessed(client, entityId, ent);
-            await MissionHandler.handleEnemyDefeatMissionProgress(client, ent);
+            const shouldProcessMissionProgress = MissionHandler.shouldWaitForEnemyKillStateMissionProgress(client, ent);
+            const shouldProcessDungeonCompletion = MissionHandler.shouldProcessEnemyKillStateDungeonCompletion(client, ent);
+            if (shouldProcessMissionProgress || shouldProcessDungeonCompletion) {
+                LevelHandler.markEnemyDefeatProcessed(client, entityId, ent);
+                if (shouldProcessMissionProgress) {
+                    await MissionHandler.handleEnemyDefeatMissionProgress(client, ent);
+                }
 
-            const levelScope = getClientLevelScope(client);
-            const ownerToken = Math.round(Number(ent.ownerToken ?? 0));
-            const authorityToken = ownerToken > 0
-                ? ownerToken
-                : (levelScope ? resolveSharedDungeonProgressAuthorityToken(levelScope) : 0);
-            const authorityClient = authorityToken > 0 ? GlobalState.sessionsByToken.get(authorityToken) : null;
-            const completionClient = authorityClient && areClientsInSameLevelScope(client, authorityClient)
-                ? authorityClient
-                : client;
-            await MissionHandler.handleForcedDungeonBossCompletion(completionClient, ent);
+                const levelScope = getClientLevelScope(client);
+                const ownerToken = Math.round(Number(ent.ownerToken ?? 0));
+                const authorityToken = ownerToken > 0
+                    ? ownerToken
+                    : (levelScope ? resolveSharedDungeonProgressAuthorityToken(levelScope) : 0);
+                const authorityClient = authorityToken > 0 ? GlobalState.sessionsByToken.get(authorityToken) : null;
+                const completionClient = authorityClient && areClientsInSameLevelScope(client, authorityClient)
+                    ? authorityClient
+                    : client;
+                await MissionHandler.handleForcedDungeonBossCompletion(completionClient, ent);
+            }
         }
 
-        if (isSelf && entState === EntityState.DEAD) {
+        if (isSelf && isDefeatEntState) {
             const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
             CombatHandler.notePlayerDeathState(client);
         }
