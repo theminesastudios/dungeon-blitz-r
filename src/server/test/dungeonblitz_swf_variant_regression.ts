@@ -35,7 +35,7 @@ const CLASS82_SCENE_CACHE_SAFE_PIXELS = 4194304;
 const CLASS72_FLOAT_TEXT_SAFE_PIXELS = 262144;
 const CLASS82_MAX_SCENE_CACHE_SCALE = 16;
 const SUPERANIM_METHOD200_SAFE_PIXELS = 16384;
-const SUPERANIM_METHOD982_SAFE_PIXELS = 65536;
+const SUPERANIM_METHOD982_SAFE_PIXELS = 4194304;
 const SUPERANIM_METHOD982_SAFE_AXIS = 8191;
 const SUPERANIM_METHOD806_FULLSCREEN_ENTITY_BITMAP_SIZE = 3072;
 const SAFE_SCREEN_BITMAP_WIDTH = 2048;
@@ -296,14 +296,14 @@ function assertClass82BitmapDataGuardWindow(swfPath: string): void {
             }
             const window = instructions.slice(index + 1, index + 8);
             const divisorIndex = window.findIndex((candidate) =>
-                candidate.opcode === 0x24 && candidate.operands[0]?.[1] === 4
+                candidate.opcode === 0x24 && candidate.operands[0]?.[1] === 1
             );
             return divisorIndex >= 0 &&
                 window[divisorIndex + 1]?.opcode === 0xa3 &&
                 window.some((candidate) => setLocalOperand(candidate) === 6);
         }),
         true,
-        'class_82.method_193 must quarter cache render scale before BitmapData allocation'
+        'class_82.method_193 must preserve normal cache render scale before BitmapData allocation'
     );
     assert.equal(
         guardWindow.filter((instruction) => instruction.opcode === 0x25 && instruction.operands[0]?.[1] === 128).length >= 2,
@@ -612,7 +612,7 @@ function assertMainMethod561DoesNotClampMaxScale(swfPath: string): void {
     assert.equal(
         maxScaleAssignment,
         undefined,
-        'Main.method_561 must not clamp centered fullscreen scale back to 1.25'
+        'Main.method_561 must not clamp fullscreen fit scale back to 1.25'
     );
 }
 

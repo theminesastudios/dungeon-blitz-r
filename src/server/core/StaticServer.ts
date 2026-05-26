@@ -178,6 +178,20 @@ export class StaticServer {
         return path.join(cbqDir, 'Game.swz');
     }
 
+    private getFlashVersionAssetPath(assetPath: string): string {
+        const segments = assetPath.split('/').filter(Boolean);
+        if (segments.some((segment) => segment === '..' || segment.includes(path.sep))) {
+            return path.join(this.contentDir, 'p', this.flashVersion, '__invalid__');
+        }
+        const normalizedAssetPath = segments.join(path.sep);
+        const versionedPath = path.join(this.contentDir, 'p', this.flashVersion, normalizedAssetPath);
+        if (fs.existsSync(versionedPath)) {
+            return versionedPath;
+        }
+
+        return path.join(this.contentDir, 'p', 'cbq', normalizedAssetPath);
+    }
+
     private renderDevSettings(devSettingsPath: string): string {
         const contents = fs.readFileSync(devSettingsPath, 'utf8');
         return contents.replace(
@@ -279,6 +293,27 @@ export class StaticServer {
         this.app.get('/p/cbq/devSettings.xml', (_req, res) => {
             res.type('application/xml');
             res.send(this.renderDevSettings(devSettingsPath));
+        });
+
+        this.app.get(`/p/${this.flashVersion}/Game.swz`, (req, res) => {
+            const locale = this.resolveGameSwzLocale(req);
+            const swzPath = this.getGameSwzPathForLocale(locale);
+            res.type('application/x-shockwave-flash');
+            res.setHeader('X-DungeonBlitz-Language', locale);
+            res.sendFile(swzPath);
+        });
+
+        this.app.use(`/p/${this.flashVersion}`, (req, res, next) => {
+            const assetPath = this.getFlashVersionAssetPath(req.path);
+            if (!fs.existsSync(assetPath) || !fs.statSync(assetPath).isFile()) {
+                next();
+                return;
+            }
+
+            if (assetPath.endsWith('.xml')) {
+                res.type('application/xml');
+            }
+            res.sendFile(assetPath);
         });
 
         this.app.get('/api/presence/sessions', (req, res) => {

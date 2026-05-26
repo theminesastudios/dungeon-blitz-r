@@ -95,8 +95,18 @@ const TURKISH_DISCIPLINE_REPLACEMENTS: StringReplacement[] = [
     { oldValue: 'Discipline Masteries', newValue: 'Disiplin Ustaligi' }
 ];
 
+// The original SWF had English disconnect strings ("Lost Connection", "Client
+// Error") but they were overwritten with Turkish ("Baglanti Koptu", "Istemci
+// Hatasi") directly in the string pool, so every locale sees Turkish text.
+const DISCONNECT_SCREEN_RESTORE_ENGLISH: StringReplacement[] = [
+    { oldValue: 'Baglanti Koptu', newValue: 'Lost Connection' },
+    { oldValue: 'Istemci Hatasi', newValue: 'Client Error' },
+];
+
 function getReplacements(mode: DungeonBlitzSwfMode, locale: DungeonBlitzSwfLocale): StringReplacement[] {
-    const localeReplacements = locale === 'tr' ? TURKISH_DISCIPLINE_REPLACEMENTS : [];
+    const localeReplacements = locale === 'tr'
+        ? TURKISH_DISCIPLINE_REPLACEMENTS
+        : DISCONNECT_SCREEN_RESTORE_ENGLISH;
     if (mode === 'local') {
         return [
             { oldValue: REMOTE_HOST, newValue: LOCAL_HOST },

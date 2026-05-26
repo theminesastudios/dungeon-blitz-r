@@ -51,7 +51,7 @@ function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
         "  npm exec tsx src/server/scripts/patch-dungeonblitz-main-method561-unclamp-scale.ts [--verify] [--swf <path>]",
         "",
         "Disables Main.method_561's legacy 1.25 max-scale clamp while keeping",
-        "the original contain-style stage fit logic intact.",
+        "the original fullscreen fit logic intact.",
       ].join("\n"));
       process.exit(0);
     }
@@ -154,7 +154,7 @@ function patchSwf(swfPath: string, verify: boolean): void {
       start: methodBody.codeStart + clampRange.start,
       end: methodBody.codeStart + clampRange.end,
       data: Buffer.alloc(clampRange.end - clampRange.start, NOP_OPCODE),
-      detail: "allow centered fit scale above the legacy 1.25 cap",
+      detail: "allow fullscreen fit scale above the legacy 1.25 cap",
     },
   ];
 

@@ -32,8 +32,8 @@ const CLASS82_LEGACY_TOTAL_PIXEL_GUARDS = [
   262144,
 ];
 const CLASS82_MAX_SCENE_CACHE_SCALE = 16;
-const CACHE_SCALE_DIVISOR = 4;
-const LEGACY_CACHE_SCALE_DIVISORS = [2];
+const CACHE_SCALE_DIVISOR = 1;
+const LEGACY_CACHE_SCALE_DIVISORS = [2, 4];
 const FALLBACK_BITMAP_SIZE = 128;
 const SCALE_DIVISOR_PATCH = Buffer.from([0x24, CACHE_SCALE_DIVISOR, 0xa3]);
 
@@ -62,7 +62,7 @@ function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
         "  ts-node src/server/scripts/patch-dungeonblitz-class82-bitmapdata-guard.ts [--verify] [--swf <path>]",
         "",
         "Patches class_82.method_193 so invalid scene cache scale/dimensions",
-        "are reduced to a safe 1x1 transparent bitmap instead of crashing Flash.",
+        "are reduced to a safe fallback bitmap without lowering normal cache resolution.",
       ].join("\n"));
       process.exit(0);
     }
@@ -423,7 +423,7 @@ function findScaleAssignmentOffsets(
     ) {
       const divisorPatchStart = divisorIndex >= 0 ? instructions[divisorIndex].offset : convert!.offset;
       const divisorPatchEnd = divisorIndex >= 0
-        ? instructions[divisorIndex + 2].offset + instructions[divisorIndex + 2].size
+        ? instructions[divisorIndex + 1].offset + instructions[divisorIndex + 1].size
         : convert!.offset;
       return {
         divisorPatchStart,
@@ -536,7 +536,6 @@ function writePatchedMethod(
 function patchSwf(swfPath: string, verify: boolean): void {
   const { ctx, abc, methodBody, code, instructions } = getInstanceMethod(swfPath, "class_82", "method_193");
   const constructor = findBitmapDataConstructor(instructions, abc, 8, 9);
-  const scaleOffsets = findScaleAssignmentOffsets(instructions, abc);
   const targetTotalPixelsIntIndex = findRequiredInt(abc, CLASS82_TARGET_TOTAL_PIXELS);
   const guard = assembleInserted(dimensionGuard(8, 9, targetTotalPixelsIntIndex));
   const cacheScaleGuard = assembleInserted(scaleGuard(6));
@@ -545,10 +544,19 @@ function patchSwf(swfPath: string, verify: boolean): void {
     .filter((index): index is number => index !== null)
     .map((index) => assembleInserted(dimensionGuard(8, 9, index)));
   const hasGuard = hasExactGuardBefore(code, constructor.offset, guard);
+  const hasScalePatchByPattern = hasClass82ScaleDivisor(instructions, abc);
+  const hasScaleGuardByPattern = hasClass82ScaleGuard(instructions);
+
+  if (hasGuard && hasScalePatchByPattern && hasScaleGuardByPattern) {
+    console.log(`${swfPath}: already patched (class_82.method_193 BitmapData guard present).`);
+    return;
+  }
+
+  const scaleOffsets = findScaleAssignmentOffsets(instructions, abc);
   const hasScalePatch = hasScaleDivisorPatch(code, scaleOffsets.divisorPatchStart, scaleOffsets.divisorPatchEnd) ||
-    hasClass82ScaleDivisor(instructions, abc);
+    hasScalePatchByPattern;
   const hasScaleGuard = hasScaleGuardPatch(code, scaleOffsets.guardInsertOffset, cacheScaleGuard) ||
-    hasClass82ScaleGuard(instructions);
+    hasScaleGuardByPattern;
 
   if (hasGuard && hasScalePatch && hasScaleGuard) {
     console.log(`${swfPath}: already patched (class_82.method_193 BitmapData guard present).`);

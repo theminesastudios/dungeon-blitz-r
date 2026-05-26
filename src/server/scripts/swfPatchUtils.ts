@@ -65,6 +65,7 @@ export interface MethodBodyInfo {
 
 export interface AbcParseResult {
   intValues: number[];
+  doubleValues: number[];
   stringValues: string[];
   stringLenPositions: number[];
   stringDataPositions: number[];
@@ -339,7 +340,12 @@ export function parseAbc(ctx: SwfContext): AbcParseResult {
   }
 
   [count, pos] = readU30(data, pos, "abc.double_count");
-  pos += Math.max(0, count - 1) * 8;
+  const doubleValues = [NaN];
+  for (let i = 1; i < count; i += 1) {
+    requireBounds(data, pos, 8, `abc.double[${i}]`);
+    doubleValues.push(data.readDoubleLE(pos));
+    pos += 8;
+  }
 
   let stringCount: number;
   [stringCount, pos] = readU30(data, pos, "abc.string_count");
@@ -568,6 +574,7 @@ export function parseAbc(ctx: SwfContext): AbcParseResult {
 
   return {
     intValues,
+    doubleValues,
     stringValues,
     stringLenPositions,
     stringDataPositions,

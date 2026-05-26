@@ -35,9 +35,15 @@ call npm -v
 echo.
 
 :: Root dependencies
-if not exist node_modules (
+if not exist node_modules\.bin\concurrently.cmd (
     echo Installing root dependencies...
-    call npm install
+    call npm install --include=dev
+    if !errorlevel! neq 0 (
+        echo.
+        echo ERROR: Root dependency install failed.
+        pause
+        exit /b !errorlevel!
+    )
     echo.
 ) else (
     echo Root dependencies already installed; skipping.
@@ -45,10 +51,17 @@ if not exist node_modules (
 )
 
 :: Server dependencies
-if not exist src\server\node_modules (
+if not exist src\server\node_modules\.bin\nodemon.cmd (
     echo Installing server dependencies...
     cd src\server
-    call npm install
+    call npm install --include=dev
+    if !errorlevel! neq 0 (
+        cd /d "%~dp0"
+        echo.
+        echo ERROR: Server dependency install failed.
+        pause
+        exit /b !errorlevel!
+    )
     cd /d "%~dp0"
     echo.
 ) else (

@@ -31,6 +31,55 @@ function testStaticServerSelectsLocalizedGameSwz(): void {
     assert.equal(fs.existsSync(turkishPath), true);
 }
 
+function testStaticServerAliasesCurrentFlashVersionManifest(): void {
+    const server = new StaticServer();
+    const manifestPath = (server as any).getFlashVersionAssetPath('/masterFileList.xml') as string;
+
+    assert.equal(path.basename(path.dirname(manifestPath)), 'cbq');
+    assert.equal(path.basename(manifestPath), 'masterFileList.xml');
+    assert.equal(fs.existsSync(manifestPath), true);
+}
+
+function testBrowserEmbedFillsViewportWithoutCropping(): void {
+    const server = new StaticServer();
+    const contentDir = (server as any).contentDir as string;
+    const indexHtml = fs.readFileSync(path.join(contentDir, 'index.html'), 'utf8');
+    const embedRule = indexHtml.match(/#game-container,\s*\r?\n\s*#DungeonBlitz,\s*\r?\n\s*object#DungeonBlitz,\s*\r?\n\s*embed#DungeonBlitz\s*\{([\s\S]*?)\n    \}/);
+
+    assert.ok(embedRule, 'DungeonBlitz embed CSS rule not found');
+    assert.equal(indexHtml.includes('id="game-shell"'), false, 'Flash host must not use the removed game-shell wrapper');
+    assert.equal(
+        /transform\s*:\s*scale/.test(embedRule[1]),
+        false,
+        'DungeonBlitz embed must not browser-scale the SWF beyond the viewport'
+    );
+    assert.equal(
+        /--game-fill/.test(embedRule[1]),
+        false,
+        'DungeonBlitz embed must not use a crop/fill multiplier'
+    );
+    assert.equal(
+        /position:\s*fixed/.test(embedRule[1]) && /inset:\s*0/.test(embedRule[1]),
+        true,
+        'DungeonBlitz embed must be pinned to the viewport'
+    );
+    assert.equal(
+        /width:\s*100dvw\s*!important/.test(embedRule[1]),
+        true,
+        'DungeonBlitz embed must fill the dynamic viewport width'
+    );
+    assert.equal(
+        /height:\s*100dvh\s*!important/.test(embedRule[1]),
+        true,
+        'DungeonBlitz embed must fill the dynamic viewport height'
+    );
+    assert.equal(
+        /aspect-ratio/.test(embedRule[1]),
+        false,
+        'DungeonBlitz embed must not force a 3:2 letterboxed viewport'
+    );
+}
+
 function testStaticServerResolvesGameSwzLocaleFromRequest(): void {
     const server = new StaticServer();
     const queryRequest = {
@@ -83,6 +132,8 @@ function testStaticServerBuildsLocalizedSwfTextByLocale(): void {
 function main(): void {
     testStaticServerServesSingleSwfByDefault();
     testStaticServerSelectsLocalizedGameSwz();
+    testStaticServerAliasesCurrentFlashVersionManifest();
+    testBrowserEmbedFillsViewportWithoutCropping();
     testStaticServerResolvesGameSwzLocaleFromRequest();
     testStaticServerBuildsLocalizedSwfTextByLocale();
     console.log('static_server_default_swf_regression: ok');
