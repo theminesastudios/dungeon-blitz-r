@@ -974,7 +974,22 @@ export class LevelHandler {
         return DialogueTranslationLoader.translateText(
             text,
             LevelHandler.getDialogueLanguage(client.character),
-            { fallbackToGeneric }
+            {
+                fallbackToGeneric,
+                playerClass: client.character?.class,
+                playerGender: client.character?.gender
+            }
+        );
+    }
+
+    private static translateDisplayText(client: Client, text: string): string {
+        return DialogueTranslationLoader.translateText(
+            text,
+            LevelHandler.getDialogueLanguage(client.character),
+            {
+                playerClass: client.character?.class,
+                playerGender: client.character?.gender
+            }
         );
     }
 
@@ -1398,7 +1413,7 @@ export class LevelHandler {
                 client.currentLevel,
                 client.currentRoomId,
                 entityId,
-                LevelHandler.KEEP_TUTORIAL_BOSS_NAME,
+                LevelHandler.translateDisplayText(client, LevelHandler.KEEP_TUTORIAL_BOSS_NAME),
                 client.levelInstanceId
             );
             state.bossInfoSentIds.add(entityId);
@@ -3848,15 +3863,23 @@ export class LevelHandler {
         const roomId = br.readMethod9();
         LevelHandler.cacheRoomId(client, roomId);
         const bossId = br.readMethod9();
-        br.readMethod26();
-        br.readMethod9();
-        br.readMethod26();
+        const bossName = br.readMethod26();
+        const unknownValue = br.readMethod9();
+        const subtitle = br.readMethod26();
         for (const other of LevelHandler.forLevelRecipients(client, true)) {
             MissionHandler.noteDungeonCutsceneStart(other, roomId);
         }
         noteDungeonRunBossCutscene(getClientLevelScope(client), roomId, bossId);
 
-        LevelHandler.relayToLevel(client, 0xAC, data);
+        for (const other of LevelHandler.forLevelRecipients(client, true)) {
+            const bb = new BitBuffer(false);
+            bb.writeMethod4(Math.max(0, roomId));
+            bb.writeMethod4(Math.max(0, bossId));
+            bb.writeMethod26(LevelHandler.translateDisplayText(other, bossName));
+            bb.writeMethod4(Math.max(0, unknownValue));
+            bb.writeMethod26(LevelHandler.translateDisplayText(other, subtitle));
+            other.send(0xAC, bb.toBuffer());
+        }
     }
 
     static handleSetUntargetable(client: Client, data: Buffer): void {

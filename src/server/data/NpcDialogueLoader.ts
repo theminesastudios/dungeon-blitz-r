@@ -146,6 +146,87 @@ export class NpcDialogueLoader {
         return true;
     }
 
+    private static isFemaleGender(character: Character | null | undefined): boolean {
+        return String(character?.gender ?? '').trim().toLowerCase() === 'female';
+    }
+
+    private static localizePortugueseClassPlaceholder(line: string, character: Character | null | undefined, locale: string): string {
+        if (this.normalizeLocale(locale) !== 'pt-br' || !/#tc#/i.test(line)) {
+            return line;
+        }
+
+        const classNames: Record<string, { male: string; female: string }> = {
+            mage: { male: 'Mago', female: 'Maga' },
+            rogue: { male: 'Ladino', female: 'Ladina' },
+            paladin: { male: 'Paladino', female: 'Paladina' }
+        };
+        const className = classNames[String(character?.class ?? '').trim().toLowerCase()];
+        const localizedClass = className
+            ? (this.isFemaleGender(character) ? className.female : className.male)
+            : undefined;
+        return localizedClass ? line.replace(/#tc#/gi, localizedClass) : line;
+    }
+
+    private static localizePortugueseGenderedText(line: string, character: Character | null | undefined, locale: string): string {
+        if (this.normalizeLocale(locale) !== 'pt-br') {
+            return line;
+        }
+
+        const female = this.isFemaleGender(character);
+        const choose = (maleText: string, femaleText: string): string => female ? femaleText : maleText;
+        let localized = String(line ?? '')
+            .replace(/\bEle\|Ela\b/g, choose('Ele', 'Ela'))
+            .replace(/\bele\|ela\b/g, choose('ele', 'ela'))
+            .replace(/\bdele\|dela\b/g, choose('dele', 'dela'))
+            .replace(/\bele\|dela\b/g, choose('ele', 'ela'))
+            .replace(/\bEle\|Dela\b/g, choose('Ele', 'Ela'))
+            .replace(/\bbem-vindo\|bem-vinda\b/g, choose('bem-vindo', 'bem-vinda'))
+            .replace(/\bBem-vindo\|Bem-vinda\b/g, choose('Bem-vindo', 'Bem-vinda'))
+            .replace(/\bguerreiro\|guerreira\b/g, choose('guerreiro', 'guerreira'))
+            .replace(/\bGuerreiro\|Guerreira\b/g, choose('Guerreiro', 'Guerreira'))
+            .replace(/\bamigo\|amiga\b/g, choose('amigo', 'amiga'))
+            .replace(/\bAmigo\|Amiga\b/g, choose('Amigo', 'Amiga'))
+            .replace(/\bherói\|heroína\b/g, choose('herói', 'heroína'))
+            .replace(/\bHerói\|Heroína\b/g, choose('Herói', 'Heroína'))
+            .replace(/\bheroi\|heroina\b/g, choose('herói', 'heroína'))
+            .replace(/\bHeroi\|Heroina\b/g, choose('Herói', 'Heroína'));
+
+        if (!female) {
+            return localized;
+        }
+
+        return localized
+            .replace(/\bO Caçador do Kraken\b/g, 'A Caçadora do Kraken')
+            .replace(/\bo Caçador do Kraken\b/g, 'a Caçadora do Kraken')
+            .replace(/\bCaçador do Kraken\b/g, 'Caçadora do Kraken')
+            .replace(/\bO humano\b/g, 'A humana')
+            .replace(/\bo humano\b/g, 'a humana')
+            .replace(/\bhumano\b/g, 'humana')
+            .replace(/\bHumano\b/g, 'Humana')
+            .replace(/\bnenhum herói(?!na)\b/g, 'nenhuma heroína')
+            .replace(/\bum herói(?!na)\b/g, 'uma heroína')
+            .replace(/\bherói(?!na)\b/g, 'heroína')
+            .replace(/\bHerói(?!na)\b/g, 'Heroína')
+            .replace(/\bcampeão\b/g, 'campeã')
+            .replace(/\bCampeão\b/g, 'Campeã')
+            .replace(/\bmeu amigo\b/g, 'minha amiga')
+            .replace(/\bMeu amigo\b/g, 'Minha amiga')
+            .replace(/\bamigo ou inimigo\b/g, 'amiga ou inimiga')
+            .replace(/\bAmigo ou inimigo\b/g, 'Amiga ou inimiga')
+            .replace(/\bamigo\b/g, 'amiga')
+            .replace(/\bAmigo\b/g, 'Amiga')
+            .replace(/\binimigo\b/g, 'inimiga')
+            .replace(/\bInimigo\b/g, 'Inimiga')
+            .replace(/\bmuito bom em\b/g, 'muito boa em')
+            .replace(/\bMuito bom em\b/g, 'Muito boa em');
+    }
+
+    private static prepareLinesForClient(lines: string[], character: Character | null | undefined, locale: string): string[] {
+        return normalizeDialogueLinesForClient(lines, locale)
+            .map((line) => this.localizePortugueseClassPlaceholder(line, character, locale))
+            .map((line) => this.localizePortugueseGenderedText(line, character, locale));
+    }
+
     private static resolveEntry(levelName: string, npcKey: string, locale: string): NpcDialogueEntry | null {
         const normalizedLocale = this.normalizeLocale(locale);
         const normalizedLevel = this.normalizeLevelName(levelName);
@@ -233,10 +314,10 @@ export class NpcDialogueLoader {
 
         for (const condition of entry.conditionalLines) {
             if (this.matchesCondition(character, condition)) {
-                return normalizeDialogueLinesForClient(condition.lines, locale);
+                return this.prepareLinesForClient(condition.lines, character, locale);
             }
         }
 
-        return normalizeDialogueLinesForClient(entry.defaultLines, locale);
+        return this.prepareLinesForClient(entry.defaultLines, character, locale);
     }
 }

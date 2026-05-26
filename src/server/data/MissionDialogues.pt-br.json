@@ -1,0 +1,1369 @@
+{
+  "missions": {
+    "1": {
+      "ReturnText": "Você nos salvou!",
+      "ActiveText": "Você pode encontrar a vila no mapa.=@Vou até lá ver se aqueles são mesmo sobreviventes.=É só seguir para o leste que você vai encontrar ela.=Vou tentar consertar a Niobe."
+    },
+    "2": {
+      "OfferText": "Precisamos encontrar aquela vila.",
+      "ActiveText": "Você pode encontrar a vila no mapa.=@Vou até lá ver se aqueles são mesmo sobreviventes.=É só seguir para o leste que você vai encontrar ela.=Vou tentar consertar a Niobe.",
+      "ReturnText": "Não pode ser! Alguém da terra natal finalmente voltou a Ellyria?=",
+      "PraiseText": "Preciso enviar notícias ao rei!=Mal posso acreditar que ainda existam humanos além de nós."
+    },
+    "3": {
+      "OfferText": "Graças a combatentes durões como Anna, conseguimos resistir.",
+      "ActiveText": "Quem é você? De onde você veio?=@Sou #tn#. Foi o rei quem me enviou.=@Mas confesso que não esperava encontrar humanos ainda vivendo por aqui.=Viemos com Sigmund Hocke há cinquenta anos.=@Sigmund, filho do Barão Hocke!?=O próprio. Eu era o tamborileiro do exército dele.=Fiz parte de uma expedição para salvar a baronia do pai dele quando os goblins invadiram.=@E vocês sobreviveram todo esse tempo? Impressionante!=Graças a duas gerações de combatentes como Anna.=Mas os goblins pegaram ela de surpresa na praia.=@Aqueles goblins do mar estavam fugindo de mim. Anna deve ter se metido no caminho deles.=@Eles desembarcaram a leste daqui. Tem alguma caverna naquela direção?=Logo ali, atrás daquela colina, há um antigo esconderijo de contrabandistas.=@Então é lá que ela está. Até eu resgatá-la, é claro."
+    },
+    "4": {
+      "OfferText": "De qualquer forma, obrigada de novo! Não víamos goblins há mais de um ano.",
+      "ReturnText": "Obrigado por libertar a Anna! Nossos combatentes precisam da líder deles.=@O prazer foi meu. Derrotar goblins é uma das minhas especialidades.=Sei bem. Seu capitão estava me contando sobre as Guerras Goblin.=@Mas, ao que parece, nossa vitória ainda está longe."
+    },
+    "5": {
+      "OfferText": "Há cinquenta anos, o Forte de Fim do Lobo nos protegia.",
+      "ActiveText": "Sigmund Hocke construiu o forte como base para a expedição dele.=Mas os goblins e outras criaturas ainda piores nos expulsaram de lá há décadas.=Com essa sua habilidade para acabar com goblins...=@Talvez eu seja a pessoa certa para reconquistar o forte.=Bom, ele está em péssimo estado. Hoje é praticamente uma ruína.=@Vou limpar o lugar e começar a reconstruir tudo.=@Preciso de um lugar seguro aqui em Ellyria.=Se você conseguir expulsar os goblins, vamos ajudar no que pudermos para reconstruir o lugar.=@Eu dou conta dos goblins, pode deixar.=@Quer saber? Vou cuidar disso agora mesmo.",
+      "ReturnText": "Você limpou o velho forte? Então agora ele é seu. Vamos ajudar a transformar esse lugar em um lar de verdade.=@Obrigado, prefeito. Vou cuidar bem dele."
+    },
+    "6": {
+      "OfferText": "Alguém chamado \"Nephit\" está tentando controlar os goblins e os mortos-vivos.",
+      "ActiveText": "Meu pai vasculhou os relatórios antigos, da época em que desembarcamos aqui há cinquenta anos.=@E ele encontrou algo sobre esse tal de Nephit?=O Barão Hocke contratou os homens mais sábios do mundo para suas pesquisas.=Nephit era um dos melhores. Ele estava escavando uma tumba quando os goblins invadiram.=@Você tem ideia de qual tumba era?=Vimos muitos mortos-vivos saindo da Tumba do Rei Adormecido.=@Beleza, vou começar as buscas por lá.=Certo. Encontro você de novo quando a poeira baixar.",
+      "ReturnText": "Com Nephit fora do caminho, talvez tenhamos menos mortos-vivos e menos goblins por aqui."
+    },
+    "7": {
+      "OfferText": "Existe outra tumba. Talvez o que Nephit procurava esteja lá dentro.",
+      "ActiveText": "Você disse que Nephit mencionou um \"Dragão dos Sonhos\".=@Os dragões desapareceram há milhares de anos.=Essa outra tumba é ainda mais antiga que isso.=O Barão Hocke era obcecado por essas criptas antigas.=@Talvez Nephit estivesse atrás de ossos de dragão. São artefatos poderosos.=A tumba fica ao sul, do outro lado da floresta. Se Nephit conseguir se erguer uma segunda vez...=@Então é melhor eu chegar lá antes dele.=Abra caminho que eu sigo você.",
+      "ReturnText": "Um dragão! Incrível, mesmo que fosse só uma espécie de fantasma dos sonhos."
+    },
+    "8": {
+      "OfferText": "Com Fim do Lobo segura, podemos recuperar mais terras das mãos do mal.",
+      "ActiveText": "Graças a você, estamos de pé de novo e prontos para lutar!=@Fico feliz em ouvir isso. Pretendo acabar com os goblins deste lado do oceano.=@Seu povo vai me ajudar?=Claro! A família do Abbod é da região a leste daqui.=Ele está ansioso para recuperar o legado da família.=@Excelente. E preciso descobrir mais sobre as Terras Adormecidas.=Nunca ouvi falar delas.=Mas talvez haja algum registro nos arquivos da Cidadela de Wissen.=@Então, vou libertar a cidadela e também as terras de Abbod.=@Diga ao Abbod que vou encontrá-lo lá!=Pode deixar. Eu aviso assim que voltar à vila.",
+      "ReturnText": "Vamos fortificar nosso acampamento aqui. Obrigado por ter nos guiado.",
+      "PraiseText": "Esta vila será a primeira de muitas que vamos recuperar.=Temos muita luta difícil pela frente, mas vamos conseguir.=Toda esta terra já foi um campo verdejante.=Os goblins e a magia deles transformaram tudo em pântano.=@O que a magia fez, a magia pode desfazer.=@Juntos, vamos restaurar esta terra.=@Bom, pelo menos boa parte.=Boa parte já seria mais do que eu jamais esperei."
+    },
+    "9": {
+      "OfferText": "Os goblins roubaram todas as nossas ferraduras e transformaram em argolas de nariz.",
+      "ActiveText": "Os goblins grandalhões usam ferraduras como argolas de nariz.=Pra zombar da nossa cara, eu acho.=Mas precisamos de ferraduras se quisermos reconstruir nosso exército e nossa economia.=@Qualquer chance de tomar algo de volta dos goblins me interessa.",
+      "ReturnText": "Valeu! Agora só tenho que dar uma boa limpada nessas argolas..."
+    },
+    "10": {
+      "OfferText": "Os xamãs goblins usam suas varinhas para controlar os Olhos da Morte.",
+      "ActiveText": "Se você me trouxer as varinhas dos xamãs goblins, posso usá-las para afastar os Olhos da Morte.=Vai ser bom não ter mais aquelas coisas malignas nos espionando.=Principalmente à noite.=Enquanto dormimos.",
+      "ReturnText": "Obrigado! Com isso, devo conseguir afastar qualquer Olho da Morte.",
+      "PraiseText": "Eu odeio como aqueles Olhos da Morte me olham.=Mais uma vez, obrigado."
+    },
+    "12": {
+      "OfferText": "Se houvesse menos goblins, poderíamos recuperar esta terra.",
+      "ActiveText": "Faz anos que não vejo os goblins tão agitados assim.=Eles estão em pânico.=Provavelmente por sua causa.=@É bem provável.",
+      "ReturnText": "Uau, você é um caçador de goblins e tanto!",
+      "PraiseText": "Você sabe mesmo como lidar com goblins.=Talvez ainda dê para salvar este lugar."
+    },
+    "13": {
+      "OfferText": "Tem um bando de saqueadores goblins entocados naquela fazenda.",
+      "ActiveText": "Nós encurralamos os trogs.=Mas eles têm um comandante casca-grossa lá com eles.=Se você der um jeito nele, eu dou conta do resto.=@Pode deixar.",
+      "ReturnText": "Você acabou com ele!=Podemos mantê-los presos lá dentro.=Sem problema.",
+      "PraiseText": "Você colocou os goblins para correr.=Enquanto mantivermos a pressão...=Podemos recuperar esta terra."
+    },
+    "14": {
+      "OfferText": "Os mortos-vivos não param de sair daquela cripta.",
+      "ActiveText": "O velho santuário lá em cima foi de onde os mortos-vivos surgiram pela primeira vez.=Desde então, eles não param de vir.=Se você puder me ajudar a destruir alguns dos piores deles...=Podemos impedir que eles se espalhem por Fim do Lobo.",
+      "ReturnText": "Você tem minha gratidão.",
+      "PraiseText": "Vou continuar lutando contra eles.=Mas nunca vou me acostumar com eles.=Nem com o cheiro deles.=Nem com as coisas sinistras que dizem.=Mas, principalmente, com o cheiro deles."
+    },
+    "15": {
+      "OfferText": "Alguns novo tipo de monstruoso guerreiro fica contra nos agora.",
+      "ActiveText": "Estes nao sao goblins nos estamos lutando.=@Nao gobins? O Que sao nos lidando com entao?=Alguns tipo de reptil-homens. Eles chamam eles mesmos Tuatara.=@Tuatara. Eu Ja leu nome em antigo historias. Fearsome soldados.=Aquele soa como eles, eles estao muito organizados.=Eles Tem tomado ha um torre proximo.=Nos nao pode obter passado eles.=@Eu pode obter passado eles.=Eu esperanca so.=@Me tambem. Apenas um caminho para encontrar fora.",
+      "ReturnText": "Voce mostrou Tuatara como humanos lutar!"
+    },
+    "16": {
+      "OfferText": "castelo de Lorde Yornak parece ainda habitado embora nao por homens.",
+      "ActiveText": "Castelo Yornak era lar de este de regiao lords.=ultimo Lorde e Dama Yornak construiu magnifico celeiro, palacio, e universidade.=@Eles eram renomados para deles riqueza e lavish spending, Eu saber.=de Fato eles eram, mas...=Eles sempre manteve deles antigo castelo em bom reparar.=Isso era deles seguro retreat.=@Talvez la sao alguns sobreviventes la tambem.=Ha alguem em la.=Alguem Tuatara chamam Yornak.=@Yornak! Talvez um heir? Eu Vou ir encontrar fora.",
+      "ReturnText": "Voce sobreviveu Castelo Yornak.",
+      "PraiseText": "Yornak familia e outro tragico conto.=@invasions de Terras Adormecidas tem corrompido tudo.=@Eu Estou feliz Eu finalmente trouxe eles paz."
+    },
+    "17": {
+      "OfferText": "Ranger Affric tem liderou um grupo para scout antigo universidade distrito.",
+      "ActiveText": "Affric acha fonte de corrupcao e para leste.=Alguem chamado Hsalt tem montou acima em Cidadela de Wissen.=@Eu queria para poke ao redor la eu mesmo.=@Eu Vou ir ver o que ele tem descobriu.=Ser cuidadoso, estrada e overrung com Tuatara e Devoradores.",
+      "ReturnText": "Isso Esta bom para ver voce novamente, amigo.",
+      "PraiseText": "Seu legend cresce.=Logo este regiao vai seguir voce qualquer lugar."
+    },
+    "18": {
+      "OfferText": "Vizir de Tuatara e criando carnisaurs.",
+      "ActiveText": "Vizir pode trabalho para dragao generais...=Mas nos agora saber ele esta real poder por tras corrupcao.=de vizir magico experimentos sao criando carnasaurs.=@Aqueles lagarto-horse coisas?=Ele Esta criando eles para servir como montarias para Tuatara soldados.=@Eles Iriam ser mais que um match para nosso cavaleiros volta lar.=@Eu precisa para fim este monstro-criando program agora.",
+      "ReturnText": "Voce fez isso! Nenhum carnasaur cavaleiros vai atormentar nos."
+    },
+    "19": {
+      "OfferText": "Vizir Hsalt e usando de cidadela biblioteca para mal",
+      "ActiveText": "Vizir vai ser incrivelmente irado at voce.=@Eu Estou mesmo mais irado at ele.=@Ele Esta perverteu de cidadela sabedoria para mal.=Eu suponho voce esta indo depois ele.=@Eu sou. Eu Estou tomando volta biblioteca para todos de nos.=Ser cuidadoso, de vizir magia faz ele como perigoso como dragoes ele serves.",
+      "ReturnText": "biblioteca e liberated!"
+    },
+    "20": {
+      "OfferText": "Tuatara general tem montou acima dele base em castelo proximo",
+      "ActiveText": "Tuatara General, Svar, e based em aquele antigo castelo.=@Este Svar parece para ser um de deles importante lideres.=@Eu Estou indo para tomar ele em e aprender onde estes reptilian soldados vir de.=O Que e um exercito fazendo em este pantano mesmo assim?=@Eu Estou nao certo, mas exercitos nao ficar em um lugar.=@Exercitos este grande sao para attacking outros.=Como nearest outro, isso e worrisome para me.",
+      "ReturnText": "General Svar era um dragao!",
+      "PraiseText": "Tuatara sao liderou por real, viver dragoes.=@Eles sao, qual nao e bom noticias.=Aquele significa la sao mais dragoes.=@Provavelmente maiores uns tambem.=Bom sorte com aquele.=Feliz isso esta nao me em seu boots."
+    },
+    "21": {
+      "OfferText": "Gehrin e Odem acho eles saber onde Tuatara General e.",
+      "ActiveText": "Nos tem mais soldados scouting brejo.=Gehrin e Odem acho eles saber onde outro Tuatara general e.=@Outro dragao?=Provavelmente.=Ir ver eles, eles saber mais que Eu.",
+      "ReturnText": "Feliz voce poderia fazer isso.",
+      "PraiseText": "de Tuatara outro general e proximo.=Mas ele esta diferente que Svath.=@Diferente como?=Nos visto sinais de mortos-vivos em dele servico.=@Grande. Eu sense de Nephit mao em este."
+    },
+    "22": {
+      "OfferText": "Ha outro General, chamado Svath. Ele Esta em antigo palacio.",
+      "ActiveText": "General Svath comanda todos estes Tuatara.=@Svath e Svar? Eles deve ser irmaos.=Provavelmente so, mas este soa como grande irmao.=e Svath nao apenas comandar Tuatara soldados.=Ele Esta para dentro scarier coisas.=@Voce significa besides giant aranhas e carnivorous plantas?=Eu significa como mortos-vivos.=@Grande, outro tumulo digger como Nephit.=@Um invasao de dragoes e fantasmas iria ruina de qualquer um week.",
+      "ReturnText": "Voce parado dragao invasao em dele tracks!"
+    },
+    "23": {
+      "OfferText": "O Que e proximo para voce,#tn#?",
+      "ActiveText": "Agora aquele Tuatara sao derrotado...=O Que e seu plano?=@Eu Estou indo para seguir para Castelo Hocke.=@Eu Estou certo isso esta todos monstros e ruinas agora.=Eu nao pode imagine qualquer um sobreviveu Tuatara Legiao passing atraves.=@e Nephit e nenhum duvida acima para algo.=@Eu precisa para obter para dentro aquele castelo...=@Se Eu Estou sempre indo para aprender verdade sobre onde estes monstros vir de.",
+      "ReturnText": "Segurar la, stanger. Quem sao voce?",
+      "PraiseText": "Voce fez alguns tremendous changes em estes parts."
+    },
+    "24": {
+      "OfferText": "ruinas de Real Celeiro e fonte de devoradores.",
+      "ActiveText": "Real Celeiro usado para ser um maravilha de mundo.=@Este inteiro regiao era celeiro de imperio.=Mas agora arruinado celeiro e corrompido.=devoradores parecem para todos vir de la.=@Entao weeding eles fora vai ser meu proximo task.=Se nos pode recuperar grain campos, nos pode apoio um inteiro exercito.=@Eu apenas precisa para cortar abaixo um exercito de killer plantas primeiro.",
+      "ReturnText": "Voce limpou Real Celeiro!"
+    },
+    "25": {
+      "OfferText": "Aqueles lagartos colocar um muito de stock em aqueles estandartes",
+      "ActiveText": "Tuatara reunem ao redor deles guerra estandartes.=Eles Estao ferozes quando deles estandarte e acima.=@e mais organizados que goblins sempre eram.=estandartes sao encantado em alguns caminho.=Se voce capture alguns de eles, Eu pode ser capaz para uso deles magia contra eles.=@Nos poderia uso nosso proprio magia estandartes para retake terra!",
+      "ReturnText": "Perfect. Eu acho Eu pode sew nosso proprio encantado estandartes agora.",
+      "PraiseText": "Agora Eu apenas precisa um bom desenho.=@Se voce querer para uso meu retrato, voce pode.=Um, obrigado, Eu Vou considerar isso.=@Eu tem um inspirador perfil.=Uh, voce fazer?=Sim, bem, Eu Vou vir acima com um poucos options."
+    },
+    "26": {
+      "OfferText": "Um Tuatara squad tem montou acima em um abandonado fazenda.",
+      "ActiveText": "lagartos tomou ha este antigo casa.=Eles Estao usando isso como um base para lancar ataques de.=Eles loja suprimentos la tambem.=Principalmente secos besouros e rancida carne.=So voce pode talvez sair aquele la.=Unless voce esta para dentro aquele tipo de comida.=Eu Estou nao judging.",
+      "ReturnText": "Agradecer voce!",
+      "PraiseText": "Nos Vamos fortaleza um olho em aquele lugar.=Se qualquer mais mostrar acima, nos vamos tomar cuidar de eles.=Obrigado para nao bringing me secos besouros.=Embora meu cousin diz eles estao tasty.=Eu acho Eu deveria tentar um antes Eu judge."
+    },
+    "27": {
+      "OfferText": "Devoradores sao por toda parte! Eu nao pode obter para bem",
+      "ActiveText": "Pode voce obter devoradores embora de bem?=Isso Esta apenas fonte de fresco agua qualquer lugar perto aqui.=Estes monstro tem corrompido rio.=e lagoas.=Eles Iriam corromper chuva se eles poderia.",
+      "ReturnText": "Whew, obrigado!",
+      "PraiseText": "Obrigado para clearing bem.=Nos realmente precisa um reliable agua fonte."
+    },
+    "28": {
+      "OfferText": "Ha algo grande acima em aquele antigo fazenda.",
+      "ActiveText": "Eu nao saber o que isso e.=Eu nao acho isso esta Tuatara embora.=Eu figured voce iria querer para verificar isso fora.=Porque Eu realmente nao querer para.=Fez Eu mention isso sounded grande?",
+      "ReturnText": "Ooo! Eu odeio aranhas! Obrigado!",
+      "PraiseText": "Um colossal aranha, isso era?=Eu odeio aranhas.=Eu Estou feliz isso era voce e nao me!"
+    },
+    "29": {
+      "OfferText": "Estes murderous plantas sao intriguing.",
+      "ActiveText": "Nos precisa para aprender mais sobre Devoradores.=@Eu destruiu fonte de aqueles vil plantas.=Sim, mas eles crescem como ervas daninhas.=Se nos estamos indo para curar terra, Eu para saber mais.=Coletar dentes de grande uns.=Eu pode uso eles para concoct um potion para veneno eles.=@Eu acho nos iriamos todos ser melhor afastado se plantas nao tem dentes.",
+      "ReturnText": "Bem feito, agradecer voce!",
+      "PraiseText": "Eu odeio para acho o que Hsalt fez para dar plantas dentes.=Isso Esta terrivel para contemplar.=Mas isso esta todos Eu pode acho sobre.=O Que mais fez ele dar dentes para?=Cogumelos?=Descricao em Portugues 4D97D8.=Descricao em Portugues DB7932."
+    },
+    "30": {
+      "OfferText": "Vai voce ajudar nos empurrar volta Tuatara soldados?",
+      "ActiveText": "Trazer me Elmos de Tuatara Commanders.=@Por Que fazer voce querer deles elmos?=Primeiro, para mostrar eles nos estamos tomando ha. Eles amam deles elmos.=Segundo, nos pode uso metal para forja nosso proprio armadura.=@Third, isso vai fazer eles so irado.=Descricao em Portugues DE04E0.",
+      "ReturnText": "Agradecer voce! Aqueles lagartos saber nos estamos nao fooling ao redor agora!",
+      "PraiseText": "Um real herói em nosso lado!=Talvez nos pode tomar lutar para estes beasties.=e nao apenas Tuatara.=Imagine este terra gratis de monstro dominio!"
+    },
+    "31": {
+      "OfferText": "Meu antidoto para aranha veneno precisa aranha presas",
+      "ActiveText": "Se voce trazer me aranha presas, Eu Iria ser capaz para fazer um antidoto.=@Aquele iria definitely vir em util.=Estes grande aranhas nao usado para viver aqui.=@Eles eram corrompido por alguns vil magia.=Isso e por que Eu odeio magia, sempre corrompendo coisas.=Eu muito prefer alchemy.",
+      "ReturnText": "Agradecer voce, agora Eu pode terminar antidoto",
+      "PraiseText": "Isso vai tomar anos para obter livrar de estes aranhas.=Se nos pode sempre figure fora onde eles vir de."
+    },
+    "32": {
+      "OfferText": "Nos Estamos sabio para seu de tipo tricks. Present voce mesmo para Guardiao ou taste steel.",
+      "ActiveText": "Guardiao deve aprovar todos forasteiros.=@Voce Esta humano!=e so sao voce, aquele nao significa nos estamos amigos.=@Mas, como fez voce obter aqui?=Eu era nascido aqui.=@Eu nao entender, Goblin Horda...=Nao saber nada sobre nenhum hordas.=Voce tambem verificar em com Guardiao ou afastado com voce.=Embora Guardiao vai nenhum duvida enviar voce em seu caminho.=Nos Estamos nao procurando para seu tipo de problema.",
+      "ReturnText": "Nos tinha nosso encher de saqueadores e bandidos.",
+      "PraiseText": "Voce behave, estranho."
+    },
+    "33": {
+      "OfferText": "Estranho, Eu saber seu type. Nos nenhum patience para voce aqui.",
+      "ActiveText": "Eu nao saber voce, mas voce iria melhor ser em seu caminho.=@Eu Ja vir de Rei.=@Eu Estou aqui para ajudar restaurar Baronia de Ellyria.=Seu rei tem nada para fazer com nos.=e nos tinha plenty de bandidos dizer mesmo historia.=Eu nao querer problema, so ir onto bosques com outros.=@La sao humano bandidos em bosques?=Sim, voce vai encontrar plenty de seu tipo la.=@Nao meu tipo.=So voce dizer.=Eu Vou acredito isso quando Eu ver isso.",
+      "ReturnText": "Bem, estranho, Eu Estou surpreso. Voce feito nosso fair vila um servico."
+    },
+    "34": {
+      "OfferText": "bandidos dizer eles estao soldados de seu terra natal.",
+      "ActiveText": "Voce afirmar para ser de alguns kingdom atraves mar.=@Isso e verdade. Eu era enviou por Rei.=Eu nao saber qualquer reis, mas estes outro homens disse mesmo.=@Eu nao entender, onde fez Voce vir de?=@Eu pensou este vila destruiu.=Nenhum, nenhum, nos estamos fazendo apenas fine.=Exceto para saqueadores e saqueadores de atraves mar.=Apparently de seu kingdom.=@Eu tem mais questions...=Qual Eu Vou answer uma vez voce tomar cuidar de seu companheiro bandidos.=@Eu sou nenhum bandido!=Bem, eles sao, e eles estao de seu terra.=@Muito bem, Eu deve ver para eles.",
+      "ReturnText": "Voce retornou? So talvez voce nao sao como outros."
+    },
+    "35": {
+      "OfferText": "Eu enviou seu amigos de de Wolf Fim para Cemiterio Colina. Eles pode assentar la se eles como.",
+      "ActiveText": "Ha nenhum sala para voce de Wolf Fim folk aqui.=@Onde fez voce vir de, mesmo assim.=Meu povo settled aqui 40 anos atras.=Nos veio de um distante, distante terra, onde nos eram escravos.=Agora nos viver gratis e prosperous vidas.=@Mas monstros! Goblins, dragoes, mortos-vivos...=Nos proteger nosso proprio.=Eu enviou seu amigos de de Wolf Fim para Cemiterio Colina.=Se eles estao procurando para novo terras para assentar, eles pode tem aqueles.=@Um Cemiterio?=Beggars nao pode ser choosers.",
+      "ReturnText": "Agradecer estrelas voce esta aqui! de Nephit sombrio magia tem retornou!",
+      "PraiseText": "Meu pai liderou nosso povo fora de escravidao.=@Onde fez voce vir de.=Algum Lugar voce vai nunca ir, amigo.=Algum Lugar terrivel alem palavras.=@Como fez voce sobreviver dragoes e goblins e...=Nosso safety e nosso concern.=Nos tem fez dificil sacrificios.=Mas eles eram necessary.=Eu tem protegido meu povo at todos costs.=Talvez voce deveria preocupe sobre seu proprio folk."
+    },
+    "36": {
+      "OfferText": "Mordomo nao e aqui certo agora, estranho.",
+      "ActiveText": "Voce Esta volta.=@Eu precisa para atravessar ponte para dentro castelo.=Apenas Mordomo sabe como magico escudo funciona.=Aquele escudo e nosso principal protecao contra nosso inimigos.=@Como fez Mordomo criar tal poderosos magia?=Eu nao saber, isso e dele fazendo.=Mas ele esta manteve nos principalmente seguro para anos.=@Principalmente seguro?=Um poucos povo disappear cada ano, mas nao muito.=Mordomo e gathering material para Colheita Ritual.=Ir falar para dele guarda-costas Gunter se voce querer para encontrar ele.",
+      "ReturnText": "Estes bandidos nunca bothered nos antes. Fez voce rile eles acima?"
+    },
+    "37": {
+      "OfferText": "Mordomo foi para dentro aquele caverna para preparar para Colheita Ritual.",
+      "ActiveText": "Voce nao deveria perturbar Mordomo.=@Faz este ritual poder escudo em ponte?=Eu acho so.=Apenas Mordomo sabe como isso funciona.=@Isso Esta poderosos magia.=Mordomo tem longo protegido nosso povo, sempre desde nos veio aqui.=@Eu precisa para falar com ele sobre crossing ponte.=Bem, ele esta em la.=Mas nao bother ele se ele parece tambem ocupado.=Ele Esta fazendo importante trabalho.",
+      "PraiseText": "Fez voce falar com Mordomo?"
+    },
+    "38": {
+      "ActiveText": "Voce dizer Mordomo adora sombrio poderes?=@Ele Esta estado sacrificing seu povo para alguns antigo deus.=Eu tinha nenhum ideia!=@Ha mais para ser aprendido. Onde Esta dele casa?=Direita ha la, afastado vila square.=Pressa, voce tem para encontrar fora quem mais e helping ele.=Mordomo, fazendo pacts com mal deuses...=Eu nunca imaginou isso.",
+      "ReturnText": "Com de mordomo mal unveiled, nos tem um muito para figure fora."
+    },
+    "39": {
+      "OfferText": "Segundo para de mordomo diario, dele culto tomou sacrificios para montanha pico.",
+      "ActiveText": "Ha um chance Culto deixou sobreviventes em montanha.=@Possivelmente. At muito menos la sao mais cultistas acima la.=Eu Estou enviando alguns de meu povo para investigar.=@Eu vai juntar eles.=@de Meylour culto e ainda keeping acima aquele magia escudo.=@Eu precisa para derrotar Meylour para obter atraves ponte.=Entao encontrar meu povo em montanhas.=Mas tread lightly, nos nao saber o que e acima la.",
+      "ReturnText": "expedicao e acima adiante."
+    },
+    "40": {
+      "OfferText": "Bruxa Yagarah pode ser em alianca com Nephit!",
+      "ActiveText": "Mordomo de Ponte Sombria disse Cemiterio Colina iria ser seguro para assentar.=@Clearly isso esta nao.=morto comecou levantando de deles tumulos este manha!=@Soa como de Nephit trabalho.=Sim, isso faz, mas nos aprendido sobre um bruxa.=Dela de nome Yagarah, e ela pode ser working com Nephit.=Nos acho ela esta encurralados acima em um mausoleu Leste de aqui.=@Qualquer amigo de de Nephit e um inimigo de mina.",
+      "ReturnText": "Agradecer voce para rescuing me",
+      "PraiseText": "gnoles tem hated humanos para decadas.=Isso Esta nenhum surpresa eles transformado para Nephit para ajudar."
+    },
+    "41": {
+      "OfferText": "Gnoles e Morto-Vivo tem formed um frightening alliance.",
+      "ActiveText": "Gnoles e humanos usado para ser aliados.=Anos atras nos ajudou cada outro escapar escravidao.=Mas dois lados ambos queria para ser em comando depois.=Nos lutou sempre desde.=@e agora eles estao em alianca com Nephit.=Eles deve acho mortos-vivos aliados vai deixar eles finalmente escravizar nos novamente.=@Eles pode ser certo.=Voce Vai encontrar mais gnoles e mais mortos-vivos em tumulo de Karl Tilly.",
+      "ReturnText": "Grande trabalho! Tomara aquele montou volta de Nephit e Gnoles planos."
+    },
+    "42": {
+      "OfferText": "Eu interrogou um de de Nephit fantasmal servos sobre tumulo de Cornelius Hocke.",
+      "ActiveText": "Ha um tempestade de mortos-vivos activity em Cornelius de Hocke tumulo.=@Nephit tem um coisa para antigo tumulos, e usado para trabalho para Hocke familia.=Voce pode tem derrotado de Nephit latest incarnation...=Mas mortos-vivos sao apenas growing mais restless.=@Nephit funciona dele mal magia mesmo quando ele tem nenhum physical forma.=Todos sinais apontar para de Nephit fazendo algo em Cornelius de Hocke tumulo.=@Entao isso e meu proximo parar.",
+      "ReturnText": "Nephit verdadeiramente e um demonio, ele tem voce para levar fora dele antigo vinganca para ele."
+    },
+    "43": {
+      "OfferText": "Eu Estou worried sobre estes Chamas-fantasma Nephit e usando para erguer morto.",
+      "ActiveText": "Eu Ja nunca visto magia como estes chamas-fantasma.=Ha outro tumulo showing activity.=@Outro trick de de Nephit ou real coisa?=Nenhum caminho para dizer sem indo la.=Tentar e aprender mais sobre chamas-fantasma enquanto voce esta la.=@Eu Vou ver o que Eu pode fazer."
+    },
+    "44": {
+      "ActiveText": "Tem voce figured fora o que de Nephit plano e?",
+      "ReturnText": "Agradecer voce para stopping Nephit. Tomara coisas retornar para normal logo"
+    },
+    "45": {
+      "OfferText": "Eu Estou proud para tem ajudou voce recuperar este terra para seu povo.",
+      "ActiveText": "Voce pode dizer meu antigo amigos volta em Ponte Sombria Eu Estou staying aqui com seu povo.",
+      "ReturnText": "Voce retornou uma vez novamente. Whatever voce fez fora la, isso esta feito algo aqui.",
+      "PraiseText": "Agradecer voce para tudo voce tem feito aqui!"
+    },
+    "46": {
+      "OfferText": "La sao gnoles por toda parte! Nos precisa um mais seguro location.",
+      "ActiveText": "Mordomo nao fazer nos qualquer favors enviando nos aqui.=La sao gnoles e mortos-vivos por toda parte.=@Voce precisa um melhor base de operacoes.=Ha um armazem proximo isso e solid...=Mas isso esta filled com gnoles.=@Isso nao vai ser para longo. Eu Vou tomar cuidar de gnoles.",
+      "ReturnText": "Obrigado! Com aqueles gnoles sumiram, nos vamos tomar armazem ha."
+    },
+    "47": {
+      "OfferText": "Meu Tilly ancestrais eram lords aqui longo atras, mas agora morto erguer em meu familia tumulo.",
+      "ActiveText": "Eu queria para prestar meu ancestrais meu respeitos.=Mas de Nephit vil magia tem amaldicoado meu familia como bem como outros.=@de Nephit mal sabe nenhum profundezas.=@Eu vai restaurar seu ancestrais para deles descanso.",
+      "ReturnText": "Agradecer voce. Eu Estou feliz meu familia vai ser at paz.",
+      "PraiseText": "Obrigado novamente para cleansing meu familia tumulo."
+    },
+    "48": {
+      "OfferText": "de Nephit tomado cuidar de, mas Gnoles permanecem.",
+      "ActiveText": "gnole fortress e para Leste.=@Sem Nephit, eles estao menos de um threat.=Mas eles ainda tem access para crystal minas.=@Qual significa eles poderia recriar de Nephit chamas-fantasma.=Ou reviver Nephit.=@Tambem caminho, eles precisa para ser parado.",
+      "PraiseText": "cristais sao seguro, nenhum mais chamas-fantasma."
+    },
+    "49": {
+      "OfferText": "gnoles tem estranho artefatos aquele proteger eles de mortos-vivos.",
+      "ActiveText": "Se voce pode, trazer me aqueles estranho artefatos aquele proteger gnoles de mortos-vivos.=Se nos tinha eles, isso iria ser muito mais facil para com seguranca assentar este area.",
+      "ReturnText": "Meu obrigado! Com estes, nos pode fortaleza mortos-vivos at bay.",
+      "PraiseText": "Obrigado novamente, estes estranho heirlooms realmente fazer expulsar mortos-vivos embora."
+    },
+    "50": {
+      "OfferText": "O Que e isso com mortos-vivos levantando aqui tambem!",
+      "ActiveText": "Isso Esta como de Wolf Fim novamente!=morto sao levantando aqui tambem.=@Eu Estou lidando com isso, medo nao.",
+      "ReturnText": "Agradecer voce! Nos sao muito grateful para seu ajudar",
+      "PraiseText": "Voce Esta um worthy herói. Obrigado para seu ajudar"
+    },
+    "60": {
+      "OfferText": "Ser cuidadoso, la sao goblins por toda parte.",
+      "ActiveText": "La sao goblins de sobra em proximo cavernas.=@Mais goblins! Eu Vou ver para eles.=Fazer voce acho eles estao em alianca com Culto de Meylour?=@Com deles rei morto em guerra, goblins sao leaderless.=@Eu Estou certo eles vao servir qualquer um mal suficiente para tomar eles.",
+      "ReturnText": "Voce fez isso. Bom. Nos precisa um experienced goblin lutador.",
+      "PraiseText": "Obrigado para clearing caminho!"
+    },
+    "61": {
+      "OfferText": "Antes nos buscar para sobreviventes, nos precisa para seguro este area de goblins.",
+      "ActiveText": "Ha um large forca de goblins em aqueles proximo tuneis.=@Eu Ja lutou meu caminho atraves mais que um goblin toca.=O Que sao eles fazendo aqui, Eu maravilha.=@Eu aposto eles estao desperate para aliados agora aquele eles perdido guerra.=@Culto de Meylour pode tem tomado eles em.=@Eu Vou cavar abaixo atraves deles imundice e descobrir verdade.",
+      "ReturnText": "Moai tem despertou!"
+    },
+    "62": {
+      "ActiveText": "Removing aquele espada fez estes statues comecar falando!=@Realmente? O Que sao eles saying?=Eles Estao antigo pedra elementais, silenciados por Meylour.=Eles dizer de Meylour culto e fazendo terrivel coisas para nosso povo.=@Como pode Eu ajudar?=Falar para Moai.=Cada um tem revealed algo importante.=@Eu Vou consultar eles certo embora!",
+      "ReturnText": "Aqueles Moai espiritos realmente odeio Meylour."
+    },
+    "63": {
+      "OfferText": "Alguns de seu tipo pode ainda viver como eles uma vez eram.",
+      "ActiveText": "Eu saber onde alguns de seu tipo eram tomado.=@O Que sao voce? Alguns espirito?=Nos sao antigo protectors de este montanha.=Meylour toppled nos de nosso thrones.=@Onde sao sobreviventes?=Se eles viver, eles estao em um de de Meylour vil shrines.=Voce deve pressa, lest deles tempo vir.=@Eu Estou em meu caminho!",
+      "ReturnText": "Meylour ergueu em fury de profundezas five decadas passado.",
+      "PraiseText": "Meylour ergueu em fury de profundezas five decadas passado."
+    },
+    "64": {
+      "OfferText": "Se voce iria saber seu de povo destino, voce deve confrontar eles.",
+      "ActiveText": "Ciclopes eram nao sempre thus.=Meylour tem corrompido deles antigo formas.=Eles sao dele alto sacerdotes e devotos acolitos.=Buscam de Meylour segredos em deles fortaleza.",
+      "PraiseText": "Meylour e antigo alem contagem e odeia todos vivendo coisas."
+    },
+    "65": {
+      "OfferText": "gnoles virar para Meylour em desparation.",
+      "ActiveText": "gnoles normally tem nenhum amam para deuses.=Mas eles odeio humanos para betraying eles.=@Quem betrayed eles?=humanos de Ponte Sombria eram uma vez deles aliados.=Mordomo betrayed eles.=Agora eles virar para Meylour para revenge.=@Ironico. Mordomo worshipped Meylour como bem.=Mal deuses corromper todos.",
+      "ReturnText": "Meylour e essence de uncaring pedra, anathema para todos vida.",
+      "PraiseText": "Meylour e essence de uncaring pedra, anathema para todos vida."
+    },
+    "66": {
+      "OfferText": "Gnole chefe adora Meylour em montanha pico.",
+      "ActiveText": "Voce pode terminar afastado gnoles para bom.=Mas voce deveria saber...=Eu acredito Meylour tem feito algo estranho para gnole lider.=Gnoles quem viver longo suficiente pode become monstrously poderosos.=@Eu Vou tentar e fazer certo ele nao tem aquele muito tempo.",
+      "ReturnText": "de Meylour seguidores sao cavando furiosamente para dentro montanha."
+    },
+    "67": {
+      "OfferText": "goblins e ciclopes sao cavando embora em montanha.",
+      "ActiveText": "La sao alguns abandonado minas em area.=goblins sao expanding eles...=Mas eles nao parecem para ser cavando para ouro.=@Nao procurando para ouro?=Nenhum, eles parecem para tem alguns Grande Trabalho em mind.=@Qualquer goblin trabalho para Meylour e ruim noticias.=@Eu Vou colocar um fim para isso."
+    },
+    "68": {
+      "ActiveText": "Conhecido como Veios de Meylour, estes minas uma vez belonged para Terra Tita=Agora de Vezrinn devotos tem tomaram eles=Eles buscam magia minerio Alurite, e Coracao=Voce vai precisa para derrotar eles todos para tomar artifact e activate Espada de Meylour"
+    },
+    "69": {
+      "ActiveText": "Conhecido como Veios de Meylour, estes minas uma vez belonged para Terra Tita=Agora de Vezrinn devotos tem tomaram eles=Eles buscam magia minerio Alumite, e Coracao=Voce vai precisa para derrotar eles todos para tomar artifact e activate Espada de Meylour"
+    },
+    "70": {
+      "ActiveText": "Conhecido como Veios de Meylour, estes minas uma vez belonged para Terra Tita=Agora de Vezrinn devotos tem tomaram eles=Eles buscam magia minerio Alumite, e Coracao=Voce vai precisa para derrotar eles todos para tomar artifact e activate Espada de Meylour"
+    },
+    "71": {
+      "ActiveText": "Seguir abaixo primeiro caminho leste de aqui para obter para Emerald Clareiras=Fortaleza seguindo leste",
+      "ReturnText": "Voce deve ser um poderosos herói para tem vir atraves minas!",
+      "PraiseText": "Agradecer voce para reuniting nosso povo!"
+    },
+    "72": {
+      "OfferText": "de Uthor Exquisite Creations",
+      "ActiveText": "Descricao em Portugues 88D86B.=Invasores Vai Ser Aniquilados",
+      "ReturnText": "de Uthor Exquisite Creations=Invasores Vai Ser Aniquilados=Descricao em Portugues 88D86B.",
+      "PraiseText": "de Uthor Exquisite Creations=Invasores Vai Ser Aniquilados=Descricao em Portugues 88D86B."
+    },
+    "73": {
+      "OfferText": "de Uthor Exquisite Creations",
+      "ActiveText": "forja restos escondido em Estilhaco da Tempestade Peaks.",
+      "ReturnText": "de Uthor Exquisite Creations=forja e encontrou.",
+      "PraiseText": "de Uthor Exquisite Creations=forja e encontrou."
+    },
+    "74": {
+      "OfferText": "Aqueles goblin argolas de nariz sao fez de fine steel.",
+      "ActiveText": "Voce pode encontrar argolas de nariz em goblin Brutes.=Eu Vou prestar voce bem para eles.",
+      "ReturnText": "Obrigado, Eu saber apenas guy para limpar estes."
+    },
+    "75": {
+      "OfferText": "Estes montanhas sao rich em mineral Alurite.",
+      "ActiveText": "estranho rocha criaturas contain Alurite.=Nos pode uso isso para encantado armas...=Encantado armadura...=Encantado cookware...=Encantado tudo!=Ponte Sombria vai sparkle.=e nos vamos ambos fazer um profit.",
+      "ReturnText": "Agradecer voce! smith em Ponte Sombria vai prestar um bom preco para este.",
+      "PraiseText": "Obrigado novamente para seu ajudar!"
+    },
+    "76": {
+      "OfferText": "Estes Gnomos sao driving me crazy!",
+      "ActiveText": "Aqueles pesky Gnomos esconder fora em cavernas.=Eles vir at noite e roubar nosso suprimentos.",
+      "ReturnText": "Agradecer voce, talvez agora eles vai inseto alguem mais!"
+    },
+    "77": {
+      "OfferText": "Por Favor ajudar nos com nosso aranha problema",
+      "ActiveText": "Parece como aranhas sao por toda parte!=Por Favor ajudar nos!",
+      "ReturnText": "Agradecer voce, talvez agora Eu pode dormir at noite",
+      "PraiseText": "Obrigado novamente para seu ajudar!"
+    },
+    "78": {
+      "OfferText": "Isso Esta horrible, o que Meylour fez para nosso povo.",
+      "ActiveText": "Eu nao pode acredito aqueles ciclopes eram uma vez meu neighbors.=de mordomo horror foi em para decadas.=Por Favor, colocar deles tortured souls para descanso.=Apenas morte vai gratis eles de Meylour.",
+      "ReturnText": "Eu Estou feliz para ouvir eles sao gratis at ultimo, agradecer voce."
+    },
+    "79": {
+      "OfferText": "TheGnoles tem estado roubando deixou e certo.",
+      "ActiveText": "Gnoles amam shiny coisas.=Eles Tem estado roubando de nos para anos.",
+      "ReturnText": "Uau, olhar como muito voce encontrou! Obrigado so muito!",
+      "PraiseText": "Obrigado novamente para seu ajudar!"
+    },
+    "83": {
+      "OfferText": "de Meylour Cinzento Driades sao cercando Ur-Arvore!",
+      "ActiveText": "Um de de Meylour Cinzento Driades fugiu para Leste.=Eu tomar isso ele era correndo de voce?=@Eu apenas veio de montanha.=@Meylour e transformando seu povo para dentro monstros.=Vivendo Montanha tem ja destruiu mais de meu tipo.=@Meylour vai destruir todos vida se ele tem dele caminho.=Seguir aquele Cinzento Driade.=Capturing ele vai revelar mais de de Meylour planos.",
+      "ReturnText": "Agradecer voce, e agradecer Wildbark para enviando voce!",
+      "PraiseText": "Agradecer voce para helping nosso povo!"
+    },
+    "84": {
+      "OfferText": "de Meylour corrompido Driades tem infested Ur-Arvore!",
+      "ActiveText": "de Meylour demonios expulsou nos de arvore.=Dele corrompido plantas e chamas sao por toda parte.=@Eu nao vai deixar de Meylour culto destruir este arvore.=Voce deve pressa, Eu cheiro smoke!",
+      "ReturnText": "Agradecer voce, mas arvore nao e seguro ainda."
+    },
+    "85": {
+      "OfferText": "de Meylour abominations tunneled em de roots.",
+      "ActiveText": "Sacerdotes de Meylour vai apenas enviar mais fogo.=@Onde fez eles vir de?=Eles burrowed aqui de deles temples.=@Apontar me em direcao a tunel.=:@Eu Vou fazer certo nenhum mais vir vir de la.",
+      "ReturnText": "Meylour quer tudo morto. Tudo."
+    },
+    "86": {
+      "OfferText": "Seguir para antigo templo e derrotar de Meylour cultistas",
+      "ActiveText": "sacerdotes de Meylour sao preparing ainda outro ritual.=@Eles nunca dar acima.=Voce precisa para encontrar um caminho para de Meylour Coracao.=@de Meylour Coracao? O Que e aquele?=Isso e onde de Meylour poder mentiras.=Apenas dele sacerdotes saber dele location.=@Entao Eu vai fazer eles dizer me...=@Um caminho ou outro.",
+      "ReturnText": "Culto de Meylour e quase derrotado!"
+    },
+    "88": {
+      "OfferText": "ultimo de de Meylour culto se encolhe em medo.",
+      "ActiveText": "Voce quase derrotado eles.=@Mas Eu ainda nao saber onde Coracao de Meylour e.=@Eu vai fazer estes ultimo cultistas dizer me.=@de Meylour terror vai vir para um fim.",
+      "ReturnText": "Agora voce pode finalmente golpe abaixo Meylour para sempre.",
+      "PraiseText": "de Meylour seguidores tem o que eles deserved."
+    },
+    "89": {
+      "OfferText": "Ajudar nos reunir Sombrio Totens de Cinzento Driades",
+      "ActiveText": "Voce pode encontrar eles em Cinzento Driades=Nos precisa eles para um protecao de fogo feitico.",
+      "ReturnText": "Perfect, Eu Vou obter protecao feitico comecou."
+    },
+    "90": {
+      "OfferText": "Nos also precisa de Meylour Mascaras para protecao feitico",
+      "ActiveText": "Por Favor pressa, sacerdotes attacks precisa para ser repelled.",
+      "ReturnText": "Apenas o que nos needed. Agradecer voce!",
+      "PraiseText": "Nos deveria ser protegido agora. Obrigado novamente!"
+    },
+    "91": {
+      "OfferText": "Pode voce ajudar nos colocar fora fires plaguing nosso terra?",
+      "ActiveText": "Vivendo fogo e por toda parte, por favor destruir isso.",
+      "ReturnText": "Agradecer voce. Eu pode breath melhor ja.",
+      "PraiseText": "Tomara nosso terra vai crescem verde uma vez mais!"
+    },
+    "92": {
+      "OfferText": "Por destroying Meylour, voce deixou caminho para Terras Adormecidas unblocked.",
+      "ActiveText": "Com de Meylour barreira sumiram, caminho para castelo e abrir.=Meu povo veio acima de la decadas atras.=Nos eram fleeing um vida de escravidao em Terras Adormecidas.=Dragoes e Goblins manteve nos em correntes.=Ha nenhum sabendo o que e la agora.=de Meylour barreira manteve Terras Adormecidas bloqueado embora de este mundo.",
+      "ReturnText": "Marechal Sythokahn e derrotado, nao apenas dele sonho este tempo.",
+      "PraiseText": "Voce parado dragoes de invading novamente.=Mas quem sabe o que mais e abaixo la."
+    },
+    "93": {
+      "OfferText": "Nosso lider, Titus, foi para Observatorio procurando para alguns caminho para lutar dragoes.",
+      "ActiveText": "Agradecer voce para abatendo aquele dragao.=@Quem sao voce povo?=Nos eram com Sigmund de Hocke expedicao.=@Como povo de de Wolf Fim?=Sim, muito mesmo.=Nos lutou atraves goblins e para dentro castelo.=Sigmund deixou nos para guarda acampamento.=Ele e dele cavaleiros foi abaixo abaixo.=Eles passed atraves portal.=@e voce estado trapped aqui sempre desde.=Sabio Titus ajudou nos.=Quando dragao legiao veio, ele foi para encontrar um caminho para parar eles.=Voce deveria encontrar encontrar ele.",
+      "PraiseText": "Eu ainda maravilha o que became de Sigmund Hocke em Terras Adormecidas."
+    },
+    "94": {
+      "ActiveText": "Nephit busca um antigo ritual de Aetheric Observatorio.=Quando nos eram ambos vivo, ele pediu para isso.=Eu nunca confiava ele com tal poder.=@O Que e este ritual?=Isso contatos terrivel, antigo deuses.=@Como Meylour. Por Que iria ele querer aquele?=Eu nao saber, mas isso esta um ruim ideia.=Um realmente, realmente ruim ideia.=Terrivel ideia.=@Eu obter isso. Eu Vou parar ele.",
+      "ReturnText": "Parar Nephit de usando ritual."
+    },
+    "95": {
+      "OfferText": "Nephit materialized em ramparts depois voce lutou ele.",
+      "ActiveText": "Eu tomar isso Nephit encontrou ritual?=@Ele tem isso, sim.=Eu nao saber por que, mas ele esta indo para uso isso.=Talvez ele hopes isso vai restaurar ele para vida.=@e aquele possivel?=Talvez, mas isso iria ser um monstruoso existence.=Pressa agora, parar ele antes ele pode encontrar fora.",
+      "PraiseText": "Nephit foi oeste para Castelo!"
+    },
+    "96": {
+      "ActiveText": "Alem mentiras portal para Terras Adormecidas=Barao de Hocke sabios criou um poderosos Pedra Angular para selar portal.=Isso limita viajar entre mundos.=Nephit vai tentar e quebrar Pedra Angular e uso dele energy para dele ritual.=@O Que happens se ele faz aquele?=Viajar entre realms vai ser imparavel.=@Mais dragoes, goblins e pior.=Assuming de Nephit ritual nao matar nos todos.",
+      "ReturnText": "At menos, Nephit e nenhum mais.",
+      "PraiseText": "Isso Esta vindo=@O Que e vindo?=Tudo=Riches e Pesadelos=Monstros e Magia=Bom e Mal=Isso Esta todos abaixo la, e isso esta todos acordado agora"
+    },
+    "97": {
+      "OfferText": "La e um segredo porta em trono sala aquele leva para caverna",
+      "ActiveText": "Alguns de de dragao soldados sao encurralados acima abaixo la.=Ser cuidadoso, eles tem um de Barao de Hocke golems at deles comandar.",
+      "PraiseText": "Aquele era Barao de Hocke Principal Paladino.=primeiro de dele Golem guardas.=Um vergonha para ver tal um maravilha perverteu."
+    },
+    "98": {
+      "OfferText": "So muitos Tuatara soldados, pode voce trim deles numbers?",
+      "ActiveText": "Eles sao todos ha castelo=Eles veio de abaixo=@Eu Ja lutou deles tipo antes.=@Eu Vou tomar cuidar de eles.",
+      "ReturnText": "Agradecer voce, talvez nos pode finalmente reconstruir aqui.",
+      "PraiseText": "Obrigado, Eu ja sentir mais seguro aqui."
+    },
+    "99": {
+      "OfferText": "Sombrio Paladino mascaras sao segredo para controlando estes golems.",
+      "ActiveText": "dragao general tomou controlar de Sombrio Paladino Golems.=Eles usado para ser Barao de Hocke particular guarda-costas.=Deles mascaras sao chave para controlando eles.=Se voce trazer me qualquer voce encontrar, talvez Eu pode restaurar controlar.",
+      "ReturnText": "Obrigado, Eu vai obter comecou em deconstructing estes certo embora.",
+      "PraiseText": "Obrigado novamente para gathering mascaras."
+    },
+    "100": {
+      "OfferText": "Nephit e derrotado, mas Pedra Angular e destruiu. link para Terras Adormecidas mentiras abrir",
+      "ActiveText": "O Que sao Terras Adormecidas?=Tudo=Riches e Pesadelos=Monstros e Magia=Bom e Mal=Isso Esta todos abaixo la, e isso esta todos acordado agora=@Descricao em Portugues 5F5DE2.=Ha, voce sao ainda um adventurer=Voce sao indo abaixo la, nao sao voce?=Bem, entao, Eu vai accompany voce=Aquele portao deveria tomar nos la=Ou mais rasgar nos para pedacos=@Suficiente falar, vamos ir",
+      "ReturnText": "Ah. Voce fez isso ha e appear para ser em um pedaco. Excelente!"
+    },
+    "101": {
+      "OfferText": "Estes grandioso piramides sao nao trabalho de nosso povo.",
+      "ActiveText": "Magos quem construiu piramides deixou este terra longo atras.=Nos tem tomado alguns de deles ruinas como nosso proprio.=Mas outros permanecem guarded por poderosos espiritos.=Se isso esta antigo conhecimento voce buscam...=e voce esta daring suficiente para rosto antigo magics...=Entao voce deveria plumb profundezas de Umbral Templo para Oeste.",
+      "ReturnText": "Voce sao um sobrevivente e um scholar. Eu esperanca voce aprendido muito de value."
+    },
+    "102": {
+      "OfferText": "Ir para perto por aldeia e encontrar Vila Anciao.",
+      "ActiveText": "Bem-vindo para Terras Adormecidas,#tn#.=@Isso parece um wondrous lugar=Este country e chamado Shazari.=Para seculos dragoes governou aqui.=@Eu aposto dragoes eram cruel mestres.=Terrivel e cruel, sim.=Mas povo aqui sao gratis agora.=Ir introduce voce mesmo para vila anciao.",
+      "ReturnText": "Eu esperanca nos encontrar alguns caminho para evitar caindo sob de imperador poder."
+    },
+    "104": {
+      "OfferText": "Agradecer voce para vindo,#tn#. Nos precisa seu ajudar.",
+      "ActiveText": "Bem-vindo para humilde Kovah.=@Isso e um honra para encontrar voce, Anciao.=honra e todos mina.=Matador de dragoes e Abridor de Caminho...=Voce tem realizou verdade maravilhas.=@Eu fazer o que Eu pode.=Nos vai falar mais em estes matters...=Mas agora Eu beg seu ajudar.=Seelie magias atormentar nosso templo, filling isso com abominations.=Seculos sob dragao dominio deixou nos com nenhum guerreiros para lutar eles.=@Isso vai ser meu prazer para tomar cuidar de isso, Anciao.",
+      "ReturnText": "Agora nosso aldeia vai sobreviver!"
+    },
+    "105": {
+      "OfferText": "outro dragoes sao sumiram, mas vil Poco Lorde restos.",
+      "ActiveText": "Cuidado voce mesmo, estranho...=Poco Lorde escraviza todos quem vir em dele alcance.=@Anciao Kenken enviou me.=@Eu tem alguns experiencia abatendo dragoes.=Bem, isso e um raro pericia de fato.=Mas este wily antigo serpe nao e sozinho.=Ele tem escravos quem lutar para ele, qual e ruim suficiente.=Recently ele tem alguns outro monstros como bem.=Eu nao saber onde dele reinforcements veio de.=Mas eles tem tem estranho magias.",
+      "ReturnText": "Poco Lorde morto! Nos sao um gratis reino at ultimo.",
+      "PraiseText": "Eu ainda maravilha onde Poco Lorde tem dele reinforcements de.=Alguem era tentando para prop ele acima.=Alguem e causando problema para gratis peoples de Shazari."
+    },
+    "106": {
+      "OfferText": "Um novo forca busca para replace dragao legioes aqui em Shazari.",
+      "ActiveText": "Apenas quando Eu pensou nos poderia retomar normal negociacao.=@Goblin. O Que fazer voce querer?=Humano! Eu querer para ser gratis para comercio com meu amigos e aliados.=@Bem, o que e stopping voce?=Estranho novo guerreiros, taller que homens.=Eu acredito eles pode ser Seelie Ogres.=@O Que sao Seelie?=Um antigo faerie race, expert em magias.=Eles corromper todos eles touch.=Eles Estao encamped alem muro para Leste.=@Eu deve investigar...=@Mas voce melhor ser speaking verdade, goblin.=Agradecer voce, herói! Bom sorte!",
+      "ReturnText": "So, isso era Seelie. Nos deve precisa de imperador ajudar para certo!",
+      "PraiseText": "Encontrar alguem de Valhaven.=Nos precisa de imperador ajuda contra um inimigo como Seelie.=Nos ficar nenhum chance!"
+    },
+    "107": {
+      "OfferText": "goblin anciao enviou voce para encontrar um Valhaven embaixador, certo?",
+      "ActiveText": "Eu Estou certamente nao embaixador.=@Entao o que assunto fazer nos tem, estranho?=Eu acredito Imperador ele mesmo e por tras Seelie.=@Isso e um serio acusacao.=Qual e por que Eu precisa proof.=@Por Que iria Imperador corromper este terra.=Com dragoes sumiram, ele busca para add Shazari para dele imperio.=antigo enterro terrenos parecem fonte de problema.=Ver se voce encontrar qualquer sinal de Imperial meddling.",
+      "ReturnText": "Eu pensou como muito! Imperador e sempre pitiless e vile.",
+      "PraiseText": "Encontrar me por docks.=@Por Que?=So Eu pode sneak voce para dentro Valhaven de claro.=Voce foiled de imperador planos aqui.=Voce Esta indo para precisa ajudar lutando seu newest inimigo.=@e voce esta aquele ajudar?=Eu tem alguns muito capable amigos.=Vir para barco."
+    },
+    "108": {
+      "OfferText": "antigo piramides ao redor aqui pode segurar algo de interest.",
+      "ActiveText": "antigo Seelie construiu estes piramides.=Um de eles restos selado ainda.=Eu imagine la sao maravilhas e perigos dentro.=@Por Que fazer maravilhas sempre vir com perigo?=Seelie eram sempre cruel aquele caminho.",
+      "ReturnText": "Isso soa mais wondrous que Eu imaginou!",
+      "PraiseText": "e voce tomou cuidar de perigos como bem.=@Isso era um muito estranho lugar.=Agora aquele voce derrotado defesas...=Eu Estou indo para spend alguns tempo plumbing dele segredos.=@Bom sorte.=@lugar e tambem cold e harsh para me."
+    },
+    "109": {
+      "OfferText": "Alguns de meu povo fugiu Oeste quando Seelie veio.",
+      "ActiveText": "Se voce ver meu fearful messengers em outro towns...=Poderia voce dizer eles isso esta seguro para vir volta?=Obrigado para voce, meu amigo.=@Nenhum goblin tem chamado me amigo antes.=Bem, amigos nos sao!=@Eu acho isso e verdade.=@Weird mas verdade.",
+      "ReturnText": "Meu obrigado! Nos tem muito menos para medo agora aquele Seelie sao derrotado.",
+      "PraiseText": "Eu acho agora nos goblins pode retornar para nosso pacificos ways.=@Fazer goblins realmente amam paz?=Longo atras nos fez.=Eu acho nos deve novamente.=@Eu certamente esperanca so."
+    },
+    "110": {
+      "OfferText": "Mesmo sem threat de drought, viajar apenas nao e seguro mais",
+      "ActiveText": "La sao so muitos perigos em estradas estes dias=Povo sao virando acima com horriveis ferroadas de scarab scorpions=Eu nao pode fazer qualquer coisa sobre Forasteiro problema, mas Eu poderia at menos solve scorpion problema=Se voce trazer me suficiente stingers Eu poderia fazer como anti-veneno",
+      "ReturnText": "Oh excelente! Este e mais que suficiente!",
+      "PraiseText": "Este anti-veneno vai salvar um muito de vidas=Voce olhar como voce tomou bastante um poucos ferroadas voce mesmo=Voce deve ser fez de tougher coisas que seu average traveler para ainda ser walking ao redor=Agradecer voce para todos voce feito para nos!=Ceu abencoar voce em seu jornada"
+    },
+    "111": {
+      "OfferText": "Talvez voce poderia fazer algo mais para nos",
+      "ActiveText": "Voce ver estes wasp hives?=Eles Tem realmente obtido fora de mao e wasps ataque povo aquele obter tambem perto=estradas iria ser muito mais seguro se voce poderia derrubar um poucos de eles abaixo",
+      "ReturnText": "Grande!",
+      "PraiseText": "Parece como voce tomou um ferroada ou dois=Deixar me tomar cuidar de aquele para voce=Nos realmente appreciate seu sacrificio=Ceu abencoar voce em seu jornada."
+    },
+    "112": {
+      "OfferText": "Nosso escapar plano falhou. Nenhum de goblin escravos fez isso fora",
+      "ActiveText": "Encontrar deles memoria encantos e Eu pode tomar eles para deles familias=Eles lutou bravamente, mas eles apenas nao eram forte suficiente=Deles familias merecem alguns encerramento",
+      "ReturnText": "Voce encontrou eles todos?",
+      "PraiseText": "Eu Vou fazer certo deles familias saber eles lutou bravamente=Eu Iria vir para saber eles todos em escravo pits=Eles sao todos realmente grande guys=Agradecer voce para o que voce feito"
+    },
+    "113": {
+      "OfferText": "Aqueles Seelie braceletes fascinam me",
+      "ActiveText": "Se tinha um bunch de aqueles Seelie braceletes...=Eu poderia quebrar eles abaixo e comecar replicating eles.=Smaller size de claro.=Mas Goblins iria prestar bem para algo como aqueles.=Trazer me o que voce pode.",
+      "ReturnText": "Hmm. Nao exactly novo mais. Ah bem, de aqui seu prestar.",
+      "PraiseText": "Ver?=Descricao em Portugues A5C07A."
+    },
+    "114": {
+      "OfferText": "Nos pode ser capaz para fortaleza este de happening novamente",
+      "ActiveText": "Trazer me suficiente mucus glands e Eu pode mix acima um repellent=Aquele vai fortaleza insetos fora de templo",
+      "ReturnText": "Este vai fazer nicely. Tomar este para seu problema",
+      "PraiseText": "Uau, este coisas smells horrid=Isso Vai scare embora insetos embora, so isso esta vale isso=Ceu abencoar voce em seu jornada"
+    },
+    "116": {
+      "OfferText": "Graças a combatentes durões como Anna, conseguimos resistir.",
+      "ActiveText": "Quem é você? De onde você veio?=@Sou #tn#. Foi o rei quem me enviou.=@Mas confesso que não esperava encontrar humanos ainda vivendo por aqui.=Viemos com Sigmund Hocke há cinquenta anos.=@Sigmund, filho do Barão Hocke!?=O próprio. Eu era o tamborileiro do exército dele.=Fiz parte de uma expedição para salvar a baronia do pai dele quando os goblins invadiram.=@E vocês sobreviveram todo esse tempo? Impressionante!=Graças a duas gerações de combatentes como Anna.=Mas os goblins pegaram ela de surpresa na praia.=@Aqueles goblins do mar estavam fugindo de mim. Anna deve ter se metido no caminho deles.=@Eles desembarcaram a leste daqui. Tem alguma caverna naquela direção?=Logo ali, atrás daquela colina, há um antigo esconderijo de contrabandistas.=@Então é lá que ela está. Até eu resgatá-la, é claro."
+    },
+    "117": {
+      "OfferText": "Alguém chamado \"Nephit\" está tentando controlar os goblins e os mortos-vivos.",
+      "ActiveText": "Meu pai vasculhou os relatórios antigos, da época em que desembarcamos aqui há cinquenta anos.=@E ele encontrou algo sobre esse tal de Nephit?=O Barão Hocke contratou os homens mais sábios do mundo para suas pesquisas.=Nephit era um dos melhores. Ele estava escavando uma tumba quando os goblins invadiram.=@Você tem ideia de qual tumba era?=Vimos muitos mortos-vivos saindo da Tumba do Rei Adormecido.=@Beleza, vou começar as buscas por lá.=Certo. Encontro você de novo quando a poeira baixar.",
+      "ReturnText": "Com Nephit fora do caminho, talvez tenhamos menos mortos-vivos e menos goblins por aqui."
+    },
+    "118": {
+      "OfferText": "Existe outra tumba. Talvez o que Nephit procurava esteja lá dentro.",
+      "ActiveText": "Você disse que Nephit mencionou um \"Dragão dos Sonhos\".=@Os dragões desapareceram há milhares de anos.=Essa outra tumba é ainda mais antiga que isso.=O Barão Hocke era obcecado por essas criptas antigas.=@Talvez Nephit estivesse atrás de ossos de dragão. São artefatos poderosos.=A tumba fica ao sul, do outro lado da floresta. Se Nephit conseguir se erguer uma segunda vez...=@Então é melhor eu chegar lá antes dele.=Abra caminho que eu sigo você.",
+      "ReturnText": "Um dragão! Incrível, mesmo que fosse só uma espécie de fantasma dos sonhos."
+    },
+    "119": {
+      "OfferText": "Goblins roubou todos nosso ferraduras e fez argolas de nariz",
+      "ActiveText": "grande goblins usam ferraduras como argolas de nariz.=Para zombar nos, Eu acho.=Mas nos precisa ferraduras se nos estamos indo para reconstruir nosso exercito e economia.=@Qualquer chance para tomar algo volta de goblins.",
+      "ReturnText": "Obrigado! Eu Vou apenas obter estes rings cleaned afastado..."
+    },
+    "120": {
+      "OfferText": "goblin xamas uso deles varinhas para controlar Morte Olhos.",
+      "ActiveText": "Se voce trazer me varinhas de goblin xamas, Eu pode uso eles para expulsar afastado Morte Olhos.=Isso vai ser bom nao para tem aqueles mal coisas espionando em nos.=Especialmente at noite.=Enquanto nos dormir.",
+      "ReturnText": "Obrigado! Eu deveria ser capaz para proteger afastado qualquer Morte Olhos com estes.",
+      "PraiseText": "Eu odeio caminho aqueles Morte Olhos olhar at me.=Obrigado novamente"
+    },
+    "122": {
+      "OfferText": "Se la eram menos goblins, nos poderia limpar leste estrada",
+      "ActiveText": "Goblins fortaleza estradas closed=Eu maravilha sobre meu amigos em orientais villages=@^tI poderia tomar cuidar de deles Goblin problema",
+      "ReturnText": "Uau, Prefeito deu aquele propriedade para certo cara|dama!",
+      "PraiseText": "Voce Esta um duro goblin lutador=Este lugar pode ser salvou ainda"
+    },
+    "123": {
+      "OfferText": "La sao goblin saqueadores encurralados acima em aquele fazenda.",
+      "ActiveText": "Nos tem trogs cornered.=Mas eles tem tem alguns duro comandante em la.=Se voce tomar cuidar de ele, Eu pode segurar linha aqui.",
+      "ReturnText": "Voce mostrou ele!:Nos pode fortaleza eles bottled acima em la,:Nenhum problema.",
+      "PraiseText": "Voce tem goblins em run.=Como longo como nos fortaleza acima presure...=Nos pode recuperar este terra."
+    },
+    "124": {
+      "OfferText": "mortos-vivos apenas fortaleza levantando de aquele crypt.",
+      "ActiveText": "antigo shrine acima la e onde mortos-vivos primeiro veio de.=Eles Tem estado vindo sempre desde.=Se voce pode ajudar me destruir alguns de pior de eles...=Nos pode fortaleza eles de spreading para de Wolf Fim.",
+      "ReturnText": "Voce tem meu obrigado.",
+      "PraiseText": "Eu Vou fortaleza lutando eles.=Mas Eu Vou nunca obter usado para eles.=Ou deles cheiro.=Ou assustador coisas eles dizer.=Mas principalmente deles cheiro."
+    },
+    "125": {
+      "OfferText": "Alguns novo tipo de monstruoso guerreiro fica contra nos agora.",
+      "ActiveText": "Estes nao sao goblins nos estamos lutando.=@Nao gobins? O Que sao nos lidando com entao?=Alguns tipo de reptil-homens. Eles chamam eles mesmos Tuatara.=@Tuatara. Eu Ja leu nome em antigo historias. Fearsome soldados.=Aquele soa como eles, eles estao muito organizard.=Eles Tem tomado ha um torre proximo.=Nos nao pode obter passado eles.=@Eu pode obter passado eles.=Eu esperanca so.=@Me tambem. Apenas um caminho para encontrar fora.",
+      "ReturnText": "Voce mostrou Tuatara como humanos lutar!"
+    },
+    "126": {
+      "OfferText": "castelo de Lorde Yornak parece ainda habitado embora nao por homens.",
+      "ActiveText": "Castelo Yornak era lar de este de regiao lords.=ultimo Lorde e Dama Yornak construiu magnifico celeiro, palacio, e universidade.=@Eles eram renomados para deles riqueza e lavish spending, Eu saber.=de Fato eles eram, mas...=Eles sempre manteve deles antigo castelo em bom reparar.=Isso era deles seguro retreat.=@Talvez la sao alguns sobreviventes la tambem.=Ha alguem em la.=Alguem Tuatara chamam Yornak.=@Yornak! Talvez um heir? Eu Vou ir encontrar fora.",
+      "ReturnText": "Voce sobreviveu Castelo Yornak.",
+      "PraiseText": "Yornak familia e outro tragico conto.=@invasions de Terras Adormecidas tem corrompido tudo.=@Eu Estou feliz Eu finalmente trouxe eles paz."
+    },
+    "127": {
+      "OfferText": "Ranger Affric tem liderou um grupo para scout antigo universidade distrito.",
+      "ActiveText": "Affric acha fonte de corrupcao e para leste.=Alguem chamado Hsalt tem montou acima em Cidadela de Wissen.=@Eu queria para poke ao redor la eu mesmo.=@Eu Vou ir ver o que ele tem descobriu.=Ser cuidadoso, estrada e overrung com Tuatara e Devoradores.",
+      "ReturnText": "Isso Esta bom para ver voce novamente, amigo.",
+      "PraiseText": "Seu legend cresce.=Logo este regiao vai seguir voce qualquer lugar."
+    },
+    "128": {
+      "OfferText": "Vizir de Tuatara e criando carnisaurs.",
+      "ActiveText": "Vizir pode trabalho para dragao generais...=Mas nos agora saber ele esta real poder por tras corrupcao.=de vizir magico experimentos sao criando carnasaurs.=@Aqueles lagarto-horse coisas?=Ele Esta criando eles para servir como montarias para Tuatara soldados.=@Eles Iriam ser mais que um match para nosso cavaleiros volta lar.=@Eu precisa para fim este monstro-criando program agora.",
+      "ReturnText": "Voce fez isso! Nenhum carnasaur cavaleiros vai atormentar nos."
+    },
+    "129": {
+      "OfferText": "Vizir Hsalt e usando de cidadela biblioteca para mal",
+      "ActiveText": "Vizir vai ser incrivelmente irado at voce.=@Eu Estou mesmo mais irado at ele.=@Ele Esta perverteu de cidadela sabedoria para mal.=Eu suponho voce esta indo depois ele.=@Eu sou. Eu Estou tomando volta biblioteca para todos de nos.=Ser cuidadoso, de vizir magia faz ele como perigoso como dragoes ele serves.",
+      "ReturnText": "biblioteca e liberated!"
+    },
+    "130": {
+      "OfferText": "Tuatara general tem montou acima dele base em castelo proximo",
+      "ActiveText": "Tuatara General, Svar, e based em aquele antigo castelo.=@Este Svar parece para ser um de deles importante lideres.=@Eu Estou indo para tomar ele em e aprender onde estes reptilian soldados vir de.=O Que e um exercito fazendo em este pantano mesmo assim?=@Eu Estou nao certo, mas exercitos nao ficar em um lugar.=@Exercitos este grande sao para attacking outros.=Como nearest outro, isso e worrisome para me.",
+      "ReturnText": "General Svar era um dragao!",
+      "PraiseText": "Tuatara sao liderou por real, viver dragoes.=@Eles sao, qual nao e bom noticias.=Aquele significa la sao mais dragoes.=@Provavelmente maiores uns tambem.=Bom sorte com aquele.=Feliz isso esta nao me em seu boots."
+    },
+    "131": {
+      "OfferText": "Gehrin e Odem acho eles saber onde Tuatara General e.",
+      "ActiveText": "Nos tem mais soldados scouting brejo.=Gehrin e Odem acho eles saber onde outro Tuatara general e.=@Outro dragao?=Provavelmente.=Ir ver eles, eles saber mais que Eu.",
+      "ReturnText": "Feliz voce poderia fazer isso.",
+      "PraiseText": "de Tuatara outro general e proximo.=Mas ele esta diferente que Svath.=@Diferente como?=Nos visto sinais de mortos-vivos em dele servico.=@Grande. Eu sense de Nephit mao em este."
+    },
+    "132": {
+      "OfferText": "Ha outro General, chamado Svath. Ele Esta em antigo palacio.",
+      "ActiveText": "General Svath comanda todos estes Tuatara.=@Svath e Svar? Eles deve ser irmaos.=Provavelmente so, mas este soa como grande irmao.=e Svath nao apenas comandar Tuatara soldados.=Ele Esta para dentro scarier coisas.=@Voce significa besides giant aranhas e carnivorous plantas?=Eu significa como mortos-vivos.=@Grande, outro tumulo digger como Nephit.=@Um invasao de dragoes e fantasmas iria ruina de qualquer um week.",
+      "ReturnText": "Voce parado dragao invasao em dele tracks!"
+    },
+    "133": {
+      "OfferText": "O Que e proximo para voce,#tn#?",
+      "ActiveText": "Agora aquele Tuatara sao derrotado...=O Que e seu plano?=@Eu Estou indo para seguir para Castelo Hocke.=@Eu Estou certo isso esta todos monstros e ruinas agora.=Eu nao pode imagine qualquer um sobreviveu Tuatara Legiao passing atraves.=@e Nephit e nenhum duvida acima para algo.=@Eu precisa para obter para dentro aquele castelo...=@Se Eu Estou sempre indo para aprender verdade sobre onde estes monstros vir de.",
+      "ReturnText": "Segurar la, stanger. Quem sao voce?",
+      "PraiseText": "Voce fez alguns tremendous changes em estes parts."
+    },
+    "134": {
+      "OfferText": "ruinas de Real Celeiro e fonte de devoradores.",
+      "ActiveText": "Real Celeiro usado para ser um maravilha de mundo.=@Este inteiro regiao era celeiro de imperio.=Mas agora arruinado celeiro e corrompido.=devoradores parecem para todos vir de la.=@Entao weeding eles fora vai ser meu proximo task.=Se nos pode recuperar grain campos, nos pode apoio um inteiro exercito.=@Eu apenas precisa para cortar abaixo um exercito de killer plantas primeiro.",
+      "ReturnText": "Voce limpou Real Celeiro!"
+    },
+    "135": {
+      "OfferText": "Aqueles lagartos colocar um muito de stock em aqueles estandartes",
+      "ActiveText": "Tuatara reunem ao redor deles guerra estandartes.=Eles Estao ferozes quando deles estandarte e acima.=@e mais organizados que goblins sempre eram.=estandartes sao encantado em alguns caminho.=Se voce capture alguns de eles, Eu pode ser capaz para uso deles magia contra eles.=@Nos poderia uso nosso proprio magia estandartes para retake terra!",
+      "ReturnText": "Perfect. Eu acho Eu pode sew nosso proprio encantado estandartes agora.",
+      "PraiseText": "Agora Eu apenas precisa um bom desenho.=@Se voce querer para uso meu retrato, voce pode.=Um, obrigado, Eu Vou considerar isso.=@Eu realmente tem um inspirador perfil.=Uh, voce fazer?=Sim, bem, Eu Vou vir acima com um poucos options."
+    },
+    "136": {
+      "OfferText": "Um Tuatara squad tem montou acima em um abandonado fazenda.",
+      "ActiveText": "lagartos tomou ha este antigo casa.=Eles Estao usando isso como um base para lancar ataques de.=Eles loja suprimentos la tambem.=Principalmente secos besouros e rancida carne.=So voce pode talvez sair aquele la.=Unless voce esta para dentro aquele tipo de comida.=Eu Estou nao judging.",
+      "ReturnText": "Agradecer voce!",
+      "PraiseText": "Nos Vamos fortaleza um olho em aquele lugar.=Se qualquer mais mostrar acima, nos vamos tomar cuidar de eles.=Obrigado para nao bringing me secos besouros.=Embora meu cousin diz eles estao tasty.=Eu acho Eu deveria tentar um antes Eu judge."
+    },
+    "137": {
+      "OfferText": "Devoradores sao por toda parte! Eu nao pode obter para bem",
+      "ActiveText": "Pode voce obter devoradores embora de bem?=Isso Esta apenas fonte de fresco agua qualquer lugar perto aqui.=Estes monstro tem corrompido rio.=e lagoas.=Eles Iriam corromper chuva se eles poderia.",
+      "ReturnText": "Whew, obrigado!",
+      "PraiseText": "Obrigado para clearing bem.=Nos realmente precisa um reliable agua fonte."
+    },
+    "138": {
+      "OfferText": "Ha algo grande acima em aquele antigo fazenda.",
+      "ActiveText": "Eu nao saber o que isso e.=Eu nao acho isso esta Tuatara embora.=Eu figured voce iria querer para verificar isso fora.=Porque Eu realmente nao querer para.=Fez Eu mention isso sounded grande?",
+      "ReturnText": "Ooo! Eu odeio aranhas! Obrigado!",
+      "PraiseText": "Um colossal aranha, isso era?=Eu odeio aranhas.=Eu Estou feliz isso era voce e nao me!"
+    },
+    "139": {
+      "OfferText": "Estes murderous plantas sao intriguing.",
+      "ActiveText": "Nos precisa para aprender mais sobre Devoradores.=@Eu destruiu fonte de aqueles vil plantas.=Sim, mas eles crescem como ervas daninhas.=Se nos estamos indo para curar terra, Eu para saber mais.=Coletar dentes de grande uns.=Eu pode uso eles para concoct um potion para veneno eles.=@Eu acho nos iriamos todos ser melhor afastado se plantas nao tem dentes.",
+      "ReturnText": "Bem feito, agradecer voce!",
+      "PraiseText": "Eu odeio para acho o que Hsalt fez para dar plantas dentes.=Isso Esta terrivel para contemplar.=Mas isso esta todos Eu pode acho sobre.=O Que mais fez ele dar dentes para?=Cogumelos?=Descricao em Portugues 4D97D8.=Descricao em Portugues DB7932."
+    },
+    "140": {
+      "OfferText": "Vai voce ajudar nos empurrar volta Tuatara soldados?",
+      "ActiveText": "Trazer me Elmos de Tuatara Commanders.=@Por Que fazer voce querer deles elmos?=Primeiro, para mostrar eles nos estamos tomando ha. Eles amam deles elmos.=Segundo, nos pode uso metal para forja nosso proprio armadura.=@Third, isso vai fazer eles so irado.=Descricao em Portugues DE04E0.",
+      "ReturnText": "Agradecer voce! Aqueles lagartos saber nos estamos nao fooling ao redor agora!",
+      "PraiseText": "Um real herói em nosso lado!=Talvez nos pode tomar lutar para estes beasties.=e nao apenas Tuatara.=Imagine este terra gratis de monstro dominio!"
+    },
+    "141": {
+      "OfferText": "Meu antidoto para aranha veneno precisa aranha presas",
+      "ActiveText": "Se voce trazer me aranha presas, Eu Iria ser capaz para fazer um antidoto.=@Aquele iria definitely vir em util.=Estes grande aranhas nao usado para viver aqui.=@Eles eram corrompido por alguns vil magia.=Isso e por que Eu odeio magia, sempre corrompendo coisas.=Eu muito prefer alchemy.",
+      "ReturnText": "Agradecer voce, agora Eu pode terminar antidoto",
+      "PraiseText": "Isso vai tomar anos para obter livrar de estes aranhas.=Se nos pode sempre figure fora onde eles vir de."
+    },
+    "142": {
+      "OfferText": "Nos Estamos sabio para seu de tipo tricks. Present voce mesmo para Guardiao ou taste steel.",
+      "ActiveText": "Guardiao deve aprovar todos forasteiros.=@Voce Esta humano!=e so sao voce, aquele nao significa nos estamos amigos.=@Mas, como fez voce obter aqui?=Eu era nascido aqui.=@Eu nao entender, Goblin Horda...=Nao saber nada sobre nenhum hordas.=Voce tambem verificar em com Guardiao ou afastado com voce.=Embora Guardiao vai nenhum duvida enviar voce em seu caminho.=Nos Estamos nao procurando para seu tipo de problema.",
+      "ReturnText": "Pare, forasteiro, nos tinha nosso encher de saqueadores e bandidos.",
+      "PraiseText": "Como iria nos ver este?"
+    },
+    "143": {
+      "OfferText": "Estranho, Eu saber seu type. Nos nenhum patience para voce aqui.",
+      "ActiveText": "Eu nao saber voce, mas voce iria melhor ser em seu caminho.=@Eu Ja vir de Rei.=@Eu Estou aqui para ajudar restaurar Baronia de Ellyria.=Seu rei tem nada para fazer com nos.=e nos tinha plenty de bandidos dizer mesmo historia.=Eu nao querer problema, so ir onto bosques com outros.=@La sao humano bandidos em bosques?=Sim, voce vai encontrar plenty de seu tipo la.=@Nao meu tipo.=So voce dizer.=Eu Vou acredito isso quando Eu ver isso.",
+      "ReturnText": "Bem, estranho, Eu Estou surpreso. Voce feito nosso fair vila um servico."
+    },
+    "144": {
+      "OfferText": "bandidos dizer eles estao soldados de seu terra natal.",
+      "ActiveText": "Voce afirmar para ser de alguns kingdom atraves mar.=@Isso e verdade. Eu era enviou por Rei.=Eu nao saber qualquer reis, mas estes outro homens disse mesmo.=@Eu nao entender, onde fez Voce vir de?=@Eu pensou este vila destruiu.=Nenhum, nenhum, nos estamos fazendo apenas fine.=Exceto para saqueadores e saqueadores de atraves mar.=Apparently de seu kingdom.=@Eu tem mais questions...=Qual Eu Vou answer uma vez voce tomar cuidar de seu companheiro bandidos.=@Eu sou nenhum bandido!=Bem, eles sao, e eles estao de seu terra.=@Muito bem, Eu deve ver para eles.",
+      "ReturnText": "Voce retornou? So talvez voce nao sao como outros."
+    },
+    "145": {
+      "OfferText": "Eu enviou seu amigos de de Wolf Fim para Cemiterio Colina. Eles pode assentar la se eles como.",
+      "ActiveText": "Ha nenhum sala para voce de Wolf Fim folk aqui.=@Onde fez voce vir de, mesmo assim.=Meu povo settled aqui 40 anos atras.=Nos veio de um distante, distante terra, onde nos eram escravos.=Agora nos viver gratis e prosperous vidas.=@Mas monstros! Goblins, dragoes, mortos-vivos...=Nos proteger nosso proprio.=Eu enviou seu amigos de de Wolf Fim para Cemiterio Colina.=Se eles estao procurando para novo terras para assentar, eles pode tem aqueles.=@Um Cemiterio?=Beggars nao pode ser choosers.",
+      "ReturnText": "Agradecer estrelas voce esta aqui! de Nephit sombrio magia tem retornou!",
+      "PraiseText": "Meu pai liderou nosso povo fora de escravidao.=@Onde fez voce vir de.=Algum Lugar voce vai nunca ir, amigo.=Algum Lugar terrivel alem palavras.=@Como fez voce sobreviver dragoes e goblins e...=Nosso safety e nosso concern.=Nos tem fez dificil sacrificios.=Mas eles eram necessary.=Eu tem protegido meu povo at todos costs.=Talvez voce deveria preocupe sobre seu proprio folk."
+    },
+    "146": {
+      "OfferText": "Mordomo nao e aqui certo agora, estranho.",
+      "ActiveText": "Voce Esta volta.=@Eu precisa para atravessar ponte para dentro castelo.=Apenas Mordomo sabe como magico escudo funciona.=Aquele escudo e nosso principal protecao contra nosso inimigos.=@Como fez Mordomo criar tal poderosos magia?=Eu nao saber, isso e dele fazendo.=Mas ele esta manteve nos principalmente seguro para anos.=@Principalmente seguro?=Um poucos povo disappear cada ano, mas nao muito.=Mordomo e gathering material para Colheita Ritual.=Ir falar para dele guarda-costas Gunter se voce querer para encontrar ele.",
+      "ReturnText": "Estes bandidos nunca bothered nos antes. Fez voce rile eles acima?"
+    },
+    "147": {
+      "OfferText": "Mordomo foi para dentro aquele caverna para preparar para Colheita Ritual.",
+      "ActiveText": "Voce nao deveria perturbar Mordomo.=@Faz este ritual poder escudo em ponte?=Eu acho so.=Apenas Mordomo sabe como isso funciona.=@Isso Esta poderosos magia.=Mordomo tem longo protegido nosso povo, sempre desde nos veio aqui.=@Eu precisa para falar com ele sobre crossing ponte.=Bem, ele esta em la.=Mas nao bother ele se ele parece tambem ocupado.=Ele Esta fazendo importante trabalho.",
+      "PraiseText": "Fez voce falar com Mordomo?"
+    },
+    "148": {
+      "ActiveText": "Voce dizer Mordomo adora sombrio poderes?=@Ele Esta estado sacrificing seu povo para alguns antigo deus.=Eu tinha nenhum ideia!=@Ha mais para ser aprendido. Onde Esta dele casa?=Direita ha la, afastado vila square.=Pressa, voce tem para encontrar fora quem mais e helping ele.=Mordomo, fazendo pacts com mal deuses...=Eu nunca imaginou isso.",
+      "ReturnText": "Com de mordomo mal unveiled, nos tem um muito para figure fora."
+    },
+    "149": {
+      "OfferText": "Segundo para de mordomo diario, dele culto tomou sacrificios para montanha pico.",
+      "ActiveText": "Ha um chance Culto deixou sobreviventes em montanha.=@Possivelmente. At muito menos la sao mais cultistas acima la.=Eu Estou enviando alguns de meu povo para investigar.=@Eu vai juntar eles.=@de Meylour culto e ainda keeping acima aquele magia escudo.=@Eu precisa para derrotar Meylour para obter atraves ponte.=Entao encontrar meu povo em montanhas.=Mas tread lightly, nos nao saber o que e acima la.",
+      "ReturnText": "descanso de expedicao e futher acima montanha."
+    },
+    "150": {
+      "OfferText": "Bruxa Yagarah pode ser em alianca com Nephit!",
+      "ActiveText": "Mordomo de Ponte Sombria disse Cemiterio Colina iria ser seguro para assentar.=@Clearly isso esta nao.=morto comecou levantando de deles tumulos este manha!=@Soa como de Nephit trabalho.=Sim, isso faz, mas nos aprendido sobre um bruxa.=Dela de nome Yagarah, e ela pode ser working com Nephit.=Nos acho ela esta encurralados acima em um mausoleu Leste de aqui.=@Qualquer amigo de de Nephit e um inimigo de mina.",
+      "ReturnText": "Agradecer voce para rescuing me",
+      "PraiseText": "gnoles tem hated humanos para decadas.=Isso Esta nenhum surpresa eles transformado para Nephit para ajudar."
+    },
+    "151": {
+      "OfferText": "Gnoles e Morto-Vivo tem formed um frightening alliance.",
+      "ActiveText": "Gnoles e humanos usado para ser aliados.=Anos atras nos ajudou cada outro escapar escravidao.=Mas dois lados ambos queria para ser em comando depois.=Nos lutou sempre desde.=@e agora eles estao em alianca com Nephit.=Eles deve acho mortos-vivos aliados vai deixar eles finalmente escravizar nos novamente.=@Eles pode ser certo.=Voce Vai encontrar mais gnoles e mais mortos-vivos em tumulo de Karl Tilly.",
+      "ReturnText": "Grande trabalho! Tomara aquele montou volta de Nephit e Gnoles planos."
+    },
+    "152": {
+      "OfferText": "Eu interrogou um de de Nephit fantasmal servos sobre tumulo de Cornelius Hocke.",
+      "ActiveText": "Ha um tempestade de mortos-vivos activity em Cornelius de Hocke tumulo.=@Nephit tem um coisa para antigo tumulos, e usado para trabalho para Hocke familia.=Voce pode tem derrotado de Nephit latest incarnation...=Mas mortos-vivos sao apenas growing mais restless.=@Nephit funciona dele mal magia mesmo quando ele tem nenhum physical forma.=Todos sinais apontar para de Nephit fazendo algo em Cornelius de Hocke tumulo.=@Entao isso e meu proximo parar.",
+      "ReturnText": "Nephit verdadeiramente e um demonio, ele tem voce para levar fora dele antigo vinganca para ele."
+    },
+    "153": {
+      "OfferText": "Eu Estou worried sobre estes Chamas-fantasma Nephit e usando para erguer morto.",
+      "ActiveText": "Eu Ja nunca visto magia como estes chamas-fantasma.=Ha outro tumulo showing activity.=@Outro trick de de Nephit ou real coisa?=Nenhum caminho para dizer sem indo la.=Tentar e aprender mais sobre chamas-fantasma enquanto voce esta la.=@Eu Vou ver o que Eu pode fazer."
+    },
+    "154": {
+      "ActiveText": "Tem voce figured fora o que de Nephit plano e?",
+      "ReturnText": "Agradecer voce para stopping Nephit. Tomara coisas retornar para normal logo"
+    },
+    "155": {
+      "OfferText": "Eu Estou proud para tem ajudou voce recuperar este terra para seu povo.",
+      "ActiveText": "Voce pode dizer meu antigo amigos volta em Ponte Sombria Eu Estou staying aqui com seu povo.",
+      "ReturnText": "Voce retornou uma vez novamente. Whatever voce fez fora la, isso esta feito algo aqui.",
+      "PraiseText": "Agradecer voce para tudo voce tem feito aqui!"
+    },
+    "156": {
+      "OfferText": "La sao gnoles por toda parte! Nos precisa um mais seguro location.",
+      "ActiveText": "Mordomo nao fazer nos qualquer favors enviando nos aqui.=La sao gnoles e mortos-vivos por toda parte.=@Voce precisa um melhor base de operacoes.=Ha um armazem proximo isso e solid...=Mas isso esta filled com gnoles.=@Isso nao vai ser para longo. Eu Vou tomar cuidar de gnoles.",
+      "ReturnText": "Obrigado! Com aqueles gnoles sumiram, nos vamos tomar armazem ha."
+    },
+    "157": {
+      "OfferText": "Meu Tilly ancestrais eram lords aqui longo atras, mas agora morto erguer em meu familia tumulo.",
+      "ActiveText": "Eu queria para prestar meu ancestrais meu respeitos.=Mas de Nephit vil magia tem amaldicoado meu familia como bem como outros.=@de Nephit mal sabe nenhum profundezas.=@Eu vai restaurar seu ancestrais para deles descanso.",
+      "ReturnText": "Agradecer voce. Eu Estou feliz meu familia vai ser at paz.",
+      "PraiseText": "Obrigado novamente para cleansing meu familia tumulo."
+    },
+    "158": {
+      "OfferText": "de Nephit tomado cuidar de, mas Gnoles permanecem.",
+      "ActiveText": "gnole fortress e para Leste.=@Sem Nephit, eles estao menos de um threat.=Mas eles ainda tem access para crystal minas.=@Qual significa eles poderia recriar de Nephit chamas-fantasma.=Ou reviver Nephit.=@Tambem caminho, eles precisa para ser parado.",
+      "PraiseText": "cristais sao seguro, nenhum mais chamas-fantasma."
+    },
+    "159": {
+      "OfferText": "gnoles tem estranho artefatos aquele proteger eles de mortos-vivos.",
+      "ActiveText": "Se voce pode, trazer me aqueles estranho artefatos aquele proteger gnoles de mortos-vivos.=Se nos tinha eles, isso iria ser muito mais facil para com seguranca assentar este area.",
+      "ReturnText": "Meu obrigado! Com estes, nos pode fortaleza mortos-vivos at bay.",
+      "PraiseText": "Obrigado novamente, estes estranho heirlooms realmente fazer expulsar mortos-vivos embora."
+    },
+    "160": {
+      "OfferText": "O Que e isso com mortos-vivos levantando aqui tambem!",
+      "ActiveText": "Isso Esta como de Wolf Fim novamente!=morto sao levantando aqui tambem.=@Eu Estou lidando com isso, medo nao.",
+      "ReturnText": "Agradecer voce! Nos sao muito grateful para seu ajudar",
+      "PraiseText": "Voce Esta um worthy herói. Obrigado para seu ajudar"
+    },
+    "170": {
+      "OfferText": "Ser cuidadoso, la sao goblins por toda parte.",
+      "ActiveText": "La sao goblins de sobra em proximo cavernas.=@Mais goblins! Eu Vou ver para eles.=Fazer voce acho eles estao em alianca com Culto de Meylour?=@Com deles rei morto em guerra, goblins sao leaderless.=@Eu Estou certo eles vao servir qualquer um mal suficiente para tomar eles.",
+      "ReturnText": "Bom, voce fez isso atraves goblins.",
+      "PraiseText": "Obrigado para clearing caminho!"
+    },
+    "171": {
+      "OfferText": "Antes nos buscar para sobreviventes, nos precisa para seguro este area de goblins.",
+      "ActiveText": "Ha um large forca de goblins em aqueles proximo tuneis.=@Eu Ja lutou meu caminho atraves mais que um goblin toca.=O Que sao eles fazendo aqui, Eu maravilha.=@Eu aposto eles estao desperate para aliados agora aquele eles perdido guerra.=@Culto de Meylour pode tem tomado eles em.=@Eu Vou cavar abaixo atraves deles imundice e descobrir verdade.",
+      "ReturnText": "Moai tem despertou!"
+    },
+    "172": {
+      "ActiveText": "Removing aquele espada fez estes statues comecar falando!=@Realmente? O Que sao eles saying?=Eles Estao antigo pedra elementais, silenciados por Meylour.=Eles dizer de Meylour culto e fazendo terrivel coisas para nosso povo.=@Como pode Eu ajudar?=Falar para Moai.=Cada um tem revealed algo importante.=@Eu Vou consultar eles certo embora!",
+      "ReturnText": "Aqueles Moai espiritos realmente odeio Meylour."
+    },
+    "173": {
+      "OfferText": "Alguns de seu tipo pode ainda viver como eles uma vez eram.",
+      "ActiveText": "Eu saber onde alguns de seu tipo eram tomado.=@O Que sao voce? Alguns espirito?=Nos sao antigo protectors de este montanha.=Meylour toppled nos de nosso thrones.=@Onde sao sobreviventes?=Se eles viver, eles estao em um de de Meylour vil shrines.=Voce deve pressa, lest deles tempo vir.=@Eu Estou em meu caminho!",
+      "ReturnText": "Meylour ergueu em fury de profundezas five decadas passado.",
+      "PraiseText": "Meylour ergueu em fury de profundezas five decadas passado."
+    },
+    "174": {
+      "OfferText": "Se voce iria saber seu de povo destino, voce deve confrontar eles.",
+      "ActiveText": "Ciclopes eram nao sempre thus.=Meylour tem corrompido deles antigo formas.=Eles sao dele alto sacerdotes e devotos acolitos.=Buscam de Meylour segredos em deles fortaleza.",
+      "PraiseText": "Meylour e antigo alem contagem e odeia todos vivendo coisas."
+    },
+    "175": {
+      "OfferText": "gnoles virar para Meylour em desparation.",
+      "ActiveText": "gnoles normally tem nenhum amam para deuses.=Mas eles odeio humanos para betraying eles.=@Quem betrayed eles?=humanos de Ponte Sombria eram uma vez deles aliados.=Mordomo betrayed eles.=Agora eles virar para Meylour para revenge.=@Ironico. Mordomo worshipped Meylour como bem.=Mal deuses corromper todos.",
+      "ReturnText": "Meylour e essence de uncaring pedra, anathema para todos vida.",
+      "PraiseText": "Meylour e essence de uncaring pedra, anathema para todos vida."
+    },
+    "176": {
+      "OfferText": "Gnole chefe adora Meylour em montanha pico.",
+      "ActiveText": "Voce pode terminar afastado gnoles para bom.=Mas voce deveria saber...=Eu acredito Meylour tem feito algo estranho para gnole lider.=Gnoles quem viver longo suficiente pode become monstrously poderosos.=@Eu Vou tentar e fazer certo ele nao tem aquele muito tempo.",
+      "ReturnText": "de Meylour seguidores sao cavando furiosamente para dentro montanha."
+    },
+    "177": {
+      "OfferText": "goblins e ciclopes sao cavando embora em montanha.",
+      "ActiveText": "La sao alguns abandonado minas em area.=goblins sao expanding eles...=Mas eles nao parecem para ser cavando para ouro.=@Nao procurando para ouro?=Nenhum, eles parecem para tem alguns Grande Trabalho em mind.=@Qualquer goblin trabalho para Meylour e ruim noticias.=@Eu Vou colocar um fim para isso."
+    },
+    "178": {
+      "ActiveText": "Conhecido como Veios de Meylour, estes minas uma vez belonged para Terra Tita=Agora de Vezrinn devotos tem tomaram eles=Eles buscam magia minerio Alurite, e Coracao=Voce vai precisa para derrotar eles todos para tomar artifact e activate Espada de Meylour"
+    },
+    "179": {
+      "ActiveText": "Conhecido como Veios de Meylour, estes minas uma vez belonged para Terra Tita=Agora de Vezrinn devotos tem tomaram eles=Eles buscam magia minerio Alumite, e Coracao=Voce vai precisa para derrotar eles todos para tomar artifact e activate Espada de Meylour"
+    },
+    "180": {
+      "ActiveText": "Conhecido como Veios de Meylour, estes minas uma vez belonged para Terra Tita=Agora de Vezrinn devotos tem tomaram eles=Eles buscam magia minerio Alumite, e Coracao=Voce vai precisa para derrotar eles todos para tomar artifact e activate Espada de Meylour"
+    },
+    "181": {
+      "ActiveText": "Seguir abaixo primeiro caminho leste de aqui para obter para Emerald Clareiras=Fortaleza seguindo leste",
+      "ReturnText": "Voce deve ser um poderosos herói para tem vir atraves minas!",
+      "PraiseText": "Agradecer voce para reuniting nosso povo!"
+    },
+    "182": {
+      "OfferText": "de Uthor Exquisite Creations",
+      "ActiveText": "Descricao em Portugues 88D86B.=Invasores Vai Ser Aniquilados",
+      "ReturnText": "de Uthor Exquisite Creations=Invasores Vai Ser Aniquilados=Descricao em Portugues 88D86B.",
+      "PraiseText": "de Uthor Exquisite Creations=Invasores Vai Ser Aniquilados=Descricao em Portugues 88D86B."
+    },
+    "183": {
+      "OfferText": "de Uthor Exquisite Creations",
+      "ActiveText": "forja restos escondido em Estilhaco da Tempestade Peaks.",
+      "ReturnText": "de Uthor Exquisite Creations=forja e encontrou.",
+      "PraiseText": "de Uthor Exquisite Creations=forja e encontrou."
+    },
+    "184": {
+      "OfferText": "Aqueles goblin argolas de nariz sao fez de fine steel.",
+      "ActiveText": "Voce pode encontrar argolas de nariz em goblin Brutes.=Eu Vou prestar voce bem para eles.",
+      "ReturnText": "Obrigado, Eu saber apenas guy para limpar estes."
+    },
+    "185": {
+      "OfferText": "Estes montanhas sao rich em mineral Alurite.",
+      "ActiveText": "estranho rocha criaturas contain Alurite.=Nos pode uso isso para encantado armas...=Encantado armadura...=Encantado cookware...=Encantado tudo!=Ponte Sombria vai sparkle.=e nos vamos ambos fazer um profit.",
+      "ReturnText": "Agradecer voce! smith em Ponte Sombria vai prestar um bom preco para este.",
+      "PraiseText": "Obrigado novamente para seu ajudar!"
+    },
+    "186": {
+      "OfferText": "Estes Gnomos sao driving me crazy!",
+      "ActiveText": "Aqueles pesky Gnomos esconder fora em cavernas.=Eles vir at noite e roubar nosso suprimentos.",
+      "ReturnText": "Agradecer voce, talvez agora eles vai inseto alguem mais!"
+    },
+    "187": {
+      "OfferText": "Por Favor ajudar nos com nosso aranha problema",
+      "ActiveText": "Parece como aranhas sao por toda parte!=Por Favor ajudar nos!",
+      "ReturnText": "Agradecer voce, talvez agora Eu pode dormir at noite.",
+      "PraiseText": "Obrigado novamente para seu ajudar!"
+    },
+    "188": {
+      "OfferText": "Isso Esta horrible, o que Meylour fez para nosso povo.",
+      "ActiveText": "Eu nao pode acredito aqueles ciclopes eram uma vez meu neighbors.=de mordomo horror foi em para decadas.=Por Favor, colocar deles tortured souls para descanso.=Apenas morte vai gratis eles de Meylour.",
+      "ReturnText": "Eu Estou feliz para ouvir eles sao gratis at ultimo, agradecer voce."
+    },
+    "189": {
+      "OfferText": "TheGnoles tem estado roubando deixou e certo.",
+      "ActiveText": "Gnoles amam shiny coisas.=Eles Tem estado roubando de nos para anos.",
+      "ReturnText": "Uau, olhar como muito voce encontrou! Obrigado so muito!",
+      "PraiseText": "Obrigado novamente para seu ajudar!"
+    },
+    "190": {
+      "OfferText": "de Meylour Cinzento Driades sao cercando Ur-Arvore!",
+      "ActiveText": "Um de de Meylour Cinzento Driades fugiu para Leste.=Eu tomar isso ele era correndo de voce?=@Eu apenas veio de montanha.=@Meylour e transformando seu povo para dentro monstros.=Vivendo Montanha tem ja destruiu mais de meu tipo.=@Meylour vai destruir todos vida se ele tem dele caminho.=Seguir aquele Cinzento Driade.=Capturing ele vai revelar mais de de Meylour planos.",
+      "ReturnText": "Agradecer voce, e agradecer Wildbark para enviando voce!",
+      "PraiseText": "Agradecer voce para helping nosso povo!"
+    },
+    "191": {
+      "OfferText": "de Meylour corrompido Driades tem infested Ur-Arvore!",
+      "ActiveText": "de Meylour demonios expulsou nos de arvore.=Dele corrompido plantas e chamas sao por toda parte.=@Eu nao vai deixar de Meylour culto destruir este arvore.=Voce deve pressa, Eu cheiro smoke!",
+      "ReturnText": "Agradecer voce, mas arvore nao e seguro ainda."
+    },
+    "192": {
+      "OfferText": "de Meylour abominations tunneled em de roots.",
+      "ActiveText": "Sacerdotes de Meylour vai apenas enviar mais fogo.=@Onde fez eles vir de?=Eles burrowed aqui de deles temples.=@Apontar me em direcao a tunel.=:@Eu Vou fazer certo nenhum mais vir vir de la.",
+      "ReturnText": "Meylour quer tudo morto. Tudo."
+    },
+    "193": {
+      "OfferText": "Seguir para antigo templo e derrotar de Meylour cultistas",
+      "ActiveText": "sacerdotes de Meylour sao preparing ainda outro ritual.=@Eles nunca dar acima.=Voce precisa para encontrar um caminho para de Meylour Coracao.=@de Meylour Coracao? O Que e aquele?=Isso e onde de Meylour poder mentiras.=Apenas dele sacerdotes saber dele location.=@Entao Eu vai fazer eles dizer me...=@Um caminho ou outro.",
+      "ReturnText": "Culto de Meylour e quase derrotado!"
+    },
+    "195": {
+      "OfferText": "ultimo de de Meylour culto se encolhe em medo.",
+      "ActiveText": "Voce quase derrotado eles.=@Mas Eu ainda nao saber onde Coracao de Meylour e.=@Eu vai fazer estes ultimo cultistas dizer me.=@de Meylour terror vai vir para um fim.",
+      "ReturnText": "Agora voce pode finalmente golpe abaixo Meylour para sempre.",
+      "PraiseText": "de Meylour seguidores tem o que eles deserved."
+    },
+    "196": {
+      "OfferText": "Ajudar nos reunir Sombrio Totens de Cinzento Driades",
+      "ActiveText": "Voce pode encontrar eles em Cinzento Driades=Nos precisa eles para um protecao de fogo feitico.",
+      "ReturnText": "Perfect, Eu Vou obter protecao feitico comecou."
+    },
+    "197": {
+      "OfferText": "Nos also precisa de Meylour Mascaras para protecao feitico",
+      "ActiveText": "Por Favor pressa, sacerdotes attacks precisa para ser repelled.",
+      "ReturnText": "Apenas o que nos needed. Agradecer voce!",
+      "PraiseText": "Nos deveria ser protegido agora. Obrigado novamente!"
+    },
+    "198": {
+      "OfferText": "Pode voce ajudar nos colocar fora fires plaguing nosso terra?",
+      "ActiveText": "Vivendo fogo e por toda parte, por favor destruir isso.",
+      "ReturnText": "Agradecer voce. Eu pode breath melhor ja.",
+      "PraiseText": "Tomara nosso terra vai crescem verde uma vez mais!"
+    },
+    "199": {
+      "OfferText": "Por destroying Meylour, voce deixou caminho para Terras Adormecidas unblocked.",
+      "ActiveText": "Com de Meylour barreira sumiram, caminho para castelo e abrir.=Meu povo veio acima de la decadas atras.=Nos eram fleeing um vida de escravidao em Terras Adormecidas.=Dragoes e Goblins manteve nos em correntes.=Ha nenhum sabendo o que e la agora.=de Meylour barreira manteve Terras Adormecidas bloqueado embora de este mundo.",
+      "ReturnText": "Marechal Sythokahn e derrotado, nao apenas dele sonho este tempo.",
+      "PraiseText": "Voce parado dragoes de invading novamente.=Mas quem sabe o que mais e abaixo la."
+    },
+    "200": {
+      "OfferText": "Nosso lider, Titus, foi para Observatorio procurando para alguns caminho para lutar dragoes.",
+      "ActiveText": "Agradecer voce para abatendo aquele dragao.=@Quem sao voce povo?=Nos eram com Sigmund de Hocke expedicao.=@Como povo de de Wolf Fim?=Sim, muito mesmo.=Nos lutou atraves goblins e para dentro castelo.=Sigmund deixou nos para guarda acampamento.=Ele e dele cavaleiros foi abaixo abaixo.=Eles passed atraves portal.=@e voce estado trapped aqui sempre desde.=Sabio Titus ajudou nos.=Quando dragao legiao veio, ele foi para encontrar um caminho para parar eles.=Voce deveria encontrar encontrar ele.",
+      "PraiseText": "Eu ainda maravilha o que became de Sigmund Hocke em Terras Adormecidas."
+    },
+    "201": {
+      "ActiveText": "Nephit busca um antigo ritual de Aetheric Observatorio.=Quando nos eram ambos vivo, ele pediu para isso.=Eu nunca confiava ele com tal poder.=@O Que e este ritual?=Isso contatos terrivel, antigo deuses.=@Como Meylour. Por Que iria ele querer aquele?=Eu nao saber, mas isso esta um ruim ideia.=Um realmente, realmente ruim ideia.=Terrivel ideia.=@Eu obter isso. Eu Vou parar ele.",
+      "ReturnText": "Parar Nephit de usando ritual."
+    },
+    "202": {
+      "OfferText": "Nephit materialized em ramparts depois voce lutou ele.",
+      "ActiveText": "Eu tomar isso Nephit encontrou ritual?=@Ele tem isso, sim.=Eu nao saber por que, mas ele esta indo para uso isso.=Talvez ele hopes isso vai restaurar ele para vida.=@e aquele possivel?=Talvez, mas isso iria ser um monstruoso existence.=Pressa agora, parar ele antes ele pode encontrar fora.",
+      "PraiseText": "Nephit foi oeste para Castelo!"
+    },
+    "203": {
+      "ActiveText": "Alem mentiras portal para Terras Adormecidas=Barao de Hocke sabios criou um poderosos Pedra Angular para selar portal.=Isso limita viajar entre mundos.=Nephit vai tentar e quebrar Pedra Angular e uso dele energy para dele ritual.=@O Que happens se ele faz aquele?=Viajar entre realms vai ser imparavel.=@Mais dragoes, goblins e pior.=Assuming de Nephit ritual nao matar nos todos.",
+      "ReturnText": "At menos, Nephit e nenhum mais.",
+      "PraiseText": "Isso Esta vindo=@O Que e vindo?=Tudo=Riches e Pesadelos=Monstros e Magia=Bom e Mal=Isso Esta todos abaixo la, e isso esta todos acordado agora"
+    },
+    "204": {
+      "OfferText": "La e um segredo porta em trono sala aquele leva para caverna",
+      "ActiveText": "Alguns de de dragao soldados sao encurralados acima abaixo la.=Ser cuidadoso, eles tem um de Barao de Hocke golems at deles comandar.",
+      "PraiseText": "Aquele era Barao de Hocke Principal Paladino.=primeiro de dele Golem guardas.=Um vergonha para ver tal um maravilha perverteu."
+    },
+    "205": {
+      "OfferText": "So muitos Tuatara soldados, pode voce trim deles numbers?",
+      "ActiveText": "Eles sao todos ha castelo=Eles veio de abaixo=@Eu Ja lutou deles tipo antes.=@Eu Vou tomar cuidar de eles.",
+      "ReturnText": "Agradecer voce, talvez nos pode finalmente reconstruir aqui.",
+      "PraiseText": "Obrigado, Eu ja sentir mais seguro aqui."
+    },
+    "206": {
+      "OfferText": "Sombrio Paladino mascaras sao segredo para controlando estes golems.",
+      "ActiveText": "dragao general tomou controlar de Sombrio Paladino Golems.=Eles usado para ser Barao de Hocke particular guarda-costas.=Deles mascaras sao chave para controlando eles.=Se voce trazer me qualquer voce encontrar, talvez Eu pode restaurar controlar.",
+      "ReturnText": "Obrigado, Eu vai obter comecou em deconstructing estes certo embora.",
+      "PraiseText": "Obrigado novamente para gathering mascaras."
+    },
+    "207": {
+      "OfferText": "Nephit e derrotado, mas Pedra Angular e destruiu. link para Terras Adormecidas mentiras abrir",
+      "ActiveText": "O Que sao Terras Adormecidas?=Tudo=Riches e Pesadelos=Monstros e Magia=Bom e Mal=Isso Esta todos abaixo la, e isso esta todos acordado agora=@Descricao em Portugues 5F5DE2.=Ha, voce sao ainda um adventurer=Voce sao indo abaixo la, nao sao voce?=Bem, entao, Eu vai accompany voce=Aquele portao deveria tomar nos la=Ou mais rasgar nos para pedacos=@Suficiente falar, vamos ir",
+      "ReturnText": "Ah. Voce fez isso ha e appear para ser em um pedaco. Excelente!"
+    },
+    "208": {
+      "OfferText": "Estes grandioso piramides sao nao trabalho de nosso povo.",
+      "ActiveText": "Magos quem construiu piramides deixou este terra longo atras.=Nos tem tomado alguns de deles ruinas como nosso proprio.=Mas outros permanecem guarded por poderosos espiritos.=Se isso esta antigo conhecimento voce buscam...=e voce esta daring suficiente para rosto antigo magics...=Entao voce deveria plumb profundezas de Umbral Templo para Oeste.",
+      "ReturnText": "Voce sao um sobrevivente e um scholar. Eu esperanca voce aprendido muito de value."
+    },
+    "209": {
+      "OfferText": "Ir para perto por aldeia e encontrar Vila Anciao",
+      "ActiveText": "Bem-vindo para Terras Adormecidas,#tn#.=@Isso parece um wondrous lugar=Este country e chamado Shazari.=Para seculos dragoes governou aqui.=@Eu aposto dragoes eram cruel mestres.=Terrivel e cruel, sim.=Mas povo aqui sao gratis agora.=Ir introduce voce mesmo para vila anciao.",
+      "ReturnText": "Eu esperanca nos encontrar alguns caminho para evitar caindo sob de imperador poder."
+    },
+    "211": {
+      "OfferText": "Agradecer voce para vindo,#tn#. Nos precisa seu ajudar.",
+      "ActiveText": "Bem-vindo para humilde Kovah.=@Isso e um honra para encontrar voce, Anciao.=honra e todos mina.=Matador de dragoes e Abridor de Caminho...=Voce tem realizou verdade maravilhas.=@Eu fazer o que Eu pode.=Nos vai falar mais em estes matters...=Mas agora Eu beg seu ajudar.=Seelie magias atormentar nosso templo, filling isso com abominations.=Seculos sob dragao dominio deixou nos com nenhum guerreiros para lutar eles.=@Isso vai ser meu prazer para tomar cuidar de isso, Anciao.",
+      "ReturnText": "Agora nosso aldeia vai sobreviver!"
+    },
+    "212": {
+      "OfferText": "outro dragoes sao sumiram, mas vil Poco Lorde restos.",
+      "ActiveText": "Cuidado voce mesmo, estranho...=Poco Lorde escraviza todos quem vir em dele alcance.=@Anciao Kenken enviou me.=@Eu tem alguns experiencia abatendo dragoes.=Bem, isso e um raro pericia de fato.=Mas este wily antigo serpe nao e sozinho.=Ele tem escravos quem lutar para ele, qual e ruim suficiente.=Recently ele tem alguns outro monstros como bem.=Eu nao saber onde dele reinforcements veio de.=Mas eles tem tem estranho magias.",
+      "ReturnText": "Poco Lorde morto! Nos sao um gratis reino at ultimo.",
+      "PraiseText": "Eu ainda maravilha onde Poco Lorde tem dele reinforcements de.=Alguem era tentando para prop ele acima.=Alguem e causando problema para gratis peoples de Shazari."
+    },
+    "213": {
+      "OfferText": "Um novo forca busca para replace dragao legioes aqui em Shazari.",
+      "ActiveText": "Apenas quando Eu pensou nos poderia retomar normal negociacao.=@Goblin. O Que fazer voce querer?=Humano! Eu querer para ser gratis para comercio com meu amigos e aliados.=@Bem, o que e stopping voce?=Estranho novo guerreiros, taller que homens.=Eu acredito eles pode ser Seelie Ogres.=@O Que sao Seelie?=Um antigo faerie race, expert em magias.=Eles corromper todos eles touch.=Eles Estao encamped alem muro para Leste.=@Eu deve investigar...=@Mas voce melhor ser speaking verdade, goblin.=Agradecer voce, herói! Bom sorte!",
+      "ReturnText": "So, isso era Seelie. Nos deve precisa de imperador ajudar para certo!",
+      "PraiseText": "Encontrar alguem de Valhaven.=Nos precisa de imperador ajuda contra um inimigo como Seelie.=Nos ficar nenhum chance!"
+    },
+    "214": {
+      "OfferText": "goblin anciao enviou voce para encontrar um Valhaven embaixador, certo?",
+      "ActiveText": "Eu Estou certamente nao embaixador.=@Entao o que assunto fazer nos tem, estranho?=Eu acredito Imperador ele mesmo e por tras Seelie.=@Isso e um serio acusacao.=Qual e por que Eu precisa proof.=@Por Que iria Imperador corromper este terra.=Com dragoes sumiram, ele busca para add Shazari para dele imperio.=antigo enterro terrenos parecem fonte de problema.=Ver se voce encontrar qualquer sinal de Imperial meddling.",
+      "ReturnText": "Eu pensou como muito! Imperador e sempre pitiless e vile.",
+      "PraiseText": "Encontrar me por docks.=@Por Que?=So Eu pode sneak voce para dentro Valhaven de claro.=Voce foiled de imperador planos aqui.=Voce Esta indo para precisa ajudar lutando seu newest inimigo.=@e voce esta aquele ajudar?=Eu tem alguns muito capable amigos.=Vir para barco."
+    },
+    "215": {
+      "OfferText": "antigo piramides ao redor aqui pode segurar algo de interest.",
+      "ActiveText": "antigo Seelie construiu estes piramides.=Um de eles restos selado ainda.=Eu imagine la sao maravilhas e perigos dentro.=@Por Que fazer maravilhas sempre vir com perigo?=Seelie eram sempre cruel aquele caminho.",
+      "ReturnText": "Isso soa mais wondrous que Eu imaginou!",
+      "PraiseText": "e voce tomou cuidar de perigos como bem.=@Isso era um muito estranho lugar.=Agora aquele voce derrotado defesas...=Eu Estou indo para spend alguns tempo plumbing dele segredos.=@Bom sorte.=@lugar e tambem cold e harsh para me."
+    },
+    "216": {
+      "OfferText": "Alguns de meu povo fugiu Oeste quando Seelie veio.",
+      "ActiveText": "Se voce ver meu fearful messengers em outro towns...=Poderia voce dizer eles isso esta seguro para vir volta?=Obrigado para voce, meu amigo.=@Nenhum goblin tem chamado me amigo antes.=Bem, amigos nos sao!=@Eu acho isso e verdade.=@Weird mas verdade.",
+      "ReturnText": "Meu obrigado! Nos tem muito menos para medo agora aquele Seelie sao derrotado.",
+      "PraiseText": "Eu acho agora nos goblins pode retornar para nosso pacificos ways.=@Fazer goblins realmente amam paz?=Longo atras nos fez.=Eu acho nos deve novamente.=@Eu certamente esperanca so."
+    },
+    "217": {
+      "OfferText": "Mesmo sem threat de drought, viajar apenas nao e seguro mais",
+      "ActiveText": "La sao so muitos perigos em estradas estes dias=Povo sao virando acima com horriveis ferroadas de scarab scorpions=Eu nao pode fazer qualquer coisa sobre Forasteiro problema, mas Eu poderia at menos solve scorpion problema=Se voce trazer me suficiente stingers Eu poderia fazer como anti-veneno",
+      "ReturnText": "Oh excelente! Este e mais que suficiente!",
+      "PraiseText": "Este anti-veneno vai salvar um muito de vidas=Voce olhar como voce tomou bastante um poucos ferroadas voce mesmo=Voce deve ser fez de tougher coisas que seu average traveler para ainda ser walking ao redor=Agradecer voce para todos voce feito para nos!=Ceu abencoar voce em seu jornada"
+    },
+    "218": {
+      "OfferText": "Talvez voce poderia fazer algo mais para nos",
+      "ActiveText": "Voce ver estes wasp hives?=Eles Tem realmente obtido fora de mao e wasps ataque povo aquele obter tambem perto=estradas iria ser muito mais seguro se voce poderia derrubar um poucos de eles abaixo",
+      "ReturnText": "Grande!",
+      "PraiseText": "Parece como voce tomou um ferroada ou dois=Deixar me tomar cuidar de aquele para voce=Nos realmente appreciate seu sacrificio=Ceu abencoar voce em seu jornada."
+    },
+    "219": {
+      "OfferText": "Nosso escapar plano falhou. Nenhum de goblin escravos fez isso fora",
+      "ActiveText": "Encontrar deles memoria encantos e Eu pode tomar eles para deles familias=Eles lutou bravamente, mas eles apenas nao eram forte suficiente=Deles familias merecem alguns encerramento",
+      "ReturnText": "Voce encontrou eles todos?",
+      "PraiseText": "Eu Vou fazer certo deles familias saber eles lutou bravamente=Eu Iria vir para saber eles todos em escravo pits=Eles sao todos realmente grande guys=Agradecer voce para o que voce feito"
+    },
+    "220": {
+      "OfferText": "Seelie braceletes sao fascinating para me",
+      "ActiveText": "Se tinha um bunch de aqueles Seelie braceletes...=Eu poderia quebrar eles abaixo e comecar replicating eles.=Smaller size de claro.=Mas Goblins iria prestar bem para algo como aqueles.=Trazer me o que voce pode.",
+      "ReturnText": "Hmm. Nao exactly novo mais. Ah bem, ele esta seu prestar",
+      "PraiseText": "Ver?=Descricao em Portugues A5C07A."
+    },
+    "221": {
+      "OfferText": "Nos pode ser capaz para fortaleza este de happening novamente",
+      "ActiveText": "Trazer me suficiente mucus glands e Eu pode mix acima um repellent=Aquele vai fortaleza insetos fora de templo",
+      "ReturnText": "Este vai fazer nicely. Tomar este para seu problema",
+      "PraiseText": "Uau, este coisas smells horrid=Isso Vai scare embora insetos embora, so isso esta vale isso=Ceu abencoar voce em seu jornada"
+    },
+    "223": {
+      "OfferText": "Voce Vai tem para vir com me para Valhaven para parar Imperador e dele Seelie aliados.",
+      "ActiveText": "Imperador vai ser depois voce agora.=@Seu imperador parece como um ardiloso demonio.=Ele era um grande homem uma vez.=Veio fora de lugar nenhum e expulsou fora Goblins.=Entao ele mantido afastado dragoes.=Mas em recent anos ele esta grown cruel.=@e ele parece para ser em alianca com Seelie.=Sim, isso e verdade.=Eu nao saber como mal eles eram ate hoje.=Vir, nos deve pressa.=Se nos estamos sortudo, Imperador nao vai saber nos estamos vindo."
+    },
+    "224": {
+      "ReturnText": "Voce deve ser Traveller Rathbone falou de. Bem-vindo."
+    },
+    "225": {
+      "OfferText": "Imperador sabe seu nome e querer voce morto.",
+      "ActiveText": "Eu maravilha o que voce fez para earn dele furia?=@Eu fez foil dele planos em Shazari.=Aquele poderia nao tem pleased ele.=Mas ele iria nunca admit para ardiloso contra Shazari.=e ele tem colocar um public preco em seu seguir.=Dele filho, Alto Mago, vai saber verdade.=@Por Que iria ele dizer me?=Ele parece para ser fora de favor com dele pai.=Encontrar ele enquanto ele esta fora palacio e ele pode falar.=Ele frequents alleys, cultivating thieves para dele causar."
+    },
+    "226": {
+      "ReturnText": "So, Imperador e de seu mundo!=Dele origens eram sempre um misterio.=Ele derrubou Goblins e montou ele mesmo acima dez anos atras.=Obrigado para dele Seelie aliados, ele esta estado imparavel.",
+      "PraiseText": "Eu pode sense voce esta destinado para fazer grande coisas aqui=Trabalho com Mab para encontrar um brecha em de imperador armadura"
+    },
+    "227": {
+      "OfferText": "Agora nos precisa Ma de Mab ajudar figuring fora o que para fazer proximo.",
+      "ActiveText": "Sigmund Hocke became Imperador obrigado para Seelie.=Deles sombrio magias proteger ele e seguro dele trono.=Nos precisa um contra-ataque para deles protecoes.=Ma Mab sabe mais sobre Seelie que qualquer um Eu saber.=Falar para dela e ver se ela tem qualquer ideas.",
+      "ReturnText": "Hello, young homem|dama"
+    },
+    "229": {
+      "OfferText": "Vermyn gangues ajudou Imperador overthrow Goblins.",
+      "ActiveText": "Eu ver agora por que Imperador odeia voce.=@Sigmund Hocke era um bravo herói.=@Ele acha Eu querer dele trono.=Fazer voce? Voce tomou dele Baronia.=@Ele deixou dele Baronia para goblins.=Bem, ele esta angered povo aqui tambem.=Vermyn gangues chafe sob de imperador dominio.=Eles iria erguer acima contra ele...=Exceto Gutter Lorde restos loyal para Imperador.=Ir abaixo e tomar fora Gutter Lorde.=Entao Vermyn vai juntar nos para certo.",
+      "ReturnText": "Vermyn gangues sao em um uproar!=Com Gutter Lorde sumiram, alguns sao ja em nosso lado."
+    },
+    "230": {
+      "OfferText": "Imperador sold dele alma para Seelie para seguro dele trono.",
+      "ActiveText": "Seelie eram primeiro para acordado em Terras Adormecidas.=Eles eram uma vez sabio e generoso...=Mas tempo fez eles cruel e jealous de outros.=Eles perdido poder para Goblins e Dragoes...=Sigmund Hocke transformado para eles para ajudar derrotar Goblin Reis.=e agora eles prop acima dele dominio em Valhaven.=Isso takes Seelie magia para contra-ataque Seelie magia.=Ir para Templo de Perdido Sonhos...=La voce pode encontrar algo Eu pode uso para contra-ataque de imperador protecoes.",
+      "ReturnText": "Soa como Templo era mais perigoso que suspected.=Imperador deve tem estado protecting dele segredos bem.=Agora Eu saber um grande lidar mais sobre dele Seelie magia.=Eu deveria ser capaz para obter voce passado outer protecoes de dele palacio.=Mas voce vai ser em seu proprio quando voce rosto ele.=Ele e vulnerable, mas ainda muito perigoso."
+    },
+    "231": {
+      "OfferText": "Voce tem deixou seu mark em Terras Adormecidas.",
+      "ActiveText": "Agora voce sao um parte de destino de Terras Adormecidas.=Seu acoes reverberam atraves mundo de sonhos.=Se voce ousa rosto seu destino...=Voce pode entrar Primordial Sonho e aprender verdade.=@verdade sobre o que?=verdade sobre voce mesmo e seu lugar em mundo.",
+      "ReturnText": "Voce tem retornou. Eu esperanca voce aprendido muito.",
+      "PraiseText": "Isso parece um dragao era escondido em seu sonhos.=@Eu nao mesmo saber aquele era possivel.=Voce vai encontrar muitos estranho coisas sao possivel.=Voce tem visto mas um fragmento de Terras Adormecidas.=@e Eu pretendo para visita muito mais.=@Como longo como Eu pode dormir sem dragoes em meu mind.=Voce Vai ser sortudo se isso e seu apenas problema.=Este mundo sabe voce agora.=e Eu Estou nao certo isso significa voce bem."
+    },
+    "232": {
+      "OfferText": "Agora para dificil parte.",
+      "ActiveText": "Imperador se encolhe em dele palacio.=Voce tomado fora todos dele apoio.=povo reunem contra ele.=Imperador de Sigmund reinado de terror termina hoje.",
+      "ReturnText": "Descricao em Portugues 84141F.",
+      "PraiseText": "O Que voce tem feito aqui...=Eu nao pode agradecer voce suficiente=Valhaven e gratis para primeiro tempo em seculos.=Goblins, Dragoes, e Seelie sao todos derrotado.=At ultimo nos deve saber paz."
+    },
+    "233": {
+      "OfferText": "Agora aquele voce pode obter passado Seelie protecoes, isso esta tempo para golpe.",
+      "ActiveText": "Antes confronting Imperador, nos precisa para enfraquecer ele.=Tomar fora todos dele apoio antes voce confrontar ele.=Dele filhas comandar dele exercito e segredo policia.=Voce pode encontrar eles em Leste e Oeste wings de palacio.=Voce also precisa para derrotar Imperial Guarda Comandante.=Ele vidas em quarteis.",
+      "ReturnText": "Agora de imperador defesas sao em disarray.=tempo para golpe tem vir!",
+      "PraiseText": "Voce nunca fail para impress,#tn#."
+    },
+    "237": {
+      "OfferText": "humano gangues aqui tem alto standards.",
+      "ActiveText": "Voce tem Vermyn gangues em seu lado...=Isso e impressionante.=Mas humano gangues sao diferente.=Se voce querer para obter perto para lideres...=Voce Esta indo para tem para provar voce mesmo para eles.=@Eu Estou duro suficiente, nao voce preocupe.=Ser pronto para um brutal lutar.=Eles Vao gang acima em voce em aquele lutando poco.=@Eu pode aguentar isso.=@Provavelmente.",
+      "ReturnText": "de Everyone talkin' sobre voce agora,#tn#."
+    },
+    "238": {
+      "OfferText": "Isso era um trick! Eles Estao onto voce e seu rebelde amigos!",
+      "ActiveText": "gang lideres montou nos acima.=@O Que sao voce falando sobre?=Enquanto voce eram em arena, eles eram em move.=gangues sao seguindo para rebelde esconderijo.=Voce tem para pressa volta...=Cortar eles afastado antes eles matar Odryn!",
+      "ReturnText": "Se voce nao tinha parado gang lideres,, Eu Iria ser morto."
+    },
+    "240": {
+      "OfferText": "Eu usado para ser um Imperial...",
+      "ActiveText": "Volta antes Imperador perdido dele mind e comecou associating com Seelie.=Eu seguiu meu consciencia e isso custo me tudo.=Agora Eu cuidado eles aterrorizam estes ruas nos usado para proteger.=Eu Vou prestar para qualquer Imperial voce tomar afastado ruas.",
+      "ReturnText": "Isso e so muitos...Tomar este.",
+      "PraiseText": "Isso e todos money Eu tinha deixou=Nenhum, Tomar isso. Voce sao lutando para um causar aquele e apenas=Eu Iria comercio todos ouro em mundo para coisas para retornar para caminho eles eram=Eu acho tempo para aquele tem passed=Coisas vai nunca ser mesmo novamente."
+    },
+    "241": {
+      "OfferText": "O Que e aquele?! Yep! Eles Tem robbed meh blind!",
+      "ActiveText": "Vermyn invadiu meu jardim e roubou meu cogumelos.=Eu uso aqueles cogumelos para fazer ensopado e meu farto cogumelo torta.=Com todos este Imperial bobagem, povo em ruas precisa meu cogumelos para obter por!=Eu nao wanna ver qualquer um starve, fazer voce?",
+      "ReturnText": "Hoo-yeah! Voce encontrou meu cogumelos!",
+      "PraiseText": "Agora Eu pode ir volta para baking cogumelo torta=e Cogumelo Gumbo=e Cogumelo Ensopado=e Cogumelo Souffle=e Stuffed Cogumelo Saffron Surpresa=e Cogumelo ala Kelp=e, vamos ver. Eu saber ha mais Eu pode fazer com cogumelos"
+    },
+    "242": {
+      "OfferText": "Imperials sao ruim suficiente, mas gangues sao pior kinds de opportunists.",
+      "ActiveText": "Eles sao correndo um protecao e extortion racket.=Preying afastado innocent civilians aquele nao pode defender eles mesmos.=Eu acho isso esta tempo alguem mostrou eles aquele deles dias sao acabado.",
+      "ReturnText": "Agradecer voce traveler.",
+      "PraiseText": "Aquele e um menos threat povo tem para preocupe sobre."
+    },
+    "243": {
+      "OfferText": "Isso e um tragedy o que Imperador tem feito aqui, mas todos e nao perdido",
+      "ActiveText": "Eu pode sentir cidade crying fora de sob weight de Seelie imundice aquele tem tainted isso.=Como veneno e chave para fazendo anti-veneno, demon lagrimas sao chave para purificar de Valhaven aura.",
+      "ReturnText": "Abencoar voce, amigo.",
+      "PraiseText": "Eu vai begin longo process de setting coisas certo...=Isso gladens meu coracao para encontrar um noble alma tal como voce"
+    },
+    "244": {
+      "OfferText": "Voce Vai tem para vir com me para Valhaven para parar Imperador e dele Seelie aliados.",
+      "ActiveText": "Imperador vai ser depois voce agora.=@Seu imperador parece como um ardiloso demonio.=Ele era um grande homem uma vez.=Veio fora de lugar nenhum e expulsou fora Goblins.=Entao ele mantido afastado dragoes.=Mas em recent anos ele esta grown cruel.=@e ele parece para ser em alianca com Seelie.=Sim, isso e verdade.=Eu nao saber como mal eles eram ate hoje.=Vir, nos deve pressa.=Se nos estamos sortudo, Imperador nao vai saber nos estamos vindo."
+    },
+    "245": {
+      "ReturnText": "Voce deve ser Traveller Rathbone falou de. Bem-vindo."
+    },
+    "246": {
+      "OfferText": "Imperador sabe seu nome e querer voce morto.",
+      "ActiveText": "Eu maravilha o que voce fez para earn dele furia?=@Eu fez foil dele planos em Shazari.=Aquele poderia nao tem pleased ele.=Mas ele iria nunca admit para ardiloso contra Shazari.=e ele tem colocar um public preco em seu seguir.=Dele filho, Alto Mago, vai saber verdade.=@Por Que iria ele dizer me?=Ele parece para ser fora de favor com dele pai.=Encontrar ele enquanto ele esta fora palacio e ele pode falar.=Ele frequents alleys, cultivating thieves para dele causar."
+    },
+    "247": {
+      "ReturnText": "So, Imperador e de seu mundo!=Dele origens eram sempre um misterio.=Ele derrubou Goblins e montou ele mesmo acima dez anos atras.=Obrigado para dele Seelie aliados, ele esta estado imparavel.",
+      "PraiseText": "Eu pode sense voce esta destinado para fazer grande coisas aqui=Trabalho com Mab para encontrar um brecha em de imperador armadura"
+    },
+    "248": {
+      "OfferText": "Agora nos precisa Ma de Mab ajudar figuring fora o que para fazer proximo.",
+      "ActiveText": "Sigmund Hocke became Imperador obrigado para Seelie.=Deles sombrio magias proteger ele e seguro dele trono.=Nos precisa um contra-ataque para deles protecoes.=Ma Mab sabe mais sobre Seelie que qualquer um Eu saber.=Falar para dela e ver se ela tem qualquer ideas.",
+      "ReturnText": "Hello, young homem|dama"
+    },
+    "250": {
+      "OfferText": "Vermyn gangues ajudou Imperador overthrow Goblins.",
+      "ActiveText": "Eu ver agora por que Imperador odeia voce.=@Sigmund Hocke era um bravo herói.=@Ele acha Eu querer dele trono.=Fazer voce? Voce tomou dele Baronia.=@Ele deixou dele Baronia para goblins.=Bem, ele esta angered povo aqui tambem.=Vermyn gangues chafe sob de imperador dominio.=Eles iria erguer acima contra ele...=Exceto Gutter Lorde restos loyal para Imperador.=Ir abaixo e tomar fora Gutter Lorde.=Entao Vermyn vai juntar nos para certo.",
+      "ReturnText": "Vermyn gangues sao em um uproar!=Com Gutter Lorde sumiram, alguns sao ja em nosso lado."
+    },
+    "251": {
+      "OfferText": "Imperador sold dele alma para Seelie para seguro dele trono.",
+      "ActiveText": "Seelie eram primeiro para acordado em Terras Adormecidas.=Eles eram uma vez sabio e generoso...=Mas tempo fez eles cruel e jealous de outros.=Eles perdido poder para Goblins e Dragoes...=Sigmund Hocke transformado para eles para ajudar derrotar Goblin Reis.=e agora eles prop acima dele dominio em Valhaven.=Isso takes Seelie magia para contra-ataque Seelie magia.=Ir para Templo de Perdido Sonhos...=La voce pode encontrar algo Eu pode uso para contra-ataque de imperador protecoes.",
+      "ReturnText": "Soa como Templo era mais perigoso que suspected.=Imperador deve tem estado protecting dele segredos bem.=Agora Eu saber um grande lidar mais sobre dele Seelie magia.=Eu deveria ser capaz para obter voce passado outer protecoes de dele palacio.=Mas voce vai ser em seu proprio quando voce rosto ele.=Ele e vulnerable, mas ainda muito perigoso."
+    },
+    "252": {
+      "OfferText": "Voce tem deixou seu mark em Terras Adormecidas.",
+      "ActiveText": "Agora voce sao um parte de destino de Terras Adormecidas.=Seu acoes reverberam atraves mundo de sonhos.=Se voce ousa rosto seu destino...=Voce pode entrar Primordial Sonho e aprender verdade.=@verdade sobre o que?=verdade sobre voce mesmo e seu lugar em mundo.",
+      "ReturnText": "Voce tem retornou. Eu esperanca voce aprendido muito.",
+      "PraiseText": "Isso parece um dragao era escondido em seu sonhos.=@Eu nao mesmo saber aquele era possivel.=Voce vai encontrar muitos estranho coisas sao possivel.=Voce tem visto mas um fragmento de Terras Adormecidas.=@e Eu pretendo para visita muito mais.=@Como longo como Eu pode dormir sem dragoes em meu mind.=Voce Vai ser sortudo se isso e seu apenas problema.=Este mundo sabe voce agora.=e Eu Estou nao certo isso significa voce bem."
+    },
+    "253": {
+      "OfferText": "Agora para dificil parte.",
+      "ActiveText": "Imperador se encolhe em dele palacio.=Voce tomado fora todos dele apoio.=povo reunem contra ele.=Imperador de Sigmund reinado de terror termina hoje.",
+      "ReturnText": "Descricao em Portugues 84141F.",
+      "PraiseText": "O Que voce tem feito aqui...=Eu nao pode agradecer voce suficiente=Valhaven e gratis para primeiro tempo em seculos.=Goblins, Dragoes, e Seelie sao todos derrotado.=At ultimo nos deve saber paz."
+    },
+    "254": {
+      "OfferText": "Agora aquele voce pode obter passado Seelie protecoes, isso esta tempo para golpe.",
+      "ActiveText": "Antes confronting Imperador, nos precisa para enfraquecer ele.=Tomar fora todos dele apoio antes voce confrontar ele.=Dele filhas comandar dele exercito e segredo policia.=Voce pode encontrar eles em Leste e Oeste wings de palacio.=Voce also precisa para derrotar Imperial Guarda Comandante.=Ele vidas em quarteis.",
+      "ReturnText": "Agora de imperador defesas sao em disarray.=tempo para golpe tem vir!",
+      "PraiseText": "Voce nunca fail para impress,#tn#."
+    },
+    "258": {
+      "OfferText": "humano gangues aqui tem alto standards.",
+      "ActiveText": "Voce tem Vermyn gangues em seu lado...=Isso e impressionante.=Mas humano gangues sao diferente.=Se voce querer para obter perto para lideres...=Voce Esta indo para tem para provar voce mesmo para eles.=@Eu Estou duro suficiente, nao voce preocupe.=Ser pronto para um brutal lutar.=Eles Vao gang acima em voce em aquele lutando poco.=@Eu pode aguentar isso.=@Provavelmente.",
+      "ReturnText": "de Everyone talkin' sobre voce agora,#tn#."
+    },
+    "259": {
+      "OfferText": "Isso era um trick! Eles Estao onto voce e seu rebelde amigos!",
+      "ActiveText": "gang lideres montou nos acima.=@O Que sao voce falando sobre?=Enquanto voce eram em arena, eles eram em move.=gangues sao seguindo para rebelde esconderijo.=Voce tem para pressa volta...=Cortar eles afastado antes eles matar Odryn!",
+      "ReturnText": "Se voce nao tinha parado gang lideres,, Eu Iria ser morto."
+    },
+    "261": {
+      "OfferText": "Eu usado para ser um Imperial...",
+      "ActiveText": "Volta antes Imperador perdido dele mind e comecou associating com Seelie.=Eu seguiu meu consciencia e isso custo me tudo.=Agora Eu cuidado eles aterrorizam estes ruas nos usado para proteger.=Eu Vou prestar para qualquer Imperial voce tomar afastado ruas.",
+      "ReturnText": "Isso e so muitos...Tomar este.",
+      "PraiseText": "Isso e todos money Eu tinha deixou=Nenhum, Tomar isso. Voce sao lutando para um causar aquele e apenas=Eu Iria comercio todos ouro em mundo para coisas para retornar para caminho eles eram=Eu acho tempo para aquele tem passed=Coisas vai nunca ser mesmo novamente."
+    },
+    "262": {
+      "OfferText": "O Que e aquele?! Yep! Eles Tem robbed meh blind!",
+      "ActiveText": "Vermyn invadiu meu jardim e roubou meu cogumelos.=Eu uso aqueles cogumelos para fazer ensopado e meu farto cogumelo torta.=Com todos este Imperial bobagem, povo em ruas precisa meu cogumelos para obter por!=Eu nao wanna ver qualquer um starve, fazer voce?",
+      "ReturnText": "Hoo-yeah! Voce encontrou meu cogumelos!",
+      "PraiseText": "Agora Eu pode ir volta para baking cogumelo torta=e Cogumelo Gumbo=e Cogumelo Ensopado=e Cogumelo Souffle=e Stuffed Cogumelo Saffron Surpresa=e Cogumelo ala Kelp=e, vamos ver. Eu saber ha mais Eu pode fazer com cogumelos"
+    },
+    "263": {
+      "OfferText": "Imperials sao ruim suficiente, mas gangues sao pior kinds de opportunists.",
+      "ActiveText": "Eles sao correndo um protecao e extortion racket.=Preying afastado innocent civilians aquele nao pode defender eles mesmos.=Eu acho isso esta tempo alguem mostrou eles aquele deles dias sao acabado.",
+      "ReturnText": "Agradecer voce traveler.",
+      "PraiseText": "Aquele e um menos threat povo tem para preocupe sobre."
+    },
+    "264": {
+      "OfferText": "Isso e um tragedy o que Imperador tem feito aqui, mas todos e nao perdido",
+      "ActiveText": "Eu pode sentir cidade crying fora de sob weight de Seelie imundice aquele tem tainted isso.=Como veneno e chave para fazendo anti-veneno, demon lagrimas sao chave para purificar de Valhaven aura.",
+      "ReturnText": "Abencoar voce, amigo.",
+      "PraiseText": "Eu vai begin longo process de setting coisas certo...=Isso gladens meu coracao para encontrar um noble alma tal como voce"
+    },
+    "265": {
+      "OfferText": "Voce derrotado Grandioso Marechal Sythokahn, mas um dragao restos.",
+      "ActiveText": "dragao Sythokahn governou este terra para seculos.=@Ele e dele legiao sao po e ossos agora.=Obrigado para voce.=@Obrigado para me.=Mas um dragao restos, Poco Lorde.=Ele runs Arena, onde escravos lutar para dele prazer.=@Eu acho isso esta tempo Eu met este Poco Lorde.=Ir ver Zumwalt, ele usado para lutar em arena.=Ele pode dizer voce mais.",
+      "ReturnText": "Ficar alert estranho, Poco de lorde homens sao por toda parte."
+    },
+    "266": {
+      "OfferText": "Eu Ja ouviu aquele goblins pode saber quem tem estado causando nosso recent troubles.",
+      "ActiveText": "Voce deveria falar para goblin anciao.=@Goblins! Eles causar nada mas problema.=@Se ha um guerra grupo proximo, Eu Vou ver para eles.=Nenhum, amigo, nenhum!=Estes goblins sao pacificos.=@Goblins nao saber mensagem paz.=Estes fazer, confiar me.=Falar para eles se voce querer para aprender verdade fonte de mal aqui.=@Eu deve reserva judgement.=@Mas Eu wager eles estao todos causar nos vai encontrar.",
+      "ReturnText": "Ahh, bem-vindo, amigo! Agradecer voce para vindo."
+    },
+    "267": {
+      "OfferText": "Voce derrotado Grandioso Marechal Sythokahn, mas um dragao restos.",
+      "ActiveText": "dragao Sythokahn governou este terra para seculos.=@Ele e dele legiao sao po e ossos agora.=Obrigado para voce.=@Obrigado para me.=Mas um dragao restos, Poco Lorde.=Ele runs Arena, onde escravos lutar para dele prazer.=@Eu acho isso esta tempo Eu met este Poco Lorde.=Ir ver Zumwalt, ele usado para lutar em arena.=Ele pode dizer voce mais.",
+      "ReturnText": "Ficar alert estranho, Poco de lorde homens sao por toda parte."
+    },
+    "268": {
+      "OfferText": "Eu Ja ouviu aquele goblins pode saber quem tem estado causando nosso recent troubles.",
+      "ActiveText": "Voce deveria falar para goblin anciao.=@Goblins! Eles causar nada mas problema.=@Se ha um guerra grupo proximo, Eu Vou ver para eles.=Nenhum, amigo, nenhum!=Estes goblins sao pacificos.=@Goblins nao saber mensagem paz.=Estes fazer, confiar me.=Falar para eles se voce querer para aprender verdade fonte de mal aqui.=@Eu deve reserva judgement.=@Mas Eu wager eles estao todos causar nos vai encontrar.",
+      "ReturnText": "Ahh, bem-vindo, amigo! Agradecer voce para vindo."
+    },
+    "269": {
+      "OfferText": "Este de cidade gangues sao principalmente humano e sao loyal para Imperador.",
+      "ActiveText": "Mas Eu ouvir de Skitts eles pode ser venceu ha.=Humanos usually apoio Imperador.=Mas ele relies tambem muito em Seelie agora.=humano gangues vai lutar ele...=Se nos pode derrubar fora deles lideres.=Mas Eu nao saber quem lideres sao.=Meu contato Skitts vai saber.=Ir ver o que ele suggests.",
+      "ReturnText": "So voce esta encrenqueiro, eh?"
+    },
+    "270": {
+      "OfferText": "Este de cidade gangues sao principalmente humano e sao loyal para Imperador.",
+      "ActiveText": "Mas Eu ouvir de Skitts eles pode ser venceu ha.=Humanos usually apoio Imperador.=Mas ele relies tambem muito em Seelie agora.=humano gangues vai lutar ele...=Se nos pode derrubar fora deles lideres.=Mas Eu nao saber quem lideres sao.=Meu contato Skitts vai saber.=Ir ver o que ele suggests.",
+      "ReturnText": "So voce esta encrenqueiro, eh?"
+    },
+    "271": {
+      "OfferText": "Eu sei onde fica o acampamento do Chefe dos Goblins.",
+      "ActiveText": "Os goblins estão escondidos do outro lado da floresta.=@O que eles estão fazendo lá?=Se escondendo, ué. Como eu disse.=Os goblins estão fugindo, morrendo de medo.=Mas ainda tem muito mais deles do que conseguimos dar conta.=Ainda mais com todos esses mortos-vivos se erguendo de repente.=@Pode deixar os mortos-vivos comigo.=@Mas primeiro tenho goblins para caçar.=Atravesse a floresta e siga o rio.=Você vai encontrar goblins de sobra por lá.=Assim que você terminar, eu te alcanço.",
+      "ReturnText": "Você derrotou o goblin grandão e malvadão? Belo trabalho!",
+      "PraiseText": "Com o Chefe dos Goblins derrotado, podemos recuperar estas terras.=Aquele terreno à beira do rio é lindo.=Talvez eu construa uma casa lá.=Crie umas ovelhas ou algo assim.=Ou abra uma guilda de aventureiros.=Ou talvez uma pousada.=Seria um ótimo lugar para um pequeno forte.=Eu poderia ser uma linda baronesa.=Por que não?"
+    },
+    "272": {
+      "OfferText": "Eu sei onde fica o acampamento do Chefe dos Goblins.",
+      "ActiveText": "Os goblins estão escondidos do outro lado da floresta.=@O que eles estão fazendo lá?=Se escondendo, ué. Como eu disse.=Os goblins estão fugindo, morrendo de medo.=Mas ainda tem muito mais deles do que conseguimos dar conta.=Ainda mais com todos esses mortos-vivos se erguendo de repente.=@Pode deixar os mortos-vivos comigo.=@Mas primeiro tenho goblins para caçar.=Atravesse a floresta e siga o rio.=Você vai encontrar goblins de sobra por lá.=Assim que você terminar, eu te alcanço.",
+      "ReturnText": "Você derrotou o goblin grandão e malvadão? Belo trabalho!",
+      "PraiseText": "Com o Chefe dos Goblins derrotado, podemos recuperar estas terras.=Aquele terreno à beira do rio é lindo.=Talvez eu construa uma casa lá.=Crie umas ovelhas ou algo assim.=Ou abra uma guilda de aventureiros.=Ou talvez uma pousada.=Seria um ótimo lugar para um pequeno forte.=Eu poderia ser uma linda baronesa.=Por que não?"
+    },
+    "273": {
+      "OfferText": "Meylour vai nao descanso ate todos vida em Ellyria queima.",
+      "ActiveText": "Meylour ritual e disrupted?=@Isso e. Eu precisa seu ajudar busca Meylour ele mesmo.=de Meylour vil magia deixa um rastro.=culto tentou para libertar dele poder.=Agora Eu pode ajudar voce seguir aquele poder para dele fonte.=Seguir trail profundo para dentro de montanha coracao.=La voce vai encontrar Meylour.=@La Eu vai destruir Meylour.",
+      "ReturnText": "magia barreira aquele selado Castelo Hocke e dispelled."
+    },
+    "274": {
+      "OfferText": "Meylour vai nao descanso ate todos vida em Ellyria queima.",
+      "ActiveText": "Meylour ritual e disrupted?=@Isso e. Eu precisa seu ajudar busca Meylour ele mesmo.=de Meylour vil magia deixa um rastro.=culto tentou para libertar dele poder.=Agora Eu pode ajudar voce seguir aquele poder para dele fonte.=Seguir trail profundo para dentro de montanha coracao.=La voce vai encontrar Meylour.=@La Eu vai destruir Meylour.",
+      "ReturnText": "magia barreira aquele selado Castelo Hocke e dispelled."
+    },
+    "275": {
+      "OfferText": "Nos pegou um espiao em seu fortaleza. Mas ele escapou.",
+      "ActiveText": "Um espiao era escondido em seu fortaleza.=@O Que espiao? de onde?=Nos nao tem um chance para encontrar fora.=@Como fez ele escapar?=Eu acho voce deveria ask Maxus Krong.=@Quem em mundo e Maxus Krong?=Um supposed herói.=Ele era interrogatorio prisoner.=@Eu Vou tem um mensagem com ele.",
+      "ReturnText": "espiao e seguro em jail uma vez mais.",
+      "PraiseText": "Nos ainda nao saber onde ele veio de.=@Fortaleza interrogatorio ele.=@Eu precisa para aprender quem estes novo inimigos sao."
+    },
+    "276": {
+      "OfferText": "Meu novo casa e acabado, voce deveria vir para jantar.",
+      "ActiveText": "Eu construiu um novo casa por waterfall.=@Voce significa onde goblin acampamento era?=Sim! Mas Eu cleaned fora todos goblin nastiness.=@Isso soa bom, Eu Iria amam para ver isso.=Vir em ha whenever.=@Eu Vou trazer alguns honey mead.",
+      "ReturnText": "Isso Esta indo para tomar weeks para obter livrar de estes ervas daninhas.",
+      "PraiseText": "Onde fez devoradores vir de?@La era alguns estranho la.=@He'd transformado devoradores para dentro armas.=Soa como de alguem raiding de Hsalt segredo laboratorios.=@Eu Vou precisa para ser em olhar fora para estes espioes."
+    },
+    "277": {
+      "OfferText": "Alguns goblin mercadores tem moved para dentro de contrabandista caverna.",
+      "ActiveText": "Eles dizer eles estao amistosos goblin mercadores.=@Eu saber isso soa estranho...=@Mas la sao amistosos goblins.=Bem, Eu nao confiar eles.=Pode voce ir ver o que eles estao fazendo em aquele caverna?=@Confiar me, la realmente sao bom goblins.=@Mas se isso faz voce sentir melhor...=@Eu vai verificar em em eles.=Hmm. Cuidadoso.=Eles Estao tricky.",
+      "ReturnText": "La realmente sao bom goblins? Huh.",
+      "PraiseText": "Eu suponho Eu Vou aprender para como eles.=@Eles Estao muito mais facil para como que krakens.=@e Eu tomou cuidar de ultimo kraken.=Isso e o que voce disse ultimo tempo.=@Este tempo Eu Estou certo isso era ultimo um.=Voce Esta positive isso esta ultimo Kraken?=@Bem, Eu Estou muito certo isso era.=@Provavelmente."
+    },
+    "278": {
+      "OfferText": "Meu companheiro sabios tem perdido contato, Eu medo pior.",
+      "ActiveText": "Rei enviou me e meu companheiro sabios para pesquisa Nephit.=@Isso e um perigoso subject.=Eu medo voce sao correct.=Eu Ja perdido contato com meu comrades.=Eles eram escavando de Nephit tumulo.=@Eu saber isso bem.=@Melhor deixar me tomar um olhar.=@Se nos estamos sortudo eles descobriu algo grande...=@e sao tambem ocupado para deixar voce saber.=Talvez isso e case.=Talvez nao.",
+      "ReturnText": "O Que um grandioso discovery!",
+      "PraiseText": "Este antigo biblioteca vai revelar maravilhas, Eu Estou certo.=@Isso parece nos estamos nao apenas uns interessados em isso.=@Estes espioes sao aparecendo acima por toda parte."
+    },
+    "279": {
+      "OfferText": "Nos encontrou um mapa em Perdido Biblioteca.",
+      "ActiveText": "Meu companheiro sabios descobriu algo em biblioteca.=Ha alguns sort de escondido camara em sonho tumulo.=@Onde Eu derrotado de Sythokahn sonho forma?=Sim, nos comecou excavations.=Voce pode ser interessados em o que eles encontrar.=@Eu melhor ir e fazer certo eles nao encontrar qualquer coisa perigoso.=@Seu curiosity vai obter voce sabios morto.=Nao como longo como voce esta aqui para proteger nos!=@Someday voce vai precisa para proteger yourselves.",
+      "ReturnText": "Eu nao pode dormir. Estes pesadelos...",
+      "PraiseText": "Todos de sabios sao plagued por pesadelos.=@Isso vai pass.=@Eu derrotado sonho hordas.=@Mas voce sabios precisa para steer limpar de tal perigos.=Talvez nos deveria stick para nosso books."
+    },
+    "280": {
+      "OfferText": "Descricao em Portugues B698C1.",
+      "ActiveText": "Descricao em Portugues B698C1.",
+      "ReturnText": "Descricao em Portugues B698C1.",
+      "PraiseText": "Descricao em Portugues B698C1."
+    },
+    "281": {
+      "OfferText": "Voce Esta grande tumulo despoiler, nao sao voce?",
+      "ActiveText": "Voce desecrated Tumulo de Pharaohs.=@Eu derrotado mal dwelling em la, sim.=Aquele era meu de familia tumulo voce stomped atraves.=@monstros defiled isso, nao me.=Talvez so, mas Eu precisa para obter em la.=Mas aqueles monstros sao volta.=Escort me para sarcophagus e Eu Vou recompensa voce.",
+      "ReturnText": "Voce eram um little helpful, Eu suponho.",
+      "PraiseText": "O Que fazer voce querer?=@Voce Iria ser morto se isso nao eram para me!=Mas Eu nao iria tem estado la se isso nao eram para voce.=@Eu nao iria tem estado la se voce nao tinha...=Vamos nao argue sobre o que voce fez errado.=@Agora listen aqui...=de aqui seu recompensa.=Ir em, aproveitar isso.=Descricao em Portugues 3D34E8.=Eu Ja tem mais importante coisas para fazer."
+    },
+    "282": {
+      "OfferText": "Voce feito so muito bom, nos querer para dar voce um grupo.",
+      "ActiveText": "Defeating ruim, weak goblins...=Abatendo dragoes...=Voce Esta melhor herói sempre!=@Agradecer voce para saying so.=Nos goblins realmente appreciate voce.=@Eu nunca pensou Eu Iria ouvir um goblin dizer aquele.=Nos querer para dar voce um grupo.=Nos tem sweets e honey mead.=Apenas seguir downstairs.=@Isso e muito tipo de voce!",
+      "ReturnText": "Voce! Voce Esta vivo.",
+      "PraiseText": "Ainda vivo, huh?=@Nenhum obrigado para voce, trog!=Eu surrender!=Isso era apenas um joke!=Por Favor nao matar me!=@Eu Vou spare voce, mas...=@Voce Vai ser em um cell para um longo, longo tempo."
+    },
+    "283": {
+      "OfferText": "Nos Estamos tendo um monstruoso praga problema em bazar.",
+      "ActiveText": "Pode voce ajudar nos obter shops abrir novamente?=@Voce transformado arena para dentro um shopping bazar?=Tapetes e cristalizadas frutas instead de sangue e entranhas.=@Aquele soa muito nicer, bom trabalho!=Isso era nicer, mas la sao pragas por toda parte.=@O Que tipo de pragas?=Giant aranhas, bats, flying imps.=Por Favor, ajudar nos obter volta para assunto!=@Este lugar tem visto tambem muito morte ja.=@Eu Vou montou coisas volta em claro para voce.",
+      "ReturnText": "Muitos obrigado! Para voce, half afastado tudo!",
+      "PraiseText": "Para voce, half afastado tudo!@Agradecer voce.=@Eu fazer amam cristalizadas frutas.=Voce deve tentar fresco figs.=@Enviar um case para meu fortaleza."
+    },
+    "284": {
+      "OfferText": "Alguem e destroying nosso planos para reviver deserto",
+      "ActiveText": "Nos estado usando agua de Ogre Magos oasis para reviver Shazari.=@Muito esperto e generoso de voce.=Nos eram com sucesso desfazendo dano dragoes causado.=Mas agora alguem e siphoning afastado nosso agua.=e la sao carnivorous plantas por toda parte!=@Devoradores em deserto?=@Nao preocupe, Eu saber como para tomar cuidar de eles.",
+      "ReturnText": "de agua flowing novamente, agradecer voce!",
+      "PraiseText": "Agradecer voce!=@Para agora seu problema e solved.=@Mas ha um agua tita fora la procurando para causar problema.=O Que e um agua tita?=@Se isso esta qualquer coisa como Meylour, voce nao querer para encontrar isso.=@Deixar me saber se voce ouvir qualquer mais tita falar."
+    },
+    "285": {
+      "OfferText": "Alguns de meu brethren em deserto precisa ajudar!",
+      "ActiveText": "Um group de colonos foi para dentro deserto dois meses atras.=Eles esperanca para abrir comercio com Bitterfrost.=Eles encontrou um bom local para um caravancarai...=Mas agora monstros besiege eles de todos lados.=@Comercio com Bitterfrost iria benefit todos de nos.=@Eu Vou ajudar eles seguro deles settlement.=@Plus, Eu realmente fazer odeio monstros.",
+      "ReturnText": "caravancarai e seguro.",
+      "PraiseText": "Muitos obrigado para seu ajudar.=@Eu olhar forward para learning mais sobre Bitterfrost.=Deles smoked fish e disse para ser exquisite.=@Eu Estou mais interessados em tales de deles gem minas."
+    },
+    "286": {
+      "OfferText": "Seu amigo Titus parece para ser tendo problems em dele piramide.",
+      "ActiveText": "Rei enviou me para study com Titus.=Ele tem fez grande discoveries em construct piramide.=Mas Eu medo ele pode ser perdendo controlar.=Ou mesmo perdendo dele mind.=@O Que e errado com ele?=Ele tem perdido ele mesmo em tempo.=Voce deveria ir visita ele, voce vai ver.=@Eu vai prestar Titus um visita at uma vez.",
+      "ReturnText": "Titus tem tempo sob controlar novamente?",
+      "PraiseText": "Titus e volta para normal?=@Eu esperanca so.=@Aquele piramide e um portao para outro eras.=@Eu Estou nao certo isso esta seguro para qualquer um."
+    },
+    "287": {
+      "OfferText": "Descricao em Portugues B698C1.",
+      "ActiveText": "Descricao em Portugues B698C1.",
+      "ReturnText": "Descricao em Portugues B698C1.",
+      "PraiseText": "Descricao em Portugues B698C1."
+    },
+    "288": {
+      "OfferText": "Descricao em Portugues B698C1.",
+      "ActiveText": "Descricao em Portugues B698C1.",
+      "ReturnText": "Descricao em Portugues B698C1.",
+      "PraiseText": "Descricao em Portugues B698C1."
+    },
+    "289": {
+      "OfferText": "Descricao em Portugues B698C1.",
+      "ActiveText": "Descricao em Portugues B698C1.",
+      "ReturnText": "Descricao em Portugues B698C1.",
+      "PraiseText": "Descricao em Portugues B698C1."
+    },
+    "290": {
+      "OfferText": "Descricao em Portugues B698C1.",
+      "ActiveText": "Descricao em Portugues B698C1.",
+      "ReturnText": "Descricao em Portugues B698C1.",
+      "PraiseText": "Descricao em Portugues B698C1."
+    },
+    "291": {
+      "OfferText": "Descricao em Portugues B698C1.",
+      "ActiveText": "Descricao em Portugues B698C1.",
+      "ReturnText": "Descricao em Portugues B698C1.",
+      "PraiseText": "Descricao em Portugues B698C1."
+    },
+    "292": {
+      "OfferText": "Descricao em Portugues B698C1.",
+      "ActiveText": "Descricao em Portugues B698C1.",
+      "ReturnText": "Descricao em Portugues B698C1.",
+      "PraiseText": "Descricao em Portugues B698C1."
+    },
+    "293": {
+      "OfferText": "Descricao em Portugues B698C1.",
+      "ActiveText": "Descricao em Portugues B698C1.",
+      "ReturnText": "Descricao em Portugues B698C1.",
+      "PraiseText": "Descricao em Portugues B698C1."
+    }
+  }
+}

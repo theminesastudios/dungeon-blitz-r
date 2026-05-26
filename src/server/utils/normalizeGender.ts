@@ -14,12 +14,12 @@ export function normalizeGender(value: unknown): string {
 }
 
 /**
- * Resolve the gender of a character at creation time.  The SWF patch makes the
- * client send "Male" or "Female" in the character-creation packet, but for any
- * legacy characters (or if the client somehow still sends an empty string) we
- * fall back to inferring gender from the visual asset naming convention:
- *   - Assets prefixed with "Female", "FDo", "FMouth", or "FFace" → Female
- *   - Everything else → Male (the game's default)
+ * Resolves character gender from the client-sent gender string, falling back to
+ * visual asset names when the client sends an empty or unrecognized value.
+ *
+ * Flash asset naming convention:
+ *   Female: FemaleHead*, FDo*, FMouth*, FFace*
+ *   Male:   MaleHead*,   MDo*, MM*,    MF*
  */
 export function resolveCharacterGender(
     gender: unknown,
@@ -33,6 +33,7 @@ export function resolveCharacterGender(
         return normalized;
     }
 
+    // Infer from visual asset names (most reliable signal)
     const parts = [headSet, hairSet, mouthSet, faceSet];
     for (const part of parts) {
         if (/female/i.test(part)) return 'Female';

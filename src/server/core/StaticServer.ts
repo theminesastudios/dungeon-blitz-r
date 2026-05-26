@@ -4,7 +4,19 @@ import type { Server as HttpServer } from 'http';
 import * as path from 'path';
 import type { Request } from 'express';
 import { Config } from './config';
-import { buildDungeonBlitzSwfVariantBuffer, type DungeonBlitzSwfLocale } from './DungeonBlitzSwf';
+import {
+    BRAZILIAN_PORTUGUESE_ASSET_REPLACEMENTS,
+    BRAZILIAN_PORTUGUESE_LEVELS_HOME_TEXT_REPLACEMENTS,
+    BRAZILIAN_PORTUGUESE_UI1_REPLACEMENTS,
+    BRAZILIAN_PORTUGUESE_UI4_REPLACEMENTS,
+    buildDungeonBlitzSwfVariantBuffer,
+    buildPortugueseExactAssetSwfBuffer,
+    buildPortugueseLevelsNrSwfBuffer,
+    buildPortugueseUi1SwfBuffer,
+    buildPortugueseUi4SwfBuffer,
+    buildSwfTagStringReplacementBuffer,
+    type DungeonBlitzSwfLocale
+} from './DungeonBlitzSwf';
 import { PresenceService } from './PresenceService';
 import { SocialHandler } from '../handlers/SocialHandler';
 import { GlobalState } from './GlobalState';
@@ -37,6 +49,12 @@ function escapeHtml(value: string | null | undefined): string {
         .replace(/'/g, '&#39;');
 }
 
+const BRAZILIAN_PORTUGUESE_XML_REPLACEMENTS = new Map<string, string>([
+    ['Invite a player to be your friend.', 'Convide um jogador para ser seu amigo.'],
+    ['Accept no more messages from a player.', 'Não aceite mais mensagens de um jogador.'],
+    ['Chat    shortcut:    Hit [Enter] to begin              Hit [Enter] to send', 'Atalho do chat:    Pressione [Enter] para começar              Pressione [Enter] para enviar']
+]);
+
 export class StaticServer {
     private app: express.Application;
     private server: HttpServer | null;
@@ -44,6 +62,7 @@ export class StaticServer {
     private contentDir: string;
     private host: string;
     private selectedSwfCache: { key: string; buffer: Buffer } | null;
+    private localizedAssetSwfCache: { key: string; buffer: Buffer } | null;
     private readonly discordAccountLinks: DiscordAccountLinkService;
     private readonly flashVersion = 'cbw';
     private readonly gameVersion = 'cbw';
@@ -58,6 +77,7 @@ export class StaticServer {
         this.app = express();
         this.server = null;
         this.selectedSwfCache = null;
+        this.localizedAssetSwfCache = null;
         this.discordAccountLinks = new DiscordAccountLinkService();
         
         // Resolve against the server root so dist and ts-node use the same content directory.
@@ -74,14 +94,70 @@ export class StaticServer {
         const mode = Config.MULTIPLAYER_MODE ? 'multiplayer' : 'local';
         const swfPath = this.getSelectedSwfPath();
         const stats = fs.statSync(swfPath);
-        const cacheKey = `${mode}:${locale}:${swfPath}:${stats.mtimeMs}:${stats.size}`;
+        const ptbrMainText = process.env.DB_PTBR_MAIN_SWF_TEXT === '1' ? 'on' : 'off';
+        const ptbrEmotePatches = process.env.DB_PTBR_EMOTE_PATCHES === '0' ? 'off' : 'on';
+        const cacheKey = `${mode}:${locale}:${ptbrMainText}:${ptbrEmotePatches}:${swfPath}:${stats.mtimeMs}:${stats.size}`;
         if (this.selectedSwfCache?.key === cacheKey) {
             return this.selectedSwfCache.buffer;
         }
 
         const buffer = buildDungeonBlitzSwfVariantBuffer(swfPath, mode, locale);
         this.selectedSwfCache = { key: cacheKey, buffer };
-        console.log(`[StaticServer] Prepared DungeonBlitz.swf variant for ${mode} mode (${locale}).`);
+        const ptbrFlags = locale === 'pt-br'
+            ? ` ptbrMainText=${ptbrMainText} ptbrEmotePatches=${ptbrEmotePatches}`
+            : '';
+        console.log(`[StaticServer] Prepared DungeonBlitz.swf variant for ${mode} mode (${locale}).${ptbrFlags}`);
+        return buffer;
+    }
+
+    private getLocalizedAssetSwfBuffer(assetRelativePath: string, locale: DungeonBlitzSwfLocale): Buffer {
+        const swfPath = path.join(this.contentDir, assetRelativePath);
+        const stats = fs.statSync(swfPath);
+        const shouldLocalizeAssets = process.env.DB_PTBR_LOCALIZED_ASSETS !== '0';
+        const cacheKey = `${locale}:${shouldLocalizeAssets ? 'assets-on' : 'assets-off'}:${swfPath}:${stats.mtimeMs}:${stats.size}`;
+        if (this.localizedAssetSwfCache?.key === cacheKey) {
+            return this.localizedAssetSwfCache.buffer;
+        }
+
+        const assetName = path.basename(assetRelativePath).toLowerCase();
+        const isTutorialLevelsAsset = assetName === 'levelsnr.swf' || assetName === 'levelstut.swf';
+        let buffer: Buffer;
+        if (locale === 'pt-br' && shouldLocalizeAssets) {
+            if (assetName === 'ui_1.swf') {
+                buffer = buildPortugueseUi1SwfBuffer(swfPath, BRAZILIAN_PORTUGUESE_UI1_REPLACEMENTS);
+                console.log(`[StaticServer] Served ${assetRelativePath} for pt-br with localizedAssets=on (ui patch applied).`);
+            } else if (assetName === 'ui_4.swf') {
+                buffer = buildPortugueseUi4SwfBuffer(swfPath, BRAZILIAN_PORTUGUESE_UI4_REPLACEMENTS);
+                console.log(`[StaticServer] Served ${assetRelativePath} for pt-br with localizedAssets=on (ui_4 exact UI strings patched).`);
+            } else if (assetName === 'levelsnr.swf') {
+                const result = buildPortugueseLevelsNrSwfBuffer(swfPath);
+                buffer = result.buffer;
+                if (result.changed) {
+                    console.log(`[StaticServer] Served ${assetRelativePath} for pt-br — text/script tags PATCHED. Matched strings (${result.matchedStrings.length}): ${result.matchedStrings.map((s) => JSON.stringify(s)).join(', ')}`);
+                } else {
+                    console.log(`[StaticServer] Served ${assetRelativePath} for pt-br — NO text/script tag matches found, serving raw file unchanged.`);
+                }
+            } else if (isTutorialLevelsAsset) {
+                const result = buildSwfTagStringReplacementBuffer(swfPath, BRAZILIAN_PORTUGUESE_ASSET_REPLACEMENTS);
+                buffer = result.buffer;
+                if (result.changed) {
+                    console.log(`[StaticServer] Served ${assetRelativePath} for pt-br — text tags PATCHED. Matched strings (${result.matchedStrings.length}): ${result.matchedStrings.map((s) => JSON.stringify(s)).join(', ')}`);
+                } else {
+                    console.log(`[StaticServer] Served ${assetRelativePath} for pt-br — NO text tag matches found, serving raw file unchanged.`);
+                }
+            } else if (assetName === 'levelshome.swf') {
+                buffer = buildPortugueseExactAssetSwfBuffer(swfPath, BRAZILIAN_PORTUGUESE_LEVELS_HOME_TEXT_REPLACEMENTS);
+                console.log(`[StaticServer] Served ${assetRelativePath} for pt-br with localizedAssets=on (home exact dialogue strings patched).`);
+            } else {
+                buffer = fs.readFileSync(swfPath);
+            }
+        } else {
+            buffer = fs.readFileSync(swfPath);
+            if (locale === 'pt-br' && isTutorialLevelsAsset) {
+                console.log(`[StaticServer] Served ${assetRelativePath} for pt-br with localizedAssets=off (raw).`);
+            }
+        }
+        this.localizedAssetSwfCache = { key: cacheKey, buffer };
         return buffer;
     }
 
@@ -316,6 +392,29 @@ export class StaticServer {
         return path.join(this.contentDir, 'p', 'cbq', normalizedAssetPath);
     }
 
+    private getSharedXmlAssetPath(assetPath: string): string {
+        const segments = assetPath.split('/').filter(Boolean);
+        if (segments.some((segment) => segment === '..' || segment.includes(path.sep))) {
+            return path.join(this.contentDir, '..', 'xml', '__invalid__');
+        }
+        return path.resolve(this.contentDir, '..', 'xml', segments.join(path.sep));
+    }
+
+    private getLocalizedXmlBuffer(assetPath: string, locale: DungeonBlitzSwfLocale): Buffer {
+        const basename = path.basename(assetPath).toLowerCase();
+        const xml = fs.readFileSync(assetPath, 'utf8');
+        if (locale !== 'pt-br' || basename !== 'tooltiptypes.xml') {
+            return Buffer.from(xml, 'utf8');
+        }
+
+        let localized = xml;
+        for (const [oldValue, newValue] of BRAZILIAN_PORTUGUESE_XML_REPLACEMENTS) {
+            localized = localized.replace(oldValue, newValue);
+        }
+
+        return Buffer.from(localized, 'utf8');
+    }
+
     private rememberQueryLocale(req: Request, res: Response): void {
         const locale = this.normalizeLocale(req.query.lang);
         if (!locale) {
@@ -428,19 +527,6 @@ export class StaticServer {
             res.sendFile(swzPath);
         });
 
-        this.app.get('/DungeonBlitzRemote.swf', (req, res) => {
-            const locale = this.resolveSwfLocale(req);
-            this.rememberQueryLocale(req, res);
-            res.type('application/x-shockwave-flash');
-            res.setHeader('X-DungeonBlitz-Language', locale);
-            res.send(this.getSelectedSwfBuffer(locale));
-        });
-
-        this.app.get('/p/cbq/devSettings.xml', (_req, res) => {
-            res.type('application/xml');
-            res.send(this.renderDevSettings(devSettingsPath));
-        });
-
         this.app.get(`/p/${this.flashVersion}/Game.swz`, (req, res) => {
             const locale = this.resolveGameSwzLocale(req);
             const swzPath = this.getGameSwzPathForLocale(locale);
@@ -457,9 +543,59 @@ export class StaticServer {
             }
 
             if (assetPath.endsWith('.xml')) {
+                const locale = this.resolveSwfLocale(req);
+                this.rememberQueryLocale(req, res);
                 res.type('application/xml');
+                res.setHeader('X-DungeonBlitz-Language', locale);
+                res.send(this.getLocalizedXmlBuffer(assetPath, locale));
+                return;
             }
             res.sendFile(assetPath);
+        });
+
+        this.app.get('/p/cbp/UI_1.swf', (req, res) => {
+            const locale = this.resolveSwfLocale(req);
+            this.rememberQueryLocale(req, res);
+            res.type('application/x-shockwave-flash');
+            res.setHeader('X-DungeonBlitz-Language', locale);
+            res.setHeader('Cache-Control', 'no-store');
+            res.send(this.getLocalizedAssetSwfBuffer(path.join('p', 'cbp', 'UI_1.swf'), locale));
+        });
+
+        this.app.get(/^\/xml\/.+\.xml$/, (req, res, next) => {
+            const assetPath = this.getSharedXmlAssetPath(req.path.replace(/^\/xml\//, ''));
+            if (!fs.existsSync(assetPath) || !fs.statSync(assetPath).isFile()) {
+                next();
+                return;
+            }
+
+            const locale = this.resolveSwfLocale(req);
+            this.rememberQueryLocale(req, res);
+            res.type('application/xml');
+            res.setHeader('X-DungeonBlitz-Language', locale);
+            res.send(this.getLocalizedXmlBuffer(assetPath, locale));
+        });
+
+        this.app.get(/^\/p\/(?:caa|caf|cam|cbp|cbo|cbq)\/.+\.swf$/, (req, res) => {
+            const locale = this.resolveSwfLocale(req);
+            this.rememberQueryLocale(req, res);
+            res.type('application/x-shockwave-flash');
+            res.setHeader('X-DungeonBlitz-Language', locale);
+            res.setHeader('Cache-Control', 'no-store');
+            res.send(this.getLocalizedAssetSwfBuffer(req.path.replace(/^\//, ''), locale));
+        });
+
+        this.app.get('/DungeonBlitzRemote.swf', (req, res) => {
+            const locale = this.resolveSwfLocale(req);
+            this.rememberQueryLocale(req, res);
+            res.type('application/x-shockwave-flash');
+            res.setHeader('X-DungeonBlitz-Language', locale);
+            res.send(this.getSelectedSwfBuffer(locale));
+        });
+
+        this.app.get('/p/cbq/devSettings.xml', (_req, res) => {
+            res.type('application/xml');
+            res.send(this.renderDevSettings(devSettingsPath));
         });
 
         this.app.get('/api/presence/sessions', (req, res) => {

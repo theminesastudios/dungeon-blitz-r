@@ -1,0 +1,3310 @@
+{
+  "levels": {
+    "BridgeTown": {
+      "btgreeter": {
+        "defaultLines": [
+          "Por Favor ir volta e obter livrar de Arachnae",
+          "Segurar la, stanger. Quem sao voce?",
+          "Voce fez alguns tremendous changes em estes parts.",
+          "Nos Estamos sabio para seu de tipo tricks. Present voce mesmo para Guardiao ou taste steel.",
+          "Guardiao deve aprovar todos forasteiros.",
+          "e so sao voce, aquele nao significa nos estamos amigos.",
+          "Eu era nascido aqui.",
+          "Nao saber nada sobre nenhum hordas.",
+          "Voce tambem verificar em com Guardiao ou afastado com voce.",
+          "Embora Guardiao vai nenhum duvida enviar voce em seu caminho.",
+          "Nos Estamos nao procurando para seu tipo de problema."
+        ]
+      },
+      "btmayor01": {
+        "defaultLines": [
+          "Oh, glorious deuses! Apenas o que nos nao precisa, mais forasteiros...",
+          "Bem, estranho, Eu Estou surpreso. Voce feito nosso fair vila um servico.",
+          "bandidos dizer eles estao soldados de seu terra natal.",
+          "Voce afirmar para ser de alguns kingdom atraves mar.",
+          "Eu nao saber qualquer reis, mas estes outro homens disse mesmo.",
+          "Nenhum, nenhum, nos estamos fazendo apenas fine.",
+          "Exceto para saqueadores e saqueadores de atraves mar.",
+          "Apparently de seu kingdom.",
+          "Qual Eu Vou answer uma vez voce tomar cuidar de seu companheiro bandidos.",
+          "Bem, eles sao, e eles estao de seu terra.",
+          "Voce retornou? So talvez voce nao sao como outros.",
+          "Eu enviou seu amigos de de Wolf Fim para Cemiterio Colina. Eles pode assentar la se eles como.",
+          "Ha nenhum sala para voce de Wolf Fim folk aqui.",
+          "Meu povo settled aqui 40 anos atras.",
+          "Nos veio de um distante, distante terra, onde nos eram escravos.",
+          "Agora nos viver gratis e prosperous vidas.",
+          "Nos proteger nosso proprio.",
+          "Eu enviou seu amigos de de Wolf Fim para Cemiterio Colina.",
+          "Se eles estao procurando para novo terras para assentar, eles pode tem aqueles.",
+          "Beggars nao pode ser choosers."
+        ]
+      },
+      "btmerchant01": {
+        "displayName": "Descricao em Portugues D91CF8.",
+        "defaultLines": [
+          "Nenhum um mais vai comercio com Gnoles.",
+          "Mas Eu lembrar quando eles nao eram so ruim.",
+          "Eu nao pode imagine por que eles estao so irado agora!"
+        ]
+      },
+      "btsubwarden": {
+        "defaultLines": [
+          "bandido acampamento era apenas volta outro caminho",
+          "Estes bandidos nunca bothered nos antes. Fez voce rile eles acima?",
+          "Mordomo foi para dentro aquele caverna para preparar para Colheita Ritual.",
+          "Voce nao deveria perturbar Mordomo.",
+          "Eu acho so.",
+          "Apenas Mordomo sabe como isso funciona.",
+          "Mordomo tem longo protegido nosso povo, sempre desde nos veio aqui.",
+          "Bem, ele esta em la.",
+          "Mas nao bother ele se ele parece tambem ocupado.",
+          "Ele Esta fazendo importante trabalho."
+        ]
+      },
+      "bttrainer01": {
+        "displayName": "Descricao em Portugues 4AF7A7.",
+        "defaultLines": [
+          "Tempo para um lesson?"
+        ]
+      },
+      "btwarden": {
+        "defaultLines": [
+          "Por Favor ir volta e obter livrar de Arachnae",
+          "Voce Esta um melhor class de herói",
+          "Um nos precisa badly",
+          "morto de Cemiterio Colina sao levantando",
+          "Bandidos ainda atormentar nos",
+          "e nos viver em sombra de Castelo Hocke",
+          "Aquele fortress era shut para nos anos atras",
+          "Mas mal aquele shut isso ainda pervades este terra",
+          "Tem voce visto Mordomo ainda.",
+          "Voce mudou este terra para melhor.",
+          "Mas Eu medo nosso troubles tem apenas comecou.",
+          "Nos tinha nosso encher de saqueadores e bandidos.",
+          "Voce behave, estranho.",
+          "Estranho, Eu saber seu type. Nos nenhum patience para voce aqui.",
+          "Eu nao saber voce, mas voce iria melhor ser em seu caminho.",
+          "Seu rei tem nada para fazer com nos.",
+          "e nos tinha plenty de bandidos dizer mesmo historia.",
+          "Eu nao querer problema, so ir onto bosques com outros.",
+          "Sim, voce vai encontrar plenty de seu tipo la.",
+          "So voce dizer.",
+          "Eu Vou acredito isso quando Eu ver isso.",
+          "Mordomo nao e aqui certo agora, estranho.",
+          "Voce Esta volta.",
+          "Apenas Mordomo sabe como magico escudo funciona.",
+          "Aquele escudo e nosso principal protecao contra nosso inimigos.",
+          "Eu nao saber, isso e dele fazendo.",
+          "Mas ele esta manteve nos principalmente seguro para anos.",
+          "Um poucos povo disappear cada ano, mas nao muito.",
+          "Mordomo e gathering material para Colheita Ritual.",
+          "Ir falar para dele guarda-costas Gunter se voce querer para encontrar ele.",
+          "Voce dizer Mordomo adora sombrio poderes?",
+          "Eu tinha nenhum ideia!",
+          "Direita ha la, afastado vila square.",
+          "Pressa, voce tem para encontrar fora quem mais e helping ele.",
+          "Mordomo, fazendo pacts com mal deuses...",
+          "Eu nunca imaginou isso.",
+          "Com de mordomo mal unveiled, nos tem um muito para figure fora.",
+          "Segundo para de mordomo diario, dele culto tomou sacrificios para montanha pico.",
+          "Ha um chance Culto deixou sobreviventes em montanha.",
+          "Eu Estou enviando alguns de meu povo para investigar.",
+          "Entao encontrar meu povo em montanhas.",
+          "Mas tread lightly, nos nao saber o que e acima la.",
+          "Voce retornou uma vez novamente. Whatever voce fez fora la, isso esta feito algo aqui.",
+          "Agradecer voce para tudo voce tem feito aqui!",
+          "Por destroying Meylour, voce deixou caminho para Adormecido Terras unblocked.",
+          "Com de Meylour barreira sumiram, caminho para castelo e abrir.",
+          "Meu povo veio acima de la decadas atras.",
+          "Nos eram fleeing um vida de escravidao em Adormecido Terras.",
+          "Dragoes e Goblins manteve nos em correntes.",
+          "Ha nenhum sabendo o que e la agora.",
+          "de Meylour barreira manteve Adormecido Terras bloqueado embora de este mundo.",
+          "magia barreira aquele selado Castelo Hocke e dispelled."
+        ]
+      },
+      "earl": {
+        "displayName": "Descricao em Portugues 22FEFB.",
+        "defaultLines": [
+          "Outro estranho...",
+          "Nos nenhum sala para estranhos aqui.",
+          "Nenhum de seu concern, estranho."
+        ]
+      },
+      "emma": {
+        "displayName": "Descricao em Portugues 409AE7.",
+        "defaultLines": [
+          "La sao povo vivendo sul de pantano?",
+          "Incrivel, Eu nao mesmo saber la eram outro humanos.",
+          "Eu grew acima aqui.",
+          "Isso Esta melhor lugar em mundo."
+        ]
+      },
+      "felguard": {
+        "displayName": "Descricao em Portugues B2611F.",
+        "defaultLines": [
+          "bosques sao cheio de bandidos.",
+          "Mas eles iriam nunca vir aqui."
+        ]
+      },
+      "franny": {
+        "displayName": "Descricao em Portugues FE14F7.",
+        "defaultLines": [
+          "Aqui para colheita festival?",
+          "Mordomo faz certo cada ano e melhor que ultimo.",
+          "Aquele homem funciona maravilhas.",
+          "Nao mesmo saber por que nos precisa um Guardiao."
+        ]
+      },
+      "grahm": {
+        "displayName": "Descricao em Portugues F1C22F.",
+        "defaultLines": [
+          "Gnoles nunca vir para dentro vila.",
+          "Mas eles vao ataque se voce sair cidade limita."
+        ]
+      },
+      "jema": {
+        "displayName": "Descricao em Portugues FB59D9.",
+        "defaultLines": [
+          "Um forasteiro! Uau!",
+          "Eu wish meu irmao Karl eram aqui.",
+          "Ele ran embora ultimo colheita.",
+          "Mas ele sempre disse la eram outro povo.",
+          "e ele era certo.",
+          "Acho Mordomo nao saber todos."
+        ]
+      },
+      "laura": {
+        "displayName": "Descricao em Portugues 6A3FB3.",
+        "defaultLines": [
+          "Quem sao voce?",
+          "Eu Ja nunca visto alguem de fora vila.",
+          "Sao voce allowed para ser aqui?"
+        ]
+      },
+      "lucy": {
+        "displayName": "Descricao em Portugues C5C8F3.",
+        "defaultLines": [
+          "Gnoles e bandidos fora la.",
+          "Ficar alert."
+        ]
+      },
+      "meylourmagenpc": {
+        "displayName": "Descricao em Portugues D866E6.",
+        "defaultLines": [
+          "Estranho.",
+          "O Que sao voce selling?",
+          "Protecao services?",
+          "Descricao em Portugues 3E1593.",
+          "Magia beans?",
+          "Nos tinha nosso encher de estranhos."
+        ]
+      },
+      "meylourmagenpc2": {
+        "displayName": "Descricao em Portugues 2C7A46.",
+        "defaultLines": [
+          "Deixar me acho...",
+          "Voce Esta um thief?",
+          "Ou talvez um charlatan?",
+          "Eu saber!",
+          "Voce Esta um#tc#.",
+          "Mesmo pior."
+        ]
+      },
+      "npctraveller": {
+        "displayName": "Descricao em Portugues 68A748.",
+        "defaultLines": [
+          "Tem um cuidar! Fez Eu restaurar Dreadfold Portao so voce poderia stumble para seu ruina?",
+          "Longo atras, wizard Caphrax sundered mundo para dentro dois tempo-rivers",
+          "dois branches sao perto mas separated",
+          "Para Dentro um branch wizard channeled sombrio magia de Adormecido Terras, creating Dreadfold",
+          "Sim, um sombrio, magia-drenched mirror de nosso mundo mentiras atraves este portao",
+          "Sao voce louco? Apenas um batalha-experiente equipe de aventureiros fica qualquer chance atraves aquele portao",
+          "Eu Iria suggest voce mestre perils de este mundo primeiro"
+        ]
+      },
+      "rodgert": {
+        "displayName": "Descricao em Portugues 9CB5F1.",
+        "defaultLines": [
+          "Nosso colheita festival begins logo!",
+          "Isso Esta meu favorite tempo de ano.",
+          "Embora algo sad sempre happens tambem.",
+          "Meu nephew disappeared ultimo festival.",
+          "Meu daughter disappeared dez anos volta.",
+          "Ainda, isso esta um happy tempo!"
+        ]
+      },
+      "samuel": {
+        "displayName": "Descricao em Portugues F84B9D.",
+        "defaultLines": [
+          "Ponte Sombria e um bom lugar.",
+          "Nos nao precisa forasteiros messing coisas acima."
+        ]
+      },
+      "smiddy": {
+        "displayName": "Descricao em Portugues DEE530.",
+        "defaultLines": [
+          "*grumble*%Lotta trabalho para fazer%*mumble*%*grumble* Move along, kido.%Nao makin' qualquer coisa fancy. Apenas um shovel.%*mumble grumble*%^tNosy#tc#'s!"
+        ]
+      }
+    },
+    "BridgeTownHard": {
+      "btgreeterhard": {
+        "defaultLines": [
+          "Por Favor ir volta e obter livrar de Arachnae",
+          "Nos Estamos sabio para seu de tipo tricks. Present voce mesmo para Guardiao ou taste steel.",
+          "Guardiao deve aprovar todos forasteiros.",
+          "e so sao voce, aquele nao significa nos estamos amigos.",
+          "Eu era nascido aqui.",
+          "Nao saber nada sobre nenhum hordas.",
+          "Voce tambem verificar em com Guardiao ou afastado com voce.",
+          "Embora Guardiao vai nenhum duvida enviar voce em seu caminho.",
+          "Nos Estamos nao procurando para seu tipo de problema.",
+          "Segurar la, stanger. Quem sao voce?",
+          "Voce fez alguns tremendous changes em estes parts."
+        ]
+      },
+      "btmayor01hard": {
+        "defaultLines": [
+          "Oh, glorious deuses! Apenas o que nos nao precisa, mais forasteiros...",
+          "Bem, estranho, Eu Estou surpreso. Voce feito nosso fair vila um servico.",
+          "bandidos dizer eles estao soldados de seu terra natal.",
+          "Voce afirmar para ser de alguns kingdom atraves mar.",
+          "Eu nao saber qualquer reis, mas estes outro homens disse mesmo.",
+          "Nenhum, nenhum, nos estamos fazendo apenas fine.",
+          "Exceto para saqueadores e saqueadores de atraves mar.",
+          "Apparently de seu kingdom.",
+          "Qual Eu Vou answer uma vez voce tomar cuidar de seu companheiro bandidos.",
+          "Bem, eles sao, e eles estao de seu terra.",
+          "Voce retornou? So talvez voce nao sao como outros.",
+          "Eu enviou seu amigos de de Wolf Fim para Cemiterio Colina. Eles pode assentar la se eles como.",
+          "Ha nenhum sala para voce de Wolf Fim folk aqui.",
+          "Meu povo settled aqui 40 anos atras.",
+          "Nos veio de um distante, distante terra, onde nos eram escravos.",
+          "Agora nos viver gratis e prosperous vidas.",
+          "Nos proteger nosso proprio.",
+          "Eu enviou seu amigos de de Wolf Fim para Cemiterio Colina.",
+          "Se eles estao procurando para novo terras para assentar, eles pode tem aqueles.",
+          "Beggars nao pode ser choosers."
+        ]
+      },
+      "btmerchant01hard": {
+        "displayName": "Descricao em Portugues D91CF8.",
+        "defaultLines": [
+          "Nenhum um mais vai comercio com Gnoles.",
+          "Mas Eu lembrar quando eles nao eram so ruim.",
+          "Eu nao pode imagine por que eles estao so irado agora!"
+        ]
+      },
+      "btsubwardenhard": {
+        "defaultLines": [
+          "bandido acampamento era apenas volta outro caminho",
+          "Estes bandidos nunca bothered nos antes. Fez voce rile eles acima?",
+          "Mordomo foi para dentro aquele caverna para preparar para Colheita Ritual.",
+          "Voce nao deveria perturbar Mordomo.",
+          "Eu acho so.",
+          "Apenas Mordomo sabe como isso funciona.",
+          "Mordomo tem longo protegido nosso povo, sempre desde nos veio aqui.",
+          "Bem, ele esta em la.",
+          "Mas nao bother ele se ele parece tambem ocupado.",
+          "Ele Esta fazendo importante trabalho."
+        ]
+      },
+      "bttrainer01hard": {
+        "displayName": "Descricao em Portugues 4AF7A7.",
+        "defaultLines": [
+          "Tempo para um lesson?"
+        ]
+      },
+      "btwardenhard": {
+        "defaultLines": [
+          "Por Favor ir volta e obter livrar de Arachnae",
+          "Voce Esta um melhor class de herói",
+          "Um nos precisa badly",
+          "morto de Cemiterio Colina sao levantando",
+          "Bandidos ainda atormentar nos",
+          "e nos viver em sombra de Castelo Hocke",
+          "Aquele fortress era shut para nos anos atras",
+          "Mas mal aquele shut isso ainda pervades este terra",
+          "Tem voce visto Mordomo ainda.",
+          "Voce mudou este terra para melhor.",
+          "Mas Eu medo nosso troubles tem apenas comecou.",
+          "Pare, forasteiro, nos tinha nosso encher de saqueadores e bandidos.",
+          "Como iria nos ver este?",
+          "Estranho, Eu saber seu type. Nos nenhum patience para voce aqui.",
+          "Eu nao saber voce, mas voce iria melhor ser em seu caminho.",
+          "Seu rei tem nada para fazer com nos.",
+          "e nos tinha plenty de bandidos dizer mesmo historia.",
+          "Eu nao querer problema, so ir onto bosques com outros.",
+          "Sim, voce vai encontrar plenty de seu tipo la.",
+          "So voce dizer.",
+          "Eu Vou acredito isso quando Eu ver isso.",
+          "Mordomo nao e aqui certo agora, estranho.",
+          "Voce Esta volta.",
+          "Apenas Mordomo sabe como magico escudo funciona.",
+          "Aquele escudo e nosso principal protecao contra nosso inimigos.",
+          "Eu nao saber, isso e dele fazendo.",
+          "Mas ele esta manteve nos principalmente seguro para anos.",
+          "Um poucos povo disappear cada ano, mas nao muito.",
+          "Mordomo e gathering material para Colheita Ritual.",
+          "Ir falar para dele guarda-costas Gunter se voce querer para encontrar ele.",
+          "Voce dizer Mordomo adora sombrio poderes?",
+          "Eu tinha nenhum ideia!",
+          "Direita ha la, afastado vila square.",
+          "Pressa, voce tem para encontrar fora quem mais e helping ele.",
+          "Mordomo, fazendo pacts com mal deuses...",
+          "Eu nunca imaginou isso.",
+          "Com de mordomo mal unveiled, nos tem um muito para figure fora.",
+          "Segundo para de mordomo diario, dele culto tomou sacrificios para montanha pico.",
+          "Ha um chance Culto deixou sobreviventes em montanha.",
+          "Eu Estou enviando alguns de meu povo para investigar.",
+          "Entao encontrar meu povo em montanhas.",
+          "Mas tread lightly, nos nao saber o que e acima la.",
+          "Voce retornou uma vez novamente. Whatever voce fez fora la, isso esta feito algo aqui.",
+          "Agradecer voce para tudo voce tem feito aqui!",
+          "Por destroying Meylour, voce deixou caminho para Adormecido Terras unblocked.",
+          "Com de Meylour barreira sumiram, caminho para castelo e abrir.",
+          "Meu povo veio acima de la decadas atras.",
+          "Nos eram fleeing um vida de escravidao em Adormecido Terras.",
+          "Dragoes e Goblins manteve nos em correntes.",
+          "Ha nenhum sabendo o que e la agora.",
+          "de Meylour barreira manteve Adormecido Terras bloqueado embora de este mundo.",
+          "magia barreira aquele selado Castelo Hocke e dispelled.",
+          "Nos tinha nosso encher de saqueadores e bandidos.",
+          "Voce behave, estranho."
+        ]
+      },
+      "earlhard": {
+        "displayName": "Descricao em Portugues 22FEFB.",
+        "defaultLines": [
+          "Outro estranho...",
+          "Nos nenhum sala para estranhos aqui.",
+          "Nenhum de seu concern, estranho."
+        ]
+      },
+      "emmahard": {
+        "displayName": "Descricao em Portugues 409AE7.",
+        "defaultLines": [
+          "La sao povo vivendo sul de pantano?",
+          "Incrivel, Eu nao mesmo saber la eram outro humanos.",
+          "Eu grew acima aqui.",
+          "Isso Esta melhor lugar em mundo."
+        ]
+      },
+      "felguardhard": {
+        "displayName": "Descricao em Portugues B2611F.",
+        "defaultLines": [
+          "bosques sao cheio de bandidos.",
+          "Mas eles iriam nunca vir aqui."
+        ]
+      },
+      "frannyhard": {
+        "displayName": "Descricao em Portugues FE14F7.",
+        "defaultLines": [
+          "Aqui para colheita festival?",
+          "Mordomo faz certo cada ano e melhor que ultimo.",
+          "Aquele homem funciona maravilhas.",
+          "Nao mesmo saber por que nos precisa um Guardiao."
+        ]
+      },
+      "grahmhard": {
+        "displayName": "Descricao em Portugues F1C22F.",
+        "defaultLines": [
+          "Gnoles nunca vir para dentro vila.",
+          "Mas eles vao ataque se voce sair cidade limita."
+        ]
+      },
+      "jemahard": {
+        "displayName": "Descricao em Portugues FB59D9.",
+        "defaultLines": [
+          "Um forasteiro! Uau!",
+          "Eu wish meu irmao Karl eram aqui.",
+          "Ele ran embora ultimo colheita.",
+          "Mas ele sempre disse la eram outro povo.",
+          "e ele era certo.",
+          "Acho Mordomo nao saber todos."
+        ]
+      },
+      "laurahard": {
+        "displayName": "Descricao em Portugues 6A3FB3.",
+        "defaultLines": [
+          "Quem sao voce?",
+          "Eu Ja nunca visto alguem de fora vila.",
+          "Sao voce allowed para ser aqui?"
+        ]
+      },
+      "lucyhard": {
+        "displayName": "Descricao em Portugues C5C8F3.",
+        "defaultLines": [
+          "Gnoles e bandidos fora la.",
+          "Ficar alert."
+        ]
+      },
+      "meylourmagenpc2hard": {
+        "displayName": "Descricao em Portugues 2C7A46.",
+        "defaultLines": [
+          "Deixar me acho...",
+          "Voce Esta um thief?",
+          "Ou talvez um charlatan?",
+          "Eu saber!",
+          "Voce Esta um#tc#.",
+          "Mesmo pior."
+        ]
+      },
+      "meylourmagenpchard": {
+        "displayName": "Descricao em Portugues D866E6.",
+        "defaultLines": [
+          "Estranho.",
+          "O Que sao voce selling?",
+          "Protecao services?",
+          "Descricao em Portugues 3E1593.",
+          "Magia beans?",
+          "Nos tinha nosso encher de estranhos."
+        ]
+      },
+      "rodgerthard": {
+        "displayName": "Descricao em Portugues 9CB5F1.",
+        "defaultLines": [
+          "Nosso colheita festival begins logo!",
+          "Isso Esta meu favorite tempo de ano.",
+          "Embora algo sad sempre happens tambem.",
+          "Meu nephew disappeared ultimo festival.",
+          "Meu daughter disappeared dez anos volta.",
+          "Ainda, isso esta um happy tempo!"
+        ]
+      },
+      "samuelhard": {
+        "displayName": "Descricao em Portugues F84B9D.",
+        "defaultLines": [
+          "Ponte Sombria e um bom lugar.",
+          "Nos nao precisa forasteiros messing coisas acima."
+        ]
+      },
+      "smiddyhard": {
+        "displayName": "Descricao em Portugues DEE530.",
+        "defaultLines": [
+          "*grumble*%Lotta trabalho para fazer%*mumble*%*grumble* Move along, kido.%Nao makin' qualquer coisa fancy. Apenas um shovel.%*mumble grumble*%^tNosy#tc#'s!"
+        ]
+      }
+    },
+    "Castle": {
+      "acmayor01": {
+        "defaultLines": [
+          "Marechal Sythokahn e derrotado, nao apenas dele sonho este tempo.",
+          "Voce parado dragoes de invading novamente.",
+          "Mas quem sabe o que mais e abaixo la.",
+          "Nosso lider, Titus, foi para Observatorio procurando para alguns caminho para lutar dragoes.",
+          "Agradecer voce para abatendo aquele dragao.",
+          "Nos eram com Sigmund de Hocke expedicao.",
+          "Sim, muito mesmo.",
+          "Nos lutou atraves goblins e para dentro castelo.",
+          "Sigmund deixou nos para guarda acampamento.",
+          "Ele e dele cavaleiros foi abaixo abaixo.",
+          "Eles passed atraves portal.",
+          "Sabio Titus ajudou nos.",
+          "Quando dragao legiao veio, ele foi para encontrar um caminho para parar eles.",
+          "Voce deveria encontrar encontrar ele."
+        ]
+      },
+      "actitus01": {
+        "defaultLines": [
+          "Como e isso voce ver me?",
+          "Nephit busca um antigo ritual de Aetheric Observatorio.",
+          "Quando nos eram ambos vivo, ele pediu para isso.",
+          "Eu nunca confiava ele com tal poder.",
+          "Isso contatos terrivel, antigo deuses.",
+          "Eu nao saber, mas isso esta um ruim ideia.",
+          "Um realmente, realmente ruim ideia.",
+          "Terrivel ideia.",
+          "Parar Nephit de usando ritual.",
+          "Nephit materialized em ramparts depois voce lutou ele.",
+          "Eu tomar isso Nephit encontrou ritual?",
+          "Eu nao saber por que, mas ele esta indo para uso isso.",
+          "Talvez ele hopes isso vai restaurar ele para vida.",
+          "Talvez, mas isso iria ser um monstruoso existence.",
+          "Pressa agora, parar ele antes ele pode encontrar fora."
+        ]
+      },
+      "actitus02": {
+        "defaultLines": [
+          "Pressa! Nephit foi este caminho!",
+          "Alem mentiras portal para Adormecido Terras",
+          "Barao de Hocke sabios criou um poderosos Pedra Angular para selar portal.",
+          "Isso limita viajar entre mundos.",
+          "Nephit vai tentar e quebrar Pedra Angular e uso dele energy para dele ritual.",
+          "Viajar entre realms vai ser imparavel.",
+          "Assuming de Nephit ritual nao matar nos todos."
+        ]
+      },
+      "actitus03": {
+        "defaultLines": [
+          "Ele Esta indo em direcao a Pedra Angular!",
+          "At menos, Nephit e nenhum mais.",
+          "Isso Esta vindo",
+          "Tudo",
+          "Riches e Pesadelos",
+          "Monstros e Magia",
+          "Bom e Mal",
+          "Isso Esta todos abaixo la, e isso esta todos acordado agora",
+          "Nephit e derrotado, mas Pedra Angular e destruiu. link para Adormecido Terras mentiras abrir",
+          "O Que sao Adormecido Terras?",
+          "Ha, voce sao ainda um adventurer",
+          "Voce sao indo abaixo la, nao sao voce?",
+          "Bem, entao, Eu vai accompany voce",
+          "Aquele portao deveria tomar nos la",
+          "Ou mais rasgar nos para pedacos"
+        ]
+      },
+      "acvillager01": {
+        "displayName": "Descricao em Portugues FF0AE0.",
+        "defaultLines": [
+          "Estes dragao-soldados veio acima de abaixo!",
+          "Eu Vou explain later!",
+          "Pressa, nos precisa ajudar em courtyard!",
+          "Agradecer voce valiant herói, para abatendo dragao!"
+        ]
+      },
+      "acvillager02": {
+        "displayName": "Descricao em Portugues EA0CC4.",
+        "defaultLines": [
+          "Nos eram escondido aqui para so longo.",
+          "Entao dragao guerreiros veio de abaixo.",
+          "Eles tomou controlar de Sombrio Paladins."
+        ]
+      },
+      "acvillager03": {
+        "defaultLines": [
+          "So muitos Tuatara soldados, pode voce trim deles numbers?",
+          "Eles sao todos ha castelo",
+          "Eles veio de abaixo",
+          "Agradecer voce, talvez nos pode finalmente reconstruir aqui.",
+          "Obrigado, Eu ja sentir mais seguro aqui."
+        ]
+      },
+      "acvillager04": {
+        "defaultLines": [
+          "La e um segredo porta em trono sala aquele leva para caverna",
+          "Alguns de de dragao soldados sao encurralados acima abaixo la.",
+          "Ser cuidadoso, eles tem um de Barao de Hocke golems at deles comandar."
+        ]
+      },
+      "acvillager05": {
+        "defaultLines": [
+          "Sombrio Paladino mascaras sao segredo para controlando estes golems.",
+          "dragao general tomou controlar de Sombrio Paladino Golems.",
+          "Eles usado para ser Barao de Hocke particular guarda-costas.",
+          "Deles mascaras sao chave para controlando eles.",
+          "Se voce trazer me qualquer voce encontrar, talvez Eu pode restaurar controlar.",
+          "Obrigado, Eu vai obter comecou em deconstructing estes certo embora.",
+          "Obrigado novamente para gathering mascaras."
+        ]
+      }
+    },
+    "CastleHard": {
+      "acmayor01hard": {
+        "defaultLines": [
+          "Marechal Sythokahn e derrotado, nao apenas dele sonho este tempo.",
+          "Voce parado dragoes de invading novamente.",
+          "Mas quem sabe o que mais e abaixo la.",
+          "Nosso lider, Titus, foi para Observatorio procurando para alguns caminho para lutar dragoes.",
+          "Agradecer voce para abatendo aquele dragao.",
+          "Nos eram com Sigmund de Hocke expedicao.",
+          "Sim, muito mesmo.",
+          "Nos lutou atraves goblins e para dentro castelo.",
+          "Sigmund deixou nos para guarda acampamento.",
+          "Ele e dele cavaleiros foi abaixo abaixo.",
+          "Eles passed atraves portal.",
+          "Sabio Titus ajudou nos.",
+          "Quando dragao legiao veio, ele foi para encontrar um caminho para parar eles.",
+          "Voce deveria encontrar encontrar ele."
+        ]
+      },
+      "actitus01hard": {
+        "defaultLines": [
+          "Como e isso voce ver me?",
+          "Nephit busca um antigo ritual de Aetheric Observatorio.",
+          "Quando nos eram ambos vivo, ele pediu para isso.",
+          "Eu nunca confiava ele com tal poder.",
+          "Isso contatos terrivel, antigo deuses.",
+          "Eu nao saber, mas isso esta um ruim ideia.",
+          "Um realmente, realmente ruim ideia.",
+          "Terrivel ideia.",
+          "Parar Nephit de usando ritual.",
+          "Nephit materialized em ramparts depois voce lutou ele.",
+          "Eu tomar isso Nephit encontrou ritual?",
+          "Eu nao saber por que, mas ele esta indo para uso isso.",
+          "Talvez ele hopes isso vai restaurar ele para vida.",
+          "Talvez, mas isso iria ser um monstruoso existence.",
+          "Pressa agora, parar ele antes ele pode encontrar fora."
+        ]
+      },
+      "actitus02hard": {
+        "defaultLines": [
+          "Pressa! Nephit foi este caminho!",
+          "Alem mentiras portal para Adormecido Terras",
+          "Barao de Hocke sabios criou um poderosos Pedra Angular para selar portal.",
+          "Isso limita viajar entre mundos.",
+          "Nephit vai tentar e quebrar Pedra Angular e uso dele energy para dele ritual.",
+          "Viajar entre realms vai ser imparavel.",
+          "Assuming de Nephit ritual nao matar nos todos."
+        ]
+      },
+      "actitus03hard": {
+        "defaultLines": [
+          "Ele Esta indo em direcao a Pedra Angular!",
+          "At menos, Nephit e nenhum mais.",
+          "Isso Esta vindo",
+          "Tudo",
+          "Riches e Pesadelos",
+          "Monstros e Magia",
+          "Bom e Mal",
+          "Isso Esta todos abaixo la, e isso esta todos acordado agora",
+          "Nephit e derrotado, mas Pedra Angular e destruiu. link para Adormecido Terras mentiras abrir",
+          "O Que sao Adormecido Terras?",
+          "Ha, voce sao ainda um adventurer",
+          "Voce sao indo abaixo la, nao sao voce?",
+          "Bem, entao, Eu vai accompany voce",
+          "Aquele portao deveria tomar nos la",
+          "Ou mais rasgar nos para pedacos"
+        ]
+      },
+      "acvillager01hard": {
+        "displayName": "Descricao em Portugues FF0AE0.",
+        "defaultLines": [
+          "Estes dragao-soldados veio acima de abaixo!",
+          "Eu Vou explain later!",
+          "Pressa, nos precisa ajudar em courtyard!",
+          "Agradecer voce valiant herói, para abatendo dragao!"
+        ]
+      },
+      "acvillager02hard": {
+        "displayName": "Descricao em Portugues EA0CC4.",
+        "defaultLines": [
+          "Nos eram escondido aqui para so longo.",
+          "Entao dragao guerreiros veio de abaixo.",
+          "Eles tomou controlar de Sombrio Paladins."
+        ]
+      },
+      "acvillager03hard": {
+        "defaultLines": [
+          "So muitos Tuatara soldados, pode voce trim deles numbers?",
+          "Eles sao todos ha castelo",
+          "Eles veio de abaixo",
+          "Agradecer voce, talvez nos pode finalmente reconstruir aqui.",
+          "Obrigado, Eu ja sentir mais seguro aqui."
+        ]
+      },
+      "acvillager04hard": {
+        "defaultLines": [
+          "La e um segredo porta em trono sala aquele leva para caverna",
+          "Alguns de de dragao soldados sao encurralados acima abaixo la.",
+          "Ser cuidadoso, eles tem um de Barao de Hocke golems at deles comandar."
+        ]
+      },
+      "acvillager05hard": {
+        "defaultLines": [
+          "Sombrio Paladino mascaras sao segredo para controlando estes golems.",
+          "dragao general tomou controlar de Sombrio Paladino Golems.",
+          "Eles usado para ser Barao de Hocke particular guarda-costas.",
+          "Deles mascaras sao chave para controlando eles.",
+          "Se voce trazer me qualquer voce encontrar, talvez Eu pode restaurar controlar.",
+          "Obrigado, Eu vai obter comecou em deconstructing estes certo embora.",
+          "Obrigado novamente para gathering mascaras."
+        ]
+      }
+    },
+    "EmeraldGlades": {
+      "egmayor01": {
+        "defaultLines": [
+          "Tem voce visto Wildbark? Ela deixou nosso arvore indo oeste",
+          "Agradecer voce, e agradecer Wildbark para enviando voce!",
+          "Agradecer voce para helping nosso povo!",
+          "de Meylour corrompido Driades tem infested Ur-Arvore!",
+          "de Meylour demonios expulsou nos de arvore.",
+          "Dele corrompido plantas e chamas sao por toda parte.",
+          "Voce deve pressa, Eu cheiro smoke!",
+          "Agradecer voce, mas arvore nao e seguro ainda.",
+          "de Meylour abominations tunneled em de roots.",
+          "Sacerdotes de Meylour vai apenas enviar mais fogo.",
+          "Eles burrowed aqui de deles temples.",
+          "Meylour quer tudo morto. Tudo.",
+          "Seguir para antigo templo e derrotar de Meylour cultistas",
+          "sacerdotes de Meylour sao preparing ainda outro ritual.",
+          "Voce precisa para encontrar um caminho para de Meylour Coracao.",
+          "Isso e onde de Meylour poder mentiras.",
+          "Apenas dele sacerdotes saber dele location.",
+          "Culto de Meylour e quase derrotado!",
+          "ultimo de de Meylour culto se encolhe em medo.",
+          "Voce quase derrotado eles.",
+          "Agora voce pode finalmente golpe abaixo Meylour para sempre.",
+          "de Meylour seguidores tem o que eles deserved.",
+          "Meylour vai nao descanso ate todos vida em Ellyria queima.",
+          "Meylour ritual e disrupted?",
+          "de Meylour vil magia deixa um rastro.",
+          "culto tentou para libertar dele poder.",
+          "Agora Eu pode ajudar voce seguir aquele poder para dele fonte.",
+          "Seguir trail profundo para dentro de montanha coracao.",
+          "La voce vai encontrar Meylour."
+        ]
+      },
+      "egscout01": {
+        "defaultLines": [
+          "de Meylour segredos sao em Estilhaco da Tempestade Montanha.",
+          "Voce deve ser um poderosos herói para tem vir atraves minas!",
+          "Agradecer voce para reuniting nosso povo!",
+          "de Meylour Cinzento Driades sao cercando Ur-Arvore!",
+          "Um de de Meylour Cinzento Driades fugiu para Leste.",
+          "Eu tomar isso ele era correndo de voce?",
+          "Vivendo Montanha tem ja destruiu mais de meu tipo.",
+          "Seguir aquele Cinzento Driade.",
+          "Capturing ele vai revelar mais de de Meylour planos."
+        ]
+      },
+      "egvillager02": {
+        "defaultLines": [
+          "Ajudar nos reunir Sombrio Totens de Cinzento Driades",
+          "Voce pode encontrar eles em Cinzento Driades",
+          "Nos precisa eles para um protecao de fogo feitico.",
+          "Perfect, Eu Vou obter protecao feitico comecou.",
+          "Nos also precisa de Meylour Mascaras para protecao feitico",
+          "Por Favor pressa, sacerdotes attacks precisa para ser repelled.",
+          "Apenas o que nos needed. Agradecer voce!",
+          "Nos deveria ser protegido agora. Obrigado novamente!"
+        ]
+      },
+      "egvillager03": {
+        "defaultLines": [
+          "Pode voce ajudar nos colocar fora fires plaguing nosso terra?",
+          "Vivendo fogo e por toda parte, por favor destruir isso.",
+          "Agradecer voce. Eu pode breath melhor ja.",
+          "Tomara nosso terra vai crescem verde uma vez mais!"
+        ]
+      },
+      "oakfrost": {
+        "displayName": "Descricao em Portugues B9F819.",
+        "defaultLines": [
+          "Este usado para ser um paradise."
+        ]
+      }
+    },
+    "JadeCity": {
+      "bako": {
+        "displayName": "Descricao em Portugues 5D50E3.",
+        "defaultLines": [
+          "Voce Esta nao de ao redor aqui, sao voce?"
+        ]
+      },
+      "citypete": {
+        "displayName": "Pete Ferry Homem",
+        "defaultLines": [
+          "Isso pode nao olhar como muito, mas isso vai obter voce atraves lake",
+          "Nenhum comando. Eu actually aproveitar exercise",
+          "Templo Isle e pacificos, mesmo com todos aquele e indo em",
+          "Seguindo Ha?"
+        ]
+      },
+      "islandpete": {
+        "displayName": "Pete Ferry Homem",
+        "defaultLines": [
+          "Seguindo volta ja?",
+          "Eu Vou aposto voce tem alguns selvagem historias para dizer",
+          "Fez voce ouvir aquele?",
+          "Eu Vou ser certo aqui quando voce sao pronto para ir volta para cidade"
+        ]
+      },
+      "kala": {
+        "displayName": "Descricao em Portugues 04DC3A.",
+        "defaultLines": [
+          "Com tudo aquele tem estado indo em...",
+          "Isso Esta apenas melhor para fortaleza afastado ruas"
+        ]
+      },
+      "vhfabmab01": {
+        "defaultLines": [
+          "Hello, young homem|dama",
+          "Imperador sold dele alma para Seelie para seguro dele trono.",
+          "Seelie eram primeiro para acordado em Adormecido Terras.",
+          "Eles eram uma vez sabio e generoso...",
+          "Mas tempo fez eles cruel e jealous de outros.",
+          "Eles perdido poder para Goblins e Dragoes...",
+          "Sigmund Hocke transformado para eles para ajudar derrotar Goblin Reis.",
+          "e agora eles prop acima dele dominio em Valhaven.",
+          "Isso takes Seelie magia para contra-ataque Seelie magia.",
+          "Ir para Templo de Perdido Sonhos...",
+          "La voce pode encontrar algo Eu pode uso para contra-ataque de imperador protecoes.",
+          "Soa como Templo era mais perigoso que suspected.",
+          "Imperador deve tem estado protecting dele segredos bem.",
+          "Agora Eu saber um grande lidar mais sobre dele Seelie magia.",
+          "Eu deveria ser capaz para obter voce passado outer protecoes de dele palacio.",
+          "Mas voce vai ser em seu proprio quando voce rosto ele.",
+          "Ele e vulnerable, mas ainda muito perigoso."
+        ]
+      },
+      "vhfabmab02": {
+        "defaultLines": [
+          "Voce tem deixou seu mark em Adormecido Terras.",
+          "Agora voce sao um parte de destino de Adormecido Terras.",
+          "Seu acoes reverberam atraves mundo de sonhos.",
+          "Se voce ousa rosto seu destino...",
+          "Voce pode entrar Primordial Sonho e aprender verdade.",
+          "verdade sobre voce mesmo e seu lugar em mundo.",
+          "Voce tem retornou. Eu esperanca voce aprendido muito.",
+          "Isso parece um dragao era escondido em seu sonhos.",
+          "Voce vai encontrar muitos estranho coisas sao possivel.",
+          "Voce tem visto mas um fragmento de Adormecido Terras.",
+          "Voce Vai ser sortudo se isso e seu apenas problema.",
+          "Este mundo sabe voce agora.",
+          "e Eu Estou nao certo isso significa voce bem."
+        ]
+      },
+      "vhjackal02": {
+        "defaultLines": [
+          "Agora aquele voce pode obter passado Seelie protecoes, isso esta tempo para golpe.",
+          "Antes confronting Imperador, nos precisa para enfraquecer ele.",
+          "Tomar fora todos dele apoio antes voce confrontar ele.",
+          "Dele filhas comandar dele exercito e segredo policia.",
+          "Voce pode encontrar eles em Leste e Oeste wings de palacio.",
+          "Voce also precisa para derrotar Imperial Guarda Comandante.",
+          "Ele vidas em quarteis.",
+          "Agora de imperador defesas sao em disarray.",
+          "tempo para golpe tem vir!",
+          "Voce nunca fail para impress,#tn#."
+        ]
+      },
+      "vhmonk01": {
+        "defaultLines": [
+          "Isso e um tragedy o que Imperador tem feito aqui, mas todos e nao perdido",
+          "Eu pode sentir cidade crying fora de sob weight de Seelie imundice aquele tem tainted isso.",
+          "Como veneno e chave para fazendo anti-veneno, demon lagrimas sao chave para purificar de Valhaven aura.",
+          "Abencoar voce, amigo.",
+          "Eu vai begin longo process de setting coisas certo...",
+          "Isso gladens meu coracao para encontrar um noble alma tal como voce"
+        ]
+      },
+      "vhodin01": {
+        "defaultLines": [
+          "Voce deve ser Traveller Rathbone falou de. Bem-vindo.",
+          "Imperador sabe seu nome e querer voce morto.",
+          "Eu maravilha o que voce fez para earn dele furia?",
+          "Aquele poderia nao tem pleased ele.",
+          "Mas ele iria nunca admit para ardiloso contra Shazari.",
+          "e ele tem colocar um public preco em seu seguir.",
+          "Dele filho, Alto Mago, vai saber verdade.",
+          "Ele parece para ser fora de favor com dele pai.",
+          "Encontrar ele enquanto ele esta fora palacio e ele pode falar.",
+          "Ele frequents alleys, cultivating thieves para dele causar.",
+          "So, Imperador e de seu mundo!",
+          "Dele origens eram sempre um misterio.",
+          "Ele derrubou Goblins e montou ele mesmo acima dez anos atras.",
+          "Obrigado para dele Seelie aliados, ele esta estado imparavel.",
+          "Eu pode sense voce esta destinado para fazer grande coisas aqui",
+          "Trabalho com Mab para encontrar um brecha em de imperador armadura",
+          "Agora nos precisa Ma de Mab ajudar figuring fora o que para fazer proximo.",
+          "Sigmund Hocke became Imperador obrigado para Seelie.",
+          "Deles sombrio magias proteger ele e seguro dele trono.",
+          "Nos precisa um contra-ataque para deles protecoes.",
+          "Ma Mab sabe mais sobre Seelie que qualquer um Eu saber.",
+          "Falar para dela e ver se ela tem qualquer ideas.",
+          "Vermyn gangues ajudou Imperador overthrow Goblins.",
+          "Eu ver agora por que Imperador odeia voce.",
+          "Fazer voce? Voce tomou dele Baronia.",
+          "Bem, ele esta angered povo aqui tambem.",
+          "Vermyn gangues chafe sob de imperador dominio.",
+          "Eles iria erguer acima contra ele...",
+          "Exceto Gutter Lorde restos loyal para Imperador.",
+          "Ir abaixo e tomar fora Gutter Lorde.",
+          "Entao Vermyn vai juntar nos para certo.",
+          "Vermyn gangues sao em um uproar!",
+          "Com Gutter Lorde sumiram, alguns sao ja em nosso lado.",
+          "Agora para dificil parte.",
+          "Imperador se encolhe em dele palacio.",
+          "Voce tomado fora todos dele apoio.",
+          "povo reunem contra ele.",
+          "Imperador de Sigmund reinado de terror termina hoje.",
+          "Descricao em Portugues 84141F.",
+          "O Que voce tem feito aqui...",
+          "Eu nao pode agradecer voce suficiente",
+          "Valhaven e gratis para primeiro tempo em seculos.",
+          "Goblins, Dragoes, e Seelie sao todos derrotado.",
+          "At ultimo nos deve saber paz.",
+          "Se voce nao tinha parado gang lideres,, Eu Iria ser morto.",
+          "Este de cidade gangues sao principalmente humano e sao loyal para Imperador.",
+          "Mas Eu ouvir de Skitts eles pode ser venceu ha.",
+          "Humanos usually apoio Imperador.",
+          "Mas ele relies tambem muito em Seelie agora.",
+          "humano gangues vai lutar ele...",
+          "Se nos pode derrubar fora deles lideres.",
+          "Mas Eu nao saber quem lideres sao.",
+          "Meu contato Skitts vai saber.",
+          "Ir ver o que ele suggests."
+        ]
+      },
+      "vhrebel01": {
+        "defaultLines": [
+          "Eu usado para ser um Imperial...",
+          "Volta antes Imperador perdido dele mind e comecou associating com Seelie.",
+          "Eu seguiu meu consciencia e isso custo me tudo.",
+          "Agora Eu cuidado eles aterrorizam estes ruas nos usado para proteger.",
+          "Eu Vou prestar para qualquer Imperial voce tomar afastado ruas.",
+          "Isso e so muitos...Tomar este.",
+          "Isso e todos money Eu tinha deixou",
+          "Nenhum, Tomar isso. Voce sao lutando para um causar aquele e apenas",
+          "Eu Iria comercio todos ouro em mundo para coisas para retornar para caminho eles eram",
+          "Eu acho tempo para aquele tem passed",
+          "Coisas vai nunca ser mesmo novamente."
+        ]
+      },
+      "vhrebel02": {
+        "defaultLines": [
+          "Imperials sao ruim suficiente, mas gangues sao pior kinds de opportunists.",
+          "Eles sao correndo um protecao e extortion racket.",
+          "Preying afastado innocent civilians aquele nao pode defender eles mesmos.",
+          "Eu acho isso esta tempo alguem mostrou eles aquele deles dias sao acabado.",
+          "Agradecer voce traveler.",
+          "Aquele e um menos threat povo tem para preocupe sobre."
+        ]
+      },
+      "vhskitts01": {
+        "defaultLines": [
+          "humano gangues aqui tem alto standards.",
+          "Voce tem Vermyn gangues em seu lado...",
+          "Isso e impressionante.",
+          "Mas humano gangues sao diferente.",
+          "Se voce querer para obter perto para lideres...",
+          "Voce Esta indo para tem para provar voce mesmo para eles.",
+          "Ser pronto para um brutal lutar.",
+          "Eles Vao gang acima em voce em aquele lutando poco.",
+          "de Everyone talkin' sobre voce agora,#tn#.",
+          "Isso era um trick! Eles Estao onto voce e seu rebelde amigos!",
+          "gang lideres montou nos acima.",
+          "Enquanto voce eram em arena, eles eram em move.",
+          "gangues sao seguindo para rebelde esconderijo.",
+          "Voce tem para pressa volta...",
+          "Cortar eles afastado antes eles matar Odryn!",
+          "So voce esta encrenqueiro, eh?"
+        ]
+      },
+      "vhvagrant01": {
+        "defaultLines": [
+          "O Que e aquele?! Yep! Eles Tem robbed meh blind!",
+          "Vermyn invadiu meu jardim e roubou meu cogumelos.",
+          "Eu uso aqueles cogumelos para fazer ensopado e meu farto cogumelo torta.",
+          "Com todos este Imperial bobagem, povo em ruas precisa meu cogumelos para obter por!",
+          "Eu nao wanna ver qualquer um starve, fazer voce?",
+          "Hoo-yeah! Voce encontrou meu cogumelos!",
+          "Agora Eu pode ir volta para baking cogumelo torta",
+          "e Cogumelo Gumbo",
+          "e Cogumelo Ensopado",
+          "e Cogumelo Souffle",
+          "e Stuffed Cogumelo Saffron Surpresa",
+          "e Cogumelo ala Kelp",
+          "e, vamos ver. Eu saber ha mais Eu pode fazer com cogumelos"
+        ]
+      }
+    },
+    "JadeCityHard": {
+      "bakohard": {
+        "displayName": "Descricao em Portugues 5D50E3.",
+        "defaultLines": [
+          "Voce Esta nao de ao redor aqui, sao voce?"
+        ]
+      },
+      "citypetehard": {
+        "displayName": "Pete Ferry Homem",
+        "defaultLines": [
+          "Isso pode nao olhar como muito, mas isso vai obter voce atraves lake",
+          "Nenhum comando. Eu actually aproveitar exercise",
+          "Templo Isle e pacificos, mesmo com todos aquele e indo em",
+          "Seguindo Ha?"
+        ]
+      },
+      "islandpetehard": {
+        "displayName": "Pete Ferry Homem",
+        "defaultLines": [
+          "Seguindo volta ja?",
+          "Eu Vou aposto voce tem alguns selvagem historias para dizer",
+          "Fez voce ouvir aquele?",
+          "Eu Vou ser certo aqui quando voce sao pronto para ir volta para cidade"
+        ]
+      },
+      "kalahard": {
+        "displayName": "Descricao em Portugues 04DC3A.",
+        "defaultLines": [
+          "Com tudo aquele tem estado indo em...",
+          "Isso Esta apenas melhor para fortaleza afastado ruas"
+        ]
+      },
+      "vhfabmab01hard": {
+        "defaultLines": [
+          "Hello, young homem|dama",
+          "Imperador sold dele alma para Seelie para seguro dele trono.",
+          "Seelie eram primeiro para acordado em Adormecido Terras.",
+          "Eles eram uma vez sabio e generoso...",
+          "Mas tempo fez eles cruel e jealous de outros.",
+          "Eles perdido poder para Goblins e Dragoes...",
+          "Sigmund Hocke transformado para eles para ajudar derrotar Goblin Reis.",
+          "e agora eles prop acima dele dominio em Valhaven.",
+          "Isso takes Seelie magia para contra-ataque Seelie magia.",
+          "Ir para Templo de Perdido Sonhos...",
+          "La voce pode encontrar algo Eu pode uso para contra-ataque de imperador protecoes.",
+          "Soa como Templo era mais perigoso que suspected.",
+          "Imperador deve tem estado protecting dele segredos bem.",
+          "Agora Eu saber um grande lidar mais sobre dele Seelie magia.",
+          "Eu deveria ser capaz para obter voce passado outer protecoes de dele palacio.",
+          "Mas voce vai ser em seu proprio quando voce rosto ele.",
+          "Ele e vulnerable, mas ainda muito perigoso."
+        ]
+      },
+      "vhfabmab02hard": {
+        "defaultLines": [
+          "Voce tem deixou seu mark em Adormecido Terras.",
+          "Agora voce sao um parte de destino de Adormecido Terras.",
+          "Seu acoes reverberam atraves mundo de sonhos.",
+          "Se voce ousa rosto seu destino...",
+          "Voce pode entrar Primordial Sonho e aprender verdade.",
+          "verdade sobre voce mesmo e seu lugar em mundo.",
+          "Voce tem retornou. Eu esperanca voce aprendido muito.",
+          "Isso parece um dragao era escondido em seu sonhos.",
+          "Voce vai encontrar muitos estranho coisas sao possivel.",
+          "Voce tem visto mas um fragmento de Adormecido Terras.",
+          "Voce Vai ser sortudo se isso e seu apenas problema.",
+          "Este mundo sabe voce agora.",
+          "e Eu Estou nao certo isso significa voce bem."
+        ]
+      },
+      "vhjackal02hard": {
+        "defaultLines": [
+          "Agora aquele voce pode obter passado Seelie protecoes, isso esta tempo para golpe.",
+          "Antes confronting Imperador, nos precisa para enfraquecer ele.",
+          "Tomar fora todos dele apoio antes voce confrontar ele.",
+          "Dele filhas comandar dele exercito e segredo policia.",
+          "Voce pode encontrar eles em Leste e Oeste wings de palacio.",
+          "Voce also precisa para derrotar Imperial Guarda Comandante.",
+          "Ele vidas em quarteis.",
+          "Agora de imperador defesas sao em disarray.",
+          "tempo para golpe tem vir!",
+          "Voce nunca fail para impress,#tn#."
+        ]
+      },
+      "vhmonk01hard": {
+        "defaultLines": [
+          "Isso e um tragedy o que Imperador tem feito aqui, mas todos e nao perdido",
+          "Eu pode sentir cidade crying fora de sob weight de Seelie imundice aquele tem tainted isso.",
+          "Como veneno e chave para fazendo anti-veneno, demon lagrimas sao chave para purificar de Valhaven aura.",
+          "Abencoar voce, amigo.",
+          "Eu vai begin longo process de setting coisas certo...",
+          "Isso gladens meu coracao para encontrar um noble alma tal como voce"
+        ]
+      },
+      "vhodin01hard": {
+        "defaultLines": [
+          "Voce deve ser Traveller Rathbone falou de. Bem-vindo.",
+          "Imperador sabe seu nome e querer voce morto.",
+          "Eu maravilha o que voce fez para earn dele furia?",
+          "Aquele poderia nao tem pleased ele.",
+          "Mas ele iria nunca admit para ardiloso contra Shazari.",
+          "e ele tem colocar um public preco em seu seguir.",
+          "Dele filho, Alto Mago, vai saber verdade.",
+          "Ele parece para ser fora de favor com dele pai.",
+          "Encontrar ele enquanto ele esta fora palacio e ele pode falar.",
+          "Ele frequents alleys, cultivating thieves para dele causar.",
+          "So, Imperador e de seu mundo!",
+          "Dele origens eram sempre um misterio.",
+          "Ele derrubou Goblins e montou ele mesmo acima dez anos atras.",
+          "Obrigado para dele Seelie aliados, ele esta estado imparavel.",
+          "Eu pode sense voce esta destinado para fazer grande coisas aqui",
+          "Trabalho com Mab para encontrar um brecha em de imperador armadura",
+          "Agora nos precisa Ma de Mab ajudar figuring fora o que para fazer proximo.",
+          "Sigmund Hocke became Imperador obrigado para Seelie.",
+          "Deles sombrio magias proteger ele e seguro dele trono.",
+          "Nos precisa um contra-ataque para deles protecoes.",
+          "Ma Mab sabe mais sobre Seelie que qualquer um Eu saber.",
+          "Falar para dela e ver se ela tem qualquer ideas.",
+          "Vermyn gangues ajudou Imperador overthrow Goblins.",
+          "Eu ver agora por que Imperador odeia voce.",
+          "Fazer voce? Voce tomou dele Baronia.",
+          "Bem, ele esta angered povo aqui tambem.",
+          "Vermyn gangues chafe sob de imperador dominio.",
+          "Eles iria erguer acima contra ele...",
+          "Exceto Gutter Lorde restos loyal para Imperador.",
+          "Ir abaixo e tomar fora Gutter Lorde.",
+          "Entao Vermyn vai juntar nos para certo.",
+          "Vermyn gangues sao em um uproar!",
+          "Com Gutter Lorde sumiram, alguns sao ja em nosso lado.",
+          "Agora para dificil parte.",
+          "Imperador se encolhe em dele palacio.",
+          "Voce tomado fora todos dele apoio.",
+          "povo reunem contra ele.",
+          "Imperador de Sigmund reinado de terror termina hoje.",
+          "Descricao em Portugues 84141F.",
+          "O Que voce tem feito aqui...",
+          "Eu nao pode agradecer voce suficiente",
+          "Valhaven e gratis para primeiro tempo em seculos.",
+          "Goblins, Dragoes, e Seelie sao todos derrotado.",
+          "At ultimo nos deve saber paz.",
+          "Se voce nao tinha parado gang lideres,, Eu Iria ser morto.",
+          "Este de cidade gangues sao principalmente humano e sao loyal para Imperador.",
+          "Mas Eu ouvir de Skitts eles pode ser venceu ha.",
+          "Humanos usually apoio Imperador.",
+          "Mas ele relies tambem muito em Seelie agora.",
+          "humano gangues vai lutar ele...",
+          "Se nos pode derrubar fora deles lideres.",
+          "Mas Eu nao saber quem lideres sao.",
+          "Meu contato Skitts vai saber.",
+          "Ir ver o que ele suggests."
+        ]
+      },
+      "vhrebel01hard": {
+        "defaultLines": [
+          "Eu usado para ser um Imperial...",
+          "Volta antes Imperador perdido dele mind e comecou associating com Seelie.",
+          "Eu seguiu meu consciencia e isso custo me tudo.",
+          "Agora Eu cuidado eles aterrorizam estes ruas nos usado para proteger.",
+          "Eu Vou prestar para qualquer Imperial voce tomar afastado ruas.",
+          "Isso e so muitos...Tomar este.",
+          "Isso e todos money Eu tinha deixou",
+          "Nenhum, Tomar isso. Voce sao lutando para um causar aquele e apenas",
+          "Eu Iria comercio todos ouro em mundo para coisas para retornar para caminho eles eram",
+          "Eu acho tempo para aquele tem passed",
+          "Coisas vai nunca ser mesmo novamente."
+        ]
+      },
+      "vhrebel02hard": {
+        "defaultLines": [
+          "Imperials sao ruim suficiente, mas gangues sao pior kinds de opportunists.",
+          "Eles sao correndo um protecao e extortion racket.",
+          "Preying afastado innocent civilians aquele nao pode defender eles mesmos.",
+          "Eu acho isso esta tempo alguem mostrou eles aquele deles dias sao acabado.",
+          "Agradecer voce traveler.",
+          "Aquele e um menos threat povo tem para preocupe sobre."
+        ]
+      },
+      "vhskitts01hard": {
+        "defaultLines": [
+          "humano gangues aqui tem alto standards.",
+          "Voce tem Vermyn gangues em seu lado...",
+          "Isso e impressionante.",
+          "Mas humano gangues sao diferente.",
+          "Se voce querer para obter perto para lideres...",
+          "Voce Esta indo para tem para provar voce mesmo para eles.",
+          "Ser pronto para um brutal lutar.",
+          "Eles Vao gang acima em voce em aquele lutando poco.",
+          "de Everyone talkin' sobre voce agora,#tn#.",
+          "Isso era um trick! Eles Estao onto voce e seu rebelde amigos!",
+          "gang lideres montou nos acima.",
+          "Enquanto voce eram em arena, eles eram em move.",
+          "gangues sao seguindo para rebelde esconderijo.",
+          "Voce tem para pressa volta...",
+          "Cortar eles afastado antes eles matar Odryn!",
+          "So voce esta encrenqueiro, eh?"
+        ]
+      },
+      "vhvagrant01hard": {
+        "defaultLines": [
+          "O Que e aquele?! Yep! Eles Tem robbed meh blind!",
+          "Vermyn invadiu meu jardim e roubou meu cogumelos.",
+          "Eu uso aqueles cogumelos para fazer ensopado e meu farto cogumelo torta.",
+          "Com todos este Imperial bobagem, povo em ruas precisa meu cogumelos para obter por!",
+          "Eu nao wanna ver qualquer um starve, fazer voce?",
+          "Hoo-yeah! Voce encontrou meu cogumelos!",
+          "Agora Eu pode ir volta para baking cogumelo torta",
+          "e Cogumelo Gumbo",
+          "e Cogumelo Ensopado",
+          "e Cogumelo Souffle",
+          "e Stuffed Cogumelo Saffron Surpresa",
+          "e Cogumelo ala Kelp",
+          "e, vamos ver. Eu saber ha mais Eu pode fazer com cogumelos"
+        ]
+      }
+    },
+    "NewbieRoad": {
+      "annaoutside": {
+        "displayName": "Anna",
+        "defaultLines": [
+          "Obrigada por me libertar!",
+          "Nossos combatentes precisam da líder deles.",
+          "Alguém chamado 'Nephit' está tentando controlar os goblins.",
+          "Meu pai leu os relatórios antigos de quando desembarcamos aqui, há 50 anos.",
+          "Há outro túmulo. Talvez o que Nephit procurava esteja lá dentro.",
+          "Socorro! Quebre estas correntes!",
+          "Quem é você, afinal?",
+          "Você não é daqui.",
+          "Obrigada! Não víamos goblins há mais de um ano.",
+          "Eu sei onde fica o acampamento do Chefe dos Goblins.",
+          "Os goblins estão escondidos do outro lado da floresta.",
+          "Escondidos, como eu disse.",
+          "Os goblins estão fugindo, morrendo de medo.",
+          "Mas ainda há muitos mais deles do que conseguimos dar conta.",
+          "Principalmente com todos esses mortos-vivos surgindo de repente.",
+          "Siga pela mata e acompanhe o rio.",
+          "Você vai encontrar goblins de sobra por lá.",
+          "Assim que você terminar, eu te alcanço.",
+          "Minha casa nova está pronta. Você devia vir jantar.",
+          "Construí uma casa nova perto da cachoeira.",
+          "Sim! Mas limpei toda aquela nojeira goblin.",
+          "Apareça quando quiser.",
+          "Vai levar semanas para me livrar destas ervas daninhas.",
+          "De onde vieram os devoradores?@Havia um estranho por lá.",
+          "Parece que alguém anda saqueando os laboratórios secretos de Hsalt."
+        ]
+      },
+      "captainfink": {
+        "defaultLines": [
+          "Você nos salvou!",
+          "Precisamos encontrar aquela vila.",
+          "Você pode encontrar a vila no mapa.",
+          "É só seguir para o leste que você vai encontrar ela.",
+          "Vou tentar consertar a Niobe."
+        ],
+        "displayName": "Capitão Fink"
+      },
+      "nraffric": {
+        "displayName": "Affric",
+        "defaultLines": [
+          "Você é amigo ou inimigo?",
+          "Você traz notícias dos nossos amigos de Sark?",
+          "Não podemos confiar em estranhos.",
+          "Foi mesmo o rei quem te mandou?",
+          "Eu nem sabia que havia um rei.",
+          "Eu nem sabia que existiam outros humanos além de nós.",
+          "Achei que isso tudo fosse invenção."
+        ]
+      },
+      "nrcartguy": {
+        "defaultLines": [
+          "Tem um bando de saqueadores goblins entocados naquela fazenda.",
+          "Nós encurralamos os trogs.",
+          "Você colocou os goblins para correr.",
+          "Enquanto mantivermos a pressão...",
+          "Podemos recuperar esta terra.",
+          "Mas eles têm um comandante casca-grossa lá com eles.",
+          "Se você der um jeito nele, eu dou conta do resto.",
+          "Você acabou com ele!",
+          "Podemos mantê-los presos lá dentro.",
+          "Sem problema.",
+          "Enquanto mantivermos a pressão..."
+        ],
+        "conditionalLines": [
+          {
+            "missionId": 13,
+            "minState": 0,
+            "maxState": 2,
+            "lines": [
+              "Os saqueadores espalharam minha carga por toda a fazenda.",
+              "Eu já ficaria satisfeito com meus suprimentos e um dia sem goblins.",
+              "Traga minhas coisas de volta e eu consigo manter esse povo alimentado."
+            ]
+          }
+        ]
+      },
+      "nrelric": {
+        "displayName": "Ehric",
+        "defaultLines": [
+          "Viver por aqui deixa a gente casca-grossa.",
+          "Cuidado com os lobos perto da estrada velha.",
+          "Não é seguro viajar sozinho depois de anoitecer.",
+          "Conheço estas bandas há anos.",
+          "Se você estiver indo para o leste, tome cuidado.",
+          "Nunca vi humanos de fora de Fim do Lobo.",
+          "Achávamos que estávamos sozinhos.",
+          "Passei a vida inteira com medo dos goblins.",
+          "E coisas ainda piores.",
+          "Nem nadar mais eu posso, por causa dos malditos krakens."
+        ]
+      },
+      "nrhermit": {
+        "defaultLines": [
+          "Os mortos-vivos não param de sair daquela cripta.",
+          "O velho santuário lá em cima foi de onde os mortos-vivos surgiram pela primeira vez.",
+          "Desde então, eles não param de vir.",
+          "Vou continuar lutando contra eles.",
+          "Nunca vou me acostumar com o cheiro deles.",
+          "Se você puder me ajudar a destruir alguns dos piores deles...",
+          "Podemos impedir que eles se espalhem por Fim do Lobo.",
+          "Você tem minha gratidão.",
+          "Mas nunca vou me acostumar com eles.",
+          "Nem com o cheiro deles.",
+          "Nem com as coisas sinistras que dizem.",
+          "Mas, principalmente, com o cheiro deles."
+        ],
+        "conditionalLines": [
+          {
+            "missionId": 14,
+            "minState": 0,
+            "maxState": 2,
+            "lines": [
+              "O velho cemitério já era assustador o suficiente antes dos ossos começarem a andar.",
+              "Tem alguma coisa naquela cripta que continua perturbando os mortos.",
+              "Acabe com os piores deles e talvez os demais se lembrem de que já estão mortos."
+            ]
+          }
+        ]
+      },
+      "nrintrovillager": {
+        "displayName": "Tyna",
+        "defaultLines": [
+          "Achávamos que os goblins da praia iam acabar com a gente de uma vez.",
+          "Ver um rosto novo vindo do mar ainda parece um milagre.",
+          "Se pretende ficar, Fim do Lobo sempre aceita mais uma alma corajosa.",
+          "Lutamos contra os goblins há 50 anos.",
+          "Eu achava que outros humanos eram coisa de conto de fadas.",
+          "Mas você é real.",
+          "E você é muito bom em matar goblins.",
+          "Gosto disso numa pessoa."
+        ]
+      },
+      "nrmayor01": {
+        "displayName": "Prefeito Ristas",
+        "defaultLines": [
+          "Nossa vila pode ser pequena, mas somos fortes.",
+          "Os goblins andam mais agressivos ultimamente.",
+          "Precisamos de heróis corajosos para proteger estas terras.",
+          "Faço o que posso pelo povo daqui.",
+          "Fique um tempo, aventureiro. Você está seguro aqui.",
+          "Não pode ser! Alguém da terra natal finalmente voltou a Ellyria?",
+          "Preciso mandar uma mensagem ao rei!",
+          "Estou surpreso que ainda existam humanos aqui.",
+          "Graças a combatentes durões como Anna, conseguimos resistir.",
+          "Quem é você? De onde veio?",
+          "Viemos com Sigmund Hocke há cinquenta anos.",
+          "Eu era menino tamborileiro no exército dele.",
+          "Parte de uma expedição para salvar o baronato do pai dele quando os goblins invadiram.",
+          "Graças a duas gerações de combatentes como Anna.",
+          "Mas os goblins pegaram ela de surpresa na praia.",
+          "Logo depois daquela colina há um velho esconderijo de contrabandistas.",
+          "Obrigado por libertar Anna! Nossos combatentes precisam da líder deles.",
+          "Sim, seu capitão do mar me contou sobre as Guerras Goblins.",
+          "Cinquenta anos atrás, tínhamos a Fortaleza de Fim do Lobo para nos proteger.",
+          "Sigmund Hocke construiu a fortaleza como base para sua expedição.",
+          "Mas goblins e coisas piores nos expulsaram de lá décadas atrás.",
+          "Com suas habilidades de caçador de goblins...",
+          "Bem, ela está em péssimo estado, agora é só uma ruína.",
+          "Se você conseguir expulsar os goblins, vamos ajudar como pudermos a reconstruí-la.",
+          "Você limpou a velha fortaleza? Então ela é sua. Vamos ajudar a transformá-la em um lar de verdade.",
+          "Alguns mercadores goblins se mudaram para a caverna dos contrabandistas.",
+          "Eles dizem que são mercadores goblins amigáveis.",
+          "Bem, eu não confio neles.",
+          "Pode ver o que estão fazendo naquela caverna?",
+          "Hmm. Cuidado.",
+          "Eles são ardilosos.",
+          "Então existem goblins bons mesmo? Huh.",
+          "Acho que vou aprender a gostar deles.",
+          "Foi o que você disse da última vez.",
+          "Tem certeza de que é o último Kraken?"
+        ]
+      },
+      "nrmerchant01": {
+        "displayName": "Galrius",
+        "defaultLines": [
+          "Os melhores preços do reino!",
+          "Mercadorias fresquinhas, acabaram de chegar!",
+          "Você tem interesse em alguma coisa?",
+          "Tenho itens raros vindos do Oriente.",
+          "Os negócios vão bem.",
+          "Os goblins ainda não levaram tudo."
+        ]
+      },
+      "nrodem": {
+        "displayName": "Odem",
+        "defaultLines": [
+          "Fico de vigia na estrada à noite.",
+          "Algo se move nas ruínas antigas ao sul.",
+          "Você viu aquelas luzes ontem à noite?",
+          "Eu já fui soldado, sabia?",
+          "Mantenha-se alerta, amigo|amiga.",
+          "Tivemos que parar nossas patrulhas.",
+          "Tem goblins demais...",
+          "E mortos-vivos demais também.",
+          "Meus patrulheiros seriam massacrados lá fora."
+        ]
+      },
+      "nrquestanna01": {
+        "displayName": "Anna",
+        "defaultLines": [
+          "Alguém chamado 'Nephit' está tentando controlar os goblins.",
+          "Vimos muitos mortos-vivos saindo do Túmulo do Rei Adormecido.",
+          "O Barão Hocke empregou os homens mais sábios do mundo em sua pesquisa.",
+          "Alguém chamado \"Nephit\" está tentando controlar os goblins e os mortos-vivos.",
+          "Meu pai leu os relatórios antigos de quando desembarcamos aqui, há 50 anos.",
+          "Nephit era um dos melhores. Ele escavava um túmulo quando os goblins invadiram.",
+          "Tudo bem, encontro você de novo quando a poeira baixar.",
+          "Você derrotou o goblin grandão e malvadão? Belo trabalho!",
+          "Com o Chefe dos Goblins derrotado, podemos retomar estas terras.",
+          "Aquele terreno à beira do rio é lindo.",
+          "Talvez eu construa uma casa lá.",
+          "Crie algumas ovelhas ou algo assim.",
+          "Ou abra uma guilda de aventureiros.",
+          "Ou talvez uma pousada.",
+          "Seria um ótimo lugar para um pequeno forte.",
+          "Eu poderia ser uma linda baronesa.",
+          "Por que não?"
+        ],
+        "conditionalLines": [
+          {
+            "missionId": 6,
+            "minState": 0,
+            "maxState": 2,
+            "lines": [
+              "Se Nephit está movendo os goblins, quero o nome dele enterrado de vez.",
+              "Os relatórios antigos falam de túmulos, reis e um estudioso que cavou fundo demais.",
+              "Quando estiver pronto, eu conto o que encontramos."
+            ]
+          }
+        ]
+      },
+      "nrquestanna02": {
+        "displayName": "Anna",
+        "defaultLines": [
+          "Há outro túmulo. Talvez o que Nephit procurava esteja lá dentro.",
+          "Talvez Nephit quisesse ossos de dragão.",
+          "O túmulo fica ao sul, atravessando a mata.",
+          "Com Nephit expulso, talvez tenhamos menos mortos-vivos e goblins.",
+          "Você disse que Nephit mencionou um \"Sonho de Dragão\".",
+          "Este outro túmulo está aqui há ainda mais tempo.",
+          "O Barão Hocke era obcecado por essas criptas antigas.",
+          "O túmulo fica ao sul, atravessando a mata. Se Nephit puder se erguer uma segunda vez...",
+          "Abra caminho e eu sigo você."
+        ],
+        "conditionalLines": [
+          {
+            "missionId": 7,
+            "minState": 0,
+            "maxState": 2,
+            "lines": [
+              "Outro túmulo significa outro segredo que Nephit queria.",
+              "O que quer que espere lá embaixo, não está dormindo em paz.",
+              "Se há um dragão envolvido, prefiro ouvir de você do que por rumores."
+            ]
+          }
+        ]
+      },
+      "nrquestanna03": {
+        "displayName": "Anna",
+        "defaultLines": [
+          "Com Fim do Lobo segura, podemos recuperar mais terras das mãos do mal.",
+          "Temos muita luta difícil pela frente, mas vamos conseguir.",
+          "Toda esta terra já foi um campo verdejante.",
+          "Um dragão! Incrível, mesmo que fosse só uma espécie de fantasma dos sonhos.",
+          "Graças a você, estamos de pé de novo e prontos para lutar!",
+          "Claro! A família do Abbod é da região a leste daqui.",
+          "Ele está ansioso para recuperar o legado da família.",
+          "Nunca ouvi falar delas.",
+          "Mas talvez haja algum registro nos arquivos da Cidadela de Wissen.",
+          "Pode deixar. Eu aviso assim que voltar à vila."
+        ],
+        "conditionalLines": [
+          {
+            "missionId": 8,
+            "minState": 0,
+            "maxState": 2,
+            "lines": [
+              "A estrada leste está aberta, mas isso não a torna segura.",
+              "Se pretende levar esta luta mais para o interior, não vá sozinho.",
+              "Fim do Lobo finalmente pode respirar, mas por pouco."
+            ]
+          }
+        ]
+      },
+      "nrtrainer01": {
+        "displayName": "Tess",
+        "defaultLines": [
+          "Mantenha a guarda alta!",
+          "De novo! Com mais vontade!",
+          "A dor é a fraqueza deixando o corpo.",
+          "Concentre-se na sua respiração.",
+          "Você tem potencial, recruta.",
+          "Você tem muito potencial, #tc#.",
+          "Tenho faro para esse tipo de coisa."
+        ]
+      },
+      "nrvillager02": {
+        "defaultLines": [
+          "Os goblins roubaram todas as nossas ferraduras e transformaram em argolas de nariz.",
+          "Os goblins grandalhões usam ferraduras como argolas de nariz.",
+          "Se houvesse menos goblins, poderíamos recuperar esta terra.",
+          "Faz anos que não vejo os goblins tão agitados assim.",
+          "Você é duro na queda contra goblins.",
+          "Talvez ainda dê para salvar este lugar.",
+          "Estou de guarda há três dias.",
+          "Os goblins roubaram todas as nossas ferraduras e transformaram em argolas de nariz.",
+          "Pra zombar da nossa cara, eu acho.",
+          "Mas precisamos de ferraduras se quisermos reconstruir nosso exército e nossa economia.",
+          "Valeu! Agora só tenho que dar uma boa limpada nessas argolas...",
+          "Eles estão em pânico.",
+          "Provavelmente por sua causa."
+        ],
+        "conditionalLines": [
+          {
+            "missionId": 9,
+            "minState": 0,
+            "maxState": 2,
+            "lines": [
+              "Se aqueles goblins estiverem usando nossas ferraduras, traga elas de volta.",
+              "É mais fácil engolir a zombaria quando dá para derreter tudo depois.",
+              "Uma forja em funcionamento precisa mais de ferro do que de orgulho."
+            ]
+          },
+          {
+            "missionId": 12,
+            "minState": 0,
+            "maxState": 2,
+            "lines": [
+              "Quanto menos goblins houver entre aqui e as colinas, melhor eu durmo.",
+              "Temos terras que valem a pena recuperar se alguém continuar eliminando essas pragas.",
+              "Cada goblin que você derrota garante mais um dia para esta vila."
+            ]
+          }
+        ]
+      },
+      "nrvillager03": {
+        "defaultLines": [
+          "Os xamãs goblins usam suas varinhas para controlar os Olhos da Morte.",
+          "Vai ser bom não ter mais aquelas coisas malignas nos espionando.",
+          "Eu odeio como aqueles Olhos da Morte me olham.",
+          "Mais uma vez, obrigado pela sua ajuda.",
+          "Se você trouxer as varinhas dos xamãs goblins, posso usá-las para afastar os Olhos da Morte.",
+          "Principalmente à noite.",
+          "Enquanto dormimos.",
+          "Obrigado! Com isso, devo conseguir afastar qualquer Olho da Morte.",
+          "Mais uma vez, obrigado.",
+          "Uau, você é um caçador de goblins e tanto!",
+          "Você sabe mesmo como lidar com goblins.",
+          "Talvez ainda dê para salvar este lugar."
+        ],
+        "conditionalLines": [
+          {
+            "missionId": 10,
+            "minState": 0,
+            "maxState": 2,
+            "lines": [
+              "Aqueles Olhos da Morte chegam perto demais da vila depois do anoitecer.",
+              "Talvez a varinha de um xamã goblin consiga finalmente manter essas coisas longe da gente.",
+              "Adoraria passar uma noite sem ver olhos brilhantes na janela."
+            ]
+          },
+          {
+            "missionId": 12,
+            "minState": 0,
+            "maxState": 2,
+            "lines": [
+              "Os goblins estão ficando imprudentes. É aí que eles começam a errar.",
+              "Aperte o cerco ainda mais, e eles vão quebrar.",
+              "O medo se espalha rapidamente por um acampamento de saqueadores."
+            ]
+          }
+        ]
+      }
+    },
+    "NewbieRoadHard": {
+      "annaoutsidehard": {
+        "defaultLines": [
+          "Socorro! Quebre estas correntes!",
+          "Quem é você, afinal?",
+          "Você não é daqui.",
+          "Eu sei onde fica o acampamento do Chefe dos Goblins.",
+          "Os goblins estão escondidos do outro lado da floresta.",
+          "Escondidos, como eu disse.",
+          "Os goblins estão fugindo, morrendo de medo.",
+          "Mas ainda há muitos mais deles do que conseguimos dar conta.",
+          "Principalmente com todos esses mortos-vivos surgindo de repente.",
+          "Siga pela mata e acompanhe o rio.",
+          "Você vai encontrar goblins de sobra por lá.",
+          "Assim que você terminar, eu te alcanço.",
+          "Obrigada! Não víamos goblins há mais de um ano.",
+          "Minha casa nova está pronta. Você devia vir jantar.",
+          "Construí uma casa nova perto da cachoeira.",
+          "Sim! Mas limpei toda aquela nojeira goblin.",
+          "Apareça quando quiser.",
+          "Vai levar semanas para me livrar destas ervas daninhas.",
+          "De onde vieram os devoradores?@Havia um estranho por lá.",
+          "Parece que alguém anda saqueando os laboratórios secretos de Hsalt."
+        ]
+      },
+      "nraffrichard": {
+        "displayName": "Affric",
+        "defaultLines": [
+          "O rei mandou você mesmo?",
+          "Eu nem sabia que havia um rei.",
+          "Eu nem sabia que existiam outros humanos além de nós.",
+          "Achei que isso tudo fosse invenção."
+        ]
+      },
+      "nrcartguyhard": {
+        "defaultLines": [
+          "Há saqueadores goblins entocados naquela fazenda.",
+          "Nós encurralamos os trogs.",
+          "Mas eles têm um comandante casca-grossa lá com eles.",
+          "Se você der um jeito nele, eu dou conta do resto.",
+          "Você acabou com ele!",
+          "Podemos mantê-los encurralados lá dentro,",
+          "Sem problema.",
+          "Você pôs os goblins para correr.",
+          "Enquanto mantivermos a pressão...",
+          "Podemos retomar esta terra."
+        ]
+      },
+      "nrelrichard": {
+        "displayName": "Ehric",
+        "defaultLines": [
+          "Nunca vi humanos de fora de Fim do Lobo.",
+          "Achávamos que estávamos sozinhos.",
+          "Passei a vida inteira temendo goblins.",
+          "E coisas piores.",
+          "Nem nadar dá, por causa dos krakens."
+        ]
+      },
+      "nrhermithard": {
+        "defaultLines": [
+          "Os mortos-vivos não param de sair daquela cripta.",
+          "O velho santuário lá em cima foi de onde os mortos-vivos vieram primeiro.",
+          "Desde então, eles não param de vir.",
+          "Se você me ajudar a destruir alguns dos piores deles...",
+          "Podemos impedir que eles cheguem até Fim do Lobo.",
+          "Você tem meu agradecimento.",
+          "Vou continuar lutando contra eles.",
+          "Mas nunca vou me acostumar com eles.",
+          "Nem com o cheiro deles.",
+          "Nem com as coisas sinistras que dizem.",
+          "Mas, principalmente, com o cheiro deles."
+        ]
+      },
+      "nrintrovillagerhard": {
+        "displayName": "Tyna",
+        "defaultLines": [
+          "Lutamos contra os goblins há 50 anos.",
+          "Achei que outros humanos fossem conto de fadas.",
+          "Mas você é real.",
+          "E você é muito bom em matar goblins.",
+          "Gosto disso numa pessoa."
+        ]
+      },
+      "nrmayor01hard": {
+        "defaultLines": [
+          "Graças a combatentes durões como Anna, conseguimos resistir.",
+          "Quem é você? De onde veio?",
+          "Viemos com Sigmund Hocke há cinquenta anos.",
+          "Eu era menino tamborileiro no exército dele.",
+          "Parte de uma expedição para salvar o baronato do pai dele quando os goblins invadiram.",
+          "Graças a duas gerações de combatentes como Anna.",
+          "Mas os goblins pegaram ela de surpresa na praia.",
+          "Logo depois daquela colina há um velho esconderijo de contrabandistas.",
+          "Não pode ser! Alguém da terra natal finalmente voltou a Ellyria?",
+          "Preciso mandar uma mensagem ao rei!",
+          "Estou surpreso que ainda existam humanos aqui.",
+          "Obrigado por libertar Anna! Nossos combatentes precisam da líder deles.",
+          "Sim, seu capitão do mar me contou sobre as Guerras Goblins.",
+          "Cinquenta anos atrás, tínhamos a Fortaleza de Fim do Lobo para nos proteger.",
+          "Sigmund Hocke construiu a fortaleza como base para sua expedição.",
+          "Mas goblins e coisas piores nos expulsaram de lá décadas atrás.",
+          "Com suas habilidades de caçador de goblins...",
+          "Bem, ela está em péssimo estado, agora é só uma ruína.",
+          "Se você conseguir expulsar os goblins, vamos ajudar como pudermos a reconstruí-la.",
+          "Você limpou a velha fortaleza? Então ela é sua. Vamos ajudar a transformá-la em um lar de verdade.",
+          "Alguns mercadores goblins se mudaram para a caverna dos contrabandistas.",
+          "Eles dizem que são mercadores goblins amigáveis.",
+          "Bem, eu não confio neles.",
+          "Pode ver o que estão fazendo naquela caverna?",
+          "Hmm. Cuidado.",
+          "Eles são ardilosos.",
+          "Então existem goblins bons mesmo? Huh.",
+          "Acho que vou aprender a gostar deles.",
+          "Foi o que você disse da última vez.",
+          "Tem certeza de que é o último Kraken?"
+        ]
+      },
+      "nrmerchant01hard": {
+        "displayName": "Galrius",
+        "defaultLines": [
+          "Os goblins ainda não levaram tudo."
+        ]
+      },
+      "nrodemhard": {
+        "displayName": "Odem",
+        "defaultLines": [
+          "Tivemos que parar nossas patrulhas.",
+          "Tem goblins demais...",
+          "Mortos-vivos demais.",
+          "Meus patrulheiros seriam massacrados lá fora."
+        ]
+      },
+      "nrquestanna01hard": {
+        "defaultLines": [
+          "Alguém chamado \"Nephit\" está tentando controlar os goblins e os mortos-vivos.",
+          "Meu pai leu os relatórios antigos de quando desembarcamos aqui, há 50 anos.",
+          "O Barão Hocke empregou os homens mais sábios do mundo em sua pesquisa.",
+          "Nephit era um dos melhores. Ele escavava um túmulo quando os goblins invadiram.",
+          "Vimos muitos mortos-vivos saindo do Túmulo do Rei Adormecido.",
+          "Tudo bem, encontro você de novo quando a poeira baixar.",
+          "Você derrotou o goblin grandão e malvadão? Belo trabalho!",
+          "Com o Chefe dos Goblins derrotado, podemos retomar estas terras.",
+          "Aquele terreno à beira do rio é lindo.",
+          "Talvez eu construa uma casa lá.",
+          "Crie algumas ovelhas ou algo assim.",
+          "Ou abra uma guilda de aventureiros.",
+          "Ou talvez uma estalagem.",
+          "Seria um ótimo lugar para um pequeno forte.",
+          "Eu poderia ser uma linda baronesa.",
+          "Por que não?"
+        ]
+      },
+      "nrquestanna02hard": {
+        "defaultLines": [
+          "Com Nephit expulso, talvez tenhamos menos mortos-vivos e goblins.",
+          "Há outro túmulo. Talvez o que Nephit procurava esteja lá dentro.",
+          "Você disse que Nephit mencionou um \"Sonho de Dragão\".",
+          "Este outro túmulo está aqui há ainda mais tempo.",
+          "O Barão Hocke era obcecado por essas criptas antigas.",
+          "O túmulo fica ao sul, atravessando a mata. Se Nephit puder se erguer uma segunda vez...",
+          "Abra caminho e eu sigo você."
+        ]
+      },
+      "nrquestanna03hard": {
+        "defaultLines": [
+          "Um dragão! Incrível, mesmo que seja só algum tipo de fantasma de sonho.",
+          "Com Fim do Lobo seguro, podemos retomar mais terras das mãos do mal.",
+          "Graças a você, estamos de pé de novo e prontos para lutar!",
+          "Claro! A família de Abbod é da região a leste daqui.",
+          "Ele está ansioso para recuperar a herança dele.",
+          "Nunca ouvi falar deles.",
+          "Mas os arquivos na Cidadela de Wissen talvez tenham algum registro.",
+          "Vou contar a ele assim que voltar para a vila."
+        ]
+      },
+      "nrtrainer01hard": {
+        "displayName": "Tess",
+        "defaultLines": [
+          "Você tem muito potencial, #tc#.",
+          "Tenho faro para esse tipo de coisa."
+        ]
+      },
+      "nrvillager02hard": {
+        "defaultLines": [
+          "Vou ficar de guarda em breve.",
+          "Os goblins roubam qualquer coisa de metal.",
+          "Eles matam o que não conseguem levar.%O que eles estão fazendo aqui?",
+          "Estou de guarda há três dias.",
+          "Os goblins roubaram todas as nossas ferraduras e fizeram argolas de nariz.",
+          "Os goblins grandalhões usam ferraduras como argolas de nariz.",
+          "Para zombar da nossa cara, acho eu.",
+          "Mas precisamos das ferraduras se vamos reconstruir nosso exército e economia.",
+          "Valeu! Agora só tenho que dar uma boa limpada nestas argolas...",
+          "Os xamãs goblins usam as varinhas deles para controlar Olhos da Morte.",
+          "Se você trouxer as varinhas dos xamãs goblins, posso usá-las para afastar os Olhos da Morte.",
+          "Vai ser bom não ter aquelas coisas malignas espionando a gente.",
+          "Principalmente à noite.",
+          "Enquanto dormimos.",
+          "Obrigado! Com isto, devo conseguir afastar qualquer Olho da Morte.",
+          "Eu odeio como aqueles Olhos da Morte me encaram.",
+          "Obrigado de novo.",
+          "Com menos goblins, poderíamos retomar esta terra.",
+          "Faz anos que não vejo os goblins tão agitados assim.",
+          "Eles estão em pânico.",
+          "Provavelmente por sua causa."
+        ]
+      },
+      "nrvillager03hard": {
+        "defaultLines": [
+          "Com menos goblins, poderíamos limpar a estrada leste.",
+          "Os goblins mantêm as estradas fechadas.",
+          "Penso nos meus amigos das vilas orientais.",
+          "Uau, o Prefeito deu aquela propriedade para a pessoa certa!",
+          "Você é um guerreiro e tanto contra goblins.",
+          "Este lugar ainda pode ser salvo.",
+          "Os xamãs goblins usam as varinhas deles para controlar Olhos da Morte.",
+          "Se você trouxer as varinhas dos xamãs goblins, posso usá-las para afastar os Olhos da Morte.",
+          "Vai ser bom não ter aquelas coisas malignas espionando a gente.",
+          "Principalmente à noite.",
+          "Enquanto dormimos.",
+          "Obrigado! Com isto, devo conseguir afastar qualquer Olho da Morte.",
+          "Eu odeio como aqueles Olhos da Morte me encaram.",
+          "Obrigado de novo.",
+          "Nossa, você é um caçador de goblins e tanto!",
+          "Você é um guerreiro e tanto contra goblins.",
+          "Este lugar ainda pode ser salvo."
+        ]
+      }
+    },
+    "OldMineMountain": {
+      "ommmayor01": {
+        "defaultLines": [
+          "Verificar em com Shamar e faz certo estrada e limpar.",
+          "Voce fez isso. Bom. Nos precisa um experienced goblin lutador.",
+          "Obrigado para clearing caminho!",
+          "Antes nos buscar para sobreviventes, nos precisa para seguro este area de goblins.",
+          "Ha um large forca de goblins em aqueles proximo tuneis.",
+          "O Que sao eles fazendo aqui, Eu maravilha.",
+          "Moai tem despertou!",
+          "Removing aquele espada fez estes statues comecar falando!",
+          "Eles Estao antigo pedra elementais, silenciados por Meylour.",
+          "Eles dizer de Meylour culto e fazendo terrivel coisas para nosso povo.",
+          "Falar para Moai.",
+          "Cada um tem revealed algo importante.",
+          "Aqueles Moai espiritos realmente odeio Meylour.",
+          "Gnole chefe adora Meylour em montanha pico.",
+          "Voce pode terminar afastado gnoles para bom.",
+          "Mas voce deveria saber...",
+          "Eu acredito Meylour tem feito algo estranho para gnole lider.",
+          "Gnoles quem viver longo suficiente pode become monstrously poderosos.",
+          "de Meylour seguidores sao cavando furiosamente para dentro montanha.",
+          "goblins e ciclopes sao cavando embora em montanha.",
+          "La sao alguns abandonado minas em area.",
+          "goblins sao expanding eles...",
+          "Mas eles nao parecem para ser cavando para ouro.",
+          "Nenhum, eles parecem para tem alguns Grande Trabalho em mind.",
+          "Conhecido como Veios de Meylour, estes minas uma vez belonged para Terra Tita",
+          "Agora de Vezrinn devotos tem tomaram eles",
+          "Eles buscam magia minerio Alurite, e Coracao",
+          "Voce vai precisa para derrotar eles todos para tomar artifact e activate Espada de Meylour",
+          "Eles buscam magia minerio Alumite, e Coracao",
+          "Seguir abaixo primeiro caminho leste de aqui para obter para Emerald Clareiras",
+          "Fortaleza seguindo leste"
+        ]
+      },
+      "ommmoai01": {
+        "defaultLines": [
+          "Alguns de seu tipo pode ainda viver como eles uma vez eram.",
+          "Eu saber onde alguns de seu tipo eram tomado.",
+          "Nos sao antigo protectors de este montanha.",
+          "Meylour toppled nos de nosso thrones.",
+          "Se eles viver, eles estao em um de de Meylour vil shrines.",
+          "Voce deve pressa, lest deles tempo vir."
+        ]
+      },
+      "ommmoai02": {
+        "defaultLines": [
+          "Se voce iria saber seu de povo destino, voce deve confrontar eles.",
+          "Ciclopes eram nao sempre thus.",
+          "Meylour tem corrompido deles antigo formas.",
+          "Eles sao dele alto sacerdotes e devotos acolitos.",
+          "Buscam de Meylour segredos em deles fortaleza."
+        ]
+      },
+      "ommmoai03": {
+        "defaultLines": [
+          "gnoles virar para Meylour em desparation.",
+          "gnoles normally tem nenhum amam para deuses.",
+          "Mas eles odeio humanos para betraying eles.",
+          "humanos de Ponte Sombria eram uma vez deles aliados.",
+          "Mordomo betrayed eles.",
+          "Agora eles virar para Meylour para revenge.",
+          "Mal deuses corromper todos."
+        ]
+      },
+      "ommscout01": {
+        "defaultLines": [
+          "Estilhaco da Tempestade Montanhas sao tambem perigoso para ir mais longe acima",
+          "expedicao e acima adiante.",
+          "Ser cuidadoso, la sao goblins por toda parte.",
+          "La sao goblins de sobra em proximo cavernas.",
+          "Fazer voce acho eles estao em alianca com Culto de Meylour?"
+        ]
+      },
+      "ommstatue01": {
+        "defaultLines": [
+          "de Uthor Exquisite Creations",
+          "Descricao em Portugues 88D86B.",
+          "Invasores Vai Ser Aniquilados"
+        ]
+      },
+      "ommvillager01": {
+        "defaultLines": [
+          "Mais goblins, mais problems.",
+          "Aqueles goblin argolas de nariz sao fez de fine steel.",
+          "Voce pode encontrar argolas de nariz em goblin Brutes.",
+          "Eu Vou prestar voce bem para eles.",
+          "Obrigado, Eu saber apenas guy para limpar estes.",
+          "Estes montanhas sao rich em mineral Alurite.",
+          "estranho rocha criaturas contain Alurite.",
+          "Nos pode uso isso para encantado armas...",
+          "Encantado armadura...",
+          "Encantado cookware...",
+          "Encantado tudo!",
+          "Ponte Sombria vai sparkle.",
+          "e nos vamos ambos fazer um profit.",
+          "Agradecer voce! smith em Ponte Sombria vai prestar um bom preco para este.",
+          "Obrigado novamente para seu ajudar!"
+        ]
+      },
+      "ommvillager02": {
+        "defaultLines": [
+          "Tem voce noticed aqueles assustador gnomos?",
+          "Estes Gnomos sao driving me crazy!",
+          "Aqueles pesky Gnomos esconder fora em cavernas.",
+          "Eles vir at noite e roubar nosso suprimentos.",
+          "Agradecer voce, talvez agora eles vai inseto alguem mais!",
+          "Por Favor ajudar nos com nosso aranha problema",
+          "Parece como aranhas sao por toda parte!",
+          "Por Favor ajudar nos!",
+          "Agradecer voce, talvez agora Eu pode dormir at noite",
+          "Obrigado novamente para seu ajudar!"
+        ]
+      },
+      "ommvillager03": {
+        "defaultLines": [
+          "Meu cousin era perdido acima aqui dez anos atras.",
+          "Isso Esta horrible, o que Meylour fez para nosso povo.",
+          "Eu nao pode acredito aqueles ciclopes eram uma vez meu neighbors.",
+          "de mordomo horror foi em para decadas.",
+          "Por Favor, colocar deles tortured souls para descanso.",
+          "Apenas morte vai gratis eles de Meylour.",
+          "Eu Estou feliz para ouvir eles sao gratis at ultimo, agradecer voce.",
+          "TheGnoles tem estado roubando deixou e certo.",
+          "Gnoles amam shiny coisas.",
+          "Eles Tem estado roubando de nos para anos.",
+          "Uau, olhar como muito voce encontrou! Obrigado so muito!",
+          "Obrigado novamente para seu ajudar!"
+        ]
+      }
+    },
+    "OldMineMountainHard": {
+      "ommmayor01hard": {
+        "defaultLines": [
+          "Verificar em com Shamar e faz certo estrada e limpar.",
+          "Bom, voce fez isso atraves goblins.",
+          "Obrigado para clearing caminho!",
+          "Antes nos buscar para sobreviventes, nos precisa para seguro este area de goblins.",
+          "Ha um large forca de goblins em aqueles proximo tuneis.",
+          "O Que sao eles fazendo aqui, Eu maravilha.",
+          "Moai tem despertou!",
+          "Removing aquele espada fez estes statues comecar falando!",
+          "Eles Estao antigo pedra elementais, silenciados por Meylour.",
+          "Eles dizer de Meylour culto e fazendo terrivel coisas para nosso povo.",
+          "Falar para Moai.",
+          "Cada um tem revealed algo importante.",
+          "Aqueles Moai espiritos realmente odeio Meylour.",
+          "Gnole chefe adora Meylour em montanha pico.",
+          "Voce pode terminar afastado gnoles para bom.",
+          "Mas voce deveria saber...",
+          "Eu acredito Meylour tem feito algo estranho para gnole lider.",
+          "Gnoles quem viver longo suficiente pode become monstrously poderosos.",
+          "de Meylour seguidores sao cavando furiosamente para dentro montanha.",
+          "goblins e ciclopes sao cavando embora em montanha.",
+          "La sao alguns abandonado minas em area.",
+          "goblins sao expanding eles...",
+          "Mas eles nao parecem para ser cavando para ouro.",
+          "Nenhum, eles parecem para tem alguns Grande Trabalho em mind.",
+          "Conhecido como Veios de Meylour, estes minas uma vez belonged para Terra Tita",
+          "Agora de Vezrinn devotos tem tomaram eles",
+          "Eles buscam magia minerio Alurite, e Coracao",
+          "Voce vai precisa para derrotar eles todos para tomar artifact e activate Espada de Meylour",
+          "Eles buscam magia minerio Alumite, e Coracao",
+          "Seguir abaixo primeiro caminho leste de aqui para obter para Emerald Clareiras",
+          "Fortaleza seguindo leste",
+          "Voce fez isso. Bom. Nos precisa um experienced goblin lutador."
+        ]
+      },
+      "ommmoai01hard": {
+        "defaultLines": [
+          "Alguns de seu tipo pode ainda viver como eles uma vez eram.",
+          "Eu saber onde alguns de seu tipo eram tomado.",
+          "Nos sao antigo protectors de este montanha.",
+          "Meylour toppled nos de nosso thrones.",
+          "Se eles viver, eles estao em um de de Meylour vil shrines.",
+          "Voce deve pressa, lest deles tempo vir."
+        ]
+      },
+      "ommmoai02hard": {
+        "defaultLines": [
+          "Se voce iria saber seu de povo destino, voce deve confrontar eles.",
+          "Ciclopes eram nao sempre thus.",
+          "Meylour tem corrompido deles antigo formas.",
+          "Eles sao dele alto sacerdotes e devotos acolitos.",
+          "Buscam de Meylour segredos em deles fortaleza."
+        ]
+      },
+      "ommmoai03hard": {
+        "defaultLines": [
+          "gnoles virar para Meylour em desparation.",
+          "gnoles normally tem nenhum amam para deuses.",
+          "Mas eles odeio humanos para betraying eles.",
+          "humanos de Ponte Sombria eram uma vez deles aliados.",
+          "Mordomo betrayed eles.",
+          "Agora eles virar para Meylour para revenge.",
+          "Mal deuses corromper todos."
+        ]
+      },
+      "ommscout01hard": {
+        "defaultLines": [
+          "Estilhaco da Tempestade Montanhas sao tambem perigoso para ir mais longe acima",
+          "descanso de expedicao e futher acima montanha.",
+          "Ser cuidadoso, la sao goblins por toda parte.",
+          "La sao goblins de sobra em proximo cavernas.",
+          "Fazer voce acho eles estao em alianca com Culto de Meylour?",
+          "expedicao e acima adiante."
+        ]
+      },
+      "ommstatue01hard": {
+        "defaultLines": [
+          "de Uthor Exquisite Creations",
+          "Descricao em Portugues 88D86B.",
+          "Invasores Vai Ser Aniquilados"
+        ]
+      },
+      "ommvillager01hard": {
+        "defaultLines": [
+          "Mais goblins, mais problems.",
+          "Aqueles goblin argolas de nariz sao fez de fine steel.",
+          "Voce pode encontrar argolas de nariz em goblin Brutes.",
+          "Eu Vou prestar voce bem para eles.",
+          "Obrigado, Eu saber apenas guy para limpar estes.",
+          "Estes montanhas sao rich em mineral Alurite.",
+          "estranho rocha criaturas contain Alurite.",
+          "Nos pode uso isso para encantado armas...",
+          "Encantado armadura...",
+          "Encantado cookware...",
+          "Encantado tudo!",
+          "Ponte Sombria vai sparkle.",
+          "e nos vamos ambos fazer um profit.",
+          "Agradecer voce! smith em Ponte Sombria vai prestar um bom preco para este.",
+          "Obrigado novamente para seu ajudar!"
+        ]
+      },
+      "ommvillager02hard": {
+        "defaultLines": [
+          "Tem voce noticed aqueles assustador gnomos?",
+          "Estes Gnomos sao driving me crazy!",
+          "Aqueles pesky Gnomos esconder fora em cavernas.",
+          "Eles vir at noite e roubar nosso suprimentos.",
+          "Agradecer voce, talvez agora eles vai inseto alguem mais!",
+          "Por Favor ajudar nos com nosso aranha problema",
+          "Parece como aranhas sao por toda parte!",
+          "Por Favor ajudar nos!",
+          "Agradecer voce, talvez agora Eu pode dormir at noite.",
+          "Obrigado novamente para seu ajudar!",
+          "Agradecer voce, talvez agora Eu pode dormir at noite"
+        ]
+      },
+      "ommvillager03hard": {
+        "defaultLines": [
+          "Meu cousin era perdido acima aqui 10 anos atras.",
+          "Meu cousin era perdido acima aqui dez anos atras.",
+          "Isso Esta horrible, o que Meylour fez para nosso povo.",
+          "Eu nao pode acredito aqueles ciclopes eram uma vez meu neighbors.",
+          "de mordomo horror foi em para decadas.",
+          "Por Favor, colocar deles tortured souls para descanso.",
+          "Apenas morte vai gratis eles de Meylour.",
+          "Eu Estou feliz para ouvir eles sao gratis at ultimo, agradecer voce.",
+          "TheGnoles tem estado roubando deixou e certo.",
+          "Gnoles amam shiny coisas.",
+          "Eles Tem estado roubando de nos para anos.",
+          "Uau, olhar como muito voce encontrou! Obrigado so muito!",
+          "Obrigado novamente para seu ajudar!"
+        ]
+      }
+    },
+    "ShazariDesert": {
+      "npcdune04": {
+        "displayName": "Descricao em Portugues 78C653.",
+        "defaultLines": [
+          "Este e nosso primeiro taste de freedom!",
+          "Isso Esta incrivel.",
+          "Exceto para todos monstruoso insects aquele tem appeared.",
+          "Ainda, Eu amam Freedom.",
+          "Eu esperanca Imperador deixa nos fortaleza isso."
+        ]
+      },
+      "npcdune05": {
+        "displayName": "Descricao em Portugues 15D4C9.",
+        "defaultLines": [
+          "Bem-vindo,#tn#!",
+          "Todos Shazari sabe de herói quem defeted Dragao Legioes.",
+          "Voce feito mais que Imperador sempre poderia."
+        ]
+      },
+      "npcdune06": {
+        "displayName": "Descricao em Portugues B83A15.",
+        "defaultLines": [
+          "monstruoso vermin sao um novo atormentar.",
+          "Eu suspect um mal mao por tras eles.",
+          "dragoes nunca iria tem tolerated tal coisas."
+        ]
+      },
+      "npcdune07": {
+        "displayName": "Descricao em Portugues 675BC8.",
+        "defaultLines": [
+          "Fez voce saber este nao era sempre deserto?",
+          "Quando Magos construiu estes temples...",
+          "Este era um verdant terra.",
+          "Um thousand anos de dragoes transformado isso para dentro este."
+        ]
+      },
+      "npcdune08": {
+        "displayName": "Descricao em Portugues 547DE7.",
+        "defaultLines": [
+          "Spent meu inteiro vida tentando para lutar Dragoes.",
+          "Entao alguns surface mundo herói faz isso.",
+          "Isso e grande.",
+          "Realmente, Eu Estou sendo sincero.",
+          "Juuuust grande.",
+          "Realmente.",
+          "Grande."
+        ]
+      },
+      "npcdune09": {
+        "displayName": "Descricao em Portugues 9B2477.",
+        "defaultLines": [
+          "Eu Vou nao bend knee para Imperador de Valhaven.",
+          "Ele pode nao ser um dragao...",
+          "Mas Eu ainda nao confiar ele.",
+          "de Valhaven mudou para pior sob dele reinado."
+        ]
+      },
+      "npcgoblinnomad01": {
+        "displayName": "Descricao em Portugues 58F917.",
+        "defaultLines": [
+          "Oooh, humano!",
+          "Um prazer para encontrar ye!",
+          "e isso so estranho para ser polite?",
+          "Voce met errado tipo de goblins entao.",
+          "Bem, voce esta bem-vindo aqui, estranho."
+        ]
+      },
+      "npcgoblinnomad02": {
+        "displayName": "Descricao em Portugues 7DD6BF.",
+        "defaultLines": [
+          "dragoes sao sumiram...",
+          "Talvez alguem vai fazer mesmo para Imperador."
+        ]
+      },
+      "npcgoblinnomad04": {
+        "displayName": "Descricao em Portugues CC9C1E.",
+        "defaultLines": [
+          "Hello amigo!",
+          "Um warm goblin bem-vindo para voce!",
+          "Iria voce como alguns agua?",
+          "Talvez alguns fresco dates?"
+        ]
+      },
+      "npcgoblinnomad06": {
+        "displayName": "Descricao em Portugues 707297.",
+        "defaultLines": [
+          "Seelie nao parecem interessados em comercio.",
+          "Eles parecem interessados em bossing nos ao redor."
+        ]
+      },
+      "npckasa": {
+        "displayName": "Descricao em Portugues FF8B8E.",
+        "defaultLines": [
+          "Meu familia fugiu Valhaven quando Imperador veio.",
+          "Ele odeia goblins.",
+          "Realmente, realmente odeia eles."
+        ]
+      },
+      "npckevah": {
+        "displayName": "Descricao em Portugues 212754.",
+        "defaultLines": [
+          "Eu Estou feliz nos goblins deu acima em guerra.",
+          "Eu apenas wish Imperador nao tinha morto so muitos de nos.",
+          "Meu inteiro famly fell para de imperador exercito."
+        ]
+      },
+      "npckohken": {
+        "displayName": "Descricao em Portugues AFC348.",
+        "defaultLines": [
+          "de imperador tax policies sao insane!",
+          "Como faz ele expect comercio para flourish?"
+        ]
+      },
+      "npcnorgog": {
+        "displayName": "Descricao em Portugues 4DE4B0.",
+        "defaultLines": [
+          "Imperador tomou Valhaven de meu povo.",
+          "Embora goblins nao eram muito melhor.",
+          "Todos beings pode ser cruel."
+        ]
+      },
+      "sdacolyte01": {
+        "defaultLines": [
+          "Mesmo sem threat de drought, viajar apenas nao e seguro mais",
+          "La sao so muitos perigos em estradas estes dias",
+          "Povo sao virando acima com horriveis ferroadas de scarab scorpions",
+          "Eu nao pode fazer qualquer coisa sobre Forasteiro problema, mas Eu poderia at menos solve scorpion problema",
+          "Se voce trazer me suficiente stingers Eu poderia fazer como anti-veneno",
+          "Oh excelente! Este e mais que suficiente!",
+          "Este anti-veneno vai salvar um muito de vidas",
+          "Voce olhar como voce tomou bastante um poucos ferroadas voce mesmo",
+          "Voce deve ser fez de tougher coisas que seu average traveler para ainda ser walking ao redor",
+          "Agradecer voce para todos voce feito para nos!",
+          "Ceu abencoar voce em seu jornada"
+        ]
+      },
+      "sdacolyte02": {
+        "defaultLines": [
+          "Talvez voce poderia fazer algo mais para nos",
+          "Voce ver estes wasp hives?",
+          "Eles Tem realmente obtido fora de mao e wasps ataque povo aquele obter tambem perto",
+          "estradas iria ser muito mais seguro se voce poderia derrubar um poucos de eles abaixo",
+          "Grande!",
+          "Parece como voce tomou um ferroada ou dois",
+          "Deixar me tomar cuidar de aquele para voce",
+          "Nos realmente appreciate seu sacrificio",
+          "Ceu abencoar voce em seu jornada."
+        ]
+      },
+      "sdchief01": {
+        "defaultLines": [
+          "Um novo forca busca para replace dragao legioes aqui em Shazari.",
+          "Apenas quando Eu pensou nos poderia retomar normal negociacao.",
+          "Humano! Eu querer para ser gratis para comercio com meu amigos e aliados.",
+          "Estranho novo guerreiros, taller que homens.",
+          "Eu acredito eles pode ser Seelie Ogres.",
+          "Um antigo faerie race, expert em magias.",
+          "Eles corromper todos eles touch.",
+          "Eles Estao encamped alem muro para Leste.",
+          "Agradecer voce, herói! Bom sorte!",
+          "So, isso era Seelie. Nos deve precisa de imperador ajudar para certo!",
+          "Encontrar alguem de Valhaven.",
+          "Nos precisa de imperador ajuda contra um inimigo como Seelie.",
+          "Nos ficar nenhum chance!",
+          "Meu obrigado! Nos tem muito menos para medo agora aquele Seelie sao derrotado.",
+          "Eu acho agora nos goblins pode retornar para nosso pacificos ways.",
+          "Longo atras nos fez.",
+          "Eu acho nos deve novamente.",
+          "Ahh, bem-vindo, amigo! Agradecer voce para vindo."
+        ]
+      },
+      "sdemissary02": {
+        "defaultLines": [
+          "Alguns de meu povo fugiu Oeste quando Seelie veio.",
+          "Se voce ver meu fearful messengers em outro towns...",
+          "Poderia voce dizer eles isso esta seguro para vir volta?",
+          "Obrigado para voce, meu amigo.",
+          "Bem, amigos nos sao!"
+        ]
+      },
+      "sdgladiator01": {
+        "defaultLines": [
+          "outro dragoes sao sumiram, mas vil Poco Lorde restos.",
+          "Cuidado voce mesmo, estranho...",
+          "Poco Lorde escraviza todos quem vir em dele alcance.",
+          "Bem, isso e um raro pericia de fato.",
+          "Mas este wily antigo serpe nao e sozinho.",
+          "Ele tem escravos quem lutar para ele, qual e ruim suficiente.",
+          "Recently ele tem alguns outro monstros como bem.",
+          "Eu nao saber onde dele reinforcements veio de.",
+          "Mas eles tem tem estranho magias.",
+          "Poco Lorde morto! Nos sao um gratis reino at ultimo.",
+          "Eu ainda maravilha onde Poco Lorde tem dele reinforcements de.",
+          "Alguem era tentando para prop ele acima.",
+          "Alguem e causando problema para gratis peoples de Shazari.",
+          "Ficar alert estranho, Poco de lorde homens sao por toda parte.",
+          "Eu Ja ouviu aquele goblins pode saber quem tem estado causando nosso recent troubles.",
+          "Voce deveria falar para goblin anciao.",
+          "Nenhum, amigo, nenhum!",
+          "Estes goblins sao pacificos.",
+          "Estes fazer, confiar me.",
+          "Falar para eles se voce querer para aprender verdade fonte de mal aqui."
+        ]
+      },
+      "sdjackal01": {
+        "defaultLines": [
+          "goblin anciao enviou voce para encontrar um Valhaven embaixador, certo?",
+          "Eu Estou certamente nao embaixador.",
+          "Eu acredito Imperador ele mesmo e por tras Seelie.",
+          "Qual e por que Eu precisa proof.",
+          "Com dragoes sumiram, ele busca para add Shazari para dele imperio.",
+          "antigo enterro terrenos parecem fonte de problema.",
+          "Ver se voce encontrar qualquer sinal de Imperial meddling.",
+          "Eu pensou como muito! Imperador e sempre pitiless e vile.",
+          "Encontrar me por docks.",
+          "So Eu pode sneak voce para dentro Valhaven de claro.",
+          "Voce foiled de imperador planos aqui.",
+          "Voce Esta indo para precisa ajudar lutando seu newest inimigo.",
+          "Eu tem alguns muito capable amigos.",
+          "Vir para barco.",
+          "Voce Vai tem para vir com me para Valhaven para parar Imperador e dele Seelie aliados.",
+          "Imperador vai ser depois voce agora.",
+          "Ele era um grande homem uma vez.",
+          "Veio fora de lugar nenhum e expulsou fora Goblins.",
+          "Entao ele mantido afastado dragoes.",
+          "Mas em recent anos ele esta grown cruel.",
+          "Sim, isso e verdade.",
+          "Eu nao saber como mal eles eram ate hoje.",
+          "Vir, nos deve pressa.",
+          "Se nos estamos sortudo, Imperador nao vai saber nos estamos vindo."
+        ]
+      },
+      "sdmatron01": {
+        "defaultLines": [
+          "Nos pode ser capaz para fortaleza este de happening novamente",
+          "Trazer me suficiente mucus glands e Eu pode mix acima um repellent",
+          "Aquele vai fortaleza insetos fora de templo",
+          "Este vai fazer nicely. Tomar este para seu problema",
+          "Uau, este coisas smells horrid",
+          "Isso Vai scare embora insetos embora, so isso esta vale isso",
+          "Ceu abencoar voce em seu jornada"
+        ]
+      },
+      "sdmayor01": {
+        "defaultLines": [
+          "Eu esperanca nos encontrar alguns caminho para evitar caindo sob de imperador poder.",
+          "Agradecer voce para vindo,#tn#. Nos precisa seu ajudar.",
+          "Bem-vindo para humilde Kovah.",
+          "honra e todos mina.",
+          "Matador de dragoes e Abridor de Caminho...",
+          "Voce tem realizou verdade maravilhas.",
+          "Nos vai falar mais em estes matters...",
+          "Mas agora Eu beg seu ajudar.",
+          "Seelie magias atormentar nosso templo, filling isso com abominations.",
+          "Seculos sob dragao dominio deixou nos com nenhum guerreiros para lutar eles.",
+          "Agora nosso aldeia vai sobreviver!",
+          "Voce derrotado Grandioso Marechal Sythokahn, mas um dragao restos.",
+          "dragao Sythokahn governou este terra para seculos.",
+          "Obrigado para voce.",
+          "Mas um dragao restos, Poco Lorde.",
+          "Ele runs Arena, onde escravos lutar para dele prazer.",
+          "Ir ver Zumwalt, ele usado para lutar em arena.",
+          "Ele pode dizer voce mais.",
+          "Alguem e destroying nosso planos para reviver deserto",
+          "Nos estado usando agua de Ogre Magos oasis para reviver Shazari.",
+          "Nos eram com sucesso desfazendo dano dragoes causado.",
+          "Mas agora alguem e siphoning afastado nosso agua.",
+          "e la sao carnivorous plantas por toda parte!",
+          "de agua flowing novamente, agradecer voce!",
+          "Agradecer voce!",
+          "O Que e um agua tita?"
+        ]
+      },
+      "sdnomad01": {
+        "defaultLines": [
+          "Aqueles Seelie braceletes fascinam me",
+          "Se tinha um bunch de aqueles Seelie braceletes...",
+          "Eu poderia quebrar eles abaixo e comecar replicating eles.",
+          "Smaller size de claro.",
+          "Mas Goblins iria prestar bem para algo como aqueles.",
+          "Trazer me o que voce pode.",
+          "Hmm. Nao exactly novo mais. Ah bem, de aqui seu prestar.",
+          "Ver?",
+          "Descricao em Portugues A5C07A."
+        ]
+      },
+      "sdsage01": {
+        "defaultLines": [
+          "Estes grandioso piramides sao nao trabalho de nosso povo.",
+          "Magos quem construiu piramides deixou este terra longo atras.",
+          "Nos tem tomado alguns de deles ruinas como nosso proprio.",
+          "Mas outros permanecem guarded por poderosos espiritos.",
+          "Se isso esta antigo conhecimento voce buscam...",
+          "e voce esta daring suficiente para rosto antigo magics...",
+          "Entao voce deveria plumb profundezas de Umbral Templo para Oeste.",
+          "Voce sao um sobrevivente e um scholar. Eu esperanca voce aprendido muito de value.",
+          "Alguns de meu brethren em deserto precisa ajudar!",
+          "Um group de colonos foi para dentro deserto dois meses atras.",
+          "Eles esperanca para abrir comercio com Bitterfrost.",
+          "Eles encontrou um bom local para um caravancarai...",
+          "Mas agora monstros besiege eles de todos lados.",
+          "caravancarai e seguro.",
+          "Muitos obrigado para seu ajudar.",
+          "Deles smoked fish e disse para ser exquisite."
+        ]
+      },
+      "sdslave01": {
+        "defaultLines": [
+          "Nosso escapar plano falhou. Nenhum de goblin escravos fez isso fora",
+          "Encontrar deles memoria encantos e Eu pode tomar eles para deles familias",
+          "Eles lutou bravamente, mas eles apenas nao eram forte suficiente",
+          "Deles familias merecem alguns encerramento",
+          "Voce encontrou eles todos?",
+          "Eu Vou fazer certo deles familias saber eles lutou bravamente",
+          "Eu Iria vir para saber eles todos em escravo pits",
+          "Eles sao todos realmente grande guys",
+          "Agradecer voce para o que voce feito"
+        ]
+      },
+      "sdtitus01": {
+        "defaultLines": [
+          "Ah. Voce fez isso ha e appear para ser em um pedaco. Excelente!",
+          "Ir para perto por aldeia e encontrar Vila Anciao.",
+          "Bem-vindo para Adormecido Terras,#tn#.",
+          "Este country e chamado Shazari.",
+          "Para seculos dragoes governou aqui.",
+          "Terrivel e cruel, sim.",
+          "Mas povo aqui sao gratis agora.",
+          "Ir introduce voce mesmo para vila anciao."
+        ]
+      },
+      "sdtitus02": {
+        "defaultLines": [
+          "antigo piramides ao redor aqui pode segurar algo de interest.",
+          "antigo Seelie construiu estes piramides.",
+          "Um de eles restos selado ainda.",
+          "Eu imagine la sao maravilhas e perigos dentro.",
+          "Seelie eram sempre cruel aquele caminho.",
+          "Isso soa mais wondrous que Eu imaginou!",
+          "e voce tomou cuidar de perigos como bem.",
+          "Agora aquele voce derrotado defesas...",
+          "Eu Estou indo para spend alguns tempo plumbing dele segredos."
+        ]
+      }
+    },
+    "ShazariDesertHard": {
+      "npcdune04hard": {
+        "displayName": "Descricao em Portugues 78C653.",
+        "defaultLines": [
+          "Este e nosso primeiro taste de freedom!",
+          "Isso Esta incrivel.",
+          "Exceto para todos monstruoso insects aquele tem appeared.",
+          "Ainda, Eu amam Freedom.",
+          "Eu esperanca Imperador deixa nos fortaleza isso."
+        ]
+      },
+      "npcdune05hard": {
+        "displayName": "Descricao em Portugues 15D4C9.",
+        "defaultLines": [
+          "Bem-vindo,#tn#!",
+          "Todos Shazari sabe de herói quem defeted Dragao Legioes.",
+          "Voce feito mais que Imperador sempre poderia."
+        ]
+      },
+      "npcdune06hard": {
+        "displayName": "Descricao em Portugues B83A15.",
+        "defaultLines": [
+          "monstruoso vermin sao um novo atormentar.",
+          "Eu suspect um mal mao por tras eles.",
+          "dragoes nunca iria tem tolerated tal coisas."
+        ]
+      },
+      "npcdune07hard": {
+        "displayName": "Descricao em Portugues 675BC8.",
+        "defaultLines": [
+          "Fez voce saber este nao era sempre deserto?",
+          "Quando Magos construiu estes temples...",
+          "Este era um verdant terra.",
+          "Um thousand anos de dragoes transformado isso para dentro este."
+        ]
+      },
+      "npcdune08hard": {
+        "displayName": "Descricao em Portugues 547DE7.",
+        "defaultLines": [
+          "Spent meu inteiro vida tentando para lutar Dragoes.",
+          "Entao alguns surface mundo herói faz isso.",
+          "Isso e grande.",
+          "Realmente, Eu Estou sendo sincero.",
+          "Juuuust grande.",
+          "Realmente.",
+          "Grande."
+        ]
+      },
+      "npcdune09hard": {
+        "displayName": "Descricao em Portugues 9B2477.",
+        "defaultLines": [
+          "Eu Vou nao bend knee para Imperador de Valhaven.",
+          "Ele pode nao ser um dragao...",
+          "Mas Eu ainda nao confiar ele.",
+          "de Valhaven mudou para pior sob dele reinado."
+        ]
+      },
+      "npcgoblinnomad01hard": {
+        "displayName": "Descricao em Portugues 58F917.",
+        "defaultLines": [
+          "Oooh, humano!",
+          "Um prazer para encontrar ye!",
+          "e isso so estranho para ser polite?",
+          "Voce met errado tipo de goblins entao.",
+          "Bem, voce esta bem-vindo aqui, estranho."
+        ]
+      },
+      "npcgoblinnomad02hard": {
+        "displayName": "Descricao em Portugues 7DD6BF.",
+        "defaultLines": [
+          "dragoes sao sumiram...",
+          "Talvez alguem vai fazer mesmo para Imperador."
+        ]
+      },
+      "npcgoblinnomad04hard": {
+        "displayName": "Descricao em Portugues CC9C1E.",
+        "defaultLines": [
+          "Hello amigo!",
+          "Um warm goblin bem-vindo para voce!",
+          "Iria voce como alguns agua?",
+          "Talvez alguns fresco dates?"
+        ]
+      },
+      "npcgoblinnomad06hard": {
+        "displayName": "Descricao em Portugues 707297.",
+        "defaultLines": [
+          "Seelie nao parecem interessados em comercio.",
+          "Eles parecem interessados em bossing nos ao redor."
+        ]
+      },
+      "npckasahard": {
+        "displayName": "Descricao em Portugues FF8B8E.",
+        "defaultLines": [
+          "Meu familia fugiu Valhaven quando Imperador veio.",
+          "Ele odeia goblins.",
+          "Realmente, realmente odeia eles."
+        ]
+      },
+      "npckevahhard": {
+        "displayName": "Descricao em Portugues 212754.",
+        "defaultLines": [
+          "Eu Estou feliz nos goblins deu acima em guerra.",
+          "Eu apenas wish Imperador nao tinha morto so muitos de nos.",
+          "Meu inteiro famly fell para de imperador exercito."
+        ]
+      },
+      "npckohkenhard": {
+        "displayName": "Descricao em Portugues AFC348.",
+        "defaultLines": [
+          "de imperador tax policies sao insane!",
+          "Como faz ele expect comercio para flourish?"
+        ]
+      },
+      "npcnorgoghard": {
+        "displayName": "Descricao em Portugues 4DE4B0.",
+        "defaultLines": [
+          "Imperador tomou Valhaven de meu povo.",
+          "Embora goblins nao eram muito melhor.",
+          "Todos beings pode ser cruel."
+        ]
+      },
+      "sdacolyte01hard": {
+        "defaultLines": [
+          "Mesmo sem threat de drought, viajar apenas nao e seguro mais",
+          "La sao so muitos perigos em estradas estes dias",
+          "Povo sao virando acima com horriveis ferroadas de scarab scorpions",
+          "Eu nao pode fazer qualquer coisa sobre Forasteiro problema, mas Eu poderia at menos solve scorpion problema",
+          "Se voce trazer me suficiente stingers Eu poderia fazer como anti-veneno",
+          "Oh excelente! Este e mais que suficiente!",
+          "Este anti-veneno vai salvar um muito de vidas",
+          "Voce olhar como voce tomou bastante um poucos ferroadas voce mesmo",
+          "Voce deve ser fez de tougher coisas que seu average traveler para ainda ser walking ao redor",
+          "Agradecer voce para todos voce feito para nos!",
+          "Ceu abencoar voce em seu jornada"
+        ]
+      },
+      "sdacolyte02hard": {
+        "defaultLines": [
+          "Talvez voce poderia fazer algo mais para nos",
+          "Voce ver estes wasp hives?",
+          "Eles Tem realmente obtido fora de mao e wasps ataque povo aquele obter tambem perto",
+          "estradas iria ser muito mais seguro se voce poderia derrubar um poucos de eles abaixo",
+          "Grande!",
+          "Parece como voce tomou um ferroada ou dois",
+          "Deixar me tomar cuidar de aquele para voce",
+          "Nos realmente appreciate seu sacrificio",
+          "Ceu abencoar voce em seu jornada."
+        ]
+      },
+      "sdchief01hard": {
+        "defaultLines": [
+          "Um novo forca busca para replace dragao legioes aqui em Shazari.",
+          "Apenas quando Eu pensou nos poderia retomar normal negociacao.",
+          "Humano! Eu querer para ser gratis para comercio com meu amigos e aliados.",
+          "Estranho novo guerreiros, taller que homens.",
+          "Eu acredito eles pode ser Seelie Ogres.",
+          "Um antigo faerie race, expert em magias.",
+          "Eles corromper todos eles touch.",
+          "Eles Estao encamped alem muro para Leste.",
+          "Agradecer voce, herói! Bom sorte!",
+          "So, isso era Seelie. Nos deve precisa de imperador ajudar para certo!",
+          "Encontrar alguem de Valhaven.",
+          "Nos precisa de imperador ajuda contra um inimigo como Seelie.",
+          "Nos ficar nenhum chance!",
+          "Meu obrigado! Nos tem muito menos para medo agora aquele Seelie sao derrotado.",
+          "Eu acho agora nos goblins pode retornar para nosso pacificos ways.",
+          "Longo atras nos fez.",
+          "Eu acho nos deve novamente.",
+          "Ahh, bem-vindo, amigo! Agradecer voce para vindo."
+        ]
+      },
+      "sdemissary02hard": {
+        "defaultLines": [
+          "Alguns de meu povo fugiu Oeste quando Seelie veio.",
+          "Se voce ver meu fearful messengers em outro towns...",
+          "Poderia voce dizer eles isso esta seguro para vir volta?",
+          "Obrigado para voce, meu amigo.",
+          "Bem, amigos nos sao!"
+        ]
+      },
+      "sdgladiator01hard": {
+        "defaultLines": [
+          "outro dragoes sao sumiram, mas vil Poco Lorde restos.",
+          "Cuidado voce mesmo, estranho...",
+          "Poco Lorde escraviza todos quem vir em dele alcance.",
+          "Bem, isso e um raro pericia de fato.",
+          "Mas este wily antigo serpe nao e sozinho.",
+          "Ele tem escravos quem lutar para ele, qual e ruim suficiente.",
+          "Recently ele tem alguns outro monstros como bem.",
+          "Eu nao saber onde dele reinforcements veio de.",
+          "Mas eles tem tem estranho magias.",
+          "Poco Lorde morto! Nos sao um gratis reino at ultimo.",
+          "Eu ainda maravilha onde Poco Lorde tem dele reinforcements de.",
+          "Alguem era tentando para prop ele acima.",
+          "Alguem e causando problema para gratis peoples de Shazari.",
+          "Ficar alert estranho, Poco de lorde homens sao por toda parte.",
+          "Eu Ja ouviu aquele goblins pode saber quem tem estado causando nosso recent troubles.",
+          "Voce deveria falar para goblin anciao.",
+          "Nenhum, amigo, nenhum!",
+          "Estes goblins sao pacificos.",
+          "Estes fazer, confiar me.",
+          "Falar para eles se voce querer para aprender verdade fonte de mal aqui."
+        ]
+      },
+      "sdjackal01hard": {
+        "defaultLines": [
+          "goblin anciao enviou voce para encontrar um Valhaven embaixador, certo?",
+          "Eu Estou certamente nao embaixador.",
+          "Eu acredito Imperador ele mesmo e por tras Seelie.",
+          "Qual e por que Eu precisa proof.",
+          "Com dragoes sumiram, ele busca para add Shazari para dele imperio.",
+          "antigo enterro terrenos parecem fonte de problema.",
+          "Ver se voce encontrar qualquer sinal de Imperial meddling.",
+          "Eu pensou como muito! Imperador e sempre pitiless e vile.",
+          "Encontrar me por docks.",
+          "So Eu pode sneak voce para dentro Valhaven de claro.",
+          "Voce foiled de imperador planos aqui.",
+          "Voce Esta indo para precisa ajudar lutando seu newest inimigo.",
+          "Eu tem alguns muito capable amigos.",
+          "Vir para barco.",
+          "Voce Vai tem para vir com me para Valhaven para parar Imperador e dele Seelie aliados.",
+          "Imperador vai ser depois voce agora.",
+          "Ele era um grande homem uma vez.",
+          "Veio fora de lugar nenhum e expulsou fora Goblins.",
+          "Entao ele mantido afastado dragoes.",
+          "Mas em recent anos ele esta grown cruel.",
+          "Sim, isso e verdade.",
+          "Eu nao saber como mal eles eram ate hoje.",
+          "Vir, nos deve pressa.",
+          "Se nos estamos sortudo, Imperador nao vai saber nos estamos vindo."
+        ]
+      },
+      "sdmatron01hard": {
+        "defaultLines": [
+          "Nos pode ser capaz para fortaleza este de happening novamente",
+          "Trazer me suficiente mucus glands e Eu pode mix acima um repellent",
+          "Aquele vai fortaleza insetos fora de templo",
+          "Este vai fazer nicely. Tomar este para seu problema",
+          "Uau, este coisas smells horrid",
+          "Isso Vai scare embora insetos embora, so isso esta vale isso",
+          "Ceu abencoar voce em seu jornada"
+        ]
+      },
+      "sdmayor01hard": {
+        "defaultLines": [
+          "Eu esperanca nos encontrar alguns caminho para evitar caindo sob de imperador poder.",
+          "Agradecer voce para vindo,#tn#. Nos precisa seu ajudar.",
+          "Bem-vindo para humilde Kovah.",
+          "honra e todos mina.",
+          "Matador de dragoes e Abridor de Caminho...",
+          "Voce tem realizou verdade maravilhas.",
+          "Nos vai falar mais em estes matters...",
+          "Mas agora Eu beg seu ajudar.",
+          "Seelie magias atormentar nosso templo, filling isso com abominations.",
+          "Seculos sob dragao dominio deixou nos com nenhum guerreiros para lutar eles.",
+          "Agora nosso aldeia vai sobreviver!",
+          "Voce derrotado Grandioso Marechal Sythokahn, mas um dragao restos.",
+          "dragao Sythokahn governou este terra para seculos.",
+          "Obrigado para voce.",
+          "Mas um dragao restos, Poco Lorde.",
+          "Ele runs Arena, onde escravos lutar para dele prazer.",
+          "Ir ver Zumwalt, ele usado para lutar em arena.",
+          "Ele pode dizer voce mais.",
+          "Alguem e destroying nosso planos para reviver deserto",
+          "Nos estado usando agua de Ogre Magos oasis para reviver Shazari.",
+          "Nos eram com sucesso desfazendo dano dragoes causado.",
+          "Mas agora alguem e siphoning afastado nosso agua.",
+          "e la sao carnivorous plantas por toda parte!",
+          "de agua flowing novamente, agradecer voce!",
+          "Agradecer voce!",
+          "O Que e um agua tita?"
+        ]
+      },
+      "sdnomad01hard": {
+        "defaultLines": [
+          "Seelie braceletes sao fascinating para me",
+          "Se tinha um bunch de aqueles Seelie braceletes...",
+          "Eu poderia quebrar eles abaixo e comecar replicating eles.",
+          "Smaller size de claro.",
+          "Mas Goblins iria prestar bem para algo como aqueles.",
+          "Trazer me o que voce pode.",
+          "Hmm. Nao exactly novo mais. Ah bem, ele esta seu prestar",
+          "Ver?",
+          "Descricao em Portugues A5C07A.",
+          "Aqueles Seelie braceletes fascinam me",
+          "Hmm. Nao exactly novo mais. Ah bem, de aqui seu prestar."
+        ]
+      },
+      "sdsage01hard": {
+        "defaultLines": [
+          "Estes grandioso piramides sao nao trabalho de nosso povo.",
+          "Magos quem construiu piramides deixou este terra longo atras.",
+          "Nos tem tomado alguns de deles ruinas como nosso proprio.",
+          "Mas outros permanecem guarded por poderosos espiritos.",
+          "Se isso esta antigo conhecimento voce buscam...",
+          "e voce esta daring suficiente para rosto antigo magics...",
+          "Entao voce deveria plumb profundezas de Umbral Templo para Oeste.",
+          "Voce sao um sobrevivente e um scholar. Eu esperanca voce aprendido muito de value.",
+          "Alguns de meu brethren em deserto precisa ajudar!",
+          "Um group de colonos foi para dentro deserto dois meses atras.",
+          "Eles esperanca para abrir comercio com Bitterfrost.",
+          "Eles encontrou um bom local para um caravancarai...",
+          "Mas agora monstros besiege eles de todos lados.",
+          "caravancarai e seguro.",
+          "Muitos obrigado para seu ajudar.",
+          "Deles smoked fish e disse para ser exquisite."
+        ]
+      },
+      "sdslave01hard": {
+        "defaultLines": [
+          "Nosso escapar plano falhou. Nenhum de goblin escravos fez isso fora",
+          "Encontrar deles memoria encantos e Eu pode tomar eles para deles familias",
+          "Eles lutou bravamente, mas eles apenas nao eram forte suficiente",
+          "Deles familias merecem alguns encerramento",
+          "Voce encontrou eles todos?",
+          "Eu Vou fazer certo deles familias saber eles lutou bravamente",
+          "Eu Iria vir para saber eles todos em escravo pits",
+          "Eles sao todos realmente grande guys",
+          "Agradecer voce para o que voce feito"
+        ]
+      },
+      "sdtitus01hard": {
+        "defaultLines": [
+          "Ah. Voce fez isso ha e appear para ser em um pedaco. Excelente!",
+          "Ir para perto por aldeia e encontrar Vila Anciao",
+          "Bem-vindo para Adormecido Terras,#tn#.",
+          "Este country e chamado Shazari.",
+          "Para seculos dragoes governou aqui.",
+          "Terrivel e cruel, sim.",
+          "Mas povo aqui sao gratis agora.",
+          "Ir introduce voce mesmo para vila anciao.",
+          "Ir para perto por aldeia e encontrar Vila Anciao."
+        ]
+      },
+      "sdtitus02hard": {
+        "defaultLines": [
+          "antigo piramides ao redor aqui pode segurar algo de interest.",
+          "antigo Seelie construiu estes piramides.",
+          "Um de eles restos selado ainda.",
+          "Eu imagine la sao maravilhas e perigos dentro.",
+          "Seelie eram sempre cruel aquele caminho.",
+          "Isso soa mais wondrous que Eu imaginou!",
+          "e voce tomou cuidar de perigos como bem.",
+          "Agora aquele voce derrotado defesas...",
+          "Eu Estou indo para spend alguns tempo plumbing dele segredos."
+        ]
+      }
+    },
+    "SwampRoadNorth": {
+      "bede": {
+        "displayName": "Descricao em Portugues FF9E52.",
+        "defaultLines": [
+          "Aquele usado para ser estrada para Ponte Sombria",
+          "Agora isso esta estrada para certain morte",
+          "Eu esperanca voce pode limpar caminho"
+        ]
+      },
+      "dane": {
+        "defaultLines": [
+          "castelo de Lorde Yornak parece ainda habitado embora nao por homens.",
+          "Castelo Yornak era lar de este de regiao lords.",
+          "ultimo Lorde e Dama Yornak construiu magnifico celeiro, palacio, e universidade.",
+          "de Fato eles eram, mas...",
+          "Eles sempre manteve deles antigo castelo em bom reparar.",
+          "Isso era deles seguro retreat.",
+          "Ha alguem em la.",
+          "Alguem Tuatara chamam Yornak.",
+          "Voce sobreviveu Castelo Yornak.",
+          "Yornak familia e outro tragico conto."
+        ]
+      },
+      "gran": {
+        "defaultLines": [
+          "Vai voce ajudar nos empurrar volta Tuatara soldados?",
+          "Trazer me Elmos de Tuatara Commanders.",
+          "Primeiro, para mostrar eles nos estamos tomando ha. Eles amam deles elmos.",
+          "Segundo, nos pode uso metal para forja nosso proprio armadura.",
+          "Descricao em Portugues DE04E0.",
+          "Agradecer voce! Aqueles lagartos saber nos estamos nao fooling ao redor agora!",
+          "Um real herói em nosso lado!",
+          "Talvez nos pode tomar lutar para estes beasties.",
+          "e nao apenas Tuatara.",
+          "Imagine este terra gratis de monstro dominio!"
+        ]
+      },
+      "gretta": {
+        "defaultLines": [
+          "Meu antidoto para aranha veneno precisa aranha presas",
+          "Se voce trazer me aranha presas, Eu Iria ser capaz para fazer um antidoto.",
+          "Estes grande aranhas nao usado para viver aqui.",
+          "Isso e por que Eu odeio magia, sempre corrompendo coisas.",
+          "Eu muito prefer alchemy.",
+          "Agradecer voce, agora Eu pode terminar antidoto",
+          "Isso vai tomar anos para obter livrar de estes aranhas.",
+          "Se nos pode sempre figure fora onde eles vir de."
+        ]
+      },
+      "ield": {
+        "defaultLines": [
+          "Aqueles lagartos colocar um muito de stock em aqueles estandartes",
+          "Tuatara reunem ao redor deles guerra estandartes.",
+          "Eles Estao ferozes quando deles estandarte e acima.",
+          "estandartes sao encantado em alguns caminho.",
+          "Se voce capture alguns de eles, Eu pode ser capaz para uso deles magia contra eles.",
+          "Perfect. Eu acho Eu pode sew nosso proprio encantado estandartes agora.",
+          "Agora Eu apenas precisa um bom desenho.",
+          "Um, obrigado, Eu Vou considerar isso.",
+          "Uh, voce fazer?",
+          "Sim, bem, Eu Vou vir acima com um poucos options."
+        ]
+      },
+      "kenelm": {
+        "displayName": "Descricao em Portugues 19F492.",
+        "defaultLines": [
+          "Isso Esta sombrio abaixo aqui.",
+          "e wet.",
+          "Eu miss praia."
+        ]
+      },
+      "odem": {
+        "defaultLines": [
+          "ruinas de Real Celeiro e fonte de devoradores.",
+          "Real Celeiro usado para ser um maravilha de mundo.",
+          "Mas agora arruinado celeiro e corrompido.",
+          "devoradores parecem para todos vir de la.",
+          "Se nos pode recuperar grain campos, nos pode apoio um inteiro exercito.",
+          "Voce limpou Real Celeiro!",
+          "Estes murderous plantas sao intriguing.",
+          "Nos precisa para aprender mais sobre Devoradores.",
+          "Sim, mas eles crescem como ervas daninhas.",
+          "Se nos estamos indo para curar terra, Eu para saber mais.",
+          "Coletar dentes de grande uns.",
+          "Eu pode uso eles para concoct um potion para veneno eles.",
+          "Bem feito, agradecer voce!",
+          "Eu odeio para acho o que Hsalt fez para dar plantas dentes.",
+          "Isso Esta terrivel para contemplar.",
+          "Mas isso esta todos Eu pode acho sobre.",
+          "O Que mais fez ele dar dentes para?",
+          "Cogumelos?",
+          "Descricao em Portugues 4D97D8.",
+          "Descricao em Portugues DB7932."
+        ]
+      },
+      "palok": {
+        "defaultLines": [
+          "Um Tuatara squad tem montou acima em um abandonado fazenda.",
+          "lagartos tomou ha este antigo casa.",
+          "Eles Estao usando isso como um base para lancar ataques de.",
+          "Eles loja suprimentos la tambem.",
+          "Principalmente secos besouros e rancida carne.",
+          "So voce pode talvez sair aquele la.",
+          "Unless voce esta para dentro aquele tipo de comida.",
+          "Eu Estou nao judging.",
+          "Agradecer voce!",
+          "Nos Vamos fortaleza um olho em aquele lugar.",
+          "Se qualquer mais mostrar acima, nos vamos tomar cuidar de eles.",
+          "Obrigado para nao bringing me secos besouros.",
+          "Embora meu cousin diz eles estao tasty.",
+          "Eu acho Eu deveria tentar um antes Eu judge."
+        ]
+      },
+      "rose": {
+        "defaultLines": [
+          "Devoradores sao por toda parte! Eu nao pode obter para bem",
+          "Pode voce obter devoradores embora de bem?",
+          "Isso Esta apenas fonte de fresco agua qualquer lugar perto aqui.",
+          "Estes monstro tem corrompido rio.",
+          "e lagoas.",
+          "Eles Iriam corromper chuva se eles poderia.",
+          "Whew, obrigado!",
+          "Obrigado para clearing bem.",
+          "Nos realmente precisa um reliable agua fonte."
+        ]
+      },
+      "srnmayor01": {
+        "defaultLines": [
+          "Nos vai fortificar nosso acampamento aqui, herói. Meu obrigado para liderando nos.",
+          "Este aldeia vai ser primeiro de varios nos recuperar.",
+          "Este inteiro terra era uma vez verde pasto.",
+          "goblins e deles magia tem transformado isso para dentro um pantano.",
+          "Principalmente iria ser mais que Eu sempre expected.",
+          "Alguns novo tipo de monstruoso guerreiro fica contra nos agora.",
+          "Estes nao sao goblins nos estamos lutando.",
+          "Alguns tipo de reptil-homens. Eles chamam eles mesmos Tuatara.",
+          "Aquele soa como eles, eles estao muito organizados.",
+          "Eles Tem tomado ha um torre proximo.",
+          "Nos nao pode obter passado eles.",
+          "Eu esperanca so.",
+          "Voce mostrou Tuatara como humanos lutar!",
+          "Ranger Affric tem liderou um grupo para scout antigo universidade distrito.",
+          "Affric acha fonte de corrupcao e para leste.",
+          "Alguem chamado Hsalt tem montou acima em Cidadela de Wissen.",
+          "Ser cuidadoso, estrada e overrung com Tuatara e Devoradores.",
+          "Tuatara general tem montou acima dele base em castelo proximo",
+          "Tuatara General, Svar, e based em aquele antigo castelo.",
+          "O Que e um exercito fazendo em este pantano mesmo assim?",
+          "Como nearest outro, isso e worrisome para me.",
+          "General Svar era um dragao!",
+          "Tuatara sao liderou por real, viver dragoes.",
+          "Aquele significa la sao mais dragoes.",
+          "Bom sorte com aquele.",
+          "Feliz isso esta nao me em seu boots."
+        ]
+      },
+      "srnmayor02": {
+        "displayName": "Descricao em Portugues 4EE72F.",
+        "defaultLines": [
+          "Sao voce amigo ou inimigo?",
+          "Fazer voce trazer message de nosso amigos em Sark?",
+          "Nos nao pode confiar estranhos.",
+          "Nos nao pode confiar estranhos",
+          "Isso Esta bom para ver voce novamente, amigo.",
+          "Seu legend cresce.",
+          "Logo este regiao vai seguir voce qualquer lugar.",
+          "Vizir de Tuatara e criando carnisaurs.",
+          "Vizir pode trabalho para dragao generais...",
+          "Mas nos agora saber ele esta real poder por tras corrupcao.",
+          "de vizir magico experimentos sao criando carnasaurs.",
+          "Ele Esta criando eles para servir como montarias para Tuatara soldados.",
+          "Voce fez isso! Nenhum carnasaur cavaleiros vai atormentar nos.",
+          "Vizir Hsalt e usando de cidadela biblioteca para mal",
+          "Vizir vai ser incrivelmente irado at voce.",
+          "Eu suponho voce esta indo depois ele.",
+          "Ser cuidadoso, de vizir magia faz ele como perigoso como dragoes ele serves.",
+          "biblioteca e liberated!",
+          "Gehrin e Odem acho eles saber onde Tuatara General e.",
+          "Nos tem mais soldados scouting brejo.",
+          "Gehrin e Odem acho eles saber onde outro Tuatara general e.",
+          "Provavelmente.",
+          "Ir ver eles, eles saber mais que Eu."
+        ]
+      },
+      "srnmayor03": {
+        "defaultLines": [
+          "Nos Estamos ainda scouting este area.",
+          "Nos Vamos enviar mensagem quando nos saber mais.",
+          "Feliz voce poderia fazer isso.",
+          "de Tuatara outro general e proximo.",
+          "Mas ele esta diferente que Svath.",
+          "Nos visto sinais de mortos-vivos em dele servico.",
+          "Ha outro General, chamado Svath. Ele Esta em antigo palacio.",
+          "General Svath comanda todos estes Tuatara.",
+          "Provavelmente so, mas este soa como grande irmao.",
+          "e Svath nao apenas comandar Tuatara soldados.",
+          "Ele Esta para dentro scarier coisas.",
+          "Eu significa como mortos-vivos.",
+          "Voce parado dragao invasao em dele tracks!",
+          "O Que e proximo para voce,#tn#?",
+          "Agora aquele Tuatara sao derrotado...",
+          "O Que e seu plano?",
+          "Eu nao pode imagine qualquer um sobreviveu Tuatara Legiao passing atraves."
+        ]
+      },
+      "srnmerchant01": {
+        "displayName": "Descricao em Portugues 92F7B7.",
+        "defaultLines": [
+          "Hail. Eu tem um poucos small coisas lagartos nao temos roubado ainda"
+        ]
+      },
+      "srnmerchant03": {
+        "displayName": "Descricao em Portugues E31D4B.",
+        "defaultLines": [
+          "Nao venture para dentro wilds unprepared!"
+        ]
+      },
+      "srntrainer01": {
+        "displayName": "Descricao em Portugues 5D569D.",
+        "defaultLines": [
+          "Ouviu sobre voce de meu irma",
+          "Voce sao um vicious goblin-matador"
+        ]
+      },
+      "srntrainer03": {
+        "displayName": "Descricao em Portugues C3DE41.",
+        "defaultLines": [
+          "Acima para um lesson,#tc#?"
+        ]
+      },
+      "sugh": {
+        "defaultLines": [
+          "Ha algo grande acima em aquele antigo fazenda.",
+          "Eu nao saber o que isso e.",
+          "Eu nao acho isso esta Tuatara embora.",
+          "Eu figured voce iria querer para verificar isso fora.",
+          "Porque Eu realmente nao querer para.",
+          "Fez Eu mention isso sounded grande?",
+          "Ooo! Eu odeio aranhas! Obrigado!",
+          "Um colossal aranha, isso era?",
+          "Eu odeio aranhas.",
+          "Eu Estou feliz isso era voce e nao me!"
+        ]
+      },
+      "yolaf": {
+        "displayName": "Descricao em Portugues BFE017.",
+        "defaultLines": [
+          "Meu mother veio de este terra.",
+          "Ela disse isso era pride de Ellyria.",
+          "Agora isso esta um pantano cheio de ruinas.",
+          "Eu querer para fix isso.",
+          "Fazer isso como isso e em meu sonhos."
+        ]
+      }
+    },
+    "SwampRoadNorthHard": {
+      "bedehard": {
+        "displayName": "Descricao em Portugues FF9E52.",
+        "defaultLines": [
+          "Aquele usado para ser estrada para Ponte Sombria",
+          "Agora isso esta estrada para certain morte",
+          "Eu esperanca voce pode limpar caminho"
+        ]
+      },
+      "danehard": {
+        "defaultLines": [
+          "castelo de Lorde Yornak parece ainda habitado embora nao por homens.",
+          "Castelo Yornak era lar de este de regiao lords.",
+          "ultimo Lorde e Dama Yornak construiu magnifico celeiro, palacio, e universidade.",
+          "de Fato eles eram, mas...",
+          "Eles sempre manteve deles antigo castelo em bom reparar.",
+          "Isso era deles seguro retreat.",
+          "Ha alguem em la.",
+          "Alguem Tuatara chamam Yornak.",
+          "Voce sobreviveu Castelo Yornak.",
+          "Yornak familia e outro tragico conto."
+        ]
+      },
+      "granhard": {
+        "defaultLines": [
+          "Vai voce ajudar nos empurrar volta Tuatara soldados?",
+          "Trazer me Elmos de Tuatara Commanders.",
+          "Primeiro, para mostrar eles nos estamos tomando ha. Eles amam deles elmos.",
+          "Segundo, nos pode uso metal para forja nosso proprio armadura.",
+          "Descricao em Portugues DE04E0.",
+          "Agradecer voce! Aqueles lagartos saber nos estamos nao fooling ao redor agora!",
+          "Um real herói em nosso lado!",
+          "Talvez nos pode tomar lutar para estes beasties.",
+          "e nao apenas Tuatara.",
+          "Imagine este terra gratis de monstro dominio!"
+        ]
+      },
+      "grettahard": {
+        "defaultLines": [
+          "Meu antidoto para aranha veneno precisa aranha presas",
+          "Se voce trazer me aranha presas, Eu Iria ser capaz para fazer um antidoto.",
+          "Estes grande aranhas nao usado para viver aqui.",
+          "Isso e por que Eu odeio magia, sempre corrompendo coisas.",
+          "Eu muito prefer alchemy.",
+          "Agradecer voce, agora Eu pode terminar antidoto",
+          "Isso vai tomar anos para obter livrar de estes aranhas.",
+          "Se nos pode sempre figure fora onde eles vir de."
+        ]
+      },
+      "ieldhard": {
+        "defaultLines": [
+          "Aqueles lagartos colocar um muito de stock em aqueles estandartes",
+          "Tuatara reunem ao redor deles guerra estandartes.",
+          "Eles Estao ferozes quando deles estandarte e acima.",
+          "estandartes sao encantado em alguns caminho.",
+          "Se voce capture alguns de eles, Eu pode ser capaz para uso deles magia contra eles.",
+          "Perfect. Eu acho Eu pode sew nosso proprio encantado estandartes agora.",
+          "Agora Eu apenas precisa um bom desenho.",
+          "Um, obrigado, Eu Vou considerar isso.",
+          "Uh, voce fazer?",
+          "Sim, bem, Eu Vou vir acima com um poucos options."
+        ]
+      },
+      "kenelmhard": {
+        "displayName": "Descricao em Portugues 19F492.",
+        "defaultLines": [
+          "Isso Esta sombrio abaixo aqui.",
+          "e wet.",
+          "Eu miss praia."
+        ]
+      },
+      "odemhard": {
+        "defaultLines": [
+          "ruinas de Real Celeiro e fonte de devoradores.",
+          "Real Celeiro usado para ser um maravilha de mundo.",
+          "Mas agora arruinado celeiro e corrompido.",
+          "devoradores parecem para todos vir de la.",
+          "Se nos pode recuperar grain campos, nos pode apoio um inteiro exercito.",
+          "Voce limpou Real Celeiro!",
+          "Estes murderous plantas sao intriguing.",
+          "Nos precisa para aprender mais sobre Devoradores.",
+          "Sim, mas eles crescem como ervas daninhas.",
+          "Se nos estamos indo para curar terra, Eu para saber mais.",
+          "Coletar dentes de grande uns.",
+          "Eu pode uso eles para concoct um potion para veneno eles.",
+          "Bem feito, agradecer voce!",
+          "Eu odeio para acho o que Hsalt fez para dar plantas dentes.",
+          "Isso Esta terrivel para contemplar.",
+          "Mas isso esta todos Eu pode acho sobre.",
+          "O Que mais fez ele dar dentes para?",
+          "Cogumelos?",
+          "Descricao em Portugues 4D97D8.",
+          "Descricao em Portugues DB7932."
+        ]
+      },
+      "palokhard": {
+        "defaultLines": [
+          "Um Tuatara squad tem montou acima em um abandonado fazenda.",
+          "lagartos tomou ha este antigo casa.",
+          "Eles Estao usando isso como um base para lancar ataques de.",
+          "Eles loja suprimentos la tambem.",
+          "Principalmente secos besouros e rancida carne.",
+          "So voce pode talvez sair aquele la.",
+          "Unless voce esta para dentro aquele tipo de comida.",
+          "Eu Estou nao judging.",
+          "Agradecer voce!",
+          "Nos Vamos fortaleza um olho em aquele lugar.",
+          "Se qualquer mais mostrar acima, nos vamos tomar cuidar de eles.",
+          "Obrigado para nao bringing me secos besouros.",
+          "Embora meu cousin diz eles estao tasty.",
+          "Eu acho Eu deveria tentar um antes Eu judge."
+        ]
+      },
+      "rosehard": {
+        "defaultLines": [
+          "Devoradores sao por toda parte! Eu nao pode obter para bem",
+          "Pode voce obter devoradores embora de bem?",
+          "Isso Esta apenas fonte de fresco agua qualquer lugar perto aqui.",
+          "Estes monstro tem corrompido rio.",
+          "e lagoas.",
+          "Eles Iriam corromper chuva se eles poderia.",
+          "Whew, obrigado!",
+          "Obrigado para clearing bem.",
+          "Nos realmente precisa um reliable agua fonte."
+        ]
+      },
+      "srnmayor01hard": {
+        "defaultLines": [
+          "Alguns novo tipo de monstruoso guerreiro fica contra nos agora.",
+          "Estes nao sao goblins nos estamos lutando.",
+          "Alguns tipo de reptil-homens. Eles chamam eles mesmos Tuatara.",
+          "Aquele soa como eles, eles estao muito organizard.",
+          "Eles Tem tomado ha um torre proximo.",
+          "Nos nao pode obter passado eles.",
+          "Eu esperanca so.",
+          "Voce mostrou Tuatara como humanos lutar!",
+          "Ranger Affric tem liderou um grupo para scout antigo universidade distrito.",
+          "Affric acha fonte de corrupcao e para leste.",
+          "Alguem chamado Hsalt tem montou acima em Cidadela de Wissen.",
+          "Ser cuidadoso, estrada e overrung com Tuatara e Devoradores.",
+          "Tuatara general tem montou acima dele base em castelo proximo",
+          "Tuatara General, Svar, e based em aquele antigo castelo.",
+          "O Que e um exercito fazendo em este pantano mesmo assim?",
+          "Como nearest outro, isso e worrisome para me.",
+          "General Svar era um dragao!",
+          "Tuatara sao liderou por real, viver dragoes.",
+          "Aquele significa la sao mais dragoes.",
+          "Bom sorte com aquele.",
+          "Feliz isso esta nao me em seu boots.",
+          "Nos vai fortificar nosso acampamento aqui, herói. Meu obrigado para liderando nos.",
+          "Este aldeia vai ser primeiro de varios nos recuperar.",
+          "Este inteiro terra era uma vez verde pasto.",
+          "goblins e deles magia tem transformado isso para dentro um pantano.",
+          "Principalmente iria ser mais que Eu sempre expected.",
+          "Aquele soa como eles, eles estao muito organizados."
+        ]
+      },
+      "srnmayor02hard": {
+        "defaultLines": [
+          "Sao voce amigo ou inimigo?",
+          "Fazer voce trazer message de nosso amigos em Sark?",
+          "Nos nao pode confiar estranhos",
+          "Isso Esta bom para ver voce novamente, amigo.",
+          "Seu legend cresce.",
+          "Logo este regiao vai seguir voce qualquer lugar.",
+          "Vizir de Tuatara e criando carnisaurs.",
+          "Vizir pode trabalho para dragao generais...",
+          "Mas nos agora saber ele esta real poder por tras corrupcao.",
+          "de vizir magico experimentos sao criando carnasaurs.",
+          "Ele Esta criando eles para servir como montarias para Tuatara soldados.",
+          "Voce fez isso! Nenhum carnasaur cavaleiros vai atormentar nos.",
+          "Vizir Hsalt e usando de cidadela biblioteca para mal",
+          "Vizir vai ser incrivelmente irado at voce.",
+          "Eu suponho voce esta indo depois ele.",
+          "Ser cuidadoso, de vizir magia faz ele como perigoso como dragoes ele serves.",
+          "biblioteca e liberated!",
+          "Gehrin e Odem acho eles saber onde Tuatara General e.",
+          "Nos tem mais soldados scouting brejo.",
+          "Gehrin e Odem acho eles saber onde outro Tuatara general e.",
+          "Provavelmente.",
+          "Ir ver eles, eles saber mais que Eu."
+        ]
+      },
+      "srnmayor03hard": {
+        "defaultLines": [
+          "Nos Estamos ainda scouting este area.",
+          "Nos Vamos enviar mensagem quando nos saber mais.",
+          "Feliz voce poderia fazer isso.",
+          "de Tuatara outro general e proximo.",
+          "Mas ele esta diferente que Svath.",
+          "Nos visto sinais de mortos-vivos em dele servico.",
+          "Ha outro General, chamado Svath. Ele Esta em antigo palacio.",
+          "General Svath comanda todos estes Tuatara.",
+          "Provavelmente so, mas este soa como grande irmao.",
+          "e Svath nao apenas comandar Tuatara soldados.",
+          "Ele Esta para dentro scarier coisas.",
+          "Eu significa como mortos-vivos.",
+          "Voce parado dragao invasao em dele tracks!",
+          "O Que e proximo para voce,#tn#?",
+          "Agora aquele Tuatara sao derrotado...",
+          "O Que e seu plano?",
+          "Eu nao pode imagine qualquer um sobreviveu Tuatara Legiao passing atraves."
+        ]
+      },
+      "srnmerchant01hard": {
+        "displayName": "Descricao em Portugues 92F7B7.",
+        "defaultLines": [
+          "Hail. Eu tem um poucos small coisas lagartos nao temos roubado ainda"
+        ]
+      },
+      "srnmerchant03hard": {
+        "displayName": "Descricao em Portugues E31D4B.",
+        "defaultLines": [
+          "Nao venture para dentro wilds unprepared!"
+        ]
+      },
+      "srntrainer01hard": {
+        "displayName": "Descricao em Portugues 5D569D.",
+        "defaultLines": [
+          "Ouviu sobre voce de meu irma",
+          "Voce sao um vicious goblin-matador"
+        ]
+      },
+      "srntrainer03hard": {
+        "displayName": "Descricao em Portugues C3DE41.",
+        "defaultLines": [
+          "Acima para um lesson,#tc#?"
+        ]
+      },
+      "sughhard": {
+        "defaultLines": [
+          "Ha algo grande acima em aquele antigo fazenda.",
+          "Eu nao saber o que isso e.",
+          "Eu nao acho isso esta Tuatara embora.",
+          "Eu figured voce iria querer para verificar isso fora.",
+          "Porque Eu realmente nao querer para.",
+          "Fez Eu mention isso sounded grande?",
+          "Ooo! Eu odeio aranhas! Obrigado!",
+          "Um colossal aranha, isso era?",
+          "Eu odeio aranhas.",
+          "Eu Estou feliz isso era voce e nao me!"
+        ]
+      },
+      "yolafhard": {
+        "displayName": "Descricao em Portugues BFE017.",
+        "defaultLines": [
+          "Meu mother veio de este terra.",
+          "Ela disse isso era pride de Ellyria.",
+          "Agora isso esta um pantano cheio de ruinas.",
+          "Eu querer para fix isso.",
+          "Fazer isso como isso e em meu sonhos."
+        ]
+      }
+    },
+    "TutorialBoat": {
+      "captainfink": {
+        "defaultLines": [
+          "Você nos salvou!",
+          "Precisamos encontrar aquela vila.",
+          "Você pode encontrar a vila no mapa.",
+          "É só seguir para o leste que você vai encontrar ela.",
+          "Vou tentar consertar a Niobe."
+        ]
+      }
+    }
+  }
+}

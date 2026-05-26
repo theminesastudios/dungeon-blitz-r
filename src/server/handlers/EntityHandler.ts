@@ -13,6 +13,7 @@ import { noteDungeonRunBossCutscene, noteDungeonRunEntitySeen } from '../core/Du
 import { areClientsInSameParty, getPartyIdForClient, isClientPartyLeader, sharesRoomIds } from '../core/PartySync';
 import { areClientsInSameLevelScope, getClientLevelScope, getLevelScopeKey } from '../core/LevelScope';
 import { getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
+import { DialogueTranslationLoader } from '../data/DialogueTranslationLoader';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
@@ -1002,20 +1003,26 @@ export class EntityHandler {
         bossName: string,
         levelInstanceId: string = ''
     ): void {
-        const bb = new BitBuffer(false);
-        bb.writeMethod4(Math.max(0, roomId));
-        bb.writeMethod4(bossId);
-        bb.writeMethod26(bossName);
-        bb.writeMethod4(0);
-        bb.writeMethod26('');
-        const payload = bb.toBuffer();
-
         const scopeKey = getLevelScopeKey(levelName, levelInstanceId);
         for (const other of GlobalState.sessionsByToken.values()) {
             if (!other.playerSpawned || getClientLevelScope(other) !== scopeKey) {
                 continue;
             }
-            other.send(0xAC, payload);
+
+            const bb = new BitBuffer(false);
+            bb.writeMethod4(Math.max(0, roomId));
+            bb.writeMethod4(bossId);
+            bb.writeMethod26(DialogueTranslationLoader.translateText(
+                bossName,
+                String(other.character?.dialogueLanguage ?? '').trim().toLowerCase() || 'en',
+                {
+                    playerClass: other.character?.class,
+                    playerGender: other.character?.gender
+                }
+            ));
+            bb.writeMethod4(0);
+            bb.writeMethod26('');
+            other.send(0xAC, bb.toBuffer());
         }
         noteDungeonRunBossCutscene(scopeKey, roomId, bossId);
     }
@@ -1315,7 +1322,14 @@ export class EntityHandler {
                 client.currentLevel,
                 client.currentRoomId,
                 entityId,
-                'Ranik, The Geomancer',
+                DialogueTranslationLoader.translateText(
+                    'Ranik, The Geomancer',
+                    String(client.character?.dialogueLanguage ?? '').trim().toLowerCase() || 'en',
+                    {
+                        playerClass: client.character?.class,
+                        playerGender: client.character?.gender
+                    }
+                ),
                 client.levelInstanceId
             );
             state.bossInfoSentIds.add(entityId);

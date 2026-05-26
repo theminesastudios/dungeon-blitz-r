@@ -667,12 +667,28 @@ export class SocialHandler {
         return Number(entity?.team ?? 0) === EntityTeam.ENEMY;
     }
 
-    private static translateRoomThought(client: Client, entityId: number, text: string): string {
+    private static translateRoomThought(client: Client, entityId: number, text: string, target: Client = client): string {
         return DialogueTranslationLoader.translateText(
             text,
-            SocialHandler.getDialogueLanguage(client.character),
-            { fallbackToGeneric: SocialHandler.isEnemyRoomThought(client, entityId) }
+            SocialHandler.getDialogueLanguage(target.character),
+            {
+                fallbackToGeneric: SocialHandler.isEnemyRoomThought(client, entityId),
+                playerClass: target.character?.class,
+                playerGender: target.character?.gender
+            }
         );
+    }
+
+    private static relayRoomThought(client: Client, entityId: number, text: string): void {
+        for (const other of SocialHandler.forLevelRecipients(client, true)) {
+            other.send(
+                0x76,
+                SocialHandler.buildRoomThoughtPayload(
+                    entityId,
+                    SocialHandler.translateRoomThought(client, entityId, text, other)
+                )
+            );
+        }
     }
 
     private static getPartyForName(name: string): { partyId: number; group: PartyGroup } | null {
@@ -1862,14 +1878,10 @@ export class SocialHandler {
         const br = new BitReader(data);
         const entityId = br.readMethod4();
         const text = br.readMethod13();
-        const payload = SocialHandler.buildRoomThoughtPayload(
-            entityId,
-            SocialHandler.translateRoomThought(client, entityId, text)
-        );
         LevelHandler.maybeStartGoblinRiverBossIntroLock(client, entityId, text);
         MissionHandler.noteDungeonSkitActivity(client);
 
-        SocialHandler.relayToLevel(client, 0x76, payload, true);
+        SocialHandler.relayRoomThought(client, entityId, text);
     }
 
     static handleStartSkit(client: Client, data: Buffer): void {
@@ -1877,14 +1889,10 @@ export class SocialHandler {
         const entityId = br.readMethod9();
         br.readMethod15();
         const text = br.readMethod26();
-        const payload = SocialHandler.buildRoomThoughtPayload(
-            entityId,
-            SocialHandler.translateRoomThought(client, entityId, text)
-        );
         LevelHandler.maybeStartGoblinRiverBossIntroLock(client, entityId, text);
         MissionHandler.noteDungeonSkitActivity(client);
 
-        SocialHandler.relayToLevel(client, 0x76, payload, true);
+        SocialHandler.relayRoomThought(client, entityId, text);
     }
 
     static handleEmoteBegin(client: Client, data: Buffer): void {

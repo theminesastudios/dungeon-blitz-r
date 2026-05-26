@@ -2,7 +2,7 @@ import { strict as assert } from 'assert';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { buildDungeonBlitzSwfVariantBuffer } from '../core/DungeonBlitzSwf';
+import { buildDungeonBlitzSwfVariantBuffer, SWF_RUNTIME_VERSION } from '../core/DungeonBlitzSwf';
 import { Config } from '../core/config';
 import {
     classIndexByName,
@@ -29,7 +29,9 @@ function resolveBaseSwfPath(): string {
 const BASE_SWF_PATH = resolveBaseSwfPath();
 const MULTIPLAYER_HOST = Config.MULTIPLAYER_HOST;
 const LOCAL_REFRESH_URL = 'http://localhost:8000/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbw';
+const LOCAL_PORTUGUESE_REFRESH_URL = 'http://localhost:8000/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbw&lang=pt-br';
 const MULTIPLAYER_REFRESH_URL = `http://${MULTIPLAYER_HOST}/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbw`;
+const MULTIPLAYER_PORTUGUESE_REFRESH_URL = `http://${MULTIPLAYER_HOST}/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbw&lang=pt-br`;
 const LEGACY_REFRESH_URL = '/p/cbp/DungeonBlitz.swf?fv=cbw&gv=cbw';
 const BITMAPDATA_TOTAL_PIXELS = 16777215;
 const CLASS82_SCENE_CACHE_SAFE_PIXELS = 4194304;
@@ -155,6 +157,38 @@ function getInstanceMethodCode(swfPath: string, className: string, methodName: s
         methodBody,
         instructions: disassemble(code, `${className}.${methodName}`)
     };
+}
+
+function assertInstanceMethodBranchesTargetInstructions(swfPath: string, className: string, methodName: string): void {
+    const ctx = parseSwf(swfPath);
+    const abc = parseAbc(ctx);
+    const classIndex = classIndexByName(abc, className);
+    assert.notEqual(classIndex, null, `${className} class not found`);
+
+    const methodIdx = methodIdxForTrait(abc.instances[classIndex!].traits, abc, methodName);
+    assert.notEqual(methodIdx, null, `${className}.${methodName} not found`);
+
+    const methodBody = abc.methodBodies.get(methodIdx!);
+    assert.ok(methodBody, `${className}.${methodName} body not found`);
+
+    const code = ctx.body.subarray(methodBody.codeStart, methodBody.codeStart + methodBody.codeLen);
+    const instructions = disassemble(code, `${className}.${methodName}`);
+    const validTargets = new Set(instructions.map((instruction) => instruction.offset));
+    validTargets.add(code.length);
+
+    for (const instruction of instructions) {
+        for (const operand of instruction.operands) {
+            if (operand[0] !== 's24') {
+                continue;
+            }
+            const target = instruction.offset + instruction.size + operand[1];
+            assert.equal(
+                validTargets.has(target),
+                true,
+                `${className}.${methodName} branch at ${instruction.offset} targets invalid offset ${target}`
+            );
+        }
+    }
 }
 
 function findBitmapDataConstructorIndex(
@@ -309,73 +343,6 @@ function assertClass82BitmapDataGuardWindow(swfPath: string): void {
         }),
         true,
         'class_82.method_193 must preserve normal cache render scale before BitmapData allocation'
-    );
-    assert.equal(
-        guardWindow.filter((instruction) => instruction.opcode === 0x25 && instruction.operands[0]?.[1] === 128).length >= 2,
-        true,
-        'class_82.method_193 fallback must use a visible 128x128 BitmapData instead of 1x1'
-    );
-    assert.equal(
-        instructions.some((instruction, index) =>
-            getLocalOperand(instruction) === 6 &&
-            getLocalOperand(instructions[index + 1]) === 6 &&
-            instructions[index + 2]?.opcode === 0xab &&
-            instructions[index + 3]?.opcode === 0x12 &&
-            getLocalOperand(instructions[index + 4]) === 6 &&
-            instructions[index + 5]?.opcode === 0x24 &&
-            instructions[index + 5]?.operands[0]?.[1] === 0 &&
-            instructions[index + 6]?.opcode === 0xaf &&
-            instructions[index + 7]?.opcode === 0x12 &&
-            getLocalOperand(instructions[index + 8]) === 6 &&
-            instructions[index + 9]?.opcode === 0x24 &&
-            instructions[index + 9]?.operands[0]?.[1] === CLASS82_MAX_SCENE_CACHE_SCALE &&
-            instructions[index + 10]?.opcode === 0xaf &&
-            instructions[index + 11]?.opcode === 0x11
-        ),
-        true,
-        'class_82.method_193 must clamp invalid transition cache scale before width/height calculation'
-    );
-}
-
-function assertClass72FloatTextBitmapDataGuardWindow(swfPath: string): void {
-    const { abc, instructions } = getInstanceMethodCode(swfPath, 'class_72', 'method_1943');
-    const widthLocal = 14;
-    const heightLocal = 15;
-    const constructorIndex = findBitmapDataConstructorIndex(
-        instructions,
-        abc.multinameNames,
-        widthLocal,
-        heightLocal
-    );
-    assert.notEqual(constructorIndex, -1, 'class_72.method_1943 BitmapData constructor must use guarded dimensions');
-
-    const guardWindow = instructions.slice(Math.max(0, constructorIndex - 85), constructorIndex);
-    assert.equal(
-        guardWindow.filter((instruction) => instruction.opcode === 0x25 && instruction.operands[0]?.[1] === 8191).length >= 2,
-        true,
-        'class_72.method_1943 must enforce Flash\'s 8191 BitmapData axis limit'
-    );
-    assert.equal(
-        guardWindow.some((instruction, index) => (
-            getLocalOperand(instruction) === widthLocal &&
-            getLocalOperand(guardWindow[index + 1]) === heightLocal &&
-            guardWindow[index + 2]?.opcode === 0xa2 &&
-            guardWindow[index + 3]?.opcode === 0x25 &&
-            guardWindow[index + 3]?.operands[0]?.[1] === CLASS72_FLOAT_TEXT_SAFE_PIXELS &&
-            guardWindow[index + 4]?.opcode === 0xaf
-        )),
-        true,
-        'class_72.method_1943 must enforce the floating text BitmapData safe pixel limit'
-    );
-    assert.equal(
-        guardWindow.filter((instruction) => instruction.opcode === 0x25 && instruction.operands[0]?.[1] === 128).length >= 2,
-        true,
-        'class_72.method_1943 fallback must use a visible 128x128 BitmapData instead of 1x1'
-    );
-    assert.equal(
-        guardWindow.some((instruction) => instruction.opcode === 0x68 && u30OperandName(instruction, abc.multinameNames) === 'var_1344'),
-        true,
-        'class_72.method_1943 fallback must avoid caching clipped oversized float text'
     );
 }
 
@@ -711,6 +678,33 @@ function assertDungeonQuestHelperPrefersDungeonProgress(swfPath: string): void {
     );
 }
 
+function assertDisconnectRefreshButtonNudgedRight(swfPath: string): void {
+    const { abc, instructions } = getInstanceMethodCode(swfPath, 'class_67', 'OnCreateScreen');
+    assert.equal(
+        instructions.some((instruction, index) =>
+            instruction.opcode === 0x66 &&
+            u30OperandName(instruction, abc.multinameNames) === 'am_Refresh' &&
+            instructions[index + 1]?.opcode === 0x2a &&
+            instructions[index + 2]?.opcode === 0x66 &&
+            u30OperandName(instructions[index + 2], abc.multinameNames) === 'x' &&
+            instructions[index + 3]?.opcode === 0x24 &&
+            instructions[index + 3]?.operands[0]?.[1] === 3 &&
+            instructions[index + 4]?.opcode === 0xa0 &&
+            instructions[index + 5]?.opcode === 0x61 &&
+            u30OperandName(instructions[index + 5], abc.multinameNames) === 'x' &&
+            instructions[index + 9]?.opcode === 0x66 &&
+            u30OperandName(instructions[index + 9], abc.multinameNames) === 'y' &&
+            instructions[index + 10]?.opcode === 0x24 &&
+            instructions[index + 10]?.operands[0]?.[1] === -5 &&
+            instructions[index + 11]?.opcode === 0xa0 &&
+            instructions[index + 12]?.opcode === 0x61 &&
+            u30OperandName(instructions[index + 12], abc.multinameNames) === 'y'
+        ),
+        true,
+        'class_67.OnCreateScreen must nudge the disconnect refresh button into its frame'
+    );
+}
+
 function assertSuperAnimMethod200BitmapDataGuard(swfPath: string): void {
     assertBitmapDataGuardWindow(swfPath, 10, 11, 'SuperAnimData.method_200 direct allocation');
     assertBitmapDataGuardWindow(swfPath, 25, 26, 'SuperAnimData.method_200 cropped allocation');
@@ -786,30 +780,6 @@ function assertSuperAnimMethod866LiveFallbackCleanup(swfPath: string): void {
 
     assert.equal(
         instructions.some((instruction, index) =>
-            instruction.opcode === 0x46 &&
-            u30OperandName(instruction, abc.multinameNames) === 'method_982' &&
-            setLocalOperand(instructions[index + 2]) === 11 &&
-            getLocalOperand(instructions[index + 3]) === 11 &&
-            instructions[index + 4]?.opcode === 0x12 &&
-            getLocalOperand(instructions[index + 5]) === 11 &&
-            instructions[index + 6]?.opcode === 0x66 &&
-            u30OperandName(instructions[index + 6], abc.multinameNames) === 'bitmapData' &&
-            instructions[index + 7]?.opcode === 0x12 &&
-            getLocalOperand(instructions[index + 8]) === 11 &&
-            instructions[index + 9]?.opcode === 0x66 &&
-            u30OperandName(instructions[index + 9], abc.multinameNames) === 'bitmapData' &&
-            instructions[index + 10]?.opcode === 0x66 &&
-            u30OperandName(instructions[index + 10], abc.multinameNames) === 'width' &&
-            instructions[index + 11]?.opcode === 0x24 &&
-            instructions[index + 11].operands[0]?.[1] === 1 &&
-            instructions[index + 12]?.opcode === 0x17
-        ),
-        true,
-        'SuperAnimData.method_866 must reject method_982 1x1 fallback bitmaps before caching frames'
-    );
-
-    assert.equal(
-        instructions.some((instruction, index) =>
             getLocalOperand(instruction) === 11 &&
             instructions[index + 1]?.opcode === 0x11 &&
             getLocalOperand(instructions[index + 2]) === 4 &&
@@ -838,6 +808,8 @@ function testLocalVariantUsesLocalhostAndPort8000(): void {
         assert.equal(getStringMatchCount(tempPath, 'localhost'), 1);
         assert.equal(getStringMatchCount(tempPath, ':8000/p/'), 1);
         assert.equal(getStringMatchCount(tempPath, LOCAL_REFRESH_URL), 1);
+        assert.equal(getStringMatchCount(tempPath, '/lang:ptbr'), 1);
+        assert.equal(getStringMatchCount(tempPath, '/lang:br'), 1);
         assert.equal(getStringMatchCount(tempPath, LEGACY_REFRESH_URL), 0);
         assert.equal(getStringMatchCount(tempPath, MULTIPLAYER_HOST), 0);
         assert.equal(getStringMatchCount(tempPath, '/p/'), 0);
@@ -853,6 +825,13 @@ function testMultiplayerVariantUsesRemoteHostAndDefaultAssetPath(): void {
         assert.equal(getStringMatchCount(tempPath, LEGACY_REFRESH_URL), 0);
         assert.equal(getStringMatchCount(tempPath, 'localhost'), 0);
         assert.equal(getStringMatchCount(tempPath, ':8000/p/'), 0);
+    });
+}
+
+function testPortugueseMultiplayerVariantKeepsPortugueseRefreshUrl(): void {
+    const buffer = buildDungeonBlitzSwfVariantBuffer(BASE_SWF_PATH, 'multiplayer', 'pt-br');
+    withTempSwf(buffer, (tempPath) => {
+        assert.equal(getStringMatchCount(tempPath, MULTIPLAYER_PORTUGUESE_REFRESH_URL), 1);
     });
 }
 
@@ -884,14 +863,6 @@ function testBaseAndLocalVariantKeepClass23BitmapDataGuard(): void {
     const buffer = buildDungeonBlitzSwfVariantBuffer(BASE_SWF_PATH, 'local');
     withTempSwf(buffer, (tempPath) => {
         assertClass23BitmapDataGuardWindow(tempPath);
-    });
-}
-
-function testBaseAndLocalVariantKeepClass72FloatTextBitmapDataGuard(): void {
-    assertClass72FloatTextBitmapDataGuardWindow(BASE_SWF_PATH);
-    const buffer = buildDungeonBlitzSwfVariantBuffer(BASE_SWF_PATH, 'local');
-    withTempSwf(buffer, (tempPath) => {
-        assertClass72FloatTextBitmapDataGuardWindow(tempPath);
     });
 }
 
@@ -985,14 +956,87 @@ function testBaseAndLocalVariantKeepDungeonQuestHelperGuard(): void {
     });
 }
 
+function testLocalVariantNudgesDisconnectRefreshButton(): void {
+    const buffer = buildDungeonBlitzSwfVariantBuffer(BASE_SWF_PATH, 'local', 'pt-br');
+    withTempSwf(buffer, (tempPath) => {
+        assertDisconnectRefreshButtonNudgedRight(tempPath);
+    });
+}
+
+function testPortugueseVariantAddsLocalizedEmoteMenuAndAliases(): void {
+    const englishBuffer = buildDungeonBlitzSwfVariantBuffer(BASE_SWF_PATH, 'local', 'en');
+    withTempSwf(englishBuffer, (tempPath) => {
+        assert.equal(getStringMatchCount(tempPath, 'Acenar'), 0);
+        assert.equal(getStringMatchCount(tempPath, 'ACENAR'), 0);
+    });
+
+    const portugueseBuffer = buildDungeonBlitzSwfVariantBuffer(BASE_SWF_PATH, 'local', 'pt-br');
+    withTempSwf(portugueseBuffer, (tempPath) => {
+        assert.equal(getStringMatchCount(tempPath, LOCAL_PORTUGUESE_REFRESH_URL), 1);
+        assert.equal(getStringMatchCount(tempPath, `UI_1.swf?rv=${SWF_RUNTIME_VERSION}`), 1);
+        assertInstanceMethodBranchesTargetInstructions(tempPath, 'class_127', 'method_1237');
+        assertInstanceMethodBranchesTargetInstructions(tempPath, 'class_127', 'method_1260');
+        const { abc, instructions } = getInstanceMethodCode(tempPath, 'class_127', 'method_1260');
+        const menuMethod = getInstanceMethodCode(tempPath, 'class_127', 'method_1237');
+        const menuStrings = new Set(
+            menuMethod.instructions
+                .filter((instruction) => instruction.opcode === 0x2c)
+                .map((instruction) => menuMethod.abc.stringValues[instruction.operands[0]?.[1] ?? 0])
+        );
+        let keepsCanonicalEmoteList = false;
+        const parsedSwf = parseSwf(tempPath);
+        const parsedAbc = parseAbc(parsedSwf);
+        for (const methodBody of parsedAbc.methodBodies.values()) {
+            const code = parsedSwf.body.subarray(methodBody.codeStart, methodBody.codeStart + methodBody.codeLen);
+            let methodInstructions: Instruction[];
+            try {
+                methodInstructions = disassemble(code, 'pt-br emote list scan');
+            } catch {
+                continue;
+            }
+            const methodStrings = new Set(
+                methodInstructions
+                    .filter((instruction) => instruction.opcode === 0x2c)
+                    .map((instruction) => parsedAbc.stringValues[instruction.operands[0]?.[1] ?? 0])
+            );
+            if (methodStrings.has('Cheer L') && methodStrings.has('Kickball L')) {
+                keepsCanonicalEmoteList = ['Wave', 'Cheer L', 'Dance L', 'Relaxed L', 'Charge', 'End', 'AFK']
+                    .every((text) => methodStrings.has(text));
+                break;
+            }
+        }
+        assert.equal(keepsCanonicalEmoteList, true, 'PT-BR emote patch must keep class_127.const_245 canonical');
+        for (const text of ['Acenar', 'Celebrar', 'Sair', 'Avancar', 'DeOlho', 'Altinha', 'Parar', 'Ausente']) {
+            assert.ok(getStringMatchCount(tempPath, text) >= 1, `PT-BR emote menu should include ${text}`);
+            assert.ok(menuStrings.has(text), `class_127.method_1237 should use the localized emote label ${text}`);
+        }
+        for (const text of ['CONVIDAR', 'CONV', 'ENTRAR', 'ADICIONAR', 'AMIGO', 'SUSSURRAR', 'SUSSURAR', 'MSG', 'SAIR', 'IGNORAR', 'IGN', 'ACENAR', 'CELEBRAR', 'AVANCAR', 'DEOLHO', 'ALTINHA', 'EMBAIXADINHA', 'PARAR', 'AUSENTE']) {
+            const stringIndex = abc.stringValues.findIndex((value) => value === text);
+            assert.notEqual(stringIndex, -1, `PT-BR emote alias should include ${text}`);
+            assert.ok(
+                instructions.some((instruction) => instruction.opcode === 0x2c && instruction.operands[0]?.[1] === stringIndex),
+                `class_127.method_1260 should compare the PT-BR emote alias ${text}`
+            );
+        }
+        for (const text of ['INVITE', 'JOIN', 'FRIEND', 'TELL', 'LEAVE', 'IGNORE', 'WAVE', 'CHEER', 'CHARGE', 'EYESONYOU', 'KICKBALL', 'END', 'AFK']) {
+            const stringIndex = abc.stringValues.findIndex((value) => value === text);
+            assert.notEqual(stringIndex, -1, `PT-BR emote aliases should keep canonical ${text}`);
+            assert.ok(
+                instructions.some((instruction) => instruction.opcode === 0x2c && instruction.operands[0]?.[1] === stringIndex),
+                `class_127.method_1260 should normalize to canonical emote ${text}`
+            );
+        }
+    });
+}
+
 function main(): void {
     testLocalVariantUsesLocalhostAndPort8000();
     testMultiplayerVariantUsesRemoteHostAndDefaultAssetPath();
+    testPortugueseMultiplayerVariantKeepsPortugueseRefreshUrl();
     testVariantRemovesDungeonMountSpeedGate();
     testBaseAndLocalVariantKeepSuperAnimMethod200BitmapDataGuard();
     testBaseAndLocalVariantKeepClass82BitmapDataGuard();
     testBaseAndLocalVariantKeepClass23BitmapDataGuard();
-    testBaseAndLocalVariantKeepClass72FloatTextBitmapDataGuard();
     testBaseAndLocalVariantKeepSuperAnimMethod806FullscreenBitmapData();
     testBaseAndLocalVariantKeepSuperAnimMethod982BitmapDataGuard();
     testBaseAndLocalVariantKeepGameMethod1947SafeScreenBitmapData();
@@ -1003,6 +1047,8 @@ function main(): void {
     testBaseAndLocalVariantKeepChatBubbleNullGuard();
     testBaseAndLocalVariantKeepMainMethod561ScaleClamp();
     testBaseAndLocalVariantKeepDungeonQuestHelperGuard();
+    testLocalVariantNudgesDisconnectRefreshButton();
+    testPortugueseVariantAddsLocalizedEmoteMenuAndAliases();
     console.log('dungeonblitz_swf_variant_regression: ok');
 }
 

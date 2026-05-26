@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { Character } from '../database/Database';
 import { DialogueTranslationLoader } from '../data/DialogueTranslationLoader';
+import { NpcDialogueLoader } from '../data/NpcDialogueLoader';
 import { GlobalState } from '../core/GlobalState';
 import { EntityTeam } from '../core/Entity';
 import { SocialHandler } from '../handlers/SocialHandler';
@@ -276,6 +277,77 @@ function testTurkishRoomThoughtFallbackPreventsEnemyEnglish(): void {
     const packet = client.sentPackets.find((entry) => entry.id === 0x76);
     assert.ok(packet, 'enemy room thought should still be relayed');
     assert.equal(decodeRoomThought(packet!.payload).text, 'Bunu odetecegiz!');
+}
+
+function testPortugueseDungeonRoomThoughtsUseOriginalTiming(): void {
+    const dataDir = path.resolve(__dirname, '../data');
+    DialogueTranslationLoader.load(dataDir);
+
+    const client = createFakeClient();
+    client.character.dialogueLanguage = 'pt-br';
+    client.token = 51003;
+    client.currentLevel = 'TutorialBoat';
+    client.levelInstanceId = 'quick-reaction';
+    client.playerSpawned = true;
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    try {
+        SocialHandler.handleStartSkit(
+            client as never,
+            createStartSkitPacket(101, "I told you I'd protect your ship, Captain.")
+        );
+        SocialHandler.handleStartSkit(
+            client as never,
+            createStartSkitPacket(102, 'Their Kraken...')
+        );
+        SocialHandler.handleStartSkit(
+            client as never,
+            createStartSkitPacket(103, '!?')
+        );
+    } finally {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+
+    const thoughts = client.sentPackets
+        .filter((entry) => entry.id === 0x76)
+        .map((entry) => decodeRoomThought(entry.payload));
+
+    assert.deepEqual(thoughts, [
+        {
+            entityId: 101,
+            text: 'Eu disse que protegeria seu barco, Capitão.'
+        },
+        {
+            entityId: 102,
+            text: 'Eles não, o Kraken deles...'
+        },
+        {
+            entityId: 103,
+            text: '!?'
+        }
+    ]);
+}
+
+function testPortugueseAlreadyLocalizedRoomThoughtPassesThrough(): void {
+    const dataDir = path.resolve(__dirname, '../data');
+    DialogueTranslationLoader.load(dataDir);
+
+    assert.equal(
+        DialogueTranslationLoader.translateText(
+            'Volte para o outro lado do mar!',
+            'pt-br',
+            { fallbackToGeneric: true }
+        ),
+        'Volte para o outro lado do mar!'
+    );
+    assert.equal(
+        DialogueTranslationLoader.translateText(
+            'Ele|Ela nos encontrou!',
+            'pt-br',
+            { fallbackToGeneric: true, playerGender: 'Female' }
+        ),
+        'Ela nos encontrou!'
+    );
 }
 
 function testTurkishEnemyFallbackKeepsLineVariety(): void {
@@ -957,6 +1029,202 @@ function testFelbridgeMeylourRoomDialogueTranslationsCoverExtractedSource(): voi
 
     const missing = felbridgeMeylourLines.filter((line) => !String(translations.translations?.[line] ?? '').trim());
     assert.deepEqual(missing, [], 'Felbridge Meylour room dialogue should have exact Turkish translations');
+}
+
+function testPortugueseClassPlaceholderLocalizesPlayerClass(): void {
+    const dataDir = path.resolve(__dirname, '../data');
+    DialogueTranslationLoader.load(dataDir);
+
+    const translated = DialogueTranslationLoader.translateText(
+        'You toy with what you do not understand, Rogue.',
+        'pt-br'
+    );
+
+    assert.equal(translated, 'Você brinca com o que não compreende, Ladino.');
+
+    const femaleTemplate = DialogueTranslationLoader.translateText(
+        'You toy with what you do not understand, Rogue.',
+        'pt-br',
+        { playerGender: 'Female' }
+    );
+
+    assert.equal(femaleTemplate, 'Você brinca com o que não compreende, Ladina.');
+
+    const exactPlaceholder = DialogueTranslationLoader.translateText(
+        'You toy with what you do not understand, #tc#.',
+        'pt-br',
+        { playerClass: 'Mage' }
+    );
+
+    assert.equal(exactPlaceholder, 'Você brinca com o que não compreende, Mago.');
+
+    const femalePlaceholder = DialogueTranslationLoader.translateText(
+        'You toy with what you do not understand, #tc#.',
+        'pt-br',
+        { playerClass: 'Rogue', playerGender: 'Female' }
+    );
+
+    assert.equal(femalePlaceholder, 'Você brinca com o que não compreende, Ladina.');
+
+    const femaleKrakenTitle = DialogueTranslationLoader.translateText(
+        'Die, Kraken Slayer!',
+        'pt-br',
+        { playerGender: 'Female' }
+    );
+
+    assert.equal(femaleKrakenTitle, 'Morra, Caçadora do Kraken!');
+
+    const malePronoun = DialogueTranslationLoader.translateText(
+        "Don't let him|her cross the bridge!",
+        'pt-br',
+        { playerGender: 'Male' }
+    );
+    const femalePronoun = DialogueTranslationLoader.translateText(
+        "Don't let him|her cross the bridge!",
+        'pt-br',
+        { playerGender: 'Female' }
+    );
+
+    assert.equal(malePronoun, 'Não deixem ele atravessar a ponte!');
+    assert.equal(femalePronoun, 'Não deixem ela atravessar a ponte!');
+
+    const femaleHumanVocative = DialogueTranslationLoader.translateText(
+        "You're gonna die in these caves, human!",
+        'pt-br',
+        { playerGender: 'Female' }
+    );
+
+    assert.equal(femaleHumanVocative, 'Você vai morrer nessas cavernas, humana!');
+
+    const maleFink = DialogueTranslationLoader.translateText(
+        "It's not the storm I fear.",
+        'pt-br',
+        { playerGender: 'Male' }
+    );
+    const femaleFink = DialogueTranslationLoader.translateText(
+        "It's not the storm I fear.",
+        'pt-br',
+        { playerGender: 'Female' }
+    );
+
+    assert.equal(maleFink, 'Não é a tempestade que eu temo, marujo.');
+    assert.equal(femaleFink, 'Não é a tempestade que eu temo, maruja.');
+
+    const femaleKrakenFriend = DialogueTranslationLoader.translateText(
+        'Are you friend or foe?',
+        'pt-br',
+        { playerGender: 'Female' }
+    );
+
+    assert.equal(femaleKrakenFriend, 'Você é amiga ou inimiga?');
+
+    assert.equal(
+        DialogueTranslationLoader.translateText('Look! An intruder!', 'pt-br', { playerGender: 'Female' }),
+        'Olhem! Uma intrusa!'
+    );
+    assert.equal(
+        DialogueTranslationLoader.translateText("This one's kind of tough...", 'pt-br', { playerGender: 'Female' }),
+        'Essa aqui é do tipo durona...'
+    );
+    assert.equal(
+        DialogueTranslationLoader.translateText("I don't need any help takin care of some human!", 'pt-br', { playerGender: 'Female' }),
+        'Não preciso de ajuda para cuidar de uma humana!'
+    );
+    assert.equal(
+        DialogueTranslationLoader.translateText("Thank you! You're quite the goblin slayer.", 'pt-br', { playerGender: 'Female' }),
+        'Obrigada! Você é uma baita caçadora de goblins.'
+    );
+    assert.equal(
+        DialogueTranslationLoader.translateText('HELP!', 'pt-br', { playerGender: 'Female' }),
+        'SOCORRO!'
+    );
+    assert.equal(
+        DialogueTranslationLoader.translateText('Nice one, stranger!', 'pt-br', { playerGender: 'Female' }),
+        'Muito bem, forasteira!'
+    );
+    assert.equal(
+        DialogueTranslationLoader.translateText('Stop the human!', 'pt-br', { playerGender: 'Female' }),
+        'Parem a humana!'
+    );
+    assert.equal(
+        DialogueTranslationLoader.translateText("Don't let him|her take our home!", 'pt-br', { playerGender: 'Female' }),
+        'Não deixem ela tomar nosso lar!'
+    );
+    assert.equal(
+        DialogueTranslationLoader.translateText("Don't let her take our home!", 'pt-br', { playerGender: 'Female' }),
+        'Não deixem ela tomar nosso lar!'
+    );
+    assert.equal(
+        DialogueTranslationLoader.translateText('Welcome, warrior. Enjoy the Guild Hall.', 'pt-br', { playerGender: 'Male' }),
+        'Seja bem-vindo, guerreiro. Aproveite o Salão da Guilda.'
+    );
+    assert.equal(
+        DialogueTranslationLoader.translateText('Welcome, warrior. Enjoy the Guild Hall.', 'pt-br', { playerGender: 'Female' }),
+        'Seja bem-vinda, guerreira. Aproveite o Salão da Guilda.'
+    );
+    assert.equal(
+        DialogueTranslationLoader.translateText('Please hatch more eggs, friend. Yval here might like a bit more company.', 'pt-br', { playerGender: 'Female' }),
+        'Por favor, choque mais ovos, amiga. O Yval aqui talvez goste de ter um pouco mais de companhia.'
+    );
+    assert.equal(
+        DialogueTranslationLoader.translateText('If only a hero could lead the way.', 'pt-br', { playerGender: 'Female' }),
+        'Se ao menos uma heroína pudesse nos guiar.'
+    );
+}
+
+function testPortugueseNpcClassPlaceholderLocalizesPlayerClass(): void {
+    const dataDir = path.resolve(__dirname, '../data');
+    NpcDialogueLoader.load(dataDir);
+
+    const lines = NpcDialogueLoader.getLinesForNpc(
+        'NewbieRoad',
+        'nrtrainer01',
+        { class: 'Rogue', gender: 'Male', missions: {} } as unknown as Character,
+        'pt-br'
+    );
+
+    assert.ok(lines.includes('Você tem muito potencial, Ladino.'));
+    assert.equal(lines.some((line) => /\bRogue\b/.test(line)), false);
+
+    const femaleLines = NpcDialogueLoader.getLinesForNpc(
+        'NewbieRoad',
+        'nrtrainer01',
+        { class: 'Rogue', gender: 'Female', missions: {} } as unknown as Character,
+        'pt-br'
+    );
+
+    assert.ok(femaleLines.includes('Você tem muito potencial, Ladina.'));
+
+    const affricFemaleLines = NpcDialogueLoader.getLinesForNpc(
+        'NewbieRoad',
+        'nraffric',
+        { class: 'Mage', gender: 'Female', missions: {} } as unknown as Character,
+        'pt-br'
+    );
+    assert.ok(affricFemaleLines.includes('Você é amiga ou inimiga?'));
+
+    const tynaFemaleLines = NpcDialogueLoader.getLinesForNpc(
+        'NewbieRoad',
+        'nrintrovillager',
+        { class: 'Mage', gender: 'Female', missions: {} } as unknown as Character,
+        'pt-br'
+    );
+    assert.ok(tynaFemaleLines.includes('E você é muito boa em matar goblins.'));
+
+    const odemMaleLines = NpcDialogueLoader.getLinesForNpc(
+        'NewbieRoad',
+        'nrodem',
+        { class: 'Rogue', gender: 'Male', missions: {} } as unknown as Character,
+        'pt-br'
+    );
+    const odemFemaleLines = NpcDialogueLoader.getLinesForNpc(
+        'NewbieRoad',
+        'nrodem',
+        { class: 'Rogue', gender: 'Female', missions: {} } as unknown as Character,
+        'pt-br'
+    );
+    assert.ok(odemMaleLines.includes('Mantenha-se alerta, amigo.'));
+    assert.ok(odemFemaleLines.includes('Mantenha-se alerta, amiga.'));
 }
 
 function testBridgeTownMissionsRoomDialogueTranslationsCoverExtractedSource(): void {
@@ -1946,6 +2214,8 @@ async function main(): Promise<void> {
     testTurkishDialogueFilesCoverAllSourceDialogue();
     testTurkishRoomThoughtUsesTranslationTable();
     testTurkishRoomThoughtFallbackPreventsEnemyEnglish();
+    testPortugueseDungeonRoomThoughtsUseOriginalTiming();
+    testPortugueseAlreadyLocalizedRoomThoughtPassesThrough();
     testTurkishEnemyFallbackKeepsLineVariety();
     testMeylourFallbackKeepsLineVarietyLikeScarab();
     testSpecificDungeonRoomThoughtTranslation();
@@ -1960,6 +2230,8 @@ async function main(): Promise<void> {
     testValhavenWelcomePartyLiveSkitSegmentsUseTranslations();
     testCapstoneRoomDialogueTranslationsCoverExtractedSource();
     testFelbridgeMeylourRoomDialogueTranslationsCoverExtractedSource();
+    testPortugueseClassPlaceholderLocalizesPlayerClass();
+    testPortugueseNpcClassPlaceholderLocalizesPlayerClass();
     testBridgeTownMissionsRoomDialogueTranslationsCoverExtractedSource();
     testBlackRoseMireRoomDialogueTranslationsCoverExtractedSource();
     testFelbridgeRoomDialogueTranslationsCoverExtractedSource();
