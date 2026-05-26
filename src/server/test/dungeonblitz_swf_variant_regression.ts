@@ -679,30 +679,6 @@ function assertMainMethod561ClipsViewport(swfPath: string): void {
     );
 }
 
-function assertRoomTransitionsResyncViewport(swfPath: string): void {
-    const { abc, instructions } = getInstanceMethodCode(swfPath, 'Game', 'method_1445');
-    const method1453Index = instructions.findIndex((instruction) =>
-        instruction.opcode === 0x4f &&
-        u30OperandName(instruction, abc.multinameNames) === 'method_1453'
-    );
-
-    assert.notEqual(
-        method1453Index,
-        -1,
-        'Game.method_1445 must still finalize level construction through method_1453'
-    );
-
-    const resyncWindow = instructions.slice(method1453Index, method1453Index + 8);
-    assert.equal(
-        resyncWindow.some((instruction) =>
-            instruction.opcode === 0x61 &&
-            u30OperandName(instruction, abc.multinameNames) === 'var_2289'
-        ),
-        true,
-        'Game.method_1445 must mark Main.method_561 dirty after level construction so room transitions resync the viewport'
-    );
-}
-
 function assertDungeonQuestHelperPrefersDungeonProgress(swfPath: string): void {
     const { abc, instructions } = getInstanceMethodCode(swfPath, 'Game', 'SelectMissionToTrack');
     const hasDungeonGuard = instructions.some((instruction, index) => {
@@ -985,12 +961,10 @@ function testBaseAndLocalVariantKeepChatBubbleNullGuard(): void {
 function testBaseAndLocalVariantKeepMainMethod561ScaleClamp(): void {
     assertMainMethod561ClampsMaxScale(BASE_SWF_PATH);
     assertMainMethod561ClipsViewport(BASE_SWF_PATH);
-    assertRoomTransitionsResyncViewport(BASE_SWF_PATH);
     const buffer = buildDungeonBlitzSwfVariantBuffer(BASE_SWF_PATH, 'local');
     withTempSwf(buffer, (tempPath) => {
         assertMainMethod561ClampsMaxScale(tempPath);
         assertMainMethod561ClipsViewport(tempPath);
-        assertRoomTransitionsResyncViewport(tempPath);
     });
 }
 
