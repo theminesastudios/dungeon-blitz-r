@@ -158,25 +158,6 @@ function findExistingScrollRectPatchBounds(instructions: Instruction[], names: s
   return null;
 }
 
-function findScrollRectInsertionOffset(instructions: Instruction[], names: string[]): number {
-  for (let index = 0; index < instructions.length - 4; index += 1) {
-    if (
-      instructions[index].opcode === SET_PROPERTY_OP &&
-      u30OperandName(instructions[index], names) === "y" &&
-      instructions[index + 1]?.opcode === GETLOCAL0_OP &&
-      instructions[index + 2]?.opcode === GETLOCAL0_OP &&
-      instructions[index + 3]?.opcode === GET_PROPERTY_OP &&
-      u30OperandName(instructions[index + 3], names) === "var_2289" &&
-      instructions[index + 4]?.opcode === SET_PROPERTY_OP
-      && u30OperandName(instructions[index + 4], names) === "var_2792"
-    ) {
-      return instructions[index].offset + instructions[index].size;
-    }
-  }
-
-  throw new PatchError("Could not find Main.method_561 insertion point after parent.y assignment.");
-}
-
 function buildScrollRectPatch(abc: ReturnType<typeof parseAbc>): Buffer {
   const names = abc.multinameNames;
   const camera = names.indexOf("Camera");
