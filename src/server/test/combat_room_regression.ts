@@ -4,6 +4,7 @@ import { GlobalState } from '../core/GlobalState';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { CombatHandler } from '../handlers/CombatHandler';
+import { EntityHandler } from '../handlers/EntityHandler';
 import { Entity, EntityState, EntityTeam } from '../core/Entity';
 import { LevelConfig } from '../core/LevelConfig';
 import { getClientLevelScope } from '../core/LevelScope';
@@ -135,6 +136,41 @@ function buildDestroyEntityPayload(entityId: number): Buffer {
     return bb.toBuffer();
 }
 
+function buildEntityFullUpdatePayload(
+    entityId: number,
+    name: string,
+    options: {
+        x?: number;
+        y?: number;
+        v?: number;
+        team?: number;
+        isPlayer?: boolean;
+        entState?: number;
+        characterName?: string;
+        roomId?: number;
+    } = {}
+): Buffer {
+    const payload = (EntityHandler as any).buildEntityFullUpdatePayload({
+        id: entityId,
+        name,
+        isPlayer: options.isPlayer ?? true,
+        x: options.x ?? 0,
+        y: options.y ?? 0,
+        v: options.v ?? 0,
+        team: options.team ?? EntityTeam.PLAYER,
+        renderDepthOffset: 0,
+        characterName: options.characterName ?? '',
+        entState: options.entState ?? EntityState.ACTIVE,
+        facingLeft: false,
+        running: false,
+        jumping: false,
+        dropping: false,
+        backpedal: false,
+        roomId: options.roomId ?? -1
+    });
+    return Buffer.concat([payload, Buffer.from([0])]);
+}
+
 function buildPlayerEntity(session: FakeClient): any {
     return {
         ...Entity.fromCharacter(session.clientEntID, session.character as any, {
@@ -180,6 +216,14 @@ function parseEntityState(payload: Buffer): { entityId: number; entState: number
     return {
         entityId,
         entState: br.readMethod6(2)
+    };
+}
+
+function parseHpDelta(payload: Buffer): { entityId: number; delta: number } {
+    const br = new BitReader(payload);
+    return {
+        entityId: br.readMethod4(),
+        delta: br.readMethod45()
     };
 }
 
@@ -1143,6 +1187,154 @@ async function testSharedDungeonHostileDefeatUsesViewerLocalId(): Promise<void> 
     );
 }
 
+async function testPlayerFullUpdateCanonicalizesCollidingEntityIds(): Promise<void> {
+    const alpha = createFakeClient(500, 'CanonAlpha', 2);
+    const beta = createFakeClient(501, 'CanonBeta', 2);
+    const rawPlayerId = 9101;
+
+    GlobalState.sessionsByToken.set(alpha.token, alpha as never);
+    GlobalState.sessionsByToken.set(beta.token, beta as never);
+
+    EntityHandler.handleEntityFullUpdate(
+        alpha as never,
+        buildEntityFullUpdatePayload(rawPlayerId, alpha.character!.name, {
+            x: 10,
+            y: 20
+        })
+    );
+    EntityHandler.handleEntityFullUpdate(
+        beta as never,
+        buildEntityFullUpdatePayload(rawPlayerId, beta.character!.name, {
+            x: 30,
+            y: 40
+        })
+    );
+
+    const levelMap = GlobalState.levelEntities.get(getClientLevelScope(alpha as never));
+    assert.ok(levelMap, 'level scope should have canonical player entities');
+    assert.equal(alpha.clientEntID, rawPlayerId, 'first player should keep the raw entity id when it is free');
+    assert.notEqual(beta.clientEntID, rawPlayerId, 'second player should be remapped away from the occupied raw id');
+    assert.equal(beta.entityIdAliases.get(rawPlayerId), beta.clientEntID, 'second player should remember raw-to-canonical alias');
+    assert.equal(levelMap!.get(alpha.clientEntID)?.ownerToken, alpha.token, 'first canonical entity should keep its owner');
+    assert.equal(levelMap!.get(beta.clientEntID)?.ownerToken, beta.token, 'second canonical entity should keep its owner');
+    assert.equal(levelMap!.get(rawPlayerId)?.ownerToken, alpha.token, 'remap must not overwrite the existing owner');
+    assert.ok(beta.entities.has(beta.clientEntID), 'second session should store its player under the canonical id');
+    assert.equal(beta.entities.has(rawPlayerId), false, 'second session should not keep a stale owned player at the raw id');
+}
+
+async function testCanonicalPlayerStateRelaysToTeammate(): Promise<void> {
+    const victim = createFakeClient(510, 'CanonVictim', 2);
+    const watcher = createFakeClient(511, 'CanonWatcher', 2);
+    const rawPlayerId = 9201;
+
+    GlobalState.partyByMember.set('canonvictim', 11);
+    GlobalState.partyByMember.set('canonwatcher', 11);
+    GlobalState.sessionsByToken.set(victim.token, victim as never);
+    GlobalState.sessionsByToken.set(watcher.token, watcher as never);
+
+    EntityHandler.handleEntityFullUpdate(
+        watcher as never,
+        buildEntityFullUpdatePayload(rawPlayerId, watcher.character!.name, {
+        })
+    );
+    EntityHandler.handleEntityFullUpdate(
+        victim as never,
+        buildEntityFullUpdatePayload(rawPlayerId, victim.character!.name, {
+        })
+    );
+
+    const hostile = {
+        id: 9301,
+        name: 'CanonicalGoblin',
+        isPlayer: false,
+        x: 24,
+        y: 20,
+        v: 0,
+        team: EntityTeam.ENEMY,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        roomId: victim.currentRoomId,
+        hp: 100
+    };
+    GlobalState.levelEntities.get(getClientLevelScope(victim as never))?.set(hostile.id, hostile);
+
+    await CombatHandler.handlePowerHit(victim as never, buildPowerHitPayload(victim.clientEntID, hostile.id, 120, 55));
+
+    const relayedDeath = watcher.sentPackets.find((packet) => {
+        if (packet.id !== 0x07) {
+            return false;
+        }
+        const state = parseEntityState(packet.payload);
+        return state.entityId === victim.clientEntID && state.entState === EntityState.DEAD;
+    });
+    assert.ok(relayedDeath, 'teammate should receive the canonical remote player death state');
+    assert.equal(
+        watcher.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === rawPlayerId),
+        false,
+        'remote player death state should not use the stale raw id'
+    );
+
+    const correction = watcher.sentPackets.find((packet) => packet.id === 0x3A);
+    if (correction) {
+        assert.equal(parseHpDelta(correction.payload).entityId, victim.clientEntID);
+    }
+}
+
+async function testEnemyDefeatNotSuppressedByViewerPlayerIdOverlap(): Promise<void> {
+    const owner = createFakeClient(520, 'OverlapOwner', 2);
+    const watcher = createFakeClient(521, 'OverlapWatcher', 2);
+
+    owner.currentLevel = 'GhostBossDungeon';
+    watcher.currentLevel = 'GhostBossDungeon';
+    watcher.clientEntID = 9401;
+
+    attachPlayerEntity(owner);
+    attachPlayerEntity(watcher);
+    GlobalState.partyByMember.set('overlapowner', 12);
+    GlobalState.partyByMember.set('overlapwatcher', 12);
+
+    const hostile = {
+        id: 9501,
+        name: 'OverlapSharedHostile',
+        isPlayer: false,
+        clientSpawned: true,
+        x: 100,
+        y: 100,
+        v: 0,
+        team: EntityTeam.ENEMY,
+        entState: EntityState.ACTIVE,
+        ownerToken: owner.token,
+        ownerPartyId: 12,
+        roomId: owner.currentRoomId,
+        hp: 100,
+        maxHp: 100
+    };
+    GlobalState.levelEntities.get(getClientLevelScope(owner as never))?.set(hostile.id, hostile);
+    owner.knownEntityIds.add(hostile.id);
+    watcher.entityIdAliases.set(watcher.clientEntID, hostile.id);
+    watcher.knownEntityIds.add(hostile.id);
+    watcher.entities.set(hostile.id, { ...hostile });
+
+    GlobalState.sessionsByToken.set(owner.token, owner as never);
+    GlobalState.sessionsByToken.set(watcher.token, watcher as never);
+
+    await CombatHandler.handleEntityDestroy(owner as never, buildDestroyEntityPayload(hostile.id));
+
+    assert.equal(watcher.entities.get(watcher.clientEntID)?.isPlayer, true, 'viewer player entity should not be mutated as the hostile');
+    assert.notEqual(watcher.entities.get(watcher.clientEntID)?.entState, EntityState.DEAD, 'viewer player entity should not be killed by overlap cleanup');
+    assert.equal(
+        watcher.sentPackets.some((packet) => {
+            if (packet.id !== 0x07) {
+                return false;
+            }
+            const state = parseEntityState(packet.payload);
+            return state.entityId === hostile.id && state.entState === EntityState.DEAD;
+        }),
+        true,
+        'viewer should still receive the enemy death state even when the local alias overlaps its player id'
+    );
+}
+
 async function main(): Promise<void> {
     ensureLevelConfigLoaded();
 
@@ -1297,6 +1489,33 @@ async function main(): Promise<void> {
         GlobalState.entityLastRewardNonces.clear();
 
         await testSharedDungeonHostileDefeatUsesViewerLocalId();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testPlayerFullUpdateCanonicalizesCollidingEntityIds();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testCanonicalPlayerStateRelaysToTeammate();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testEnemyDefeatNotSuppressedByViewerPlayerIdOverlap();
     } finally {
         GlobalState.sessionsByToken = sessionsByToken;
         GlobalState.levelEntities = levelEntities;

@@ -436,6 +436,174 @@ export class EntityHandler {
         client.entityIdAliases.set(localId, canonicalId);
     }
 
+    static isClientOwnPlayerEntity(client: Client, levelScope: string | null | undefined, entityId: number, entity: any = null): boolean {
+        const id = Math.max(0, Math.round(Number(entityId) || 0));
+        if (id <= 0 || client.clientEntID <= 0 || id !== client.clientEntID || !client.character) {
+            return false;
+        }
+
+        const candidate = entity ?? client.entities.get(id) ?? (levelScope ? GlobalState.levelEntities.get(levelScope)?.get(id) : null);
+        if (candidate && typeof candidate === 'object') {
+            if (!Boolean(candidate.isPlayer)) {
+                return false;
+            }
+
+            const ownerToken = Math.round(Number(candidate.ownerToken ?? 0));
+            if (ownerToken > 0 && ownerToken !== client.token) {
+                return false;
+            }
+
+            const ownerUserId = Math.round(Number(candidate.ownerUserId ?? 0));
+            if (ownerUserId > 0 && client.userId && ownerUserId !== client.userId) {
+                return false;
+            }
+
+            const entityName = EntityHandler.normalizeIdentityName(candidate.ownerCharacterName ?? candidate.name ?? candidate.characterName);
+            const characterName = EntityHandler.normalizeIdentityName(client.character?.name);
+            return !entityName || !characterName || entityName === characterName;
+        }
+
+        return true;
+    }
+
+    private static isEntityOwnedByClientPlayer(client: Client, entityId: number, entity: any): boolean {
+        const id = Math.max(0, Math.round(Number(entityId) || 0));
+        if (id <= 0 || !entity || !Boolean(entity.isPlayer)) {
+            return false;
+        }
+
+        const ownerToken = Math.round(Number(entity.ownerToken ?? 0));
+        if (ownerToken > 0) {
+            return ownerToken === client.token;
+        }
+
+        const ownerUserId = Math.round(Number(entity.ownerUserId ?? 0));
+        if (ownerUserId > 0 && client.userId) {
+            return ownerUserId === client.userId;
+        }
+
+        const entityName = EntityHandler.normalizeIdentityName(entity.ownerCharacterName ?? entity.name ?? entity.characterName);
+        const characterName = EntityHandler.normalizeIdentityName(client.character?.name);
+        return Boolean(characterName && entityName && entityName === characterName);
+    }
+
+    private static isPlayerEntityIdOccupiedByOther(levelScope: string, client: Client, entityId: number): boolean {
+        const id = Math.max(0, Math.round(Number(entityId) || 0));
+        if (!levelScope || id <= 0) {
+            return false;
+        }
+
+        const levelEntity = GlobalState.levelEntities.get(levelScope)?.get(id);
+        if (levelEntity && !EntityHandler.isEntityOwnedByClientPlayer(client, id, levelEntity)) {
+            return true;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (other === client || getClientLevelScope(other) !== levelScope) {
+                continue;
+            }
+            if (other.clientEntID === id && other.character) {
+                return true;
+            }
+
+            const otherEntity = other.entities.get(id);
+            if (otherEntity && EntityHandler.isEntityOwnedByClientPlayer(other, id, otherEntity)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static isPlayerCanonicalIdFree(levelScope: string, client: Client, entityId: number): boolean {
+        const id = Math.max(0, Math.round(Number(entityId) || 0));
+        if (!levelScope || id <= 0) {
+            return false;
+        }
+
+        const levelEntity = GlobalState.levelEntities.get(levelScope)?.get(id);
+        if (levelEntity && !EntityHandler.isEntityOwnedByClientPlayer(client, id, levelEntity)) {
+            return false;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (other === client || getClientLevelScope(other) !== levelScope) {
+                continue;
+            }
+            if (other.clientEntID === id && other.character) {
+                return false;
+            }
+            if (other.entities.has(id)) {
+                return false;
+            }
+        }
+
+        const localEntity = client.entities.get(id);
+        return !localEntity || EntityHandler.isEntityOwnedByClientPlayer(client, id, localEntity);
+    }
+
+    private static allocateCanonicalPlayerEntityId(client: Client, levelScope: string, rawEntityId: number): number {
+        const rawId = Math.max(0, Math.round(Number(rawEntityId) || 0));
+        if (rawId <= 0) {
+            return rawId;
+        }
+
+        if (!EntityHandler.isPlayerEntityIdOccupiedByOther(levelScope, client, rawId)) {
+            return rawId;
+        }
+
+        let candidate = rawId;
+        const levelMap = GlobalState.levelEntities.get(levelScope);
+        for (const id of levelMap?.keys() ?? []) {
+            candidate = Math.max(candidate, Math.round(Number(id) || 0));
+        }
+        for (const session of GlobalState.sessionsByToken.values()) {
+            if (getClientLevelScope(session) !== levelScope) {
+                continue;
+            }
+            candidate = Math.max(candidate, Math.round(Number(session.clientEntID) || 0));
+            for (const id of session.entities.keys()) {
+                candidate = Math.max(candidate, Math.round(Number(id) || 0));
+            }
+        }
+
+        candidate = Math.max(candidate + 1, rawId + 1);
+        while (!EntityHandler.isPlayerCanonicalIdFree(levelScope, client, candidate)) {
+            candidate++;
+        }
+
+        return candidate;
+    }
+
+    private static migrateOwnedPlayerEntityId(client: Client, levelMap: Map<number, any> | null, rawEntityId: number, canonicalEntityId: number): void {
+        const rawId = Math.max(0, Math.round(Number(rawEntityId) || 0));
+        const canonicalId = Math.max(0, Math.round(Number(canonicalEntityId) || 0));
+        if (rawId <= 0 || canonicalId <= 0 || rawId === canonicalId) {
+            return;
+        }
+
+        const localEntity = client.entities.get(rawId);
+        if (EntityHandler.isEntityOwnedByClientPlayer(client, rawId, localEntity)) {
+            client.entities.delete(rawId);
+            client.entities.set(canonicalId, {
+                ...localEntity,
+                id: canonicalId
+            });
+        }
+
+        const levelEntity = levelMap?.get(rawId);
+        if (EntityHandler.isEntityOwnedByClientPlayer(client, rawId, levelEntity)) {
+            levelMap?.delete(rawId);
+            levelMap?.set(canonicalId, {
+                ...levelEntity,
+                id: canonicalId
+            });
+        }
+
+        client.knownEntityIds.delete(rawId);
+        client.knownEntityIds.add(canonicalId);
+    }
+
     private static getDeferredRemoteUpdateIds(client: Client): Set<number> {
         const dynamicClient = client as Client & { sharedEntityRemoteUpdateDeferredIds?: Set<number> };
         if (!dynamicClient.sharedEntityRemoteUpdateDeferredIds) {
@@ -1364,7 +1532,8 @@ export class EntityHandler {
     static handleEntityFullUpdate(client: Client, data: Buffer): void {
         const br = new BitReader(data);
 
-        const entityId = br.readMethod9();
+        const rawEntityId = br.readMethod9();
+        let entityId = rawEntityId;
         const posX = br.readMethod24();
         const posY = br.readMethod24();
         const velocityX = br.readMethod24();
@@ -1424,7 +1593,16 @@ export class EntityHandler {
         const charNameNorm = EntityHandler.normalizeIdentityName(client.character?.name);
         const isSelfPacket = Boolean(isPlayer && entNameNorm && charNameNorm && entNameNorm === charNameNorm);
 
-        if (isPlayer && (client.clientEntID === 0 || (isSelfPacket && client.clientEntID !== entityId))) {
+        if (isPlayer && levelName && isSelfPacket) {
+            const levelScope = getClientLevelScope(client);
+            const canonicalEntityId = EntityHandler.allocateCanonicalPlayerEntityId(client, levelScope, rawEntityId);
+            if (canonicalEntityId !== rawEntityId) {
+                EntityHandler.rememberEntityAlias(client, rawEntityId, canonicalEntityId);
+                EntityHandler.migrateOwnedPlayerEntityId(client, existingLevelMap, rawEntityId, canonicalEntityId);
+            }
+            entityId = canonicalEntityId;
+            client.clientEntID = canonicalEntityId;
+        } else if (isPlayer && client.clientEntID === 0) {
             client.clientEntID = entityId;
         }
 

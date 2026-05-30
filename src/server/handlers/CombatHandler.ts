@@ -1083,7 +1083,7 @@ export class CombatHandler {
 
         for (const entity of CombatHandler.collectHostileRegenCandidates(levelScope)) {
             const entityId = Math.max(0, Math.round(Number(entity?.id ?? 0)));
-            if (entityId <= 0 || entityId === client.clientEntID) {
+            if (entityId <= 0 || EntityHandler.isClientOwnPlayerEntity(client, levelScope, entityId, entity)) {
                 continue;
             }
             if (
@@ -1141,7 +1141,7 @@ export class CombatHandler {
         }
 
         for (const [entityId, entity] of levelMap.entries()) {
-            if (entityId <= 0 || entityId === client.clientEntID) {
+            if (entityId <= 0 || EntityHandler.isClientOwnPlayerEntity(client, levelScope, entityId, entity)) {
                 continue;
             }
             if (Boolean(entity?.isPlayer) || Number(entity?.team ?? 0) !== 2) {
@@ -1240,12 +1240,24 @@ export class CombatHandler {
 
         for (const other of GlobalState.sessionsByToken.values()) {
             const localEntityId = EntityHandler.resolveEntityLocalId(other, entityId);
-            const localEntity = other.entities.get(localEntityId) ?? other.entities.get(entityId);
+            let updateEntityId = localEntityId;
+            let localEntity = other.entities.get(localEntityId) ?? other.entities.get(entityId);
+            if (
+                localEntity &&
+                EntityHandler.isClientOwnPlayerEntity(other, levelScope, localEntityId, localEntity)
+            ) {
+                const canonicalLocalEntity = other.entities.get(entityId);
+                localEntity = canonicalLocalEntity && !Boolean(canonicalLocalEntity.isPlayer)
+                    ? canonicalLocalEntity
+                    : null;
+                updateEntityId = entityId;
+            }
             if (
                 other === anchor ||
                 !other.playerSpawned ||
                 getClientLevelScope(other) !== levelScope ||
                 !areClientsInSameParty(anchor, other) ||
+                !localEntity ||
                 !CombatHandler.shouldMirrorClientSpawnEntityToParty(anchor.currentLevel, localEntity)
             ) {
                 continue;
@@ -1259,9 +1271,9 @@ export class CombatHandler {
                 localEntity.healthDelta = -maxHp;
                 localEntity.health_delta = -maxHp;
             }
-            other.entities.set(localEntityId, localEntity);
+            other.entities.set(updateEntityId, localEntity);
             other.knownEntityIds.delete(entityId);
-            other.send(0x07, CombatHandler.buildEntityStatePayload(localEntityId, EntityState.DEAD, Boolean(localEntity.facingLeft)));
+            other.send(0x07, CombatHandler.buildEntityStatePayload(updateEntityId, EntityState.DEAD, Boolean(localEntity.facingLeft)));
         }
     }
 

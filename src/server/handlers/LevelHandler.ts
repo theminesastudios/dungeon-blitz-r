@@ -4232,7 +4232,6 @@ export class LevelHandler {
         const br = new BitReader(data);
         const rawEntityId = br.readMethod4();
         const entityId = EntityHandler.resolveEntityAlias(client, rawEntityId);
-        const isSelf = (rawEntityId === client.clientEntID || entityId === client.clientEntID);
 
         // If it's us and we haven't spawned, ignore
         // In TS we don't track 'player_spawned' explicitly like python yet, but usually we can ignore.
@@ -4261,6 +4260,9 @@ export class LevelHandler {
         const levelEntity = LevelHandler.getCurrentLevelMap(client)?.get(entityId);
         const ent = client.entities.get(rawEntityId) ?? client.entities.get(entityId) ?? levelEntity;
         if (!ent) return;
+        const isSelf =
+            EntityHandler.isClientOwnPlayerEntity(client, getClientLevelScope(client), entityId, ent) ||
+            EntityHandler.isClientOwnPlayerEntity(client, getClientLevelScope(client), rawEntityId, ent);
         const currentLevel = client.currentLevel || "NewbieRoad";
         const isAliasedSharedClientSpawnUpdate =
             rawEntityId !== entityId &&
