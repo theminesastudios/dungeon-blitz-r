@@ -28,6 +28,7 @@ import { sendConsumableUpdate } from '../utils/ConsumableState';
 type CombatRelayOptions = {
     includeAnchor?: boolean;
     referencedEntityIds?: number[];
+    excludedClients?: Iterable<Client>;
 };
 
 type ContributionSnapshot = {
@@ -1355,12 +1356,27 @@ export class CombatHandler {
     }
 
     static broadcastToCombatRoom(anchor: Client, packetId: number, data: Buffer, includeAnchor: boolean = false, referencedEntityIds: number[] = []): void {
+        CombatHandler.broadcastToCombatRoomExcept(anchor, packetId, data, includeAnchor, referencedEntityIds);
+    }
+
+    private static broadcastToCombatRoomExcept(
+        anchor: Client,
+        packetId: number,
+        data: Buffer,
+        includeAnchor: boolean = false,
+        referencedEntityIds: number[] = [],
+        excludedClients: Set<Client> = new Set<Client>()
+    ): void {
         const levelScope = getClientLevelScope(anchor);
         if (!levelScope || !anchor.playerSpawned) {
             return;
         }
 
         for (const other of CombatHandler.getCombatRecipients(anchor, includeAnchor)) {
+            if (excludedClients.has(other)) {
+                continue;
+            }
+
             let missingEntity = false;
             for (const entityId of referencedEntityIds) {
                 if (!CombatHandler.canViewerResolveAnchoredCombatEntity(other, anchor, levelScope, entityId)) {
@@ -1378,7 +1394,14 @@ export class CombatHandler {
 
     private static broadcastCombatPacket(anchor: Client, packetId: number, data: Buffer, options: CombatRelayOptions = {}): void {
         const referencedEntityIds = Array.from(new Set((options.referencedEntityIds ?? []).filter((id) => Number.isFinite(id) && id > 0)));
-        CombatHandler.broadcastToCombatRoom(anchor, packetId, data, Boolean(options.includeAnchor), referencedEntityIds);
+        CombatHandler.broadcastToCombatRoomExcept(
+            anchor,
+            packetId,
+            data,
+            Boolean(options.includeAnchor),
+            referencedEntityIds,
+            new Set(options.excludedClients ?? [])
+        );
     }
 
     private static canViewerResolveCombatEntity(viewer: Client, levelScope: string, entityId: number): boolean {
@@ -1944,9 +1967,74 @@ export class CombatHandler {
     private static shouldSuppressForeignOwnedHit(
         client: Client,
         sourceSession: Client | null,
-        isHostileNpcSource: boolean
+        isHostileNpcSource: boolean,
+        sourceEntity: any = null
     ): boolean {
-        return Boolean(sourceSession && sourceSession !== client && !isHostileNpcSource);
+        if (!sourceSession || sourceSession === client) {
+            return false;
+        }
+
+        if (!isHostileNpcSource) {
+            return true;
+        }
+
+        return CombatHandler.shouldMirrorClientSpawnEntityToParty(client.currentLevel, sourceEntity);
+    }
+
+    private static resolveSharedHostileLocalHitEchoRecipients(
+        anchor: Client,
+        levelScope: string,
+        targetEntity: any,
+        targetId: number,
+        sourceId: number,
+        isHostileNpcSource: boolean
+    ): Set<Client> {
+        const recipients = new Set<Client>();
+        if (
+            !levelScope ||
+            isHostileNpcSource ||
+            !targetEntity ||
+            Boolean(targetEntity.isPlayer) ||
+            !CombatHandler.shouldMirrorClientSpawnEntityToParty(anchor.currentLevel, targetEntity)
+        ) {
+            return recipients;
+        }
+
+        for (const other of CombatHandler.getCombatRecipients(anchor, false)) {
+            if (
+                other === anchor ||
+                !CombatHandler.canViewerResolveCombatEntity(other, levelScope, targetId) ||
+                !CombatHandler.canViewerResolveCombatEntity(other, levelScope, sourceId)
+            ) {
+                continue;
+            }
+
+            const localTargetId = EntityHandler.resolveEntityLocalId(other, targetId);
+            if (
+                other.entities?.has(localTargetId) ||
+                other.entities?.has(targetId) ||
+                other.knownEntityIds?.has(targetId)
+            ) {
+                recipients.add(other);
+            }
+        }
+
+        return recipients;
+    }
+
+    private static shouldSuppressSharedHostileVictimEcho(
+        levelName: string,
+        sourceEntity: any,
+        targetSession: Client | null,
+        sourceId: number
+    ): boolean {
+        return Boolean(
+            targetSession &&
+            sourceEntity &&
+            !sourceEntity.isPlayer &&
+            CombatHandler.shouldMirrorClientSpawnEntityToParty(levelName, sourceEntity) &&
+            EntityHandler.canClientResolveCanonicalEntity(targetSession, sourceId)
+        );
     }
 
     static async handlePowerCast(client: Client, data: Buffer): Promise<void> {
@@ -2018,9 +2106,12 @@ export class CombatHandler {
         if (targetEntity && !targetEntity.isPlayer && Boolean(targetEntity.untargetable)) {
             return;
         }
+        if (isHostileNpcSource && CombatHandler.isEntityDead(sourceEntity)) {
+            return;
+        }
 
         const sourceSession = CombatHandler.resolveCombatSourceSession(levelScope, sourceId, client);
-        if (CombatHandler.shouldSuppressForeignOwnedHit(client, sourceSession, isHostileNpcSource)) {
+        if (CombatHandler.shouldSuppressForeignOwnedHit(client, sourceSession, isHostileNpcSource, sourceEntity)) {
             return;
         }
 
@@ -2070,18 +2161,33 @@ export class CombatHandler {
             }
         }
 
+        if (isHostileNpcSource && relayDamage <= 0) {
+            return;
+        }
+
         const displayRelayDamage = CombatHandler.clampRelayPowerHitDamage(relayDamage);
         const relayPayload = displayRelayDamage === damage && info === parsedInfo
             ? data
             : CombatHandler.buildPowerHitPayload(info, displayRelayDamage);
         if (isHostileNpcSource) {
-            const excludeLocalVictim = targetSession === client ? client : null;
+            const excludeLocalVictim = targetSession === client ||
+                CombatHandler.shouldSuppressSharedHostileVictimEcho(currentLevel, sourceEntity, targetSession, sourceId)
+                ? targetSession
+                : null;
             CombatHandler.broadcastEntityViewPacket(levelScope, sourceEntity, 0x0A, relayPayload, [targetId, sourceId], excludeLocalVictim);
             return;
         }
 
         CombatHandler.broadcastCombatPacket(client, 0x0A, relayPayload, {
-            referencedEntityIds: [targetId, sourceId]
+            referencedEntityIds: [targetId, sourceId],
+            excludedClients: CombatHandler.resolveSharedHostileLocalHitEchoRecipients(
+                client,
+                levelScope,
+                targetEntity,
+                targetId,
+                sourceId,
+                isHostileNpcSource
+            )
         });
     }
 
@@ -2322,9 +2428,12 @@ export class CombatHandler {
         if (targetEntity && !targetEntity.isPlayer && Boolean(targetEntity.untargetable)) {
             return;
         }
+        if (isHostileNpcSource && CombatHandler.isEntityDead(sourceEntity)) {
+            return;
+        }
 
         const sourceSession = CombatHandler.resolveCombatSourceSession(levelScope, sourceId, client);
-        if (CombatHandler.shouldSuppressForeignOwnedHit(client, sourceSession, isHostileNpcSource)) {
+        if (CombatHandler.shouldSuppressForeignOwnedHit(client, sourceSession, isHostileNpcSource, sourceEntity)) {
             return;
         }
 
@@ -2363,8 +2472,26 @@ export class CombatHandler {
             ? data
             : CombatHandler.buildBuffTickDotPayload(info);
 
+        if (isHostileNpcSource) {
+            const targetSession = CombatHandler.findPlayerSessionByEntityId(targetId);
+            const excludeLocalVictim = targetSession === client ||
+                CombatHandler.shouldSuppressSharedHostileVictimEcho(client.currentLevel, sourceEntity, targetSession, sourceId)
+                ? targetSession
+                : null;
+            CombatHandler.broadcastEntityViewPacket(levelScope, sourceEntity, 0x79, relayPayload, [targetId, sourceId], excludeLocalVictim);
+            return;
+        }
+
         CombatHandler.broadcastCombatPacket(client, 0x79, relayPayload, {
-            referencedEntityIds: [targetId, sourceId]
+            referencedEntityIds: [targetId, sourceId],
+            excludedClients: CombatHandler.resolveSharedHostileLocalHitEchoRecipients(
+                client,
+                levelScope,
+                targetEntity,
+                targetId,
+                sourceId,
+                isHostileNpcSource
+            )
         });
     }
 

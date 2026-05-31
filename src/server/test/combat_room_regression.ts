@@ -234,25 +234,6 @@ function parsePowerHitDamage(payload: Buffer): number {
     return br.readMethod24();
 }
 
-function parsePowerHitIds(payload: Buffer): { targetId: number; sourceId: number; damage: number } {
-    const br = new BitReader(payload);
-    return {
-        targetId: br.readMethod4(),
-        sourceId: br.readMethod4(),
-        damage: br.readMethod24()
-    };
-}
-
-function parseBuffTickDotIds(payload: Buffer): { targetId: number; sourceId: number; powerId: number; damage: number } {
-    const br = new BitReader(payload);
-    return {
-        targetId: br.readMethod4(),
-        sourceId: br.readMethod4(),
-        powerId: br.readMethod4(),
-        damage: Math.abs(br.readMethod45())
-    };
-}
-
 function parsePowerCastPayload(payload: Buffer): {
     sourceId: number;
     powerId: number;
@@ -477,7 +458,11 @@ async function testPowerHitFollowsPartyAudience(): Promise<void> {
 
     await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(hostile.id, sender.clientEntID, 42, 77));
 
-    assert.equal(partyOtherRoom.sentPackets.some((packet) => packet.id === 0x0A), true);
+    assert.equal(
+        partyOtherRoom.sentPackets.some((packet) => packet.id === 0x0A),
+        false,
+        'party mate should not receive a duplicate shared-hostile hit echo'
+    );
     assert.equal(sameRoomStranger.sentPackets.some((packet) => packet.id === 0x0A), false);
     assert.equal(otherRoomStranger.sentPackets.some((packet) => packet.id === 0x0A), false);
 }
@@ -525,8 +510,8 @@ async function testPartyEchoedPowerHitDoesNotDoubleApplyDamage(): Promise<void> 
     assert.equal(hostile.hp, 58, 'first player hit should apply once to the canonical shared enemy');
     assert.equal(
         partyOtherRoom.sentPackets.some((packet) => packet.id === 0x0A && parsePowerHitDamage(packet.payload) === 42),
-        true,
-        'party mate should see the first player hit'
+        false,
+        'party mate should not receive a second hit echo for a locally simulated shared hostile'
     );
 
     sender.sentPackets.length = 0;
@@ -543,8 +528,8 @@ async function testPartyEchoedPowerHitDoesNotDoubleApplyDamage(): Promise<void> 
     assert.equal(hostile.hp, 48, 'the party mate should still be able to apply their own hit');
     assert.equal(
         sender.sentPackets.some((packet) => packet.id === 0x0A && parsePowerHitDamage(packet.payload) === 10),
-        true,
-        'the original player should see the party mate own-source hit'
+        false,
+        'the original player should not receive a second hit echo for the party mate own-source hit'
     );
 }
 
@@ -798,6 +783,167 @@ async function testHostileHitsDoNotEchoPowerHitBackToLocalVictimWhenDamageMatche
         false,
         'other rooms should still stay isolated from hostile combat packets'
     );
+}
+
+async function testSharedHostileHitDoesNotEchoToVictimLocalDuplicate(): Promise<void> {
+    const owner = createFakeClient(326, 'HostileOwner', 2);
+    const victim = createFakeClient(327, 'LocalVictim', 2);
+    const sameRoomWatcher = createFakeClient(328, 'VictimWatcher', 2);
+
+    owner.currentLevel = 'TutorialDungeon';
+    victim.currentLevel = 'TutorialDungeon';
+    sameRoomWatcher.currentLevel = 'TutorialDungeon';
+
+    attachPlayerEntity(owner);
+    attachPlayerEntity(victim);
+    attachPlayerEntity(sameRoomWatcher);
+
+    GlobalState.partyByMember.set('hostileowner', 18);
+    GlobalState.partyByMember.set('localvictim', 18);
+    GlobalState.partyByMember.set('victimwatcher', 18);
+
+    const hostile = {
+        id: 8126,
+        name: 'EnemyGoblinShared',
+        isPlayer: false,
+        x: 24,
+        y: 20,
+        v: 0,
+        team: EntityTeam.ENEMY,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: owner.token,
+        ownerPartyId: 18,
+        roomId: owner.currentRoomId,
+        hp: 100
+    };
+    GlobalState.levelEntities.get(getClientLevelScope(owner as never))?.set(hostile.id, hostile);
+    owner.knownEntityIds.add(hostile.id);
+    sameRoomWatcher.knownEntityIds.add(hostile.id);
+    victim.entityIdAliases.set(9126, hostile.id);
+    victim.knownEntityIds.add(hostile.id);
+    victim.entities.set(9126, { ...hostile, id: 9126, ownerToken: victim.token, sharedCanonicalId: hostile.id });
+
+    GlobalState.sessionsByToken.set(owner.token, owner as never);
+    GlobalState.sessionsByToken.set(victim.token, victim as never);
+    GlobalState.sessionsByToken.set(sameRoomWatcher.token, sameRoomWatcher as never);
+
+    await CombatHandler.handlePowerHit(owner as never, buildPowerHitPayload(victim.clientEntID, hostile.id, 1, 55));
+
+    assert.equal(
+        victim.sentPackets.some((packet) => packet.id === 0x0A),
+        false,
+        'victim with a local shared-hostile duplicate already simulated the enemy hit and should not receive a remote echo'
+    );
+    assert.equal(
+        sameRoomWatcher.sentPackets.some((packet) => packet.id === 0x0A),
+        true,
+        'other viewers that are not the local victim still need the hostile hit relay'
+    );
+}
+
+async function testForeignOwnedSharedHostileHitIsSuppressed(): Promise<void> {
+    const owner = createFakeClient(329, 'CanonicalOwner', 2);
+    const joiner = createFakeClient(330, 'AliasJoiner', 2);
+    const victim = createFakeClient(331, 'AliasVictim', 2);
+
+    owner.currentLevel = 'TutorialDungeon';
+    joiner.currentLevel = 'TutorialDungeon';
+    victim.currentLevel = 'TutorialDungeon';
+
+    attachPlayerEntity(owner);
+    attachPlayerEntity(joiner);
+    attachPlayerEntity(victim);
+
+    GlobalState.partyByMember.set('canonicalowner', 19);
+    GlobalState.partyByMember.set('aliasjoiner', 19);
+    GlobalState.partyByMember.set('aliasvictim', 19);
+
+    const hostile = {
+        id: 8127,
+        name: 'EnemyGoblinForeignOwned',
+        isPlayer: false,
+        x: 24,
+        y: 20,
+        v: 0,
+        team: EntityTeam.ENEMY,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: owner.token,
+        ownerPartyId: 19,
+        roomId: owner.currentRoomId,
+        hp: 100
+    };
+    GlobalState.levelEntities.get(getClientLevelScope(owner as never))?.set(hostile.id, hostile);
+    owner.knownEntityIds.add(hostile.id);
+    joiner.entityIdAliases.set(9127, hostile.id);
+    joiner.knownEntityIds.add(hostile.id);
+    joiner.entities.set(9127, { ...hostile, id: 9127, ownerToken: joiner.token, sharedCanonicalId: hostile.id });
+    victim.knownEntityIds.add(hostile.id);
+
+    GlobalState.sessionsByToken.set(owner.token, owner as never);
+    GlobalState.sessionsByToken.set(joiner.token, joiner as never);
+    GlobalState.sessionsByToken.set(victim.token, victim as never);
+
+    await CombatHandler.handlePowerHit(joiner as never, buildPowerHitPayload(victim.clientEntID, 9127, 15, 55));
+
+    assert.equal(victim.entities.get(victim.clientEntID)?.hp, 100, 'non-owner shared hostile power hit should not apply player damage');
+    assert.equal(victim.sentPackets.some((packet) => packet.id === 0x0A || packet.id === 0x3A), false);
+    assert.equal(owner.sentPackets.some((packet) => packet.id === 0x0A), false);
+
+    await CombatHandler.handleBuffTickDot(joiner as never, buildBuffTickDotPayload(victim.clientEntID, 9127, 88, 7));
+
+    assert.equal(victim.sentPackets.some((packet) => packet.id === 0x79), false);
+    assert.equal(owner.sentPackets.some((packet) => packet.id === 0x79), false);
+}
+
+async function testDeadSharedHostileSourceDoesNotRelayCombat(): Promise<void> {
+    const owner = createFakeClient(332, 'DeadOwner', 2);
+    const victim = createFakeClient(333, 'DeadVictim', 2);
+    const watcher = createFakeClient(334, 'DeadWatcher', 2);
+
+    owner.currentLevel = 'TutorialDungeon';
+    victim.currentLevel = 'TutorialDungeon';
+    watcher.currentLevel = 'TutorialDungeon';
+
+    attachPlayerEntity(owner);
+    attachPlayerEntity(victim);
+    attachPlayerEntity(watcher);
+
+    GlobalState.partyByMember.set('deadowner', 20);
+    GlobalState.partyByMember.set('deadvictim', 20);
+    GlobalState.partyByMember.set('deadwatcher', 20);
+
+    const hostile = {
+        id: 8128,
+        name: 'EnemyGoblinDeadSource',
+        isPlayer: false,
+        x: 24,
+        y: 20,
+        v: 0,
+        team: EntityTeam.ENEMY,
+        entState: EntityState.DEAD,
+        dead: true,
+        clientSpawned: true,
+        ownerToken: owner.token,
+        ownerPartyId: 20,
+        roomId: owner.currentRoomId,
+        hp: 0
+    };
+    GlobalState.levelEntities.get(getClientLevelScope(owner as never))?.set(hostile.id, hostile);
+    owner.knownEntityIds.add(hostile.id);
+    victim.knownEntityIds.add(hostile.id);
+    watcher.knownEntityIds.add(hostile.id);
+
+    GlobalState.sessionsByToken.set(owner.token, owner as never);
+    GlobalState.sessionsByToken.set(victim.token, victim as never);
+    GlobalState.sessionsByToken.set(watcher.token, watcher as never);
+
+    await CombatHandler.handlePowerHit(owner as never, buildPowerHitPayload(victim.clientEntID, hostile.id, 15, 55));
+    await CombatHandler.handleBuffTickDot(owner as never, buildBuffTickDotPayload(victim.clientEntID, hostile.id, 88, 7));
+
+    assert.equal(victim.entities.get(victim.clientEntID)?.hp, 100, 'dead shared hostile source should not apply player damage');
+    assert.equal(watcher.sentPackets.some((packet) => packet.id === 0x0A || packet.id === 0x79), false);
 }
 
 async function testHostileDeathStateDoesNotEchoBackToLocalVictim(): Promise<void> {
@@ -1055,12 +1201,10 @@ async function testAliasedDungeonHostileHitUsesCanonicalEntity(): Promise<void> 
     await CombatHandler.handlePowerHit(partyOtherRoom as never, buildPowerHitPayload(8701, partyOtherRoom.clientEntID, 25, 77));
 
     assert.equal(hostile.hp, 75, 'hit against a local duplicate id should apply to the canonical hostile');
-    const relayedHit = sender.sentPackets.find((packet) => packet.id === 0x0A);
-    assert.ok(relayedHit, 'canonical hit should relay to the party peer');
-    assert.deepEqual(
-        parsePowerHitIds(relayedHit!.payload),
-        { targetId: hostile.id, sourceId: partyOtherRoom.clientEntID, damage: 25 },
-        'relayed hit should use the canonical target id, not the duplicate local id'
+    assert.equal(
+        sender.sentPackets.some((packet) => packet.id === 0x0A),
+        false,
+        'canonical shared-hostile hit should not relay a second 0x0A to the party peer'
     );
 
     sender.sentPackets.length = 0;
@@ -1071,12 +1215,10 @@ async function testAliasedDungeonHostileHitUsesCanonicalEntity(): Promise<void> 
     );
 
     assert.equal(hostile.hp, 70, 'DoT against a local duplicate id should apply to the canonical hostile');
-    const relayedDot = sender.sentPackets.find((packet) => packet.id === 0x79);
-    assert.ok(relayedDot, 'canonical DoT should relay to the party peer');
-    assert.deepEqual(
-        parseBuffTickDotIds(relayedDot!.payload),
-        { targetId: hostile.id, sourceId: partyOtherRoom.clientEntID, powerId: 88, damage: 5 },
-        'relayed DoT should use the canonical target id, not the duplicate local id'
+    assert.equal(
+        sender.sentPackets.some((packet) => packet.id === 0x79),
+        false,
+        'canonical shared-hostile DoT should not relay a second tick to the party peer'
     );
 }
 
@@ -1129,12 +1271,10 @@ async function testSharedDungeonHostileCombatWaitsForJoinerAdoption(): Promise<v
 
     await CombatHandler.handlePowerHit(owner as never, buildPowerHitPayload(hostile.id, owner.clientEntID, 10, 77));
 
-    const relayedHit = joiner.sentPackets.find((packet) => packet.id === 0x0A);
-    assert.ok(relayedHit, 'joiner should receive shared hostile combat after canonical id adoption');
-    assert.deepEqual(
-        parsePowerHitIds(relayedHit!.payload),
-        { targetId: 8801, sourceId: owner.clientEntID, damage: 10 },
-        'joiner should receive shared hostile combat against its local enemy id'
+    assert.equal(
+        joiner.sentPackets.some((packet) => packet.id === 0x0A),
+        false,
+        'joiner should not receive a duplicate shared-hostile hit echo after canonical id adoption'
     );
 }
 
@@ -1426,6 +1566,33 @@ async function main(): Promise<void> {
         GlobalState.entityLastRewardNonces.clear();
 
         await testHostileHitsDoNotEchoPowerHitBackToLocalVictimWhenDamageMatches();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testSharedHostileHitDoesNotEchoToVictimLocalDuplicate();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testForeignOwnedSharedHostileHitIsSuppressed();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testDeadSharedHostileSourceDoesNotRelayCombat();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.levelEntities.clear();
