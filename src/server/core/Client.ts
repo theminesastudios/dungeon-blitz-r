@@ -148,6 +148,7 @@ export class Client {
     public currentLevel: string = "";
     public craftTownHostCharacter: Character | null = null;
     public levelInstanceId: string = "";
+    public dungeonRuntimeLevel: number = 0;
     public entryLevel: string = "";
     public entryX: number = 0;
     public entryY: number = 0;
@@ -400,6 +401,7 @@ export class Client {
         this.entities.clear();
         this.currentLevel = "";
         this.levelInstanceId = "";
+        this.dungeonRuntimeLevel = 0;
         this.entryLevel = "";
         this.entryX = 0;
         this.entryY = 0;

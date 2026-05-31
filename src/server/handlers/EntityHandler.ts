@@ -112,6 +112,11 @@ export class EntityHandler {
             return Math.max(1, Math.min(50, Math.round(Number(fallbackLevel) || 1)));
         }
 
+        const lockedRuntimeLevel = Math.round(Number(client.dungeonRuntimeLevel ?? 0));
+        if (Number.isFinite(lockedRuntimeLevel) && lockedRuntimeLevel > 0) {
+            return Math.max(1, Math.min(50, lockedRuntimeLevel));
+        }
+
         return getPartyRuntimeLevelForClient(client, client.character, fallbackLevel);
     }
 

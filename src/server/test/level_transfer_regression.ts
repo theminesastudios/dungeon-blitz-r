@@ -36,6 +36,7 @@ function createClient(): any {
         entities: new Map(),
         currentLevel: '',
         levelInstanceId: '',
+        dungeonRuntimeLevel: 0,
         entryLevel: '',
         entryX: 0,
         entryY: 0,
@@ -2594,6 +2595,36 @@ function testDungeonMapPacketLevelUsesMaxLivePartyLevel(): void {
     );
 }
 
+function testDoorTransferPartyJoinUsesAnchorRuntimeLevelForEnemyScaling(): void {
+    const anchor = createClient();
+    anchor.token = 9201;
+    anchor.userId = 9201;
+    anchor.character = createCharacter('Lowbie');
+    anchor.character.level = 12;
+    anchor.currentLevel = 'GoblinRiverDungeon';
+    anchor.levelInstanceId = 'door-runtime-lock';
+    anchor.dungeonRuntimeLevel = 12;
+    anchor.playerSpawned = true;
+    anchor.syncAnchorStartedAt = 2345;
+    anchor.syncAnchorToken = anchor.token;
+    anchor.syncAnchorCharacterName = 'Lowbie';
+
+    const joiner = createClient();
+    joiner.userId = 9202;
+    joiner.character = createCharacter('Fifty');
+    joiner.character.level = 50;
+    joiner.currentLevel = 'NewbieRoad';
+
+    GlobalState.sessionsByToken.set(anchor.token, anchor as never);
+    GlobalState.partyByMember.set('lowbie', 920);
+    GlobalState.partyByMember.set('fifty', 920);
+
+    const syncState = (LevelHandler as any).buildTransferSyncState(joiner, 'GoblinRiverDungeon', null);
+    assert.ok(syncState);
+    assert.equal(syncState.levelInstanceId, 'door-runtime-lock');
+    assert.equal(syncState.dungeonRuntimeLevel, 12);
+}
+
 function testEnterWorldRepairsUnsafeSavedDungeonLocation(): void {
     const client = createClient();
     const character = createCharacter('RecoveredValhavenCrawler');
@@ -2821,6 +2852,13 @@ async function main(): Promise<void> {
 
         testDungeonMapPacketLevelKeepsAuthoredBaseLevelForEnemyScaling();
         testDungeonMapPacketLevelUsesMaxLivePartyLevel();
+
+        testDoorTransferPartyJoinUsesAnchorRuntimeLevelForEnemyScaling();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.pendingWorld.clear();
+        GlobalState.pendingExtended.clear();
         testEnterWorldRepairsUnsafeSavedDungeonLocation();
         testDungeonSafeReturnUsesExplicitEntryCoordinates();
         testBuildTransferSyncStateKeepsTeleportCallerReturnPoint();

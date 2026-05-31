@@ -7,6 +7,7 @@ export interface PendingTransfer {
     craftTownHostCharacter?: Character;
     targetLevel: string;
     levelInstanceId?: string;
+    dungeonRuntimeLevel?: number;
     previousLevel: string;
     userId: number;
     accountEmail?: string;

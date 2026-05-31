@@ -61,6 +61,7 @@ type LevelSyncState = {
     hasCoord: boolean;
     playSessionStartedAt?: number;
     levelInstanceId?: string;
+    dungeonRuntimeLevel?: number;
     syncAnchorStartedAt?: number;
     syncAnchorToken?: number;
     syncAnchorCharacterName?: string;
@@ -85,6 +86,15 @@ type TransferSyncAnchorCandidate = {
     characterKey: string;
     state: LevelSyncState;
 };
+
+function normalizeDungeonRuntimeLevel(value: unknown): number | undefined {
+    const numericValue = Math.round(Number(value));
+    if (!Number.isFinite(numericValue) || numericValue <= 0) {
+        return undefined;
+    }
+
+    return Math.max(1, Math.min(50, numericValue));
+}
 
 type LevelTriggerSpec = {
     roomId: number;
@@ -258,6 +268,7 @@ export class LevelHandler {
         target.characters = Array.isArray(source.characters) ? [...source.characters] : [];
         target.currentLevel = source.currentLevel;
         target.levelInstanceId = source.levelInstanceId;
+        target.dungeonRuntimeLevel = source.dungeonRuntimeLevel;
         target.entryLevel = source.entryLevel;
         target.entryX = source.entryX;
         target.entryY = source.entryY;
@@ -432,6 +443,7 @@ export class LevelHandler {
                 y,
                 hasCoord,
                 levelInstanceId: normalizeLevelInstanceId(session.levelInstanceId) || undefined,
+                dungeonRuntimeLevel: normalizeDungeonRuntimeLevel(session.dungeonRuntimeLevel),
                 syncAnchorStartedAt: LevelHandler.normalizeSyncAnchorStartedAt(session.syncAnchorStartedAt),
                 syncAnchorToken: Number(session.syncAnchorToken ?? 0) > 0
                     ? Math.round(Number(session.syncAnchorToken))
@@ -474,6 +486,7 @@ export class LevelHandler {
                 y: hasCoord ? Math.round(newY) : 0,
                 hasCoord,
                 levelInstanceId: normalizeLevelInstanceId(entry.levelInstanceId) || undefined,
+                dungeonRuntimeLevel: normalizeDungeonRuntimeLevel(entry.dungeonRuntimeLevel),
                 syncAnchorStartedAt: LevelHandler.normalizeSyncAnchorStartedAt(entry.syncAnchorStartedAt),
                 syncAnchorToken: Number(entry.syncAnchorToken ?? 0) > 0
                     ? Math.round(Number(entry.syncAnchorToken))
@@ -707,6 +720,9 @@ export class LevelHandler {
         let levelInstanceId = shouldSyncDungeonProgress
             ? normalizeLevelInstanceId(teleportOverride?.levelInstanceId)
             : '';
+        let dungeonRuntimeLevel = shouldSyncDungeonProgress
+            ? normalizeDungeonRuntimeLevel((teleportOverride as PendingTeleport & { dungeonRuntimeLevel?: number } | null)?.dungeonRuntimeLevel)
+            : undefined;
         let syncAnchorStartedAt = shouldSyncDungeonProgress
             ? LevelHandler.normalizeSyncAnchorStartedAt(client.syncAnchorStartedAt)
             : undefined;
@@ -757,6 +773,7 @@ export class LevelHandler {
             syncAnchorCharacterName = anchorState.syncAnchorCharacterName ?? syncAnchorCharacterName;
             if (shouldSyncDungeonProgress) {
                 levelInstanceId = normalizeLevelInstanceId(anchorState.levelInstanceId) || levelInstanceId;
+                dungeonRuntimeLevel = normalizeDungeonRuntimeLevel(anchorState.dungeonRuntimeLevel) ?? dungeonRuntimeLevel;
                 syncAnchorStartedAt = LevelHandler.normalizeSyncAnchorStartedAt(anchorState.syncAnchorStartedAt) ?? syncAnchorStartedAt;
                 if (shouldUseAnchorEntryReturn) {
                     syncEntryLevel = LevelConfig.normalizeLevelName(anchorState.syncEntryLevel) || syncEntryLevel;
@@ -787,6 +804,13 @@ export class LevelHandler {
 
         if (shouldSyncDungeonProgress) {
             syncAnchorStartedAt = syncAnchorStartedAt ?? Date.now();
+            dungeonRuntimeLevel = dungeonRuntimeLevel ??
+                LevelHandler.resolveDungeonMapPacketLevel(
+                    normalizedTargetLevel,
+                    LevelConfig.get(normalizedTargetLevel).mapId,
+                    client.character ?? ({} as Character),
+                    client
+                );
             const entryEntity = client.clientEntID > 0 ? client.entities.get(client.clientEntID) : null;
             const sourceLevel = LevelConfig.normalizeLevelName(client.currentLevel);
             if (
@@ -837,6 +861,7 @@ export class LevelHandler {
                 ? Math.round(client.playSessionStartedAt)
                 : Date.now(),
             levelInstanceId: levelInstanceId || undefined,
+            dungeonRuntimeLevel,
             syncAnchorStartedAt,
             syncAnchorToken,
             syncAnchorCharacterName,
@@ -2523,6 +2548,7 @@ export class LevelHandler {
         client.currentRoomId = 0;
         client.startedRoomEvents.clear();
         client.levelInstanceId = '';
+        client.dungeonRuntimeLevel = 0;
         client.syncAnchorStartedAt = 0;
         client.syncAnchorToken = 0;
         client.syncAnchorCharacterName = '';
@@ -3249,6 +3275,7 @@ export class LevelHandler {
                 userId,
                 targetLevel,
                 levelInstanceId: levelInstanceId || undefined,
+                dungeonRuntimeLevel: syncState?.dungeonRuntimeLevel,
                 previousLevel,
                 newX,
                 newY,
@@ -3404,6 +3431,7 @@ export class LevelHandler {
                 ? usedEntry.craftTownHostCharacter ?? null
                 : null;
             client.levelInstanceId = normalizeLevelInstanceId(usedEntry.levelInstanceId);
+            client.dungeonRuntimeLevel = normalizeDungeonRuntimeLevel(usedEntry.dungeonRuntimeLevel) ?? 0;
             client.entryLevel = LevelConfig.resolveDungeonEntryLevel(
                 usedEntry.targetLevel,
                 usedEntry.previousLevel,
@@ -3482,6 +3510,7 @@ export class LevelHandler {
                 ? pendingEntry.craftTownHostCharacter ?? null
                 : null;
             client.levelInstanceId = normalizeLevelInstanceId(pendingEntry.levelInstanceId);
+            client.dungeonRuntimeLevel = normalizeDungeonRuntimeLevel(pendingEntry.dungeonRuntimeLevel) ?? 0;
             client.entryLevel = LevelConfig.resolveDungeonEntryLevel(
                 pendingEntry.targetLevel,
                 pendingEntry.previousLevel,
@@ -4152,7 +4181,8 @@ export class LevelHandler {
         const levelSpec = LevelConfig.get(targetLevel);
         const isHard = targetLevel.endsWith("Hard");
         const oldLevelSpec = LevelConfig.get(oldLevel);
-        const runtimeMapLevel = LevelHandler.resolveDungeonMapPacketLevel(targetLevel, levelSpec.mapId, activeCharacter, client);
+        const runtimeMapLevel = syncState?.dungeonRuntimeLevel ??
+            LevelHandler.resolveDungeonMapPacketLevel(targetLevel, levelSpec.mapId, activeCharacter, client);
         const runtimeBaseLevel = levelSpec.baseId;
         const isVisitedCraftTown = targetLevel === 'CraftTown' && LevelHandler.isDifferentCharacter(activeCharacter, hostChar);
         const craftTownOwnerToken = isVisitedCraftTown

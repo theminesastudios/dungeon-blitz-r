@@ -22,6 +22,7 @@ type FakeClient = {
     character: { name: string; level?: number; xp?: number };
     currentLevel: string;
     levelInstanceId: string;
+    dungeonRuntimeLevel: number;
     currentRoomId: number;
     playerSpawned: boolean;
     clientEntID: number;
@@ -71,6 +72,7 @@ function createFakeClient(name: string, level: number = 1): FakeClient {
         character: { name, level },
         currentLevel: 'NewbieRoad',
         levelInstanceId: '',
+        dungeonRuntimeLevel: 0,
         currentRoomId: 1,
         playerSpawned: true,
         clientEntID: 0,
@@ -2745,6 +2747,38 @@ function testDungeonClientSpawnHostilesUseMaxPartyRuntimeLevel(): void {
     assert.equal(hostile.level, 50, 'party dungeon hostiles should scale to the highest live party member level');
 }
 
+function testDungeonClientSpawnHostilesUseLockedInstanceRuntimeLevel(): void {
+    const low = createFakeClient('Lowbie', 12);
+    const high = createFakeClient('Fifty', 50);
+    low.currentLevel = 'GoblinRiverDungeon';
+    high.currentLevel = 'GoblinRiverDungeon';
+    low.levelInstanceId = 'locked-scaled-run';
+    high.levelInstanceId = 'locked-scaled-run';
+    low.dungeonRuntimeLevel = 12;
+    high.dungeonRuntimeLevel = 12;
+
+    GlobalState.sessionsByToken.set(low.token, low as never);
+    GlobalState.sessionsByToken.set(high.token, high as never);
+    GlobalState.partyByMember.set('lowbie', 307);
+    GlobalState.partyByMember.set('fifty', 307);
+    GlobalState.partyGroups.set(307, { id: 307, leader: 'Lowbie', members: ['Lowbie', 'Fifty'], locked: false });
+
+    const hostile: any = {
+        id: 9153,
+        name: 'GoblinDagger',
+        isPlayer: false,
+        x: 200,
+        y: 300,
+        v: 0,
+        team: 2,
+        entState: 0
+    };
+
+    (EntityHandler as any).applyRuntimeDungeonEntityLevel(high as never, high.currentLevel, hostile);
+
+    assert.equal(hostile.level, 12, 'party joiners should keep the dungeon instance runtime level used by the anchor client');
+}
+
 function testJoiningHighLevelPartyMemberRescalesExistingDungeonHostiles(): void {
     const low = createFakeClient('Lowbie', 12);
     const high = createFakeClient('Fifty', 50);
@@ -2781,6 +2815,46 @@ function testJoiningHighLevelPartyMemberRescalesExistingDungeonHostiles(): void 
     assert.equal(updatedCount, 1);
     assert.equal(scaledHostile?.level, 50, 'joining high-level party member should raise existing shared hostile level');
     assert.equal(low.entities.get(hostile.id)?.level, 50, 'owner local entity cache should be raised with the shared hostile');
+}
+
+function testLockedDungeonRuntimePreventsExistingHostileRescale(): void {
+    const low = createFakeClient('Lowbie', 12);
+    const high = createFakeClient('Fifty', 50);
+    low.currentLevel = 'GoblinRiverDungeon';
+    high.currentLevel = 'GoblinRiverDungeon';
+    low.levelInstanceId = 'locked-rescale-run';
+    high.levelInstanceId = 'locked-rescale-run';
+    low.dungeonRuntimeLevel = 12;
+    high.dungeonRuntimeLevel = 12;
+
+    GlobalState.sessionsByToken.set(low.token, low as never);
+    GlobalState.sessionsByToken.set(high.token, high as never);
+    GlobalState.partyByMember.set('lowbie', 308);
+    GlobalState.partyByMember.set('fifty', 308);
+    GlobalState.partyGroups.set(308, { id: 308, leader: 'Lowbie', members: ['Lowbie', 'Fifty'], locked: false });
+
+    const hostile = {
+        id: 9251,
+        name: 'GoblinDagger',
+        isPlayer: false,
+        x: 200,
+        y: 300,
+        v: 0,
+        team: 2,
+        entState: 0,
+        clientSpawned: true,
+        ownerToken: low.token,
+        ownerPartyId: 308,
+        level: 12
+    };
+    GlobalState.levelEntities.set('GoblinRiverDungeon#locked-rescale-run', new Map<number, any>([[hostile.id, hostile]]));
+    low.entities.set(hostile.id, { ...hostile });
+
+    const updatedCount = EntityHandler.rescaleDungeonEntitiesForParty(high as never);
+    const scaledHostile = GlobalState.levelEntities.get('GoblinRiverDungeon#locked-rescale-run')?.get(9251);
+    assert.equal(updatedCount, 0);
+    assert.equal(scaledHostile?.level, 12, 'existing shared hostile should stay on the instance runtime level');
+    assert.equal(low.entities.get(hostile.id)?.level, 12, 'owner local cache should stay on the same instance runtime level');
 }
 
 async function main(): Promise<void> {
@@ -3080,7 +3154,19 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        testDungeonClientSpawnHostilesUseLockedInstanceRuntimeLevel();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
         testJoiningHighLevelPartyMemberRescalesExistingDungeonHostiles();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        testLockedDungeonRuntimePreventsExistingHostileRescale();
     } finally {
         GlobalState.levelEntities = levelEntities;
         GlobalState.sessionsByToken = sessionsByToken;

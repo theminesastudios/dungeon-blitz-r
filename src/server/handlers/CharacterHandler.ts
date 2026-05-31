@@ -40,6 +40,15 @@ import { getCharacterRuntimeLevel, getPartyRuntimeLevelForClient } from '../core
 
 const db = new JsonAdapter();
 
+function normalizeDungeonRuntimeLevel(value: unknown): number | undefined {
+    const numericValue = Math.round(Number(value));
+    if (!Number.isFinite(numericValue) || numericValue <= 0) {
+        return undefined;
+    }
+
+    return Math.max(1, Math.min(50, numericValue));
+}
+
 export class CharacterHandler {
     private static readonly DYE_GOLD_COST = [0, 455, 550, 595, 650, 735, 795, 890, 965, 1075, 1155, 1285, 1385, 1520, 1685, 1810, 1985, 2180, 2380, 2600, 2845, 3090, 3375, 3710, 4025, 4410, 4790, 5225, 5705, 6215, 6750, 7340, 8020, 8690, 9455, 10300, 11230, 12185, 13255, 14405, 15635, 17010, 18475, 20050, 21725, 23650, 25640, 27835, 30165, 32730, 35540] as const;
     private static readonly DYE_IDOLS_COST = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7, 7, 8, 8, 9, 10, 11, 11, 12, 13, 14, 16, 17] as const;
@@ -902,9 +911,13 @@ export class CharacterHandler {
             "NewbieRoad";
         const spawn = LevelConfig.getSpawnCoordinates(char, previousLevelName, currentLevelName);
         const isDungeonLevel = LevelConfig.isDungeonLevel(currentLevelName);
+        const levelSpec = LevelConfig.get(currentLevelName);
 
         // Generate Transfer Token
         const token = CharacterHandler.allocateTransferToken(currentLevelName);
+        let dungeonRuntimeLevel = isDungeonLevel
+            ? CharacterHandler.resolveDungeonMapPacketLevel(currentLevelName, levelSpec.mapId, char, client)
+            : undefined;
         
         // Store Pending State
         if (client.userId) {
@@ -932,6 +945,7 @@ export class CharacterHandler {
 
                      // Found a party member in the same dungeon — reuse their level scope
                      levelInstanceId = normalizeLevelInstanceId(other.levelInstanceId) || createDungeonInstanceId(token);
+                     dungeonRuntimeLevel = normalizeDungeonRuntimeLevel(other.dungeonRuntimeLevel) ?? dungeonRuntimeLevel;
                      syncAnchorStartedAt = other.syncAnchorStartedAt > 0 ? other.syncAnchorStartedAt : Date.now();
                      syncAnchorToken = other.syncAnchorToken > 0 ? other.syncAnchorToken : token;
                      syncAnchorCharacterName = String(other.syncAnchorCharacterName || other.character.name).trim();
@@ -956,6 +970,7 @@ export class CharacterHandler {
                 character: char,
                 targetLevel: currentLevelName,
                 levelInstanceId: levelInstanceId || undefined,
+                dungeonRuntimeLevel,
                 previousLevel: previousLevelName,
                 userId: client.userId,
                 accountEmail: client.account?.email,
@@ -975,9 +990,9 @@ export class CharacterHandler {
         }
 
         // Get Level Config
-        const levelSpec = LevelConfig.get(currentLevelName);
         const isHard = currentLevelName.endsWith("Hard");
-        const runtimeMapLevel = CharacterHandler.resolveDungeonMapPacketLevel(currentLevelName, levelSpec.mapId, char, client);
+        const runtimeMapLevel = dungeonRuntimeLevel ??
+            CharacterHandler.resolveDungeonMapPacketLevel(currentLevelName, levelSpec.mapId, char, client);
         const runtimeBaseLevel = levelSpec.baseId;
 
         const pendingEntry = GlobalState.pendingWorld.get(token);
@@ -1052,6 +1067,9 @@ export class CharacterHandler {
             : LevelConfig.isDungeonLevel(entry.targetLevel)
                 ? normalizeLevelInstanceId(entry.levelInstanceId) || createDungeonInstanceId(token)
                 : '';
+        client.dungeonRuntimeLevel = LevelConfig.isDungeonLevel(entry.targetLevel)
+            ? normalizeDungeonRuntimeLevel(entry.dungeonRuntimeLevel) ?? getCharacterRuntimeLevel(entry.character, LevelConfig.get(entry.targetLevel).mapId)
+            : 0;
         console.log(`[GameLogin] ${entry.character.name} entering ${entry.targetLevel} with levelInstanceId='${client.levelInstanceId}' (from entry: '${entry.levelInstanceId}')`);
         client.entryLevel = LevelConfig.resolveDungeonEntryLevel(
             entry.targetLevel,
@@ -1166,6 +1184,7 @@ export class CharacterHandler {
             userId: entry.userId,
             targetLevel: entry.targetLevel,
             levelInstanceId: client.levelInstanceId || undefined,
+            dungeonRuntimeLevel: client.dungeonRuntimeLevel || undefined,
             previousLevel: entry.previousLevel,
             newX: entry.newX,
             newY: entry.newY,
