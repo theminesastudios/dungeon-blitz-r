@@ -74,6 +74,18 @@ type BuffTickDotInfo = {
     tailBits: number;
 };
 
+type AddBuffRelayInfo = {
+    targetId: number;
+    fields: [number, number, number, number, number];
+    hasModifiers: boolean;
+};
+
+type RemoveBuffRelayInfo = {
+    targetId: number;
+    buffInstanceId: number;
+    buffTypeId: number;
+};
+
 type PlayerHitResolution = {
     appliedDamage: number;
     killed: boolean;
@@ -934,6 +946,24 @@ export class CombatHandler {
         return bb.toBuffer();
     }
 
+    private static buildAddBuffPayload(info: AddBuffRelayInfo): Buffer {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(info.targetId);
+        for (const field of info.fields) {
+            bb.writeMethod4(Math.max(0, Math.round(Number(field) || 0)));
+        }
+        bb.writeMethod15(false);
+        return bb.toBuffer();
+    }
+
+    private static buildRemoveBuffPayload(info: RemoveBuffRelayInfo): Buffer {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(info.targetId);
+        bb.writeMethod4(Math.max(0, Math.round(Number(info.buffInstanceId) || 0)));
+        bb.writeMethod4(Math.max(0, Math.round(Number(info.buffTypeId) || 0)));
+        return bb.toBuffer();
+    }
+
     private static translateEntityIdForViewer(viewer: Client, entityId: number): number {
         return EntityHandler.resolveEntityLocalId(viewer, entityId);
     }
@@ -991,6 +1021,38 @@ export class CombatHandler {
                         ...info,
                         targetId,
                         sourceId
+                    });
+                }
+                case 0x0B: {
+                    const info = CombatHandler.parseAddBuffInfo(data);
+                    if (!info) {
+                        return data;
+                    }
+
+                    const targetId = CombatHandler.translateEntityIdForViewer(viewer, info.targetId);
+                    if (targetId === info.targetId) {
+                        return data;
+                    }
+
+                    return CombatHandler.buildAddBuffPayload({
+                        ...info,
+                        targetId
+                    });
+                }
+                case 0x0C: {
+                    const info = CombatHandler.parseRemoveBuffInfo(data);
+                    if (!info) {
+                        return data;
+                    }
+
+                    const targetId = CombatHandler.translateEntityIdForViewer(viewer, info.targetId);
+                    if (targetId === info.targetId) {
+                        return data;
+                    }
+
+                    return CombatHandler.buildRemoveBuffPayload({
+                        ...info,
+                        targetId
                     });
                 }
                 case 0x07: {
@@ -1692,6 +1754,47 @@ export class CombatHandler {
         }
     }
 
+    private static parseAddBuffInfo(data: Buffer): AddBuffRelayInfo | null {
+        const br = new BitReader(data);
+
+        try {
+            const targetId = br.readMethod9();
+            const fields: [number, number, number, number, number] = [
+                br.readMethod9(),
+                br.readMethod9(),
+                br.readMethod9(),
+                br.readMethod9(),
+                br.readMethod9()
+            ];
+            const hasModifiers = br.remainingBits() > 0 ? br.readMethod15() : false;
+            if (hasModifiers) {
+                return null;
+            }
+
+            return {
+                targetId,
+                fields,
+                hasModifiers
+            };
+        } catch {
+            return null;
+        }
+    }
+
+    private static parseRemoveBuffInfo(data: Buffer): RemoveBuffRelayInfo | null {
+        const br = new BitReader(data);
+
+        try {
+            return {
+                targetId: br.readMethod9(),
+                buffInstanceId: br.readMethod9(),
+                buffTypeId: br.readMethod9()
+            };
+        } catch {
+            return null;
+        }
+    }
+
     private static updatePlayerTargetAfterHit(targetSession: Client, damage: number, preventDeath: boolean = false): PlayerHitResolution {
         if (damage <= 0 || !targetSession.character || targetSession.clientEntID <= 0) {
             return {
@@ -2005,6 +2108,43 @@ export class CombatHandler {
                 other === anchor ||
                 !CombatHandler.canViewerResolveCombatEntity(other, levelScope, targetId) ||
                 !CombatHandler.canViewerResolveCombatEntity(other, levelScope, sourceId)
+            ) {
+                continue;
+            }
+
+            const localTargetId = EntityHandler.resolveEntityLocalId(other, targetId);
+            if (
+                other.entities?.has(localTargetId) ||
+                other.entities?.has(targetId) ||
+                other.knownEntityIds?.has(targetId)
+            ) {
+                recipients.add(other);
+            }
+        }
+
+        return recipients;
+    }
+
+    private static resolveSharedHostileLocalEffectEchoRecipients(
+        anchor: Client,
+        levelScope: string,
+        targetEntity: any,
+        targetId: number
+    ): Set<Client> {
+        const recipients = new Set<Client>();
+        if (
+            !levelScope ||
+            !targetEntity ||
+            Boolean(targetEntity.isPlayer) ||
+            !CombatHandler.shouldMirrorClientSpawnEntityToParty(anchor.currentLevel, targetEntity)
+        ) {
+            return recipients;
+        }
+
+        for (const other of CombatHandler.getCombatRecipients(anchor, false)) {
+            if (
+                other === anchor ||
+                !CombatHandler.canViewerResolveCombatEntity(other, levelScope, targetId)
             ) {
                 continue;
             }
@@ -2496,14 +2636,48 @@ export class CombatHandler {
     }
 
     static async handleAddBuff(client: Client, data: Buffer): Promise<void> {
-        CombatHandler.broadcastCombatPacket(client, 0x0B, data, {
-            referencedEntityIds: CombatHandler.parseReferencedEntityIds(0x0B, data)
+        const info = CombatHandler.parseAddBuffInfo(data);
+        const rawTargetId = info?.targetId ?? CombatHandler.parseReferencedEntityIds(0x0B, data)[0] ?? 0;
+        const targetId = EntityHandler.resolveEntityAlias(client, rawTargetId);
+        if (!info && targetId !== rawTargetId) {
+            return;
+        }
+        const relayPayload = info && targetId !== rawTargetId
+            ? CombatHandler.buildAddBuffPayload({ ...info, targetId })
+            : data;
+        const levelScope = getClientLevelScope(client);
+        const targetEntity = CombatHandler.resolveLevelEntity(levelScope, targetId);
+        CombatHandler.broadcastCombatPacket(client, 0x0B, relayPayload, {
+            referencedEntityIds: targetId > 0 ? [targetId] : [],
+            excludedClients: CombatHandler.resolveSharedHostileLocalEffectEchoRecipients(
+                client,
+                levelScope,
+                targetEntity,
+                targetId
+            )
         });
     }
 
     static async handleRemoveBuff(client: Client, data: Buffer): Promise<void> {
-        CombatHandler.broadcastCombatPacket(client, 0x0C, data, {
-            referencedEntityIds: CombatHandler.parseReferencedEntityIds(0x0C, data)
+        const info = CombatHandler.parseRemoveBuffInfo(data);
+        const rawTargetId = info?.targetId ?? CombatHandler.parseReferencedEntityIds(0x0C, data)[0] ?? 0;
+        const targetId = EntityHandler.resolveEntityAlias(client, rawTargetId);
+        if (!info && targetId !== rawTargetId) {
+            return;
+        }
+        const relayPayload = info && targetId !== rawTargetId
+            ? CombatHandler.buildRemoveBuffPayload({ ...info, targetId })
+            : data;
+        const levelScope = getClientLevelScope(client);
+        const targetEntity = CombatHandler.resolveLevelEntity(levelScope, targetId);
+        CombatHandler.broadcastCombatPacket(client, 0x0C, relayPayload, {
+            referencedEntityIds: targetId > 0 ? [targetId] : [],
+            excludedClients: CombatHandler.resolveSharedHostileLocalEffectEchoRecipients(
+                client,
+                levelScope,
+                targetEntity,
+                targetId
+            )
         });
     }
 }

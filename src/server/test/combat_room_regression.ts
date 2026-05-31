@@ -129,6 +129,26 @@ function buildBuffTickDotPayload(targetId: number, sourceId: number, powerId: nu
     return bb.toBuffer();
 }
 
+function buildAddBuffPayload(targetId: number, powerId: number = 492): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(targetId);
+    bb.writeMethod4(powerId);
+    bb.writeMethod4(powerId);
+    bb.writeMethod4(1);
+    bb.writeMethod4(0);
+    bb.writeMethod4(0);
+    bb.writeMethod15(false);
+    return bb.toBuffer();
+}
+
+function buildRemoveBuffPayload(targetId: number, buffInstanceId: number = 492, buffTypeId: number = 492): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(targetId);
+    bb.writeMethod4(buffInstanceId);
+    bb.writeMethod4(buffTypeId);
+    return bb.toBuffer();
+}
+
 function buildDestroyEntityPayload(entityId: number): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod4(entityId);
@@ -271,6 +291,10 @@ function parsePowerCastPayload(payload: Buffer): {
         comboIsMelee,
         comboId
     };
+}
+
+function parseBuffTargetId(payload: Buffer): number {
+    return new BitReader(payload).readMethod4();
 }
 
 async function testPowerCastReachesPartyAcrossRooms(): Promise<void> {
@@ -946,6 +970,111 @@ async function testDeadSharedHostileSourceDoesNotRelayCombat(): Promise<void> {
     assert.equal(watcher.sentPackets.some((packet) => packet.id === 0x0A || packet.id === 0x79), false);
 }
 
+async function testFireBlastBuffEchoSkipsSharedHostileLocalDuplicate(): Promise<void> {
+    const caster = createFakeClient(335, 'FireCaster', 2);
+    const localDuplicatePeer = createFakeClient(336, 'FirePeer', 2);
+    const knownPeer = createFakeClient(337, 'FireWatcher', 2);
+
+    caster.currentLevel = 'TutorialDungeon';
+    localDuplicatePeer.currentLevel = 'TutorialDungeon';
+    knownPeer.currentLevel = 'TutorialDungeon';
+
+    attachPlayerEntity(caster);
+    attachPlayerEntity(localDuplicatePeer);
+    attachPlayerEntity(knownPeer);
+
+    GlobalState.partyByMember.set('firecaster', 21);
+    GlobalState.partyByMember.set('firepeer', 21);
+    GlobalState.partyByMember.set('firewatcher', 21);
+
+    const hostile = {
+        id: 8130,
+        name: 'EnemyGoblinFireBlast',
+        isPlayer: false,
+        x: 24,
+        y: 20,
+        v: 0,
+        team: EntityTeam.ENEMY,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: caster.token,
+        ownerPartyId: 21,
+        roomId: caster.currentRoomId,
+        hp: 100
+    };
+    GlobalState.levelEntities.get(getClientLevelScope(caster as never))?.set(hostile.id, hostile);
+    caster.knownEntityIds.add(hostile.id);
+    localDuplicatePeer.knownEntityIds.add(hostile.id);
+    localDuplicatePeer.entities.set(hostile.id, { ...hostile, ownerToken: localDuplicatePeer.token });
+    knownPeer.knownEntityIds.add(hostile.id);
+
+    GlobalState.sessionsByToken.set(caster.token, caster as never);
+    GlobalState.sessionsByToken.set(localDuplicatePeer.token, localDuplicatePeer as never);
+    GlobalState.sessionsByToken.set(knownPeer.token, knownPeer as never);
+
+    await CombatHandler.handleAddBuff(caster as never, buildAddBuffPayload(hostile.id, 492));
+    await CombatHandler.handleRemoveBuff(caster as never, buildRemoveBuffPayload(hostile.id, 492, 492));
+
+    assert.equal(
+        localDuplicatePeer.sentPackets.some((packet) => packet.id === 0x0B || packet.id === 0x0C),
+        false,
+        'Fire Blast burn add/remove should not echo onto a party peer local shared-hostile duplicate'
+    );
+    assert.deepEqual(
+        knownPeer.sentPackets.filter((packet) => packet.id === 0x0B || packet.id === 0x0C).map((packet) => packet.id),
+        [],
+        'Fire Blast burn add/remove should also skip peers that already know the shared-hostile entity'
+    );
+}
+
+async function testBuffEchoNormalizesSenderAndViewerEntityAliases(): Promise<void> {
+    const sender = createFakeClient(338, 'BuffAliasSender', 2);
+    const viewer = createFakeClient(339, 'BuffAliasViewer', 2);
+
+    sender.currentLevel = 'TutorialDungeon';
+    viewer.currentLevel = 'TutorialDungeon';
+
+    attachPlayerEntity(sender);
+    attachPlayerEntity(viewer);
+
+    GlobalState.partyByMember.set('buffaliassender', 22);
+    GlobalState.partyByMember.set('buffaliasviewer', 22);
+
+    const hostile = {
+        id: 8140,
+        name: 'ServerGoblinBuffAlias',
+        isPlayer: false,
+        x: 24,
+        y: 20,
+        v: 0,
+        team: EntityTeam.ENEMY,
+        entState: EntityState.ACTIVE,
+        clientSpawned: false,
+        ownerToken: sender.token,
+        roomId: sender.currentRoomId,
+        hp: 100
+    };
+    GlobalState.levelEntities.get(getClientLevelScope(sender as never))?.set(hostile.id, hostile);
+    sender.entityIdAliases.set(8701, hostile.id);
+    sender.knownEntityIds.add(hostile.id);
+    viewer.entityIdAliases.set(8801, hostile.id);
+    viewer.knownEntityIds.add(hostile.id);
+
+    GlobalState.sessionsByToken.set(sender.token, sender as never);
+    GlobalState.sessionsByToken.set(viewer.token, viewer as never);
+
+    await CombatHandler.handleAddBuff(sender as never, buildAddBuffPayload(8701, 492));
+    await CombatHandler.handleRemoveBuff(sender as never, buildRemoveBuffPayload(8701, 492, 492));
+
+    const addBuff = viewer.sentPackets.find((packet) => packet.id === 0x0B);
+    const removeBuff = viewer.sentPackets.find((packet) => packet.id === 0x0C);
+
+    assert.ok(addBuff, 'viewer should receive normalized add-buff packet');
+    assert.ok(removeBuff, 'viewer should receive normalized remove-buff packet');
+    assert.equal(parseBuffTargetId(addBuff.payload), 8801, 'add-buff target should be translated to viewer local id');
+    assert.equal(parseBuffTargetId(removeBuff.payload), 8801, 'remove-buff target should be translated to viewer local id');
+}
+
 async function testHostileDeathStateDoesNotEchoBackToLocalVictim(): Promise<void> {
     const victim = createFakeClient(330, 'VictimDeadEcho', 2);
     const sameRoomWatcher = createFakeClient(331, 'WatcherDeadEcho', 2);
@@ -1593,6 +1722,24 @@ async function main(): Promise<void> {
         GlobalState.entityLastRewardNonces.clear();
 
         await testDeadSharedHostileSourceDoesNotRelayCombat();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testFireBlastBuffEchoSkipsSharedHostileLocalDuplicate();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testBuffEchoNormalizesSenderAndViewerEntityAliases();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.levelEntities.clear();
