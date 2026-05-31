@@ -1,6 +1,8 @@
 import { LevelConfig } from './LevelConfig';
+import { WAYBACK_RANKING_DUNGEON_CAPS } from './WaybackDungeonStatCaps';
 
 export type DungeonStatCapSource =
+    | 'wayback-2017-rankings'
     | 'original-client-ui-with-inferred-tier'
     | 'custom-fallback';
 
@@ -156,6 +158,14 @@ export function getDungeonStatCaps(levelName: string): DungeonStatCaps | null {
     const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
     if (!normalizedLevel) {
         return null;
+    }
+
+    const waybackCaps = WAYBACK_RANKING_DUNGEON_CAPS[normalizedLevel];
+    if (waybackCaps) {
+        return {
+            ...waybackCaps,
+            source: 'wayback-2017-rankings'
+        };
     }
 
     const tierEvidence = ORIGINAL_TIER_DUNGEON_RESULT_BARS[normalizedLevel];

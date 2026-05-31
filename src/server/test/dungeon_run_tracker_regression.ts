@@ -3,6 +3,7 @@ import * as path from 'path';
 import { GlobalState } from '../core/GlobalState';
 import { GameData } from '../core/GameData';
 import {
+    finalizeDungeonRun,
     getWolfsEndLiveStatCap,
     getWolfsEndTimeBonusCap,
     noteDungeonRunBossCutscene,
@@ -52,7 +53,6 @@ type FakeClient = {
 };
 
 const LIVE_ACCURACY_CAP = 40_000;
-const LIVE_DEATHS_BASE = 40_000;
 const LIVE_BOSS_RUN_KILL_CAP = 160_000;
 
 function ensureGameDataLoaded(): void {
@@ -266,12 +266,12 @@ function getDeathPenaltyPerDeath(levelName: string, deathIndex: number): number 
     return Math.max(1, Math.round((4_000 + (levelTier * 750)) * difficultyScalar * streakScalar));
 }
 
-function getExpectedDeathScore(levelName: string, deathCount: number): number {
+function getExpectedDeathScore(levelName: string, deathCount: number, deathCap: number): number {
     let totalPenalty = 0;
     for (let deathIndex = 1; deathIndex <= deathCount; deathIndex++) {
         totalPenalty += getDeathPenaltyPerDeath(levelName, deathIndex);
     }
-    return Math.max(0, LIVE_DEATHS_BASE - totalPenalty);
+    return Math.max(0, deathCap - totalPenalty);
 }
 
 function getExpectedTimeBonus(levelName: string, bossRun: boolean, cap: number, elapsedMs: number): number {
@@ -309,6 +309,9 @@ async function finalizeAndReadResultWithPacket(
     remainingKills: number = 1,
     requiredKills: number = 2
 ): Promise<ReturnType<typeof decodeDungeonCompletePacket>> {
+    if (completionPercent >= 100) {
+        (client as any).forcedDungeonCompletionScope = getClientLevelScope(client as never);
+    }
     await MissionHandler.handleSetLevelComplete(
         client as never,
         createLevelCompletePacket(completionPercent, remainingKills, requiredKills)
@@ -346,7 +349,77 @@ async function testBossRunNoDeathsKeepsDeathsBase(): Promise<void> {
     const result = await finalizeAndReadResult(client);
     assertResultMatchesTrackerSummary(client, result);
     assert.equal(client.dungeonRun.finalizedStats?.scoreMode, 'boss_run', 'pure boss completion should remain boss_run');
-    assert.equal(result.deaths, LIVE_DEATHS_BASE, 'boss runs with no deaths should keep the 40000 deaths base');
+    assert.equal(
+        result.deaths,
+        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.deaths,
+        'boss runs with no deaths should keep the profile deaths cap'
+    );
+}
+
+async function testTowerOfTuataraFullPercentUsesArchivedCaps(): Promise<void> {
+    const client = createFakeDungeonClient('SRN_Mission1', MissionID.StopCastout);
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    syncClientDungeonRunState(client as never);
+    resetTrackerEntityBuckets(client);
+
+    const finalized = finalizeDungeonRun(client as never, 'success', {
+        completionPercent: 100,
+        dungeonCompleted: true
+    });
+    assert.ok(finalized, 'Tower of the Tuatara should finalize dungeon run stats');
+    const summary = finalized!.scoreSummary;
+    assert.equal(summary.resultBar, 6, 'Tower of the Tuatara should use the archived Normal result bar');
+    assert.equal(summary.finalStat.kills, 240_000, '100% Tower of the Tuatara should max archived kills');
+    assert.equal(summary.finalStat.treasure, 60_000, '100% Tower of the Tuatara should max archived treasure');
+    assert.equal(summary.finalStat.accuracy, 120_000, '100% Tower of the Tuatara should max archived accuracy');
+    assert.equal(summary.finalStat.deaths, 120_000, '100% Tower of the Tuatara should max archived deaths');
+    assert.equal(summary.finalStat.timeBonus, 112_809, 'fast Tower of the Tuatara completion should keep the archived time bonus cap');
+}
+
+async function testTowerOfTuataraBossRunDoesNotBecomeFullClear(): Promise<void> {
+    const client = createFakeDungeonClient('SRN_Mission1', MissionID.StopCastout);
+    const levelScope = getClientLevelScope(client as never);
+    const boss = { id: 90301, name: 'LizardLord', team: 2, entRank: 'Boss', hp: 10, roomId: 1 };
+    const bossAdd = { id: 90302, name: 'LizardGuard', team: 2, entRank: 'Minion', hp: 10, roomId: 1 };
+
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    syncClientDungeonRunState(client as never);
+    resetTrackerEntityBuckets(client);
+    client.currentRoomId = 1;
+    client.entities.set(bossAdd.id, bossAdd);
+    triggerBossCutscene(client, boss);
+
+    noteDungeonRunCast(client as never, { sourceId: client.clientEntID, projectileId: null, isPersistent: false, hasTargetPos: true });
+    noteDungeonRunHit(client as never, {
+        sourceId: client.clientEntID,
+        targetId: bossAdd.id,
+        targetEntity: bossAdd,
+        damage: 25
+    });
+    noteDungeonRunKill(levelScope, ['trackerrunner'], bossAdd.id, { ...bossAdd, hp: 0, dead: true, entState: 6 });
+    noteDungeonRunCast(client as never, { sourceId: client.clientEntID, projectileId: null, isPersistent: false, hasTargetPos: true });
+    noteDungeonRunHit(client as never, {
+        sourceId: client.clientEntID,
+        targetId: boss.id,
+        targetEntity: boss,
+        damage: 25
+    });
+    noteDungeonRunKill(levelScope, ['trackerrunner'], boss.id, { ...boss, hp: 0, dead: true, entState: 6 });
+
+    const finalized = finalizeDungeonRun(client as never, 'success', {
+        completionPercent: 100,
+        dungeonCompleted: true
+    });
+    assert.ok(finalized, 'Tower of the Tuatara boss run should finalize dungeon run stats');
+    const summary = finalized!.scoreSummary;
+    assert.equal(finalized!.scoreMode, 'boss_run', 'boss-scene-only Tuatara completion should stay in boss_run mode');
+    assert.equal(summary.finalStat.kills, LIVE_BOSS_RUN_KILL_CAP, 'boss-scene-only Tuatara should use the boss-run kill cap');
+    assert.equal(summary.finalStat.treasure, 60_000, 'killing all boss-scene enemies should max the archived treasure cap');
+    assert.equal(summary.finalStat.accuracy, 120_000, 'clean boss-scene combat should max the archived accuracy cap');
+    assert.equal(summary.finalStat.deaths, 120_000, 'no-death boss-scene combat should max the archived deaths cap');
+    assert.equal(summary.finalStat.timeBonus, 112_809, 'fast boss-scene completion should keep the archived time bonus cap');
+    assert.equal(summary.finalStat.total, 572_809, 'boss-scene-only Tuatara should not receive the full-clear total');
 }
 
 async function testBossRunDeathsUseDungeonScaledPenalty(): Promise<void> {
@@ -371,10 +444,11 @@ async function testBossRunDeathsUseDungeonScaledPenalty(): Promise<void> {
 
     const result = await finalizeAndReadResult(client);
     assertResultMatchesTrackerSummary(client, result);
+    const deathCap = client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.deaths;
     assert.equal(
         result.deaths,
-        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.deaths,
-        'Wolf\'s End full clears should clamp deaths to the max bucket even if the run had deaths'
+        getExpectedDeathScore('GhostBossDungeon', 2, deathCap),
+        'boss runs should score deaths from the boss encounter instead of receiving the full-clear no-death bucket'
     );
 }
 
@@ -406,8 +480,8 @@ async function testBossRunAccuracyUsesBossFightOnlyWhenNoPreBossHits(): Promise<
     assert.equal(client.dungeonRun.finalizedStats?.accuracyWindowSource, 'boss_cutscene', 'boss-only runs should score accuracy from the boss window');
     assert.equal(
         result.accuracy,
-        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.accuracy,
-        'Wolf\'s End boss-only full clears should clamp accuracy to max even when the pre-clear combat had misses'
+        Math.round(client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.accuracy / 2),
+        'boss-only runs should ignore pre-boss misses but still score misses made during the boss window'
     );
 }
 
@@ -678,11 +752,15 @@ async function testFinalPacketMatchesTrackerWithoutFallbackInflation(): Promise<
     assertResultMatchesTrackerSummary(client, result);
     assert.equal(
         result.accuracy,
-        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.accuracy,
-        'Wolf\'s End full clears should max accuracy even if completion was driven by dungeon progress rather than landed-hit bookkeeping'
+        0,
+        'boss-run accuracy should stay at zero when the boss window has no landed hit'
     );
     assert.notEqual(result.accuracy, 50, 'accuracy should not fall back to the old fabricated default');
-    assert.notEqual(result.deaths, 80_000, 'deaths should no longer use the legacy profile-perfect value');
+    assert.equal(
+        result.deaths,
+        client.dungeonRun.finalizedStats!.scoreSummary.unlockedCap.deaths,
+        'deaths should use the active dungeon profile cap'
+    );
 }
 
 async function testDreamDragonQuestTrackerFullClearOverridesPacketProgress(): Promise<void> {
@@ -742,6 +820,12 @@ async function main(): Promise<void> {
 
     try {
         await testBossRunNoDeathsKeepsDeathsBase();
+        GlobalState.sessionsByToken.clear();
+
+        await testTowerOfTuataraFullPercentUsesArchivedCaps();
+        GlobalState.sessionsByToken.clear();
+
+        await testTowerOfTuataraBossRunDoesNotBecomeFullClear();
         GlobalState.sessionsByToken.clear();
 
         await testBossRunDeathsUseDungeonScaledPenalty();

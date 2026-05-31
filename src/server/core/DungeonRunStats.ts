@@ -224,8 +224,6 @@ type DungeonRunHitContext = {
 };
 
 const DUNGEON_RUN_DEBUG_ENABLED = String(process.env.DUNGEON_RUN_DEBUG ?? '').trim() === '1';
-const LIVE_ACCURACY_CAP = 40_000;
-const LIVE_DEATHS_BASE = 40_000;
 const LIVE_BOSS_RUN_KILL_CAP = 160_000;
 
 function recordDungeonRunEvent(
@@ -1135,7 +1133,9 @@ export function noteDungeonRunKill(
             if (entityId && entity) {
                 noteDungeonRunEntity(stats, entityId, entity);
                 const kind = classifyDungeonRunEntity(entity);
-                if (stats.scoreMode === 'pending' && shouldPromotePendingRunForEntity(kind)) {
+                if (stats.scoreMode === 'pending' && kind.boss && !stats.preBossEncounterEngaged) {
+                    activateBossRunScoreWindow(stats, session, session.currentRoomId, entityId);
+                } else if (stats.scoreMode === 'pending' && shouldPromotePendingRunForEntity(kind)) {
                     stats.preBossEncounterEngaged = true;
                     promotePendingRunToDungeonClear(stats);
                 }
@@ -1290,7 +1290,7 @@ export function noteDungeonRunBossCutscene(
 
 export function buildDungeonRunScoreSummary(stats: DungeonRunStats): DungeonRunScoreSummary {
     const profile = getDungeonScoreProfile(stats.levelName) ?? buildDefaultDungeonScoreProfile(stats.levelName);
-    const wolfsEndFullClear = isWolfsEndDungeonLevel(stats.levelName) &&
+    const percentFullClear = stats.scoreMode !== 'boss_run' &&
         stats.dungeonCompleted &&
         stats.completionPercent >= 100;
     const canonicalSharedState = GlobalState.levelQuestProgress.get(stats.levelScope);
@@ -1318,12 +1318,8 @@ export function buildDungeonRunScoreSummary(stats: DungeonRunStats): DungeonRunS
     const treasureCap = profile.treasureCap;
     const timeBonusCap = profile.timeBonusCap;
     const elapsedMs = getScoredElapsedMs(stats);
-    const liveAccuracyCap = isWolfsEndDungeonLevel(stats.levelName)
-        ? getWolfsEndLiveStatCap(stats.levelName, LIVE_ACCURACY_CAP)
-        : LIVE_ACCURACY_CAP;
-    const liveDeathCap = isWolfsEndDungeonLevel(stats.levelName)
-        ? getWolfsEndLiveStatCap(stats.levelName, LIVE_DEATHS_BASE)
-        : LIVE_DEATHS_BASE;
+    const liveAccuracyCap = Math.max(0, Math.round(profile.accuracyCap));
+    const liveDeathCap = Math.max(0, Math.round(profile.deathCap));
 
     const unlockedCap: DungeonRunScoreBudget = {
         kills: Math.max(0, Math.round(killCap)),
@@ -1365,7 +1361,7 @@ export function buildDungeonRunScoreSummary(stats: DungeonRunStats): DungeonRunS
         timeBonus: Math.max(0, Math.min(rawEarned.timeBonus, unlockedCap.timeBonus)),
         total: 0
     };
-    if (wolfsEndFullClear) {
+    if (percentFullClear) {
         finalStat.kills = unlockedCap.kills;
         finalStat.treasure = unlockedCap.treasure;
         finalStat.accuracy = unlockedCap.accuracy;
