@@ -24,6 +24,7 @@ import { EquipmentHandler } from './EquipmentHandler';
 import { GameData } from '../core/GameData';
 import { CharacterSync } from '../utils/CharacterSync';
 import { sendConsumableUpdate } from '../utils/ConsumableState';
+import { LevelConfig } from '../core/LevelConfig';
 
 type CombatRelayOptions = {
     includeAnchor?: boolean;
@@ -1254,6 +1255,58 @@ export class CombatHandler {
         return EntityHandler.shouldMirrorClientSpawnEntityToParty(levelName, entity);
     }
 
+    private static hasPartySharedClientSpawnHostileInRoom(
+        levelScope: string,
+        levelName: string | null | undefined,
+        roomId: number
+    ): boolean {
+        if (!levelScope || !LevelConfig.isDungeonLevel(levelName)) {
+            return false;
+        }
+
+        const levelMap = GlobalState.levelEntities.get(levelScope);
+        if (!levelMap) {
+            return false;
+        }
+
+        for (const entity of levelMap.values()) {
+            if (
+                !entity ||
+                Boolean(entity.isPlayer) ||
+                !CombatHandler.shouldMirrorClientSpawnEntityToParty(String(levelName ?? ''), entity)
+            ) {
+                continue;
+            }
+
+            if (Boolean(entity.dead) || Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
+                continue;
+            }
+
+            if (sharesRoomIds(roomId, Number(entity.roomId ?? -1))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static shouldKeepPlayerPowerCastLocal(client: Client, levelScope: string, sourceId: number): boolean {
+        if (!levelScope || sourceId <= 0) {
+            return false;
+        }
+
+        const sourceSession = CombatHandler.resolveCombatSourceSession(levelScope, sourceId, client);
+        if (!sourceSession || sourceSession !== client) {
+            return false;
+        }
+
+        return CombatHandler.hasPartySharedClientSpawnHostileInRoom(
+            levelScope,
+            client.currentLevel,
+            Number(client.currentRoomId ?? -1)
+        );
+    }
+
     private static getCombatRecipients(anchor: Client, includeAnchor: boolean = false): Client[] {
         const recipients: Client[] = [];
         const levelScope = getClientLevelScope(anchor);
@@ -2208,6 +2261,10 @@ export class CombatHandler {
                 isPersistent: info.isPersistent,
                 comboData: info.comboData
             });
+        }
+
+        if (CombatHandler.shouldKeepPlayerPowerCastLocal(client, levelScope, info.sourceId)) {
+            return;
         }
 
         const relayPayload = CombatHandler.normalizePowerCastRelay(client, info, data);

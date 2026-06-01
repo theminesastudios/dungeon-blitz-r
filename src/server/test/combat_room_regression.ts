@@ -436,6 +436,60 @@ async function testUnsafeRangedDirectTargetPowerCastStillSuppresses(): Promise<v
     );
 }
 
+async function testPlayerBlastCastStaysLocalAroundSharedDungeonHostiles(): Promise<void> {
+    const sender = createFakeClient(116, 'Alpha', 3);
+    const partyOtherRoom = createFakeClient(117, 'Beta', 3);
+    const sameRoomStranger = createFakeClient(118, 'Gamma', 3);
+
+    sender.currentLevel = 'JC_Mission3';
+    partyOtherRoom.currentLevel = 'JC_Mission3';
+    sameRoomStranger.currentLevel = 'JC_Mission3';
+    sender.levelInstanceId = 'prodigal-run';
+    partyOtherRoom.levelInstanceId = 'prodigal-run';
+    sameRoomStranger.levelInstanceId = 'prodigal-run';
+
+    attachPlayerEntity(sender);
+    attachPlayerEntity(partyOtherRoom);
+    attachPlayerEntity(sameRoomStranger);
+
+    GlobalState.partyByMember.set('alpha', 6);
+    GlobalState.partyByMember.set('beta', 6);
+
+    const hostile = {
+        id: 6201,
+        name: 'ProdigalGuard',
+        isPlayer: false,
+        x: 180,
+        y: 220,
+        v: 0,
+        team: EntityTeam.ENEMY,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true,
+        ownerToken: sender.token,
+        ownerPartyId: 6,
+        roomId: sender.currentRoomId,
+        hp: 100
+    };
+    GlobalState.levelEntities.get(getClientLevelScope(sender as never))?.set(hostile.id, hostile);
+
+    GlobalState.sessionsByToken.set(sender.token, sender as never);
+    GlobalState.sessionsByToken.set(partyOtherRoom.token, partyOtherRoom as never);
+    GlobalState.sessionsByToken.set(sameRoomStranger.token, sameRoomStranger as never);
+
+    await CombatHandler.handlePowerCast(sender as never, buildPowerCastPayload(sender.clientEntID, 490));
+
+    assert.equal(
+        partyOtherRoom.sentPackets.some((packet) => packet.id === 0x09),
+        false,
+        'Fire Blast should stay local while shared client-spawn dungeon hostiles are active'
+    );
+    assert.equal(
+        sameRoomStranger.sentPackets.some((packet) => packet.id === 0x09),
+        false,
+        'same-room viewers should not receive local AoE casts that can re-hit their hostile copy'
+    );
+}
+
 async function testPowerHitFollowsPartyAudience(): Promise<void> {
     const sender = createFakeClient(200, 'Alpha', 1);
     const partyOtherRoom = createFakeClient(201, 'Beta', 5);
@@ -1641,6 +1695,15 @@ async function main(): Promise<void> {
         GlobalState.entityLastRewardNonces.clear();
 
         await testUnsafeRangedDirectTargetPowerCastStillSuppresses();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testPlayerBlastCastStaysLocalAroundSharedDungeonHostiles();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.levelEntities.clear();
