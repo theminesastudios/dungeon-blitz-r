@@ -489,31 +489,6 @@ export class CombatHandler {
         return GameData.isDungeonBossEntity(getScopeLevelName(levelScope), entity);
     }
 
-    private static levelHasDeadPlayer(levelScope: string): boolean {
-        if (!levelScope) {
-            return false;
-        }
-
-        for (const session of GlobalState.sessionsByToken.values()) {
-            if (!session.playerSpawned || getClientLevelScope(session) !== levelScope) {
-                continue;
-            }
-
-            const entity = session.entities.get(session.clientEntID) ??
-                CombatHandler.resolveLevelEntity(levelScope, session.clientEntID);
-            const authoritativeHp = Math.round(Number(session.authoritativeCurrentHp ?? NaN));
-            if (
-                CombatHandler.isEntityDead(entity) ||
-                Boolean(session.enemyDeathRegenArmed) ||
-                (Number.isFinite(authoritativeHp) && authoritativeHp <= 0)
-            ) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private static estimateHostileMaxHp(entity: any): number {
         const entType = GameData.getEntType(String(entity?.name ?? '')) ?? {};
         const rawLevel = Number(entity?.level ?? entType?.Level ?? entType?.baseLevel ?? entType?.ExpLevel ?? 1);
@@ -724,7 +699,7 @@ export class CombatHandler {
         if (!entity || entity.isPlayer || Number(entity.team ?? 0) !== EntityTeam.ENEMY) {
             return;
         }
-        if (!CombatHandler.isDungeonBossEntity(levelScope, entity) || !CombatHandler.levelHasDeadPlayer(levelScope)) {
+        if (!CombatHandler.isDungeonBossEntity(levelScope, entity)) {
             return;
         }
 

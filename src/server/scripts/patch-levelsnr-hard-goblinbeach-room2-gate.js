@@ -36,9 +36,9 @@ function usage() {
     'Usage:',
     '  node src/server/scripts/patch-levelsnr-hard-goblinbeach-room2-gate.js [--verify] [--swf <path>] [--ffdec <path>]',
     '',
-    'Patches LevelsNR TutorialDungeonHard room 2 so the right-side gate collision',
-    'opens when the authored room enemies are defeated, even if RoomCleared() misses',
-    'the hard-mode client-spawned cue state.'
+    'Patches LevelsNR TutorialDungeonHard room 2 so the untouchable door-side',
+    'am_Scout/GoblinArmorSwordHard cue is removed, while the remaining authored',
+    'room enemies stay active and can open the gate when defeated.'
   ].join('\n'));
 }
 
@@ -104,34 +104,143 @@ function exportRoomScript(ffdecPath, workRoot, swfPath) {
 function patchRoomSource(source) {
   verifyRoomSource(source, 'current source', true);
 
-  if (source.includes('this.RoomTwoGateCanOpen(param1)')) {
+  const eol = source.includes('\r\n') ? '\r\n' : '\n';
+  const removeScoutCall = '         this.RemoveRoomTwoDoorScout();' + eol;
+  const constructorMarker = '         this.__setProp___id297__a_Room_GoblinBeachHard_02_Details();' + eol;
+
+  if (
+    source.includes(constructorMarker + removeScoutCall) &&
+    source.includes('public function RemoveRoomTwoDoorScout() : void') &&
+    source.includes('this.am_Scout.Remove();') &&
+    source.includes('this.Script_Summon = ["1 SpawnCue Mage1","0 Mage1 <Board> The Curse of Zegl upon Ye!"];') &&
+    source.includes('param1.RoomCleared() || this.RoomTwoGateCanOpen(param1)') &&
+    source.includes('public function OpenRoomTwoGate(param1:a_GameHook) : void') &&
+    source.includes('public function RoomTwoEnemyCleared(param1:*) : Boolean') &&
+    source.includes('this.RoomTwoEnemyCleared(this.am_Mage1) && this.RoomTwoEnemyCleared(this.am_Add1) && this.RoomTwoEnemyCleared(this.am_Add2)') &&
+    (source.match(/public function RoomTwoGateCanOpen/g) || []).length === 1 &&
+    (source.match(/public function RemoveRoomTwoDoorScout/g) || []).length === 1 &&
+    !source.includes('this.am_Scout.Aggro();') &&
+    !source.includes('this.am_Scout.Defeated()')
+  ) {
     verifyRoomSource(source, 'patched source', false);
     return source;
   }
 
-  const eol = source.includes('\r\n') ? '\r\n' : '\n';
+  let patched = source;
+  patched = patched.replace(
+    /      public function RoomTwoGateCanOpen\(param1:a_GameHook\) : Boolean\r?\n      \{\r?\n         return .*?;\r?\n      \}\r?\n      \r?\n/g,
+    ''
+  );
+  patched = patched.replace(
+    /      public function RoomTwoEnemyCleared\(param1:\*\) : Boolean\r?\n      \{\r?\n[\s\S]*?\r?\n      \}\r?\n      \r?\n/g,
+    ''
+  );
+  patched = patched.replace(
+    /      public function OpenRoomTwoGate\(param1:a_GameHook\) : void\r?\n      \{\r?\n[\s\S]*?\r?\n      \}\r?\n      \r?\n/g,
+    ''
+  );
+  patched = patched.replace(
+    /      public function RemoveRoomTwoDoorScout\(\) : void\r?\n      \{\r?\n[\s\S]*?\r?\n      \}\r?\n      \r?\n/g,
+    ''
+  );
+  for (const methodName of ['Aggro', 'AddBuff', 'RemoveBuff', 'DeepSleep']) {
+    patched = patched.replace(
+      new RegExp(`^\\s*this\\.am_Scout\\.${methodName}\\([^\\r\\n]*\\);\\r?\\n`, 'gm'),
+      ''
+    );
+  }
+  patched = patched.replace(
+    'this.Script_Summon = ["1 Scout <Cheer> Now!!!","1 SpawnCue Mage1","0 Mage1 <Board> The Curse of Zegl upon Ye!"];',
+    'this.Script_Summon = ["1 SpawnCue Mage1","0 Mage1 <Board> The Curse of Zegl upon Ye!"];'
+  );
+
   const condition = '         if(param1.RoomCleared())';
   const replacement = '         if(param1.RoomCleared() || this.RoomTwoGateCanOpen(param1))';
-  if (!source.includes(condition)) {
+  if (patched.includes(condition)) {
+    patched = patched.replace(condition, replacement);
+  } else if (!patched.includes(replacement)) {
     throw new Error('Could not find room 2 gate RoomCleared condition');
   }
 
   const helper = [
     '      public function RoomTwoGateCanOpen(param1:a_GameHook) : Boolean',
     '      {',
-    '         return this.am_Scout.Defeated() && this.am_Mage1.Defeated() && this.am_Add1.Defeated() && this.am_Add2.Defeated();',
+    '         return this.RoomTwoEnemyCleared(this.am_Mage1) && this.RoomTwoEnemyCleared(this.am_Add1) && this.RoomTwoEnemyCleared(this.am_Add2);',
+    '      }',
+    '      ',
+    '      public function RoomTwoEnemyCleared(param1:*) : Boolean',
+    '      {',
+    '         return !param1 || param1.Defeated() || param1.Health() < 1;',
+    '      }',
+    '      ',
+    '      public function OpenRoomTwoGate(param1:a_GameHook) : void',
+    '      {',
+    '         param1.CollisionOff("am_DynamicCollision_GateBlock");',
+    '         param1.PlaySound("a_Sound_Fireball_Big");',
+    '         param1.PlayScript(this.Script_Shake);',
+    '         param1.Animate("am_Gate","Open",true);',
+    '         param1.SetPhase(null);',
+    '      }',
+    '      ',
+    '      public function RemoveRoomTwoDoorScout() : void',
+    '      {',
+    '         if(this.am_Scout)',
+    '         {',
+    '            this.am_Scout.Remove();',
+    '            if(this.am_Scout.parent)',
+    '            {',
+    '               this.am_Scout.parent.removeChild(this.am_Scout);',
+    '            }',
+    '         }',
     '      }',
     '      '
   ].join(eol);
 
   const insertionPoint = '      internal function __setProp___id297__a_Room_GoblinBeachHard_02_Details()';
-  if (!source.includes(insertionPoint)) {
+  if (!patched.includes(insertionPoint)) {
     throw new Error('Could not find room 2 helper insertion point');
   }
 
-  const patched = source
-    .replace(condition, replacement)
-    .replace(insertionPoint, `${helper}${insertionPoint}`);
+  const initMarker = '      public function InitRoom(param1:a_GameHook) : void' + eol + '      {' + eol;
+  if (!patched.includes(initMarker)) {
+    throw new Error('Could not find room 2 InitRoom body');
+  }
+  const initBodyStart = patched.indexOf(initMarker) + initMarker.length;
+  if (!patched.slice(initBodyStart, initBodyStart + 80).includes('this.RemoveRoomTwoDoorScout();')) {
+    patched = patched.replace(initMarker, initMarker + removeScoutCall);
+  }
+
+  if (!patched.includes(constructorMarker)) {
+    throw new Error('Could not find room 2 constructor property setup');
+  }
+  if (!patched.includes(constructorMarker + removeScoutCall)) {
+    patched = patched.replace(constructorMarker, constructorMarker + removeScoutCall);
+  }
+
+  patched = patched.replace(
+    /         if\(param1\.RoomCleared\(\) \|\| this\.RoomTwoGateCanOpen\(param1\)\)\r?\n         \{\r?\n            param1\.CollisionOff\("am_DynamicCollision_GateBlock"\);\r?\n            param1\.PlaySound\("a_Sound_Fireball_Big"\);\r?\n            param1\.PlayScript\(this\.Script_Shake\);\r?\n            param1\.Animate\("am_Gate","Open",true\);\r?\n            param1\.SetPhase\(null\);\r?\n         \}/,
+    [
+      '         if(param1.RoomCleared() || this.RoomTwoGateCanOpen(param1))',
+      '         {',
+      '            this.OpenRoomTwoGate(param1);',
+      '         }'
+    ].join(eol)
+  );
+  patched = patched.replace(
+    /         if\(param1\.OnTrigger\("am_Trigger_1"\)\)\r?\n         \{\r?\n            param1\.SetPhase\(this\.UpdateSummonWaveOne\);\r?\n         \}/,
+    [
+      '         if(this.RoomTwoGateCanOpen(param1))',
+      '         {',
+      '            this.OpenRoomTwoGate(param1);',
+      '         }',
+      '         if(param1.OnTrigger("am_Trigger_1"))',
+      '         {',
+      '            param1.SetPhase(this.UpdateSummonWaveOne);',
+      '         }'
+    ].join(eol)
+  );
+
+  patched = patched.replace(insertionPoint, `${helper}${insertionPoint}`);
 
   verifyRoomSource(patched, 'patched source', false);
   return patched;
@@ -153,14 +262,25 @@ function verifyRoomSource(source, label, allowUnpatched) {
   }
 
   const patchedMarkers = [
+    'this.RemoveRoomTwoDoorScout();',
+    'public function RemoveRoomTwoDoorScout() : void',
+    'this.am_Scout.Remove();',
+    'this.am_Scout.parent.removeChild(this.am_Scout);',
+    'this.Script_Summon = ["1 SpawnCue Mage1","0 Mage1 <Board> The Curse of Zegl upon Ye!"];',
     'param1.RoomCleared() || this.RoomTwoGateCanOpen(param1)',
+    'this.OpenRoomTwoGate(param1);',
+    'public function OpenRoomTwoGate(param1:a_GameHook) : void',
+    'public function RoomTwoEnemyCleared(param1:*) : Boolean',
     'public function RoomTwoGateCanOpen(param1:a_GameHook) : Boolean',
-    'this.am_Scout.Defeated() && this.am_Mage1.Defeated() && this.am_Add1.Defeated() && this.am_Add2.Defeated()'
+    'this.RoomTwoEnemyCleared(this.am_Mage1) && this.RoomTwoEnemyCleared(this.am_Add1) && this.RoomTwoEnemyCleared(this.am_Add2)'
   ];
 
   const patched = patchedMarkers.every((marker) => source.includes(marker));
   if (!allowUnpatched && !patched) {
     throw new Error(`${label} is missing hard room 2 gate fallback`);
+  }
+  if (!allowUnpatched && (source.includes('this.am_Scout.Aggro();') || source.includes('this.am_Scout.Defeated()'))) {
+    throw new Error(`${label} still treats room 2 am_Scout as an active gate enemy`);
   }
 }
 
