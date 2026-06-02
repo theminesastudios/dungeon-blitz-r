@@ -50,8 +50,8 @@ export class LevelConfig {
     private static readonly LEVEL_ALIASES: Record<string, string> = {
         "blackrosemire": "SwampRoadNorth",
         "blackrosemirehard": "SwampRoadNorthHard",
-        "goblinkidnappers": "GoblinRiverDungeon",
-        "goblinkidnappershard": "GoblinRiverDungeonHard",
+        "goblinkidnappers": "TutorialDungeon",
+        "goblinkidnappershard": "TutorialDungeonHard",
         "wolfsend": "NewbieRoad",
         "wolfsendhard": "NewbieRoadHard",
         "newbieroad": "NewbieRoad",

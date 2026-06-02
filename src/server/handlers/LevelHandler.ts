@@ -1136,6 +1136,7 @@ export class LevelHandler {
         const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
         return usesSharedDungeonProgress(normalizedLevel) ||
             normalizedLevel === 'TutorialDungeon' ||
+            normalizedLevel === 'TutorialDungeonHard' ||
             normalizedLevel === 'CraftTownTutorial';
     }
 
@@ -1144,14 +1145,16 @@ export class LevelHandler {
             return;
         }
 
-        if (client.currentLevel === 'TutorialDungeon') {
+        const normalizedLevel = LevelConfig.normalizeLevelName(client.currentLevel) || client.currentLevel;
+
+        if (normalizedLevel === 'TutorialDungeon' || normalizedLevel === 'TutorialDungeonHard') {
             client.currentRoomId = 0;
             client.startedRoomEvents.clear();
             client.character.questTrackerState = LevelHandler.TUTORIAL_DUNGEON_INITIAL_PROGRESS;
             return;
         }
 
-        if (client.currentLevel === 'CraftTownTutorial') {
+        if (normalizedLevel === 'CraftTownTutorial') {
             client.currentRoomId = 0;
             client.startedRoomEvents.clear();
             client.character.questTrackerState = 0;
