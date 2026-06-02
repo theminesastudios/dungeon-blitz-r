@@ -187,6 +187,10 @@ export class JsonAdapter implements IDatabase {
                 if (err.code === 'ENOENT') {
                     continue;
                 }
+                if (err instanceof SyntaxError) {
+                    console.error(`[JsonAdapter] Invalid accounts JSON at ${accountsPath}: ${err.message}`);
+                    continue;
+                }
                 throw err;
             }
         }

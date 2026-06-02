@@ -256,6 +256,20 @@ async function testLoadCharactersNormalizesLevelFromXp(): Promise<void> {
     });
 }
 
+async function testGetAccountIdSkipsInvalidPrimaryAccountsJson(): Promise<void> {
+    await withTempDataDir('invalid_primary_accounts', async (adapter, tempDir) => {
+        await fs.mkdir(path.join(tempDir, 'data'), { recursive: true });
+        await fs.writeFile(path.join(tempDir, 'data', 'Accounts.json'), '[{"email":"broken@example.com","user_id":1}\n{');
+        await fs.writeFile(
+            path.join(tempDir, 'Accounts.json'),
+            JSON.stringify([{ email: 'fallback@example.com', user_id: 22 }], null, 2)
+        );
+
+        const accountId = await adapter.getAccountId('fallback@example.com');
+        assert.equal(accountId, 22, 'invalid primary Accounts.json should fall back to a valid legacy file');
+    });
+}
+
 async function main(): Promise<void> {
     await testSaveCharactersRetriesTransientRenameLock();
     await testSaveCharactersSerializesConcurrentWrites();
@@ -263,6 +277,7 @@ async function main(): Promise<void> {
     await testSaveCharactersMergesLiveSessionCharacter();
     await testSaveCharactersMergesAllLiveSameAccountCharacters();
     await testLoadCharactersNormalizesLevelFromXp();
+    await testGetAccountIdSkipsInvalidPrimaryAccountsJson();
     console.log('json_adapter_save_regression: ok');
 }
 
