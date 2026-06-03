@@ -311,7 +311,7 @@ async function testPowerCastReachesPartyAcrossRooms(): Promise<void> {
     GlobalState.sessionsByToken.set(sameRoomStranger.token, sameRoomStranger as never);
     GlobalState.sessionsByToken.set(otherRoomStranger.token, otherRoomStranger as never);
 
-    await CombatHandler.handlePowerCast(sender as never, buildPowerCastPayload(sender.clientEntID, 77));
+    await CombatHandler.handlePowerCast(sender as never, buildPowerCastPayload(sender.clientEntID, 9999));
 
     assert.deepEqual(
         partyOtherRoom.sentPackets.map((packet) => packet.id),
@@ -475,7 +475,7 @@ async function testPowerHitFollowsPartyAudience(): Promise<void> {
     GlobalState.sessionsByToken.set(sameRoomStranger.token, sameRoomStranger as never);
     GlobalState.sessionsByToken.set(otherRoomStranger.token, otherRoomStranger as never);
 
-    await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(hostile.id, sender.clientEntID, 42, 77));
+    await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(hostile.id, sender.clientEntID, 42, 9999));
 
     assert.equal(partyOtherRoom.sentPackets.some((packet) => packet.id === 0x0A), true);
     assert.equal(sameRoomStranger.sentPackets.some((packet) => packet.id === 0x0A), false);
@@ -722,7 +722,7 @@ async function testPartyEchoedPowerHitDoesNotDoubleApplyDamage(): Promise<void> 
     GlobalState.sessionsByToken.set(sender.token, sender as never);
     GlobalState.sessionsByToken.set(partyOtherRoom.token, partyOtherRoom as never);
 
-    const alphaHit = buildPowerHitPayload(hostile.id, sender.clientEntID, 42, 77);
+    const alphaHit = buildPowerHitPayload(hostile.id, sender.clientEntID, 42, 9999);
     await CombatHandler.handlePowerHit(sender as never, alphaHit);
 
     assert.equal(hostile.hp, 58, 'first player hit should apply once to the canonical shared enemy');
@@ -741,7 +741,7 @@ async function testPartyEchoedPowerHitDoesNotDoubleApplyDamage(): Promise<void> 
     assert.equal(sender.sentPackets.some((packet) => packet.id === 0x0A), false);
     assert.equal(partyOtherRoom.sentPackets.some((packet) => packet.id === 0x0A), false);
 
-    await CombatHandler.handlePowerHit(partyOtherRoom as never, buildPowerHitPayload(hostile.id, partyOtherRoom.clientEntID, 10, 77));
+    await CombatHandler.handlePowerHit(partyOtherRoom as never, buildPowerHitPayload(hostile.id, partyOtherRoom.clientEntID, 10, 9999));
 
     assert.equal(hostile.hp, 48, 'the party mate should still be able to apply their own hit');
     assert.equal(
@@ -784,7 +784,7 @@ async function testVeryLargePowerHitRelaysSafeDisplayDamage(): Promise<void> {
     GlobalState.sessionsByToken.set(sender.token, sender as never);
     GlobalState.sessionsByToken.set(partyOtherRoom.token, partyOtherRoom as never);
 
-    await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(hostile.id, sender.clientEntID, 5000000, 77));
+    await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(hostile.id, sender.clientEntID, 5000000, 9999));
 
     assert.equal(hostile.hp, 0, 'server-side combat should still apply the full lethal damage');
     assert.equal(hostile.dead, true, 'the high-damage hit should still kill the target');
@@ -838,7 +838,7 @@ async function testBakedOutdoorHostileHitsStayOwnerLocal(): Promise<void> {
     GlobalState.sessionsByToken.set(partyOtherRoom.token, partyOtherRoom as never);
     GlobalState.sessionsByToken.set(sameRoomStranger.token, sameRoomStranger as never);
 
-    await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(hostile.id, sender.clientEntID, 42, 77));
+    await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(hostile.id, sender.clientEntID, 42, 9999));
 
     assert.equal(
         partyOtherRoom.sentPackets.some((packet) => packet.id === 0x0A || packet.id === 0x0F),
@@ -1208,7 +1208,7 @@ async function testDungeonCombatDoesNotCrossInstanceScopes(): Promise<void> {
     GlobalState.sessionsByToken.set(sender.token, sender as never);
     GlobalState.sessionsByToken.set(stranger.token, stranger as never);
 
-    await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(hostile.id, sender.clientEntID, 42, 77));
+    await CombatHandler.handlePowerHit(sender as never, buildPowerHitPayload(hostile.id, sender.clientEntID, 42, 9999));
 
     assert.equal(
         stranger.sentPackets.some((packet) => packet.id === 0x0A || packet.id === 0x0F),
@@ -1255,7 +1255,7 @@ async function testAliasedDungeonHostileHitUsesCanonicalEntity(): Promise<void> 
     GlobalState.sessionsByToken.set(sender.token, sender as never);
     GlobalState.sessionsByToken.set(partyOtherRoom.token, partyOtherRoom as never);
 
-    await CombatHandler.handlePowerHit(partyOtherRoom as never, buildPowerHitPayload(8701, partyOtherRoom.clientEntID, 25, 77));
+    await CombatHandler.handlePowerHit(partyOtherRoom as never, buildPowerHitPayload(8701, partyOtherRoom.clientEntID, 25, 9999));
 
     assert.equal(hostile.hp, 75, 'hit against a local duplicate id should apply to the canonical hostile');
     const relayedHit = sender.sentPackets.find((packet) => packet.id === 0x0A);
@@ -1270,7 +1270,7 @@ async function testAliasedDungeonHostileHitUsesCanonicalEntity(): Promise<void> 
 
     await CombatHandler.handleBuffTickDot(
         partyOtherRoom as never,
-        buildBuffTickDotPayload(8701, partyOtherRoom.clientEntID, 88, 5)
+        buildBuffTickDotPayload(8701, partyOtherRoom.clientEntID, 9999, 5)
     );
 
     assert.equal(hostile.hp, 70, 'DoT against a local duplicate id should apply to the canonical hostile');
@@ -1278,7 +1278,7 @@ async function testAliasedDungeonHostileHitUsesCanonicalEntity(): Promise<void> 
     assert.ok(relayedDot, 'canonical DoT should relay to the party peer');
     assert.deepEqual(
         parseBuffTickDotIds(relayedDot!.payload),
-        { targetId: hostile.id, sourceId: partyOtherRoom.clientEntID, powerId: 88, damage: 5 },
+        { targetId: hostile.id, sourceId: partyOtherRoom.clientEntID, powerId: 9999, damage: 5 },
         'relayed DoT should use the canonical target id, not the duplicate local id'
     );
 }
@@ -1317,7 +1317,7 @@ async function testSharedDungeonHostileCombatWaitsForJoinerAdoption(): Promise<v
     GlobalState.sessionsByToken.set(owner.token, owner as never);
     GlobalState.sessionsByToken.set(joiner.token, joiner as never);
 
-    await CombatHandler.handlePowerHit(owner as never, buildPowerHitPayload(hostile.id, owner.clientEntID, 10, 77));
+    await CombatHandler.handlePowerHit(owner as never, buildPowerHitPayload(hostile.id, owner.clientEntID, 10, 9999));
 
     assert.equal(
         joiner.sentPackets.some((packet) => packet.id === 0x0A),
@@ -1330,7 +1330,7 @@ async function testSharedDungeonHostileCombatWaitsForJoinerAdoption(): Promise<v
     joiner.knownEntityIds.add(hostile.id);
     joiner.entities.set(8801, { ...hostile, id: 8801, sharedCanonicalId: hostile.id });
 
-    await CombatHandler.handlePowerHit(owner as never, buildPowerHitPayload(hostile.id, owner.clientEntID, 10, 77));
+    await CombatHandler.handlePowerHit(owner as never, buildPowerHitPayload(hostile.id, owner.clientEntID, 10, 9999));
 
     const relayedHit = joiner.sentPackets.find((packet) => packet.id === 0x0A);
     assert.ok(relayedHit, 'joiner should receive shared hostile combat after canonical id adoption');
