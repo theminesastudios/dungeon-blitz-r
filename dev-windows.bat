@@ -73,8 +73,21 @@ set BRIDGE_DIR=%CD%\src\server\native_bridge
 set BRIDGE_SDK_DIR=%BRIDGE_DIR%\discord_social_sdk
 set BRIDGE_EXECUTABLE=%BRIDGE_DIR%\build\discord_social_bridge.exe
 set BRIDGE_BUILD_READY=false
+set BRIDGE_TOOLCHAIN_READY=false
 
-if exist "%BRIDGE_DIR%\build-windows.bat" if exist "%BRIDGE_SDK_DIR%" set BRIDGE_BUILD_READY=true
+where cmake >nul 2>nul
+if %errorlevel% equ 0 (
+    where ninja >nul 2>nul
+    if !errorlevel! equ 0 set BRIDGE_TOOLCHAIN_READY=true
+    where msbuild >nul 2>nul
+    if !errorlevel! equ 0 set BRIDGE_TOOLCHAIN_READY=true
+    where devenv >nul 2>nul
+    if !errorlevel! equ 0 set BRIDGE_TOOLCHAIN_READY=true
+    where nmake >nul 2>nul
+    if !errorlevel! equ 0 set BRIDGE_TOOLCHAIN_READY=true
+)
+
+if exist "%BRIDGE_DIR%\build-windows.bat" if exist "%BRIDGE_SDK_DIR%" if "%BRIDGE_TOOLCHAIN_READY%"=="true" set BRIDGE_BUILD_READY=true
 
 if "%BRIDGE_BUILD_READY%"=="true" (
     echo Building Discord Social SDK native bridge...
@@ -87,6 +100,14 @@ if "%BRIDGE_BUILD_READY%"=="true" (
         pause
         exit /b !BRIDGE_BUILD_CODE!
     )
+    echo.
+) else if exist "%BRIDGE_SDK_DIR%" if "%BRIDGE_TOOLCHAIN_READY%"=="false" if exist "%BRIDGE_EXECUTABLE%" (
+    echo Discord Social SDK C++ build tools were not found; reusing existing native bridge build.
+    echo Install Visual Studio C++ Build Tools or Ninja to rebuild the optional bridge.
+    echo.
+) else if exist "%BRIDGE_SDK_DIR%" if "%BRIDGE_TOOLCHAIN_READY%"=="false" (
+    echo Discord Social SDK C++ build tools were not found; skipping optional native bridge build.
+    echo Install Visual Studio C++ Build Tools or Ninja to enable the optional bridge.
     echo.
 ) else if exist "%BRIDGE_EXECUTABLE%" (
     echo Discord Social SDK folder not installed; reusing existing native bridge build.
