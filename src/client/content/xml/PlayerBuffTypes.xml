@@ -972,6 +972,7 @@
 		<BuffID>294</BuffID>
 		<Attack>false</Attack>
 		<Duration>7200</Duration>
+		<RangedOverride>FireBrandShot1</RangedOverride>
 		<BuffLoc>ChestBack</BuffLoc>
 		<GfxType>
 			<AnimScale>1</AnimScale>
@@ -1069,10 +1070,8 @@
 	<BuffType BuffName="DragonSoulEffect">
 		<BuffID>304</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>3000</Duration>
 		<MeleeDamage>0.3</MeleeDamage>
-		<MagicDefense>-0.15</MagicDefense>
-		<MeleeDefense>-0.15</MeleeDefense>
 		<GfxType/>
 	</BuffType>
 	<BuffType BuffName="Sacrifice">
@@ -1597,7 +1596,7 @@
 	<BuffType BuffName="Pyromania">
 		<BuffID>367</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>8000</Duration>
 		<RangedOverride>FlamethrowerROR</RangedOverride>
 		<MeleeOverride>FlamethrowerROR</MeleeOverride>
 		<GfxType/>
@@ -2085,6 +2084,7 @@
 		<EntTint>0x720000</EntTint>
 		<GfxType/>
 	</BuffType>
+
 	<BuffType BuffName="AttackSpeed10">
 		<BuffID>412</BuffID>
 		<Attack>false</Attack>
@@ -2640,6 +2640,7 @@
 		<BuffID>462</BuffID>
 		<Attack>false</Attack>
 		<Duration>7200</Duration>
+		<RangedOverride>FireBrandShot1</RangedOverride>
 		<BuffLoc>FeetBack</BuffLoc>
 		<GfxType>
 			<AnimScale>2</AnimScale>
@@ -2651,6 +2652,7 @@
 		<BuffID>463</BuffID>
 		<Attack>false</Attack>
 		<Duration>7700</Duration>
+		<RangedOverride>FireBrandShot3</RangedOverride>
 		<BuffLoc>FeetBack</BuffLoc>
 		<GfxType>
 			<AnimScale>2</AnimScale>
@@ -2662,6 +2664,7 @@
 		<BuffID>464</BuffID>
 		<Attack>false</Attack>
 		<Duration>8700</Duration>
+		<RangedOverride>FireBrandShot6</RangedOverride>
 		<BuffLoc>FeetBack</BuffLoc>
 		<GfxType>
 			<AnimScale>2</AnimScale>
@@ -2673,6 +2676,7 @@
 		<BuffID>465</BuffID>
 		<Attack>false</Attack>
 		<Duration>9200</Duration>
+		<RangedOverride>FlameAxeFireBrandShot8</RangedOverride>
 		<BuffLoc>FeetBack</BuffLoc>
 		<GfxType>
 			<AnimScale>2</AnimScale>
@@ -2858,7 +2862,7 @@
 	<BuffType BuffName="Pyromania1">
 		<BuffID>482</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>8000</Duration>
 		<RangedOverride>FlamethrowerROR1</RangedOverride>
 		<MeleeOverride>FlamethrowerROR1</MeleeOverride>
 		<GfxType/>
@@ -2866,7 +2870,7 @@
 	<BuffType BuffName="Pyromania2">
 		<BuffID>483</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>8000</Duration>
 		<RangedOverride>FlamethrowerROR2</RangedOverride>
 		<MeleeOverride>FlamethrowerROR2</MeleeOverride>
 		<GfxType/>
@@ -2874,7 +2878,7 @@
 	<BuffType BuffName="Pyromania3">
 		<BuffID>484</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>8000</Duration>
 		<RangedOverride>FlamethrowerROR3</RangedOverride>
 		<MeleeOverride>FlamethrowerROR3</MeleeOverride>
 		<GfxType/>
@@ -2882,7 +2886,7 @@
 	<BuffType BuffName="Pyromania4">
 		<BuffID>485</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>8000</Duration>
 		<RangedOverride>FlamethrowerROR4</RangedOverride>
 		<MeleeOverride>FlamethrowerROR4</MeleeOverride>
 		<GfxType/>
@@ -2890,7 +2894,7 @@
 	<BuffType BuffName="Pyromania5">
 		<BuffID>486</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>8000</Duration>
 		<RangedOverride>FlamethrowerROR5</RangedOverride>
 		<MeleeOverride>FlamethrowerROR5</MeleeOverride>
 		<GfxType/>
@@ -2898,7 +2902,7 @@
 	<BuffType BuffName="Pyromania6">
 		<BuffID>487</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>8000</Duration>
 		<RangedOverride>FlamethrowerROR6</RangedOverride>
 		<MeleeOverride>FlamethrowerROR6</MeleeOverride>
 		<GfxType/>
@@ -2906,7 +2910,7 @@
 	<BuffType BuffName="Pyromania7">
 		<BuffID>488</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>8000</Duration>
 		<RangedOverride>FlamethrowerROR7</RangedOverride>
 		<MeleeOverride>FlamethrowerROR7</MeleeOverride>
 		<GfxType/>
@@ -2914,7 +2918,7 @@
 	<BuffType BuffName="Pyromania8">
 		<BuffID>489</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>8000</Duration>
 		<RangedOverride>FlamethrowerROR8</RangedOverride>
 		<MeleeOverride>FlamethrowerROR8</MeleeOverride>
 		<GfxType/>
@@ -2922,7 +2926,7 @@
 	<BuffType BuffName="Pyromania9">
 		<BuffID>490</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>8000</Duration>
 		<RangedOverride>FlamethrowerROR9</RangedOverride>
 		<MeleeOverride>FlamethrowerROR9</MeleeOverride>
 		<GfxType/>
@@ -2930,7 +2934,7 @@
 	<BuffType BuffName="Pyromania10">
 		<BuffID>491</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>8000</Duration>
 		<RangedOverride>FlamethrowerROR10</RangedOverride>
 		<MeleeOverride>FlamethrowerROR10</MeleeOverride>
 		<GfxType/>
@@ -2938,28 +2942,22 @@
 	<BuffType BuffName="DragonSoulRank1">
 		<BuffID>492</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>3000</Duration>
 		<MeleeDamage>0.15</MeleeDamage>
-		<MagicDefense>-0.15</MagicDefense>
-		<MeleeDefense>-0.15</MeleeDefense>
 		<GfxType/>
 	</BuffType>
 	<BuffType BuffName="DragonSoulRank3">
 		<BuffID>493</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>4000</Duration>
 		<MeleeDamage>0.2</MeleeDamage>
-		<MagicDefense>-0.15</MagicDefense>
-		<MeleeDefense>-0.15</MeleeDefense>
 		<GfxType/>
 	</BuffType>
 	<BuffType BuffName="DragonSoulRank8">
 		<BuffID>494</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>5000</Duration>
 		<MeleeDamage>0.3</MeleeDamage>
-		<MagicDefense>-0.15</MagicDefense>
-		<MeleeDefense>-0.15</MeleeDefense>
 		<GfxType/>
 	</BuffType>
 	<BuffType BuffName="Berserker1">
@@ -5422,7 +5420,7 @@
 	<BuffType BuffName="MinionMaster1">
 		<BuffID>711</BuffID>
 		<Attack>false</Attack>
-		<Duration>2500</Duration>
+		<Duration>5000</Duration>
 		<MagicDamage>0.01</MagicDamage>
 		<StackCount>5</StackCount>
 		<GfxType>
@@ -5434,7 +5432,7 @@
 	<BuffType BuffName="MinionMaster2">
 		<BuffID>712</BuffID>
 		<Attack>false</Attack>
-		<Duration>2500</Duration>
+		<Duration>5000</Duration>
 		<MagicDamage>0.02</MagicDamage>
 		<StackCount>5</StackCount>
 		<GfxType>
@@ -5446,7 +5444,7 @@
 	<BuffType BuffName="MinionMaster3">
 		<BuffID>713</BuffID>
 		<Attack>false</Attack>
-		<Duration>2500</Duration>
+		<Duration>5000</Duration>
 		<MagicDamage>0.03</MagicDamage>
 		<StackCount>5</StackCount>
 		<GfxType>
@@ -5458,7 +5456,7 @@
 	<BuffType BuffName="MinionMaster4">
 		<BuffID>714</BuffID>
 		<Attack>false</Attack>
-		<Duration>2500</Duration>
+		<Duration>5000</Duration>
 		<MagicDamage>0.04</MagicDamage>
 		<StackCount>5</StackCount>
 		<GfxType>
@@ -5470,7 +5468,7 @@
 	<BuffType BuffName="MinionMaster5">
 		<BuffID>715</BuffID>
 		<Attack>false</Attack>
-		<Duration>2500</Duration>
+		<Duration>5000</Duration>
 		<MagicDamage>0.05</MagicDamage>
 		<StackCount>5</StackCount>
 		<GfxType>

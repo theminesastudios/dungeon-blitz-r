@@ -27,7 +27,7 @@
   <File  Version="cbo" Stage="Core"  Size="411"  Name="UI_Seasonal.swf" />
   <File  Version="cbp" Stage="Core"  Size="5072" Name="sounds/Sound.swf" />
   
-  <File  Version="cbq" Stage="Game"  Size="233"	 Name="Game.swz" />
+  <File  Version="cbw" Stage="Game"  Size="259"	 Name="Game.swz" />
   <File  Version="cbp" Stage="Game"  Size="885"	 Name="GlobalMap01.swf" />
   <File  Version="caa" Stage="Game"  Size="133"	 Name="GlobalMap02.swf" />
   <File  Version="caf" Stage="Game"  Size="360"	 Name="Animation_Abomination.swf" />

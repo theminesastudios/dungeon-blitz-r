@@ -195,8 +195,7 @@ export function hasDeathMarkPoisonMinions(powerXml: string, buffXml: string): bo
     checkedBlocks += 1;
     if (
       !powerBlock.includes("PoisonCloud") ||
-      !powerBlock.includes(MINION_VULNERABILITY_BUFF) ||
-      !powerBlock.includes("Undead minions")
+      !powerBlock.includes(MINION_VULNERABILITY_BUFF)
     ) {
       allBlocksPatched = false;
     }

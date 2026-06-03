@@ -482,6 +482,208 @@ async function testPowerHitFollowsPartyAudience(): Promise<void> {
     assert.equal(otherRoomStranger.sentPackets.some((packet) => packet.id === 0x0A), false);
 }
 
+async function testFireBrandPiercingShotFansOutLineHits(): Promise<void> {
+    const sender = createFakeClient(216, 'AlphaPierce', 1);
+    const sameRoomWatcher = createFakeClient(217, 'WatcherPierce', 1);
+
+    sender.currentLevel = 'TutorialDungeon';
+    sameRoomWatcher.currentLevel = 'TutorialDungeon';
+
+    attachPlayerEntity(sender);
+    attachPlayerEntity(sameRoomWatcher);
+
+    const sourceEntity = GlobalState.levelEntities.get(getClientLevelScope(sender as never))?.get(sender.clientEntID);
+    sourceEntity.x = 100;
+    sourceEntity.y = 200;
+    sourceEntity.roomId = sender.currentRoomId;
+    sourceEntity.magicDamage = 25;
+
+    const firstHostile = {
+        id: 5161,
+        name: 'PierceFirst',
+        isPlayer: false,
+        x: 260,
+        y: 200,
+        v: 0,
+        team: 2,
+        entState: EntityState.ACTIVE,
+        roomId: sender.currentRoomId,
+        hp: 100,
+        maxHp: 100,
+        width: 80,
+        height: 80
+    };
+    const linedHostile = {
+        id: 5162,
+        name: 'PierceSecond',
+        isPlayer: false,
+        x: 430,
+        y: 205,
+        v: 0,
+        team: 2,
+        entState: EntityState.ACTIVE,
+        roomId: sender.currentRoomId,
+        hp: 100,
+        maxHp: 100,
+        width: 80,
+        height: 80
+    };
+    const offLineHostile = {
+        id: 5163,
+        name: 'PierceOffLine',
+        isPlayer: false,
+        x: 430,
+        y: 320,
+        v: 0,
+        team: 2,
+        entState: EntityState.ACTIVE,
+        roomId: sender.currentRoomId,
+        hp: 100,
+        maxHp: 100,
+        width: 80,
+        height: 80
+    };
+    const levelMap = GlobalState.levelEntities.get(getClientLevelScope(sender as never));
+    levelMap?.set(firstHostile.id, firstHostile);
+    levelMap?.set(linedHostile.id, linedHostile);
+    levelMap?.set(offLineHostile.id, offLineHostile);
+
+    GlobalState.sessionsByToken.set(sender.token, sender as never);
+    GlobalState.sessionsByToken.set(sameRoomWatcher.token, sameRoomWatcher as never);
+
+    await CombatHandler.handlePowerCast(sender as never, buildPowerCastPayload(sender.clientEntID, 6146, {
+        isProjectile: true,
+        projectileId: 77
+    }));
+
+    assert.equal(firstHostile.hp, 75, 'the first enemy on the FireBrand facing line should take cast-driven damage');
+    assert.equal(linedHostile.hp, 75, 'the lined-up enemy behind the first target should take cast-driven damage without a cast targetPos');
+    assert.equal(offLineHostile.hp, 100, 'off-line enemies should not be hit by the piercing cast damage');
+
+    const senderHits = sender.sentPackets
+        .filter((packet) => packet.id === 0x0A)
+        .map((packet) => parsePowerHitIds(packet.payload));
+    assert.deepEqual(
+        senderHits.map((hit) => hit.targetId),
+        [firstHostile.id, linedHostile.id],
+        'the caster should receive server-generated hit packets for each pierced enemy'
+    );
+    assert.deepEqual(senderHits.map((hit) => hit.damage), [25, 25]);
+
+    const watcherHits = sameRoomWatcher.sentPackets
+        .filter((packet) => packet.id === 0x0A)
+        .map((packet) => parsePowerHitIds(packet.payload));
+    assert.deepEqual(
+        watcherHits.map((hit) => hit.targetId).sort((left, right) => left - right),
+        [firstHostile.id, linedHostile.id],
+        'same-room viewers should see each server-generated piercing hit'
+    );
+    assert.equal(
+        sameRoomWatcher.sentPackets.some((packet) => packet.id === 0x09),
+        true,
+        'same-room viewers should still see the original FireBrand projectile cast'
+    );
+}
+
+async function testFireBrandPiercingShotHitsHomeDummiesWithoutEnemyTeam(): Promise<void> {
+    const sender = createFakeClient(218, 'AlphaPierceHome', 1);
+    const sameRoomWatcher = createFakeClient(219, 'WatcherPierceHome', 1);
+
+    sender.currentLevel = 'CraftTown';
+    sender.levelInstanceId = 'firebrand-home-dummy';
+    sameRoomWatcher.currentLevel = 'CraftTown';
+    sameRoomWatcher.levelInstanceId = 'firebrand-home-dummy';
+
+    attachPlayerEntity(sender);
+    attachPlayerEntity(sameRoomWatcher);
+
+    const sourceEntity = GlobalState.levelEntities.get(getClientLevelScope(sender as never))?.get(sender.clientEntID);
+    sourceEntity.x = 100;
+    sourceEntity.y = 200;
+    sourceEntity.roomId = sender.currentRoomId;
+    sourceEntity.magicDamage = 25;
+
+    const firstDummy: any = {
+        id: 5171,
+        name: 'HomeDummy1',
+        isPlayer: false,
+        x: 260,
+        y: 200,
+        v: 0,
+        team: EntityTeam.NPC,
+        entState: EntityState.ACTIVE,
+        roomId: sender.currentRoomId,
+        level: 1,
+        HitPoints: 1,
+        width: 80,
+        height: 80
+    };
+    const linedDummy: any = {
+        id: 5172,
+        name: 'HomeDummy2',
+        isPlayer: false,
+        x: 430,
+        y: 205,
+        v: 0,
+        team: EntityTeam.NPC,
+        entState: EntityState.ACTIVE,
+        roomId: sender.currentRoomId,
+        level: 1,
+        HitPoints: 1,
+        width: 80,
+        height: 80
+    };
+    const offLineDummy: any = {
+        id: 5173,
+        name: 'HomeDummy3',
+        isPlayer: false,
+        x: 430,
+        y: 320,
+        v: 0,
+        team: EntityTeam.NPC,
+        entState: EntityState.ACTIVE,
+        roomId: sender.currentRoomId,
+        level: 1,
+        HitPoints: 1,
+        width: 80,
+        height: 80
+    };
+    const levelMap = GlobalState.levelEntities.get(getClientLevelScope(sender as never));
+    levelMap?.set(firstDummy.id, firstDummy);
+    levelMap?.set(linedDummy.id, linedDummy);
+    levelMap?.set(offLineDummy.id, offLineDummy);
+
+    GlobalState.sessionsByToken.set(sender.token, sender as never);
+    GlobalState.sessionsByToken.set(sameRoomWatcher.token, sameRoomWatcher as never);
+
+    await CombatHandler.handlePowerCast(sender as never, buildPowerCastPayload(sender.clientEntID, 6146, {
+        isProjectile: true,
+        projectileId: 78
+    }));
+
+    assert.equal(firstDummy.healthDelta, -25, 'the first home dummy should take FireBrand piercing damage even without enemy team');
+    assert.equal(linedDummy.healthDelta, -25, 'the lined-up home dummy should also take FireBrand piercing damage');
+    assert.equal(offLineDummy.healthDelta ?? 0, 0, 'off-line home dummies should not be hit by FireBrand piercing');
+
+    const senderHits = sender.sentPackets
+        .filter((packet) => packet.id === 0x0A)
+        .map((packet) => parsePowerHitIds(packet.payload));
+    assert.deepEqual(
+        senderHits.map((hit) => hit.targetId),
+        [firstDummy.id, linedDummy.id],
+        'the caster should receive server-generated hit packets for each pierced home dummy'
+    );
+
+    const watcherHits = sameRoomWatcher.sentPackets
+        .filter((packet) => packet.id === 0x0A)
+        .map((packet) => parsePowerHitIds(packet.payload));
+    assert.deepEqual(
+        watcherHits.map((hit) => hit.targetId).sort((left, right) => left - right),
+        [firstDummy.id, linedDummy.id],
+        'same-room viewers should see each server-generated home dummy hit'
+    );
+}
+
 async function testPartyEchoedPowerHitDoesNotDoubleApplyDamage(): Promise<void> {
     const sender = createFakeClient(204, 'Alpha', 1);
     const partyOtherRoom = createFakeClient(205, 'Beta', 5);
@@ -1381,6 +1583,24 @@ async function main(): Promise<void> {
         GlobalState.entityLastRewardNonces.clear();
 
         await testPowerHitFollowsPartyAudience();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testFireBrandPiercingShotFansOutLineHits();
+
+        GlobalState.sessionsByToken.clear();
+        GlobalState.levelEntities.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.combatContributions.clear();
+        GlobalState.entityLifeNonces.clear();
+        GlobalState.entityLastRewardNonces.clear();
+
+        await testFireBrandPiercingShotHitsHomeDummiesWithoutEnemyTeam();
 
         GlobalState.sessionsByToken.clear();
         GlobalState.levelEntities.clear();

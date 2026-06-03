@@ -92,7 +92,7 @@ function applyCurrentEnglishTalentDescriptions(xml: string): string {
     "ModName",
     "ChilblainsDmg1",
     "Description",
-    "Increases Chilblains Damage@Chilblains Damage:, +5%, +10%, +20%, +35%, +50%"
+    "Increases Chilblains Damage@Chilblains Damage:, +4%, +12%, +24%, +40%, +50%"
   );
   updated = setTextForRecord(
     updated,
@@ -117,6 +117,22 @@ function applyCurrentEnglishTalentDescriptions(xml: string): string {
     "ColdHeart1",
     "Description",
     "Reduces the target's healing effects.@Healing Reduction:, 10%, 20%, 30%, 40%, 50%"
+  );
+  updated = setTextForRecord(
+    updated,
+    "PowerModType",
+    "ModName",
+    "IgniteCrit1",
+    "Description",
+    "Gain a Poison Damage bonus against Cursed targets.@Poison Damage Bonus:, 2%, 4%, 6%, 8%, 10%"
+  );
+  updated = setTextForRecord(
+    updated,
+    "PowerModType",
+    "ModName",
+    "PoisonDmg1",
+    "Description",
+    "Increases Poison Damage@Poison Damage:, +6%, +12%, +18%, +24%, +30%"
   );
 
   return updated;

@@ -85,6 +85,11 @@ type NpcHitResolution = {
 
 export class CombatHandler {
     private static readonly MAX_RELAY_POWER_HIT_DAMAGE = 4_000_000;
+    private static readonly FIREBRAND_PIERCING_SHOT_POWER_ID = 6146;
+    private static readonly FIREBRAND_PIERCING_SHOT_RANGE = 800;
+    private static readonly FIREBRAND_PIERCING_SHOT_MIN_HIT_RADIUS = 35;
+    private static readonly FIREBRAND_PIERCING_HIT_DEDUPE_MS = 1_500;
+    private static readonly recentFireBrandPiercingCasts = new Map<string, number>();
 
     private static clampRelayPowerHitDamage(damage: number): number {
         return Math.max(0, Math.min(CombatHandler.MAX_RELAY_POWER_HIT_DAMAGE, Math.round(Number(damage) || 0)));
@@ -1438,6 +1443,219 @@ export class CombatHandler {
         };
     }
 
+    private static getEntityPierceRadius(entity: any): number {
+        const width = Math.max(0, Number(entity?.width ?? entity?.entType?.width ?? 0));
+        const height = Math.max(0, Number(entity?.height ?? entity?.entType?.height ?? 0));
+        return Math.max(CombatHandler.FIREBRAND_PIERCING_SHOT_MIN_HIT_RADIUS, width * 0.5, height * 0.35);
+    }
+
+    private static isFireBrandPiercingTarget(entity: any): boolean {
+        return Boolean(entity) &&
+            !Boolean(entity?.isPlayer) &&
+            (
+                Number(entity?.team ?? 0) === EntityTeam.ENEMY ||
+                EntityHandler.isHomeDummyEntity(entity)
+            );
+    }
+
+    private static collectFireBrandPiercingTargetsOnLine(
+        levelScope: string,
+        sourceEntity: any,
+        targetPos: CombatPoint | null
+    ): any[] {
+        const sourcePos = CombatHandler.getEntityPosition(sourceEntity);
+        if (!levelScope || !sourcePos || !targetPos) {
+            return [];
+        }
+
+        const dx = targetPos.x - sourcePos.x;
+        const dy = targetPos.y - sourcePos.y;
+        const distance = Math.hypot(dx, dy);
+        if (distance <= 0) {
+            return [];
+        }
+
+        const unitX = dx / distance;
+        const unitY = dy / distance;
+        const sourceId = Number(sourceEntity?.id ?? 0);
+        const sourceRoomId = Number.isFinite(Number(sourceEntity?.roomId)) ? Number(sourceEntity.roomId) : -1;
+        const targets: Array<{ entity: any; projection: number }> = [];
+
+        for (const candidate of GlobalState.levelEntities.get(levelScope)?.values() ?? []) {
+            const candidateId = Number(candidate?.id ?? 0);
+            if (candidateId <= 0 || candidateId === sourceId) {
+                continue;
+            }
+            if (!CombatHandler.isFireBrandPiercingTarget(candidate)) {
+                continue;
+            }
+            if (Boolean(candidate?.dead) || Number(candidate?.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
+                continue;
+            }
+            if (Boolean(candidate?.untargetable)) {
+                continue;
+            }
+            if (sourceRoomId >= 0 && !sharesRoomIds(sourceRoomId, Number(candidate?.roomId ?? -1))) {
+                continue;
+            }
+
+            const candidatePos = CombatHandler.getEntityPosition(candidate);
+            if (!candidatePos) {
+                continue;
+            }
+
+            const relX = candidatePos.x - sourcePos.x;
+            const relY = candidatePos.y - sourcePos.y;
+            const projection = relX * unitX + relY * unitY;
+            if (projection <= 0 || projection > CombatHandler.FIREBRAND_PIERCING_SHOT_RANGE) {
+                continue;
+            }
+
+            const closestX = sourcePos.x + unitX * projection;
+            const closestY = sourcePos.y + unitY * projection;
+            const perpendicularDistance = Math.hypot(candidatePos.x - closestX, candidatePos.y - closestY);
+            if (perpendicularDistance <= CombatHandler.getEntityPierceRadius(candidate)) {
+                targets.push({ entity: candidate, projection });
+            }
+        }
+
+        targets.sort((left, right) => left.projection - right.projection);
+        return targets.map((target) => target.entity);
+    }
+
+    private static getFireBrandPiercingCastKey(levelScope: string, sourceId: number): string {
+        return `${levelScope}:${sourceId}:${CombatHandler.FIREBRAND_PIERCING_SHOT_POWER_ID}`;
+    }
+
+    private static markFireBrandPiercingCastDamage(levelScope: string, sourceId: number): void {
+        CombatHandler.recentFireBrandPiercingCasts.set(
+            CombatHandler.getFireBrandPiercingCastKey(levelScope, sourceId),
+            Date.now()
+        );
+    }
+
+    private static didRecentlyApplyFireBrandPiercingCastDamage(levelScope: string, sourceId: number): boolean {
+        const key = CombatHandler.getFireBrandPiercingCastKey(levelScope, sourceId);
+        const appliedAt = Number(CombatHandler.recentFireBrandPiercingCasts.get(key) ?? 0);
+        if (appliedAt <= 0) {
+            return false;
+        }
+
+        if (Date.now() - appliedAt > CombatHandler.FIREBRAND_PIERCING_HIT_DEDUPE_MS) {
+            CombatHandler.recentFireBrandPiercingCasts.delete(key);
+            return false;
+        }
+
+        return true;
+    }
+
+    private static resolveFireBrandPiercingShotDamage(sourceSession: Client, sourceEntity: any): number {
+        const localSource = sourceSession.clientEntID > 0 ? sourceSession.entities.get(sourceSession.clientEntID) : null;
+        const rawDamage = Math.max(
+            0,
+            Number(sourceEntity?.magicDamage ?? 0),
+            Number(localSource?.magicDamage ?? 0),
+            Number(sourceEntity?.meleeDamage ?? 0),
+            Number(localSource?.meleeDamage ?? 0)
+        );
+        if (Number.isFinite(rawDamage) && rawDamage > 0) {
+            return Math.max(1, Math.round(rawDamage));
+        }
+
+        return 25;
+    }
+
+    private static resolveFireBrandPiercingTargetPos(info: PowerCastRelayInfo, sourceEntity: any): CombatPoint | null {
+        if (info.targetPos) {
+            return info.targetPos;
+        }
+
+        const sourcePos = CombatHandler.getEntityPosition(sourceEntity);
+        if (!sourcePos) {
+            return null;
+        }
+
+        const facingLeft = Boolean(sourceEntity?.facingLeft ?? sourceEntity?.facing_left ?? false);
+        return {
+            x: sourcePos.x + (facingLeft ? -CombatHandler.FIREBRAND_PIERCING_SHOT_RANGE : CombatHandler.FIREBRAND_PIERCING_SHOT_RANGE),
+            y: sourcePos.y
+        };
+    }
+
+    private static applyFireBrandPiercingCastDamage(
+        client: Client,
+        levelScope: string,
+        info: PowerCastRelayInfo,
+        sourceSession: Client | null,
+        sourceEntity: any
+    ): void {
+        if (
+            info.powerId !== CombatHandler.FIREBRAND_PIERCING_SHOT_POWER_ID ||
+            !sourceSession ||
+            !sourceEntity
+        ) {
+            return;
+        }
+
+        const targetPos = CombatHandler.resolveFireBrandPiercingTargetPos(info, sourceEntity);
+        let targets = CombatHandler.collectFireBrandPiercingTargetsOnLine(levelScope, sourceEntity, targetPos);
+        if (targets.length === 0 && info.targetPos) {
+            targets = CombatHandler.collectFireBrandPiercingTargetsOnLine(
+                levelScope,
+                sourceEntity,
+                CombatHandler.resolveFireBrandPiercingTargetPos({ ...info, targetPos: null }, sourceEntity)
+            );
+        }
+        if (targets.length === 0) {
+            return;
+        }
+
+        const damage = CombatHandler.resolveFireBrandPiercingShotDamage(sourceSession, sourceEntity);
+        CombatHandler.markFireBrandPiercingCastDamage(levelScope, info.sourceId);
+        for (const targetEntity of targets) {
+            const targetId = Number(targetEntity?.id ?? 0);
+            if (targetId <= 0) {
+                continue;
+            }
+
+            CombatHandler.noteCombatInteraction(levelScope, info.sourceId, targetId, client);
+            CombatHandler.maybeRecordNpcContribution(levelScope, targetId, info.sourceId, damage, client);
+            noteDungeonRunHit(sourceSession, {
+                sourceId: info.sourceId,
+                targetId,
+                targetEntity,
+                damage
+            });
+
+            const deferDungeonCompletionUntilDestroy = Boolean(
+                MissionHandler.shouldProcessEnemyKillStateDungeonCompletion(client, targetEntity)
+            );
+            const resolution = CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage);
+            if (resolution.killed && resolution.entity && !deferDungeonCompletionUntilDestroy) {
+                CombatHandler.handleEnemyDefeatState(sourceSession, levelScope, targetId, resolution.entity);
+            }
+
+            const relayInfo: PowerHitRelayInfo = {
+                targetId,
+                sourceId: info.sourceId,
+                damage,
+                powerId: info.powerId,
+                animOverrideId: null,
+                effectOverrideId: null,
+                isCrit: false
+            };
+            CombatHandler.broadcastCombatPacket(
+                client,
+                0x0A,
+                CombatHandler.buildPowerHitPayload(relayInfo, damage),
+                {
+                    includeAnchor: true,
+                    referencedEntityIds: [targetId, info.sourceId]
+                }
+            );
+        }
+    }
+
     private static resolvePowerCastSourceEntity(levelScope: string, sourceId: number, fallbackClient: Client): any {
         if (sourceId <= 0) {
             return null;
@@ -1945,6 +2163,7 @@ export class CombatHandler {
         }
 
         const sourceSession = CombatHandler.resolveCombatSourceSession(levelScope, info.sourceId, client);
+        const sourceEntity = CombatHandler.resolvePowerCastSourceEntity(levelScope, info.sourceId, client);
         if (sourceSession) {
             noteDungeonRunCast(sourceSession, {
                 sourceId: info.sourceId,
@@ -1965,6 +2184,8 @@ export class CombatHandler {
         CombatHandler.broadcastCombatPacket(client, 0x09, relayPayload, {
             referencedEntityIds: CombatHandler.parseReferencedEntityIds(0x09, relayPayload)
         });
+        const relayInfo = CombatHandler.parsePowerCastRelayInfo(relayPayload) ?? info;
+        CombatHandler.applyFireBrandPiercingCastDamage(client, levelScope, relayInfo, sourceSession, sourceEntity);
     }
 
     static async handlePowerHit(client: Client, data: Buffer): Promise<void> {
@@ -1996,6 +2217,12 @@ export class CombatHandler {
 
         const sourceSession = CombatHandler.resolveCombatSourceSession(levelScope, sourceId, client);
         if (CombatHandler.shouldSuppressForeignOwnedHit(client, sourceSession, isHostileNpcSource)) {
+            return;
+        }
+        if (
+            info.powerId === CombatHandler.FIREBRAND_PIERCING_SHOT_POWER_ID &&
+            CombatHandler.didRecentlyApplyFireBrandPiercingCastDamage(levelScope, sourceId)
+        ) {
             return;
         }
 

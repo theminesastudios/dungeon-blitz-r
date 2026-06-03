@@ -19959,7 +19959,7 @@
 		<CastTime>100,100,100,100,100,100</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>20</ManaCost>
+		<ManaCost>30</ManaCost>
 		<BaseDamageMult>1.08</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
@@ -19997,7 +19997,7 @@
 		<CastTime>100,100,100,100,100,100</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>20</ManaCost>
+		<ManaCost>30</ManaCost>
 		<BaseDamageMult>0.76</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
@@ -20037,7 +20037,7 @@
 		<CastTime>100,100,100,100,100,100</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>20</ManaCost>
+		<ManaCost>30</ManaCost>
 		<BaseDamageMult>0.84</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
@@ -20077,7 +20077,7 @@
 		<CastTime>100,100,100,100,100,100</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>20</ManaCost>
+		<ManaCost>30</ManaCost>
 		<BaseDamageMult>0.92</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
@@ -20117,7 +20117,7 @@
 		<CastTime>100,100,100,100,100,100</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>20</ManaCost>
+		<ManaCost>30</ManaCost>
 		<BaseDamageMult>1.06</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
@@ -20157,7 +20157,7 @@
 		<CastTime>100,100,100,100,100,100</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>20</ManaCost>
+		<ManaCost>30</ManaCost>
 		<BaseDamageMult>1.06</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
@@ -20197,7 +20197,7 @@
 		<CastTime>100,100,100,100,100,100</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>20</ManaCost>
+		<ManaCost>30</ManaCost>
 		<BaseDamageMult>1.14</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
@@ -20237,7 +20237,7 @@
 		<CastTime>100,100,100,100,100,100</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>20</ManaCost>
+		<ManaCost>30</ManaCost>
 		<BaseDamageMult>1.23</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
@@ -20277,7 +20277,7 @@
 		<CastTime>100,100,100,100,100,100</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>20</ManaCost>
+		<ManaCost>30</ManaCost>
 		<BaseDamageMult>1.33</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
@@ -20317,7 +20317,7 @@
 		<CastTime>100,100,100,100,100,100</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>20</ManaCost>
+		<ManaCost>30</ManaCost>
 		<BaseDamageMult>1.43</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
@@ -20357,7 +20357,7 @@
 		<CastTime>100,100,100,100,100,100</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>20</ManaCost>
+		<ManaCost>30</ManaCost>
 		<BaseDamageMult>1.43</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
@@ -20402,7 +20402,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Nature</DamageType>
 		<PowerGroup>VineLance</PowerGroup>
-		<AddTargetBuff>VineLance</AddTargetBuff>
+		<AddTargetBuff>VineLance,PoisonCloud</AddTargetBuff>
 		<DisplayName>Vine Strike</DisplayName>
 		<Description>Summon vines under your opponents. Damaging them and hindering them for a moment</Description>
 		<IconName>a_PowerIcon_VineLance</IconName>
@@ -20523,7 +20523,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Nature</DamageType>
 		<PowerGroup>VineLance</PowerGroup>
-		<AddTargetBuff>VineLance</AddTargetBuff>
+		<AddTargetBuff>VineLance,PoisonCloud</AddTargetBuff>
 		<DisplayName>Vine Strike</DisplayName>
 		<BasePowerName>VineLance</BasePowerName>
 		<Description>Summon vines under your opponents. Damaging them and hindering them for a moment</Description>
@@ -20564,7 +20564,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Nature</DamageType>
 		<PowerGroup>VineLance</PowerGroup>
-		<AddTargetBuff>VineLance</AddTargetBuff>
+		<AddTargetBuff>VineLance,PoisonCloud</AddTargetBuff>
 		<DisplayName>Vine Strike</DisplayName>
 		<BasePowerName>VineLance</BasePowerName>
 		<Description>Summon vines under your opponents. Damaging them and hindering them for a moment</Description>
@@ -20605,7 +20605,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Nature</DamageType>
 		<PowerGroup>VineLance</PowerGroup>
-		<AddTargetBuff>VineLance,Weakened</AddTargetBuff>
+		<AddTargetBuff>VineLance,Weakened,PoisonCloud</AddTargetBuff>
 		<DisplayName>Vine Strike</DisplayName>
 		<BasePowerName>VineLance</BasePowerName>
 		<Description>Summon vines under your opponents. Damaging, Weakening and hindering them for a moment</Description>
@@ -20646,7 +20646,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Nature</DamageType>
 		<PowerGroup>VineLance</PowerGroup>
-		<AddTargetBuff>VineLance,Weakened</AddTargetBuff>
+		<AddTargetBuff>VineLance,Weakened,PoisonCloud</AddTargetBuff>
 		<DisplayName>Vine Strike</DisplayName>
 		<BasePowerName>VineLance</BasePowerName>
 		<Description>Summon vines under your opponents. Damaging, Weakening and hindering them for a moment</Description>
@@ -20687,7 +20687,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Nature</DamageType>
 		<PowerGroup>VineLance</PowerGroup>
-		<AddTargetBuff>VineLance,Weakened</AddTargetBuff>
+		<AddTargetBuff>VineLance,Weakened,PoisonCloud</AddTargetBuff>
 		<DisplayName>Vine Strike</DisplayName>
 		<BasePowerName>VineLance</BasePowerName>
 		<Description>Summon vines under your opponents. Damaging, Weakening and hindering them for a moment</Description>
@@ -20728,7 +20728,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Nature</DamageType>
 		<PowerGroup>VineLance</PowerGroup>
-		<AddTargetBuff>VineLance,Weakened</AddTargetBuff>
+		<AddTargetBuff>VineLance,Weakened,PoisonCloud</AddTargetBuff>
 		<DisplayName>Vine Strike</DisplayName>
 		<BasePowerName>VineLance</BasePowerName>
 		<Description>Summon vines under your opponents. Damaging, Weakening and hindering them for a moment</Description>
@@ -20769,7 +20769,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Nature</DamageType>
 		<PowerGroup>VineLance</PowerGroup>
-		<AddTargetBuff>VineLance,Weakened</AddTargetBuff>
+		<AddTargetBuff>VineLance,Weakened,PoisonCloud</AddTargetBuff>
 		<DisplayName>Vine Strike</DisplayName>
 		<BasePowerName>VineLance</BasePowerName>
 		<Description>Summon vines under your opponents. Damaging, Weakening and hindering them for a moment</Description>
@@ -20810,7 +20810,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Nature</DamageType>
 		<PowerGroup>VineLance</PowerGroup>
-		<AddTargetBuff>VineLance,Weakened,Crippled</AddTargetBuff>
+		<AddTargetBuff>VineLance,Weakened,Crippled,PoisonCloud</AddTargetBuff>
 		<DisplayName>Vine Strike</DisplayName>
 		<BasePowerName>VineLance</BasePowerName>
 		<Description>Summon vines under your opponents. Damaging, Weakening and Crippling them</Description>
@@ -22568,7 +22568,7 @@
 		<Range>450</Range>
 		<AoERadius>230</AoERadius>
 		<CastAnim>L:BlastFire</CastAnim>
-		<CastTime>1140,670,590</CastTime>
+		<CastTime>855,503,443</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
@@ -22576,7 +22576,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>IceStorm</PowerGroup>
-		<AddTargetBuff>Chilled42</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Chilblains</AddTargetBuff>
 		<DisplayName>Hail Storm</DisplayName>
 		<Description>Call down waves of ice comets, pummeling and Chilling foes in the area</Description>
 		<IconName>a_PowerIcon_IceStorm</IconName>
@@ -22599,7 +22599,7 @@
 		<Range>450</Range>
 		<AoERadius>200</AoERadius>
 		<CastAnim>L:BlastFire</CastAnim>
-		<CastTime>1140,670,590</CastTime>
+		<CastTime>855,503,443</CastTime>
 		<RecoverTime>600</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
@@ -22607,7 +22607,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>IceStorm</PowerGroup>
-		<AddTargetBuff>Chilled42</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Chilblains</AddTargetBuff>
 		<DisplayName>Hail Storm</DisplayName>
 		<BasePowerName>IceStorm</BasePowerName>
 		<Description>Call down waves of ice comets, pummeling and Chilling foes in the area</Description>
@@ -22632,7 +22632,7 @@
 		<Range>450</Range>
 		<AoERadius>200</AoERadius>
 		<CastAnim>L:BlastFire</CastAnim>
-		<CastTime>1140,670,590</CastTime>
+		<CastTime>855,503,443</CastTime>
 		<RecoverTime>600</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
@@ -22640,7 +22640,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>IceStorm</PowerGroup>
-		<AddTargetBuff>Chilled42</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Chilblains</AddTargetBuff>
 		<DisplayName>Hail Storm</DisplayName>
 		<BasePowerName>IceStorm</BasePowerName>
 		<Description>Call down waves of ice comets, pummeling and Chilling foes in the area</Description>
@@ -22665,7 +22665,7 @@
 		<Range>450</Range>
 		<AoERadius>200</AoERadius>
 		<CastAnim>L:BlastFire</CastAnim>
-		<CastTime>1140,670,590</CastTime>
+		<CastTime>855,503,443</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
@@ -22673,7 +22673,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>IceStorm</PowerGroup>
-		<AddTargetBuff>Chilled42</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Chilblains</AddTargetBuff>
 		<DisplayName>Hail Storm</DisplayName>
 		<BasePowerName>IceStorm</BasePowerName>
 		<Description>Call down waves of ice comets, pummeling and Chilling foes in the area</Description>
@@ -22698,7 +22698,7 @@
 		<Range>450</Range>
 		<AoERadius>200</AoERadius>
 		<CastAnim>L:BlastFire</CastAnim>
-		<CastTime>1140,670,590</CastTime>
+		<CastTime>855,503,443</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
@@ -22706,7 +22706,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>IceStorm</PowerGroup>
-		<AddTargetBuff>Chilled42</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Chilblains</AddTargetBuff>
 		<DisplayName>Hail Storm</DisplayName>
 		<BasePowerName>IceStorm</BasePowerName>
 		<Description>Call down waves of ice comets, pummeling and Chilling foes in the area</Description>
@@ -22731,7 +22731,7 @@
 		<Range>450</Range>
 		<AoERadius>230</AoERadius>
 		<CastAnim>L:BlastFire</CastAnim>
-		<CastTime>1140,670,590</CastTime>
+		<CastTime>855,503,443</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>1950</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
@@ -22740,7 +22740,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>IceStorm</PowerGroup>
-		<AddTargetBuff>Chilled42</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Chilblains</AddTargetBuff>
 		<DisplayName>Hail Storm</DisplayName>
 		<BasePowerName>IceStorm</BasePowerName>
 		<Description>Call down waves of ice comets, pummeling and Chilling foes in the area</Description>
@@ -22765,7 +22765,7 @@
 		<Range>450</Range>
 		<AoERadius>230</AoERadius>
 		<CastAnim>L:BlastFire</CastAnim>
-		<CastTime>1140,670,590</CastTime>
+		<CastTime>855,503,443</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>1950</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
@@ -22774,7 +22774,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>IceStorm</PowerGroup>
-		<AddTargetBuff>Chilled42</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Chilblains</AddTargetBuff>
 		<DisplayName>Hail Storm</DisplayName>
 		<BasePowerName>IceStorm</BasePowerName>
 		<Description>Call down waves of ice comets, pummeling and Chilling foes in the area</Description>
@@ -22799,7 +22799,7 @@
 		<Range>450</Range>
 		<AoERadius>275</AoERadius>
 		<CastAnim>L:BlastFire</CastAnim>
-		<CastTime>1140,670,590</CastTime>
+		<CastTime>855,503,443</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>1950</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
@@ -22808,7 +22808,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>IceStorm</PowerGroup>
-		<AddTargetBuff>Chilled42</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Chilblains</AddTargetBuff>
 		<DisplayName>Hail Storm</DisplayName>
 		<BasePowerName>IceStorm</BasePowerName>
 		<Description>Call down waves of ice comets, pummeling and Chilling foes in the area</Description>
@@ -22833,7 +22833,7 @@
 		<Range>450</Range>
 		<AoERadius>275</AoERadius>
 		<CastAnim>L:BlastFire</CastAnim>
-		<CastTime>1140,670,590</CastTime>
+		<CastTime>855,503,443</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>1950</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
@@ -22842,7 +22842,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>IceStorm</PowerGroup>
-		<AddTargetBuff>Chilled42</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Chilblains</AddTargetBuff>
 		<DisplayName>Hail Storm</DisplayName>
 		<BasePowerName>IceStorm</BasePowerName>
 		<Description>Call down waves of ice comets, pummeling and Chilling foes in the area</Description>
@@ -22867,7 +22867,7 @@
 		<Range>450</Range>
 		<AoERadius>275</AoERadius>
 		<CastAnim>L:BlastFire</CastAnim>
-		<CastTime>1140,670,590</CastTime>
+		<CastTime>855,503,443</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>1950</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
@@ -22876,7 +22876,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>IceStorm</PowerGroup>
-		<AddTargetBuff>Chilled42</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Chilblains</AddTargetBuff>
 		<DisplayName>Hail Storm</DisplayName>
 		<BasePowerName>IceStorm</BasePowerName>
 		<Description>Call down waves of ice comets, pummeling and Chilling foes in the area</Description>
@@ -22901,7 +22901,7 @@
 		<Range>450</Range>
 		<AoERadius>300</AoERadius>
 		<CastAnim>L:BlastFire</CastAnim>
-		<CastTime>1140,670,590</CastTime>
+		<CastTime>855,503,443</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>1950</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
@@ -22910,7 +22910,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>IceStorm</PowerGroup>
-		<AddTargetBuff>Chilled42</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Chilblains</AddTargetBuff>
 		<DisplayName>Hail Storm</DisplayName>
 		<BasePowerName>IceStorm</BasePowerName>
 		<Description>Call down waves of ice comets, pummeling and Chilling foes in the area</Description>
@@ -23317,14 +23317,14 @@
 		<PowerID>602</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>500</Range>
-		<AoERadius>170</AoERadius>
+		<AoERadius>170,170</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>610</CastTime>
+		<CastTime>610,150</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<ShakeTime>610</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>2.44</BaseDamageMult>
+		<BaseDamageMult>2.44,2.44</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>ice</DamageType>
 		<PowerGroup>FrigidComet</PowerGroup>
@@ -23736,16 +23736,16 @@
 		<Range>500</Range>
 		<AoERadius>100,200,200</AoERadius>
 		<CastAnim>RaiseArms2</CastAnim>
-		<CastTime>0,1450,0</CastTime>
+		<CastTime>0,1650,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>250</ReleaseTime>
+		<ReleaseTime>650</ReleaseTime>
 		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.7,0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
-		<AddTargetBuff>Sequence:FrozenWardDelay,Chilled42,Freeze2500</AddTargetBuff>
+		<AddTargetBuff>Sequence:FrozenWardDelay,Chilled42,Freeze2500,Chilblains,Chilblains</AddTargetBuff>
 		<DisplayName>Frozen Ward</DisplayName>
 		<Description>Creates a Chilling ward that explodes and Freezes enemies.</Description>
 		<IconName>a_PowerIcon_FrozenWard</IconName>
@@ -23773,9 +23773,9 @@
 		<Range>500</Range>
 		<AoERadius>75,150,150</AoERadius>
 		<CastAnim>RaiseArms2</CastAnim>
-		<CastTime>0,1450,0</CastTime>
+		<CastTime>0,1650,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>250</ReleaseTime>
+		<ReleaseTime>650</ReleaseTime>
 		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.45,0</BaseDamageMult>
@@ -23812,9 +23812,9 @@
 		<Range>500</Range>
 		<AoERadius>75,150,150</AoERadius>
 		<CastAnim>RaiseArms2</CastAnim>
-		<CastTime>0,1450,0</CastTime>
+		<CastTime>0,1650,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>250</ReleaseTime>
+		<ReleaseTime>650</ReleaseTime>
 		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.5,0</BaseDamageMult>
@@ -23851,9 +23851,9 @@
 		<Range>500</Range>
 		<AoERadius>75,150,150</AoERadius>
 		<CastAnim>RaiseArms2</CastAnim>
-		<CastTime>0,1450,0</CastTime>
+		<CastTime>0,1650,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>250</ReleaseTime>
+		<ReleaseTime>650</ReleaseTime>
 		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.5,0</BaseDamageMult>
@@ -23890,9 +23890,9 @@
 		<Range>500</Range>
 		<AoERadius>100,200,200,200</AoERadius>
 		<CastAnim>RaiseArms2</CastAnim>
-		<CastTime>0,1450,0,0</CastTime>
+		<CastTime>0,1650,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>250</ReleaseTime>
+		<ReleaseTime>650</ReleaseTime>
 		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.5,0,0</BaseDamageMult>
@@ -23929,9 +23929,9 @@
 		<Range>500</Range>
 		<AoERadius>100,200,200,200,200</AoERadius>
 		<CastAnim>RaiseArms2</CastAnim>
-		<CastTime>0,1450,0,0,0</CastTime>
+		<CastTime>0,1650,0,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>250</ReleaseTime>
+		<ReleaseTime>650</ReleaseTime>
 		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.5,0,0,0</BaseDamageMult>
@@ -23968,9 +23968,9 @@
 		<Range>500</Range>
 		<AoERadius>100,200,200,200,200</AoERadius>
 		<CastAnim>RaiseArms2</CastAnim>
-		<CastTime>0,1450,0,0,0</CastTime>
+		<CastTime>0,1650,0,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>250</ReleaseTime>
+		<ReleaseTime>650</ReleaseTime>
 		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.57,0,0,0</BaseDamageMult>
@@ -24007,9 +24007,9 @@
 		<Range>500</Range>
 		<AoERadius>150,250,250,250,250</AoERadius>
 		<CastAnim>RaiseArms2</CastAnim>
-		<CastTime>0,1450,0,0,0</CastTime>
+		<CastTime>0,1650,0,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>250</ReleaseTime>
+		<ReleaseTime>650</ReleaseTime>
 		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.57,0,0,0</BaseDamageMult>
@@ -24046,9 +24046,9 @@
 		<Range>500</Range>
 		<AoERadius>150,250,250,250,250,250</AoERadius>
 		<CastAnim>RaiseArms2</CastAnim>
-		<CastTime>0,1450,0,0,0,0</CastTime>
+		<CastTime>0,1650,0,0,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>250</ReleaseTime>
+		<ReleaseTime>650</ReleaseTime>
 		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.73,0,0,0,0</BaseDamageMult>
@@ -24085,9 +24085,9 @@
 		<Range>500</Range>
 		<AoERadius>200,300,300,300,300,300</AoERadius>
 		<CastAnim>RaiseArms2</CastAnim>
-		<CastTime>0,1450,0,0,0,0</CastTime>
+		<CastTime>0,1650,0,0,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>250</ReleaseTime>
+		<ReleaseTime>650</ReleaseTime>
 		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.73,0,0,0,0</BaseDamageMult>
@@ -24124,9 +24124,9 @@
 		<Range>500</Range>
 		<AoERadius>200,300,300,300,300,300,300</AoERadius>
 		<CastAnim>RaiseArms2</CastAnim>
-		<CastTime>0,1450,0,0,0,0,0</CastTime>
+		<CastTime>0,1650,0,0,0,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>250</ReleaseTime>
+		<ReleaseTime>650</ReleaseTime>
 		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.73,0,0,0,0,0</BaseDamageMult>
@@ -24172,7 +24172,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrostBlast</PowerGroup>
-		<AddTargetBuff>Chilled42</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Weakened</AddTargetBuff>
 		<DisplayName>Arctic Blast</DisplayName>
 		<Description>Emit a cone of Chilling frost.</Description>
 		<IconName>a_PowerIcon_FrostBolt</IconName>
@@ -27041,7 +27041,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
-		<AddTargetBuff>Chilled42,ChilblainsPermafrost</AddTargetBuff>
+		<AddTargetBuff>Chilled42,ChilblainsPermafrost,Chilblains</AddTargetBuff>
 		<BasePowerName>PermafrostCloneExplode</BasePowerName>
 		<Description>PermafrostClone combo</Description>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -27074,7 +27074,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
-		<AddTargetBuff>Chilled42,ChilblainsPermafrost</AddTargetBuff>
+		<AddTargetBuff>Chilled42,ChilblainsPermafrost,Chilblains</AddTargetBuff>
 		<BasePowerName>PermafrostCloneExplode</BasePowerName>
 		<Description>PermafrostClone combo</Description>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -27107,7 +27107,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
-		<AddTargetBuff>Chilled42,ChilblainsPermafrost</AddTargetBuff>
+		<AddTargetBuff>Chilled42,ChilblainsPermafrost,Chilblains</AddTargetBuff>
 		<BasePowerName>PermafrostCloneExplode</BasePowerName>
 		<Description>PermafrostClone combo</Description>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -27140,7 +27140,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
-		<AddTargetBuff>Chilled42,ChilblainsPermafrost</AddTargetBuff>
+		<AddTargetBuff>Chilled42,ChilblainsPermafrost,Chilblains</AddTargetBuff>
 		<BasePowerName>PermafrostCloneExplode</BasePowerName>
 		<Description>PermafrostClone combo</Description>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -27173,7 +27173,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
-		<AddTargetBuff>Chilled42,ChilblainsPermafrost</AddTargetBuff>
+		<AddTargetBuff>Chilled42,ChilblainsPermafrost,Chilblains</AddTargetBuff>
 		<BasePowerName>PermafrostCloneExplode</BasePowerName>
 		<Description>PermafrostClone combo</Description>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -27206,7 +27206,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
-		<AddTargetBuff>Chilled42,ChilblainsPermafrost</AddTargetBuff>
+		<AddTargetBuff>Chilled42,ChilblainsPermafrost,Chilblains</AddTargetBuff>
 		<BasePowerName>PermafrostCloneExplode</BasePowerName>
 		<Description>PermafrostClone combo</Description>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -27239,7 +27239,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
-		<AddTargetBuff>Chilled42,ChilblainsPermafrost</AddTargetBuff>
+		<AddTargetBuff>Chilled42,ChilblainsPermafrost,Chilblains</AddTargetBuff>
 		<BasePowerName>PermafrostCloneExplode</BasePowerName>
 		<Description>PermafrostClone combo</Description>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -27272,7 +27272,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
-		<AddTargetBuff>Chilled42,ChilblainsPermafrost</AddTargetBuff>
+		<AddTargetBuff>Chilled42,ChilblainsPermafrost,Chilblains</AddTargetBuff>
 		<BasePowerName>PermafrostCloneExplode</BasePowerName>
 		<Description>PermafrostClone combo</Description>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -27305,7 +27305,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
-		<AddTargetBuff>Chilled42,ChilblainsPermafrost</AddTargetBuff>
+		<AddTargetBuff>Chilled42,ChilblainsPermafrost,Chilblains</AddTargetBuff>
 		<BasePowerName>PermafrostCloneExplode</BasePowerName>
 		<Description>PermafrostClone combo</Description>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -27338,7 +27338,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
-		<AddTargetBuff>Chilled42,ChilblainsPermafrost</AddTargetBuff>
+		<AddTargetBuff>Chilled42,ChilblainsPermafrost,Chilblains</AddTargetBuff>
 		<BasePowerName>PermafrostCloneExplode</BasePowerName>
 		<Description>PermafrostClone combo</Description>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -28690,7 +28690,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>FlameStrike</PowerGroup>
-		<AddTargetBuff>Scorched</AddTargetBuff>
+		<AddTargetBuff>Scorched,Crippled</AddTargetBuff>
 		<AddSelfBuff>FireArmor</AddSelfBuff>
 		<DisplayName>Conflagration</DisplayName>
 		<Description>Dash through your enemies, leaving a trail of Scorching fire.</Description>
@@ -28721,7 +28721,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>FlameStrike</PowerGroup>
-		<AddTargetBuff>Scorched</AddTargetBuff>
+		<AddTargetBuff>Scorched,Crippled</AddTargetBuff>
 		<DisplayName>Conflagration</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
 		<Description>Dash through your enemies, Scorching them and leaving a trail of fire.</Description>
@@ -28753,7 +28753,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>FlameStrike</PowerGroup>
-		<AddTargetBuff>Scorched</AddTargetBuff>
+		<AddTargetBuff>Scorched,Crippled</AddTargetBuff>
 		<DisplayName>Conflagration</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
 		<Description>Dash through your enemies, Scorching them and leaving a trail of fire.</Description>
@@ -28785,7 +28785,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>FlameStrike</PowerGroup>
-		<AddTargetBuff>Scorched</AddTargetBuff>
+		<AddTargetBuff>Scorched,Crippled</AddTargetBuff>
 		<DisplayName>Conflagration</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
 		<Description>Dash through your enemies, Scorching them and leaving a trail of fire.</Description>
@@ -28817,7 +28817,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>FlameStrike</PowerGroup>
-		<AddTargetBuff>Scorched</AddTargetBuff>
+		<AddTargetBuff>Scorched,Crippled</AddTargetBuff>
 		<AddSelfBuff>FireArmor30</AddSelfBuff>
 		<DisplayName>Conflagration</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
@@ -28850,7 +28850,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>FlameStrike</PowerGroup>
-		<AddTargetBuff>Scorched</AddTargetBuff>
+		<AddTargetBuff>Scorched,Crippled</AddTargetBuff>
 		<AddSelfBuff>FireArmor30</AddSelfBuff>
 		<DisplayName>Conflagration</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
@@ -28883,7 +28883,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>FlameStrike</PowerGroup>
-		<AddTargetBuff>Scorched</AddTargetBuff>
+		<AddTargetBuff>Scorched,Crippled</AddTargetBuff>
 		<AddSelfBuff>FireArmor30</AddSelfBuff>
 		<DisplayName>Conflagration</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
@@ -28916,7 +28916,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>FlameStrike</PowerGroup>
-		<AddTargetBuff>Scorched,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Burned,Crippled</AddTargetBuff>
 		<AddSelfBuff>FireArmor30</AddSelfBuff>
 		<DisplayName>Conflagration</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
@@ -28949,7 +28949,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>FlameStrike</PowerGroup>
-		<AddTargetBuff>Scorched,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Burned,Crippled</AddTargetBuff>
 		<AddSelfBuff>FireArmor</AddSelfBuff>
 		<DisplayName>Conflagration</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
@@ -28982,7 +28982,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>FlameStrike</PowerGroup>
-		<AddTargetBuff>Scorched,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Burned,Burned,Crippled</AddTargetBuff>
 		<AddSelfBuff>FireArmor</AddSelfBuff>
 		<DisplayName>Conflagration</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
@@ -29015,7 +29015,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>FlameStrike</PowerGroup>
-		<AddTargetBuff>Scorched,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Burned,Burned,Crippled</AddTargetBuff>
 		<AddSelfBuff>FireArmor</AddSelfBuff>
 		<DisplayName>Conflagration</DisplayName>
 		<BasePowerName>FlameStrike</BasePowerName>
@@ -30458,8 +30458,8 @@
 		<CastAnim>Cast05</CastAnim>
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>40</ManaCost>
+		<CoolDownTime>10000</CoolDownTime>
+		<ManaCost>0</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -30515,8 +30515,8 @@
 		<CastAnim>Cast05</CastAnim>
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>20</ManaCost>
+		<CoolDownTime>10000</CoolDownTime>
+		<ManaCost>0</ManaCost>
 		<ManaRequirement>50</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30547,8 +30547,8 @@
 		<CastAnim>Cast05</CastAnim>
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>20</ManaCost>
+		<CoolDownTime>10000</CoolDownTime>
+		<ManaCost>0</ManaCost>
 		<ManaRequirement>50</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30579,8 +30579,8 @@
 		<CastAnim>Cast05</CastAnim>
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>15</ManaCost>
+		<CoolDownTime>10000</CoolDownTime>
+		<ManaCost>0</ManaCost>
 		<ManaRequirement>45</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30611,8 +30611,8 @@
 		<CastAnim>Cast05</CastAnim>
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>15</ManaCost>
+		<CoolDownTime>10000</CoolDownTime>
+		<ManaCost>0</ManaCost>
 		<ManaRequirement>45</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30643,8 +30643,8 @@
 		<CastAnim>Cast05</CastAnim>
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>15</ManaCost>
+		<CoolDownTime>10000</CoolDownTime>
+		<ManaCost>0</ManaCost>
 		<ManaRequirement>45</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30675,8 +30675,8 @@
 		<CastAnim>Cast05</CastAnim>
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>15</ManaCost>
+		<CoolDownTime>10000</CoolDownTime>
+		<ManaCost>0</ManaCost>
 		<ManaRequirement>45</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30707,8 +30707,8 @@
 		<CastAnim>Cast05</CastAnim>
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>10</ManaCost>
+		<CoolDownTime>10000</CoolDownTime>
+		<ManaCost>0</ManaCost>
 		<ManaRequirement>40</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30739,8 +30739,8 @@
 		<CastAnim>Cast05</CastAnim>
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>10</ManaCost>
+		<CoolDownTime>10000</CoolDownTime>
+		<ManaCost>0</ManaCost>
 		<ManaRequirement>40</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30771,8 +30771,8 @@
 		<CastAnim>Cast05</CastAnim>
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>10</ManaCost>
+		<CoolDownTime>10000</CoolDownTime>
+		<ManaCost>0</ManaCost>
 		<ManaRequirement>40</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30803,8 +30803,8 @@
 		<CastAnim>Cast05</CastAnim>
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>10</ManaCost>
+		<CoolDownTime>10000</CoolDownTime>
+		<ManaCost>0</ManaCost>
 		<ManaRequirement>40</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -31609,7 +31609,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>FireBrand</PowerGroup>
-		<AddTargetBuff>FireBrand</AddTargetBuff>
+		<AddTargetBuff>FireBrandRank8</AddTargetBuff>
 		<DisplayName>Firebrand</DisplayName>
 		<Description>Your party's attacks apply Scorched and gain bonus damage against Scorched targets.</Description>
 		<IconName>a_PowerIcon_FlameWeapons</IconName>
@@ -31935,6 +31935,135 @@
 		</HitGfx>
 		<ProjGfx/>
 	</Power>
+	<Power PowerName="FireBrandShot1">
+		<PowerID>6143</PowerID>
+		<TargetMethod>ProjectileCombo</TargetMethod>
+		<AoERadius>90</AoERadius>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>0</ProcModifier>
+		<DamageType>Fire</DamageType>
+		<PowerGroup>FireBrandShot</PowerGroup>
+		<AddTargetBuff>Scorched</AddTargetBuff>
+		<DisplayName>Fire Brand Shot</DisplayName>
+		<Description>Ranged attacks deal fire damage while Fire Brand is active.</Description>
+		<IconName>a_PowerIcon_CrimsonShot</IconName>
+		<CastSound>CHR_Flameseer_CrimsonShot_A</CastSound>
+		<CastGfx/>
+		<CastAnimSource>Feet</CastAnimSource>
+		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
+		<FireAnimSource>Center</FireAnimSource>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_CrimsonShotMolten,a_CrimsonShotSuper</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="FireBrandShot3">
+		<PowerID>6144</PowerID>
+		<TargetMethod>ProjectileCombo</TargetMethod>
+		<AoERadius>105</AoERadius>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>0</ProcModifier>
+		<DamageType>Fire</DamageType>
+		<PowerGroup>FireBrandShot</PowerGroup>
+		<AddTargetBuff>Scorched</AddTargetBuff>
+		<DisplayName>Fire Brand Shot</DisplayName>
+		<Description>Ranged attacks deal fire damage while Fire Brand is active.</Description>
+		<IconName>a_PowerIcon_CrimsonShot</IconName>
+		<CastSound>CHR_Flameseer_CrimsonShot_A</CastSound>
+		<CastGfx/>
+		<CastAnimSource>Feet</CastAnimSource>
+		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
+		<FireAnimSource>Center</FireAnimSource>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_CrimsonShotMolten,a_CrimsonShotSuper</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="FireBrandShot6">
+		<PowerID>6145</PowerID>
+		<TargetMethod>ProjectileCombo</TargetMethod>
+		<AoERadius>120</AoERadius>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>0.5</BaseDamageMult>
+		<ProcModifier>0</ProcModifier>
+		<DamageType>Fire</DamageType>
+		<PowerGroup>FireBrandShot</PowerGroup>
+		<AddTargetBuff>Scorched,Burned</AddTargetBuff>
+		<DisplayName>Fire Brand Shot</DisplayName>
+		<Description>Ranged attacks deal fire damage while Fire Brand is active.</Description>
+		<IconName>a_PowerIcon_CrimsonShot</IconName>
+		<CastSound>CHR_Flameseer_CrimsonShot_A</CastSound>
+		<CastGfx/>
+		<CastAnimSource>Feet</CastAnimSource>
+		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
+		<FireAnimSource>Center</FireAnimSource>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_CrimsonShotMolten,a_CrimsonShotSuper</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="FlameAxeFireBrandShot8">
+		<PowerID>6146</PowerID>
+		<TargetMethod>ProjectileCombo</TargetMethod>
+		<Range>800</Range>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>0</ProcModifier>
+		<DamageType>Fire</DamageType>
+		<PowerGroup>FireBrandShot</PowerGroup>
+		<AddTargetBuff>Scorched</AddTargetBuff>
+		<DisplayName>Fireball</DisplayName>
+		<Description>Flameseer basic ranged attack. Pierces through targets instead of stopping on hit.</Description>
+		<IconName>a_PowerIcon_FireBall</IconName>
+		<CastSound>CHR_FlameSeer_Fireball_Fire_01|CHR_FlameSeer_Fireball_Fire_02|CHR_FlameSeer_Fireball_Fire_03</CastSound>
+		<CastGfx/>
+		<CastAnimSource>Feet</CastAnimSource>
+		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
+		<FireAnimSource>Center</FireAnimSource>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_CrimsonShotImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_CrimsonShotMolten,a_CrimsonShotSuper</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
 	<Power PowerName="IridescentBurst">
 		<PowerID>899</PowerID>
 		<TargetMethod>PBAoE</TargetMethod>
@@ -31949,7 +32078,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>IridescentBurst</PowerGroup>
-		<AddTargetBuff>Staggered,Burned,Blinded</AddTargetBuff>
+		<AddTargetBuff>Staggered,Burned,Blinded,Weakened</AddTargetBuff>
 		<DisplayName>Iridescent Burst</DisplayName>
 		<Description>Emit a bright burst of fire that Scorches, Burns, and Blinds nearby enemies.</Description>
 		<IconName>a_PowerIcon_BlindingLight</IconName>
@@ -31979,7 +32108,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>IridescentBurst</PowerGroup>
-		<AddTargetBuff>Scorched,Blinded,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Blinded,Burned,Weakened</AddTargetBuff>
 		<DisplayName>Iridescent Burst</DisplayName>
 		<BasePowerName>IridescentBurst</BasePowerName>
 		<Description>Emit a bright burst of fire that Scorches, Burns, and Blinds nearby enemies.</Description>
@@ -32011,7 +32140,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>IridescentBurst</PowerGroup>
-		<AddTargetBuff>Scorched,Blinded,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Blinded,Burned,Burned,Weakened</AddTargetBuff>
 		<DisplayName>Iridescent Burst</DisplayName>
 		<BasePowerName>IridescentBurst</BasePowerName>
 		<Description>Emit a bright burst of fire that Scorches, Burns, and Blinds nearby enemies.</Description>
@@ -32043,7 +32172,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>IridescentBurst</PowerGroup>
-		<AddTargetBuff>Scorched,Blinded,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Blinded,Burned,Burned,Weakened</AddTargetBuff>
 		<DisplayName>Iridescent Burst</DisplayName>
 		<BasePowerName>IridescentBurst</BasePowerName>
 		<Description>Emit a bright burst of fire that Scorches, Burns, and Blinds nearby enemies.</Description>
@@ -32075,7 +32204,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>IridescentBurst</PowerGroup>
-		<AddTargetBuff>Scorched,Scorched,Blinded,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Scorched,Blinded,Burned,Burned,Weakened</AddTargetBuff>
 		<DisplayName>Iridescent Burst</DisplayName>
 		<BasePowerName>IridescentBurst</BasePowerName>
 		<Description>Emit a bright burst of fire that Scorches, Burns, and Blinds nearby enemies.</Description>
@@ -32107,7 +32236,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>IridescentBurst</PowerGroup>
-		<AddTargetBuff>Staggered,Scorched,Scorched,Blinded,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Staggered,Scorched,Scorched,Blinded,Burned,Burned,Weakened</AddTargetBuff>
 		<DisplayName>Iridescent Burst</DisplayName>
 		<BasePowerName>IridescentBurst</BasePowerName>
 		<Description>Emit a bright burst of fire that Staggers, Scorches, Burns, and Blinds nearby enemies.</Description>
@@ -32139,7 +32268,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>IridescentBurst</PowerGroup>
-		<AddTargetBuff>Staggered,Scorched,Scorched,Blinded,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Staggered,Scorched,Scorched,Blinded,Burned,Burned,Weakened</AddTargetBuff>
 		<DisplayName>Iridescent Burst</DisplayName>
 		<BasePowerName>IridescentBurst</BasePowerName>
 		<Description>Emit a bright burst of fire that Staggers, Scorches, Burns, and Blinds nearby enemies.</Description>
@@ -32171,7 +32300,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>IridescentBurst</PowerGroup>
-		<AddTargetBuff>Staggered,Scorched,Scorched,Blinded,Burned,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Staggered,Scorched,Scorched,Blinded,Burned,Burned,Burned,Weakened</AddTargetBuff>
 		<DisplayName>Iridescent Burst</DisplayName>
 		<BasePowerName>IridescentBurst</BasePowerName>
 		<Description>Emit a bright burst of fire that Staggers, Scorches, Burns, and Blinds nearby enemies.</Description>
@@ -32203,7 +32332,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>IridescentBurst</PowerGroup>
-		<AddTargetBuff>Staggered,Scorched,Scorched,Scorched,Blinded,Burned,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Staggered,Scorched,Scorched,Scorched,Blinded,Burned,Burned,Burned,Weakened</AddTargetBuff>
 		<DisplayName>Iridescent Burst</DisplayName>
 		<BasePowerName>IridescentBurst</BasePowerName>
 		<Description>Emit a bright burst of fire that Staggers, Scorches, Burns, and Blinds nearby enemies.</Description>
@@ -32235,7 +32364,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>IridescentBurst</PowerGroup>
-		<AddTargetBuff>Staggered,Scorched,Scorched,Scorched,Blinded,Burned,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Staggered,Scorched,Scorched,Scorched,Blinded,Burned,Burned,Burned,Weakened</AddTargetBuff>
 		<DisplayName>Iridescent Burst</DisplayName>
 		<BasePowerName>IridescentBurst</BasePowerName>
 		<Description>Emit a bright burst of fire that Staggers, Scorches, Burns, and Blinds nearby enemies.</Description>
@@ -32267,7 +32396,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>IridescentBurst</PowerGroup>
-		<AddTargetBuff>Staggered,Scorched,Scorched,Scorched,Blinded,Burned,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Staggered,Scorched,Scorched,Scorched,Blinded,Burned,Burned,Burned,Weakened</AddTargetBuff>
 		<DisplayName>Iridescent Burst</DisplayName>
 		<BasePowerName>IridescentBurst</BasePowerName>
 		<Description>Emit a bright burst of fire that Staggers, Scorches, Burns, and Blinds nearby enemies.</Description>
@@ -32300,7 +32429,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>MoltenFist</PowerGroup>
-		<AddTargetBuff>Scorched,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Burned,Crippled,StunStrike2000</AddTargetBuff>
 		<DisplayName>Molten Fist</DisplayName>
 		<Description>Conjure a giant molten fist beneath your foes that Scorches and Burns them, then explodes for more damage.</Description>
 		<IconName>a_PowerIcon_MoltenFist</IconName>
@@ -32364,7 +32493,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>MoltenFist</PowerGroup>
-		<AddTargetBuff>Scorched,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Burned,Crippled,Dazed</AddTargetBuff>
 		<DisplayName>Molten Fist</DisplayName>
 		<BasePowerName>MoltenFist</BasePowerName>
 		<Description>Conjure a giant molten fist beneath your foes that Scorches and Burns them, then explodes for more damage.</Description>
@@ -32404,7 +32533,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>MoltenFist</PowerGroup>
-		<AddTargetBuff>Scorched,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Burned,Crippled,Dazed</AddTargetBuff>
 		<DisplayName>Molten Fist</DisplayName>
 		<BasePowerName>MoltenFist</BasePowerName>
 		<Description>Conjure a giant molten fist beneath your foes that Scorches and Burns them, then explodes for more damage.</Description>
@@ -32444,7 +32573,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>MoltenFist</PowerGroup>
-		<AddTargetBuff>Scorched,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Burned,Crippled,Dazed</AddTargetBuff>
 		<DisplayName>Molten Fist</DisplayName>
 		<BasePowerName>MoltenFist</BasePowerName>
 		<Description>Conjure a giant molten fist beneath your foes that Scorches and Burns them, then explodes for more damage.</Description>
@@ -32484,7 +32613,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>MoltenFist</PowerGroup>
-		<AddTargetBuff>Scorched,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Burned,Crippled,Dazed</AddTargetBuff>
 		<DisplayName>Molten Fist</DisplayName>
 		<BasePowerName>MoltenFist</BasePowerName>
 		<Description>Conjure a giant molten fist beneath your foes that Scorches and Burns them, then explodes for more damage.</Description>
@@ -32524,7 +32653,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>MoltenFist</PowerGroup>
-		<AddTargetBuff>Scorched,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Burned,Burned,Crippled,Dazed</AddTargetBuff>
 		<DisplayName>Molten Fist</DisplayName>
 		<BasePowerName>MoltenFist</BasePowerName>
 		<Description>Conjure a giant molten fist beneath your foes that Scorches and Burns them, then explodes for more damage.</Description>
@@ -32564,7 +32693,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>MoltenFist</PowerGroup>
-		<AddTargetBuff>Scorched,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Burned,Burned,Crippled,Dazed</AddTargetBuff>
 		<DisplayName>Molten Fist</DisplayName>
 		<BasePowerName>MoltenFist</BasePowerName>
 		<Description>Conjure a giant molten fist beneath your foes that Scorches and Burns them, then explodes for more damage.</Description>
@@ -32604,7 +32733,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>MoltenFist</PowerGroup>
-		<AddTargetBuff>Scorched,Scorched,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Scorched,Burned,Burned,Crippled,StunStrike2000</AddTargetBuff>
 		<DisplayName>Molten Fist</DisplayName>
 		<BasePowerName>MoltenFist</BasePowerName>
 		<Description>Conjure a giant molten fist beneath your foes that Scorches and Burns them, then explodes for more damage.</Description>
@@ -32644,7 +32773,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>MoltenFist</PowerGroup>
-		<AddTargetBuff>Scorched,Scorched,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Scorched,Burned,Burned,Crippled,StunStrike2000</AddTargetBuff>
 		<DisplayName>Molten Fist</DisplayName>
 		<BasePowerName>MoltenFist</BasePowerName>
 		<Description>Conjure a giant molten fist beneath your foes that Scorches and Burns them, then explodes for more damage.</Description>
@@ -32684,7 +32813,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>MoltenFist</PowerGroup>
-		<AddTargetBuff>Scorched,Scorched,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Scorched,Burned,Burned,Crippled,StunStrike2000</AddTargetBuff>
 		<DisplayName>Molten Fist</DisplayName>
 		<BasePowerName>MoltenFist</BasePowerName>
 		<Description>Conjure a giant molten fist beneath your foes that Scorches and Burns them, then explodes for more damage.</Description>
@@ -32724,7 +32853,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
 		<PowerGroup>MoltenFist</PowerGroup>
-		<AddTargetBuff>Scorched,Scorched,Burned,Burned,Burned</AddTargetBuff>
+		<AddTargetBuff>Scorched,Scorched,Burned,Burned,Burned,Crippled,StunStrike2000</AddTargetBuff>
 		<DisplayName>Molten Fist</DisplayName>
 		<BasePowerName>MoltenFist</BasePowerName>
 		<Description>Conjure a giant molten fist beneath your foes that Scorches and Burns them, then explodes for more damage.</Description>
@@ -34619,7 +34748,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>DeathMark</PowerGroup>
-		<AddTargetBuff>Cursed,DeathMarkStrength1</AddTargetBuff>
+		<AddTargetBuff>Cursed,DeathMarkStrength1,PoisonCloud</AddTargetBuff>
 		<DisplayName>Death Mark</DisplayName>
 		<Description>Creates a ward. Enemies within are Cursed and have reduced Attack.</Description>
 		<IconName>a_PowerIcon_DeathWard</IconName>
@@ -34650,7 +34779,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>DeathMark</PowerGroup>
-		<AddTargetBuff>Cursed,DeathMarkStrength1</AddTargetBuff>
+		<AddTargetBuff>Cursed,DeathMarkStrength1,PoisonCloud</AddTargetBuff>
 		<DisplayName>Death Mark</DisplayName>
 		<BasePowerName>DeathMark</BasePowerName>
 		<Description>Creates a ward. Enemies within are Cursed and have reduced Attack.</Description>
@@ -34683,7 +34812,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>DeathMark</PowerGroup>
-		<AddTargetBuff>Cursed,DeathMarkArmor1,DeathMarkStrength1</AddTargetBuff>
+		<AddTargetBuff>Cursed,DeathMarkArmor1,DeathMarkStrength1,PoisonCloud</AddTargetBuff>
 		<DisplayName>Death Mark</DisplayName>
 		<BasePowerName>DeathMark</BasePowerName>
 		<Description>Creates a ward. Enemies within are Cursed and have reduced Attack and Defense.</Description>
@@ -34716,7 +34845,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>DeathMark</PowerGroup>
-		<AddTargetBuff>Cursed,DeathMarkArmor1,DeathMarkStrength2</AddTargetBuff>
+		<AddTargetBuff>Cursed,DeathMarkArmor1,DeathMarkStrength2,PoisonCloud</AddTargetBuff>
 		<DisplayName>Death Mark</DisplayName>
 		<BasePowerName>DeathMark</BasePowerName>
 		<Description>Creates a ward. Enemies within are Cursed and have reduced Attack and Defense.</Description>
@@ -34749,7 +34878,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>DeathMark</PowerGroup>
-		<AddTargetBuff>Cursed,DeathMarkArmor2,DeathMarkStrength2</AddTargetBuff>
+		<AddTargetBuff>Cursed,DeathMarkArmor2,DeathMarkStrength2,PoisonCloud</AddTargetBuff>
 		<DisplayName>Death Mark</DisplayName>
 		<BasePowerName>DeathMark</BasePowerName>
 		<Description>Creates a ward. Enemies within are Cursed and have reduced Attack and Defense.</Description>
@@ -34782,7 +34911,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>DeathMark</PowerGroup>
-		<AddTargetBuff>Cursed,DeathMarkArmor2,DeathMarkStrength3</AddTargetBuff>
+		<AddTargetBuff>Cursed,DeathMarkArmor2,DeathMarkStrength3,PoisonCloud</AddTargetBuff>
 		<DisplayName>Death Mark</DisplayName>
 		<BasePowerName>DeathMark</BasePowerName>
 		<Description>Creates a ward. Enemies within are Cursed and have reduced Attack and Defense.</Description>
@@ -34815,7 +34944,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>DeathMark</PowerGroup>
-		<AddTargetBuff>Cursed,DeathMarkArmor3,DeathMarkStrength3</AddTargetBuff>
+		<AddTargetBuff>Cursed,DeathMarkArmor3,DeathMarkStrength3,PoisonCloud</AddTargetBuff>
 		<DisplayName>Death Mark</DisplayName>
 		<BasePowerName>DeathMark</BasePowerName>
 		<Description>Creates a ward. Enemies within are Cursed and have reduced Attack and Defense.</Description>
@@ -34848,7 +34977,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>DeathMark</PowerGroup>
-		<AddTargetBuff>Cursed,DeathMarkArmor3,DeathMarkStrength4</AddTargetBuff>
+		<AddTargetBuff>Cursed,DeathMarkArmor3,DeathMarkStrength4,PoisonCloud</AddTargetBuff>
 		<DisplayName>Death Mark</DisplayName>
 		<BasePowerName>DeathMark</BasePowerName>
 		<Description>Creates a ward. Enemies within are Cursed and have reduced Attack and Defense.</Description>
@@ -34881,7 +35010,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>DeathMark</PowerGroup>
-		<AddTargetBuff>Cursed,DeathMarkArmor4,DeathMarkStrength4</AddTargetBuff>
+		<AddTargetBuff>Cursed,DeathMarkArmor4,DeathMarkStrength4,PoisonCloud</AddTargetBuff>
 		<DisplayName>Death Mark</DisplayName>
 		<BasePowerName>DeathMark</BasePowerName>
 		<Description>Creates a ward. Enemies within are Cursed and have reduced Attack and Defense.</Description>
@@ -34914,7 +35043,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>DeathMark</PowerGroup>
-		<AddTargetBuff>Cursed,DeathMarkArmor4,DeathMarkStrength5</AddTargetBuff>
+		<AddTargetBuff>Cursed,DeathMarkArmor4,DeathMarkStrength5,PoisonCloud</AddTargetBuff>
 		<DisplayName>Death Mark</DisplayName>
 		<BasePowerName>DeathMark</BasePowerName>
 		<Description>Creates a ward. Enemies within are Cursed and have reduced Attack and Defense.</Description>
@@ -34947,7 +35076,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>DeathMark</PowerGroup>
-		<AddTargetBuff>Cursed,DeathMarkArmor5,DeathMarkStrength6</AddTargetBuff>
+		<AddTargetBuff>Cursed,DeathMarkArmor5,DeathMarkStrength6,PoisonCloud</AddTargetBuff>
 		<DisplayName>Death Mark</DisplayName>
 		<BasePowerName>DeathMark</BasePowerName>
 		<Description>Creates a ward. Enemies within are Cursed and have reduced Attack and Defense.</Description>
@@ -34968,7 +35097,7 @@
 	</Power>
 	<Power PowerName="SpectralGrasp">
 		<PowerID>5600</PowerID>
-		<TargetMethod>RangedStrike</TargetMethod>
+		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>550</Range>
 		<AoERadius>120</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
@@ -35003,7 +35132,7 @@
 	</Power>
 	<Power PowerName="SpectralGrasp1">
 		<PowerID>5601</PowerID>
-		<TargetMethod>RangedStrike</TargetMethod>
+		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>550</Range>
 		<AoERadius>120</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
@@ -35039,7 +35168,7 @@
 	</Power>
 	<Power PowerName="SpectralGrasp2">
 		<PowerID>5602</PowerID>
-		<TargetMethod>RangedStrike</TargetMethod>
+		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>550</Range>
 		<AoERadius>120</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
@@ -35076,7 +35205,7 @@
 	</Power>
 	<Power PowerName="SpectralGrasp3">
 		<PowerID>5603</PowerID>
-		<TargetMethod>RangedStrike</TargetMethod>
+		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>550</Range>
 		<AoERadius>120</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
@@ -35113,7 +35242,7 @@
 	</Power>
 	<Power PowerName="SpectralGrasp4">
 		<PowerID>5604</PowerID>
-		<TargetMethod>RangedStrike</TargetMethod>
+		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>550</Range>
 		<AoERadius>120</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
@@ -35150,7 +35279,7 @@
 	</Power>
 	<Power PowerName="SpectralGrasp5">
 		<PowerID>5605</PowerID>
-		<TargetMethod>RangedStrike</TargetMethod>
+		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>550</Range>
 		<AoERadius>120</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
@@ -35187,7 +35316,7 @@
 	</Power>
 	<Power PowerName="SpectralGrasp6">
 		<PowerID>5606</PowerID>
-		<TargetMethod>RangedStrike</TargetMethod>
+		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>550</Range>
 		<AoERadius>120</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
@@ -35224,7 +35353,7 @@
 	</Power>
 	<Power PowerName="SpectralGrasp7">
 		<PowerID>5607</PowerID>
-		<TargetMethod>RangedStrike</TargetMethod>
+		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>550</Range>
 		<AoERadius>120</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
@@ -35261,7 +35390,7 @@
 	</Power>
 	<Power PowerName="SpectralGrasp8">
 		<PowerID>5608</PowerID>
-		<TargetMethod>RangedStrike</TargetMethod>
+		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>550</Range>
 		<AoERadius>120</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
@@ -35298,7 +35427,7 @@
 	</Power>
 	<Power PowerName="SpectralGrasp9">
 		<PowerID>5609</PowerID>
-		<TargetMethod>RangedStrike</TargetMethod>
+		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>550</Range>
 		<AoERadius>120</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
@@ -35335,7 +35464,7 @@
 	</Power>
 	<Power PowerName="SpectralGrasp10">
 		<PowerID>5610</PowerID>
-		<TargetMethod>RangedStrike</TargetMethod>
+		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>550</Range>
 		<AoERadius>120</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
@@ -35419,6 +35548,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
+		<AddSelfBuff>MinionMaster1</AddSelfBuff>
 		<AddTargetBuff>Weakened,Crippled</AddTargetBuff>
 		<DisplayName>Lifethirst</DisplayName>
 		<BasePowerName>Lifethirst</BasePowerName>
@@ -35456,6 +35586,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
+		<AddSelfBuff>MinionMaster1</AddSelfBuff>
 		<AddTargetBuff>Weakened,Crippled</AddTargetBuff>
 		<DisplayName>Lifethirst</DisplayName>
 		<BasePowerName>Lifethirst</BasePowerName>
@@ -35494,6 +35625,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
+		<AddSelfBuff>MinionMaster1</AddSelfBuff>
 		<AddTargetBuff>Weakened,Crippled</AddTargetBuff>
 		<DisplayName>Lifethirst</DisplayName>
 		<BasePowerName>Lifethirst</BasePowerName>
@@ -35532,6 +35664,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
+		<AddSelfBuff>MinionMaster3</AddSelfBuff>
 		<AddTargetBuff>Weakened,Weakened,Crippled</AddTargetBuff>
 		<DisplayName>Lifethirst</DisplayName>
 		<BasePowerName>Lifethirst</BasePowerName>
@@ -35570,6 +35703,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
+		<AddSelfBuff>MinionMaster3</AddSelfBuff>
 		<AddTargetBuff>Weakened,Weakened,Crippled</AddTargetBuff>
 		<DisplayName>Lifethirst</DisplayName>
 		<BasePowerName>Lifethirst</BasePowerName>
@@ -35608,6 +35742,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
+		<AddSelfBuff>MinionMaster3</AddSelfBuff>
 		<AddTargetBuff>Weakened,Weakened,Crippled</AddTargetBuff>
 		<DisplayName>Lifethirst</DisplayName>
 		<BasePowerName>Lifethirst</BasePowerName>
@@ -35646,6 +35781,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
+		<AddSelfBuff>MinionMaster3</AddSelfBuff>
 		<AddTargetBuff>Weakened,Weakened,Crippled,Crippled</AddTargetBuff>
 		<DisplayName>Lifethirst</DisplayName>
 		<BasePowerName>Lifethirst</BasePowerName>
@@ -35684,6 +35820,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
+		<AddSelfBuff>MinionMaster5</AddSelfBuff>
 		<AddTargetBuff>Weakened,Weakened,Crippled,Crippled</AddTargetBuff>
 		<DisplayName>Lifethirst</DisplayName>
 		<BasePowerName>Lifethirst</BasePowerName>
@@ -35722,6 +35859,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
+		<AddSelfBuff>MinionMaster5</AddSelfBuff>
 		<AddTargetBuff>Weakened,Weakened,Crippled,Crippled</AddTargetBuff>
 		<DisplayName>Lifethirst</DisplayName>
 		<BasePowerName>Lifethirst</BasePowerName>
@@ -35760,6 +35898,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
+		<AddSelfBuff>MinionMaster5</AddSelfBuff>
 		<AddTargetBuff>Weakened,Weakened,Crippled,Crippled</AddTargetBuff>
 		<DisplayName>Lifethirst</DisplayName>
 		<BasePowerName>Lifethirst</BasePowerName>
@@ -35891,7 +36030,7 @@
 		<RecoverTime>1160</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>1.73</BaseDamageMult>
+		<BaseDamageMult>1.99</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>BansheeWail</PowerGroup>
@@ -35934,7 +36073,7 @@
 		<RecoverTime>1160</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>1.73</BaseDamageMult>
+		<BaseDamageMult>1.99</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>BansheeWail</PowerGroup>
@@ -35979,7 +36118,7 @@
 		<RecoverTime>1160</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>1.9</BaseDamageMult>
+		<BaseDamageMult>2.185</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>BansheeWail</PowerGroup>
@@ -36024,7 +36163,7 @@
 		<RecoverTime>1160</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>2.05</BaseDamageMult>
+		<BaseDamageMult>2.357</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>BansheeWail</PowerGroup>
@@ -36069,7 +36208,7 @@
 		<RecoverTime>1160</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>2.2</BaseDamageMult>
+		<BaseDamageMult>2.53</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>BansheeWail</PowerGroup>
@@ -36114,7 +36253,7 @@
 		<RecoverTime>1160</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>2.35</BaseDamageMult>
+		<BaseDamageMult>2.702</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>BansheeWail</PowerGroup>
@@ -36159,7 +36298,7 @@
 		<RecoverTime>1160</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>39</ManaCost>
-		<BaseDamageMult>2.5</BaseDamageMult>
+		<BaseDamageMult>2.875</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>BansheeWail</PowerGroup>
@@ -36204,7 +36343,7 @@
 		<RecoverTime>1160</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>38</ManaCost>
-		<BaseDamageMult>2.65</BaseDamageMult>
+		<BaseDamageMult>3.047</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>BansheeWail</PowerGroup>
@@ -36249,7 +36388,7 @@
 		<RecoverTime>1160</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>37</ManaCost>
-		<BaseDamageMult>2.8</BaseDamageMult>
+		<BaseDamageMult>3.22</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>BansheeWail</PowerGroup>
@@ -36294,7 +36433,7 @@
 		<RecoverTime>1160</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>36</ManaCost>
-		<BaseDamageMult>3</BaseDamageMult>
+		<BaseDamageMult>3.45</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>BansheeWail</PowerGroup>
@@ -36339,7 +36478,7 @@
 		<RecoverTime>1160</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>35</ManaCost>
-		<BaseDamageMult>3.32</BaseDamageMult>
+		<BaseDamageMult>3.818</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>BansheeWail</PowerGroup>
@@ -36386,6 +36525,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
 		<IconName>a_PowerIcon_LeechAura</IconName>

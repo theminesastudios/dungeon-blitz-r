@@ -264,11 +264,11 @@
 		<ModName>PoisonDmg1</ModName>
 		<ModID>26</ModID>
 		<DisplayName>Concentrated Venom</DisplayName>
-		<Description>Increases Poison Damage@Poison Damage:, +1%, +2%, +5%, +8%, +13%</Description>
+		<Description>Increases Poison Damage@Poison Damage:, +6%, +12%, +18%, +24%, +30%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,Plagued1,Plagued2,Plagued3,Plagued4,Plagued5,Plagued6,Plagued7,Plagued8,Plagued9,Plagued10,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.02</BuffValue>
+		<BuffValue>.06</BuffValue>
 		<IconName>a_Signet_Poison01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -278,7 +278,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,Plagued1,Plagued2,Plagued3,Plagued4,Plagued5,Plagued6,Plagued7,Plagued8,Plagued9,Plagued10,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.04</BuffValue>
+		<BuffValue>.12</BuffValue>
 		<IconName>a_Signet_Poison01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -288,7 +288,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,Plagued1,Plagued2,Plagued3,Plagued4,Plagued5,Plagued6,Plagued7,Plagued8,Plagued9,Plagued10,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.10</BuffValue>
+		<BuffValue>.18</BuffValue>
 		<IconName>a_Signet_Poison01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -298,7 +298,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,Plagued1,Plagued2,Plagued3,Plagued4,Plagued5,Plagued6,Plagued7,Plagued8,Plagued9,Plagued10,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.16</BuffValue>
+		<BuffValue>.24</BuffValue>
 		<IconName>a_Signet_Poison01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -308,7 +308,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,Plagued1,Plagued2,Plagued3,Plagued4,Plagued5,Plagued6,Plagued7,Plagued8,Plagued9,Plagued10,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.25</BuffValue>
+		<BuffValue>.3</BuffValue>
 		<IconName>a_Signet_Poison01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1106,9 +1106,11 @@
 		<ModName>IgniteCrit1</ModName>
 		<ModID>111</ModID>
 		<DisplayName>Volatile</DisplayName>
-		<Description>Gain a Critical Chance bonus vs. Ignited Targets@Critical Chance Bonus:, 1%, 2%, 3%, 5%, 8%</Description>
+		<Description>Gain a Poison Damage bonus against Cursed targets.@Poison Damage Bonus:, 2%, 4%, 6%, 8%, 10%</Description>
 		<ModType>WTF</ModType>
-		<SelfValue>0.01</SelfValue>
+		<BuffName>Cursed</BuffName>
+		<BuffProperty>PoisonMultiplier</BuffProperty>
+		<SelfValue>.02</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1116,7 +1118,9 @@
 		<ModID>112</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.02</SelfValue>
+		<BuffName>Cursed</BuffName>
+		<BuffProperty>PoisonMultiplier</BuffProperty>
+		<SelfValue>.04</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1124,7 +1128,9 @@
 		<ModID>113</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.03</SelfValue>
+		<BuffName>Cursed</BuffName>
+		<BuffProperty>PoisonMultiplier</BuffProperty>
+		<SelfValue>.06</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1132,7 +1138,9 @@
 		<ModID>114</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.05</SelfValue>
+		<BuffName>Cursed</BuffName>
+		<BuffProperty>PoisonMultiplier</BuffProperty>
+		<SelfValue>.08</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1140,7 +1148,9 @@
 		<ModID>115</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.08</SelfValue>
+		<BuffName>Cursed</BuffName>
+		<BuffProperty>PoisonMultiplier</BuffProperty>
+		<SelfValue>.1</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2107,7 +2117,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>StackCount</BuffProperty>
-		<BuffValue>1</BuffValue>
+		<BuffValue>2</BuffValue>
 		<IconName>a_Signet_Chilblains02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2117,7 +2127,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>StackCount</BuffProperty>
-		<BuffValue>2</BuffValue>
+		<BuffValue>4</BuffValue>
 		<IconName>a_Signet_Chilblains02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2127,7 +2137,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>StackCount</BuffProperty>
-		<BuffValue>3</BuffValue>
+		<BuffValue>6</BuffValue>
 		<IconName>a_Signet_Chilblains02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2137,7 +2147,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>StackCount</BuffProperty>
-		<BuffValue>4</BuffValue>
+		<BuffValue>7</BuffValue>
 		<IconName>a_Signet_Chilblains02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2147,7 +2157,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>StackCount</BuffProperty>
-		<BuffValue>5</BuffValue>
+		<BuffValue>8</BuffValue>
 		<IconName>a_Signet_Chilblains02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2256,11 +2266,11 @@
 		<ModName>ChilblainsDmg1</ModName>
 		<ModID>236</ModID>
 		<DisplayName>Chilblains</DisplayName>
-		<Description>Increases Chilblains Damage@Chilblains Damage:, +5%, +10%, +20%, +35%, +50%</Description>
+		<Description>Increases Chilblains Damage@Chilblains Damage:, +4%, +12%, +24%, +40%, +50%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.025</BuffValue>
+		<BuffValue>.02</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2270,7 +2280,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.05</BuffValue>
+		<BuffValue>.06</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2280,7 +2290,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.1</BuffValue>
+		<BuffValue>.12</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2290,7 +2300,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.175</BuffValue>
+		<BuffValue>.2</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2444,7 +2454,7 @@
 		<ModType>Stat</ModType>
 		<IconName>a_Signet_ColdHeart</IconName>
 		<StatProperty>masterDangerRegenInterval</StatProperty>
-		<StatValue>-99</StatValue>
+		<StatValue>-100</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ColdHeart2</ModName>
@@ -2453,7 +2463,7 @@
 		<ModType>Stat</ModType>
 		<IconName>a_Signet_ColdHeart</IconName>
 		<StatProperty>masterDangerRegenInterval</StatProperty>
-		<StatValue>-198</StatValue>
+		<StatValue>-200</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ColdHeart3</ModName>
@@ -2462,7 +2472,7 @@
 		<ModType>Stat</ModType>
 		<IconName>a_Signet_ColdHeart</IconName>
 		<StatProperty>masterDangerRegenInterval</StatProperty>
-		<StatValue>-297</StatValue>
+		<StatValue>-300</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ColdHeart4</ModName>
@@ -2471,7 +2481,7 @@
 		<ModType>Stat</ModType>
 		<IconName>a_Signet_ColdHeart</IconName>
 		<StatProperty>masterDangerRegenInterval</StatProperty>
-		<StatValue>-396</StatValue>
+		<StatValue>-400</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ColdHeart5</ModName>
@@ -2480,7 +2490,7 @@
 		<ModType>Stat</ModType>
 		<IconName>a_Signet_ColdHeart</IconName>
 		<StatProperty>masterDangerRegenInterval</StatProperty>
-		<StatValue>-495</StatValue>
+		<StatValue>-500</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>TwistHex1</ModName>
