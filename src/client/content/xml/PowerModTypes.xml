@@ -2154,11 +2154,11 @@
 		<ModName>DryIce1</ModName>
 		<ModID>226</ModID>
 		<DisplayName>Kuru Buz</DisplayName>
-		<Description>Buz koklemesi kirilmadan once uzmanliginin belirli bir yuzdesi kadar hasar sogurur.@Hasar (% Uzmanlik):, 50%, 110%, 180%, 260%, 350%</Description>
+		<Description>Buz koklemesi kirilmadan once uzmanliginin belirli bir yuzdesi kadar hasar sogurur.@Hasar (% Uzmanlik):, 75%, 150%, 250%, 375%, 500%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>NovaRank1,HailstoneRoot,RootSpire5,RootSpire8</BuffName>
 		<BuffProperty>Durability</BuffProperty>
-		<BuffValue>.5</BuffValue>
+		<BuffValue>.75</BuffValue>
 		<IconName>a_Signet_DryIce</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2168,7 +2168,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>NovaRank1,HailstoneRoot,RootSpire5,RootSpire8</BuffName>
 		<BuffProperty>Durability</BuffProperty>
-		<BuffValue>1.1</BuffValue>
+		<BuffValue>1.5</BuffValue>
 		<IconName>a_Signet_DryIce</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2178,7 +2178,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>NovaRank1,HailstoneRoot,RootSpire5,RootSpire8</BuffName>
 		<BuffProperty>Durability</BuffProperty>
-		<BuffValue>1.8</BuffValue>
+		<BuffValue>2.5</BuffValue>
 		<IconName>a_Signet_DryIce</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2188,7 +2188,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>NovaRank1,HailstoneRoot,RootSpire5,RootSpire8</BuffName>
 		<BuffProperty>Durability</BuffProperty>
-		<BuffValue>2.6</BuffValue>
+		<BuffValue>3.75</BuffValue>
 		<IconName>a_Signet_DryIce</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2198,18 +2198,18 @@
 		<ModType>Buff</ModType>
 		<BuffName>NovaRank1,HailstoneRoot,RootSpire5,RootSpire8</BuffName>
 		<BuffProperty>Durability</BuffProperty>
-		<BuffValue>3.5</BuffValue>
+		<BuffValue>5</BuffValue>
 		<IconName>a_Signet_DryIce</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>IceCasket1</ModName>
 		<ModID>231</ModID>
 		<DisplayName>Buz Tabutu</DisplayName>
-		<Description>Dondurma etkisi kirilmadan once uzmanliginin belirli bir yuzdesi kadar hasar sogurur.@Hasar (% Uzmanlik):, 50%, 100%, 150%, 200%, 250%</Description>
+		<Description>Dondurma etkisi kirilmadan once uzmanliginin belirli bir yuzdesi kadar hasar sogurur.@Hasar (% Uzmanlik):, 100%, 200%, 300%, 400%, 500%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Freeze2500,FreezeWard8,FreezeWard10,FreezeSpire10</BuffName>
 		<BuffProperty>Durability</BuffProperty>
-		<BuffValue>.5</BuffValue>
+		<BuffValue>1</BuffValue>
 		<IconName>a_Signet_Casket</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2219,7 +2219,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Freeze2500,FreezeWard8,FreezeWard10,FreezeSpire10</BuffName>
 		<BuffProperty>Durability</BuffProperty>
-		<BuffValue>1</BuffValue>
+		<BuffValue>2</BuffValue>
 		<IconName>a_Signet_Casket</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2229,7 +2229,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Freeze2500,FreezeWard8,FreezeWard10,FreezeSpire10</BuffName>
 		<BuffProperty>Durability</BuffProperty>
-		<BuffValue>1.5</BuffValue>
+		<BuffValue>3</BuffValue>
 		<IconName>a_Signet_Casket</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2239,7 +2239,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Freeze2500,FreezeWard8,FreezeWard10,FreezeSpire10</BuffName>
 		<BuffProperty>Durability</BuffProperty>
-		<BuffValue>2</BuffValue>
+		<BuffValue>4</BuffValue>
 		<IconName>a_Signet_Casket</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2249,18 +2249,18 @@
 		<ModType>Buff</ModType>
 		<BuffName>Freeze2500,FreezeWard8,FreezeWard10,FreezeSpire10</BuffName>
 		<BuffProperty>Durability</BuffProperty>
-		<BuffValue>2.5</BuffValue>
+		<BuffValue>5</BuffValue>
 		<IconName>a_Signet_Casket</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ChilblainsDmg1</ModName>
 		<ModID>236</ModID>
 		<DisplayName>Soguk Yaralari</DisplayName>
-		<Description>Soguk Yaralari Hasari artar.@Soguk Yaralari Hasari:, +2%, +6%, +12%, +20%, +30%</Description>
+		<Description>Soguk Yaralari Hasari artar.@Soguk Yaralari Hasari:, +5%, +10%, +20%, +35%, +50%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.01</BuffValue>
+		<BuffValue>.025</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2270,7 +2270,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.03</BuffValue>
+		<BuffValue>.05</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2280,7 +2280,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.06</BuffValue>
+		<BuffValue>.1</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2290,7 +2290,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.1</BuffValue>
+		<BuffValue>.175</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2300,7 +2300,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.15</BuffValue>
+		<BuffValue>.25</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2440,11 +2440,11 @@
 		<ModName>ColdHeart1</ModName>
 		<ModID>256</ModID>
 		<DisplayName>Soguk Kalpli</DisplayName>
-		<Description>Buz Soku cezasini azaltir.@Ceza:, -2%, -5%, -15%, -30%, -50%</Description>
+		<Description>Buz Soku cezasini azaltir.@Ceza:, -10%, -20%, -30%, -40%, -50%</Description>
 		<ModType>Stat</ModType>
 		<IconName>a_Signet_ColdHeart</IconName>
 		<StatProperty>masterDangerRegenInterval</StatProperty>
-		<StatValue>-20</StatValue>
+		<StatValue>-99</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ColdHeart2</ModName>
@@ -2453,7 +2453,7 @@
 		<ModType>Stat</ModType>
 		<IconName>a_Signet_ColdHeart</IconName>
 		<StatProperty>masterDangerRegenInterval</StatProperty>
-		<StatValue>-50</StatValue>
+		<StatValue>-198</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ColdHeart3</ModName>
@@ -2462,7 +2462,7 @@
 		<ModType>Stat</ModType>
 		<IconName>a_Signet_ColdHeart</IconName>
 		<StatProperty>masterDangerRegenInterval</StatProperty>
-		<StatValue>-150</StatValue>
+		<StatValue>-297</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ColdHeart4</ModName>
@@ -2471,7 +2471,7 @@
 		<ModType>Stat</ModType>
 		<IconName>a_Signet_ColdHeart</IconName>
 		<StatProperty>masterDangerRegenInterval</StatProperty>
-		<StatValue>-297</StatValue>
+		<StatValue>-396</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ColdHeart5</ModName>
