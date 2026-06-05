@@ -1917,8 +1917,6 @@
 		<Attack>true</Attack>
 		<Duration>2500</Duration>
 		<MeleeDamage>-0.05</MeleeDamage>
-		<DoTDamage>0.5</DoTDamage>
-		<DoTTickLength>500</DoTTickLength>
 		<Effect>Chilblains</Effect>
 		<StackCount>5</StackCount>
 		<BuffIcon>a_StatusIcon_Chilblains</BuffIcon>
