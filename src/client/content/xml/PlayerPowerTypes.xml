@@ -23736,16 +23736,16 @@
 		<Range>500</Range>
 		<AoERadius>100,200</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,1100</CastTime>
+		<CastTime>0,600</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>450</ReleaseTime>
+		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.7</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
-		<AddTargetBuff>Sequence:Chilled42,Freeze2500</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Freeze2500</AddTargetBuff>
 		<DisplayName>Donmus Muhur</DisplayName>
 		<Description>Patlayip dusmanlari donduran usutucu bir muhafaza olusturur.</Description>
 		<IconName>a_PowerIcon_FrozenWard</IconName>
@@ -23773,16 +23773,16 @@
 		<Range>500</Range>
 		<AoERadius>75,150</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,1100</CastTime>
+		<CastTime>0,600</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>450</ReleaseTime>
+		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.45</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
-		<AddTargetBuff>Sequence:Chilled42,Freeze2500</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Freeze2500</AddTargetBuff>
 		<DisplayName>Donmus Muhur</DisplayName>
 		<BasePowerName>FrozenWard</BasePowerName>
 		<Description>Patlayip dusmanlari donduran usutucu bir muhafaza olusturur.</Description>
@@ -23812,16 +23812,16 @@
 		<Range>500</Range>
 		<AoERadius>75,150</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,1100</CastTime>
+		<CastTime>0,600</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>450</ReleaseTime>
+		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.5</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
-		<AddTargetBuff>Sequence:Chilled42,Freeze2500</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Freeze2500</AddTargetBuff>
 		<DisplayName>Donmus Muhur</DisplayName>
 		<BasePowerName>FrozenWard</BasePowerName>
 		<Description>Patlayip dusmanlari donduran usutucu bir muhafaza olusturur.</Description>
@@ -23851,16 +23851,16 @@
 		<Range>500</Range>
 		<AoERadius>75,150</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,1100</CastTime>
+		<CastTime>0,600</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>450</ReleaseTime>
+		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.5</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
-		<AddTargetBuff>Sequence:Chilled42,Freeze2500</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Freeze2500</AddTargetBuff>
 		<DisplayName>Donmus Muhur</DisplayName>
 		<BasePowerName>FrozenWard</BasePowerName>
 		<Description>Patlayip dusmanlari donduran usutucu bir muhafaza olusturur.</Description>
@@ -23890,16 +23890,16 @@
 		<Range>500</Range>
 		<AoERadius>100,200</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,1100</CastTime>
+		<CastTime>0,600</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>450</ReleaseTime>
+		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.5</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
-		<AddTargetBuff>Sequence:Chilled42,Freeze2500,Chilblains</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Freeze2500,Chilblains</AddTargetBuff>
 		<DisplayName>Donmus Muhur</DisplayName>
 		<BasePowerName>FrozenWard</BasePowerName>
 		<Description>Patlayip dusmanlari donduran usutucu bir muhafaza olusturur.</Description>
@@ -23929,16 +23929,16 @@
 		<Range>500</Range>
 		<AoERadius>100,200,200</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,1100,0</CastTime>
+		<CastTime>0,600,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>450</ReleaseTime>
+		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.5</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
-		<AddTargetBuff>Sequence:Chilled42,Freeze2500,Weakened,Chilblains</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Freeze2500,Weakened,Chilblains</AddTargetBuff>
 		<DisplayName>Donmus Muhur</DisplayName>
 		<BasePowerName>FrozenWard</BasePowerName>
 		<Description>Patlayip dusmanlari zayiflatan ve donduran usutucu bir muhafaza olusturur.</Description>
@@ -23968,16 +23968,16 @@
 		<Range>500</Range>
 		<AoERadius>100,200,200</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,1100,0</CastTime>
+		<CastTime>0,600,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>450</ReleaseTime>
+		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.57</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
-		<AddTargetBuff>Sequence:Chilled42,Freeze2500,Weakened,Chilblains</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Freeze2500,Weakened,Chilblains</AddTargetBuff>
 		<DisplayName>Donmus Muhur</DisplayName>
 		<BasePowerName>FrozenWard</BasePowerName>
 		<Description>Patlayip dusmanlari zayiflatan ve donduran usutucu bir muhafaza olusturur.</Description>
@@ -24007,16 +24007,16 @@
 		<Range>500</Range>
 		<AoERadius>150,250,250</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,1100,0</CastTime>
+		<CastTime>0,600,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>450</ReleaseTime>
+		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.57</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
-		<AddTargetBuff>Sequence:Chilled42,Freeze2500,Weakened,Chilblains</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Freeze2500,Weakened,Chilblains</AddTargetBuff>
 		<DisplayName>Donmus Muhur</DisplayName>
 		<BasePowerName>FrozenWard</BasePowerName>
 		<Description>Patlayip dusmanlari zayiflatan ve donduran usutucu bir muhafaza olusturur.</Description>
@@ -24046,16 +24046,16 @@
 		<Range>500</Range>
 		<AoERadius>150,250,250</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,1100,0</CastTime>
+		<CastTime>0,600,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>450</ReleaseTime>
+		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.73</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
-		<AddTargetBuff>Sequence:Chilled42,Freeze2500,Weakened,Chilblains,Chilblains</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Freeze2500,Weakened,Chilblains,Chilblains</AddTargetBuff>
 		<DisplayName>Donmus Muhur</DisplayName>
 		<BasePowerName>FrozenWard</BasePowerName>
 		<Description>Patlayip dusmanlari zayiflatan ve donduran usutucu bir muhafaza olusturur.</Description>
@@ -24085,16 +24085,16 @@
 		<Range>500</Range>
 		<AoERadius>200,300,300</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,1100,0</CastTime>
+		<CastTime>0,600,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>450</ReleaseTime>
+		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.73</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
-		<AddTargetBuff>Sequence:Chilled42,Freeze2500,Weakened,Chilblains,Chilblains</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Freeze2500,Weakened,Chilblains,Chilblains</AddTargetBuff>
 		<DisplayName>Donmus Muhur</DisplayName>
 		<BasePowerName>FrozenWard</BasePowerName>
 		<Description>Patlayip dusmanlari zayiflatan ve donduran usutucu bir muhafaza olusturur.</Description>
@@ -24124,16 +24124,16 @@
 		<Range>500</Range>
 		<AoERadius>200,300,300,300</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,1100,0,0</CastTime>
+		<CastTime>0,600,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
-		<ReleaseTime>450</ReleaseTime>
+		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.73</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
-		<AddTargetBuff>Sequence:Chilled42,Freeze2500,Weakened,Frigid,Chilblains,Chilblains</AddTargetBuff>
+		<AddTargetBuff>Chilled42,Freeze2500,Weakened,Frigid,Chilblains,Chilblains</AddTargetBuff>
 		<DisplayName>Donmus Muhur</DisplayName>
 		<BasePowerName>FrozenWard</BasePowerName>
 		<Description>Patlayip dusmanlari zayiflatan, donduran ve saldiri hizlarini azaltan usutucu bir muhafaza olusturur.</Description>
@@ -27031,13 +27031,13 @@
 	<Power PowerName="PermafrostCloneExplode1">
 		<PowerID>738</PowerID>
 		<TargetMethod>PBAoE</TargetMethod>
-		<AoERadius>200,200,200,200,200</AoERadius>
-		<CastTime>2000,250,250,250,250</CastTime>
+		<AoERadius>200</AoERadius>
+		<CastTime>2000</CastTime>
 		<RecoverTime>0</RecoverTime>
 		<ReleaseTime>500</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1,1,1,1,1</BaseDamageMult>
+		<BaseDamageMult>1</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
@@ -27064,13 +27064,13 @@
 	<Power PowerName="PermafrostCloneExplode2">
 		<PowerID>739</PowerID>
 		<TargetMethod>PBAoE</TargetMethod>
-		<AoERadius>200,200,200,200,200</AoERadius>
-		<CastTime>2000,250,250,250,250</CastTime>
+		<AoERadius>200</AoERadius>
+		<CastTime>2000</CastTime>
 		<RecoverTime>0</RecoverTime>
 		<ReleaseTime>500</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1,1,1,1,1</BaseDamageMult>
+		<BaseDamageMult>1</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
@@ -27097,13 +27097,13 @@
 	<Power PowerName="PermafrostCloneExplode3">
 		<PowerID>740</PowerID>
 		<TargetMethod>PBAoE</TargetMethod>
-		<AoERadius>200,200,200,200,200</AoERadius>
-		<CastTime>2000,250,250,250,250</CastTime>
+		<AoERadius>200</AoERadius>
+		<CastTime>2000</CastTime>
 		<RecoverTime>0</RecoverTime>
 		<ReleaseTime>500</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.1,1.1,1.1,1.1,1.1</BaseDamageMult>
+		<BaseDamageMult>1.1</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
@@ -27130,13 +27130,13 @@
 	<Power PowerName="PermafrostCloneExplode4">
 		<PowerID>741</PowerID>
 		<TargetMethod>PBAoE</TargetMethod>
-		<AoERadius>200,200,200,200,200</AoERadius>
-		<CastTime>2000,250,250,250,250</CastTime>
+		<AoERadius>200</AoERadius>
+		<CastTime>2000</CastTime>
 		<RecoverTime>0</RecoverTime>
 		<ReleaseTime>500</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.1,1.1,1.1,1.1,1.1</BaseDamageMult>
+		<BaseDamageMult>1.1</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
@@ -27163,13 +27163,13 @@
 	<Power PowerName="PermafrostCloneExplode5">
 		<PowerID>742</PowerID>
 		<TargetMethod>PBAoE</TargetMethod>
-		<AoERadius>200,200,200,200,200</AoERadius>
-		<CastTime>2000,250,250,250,250</CastTime>
+		<AoERadius>200</AoERadius>
+		<CastTime>2000</CastTime>
 		<RecoverTime>0</RecoverTime>
 		<ReleaseTime>500</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.1,1.1,1.1,1.1,1.1</BaseDamageMult>
+		<BaseDamageMult>1.1</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
@@ -27196,13 +27196,13 @@
 	<Power PowerName="PermafrostCloneExplode6">
 		<PowerID>743</PowerID>
 		<TargetMethod>PBAoE</TargetMethod>
-		<AoERadius>200,200,200,200,200</AoERadius>
-		<CastTime>2000,250,250,250,250</CastTime>
+		<AoERadius>200</AoERadius>
+		<CastTime>2000</CastTime>
 		<RecoverTime>0</RecoverTime>
 		<ReleaseTime>500</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.21,1.21,1.21,1.21,1.21</BaseDamageMult>
+		<BaseDamageMult>1.21</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
@@ -27229,13 +27229,13 @@
 	<Power PowerName="PermafrostCloneExplode7">
 		<PowerID>744</PowerID>
 		<TargetMethod>PBAoE</TargetMethod>
-		<AoERadius>200,200,200,200,200</AoERadius>
-		<CastTime>2000,250,250,250,250</CastTime>
+		<AoERadius>200</AoERadius>
+		<CastTime>2000</CastTime>
 		<RecoverTime>0</RecoverTime>
 		<ReleaseTime>500</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.21,1.21,1.21,1.21,1.21</BaseDamageMult>
+		<BaseDamageMult>1.21</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
@@ -27262,13 +27262,13 @@
 	<Power PowerName="PermafrostCloneExplode8">
 		<PowerID>745</PowerID>
 		<TargetMethod>PBAoE</TargetMethod>
-		<AoERadius>200,200,200,200,200</AoERadius>
-		<CastTime>2000,250,250,250,250</CastTime>
+		<AoERadius>200</AoERadius>
+		<CastTime>2000</CastTime>
 		<RecoverTime>0</RecoverTime>
 		<ReleaseTime>500</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.33,1.33,1.33,1.33,1.33</BaseDamageMult>
+		<BaseDamageMult>1.33</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
@@ -27295,13 +27295,13 @@
 	<Power PowerName="PermafrostCloneExplode9">
 		<PowerID>746</PowerID>
 		<TargetMethod>PBAoE</TargetMethod>
-		<AoERadius>200,200,200,200,200</AoERadius>
-		<CastTime>2000,250,250,250,250</CastTime>
+		<AoERadius>200</AoERadius>
+		<CastTime>2000</CastTime>
 		<RecoverTime>0</RecoverTime>
 		<ReleaseTime>500</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.46,1.46,1.46,1.46,1.46</BaseDamageMult>
+		<BaseDamageMult>1.46</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
@@ -27328,13 +27328,13 @@
 	<Power PowerName="PermafrostCloneExplode10">
 		<PowerID>747</PowerID>
 		<TargetMethod>PBAoE</TargetMethod>
-		<AoERadius>200,200,200,200,200</AoERadius>
-		<CastTime>2000,250,250,250,250</CastTime>
+		<AoERadius>200</AoERadius>
+		<CastTime>2000</CastTime>
 		<RecoverTime>0</RecoverTime>
 		<ReleaseTime>500</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.63,1.63,1.63,1.63,1.63</BaseDamageMult>
+		<BaseDamageMult>1.63</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>PermafrostClone</PowerGroup>
