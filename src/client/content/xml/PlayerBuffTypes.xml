@@ -1903,7 +1903,7 @@
 	<BuffType BuffName="Chilblains">
 		<BuffID>396</BuffID>
 		<Attack>true</Attack>
-		<Duration>5000</Duration>
+		<Duration>5500</Duration>
 		<MeleeDamage>-0.05</MeleeDamage>
 		<DoTDamage>0.5</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>

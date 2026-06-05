@@ -23734,14 +23734,14 @@
 		<PowerID>613</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>500</Range>
-		<AoERadius>100,200</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,600</CastTime>
+		<CastTime>600</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>0,0.7</BaseDamageMult>
+		<BaseDamageMult>0.7</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
@@ -23771,14 +23771,14 @@
 		<PowerID>614</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>500</Range>
-		<AoERadius>75,150</AoERadius>
+		<AoERadius>150</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,600</CastTime>
+		<CastTime>600</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>0,0.45</BaseDamageMult>
+		<BaseDamageMult>0.45</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
@@ -23810,14 +23810,14 @@
 		<PowerID>615</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>500</Range>
-		<AoERadius>75,150</AoERadius>
+		<AoERadius>150</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,600</CastTime>
+		<CastTime>600</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>0,0.5</BaseDamageMult>
+		<BaseDamageMult>0.5</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
@@ -23849,14 +23849,14 @@
 		<PowerID>616</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>500</Range>
-		<AoERadius>75,150</AoERadius>
+		<AoERadius>150</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,600</CastTime>
+		<CastTime>600</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>0,0.5</BaseDamageMult>
+		<BaseDamageMult>0.5</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
@@ -23888,14 +23888,14 @@
 		<PowerID>617</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>500</Range>
-		<AoERadius>100,200</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,600</CastTime>
+		<CastTime>600</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>0,0.5</BaseDamageMult>
+		<BaseDamageMult>0.5</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
@@ -23927,14 +23927,14 @@
 		<PowerID>618</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>500</Range>
-		<AoERadius>100,200,200</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,600,0</CastTime>
+		<CastTime>600</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>0,0.5</BaseDamageMult>
+		<BaseDamageMult>0.5</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
@@ -23966,14 +23966,14 @@
 		<PowerID>619</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>500</Range>
-		<AoERadius>100,200,200</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,600,0</CastTime>
+		<CastTime>600</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>0,0.57</BaseDamageMult>
+		<BaseDamageMult>0.57</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
@@ -24005,14 +24005,14 @@
 		<PowerID>620</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>500</Range>
-		<AoERadius>150,250,250</AoERadius>
+		<AoERadius>250</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,600,0</CastTime>
+		<CastTime>600</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>0,0.57</BaseDamageMult>
+		<BaseDamageMult>0.57</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
@@ -24044,14 +24044,14 @@
 		<PowerID>621</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>500</Range>
-		<AoERadius>150,250,250</AoERadius>
+		<AoERadius>250</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,600,0</CastTime>
+		<CastTime>600</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>0,0.73</BaseDamageMult>
+		<BaseDamageMult>0.73</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
@@ -24083,14 +24083,14 @@
 		<PowerID>622</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>500</Range>
-		<AoERadius>200,300,300</AoERadius>
+		<AoERadius>300</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,600,0</CastTime>
+		<CastTime>600</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>0,0.73</BaseDamageMult>
+		<BaseDamageMult>0.73</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
@@ -24122,14 +24122,14 @@
 		<PowerID>623</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>500</Range>
-		<AoERadius>200,300,300,300</AoERadius>
+		<AoERadius>300</AoERadius>
 		<CastAnim>SkyPower2</CastAnim>
-		<CastTime>0,600,0,0</CastTime>
+		<CastTime>600</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>0,0.73</BaseDamageMult>
+		<BaseDamageMult>0.73</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Ice</DamageType>
 		<PowerGroup>FrozenWard</PowerGroup>
