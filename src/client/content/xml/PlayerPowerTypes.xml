@@ -23739,7 +23739,7 @@
 		<CastTime>0,1900,0</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.7,0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -23776,7 +23776,7 @@
 		<CastTime>0,1900,0</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.45,0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -23815,7 +23815,7 @@
 		<CastTime>0,1900,0</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.5,0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -23854,7 +23854,7 @@
 		<CastTime>0,1900,0</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.5,0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -23893,7 +23893,7 @@
 		<CastTime>0,1900,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.5,0,0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -23932,7 +23932,7 @@
 		<CastTime>0,1900,0,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.5,0,0,0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -23971,7 +23971,7 @@
 		<CastTime>0,1900,0,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.57,0,0,0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -24010,7 +24010,7 @@
 		<CastTime>0,1900,0,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.57,0,0,0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -24049,7 +24049,7 @@
 		<CastTime>0,1900,0,0,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.73,0,0,0,0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -24088,7 +24088,7 @@
 		<CastTime>0,1900,0,0,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.73,0,0,0,0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -24127,7 +24127,7 @@
 		<CastTime>0,1900,0,0,0,0,0</CastTime>
 		<RecoverTime>800</RecoverTime>
 		<ReleaseTime>250</ReleaseTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>1500</CoolDownTime>
 		<ManaCost>20</ManaCost>
 		<BaseDamageMult>0,0.73,0,0,0,0,0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
