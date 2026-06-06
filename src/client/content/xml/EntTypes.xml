@@ -6498,8 +6498,8 @@
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>1</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.75</HitPoints>
+		<ArmorClass>1.3</ArmorClass>
+		<HitPoints>1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>100</Width>
@@ -53788,8 +53788,8 @@
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>1</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1.2</ArmorClass>
-		<HitPoints>0.9</HitPoints>
+		<ArmorClass>1.3</ArmorClass>
+		<HitPoints>1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>100</Width>
@@ -53822,8 +53822,8 @@
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>1</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1.2</ArmorClass>
-		<HitPoints>1.03</HitPoints>
+		<ArmorClass>1.3</ArmorClass>
+		<HitPoints>1.15</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>100</Width>
@@ -53856,8 +53856,8 @@
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>1</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1.38</ArmorClass>
-		<HitPoints>1.03</HitPoints>
+		<ArmorClass>1.5</ArmorClass>
+		<HitPoints>1.15</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>100</Width>
@@ -53890,8 +53890,8 @@
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>1.15</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1.38</ArmorClass>
-		<HitPoints>1.03</HitPoints>
+		<ArmorClass>1.5</ArmorClass>
+		<HitPoints>1.15</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>100</Width>
@@ -53924,8 +53924,8 @@
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>1.15</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1.38</ArmorClass>
-		<HitPoints>1.2</HitPoints>
+		<ArmorClass>1.5</ArmorClass>
+		<HitPoints>1.35</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>100</Width>
@@ -53959,8 +53959,8 @@
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>1.15</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1.56</ArmorClass>
-		<HitPoints>1.2</HitPoints>
+		<ArmorClass>1.75</ArmorClass>
+		<HitPoints>1.35</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>100</Width>
@@ -53994,8 +53994,8 @@
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>1.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1.56</ArmorClass>
-		<HitPoints>1.2</HitPoints>
+		<ArmorClass>1.75</ArmorClass>
+		<HitPoints>1.35</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>100</Width>
@@ -54029,8 +54029,8 @@
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>1.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1.56</ArmorClass>
-		<HitPoints>1.44</HitPoints>
+		<ArmorClass>1.75</ArmorClass>
+		<HitPoints>1.6</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>100</Width>
@@ -54065,8 +54065,8 @@
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>1.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1.92</ArmorClass>
-		<HitPoints>1.44</HitPoints>
+		<ArmorClass>2.2</ArmorClass>
+		<HitPoints>1.6</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>100</Width>
@@ -54101,8 +54101,8 @@
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>1.6</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1.92</ArmorClass>
-		<HitPoints>1.44</HitPoints>
+		<ArmorClass>2.2</ArmorClass>
+		<HitPoints>1.6</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>100</Width>

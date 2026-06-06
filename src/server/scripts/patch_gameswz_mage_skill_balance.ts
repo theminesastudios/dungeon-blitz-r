@@ -44,6 +44,20 @@ const FIREBRAND_SHOTS: FireBrandShotDef[] = [
 const DRAGON_SOUL_DESCRIPTION =
   "Summon a Spirit of Flame that copies your Fire Brand shots and shoots at your targets. Gain increased damage for the duration.";
 const FIREBRAND_BASE_DURATION_MS = "7813";
+const PERMAFROST_DOT_BUFF = [
+  '\t<BuffType BuffName="ChilblainsPermafrostDot">',
+  "\t\t<BuffID>739</BuffID>",
+  "\t\t<Attack>true</Attack>",
+  "\t\t<Duration>5000</Duration>",
+  "\t\t<MeleeDamage>-0.05</MeleeDamage>",
+  "\t\t<DoTDamage>1</DoTDamage>",
+  "\t\t<DoTTickLength>1000</DoTTickLength>",
+  "\t\t<Effect>Chilblains</Effect>",
+  "\t\t<StackCount>5</StackCount>",
+  "\t\t<BuffIcon>a_StatusIcon_Chilblains</BuffIcon>",
+  "\t\t<GfxType/>",
+  "\t</BuffType>",
+].join("\r\n");
 const MINION_MASTER_SUMMON_POWERS = [
   "SummonGhoul",
   ...Array.from({ length: 10 }, (_, index) => `SummonGhoul${index + 1}`),
@@ -339,7 +353,15 @@ function patchPowerBlock(powerName: string, block: string, stats: PatchStats): s
     next = apply(next, stats, addTargetBuff(next, "FreezeSpire10", "Chilled42", "Frigid"));
   } else if (/^PermafrostCloneExplode(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
-    next = apply(next, stats, removeTargetBuff(next, "Chilblains"));
+    next = apply(
+      next,
+      stats,
+      replaceTag(
+        next,
+        "AddTargetBuff",
+        "Chilled42,ChilblainsPermafrostDot,ChilblainsPermafrostDot,ChilblainsPermafrostDot,ChilblainsPermafrostDot,ChilblainsPermafrost,ChilblainsPermafrost,ChilblainsPermafrost,ChilblainsPermafrost",
+      ),
+    );
   } else if (/^IridescentBurst(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
     next = apply(next, stats, addTargetBuff(next, "Weakened"));
@@ -414,6 +436,12 @@ function patchPowerBlock(powerName: string, block: string, stats: PatchStats): s
       10: "3.818",
     };
     next = apply(next, stats, replaceTag(next, "BaseDamageMult", damageByRank[rank] ?? "1.99"));
+    if (rank >= 10) {
+      const upgradeDescription = next.match(/<UpgradeDescription>([\s\S]*?)<\/UpgradeDescription>/)?.[1];
+      if (upgradeDescription?.includes("300% bonus cap")) {
+        next = apply(next, stats, replaceTag(next, "UpgradeDescription", upgradeDescription.replace("300% bonus cap", "500% bonus cap")));
+      }
+    }
   } else if (/^PlagueBattalion(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
     const rank = rankOf(powerName, "PlagueBattalion");
@@ -434,6 +462,10 @@ function patchPowerBlock(powerName: string, block: string, stats: PatchStats): s
   } else if (/^IceSpike(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
     next = apply(next, stats, replaceTag(next, "ManaCost", "30"));
+  } else if (/^MeteorROR(?:\d+)?$/.test(powerName)) {
+    stats.powerBlocks += 1;
+    const rank = powerName === "MeteorROR" ? 1 : rankOf(powerName, "MeteorROR");
+    next = apply(next, stats, replaceTag(next, "RecoverTime", rank >= 5 ? "519" : "625"));
   } else if (/^Meteor(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
     next = apply(next, stats, removeSelfBuff(next, "MeteorChannelSlow"));
@@ -441,6 +473,10 @@ function patchPowerBlock(powerName: string, block: string, stats: PatchStats): s
     stats.powerBlocks += 1;
     next = apply(next, stats, replaceTag(next, "CastTime", "855,503,443"));
     next = apply(next, stats, addTargetBuff(next, "Chilblains"));
+  } else if (powerName === "MagePetMelee" || powerName === "MagePetUber") {
+    stats.powerBlocks += 1;
+    next = apply(next, stats, upsertTagAfter(next, "AoERadius", "70", "Range"));
+    next = apply(next, stats, upsertTagAfter(next, "CenterOffset", "40", "AoERadius"));
   }
 
   return next;
@@ -484,6 +520,10 @@ function patchBuffBlock(buffName: string, block: string, stats: PatchStats): str
     if (rangedOverride) {
       next = apply(next, stats, upsertTagAfter(next, "RangedOverride", rangedOverride, "Duration"));
     }
+  } else if (buffName === "ChilblainsPermafrost") {
+    stats.buffBlocks += 1;
+    next = apply(next, stats, removeTag(next, "DoTDamage"));
+    next = apply(next, stats, removeTag(next, "DoTTickLength"));
   }
 
   return next;
@@ -494,11 +534,20 @@ export function patchPlayerBuffs(xml: string): { xml: string; stats: PatchStats 
   const stats = cloneStats();
 
   const cleanedXml = patchedXml.replace(
-    /\r?\n\t<BuffType BuffName="(?:MeteorChannelSlow|FireBrandRank4|FireBrandRank7|DeathMarkUndeadVulnerability|MoltenFistStun1000|MoltenFistStun2000)">[\s\S]*?\r?\n\t<\/BuffType>/g,
+    /\r?\n\t<BuffType BuffName="(?:MeteorChannelSlow|FireBrandRank4|FireBrandRank7|DeathMarkUndeadVulnerability|MoltenFistStun1000|MoltenFistStun2000|ChilblainsPermafrostDot)">[\s\S]*?\r?\n\t<\/BuffType>/g,
     "",
   );
   if (cleanedXml !== patchedXml) {
     patchedXml = cleanedXml;
+    stats.changes += 1;
+  }
+
+  const withPermafrostDot = patchedXml.replace(
+    /(\r?\n\t<BuffType BuffName="ChilblainsPermafrost">)/,
+    `\r\n${PERMAFROST_DOT_BUFF}$1`,
+  );
+  if (withPermafrostDot !== patchedXml) {
+    patchedXml = withPermafrostDot;
     stats.changes += 1;
   }
 
@@ -545,6 +594,8 @@ function patchPowerModBlock(modName: string, block: string, stats: PatchStats): 
     if (group === "IgniteCrit") {
       next = apply(next, stats, upsertTagAfter(next, "BuffName", "Cursed", "ModType"));
       next = apply(next, stats, upsertTagAfter(next, "BuffProperty", "PoisonMultiplier", "BuffName"));
+    } else if (group === "ChilblainsDmg") {
+      next = apply(next, stats, replaceTag(next, "BuffName", "Chilblains,ChilblainsPermafrostDot"));
     }
   }
 
@@ -598,22 +649,23 @@ export function patchPowerMods(xml: string): { xml: string; stats: PatchStats } 
 function patchEntBlock(entName: string, block: string, stats: PatchStats): string {
   let next = block;
   const guardRank = entName.match(/^SummonGuard(?:([1-9]|10))?$/);
+  const natureGuard = entName === "NatureGuard";
   const polarRank = entName.match(/^PolarSentry(?:([1-9]|10))?$/);
   const ghoulRank = entName.match(/^GhoulGuard([1-9]|10)$/);
   const rangedGhoulRank = entName.match(/^Ghoul2Guard([1-9]|10)$/);
   const infestationSpawn = entName.match(/^InfestationSpawn(?:[1-3]|King)$/);
 
-  if (guardRank) {
+  if (guardRank || natureGuard) {
     stats.entBlocks += 1;
-    const rank = Number(guardRank[1] ?? 10);
-    const hitPointsByRank = ["0", "0.9", "1.03", "1.03", "1.03", "1.2", "1.2", "1.2", "1.44", "1.44", "1.44"];
-    const armorByRank = ["0", "1.2", "1.2", "1.38", "1.38", "1.38", "1.56", "1.56", "1.56", "1.92", "1.92"];
-    next = apply(next, stats, replaceTag(next, "HitPoints", hitPointsByRank[rank] ?? "1.44"));
-    next = apply(next, stats, replaceTag(next, "ArmorClass", armorByRank[rank] ?? "1.92"));
+    const rank = natureGuard ? 1 : Number(guardRank?.[1] ?? 10);
+    const hitPointsByRank = ["0", "1", "1.15", "1.15", "1.15", "1.35", "1.35", "1.35", "1.6", "1.6", "1.6"];
+    const armorByRank = ["0", "1.3", "1.3", "1.5", "1.5", "1.5", "1.75", "1.75", "1.75", "2.2", "2.2"];
+    next = apply(next, stats, replaceTag(next, "HitPoints", hitPointsByRank[rank] ?? "1.6"));
+    next = apply(next, stats, replaceTag(next, "ArmorClass", armorByRank[rank] ?? "2.2"));
     if (!next.includes("<Powers>")) {
       next = apply(next, stats, upsertTagAfter(next, "Powers", "MagePetUber", "MeleePower"));
     }
-    if (rank >= 7 && next.includes("<Powers>")) {
+    if (next.includes("<Powers>")) {
       const powers = next.match(/<Powers>([^<]*)<\/Powers>/)?.[1] ?? "";
       next = apply(next, stats, replaceTag(next, "Powers", addBuffs(powers, "MagePetUber")));
     }

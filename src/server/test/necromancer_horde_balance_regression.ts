@@ -54,7 +54,7 @@ function assertNecromancerHordeBalance(powerXml: string, buffXml: string, modXml
 
   assert.equal(tagValue(powerBlock(powerXml, "BansheeWail10"), "BaseDamageMult"), "3.818", `${label}: Wail of the Banshee rank 10 damage`);
   if (label !== "Game.tr.swz") {
-    assert((tagValue(powerBlock(powerXml, "BansheeWail10"), "UpgradeDescription") ?? "").includes("300% bonus cap"), `${label}: Wail of the Banshee rank 10 scaling text`);
+    assert((tagValue(powerBlock(powerXml, "BansheeWail10"), "UpgradeDescription") ?? "").includes("500% bonus cap"), `${label}: Wail of the Banshee rank 10 scaling text`);
   }
   assert.equal(tagValue(buffBlock(buffXml, "MinionMaster5"), "Duration"), "5000", `${label}: MinionMaster duration`);
   assert.equal(tagValue(buffBlock(buffXml, "MinionMaster5"), "MeleeDamage"), "0.05", `${label}: MinionMaster melee damage`);

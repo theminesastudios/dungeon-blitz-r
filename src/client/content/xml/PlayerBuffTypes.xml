@@ -1911,6 +1911,18 @@
 		<BuffIcon>a_StatusIcon_Chilblains</BuffIcon>
 		<GfxType/>
 	</BuffType>
+	<BuffType BuffName="ChilblainsPermafrostDot">
+		<BuffID>739</BuffID>
+		<Attack>true</Attack>
+		<Duration>5000</Duration>
+		<MeleeDamage>-0.05</MeleeDamage>
+		<DoTDamage>1</DoTDamage>
+		<DoTTickLength>1000</DoTTickLength>
+		<Effect>Chilblains</Effect>
+		<StackCount>5</StackCount>
+		<BuffIcon>a_StatusIcon_Chilblains</BuffIcon>
+		<GfxType/>
+	</BuffType>
 	<BuffType BuffName="ChilblainsPermafrost">
 		<BuffID>738</BuffID>
 		<Attack>true</Attack>

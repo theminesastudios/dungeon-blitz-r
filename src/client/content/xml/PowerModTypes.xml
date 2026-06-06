@@ -2268,7 +2268,7 @@
 		<DisplayName>Chilblains</DisplayName>
 		<Description>Increases Chilblains Damage@Chilblains Damage:, +4%, +12%, +24%, +40%, +50%</Description>
 		<ModType>Buff</ModType>
-		<BuffName>Chilblains</BuffName>
+		<BuffName>Chilblains,ChilblainsPermafrostDot</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
 		<BuffValue>.02</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
@@ -2278,7 +2278,7 @@
 		<ModID>237</ModID>
 		<DisplayName>Chilblains</DisplayName>
 		<ModType>Buff</ModType>
-		<BuffName>Chilblains</BuffName>
+		<BuffName>Chilblains,ChilblainsPermafrostDot</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
 		<BuffValue>.06</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
@@ -2288,7 +2288,7 @@
 		<ModID>238</ModID>
 		<DisplayName>Chilblains</DisplayName>
 		<ModType>Buff</ModType>
-		<BuffName>Chilblains</BuffName>
+		<BuffName>Chilblains,ChilblainsPermafrostDot</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
 		<BuffValue>.12</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
@@ -2298,7 +2298,7 @@
 		<ModID>239</ModID>
 		<DisplayName>Chilblains</DisplayName>
 		<ModType>Buff</ModType>
-		<BuffName>Chilblains</BuffName>
+		<BuffName>Chilblains,ChilblainsPermafrostDot</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
 		<BuffValue>.2</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
@@ -2308,7 +2308,7 @@
 		<ModID>240</ModID>
 		<DisplayName>Chilblains</DisplayName>
 		<ModType>Buff</ModType>
-		<BuffName>Chilblains</BuffName>
+		<BuffName>Chilblains,ChilblainsPermafrostDot</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
 		<BuffValue>.25</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
