@@ -194,11 +194,13 @@ function buildUpdateSingleGearPayload(entityId: number, slot: number, gearId: nu
     return bb.toBuffer();
 }
 
-function testPlayerRegenAfterIdleDoesNotHealLivingPlayerBoss(): void {
+function testPlayerAndDungeonBossRegenAfterIdle(): void {
     resetState();
+    ensureOriginalGameDataLoaded();
 
     const nowMs = 10_000;
     const player = createFakeClient(1, 'Alpha', 3);
+    moveClientToLevel(player, 'DreamDragonDungeon');
     player.authoritativeCurrentHp = 600;
     player.lastCombatActivityAt = nowMs - 6000;
 
@@ -223,6 +225,7 @@ function testPlayerRegenAfterIdleDoesNotHealLivingPlayerBoss(): void {
         lastCombatRegenTickAt: 0
     };
     player.entities.set(hostileId, hostile);
+    player.knownEntityIds.add(hostileId);
 
     const levelScope = getClientLevelScope(player as never);
     GlobalState.levelEntities.get(levelScope)!.set(hostileId, hostile);
@@ -232,13 +235,18 @@ function testPlayerRegenAfterIdleDoesNotHealLivingPlayerBoss(): void {
 
     assert.equal(player.authoritativeCurrentHp, 700, 'player should recover 10% of max HP after the idle window');
     assert.equal(playerEntity.hp, 700, 'player entity snapshot should track regenerated HP');
-    assert.equal(hostile.hp, 400, 'bosses should not regenerate from idle time while the player is alive');
+    assert.equal(hostile.hp, 410, 'dungeon bosses should regenerate from idle time while the player is alive');
 
     const regenPackets = player.sentPackets.filter((packet) => packet.id === 0x3B);
-    assert.equal(regenPackets.length, 1, 'player should only receive self regen while alive');
+    assert.equal(regenPackets.length, 2, 'player should receive self and boss regen while both are idle');
 
-    const [selfPacket] = regenPackets.map((packet) => parseRegenPacket(packet.payload));
-    assert.deepEqual(selfPacket, { entityId: player.clientEntID, amount: 100 });
+    const parsedRegenPackets = regenPackets.map((packet) => parseRegenPacket(packet.payload));
+    assert.deepEqual(parsedRegenPackets.filter((packet) => packet.entityId === player.clientEntID), [
+        { entityId: player.clientEntID, amount: 100 }
+    ]);
+    assert.deepEqual(parsedRegenPackets.filter((packet) => packet.entityId === hostileId), [
+        { entityId: hostileId, amount: 10 }
+    ]);
 }
 
 function testPlayerRegenUsesEntityHealEncoding(): void {
@@ -1056,7 +1064,7 @@ async function testAuthoritativeDeadPlayerStateAllowsBossRegen(): Promise<void> 
 }
 
 async function run(): Promise<void> {
-    testPlayerRegenAfterIdleDoesNotHealLivingPlayerBoss();
+    testPlayerAndDungeonBossRegenAfterIdle();
     testPlayerRegenUsesEntityHealEncoding();
     testPlayerRegenSeedsMissingActivityAndTrustsAuthoritativeHp();
     testAiHeartbeatContinuesPlayerRegenUntilFull();

@@ -1,5 +1,6 @@
 import { strict as assert } from 'assert';
 import * as path from 'path';
+import { EntityState, EntityTeam } from '../core/Entity';
 import { GlobalState } from '../core/GlobalState';
 import { LevelConfig } from '../core/LevelConfig';
 import { getClientLevelScope } from '../core/LevelScope';
@@ -244,7 +245,59 @@ function createValhavenDungeonChainClient(
     };
     client.character.questTrackerState = 100;
     client.sentPackets.length = 0;
+    seedDefeatedValhavenBosses(client, currentLevel.endsWith('Hard'));
     return client;
+}
+
+function seedDefeatedValhavenBosses(client: FakeClient, hardMode: boolean): void {
+    const firstBossName = hardMode ? 'GreaterBoneGolemHard' : 'GreaterBoneGolem';
+    const secondBossName = hardMode ? 'GreaterBoneGolem2Hard' : 'GreaterBoneGolem2';
+    const levelScope = getClientLevelScope(client as never);
+    const bosses = new Map<number, unknown>([
+        [
+            9101,
+            {
+                id: 9101,
+                name: firstBossName,
+                isPlayer: false,
+                team: EntityTeam.ENEMY,
+                entRank: 'Boss',
+                entState: EntityState.DEAD,
+                hp: 0,
+                dead: true,
+                clientSpawned: true,
+                playerDamageContributed: true,
+                ownerToken: client.token,
+                roomId: 6
+            }
+        ],
+        [
+            9102,
+            {
+                id: 9102,
+                name: secondBossName,
+                isPlayer: false,
+                team: EntityTeam.ENEMY,
+                entRank: 'Boss',
+                entState: EntityState.DEAD,
+                hp: 0,
+                dead: true,
+                clientSpawned: true,
+                playerDamageContributed: true,
+                ownerToken: client.token,
+                roomId: 6
+            }
+        ]
+    ]);
+    client.entities = bosses;
+    GlobalState.levelEntities.set(levelScope, bosses);
+    (client as any).dungeonRun = {
+        levelScope,
+        bossKilled: true,
+        bossDefeatTime: Date.now() - 1000
+    };
+    (client as any).lastDungeonCutsceneEndScope = levelScope;
+    (client as any).lastDungeonCutsceneEndAt = Date.now();
 }
 
 function createCompletedValhavenFullClearClient(currentLevel: string, missionId: MissionID): FakeClient {
@@ -569,6 +622,10 @@ async function testValhavenDungeonChainAutoAcceptsProdigalSon(): Promise<void> {
         );
 
         await MissionHandler.handleSetLevelComplete(client as never, createLevelCompletePacket(100, 0, 1));
+        if (String((client as any).pendingDungeonCompletionScope ?? '')) {
+            MissionHandler.noteDungeonCutsceneEnd(client as never, 6);
+            await sleep(MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS + 100);
+        }
 
         assert.equal(
             Number(client.character.missions[String(testCase.completedMissionId)]?.state ?? 0),

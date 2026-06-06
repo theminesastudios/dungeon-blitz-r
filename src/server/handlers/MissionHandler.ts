@@ -1282,8 +1282,11 @@ export class MissionHandler {
         const dungeonCompletionObjectivesMet =
             !dungeonRequiresSpecificCompletionObjectives ||
             MissionHandler.hasMetRequiredDungeonCompletionObjectives(client, currentLevel, levelScope);
+        const forceSharedDungeonCompletionAllowed =
+            forceSharedDungeonCompletion &&
+            (!dungeonRequiresSpecificCompletionObjectives || dungeonCompletionObjectivesMet);
         const serverValidatedDungeonCompletion =
-            forceSharedDungeonCompletion ||
+            forceSharedDungeonCompletionAllowed ||
             allowCraftTownTutorialClientCompletion ||
             (defeatedDungeonBossForcesCompletion && dungeonCompletionObjectivesMet);
 
@@ -1339,14 +1342,14 @@ export class MissionHandler {
         if (
             clearedDungeon &&
             dungeonRequiresSpecificCompletionObjectives &&
-            !forceSharedDungeonCompletion &&
+            !forceSharedDungeonCompletionAllowed &&
             !dungeonCompletionObjectivesMet
         ) {
             return;
         }
 
         if (
-            !forceSharedDungeonCompletion &&
+            !forceSharedDungeonCompletionAllowed &&
             !serverValidatedDungeonCompletion &&
             !MissionHandler.canAcceptClientReportedDungeonCompletion(
                 client,
@@ -1392,7 +1395,7 @@ export class MissionHandler {
         }
 
         let didMutate = false;
-        if (currentLevel === 'TutorialBoat' || currentLevel === 'TutorialDungeon') {
+        if (currentLevel === 'TutorialBoat' || MissionHandler.isTutorialRescueDungeon(currentLevel)) {
             clearedDungeon = true;
             if (currentLevel === 'TutorialBoat') {
                 actualKills = Math.max(actualKills, requiredKills, 1);
@@ -1407,7 +1410,7 @@ export class MissionHandler {
         if (
             clearedDungeon &&
             currentLevel !== 'TutorialBoat' &&
-            currentLevel !== 'TutorialDungeon'
+            !MissionHandler.isTutorialRescueDungeon(currentLevel)
         ) {
             if (Number(client.character.questTrackerState ?? 0) !== 100) {
                 client.character.questTrackerState = 100;
@@ -1841,7 +1844,7 @@ export class MissionHandler {
             return false;
         }
 
-        if (currentLevel === 'TutorialBoat' || currentLevel === 'TutorialDungeon') {
+        if (currentLevel === 'TutorialBoat' || MissionHandler.isTutorialRescueDungeon(currentLevel)) {
             return true;
         }
 
@@ -2163,7 +2166,7 @@ export class MissionHandler {
         const forcedLevelName = getScopeLevelName(forcedScope || pendingScope);
         if (
             forcedScope &&
-            MissionHandler.requiresSimultaneousBossDefeatForDungeon(forcedLevelName) &&
+            MissionHandler.requiresCompletionBossDefeatForDungeon(forcedLevelName) &&
             !MissionHandler.hasMetRequiredDungeonCompletionObjectives(client, forcedLevelName, forcedScope)
         ) {
             if (client.forcedDungeonCompletionScope === forcedScope) {
@@ -2613,9 +2616,10 @@ export class MissionHandler {
             return true;
         }
 
-        if (currentLevel === 'TutorialBoat' || currentLevel === 'TutorialDungeon') {
-            const spawn = LevelConfig.getSpawn('NewbieRoad');
-            character.CurrentLevel = { name: 'NewbieRoad', x: spawn.x, y: spawn.y };
+        if (currentLevel === 'TutorialBoat' || MissionHandler.isTutorialRescueDungeon(currentLevel)) {
+            const safeLevel = currentLevel === 'TutorialDungeonHard' ? 'NewbieRoadHard' : 'NewbieRoad';
+            const spawn = LevelConfig.getSpawn(safeLevel);
+            character.CurrentLevel = { name: safeLevel, x: spawn.x, y: spawn.y };
             return true;
         }
 
@@ -2628,6 +2632,11 @@ export class MissionHandler {
         }
 
         return Boolean(String(missionDef.ReturnName ?? '').trim());
+    }
+
+    private static isTutorialRescueDungeon(levelName: string | null | undefined): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        return normalizedLevel === 'TutorialDungeon' || normalizedLevel === 'TutorialDungeonHard';
     }
 
     private static missionStartsReadyToTurnIn(missionDef: MissionDef): boolean {

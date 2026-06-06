@@ -2191,6 +2191,26 @@ function testGoblinRiverTransferredRoomProgressIsIgnored(): void {
     assert.equal(client.sentPackets.length, 0);
 }
 
+function testTutorialDungeonHardTransferredRoomProgressIsIgnored(): void {
+    const client = createClient();
+    client.currentLevel = 'TutorialDungeonHard';
+
+    const restored = LevelHandler.restoreTransferredRoomProgress(client as never, {
+        targetLevel: 'TutorialDungeonHard',
+        syncRoomId: 6,
+        syncStartedRoomIds: [0, 3, 6]
+    });
+
+    assert.equal(
+        restored,
+        false,
+        'Dread Goblin Kidnappers should ignore transferred room-progress replay so the puppet-door phase can start normally'
+    );
+    assert.equal(client.currentRoomId, 0);
+    assert.equal(client.startedRoomEvents.size, 0);
+    assert.equal(client.sentPackets.length, 0);
+}
+
 function testCraftTownTutorialTransferredRoomProgressIsIgnored(): void {
     const client = createClient();
     client.currentLevel = 'CraftTownTutorial';
@@ -2237,6 +2257,24 @@ function testPrepareTutorialDungeonEntryStateResetsToIntroBaseline(): void {
     client.startedRoomEvents.add('TutorialDungeon:6');
     client.character = {
         ...createCharacter('TutorialRunner'),
+        questTrackerState: 100
+    };
+
+    LevelHandler.prepareGoblinRiverDungeonEntryState(client as never);
+
+    assert.equal(client.currentRoomId, 0);
+    assert.equal(client.startedRoomEvents.size, 0);
+    assert.equal(client.character.questTrackerState, 11);
+}
+
+function testPrepareTutorialDungeonHardEntryStateResetsToIntroBaseline(): void {
+    const client = createClient();
+    client.currentLevel = 'TutorialDungeonHard';
+    client.currentRoomId = 6;
+    client.startedRoomEvents.add('TutorialDungeonHard:3');
+    client.startedRoomEvents.add('TutorialDungeonHard:6');
+    client.character = {
+        ...createCharacter('DreadTutorialRunner'),
         questTrackerState: 100
     };
 
@@ -3016,11 +3054,13 @@ async function main(): Promise<void> {
         GlobalState.tokenChar.clear();
 
         testGoblinRiverTransferredRoomProgressIsIgnored();
+        testTutorialDungeonHardTransferredRoomProgressIsIgnored();
         testCraftTownTutorialTransferredRoomProgressIsIgnored();
 
         testPrepareGoblinRiverDungeonEntryStateResetsToIntroBaseline();
 
         testPrepareTutorialDungeonEntryStateResetsToIntroBaseline();
+        testPrepareTutorialDungeonHardEntryStateResetsToIntroBaseline();
         testPrepareCraftTownTutorialEntryStateResetsToIntroBaseline();
         await testPrepareCraftTownTutorialEntryResetsActiveKeepQuestProgress();
 
