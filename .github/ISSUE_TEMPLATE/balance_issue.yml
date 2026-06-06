@@ -1,6 +1,10 @@
 name: Balance issue
 description: Report tuning problems with rewards, drops, combat, abilities, or progression.
 labels: ["balance", "gameplay"]
+type: bug
+assignees:
+  - Neodevils
+  - Telahair
 body:
   - type: dropdown
     id: balance_area
