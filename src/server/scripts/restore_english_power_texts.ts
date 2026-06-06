@@ -108,6 +108,14 @@ function applyCurrentEnglishTalentDescriptions(xml: string): string {
     updated,
     "PowerModType",
     "ModName",
+    "BurnDmg1",
+    "Description",
+    "Increases Burn Damage@Burn Damage:, +10%, +20%, +30%, +40%, +50%"
+  );
+  updated = setTextForRecord(
+    updated,
+    "PowerModType",
+    "ModName",
     "ChilblainsDmg1",
     "Description",
     "Increases Chilblains Damage@Chilblains Damage:, +4%, +12%, +24%, +40%, +50%"

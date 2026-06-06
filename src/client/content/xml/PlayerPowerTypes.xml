@@ -31603,7 +31603,7 @@
 		<CastAnim>Summon</CastAnim>
 		<CastTime>290</CastTime>
 		<RecoverTime>910</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>20000</CoolDownTime>
 		<ManaCost>40</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -31632,7 +31632,7 @@
 		<CastAnim>Summon</CastAnim>
 		<CastTime>290</CastTime>
 		<RecoverTime>910</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>20000</CoolDownTime>
 		<ManaCost>40</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -31663,7 +31663,7 @@
 		<CastAnim>Summon</CastAnim>
 		<CastTime>290</CastTime>
 		<RecoverTime>910</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>20000</CoolDownTime>
 		<ManaCost>40</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -31694,7 +31694,7 @@
 		<CastAnim>Summon</CastAnim>
 		<CastTime>290</CastTime>
 		<RecoverTime>910</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>20000</CoolDownTime>
 		<ManaCost>40</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -31725,7 +31725,7 @@
 		<CastAnim>Summon</CastAnim>
 		<CastTime>290</CastTime>
 		<RecoverTime>910</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>20000</CoolDownTime>
 		<ManaCost>40</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -31756,7 +31756,7 @@
 		<CastAnim>Summon</CastAnim>
 		<CastTime>290</CastTime>
 		<RecoverTime>910</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>20000</CoolDownTime>
 		<ManaCost>40</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -31787,7 +31787,7 @@
 		<CastAnim>Summon</CastAnim>
 		<CastTime>290</CastTime>
 		<RecoverTime>910</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>20000</CoolDownTime>
 		<ManaCost>40</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -31818,7 +31818,7 @@
 		<CastAnim>Summon</CastAnim>
 		<CastTime>290</CastTime>
 		<RecoverTime>910</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>20000</CoolDownTime>
 		<ManaCost>38</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -31849,7 +31849,7 @@
 		<CastAnim>Summon</CastAnim>
 		<CastTime>290</CastTime>
 		<RecoverTime>910</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>20000</CoolDownTime>
 		<ManaCost>38</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -31880,7 +31880,7 @@
 		<CastAnim>Summon</CastAnim>
 		<CastTime>290</CastTime>
 		<RecoverTime>910</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>20000</CoolDownTime>
 		<ManaCost>35</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -31911,7 +31911,7 @@
 		<CastAnim>Summon</CastAnim>
 		<CastTime>290</CastTime>
 		<RecoverTime>910</RecoverTime>
-		<CoolDownTime>0</CoolDownTime>
+		<CoolDownTime>20000</CoolDownTime>
 		<ManaCost>35</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -31943,7 +31943,7 @@
 		<CastTime>0</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>0,1</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Fire</DamageType>
@@ -31974,7 +31974,7 @@
 		<CastTime>0</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>0,1</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Fire</DamageType>
@@ -32005,7 +32005,7 @@
 		<CastTime>0</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>0,1</ManaCost>
 		<BaseDamageMult>0.5</BaseDamageMult>
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Fire</DamageType>
@@ -32036,7 +32036,7 @@
 		<CastTime>0</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>0,1</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Fire</DamageType>

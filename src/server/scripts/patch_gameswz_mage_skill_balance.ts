@@ -43,6 +43,7 @@ const FIREBRAND_SHOTS: FireBrandShotDef[] = [
 
 const DRAGON_SOUL_DESCRIPTION =
   "Summon a Spirit of Flame that copies your Fire Brand shots and shoots at your targets. Gain increased damage for the duration.";
+const FIREBRAND_BASE_DURATION_MS = "7813";
 
 function cloneStats(): PatchStats {
   return { ...EMPTY_STATS };
@@ -183,7 +184,7 @@ function buildFireBrandShotPower(def: FireBrandShotDef): string {
     "\t\t<CastTime>0</CastTime>",
     "\t\t<RecoverTime>500</RecoverTime>",
     "\t\t<CoolDownTime>0</CoolDownTime>",
-    "\t\t<ManaCost>0</ManaCost>",
+    "\t\t<ManaCost>0,1</ManaCost>",
     `\t\t<BaseDamageMult>${def.baseDamageMult}</BaseDamageMult>`,
     "\t\t<ProcModifier>0</ProcModifier>",
     "\t\t<DamageType>Fire</DamageType>",
@@ -345,6 +346,7 @@ function patchPowerBlock(powerName: string, block: string, stats: PatchStats): s
     const rank = rankOf(powerName, "FireBrand");
     const buff = rank >= 8 ? "FireBrandRank8" : rank >= 6 ? "FireBrandRank6" : rank >= 3 ? "FireBrandRank3" : "FireBrandRank1";
     next = apply(next, stats, replaceTag(next, "AddTargetBuff", buff));
+    next = apply(next, stats, replaceTag(next, "CoolDownTime", "20000"));
   } else if (/^SummonDragonSoul(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
     const rank = rankOf(powerName, "SummonDragonSoul");
@@ -437,6 +439,7 @@ function patchBuffBlock(buffName: string, block: string, stats: PatchStats): str
     next = apply(next, stats, replaceTag(next, "Duration", "5000"));
   } else if (/^FireBrand(?:Rank\d+)?$/.test(buffName)) {
     stats.buffBlocks += 1;
+    next = apply(next, stats, replaceTag(next, "Duration", FIREBRAND_BASE_DURATION_MS));
     const rangedOverride = fireBrandOverrideForBuff(buffName);
     if (rangedOverride) {
       next = apply(next, stats, upsertTagAfter(next, "RangedOverride", rangedOverride, "Duration"));
@@ -469,6 +472,7 @@ export function patchPlayerBuffs(xml: string): { xml: string; stats: PatchStats 
 function patchPowerModBlock(modName: string, block: string, stats: PatchStats): string {
   let next = block;
   const valueByMod: Record<string, string[]> = {
+    BurnDmg: [".1", ".2", ".3", ".4", ".5"],
     ChilblainsDmg: [".02", ".06", ".12", ".2", ".25"],
     DryIce: [".75", "1.5", "2.5", "3.75", "5"],
     IceCasket: ["1", "2", "3", "4", "5"],
@@ -477,6 +481,7 @@ function patchPowerModBlock(modName: string, block: string, stats: PatchStats): 
     PoisonDmg: [".06", ".12", ".18", ".24", ".3"],
   };
   const descriptions: Record<string, string> = {
+    BurnDmg: "Increases Burn Damage@Burn Damage:, +10%, +20%, +30%, +40%, +50%",
     ChilblainsDmg: "Increases Chilblains Damage@Chilblains Damage:, +4%, +12%, +24%, +40%, +50%",
     DryIce: "Increases Ice damage based on your Expertise.@Damage (%Expertise):, 75%, 150%, 250%, 375%, 500%",
     IceCasket: "Increases Freeze Durability based on your Expertise.@Durability (%Expertise):, 100%, 200%, 300%, 400%, 500%",
@@ -485,7 +490,7 @@ function patchPowerModBlock(modName: string, block: string, stats: PatchStats): 
     PoisonDmg: "Increases Poison Damage@Poison Damage:, +6%, +12%, +18%, +24%, +30%",
   };
 
-  const rankMatch = modName.match(/^(ChilblainsDmg|DryIce|IceCasket|ColdHeart|IgniteCrit|PoisonDmg)([1-5])$/);
+  const rankMatch = modName.match(/^(BurnDmg|ChilblainsDmg|DryIce|IceCasket|ColdHeart|IgniteCrit|PoisonDmg)([1-5])$/);
   if (rankMatch) {
     stats.modBlocks += 1;
     const [, group, rankText] = rankMatch;

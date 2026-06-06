@@ -971,7 +971,7 @@
 	<BuffType BuffName="FireBrand">
 		<BuffID>294</BuffID>
 		<Attack>false</Attack>
-		<Duration>7200</Duration>
+		<Duration>7813</Duration>
 		<RangedOverride>FireBrandShot1</RangedOverride>
 		<BuffLoc>ChestBack</BuffLoc>
 		<GfxType>
@@ -2639,7 +2639,7 @@
 	<BuffType BuffName="FireBrandRank1">
 		<BuffID>462</BuffID>
 		<Attack>false</Attack>
-		<Duration>7200</Duration>
+		<Duration>7813</Duration>
 		<RangedOverride>FireBrandShot1</RangedOverride>
 		<BuffLoc>FeetBack</BuffLoc>
 		<GfxType>
@@ -2651,7 +2651,7 @@
 	<BuffType BuffName="FireBrandRank3">
 		<BuffID>463</BuffID>
 		<Attack>false</Attack>
-		<Duration>7700</Duration>
+		<Duration>7813</Duration>
 		<RangedOverride>FireBrandShot3</RangedOverride>
 		<BuffLoc>FeetBack</BuffLoc>
 		<GfxType>
@@ -2663,7 +2663,7 @@
 	<BuffType BuffName="FireBrandRank6">
 		<BuffID>464</BuffID>
 		<Attack>false</Attack>
-		<Duration>8700</Duration>
+		<Duration>7813</Duration>
 		<RangedOverride>FireBrandShot6</RangedOverride>
 		<BuffLoc>FeetBack</BuffLoc>
 		<GfxType>
@@ -2675,7 +2675,7 @@
 	<BuffType BuffName="FireBrandRank8">
 		<BuffID>465</BuffID>
 		<Attack>false</Attack>
-		<Duration>9200</Duration>
+		<Duration>7813</Duration>
 		<RangedOverride>FlameAxeFireBrandShot8</RangedOverride>
 		<BuffLoc>FeetBack</BuffLoc>
 		<GfxType>

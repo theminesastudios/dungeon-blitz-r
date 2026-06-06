@@ -1766,11 +1766,11 @@
 		<ModName>BurnDmg1</ModName>
 		<ModID>186</ModID>
 		<DisplayName>Accelerant</DisplayName>
-		<Description>Increases Burn Damage@Burn Damage:, +3%, +7%, +10%, +17%, +25%</Description>
+		<Description>Increases Burn Damage@Burn Damage:, +10%, +20%, +30%, +40%, +50%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Burned</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.01</BuffValue>
+		<BuffValue>.1</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1780,7 +1780,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Burned</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.02</BuffValue>
+		<BuffValue>.2</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1790,7 +1790,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Burned</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.03</BuffValue>
+		<BuffValue>.3</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1800,7 +1800,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Burned</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.05</BuffValue>
+		<BuffValue>.4</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1810,7 +1810,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Burned</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.08</BuffValue>
+		<BuffValue>.5</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>

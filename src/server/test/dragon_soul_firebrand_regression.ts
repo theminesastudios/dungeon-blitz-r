@@ -28,6 +28,11 @@ const BUFF_DURATIONS = new Map<string, string>([
   ["DragonSoulRank8", "15000"],
 ]);
 
+const FIREBRAND_BUFFS = ["FireBrand", "FireBrandRank1", "FireBrandRank3", "FireBrandRank6", "FireBrandRank8"];
+const FIREBRAND_POWERS = ["FireBrand", "FireBrand1", "FireBrand2", "FireBrand3", "FireBrand4", "FireBrand5", "FireBrand6", "FireBrand7", "FireBrand8", "FireBrand9", "FireBrand10"];
+const FIREBRAND_SHOTS = ["FireBrandShot1", "FireBrandShot3", "FireBrandShot6", "FlameAxeFireBrandShot8"];
+const FIREBRAND_BASE_DURATION = "7813";
+
 function blockByPattern(xml: string, pattern: RegExp, label: string): string {
   const match = xml.match(pattern);
   assert(match, `${label} block must exist`);
@@ -66,8 +71,18 @@ function assertDragonSoulData(powerXml: string, buffXml: string, entXml: string 
     assert(!block.includes("reduced Defense"), `${label}: ${powerName} text must not mention reduced Defense`);
   }
 
-  for (const powerName of ["FireBrandShot1", "FireBrandShot3", "FireBrandShot6", "FlameAxeFireBrandShot8"]) {
-    assert.equal(tagValue(powerBlock(powerXml, powerName), "BasePowerName"), null, `${label}: ${powerName} must not add loader-risky BasePowerName`);
+  for (const powerName of FIREBRAND_POWERS) {
+    assert.equal(tagValue(powerBlock(powerXml, powerName), "CoolDownTime"), "20000", `${label}: ${powerName} CoolDownTime`);
+  }
+
+  for (const powerName of FIREBRAND_SHOTS) {
+    const block = powerBlock(powerXml, powerName);
+    assert.equal(tagValue(block, "ManaCost"), "0,1", `${label}: ${powerName} must restore 1 mana per hit`);
+    assert.equal(tagValue(block, "BasePowerName"), null, `${label}: ${powerName} must not add loader-risky BasePowerName`);
+  }
+
+  for (const buffName of FIREBRAND_BUFFS) {
+    assert.equal(tagValue(buffBlock(buffXml, buffName), "Duration"), FIREBRAND_BASE_DURATION, `${label}: ${buffName} Duration`);
   }
 
   for (const [buffName, duration] of BUFF_DURATIONS) {
