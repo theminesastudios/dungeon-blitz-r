@@ -312,7 +312,7 @@ export function patchPlayerPowers(xml: string): PatchResult {
 function buildFlameseerUtilityBuffs(): string {
     return [
         '\t<BuffType BuffName="ConflagrationSlow">',
-        '\t\t<BuffID>738</BuffID>',
+        '\t\t<BuffID>741</BuffID>',
         '\t\t<Attack>true</Attack>',
         '\t\t<Duration>3000</Duration>',
         '\t\t<SpeedChange>-0.1</SpeedChange>',
@@ -567,6 +567,18 @@ export function verifyFlameseerImprovements(powerXml: string, buffXml: string, p
 
     if (tagValue(buffBlock(buffXml, 'ConflagrationSlow'), 'SpeedChange') !== '-0.1') {
         throw new Error('ConflagrationSlow SpeedChange must be -0.1');
+    }
+    if (tagValue(buffBlock(buffXml, 'ConflagrationSlow'), 'BuffID') !== '741') {
+        throw new Error('ConflagrationSlow BuffID must be 741');
+    }
+    const buffIds = new Map<string, string>();
+    for (const match of buffXml.matchAll(/<BuffType BuffName="([^"]+)">[\s\S]*?<BuffID>([^<]+)<\/BuffID>[\s\S]*?<\/BuffType>/g)) {
+        const [, buffName, buffId] = match;
+        const previous = buffIds.get(buffId);
+        if (previous) {
+            throw new Error(`Duplicate BuffID ${buffId}: ${previous}, ${buffName}`);
+        }
+        buffIds.set(buffId, buffName);
     }
     if (tagValue(buffBlock(buffXml, 'MoltenFistStun1000'), 'Duration') !== '2000') {
         throw new Error('MoltenFistStun1000 duration must be 2000');

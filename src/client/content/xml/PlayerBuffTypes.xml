@@ -2173,7 +2173,7 @@
 		</GfxType>
 	</BuffType>
 	<BuffType BuffName="ConflagrationSlow">
-		<BuffID>738</BuffID>
+		<BuffID>741</BuffID>
 		<Attack>true</Attack>
 		<Duration>3000</Duration>
 		<SpeedChange>-0.1</SpeedChange>
