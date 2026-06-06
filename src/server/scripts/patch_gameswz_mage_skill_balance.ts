@@ -434,6 +434,10 @@ function patchPowerBlock(powerName: string, block: string, stats: PatchStats): s
   } else if (/^IceSpike(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
     next = apply(next, stats, replaceTag(next, "ManaCost", "30"));
+  } else if (/^MeteorROR(?:\d+)?$/.test(powerName)) {
+    stats.powerBlocks += 1;
+    const rank = powerName === "MeteorROR" ? 1 : rankOf(powerName, "MeteorROR");
+    next = apply(next, stats, replaceTag(next, "RecoverTime", rank >= 5 ? "519" : "625"));
   } else if (/^Meteor(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
     next = apply(next, stats, removeSelfBuff(next, "MeteorChannelSlow"));
@@ -441,6 +445,10 @@ function patchPowerBlock(powerName: string, block: string, stats: PatchStats): s
     stats.powerBlocks += 1;
     next = apply(next, stats, replaceTag(next, "CastTime", "855,503,443"));
     next = apply(next, stats, addTargetBuff(next, "Chilblains"));
+  } else if (powerName === "MagePetMelee" || powerName === "MagePetUber") {
+    stats.powerBlocks += 1;
+    next = apply(next, stats, upsertTagAfter(next, "AoERadius", "70", "Range"));
+    next = apply(next, stats, upsertTagAfter(next, "CenterOffset", "40", "AoERadius"));
   }
 
   return next;
@@ -598,22 +606,23 @@ export function patchPowerMods(xml: string): { xml: string; stats: PatchStats } 
 function patchEntBlock(entName: string, block: string, stats: PatchStats): string {
   let next = block;
   const guardRank = entName.match(/^SummonGuard(?:([1-9]|10))?$/);
+  const natureGuard = entName === "NatureGuard";
   const polarRank = entName.match(/^PolarSentry(?:([1-9]|10))?$/);
   const ghoulRank = entName.match(/^GhoulGuard([1-9]|10)$/);
   const rangedGhoulRank = entName.match(/^Ghoul2Guard([1-9]|10)$/);
   const infestationSpawn = entName.match(/^InfestationSpawn(?:[1-3]|King)$/);
 
-  if (guardRank) {
+  if (guardRank || natureGuard) {
     stats.entBlocks += 1;
-    const rank = Number(guardRank[1] ?? 10);
-    const hitPointsByRank = ["0", "0.9", "1.03", "1.03", "1.03", "1.2", "1.2", "1.2", "1.44", "1.44", "1.44"];
-    const armorByRank = ["0", "1.2", "1.2", "1.38", "1.38", "1.38", "1.56", "1.56", "1.56", "1.92", "1.92"];
-    next = apply(next, stats, replaceTag(next, "HitPoints", hitPointsByRank[rank] ?? "1.44"));
-    next = apply(next, stats, replaceTag(next, "ArmorClass", armorByRank[rank] ?? "1.92"));
+    const rank = natureGuard ? 1 : Number(guardRank?.[1] ?? 10);
+    const hitPointsByRank = ["0", "1", "1.15", "1.15", "1.15", "1.35", "1.35", "1.35", "1.6", "1.6", "1.6"];
+    const armorByRank = ["0", "1.3", "1.3", "1.5", "1.5", "1.5", "1.75", "1.75", "1.75", "2.2", "2.2"];
+    next = apply(next, stats, replaceTag(next, "HitPoints", hitPointsByRank[rank] ?? "1.6"));
+    next = apply(next, stats, replaceTag(next, "ArmorClass", armorByRank[rank] ?? "2.2"));
     if (!next.includes("<Powers>")) {
       next = apply(next, stats, upsertTagAfter(next, "Powers", "MagePetUber", "MeleePower"));
     }
-    if (rank >= 7 && next.includes("<Powers>")) {
+    if (next.includes("<Powers>")) {
       const powers = next.match(/<Powers>([^<]*)<\/Powers>/)?.[1] ?? "";
       next = apply(next, stats, replaceTag(next, "Powers", addBuffs(powers, "MagePetUber")));
     }
