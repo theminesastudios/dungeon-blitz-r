@@ -1,5 +1,9 @@
 name: Bug report
 description: Report a reproducible Dungeon Blitz R problem.
+type: bug
+assignees:
+  - Neodevils
+  - Telahair
 body:
   - type: markdown
     attributes:

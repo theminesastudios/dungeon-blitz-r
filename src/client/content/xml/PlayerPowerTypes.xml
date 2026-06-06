@@ -33269,7 +33269,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>2000</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
+		<BaseDamageMult>1.1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AggroBonus>2</AggroBonus>
 		<DisplayName>***Monster***</DisplayName>
@@ -33295,7 +33295,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>3000</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>0.75</BaseDamageMult>
+		<BaseDamageMult>0.825</BaseDamageMult>
 		<DamageType>Fire</DamageType>
 		<AggroBonus>2</AggroBonus>
 		<DisplayName>***Monster***</DisplayName>
@@ -33326,7 +33326,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>3000</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>0.75</BaseDamageMult>
+		<BaseDamageMult>0.825</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[350]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
@@ -33351,8 +33351,9 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>2000</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
+		<BaseDamageMult>1.1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
+		<AddTargetBuff>PoisonCloud</AddTargetBuff>
 		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
@@ -35953,7 +35954,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
-		<AddTargetBuff>MinionHoT1</AddTargetBuff>
+		<AddTargetBuff>MinionHoT1,MinionMaster3</AddTargetBuff>
 		<BasePowerName>ProcLifethirstPets</BasePowerName>
 		<Description>Vampiric pet heal Proc used by Lifethirst</Description>
 		<CastGfx/>
@@ -35979,7 +35980,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
-		<AddTargetBuff>MinionHoT2</AddTargetBuff>
+		<AddTargetBuff>MinionHoT2,MinionMaster4</AddTargetBuff>
 		<BasePowerName>ProcLifethirstPets</BasePowerName>
 		<Description>Vampiric pet heal Proc used by Lifethirst</Description>
 		<CastGfx/>
@@ -36005,7 +36006,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>Lifethirst</PowerGroup>
-		<AddTargetBuff>MinionHoT3</AddTargetBuff>
+		<AddTargetBuff>MinionHoT3,MinionMaster5</AddTargetBuff>
 		<BasePowerName>ProcLifethirstPets</BasePowerName>
 		<Description>Vampiric pet heal Proc used by Lifethirst</Description>
 		<CastGfx/>
@@ -36525,8 +36526,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
-		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueStackLimit,PlagueBattalion,PlagueBattalion,PlagueBattalion</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion,PlagueBattalion,PlagueBattalion</AddTargetBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
 		<IconName>a_PowerIcon_LeechAura</IconName>
@@ -36787,8 +36788,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion,PlagueBattalion,PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueStackLimit,PlagueBattalion,PlagueBattalion,PlagueBattalion</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36820,8 +36821,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion,PlagueBattalion,PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueStackLimit,PlagueBattalion,PlagueBattalion,PlagueBattalion</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36853,8 +36854,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion,PlagueBattalion,PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueStackLimit,PlagueBattalion,PlagueBattalion,PlagueBattalion</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>

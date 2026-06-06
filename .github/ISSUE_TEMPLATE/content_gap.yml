@@ -1,6 +1,7 @@
 name: Missing content or unclear source behavior
 description: Report missing mission wiring, unrestored content, or behavior that needs source confirmation.
 labels: ["content-missing", "needs-investigation"]
+type: task
 body:
   - type: dropdown
     id: content_area

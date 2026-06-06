@@ -1,6 +1,10 @@
 name: Localization issue
 description: Report a missing, incorrect, or awkward translation.
 labels: ["localization"]
+type: bug
+assignees:
+  - Neodevils
+  - Telahair
 body:
   - type: input
     id: language

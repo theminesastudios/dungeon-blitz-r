@@ -1,6 +1,10 @@
 name: Gameplay bug
 description: Report a quest, dungeon, combat, ability, or progression problem.
 labels: ["gameplay"]
+type: bug
+assignees:
+  - Neodevils
+  - Telahair
 body:
   - type: dropdown
     id: gameplay_area

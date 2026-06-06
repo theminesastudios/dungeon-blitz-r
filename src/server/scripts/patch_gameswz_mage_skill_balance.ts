@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils";
+import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
 
 type PatchStats = {
   powerBlocks: number;
@@ -44,6 +44,15 @@ const FIREBRAND_SHOTS: FireBrandShotDef[] = [
 const DRAGON_SOUL_DESCRIPTION =
   "Summon a Spirit of Flame that copies your Fire Brand shots and shoots at your targets. Gain increased damage for the duration.";
 const FIREBRAND_BASE_DURATION_MS = "7813";
+const MINION_MASTER_SUMMON_POWERS = [
+  "SummonGhoul",
+  ...Array.from({ length: 10 }, (_, index) => `SummonGhoul${index + 1}`),
+  "SummonRangedGhoul",
+  ...Array.from({ length: 10 }, (_, index) => `SummonRangedGhoul${index + 1}`),
+  "InfestationSpawn",
+  ...Array.from({ length: 10 }, (_, index) => `InfestationSpawn${index + 1}`),
+  "InfestationSpawnKing",
+].join(",");
 
 function cloneStats(): PatchStats {
   return { ...EMPTY_STATS };
@@ -97,10 +106,6 @@ function numberList(value: string): number[] {
 
 function formatList(values: Array<number | string>): string {
   return values.map((value) => String(value)).join(",");
-}
-
-function scaleCsv(value: string, factor: number, maxDecimals = 3): string {
-  return formatList(numberList(value).map((item) => Number((item * factor).toFixed(maxDecimals))));
 }
 
 function addBuffs(list: string, ...buffs: string[]): string {
@@ -160,6 +165,22 @@ function addSelfBuff(block: string, ...buffs: string[]): { block: string; change
     return replaceTag(block, "AddSelfBuff", nextBuffs);
   }
   return upsertTagAfter(block, "AddSelfBuff", buffs.join(","), "PowerGroup");
+}
+
+function setSelfBuffCount(block: string, buffName: string, count: number): { block: string; changed: boolean } {
+  const match = block.match(/<AddSelfBuff>([^<]*)<\/AddSelfBuff>/);
+  if (!match) {
+    return upsertTagAfter(block, "AddSelfBuff", Array(count).fill(buffName).join(","), "PowerGroup");
+  }
+  return replaceTag(block, "AddSelfBuff", setBuffCount(match[1], buffName, count));
+}
+
+function setTargetBuffCount(block: string, buffName: string, count: number): { block: string; changed: boolean } {
+  const match = block.match(/<AddTargetBuff>([^<]*)<\/AddTargetBuff>/);
+  if (!match) {
+    return upsertTagAfter(block, "AddTargetBuff", Array(count).fill(buffName).join(","), "PowerGroup");
+  }
+  return replaceTag(block, "AddTargetBuff", setBuffCount(match[1], buffName, count));
 }
 
 function apply(block: string, stats: PatchStats, patch: { block: string; changed: boolean }): string {
@@ -277,14 +298,6 @@ function dragonSoulBuffDurationForName(buffName: string): string {
 function patchPowerBlock(powerName: string, block: string, stats: PatchStats): string {
   let next = block;
 
-  const patchCastList = (factor: number, minimum = 0) => {
-    const match = next.match(/<CastTime>([^<]+)<\/CastTime>/);
-    if (match) {
-      const values = numberList(match[1]).map((value) => Math.max(minimum, Math.round(value * factor)));
-      next = apply(next, stats, replaceTag(next, "CastTime", formatList(values)));
-    }
-  };
-
   if (/^FrozenWard(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
     const rank = rankOf(powerName, "FrozenWard");
@@ -326,7 +339,7 @@ function patchPowerBlock(powerName: string, block: string, stats: PatchStats): s
     next = apply(next, stats, addTargetBuff(next, "FreezeSpire10", "Chilled42", "Frigid"));
   } else if (/^PermafrostCloneExplode(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
-    next = apply(next, stats, addTargetBuff(next, "Chilblains"));
+    next = apply(next, stats, removeTargetBuff(next, "Chilblains"));
   } else if (/^IridescentBurst(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
     next = apply(next, stats, addTargetBuff(next, "Weakened"));
@@ -364,6 +377,20 @@ function patchPowerBlock(powerName: string, block: string, stats: PatchStats): s
     stats.powerBlocks += 1;
     const rank = rankOf(powerName, "Lifethirst");
     next = apply(next, stats, addSelfBuff(next, rank >= 8 ? "MinionMaster5" : rank >= 4 ? "MinionMaster3" : "MinionMaster1"));
+  } else if (/^ProcLifethirstPets(?:4|7|10)$/.test(powerName)) {
+    stats.powerBlocks += 1;
+    const petBuff = powerName.endsWith("10") ? "MinionMaster5" : powerName.endsWith("7") ? "MinionMaster4" : "MinionMaster3";
+    next = apply(next, stats, addTargetBuff(next, petBuff));
+  } else if (powerName === "GhoulMelee") {
+    stats.powerBlocks += 1;
+    next = apply(next, stats, replaceTag(next, "BaseDamageMult", "1.1"));
+  } else if (powerName === "GhoulFireball" || powerName === "Ghoul2Melee") {
+    stats.powerBlocks += 1;
+    next = apply(next, stats, replaceTag(next, "BaseDamageMult", "0.825"));
+  } else if (powerName === "Ghoul2Fireball") {
+    stats.powerBlocks += 1;
+    next = apply(next, stats, replaceTag(next, "BaseDamageMult", "1.1"));
+    next = apply(next, stats, next.includes("<AddTargetBuff>") ? addTargetBuff(next, "PoisonCloud") : upsertTagAfter(next, "AddTargetBuff", "PoisonCloud", "DamageType"));
   } else if (/^SpectralGrasp(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
     next = apply(next, stats, replaceTag(next, "TargetMethod", "RangedAoE"));
@@ -389,8 +416,15 @@ function patchPowerBlock(powerName: string, block: string, stats: PatchStats): s
     next = apply(next, stats, replaceTag(next, "BaseDamageMult", damageByRank[rank] ?? "1.99"));
   } else if (/^PlagueBattalion(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
-    next = apply(next, stats, addTargetBuff(next, "PlagueBattalion"));
-    next = apply(next, stats, addSelfBuff(next, "PlagueBattalion", "PlagueStackLimit"));
+    const rank = rankOf(powerName, "PlagueBattalion");
+    if (rank >= 8) {
+      next = apply(next, stats, setTargetBuffCount(next, "PlagueBattalion", 3));
+      next = apply(next, stats, setSelfBuffCount(next, "PlagueBattalion", 3));
+    } else {
+      next = apply(next, stats, addTargetBuff(next, "PlagueBattalion"));
+      next = apply(next, stats, addSelfBuff(next, "PlagueBattalion"));
+    }
+    next = apply(next, stats, addSelfBuff(next, "PlagueStackLimit"));
   } else if (/^VineLance(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
     const rank = rankOf(powerName, "VineLance");
@@ -440,6 +474,8 @@ function patchBuffBlock(buffName: string, block: string, stats: PatchStats): str
   } else if (/^MinionMaster\d+$/.test(buffName)) {
     stats.buffBlocks += 1;
     next = apply(next, stats, replaceTag(next, "Duration", "5000"));
+    const rank = Number(buffName.match(/\d+$/)?.[0] ?? 1);
+    next = apply(next, stats, upsertTagAfter(next, "MeleeDamage", String((rank * 0.01).toFixed(2)), "MagicDamage"));
   } else if (/^FireBrand(?:Rank\d+)?$/.test(buffName)) {
     stats.buffBlocks += 1;
     next = apply(next, stats, replaceTag(next, "Duration", FIREBRAND_BASE_DURATION_MS));
@@ -482,7 +518,8 @@ function patchPowerModBlock(modName: string, block: string, stats: PatchStats): 
     IceCasket: ["1", "2", "3", "4", "5"],
     ColdHeart: ["-100", "-200", "-300", "-400", "-500"],
     IgniteCrit: [".02", ".04", ".06", ".08", ".1"],
-    PoisonDmg: [".06", ".12", ".18", ".24", ".3"],
+    PoisonDmg: [".07", ".14", ".21", ".28", ".35"],
+    CurseCrit: [".02", ".04", ".06", ".08", ".1"],
   };
   const descriptions: Record<string, string> = {
     BurnDmg: "Increases Burn Damage@Burn Damage:, +7%, +14%, +21%, +28%, +35%",
@@ -491,15 +528,16 @@ function patchPowerModBlock(modName: string, block: string, stats: PatchStats): 
     IceCasket: "Increases Freeze Durability based on your Expertise.@Durability (%Expertise):, 100%, 200%, 300%, 400%, 500%",
     ColdHeart: "Reduces the target's healing effects.@Healing Reduction:, 10%, 20%, 30%, 40%, 50%",
     IgniteCrit: "Gain a Poison Damage bonus against Cursed targets.@Poison Damage Bonus:, 2%, 4%, 6%, 8%, 10%",
-    PoisonDmg: "Increases Poison Damage@Poison Damage:, +6%, +12%, +18%, +24%, +30%",
+    PoisonDmg: "Increases Poison Damage@Poison Damage:, +7%, +14%, +21%, +28%, +35%",
+    CurseCrit: "Gain a Critical Chance bonus vs. Cursed Targets@Critical Chance Bonus:, 2%, 4%, 6%, 8%, 10%",
   };
 
-  const rankMatch = modName.match(/^(BurnDmg|ChilblainsDmg|DryIce|IceCasket|ColdHeart|IgniteCrit|PoisonDmg)([1-5])$/);
+  const rankMatch = modName.match(/^(BurnDmg|ChilblainsDmg|DryIce|IceCasket|ColdHeart|IgniteCrit|PoisonDmg|CurseCrit)([1-5])$/);
   if (rankMatch) {
     stats.modBlocks += 1;
     const [, group, rankText] = rankMatch;
     const value = valueByMod[group][Number(rankText) - 1];
-    const valueTag = group === "ColdHeart" ? "StatValue" : group === "IgniteCrit" ? "SelfValue" : "BuffValue";
+    const valueTag = group === "ColdHeart" ? "StatValue" : group === "IgniteCrit" || group === "CurseCrit" ? "SelfValue" : "BuffValue";
     next = apply(next, stats, replaceTag(next, valueTag, value));
     if (rankText === "1" && descriptions[group]) {
       next = apply(next, stats, replaceTag(next, "Description", descriptions[group]));
@@ -508,6 +546,34 @@ function patchPowerModBlock(modName: string, block: string, stats: PatchStats): 
       next = apply(next, stats, upsertTagAfter(next, "BuffName", "Cursed", "ModType"));
       next = apply(next, stats, upsertTagAfter(next, "BuffProperty", "PoisonMultiplier", "BuffName"));
     }
+  }
+
+  const minionMasterMatch = modName.match(/^MinionMaster([1-5])$/);
+  if (minionMasterMatch) {
+    stats.modBlocks += 1;
+    next = apply(next, stats, replaceTag(next, "ModType", "Power"));
+    next = apply(next, stats, removeTag(next, "SelfValue"));
+    next = apply(next, stats, upsertTagAfter(next, "PowerName", MINION_MASTER_SUMMON_POWERS, "ModType"));
+    next = apply(next, stats, upsertTagAfter(next, "PowerProperty", "AddSelfBuff", "PowerName"));
+    next = apply(next, stats, upsertTagAfter(next, "PowerValue", `Append:${modName}`, "PowerProperty"));
+    if (minionMasterMatch[1] === "1") {
+      next = apply(
+        next,
+        stats,
+        replaceTag(next, "Description", "Increased Expertise for 5 sec whenever you summon an Undead Minion@Expertise Bonus:, 1%, 2%, 3%, 4%, 5%"),
+      );
+    }
+  }
+
+  if (modName === "RuneSummonGhoul") {
+    stats.modBlocks += 1;
+    next = apply(next, stats, replaceTag(next, "Description", "+10% Call the Horde ghoul damage"));
+    next = apply(next, stats, replaceTag(next, "PowerValue", ".1"));
+  } else if (modName === "RuneSummonRangedGhoul") {
+    stats.modBlocks += 1;
+    next = apply(next, stats, replaceTag(next, "Description", "Bolster ghoul ranged attacks inflict Poison"));
+    next = apply(next, stats, replaceTag(next, "PowerName", "Ghoul2Fireball"));
+    next = apply(next, stats, replaceTag(next, "PowerValue", "Append:PoisonCloud"));
   }
 
   const maxMatch = modName.match(/^ChilblainsMax([1-5])$/);
@@ -533,6 +599,9 @@ function patchEntBlock(entName: string, block: string, stats: PatchStats): strin
   let next = block;
   const guardRank = entName.match(/^SummonGuard(?:([1-9]|10))?$/);
   const polarRank = entName.match(/^PolarSentry(?:([1-9]|10))?$/);
+  const ghoulRank = entName.match(/^GhoulGuard([1-9]|10)$/);
+  const rangedGhoulRank = entName.match(/^Ghoul2Guard([1-9]|10)$/);
+  const infestationSpawn = entName.match(/^InfestationSpawn(?:[1-3]|King)$/);
 
   if (guardRank) {
     stats.entBlocks += 1;
@@ -563,6 +632,12 @@ function patchEntBlock(entName: string, block: string, stats: PatchStats): strin
     } else {
       next = apply(next, stats, replaceTag(next, "Duration", "15000"));
     }
+  } else if (ghoulRank || rangedGhoulRank || infestationSpawn) {
+    stats.entBlocks += 1;
+    next = apply(next, stats, replaceTag(next, "HitPoints", "0.1"));
+    next = apply(next, stats, replaceTag(next, "MeleeDamage", "0.1"));
+    next = apply(next, stats, replaceTag(next, "MagicDamage", "0.1"));
+    next = apply(next, stats, replaceTag(next, "ArmorClass", "0.1"));
   }
 
   return next;

@@ -59,7 +59,10 @@ function detectFfdec(repoRoot, preferred) {
     path.join(repoRoot, 'build', 'tools', 'ffdec_25.0.0', 'ffdec-cli.jar'),
     path.join(repoRoot, 'build', 'tools', 'ffdec_25.0.0', 'ffdec.jar'),
     path.join(repoRoot, 'build', 'ffdec_24.0.1', 'ffdec-cli.exe'),
-    path.join(repoRoot, 'build', 'ffdec_24.0.1', 'ffdec-cli.jar')
+    path.join(repoRoot, 'build', 'ffdec_24.0.1', 'ffdec-cli.jar'),
+    '/Applications/FFDec.app/Contents/Resources/ffdec.sh',
+    '/Applications/FFDec.app/Contents/Resources/ffdec.jar',
+    '/Applications/FFDec.app/Contents/Resources/ffdec-cli.jar'
   );
 
   for (const candidate of candidates) {
@@ -300,7 +303,7 @@ function patchRoomSource(source) {
          {
             param1.PlayScript(this.Script_LetMeTry);
          }
-         if(this.bEmoteTutorialShown && (param1.OnEmote("Cheer") || param1.ActiveEmote("Cheer")))
+         if(this.bEmoteTutorialShown && (param1.OnEmote("Cheer L") || param1.ActiveEmote("Cheer L") || param1.OnEmote("Cheer") || param1.ActiveEmote("Cheer")))
          {
             param1.HideTutorial("am_HighlighterEmote");
             param1.CancelScript(this.Script_Password);
@@ -355,6 +358,8 @@ function verifyRoomSource(source, label) {
     'param1.SetPhase(this.WaitingOnParrotAtGoblinTick);',
     'this.am_Parrot.HasArrived() || param1.AtTime(7000)',
     'param1.PlayScript(this.Script_OpenDoor);',
+    'param1.OnEmote("Cheer L")',
+    'param1.ActiveEmote("Cheer L")',
     'param1.OnEmote("Cheer")',
     'param1.ActiveEmote("Cheer")',
     'this.Script_OpeningScene = ["0 Parrot Lets go!"];',
@@ -365,6 +370,7 @@ function verifyRoomSource(source, label) {
   const forbidden = [
     'param1.OnEmote(null)',
     'param1.ActiveEmote(null)',
+    'this.bEmoteTutorialShown && (param1.OnEmote("Cheer") || param1.ActiveEmote("Cheer"))',
     'param1.OnScriptFinish(this.Script_LetMeTry) || param1.AtTime(28000)',
     '|| param1.AtTime(40000)',
     'this.am_Parrot.x = this.am_Goblin.x - 90;',

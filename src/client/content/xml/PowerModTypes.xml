@@ -264,11 +264,11 @@
 		<ModName>PoisonDmg1</ModName>
 		<ModID>26</ModID>
 		<DisplayName>Concentrated Venom</DisplayName>
-		<Description>Increases Poison Damage@Poison Damage:, +6%, +12%, +18%, +24%, +30%</Description>
+		<Description>Increases Poison Damage@Poison Damage:, +7%, +14%, +21%, +28%, +35%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,Plagued1,Plagued2,Plagued3,Plagued4,Plagued5,Plagued6,Plagued7,Plagued8,Plagued9,Plagued10,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.06</BuffValue>
+		<BuffValue>.07</BuffValue>
 		<IconName>a_Signet_Poison01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -278,7 +278,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,Plagued1,Plagued2,Plagued3,Plagued4,Plagued5,Plagued6,Plagued7,Plagued8,Plagued9,Plagued10,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.12</BuffValue>
+		<BuffValue>.14</BuffValue>
 		<IconName>a_Signet_Poison01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -288,7 +288,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,Plagued1,Plagued2,Plagued3,Plagued4,Plagued5,Plagued6,Plagued7,Plagued8,Plagued9,Plagued10,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.18</BuffValue>
+		<BuffValue>.21</BuffValue>
 		<IconName>a_Signet_Poison01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -298,7 +298,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,Plagued1,Plagued2,Plagued3,Plagued4,Plagued5,Plagued6,Plagued7,Plagued8,Plagued9,Plagued10,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.24</BuffValue>
+		<BuffValue>.28</BuffValue>
 		<IconName>a_Signet_Poison01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -308,7 +308,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,Plagued1,Plagued2,Plagued3,Plagued4,Plagued5,Plagued6,Plagued7,Plagued8,Plagued9,Plagued10,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.3</BuffValue>
+		<BuffValue>.35</BuffValue>
 		<IconName>a_Signet_Poison01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2918,9 +2918,9 @@
 		<ModName>CurseCrit1</ModName>
 		<ModID>306</ModID>
 		<DisplayName>Crippling Curse</DisplayName>
-		<Description>Gain a Critical Chance bonus vs. Cursed Targets@Critical Chance Bonus:, 1%, 2%, 3%, 4%, 5%</Description>
+		<Description>Gain a Critical Chance bonus vs. Cursed Targets@Critical Chance Bonus:, 2%, 4%, 6%, 8%, 10%</Description>
 		<ModType>WTF</ModType>
-		<SelfValue>0.01</SelfValue>
+		<SelfValue>.02</SelfValue>
 		<IconName>a_Signet_CurseCrit</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2928,7 +2928,7 @@
 		<ModID>307</ModID>
 		<DisplayName>Crippling Curse</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.02</SelfValue>
+		<SelfValue>.04</SelfValue>
 		<IconName>a_Signet_CurseCrit</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2936,7 +2936,7 @@
 		<ModID>308</ModID>
 		<DisplayName>Crippling Curse</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.03</SelfValue>
+		<SelfValue>.06</SelfValue>
 		<IconName>a_Signet_CurseCrit</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2944,7 +2944,7 @@
 		<ModID>309</ModID>
 		<DisplayName>Crippling Curse</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.04</SelfValue>
+		<SelfValue>.08</SelfValue>
 		<IconName>a_Signet_CurseCrit</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2952,7 +2952,7 @@
 		<ModID>310</ModID>
 		<DisplayName>Crippling Curse</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.05</SelfValue>
+		<SelfValue>.1</SelfValue>
 		<IconName>a_Signet_CurseCrit</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3000,41 +3000,51 @@
 		<ModName>MinionMaster1</ModName>
 		<ModID>316</ModID>
 		<DisplayName>Minion Master</DisplayName>
-		<Description>Increased Expertise for 2.5 sec whenever you summon an Undead Minion@Expertise Bonus:, 1%, 2%, 3%, 4%, 5%</Description>
-		<ModType>WTF</ModType>
-		<SelfValue>MinionMaster1</SelfValue>
+		<Description>Increased Expertise for 5 sec whenever you summon an Undead Minion@Expertise Bonus:, 1%, 2%, 3%, 4%, 5%</Description>
+		<ModType>Power</ModType>
+		<PowerName>SummonGhoul,SummonGhoul1,SummonGhoul2,SummonGhoul3,SummonGhoul4,SummonGhoul5,SummonGhoul6,SummonGhoul7,SummonGhoul8,SummonGhoul9,SummonGhoul10,SummonRangedGhoul,SummonRangedGhoul1,SummonRangedGhoul2,SummonRangedGhoul3,SummonRangedGhoul4,SummonRangedGhoul5,SummonRangedGhoul6,SummonRangedGhoul7,SummonRangedGhoul8,SummonRangedGhoul9,SummonRangedGhoul10,InfestationSpawn,InfestationSpawn1,InfestationSpawn2,InfestationSpawn3,InfestationSpawn4,InfestationSpawn5,InfestationSpawn6,InfestationSpawn7,InfestationSpawn8,InfestationSpawn9,InfestationSpawn10,InfestationSpawnKing</PowerName>
+		<PowerProperty>AddSelfBuff</PowerProperty>
+		<PowerValue>Append:MinionMaster1</PowerValue>
 		<IconName>a_Signet_MinionMaster</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>MinionMaster2</ModName>
 		<ModID>317</ModID>
 		<DisplayName>Minion Master</DisplayName>
-		<ModType>WTF</ModType>
-		<SelfValue>MinionMaster2</SelfValue>
+		<ModType>Power</ModType>
+		<PowerName>SummonGhoul,SummonGhoul1,SummonGhoul2,SummonGhoul3,SummonGhoul4,SummonGhoul5,SummonGhoul6,SummonGhoul7,SummonGhoul8,SummonGhoul9,SummonGhoul10,SummonRangedGhoul,SummonRangedGhoul1,SummonRangedGhoul2,SummonRangedGhoul3,SummonRangedGhoul4,SummonRangedGhoul5,SummonRangedGhoul6,SummonRangedGhoul7,SummonRangedGhoul8,SummonRangedGhoul9,SummonRangedGhoul10,InfestationSpawn,InfestationSpawn1,InfestationSpawn2,InfestationSpawn3,InfestationSpawn4,InfestationSpawn5,InfestationSpawn6,InfestationSpawn7,InfestationSpawn8,InfestationSpawn9,InfestationSpawn10,InfestationSpawnKing</PowerName>
+		<PowerProperty>AddSelfBuff</PowerProperty>
+		<PowerValue>Append:MinionMaster2</PowerValue>
 		<IconName>a_Signet_MinionMaster</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>MinionMaster3</ModName>
 		<ModID>318</ModID>
 		<DisplayName>Minion Master</DisplayName>
-		<ModType>WTF</ModType>
-		<SelfValue>MinionMaster3</SelfValue>
+		<ModType>Power</ModType>
+		<PowerName>SummonGhoul,SummonGhoul1,SummonGhoul2,SummonGhoul3,SummonGhoul4,SummonGhoul5,SummonGhoul6,SummonGhoul7,SummonGhoul8,SummonGhoul9,SummonGhoul10,SummonRangedGhoul,SummonRangedGhoul1,SummonRangedGhoul2,SummonRangedGhoul3,SummonRangedGhoul4,SummonRangedGhoul5,SummonRangedGhoul6,SummonRangedGhoul7,SummonRangedGhoul8,SummonRangedGhoul9,SummonRangedGhoul10,InfestationSpawn,InfestationSpawn1,InfestationSpawn2,InfestationSpawn3,InfestationSpawn4,InfestationSpawn5,InfestationSpawn6,InfestationSpawn7,InfestationSpawn8,InfestationSpawn9,InfestationSpawn10,InfestationSpawnKing</PowerName>
+		<PowerProperty>AddSelfBuff</PowerProperty>
+		<PowerValue>Append:MinionMaster3</PowerValue>
 		<IconName>a_Signet_MinionMaster</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>MinionMaster4</ModName>
 		<ModID>319</ModID>
 		<DisplayName>Minion Master</DisplayName>
-		<ModType>WTF</ModType>
-		<SelfValue>MinionMaster4</SelfValue>
+		<ModType>Power</ModType>
+		<PowerName>SummonGhoul,SummonGhoul1,SummonGhoul2,SummonGhoul3,SummonGhoul4,SummonGhoul5,SummonGhoul6,SummonGhoul7,SummonGhoul8,SummonGhoul9,SummonGhoul10,SummonRangedGhoul,SummonRangedGhoul1,SummonRangedGhoul2,SummonRangedGhoul3,SummonRangedGhoul4,SummonRangedGhoul5,SummonRangedGhoul6,SummonRangedGhoul7,SummonRangedGhoul8,SummonRangedGhoul9,SummonRangedGhoul10,InfestationSpawn,InfestationSpawn1,InfestationSpawn2,InfestationSpawn3,InfestationSpawn4,InfestationSpawn5,InfestationSpawn6,InfestationSpawn7,InfestationSpawn8,InfestationSpawn9,InfestationSpawn10,InfestationSpawnKing</PowerName>
+		<PowerProperty>AddSelfBuff</PowerProperty>
+		<PowerValue>Append:MinionMaster4</PowerValue>
 		<IconName>a_Signet_MinionMaster</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>MinionMaster5</ModName>
 		<ModID>320</ModID>
 		<DisplayName>Minion Master</DisplayName>
-		<ModType>WTF</ModType>
-		<SelfValue>MinionMaster5</SelfValue>
+		<ModType>Power</ModType>
+		<PowerName>SummonGhoul,SummonGhoul1,SummonGhoul2,SummonGhoul3,SummonGhoul4,SummonGhoul5,SummonGhoul6,SummonGhoul7,SummonGhoul8,SummonGhoul9,SummonGhoul10,SummonRangedGhoul,SummonRangedGhoul1,SummonRangedGhoul2,SummonRangedGhoul3,SummonRangedGhoul4,SummonRangedGhoul5,SummonRangedGhoul6,SummonRangedGhoul7,SummonRangedGhoul8,SummonRangedGhoul9,SummonRangedGhoul10,InfestationSpawn,InfestationSpawn1,InfestationSpawn2,InfestationSpawn3,InfestationSpawn4,InfestationSpawn5,InfestationSpawn6,InfestationSpawn7,InfestationSpawn8,InfestationSpawn9,InfestationSpawn10,InfestationSpawnKing</PowerName>
+		<PowerProperty>AddSelfBuff</PowerProperty>
+		<PowerValue>Append:MinionMaster5</PowerValue>
 		<IconName>a_Signet_MinionMaster</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3843,22 +3853,22 @@
 		<ModName>RuneSummonGhoul</ModName>
 		<ModID>394</ModID>
 		<DisplayName>Call the Horde</DisplayName>
-		<Description>+4% Call the Horde ghoul attack</Description>
+		<Description>+10% Call the Horde ghoul damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>GhoulMelee</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>.05</PowerValue>
+		<PowerValue>.1</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneSummonRangedGhoul</ModName>
 		<ModID>395</ModID>
 		<DisplayName>Bolster the Horde</DisplayName>
-		<Description>Bolster ghoul shots add 1% weaken</Description>
+		<Description>Bolster ghoul ranged attacks inflict Poison</Description>
 		<ModType>Power</ModType>
-		<PowerName>Ghoul2Melee,Ghoul2Fireball</PowerName>
+		<PowerName>Ghoul2Fireball</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
-		<PowerValue>Append:RangedGhoulWeaken</PowerValue>
+		<PowerValue>Append:PoisonCloud</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>

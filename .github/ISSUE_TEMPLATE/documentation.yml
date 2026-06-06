@@ -1,5 +1,6 @@
 name: Documentation
 description: Report missing, unclear, or outdated project documentation.
+type: task
 body:
   - type: textarea
     id: location

@@ -158,7 +158,7 @@ function applyCurrentEnglishTalentDescriptions(xml: string): string {
     "ModName",
     "PoisonDmg1",
     "Description",
-    "Increases Poison Damage@Poison Damage:, +6%, +12%, +18%, +24%, +30%"
+    "Increases Poison Damage@Poison Damage:, +7%, +14%, +21%, +28%, +35%"
   );
 
   return updated;

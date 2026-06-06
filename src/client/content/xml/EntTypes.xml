@@ -6879,10 +6879,10 @@
 		<MeleePower>GhoulMelee</MeleePower>
 		<Level>10</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.72</MeleeDamage>
-		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.75</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>50</Width>
@@ -6909,10 +6909,10 @@
 		<MeleePower>GhoulMelee</MeleePower>
 		<Level>15</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.75</MeleeDamage>
-		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.85</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>50</Width>
@@ -6939,10 +6939,10 @@
 		<MeleePower>GhoulMelee</MeleePower>
 		<Level>20</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.75</MeleeDamage>
-		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.85</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>50</Width>
@@ -6969,10 +6969,10 @@
 		<MeleePower>GhoulMelee</MeleePower>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.77</MeleeDamage>
-		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.85</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>50</Width>
@@ -6999,10 +6999,10 @@
 		<MeleePower>GhoulMelee</MeleePower>
 		<Level>30</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.77</MeleeDamage>
-		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.9</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>50</Width>
@@ -7029,10 +7029,10 @@
 		<MeleePower>GhoulMelee</MeleePower>
 		<Level>35</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.77</MeleeDamage>
-		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.9</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>50</Width>
@@ -7059,10 +7059,10 @@
 		<MeleePower>GhoulMelee</MeleePower>
 		<Level>40</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.79</MeleeDamage>
-		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.9</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>50</Width>
@@ -7089,10 +7089,10 @@
 		<MeleePower>GhoulMelee</MeleePower>
 		<Level>45</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.79</MeleeDamage>
-		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.9</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>50</Width>
@@ -7119,10 +7119,10 @@
 		<MeleePower>GhoulMelee</MeleePower>
 		<Level>50</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.81</MeleeDamage>
-		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.95</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>50</Width>
@@ -7149,10 +7149,10 @@
 		<MeleePower>GhoulMelee</MeleePower>
 		<Level>50</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.81</MeleeDamage>
-		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.95</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>10.8</Speed>
 		<Width>50</Width>
@@ -7180,10 +7180,10 @@
 		<RangedPower>Ghoul2Fireball</RangedPower>
 		<Level>10</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.9</MeleeDamage>
-		<MagicDamage>1.1</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.75</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>8.1</Speed>
 		<Width>50</Width>
@@ -7211,10 +7211,10 @@
 		<RangedPower>Ghoul2Fireball</RangedPower>
 		<Level>15</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.95</MeleeDamage>
-		<MagicDamage>1.15</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.85</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>8.1</Speed>
 		<Width>50</Width>
@@ -7242,10 +7242,10 @@
 		<RangedPower>Ghoul2Fireball</RangedPower>
 		<Level>20</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.95</MeleeDamage>
-		<MagicDamage>1.15</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.85</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>8.1</Speed>
 		<Width>50</Width>
@@ -7273,10 +7273,10 @@
 		<RangedPower>Ghoul2Fireball</RangedPower>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.95</MeleeDamage>
-		<MagicDamage>1.15</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.85</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>8.1</Speed>
 		<Width>50</Width>
@@ -7304,10 +7304,10 @@
 		<RangedPower>Ghoul2Fireball</RangedPower>
 		<Level>30</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>1</MeleeDamage>
-		<MagicDamage>1.2</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.9</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>8.1</Speed>
 		<Width>50</Width>
@@ -7335,10 +7335,10 @@
 		<RangedPower>Ghoul2Fireball</RangedPower>
 		<Level>35</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>1</MeleeDamage>
-		<MagicDamage>1.2</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.9</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>8.1</Speed>
 		<Width>50</Width>
@@ -7366,10 +7366,10 @@
 		<RangedPower>Ghoul2Fireball</RangedPower>
 		<Level>40</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>1</MeleeDamage>
-		<MagicDamage>1.2</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.9</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>8.1</Speed>
 		<Width>50</Width>
@@ -7397,10 +7397,10 @@
 		<RangedPower>Ghoul2Fireball</RangedPower>
 		<Level>45</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>1</MeleeDamage>
-		<MagicDamage>1.25</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.9</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>8.1</Speed>
 		<Width>50</Width>
@@ -7428,10 +7428,10 @@
 		<RangedPower>Ghoul2Fireball</RangedPower>
 		<Level>50</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>1.05</MeleeDamage>
-		<MagicDamage>1.33</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.95</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>8.1</Speed>
 		<Width>50</Width>
@@ -7459,10 +7459,10 @@
 		<RangedPower>Ghoul2Fireball</RangedPower>
 		<Level>50</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>1.05</MeleeDamage>
-		<MagicDamage>1.44</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0.95</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<Realm>PlayerPet</Realm>
 		<Speed>8.1</Speed>
 		<Width>50</Width>
@@ -54894,10 +54894,10 @@
 		<MeleePower>InfestedMelee</MeleePower>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.7</MeleeDamage>
-		<MagicDamage>0.7</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>1</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<RewardClass>NoLoot</RewardClass>
 		<Realm>PlayerPet</Realm>
 		<Speed>0</Speed>
@@ -54931,10 +54931,10 @@
 		<MeleePower>InfestedMelee</MeleePower>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.75</MeleeDamage>
-		<MagicDamage>0.75</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>1.25</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<RewardClass>NoLoot</RewardClass>
 		<Realm>PlayerPet</Realm>
 		<Speed>0</Speed>
@@ -54968,10 +54968,10 @@
 		<MeleePower>InfestedMelee</MeleePower>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.8</MeleeDamage>
-		<MagicDamage>0.8</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>1.5</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<RewardClass>NoLoot</RewardClass>
 		<Realm>PlayerPet</Realm>
 		<Speed>0</Speed>
@@ -55005,10 +55005,10 @@
 		<MeleePower>InfestedMelee</MeleePower>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>1</MeleeDamage>
-		<MagicDamage>1</MagicDamage>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>3</HitPoints>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
+		<ArmorClass>0.1</ArmorClass>
+		<HitPoints>0.1</HitPoints>
 		<RewardClass>NoLoot</RewardClass>
 		<Realm>PlayerPet</Realm>
 		<Speed>0</Speed>
