@@ -957,7 +957,7 @@
 	<BuffType BuffName="Flamethrower">
 		<BuffID>293</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>1000</Duration>
 		<MagicDefense>0.15</MagicDefense>
 		<MeleeDefense>0.15</MeleeDefense>
 		<SpeedChange>0.3</SpeedChange>
@@ -2830,7 +2830,7 @@
 	<BuffType BuffName="FlamethrowerRank1">
 		<BuffID>479</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>1000</Duration>
 		<BuffLoc>ChestBack</BuffLoc>
 		<EntTint>0xFFD220</EntTint>
 		<GfxType/>
@@ -2838,7 +2838,7 @@
 	<BuffType BuffName="FlamethrowerRank5">
 		<BuffID>480</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>1000</Duration>
 		<MagicDefense>0.15</MagicDefense>
 		<MeleeDefense>0.15</MeleeDefense>
 		<SpeedChange>0.1</SpeedChange>
@@ -2850,7 +2850,7 @@
 	<BuffType BuffName="FlamethrowerRank9">
 		<BuffID>481</BuffID>
 		<Attack>false</Attack>
-		<Duration>0</Duration>
+		<Duration>1000</Duration>
 		<MagicDefense>0.25</MagicDefense>
 		<MeleeDefense>0.25</MeleeDefense>
 		<SpeedChange>0.1</SpeedChange>

@@ -434,6 +434,9 @@ function patchBuffBlock(buffName: string, block: string, stats: PatchStats): str
   } else if (/^Pyromania(?:\d+)?$/.test(buffName)) {
     stats.buffBlocks += 1;
     next = apply(next, stats, replaceTag(next, "Duration", "8000"));
+  } else if (/^Flamethrower(?:Rank\d+)?$/.test(buffName)) {
+    stats.buffBlocks += 1;
+    next = apply(next, stats, replaceTag(next, "Duration", "1000"));
   } else if (/^MinionMaster\d+$/.test(buffName)) {
     stats.buffBlocks += 1;
     next = apply(next, stats, replaceTag(next, "Duration", "5000"));
