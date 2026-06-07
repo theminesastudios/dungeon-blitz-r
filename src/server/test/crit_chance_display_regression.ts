@@ -2,10 +2,18 @@ import { strict as assert } from "assert";
 import * as fs from "fs";
 import * as path from "path";
 import { parseSwz } from "../scripts/swzPatchUtils";
+import {
+  classIndexByName,
+  disassemble,
+  Instruction,
+  parseAbc,
+  parseSwf,
+} from "../scripts/swfPatchUtils";
 
 const ROOT = path.resolve(__dirname, "..", "..");
 const XML_DIR = path.join(ROOT, "client", "content", "xml");
 const CBQ_DIR = path.join(ROOT, "client", "content", "localhost", "p", "cbq");
+const CBP_DIR = path.join(ROOT, "client", "content", "localhost", "p", "cbp");
 
 const EXPECTED_MOD_VALUES = new Map<string, string>([
   ["CritChance1", "+0.3%, +0.6%, +0.9%, +1.2%, +1.5%"],
@@ -66,6 +74,108 @@ function swzChunk(swzPath: string, marker: string): string {
   return chunk.xml;
 }
 
+function localOperand(inst: Instruction): number | null {
+  if (inst.opcode >= 0xd0 && inst.opcode <= 0xd3) {
+    return inst.opcode - 0xd0;
+  }
+  const operand = inst.operands[0];
+  if (inst.opcode !== 0x62 || !operand || operand[0] !== "u30") {
+    return null;
+  }
+  return operand[1];
+}
+
+function pushByteValue(inst: Instruction): number | null {
+  const operand = inst.operands[0];
+  if (inst.opcode !== 0x24 || !operand || operand[0] !== "s8") {
+    return null;
+  }
+  return operand[1];
+}
+
+function multiname(abc: ReturnType<typeof parseAbc>, inst: Instruction): string | null {
+  const operand = inst.operands[0];
+  if (!operand || operand[0] !== "u30") {
+    return null;
+  }
+  return abc.multinameNames[operand[1]] ?? null;
+}
+
+function isGetLexMath(abc: ReturnType<typeof parseAbc>, inst: Instruction | undefined): boolean {
+  return Boolean(inst && inst.opcode === 0x60 && multiname(abc, inst) === "Math");
+}
+
+function assertScreenArmoryCritChanceStatScale(swfPath: string): void {
+  const ctx = parseSwf(swfPath);
+  const abc = parseAbc(ctx);
+  const classIndex = classIndexByName(abc, "ScreenArmory");
+  assert.notEqual(classIndex, null, "DungeonBlitz.swf must contain ScreenArmory");
+
+  let oldCount = 0;
+  let patchedCount = 0;
+  const traits = [
+    ...abc.instances[classIndex as number].traits,
+    ...(abc.classTraits[classIndex as number] ?? []),
+  ];
+
+  for (const trait of traits) {
+    if (trait.methodIdx === null) {
+      continue;
+    }
+    const methodBody = abc.methodBodies.get(trait.methodIdx);
+    if (!methodBody) {
+      continue;
+    }
+    const code = ctx.body.subarray(methodBody.codeStart, methodBody.codeStart + methodBody.codeLen);
+    let instructions: Instruction[];
+    try {
+      instructions = disassemble(code, `ScreenArmory.${abc.multinameNames[trait.nameIdx] ?? trait.methodIdx}`);
+    } catch {
+      continue;
+    }
+
+    for (let index = 0; index < instructions.length - 3; index += 1) {
+      const previousInst = instructions[index - 1];
+      const local = localOperand(instructions[index]);
+      if (local !== 7 && local !== 65) {
+        continue;
+      }
+
+      if (
+        isGetLexMath(abc, previousInst) &&
+        pushByteValue(instructions[index + 1]) === 15 &&
+        instructions[index + 2]?.opcode === 0xa2 &&
+        instructions[index + 3]?.opcode === 0x46 &&
+        multiname(abc, instructions[index + 3]) === "round"
+      ) {
+        patchedCount += 1;
+        continue;
+      }
+
+      if (
+        isGetLexMath(abc, previousInst) &&
+        pushByteValue(instructions[index + 1]) === 15 &&
+        instructions[index + 2]?.opcode === 0xa2
+      ) {
+        oldCount += 1;
+      }
+
+      if (
+        isGetLexMath(abc, previousInst) &&
+        pushByteValue(instructions[index + 1]) === 100 &&
+        instructions[index + 2]?.opcode === 0xa2 &&
+        instructions[index + 3]?.opcode === 0x46 &&
+        multiname(abc, instructions[index + 3]) === "round"
+      ) {
+        oldCount += 1;
+      }
+    }
+  }
+
+  assert.equal(oldCount, 0, "served DungeonBlitz.swf should not render Critical Chance with old integer-percent scaling");
+  assert.equal(patchedCount, 3, "served DungeonBlitz.swf should patch all Critical Chance stat-page formatters");
+}
+
 assertCritChanceDisplays(
   fs.readFileSync(path.join(XML_DIR, "PlayerPowerTypes.xml"), "utf8"),
   fs.readFileSync(path.join(XML_DIR, "PowerModTypes.xml"), "utf8"),
@@ -80,5 +190,7 @@ for (const fileName of ["Game.swz", "Game.en.swz", "Game.tr.swz"]) {
     fileName,
   );
 }
+
+assertScreenArmoryCritChanceStatScale(path.join(CBP_DIR, "DungeonBlitz.swf"));
 
 console.log("crit_chance_display_regression passed");
