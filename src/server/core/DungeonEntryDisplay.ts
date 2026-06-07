@@ -1,11 +1,12 @@
 import { NpcLoader } from '../data/NpcLoader';
+import dungeonEnemyElements from '../data/dungeon_enemy_elements.json';
 import { GameData } from './GameData';
 import { LevelConfig } from './LevelConfig';
 
 const MOMENT_PREFIX = 'EnemyElements=';
 const ELEMENT_ORDER = ['Fire', 'Ice', 'Air', 'Earth', 'Life', 'Death'];
 const KNOWN_ELEMENTS = new Set(ELEMENT_ORDER);
-const MAX_VISIBLE_ELEMENTS = 2;
+const MAX_VISIBLE_ELEMENTS = 3;
 const KINGDOM_TO_ELEMENT: Record<string, string> = {
     Draconic: 'Fire',
     Infernal: 'Air',
@@ -18,7 +19,9 @@ const LEVEL_ELEMENT_FALLBACKS: Record<string, string[]> = {
     DreamDragonDungeon: ['Fire'],
     GhostBossDungeon: ['Death'],
     OMM_Mission1: ['Air', 'Earth'],
-    OMM_Mission1Hard: ['Air', 'Earth']
+    OMM_Mission1Hard: ['Air', 'Earth'],
+    SD_Mission2: ['Life', 'Air', 'Earth'],
+    SD_Mission2Hard: ['Life', 'Air', 'Earth']
 };
 const LEVEL_PREFIX_ELEMENT_FALLBACKS: Array<[RegExp, string[]]> = [
     [/^NR_Tales/, ['Earth']],
@@ -31,6 +34,12 @@ const LEVEL_PREFIX_ELEMENT_FALLBACKS: Array<[RegExp, string[]]> = [
     [/^SD_Mission|^SD_Tales/, ['Earth', 'Air']],
     [/^JC_Mission|^JC_Mini/, ['Fire', 'Ice']]
 ];
+
+interface DungeonEnemyElementEntry {
+    elements?: unknown[];
+}
+
+const DUNGEON_ENEMY_ELEMENTS = dungeonEnemyElements as Record<string, DungeonEnemyElementEntry | undefined>;
 
 function normalizeElement(value: unknown): string {
     const raw = String(value ?? '').trim();
@@ -82,6 +91,19 @@ function getFallbackElements(levelName: string): string[] {
     return [];
 }
 
+function getManifestElements(levelName: string): string[] {
+    const baseLevelName = levelName.endsWith('Hard') ? levelName.slice(0, -4) : levelName;
+    const entry = DUNGEON_ENEMY_ELEMENTS[levelName] ?? DUNGEON_ENEMY_ELEMENTS[baseLevelName];
+    if (!entry || !Array.isArray(entry.elements)) {
+        return [];
+    }
+
+    return entry.elements
+        .map((element) => normalizeElement(element))
+        .filter((element) => element)
+        .slice(0, MAX_VISIBLE_ELEMENTS);
+}
+
 export class DungeonEntryDisplay {
     static readonly MOMENT_PREFIX = MOMENT_PREFIX;
 
@@ -114,6 +136,11 @@ export class DungeonEntryDisplay {
         });
 
         if (sorted.length === 0) {
+            const manifest = getManifestElements(levelName);
+            if (manifest.length > 0) {
+                return manifest.join('|');
+            }
+
             const fallback = getFallbackElements(levelName)
                 .map((element) => normalizeElement(element))
                 .filter((element) => element);

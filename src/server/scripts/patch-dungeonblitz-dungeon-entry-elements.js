@@ -164,6 +164,42 @@ function patchClass100(source) {
         '            MathUtil.method_2(this.var_1413.am_Text,_loc6_);'
     ].join(eol);
 
+    const oldTwoElementFormatter = [
+        '            for each(_loc6_ in _loc2_.var_1550)',
+        '            {',
+        '               if(_loc6_.indexOf("EnemyElements=") == 0)',
+        '               {',
+        '                  _loc8_ = _loc6_.substr(14).split("|");',
+        '                  _loc7_ = _loc8_.length == 2 ? _loc8_[0] + " and " + _loc8_[1] + " Creatures" : _loc8_.join(", ") + " Creatures";',
+        '                  break;',
+        '               }',
+        '            }',
+        '            _loc6_ = "Dungeon Level: " + _loc5_;',
+        '            if(_loc7_)',
+        '            {',
+        '               _loc6_ += " - " + _loc7_;',
+        '            }',
+        '            MathUtil.method_2(this.var_1413.am_Text,_loc6_);'
+    ].join(eol);
+
+    const oldTwoElementFormatterSource = [
+        '            for each(_loc6_ in _loc2_.var_1550)',
+        '            {',
+        '               if(_loc6_.indexOf("EnemyElements=") == 0)',
+        '               {',
+        '                  _loc8_ = _loc6_.substr("EnemyElements=".length).split("|");',
+        '                  _loc7_ = _loc8_.length == 2 ? _loc8_[0] + " and " + _loc8_[1] + " Creatures" : _loc8_.join(", ") + " Creatures";',
+        '                  break;',
+        '               }',
+        '            }',
+        '            _loc6_ = "Dungeon Level: " + _loc5_;',
+        '            if(_loc7_)',
+        '            {',
+        '               _loc6_ += " - " + _loc7_;',
+        '            }',
+        '            MathUtil.method_2(this.var_1413.am_Text,_loc6_);'
+    ].join(eol);
+
     const oldTwoLineSource = [
         '            for each(_loc6_ in _loc2_.var_1550)',
         '            {',
@@ -187,7 +223,18 @@ function patchClass100(source) {
         '               if(_loc6_.indexOf("EnemyElements=") == 0)',
         '               {',
         '                  _loc8_ = _loc6_.substr("EnemyElements=".length).split("|");',
-        '                  _loc7_ = _loc8_.length == 2 ? _loc8_[0] + " and " + _loc8_[1] + " Creatures" : _loc8_.join(", ") + " Creatures";',
+        '                  if(_loc8_.length == 1)',
+        '                  {',
+        '                     _loc7_ = _loc8_[0] + " Creatures";',
+        '                  }',
+        '                  else if(_loc8_.length == 2)',
+        '                  {',
+        '                     _loc7_ = _loc8_[0] + " and " + _loc8_[1] + " Creatures";',
+        '                  }',
+        '                  else',
+        '                  {',
+        '                     _loc7_ = _loc8_.slice(0,_loc8_.length - 1).join(", ") + ", and " + _loc8_[_loc8_.length - 1] + " Creatures";',
+        '                  }',
         '                  break;',
         '               }',
         '            }',
@@ -211,6 +258,14 @@ function patchClass100(source) {
 
     if (patched.includes(oldOneLineSource)) {
         return patched.replace(oldOneLineSource, oneLinePatch);
+    }
+
+    if (patched.includes(oldTwoElementFormatter)) {
+        return patched.replace(oldTwoElementFormatter, oneLinePatch);
+    }
+
+    if (patched.includes(oldTwoElementFormatterSource)) {
+        return patched.replace(oldTwoElementFormatterSource, oneLinePatch);
     }
 
     if (patched.includes(oldTwoLine)) {

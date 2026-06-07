@@ -1,0 +1,6101 @@
+{
+  "CraftTown": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "no-matching-rooms",
+    "rooms": []
+  },
+  "CraftTownTutorial": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "no-matching-rooms",
+    "rooms": []
+  },
+  "TutorialBoat": {
+    "elements": [
+      "Earth",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "IntroGoblinDagger",
+        "count": 7
+      },
+      {
+        "enemyType": "IntroGoblinJumper",
+        "count": 7
+      },
+      {
+        "enemyType": "IntroDummyFlier",
+        "count": 2
+      },
+      {
+        "enemyType": "IntroGoblinClub",
+        "count": 2
+      },
+      {
+        "enemyType": "IntroPsychophageBaby",
+        "count": 2
+      },
+      {
+        "enemyType": "IntroKraken",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_TutorialBoat_R01"
+    ]
+  },
+  "TutorialDungeon": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "no-matching-rooms",
+    "rooms": []
+  },
+  "TutorialDungeonHard": {
+    "elements": [
+      "Earth",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "PsychophageBabyHard",
+        "count": 19
+      },
+      {
+        "enemyType": "GoblinShamanHoodHard",
+        "count": 7
+      },
+      {
+        "enemyType": "GoblinArmorAxeHard",
+        "count": 6
+      },
+      {
+        "enemyType": "GoblinHatchetHard",
+        "count": 5
+      },
+      {
+        "enemyType": "GoblinShamanSkullHatHard",
+        "count": 5
+      },
+      {
+        "enemyType": "GoblinArmorSwordHard",
+        "count": 4
+      },
+      {
+        "enemyType": "GoblinBruteHard",
+        "count": 4
+      },
+      {
+        "enemyType": "GoblinClubHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GoblinBoss1Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "GoblinDaggerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "GoblinMimicHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_GoblinBeachHard_01",
+      "a_Room_GoblinBeachHard_02",
+      "a_Room_GoblinBeachHard_03",
+      "a_Room_GoblinBeachHard_04",
+      "a_Room_GoblinBeachHard_05",
+      "a_Room_GoblinBeachHard_06",
+      "a_Room_GoblinBeachHard_07",
+      "a_Room_GoblinBeachHard_08",
+      "a_Room_GoblinBeachHard_09"
+    ]
+  },
+  "GoblinRiverDungeon": {
+    "elements": [
+      "Earth",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GoblinBrute",
+        "count": 6
+      },
+      {
+        "enemyType": "GoblinHatchet",
+        "count": 6
+      },
+      {
+        "enemyType": "GoblinShamanHood",
+        "count": 5
+      },
+      {
+        "enemyType": "GoblinShamanSkullHat",
+        "count": 3
+      },
+      {
+        "enemyType": "GoblinArmorAxe",
+        "count": 2
+      },
+      {
+        "enemyType": "GoblinClub",
+        "count": 2
+      },
+      {
+        "enemyType": "GoblinDagger",
+        "count": 2
+      },
+      {
+        "enemyType": "GoblinArmorSword",
+        "count": 1
+      },
+      {
+        "enemyType": "GoblinBoss2",
+        "count": 1
+      },
+      {
+        "enemyType": "GrayGhostServant",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_GoblinCamp01",
+      "a_Room_GoblinCamp02",
+      "a_Room_GoblinCamp03",
+      "a_Room_GoblinCamp04",
+      "a_Room_GoblinCamp05",
+      "a_Room_GoblinCamp06",
+      "a_Room_GoblinCamp07",
+      "a_Room_GoblinCamp08",
+      "a_Room_GoblinCamp09",
+      "a_Room_GoblinCamp10",
+      "a_Room_GoblinCamp11"
+    ]
+  },
+  "GoblinRiverDungeonHard": {
+    "elements": [
+      "Earth",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GoblinBruteHard",
+        "count": 6
+      },
+      {
+        "enemyType": "GoblinHatchetHard",
+        "count": 6
+      },
+      {
+        "enemyType": "GoblinShamanHoodHard",
+        "count": 5
+      },
+      {
+        "enemyType": "GoblinShamanSkullHatHard",
+        "count": 3
+      },
+      {
+        "enemyType": "GoblinArmorAxeHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GoblinClubHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GoblinDaggerHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GoblinArmorSwordHard",
+        "count": 1
+      },
+      {
+        "enemyType": "GoblinBoss2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "GrayGhostServantHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_GoblinCamp01",
+      "a_Room_GoblinCamp02",
+      "a_Room_GoblinCamp03",
+      "a_Room_GoblinCamp04",
+      "a_Room_GoblinCamp05",
+      "a_Room_GoblinCamp06",
+      "a_Room_GoblinCamp07",
+      "a_Room_GoblinCamp08",
+      "a_Room_GoblinCamp09",
+      "a_Room_GoblinCamp10",
+      "a_Room_GoblinCamp11"
+    ]
+  },
+  "GhostBossDungeon": {
+    "elements": [
+      "Earth",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GoblinClub",
+        "count": 5
+      },
+      {
+        "enemyType": "GoblinShamanHood",
+        "count": 3
+      },
+      {
+        "enemyType": "GoblinBrute",
+        "count": 2
+      },
+      {
+        "enemyType": "GoblinDagger",
+        "count": 2
+      },
+      {
+        "enemyType": "GoblinHatchet",
+        "count": 2
+      },
+      {
+        "enemyType": "SkeletonElite",
+        "count": 2
+      },
+      {
+        "enemyType": "GoblinArmorSword",
+        "count": 1
+      },
+      {
+        "enemyType": "GoblinShamanSkullHat",
+        "count": 1
+      },
+      {
+        "enemyType": "SkeletonClub",
+        "count": 1
+      },
+      {
+        "enemyType": "SkeletonFist",
+        "count": 1
+      },
+      {
+        "enemyType": "SkeletonSorcerer",
+        "count": 1
+      },
+      {
+        "enemyType": "SkeletonSword",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_NRM03R02",
+      "a_Room_NRM03R03",
+      "a_Room_NRM03R05",
+      "a_Room_NRM03R06",
+      "a_Room_NRM03R07",
+      "a_Room_NRM03R08",
+      "a_Room_NRM03R09",
+      "a_Room_NRM03RGhostBoss"
+    ]
+  },
+  "GhostBossDungeonHard": {
+    "elements": [
+      "Earth",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GoblinClubHard",
+        "count": 5
+      },
+      {
+        "enemyType": "GoblinShamanHoodHard",
+        "count": 3
+      },
+      {
+        "enemyType": "GoblinBruteHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GoblinDaggerHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GoblinHatchetHard",
+        "count": 2
+      },
+      {
+        "enemyType": "SkeletonEliteHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GoblinArmorSwordHard",
+        "count": 1
+      },
+      {
+        "enemyType": "GoblinShamanSkullHatHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SkeletonClubHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SkeletonFistHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SkeletonSorcererHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SkeletonSwordHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_NRM03R02",
+      "a_Room_NRM03R03",
+      "a_Room_NRM03R05",
+      "a_Room_NRM03R06",
+      "a_Room_NRM03R07",
+      "a_Room_NRM03R08",
+      "a_Room_NRM03R09",
+      "a_Room_NRM03RGhostBoss"
+    ]
+  },
+  "DreamDragonDungeon": {
+    "elements": [
+      "Death",
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SkeletonSorcerer",
+        "count": 8
+      },
+      {
+        "enemyType": "GrayGhostServant",
+        "count": 6
+      },
+      {
+        "enemyType": "GrayGhostKnight",
+        "count": 5
+      },
+      {
+        "enemyType": "SkeletonElite",
+        "count": 4
+      },
+      {
+        "enemyType": "SkeletonClub",
+        "count": 2
+      },
+      {
+        "enemyType": "SkeletonFist",
+        "count": 1
+      },
+      {
+        "enemyType": "SkeletonSword",
+        "count": 1
+      },
+      {
+        "enemyType": "YoungDragonDream",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_NRM04R01",
+      "a_Room_NRM04R03",
+      "a_Room_NRM04R04",
+      "a_Room_NRM04R05",
+      "a_Room_NRM04R06",
+      "a_Room_NRM04R08",
+      "a_Room_NRM04R09",
+      "a_Room_NRM04R10",
+      "a_Room_NRM04R12",
+      "a_Room_NRM04R13",
+      "a_Room_NRM04R15",
+      "a_Room_NRM04RDreamDragonBoss"
+    ]
+  },
+  "DreamDragonDungeonHard": {
+    "elements": [
+      "Death",
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SkeletonSorcererHard",
+        "count": 8
+      },
+      {
+        "enemyType": "GrayGhostServantHard",
+        "count": 6
+      },
+      {
+        "enemyType": "GrayGhostKnightHard",
+        "count": 5
+      },
+      {
+        "enemyType": "SkeletonEliteHard",
+        "count": 4
+      },
+      {
+        "enemyType": "SkeletonClubHard",
+        "count": 2
+      },
+      {
+        "enemyType": "SkeletonFistHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SkeletonSwordHard",
+        "count": 1
+      },
+      {
+        "enemyType": "YoungDragonDreamHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_NRM04R01",
+      "a_Room_NRM04R03",
+      "a_Room_NRM04R04",
+      "a_Room_NRM04R05",
+      "a_Room_NRM04R06",
+      "a_Room_NRM04R08",
+      "a_Room_NRM04R09",
+      "a_Room_NRM04R10",
+      "a_Room_NRM04R12",
+      "a_Room_NRM04R13",
+      "a_Room_NRM04R15",
+      "a_Room_NRM04RDreamDragonBoss"
+    ]
+  },
+  "NR_Tales1Keep": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "missing-swf",
+    "rooms": []
+  },
+  "NR_Tales2Anna": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "missing-swf",
+    "rooms": []
+  },
+  "NR_Tales3Bazaar": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "missing-swf",
+    "rooms": []
+  },
+  "NR_Tales4Research": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "missing-swf",
+    "rooms": []
+  },
+  "NR_Tales5DreamCave": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "missing-swf",
+    "rooms": []
+  },
+  "SRN_Mission1": {
+    "elements": [
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "LizardHeavy",
+        "count": 7
+      },
+      {
+        "enemyType": "LizardWarrior",
+        "count": 6
+      },
+      {
+        "enemyType": "LizardBanner",
+        "count": 5
+      },
+      {
+        "enemyType": "LizardWarrior2",
+        "count": 3
+      },
+      {
+        "enemyType": "LizardLord",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM01CastoutBoss",
+      "a_Room_SRNM01R04",
+      "a_Room_SRNM01R06",
+      "a_Room_SRNM01R07",
+      "a_Room_SRNM01R08",
+      "a_Room_SRNM01R11",
+      "a_Room_SRNM01R13",
+      "a_Room_SRNM01R15",
+      "a_Room_SRNM01R16",
+      "a_Room_SRNM01R17",
+      "a_Room_SRNM01R18",
+      "a_Room_SRNM01R20"
+    ]
+  },
+  "SRN_Mission1Hard": {
+    "elements": [
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "LizardHeavyHard",
+        "count": 7
+      },
+      {
+        "enemyType": "LizardWarriorHard",
+        "count": 6
+      },
+      {
+        "enemyType": "LizardBannerHard",
+        "count": 5
+      },
+      {
+        "enemyType": "LizardWarrior2Hard",
+        "count": 3
+      },
+      {
+        "enemyType": "LizardLordHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM01CastoutBoss",
+      "a_Room_SRNM01R04",
+      "a_Room_SRNM01R06",
+      "a_Room_SRNM01R07",
+      "a_Room_SRNM01R08",
+      "a_Room_SRNM01R11",
+      "a_Room_SRNM01R13",
+      "a_Room_SRNM01R15",
+      "a_Room_SRNM01R16",
+      "a_Room_SRNM01R17",
+      "a_Room_SRNM01R18",
+      "a_Room_SRNM01R20"
+    ]
+  },
+  "SRN_Mission2": {
+    "elements": [
+      "Fire",
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "LizardHeavy",
+        "count": 4
+      },
+      {
+        "enemyType": "LizardWarrior",
+        "count": 2
+      },
+      {
+        "enemyType": "Devourer",
+        "count": 1
+      },
+      {
+        "enemyType": "SwampKing",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM02R01",
+      "a_Room_SRNM02R03",
+      "a_Room_SRNM02R04",
+      "a_Room_SRNM02R05",
+      "a_Room_SRNM02R06",
+      "a_Room_SRNM02R07",
+      "a_Room_SRNM02R08",
+      "a_Room_SRNM02R09",
+      "a_Room_SRNM02R10",
+      "a_Room_SRNM02R11",
+      "a_Room_SRNM02R12",
+      "a_Room_SRNM02R14",
+      "a_Room_SRNM02R15",
+      "a_Room_SRNM02R16",
+      "a_Room_SRNM02R17",
+      "a_Room_SRNM02R19",
+      "a_Room_SRNM02R20",
+      "a_Room_SRNM02YornakBoss"
+    ]
+  },
+  "SRN_Mission2Hard": {
+    "elements": [
+      "Fire",
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "LizardHeavyHard",
+        "count": 4
+      },
+      {
+        "enemyType": "LizardWarriorHard",
+        "count": 2
+      },
+      {
+        "enemyType": "DevourerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SwampKingHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM02R01",
+      "a_Room_SRNM02R03",
+      "a_Room_SRNM02R04",
+      "a_Room_SRNM02R05",
+      "a_Room_SRNM02R06",
+      "a_Room_SRNM02R07",
+      "a_Room_SRNM02R08",
+      "a_Room_SRNM02R09",
+      "a_Room_SRNM02R10",
+      "a_Room_SRNM02R11",
+      "a_Room_SRNM02R12",
+      "a_Room_SRNM02R14",
+      "a_Room_SRNM02R15",
+      "a_Room_SRNM02R16",
+      "a_Room_SRNM02R17",
+      "a_Room_SRNM02R19",
+      "a_Room_SRNM02R20",
+      "a_Room_SRNM02YornakBoss"
+    ]
+  },
+  "SRN_Mission3": {
+    "elements": [
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "LizardHeavy",
+        "count": 6
+      },
+      {
+        "enemyType": "LizardBanner",
+        "count": 3
+      },
+      {
+        "enemyType": "GreatLizardHeavy",
+        "count": 2
+      },
+      {
+        "enemyType": "YoungDragonGreen",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM03R07",
+      "a_Room_SRNM03R08",
+      "a_Room_SRNM03R09",
+      "a_Room_SRNM03R10",
+      "a_Room_SRNM03R11",
+      "a_Room_SRNM03R12",
+      "a_Room_SRNM03R13",
+      "a_Room_SRNM03R23",
+      "a_Room_SRNM03R25",
+      "a_Room_SRNM03R27",
+      "a_Room_SRNM03R28",
+      "a_Room_SRNM03R29",
+      "a_Room_SRNM03SvarBoss"
+    ]
+  },
+  "SRN_Mission3Hard": {
+    "elements": [
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "LizardHeavyHard",
+        "count": 6
+      },
+      {
+        "enemyType": "LizardBannerHard",
+        "count": 3
+      },
+      {
+        "enemyType": "GreatLizardHeavyHard",
+        "count": 2
+      },
+      {
+        "enemyType": "YoungDragonGreenHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM03R07",
+      "a_Room_SRNM03R08",
+      "a_Room_SRNM03R09",
+      "a_Room_SRNM03R10",
+      "a_Room_SRNM03R11",
+      "a_Room_SRNM03R12",
+      "a_Room_SRNM03R13",
+      "a_Room_SRNM03R23",
+      "a_Room_SRNM03R25",
+      "a_Room_SRNM03R27",
+      "a_Room_SRNM03R28",
+      "a_Room_SRNM03R29",
+      "a_Room_SRNM03SvarBoss"
+    ]
+  },
+  "SRN_Mission4": {
+    "elements": [
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreatLizardBanner2",
+        "count": 4
+      },
+      {
+        "enemyType": "GreatLizardWarrior2",
+        "count": 4
+      },
+      {
+        "enemyType": "GreatLizardHeavy",
+        "count": 2
+      },
+      {
+        "enemyType": "GreatLizardWarrior",
+        "count": 2
+      },
+      {
+        "enemyType": "GreatLizardHeavy2",
+        "count": 1
+      },
+      {
+        "enemyType": "GreatLizardWarrior3",
+        "count": 1
+      },
+      {
+        "enemyType": "WyrmGreat",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM04OoyakBoss",
+      "a_Room_SRNM04R01",
+      "a_Room_SRNM04R02",
+      "a_Room_SRNM04R05",
+      "a_Room_SRNM04R06",
+      "a_Room_SRNM04R10",
+      "a_Room_SRNM04R11",
+      "a_Room_SRNM04R14",
+      "a_Room_SRNM04R16"
+    ]
+  },
+  "SRN_Mission4Hard": {
+    "elements": [
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreatLizardBanner2Hard",
+        "count": 4
+      },
+      {
+        "enemyType": "GreatLizardWarrior2Hard",
+        "count": 4
+      },
+      {
+        "enemyType": "GreatLizardHeavyHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GreatLizardWarriorHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GreatLizardHeavy2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "GreatLizardWarrior3Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "WyrmGreatHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM04OoyakBoss",
+      "a_Room_SRNM04R01",
+      "a_Room_SRNM04R02",
+      "a_Room_SRNM04R05",
+      "a_Room_SRNM04R06",
+      "a_Room_SRNM04R10",
+      "a_Room_SRNM04R11",
+      "a_Room_SRNM04R14",
+      "a_Room_SRNM04R16"
+    ]
+  },
+  "SRN_Mission5": {
+    "elements": [
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreatLizardHeavy2",
+        "count": 5
+      },
+      {
+        "enemyType": "GreatLizardBanner2",
+        "count": 4
+      },
+      {
+        "enemyType": "GreatLizardHeavy",
+        "count": 3
+      },
+      {
+        "enemyType": "GreatLizardBanner",
+        "count": 2
+      },
+      {
+        "enemyType": "WyrmYoung",
+        "count": 2
+      },
+      {
+        "enemyType": "GreatLizardLord",
+        "count": 1
+      },
+      {
+        "enemyType": "GreatLizardWarrior2",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM05BroodvictorBoss",
+      "a_Room_SRNM05R02",
+      "a_Room_SRNM05R05",
+      "a_Room_SRNM05R06",
+      "a_Room_SRNM05R07",
+      "a_Room_SRNM05R09",
+      "a_Room_SRNM05R13",
+      "a_Room_SRNM05R15",
+      "a_Room_SRNM05R16",
+      "a_Room_SRNM05R17",
+      "a_Room_SRNM05R18"
+    ]
+  },
+  "SRN_Mission5Hard": {
+    "elements": [
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreatLizardHeavy2Hard",
+        "count": 5
+      },
+      {
+        "enemyType": "GreatLizardBanner2Hard",
+        "count": 4
+      },
+      {
+        "enemyType": "GreatLizardHeavyHard",
+        "count": 3
+      },
+      {
+        "enemyType": "GreatLizardBannerHard",
+        "count": 2
+      },
+      {
+        "enemyType": "WyrmYoungHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GreatLizardLordHard",
+        "count": 1
+      },
+      {
+        "enemyType": "GreatLizardWarrior2Hard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM05BroodvictorBoss",
+      "a_Room_SRNM05R02",
+      "a_Room_SRNM05R05",
+      "a_Room_SRNM05R06",
+      "a_Room_SRNM05R07",
+      "a_Room_SRNM05R09",
+      "a_Room_SRNM05R13",
+      "a_Room_SRNM05R15",
+      "a_Room_SRNM05R16",
+      "a_Room_SRNM05R17",
+      "a_Room_SRNM05R18"
+    ]
+  },
+  "SRN_Mission6": {
+    "elements": [
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SwampBrute",
+        "count": 4
+      },
+      {
+        "enemyType": "SwampMonster",
+        "count": 4
+      },
+      {
+        "enemyType": "DevourerGreat",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM06MindlessQueenBoss",
+      "a_Room_SRNM06R01",
+      "a_Room_SRNM06R02",
+      "a_Room_SRNM06R03",
+      "a_Room_SRNM06R06",
+      "a_Room_SRNM06R07",
+      "a_Room_SRNM06R08",
+      "a_Room_SRNM06R09",
+      "a_Room_SRNM06R10",
+      "a_Room_SRNM06R13",
+      "a_Room_SRNM06R14",
+      "a_Room_SRNM06R15",
+      "a_Room_SRNM06R19",
+      "a_Room_SRNM06R20"
+    ]
+  },
+  "SRN_Mission6Hard": {
+    "elements": [
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SwampBruteHard",
+        "count": 4
+      },
+      {
+        "enemyType": "SwampMonsterHard",
+        "count": 4
+      },
+      {
+        "enemyType": "DevourerGreatHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM06MindlessQueenBoss",
+      "a_Room_SRNM06R01",
+      "a_Room_SRNM06R02",
+      "a_Room_SRNM06R03",
+      "a_Room_SRNM06R06",
+      "a_Room_SRNM06R07",
+      "a_Room_SRNM06R08",
+      "a_Room_SRNM06R09",
+      "a_Room_SRNM06R10",
+      "a_Room_SRNM06R13",
+      "a_Room_SRNM06R14",
+      "a_Room_SRNM06R15",
+      "a_Room_SRNM06R19",
+      "a_Room_SRNM06R20"
+    ]
+  },
+  "SRN_Mission7": {
+    "elements": [
+      "Death",
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SwampSkeletonSorcerer",
+        "count": 7
+      },
+      {
+        "enemyType": "GrayGhostKnight",
+        "count": 3
+      },
+      {
+        "enemyType": "DragonGreen",
+        "count": 1
+      },
+      {
+        "enemyType": "SwampSkeletonSword",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM07R03",
+      "a_Room_SRNM07R05",
+      "a_Room_SRNM07R06",
+      "a_Room_SRNM07R08",
+      "a_Room_SRNM07R10",
+      "a_Room_SRNM07R11",
+      "a_Room_SRNM07R16",
+      "a_Room_SRNM07R17",
+      "a_Room_SRNM07R22",
+      "a_Room_SRNM07R23",
+      "a_Room_SRNM07R24",
+      "a_Room_SRNM07R25",
+      "a_Room_SRNM07R27",
+      "a_Room_SRNM07SvathBoss"
+    ]
+  },
+  "SRN_Mission7Hard": {
+    "elements": [
+      "Death",
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SwampSkeletonSorcererHard",
+        "count": 7
+      },
+      {
+        "enemyType": "GrayGhostKnightHard",
+        "count": 3
+      },
+      {
+        "enemyType": "DragonGreenHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SwampSkeletonSwordHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM07R03",
+      "a_Room_SRNM07R05",
+      "a_Room_SRNM07R06",
+      "a_Room_SRNM07R08",
+      "a_Room_SRNM07R10",
+      "a_Room_SRNM07R11",
+      "a_Room_SRNM07R16",
+      "a_Room_SRNM07R17",
+      "a_Room_SRNM07R22",
+      "a_Room_SRNM07R23",
+      "a_Room_SRNM07R24",
+      "a_Room_SRNM07R25",
+      "a_Room_SRNM07R27",
+      "a_Room_SRNM07SvathBoss"
+    ]
+  },
+  "SwampRoadConnectionMission": {
+    "elements": [
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SwampBrute",
+        "count": 2
+      },
+      {
+        "enemyType": "SwampMonster",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRConnM12",
+      "a_Room_SRConnM20",
+      "a_Room_SRConnM22",
+      "a_Room_SRConnM23",
+      "a_Room_SRConnM24",
+      "a_Room_SRConnM25",
+      "a_Room_SRConnM30",
+      "a_Room_SRConnM34",
+      "a_Room_SRConnM38"
+    ]
+  },
+  "SwampRoadConnectionMissionHard": {
+    "elements": [
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SwampBruteHard",
+        "count": 2
+      },
+      {
+        "enemyType": "SwampMonsterHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRConnM12",
+      "a_Room_SRConnM20",
+      "a_Room_SRConnM22",
+      "a_Room_SRConnM23",
+      "a_Room_SRConnM24",
+      "a_Room_SRConnM25",
+      "a_Room_SRConnM30",
+      "a_Room_SRConnM34",
+      "a_Room_SRConnM38"
+    ]
+  },
+  "BT_Mission1": {
+    "elements": [
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BanditTwinA",
+        "count": 1
+      },
+      {
+        "enemyType": "BanditTwinB",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_BTM01RBanditCampBoss"
+    ]
+  },
+  "BT_Mission1Hard": {
+    "elements": [
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BanditTwinAHard",
+        "count": 1
+      },
+      {
+        "enemyType": "BanditTwinBHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_BTM01RBanditCampBoss"
+    ]
+  },
+  "BT_Mission2": {
+    "elements": [
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BanditBoss",
+        "count": 1
+      },
+      {
+        "enemyType": "BanditRogue",
+        "count": 1
+      },
+      {
+        "enemyType": "BanditRogue2",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_BTM02ROldHeroesBoss"
+    ]
+  },
+  "BT_Mission2Hard": {
+    "elements": [
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BanditBossHard",
+        "count": 1
+      },
+      {
+        "enemyType": "BanditRogue2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "BanditRogueHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_BTM02ROldHeroesBoss"
+    ]
+  },
+  "BT_Mission3": {
+    "elements": [
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "MeylourBossMage",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_BTM03RMouthOfMeylourBoss"
+    ]
+  },
+  "BT_Mission3Hard": {
+    "elements": [
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "MeylourBossMageHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_BTM03RMouthOfMeylourBoss"
+    ]
+  },
+  "BT_Mission4": {
+    "elements": [
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "AbominationBrute",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_BTM04RDerelicitionBoss"
+    ]
+  },
+  "BT_Mission4Hard": {
+    "elements": [
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "AbominationBruteHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_BTM04RDerelicitionBoss"
+    ]
+  },
+  "LDArena1": {
+    "elements": [
+      "Ice",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreenKnightFalse",
+        "count": 3
+      },
+      {
+        "enemyType": "BoneFiend",
+        "count": 1
+      },
+      {
+        "enemyType": "GreenKnight",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_LDArena1_01",
+      "a_Room_LDArena1_02"
+    ]
+  },
+  "CH_Mission1": {
+    "elements": [
+      "Fire",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DogRogue",
+        "count": 1
+      },
+      {
+        "enemyType": "YoungDragonGray",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH01",
+      "a_Room_CHM01RYagagaBoss"
+    ]
+  },
+  "CH_Mission1Hard": {
+    "elements": [
+      "Fire",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DogRogueHard",
+        "count": 1
+      },
+      {
+        "enemyType": "YoungDragonGrayHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH01",
+      "a_Room_CHM01RYagagaBoss"
+    ]
+  },
+  "CH_Mission2": {
+    "elements": [
+      "Ice",
+      "Air",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DogAlpha",
+        "count": 9
+      },
+      {
+        "enemyType": "WispDiamond",
+        "count": 3
+      },
+      {
+        "enemyType": "WispRuby",
+        "count": 3
+      },
+      {
+        "enemyType": "DogRogue",
+        "count": 2
+      },
+      {
+        "enemyType": "InfusedSkeletonElite",
+        "count": 2
+      },
+      {
+        "enemyType": "InfusedSkeletonSorcerer",
+        "count": 2
+      },
+      {
+        "enemyType": "JackalRogue",
+        "count": 2
+      },
+      {
+        "enemyType": "WispEmerald",
+        "count": 2
+      },
+      {
+        "enemyType": "WispSapphire",
+        "count": 2
+      },
+      {
+        "enemyType": "DogChieftain",
+        "count": 1
+      },
+      {
+        "enemyType": "DogPackmate",
+        "count": 1
+      },
+      {
+        "enemyType": "DogPackmate2",
+        "count": 1
+      },
+      {
+        "enemyType": "JackalAlpha",
+        "count": 1
+      },
+      {
+        "enemyType": "RedGhostKnight",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH02",
+      "a_Room_CH02R01",
+      "a_Room_CH02R02",
+      "a_Room_CH02R03",
+      "a_Room_CH02R04",
+      "a_Room_CH02R05",
+      "a_Room_CH02R06",
+      "a_Room_CH02R07",
+      "a_Room_CH02R08",
+      "a_Room_CH02R09",
+      "a_Room_CH2_01",
+      "a_Room_CH2_02",
+      "a_Room_CH2_03",
+      "a_Room_CH2_04",
+      "a_Room_CH2_05",
+      "a_Room_CH2_06",
+      "a_Room_CH2_07",
+      "a_Room_CH2_08",
+      "a_Room_CH2_09",
+      "a_Room_CHM02RJackalTreasureBoss"
+    ]
+  },
+  "CH_Mission2Hard": {
+    "elements": [
+      "Ice",
+      "Air",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DogAlphaHard",
+        "count": 9
+      },
+      {
+        "enemyType": "WispDiamondHard",
+        "count": 3
+      },
+      {
+        "enemyType": "WispRubyHard",
+        "count": 3
+      },
+      {
+        "enemyType": "DogRogueHard",
+        "count": 2
+      },
+      {
+        "enemyType": "InfusedSkeletonEliteHard",
+        "count": 2
+      },
+      {
+        "enemyType": "InfusedSkeletonSorcererHard",
+        "count": 2
+      },
+      {
+        "enemyType": "JackalRogueHard",
+        "count": 2
+      },
+      {
+        "enemyType": "WispEmeraldHard",
+        "count": 2
+      },
+      {
+        "enemyType": "WispSapphireHard",
+        "count": 2
+      },
+      {
+        "enemyType": "DogChieftainHard",
+        "count": 1
+      },
+      {
+        "enemyType": "DogPackmate2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "DogPackmateHard",
+        "count": 1
+      },
+      {
+        "enemyType": "JackalAlphaHard",
+        "count": 1
+      },
+      {
+        "enemyType": "RedGhostKnightHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH02",
+      "a_Room_CH02R01",
+      "a_Room_CH02R02",
+      "a_Room_CH02R03",
+      "a_Room_CH02R04",
+      "a_Room_CH02R05",
+      "a_Room_CH02R06",
+      "a_Room_CH02R07",
+      "a_Room_CH02R08",
+      "a_Room_CH02R09",
+      "a_Room_CH2_01",
+      "a_Room_CH2_02",
+      "a_Room_CH2_03",
+      "a_Room_CH2_04",
+      "a_Room_CH2_05",
+      "a_Room_CH2_06",
+      "a_Room_CH2_07",
+      "a_Room_CH2_08",
+      "a_Room_CH2_09",
+      "a_Room_CHM02RJackalTreasureBoss"
+    ]
+  },
+  "CH_Mission3": {
+    "elements": [
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "RedGhostServant",
+        "count": 6
+      },
+      {
+        "enemyType": "RedGhostServantFly",
+        "count": 4
+      },
+      {
+        "enemyType": "YellowGhostServant",
+        "count": 4
+      },
+      {
+        "enemyType": "RedGhostKnight",
+        "count": 2
+      },
+      {
+        "enemyType": "RedGhostLord",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH03",
+      "a_Room_CHM03RCrovnagBoss"
+    ]
+  },
+  "CH_Mission3Hard": {
+    "elements": [
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "RedGhostServantHard",
+        "count": 6
+      },
+      {
+        "enemyType": "RedGhostServantFlyHard",
+        "count": 4
+      },
+      {
+        "enemyType": "YellowGhostServantHard",
+        "count": 4
+      },
+      {
+        "enemyType": "RedGhostKnightHard",
+        "count": 2
+      },
+      {
+        "enemyType": "RedGhostLordHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH03",
+      "a_Room_CHM03RCrovnagBoss"
+    ]
+  },
+  "CH_Mission4": {
+    "elements": [
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreaterSkeletonBoss",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH04",
+      "a_Room_CHM04RPappyBoss"
+    ]
+  },
+  "CH_Mission4Hard": {
+    "elements": [
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreaterSkeletonBossHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH04",
+      "a_Room_CHM04RPappyBoss"
+    ]
+  },
+  "CH_Mission5": {
+    "elements": [
+      "Ice",
+      "Air",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DogAlpha",
+        "count": 5
+      },
+      {
+        "enemyType": "DogRogue",
+        "count": 3
+      },
+      {
+        "enemyType": "DemonMaligner",
+        "count": 1
+      },
+      {
+        "enemyType": "RedGhostKnight",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH05",
+      "a_Room_CH05R01",
+      "a_Room_CH05R02",
+      "a_Room_CH05R03",
+      "a_Room_CH05R04",
+      "a_Room_CH05R05",
+      "a_Room_CH05R06",
+      "a_Room_CH05R07",
+      "a_Room_CH05R09",
+      "a_Room_CHM05RIdolBoss"
+    ]
+  },
+  "CH_Mission5Hard": {
+    "elements": [
+      "Ice",
+      "Air",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DogAlphaHard",
+        "count": 5
+      },
+      {
+        "enemyType": "DogRogueHard",
+        "count": 3
+      },
+      {
+        "enemyType": "DemonMalignerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "RedGhostKnightHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH05",
+      "a_Room_CH05R01",
+      "a_Room_CH05R02",
+      "a_Room_CH05R03",
+      "a_Room_CH05R04",
+      "a_Room_CH05R05",
+      "a_Room_CH05R06",
+      "a_Room_CH05R07",
+      "a_Room_CH05R09",
+      "a_Room_CHM05RIdolBoss"
+    ]
+  },
+  "CH_Mission6": {
+    "elements": [
+      "Air",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "MummyBoss",
+        "count": 1
+      },
+      {
+        "enemyType": "WispDiamond",
+        "count": 1
+      },
+      {
+        "enemyType": "WispEmerald",
+        "count": 1
+      },
+      {
+        "enemyType": "WispRuby",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHM06RSecretOfWispsBoss"
+    ]
+  },
+  "CH_Mission6Hard": {
+    "elements": [
+      "Air",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "MummyBossHard",
+        "count": 1
+      },
+      {
+        "enemyType": "WispDiamondHard",
+        "count": 1
+      },
+      {
+        "enemyType": "WispEmeraldHard",
+        "count": 1
+      },
+      {
+        "enemyType": "WispRubyHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHM06RSecretOfWispsBoss"
+    ]
+  },
+  "CH_Mission7": {
+    "elements": [
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DragonBone",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH07",
+      "a_Room_CHM07RSealTheWispsBoss"
+    ]
+  },
+  "CH_Mission7Hard": {
+    "elements": [
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DragonBoneHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH07",
+      "a_Room_CHM07RSealTheWispsBoss"
+    ]
+  },
+  "CH_Mission8": {
+    "elements": [
+      "Ice",
+      "Air",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "WispEmerald",
+        "count": 4
+      },
+      {
+        "enemyType": "JackalAlpha",
+        "count": 3
+      },
+      {
+        "enemyType": "Mummy",
+        "count": 3
+      },
+      {
+        "enemyType": "WispRuby",
+        "count": 3
+      },
+      {
+        "enemyType": "InfusedSkeletonSorcerer",
+        "count": 2
+      },
+      {
+        "enemyType": "JackalRogue",
+        "count": 2
+      },
+      {
+        "enemyType": "WispDiamond",
+        "count": 2
+      },
+      {
+        "enemyType": "DogPackmate",
+        "count": 1
+      },
+      {
+        "enemyType": "DogPackmate2",
+        "count": 1
+      },
+      {
+        "enemyType": "JackalChieftain",
+        "count": 1
+      },
+      {
+        "enemyType": "JackalPackmate",
+        "count": 1
+      },
+      {
+        "enemyType": "JackalPackmate2",
+        "count": 1
+      },
+      {
+        "enemyType": "WispSapphire",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH08",
+      "a_Room_CH08_09",
+      "a_Room_CH08_10",
+      "a_Room_CH08_11",
+      "a_Room_CH08_12",
+      "a_Room_CH08_13",
+      "a_Room_CH08_14",
+      "a_Room_CH08_15",
+      "a_Room_CH08_16",
+      "a_Room_CH08_17",
+      "a_Room_CH08_18",
+      "a_Room_CHM08RDogfatherBoss"
+    ]
+  },
+  "CH_Mission8Hard": {
+    "elements": [
+      "Ice",
+      "Air",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "WispEmeraldHard",
+        "count": 4
+      },
+      {
+        "enemyType": "JackalAlphaHard",
+        "count": 3
+      },
+      {
+        "enemyType": "MummyHard",
+        "count": 3
+      },
+      {
+        "enemyType": "WispRubyHard",
+        "count": 3
+      },
+      {
+        "enemyType": "InfusedSkeletonSorcererHard",
+        "count": 2
+      },
+      {
+        "enemyType": "JackalRogueHard",
+        "count": 2
+      },
+      {
+        "enemyType": "WispDiamondHard",
+        "count": 2
+      },
+      {
+        "enemyType": "DogPackmate2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "DogPackmateHard",
+        "count": 1
+      },
+      {
+        "enemyType": "JackalChieftainHard",
+        "count": 1
+      },
+      {
+        "enemyType": "JackalPackmate2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "JackalPackmateHard",
+        "count": 1
+      },
+      {
+        "enemyType": "WispSapphireHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CH08",
+      "a_Room_CH08_09",
+      "a_Room_CH08_10",
+      "a_Room_CH08_11",
+      "a_Room_CH08_12",
+      "a_Room_CH08_13",
+      "a_Room_CH08_14",
+      "a_Room_CH08_15",
+      "a_Room_CH08_16",
+      "a_Room_CH08_17",
+      "a_Room_CH08_18",
+      "a_Room_CHM08RDogfatherBoss"
+    ]
+  },
+  "CH_MiniMission1": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini01"
+    ]
+  },
+  "CH_MiniMission1Hard": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini01"
+    ]
+  },
+  "CH_MiniMission2": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini02"
+    ]
+  },
+  "CH_MiniMission2Hard": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini02"
+    ]
+  },
+  "CH_MiniMission3": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini03"
+    ]
+  },
+  "CH_MiniMission3Hard": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini03"
+    ]
+  },
+  "CH_MiniMission4": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini04"
+    ]
+  },
+  "CH_MiniMission4Hard": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini04"
+    ]
+  },
+  "CH_MiniMission5": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini05"
+    ]
+  },
+  "CH_MiniMission5Hard": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini05"
+    ]
+  },
+  "CH_MiniMission6": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "no-matching-rooms",
+    "rooms": []
+  },
+  "CH_MiniMission6Hard": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "no-matching-rooms",
+    "rooms": []
+  },
+  "CH_MiniMission7": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini07"
+    ]
+  },
+  "CH_MiniMission7Hard": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini07"
+    ]
+  },
+  "CH_MiniMission8": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini08"
+    ]
+  },
+  "CH_MiniMission8Hard": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini08"
+    ]
+  },
+  "CH_MiniMission9": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini09"
+    ]
+  },
+  "CH_MiniMission9Hard": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHmini09"
+    ]
+  },
+  "OMM_Mission1": {
+    "elements": [
+      "Earth"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BlackGoblinBrute",
+        "count": 4
+      },
+      {
+        "enemyType": "BlackGoblinShamanHood",
+        "count": 4
+      },
+      {
+        "enemyType": "BlackGoblinAxe",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinBoss1",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM01_GiveVoiceToStoneBoss",
+      "a_Room_SSM01_02",
+      "a_Room_SSM01_03",
+      "a_Room_SSM01_04",
+      "a_Room_SSM01_05",
+      "a_Room_SSM01_06",
+      "a_Room_SSM01_07",
+      "a_Room_SSM01_08",
+      "a_Room_SSM01_10",
+      "a_Room_SSM01_12",
+      "a_Room_SSM01_13"
+    ]
+  },
+  "OMM_Mission1Hard": {
+    "elements": [
+      "Earth"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BlackGoblinBruteHard",
+        "count": 4
+      },
+      {
+        "enemyType": "BlackGoblinShamanHoodHard",
+        "count": 4
+      },
+      {
+        "enemyType": "BlackGoblinAxeHard",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinBoss1Hard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM01_GiveVoiceToStoneBoss",
+      "a_Room_SSM01_02",
+      "a_Room_SSM01_03",
+      "a_Room_SSM01_04",
+      "a_Room_SSM01_05",
+      "a_Room_SSM01_06",
+      "a_Room_SSM01_07",
+      "a_Room_SSM01_08",
+      "a_Room_SSM01_10",
+      "a_Room_SSM01_12",
+      "a_Room_SSM01_13"
+    ]
+  },
+  "OMM_Mission2": {
+    "elements": [
+      "Earth"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "RockHulk",
+        "count": 7
+      },
+      {
+        "enemyType": "CaveWizard",
+        "count": 1
+      },
+      {
+        "enemyType": "RockHulkGreater",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM02_RockHulkGardenBoss",
+      "a_Room_SSM02_01",
+      "a_Room_SSM02_02",
+      "a_Room_SSM02_03",
+      "a_Room_SSM02_04",
+      "a_Room_SSM02_05",
+      "a_Room_SSM02_06",
+      "a_Room_SSM02_07",
+      "a_Room_SSM02_08"
+    ]
+  },
+  "OMM_Mission2Hard": {
+    "elements": [
+      "Earth"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "RockHulkHard",
+        "count": 7
+      },
+      {
+        "enemyType": "CaveWizardHard",
+        "count": 1
+      },
+      {
+        "enemyType": "RockHulkGreaterHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM02_RockHulkGardenBoss",
+      "a_Room_SSM02_01",
+      "a_Room_SSM02_02",
+      "a_Room_SSM02_03",
+      "a_Room_SSM02_04",
+      "a_Room_SSM02_05",
+      "a_Room_SSM02_06",
+      "a_Room_SSM02_07",
+      "a_Room_SSM02_08"
+    ]
+  },
+  "OMM_Mission3": {
+    "elements": [
+      "Earth",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "CyclopsBerserker",
+        "count": 3
+      },
+      {
+        "enemyType": "BlackGoblinShamanHood",
+        "count": 2
+      },
+      {
+        "enemyType": "CyclopsCoward",
+        "count": 2
+      },
+      {
+        "enemyType": "BlackGoblinAxe",
+        "count": 1
+      },
+      {
+        "enemyType": "Cyclops",
+        "count": 1
+      },
+      {
+        "enemyType": "CyclopsChieftain",
+        "count": 1
+      },
+      {
+        "enemyType": "StormCyclops",
+        "count": 1
+      },
+      {
+        "enemyType": "StormCyclopsBerserker",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM03_EyeOfTheTyrantBoss",
+      "a_Room_SSM03_01",
+      "a_Room_SSM03_02",
+      "a_Room_SSM03_03",
+      "a_Room_SSM03_04",
+      "a_Room_SSM03_05",
+      "a_Room_SSM03_06",
+      "a_Room_SSM03_07",
+      "a_Room_SSM03_08",
+      "a_Room_SSM03_09",
+      "a_Room_SSM03_10"
+    ]
+  },
+  "OMM_Mission3Hard": {
+    "elements": [
+      "Earth",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "CyclopsBerserkerHard",
+        "count": 3
+      },
+      {
+        "enemyType": "BlackGoblinShamanHoodHard",
+        "count": 2
+      },
+      {
+        "enemyType": "CyclopsCowardHard",
+        "count": 2
+      },
+      {
+        "enemyType": "BlackGoblinAxeHard",
+        "count": 1
+      },
+      {
+        "enemyType": "CyclopsChieftainHard",
+        "count": 1
+      },
+      {
+        "enemyType": "CyclopsHard",
+        "count": 1
+      },
+      {
+        "enemyType": "StormCyclopsBerserkerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "StormCyclopsHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM03_EyeOfTheTyrantBoss",
+      "a_Room_SSM03_01",
+      "a_Room_SSM03_02",
+      "a_Room_SSM03_03",
+      "a_Room_SSM03_04",
+      "a_Room_SSM03_05",
+      "a_Room_SSM03_06",
+      "a_Room_SSM03_07",
+      "a_Room_SSM03_08",
+      "a_Room_SSM03_09",
+      "a_Room_SSM03_10"
+    ]
+  },
+  "OMM_Mission4": {
+    "elements": [
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BlackGhostLord",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM04_AbandonedArmoryBoss"
+    ]
+  },
+  "OMM_Mission4Hard": {
+    "elements": [
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BlackGhostLordHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM04_AbandonedArmoryBoss"
+    ]
+  },
+  "OMM_Mission5": {
+    "elements": [
+      "Ice",
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "LionAlpha",
+        "count": 7
+      },
+      {
+        "enemyType": "DragonWhite",
+        "count": 1
+      },
+      {
+        "enemyType": "LionAlpha2",
+        "count": 1
+      },
+      {
+        "enemyType": "LionGreater",
+        "count": 1
+      },
+      {
+        "enemyType": "LionLord",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM05_HuntedToTheEdgeBoss",
+      "a_Room_SSM05_01",
+      "a_Room_SSM05_02",
+      "a_Room_SSM05_03",
+      "a_Room_SSM05_04",
+      "a_Room_SSM05_07",
+      "a_Room_SSM05_08",
+      "a_Room_SSM05_09",
+      "a_Room_SSM05_10",
+      "a_Room_SSM05_11"
+    ]
+  },
+  "OMM_Mission5Hard": {
+    "elements": [
+      "Ice",
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "LionAlphaHard",
+        "count": 7
+      },
+      {
+        "enemyType": "DragonWhiteHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LionAlpha2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "LionGreaterHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LionLordHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM05_HuntedToTheEdgeBoss",
+      "a_Room_SSM05_01",
+      "a_Room_SSM05_02",
+      "a_Room_SSM05_03",
+      "a_Room_SSM05_04",
+      "a_Room_SSM05_07",
+      "a_Room_SSM05_08",
+      "a_Room_SSM05_09",
+      "a_Room_SSM05_10",
+      "a_Room_SSM05_11"
+    ]
+  },
+  "OMM_Mission6": {
+    "elements": [
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DragonRed",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM06_ForgottenForgeBoss"
+    ]
+  },
+  "OMM_Mission6Hard": {
+    "elements": [
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DragonRedHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM06_ForgottenForgeBoss"
+    ]
+  },
+  "OMM_Mission7": {
+    "elements": [
+      "Ice",
+      "Air",
+      "Earth"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "LionAlpha",
+        "count": 5
+      },
+      {
+        "enemyType": "StormCyclopsBerserker",
+        "count": 3
+      },
+      {
+        "enemyType": "StormCyclopsCoward",
+        "count": 2
+      },
+      {
+        "enemyType": "GriffonSun",
+        "count": 1
+      },
+      {
+        "enemyType": "LionAlpha2",
+        "count": 1
+      },
+      {
+        "enemyType": "RockHulk",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM07_GriffinsRedoubtBoss",
+      "a_Room_SSM07_00",
+      "a_Room_SSM07_01",
+      "a_Room_SSM07_02",
+      "a_Room_SSM07_03",
+      "a_Room_SSM07_04",
+      "a_Room_SSM07_05",
+      "a_Room_SSM07_06",
+      "a_Room_SSM07_07",
+      "a_Room_SSM07_08",
+      "a_Room_SSM07_09"
+    ]
+  },
+  "OMM_Mission7Hard": {
+    "elements": [
+      "Ice",
+      "Air",
+      "Earth"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "LionAlphaHard",
+        "count": 5
+      },
+      {
+        "enemyType": "StormCyclopsBerserkerHard",
+        "count": 3
+      },
+      {
+        "enemyType": "StormCyclopsCowardHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GriffonSunHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LionAlpha2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "RockHulkHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM07_GriffinsRedoubtBoss",
+      "a_Room_SSM07_00",
+      "a_Room_SSM07_01",
+      "a_Room_SSM07_02",
+      "a_Room_SSM07_03",
+      "a_Room_SSM07_04",
+      "a_Room_SSM07_05",
+      "a_Room_SSM07_06",
+      "a_Room_SSM07_07",
+      "a_Room_SSM07_08",
+      "a_Room_SSM07_09"
+    ]
+  },
+  "OMM_Mission8": {
+    "elements": [
+      "Earth",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BlackGoblinShamanHood",
+        "count": 4
+      },
+      {
+        "enemyType": "BlackGoblinBrute",
+        "count": 3
+      },
+      {
+        "enemyType": "LionAlpha2",
+        "count": 2
+      },
+      {
+        "enemyType": "RockCyclops",
+        "count": 2
+      },
+      {
+        "enemyType": "RockCyclopsCoward",
+        "count": 2
+      },
+      {
+        "enemyType": "BlackGoblinAxe",
+        "count": 1
+      },
+      {
+        "enemyType": "LionAlpha",
+        "count": 1
+      },
+      {
+        "enemyType": "LionPridemate",
+        "count": 1
+      },
+      {
+        "enemyType": "RockCyclopsBerserker",
+        "count": 1
+      },
+      {
+        "enemyType": "RockCyclopsChieftain",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM08_BloodInTheVeinsBoss",
+      "a_Room_SSM08_01",
+      "a_Room_SSM08_02",
+      "a_Room_SSM08_03",
+      "a_Room_SSM08_04",
+      "a_Room_SSM08_05",
+      "a_Room_SSM08_06",
+      "a_Room_SSM08_07",
+      "a_Room_SSM08_09",
+      "a_Room_SSM08_10",
+      "a_Room_SSM08_11",
+      "a_Room_SSM08_12"
+    ]
+  },
+  "OMM_Mission8Hard": {
+    "elements": [
+      "Earth",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BlackGoblinShamanHoodHard",
+        "count": 4
+      },
+      {
+        "enemyType": "BlackGoblinBruteHard",
+        "count": 3
+      },
+      {
+        "enemyType": "LionAlpha2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "RockCyclopsCowardHard",
+        "count": 2
+      },
+      {
+        "enemyType": "RockCyclopsHard",
+        "count": 2
+      },
+      {
+        "enemyType": "BlackGoblinAxeHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LionAlphaHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LionPridemateHard",
+        "count": 1
+      },
+      {
+        "enemyType": "RockCyclopsBerserkerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "RockCyclopsChieftainHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM08_BloodInTheVeinsBoss",
+      "a_Room_SSM08_01",
+      "a_Room_SSM08_02",
+      "a_Room_SSM08_03",
+      "a_Room_SSM08_04",
+      "a_Room_SSM08_05",
+      "a_Room_SSM08_06",
+      "a_Room_SSM08_07",
+      "a_Room_SSM08_09",
+      "a_Room_SSM08_10",
+      "a_Room_SSM08_11",
+      "a_Room_SSM08_12"
+    ]
+  },
+  "OMM_Mission9": {
+    "elements": [
+      "Earth",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BlackGoblinAxe",
+        "count": 2
+      },
+      {
+        "enemyType": "BlackGoblinBrute",
+        "count": 2
+      },
+      {
+        "enemyType": "BlackGoblinShamanHood",
+        "count": 2
+      },
+      {
+        "enemyType": "BlackGoblinShamanSkullHat",
+        "count": 2
+      },
+      {
+        "enemyType": "RockCyclops",
+        "count": 2
+      },
+      {
+        "enemyType": "BlackGoblinArmorSword",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinMace",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinMiniBoss",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinSword",
+        "count": 1
+      },
+      {
+        "enemyType": "GriffonMoon",
+        "count": 1
+      },
+      {
+        "enemyType": "RockCyclopsBerserker",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM09_GrahlsRebellionBoss",
+      "a_Room_SSM09_01",
+      "a_Room_SSM09_02",
+      "a_Room_SSM09_03",
+      "a_Room_SSM09_04",
+      "a_Room_SSM09_05",
+      "a_Room_SSM09_06",
+      "a_Room_SSM09_07",
+      "a_Room_SSM09_08",
+      "a_Room_SSM09_09",
+      "a_Room_SSM09_10"
+    ]
+  },
+  "OMM_Mission9Hard": {
+    "elements": [
+      "Earth",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BlackGoblinAxeHard",
+        "count": 2
+      },
+      {
+        "enemyType": "BlackGoblinBruteHard",
+        "count": 2
+      },
+      {
+        "enemyType": "BlackGoblinShamanHoodHard",
+        "count": 2
+      },
+      {
+        "enemyType": "BlackGoblinShamanSkullHatHard",
+        "count": 2
+      },
+      {
+        "enemyType": "RockCyclopsHard",
+        "count": 2
+      },
+      {
+        "enemyType": "BlackGoblinArmorSwordHard",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinMaceHard",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinMiniBossHard",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinSwordHard",
+        "count": 1
+      },
+      {
+        "enemyType": "GriffonMoonHard",
+        "count": 1
+      },
+      {
+        "enemyType": "RockCyclopsBerserkerHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM09_GrahlsRebellionBoss",
+      "a_Room_SSM09_01",
+      "a_Room_SSM09_02",
+      "a_Room_SSM09_03",
+      "a_Room_SSM09_04",
+      "a_Room_SSM09_05",
+      "a_Room_SSM09_06",
+      "a_Room_SSM09_07",
+      "a_Room_SSM09_08",
+      "a_Room_SSM09_09",
+      "a_Room_SSM09_10"
+    ]
+  },
+  "OMM_Mission10": {
+    "elements": [
+      "Earth",
+      "Air",
+      "Life",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BlackGoblinBrute",
+        "count": 3
+      },
+      {
+        "enemyType": "BlackGoblinArmorSword",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinAxe",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinMace",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinShamanSkullHat",
+        "count": 1
+      },
+      {
+        "enemyType": "CaveSpider",
+        "count": 1
+      },
+      {
+        "enemyType": "DragonGray",
+        "count": 1
+      },
+      {
+        "enemyType": "RockCyclopsBerserker",
+        "count": 1
+      },
+      {
+        "enemyType": "RockCyclopsCoward",
+        "count": 1
+      },
+      {
+        "enemyType": "StormCyclopsBerserker",
+        "count": 1
+      },
+      {
+        "enemyType": "StormCyclopsCoward",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM10_DragonsQuarryBoss",
+      "a_Room_SSM10_01",
+      "a_Room_SSM10_02",
+      "a_Room_SSM10_03",
+      "a_Room_SSM10_04",
+      "a_Room_SSM10_05",
+      "a_Room_SSM10_06",
+      "a_Room_SSM10_07",
+      "a_Room_SSM10_08",
+      "a_Room_SSM10_09",
+      "a_Room_SSM10_10"
+    ]
+  },
+  "OMM_Mission10Hard": {
+    "elements": [
+      "Earth",
+      "Air",
+      "Life",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BlackGoblinBruteHard",
+        "count": 3
+      },
+      {
+        "enemyType": "BlackGoblinArmorSwordHard",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinAxeHard",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinMaceHard",
+        "count": 1
+      },
+      {
+        "enemyType": "BlackGoblinShamanSkullHatHard",
+        "count": 1
+      },
+      {
+        "enemyType": "CaveSpiderHard",
+        "count": 1
+      },
+      {
+        "enemyType": "DragonGrayHard",
+        "count": 1
+      },
+      {
+        "enemyType": "RockCyclopsBerserkerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "RockCyclopsCowardHard",
+        "count": 1
+      },
+      {
+        "enemyType": "StormCyclopsBerserkerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "StormCyclopsCowardHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM10_DragonsQuarryBoss",
+      "a_Room_SSM10_01",
+      "a_Room_SSM10_02",
+      "a_Room_SSM10_03",
+      "a_Room_SSM10_04",
+      "a_Room_SSM10_05",
+      "a_Room_SSM10_06",
+      "a_Room_SSM10_07",
+      "a_Room_SSM10_08",
+      "a_Room_SSM10_09",
+      "a_Room_SSM10_10"
+    ]
+  },
+  "OMM_Mission11": {
+    "elements": [
+      "Fire",
+      "Life",
+      "Earth"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DeepLizardHeavy",
+        "count": 4
+      },
+      {
+        "enemyType": "AshenDryad",
+        "count": 3
+      },
+      {
+        "enemyType": "DeepLizardHeavy2",
+        "count": 2
+      },
+      {
+        "enemyType": "DeepLizardGreater",
+        "count": 1
+      },
+      {
+        "enemyType": "RockHulkKing",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM11_CutToTheHeartBoss",
+      "a_Room_SSM11_01",
+      "a_Room_SSM11_02",
+      "a_Room_SSM11_03",
+      "a_Room_SSM11_04",
+      "a_Room_SSM11_05",
+      "a_Room_SSM11_06",
+      "a_Room_SSM11_07",
+      "a_Room_SSM11_08",
+      "a_Room_SSM11_09",
+      "a_Room_SSM11_10",
+      "a_Room_SSM11_11"
+    ]
+  },
+  "OMM_Mission11Hard": {
+    "elements": [
+      "Fire",
+      "Life",
+      "Earth"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DeepLizardHeavyHard",
+        "count": 4
+      },
+      {
+        "enemyType": "AshenDryadHard",
+        "count": 3
+      },
+      {
+        "enemyType": "DeepLizardHeavy2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "DeepLizardGreaterHard",
+        "count": 1
+      },
+      {
+        "enemyType": "RockHulkKingHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM11_CutToTheHeartBoss",
+      "a_Room_SSM11_01",
+      "a_Room_SSM11_02",
+      "a_Room_SSM11_03",
+      "a_Room_SSM11_04",
+      "a_Room_SSM11_05",
+      "a_Room_SSM11_06",
+      "a_Room_SSM11_07",
+      "a_Room_SSM11_08",
+      "a_Room_SSM11_09",
+      "a_Room_SSM11_10",
+      "a_Room_SSM11_11"
+    ]
+  },
+  "OMM_Mission12": {
+    "elements": [
+      "Air",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "FirePriest2",
+        "count": 5
+      },
+      {
+        "enemyType": "FirePriest",
+        "count": 4
+      },
+      {
+        "enemyType": "MagmaRockHulk",
+        "count": 4
+      },
+      {
+        "enemyType": "MagmaCyclopsLt01",
+        "count": 2
+      },
+      {
+        "enemyType": "MagmaCyclopsBoss",
+        "count": 1
+      },
+      {
+        "enemyType": "MagmaCyclopsLt02",
+        "count": 1
+      },
+      {
+        "enemyType": "MagmaCyclopsLt03",
+        "count": 1
+      },
+      {
+        "enemyType": "MagmaCyclopsLt04",
+        "count": 1
+      },
+      {
+        "enemyType": "MagmaCyclopsMiniBoss",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM12_MeylourFinaleBoss",
+      "a_Room_SSM12_01",
+      "a_Room_SSM12_02",
+      "a_Room_SSM12_03",
+      "a_Room_SSM12_04",
+      "a_Room_SSM12_05",
+      "a_Room_SSM12_06",
+      "a_Room_SSM12_07",
+      "a_Room_SSM12_08",
+      "a_Room_SSM12_09",
+      "a_Room_SSM12_10",
+      "a_Room_SSM12_11"
+    ]
+  },
+  "OMM_Mission12Hard": {
+    "elements": [
+      "Air",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "FirePriest2Hard",
+        "count": 5
+      },
+      {
+        "enemyType": "FirePriestHard",
+        "count": 4
+      },
+      {
+        "enemyType": "MagmaRockHulkHard",
+        "count": 4
+      },
+      {
+        "enemyType": "MagmaCyclopsLt01Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "MagmaCyclopsBossHard",
+        "count": 1
+      },
+      {
+        "enemyType": "MagmaCyclopsLt02Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "MagmaCyclopsLt03Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "MagmaCyclopsLt04Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "MagmaCyclopsMiniBossHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM12_MeylourFinaleBoss",
+      "a_Room_SSM12_01",
+      "a_Room_SSM12_02",
+      "a_Room_SSM12_03",
+      "a_Room_SSM12_04",
+      "a_Room_SSM12_05",
+      "a_Room_SSM12_06",
+      "a_Room_SSM12_07",
+      "a_Room_SSM12_08",
+      "a_Room_SSM12_09",
+      "a_Room_SSM12_10",
+      "a_Room_SSM12_11"
+    ]
+  },
+  "EG_Mission1": {
+    "elements": [
+      "Life",
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "AshenDryad2",
+        "count": 5
+      },
+      {
+        "enemyType": "AshenDryad",
+        "count": 2
+      },
+      {
+        "enemyType": "AshenDryadWizard",
+        "count": 1
+      },
+      {
+        "enemyType": "PyrFiend",
+        "count": 1
+      },
+      {
+        "enemyType": "PyrFiend2",
+        "count": 1
+      },
+      {
+        "enemyType": "PyrFiendGreat",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_Eternal_R01",
+      "a_Room_Eternal_R02",
+      "a_Room_Eternal_R03",
+      "a_Room_Eternal_R05",
+      "a_Room_Eternal_R06",
+      "a_Room_Eternal_R07",
+      "a_Room_Eternal_R08",
+      "a_Room_Eternal_R09",
+      "a_Room_Eternal_R10",
+      "a_Room_M01RAshenDryadBoss",
+      "ac_AshenDryad",
+      "ac_AshenDryad2",
+      "ac_AshenDryadHero",
+      "ac_AshenDryadWizard"
+    ]
+  },
+  "EG_Mission1Hard": {
+    "elements": [
+      "Life",
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "AshenDryad2Hard",
+        "count": 5
+      },
+      {
+        "enemyType": "AshenDryadHard",
+        "count": 2
+      },
+      {
+        "enemyType": "AshenDryadWizardHard",
+        "count": 1
+      },
+      {
+        "enemyType": "PyrFiend2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "PyrFiendGreatHard",
+        "count": 1
+      },
+      {
+        "enemyType": "PyrFiendHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_Eternal_R01",
+      "a_Room_Eternal_R02",
+      "a_Room_Eternal_R03",
+      "a_Room_Eternal_R05",
+      "a_Room_Eternal_R06",
+      "a_Room_Eternal_R07",
+      "a_Room_Eternal_R08",
+      "a_Room_Eternal_R09",
+      "a_Room_Eternal_R10",
+      "a_Room_M01RAshenDryadBoss",
+      "ac_AshenDryad",
+      "ac_AshenDryad2",
+      "ac_AshenDryadHero",
+      "ac_AshenDryadWizard"
+    ]
+  },
+  "EG_Mission2": {
+    "elements": [
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "AshenDryad",
+        "count": 5
+      },
+      {
+        "enemyType": "AshenDryad2",
+        "count": 2
+      },
+      {
+        "enemyType": "AshenDryadHero",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_Limb_R01",
+      "a_Room_Limb_R02",
+      "a_Room_Limb_R03",
+      "a_Room_Limb_R04",
+      "a_Room_Limb_R05",
+      "a_Room_Limb_R06",
+      "a_Room_M02ROutOnALimbBoss"
+    ]
+  },
+  "EG_Mission2Hard": {
+    "elements": [
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "AshenDryadHard",
+        "count": 5
+      },
+      {
+        "enemyType": "AshenDryad2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "AshenDryadHeroHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_Limb_R01",
+      "a_Room_Limb_R02",
+      "a_Room_Limb_R03",
+      "a_Room_Limb_R04",
+      "a_Room_Limb_R05",
+      "a_Room_Limb_R06",
+      "a_Room_M02ROutOnALimbBoss"
+    ]
+  },
+  "EG_Mission3": {
+    "elements": [
+      "Ice",
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "FirePriest",
+        "count": 4
+      },
+      {
+        "enemyType": "DesolateDevourerHeavy",
+        "count": 3
+      },
+      {
+        "enemyType": "FirePriest2",
+        "count": 2
+      },
+      {
+        "enemyType": "DesolateDevourerShooting",
+        "count": 1
+      },
+      {
+        "enemyType": "DragonSea",
+        "count": 1
+      },
+      {
+        "enemyType": "FireMinotaur",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_M03RRottenToTheRootsBoss",
+      "a_Room_Rotten_R01",
+      "a_Room_Rotten_R02",
+      "a_Room_Rotten_R03",
+      "a_Room_Rotten_R04",
+      "a_Room_Rotten_R05",
+      "a_Room_Rotten_R06",
+      "a_Room_Rotten_R07",
+      "a_Room_Rotten_R08",
+      "a_Room_Rotten_R09",
+      "a_Room_Rotten_R10",
+      "a_Room_Rotten_R11"
+    ]
+  },
+  "EG_Mission3Hard": {
+    "elements": [
+      "Ice",
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "FirePriestHard",
+        "count": 4
+      },
+      {
+        "enemyType": "DesolateDevourerHeavyHard",
+        "count": 3
+      },
+      {
+        "enemyType": "FirePriest2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "DesolateDevourerShootingHard",
+        "count": 1
+      },
+      {
+        "enemyType": "DragonSeaHard",
+        "count": 1
+      },
+      {
+        "enemyType": "FireMinotaurHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_M03RRottenToTheRootsBoss",
+      "a_Room_Rotten_R01",
+      "a_Room_Rotten_R02",
+      "a_Room_Rotten_R03",
+      "a_Room_Rotten_R04",
+      "a_Room_Rotten_R05",
+      "a_Room_Rotten_R06",
+      "a_Room_Rotten_R07",
+      "a_Room_Rotten_R08",
+      "a_Room_Rotten_R09",
+      "a_Room_Rotten_R10",
+      "a_Room_Rotten_R11"
+    ]
+  },
+  "EG_Mission4": {
+    "elements": [
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "FirePriest",
+        "count": 4
+      },
+      {
+        "enemyType": "FirePriest2",
+        "count": 2
+      },
+      {
+        "enemyType": "FirePriestBoss",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_Hopes_R03",
+      "a_Room_Hopes_R05",
+      "a_Room_Hopes_R06",
+      "a_Room_Hopes_R07",
+      "a_Room_Hopes_R08",
+      "a_Room_Hopes_R09",
+      "a_Room_Hopes_R11",
+      "a_Room_Hopes_R12",
+      "a_Room_M04RHopeSpringsBoss"
+    ]
+  },
+  "EG_Mission4Hard": {
+    "elements": [
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "FirePriestHard",
+        "count": 4
+      },
+      {
+        "enemyType": "FirePriest2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "FirePriestBossHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_Hopes_R03",
+      "a_Room_Hopes_R05",
+      "a_Room_Hopes_R06",
+      "a_Room_Hopes_R07",
+      "a_Room_Hopes_R08",
+      "a_Room_Hopes_R09",
+      "a_Room_Hopes_R11",
+      "a_Room_Hopes_R12",
+      "a_Room_M04RHopeSpringsBoss"
+    ]
+  },
+  "EG_Mission5": {
+    "elements": [
+      "Ice",
+      "Fire",
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "FirePriest",
+        "count": 4
+      },
+      {
+        "enemyType": "FirePriest2",
+        "count": 2
+      },
+      {
+        "enemyType": "DesolateDevourerHeavy",
+        "count": 1
+      },
+      {
+        "enemyType": "FireMinotaur2",
+        "count": 1
+      },
+      {
+        "enemyType": "FirePriestWizard",
+        "count": 1
+      },
+      {
+        "enemyType": "PyrFiend",
+        "count": 1
+      },
+      {
+        "enemyType": "PyrFiend2",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_M05RRefugeOfTheDamnedBoss",
+      "a_Room_Refuge_R01",
+      "a_Room_Refuge_R02",
+      "a_Room_Refuge_R03",
+      "a_Room_Refuge_R04",
+      "a_Room_Refuge_R05",
+      "a_Room_Refuge_R06",
+      "a_Room_Refuge_R07",
+      "a_Room_Refuge_R08",
+      "a_Room_Refuge_R09",
+      "a_Room_Refuge_R10"
+    ]
+  },
+  "EG_Mission5Hard": {
+    "elements": [
+      "Ice",
+      "Fire",
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "FirePriestHard",
+        "count": 4
+      },
+      {
+        "enemyType": "FirePriest2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "DesolateDevourerHeavyHard",
+        "count": 1
+      },
+      {
+        "enemyType": "FireMinotaur2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "FirePriestWizardHard",
+        "count": 1
+      },
+      {
+        "enemyType": "PyrFiend2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "PyrFiendHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_M05RRefugeOfTheDamnedBoss",
+      "a_Room_Refuge_R01",
+      "a_Room_Refuge_R02",
+      "a_Room_Refuge_R03",
+      "a_Room_Refuge_R04",
+      "a_Room_Refuge_R05",
+      "a_Room_Refuge_R06",
+      "a_Room_Refuge_R07",
+      "a_Room_Refuge_R08",
+      "a_Room_Refuge_R09",
+      "a_Room_Refuge_R10"
+    ]
+  },
+  "AC_Mission1": {
+    "elements": [
+      "Fire",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "CastleLizardHeavy2",
+        "count": 6
+      },
+      {
+        "enemyType": "CastleLizardHeavy1",
+        "count": 3
+      },
+      {
+        "enemyType": "CastleLizardBanner2",
+        "count": 2
+      },
+      {
+        "enemyType": "DreadPaladin2",
+        "count": 2
+      },
+      {
+        "enemyType": "AncientDragonGold",
+        "count": 1
+      },
+      {
+        "enemyType": "AncientDragonGoldMini",
+        "count": 1
+      },
+      {
+        "enemyType": "CastleLizardMaster",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadChampion",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadPaladin",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadPaladin3",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_ACM01DeepgardDragonMiniBoss",
+      "a_Room_ACM01RDeepgardDragonBoss",
+      "a_Room_DGC_R09",
+      "a_Room_Dragon_R02",
+      "a_Room_Dragon_R03",
+      "a_Room_Dragon_R04",
+      "a_Room_Dragon_R05",
+      "a_Room_Dragon_R06",
+      "a_Room_Dragon_R07",
+      "a_Room_Dragon_R08",
+      "a_Room_Dragon_R09",
+      "a_Room_Dragon_R11",
+      "a_Room_ZDGC_R02",
+      "a_Room_ZDGC_R03",
+      "a_Room_ZDGC_R04",
+      "a_Room_ZDGC_R05_FIXED",
+      "a_Room_ZDGC_R06",
+      "a_Room_ZDGC_R07",
+      "a_Room_ZDGC_R08",
+      "a_Room_ZDragon_R01"
+    ]
+  },
+  "AC_Mission1Hard": {
+    "elements": [
+      "Fire",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "CastleLizardHeavy2Hard",
+        "count": 6
+      },
+      {
+        "enemyType": "CastleLizardHeavy1Hard",
+        "count": 3
+      },
+      {
+        "enemyType": "CastleLizardBanner2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "DreadPaladin2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "AncientDragonGoldHard",
+        "count": 1
+      },
+      {
+        "enemyType": "AncientDragonGoldMiniHard",
+        "count": 1
+      },
+      {
+        "enemyType": "CastleLizardMasterHard",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadChampionHard",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadPaladin3Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadPaladinHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_ACM01DeepgardDragonMiniBoss",
+      "a_Room_ACM01RDeepgardDragonBoss",
+      "a_Room_DGC_R09",
+      "a_Room_Dragon_R02",
+      "a_Room_Dragon_R03",
+      "a_Room_Dragon_R04",
+      "a_Room_Dragon_R05",
+      "a_Room_Dragon_R06",
+      "a_Room_Dragon_R07",
+      "a_Room_Dragon_R08",
+      "a_Room_Dragon_R09",
+      "a_Room_Dragon_R11",
+      "a_Room_ZDGC_R02",
+      "a_Room_ZDGC_R03",
+      "a_Room_ZDGC_R04",
+      "a_Room_ZDGC_R05_FIXED",
+      "a_Room_ZDGC_R06",
+      "a_Room_ZDGC_R07",
+      "a_Room_ZDGC_R08",
+      "a_Room_ZDragon_R01"
+    ]
+  },
+  "AC_Mission2": {
+    "elements": [
+      "Fire",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "CastleLizardHeavy1",
+        "count": 3
+      },
+      {
+        "enemyType": "CastleLizardHeavy2",
+        "count": 3
+      },
+      {
+        "enemyType": "CastleLizardMaster",
+        "count": 2
+      },
+      {
+        "enemyType": "DreadChampion2",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadLord",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadPaladin",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadPaladin3",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_ACM02REmeraldThroneBoss",
+      "a_Room_Throne_R01",
+      "a_Room_Throne_R02",
+      "a_Room_Throne_R03",
+      "a_Room_Throne_R04",
+      "a_Room_Throne_R05",
+      "a_Room_Throne_R06",
+      "a_Room_Throne_R07",
+      "a_Room_Throne_R08",
+      "a_Room_Throne_R09"
+    ]
+  },
+  "AC_Mission2Hard": {
+    "elements": [
+      "Fire",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "CastleLizardHeavy1Hard",
+        "count": 3
+      },
+      {
+        "enemyType": "CastleLizardHeavy2Hard",
+        "count": 3
+      },
+      {
+        "enemyType": "CastleLizardMasterHard",
+        "count": 2
+      },
+      {
+        "enemyType": "DreadChampion2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadLordHard",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadPaladin3Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadPaladinHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_ACM02REmeraldThroneBoss",
+      "a_Room_Throne_R01",
+      "a_Room_Throne_R02",
+      "a_Room_Throne_R03",
+      "a_Room_Throne_R04",
+      "a_Room_Throne_R05",
+      "a_Room_Throne_R06",
+      "a_Room_Throne_R07",
+      "a_Room_Throne_R08",
+      "a_Room_Throne_R09"
+    ]
+  },
+  "AC_Mission3": {
+    "elements": [
+      "Death",
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SpiritImperialSergeant1",
+        "count": 5
+      },
+      {
+        "enemyType": "SpiritImperialCenturion1",
+        "count": 4
+      },
+      {
+        "enemyType": "SpiritGoblin1",
+        "count": 3
+      },
+      {
+        "enemyType": "SpiritGoblin3",
+        "count": 2
+      },
+      {
+        "enemyType": "SpiritGoblinShamanLt1",
+        "count": 2
+      },
+      {
+        "enemyType": "SpiritImperialFootman3",
+        "count": 2
+      },
+      {
+        "enemyType": "SpiritDragon",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritGoblin2",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritGoblinBigLt1",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritGoblinBigLt2",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritGoblinLt2",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritImperialFootman1",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritImperialSergeant2",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_ACM03RBattlesBoss",
+      "a_Room_Battle_R01",
+      "a_Room_Battle_R02",
+      "a_Room_Battle_R03",
+      "a_Room_Battle_R04",
+      "a_Room_Battle_R05",
+      "a_Room_Battle_R06",
+      "a_Room_Battle_R07",
+      "a_Room_Battle_R08",
+      "a_Room_Battle_R09",
+      "a_Room_ZBattle_R01",
+      "a_Room_ZBattle_R03"
+    ]
+  },
+  "AC_Mission3Hard": {
+    "elements": [
+      "Death",
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SpiritImperialSergeant1Hard",
+        "count": 5
+      },
+      {
+        "enemyType": "SpiritImperialCenturion1Hard",
+        "count": 4
+      },
+      {
+        "enemyType": "SpiritGoblin1Hard",
+        "count": 3
+      },
+      {
+        "enemyType": "SpiritGoblin3Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "SpiritGoblinShamanLt1Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "SpiritImperialFootman3Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "SpiritDragonHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritGoblin2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritGoblinBigLt1Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritGoblinBigLt2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritGoblinLt2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritImperialFootman1Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritImperialSergeant2Hard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_ACM03RBattlesBoss",
+      "a_Room_Battle_R01",
+      "a_Room_Battle_R02",
+      "a_Room_Battle_R03",
+      "a_Room_Battle_R04",
+      "a_Room_Battle_R05",
+      "a_Room_Battle_R06",
+      "a_Room_Battle_R07",
+      "a_Room_Battle_R08",
+      "a_Room_Battle_R09",
+      "a_Room_ZBattle_R01",
+      "a_Room_ZBattle_R03"
+    ]
+  },
+  "AC_Mission4": {
+    "elements": [
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SpiritImperialSergeant1",
+        "count": 5
+      },
+      {
+        "enemyType": "SpiritGoblinLt2",
+        "count": 3
+      },
+      {
+        "enemyType": "SpiritGoblinShamanLt1",
+        "count": 2
+      },
+      {
+        "enemyType": "SpiritDemonMaligner",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritImperialCenturion1",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_ACM04RAethericObservatoryBoss",
+      "a_Room_Obersve_R03",
+      "a_Room_Observe_R01",
+      "a_Room_Observe_R02",
+      "a_Room_Observe_R04",
+      "a_Room_Observe_R05",
+      "a_Room_Observe_R06",
+      "a_Room_Observe_R07",
+      "a_Room_Observe_R08",
+      "a_Room_Observe_R09",
+      "a_Room_Observe_R11",
+      "a_Room_ZObserve_R05"
+    ]
+  },
+  "AC_Mission4Hard": {
+    "elements": [
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SpiritImperialSergeant1Hard",
+        "count": 5
+      },
+      {
+        "enemyType": "SpiritGoblinLt2Hard",
+        "count": 3
+      },
+      {
+        "enemyType": "SpiritGoblinShamanLt1Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "SpiritDemonMalignerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritImperialCenturion1Hard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_ACM04RAethericObservatoryBoss",
+      "a_Room_Obersve_R03",
+      "a_Room_Observe_R01",
+      "a_Room_Observe_R02",
+      "a_Room_Observe_R04",
+      "a_Room_Observe_R05",
+      "a_Room_Observe_R06",
+      "a_Room_Observe_R07",
+      "a_Room_Observe_R08",
+      "a_Room_Observe_R09",
+      "a_Room_Observe_R11",
+      "a_Room_ZObserve_R05"
+    ]
+  },
+  "AC_Mission5": {
+    "elements": [
+      "Death",
+      "Fire",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DreadPaladin",
+        "count": 3
+      },
+      {
+        "enemyType": "DreadPaladin2",
+        "count": 3
+      },
+      {
+        "enemyType": "AncientDragonBlack",
+        "count": 1
+      },
+      {
+        "enemyType": "AncientDragonSilver",
+        "count": 1
+      },
+      {
+        "enemyType": "CastleLizard1",
+        "count": 1
+      },
+      {
+        "enemyType": "CastleLizardBanner1",
+        "count": 1
+      },
+      {
+        "enemyType": "CastleLizardHeavy1",
+        "count": 1
+      },
+      {
+        "enemyType": "CastleLizardHeavy2",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadChampion3",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadPaladin3",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritAshenDryad",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_ACM05RRampartsBoss",
+      "a_Room_Ramparts_R01",
+      "a_Room_Ramparts_R02",
+      "a_Room_Ramparts_R03",
+      "a_Room_Ramparts_R04",
+      "a_Room_Ramparts_R05",
+      "a_Room_Ramparts_R06",
+      "a_Room_Ramparts_R07",
+      "a_Room_Ramparts_R08",
+      "a_Room_Ramparts_R09"
+    ]
+  },
+  "AC_Mission5Hard": {
+    "elements": [
+      "Death",
+      "Fire",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DreadPaladin2Hard",
+        "count": 3
+      },
+      {
+        "enemyType": "DreadPaladinHard",
+        "count": 3
+      },
+      {
+        "enemyType": "AncientDragonBlackHard",
+        "count": 1
+      },
+      {
+        "enemyType": "AncientDragonSilverHard",
+        "count": 1
+      },
+      {
+        "enemyType": "CastleLizard1Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "CastleLizardBanner1Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "CastleLizardHeavy1Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "CastleLizardHeavy2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadChampion3Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "DreadPaladin3Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritAshenDryadHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_ACM05RRampartsBoss",
+      "a_Room_Ramparts_R01",
+      "a_Room_Ramparts_R02",
+      "a_Room_Ramparts_R03",
+      "a_Room_Ramparts_R04",
+      "a_Room_Ramparts_R05",
+      "a_Room_Ramparts_R06",
+      "a_Room_Ramparts_R07",
+      "a_Room_Ramparts_R08",
+      "a_Room_Ramparts_R09"
+    ]
+  },
+  "AC_Mission6": {
+    "elements": [
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SpiritLionPridemate",
+        "count": 2
+      },
+      {
+        "enemyType": "SpiritAbominationMini",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritBlackGoblinMace",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritGreatLizardBanner",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritGreatLizardWarrior",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritPyrFiendGreat",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritStormCyclops",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_Capstone_R01",
+      "a_Room_Capstone_R02",
+      "a_Room_Capstone_R03",
+      "a_Room_Capstone_R04",
+      "a_Room_Capstone_R05",
+      "a_Room_Capstone_R06",
+      "a_Room_FinalNephitFight"
+    ]
+  },
+  "AC_Mission6Hard": {
+    "elements": [
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SpiritLionPridemateHard",
+        "count": 2
+      },
+      {
+        "enemyType": "SpiritAbominationMiniHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritBlackGoblinMaceHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritGreatLizardBannerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritGreatLizardWarriorHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritPyrFiendGreatHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritStormCyclopsHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_Capstone_R01",
+      "a_Room_Capstone_R02",
+      "a_Room_Capstone_R03",
+      "a_Room_Capstone_R04",
+      "a_Room_Capstone_R05",
+      "a_Room_Capstone_R06",
+      "a_Room_FinalNephitFight"
+    ]
+  },
+  "SD_Mission1": {
+    "elements": [
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "RaptorHorned",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SDMission01"
+    ]
+  },
+  "SD_Mission1Hard": {
+    "elements": [
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "RaptorHornedHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SDMission01"
+    ]
+  },
+  "SD_Mission2": {
+    "elements": [
+      "Life",
+      "Air",
+      "Earth"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "ScarabLarvaSpawn",
+        "count": 17
+      },
+      {
+        "enemyType": "ScarabLarvaSpawnSmall",
+        "count": 11
+      },
+      {
+        "enemyType": "ScarabHunter",
+        "count": 6
+      },
+      {
+        "enemyType": "ScarabSoldier",
+        "count": 3
+      },
+      {
+        "enemyType": "ScarabSoldier2",
+        "count": 2
+      },
+      {
+        "enemyType": "ScarabRogue",
+        "count": 1
+      },
+      {
+        "enemyType": "ScarabScorpion",
+        "count": 1
+      },
+      {
+        "enemyType": "ScarabSwarmer2",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SDMission2_01",
+      "a_Room_SDMission2_02",
+      "a_Room_SDMission2_03",
+      "a_Room_SDMission2_04",
+      "a_Room_SDMission2_05",
+      "a_Room_SDMission2_06",
+      "a_Room_SDMission2_07",
+      "a_Room_SDMission2_08",
+      "a_Room_SDMission2_09",
+      "a_Room_SDMission2_10",
+      "a_Room_SDMission2_11",
+      "a_Room_SDMission2_12",
+      "a_Room_SDMission2_13"
+    ]
+  },
+  "SD_Mission2Hard": {
+    "elements": [
+      "Life",
+      "Air",
+      "Earth"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "ScarabLarvaSpawnHard",
+        "count": 17
+      },
+      {
+        "enemyType": "ScarabLarvaSpawnSmallHard",
+        "count": 11
+      },
+      {
+        "enemyType": "ScarabHunterHard",
+        "count": 6
+      },
+      {
+        "enemyType": "ScarabSoldierHard",
+        "count": 3
+      },
+      {
+        "enemyType": "ScarabSoldier2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "ScarabRogueHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ScarabScorpionHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ScarabSwarmer2Hard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SDMission2_01",
+      "a_Room_SDMission2_02",
+      "a_Room_SDMission2_03",
+      "a_Room_SDMission2_04",
+      "a_Room_SDMission2_05",
+      "a_Room_SDMission2_06",
+      "a_Room_SDMission2_07",
+      "a_Room_SDMission2_08",
+      "a_Room_SDMission2_09",
+      "a_Room_SDMission2_10",
+      "a_Room_SDMission2_11",
+      "a_Room_SDMission2_12",
+      "a_Room_SDMission2_13"
+    ]
+  },
+  "SD_Mission3": {
+    "elements": [
+      "Life",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "OutlanderBoss",
+        "count": 2
+      },
+      {
+        "enemyType": "OutlanderGladiator",
+        "count": 2
+      },
+      {
+        "enemyType": "OutlanderRogue",
+        "count": 2
+      },
+      {
+        "enemyType": "OutlanderWyrm",
+        "count": 1
+      },
+      {
+        "enemyType": "SandSpider",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SDMission3_01",
+      "a_Room_SDMission3_02",
+      "a_Room_SDMission3_03",
+      "a_Room_SDMission3_04",
+      "a_Room_SDMission3_05",
+      "a_Room_SDMission3_06",
+      "a_Room_SDMission3_07",
+      "a_Room_SDMission3_08"
+    ]
+  },
+  "SD_Mission3Hard": {
+    "elements": [
+      "Life",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "OutlanderBossHard",
+        "count": 2
+      },
+      {
+        "enemyType": "OutlanderGladiatorHard",
+        "count": 2
+      },
+      {
+        "enemyType": "OutlanderRogueHard",
+        "count": 2
+      },
+      {
+        "enemyType": "OutlanderWyrmHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SandSpiderHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SDMission3_01",
+      "a_Room_SDMission3_02",
+      "a_Room_SDMission3_03",
+      "a_Room_SDMission3_04",
+      "a_Room_SDMission3_05",
+      "a_Room_SDMission3_06",
+      "a_Room_SDMission3_07",
+      "a_Room_SDMission3_08"
+    ]
+  },
+  "SD_Mission4": {
+    "elements": [
+      "Air",
+      "Earth",
+      "Fire",
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "OasisWarlock",
+        "count": 8
+      },
+      {
+        "enemyType": "OasisPuck",
+        "count": 6
+      },
+      {
+        "enemyType": "OasisGiant",
+        "count": 4
+      },
+      {
+        "enemyType": "OasisRaptor2",
+        "count": 4
+      },
+      {
+        "enemyType": "PuckShadow",
+        "count": 3
+      },
+      {
+        "enemyType": "OasisRaptor",
+        "count": 2
+      },
+      {
+        "enemyType": "OasisVizier",
+        "count": 2
+      },
+      {
+        "enemyType": "OasisGiant2",
+        "count": 1
+      },
+      {
+        "enemyType": "OasisVizierGreen",
+        "count": 1
+      },
+      {
+        "enemyType": "OasisVizierYellow",
+        "count": 1
+      },
+      {
+        "enemyType": "PuckShadow2",
+        "count": 1
+      },
+      {
+        "enemyType": "SandSpider",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SDMission4_01",
+      "a_Room_SDMission4_02",
+      "a_Room_SDMission4_03",
+      "a_Room_SDMission4_04",
+      "a_Room_SDMission4_05",
+      "a_Room_SDMission4_06",
+      "a_Room_SDMission4_07",
+      "a_Room_SDMission4_08",
+      "a_Room_SDMission4_09",
+      "a_Room_SDMission4_10",
+      "a_Room_SDMission4_11"
+    ]
+  },
+  "SD_Mission4Hard": {
+    "elements": [
+      "Air",
+      "Earth",
+      "Fire",
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "OasisWarlockHard",
+        "count": 8
+      },
+      {
+        "enemyType": "OasisPuckHard",
+        "count": 6
+      },
+      {
+        "enemyType": "OasisGiantHard",
+        "count": 4
+      },
+      {
+        "enemyType": "OasisRaptor2Hard",
+        "count": 4
+      },
+      {
+        "enemyType": "PuckShadowHard",
+        "count": 3
+      },
+      {
+        "enemyType": "OasisRaptorHard",
+        "count": 2
+      },
+      {
+        "enemyType": "OasisVizierHard",
+        "count": 2
+      },
+      {
+        "enemyType": "OasisGiant2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "OasisVizierGreenHard",
+        "count": 1
+      },
+      {
+        "enemyType": "OasisVizierYellowHard",
+        "count": 1
+      },
+      {
+        "enemyType": "PuckShadow2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "SandSpiderHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SDMission4_01",
+      "a_Room_SDMission4_02",
+      "a_Room_SDMission4_03",
+      "a_Room_SDMission4_04",
+      "a_Room_SDMission4_05",
+      "a_Room_SDMission4_06",
+      "a_Room_SDMission4_07",
+      "a_Room_SDMission4_08",
+      "a_Room_SDMission4_09",
+      "a_Room_SDMission4_10",
+      "a_Room_SDMission4_11"
+    ]
+  },
+  "SD_Mission5": {
+    "elements": [
+      "Air",
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "ShadeMage2",
+        "count": 6
+      },
+      {
+        "enemyType": "ScarabLarvaSpawn",
+        "count": 5
+      },
+      {
+        "enemyType": "OasisWarlock",
+        "count": 3
+      },
+      {
+        "enemyType": "SandWorm",
+        "count": 3
+      },
+      {
+        "enemyType": "OasisGiant2",
+        "count": 1
+      },
+      {
+        "enemyType": "SandSpider2",
+        "count": 1
+      },
+      {
+        "enemyType": "SandWasp",
+        "count": 1
+      },
+      {
+        "enemyType": "SandWorm2",
+        "count": 1
+      },
+      {
+        "enemyType": "SandWormGreater",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SDMission5_01",
+      "a_Room_SDMission5_02",
+      "a_Room_SDMission5_03",
+      "a_Room_SDMission5_04",
+      "a_Room_SDMission5_05",
+      "a_Room_SDMission5_06",
+      "a_Room_SDMission5_07",
+      "a_Room_SDMission5_08",
+      "a_Room_SDMission5_09",
+      "a_Room_SDMission5_10",
+      "a_Room_SDMission5_11",
+      "a_Room_SDMission5_12",
+      "a_Room_SDMission5_13"
+    ]
+  },
+  "SD_Mission5Hard": {
+    "elements": [
+      "Air",
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "ShadeMage2Hard",
+        "count": 6
+      },
+      {
+        "enemyType": "ScarabLarvaSpawnHard",
+        "count": 5
+      },
+      {
+        "enemyType": "OasisWarlockHard",
+        "count": 3
+      },
+      {
+        "enemyType": "SandWormHard",
+        "count": 3
+      },
+      {
+        "enemyType": "OasisGiant2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "SandSpider2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "SandWaspHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SandWorm2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "SandWormGreaterHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SDMission5_01",
+      "a_Room_SDMission5_02",
+      "a_Room_SDMission5_03",
+      "a_Room_SDMission5_04",
+      "a_Room_SDMission5_05",
+      "a_Room_SDMission5_06",
+      "a_Room_SDMission5_07",
+      "a_Room_SDMission5_08",
+      "a_Room_SDMission5_09",
+      "a_Room_SDMission5_10",
+      "a_Room_SDMission5_11",
+      "a_Room_SDMission5_12",
+      "a_Room_SDMission5_13"
+    ]
+  },
+  "SD_Mission6": {
+    "elements": [
+      "Earth",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GolemBrute",
+        "count": 5
+      },
+      {
+        "enemyType": "GolemDefender",
+        "count": 4
+      },
+      {
+        "enemyType": "GolemPlatform",
+        "count": 2
+      },
+      {
+        "enemyType": "GolemLord",
+        "count": 1
+      },
+      {
+        "enemyType": "GolemMini2",
+        "count": 1
+      },
+      {
+        "enemyType": "Mimic",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SDMission6_01",
+      "a_Room_SDMission6_01zone",
+      "a_Room_SDMission6_02",
+      "a_Room_SDMission6_03",
+      "a_Room_SDMission6_04",
+      "a_Room_SDMission6_05",
+      "a_Room_SDMission6_06",
+      "a_Room_SDMission6_07",
+      "a_Room_SDMission6_08",
+      "a_Room_SDMission6_09",
+      "a_Room_SDMission6_10",
+      "a_Room_SDMission6_11",
+      "a_Room_SDMission6_12"
+    ]
+  },
+  "SD_Mission6Hard": {
+    "elements": [
+      "Earth",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GolemBruteHard",
+        "count": 5
+      },
+      {
+        "enemyType": "GolemDefenderHard",
+        "count": 4
+      },
+      {
+        "enemyType": "GolemPlatformHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GolemLordHard",
+        "count": 1
+      },
+      {
+        "enemyType": "GolemMini2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "MimicHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SDMission6_01",
+      "a_Room_SDMission6_01zone",
+      "a_Room_SDMission6_02",
+      "a_Room_SDMission6_03",
+      "a_Room_SDMission6_04",
+      "a_Room_SDMission6_05",
+      "a_Room_SDMission6_06",
+      "a_Room_SDMission6_07",
+      "a_Room_SDMission6_08",
+      "a_Room_SDMission6_09",
+      "a_Room_SDMission6_10",
+      "a_Room_SDMission6_11",
+      "a_Room_SDMission6_12"
+    ]
+  },
+  "SD_Tales1Escort": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "missing-swf",
+    "rooms": []
+  },
+  "SD_Tales2Surprise": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "missing-swf",
+    "rooms": []
+  },
+  "SD_Tales3Remodel": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "missing-swf",
+    "rooms": []
+  },
+  "SD_Tales4Oasis": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "missing-swf",
+    "rooms": []
+  },
+  "SD_Tales5Defense": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "missing-swf",
+    "rooms": []
+  },
+  "SD_Tales6Time": {
+    "elements": [],
+    "enemyTypes": [],
+    "source": "missing-swf",
+    "rooms": []
+  },
+  "JC_Mission1": {
+    "elements": [
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "ImperialChampion",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission1_01",
+      "a_Room_JCMission1_02",
+      "a_Room_JCMission1_03",
+      "a_Room_JCMission1_04",
+      "a_Room_JCMission1_05",
+      "a_Room_JCMission1_06",
+      "a_Room_JCMission1_07",
+      "a_Room_JCMission1_08",
+      "a_Room_JCMission1_09",
+      "a_Room_JCMission1_10",
+      "a_Room_JCMission1_11",
+      "a_Room_JCMission1_12",
+      "a_Room_JCMission1_13",
+      "a_Room_JCMission1_14",
+      "a_Room_JCMission1_15"
+    ]
+  },
+  "JC_Mission1Hard": {
+    "elements": [
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "ImperialChampionHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission1_01",
+      "a_Room_JCMission1_02",
+      "a_Room_JCMission1_03",
+      "a_Room_JCMission1_04",
+      "a_Room_JCMission1_05",
+      "a_Room_JCMission1_06",
+      "a_Room_JCMission1_07",
+      "a_Room_JCMission1_08",
+      "a_Room_JCMission1_09",
+      "a_Room_JCMission1_10",
+      "a_Room_JCMission1_11",
+      "a_Room_JCMission1_12",
+      "a_Room_JCMission1_13",
+      "a_Room_JCMission1_14",
+      "a_Room_JCMission1_15"
+    ]
+  },
+  "JC_Mission2": {
+    "elements": [
+      "Ice",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BrigandCutthroat",
+        "count": 3
+      },
+      {
+        "enemyType": "BrigandBrawler",
+        "count": 2
+      },
+      {
+        "enemyType": "BrigandBrawler2",
+        "count": 2
+      },
+      {
+        "enemyType": "DefectorMage",
+        "count": 2
+      },
+      {
+        "enemyType": "BrigandCryomancer",
+        "count": 1
+      },
+      {
+        "enemyType": "GreaterBoneGolem",
+        "count": 1
+      },
+      {
+        "enemyType": "GreaterBoneGolem2",
+        "count": 1
+      },
+      {
+        "enemyType": "RatlingShamanHood",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission2_01",
+      "a_Room_JCMission2_02",
+      "a_Room_JCMission2_03",
+      "a_Room_JCMission2_04",
+      "a_Room_JCMission2_05",
+      "a_Room_JCMission2_06",
+      "a_Room_JCMission2_07",
+      "a_Room_JCMission2_08",
+      "a_Room_JCMission2_09",
+      "a_Room_JCMission2_10",
+      "a_Room_JCMission2_11",
+      "a_Room_JCMission2_12",
+      "a_Room_JCMission2_13",
+      "a_Room_JCMission2_14"
+    ]
+  },
+  "JC_Mission2Hard": {
+    "elements": [
+      "Ice",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BrigandCutthroatHard",
+        "count": 3
+      },
+      {
+        "enemyType": "BrigandBrawler2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "BrigandBrawlerHard",
+        "count": 2
+      },
+      {
+        "enemyType": "DefectorMageHard",
+        "count": 2
+      },
+      {
+        "enemyType": "BrigandCryomancerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "GreaterBoneGolem2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "GreaterBoneGolemHard",
+        "count": 1
+      },
+      {
+        "enemyType": "RatlingShamanHoodHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission2_01",
+      "a_Room_JCMission2_02",
+      "a_Room_JCMission2_03",
+      "a_Room_JCMission2_04",
+      "a_Room_JCMission2_05",
+      "a_Room_JCMission2_06",
+      "a_Room_JCMission2_07",
+      "a_Room_JCMission2_08",
+      "a_Room_JCMission2_09",
+      "a_Room_JCMission2_10",
+      "a_Room_JCMission2_11",
+      "a_Room_JCMission2_12",
+      "a_Room_JCMission2_13",
+      "a_Room_JCMission2_14"
+    ]
+  },
+  "JC_Mission3": {
+    "elements": [
+      "Air",
+      "Ice",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DefectorMage",
+        "count": 5
+      },
+      {
+        "enemyType": "ShadeSummoner",
+        "count": 4
+      },
+      {
+        "enemyType": "BoneGolem",
+        "count": 2
+      },
+      {
+        "enemyType": "PortalFiend2",
+        "count": 2
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission3_01",
+      "a_Room_JCMission3_02",
+      "a_Room_JCMission3_03",
+      "a_Room_JCMission3_04",
+      "a_Room_JCMission3_05",
+      "a_Room_JCMission3_06",
+      "a_Room_JCMission3_07",
+      "a_Room_JCMission3_08",
+      "a_Room_JCMission3_09",
+      "a_Room_JCMission3_10",
+      "a_Room_JCMission3_11",
+      "a_Room_JCMission3_12",
+      "a_Room_JCMission3_BossRoomNew"
+    ]
+  },
+  "JC_Mission3Hard": {
+    "elements": [
+      "Air",
+      "Ice",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DefectorMageHard",
+        "count": 5
+      },
+      {
+        "enemyType": "ShadeSummonerHard",
+        "count": 4
+      },
+      {
+        "enemyType": "BoneGolemHard",
+        "count": 2
+      },
+      {
+        "enemyType": "PortalFiend2Hard",
+        "count": 2
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission3_01",
+      "a_Room_JCMission3_02",
+      "a_Room_JCMission3_03",
+      "a_Room_JCMission3_04",
+      "a_Room_JCMission3_05",
+      "a_Room_JCMission3_06",
+      "a_Room_JCMission3_07",
+      "a_Room_JCMission3_08",
+      "a_Room_JCMission3_09",
+      "a_Room_JCMission3_10",
+      "a_Room_JCMission3_11",
+      "a_Room_JCMission3_12",
+      "a_Room_JCMission3_BossRoomNew"
+    ]
+  },
+  "JC_Mission4": {
+    "elements": [
+      "Ice",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "RatlingShamanHood",
+        "count": 4
+      },
+      {
+        "enemyType": "ShadeSummoner",
+        "count": 2
+      },
+      {
+        "enemyType": "PortalFiend2",
+        "count": 1
+      },
+      {
+        "enemyType": "RatlingKing",
+        "count": 1
+      },
+      {
+        "enemyType": "RatlingShaman",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeWarrior",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission4_01",
+      "a_Room_JCMission4_02",
+      "a_Room_JCMission4_03",
+      "a_Room_JCMission4_04",
+      "a_Room_JCMission4_05",
+      "a_Room_JCMission4_06",
+      "a_Room_JCMission4_07",
+      "a_Room_JCMission4_08",
+      "a_Room_JCMission4_09",
+      "a_Room_JCMission4_10",
+      "a_Room_JCMission4_11",
+      "a_Room_JCMission4_12",
+      "a_Room_JCMission4_13",
+      "a_Room_JCMission4_14"
+    ]
+  },
+  "JC_Mission4Hard": {
+    "elements": [
+      "Ice",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "RatlingShamanHoodHard",
+        "count": 4
+      },
+      {
+        "enemyType": "ShadeSummonerHard",
+        "count": 2
+      },
+      {
+        "enemyType": "PortalFiend2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "RatlingKingHard",
+        "count": 1
+      },
+      {
+        "enemyType": "RatlingShamanHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeWarriorHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission4_01",
+      "a_Room_JCMission4_02",
+      "a_Room_JCMission4_03",
+      "a_Room_JCMission4_04",
+      "a_Room_JCMission4_05",
+      "a_Room_JCMission4_06",
+      "a_Room_JCMission4_07",
+      "a_Room_JCMission4_08",
+      "a_Room_JCMission4_09",
+      "a_Room_JCMission4_10",
+      "a_Room_JCMission4_11",
+      "a_Room_JCMission4_12",
+      "a_Room_JCMission4_13",
+      "a_Room_JCMission4_14"
+    ]
+  },
+  "JC_Mission5": {
+    "elements": [
+      "Air",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DreamWispEmerald",
+        "count": 17
+      },
+      {
+        "enemyType": "DreamWispRuby",
+        "count": 17
+      },
+      {
+        "enemyType": "DreamWispSapphire",
+        "count": 17
+      },
+      {
+        "enemyType": "DreamFirePriestWizard",
+        "count": 1
+      },
+      {
+        "enemyType": "DreamJackalChieftain",
+        "count": 1
+      },
+      {
+        "enemyType": "DreamLizardLord",
+        "count": 1
+      },
+      {
+        "enemyType": "NephitDragon",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission5_01",
+      "a_Room_JCMission5_02",
+      "a_Room_JCMission5_04",
+      "a_Room_JCMission5_06",
+      "a_Room_JCMission5_07",
+      "a_Room_JCMission5_08",
+      "a_Room_JCMission5_10",
+      "a_Room_JCMission5_11",
+      "a_Room_JCMission5_12",
+      "a_Room_JCMission5_13",
+      "a_Room_JCMission5_15",
+      "a_Room_JCMission5_16",
+      "a_Room_JCMission5_17",
+      "a_Room_JCMission5_18"
+    ]
+  },
+  "JC_Mission5Hard": {
+    "elements": [
+      "Air",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DreamWispEmeraldHard",
+        "count": 17
+      },
+      {
+        "enemyType": "DreamWispRubyHard",
+        "count": 17
+      },
+      {
+        "enemyType": "DreamWispSapphireHard",
+        "count": 17
+      },
+      {
+        "enemyType": "DreamFirePriestWizardHard",
+        "count": 1
+      },
+      {
+        "enemyType": "DreamJackalChieftainHard",
+        "count": 1
+      },
+      {
+        "enemyType": "DreamLizardLordHard",
+        "count": 1
+      },
+      {
+        "enemyType": "NephitDragonHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission5_01",
+      "a_Room_JCMission5_02",
+      "a_Room_JCMission5_04",
+      "a_Room_JCMission5_06",
+      "a_Room_JCMission5_07",
+      "a_Room_JCMission5_08",
+      "a_Room_JCMission5_10",
+      "a_Room_JCMission5_11",
+      "a_Room_JCMission5_12",
+      "a_Room_JCMission5_13",
+      "a_Room_JCMission5_15",
+      "a_Room_JCMission5_16",
+      "a_Room_JCMission5_17",
+      "a_Room_JCMission5_18"
+    ]
+  },
+  "JC_Mission6": {
+    "elements": [
+      "Air",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreaterDemonMaligner",
+        "count": 4
+      },
+      {
+        "enemyType": "BoneGolem",
+        "count": 3
+      },
+      {
+        "enemyType": "ShadeSummoner2",
+        "count": 2
+      },
+      {
+        "enemyType": "PortalMaster",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission6_01",
+      "a_Room_JCMission6_02",
+      "a_Room_JCMission6_03",
+      "a_Room_JCMission6_04",
+      "a_Room_JCMission6_05",
+      "a_Room_JCMission6_06",
+      "a_Room_JCMission6_07",
+      "a_Room_JCMission6_08",
+      "a_Room_JCMission6_09",
+      "a_Room_JCMission6_10",
+      "a_Room_JCMission6_11",
+      "a_Room_JCMission6_12",
+      "a_Room_JCMission6_13",
+      "a_Room_JCMission6_14",
+      "a_Room_JCMission6_15"
+    ]
+  },
+  "JC_Mission6Hard": {
+    "elements": [
+      "Air",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreaterDemonMalignerHard",
+        "count": 4
+      },
+      {
+        "enemyType": "BoneGolemHard",
+        "count": 3
+      },
+      {
+        "enemyType": "ShadeSummoner2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "PortalMasterHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission6_01",
+      "a_Room_JCMission6_02",
+      "a_Room_JCMission6_03",
+      "a_Room_JCMission6_04",
+      "a_Room_JCMission6_05",
+      "a_Room_JCMission6_06",
+      "a_Room_JCMission6_07",
+      "a_Room_JCMission6_08",
+      "a_Room_JCMission6_09",
+      "a_Room_JCMission6_10",
+      "a_Room_JCMission6_11",
+      "a_Room_JCMission6_12",
+      "a_Room_JCMission6_13",
+      "a_Room_JCMission6_14",
+      "a_Room_JCMission6_15"
+    ]
+  },
+  "JC_Mission7": {
+    "elements": [
+      "Air",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DemonReaper",
+        "count": 3
+      },
+      {
+        "enemyType": "GreaterDemonMaligner",
+        "count": 3
+      },
+      {
+        "enemyType": "EmperorStatue",
+        "count": 2
+      },
+      {
+        "enemyType": "ImperialGuard",
+        "count": 2
+      },
+      {
+        "enemyType": "ImperialMagus",
+        "count": 2
+      },
+      {
+        "enemyType": "Emperor",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeWarrior",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission7_01",
+      "a_Room_JCMission7_02",
+      "a_Room_JCMission7_03",
+      "a_Room_JCMission7_04",
+      "a_Room_JCMission7_05",
+      "a_Room_JCMission7_06",
+      "a_Room_JCMission7_07",
+      "a_Room_JCMission7_08",
+      "a_Room_JCMission7_09"
+    ]
+  },
+  "JC_Mission7Hard": {
+    "elements": [
+      "Air",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DemonReaperHard",
+        "count": 3
+      },
+      {
+        "enemyType": "GreaterDemonMalignerHard",
+        "count": 3
+      },
+      {
+        "enemyType": "EmperorStatueHard",
+        "count": 2
+      },
+      {
+        "enemyType": "ImperialGuardHard",
+        "count": 2
+      },
+      {
+        "enemyType": "ImperialMagusHard",
+        "count": 2
+      },
+      {
+        "enemyType": "EmperorHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeWarriorHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission7_01",
+      "a_Room_JCMission7_02",
+      "a_Room_JCMission7_03",
+      "a_Room_JCMission7_04",
+      "a_Room_JCMission7_05",
+      "a_Room_JCMission7_06",
+      "a_Room_JCMission7_07",
+      "a_Room_JCMission7_08",
+      "a_Room_JCMission7_09"
+    ]
+  },
+  "JC_Mission8": {
+    "elements": [
+      "Ice",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "ImperialGuard",
+        "count": 4
+      },
+      {
+        "enemyType": "DemonReaper",
+        "count": 2
+      },
+      {
+        "enemyType": "GreaterDemonMaligner",
+        "count": 2
+      },
+      {
+        "enemyType": "GuardCaptain",
+        "count": 1
+      },
+      {
+        "enemyType": "ImperialMagus",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeSummoner2",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission8_01",
+      "a_Room_JCMission8_02",
+      "a_Room_JCMission8_03",
+      "a_Room_JCMission8_04",
+      "a_Room_JCMission8_05",
+      "a_Room_JCMission8_06",
+      "a_Room_JCMission8_07",
+      "a_Room_JCMission8_08",
+      "a_Room_JCMission8_09",
+      "a_Room_JCMission8_10"
+    ]
+  },
+  "JC_Mission8Hard": {
+    "elements": [
+      "Ice",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "ImperialGuardHard",
+        "count": 4
+      },
+      {
+        "enemyType": "DemonReaperHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GreaterDemonMalignerHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GuardCaptainHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ImperialMagusHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeSummoner2Hard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission8_01",
+      "a_Room_JCMission8_02",
+      "a_Room_JCMission8_03",
+      "a_Room_JCMission8_04",
+      "a_Room_JCMission8_05",
+      "a_Room_JCMission8_06",
+      "a_Room_JCMission8_07",
+      "a_Room_JCMission8_08",
+      "a_Room_JCMission8_09",
+      "a_Room_JCMission8_10"
+    ]
+  },
+  "JC_Mission9": {
+    "elements": [
+      "Ice",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BrigandCryomancer",
+        "count": 5
+      },
+      {
+        "enemyType": "BrigandCutthroat2",
+        "count": 3
+      },
+      {
+        "enemyType": "RatlingShamanHood",
+        "count": 3
+      },
+      {
+        "enemyType": "BrigandBrawler",
+        "count": 1
+      },
+      {
+        "enemyType": "BrigandBrawler2",
+        "count": 1
+      },
+      {
+        "enemyType": "BrigandCutthroat",
+        "count": 1
+      },
+      {
+        "enemyType": "RisenBandit",
+        "count": 1
+      },
+      {
+        "enemyType": "RisenBandit2",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission9_01",
+      "a_Room_JCMission9_02",
+      "a_Room_JCMission9_03",
+      "a_Room_JCMission9_04",
+      "a_Room_JCMission9_05",
+      "a_Room_JCMission9_06",
+      "a_Room_JCMission9_07",
+      "a_Room_JCMission9_08",
+      "a_Room_JCMission9_09",
+      "a_Room_JCMission9_10",
+      "a_Room_JCMission9_11",
+      "a_Room_JCMission9_12",
+      "a_Room_JCMission9_13",
+      "a_Room_JCMission9_14",
+      "a_Room_JCMission9_15",
+      "a_Room_JCMission9_16",
+      "a_Room_JCMission9_17"
+    ]
+  },
+  "JC_Mission9Hard": {
+    "elements": [
+      "Ice",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BrigandCryomancerHard",
+        "count": 5
+      },
+      {
+        "enemyType": "BrigandCutthroat2Hard",
+        "count": 3
+      },
+      {
+        "enemyType": "RatlingShamanHoodHard",
+        "count": 3
+      },
+      {
+        "enemyType": "BrigandBrawler2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "BrigandBrawlerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "BrigandCutthroatHard",
+        "count": 1
+      },
+      {
+        "enemyType": "RisenBandit2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "RisenBanditHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission9_01",
+      "a_Room_JCMission9_02",
+      "a_Room_JCMission9_03",
+      "a_Room_JCMission9_04",
+      "a_Room_JCMission9_05",
+      "a_Room_JCMission9_06",
+      "a_Room_JCMission9_07",
+      "a_Room_JCMission9_08",
+      "a_Room_JCMission9_09",
+      "a_Room_JCMission9_10",
+      "a_Room_JCMission9_11",
+      "a_Room_JCMission9_12",
+      "a_Room_JCMission9_13",
+      "a_Room_JCMission9_14",
+      "a_Room_JCMission9_15",
+      "a_Room_JCMission9_16",
+      "a_Room_JCMission9_17"
+    ]
+  },
+  "JC_Mission10": {
+    "elements": [
+      "Air",
+      "Death",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreaterDemonMaligner",
+        "count": 3
+      },
+      {
+        "enemyType": "ShadeSummoner2",
+        "count": 3
+      },
+      {
+        "enemyType": "BoneGolem",
+        "count": 2
+      },
+      {
+        "enemyType": "DemonReaper",
+        "count": 2
+      },
+      {
+        "enemyType": "DragonTemple",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeWarrior",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission10_01",
+      "a_Room_JCMission10_02",
+      "a_Room_JCMission10_03",
+      "a_Room_JCMission10_04",
+      "a_Room_JCMission10_05",
+      "a_Room_JCMission10_06",
+      "a_Room_JCMission10_07",
+      "a_Room_JCMission10_08",
+      "a_Room_JCMission10_09",
+      "a_Room_JCMission10_10",
+      "a_Room_JCMission10_11",
+      "a_Room_JCMission10_12",
+      "a_Room_JCMission10_13",
+      "a_Room_JCMission10_14"
+    ]
+  },
+  "JC_Mission10Hard": {
+    "elements": [
+      "Air",
+      "Death",
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreaterDemonMalignerHard",
+        "count": 3
+      },
+      {
+        "enemyType": "ShadeSummoner2Hard",
+        "count": 3
+      },
+      {
+        "enemyType": "BoneGolemHard",
+        "count": 2
+      },
+      {
+        "enemyType": "DemonReaperHard",
+        "count": 2
+      },
+      {
+        "enemyType": "DragonTempleHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeWarriorHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission10_01",
+      "a_Room_JCMission10_02",
+      "a_Room_JCMission10_03",
+      "a_Room_JCMission10_04",
+      "a_Room_JCMission10_05",
+      "a_Room_JCMission10_06",
+      "a_Room_JCMission10_07",
+      "a_Room_JCMission10_08",
+      "a_Room_JCMission10_09",
+      "a_Room_JCMission10_10",
+      "a_Room_JCMission10_11",
+      "a_Room_JCMission10_12",
+      "a_Room_JCMission10_13",
+      "a_Room_JCMission10_14"
+    ]
+  },
+  "JC_Mission11": {
+    "elements": [
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BrigandChamp",
+        "count": 2
+      },
+      {
+        "enemyType": "BrigandChampMarker",
+        "count": 2
+      },
+      {
+        "enemyType": "BrigandCryomancer",
+        "count": 2
+      },
+      {
+        "enemyType": "BrigandBrawler",
+        "count": 1
+      },
+      {
+        "enemyType": "BrigandCutthroat2",
+        "count": 1
+      },
+      {
+        "enemyType": "RatlingArmor",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission11_01",
+      "a_Room_JCMission11_02",
+      "a_Room_JCMission11_03",
+      "a_Room_JCMission11_04",
+      "a_Room_JCMission11_05",
+      "a_Room_JCMission11_06",
+      "a_Room_JCMission11_07",
+      "a_Room_JCMission11_08",
+      "a_Room_JCMission11_09"
+    ]
+  },
+  "JC_Mission11Hard": {
+    "elements": [
+      "Ice"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BrigandChampHard",
+        "count": 2
+      },
+      {
+        "enemyType": "BrigandChampMarkerHard",
+        "count": 2
+      },
+      {
+        "enemyType": "BrigandCryomancerHard",
+        "count": 2
+      },
+      {
+        "enemyType": "BrigandBrawlerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "BrigandCutthroat2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "RatlingArmorHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMission11_01",
+      "a_Room_JCMission11_02",
+      "a_Room_JCMission11_03",
+      "a_Room_JCMission11_04",
+      "a_Room_JCMission11_05",
+      "a_Room_JCMission11_06",
+      "a_Room_JCMission11_07",
+      "a_Room_JCMission11_08",
+      "a_Room_JCMission11_09"
+    ]
+  },
+  "JC_Mini1": {
+    "elements": [
+      "Air",
+      "Ice",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DemonReaper",
+        "count": 2
+      },
+      {
+        "enemyType": "BoneGolem",
+        "count": 1
+      },
+      {
+        "enemyType": "GreaterDemonMaligner",
+        "count": 1
+      },
+      {
+        "enemyType": "ImperialMagus",
+        "count": 1
+      },
+      {
+        "enemyType": "PortalFiend2",
+        "count": 1
+      },
+      {
+        "enemyType": "TowerGuard1",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMini1_01",
+      "a_Room_JCMini1_02",
+      "a_Room_JCMini1_03",
+      "a_Room_JCMini1_04"
+    ]
+  },
+  "JC_Mini1Hard": {
+    "elements": [
+      "Air",
+      "Ice",
+      "Death"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DemonReaperHard",
+        "count": 2
+      },
+      {
+        "enemyType": "BoneGolemHard",
+        "count": 1
+      },
+      {
+        "enemyType": "GreaterDemonMalignerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ImperialMagusHard",
+        "count": 1
+      },
+      {
+        "enemyType": "PortalFiend2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "TowerGuard1Hard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMini1_01",
+      "a_Room_JCMini1_02",
+      "a_Room_JCMini1_03",
+      "a_Room_JCMini1_04"
+    ]
+  },
+  "JC_Mini2": {
+    "elements": [
+      "Ice",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreaterDemonMaligner",
+        "count": 1
+      },
+      {
+        "enemyType": "ImperialGuard",
+        "count": 1
+      },
+      {
+        "enemyType": "ImperialMagus",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeSummoner",
+        "count": 1
+      },
+      {
+        "enemyType": "TowerGuard2",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMini2_01",
+      "a_Room_JCMini2_02",
+      "a_Room_JCMini2_03",
+      "a_Room_JCMini2_04"
+    ]
+  },
+  "JC_Mini2Hard": {
+    "elements": [
+      "Ice",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreaterDemonMalignerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ImperialGuardHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ImperialMagusHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeSummonerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "TowerGuard2Hard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMini2_01",
+      "a_Room_JCMini2_02",
+      "a_Room_JCMini2_03",
+      "a_Room_JCMini2_04"
+    ]
+  }
+}

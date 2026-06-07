@@ -32,10 +32,12 @@ loadRuntimeData();
 const normalParams = DungeonEntryDisplay.buildMomentParams('BT_Mission2', '');
 assert(normalParams.startsWith('Normal,EnemyElements='));
 assert.notEqual(readElements(normalParams), '');
+assert(readElements(normalParams).split('|').length <= 3);
 
 const existingMomentParams = DungeonEntryDisplay.buildMomentParams('BT_Mission2', 'Intro');
 assert(existingMomentParams.startsWith('Intro,EnemyElements='));
 assert.notEqual(readElements(existingMomentParams), '');
+assert(readElements(existingMomentParams).split('|').length <= 3);
 
 const explicitNormalParams = DungeonEntryDisplay.buildMomentParams('BT_Mission2', 'Normal');
 assert(explicitNormalParams.startsWith('Normal,EnemyElements='));
@@ -47,8 +49,14 @@ assert.equal(nonDungeonParams, '');
 const unknownParams = DungeonEntryDisplay.buildMomentParams('TutorialDungeonHard', 'Hard');
 assert(!unknownParams.includes('Unknown'));
 
-const clientAuthoredFallbackParams = DungeonEntryDisplay.buildMomentParams('OMM_Mission1Hard', 'Hard');
-assert.equal(clientAuthoredFallbackParams, 'Hard,EnemyElements=Air|Earth');
+const clientAuthoredManifestParams = DungeonEntryDisplay.buildMomentParams('OMM_Mission1Hard', 'Hard');
+assert.equal(clientAuthoredManifestParams, 'Hard,EnemyElements=Earth');
+
+const scarabInvasionParams = DungeonEntryDisplay.buildMomentParams('SD_Mission2', '');
+assert.equal(scarabInvasionParams, 'Normal,EnemyElements=Life|Air|Earth');
+
+const moreThanThreeElementParams = DungeonEntryDisplay.buildMomentParams('SD_Mission4', '');
+assert.equal(moreThanThreeElementParams, 'Normal,EnemyElements=Air|Earth|Fire');
 
 const levelConfig = require('../data/level_config.json') as Record<string, string>;
 for (const levelName of Object.keys(levelConfig)) {
