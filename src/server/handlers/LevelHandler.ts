@@ -51,6 +51,7 @@ import {
     getLevelScopeKey,
     normalizeLevelInstanceId
 } from '../core/LevelScope';
+import { markRoomBossEntity } from '../core/RoomBossState';
 import { getCharacterRuntimeLevel, getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
 import { getCraftTownHomeInstanceId } from '../utils/HomeVisitGuard';
 
@@ -1203,6 +1204,7 @@ export class LevelHandler {
         bb.writeMethod26('');
         const payload = bb.toBuffer();
         const scopeKey = getLevelScopeKey(levelName, levelInstanceId);
+        markRoomBossEntity(scopeKey, bossId, roomId, bossName);
 
         for (const other of GlobalState.sessionsByToken.values()) {
             if (!other.playerSpawned || getClientLevelScope(other) !== scopeKey) {
@@ -3902,13 +3904,15 @@ export class LevelHandler {
         const roomId = br.readMethod9();
         LevelHandler.cacheRoomId(client, roomId);
         const bossId = br.readMethod9();
-        br.readMethod26();
+        const bossName = br.readMethod26();
         br.readMethod9();
         br.readMethod26();
         for (const other of LevelHandler.forLevelRecipients(client, true)) {
             MissionHandler.noteDungeonCutsceneStart(other, roomId);
         }
-        noteDungeonRunBossCutscene(getClientLevelScope(client), roomId, bossId);
+        const levelScope = getClientLevelScope(client);
+        markRoomBossEntity(levelScope, bossId, roomId, bossName);
+        noteDungeonRunBossCutscene(levelScope, roomId, bossId);
 
         LevelHandler.relayToLevel(client, 0xAC, data);
     }

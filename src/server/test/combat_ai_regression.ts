@@ -2,10 +2,13 @@ import { strict as assert } from 'assert';
 import * as path from 'path';
 import { AILogic } from '../core/AILogic';
 import { LevelConfig } from '../core/LevelConfig';
+import { EntityState } from '../core/Entity';
 
 type FakeClient = {
     clientEntID: number;
     currentRoomId: number;
+    authoritativeCurrentHp: number;
+    entities: Map<number, any>;
     character: {
         CurrentLevel: { x: number; y: number };
     };
@@ -15,6 +18,10 @@ function createPlayer(x: number, y: number, roomId: number, entityId: number = 3
     return {
         clientEntID: entityId,
         currentRoomId: roomId,
+        authoritativeCurrentHp: 1000,
+        entities: new Map<number, any>([
+            [entityId, { id: entityId, isPlayer: true, entState: EntityState.ACTIVE, dead: false, hp: 1000 }]
+        ]),
         character: {
             CurrentLevel: { x, y }
         }
@@ -145,6 +152,39 @@ function testBossAggroRequiresKnownSameRoom(): void {
     );
 }
 
+function testBossIgnoresDeadPlayerInSameRoom(): void {
+    const deadPlayer = createPlayer(120, 0, 1);
+    deadPlayer.authoritativeCurrentHp = 0;
+    deadPlayer.entities.get(deadPlayer.clientEntID)!.entState = EntityState.DEAD;
+    deadPlayer.entities.get(deadPlayer.clientEntID)!.dead = true;
+    const npc = createNpc({
+        name: 'TestBoss',
+        entRank: 'Boss'
+    });
+
+    AILogic.updateNpc(npc, [deadPlayer as never], 'BridgeTown');
+
+    assert.equal(npc.x, 0, 'boss-like enemies should not chase a dead same-room player');
+    assert.equal(Number(npc.nextAttack ?? 0), 0, 'boss-like enemies should not attack a dead same-room player');
+}
+
+function testPulledMobDropsDeadAggroTarget(): void {
+    const deadPlayer = createPlayer(80, 0, 1);
+    deadPlayer.authoritativeCurrentHp = 0;
+    const npc = createNpc({
+        lastCombatActivityAt: Date.now(),
+        aggroTargetEntityId: deadPlayer.clientEntID,
+        aggroTargetToken: 123,
+        nextAttack: Date.now()
+    });
+
+    AILogic.updateNpc(npc, [deadPlayer as never], 'TutorialDungeon');
+
+    assert.equal(npc.x, 0, 'pulled enemies should not chase a dead aggro target');
+    assert.equal(Number(npc.aggroTargetEntityId ?? 0), 0, 'dead aggro targets should be cleared');
+    assert.equal(Number(npc.nextAttack ?? 0), 0, 'clearing a dead aggro target should stop pending attacks');
+}
+
 function main(): void {
     ensureLevelConfigLoaded();
     testOutdoorMeleeAggroStillUsesRoomProximity();
@@ -154,6 +194,8 @@ function main(): void {
     testPulledMobKeepsHitPlayerAsTarget();
     testBossAggroUsesShorterRadius();
     testBossAggroRequiresKnownSameRoom();
+    testBossIgnoresDeadPlayerInSameRoom();
+    testPulledMobDropsDeadAggroTarget();
     console.log('combat_ai_regression: ok');
 }
 

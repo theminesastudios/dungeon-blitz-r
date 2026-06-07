@@ -473,6 +473,8 @@ export class GameData {
         for (const [bossKey, dungeonKey] of Object.entries(GameData.BOSS_DROP_DUNGEON_BY_SOURCE)) {
             GameData.addDungeonBossEntityKey(dungeonKey, bossKey);
         }
+        GameData.addDungeonBossEntityKey('JC_Mini2', 'TowerGuard2');
+        GameData.addDungeonBossEntityKey('JC_Mini2Hard', 'TowerGuard2Hard');
 
         const npcDir = path.join(dataDir, 'npcs');
         if (!fs.existsSync(npcDir)) {

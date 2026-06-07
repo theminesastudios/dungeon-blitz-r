@@ -13,6 +13,7 @@ import { noteDungeonRunBossCutscene, noteDungeonRunEntitySeen } from '../core/Du
 import { areClientsInSameParty, getPartyIdForClient, isClientPartyLeader, sharesRoomIds } from '../core/PartySync';
 import { areClientsInSameLevelScope, getClientLevelScope, getLevelScopeKey } from '../core/LevelScope';
 import { getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
+import { markRoomBossEntity } from '../core/RoomBossState';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
@@ -1183,6 +1184,7 @@ export class EntityHandler {
         const payload = bb.toBuffer();
 
         const scopeKey = getLevelScopeKey(levelName, levelInstanceId);
+        markRoomBossEntity(scopeKey, bossId, roomId, bossName);
         for (const other of GlobalState.sessionsByToken.values()) {
             if (!other.playerSpawned || getClientLevelScope(other) !== scopeKey) {
                 continue;

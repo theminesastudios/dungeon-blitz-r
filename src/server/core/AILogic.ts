@@ -6,6 +6,7 @@ import { CombatHandler } from '../handlers/CombatHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { NpcDef } from '../data/NpcLoader';
 import { Client } from './Client';
+import { EntityState } from './Entity';
 import { sharesRoomIds } from './PartySync';
 import { getClientLevelScope, getScopeLevelName } from './LevelScope';
 import { LevelConfig } from './LevelConfig';
@@ -28,6 +29,37 @@ export class AILogic {
     private static hasCombatPull(npc: any): boolean {
         return Math.max(0, Math.round(Number(npc?.lastCombatActivityAt ?? 0))) > 0 ||
             Math.max(0, Math.round(Number(npc?.aggroTargetEntityId ?? 0))) > 0;
+    }
+
+    private static isPlayerDead(player: Client): boolean {
+        const authoritativeHp = Number((player as any)?.authoritativeCurrentHp ?? NaN);
+        if (Number.isFinite(authoritativeHp) && authoritativeHp <= 0) {
+            return true;
+        }
+
+        const localEntity = (player as any)?.entities?.get?.(player.clientEntID);
+        if (Boolean(localEntity?.dead) || Number(localEntity?.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
+            return true;
+        }
+
+        const levelEntity = GlobalState.levelEntities.get(getClientLevelScope(player))?.get(player.clientEntID);
+        return Boolean(levelEntity?.dead) || Number(levelEntity?.entState ?? EntityState.ACTIVE) === EntityState.DEAD;
+    }
+
+    private static clearDeadAggroTarget(npc: any, players: Client[]): void {
+        const aggroTargetEntityId = Math.max(0, Math.round(Number(npc?.aggroTargetEntityId ?? 0)));
+        if (aggroTargetEntityId <= 0) {
+            return;
+        }
+
+        const target = players.find((player) => player.clientEntID === aggroTargetEntityId);
+        if (!target || !AILogic.isPlayerDead(target)) {
+            return;
+        }
+
+        npc.aggroTargetEntityId = 0;
+        delete npc.aggroTargetToken;
+        npc.nextAttack = 0;
     }
 
     // Run AI loop for all levels
@@ -87,6 +119,7 @@ export class AILogic {
         const isRanged = entType?.RangedPower ? true : false;
         const isBoss = AILogic.isBossLike(npc);
         const isDungeonLevel = LevelConfig.isDungeonLevel(levelName);
+        AILogic.clearDeadAggroTarget(npc, players);
         const aggroTargetEntityId = Math.max(0, Math.round(Number(npc?.aggroTargetEntityId ?? 0)));
 
         if (isDungeonLevel && !isBoss && !AILogic.hasCombatPull(npc)) {
@@ -95,6 +128,7 @@ export class AILogic {
 
         for (const p of players) {
              if (!p.character || !p.character.CurrentLevel) continue;
+             if (AILogic.isPlayerDead(p)) continue;
              if (!isBoss && aggroTargetEntityId > 0 && p.clientEntID !== aggroTargetEntityId) continue;
              const playerRoomId = Number.isFinite(Number(p.currentRoomId)) ? Math.round(Number(p.currentRoomId)) : -1;
              if (isBoss) {
@@ -104,9 +138,6 @@ export class AILogic {
              }
              const px = p.character.CurrentLevel.x;
              const py = p.character.CurrentLevel.y;
-             
-             // Check if player is dead?
-             // For now assume alive.
 
              const dist = Math.hypot(px - npcX, py - npcY);
              if (dist < minDist) {
