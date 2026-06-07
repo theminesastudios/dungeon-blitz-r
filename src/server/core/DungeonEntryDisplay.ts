@@ -5,6 +5,7 @@ import { LevelConfig } from './LevelConfig';
 const MOMENT_PREFIX = 'EnemyElements=';
 const ELEMENT_ORDER = ['Fire', 'Ice', 'Air', 'Earth', 'Life', 'Death'];
 const KNOWN_ELEMENTS = new Set(ELEMENT_ORDER);
+const MAX_VISIBLE_ELEMENTS = 2;
 const KINGDOM_TO_ELEMENT: Record<string, string> = {
     Draconic: 'Fire',
     Infernal: 'Air',
@@ -14,9 +15,22 @@ const KINGDOM_TO_ELEMENT: Record<string, string> = {
     Undead: 'Death'
 };
 const LEVEL_ELEMENT_FALLBACKS: Record<string, string[]> = {
+    DreamDragonDungeon: ['Fire'],
+    GhostBossDungeon: ['Death'],
     OMM_Mission1: ['Air', 'Earth'],
     OMM_Mission1Hard: ['Air', 'Earth']
 };
+const LEVEL_PREFIX_ELEMENT_FALLBACKS: Array<[RegExp, string[]]> = [
+    [/^NR_Tales/, ['Earth']],
+    [/^SRN_Mission|^SwampRoadConnectionMission/, ['Fire', 'Earth']],
+    [/^BT_Mission/, ['Fire', 'Life']],
+    [/^CH_Mission|^CH_MiniMission/, ['Death', 'Earth']],
+    [/^OMM_Mission/, ['Air', 'Earth']],
+    [/^EG_Mission/, ['Life', 'Fire']],
+    [/^AC_Mission/, ['Death', 'Air']],
+    [/^SD_Mission|^SD_Tales/, ['Earth', 'Air']],
+    [/^JC_Mission|^JC_Mini/, ['Fire', 'Ice']]
+];
 
 function normalizeElement(value: unknown): string {
     const raw = String(value ?? '').trim();
@@ -52,6 +66,22 @@ function isHostileEnemy(levelName: string, npc: any): boolean {
     return !/TreasureChest|Ambient|Decoration/i.test(behavior);
 }
 
+function getFallbackElements(levelName: string): string[] {
+    const baseLevelName = levelName.endsWith('Hard') ? levelName.slice(0, -4) : levelName;
+    const exact = LEVEL_ELEMENT_FALLBACKS[levelName] ?? LEVEL_ELEMENT_FALLBACKS[baseLevelName];
+    if (exact) {
+        return exact;
+    }
+
+    for (const [pattern, elements] of LEVEL_PREFIX_ELEMENT_FALLBACKS) {
+        if (pattern.test(baseLevelName)) {
+            return elements;
+        }
+    }
+
+    return [];
+}
+
 export class DungeonEntryDisplay {
     static readonly MOMENT_PREFIX = MOMENT_PREFIX;
 
@@ -84,13 +114,13 @@ export class DungeonEntryDisplay {
         });
 
         if (sorted.length === 0) {
-            const fallback = (LEVEL_ELEMENT_FALLBACKS[levelName] ?? [])
+            const fallback = getFallbackElements(levelName)
                 .map((element) => normalizeElement(element))
                 .filter((element) => element);
-            return fallback.length > 0 ? fallback.join('|') : 'Unknown';
+            return fallback.length > 0 ? fallback.slice(0, MAX_VISIBLE_ELEMENTS).join('|') : '';
         }
 
-        return sorted.map(([element]) => element).join('|');
+        return sorted.slice(0, MAX_VISIBLE_ELEMENTS).map(([element]) => element).join('|');
     }
 
     static buildMomentParams(levelNameRaw: string | null | undefined, baseMoment: string): string {
@@ -104,7 +134,10 @@ export class DungeonEntryDisplay {
             return baseTokens.join(',');
         }
 
-        baseTokens.push(`${MOMENT_PREFIX}${DungeonEntryDisplay.summarizeEnemyElements(levelName)}`);
+        const elements = DungeonEntryDisplay.summarizeEnemyElements(levelName);
+        if (elements) {
+            baseTokens.push(`${MOMENT_PREFIX}${elements}`);
+        }
         return baseTokens.join(',');
     }
 }

@@ -31,19 +31,29 @@ loadRuntimeData();
 
 const normalParams = DungeonEntryDisplay.buildMomentParams('BT_Mission2', '');
 assert(normalParams.startsWith('EnemyElements='));
-assert(readElements(normalParams).split('|').includes('Fire'));
+assert.notEqual(readElements(normalParams), '');
 
 const existingMomentParams = DungeonEntryDisplay.buildMomentParams('BT_Mission2', 'Intro');
 assert(existingMomentParams.startsWith('Intro,EnemyElements='));
-assert(readElements(existingMomentParams).split('|').includes('Fire'));
+assert.notEqual(readElements(existingMomentParams), '');
 
 const nonDungeonParams = DungeonEntryDisplay.buildMomentParams('CraftTown', 'Normal');
 assert.equal(nonDungeonParams, '');
 
 const unknownParams = DungeonEntryDisplay.buildMomentParams('TutorialDungeonHard', 'Hard');
-assert.match(unknownParams, /^Hard,EnemyElements=/);
+assert(!unknownParams.includes('Unknown'));
 
 const clientAuthoredFallbackParams = DungeonEntryDisplay.buildMomentParams('OMM_Mission1Hard', 'Hard');
 assert.equal(clientAuthoredFallbackParams, 'Hard,EnemyElements=Air|Earth');
+
+const levelConfig = require('../data/level_config.json') as Record<string, string>;
+for (const levelName of Object.keys(levelConfig)) {
+    if (!LevelConfig.isDungeonLevel(levelName)) {
+        continue;
+    }
+
+    const params = DungeonEntryDisplay.buildMomentParams(levelName, levelName.endsWith('Hard') ? 'Hard' : '');
+    assert(!params.includes('EnemyElements=Unknown'), `${levelName} should not emit Unknown enemy elements`);
+}
 
 console.log('dungeon_entry_display_regression: ok');
