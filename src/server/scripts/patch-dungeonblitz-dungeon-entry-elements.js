@@ -103,20 +103,27 @@ function exportClass(ffdecPath, workRoot, swfPath) {
 }
 
 function patchClass100(source) {
-    if (source.includes(PATCH_MARKER)) {
-        return source;
-    }
-
     const eol = source.includes('\r\n') ? '\r\n' : '\n';
-    const declaration = '         var _loc5_:uint = 0;';
-    const patchedDeclaration = [
-        declaration,
-        '         var _loc6_:String = null;',
-        '         var _loc7_:String = null;'
+    let patched = source;
+
+    const oldTwoLine = [
+        '            for each(_loc6_ in _loc2_.var_1550)',
+        '            {',
+        '               if(_loc6_.indexOf("EnemyElements=") == 0)',
+        '               {',
+        '                  _loc7_ = _loc6_.substr(14).split("|").join(", ");',
+        '                  break;',
+        '               }',
+        '            }',
+        '            _loc6_ = "Dungeon Level: " + _loc5_;',
+        '            if(_loc7_)',
+        '            {',
+        '               _loc6_ += "\\nEnemy Elements: " + _loc7_;',
+        '            }',
+        '            MathUtil.method_2(this.var_1413.am_Text,_loc6_);'
     ].join(eol);
 
-    const levelText = '            MathUtil.method_2(this.var_1413.am_Text,"Dungeon Level: " + _loc5_);';
-    const patchedLevelText = [
+    const oldTwoLineSource = [
         '            for each(_loc6_ in _loc2_.var_1550)',
         '            {',
         '               if(_loc6_.indexOf("EnemyElements=") == 0)',
@@ -133,6 +140,45 @@ function patchClass100(source) {
         '            MathUtil.method_2(this.var_1413.am_Text,_loc6_);'
     ].join(eol);
 
+    const oneLinePatch = [
+        '            for each(_loc6_ in _loc2_.var_1550)',
+        '            {',
+        '               if(_loc6_.indexOf("EnemyElements=") == 0)',
+        '               {',
+        '                  _loc7_ = _loc6_.substr("EnemyElements=".length).split("|").join(", ") + " Creatures";',
+        '                  break;',
+        '               }',
+        '            }',
+        '            _loc6_ = "Dungeon Level: " + _loc5_;',
+        '            if(_loc7_)',
+        '            {',
+        '               _loc6_ += " - " + _loc7_;',
+        '            }',
+        '            MathUtil.method_2(this.var_1413.am_Text,_loc6_);'
+    ].join(eol);
+
+    const oneLinePatchCompiled = oneLinePatch.replace('"EnemyElements=".length', '14');
+
+    if (patched.includes(oneLinePatch) || patched.includes(oneLinePatchCompiled)) {
+        return patched;
+    }
+
+    if (patched.includes(oldTwoLine)) {
+        return patched.replace(oldTwoLine, oneLinePatch);
+    }
+
+    if (patched.includes(oldTwoLineSource)) {
+        return patched.replace(oldTwoLineSource, oneLinePatch);
+    }
+
+    const declaration = '         var _loc5_:uint = 0;';
+    const patchedDeclaration = [
+        declaration,
+        '         var _loc6_:String = null;',
+        '         var _loc7_:String = null;'
+    ].join(eol);
+
+    const levelText = '            MathUtil.method_2(this.var_1413.am_Text,"Dungeon Level: " + _loc5_);';
     if (!source.includes(declaration)) {
         throw new Error('Could not find class_100 local declaration marker.');
     }
@@ -140,9 +186,9 @@ function patchClass100(source) {
         throw new Error('Could not find class_100 dungeon level text marker.');
     }
 
-    return source
+    return patched
         .replace(declaration, patchedDeclaration)
-        .replace(levelText, patchedLevelText);
+        .replace(levelText, oneLinePatch);
 }
 
 function patchSwf(repoRoot, ffdecPath, swfPath) {
@@ -160,7 +206,7 @@ function verifySwf(repoRoot, ffdecPath, swfPath) {
     const workRoot = path.join(repoRoot, 'build', 'ffdec-dungeon-entry-elements-verify');
     const classPath = exportClass(ffdecPath, workRoot, swfPath);
     const source = fs.readFileSync(classPath, 'utf8');
-    if (!source.includes(PATCH_MARKER) || !source.includes('Enemy Elements: ')) {
+    if (!source.includes(PATCH_MARKER) || !source.includes(' Creatures') || !source.includes(' - ')) {
         throw new Error('Served DungeonBlitz.swf is missing the dungeon entry element display patch.');
     }
     console.log('dungeon entry element display patch verified');

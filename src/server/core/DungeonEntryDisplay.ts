@@ -5,6 +5,18 @@ import { LevelConfig } from './LevelConfig';
 const MOMENT_PREFIX = 'EnemyElements=';
 const ELEMENT_ORDER = ['Fire', 'Ice', 'Air', 'Earth', 'Life', 'Death'];
 const KNOWN_ELEMENTS = new Set(ELEMENT_ORDER);
+const KINGDOM_TO_ELEMENT: Record<string, string> = {
+    Draconic: 'Fire',
+    Infernal: 'Air',
+    Mythic: 'Ice',
+    Sylvan: 'Life',
+    Trog: 'Earth',
+    Undead: 'Death'
+};
+const LEVEL_ELEMENT_FALLBACKS: Record<string, string> = {
+    OMM_Mission1: 'Life',
+    OMM_Mission1Hard: 'Life'
+};
 
 function normalizeElement(value: unknown): string {
     const raw = String(value ?? '').trim();
@@ -45,15 +57,16 @@ export class DungeonEntryDisplay {
 
     private static summarizeEnemyElements(levelName: string): string {
         const counts = new Map<string, number>();
+        const npcs = NpcLoader.getRawNpcsForLevel(levelName);
 
-        for (const npc of NpcLoader.getRawNpcsForLevel(levelName)) {
+        for (const npc of npcs) {
             if (!isHostileEnemy(levelName, npc)) {
                 continue;
             }
 
             const entName = resolveEnemyEntName(levelName, String(npc.name ?? '').trim());
             const entType = GameData.getEntType(entName) ?? {};
-            const element = normalizeElement(entType.Element);
+            const element = normalizeElement(entType.Element) || normalizeElement(KINGDOM_TO_ELEMENT[String(entType.Kingdom ?? '')]);
             if (!element) {
                 continue;
             }
@@ -71,7 +84,8 @@ export class DungeonEntryDisplay {
         });
 
         if (sorted.length === 0) {
-            return 'Unknown';
+            const fallback = normalizeElement(LEVEL_ELEMENT_FALLBACKS[levelName]);
+            return fallback || 'Unknown';
         }
 
         return sorted.map(([element]) => element).join('|');
