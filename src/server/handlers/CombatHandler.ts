@@ -698,8 +698,10 @@ export class CombatHandler {
             return true;
         }
 
-        return CombatHandler.isEntityDead(client.entities.get(client.clientEntID)) ||
-            CombatHandler.isEntityDead(CombatHandler.resolveLevelEntity(getClientLevelScope(client), client.clientEntID));
+        const localEntity = client.entities.get(client.clientEntID);
+        const levelEntity = CombatHandler.resolveLevelEntity(getClientLevelScope(client), client.clientEntID);
+        return CombatHandler.isEntityDead(localEntity) ||
+            CombatHandler.isEntityDead(levelEntity);
     }
 
     private static hasLivingHostileAggroTarget(levelScope: string, entity: any): boolean {
@@ -768,6 +770,15 @@ export class CombatHandler {
         return Boolean(entity?.dead) || Number(entity?.entState ?? EntityState.ACTIVE) === EntityState.DEAD;
     }
 
+    private static isEntityActiveWithPositiveHp(entity: any): boolean {
+        if (!entity || typeof entity !== 'object' || CombatHandler.isEntityDead(entity)) {
+            return false;
+        }
+
+        const hp = Number(entity.hp ?? NaN);
+        return Number.isFinite(hp) ? Math.round(hp) > 0 : true;
+    }
+
     static isPlayerDeadForCombat(client: Client, levelScope: string = getClientLevelScope(client)): boolean {
         if (!client || typeof client !== 'object') {
             return true;
@@ -776,14 +787,14 @@ export class CombatHandler {
             return true;
         }
 
-        const authoritativeHp = Number(client.authoritativeCurrentHp ?? NaN);
-        if (Number.isFinite(authoritativeHp) && Math.round(authoritativeHp) <= 0) {
-            return true;
-        }
-
         const entityId = Math.max(0, Math.round(Number(client.clientEntID ?? 0)));
         if (entityId <= 0) {
             return false;
+        }
+
+        const authoritativeHp = Number(client.authoritativeCurrentHp ?? NaN);
+        if (Number.isFinite(authoritativeHp) && Math.round(authoritativeHp) <= 0) {
+            return true;
         }
 
         const localEntity = typeof client.entities?.get === 'function'
@@ -1185,6 +1196,11 @@ export class CombatHandler {
         return CombatHandler.getHostileDeathRegenArmKey(entity).length > 0;
     }
 
+    private static isHostileDefeatVerified(levelScope: string, entity: any): boolean {
+        return CombatHandler.collectHostileHealthCopies(levelScope, entity, true)
+            .some((copy) => Boolean(copy?.clientDefeatVerified));
+    }
+
     private static isDeathArmedViewerForHostile(viewer: Client, entity: any): boolean {
         return Boolean(viewer?.enemyDeathRegenArmed) &&
             CombatHandler.getHostileDeathRegenArmKey(entity) === CombatHandler.getDeathRegenArmKeyForPlayer(viewer);
@@ -1444,13 +1460,24 @@ export class CombatHandler {
         }
 
         const healthState = CombatHandler.resolveHostileHealthStateAcrossCopies(levelScope, entity);
-        if (!healthState || CombatHandler.isEntityDead(entity) || healthState.currentHp <= 0 || healthState.currentHp >= healthState.maxHp) {
+        const deathRegenArmed = CombatHandler.isHostileDeathRegenArmed(entity);
+        const zeroHpOrDead = Boolean(healthState) &&
+            (CombatHandler.isEntityDead(entity) || healthState!.currentHp <= 0);
+        const verifiedDefeat = deathRegenArmed &&
+            CombatHandler.isHostileDefeatVerified(levelScope, entity);
+        if (
+            !healthState ||
+            healthState.currentHp >= healthState.maxHp ||
+            (zeroHpOrDead && (!deathRegenArmed || verifiedDefeat))
+        ) {
             CombatHandler.logBossRegen('boss-regen-skip', levelScope, entity, {
                 reason: !healthState
                     ? 'no-health'
-                    : CombatHandler.isEntityDead(entity) || healthState.currentHp <= 0
-                        ? 'dead'
-                        : 'full',
+                    : healthState.currentHp >= healthState.maxHp
+                        ? 'full'
+                        : verifiedDefeat
+                            ? 'verified-dead'
+                            : 'dead',
                 currentHp: healthState?.currentHp ?? 0,
                 maxHp: healthState?.maxHp ?? 0,
                 entityHp: Math.round(Number(entity?.hp ?? 0)),
@@ -1482,7 +1509,7 @@ export class CombatHandler {
             return;
         }
 
-        if (!CombatHandler.isHostileDeathRegenArmed(entity)) {
+        if (!deathRegenArmed) {
             CombatHandler.logBossRegen('boss-regen-skip', levelScope, entity, {
                 reason: 'death-not-armed',
                 currentHp: healthState.currentHp,
@@ -2025,16 +2052,20 @@ export class CombatHandler {
         }
 
         const levelScope = getClientLevelScope(client);
-        const wasAlreadyDead = CombatHandler.isPlayerSessionDead(client);
+        const localEntity = client.entities.get(client.clientEntID);
+        const levelEntity = CombatHandler.resolveLevelEntity(levelScope, client.clientEntID);
+        const hasActivePositiveSnapshot =
+            CombatHandler.isEntityActiveWithPositiveHp(localEntity) ||
+            CombatHandler.isEntityActiveWithPositiveHp(levelEntity);
+        const wasAlreadyDead = !hasActivePositiveSnapshot && CombatHandler.isPlayerSessionDead(client);
         const deathRegenWasArmed = Boolean(client.enemyDeathRegenArmed);
-        const entity = client.entities.get(client.clientEntID);
+        const entity = localEntity;
         if (entity && typeof entity === 'object') {
             entity.dead = true;
             entity.entState = EntityState.DEAD;
             entity.hp = 0;
         }
 
-        const levelEntity = CombatHandler.resolveLevelEntity(levelScope, client.clientEntID);
         if (levelEntity && typeof levelEntity === 'object') {
             levelEntity.dead = true;
             levelEntity.entState = EntityState.DEAD;

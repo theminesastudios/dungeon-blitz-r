@@ -696,7 +696,7 @@ function testSecondTanjaDeathRearmsExistingDeathRegenKey(): void {
     levelPlayerEntity.dead = false;
     levelPlayerEntity.entState = EntityState.ACTIVE;
     levelPlayerEntity.hp = 1000;
-    player.enemyDeathRegenArmed = false;
+    player.enemyDeathRegenArmed = true;
     player.authoritativeCurrentHp = 0;
     player.playerSpawned = true;
 
@@ -709,12 +709,151 @@ function testSecondTanjaDeathRearmsExistingDeathRegenKey(): void {
 
     CombatHandler.notePlayerDeathState(player as never, nowMs + 250);
 
-    assert.equal(boss.hp, 360, 'second Tanja death should re-arm the same boss key and apply a fresh 1% tick');
+    assert.equal(boss.hp, 360, 'second Tanja death should re-arm even when the old death-arm flag stayed set');
     const bossRegenPackets = player.sentPackets
         .filter((packet) => packet.id === 0x78)
         .map((packet) => parseRegenPacket(packet.payload))
         .filter((packet) => packet.entityId === bossId);
     assert.deepEqual(bossRegenPackets, [{ entityId: bossId, amount: 10 }]);
+}
+
+function testDefeatedPlayerWithStaleActiveSnapshotStillAllowsBossRegen(): void {
+    resetState();
+    ensureOriginalGameDataLoaded();
+
+    const nowMs = 35_720;
+    const player = createFakeClient(58, 'TanjaDefeatedStaleActive', 3);
+    moveClientToLevel(player, 'JC_Mini2');
+    attachPlayerEntity(player);
+    player.authoritativeCurrentHp = 0;
+    player.enemyDeathRegenArmed = true;
+    player.playerSpawned = true;
+
+    const playerEntity = player.entities.get(player.clientEntID)!;
+    playerEntity.dead = false;
+    playerEntity.entState = EntityState.ACTIVE;
+    playerEntity.hp = 1000;
+    const levelScope = getClientLevelScope(player as never);
+    const levelPlayerEntity = GlobalState.levelEntities.get(levelScope)!.get(player.clientEntID)!;
+    levelPlayerEntity.dead = false;
+    levelPlayerEntity.entState = EntityState.ACTIVE;
+    levelPlayerEntity.hp = 1000;
+
+    const bossId = 910058;
+    const boss = createRegenHostile(bossId, 'TowerGuard2', player.currentRoomId, {
+        x: 900,
+        y: -20,
+        hp: 400,
+        maxHp: 1000,
+        lastCombatActivityAt: nowMs - 500,
+        aggroTargetEntityId: player.clientEntID,
+        aggroTargetToken: player.token,
+        deathRegenArmedForPlayerKey: `${player.token}:${player.clientEntID}`
+    });
+    GlobalState.levelEntities.get(levelScope)!.set(boss.id, boss);
+    player.entities.set(boss.id, boss);
+    player.knownEntityIds.add(boss.id);
+    GlobalState.sessionsByToken.set(player.token, player as never);
+
+    CombatHandler.processOutOfCombatRegen(levelScope, nowMs);
+
+    assert.equal(boss.hp, 410, 'authoritative defeated player state should not be overridden by stale active snapshots');
+    const bossRegenPackets = player.sentPackets
+        .filter((packet) => packet.id === 0x78)
+        .map((packet) => parseRegenPacket(packet.payload))
+        .filter((packet) => packet.entityId === bossId);
+    assert.deepEqual(bossRegenPackets, [{ entityId: bossId, amount: 10 }]);
+}
+
+function testDeathArmedBossRegenRevivesUnverifiedZeroHpBoss(): void {
+    resetState();
+    ensureOriginalGameDataLoaded();
+
+    const nowMs = 35_730;
+    const player = createFakeClient(59, 'TowerGuardZeroHpRegen', 0);
+    moveClientToLevel(player, 'JC_Mini1');
+    attachPlayerEntity(player);
+    player.authoritativeCurrentHp = 0;
+    player.enemyDeathRegenArmed = true;
+    player.playerSpawned = true;
+
+    const playerEntity = player.entities.get(player.clientEntID)!;
+    playerEntity.dead = true;
+    playerEntity.entState = EntityState.DEAD;
+    playerEntity.hp = 0;
+    const levelScope = getClientLevelScope(player as never);
+    const levelPlayerEntity = GlobalState.levelEntities.get(levelScope)!.get(player.clientEntID)!;
+    levelPlayerEntity.dead = true;
+    levelPlayerEntity.entState = EntityState.DEAD;
+    levelPlayerEntity.hp = 0;
+
+    const bossId = 910059;
+    const boss = createRegenHostile(bossId, 'TowerGuard1', player.currentRoomId, {
+        hp: 0,
+        maxHp: 1000,
+        healthDelta: -1000,
+        health_delta: -1000,
+        dead: true,
+        entState: EntityState.DEAD,
+        lastCombatActivityAt: nowMs - 500,
+        deathRegenArmedForPlayerKey: `${player.token}:${player.clientEntID}`
+    });
+    GlobalState.levelEntities.get(levelScope)!.set(boss.id, boss);
+    player.entities.set(boss.id, boss);
+    player.knownEntityIds.add(boss.id);
+    GlobalState.sessionsByToken.set(player.token, player as never);
+
+    CombatHandler.processOutOfCombatRegen(levelScope, nowMs);
+
+    assert.equal(boss.hp, 10, 'death-armed unverified zero-HP bosses should revive with the first 1% regen tick');
+    assert.equal(boss.dead, false, 'revived boss should clear the dead flag');
+    assert.equal(boss.entState, EntityState.ACTIVE, 'revived boss should return to active state');
+    assert.equal(boss.healthDelta, -990, 'revived boss should update the health delta from max HP');
+    const bossRegenPackets = player.sentPackets
+        .filter((packet) => packet.id === 0x78)
+        .map((packet) => parseRegenPacket(packet.payload))
+        .filter((packet) => packet.entityId === bossId);
+    assert.deepEqual(bossRegenPackets, [{ entityId: bossId, amount: 10 }]);
+}
+
+function testDeathArmedBossRegenDoesNotReviveVerifiedDeadBoss(): void {
+    resetState();
+    ensureOriginalGameDataLoaded();
+
+    const nowMs = 35_740;
+    const player = createFakeClient(60, 'TowerGuardVerifiedDead', 0);
+    moveClientToLevel(player, 'JC_Mini1');
+    attachPlayerEntity(player);
+    player.authoritativeCurrentHp = 0;
+    player.enemyDeathRegenArmed = true;
+
+    const levelScope = getClientLevelScope(player as never);
+    const bossId = 910060;
+    const boss = createRegenHostile(bossId, 'TowerGuard1', player.currentRoomId, {
+        hp: 0,
+        maxHp: 1000,
+        healthDelta: -1000,
+        health_delta: -1000,
+        dead: true,
+        entState: EntityState.DEAD,
+        clientDefeatVerified: true,
+        lastCombatActivityAt: nowMs - 500,
+        deathRegenArmedForPlayerKey: `${player.token}:${player.clientEntID}`
+    });
+    GlobalState.levelEntities.get(levelScope)!.set(boss.id, boss);
+    player.entities.set(boss.id, boss);
+    player.knownEntityIds.add(boss.id);
+    GlobalState.sessionsByToken.set(player.token, player as never);
+
+    CombatHandler.processOutOfCombatRegen(levelScope, nowMs);
+
+    assert.equal(boss.hp, 0, 'verified dead bosses should not be revived by death-armed regen');
+    assert.equal(boss.dead, true, 'verified dead bosses should remain dead');
+    const bossRegenPackets = player.sentPackets
+        .filter((packet) => packet.id === 0x78)
+        .map((packet) => parseRegenPacket(packet.payload))
+        .filter((packet) => packet.entityId === bossId);
+    assert.deepEqual(bossRegenPackets, []);
 }
 
 function testUnknownClientTanjaHpDeltaSeedsCanonicalBossDeathRegen(): void {
@@ -2795,6 +2934,9 @@ async function run(): Promise<void> {
     testDeathArmedTanjaContinuesRegenWhenPlayerNoLongerSpawned();
     testDeathArmedTanjaRegenBroadcastsToDefeatedViewerAfterRoomStateChanges();
     testSecondTanjaDeathRearmsExistingDeathRegenKey();
+    testDefeatedPlayerWithStaleActiveSnapshotStillAllowsBossRegen();
+    testDeathArmedBossRegenRevivesUnverifiedZeroHpBoss();
+    testDeathArmedBossRegenDoesNotReviveVerifiedDeadBoss();
     testUnknownClientTanjaHpDeltaSeedsCanonicalBossDeathRegen();
     await testUnknownClientTanjaHitSeedsCanonicalBossDeathRegen();
     await testRoomBossMarkedDreadPaladinLothyrRegensAfterPlayerDeath();
