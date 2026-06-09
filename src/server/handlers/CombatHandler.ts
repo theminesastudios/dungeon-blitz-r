@@ -161,13 +161,19 @@ export class CombatHandler {
     private static readonly PLAYER_OUT_OF_COMBAT_REGEN_DELAY_MS = 5_000;
     private static readonly PLAYER_OUT_OF_COMBAT_REGEN_INTERVAL_MS = 1_000;
     private static readonly PLAYER_REGEN_RATE = 0.05;
+    private static readonly PLAYER_HP_LOG_THROTTLE_MS = 1_000;
     // Bosses regenerate faster than the original brain/NPC tick when out of combat.
     private static readonly ORIGINAL_REGEN_INTERVAL_MS = 500;
     private static readonly DUNGEON_BOSS_OUT_OF_COMBAT_REGEN_DELAY_MS = 500;
     private static readonly DUNGEON_BOSS_REGEN_INTERVAL_MS = CombatHandler.ORIGINAL_REGEN_INTERVAL_MS;
     private static readonly HOSTILE_REGEN_RATE = 0.02;
+    private static readonly CLIENT_HEAL_PACKET_ID = 0x78;
     private static readonly BOSS_MELEE_AGGRO_RADIUS = 180;
     private static readonly BOSS_RANGED_AGGRO_RADIUS = 260;
+    private static readonly KNOWN_ROOM_BOSS_DISPLAY_KEYS_BY_ENTITY = new Map<string, ReadonlySet<string>>([
+        ['dreadpaladin', new Set(['dreadpaladinlothyr'])],
+        ['dreadpaladinhard', new Set(['dreadpaladinlothyr'])]
+    ]);
     private static readonly POWER_HIT_CLIENT_AUTHORITY_BOSS_LEVELS = new Set([
         'AC_Mission5',
         'AC_Mission5Hard',
@@ -206,6 +212,7 @@ export class CombatHandler {
         39180, 41017, 42943, 44961, 47077, 49294, 51618, 54054, 56607, 59283, 62088, 65028,
         68109, 71338, 74723, 78271, 81989, 85887
     ] as const;
+    private static readonly recentPlayerHpLogs = new Map<string, number>();
 
     private static getEntityKey(levelName: string, entityId: number): string {
         return `${levelName}:${entityId}`;
@@ -385,6 +392,39 @@ export class CombatHandler {
         return Math.max(1, baseMaxHp, bestKnownCurrentHp);
     }
 
+    private static resolvePlayerCurrentHp(client: Client, entity: any, levelEntity: any, maxHp: number): number {
+        const authoritativeMaxHp = Math.round(Number(client.authoritativeMaxHp ?? 0));
+        const authoritativeCurrentHp = Math.round(Number(client.authoritativeCurrentHp ?? NaN));
+        const candidates: number[] = [];
+        const addCandidate = (rawValue: unknown, trusted: boolean = true): void => {
+            if (!trusted) {
+                return;
+            }
+            const value = Math.round(Number(rawValue));
+            if (Number.isFinite(value) && value > 0) {
+                candidates.push(Math.max(0, Math.min(maxHp, value)));
+            }
+        };
+
+        addCandidate(entity?.hp);
+        addCandidate(levelEntity?.hp);
+        addCandidate(
+            authoritativeCurrentHp,
+            CombatHandler.shouldTrustAuthoritativePlayerHp(client, authoritativeCurrentHp, authoritativeMaxHp)
+        );
+
+        const reducedCandidates = candidates.filter((hp) => hp > 0 && hp < maxHp);
+        if (reducedCandidates.length > 0) {
+            return Math.min(...reducedCandidates);
+        }
+
+        if (candidates.length > 0) {
+            return Math.min(maxHp, Math.max(...candidates));
+        }
+
+        return maxHp;
+    }
+
     private static shouldDeferPlayerRegenForCombatStats(client: Client, nowMs: number): boolean {
         if (!client.combatStatsDirty) {
             return false;
@@ -397,15 +437,68 @@ export class CombatHandler {
         return !client.allowDirtyCombatStatsRegen;
     }
 
+    private static shouldTrustAuthoritativePlayerHp(client: Client, authoritativeCurrentHp: number, authoritativeMaxHp: number): boolean {
+        if (!Number.isFinite(authoritativeCurrentHp)) {
+            return false;
+        }
+
+        if (authoritativeMaxHp > 100 || Math.max(0, client.lastCombatActivityAt) > 0) {
+            return true;
+        }
+
+        return authoritativeMaxHp > 0 && authoritativeCurrentHp < authoritativeMaxHp;
+    }
+
+    private static normalizeCombatLookupKey(value: unknown): string {
+        return String(value ?? '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '');
+    }
+
+    private static isKnownClientRoomBossEntity(entity: any): boolean {
+        const entityKey = CombatHandler.normalizeCombatLookupKey(entity?.name ?? entity?.EntName ?? entity?.entName);
+        const bossNameKey = CombatHandler.normalizeCombatLookupKey(
+            entity?.roomBossName ?? entity?.displayName ?? entity?.DisplayName
+        );
+        return Boolean(entityKey && bossNameKey && CombatHandler.KNOWN_ROOM_BOSS_DISPLAY_KEYS_BY_ENTITY.get(entityKey)?.has(bossNameKey));
+    }
+
     private static buildCharRegenPayload(entityId: number, amount: number): Buffer {
         const bb = new BitBuffer(false);
         bb.writeMethod4(entityId);
-        bb.writeMethod4(amount);
+        bb.writeMethod45(amount);
         return bb.toBuffer();
     }
 
     private static sendCharRegen(client: Client, entityId: number, amount: number): void {
-        client.send(0x3B, CombatHandler.buildCharRegenPayload(entityId, amount));
+        client.send(CombatHandler.CLIENT_HEAL_PACKET_ID, CombatHandler.buildCharRegenPayload(entityId, amount));
+    }
+
+    private static logPlayerHp(
+        label: string,
+        client: Client,
+        details: Record<string, unknown>,
+        throttleMs: number = 0,
+        nowMs: number = Date.now()
+    ): void {
+        const reason = String(details.reason ?? '');
+        const key = `${client.token}:${client.clientEntID}:${label}:${reason}`;
+        if (throttleMs > 0) {
+            const previousAt = Math.max(0, Number(CombatHandler.recentPlayerHpLogs.get(key) ?? 0));
+            if (nowMs - previousAt < throttleMs) {
+                return;
+            }
+            CombatHandler.recentPlayerHpLogs.set(key, nowMs);
+        }
+
+        const characterName = String(client.character?.name ?? 'unknown').replace(/\s+/g, '_');
+        const levelScope = getClientLevelScope(client) || 'none';
+        const formattedDetails = Object.entries(details)
+            .map(([detailKey, value]) => `${detailKey}=${String(value)}`)
+            .join(' ');
+        console.log(
+            `[CombatRegen][${label}] player=${characterName} token=${client.token} ent=${client.clientEntID} level=${levelScope} ${formattedDetails}`
+        );
     }
 
     private static buildHpDeltaPayload(entityId: number, delta: number): Buffer {
@@ -639,6 +732,14 @@ export class CombatHandler {
             return true;
         }
 
+        if (
+            LevelConfig.isDungeonLevel(levelName) &&
+            markedRoomBoss &&
+            CombatHandler.isKnownClientRoomBossEntity(entity)
+        ) {
+            return true;
+        }
+
         return LevelConfig.isDungeonLevel(levelName) &&
             markedRoomBoss &&
             GameData.isBossEntity(entity);
@@ -790,6 +891,13 @@ export class CombatHandler {
             return;
         }
         if (CombatHandler.shouldDeferPlayerRegenForCombatStats(client, nowMs)) {
+            CombatHandler.logPlayerHp('regen-skip', client, {
+                reason: 'combat-stats-dirty',
+                authHp: Math.round(Number(client.authoritativeCurrentHp ?? 0)),
+                authMax: Math.round(Number(client.authoritativeMaxHp ?? 0)),
+                lastCombatAt: Math.max(0, client.lastCombatActivityAt),
+                lastTickAt: Math.max(0, client.lastCombatRegenTickAt)
+            }, CombatHandler.PLAYER_HP_LOG_THROTTLE_MS, nowMs);
             return;
         }
 
@@ -797,34 +905,45 @@ export class CombatHandler {
             CombatHandler.resolveLevelEntity(levelScope, client.clientEntID);
         const levelEntity = CombatHandler.resolveLevelEntity(levelScope, client.clientEntID);
         if (CombatHandler.isEntityDead(entity) || CombatHandler.isEntityDead(levelEntity)) {
+            CombatHandler.logPlayerHp('regen-skip', client, {
+                reason: 'dead',
+                entityHp: Math.round(Number(entity?.hp ?? 0)),
+                levelHp: Math.round(Number(levelEntity?.hp ?? 0)),
+                authHp: Math.round(Number(client.authoritativeCurrentHp ?? 0)),
+                authMax: Math.round(Number(client.authoritativeMaxHp ?? 0))
+            }, CombatHandler.PLAYER_HP_LOG_THROTTLE_MS, nowMs);
             return;
         }
 
         const maxHp = CombatHandler.resolvePlayerMaxHp(client, entity, levelEntity);
-        const authoritativeMaxHp = Math.round(Number(client.authoritativeMaxHp ?? 0));
-        const authoritativeCurrentHp = Math.round(Number(client.authoritativeCurrentHp ?? NaN));
-        const snapshotHp = Math.round(Number(entity?.hp ?? levelEntity?.hp ?? NaN));
-        const hasDamageActivity = Math.max(0, client.lastCombatActivityAt) > 0;
-        const canTrustAuthoritativeHp = Number.isFinite(authoritativeCurrentHp) &&
-            (authoritativeMaxHp > 100 || hasDamageActivity);
-        const currentHp = Math.max(
-            0,
-            Math.min(
-                maxHp,
-                canTrustAuthoritativeHp
-                    ? authoritativeCurrentHp
-                    : Number.isFinite(snapshotHp)
-                        ? snapshotHp
-                        : Math.round(Number(client.authoritativeCurrentHp ?? maxHp))
-            )
-        );
+        const currentHp = CombatHandler.resolvePlayerCurrentHp(client, entity, levelEntity, maxHp);
         if (currentHp <= 0 || currentHp >= maxHp) {
+            if (currentHp < maxHp) {
+                CombatHandler.logPlayerHp('regen-skip', client, {
+                    reason: 'invalid-hp',
+                    currentHp,
+                    maxHp,
+                    entityHp: Math.round(Number(entity?.hp ?? 0)),
+                    levelHp: Math.round(Number(levelEntity?.hp ?? 0)),
+                    authHp: Math.round(Number(client.authoritativeCurrentHp ?? 0)),
+                    authMax: Math.round(Number(client.authoritativeMaxHp ?? 0))
+                }, CombatHandler.PLAYER_HP_LOG_THROTTLE_MS, nowMs);
+            }
             return;
         }
 
         if (Math.max(0, client.lastCombatActivityAt) <= 0) {
             client.lastCombatActivityAt = Math.max(0, nowMs - CombatHandler.PLAYER_OUT_OF_COMBAT_REGEN_DELAY_MS);
             client.lastCombatRegenTickAt = 0;
+            CombatHandler.logPlayerHp('regen-seed', client, {
+                currentHp,
+                maxHp,
+                entityHp: Math.round(Number(entity?.hp ?? 0)),
+                levelHp: Math.round(Number(levelEntity?.hp ?? 0)),
+                authHp: Math.round(Number(client.authoritativeCurrentHp ?? 0)),
+                authMax: Math.round(Number(client.authoritativeMaxHp ?? 0)),
+                lastCombatAt: client.lastCombatActivityAt
+            }, CombatHandler.PLAYER_HP_LOG_THROTTLE_MS, nowMs);
             return;
         }
 
@@ -836,6 +955,16 @@ export class CombatHandler {
             CombatHandler.PLAYER_OUT_OF_COMBAT_REGEN_INTERVAL_MS
         );
         if (!regenState) {
+            CombatHandler.logPlayerHp('regen-wait', client, {
+                currentHp,
+                maxHp,
+                lastCombatAt: Math.max(0, client.lastCombatActivityAt),
+                lastTickAt: Math.max(0, client.lastCombatRegenTickAt),
+                dueAt: Math.max(0, client.lastCombatRegenTickAt) > 0
+                    ? Math.max(0, client.lastCombatRegenTickAt) + CombatHandler.PLAYER_OUT_OF_COMBAT_REGEN_INTERVAL_MS
+                    : Math.max(0, client.lastCombatActivityAt) + CombatHandler.PLAYER_OUT_OF_COMBAT_REGEN_DELAY_MS,
+                nowMs
+            }, CombatHandler.PLAYER_HP_LOG_THROTTLE_MS, nowMs);
             return;
         }
 
@@ -870,8 +999,17 @@ export class CombatHandler {
             ((regenState.ticks - 1) * CombatHandler.PLAYER_OUT_OF_COMBAT_REGEN_INTERVAL_MS);
 
         const payload = CombatHandler.buildCharRegenPayload(client.clientEntID, healAmount);
-        client.send(0x3B, payload);
-        CombatHandler.broadcastToSameLevel(levelScope, 0x3B, payload, [client.clientEntID], client);
+        client.send(CombatHandler.CLIENT_HEAL_PACKET_ID, payload);
+        CombatHandler.broadcastToSameLevel(levelScope, CombatHandler.CLIENT_HEAL_PACKET_ID, payload, [client.clientEntID], client);
+        CombatHandler.logPlayerHp('regen-heal', client, {
+            previousHp: currentHp,
+            healAmount,
+            nextHp,
+            maxHp,
+            ticks: regenState.ticks,
+            lastCombatAt: Math.max(0, client.lastCombatActivityAt),
+            lastTickAt: Math.max(0, client.lastCombatRegenTickAt)
+        }, 0, nowMs);
     }
 
     private static processHostileOutOfCombatRegen(levelScope: string, entity: any, nowMs: number): void {
@@ -960,7 +1098,10 @@ export class CombatHandler {
                 continue;
             }
 
-            viewer.send(0x3B, CombatHandler.translateOutboundPacketForViewer(viewer, 0x3B, payload));
+            viewer.send(
+                CombatHandler.CLIENT_HEAL_PACKET_ID,
+                CombatHandler.translateOutboundPacketForViewer(viewer, CombatHandler.CLIENT_HEAL_PACKET_ID, payload)
+            );
         }
     }
 
@@ -1187,25 +1328,15 @@ export class CombatHandler {
                     const immediate = br.readMethod15();
                     return CombatHandler.buildDestroyEntityPayload(localEntityId, immediate);
                 }
-                case 0x3A: {
+                case 0x78: {
                     const br = new BitReader(data);
-                    const entityId = br.readMethod9();
+                    const entityId = br.readMethod4();
                     const localEntityId = CombatHandler.translateEntityIdForViewer(viewer, entityId);
                     if (localEntityId === entityId) {
                         return data;
                     }
 
                     return CombatHandler.buildHpDeltaPayload(localEntityId, br.readMethod45());
-                }
-                case 0x3B: {
-                    const br = new BitReader(data);
-                    const entityId = br.readMethod9();
-                    const localEntityId = CombatHandler.translateEntityIdForViewer(viewer, entityId);
-                    if (localEntityId === entityId) {
-                        return data;
-                    }
-
-                    return CombatHandler.buildCharRegenPayload(localEntityId, br.readMethod9());
                 }
                 case 0x82: {
                     const br = new BitReader(data);
@@ -1343,7 +1474,9 @@ export class CombatHandler {
             }
         }
 
-        CombatHandler.processOutOfCombatRegen(levelScope, nowMs);
+        for (const entity of CombatHandler.collectHostileRegenCandidates(levelScope)) {
+            CombatHandler.processHostileOutOfCombatRegen(levelScope, entity, nowMs);
+        }
     }
 
     static notePlayerDeathState(client: Client, nowMs: number = Date.now()): void {
@@ -1645,12 +1778,12 @@ export class CombatHandler {
     }
 
     private static broadcastPlayerHpDelta(targetSession: Client, delta: number): void {
-        if (!targetSession.playerSpawned || !targetSession.currentLevel || targetSession.clientEntID <= 0) {
+        if (!targetSession.playerSpawned || !targetSession.currentLevel || targetSession.clientEntID <= 0 || delta <= 0) {
             return;
         }
 
         const payload = CombatHandler.buildHpDeltaPayload(targetSession.clientEntID, delta);
-        CombatHandler.broadcastToCombatRoom(targetSession, 0x3A, payload, true, [targetSession.clientEntID]);
+        CombatHandler.broadcastToCombatRoom(targetSession, CombatHandler.CLIENT_HEAL_PACKET_ID, payload, true, [targetSession.clientEntID]);
     }
 
     private static broadcastPlayerState(targetSession: Client, entState: number, roomScoped: boolean = false): void {
@@ -2212,14 +2345,15 @@ export class CombatHandler {
 
         const entity = targetSession.entities.get(targetSession.clientEntID) ?? {};
         const levelEntity = CombatHandler.resolveLevelEntity(getClientLevelScope(targetSession), targetSession.clientEntID);
+        if (CombatHandler.isEntityDead(entity) || CombatHandler.isEntityDead(levelEntity)) {
+            return {
+                appliedDamage: 0,
+                killed: true
+            };
+        }
+
         const knownMaxHp = CombatHandler.resolvePlayerMaxHp(targetSession, entity, levelEntity);
-        const currentHp = Math.max(
-            0,
-            Math.min(
-                knownMaxHp,
-                Math.round(Number(entity.hp ?? levelEntity?.hp ?? targetSession.authoritativeCurrentHp ?? knownMaxHp))
-            )
-        );
+        const currentHp = CombatHandler.resolvePlayerCurrentHp(targetSession, entity, levelEntity, knownMaxHp);
         if (currentHp <= 0) {
             return {
                 appliedDamage: 0,
@@ -2860,6 +2994,89 @@ export class CombatHandler {
         bb.writeMethod4(entId);
         bb.writeMethod24(healAmount);
         CombatHandler.broadcastToSameLevel(getClientLevelScope(client), 0x82, bb.toBuffer(), [entId], client);
+    }
+
+    static handleCharRegen(client: Client, data: Buffer): void {
+        const br = new BitReader(data);
+        const rawEntityId = br.readMethod9();
+        const amount = Math.round(br.readMethod24());
+        const entityId = EntityHandler.resolveEntityAlias(client, rawEntityId);
+        const levelScope = getClientLevelScope(client);
+        const entity = client.entities.get(entityId) ?? CombatHandler.resolveLevelEntity(levelScope, entityId);
+        if (!EntityHandler.isClientOwnPlayerEntity(client, levelScope, entityId, entity)) {
+            CombatHandler.logPlayerHp('client-hp-ignored', client, {
+                reason: 'not-own-player',
+                rawEntityId,
+                entityId,
+                amount,
+                entityHp: Math.round(Number(entity?.hp ?? 0)),
+                authHp: Math.round(Number(client.authoritativeCurrentHp ?? 0)),
+                authMax: Math.round(Number(client.authoritativeMaxHp ?? 0))
+            }, CombatHandler.PLAYER_HP_LOG_THROTTLE_MS);
+            return;
+        }
+
+        const levelEntity = CombatHandler.resolveLevelEntity(levelScope, entityId);
+        const maxHp = CombatHandler.resolvePlayerMaxHp(client, entity, levelEntity);
+        const currentHp = CombatHandler.resolvePlayerCurrentHp(client, entity, levelEntity, maxHp);
+        const nextHp = Math.max(0, Math.min(maxHp, currentHp + amount));
+        CombatHandler.logPlayerHp('client-hp-report', client, {
+            rawEntityId,
+            entityId,
+            amount,
+            previousHp: currentHp,
+            nextHp,
+            maxHp,
+            entityHp: Math.round(Number(entity?.hp ?? 0)),
+            levelHp: Math.round(Number(levelEntity?.hp ?? 0)),
+            authHp: Math.round(Number(client.authoritativeCurrentHp ?? 0)),
+            authMax: Math.round(Number(client.authoritativeMaxHp ?? 0)),
+            lastCombatAt: Math.max(0, client.lastCombatActivityAt),
+            lastTickAt: Math.max(0, client.lastCombatRegenTickAt)
+        });
+        if (nextHp <= 0) {
+            CombatHandler.notePlayerDeathState(client);
+            CombatHandler.logPlayerHp('client-hp-death', client, {
+                rawEntityId,
+                entityId,
+                amount,
+                previousHp: currentHp,
+                nextHp,
+                maxHp
+            });
+            return;
+        }
+
+        if (entity && typeof entity === 'object') {
+            entity.maxHp = maxHp;
+            entity.hp = nextHp;
+            entity.dead = false;
+            if (Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
+                entity.entState = EntityState.ACTIVE;
+            }
+        }
+
+        if (levelEntity && typeof levelEntity === 'object') {
+            levelEntity.maxHp = maxHp;
+            levelEntity.hp = nextHp;
+            levelEntity.dead = false;
+            if (Number(levelEntity.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
+                levelEntity.entState = EntityState.ACTIVE;
+            }
+        }
+
+        client.authoritativeMaxHp = maxHp;
+        client.authoritativeCurrentHp = nextHp;
+        if (amount < 0) {
+            CombatHandler.notePlayerDamageTakenActivity(client, Date.now());
+            CombatHandler.logPlayerHp('damage-timer-start', client, {
+                currentHp: nextHp,
+                maxHp,
+                damage: Math.abs(amount),
+                lastCombatAt: Math.max(0, client.lastCombatActivityAt),
+                lastTickAt: Math.max(0, client.lastCombatRegenTickAt)
+            });
+        }
     }
 
     static async handleBuffTickDot(client: Client, data: Buffer): Promise<void> {

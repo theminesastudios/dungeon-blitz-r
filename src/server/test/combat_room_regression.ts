@@ -949,7 +949,7 @@ async function testHostileHitsCanKillPlayersAndStayRoomScoped(): Promise<void> {
         'same-room watchers should be seeded before receiving hostile combat packets'
     );
     assert.equal(
-        sameRoomWatcher.sentPackets.some((packet) => packet.id === 0x3A),
+        sameRoomWatcher.sentPackets.some((packet) => packet.id === 0x78),
         false,
         'hostile hits should not emit a separate HP delta because the power-hit packet already drives the client damage display'
     );
@@ -978,16 +978,16 @@ async function testHostileHitsCanKillPlayersAndStayRoomScoped(): Promise<void> {
         'local player should not receive its own 0x07 state echo because the Flash client treats it as a remote entity update'
     );
     assert.equal(
-        victim.sentPackets.some((packet) => packet.id === 0x3A),
+        victim.sentPackets.some((packet) => packet.id === 0x78),
         false,
         'local player should only receive the hostile power-hit packet so the damage is shown once'
     );
     assert.equal(
-        partyOtherRoom.sentPackets.some((packet) => packet.id === 0x0A || packet.id === 0x3A || packet.id === 0x07),
+        partyOtherRoom.sentPackets.some((packet) => packet.id === 0x0A || packet.id === 0x78 || packet.id === 0x07),
         false,
         'party members in a different room should not receive hostile NPC combat packets from outside their room'
     );
-    assert.equal(otherRoomStranger.sentPackets.some((packet) => packet.id === 0x3A), false);
+    assert.equal(otherRoomStranger.sentPackets.some((packet) => packet.id === 0x78), false);
 
     const incoming = new BitBuffer(false);
     incoming.writeMethod4(victim.clientEntID);
@@ -1038,7 +1038,7 @@ async function testHostileHitsDoNotEchoPowerHitBackToLocalVictimWhenDamageMatche
         'the local victim already simulated the hostile hit and should not receive a duplicate power-hit echo'
     );
     assert.equal(
-        victim.sentPackets.some((packet) => packet.id === 0x3A),
+        victim.sentPackets.some((packet) => packet.id === 0x78),
         false,
         'matching hostile damage should not need a follow-up HP correction packet'
     );
@@ -1048,7 +1048,7 @@ async function testHostileHitsDoNotEchoPowerHitBackToLocalVictimWhenDamageMatche
         'same-room viewers still need the hostile hit for synchronization'
     );
     assert.equal(
-        otherRoomWatcher.sentPackets.some((packet) => packet.id === 0x0A || packet.id === 0x3A),
+        otherRoomWatcher.sentPackets.some((packet) => packet.id === 0x0A || packet.id === 0x78),
         false,
         'other rooms should still stay isolated from hostile combat packets'
     );
@@ -1528,7 +1528,7 @@ async function testCanonicalPlayerStateRelaysToTeammate(): Promise<void> {
         'remote player death state should not use the stale raw id'
     );
 
-    const correction = watcher.sentPackets.find((packet) => packet.id === 0x3A);
+    const correction = watcher.sentPackets.find((packet) => packet.id === 0x78);
     if (correction) {
         assert.equal(parseHpDelta(correction.payload).entityId, victim.clientEntID);
     }

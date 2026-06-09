@@ -177,6 +177,7 @@ router.register(0x0E, CombatHandler.handleProjectileExplode);
 router.register(0x0D, CombatHandler.handleEntityDestroy);
 router.register(0x77, CombatHandler.handleRequestRespawn);
 router.register(0x82, CombatHandler.handleRespawnBroadcast);
+router.register(0x78, CombatHandler.handleCharRegen);
 router.register(0x79, CombatHandler.handleBuffTickDot);
 router.register(0x0B, CombatHandler.handleAddBuff);
 router.register(0x0C, CombatHandler.handleRemoveBuff);

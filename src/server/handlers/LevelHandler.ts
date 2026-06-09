@@ -4324,13 +4324,14 @@ export class LevelHandler {
             ? EntityState.ACTIVE
             : entState;
         const canonicalIsDefeatState = LevelHandler.isDefeatedEntityStateValue(canonicalEntState);
+        const isActiveSelfState = isSelf && !canonicalIsDefeatState;
 
         const previousX = Number(ent.x ?? 0);
         ent.x += deltaX;
         ent.y += deltaY;
         ent.v = Number(ent.v ?? 0) + deltaVX;
         ent.entState = canonicalEntState;
-        ent.dead = canonicalIsDefeatState ? true : Boolean(ent.dead);
+        ent.dead = canonicalIsDefeatState ? true : isActiveSelfState ? false : Boolean(ent.dead);
         ent.facingLeft = flags.bLeft;
         ent.bRunning = flags.bRunning;
         ent.bJumping = flags.bJumping;
@@ -4344,7 +4345,7 @@ export class LevelHandler {
             levelEntity.y = ent.y;
             levelEntity.v = ent.v;
             levelEntity.entState = canonicalEntState;
-            levelEntity.dead = canonicalIsDefeatState ? true : Boolean(levelEntity.dead);
+            levelEntity.dead = canonicalIsDefeatState ? true : isActiveSelfState ? false : Boolean(levelEntity.dead);
             levelEntity.facingLeft = flags.bLeft;
             levelEntity.bRunning = flags.bRunning;
             levelEntity.bJumping = flags.bJumping;

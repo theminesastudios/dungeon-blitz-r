@@ -239,8 +239,8 @@ export class RewardHandler {
         }
         const bb = new BitBuffer(false);
         bb.writeMethod4(entityId);
-        bb.writeMethod4(amount);
-        client.sendBitBuffer(0x3B, bb);
+        bb.writeMethod45(amount);
+        client.sendBitBuffer(0x78, bb);
     }
 
     private static resolveSourceEntity(client: Client, sourceId: number): any {
