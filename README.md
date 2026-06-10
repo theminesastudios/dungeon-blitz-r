@@ -1,43 +1,39 @@
 # 𝐃𝐮𝐧𝐠𝐞𝐨𝐧 𝐁𝐥𝐢𝐭𝐳: 𝐑
-> Private version of Dungeon Blitz: R, for early access and going to be used for the multiplayer version.
 
-## Installation
-_This is required to play singleplayer._
+Open-source fan revival project of Dungeon Blitz developed by The Minesa Studios.
 
-### 1. Requirements
-1. Install [Node.js](https://nodejs.org/en/download)
-2. [Git](https://git-scm.com/install/)
-3. [Flash Projector](https://github.com/Grubsic/Adobe-Flash-Player-Debug-Downloads-Archive/raw/main/Windows/flashplayer_32_sa.exe)
-4. [GitHub Desktop](https://desktop.github.com/download/)[^1]
-5. Terminal
+## About
 
-### 2. Clone Repository
-```sh
-git clone https://github.com/minesa-org/dungeon-blitz-r.git
-cd dungeon-blitz-r
-```
+Dungeon Blitz: R aims to preserve and modernize the Dungeon Blitz experience while improving stability, maintainability, and multiplayer functionality.
 
-### 3. Install Depencies
-Install everything with a single command:
-```sh
-npm run install:all
-```
+The project focuses on:
 
-## Running the Game
-- Development version:
-```sh
-npm run dev
-```
-- Multiplayer version[^2]:
-```sh
-npm run start:multiplayer
-```
+* Multiplayer support
+* Bug fixes and stability improvements
+* Localization
+* Gameplay balancing
+* Quality-of-life improvements
+* Community-driven development
 
-## Playing the game
-Open the game in Flash Projector using:
-```sh
-http://localhost/p/cbv/DungeonBlitz.swf?fv=cbq&gv=cbv
-```
+## Project Status
 
-[^1]: GitHub Desktop is optional to download.
-[^2]: You won't run multiplayer version.
+Active Development
+
+Current priorities:
+
+* Multiplayer implementation
+* Region completion
+* Gameplay balancing
+* Performance improvements
+
+## Documentation
+
+Project documentation can be found in the Wiki.
+
+## Disclaimer
+
+Dungeon Blitz: R is a fan-made revival project.
+
+Dungeon Blitz and all original assets, trademarks, artwork, audio, characters, and intellectual property belong to their respective owners.
+
+This repository only licenses original code and modifications created by The Minesa Studios and project contributors.
