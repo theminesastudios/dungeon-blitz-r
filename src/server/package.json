@@ -23,7 +23,7 @@
     "cross-env": "^10.0.0",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "@types/express": "^5.0.6",
