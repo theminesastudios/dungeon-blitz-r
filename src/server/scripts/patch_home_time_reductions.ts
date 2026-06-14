@@ -93,11 +93,16 @@ function getRankUpgradeTime(kind: string, rank: unknown, typeId: unknown): strin
 
 function patchXmlUpgradeTimes(xml: string): { xml: string; changes: number } {
     let changes = 0;
+    const inheritedTypeIds: Record<string, string | undefined> = {};
     const nextXml = xml.replace(/<(Building|Ability)(?:\s[^>]*)?>[\s\S]*?<\/\1>/g, (block: string, kind: string) => {
         const rank = block.match(/<Rank>(\d+)<\/Rank>/)?.[1];
-        const typeId = block.match(kind === 'Building'
+        const explicitTypeId = block.match(kind === 'Building'
             ? /<BuildingID>(\d+)<\/BuildingID>/
             : /<AbilityID>(\d+)<\/AbilityID>/)?.[1];
+        if (explicitTypeId !== undefined) {
+            inheritedTypeIds[kind] = explicitTypeId;
+        }
+        const typeId = explicitTypeId ?? inheritedTypeIds[kind];
         const upgradeTime = getRankUpgradeTime(kind, rank, typeId);
         if (upgradeTime === null) {
             return block;
@@ -115,13 +120,18 @@ function patchXmlUpgradeTimes(xml: string): { xml: string; changes: number } {
 }
 
 function verifyXmlUpgradeTimes(xml: string, label: string): void {
+    const inheritedTypeIds: Record<string, string | undefined> = {};
     for (const blockMatch of xml.matchAll(/<(Building|Ability)(?:\s[^>]*)?>[\s\S]*?<\/\1>/g)) {
         const block = blockMatch[0];
         const kind = blockMatch[1];
         const rank = block.match(/<Rank>(\d+)<\/Rank>/)?.[1];
-        const typeId = block.match(kind === 'Building'
+        const explicitTypeId = block.match(kind === 'Building'
             ? /<BuildingID>(\d+)<\/BuildingID>/
             : /<AbilityID>(\d+)<\/AbilityID>/)?.[1];
+        if (explicitTypeId !== undefined) {
+            inheritedTypeIds[kind] = explicitTypeId;
+        }
+        const typeId = explicitTypeId ?? inheritedTypeIds[kind];
         const expected = getRankUpgradeTime(kind, rank, typeId);
         if (expected === null) {
             continue;

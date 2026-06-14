@@ -34,7 +34,7 @@
 		<PlayerLevel>1</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
-		<UpgradeTime>1800</UpgradeTime>
+		<UpgradeTime>45</UpgradeTime>
 		<Art>a_Upgrade_Tome_1</Art>
 		<UpgradeDescription>Tum Kademe 2 yeteneklerinin egitimini acar</UpgradeDescription>
 	</Building>
@@ -146,7 +146,7 @@
 		<PlayerLevel>1</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
-		<UpgradeTime>1800</UpgradeTime>
+		<UpgradeTime>45</UpgradeTime>
 		<Art>a_Upgrade_Forge_1</Art>
 		<UpgradeDescription>Kademe 2 tilsim tariflerini acar</UpgradeDescription>
 	</Building>
@@ -258,7 +258,7 @@
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
-		<UpgradeTime>1800</UpgradeTime>
+		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Justicar1</Art>
 		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
@@ -372,7 +372,7 @@
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
-		<UpgradeTime>1800</UpgradeTime>
+		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Sentinel1</Art>
 		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
@@ -484,7 +484,7 @@
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
-		<UpgradeTime>1800</UpgradeTime>
+		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Templar1</Art>
 		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
@@ -596,7 +596,7 @@
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
-		<UpgradeTime>1800</UpgradeTime>
+		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Frostwarden1</Art>
 		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
@@ -708,7 +708,7 @@
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
-		<UpgradeTime>1800</UpgradeTime>
+		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Flameseer1</Art>
 		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
@@ -820,7 +820,7 @@
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
-		<UpgradeTime>1800</UpgradeTime>
+		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Necromancer1</Art>
 		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
@@ -932,7 +932,7 @@
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
-		<UpgradeTime>1800</UpgradeTime>
+		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Executioner1</Art>
 		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
@@ -1044,7 +1044,7 @@
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
-		<UpgradeTime>1800</UpgradeTime>
+		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Shadowwalker1</Art>
 		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
@@ -1156,7 +1156,7 @@
 		<PlayerLevel>10</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
-		<UpgradeTime>1800</UpgradeTime>
+		<UpgradeTime>120</UpgradeTime>
 		<Art>a_Upgrade_Tower_Blademaster1</Art>
 		<UpgradeDescription>Sonraki 5 yetenek puaninin egitimini acar</UpgradeDescription>
 	</Building>
@@ -1281,7 +1281,7 @@
 		<PlayerLevel>5</PlayerLevel>
 		<GoldCost>0</GoldCost>
 		<IdolCost>0</IdolCost>
-		<UpgradeTime>1800</UpgradeTime>
+		<UpgradeTime>150</UpgradeTime>
 		<Art>a_Upgrade_Barn_1</Art>
 		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
 	</Building>

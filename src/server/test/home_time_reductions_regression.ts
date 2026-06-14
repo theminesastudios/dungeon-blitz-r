@@ -69,13 +69,18 @@ function getExpectedBuildingTime(rank: number, buildingId: number): number | und
 
 function assertXmlUpgradeTimesMatchRankSchedule(xml: string, label: string): void {
     let seen = 0;
+    const inheritedTypeIds: Record<string, number | undefined> = {};
     for (const blockMatch of xml.matchAll(/<(Building|Ability)(?:\s[^>]*)?>[\s\S]*?<\/\1>/g)) {
         const block = blockMatch[0];
         const kind = blockMatch[1];
         const rank = Number(block.match(/<Rank>(\d+)<\/Rank>/)?.[1] ?? 0);
-        const typeId = Number(block.match(kind === 'Building'
+        const explicitTypeId = block.match(kind === 'Building'
             ? /<BuildingID>(\d+)<\/BuildingID>/
-            : /<AbilityID>(\d+)<\/AbilityID>/)?.[1] ?? 0);
+            : /<AbilityID>(\d+)<\/AbilityID>/)?.[1];
+        if (explicitTypeId !== undefined) {
+            inheritedTypeIds[kind] = Number(explicitTypeId);
+        }
+        const typeId = inheritedTypeIds[kind] ?? 0;
         const expected = kind === 'Building'
             ? getExpectedBuildingTime(rank, typeId)
             : getExpectedAbilityTime(rank, typeId);
