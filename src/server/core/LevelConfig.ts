@@ -44,8 +44,7 @@ export class LevelConfig {
     private static LEVEL_NAME_CANONICAL: Record<string, string> = {};
     private static LEVEL_NAME_COMPACT_CANONICAL: Record<string, string> = {};
     private static readonly NON_DUNGEON_OVERRIDES = new Set([
-        'CraftTown',
-        'CraftTownTutorial'
+        'CraftTown'
     ]);
     private static readonly LEVEL_ALIASES: Record<string, string> = {
         "blackrosemire": "SwampRoadNorth",
@@ -693,13 +692,13 @@ export class LevelConfig {
             return { x: Math.round(doorSpawn.x), y: Math.round(doorSpawn.y), hasCoord: true };
         }
 
-        if (this.isDungeonLevel(targetLevel)) {
-            return { x: 0, y: 0, hasCoord: false };
-        }
-
         if (targetLevel === 'CraftTownTutorial') {
             const spawn = this.getSpawn(targetLevel);
             return { x: Math.round(spawn.x), y: Math.round(spawn.y), hasCoord: true };
+        }
+
+        if (this.isDungeonLevel(targetLevel)) {
+            return { x: 0, y: 0, hasCoord: false };
         }
 
         const currentRecord = this.asLevelRecord(char?.CurrentLevel);

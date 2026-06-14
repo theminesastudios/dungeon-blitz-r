@@ -125,6 +125,10 @@ function testCraftTownTutorialSuppressesKeepUpgradeVisuals(): void {
     const decoded = decodeCraftTownVisualData(buildCraftTownPacket('CraftTownTutorial'));
 
     assert.equal(decoded.newInternal, 'CraftTownTutorial');
+    assert.equal(decoded.isDungeon, true, 'tutorial keep should enter as a dungeon so dungeon UI state replaces home tutorial alerts');
+    assert.equal(decoded.hasNewCoord, true, 'tutorial keep should keep its authored spawn coordinates');
+    assert.equal(decoded.newX, 10);
+    assert.equal(decoded.newY, 20);
     assert.equal(decoded.isCraftTown, false, 'tutorial should use its authored ruined room art instead of live Home building visuals');
     assert.equal(decoded.keepRank, 0, 'tutorial keep should not send live keep ranks');
     assert.equal(decoded.scaffoldingLevel, 0, 'tutorial keep should not inherit live scaffolding state');
@@ -158,7 +162,7 @@ function testCraftTownSuppressesExpiredKeepUpgradeVisuals(): void {
 
 function testCraftTownLevelConfigTreatsTownAsNonDungeon(): void {
     assert.equal(LevelConfig.get('CraftTown').isDungeon, false, 'CraftTown should not be treated as a dungeon level');
-    assert.equal(LevelConfig.get('CraftTownTutorial').isDungeon, false, 'CraftTownTutorial should not be treated as a dungeon level');
+    assert.equal(LevelConfig.get('CraftTownTutorial').isDungeon, true, 'CraftTownTutorial should be treated as a dungeon level');
 }
 
 function testCraftTownTutorialPlayerDataSuppressesKeepUpgradeState(): void {
