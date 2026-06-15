@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "1.2.13",
+  "version": "1.4.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,6 +8,7 @@
     "multiplayer": "node tools/startMultiplayerServer.js",
     "dev:discord-bridge": "ts-node tools/discordLocalBridge.ts discord-bridge.dev.config.json",
     "install:discord-social-sdk": "node tools/installDiscordSocialSdk.js",
+    "build:catalog": "ts-node scripts/generate-catalog-webapp-data.ts",
     "start:multiplayer:game": "node tools/startMultiplayerServer.js",
     "build": "tsc",
     "start:multiplayer": "node tools/startMultiplayerServer.js",

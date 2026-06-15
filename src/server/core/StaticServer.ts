@@ -297,6 +297,10 @@ export class StaticServer {
             res.sendFile(path.join(this.contentDir, 'index.html'));
         });
 
+        this.app.get(['/catalog', '/catalog/'], (_req, res) => {
+            res.sendFile(path.join(this.contentDir, 'catalog', 'index.html'));
+        });
+
         this.app.get('/p/cbp/DungeonBlitz.swf', (req, res) => {
             if (!this.isCanonicalSelectedSwfRequest(req)) {
                 res.redirect(302, this.getCanonicalSelectedSwfUrl(req));

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dungeon Blitz Catalog</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <h1>Dungeon Blitz Catalog</h1>
+        <p id="dataset-summary">Loading catalog data...</p>
+      </div>
+      <button id="export-csv" type="button">Export CSV</button>
+    </header>
+
+    <section class="filters" aria-label="Catalog filters">
+      <label>
+        <span>Search</span>
+        <input id="search-input" type="search" placeholder="Name, ID, dungeon, realm">
+      </label>
+      <label>
+        <span>View</span>
+        <select id="view-filter">
+          <option value="items">All items</option>
+          <option value="gear">Gear drops</option>
+          <option value="dungeons">Dungeons</option>
+        </select>
+      </label>
+      <label>
+        <span>Category</span>
+        <select id="category-filter"></select>
+      </label>
+      <label>
+        <span>Class</span>
+        <select id="class-filter"></select>
+      </label>
+      <label>
+        <span>Type</span>
+        <select id="type-filter"></select>
+      </label>
+      <label>
+        <span>Rarity</span>
+        <select id="rarity-filter"></select>
+      </label>
+      <label>
+        <span>Level/Rank</span>
+        <select id="level-filter"></select>
+      </label>
+      <label>
+        <span>Realm</span>
+        <select id="realm-filter"></select>
+      </label>
+      <label>
+        <span>Dungeon</span>
+        <select id="dungeon-filter"></select>
+      </label>
+      <label>
+        <span>Source</span>
+        <select id="source-filter"></select>
+      </label>
+      <button id="reset-filters" type="button">Reset</button>
+    </section>
+
+    <section class="stats" id="stats-row" aria-label="Catalog counts"></section>
+
+    <section class="table-wrap" aria-live="polite">
+      <table>
+        <thead id="table-head"></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="catalog-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
