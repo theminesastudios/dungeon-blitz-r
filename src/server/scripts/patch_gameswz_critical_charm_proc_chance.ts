@@ -33,6 +33,7 @@ function storedProcChance(flatChance: number): string {
   const idealMultiplier = (targetResult / (BASE_CRIT_CHANCE * 100)) - 1;
   
   // Use toFixed(6) and trim to ensure a clean, consistent representation on the server
+  // This avoids scientific notation and prevents precision leaks from long decimal strings
   return idealMultiplier.toFixed(6).replace(/0+$/, "").replace(/\.$/, "");
 }
 
