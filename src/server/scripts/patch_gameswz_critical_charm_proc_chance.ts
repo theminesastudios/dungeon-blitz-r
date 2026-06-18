@@ -15,11 +15,11 @@ const BASE_CRIT_CHANCE = 0.15;
 const CRITICAL_CHARM_FLAT_CHANCES = new Map<string, number>([
   ...Array.from({ length: 10 }, (_, index) => {
     const level = index + 1;
-    return [`Infernal${String(level).padStart(2, "0")}`, level * 0.005] as const;
+    return [`Infernal${String(level).padStart(2, "0")}`, level * 0.00075] as const;
   }),
-  ["TripleFind", 0.04],
-  ["DoubleFind2", 0.04],
-  ["DoubleFind3", 0.04],
+  ["TripleFind", 0.006],
+  ["DoubleFind2", 0.006],
+  ["DoubleFind3", 0.006],
 ]);
 
 function storedProcChance(flatChance: number): string {
