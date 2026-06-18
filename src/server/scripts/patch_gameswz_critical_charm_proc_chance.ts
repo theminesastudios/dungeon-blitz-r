@@ -23,17 +23,9 @@ const CRITICAL_CHARM_FLAT_CHANCES = new Map<string, number>([
 ]);
 
 function storedProcChance(flatChance: number): string {
-  // Target: 15 * (1 + procChanceUp) should be a "clean" number (max 1 decimal place)
-  // Current display: 13.700000000000001
-  // Target display: 13.7
-  // x = (targetResult / 15) - 1
-  
   const currentResult = BASE_CRIT_CHANCE * 100 * (1 + flatChance / BASE_CRIT_CHANCE);
   const targetResult = Math.round(currentResult * 10) / 10;
   const idealMultiplier = (targetResult / (BASE_CRIT_CHANCE * 100)) - 1;
-  
-  // Use toFixed(6) and trim to ensure a clean, consistent representation on the server
-  // This avoids scientific notation and prevents precision leaks from long decimal strings
   return idealMultiplier.toFixed(6).replace(/0+$/, "").replace(/\.$/, "");
 }
 
@@ -88,6 +80,7 @@ function replaceCharmProcChanceJsonText(xml: string): PatchResult {
 }
 
 function patchXmlFile(filePath: string, verifyOnly: boolean): number {
+  if (!fs.existsSync(filePath)) return 0;
   const original = fs.readFileSync(filePath, "utf8");
   const patched = replaceCharmProcChance(original);
   if (!verifyOnly && patched.xml !== original) {
@@ -97,6 +90,7 @@ function patchXmlFile(filePath: string, verifyOnly: boolean): number {
 }
 
 function patchCharmsJson(filePath: string, verifyOnly: boolean): number {
+  if (!fs.existsSync(filePath)) return 0;
   const original = fs.readFileSync(filePath, "utf8");
   const data = JSON.parse(original);
   const expected = expectedProcChanceByCharm();
@@ -127,25 +121,33 @@ function patchCharmsJson(filePath: string, verifyOnly: boolean): number {
 }
 
 function patchSwzFile(swzPath: string, verifyOnly: boolean): number {
+  if (!fs.existsSync(swzPath)) return 0;
   const ctx = parseSwz(swzPath);
-  const charmChunk = ctx.chunks.find((entry) => entry.xml.includes("<CharmTypes") || entry.xml.includes('"CharmName"'));
-  if (!charmChunk) {
-    return 0;
+  let changed = false;
+  let totalChanges = 0;
+
+  for (const chunk of ctx.chunks) {
+    const isXml = chunk.xml.includes("<CharmTypes");
+    const isJson = chunk.xml.includes("\"CharmName\"");
+    if (!isXml && !isJson) continue;
+
+    const patched = isXml ? replaceCharmProcChance(chunk.xml) : replaceCharmProcChanceJsonText(chunk.xml);
+    if (patched.changes > 0) {
+      chunk.xml = patched.xml;
+      totalChanges += patched.changes;
+      changed = true;
+    }
   }
 
-  const patched = charmChunk.xml.includes("<CharmTypes")
-    ? replaceCharmProcChance(charmChunk.xml)
-    : replaceCharmProcChanceJsonText(charmChunk.xml);
-  if (!verifyOnly && patched.xml !== charmChunk.xml) {
-    charmChunk.xml = patched.xml;
+  if (!verifyOnly && changed) {
     ensureBackup(swzPath);
     writeSwz(ctx);
   }
-  return patched.changes;
+  return totalChanges;
 }
 
-function main(): number {
-  const args = process.argv.slice(2);
+export function main(customArgs?: string[]): number {
+  const args = customArgs || process.argv.slice(2);
   const verifyOnly = args.includes("--verify") || args.includes("--dry-run");
   const swzPaths = ["Game.swz", "Game.en.swz", "Game.tr.swz"]
     .map((fileName) => path.join(CBQ_DIR, fileName))
@@ -157,8 +159,7 @@ function main(): number {
     swzPaths.reduce((total, swzPath) => total + patchSwzFile(swzPath, verifyOnly), 0);
 
   console.log(JSON.stringify({ verifyOnly, swzPaths, changes }, null, 2));
-  console.log(changes === 0 ? "No changes needed." : verifyOnly ? "Patch required." : "Patch apply complete.");
-  return 0;
+  return changes;
 }
 
 if (require.main === module) {
