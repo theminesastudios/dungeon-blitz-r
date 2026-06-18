@@ -23,7 +23,9 @@ const CRITICAL_CHARM_FLAT_CHANCES = new Map<string, number>([
 ]);
 
 function storedProcChance(flatChance: number): string {
-  return (flatChance / BASE_CRIT_CHANCE).toFixed(15).replace(/0+$/, "").replace(/\.$/, "");
+  const raw = flatChance / BASE_CRIT_CHANCE;
+  // Round to 4 decimal places to avoid long repeating decimals (e.g. 0.333333333333333 -> 0.3333)
+  return parseFloat(raw.toFixed(4)).toString();
 }
 
 function expectedProcChanceByCharm(): Map<string, string> {
