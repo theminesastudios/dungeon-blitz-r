@@ -15,17 +15,24 @@ const BASE_CRIT_CHANCE = 0.15;
 const CRITICAL_CHARM_FLAT_CHANCES = new Map<string, number>([
   ...Array.from({ length: 10 }, (_, index) => {
     const level = index + 1;
-    return [`Infernal${String(level).padStart(2, "0")}`, level * 0.00075] as const;
+    return [`Infernal${String(level).padStart(2, "0")}`, level * 0.005] as const;
   }),
-  ["TripleFind", 0.006],
-  ["DoubleFind2", 0.006],
-  ["DoubleFind3", 0.006],
+  ["TripleFind", 0.04],
+  ["DoubleFind2", 0.04],
+  ["DoubleFind3", 0.04],
 ]);
 
 function storedProcChance(flatChance: number): string {
-  const raw = flatChance / BASE_CRIT_CHANCE;
-  // Round to 4 decimal places to avoid long repeating decimals (e.g. 0.333333333333333 -> 0.3333)
-  return parseFloat(raw.toFixed(4)).toString();
+  // Target: 15 * (1 + procChanceUp) should be a "clean" number (max 1 decimal place)
+  // Current display: 13.700000000000001
+  // Target display: 13.7
+  // x = (targetResult / 15) - 1
+  
+  const currentResult = BASE_CRIT_CHANCE * 100 * (1 + flatChance / BASE_CRIT_CHANCE);
+  const targetResult = Math.round(currentResult * 10) / 10;
+  const idealMultiplier = (targetResult / (BASE_CRIT_CHANCE * 100)) - 1;
+  
+  return idealMultiplier.toFixed(6).replace(/0+$/, "").replace(/\.$/, "");
 }
 
 function expectedProcChanceByCharm(): Map<string, string> {
