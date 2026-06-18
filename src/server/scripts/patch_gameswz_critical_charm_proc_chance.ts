@@ -24,13 +24,15 @@ const CRITICAL_CHARM_FLAT_CHANCES = new Map<string, number>([
 
 function storedProcChance(flatChance: number): string {
   // Target: 15 * (1 + procChanceUp) should be a "clean" number (max 1 decimal place)
-  // Example: 15 * (1 + 0.333333) = 19.999995 -> Target 20.0
-  // idealMultiplier = (targetResult / (BASE_CRIT_CHANCE * 100)) - 1
+  // Current display: 13.700000000000001
+  // Target display: 13.7
+  // x = (targetResult / 15) - 1
   
   const currentResult = BASE_CRIT_CHANCE * 100 * (1 + flatChance / BASE_CRIT_CHANCE);
   const targetResult = Math.round(currentResult * 10) / 10;
   const idealMultiplier = (targetResult / (BASE_CRIT_CHANCE * 100)) - 1;
   
+  // Use toFixed(6) and trim to ensure a clean, consistent representation on the server
   return idealMultiplier.toFixed(6).replace(/0+$/, "").replace(/\.$/, "");
 }
 
