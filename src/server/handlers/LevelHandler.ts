@@ -1076,7 +1076,6 @@ export class LevelHandler {
             return 0;
         }
 
-        const previousProgress = Number(getSharedDungeonProgressState(scopeKey)?.progress ?? 0);
         const sharedState = recomputeSharedDungeonProgress(scopeKey);
         const progress = sharedState?.progress ?? 0;
         if (sharedState) {
@@ -1087,7 +1086,7 @@ export class LevelHandler {
         }
 
         LevelHandler.broadcastSharedDungeonQuestProgress(scopeKey, progress);
-        if (progress >= 100 && previousProgress < 100) {
+        if (progress >= 100) {
             LevelHandler.maybeAutoCompleteSharedDungeon(scopeKey, sharedState);
         }
         return progress;
@@ -1108,7 +1107,7 @@ export class LevelHandler {
     }
 
     private static maybeAutoCompleteSharedDungeon(levelScope: string, sharedState: any): void {
-        if (!sharedState || sharedState.completionRequested) {
+        if (!sharedState) {
             return;
         }
 
@@ -1131,6 +1130,17 @@ export class LevelHandler {
         }
 
         if (!authorityClient?.character || authorityClient.dungeonRun?.finalizedAt) {
+            return;
+        }
+
+        if (
+            sharedState.completionRequested &&
+            (
+                String(authorityClient.pendingDungeonCompletionScope ?? '').trim() === levelScope ||
+                String(authorityClient.completedDungeonCompletionScope ?? '').trim() === levelScope ||
+                String(authorityClient.finalizingDungeonCompletionScope ?? '').trim() === levelScope
+            )
+        ) {
             return;
         }
 

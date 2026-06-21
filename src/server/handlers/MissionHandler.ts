@@ -163,6 +163,8 @@ export class MissionHandler {
         AC_Mission5Hard: new Set(['AncientDragonBlackHard', 'AncientDragonSilverHard']),
         AC_Mission6: new Set(['NephitLargeEye']),
         AC_Mission6Hard: new Set(['NephitLargeEyeHard']),
+        GhostBossDungeon: new Set(['NephitLargeEye']),
+        GhostBossDungeonHard: new Set(['NephitLargeEyeHard']),
         JC_Mission1: new Set(['ImperialChampion']),
         JC_Mission1Hard: new Set(['ImperialChampionHard']),
         JC_Mission2: new Set(['GreaterBoneGolem', 'GreaterBoneGolem2']),
@@ -1364,12 +1366,19 @@ export class MissionHandler {
             clearedDungeon = true;
         }
         noteDungeonRunCompletionProgress(client, effectiveCompletionPercent);
+        const allowSharedServerFullClearCompletion =
+            clearedDungeon &&
+            usesSharedDungeonProgress(currentLevel) &&
+            effectiveCompletionPercent >= 100 &&
+            levelScope &&
+            !MissionHandler.hasRemainingDungeonHostiles(levelScope);
 
         if (
             clearedDungeon &&
             dungeonRequiresSpecificCompletionObjectives &&
             !forceSharedDungeonCompletionAllowed &&
-            !dungeonCompletionObjectivesMet
+            !dungeonCompletionObjectivesMet &&
+            !allowSharedServerFullClearCompletion
         ) {
             return;
         }
@@ -3102,6 +3111,14 @@ export class MissionHandler {
             return true;
         }
 
+        if (
+            usesSharedDungeonProgress(currentLevel) &&
+            levelScope &&
+            !MissionHandler.hasRemainingDungeonHostiles(levelScope)
+        ) {
+            return true;
+        }
+
         return MissionHandler.hasMetRequiredDungeonCompletionObjectives(client, currentLevel, levelScope);
     }
 
@@ -3122,6 +3139,7 @@ export class MissionHandler {
             String(client.activeDungeonCutsceneScope ?? '').trim() === levelScope ||
             (
                 MissionHandler.hasPostDeathBossCutscene(currentLevel) &&
+                String(client.lastDungeonCutsceneEndScope ?? '').trim() === levelScope &&
                 MissionHandler.hasMetRequiredDungeonCompletionObjectives(client, currentLevel, levelScope)
             );
 
@@ -3186,13 +3204,21 @@ export class MissionHandler {
 
     private static isRequiredDungeonBossEntity(levelName: string | null | undefined, entity: any): boolean {
         const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
-        if (!normalizedLevel || !MissionHandler.requiresBossDefeatForDungeon(normalizedLevel)) {
+        if (!normalizedLevel) {
             return true;
         }
 
         const bossNames = MissionHandler.REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL[normalizedLevel];
         if (bossNames) {
             return bossNames.has(MissionHandler.getEntityName(entity));
+        }
+
+        if (GameData.hasDungeonBossEntities(normalizedLevel)) {
+            return GameData.isDungeonBossEntity(normalizedLevel, entity);
+        }
+
+        if (!MissionHandler.requiresBossDefeatForDungeon(normalizedLevel)) {
+            return true;
         }
 
         return MissionHandler.isDungeonCompletionBossEntity(entity);
@@ -3206,6 +3232,10 @@ export class MissionHandler {
             : null;
         if (bossNames?.has(entityName)) {
             return true;
+        }
+
+        if (normalizedLevel && GameData.hasDungeonBossEntities(normalizedLevel)) {
+            return GameData.isDungeonBossEntity(normalizedLevel, entity);
         }
 
         return MissionHandler.isDungeonCompletionBossEntity(entity) &&
