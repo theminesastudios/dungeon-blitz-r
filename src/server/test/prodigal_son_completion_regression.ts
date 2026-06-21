@@ -102,10 +102,10 @@ function setLevelEntities(client: FakeClient, entities: Array<[number, unknown]>
     GlobalState.levelEntities.set(`${client.currentLevel}#${client.levelInstanceId}`, entityMap);
 }
 
-function createPrinceAlias(id: number, defeated: boolean): Record<string, unknown> {
+function createBossReport(id: number, name: string, defeated: boolean): Record<string, unknown> {
     return {
         id,
-        name: 'PrinceFriedrichHocke',
+        name,
         isPlayer: false,
         team: EntityTeam.ENEMY,
         entRank: 'Boss',
@@ -119,7 +119,7 @@ function createPrinceAlias(id: number, defeated: boolean): Record<string, unknow
 async function testProdigalSonIgnoresClientCompletionBeforeDefectorDefeat(): Promise<void> {
     const client = createClient('JC_Mission3', MissionID.TheProdigalSon, 'early');
     setLevelEntities(client, [
-        [9301, createPrinceAlias(9301, false)]
+        [9301, createBossReport(9301, 'PrinceFriedrichHocke', false)]
     ]);
 
     await MissionHandler.handleSetLevelComplete(client as never, createLevelCompletePacket());
@@ -138,12 +138,26 @@ async function testProdigalSonCompletesFromPrinceAlias(): Promise<void> {
         {
             levelName: 'JC_Mission3',
             missionId: MissionID.TheProdigalSon,
-            flowId: 'normal'
+            flowId: 'normal',
+            bossName: 'PrinceFriedrichHocke'
         },
         {
             levelName: 'JC_Mission3Hard',
             missionId: MissionID.TheProdigalSonHard,
-            flowId: 'hard'
+            flowId: 'hard',
+            bossName: 'PrinceFriedrichHocke'
+        },
+        {
+            levelName: 'JC_Mission3Hard',
+            missionId: MissionID.TheProdigalSonHard,
+            flowId: 'hard-spaced',
+            bossName: 'Prince Friedrich Hocke'
+        },
+        {
+            levelName: 'JC_Mission3Hard',
+            missionId: MissionID.TheProdigalSonHard,
+            flowId: 'hard-base-defector',
+            bossName: 'DefectorMage'
         }
     ];
 
@@ -151,7 +165,7 @@ async function testProdigalSonCompletesFromPrinceAlias(): Promise<void> {
         const client = createClient(testCase.levelName, testCase.missionId, testCase.flowId);
         const levelScope = `${client.currentLevel}#${client.levelInstanceId}`;
         setLevelEntities(client, [
-            [9302, createPrinceAlias(9302, true)]
+            [9302, createBossReport(9302, testCase.bossName, true)]
         ]);
         client.forcedDungeonCompletionScope = levelScope;
         client.pendingDungeonCompletionFlushActive = true;
@@ -176,6 +190,8 @@ async function main(): Promise<void> {
     GlobalState.levelEntities.delete('JC_Mission3#prodigal-early');
     GlobalState.levelEntities.delete('JC_Mission3#prodigal-normal');
     GlobalState.levelEntities.delete('JC_Mission3Hard#prodigal-hard');
+    GlobalState.levelEntities.delete('JC_Mission3Hard#prodigal-hard-spaced');
+    GlobalState.levelEntities.delete('JC_Mission3Hard#prodigal-hard-base-defector');
     console.log('prodigal_son_completion_regression: ok');
 }
 

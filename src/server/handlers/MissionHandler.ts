@@ -182,11 +182,16 @@ export class MissionHandler {
     };
     private static readonly REQUIRED_DUNGEON_BOSS_NAME_ALIASES_BY_LEVEL: Record<string, ReadonlyMap<string, string>> = {
         JC_Mission3: new Map([
+            ['Prince Friedrich Hocke', 'DefectorMage'],
             ['PrinceFriedrichHocke', 'DefectorMage'],
+            ['Prince Fredrich Hocke', 'DefectorMage'],
             ['PrinceFredrichHocke', 'DefectorMage']
         ]),
         JC_Mission3Hard: new Map([
+            ['DefectorMage', 'DefectorMageHard'],
+            ['Prince Friedrich Hocke', 'DefectorMageHard'],
             ['PrinceFriedrichHocke', 'DefectorMageHard'],
+            ['Prince Fredrich Hocke', 'DefectorMageHard'],
             ['PrinceFredrichHocke', 'DefectorMageHard']
         ])
     };
@@ -3366,6 +3371,13 @@ export class MissionHandler {
         return String(entity?.name ?? entity?.EntName ?? entity?.entName ?? '').trim();
     }
 
+    private static normalizeRequiredBossNameKey(value: string | null | undefined): string {
+        return String(value ?? '')
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '');
+    }
+
     private static getRequiredDungeonBossCanonicalName(levelName: string | null | undefined, entity: any): string {
         const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
         const entityName = MissionHandler.getEntityName(entity);
@@ -3378,7 +3390,19 @@ export class MissionHandler {
             return entityName;
         }
 
-        return MissionHandler.REQUIRED_DUNGEON_BOSS_NAME_ALIASES_BY_LEVEL[normalizedLevel]?.get(entityName) ?? '';
+        const aliasMap = MissionHandler.REQUIRED_DUNGEON_BOSS_NAME_ALIASES_BY_LEVEL[normalizedLevel];
+        if (!aliasMap) {
+            return '';
+        }
+
+        const entityKey = MissionHandler.normalizeRequiredBossNameKey(entityName);
+        for (const [aliasName, canonicalName] of aliasMap.entries()) {
+            if (MissionHandler.normalizeRequiredBossNameKey(aliasName) === entityKey) {
+                return canonicalName;
+            }
+        }
+
+        return '';
     }
 
     private static isDefeatedEntityStateValue(entState: number): boolean {
