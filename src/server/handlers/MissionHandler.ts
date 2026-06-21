@@ -169,6 +169,8 @@ export class MissionHandler {
         JC_Mission1Hard: new Set(['ImperialChampionHard']),
         JC_Mission2: new Set(['GreaterBoneGolem', 'GreaterBoneGolem2']),
         JC_Mission2Hard: new Set(['GreaterBoneGolemHard', 'GreaterBoneGolem2Hard']),
+        JC_Mission3: new Set(['DefectorMage']),
+        JC_Mission3Hard: new Set(['DefectorMageHard']),
         JC_Mission9: new Set(['RisenBandit', 'RisenBandit2']),
         JC_Mission9Hard: new Set(['RisenBanditHard', 'RisenBandit2Hard']),
         SD_Mission3: new Set(['OutlanderWyrm']),
@@ -177,6 +179,16 @@ export class MissionHandler {
         SRN_Mission1Hard: new Set(['LizardLordHard']),
         SRN_Mission4: new Set(['WyrmGreat']),
         SRN_Mission4Hard: new Set(['WyrmGreatHard'])
+    };
+    private static readonly REQUIRED_DUNGEON_BOSS_NAME_ALIASES_BY_LEVEL: Record<string, ReadonlyMap<string, string>> = {
+        JC_Mission3: new Map([
+            ['PrinceFriedrichHocke', 'DefectorMage'],
+            ['PrinceFredrichHocke', 'DefectorMage']
+        ]),
+        JC_Mission3Hard: new Map([
+            ['PrinceFriedrichHocke', 'DefectorMageHard'],
+            ['PrinceFredrichHocke', 'DefectorMageHard']
+        ])
     };
     private static readonly DUNGEONS_REQUIRING_BOSS_AND_CHEST = new Set<string>();
     private static readonly REQUIRED_DUNGEON_CHEST_NAMES_BY_LEVEL: Record<string, ReadonlySet<string>> = {
@@ -3210,7 +3222,7 @@ export class MissionHandler {
 
         const bossNames = MissionHandler.REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL[normalizedLevel];
         if (bossNames) {
-            return bossNames.has(MissionHandler.getEntityName(entity));
+            return Boolean(MissionHandler.getRequiredDungeonBossCanonicalName(normalizedLevel, entity));
         }
 
         if (GameData.hasDungeonBossEntities(normalizedLevel)) {
@@ -3231,6 +3243,9 @@ export class MissionHandler {
             ? MissionHandler.REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL[normalizedLevel]
             : null;
         if (bossNames?.has(entityName)) {
+            return true;
+        }
+        if (normalizedLevel && MissionHandler.getRequiredDungeonBossCanonicalName(normalizedLevel, entity)) {
             return true;
         }
 
@@ -3349,6 +3364,21 @@ export class MissionHandler {
 
     private static getEntityName(entity: any): string {
         return String(entity?.name ?? entity?.EntName ?? entity?.entName ?? '').trim();
+    }
+
+    private static getRequiredDungeonBossCanonicalName(levelName: string | null | undefined, entity: any): string {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        const entityName = MissionHandler.getEntityName(entity);
+        if (!normalizedLevel || !entityName) {
+            return '';
+        }
+
+        const bossNames = MissionHandler.REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL[normalizedLevel];
+        if (bossNames?.has(entityName)) {
+            return entityName;
+        }
+
+        return MissionHandler.REQUIRED_DUNGEON_BOSS_NAME_ALIASES_BY_LEVEL[normalizedLevel]?.get(entityName) ?? '';
     }
 
     private static isDefeatedEntityStateValue(entState: number): boolean {
@@ -3488,7 +3518,11 @@ export class MissionHandler {
     private static markRequiredDungeonBossDefeated(levelScope: string, levelName: string | null | undefined, entity: any): void {
         const entityId = Math.max(0, Math.round(Number(entity?.id ?? 0)));
         const scopedEntity = entityId > 0 ? GlobalState.levelEntities.get(levelScope)?.get(entityId) : null;
-        const entityName = MissionHandler.getEntityName(entity) || MissionHandler.getEntityName(scopedEntity);
+        const entityName =
+            MissionHandler.getRequiredDungeonBossCanonicalName(levelName, entity) ||
+            MissionHandler.getRequiredDungeonBossCanonicalName(levelName, scopedEntity) ||
+            MissionHandler.getEntityName(entity) ||
+            MissionHandler.getEntityName(scopedEntity);
         const isRequiredBoss = MissionHandler.isRequiredDungeonBossEntity(levelName, entity) ||
             MissionHandler.isRequiredDungeonBossEntity(levelName, scopedEntity);
         if (!isRequiredBoss ||
