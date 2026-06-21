@@ -211,6 +211,10 @@ export class MissionHandler {
         'JC_Mission9',
         'JC_Mission9Hard'
     ]);
+    private static readonly DUNGEONS_WHERE_CLIENT_COMPLETION_RELEASES_POST_DEATH_CUTSCENE = new Set([
+        'JC_Mission3',
+        'JC_Mission3Hard'
+    ]);
     private static readonly FLASH_DEFEATED_ENTITY_STATE = 6;
     private static readonly dungeonCompletionObjectiveProgress = new Map<string, DungeonCompletionObjectiveProgress>();
     // These boss kills intentionally open a post-death room cutscene before the stats screen.
@@ -1282,6 +1286,14 @@ export class MissionHandler {
             pendingScope === levelScope
         ) {
             client.pendingDungeonCompletionPayload = Buffer.from(data);
+            if (
+                client.pendingDungeonCompletionWaitForCutsceneEnd &&
+                MissionHandler.clientCompletionReleasesPostDeathBossCutscene(currentLevel) &&
+                MissionHandler.hasMetRequiredDungeonCompletionObjectives(client, currentLevel, levelScope)
+            ) {
+                client.pendingDungeonCompletionWaitForCutsceneEnd = false;
+                void MissionHandler.flushPendingDungeonCompletion(client);
+            }
             return;
         }
 
@@ -1422,6 +1434,11 @@ export class MissionHandler {
             clearedDungeon &&
             levelScope &&
             !client.pendingDungeonCompletionFlushActive &&
+            !(
+                MissionHandler.clientCompletionReleasesPostDeathBossCutscene(currentLevel) &&
+                defeatedDungeonBossForcesCompletion &&
+                dungeonCompletionObjectivesMet
+            ) &&
             MissionHandler.shouldWaitForDungeonCompletionGate(
                 client,
                 currentLevel,
@@ -2134,6 +2151,14 @@ export class MissionHandler {
     private static requiresExplicitCompletionCutsceneEnd(levelName: string | null | undefined): boolean {
         const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
         return Boolean(normalizedLevel && MissionHandler.DUNGEONS_REQUIRING_EXPLICIT_COMPLETION_CUTSCENE_END.has(normalizedLevel));
+    }
+
+    private static clientCompletionReleasesPostDeathBossCutscene(levelName: string | null | undefined): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        return Boolean(
+            normalizedLevel &&
+            MissionHandler.DUNGEONS_WHERE_CLIENT_COMPLETION_RELEASES_POST_DEATH_CUTSCENE.has(normalizedLevel)
+        );
     }
 
     private static trySchedulePostCutsceneDungeonCompletion(client: Client, levelScope: string): void {
