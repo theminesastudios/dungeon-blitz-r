@@ -21,6 +21,9 @@ type FakeClient = {
     currentRoomId: number;
     playerSpawned: boolean;
     forcedDungeonCompletionScope: string;
+    pendingDungeonCompletionScope?: string;
+    pendingDungeonCompletionWaitForCutsceneEnd?: boolean;
+    pendingDungeonCompletionTimer?: NodeJS.Timeout | null;
     pendingDungeonCompletionFlushActive?: boolean;
     userId: number | null;
     character: {
@@ -73,6 +76,7 @@ function createClient(levelName: string, missionId: number, flowId: string): Fak
         currentRoomId: 13,
         playerSpawned: true,
         forcedDungeonCompletionScope: '',
+        pendingDungeonCompletionTimer: null,
         userId: null,
         character: {
             name: `ProdigalTester-${flowId}`,
@@ -94,6 +98,10 @@ function createClient(levelName: string, missionId: number, flowId: string): Fak
             sentPackets.push({ id, payload: bb.toBuffer() });
         }
     };
+}
+
+function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function setLevelEntities(client: FakeClient, entities: Array<[number, unknown]>): void {
@@ -183,15 +191,59 @@ async function testProdigalSonCompletesFromPrinceAlias(): Promise<void> {
     }
 }
 
+async function testDreadProdigalSonCompletionWaitsForCinematicEnd(): Promise<void> {
+    const client = createClient('JC_Mission3Hard', MissionID.TheProdigalSonHard, 'hard-cinematic');
+    const levelScope = `${client.currentLevel}#${client.levelInstanceId}`;
+    const boss = createBossReport(9303, 'DefectorMage', true);
+    setLevelEntities(client, [
+        [9303, boss]
+    ]);
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, boss);
+    await sleep(0);
+
+    assert.equal(
+        String(client.pendingDungeonCompletionScope ?? ''),
+        levelScope,
+        'Dread Prodigal Son boss death should queue completion for the active dungeon run'
+    );
+    assert.equal(
+        Boolean(client.pendingDungeonCompletionWaitForCutsceneEnd),
+        true,
+        'Dread Prodigal Son boss death should wait for the post-death cinematic'
+    );
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x87),
+        false,
+        'Dread Prodigal Son should not show completion before the cinematic ends'
+    );
+
+    MissionHandler.noteDungeonCutsceneEnd(client as never, 13);
+    await sleep(0);
+
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x87),
+        true,
+        'Dread Prodigal Son should show dungeon completion when the cinematic ends'
+    );
+    assert.equal(
+        Number(client.character.missions[String(MissionID.TheProdigalSonHard)]?.state ?? 0),
+        2,
+        'Dread Prodigal Son should complete the mission after the cinematic-end release'
+    );
+}
+
 async function main(): Promise<void> {
     ensureDataLoaded();
     await testProdigalSonIgnoresClientCompletionBeforeDefectorDefeat();
     await testProdigalSonCompletesFromPrinceAlias();
+    await testDreadProdigalSonCompletionWaitsForCinematicEnd();
     GlobalState.levelEntities.delete('JC_Mission3#prodigal-early');
     GlobalState.levelEntities.delete('JC_Mission3#prodigal-normal');
     GlobalState.levelEntities.delete('JC_Mission3Hard#prodigal-hard');
     GlobalState.levelEntities.delete('JC_Mission3Hard#prodigal-hard-spaced');
     GlobalState.levelEntities.delete('JC_Mission3Hard#prodigal-hard-base-defector');
+    GlobalState.levelEntities.delete('JC_Mission3Hard#prodigal-hard-cinematic');
     console.log('prodigal_son_completion_regression: ok');
 }
 
