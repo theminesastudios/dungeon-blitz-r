@@ -60,7 +60,11 @@ function detectFfdec(repoRoot, preferred) {
     path.join(repoRoot, 'build', 'tools', 'ffdec_25.0.0', 'ffdec-cli.jar'),
     path.join(repoRoot, 'build', 'tools', 'ffdec_25.0.0', 'ffdec.jar'),
     path.join(repoRoot, 'build', 'ffdec_24.0.1', 'ffdec-cli.exe'),
-    path.join(repoRoot, 'build', 'ffdec_24.0.1', 'ffdec-cli.jar')
+    path.join(repoRoot, 'build', 'ffdec_24.0.1', 'ffdec-cli.jar'),
+    '/Applications/FFDec.app/Contents/Resources/ffdec-cli.jar',
+    '/Applications/FFDec.app/Contents/Resources/ffdec.jar',
+    '/Applications/FFDec.app/Contents/Resources/ffdec-cli.exe',
+    '/Applications/FFDec.app/Contents/MacOS/FFDec'
   );
 
   for (const candidate of candidates) {
@@ -155,15 +159,27 @@ function patchRoomSource(source) {
     // Continue into the patch path below.
   }
 
+  let patched = source;
   const before = 'param1.Group(this.am_FirePitGroup).Remove();';
   const after = 'param1.Group(this.am_FirePitGroup).Kill();';
   const phaseOne = getMethodSource(source, 'UpdatePhaseOne');
 
-  if (!phaseOne.includes(before)) {
+  if (phaseOne.includes(before)) {
+    patched = patched.replace(before, after);
+  } else if (!phaseOne.includes(after)) {
     throw new Error('Could not find Attack Of Opportunity lava off-cycle Remove call');
   }
 
-  const patched = source.replace(before, after);
+  const phaseTwo = getMethodSource(patched, 'UpdatePhaseTwo');
+  if (!phaseTwo.includes('param1.Group(this.am_FirePitGroup).Revive();') && phaseTwo.includes('param1.Group(this.am_FirePitGroup).Spawn();')) {
+    patched = patched.replace(
+      /([ \t]*)param1\.Group\(this\.am_FirePitGroup\)\.Spawn\(\);/,
+      '$1param1.Group(this.am_FirePitGroup).Revive();\n$1param1.Group(this.am_FirePitGroup).Spawn();'
+    );
+  } else if (!phaseTwo.includes('param1.Group(this.am_FirePitGroup).Revive();')) {
+    throw new Error('Could not find Attack Of Opportunity lava burn-phase Spawn call');
+  }
+
   verifyRoomSource(patched, 'patched source');
   return patched;
 }
@@ -196,6 +212,12 @@ function verifyRoomSource(source, label) {
   }
   if (!phaseTwo.includes('param1.Group(this.am_FirePitGroup).Spawn();')) {
     throw new Error(`${label} no longer spawns Attack Of Opportunity lava hazards during the burn phase`);
+  }
+  if (!phaseTwo.includes('param1.Group(this.am_FirePitGroup).Revive();')) {
+    throw new Error(`${label} does not revive Attack Of Opportunity lava hazards before respawning them`);
+  }
+  if (phaseTwo.indexOf('param1.Group(this.am_FirePitGroup).Revive();') > phaseTwo.indexOf('param1.Group(this.am_FirePitGroup).Spawn();')) {
+    throw new Error(`${label} respawns Attack Of Opportunity lava hazards before reviving them`);
   }
   if (countOccurrences(phaseTwo, 'param1.Group(this.am_FirePitGroup).Kill();') < 2) {
     throw new Error(`${label} no longer clears Attack Of Opportunity lava hazards on defeat and phase end`);

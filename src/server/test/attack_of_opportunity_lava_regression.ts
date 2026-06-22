@@ -77,6 +77,35 @@ function hasCallNearProperty(
   return false;
 }
 
+function callNearPropertyIndexes(
+  instructions: Instruction[],
+  abc: AbcParseResult,
+  propertyName: string,
+  callName: string,
+): number[] {
+  const indexes: number[] = [];
+
+  for (let index = 0; index < instructions.length; index += 1) {
+    if (multiname(instructions[index], abc) !== propertyName) {
+      continue;
+    }
+
+    const end = Math.min(instructions.length, index + 8);
+    for (let next = index + 1; next < end; next += 1) {
+      if (
+        instructions[next].opcode === 0x4f &&
+        multiname(instructions[next], abc) === callName &&
+        callArgCount(instructions[next]) === 0
+      ) {
+        indexes.push(next);
+        break;
+      }
+    }
+  }
+
+  return indexes;
+}
+
 function callPropVoidCount(instructions: Instruction[], abc: AbcParseResult, callName: string): number {
   return instructions.filter((instruction) => instruction.opcode === 0x4f && multiname(instruction, abc) === callName).length;
 }
@@ -103,11 +132,23 @@ function testLavaOffCycleKillsHazards(): void {
 
 function testBurnPhaseStillCyclesHazards(): void {
   const phaseTwo = methodInstructions("UpdatePhaseTwo");
+  const reviveCalls = callNearPropertyIndexes(phaseTwo.instructions, phaseTwo.abc, "am_FirePitGroup", "Revive");
+  const spawnCalls = callNearPropertyIndexes(phaseTwo.instructions, phaseTwo.abc, "am_FirePitGroup", "Spawn");
 
   assert.equal(
-    hasCallNearProperty(phaseTwo.instructions, phaseTwo.abc, "am_FirePitGroup", "Spawn"),
+    reviveCalls.length >= 1,
+    true,
+    "Attack Of Opportunity burn phase should revive fire pit hazards before respawning them",
+  );
+  assert.equal(
+    spawnCalls.length >= 1,
     true,
     "Attack Of Opportunity burn phase should still spawn fire pit hazards",
+  );
+  assert.equal(
+    reviveCalls[0] < spawnCalls[0],
+    true,
+    "Attack Of Opportunity burn phase should revive fire pit hazards before Spawn",
   );
   assert.equal(
     callPropVoidCount(phaseTwo.instructions, phaseTwo.abc, "Kill") >= 2,
