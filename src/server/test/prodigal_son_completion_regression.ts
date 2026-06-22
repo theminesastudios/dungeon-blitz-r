@@ -6,6 +6,7 @@ import { GlobalState } from '../core/GlobalState';
 import { LevelConfig } from '../core/LevelConfig';
 import { MissionLoader } from '../data/MissionLoader';
 import { MissionID } from '../data/runtime';
+import { CombatHandler } from '../handlers/CombatHandler';
 import { MissionHandler } from '../handlers/MissionHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 
@@ -21,6 +22,8 @@ type FakeClient = {
     currentRoomId: number;
     playerSpawned: boolean;
     forcedDungeonCompletionScope: string;
+    activeDungeonCutsceneScope?: string;
+    activeDungeonCutsceneRoomId?: number;
     pendingDungeonCompletionScope?: string;
     pendingDungeonCompletionWaitForCutsceneEnd?: boolean;
     pendingDungeonCompletionPayload?: Buffer | null;
@@ -65,6 +68,13 @@ function createLevelCompletePacket(progress: number = 100, remainingKills: numbe
     bb.writeMethod9(remainingKills);
     bb.writeMethod9(requiredKills);
     bb.writeMethod9(10);
+    return bb.toBuffer();
+}
+
+function createCharRegenPacket(entityId: number, amount: number): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod9(entityId);
+    bb.writeMethod24(amount);
     return bb.toBuffer();
 }
 
@@ -256,6 +266,9 @@ async function testDreadProdigalSonClientCompletionReleasesPendingCinematic(): P
         'Dread Prodigal Son should wait for a cinematic release before showing stats'
     );
 
+    client.activeDungeonCutsceneScope = levelScope;
+    client.activeDungeonCutsceneRoomId = 13;
+
     await MissionHandler.handleSetLevelComplete(client as never, createLevelCompletePacket());
     await sleep(0);
 
@@ -263,6 +276,11 @@ async function testDreadProdigalSonClientCompletionReleasesPendingCinematic(): P
         Boolean(client.pendingDungeonCompletionWaitForCutsceneEnd),
         false,
         'Dread Prodigal Son client completion should release the pending cinematic wait'
+    );
+    assert.equal(
+        String(client.activeDungeonCutsceneScope ?? ''),
+        '',
+        'Dread Prodigal Son client completion should clear a stale active cinematic gate'
     );
     assert.equal(
         client.sentPackets.some((packet) => packet.id === 0x87),
@@ -276,14 +294,85 @@ async function testDreadProdigalSonClientCompletionReleasesPendingCinematic(): P
     );
 }
 
+async function testDreadProdigalSonMarkerHpReportTriggersCompletion(): Promise<void> {
+    const client = createClient('JC_Mission3', MissionID.TheProdigalSon, 'marker-hp-report');
+    const levelScope = `${client.currentLevel}#${client.levelInstanceId}`;
+    const marker = {
+        id: 9305,
+        name: 'DefectorMageMarker',
+        isPlayer: false,
+        team: EntityTeam.ENEMY,
+        entRank: 'Marker',
+        entState: EntityState.ACTIVE,
+        dead: false,
+        hp: 403680,
+        maxHp: 403680,
+        roomId: 13
+    };
+    const duplicateDefector = {
+        id: 9306,
+        name: 'DefectorMage',
+        isPlayer: false,
+        team: EntityTeam.ENEMY,
+        entRank: 'Boss',
+        entState: EntityState.ACTIVE,
+        dead: false,
+        hp: 403680,
+        maxHp: 403680,
+        roomId: 0
+    };
+    setLevelEntities(client, [
+        [9305, marker],
+        [9306, duplicateDefector]
+    ]);
+
+    CombatHandler.handleCharRegen(client as never, createCharRegenPacket(9305, -403680));
+    await sleep(0);
+
+    assert.equal(
+        String(client.pendingDungeonCompletionScope ?? ''),
+        levelScope,
+        'DefectorMageMarker HP report kill should queue Prodigal Son dungeon completion'
+    );
+    assert.equal(
+        Boolean(client.pendingDungeonCompletionWaitForCutsceneEnd),
+        true,
+        'DefectorMageMarker HP report kill should wait for the post-death cinematic'
+    );
+
+    client.activeDungeonCutsceneScope = levelScope;
+    client.activeDungeonCutsceneRoomId = 13;
+
+    await MissionHandler.handleSetLevelComplete(client as never, createLevelCompletePacket());
+    await sleep(0);
+
+    assert.equal(
+        String(client.activeDungeonCutsceneScope ?? ''),
+        '',
+        'DefectorMageMarker client completion should clear a stale active cinematic gate'
+    );
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x87),
+        true,
+        'Prodigal Son should show dungeon completion after the marker HP report kill and client completion'
+    );
+    assert.equal(
+        Number(client.character.missions[String(MissionID.TheProdigalSon)]?.state ?? 0),
+        2,
+        'Prodigal Son should complete from the DefectorMageMarker HP report kill'
+    );
+}
+
 async function main(): Promise<void> {
     ensureDataLoaded();
     await testProdigalSonIgnoresClientCompletionBeforeDefectorDefeat();
     await testProdigalSonCompletesFromPrinceAlias();
     await testDreadProdigalSonCompletionWaitsForCinematicEnd();
     await testDreadProdigalSonClientCompletionReleasesPendingCinematic();
+    await testDreadProdigalSonMarkerHpReportTriggersCompletion();
     GlobalState.levelEntities.delete('JC_Mission3#prodigal-early');
     GlobalState.levelEntities.delete('JC_Mission3#prodigal-normal');
+    GlobalState.levelEntities.delete('JC_Mission3#prodigal-marker-hp-report');
     GlobalState.levelEntities.delete('JC_Mission3Hard#prodigal-hard');
     GlobalState.levelEntities.delete('JC_Mission3Hard#prodigal-hard-spaced');
     GlobalState.levelEntities.delete('JC_Mission3Hard#prodigal-hard-base-defector');

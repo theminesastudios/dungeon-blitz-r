@@ -3660,7 +3660,10 @@ export class CombatHandler {
             !targetEntity ||
             Boolean(targetEntity?.isPlayer) ||
             Number(targetEntity?.team ?? 0) !== EntityTeam.ENEMY ||
-            !CombatHandler.isDungeonBossEntity(levelScope, targetEntity)
+            (
+                !CombatHandler.isDungeonBossEntity(levelScope, targetEntity) &&
+                !MissionHandler.shouldProcessEnemyKillStateDungeonCompletion(client, targetEntity)
+            )
         ) {
             return false;
         }
@@ -3679,6 +3682,9 @@ export class CombatHandler {
 
         const authoritativeKill = healthState.authoritativeKill &&
             !CombatHandler.shouldDeferPowerHitKillToClient(levelScope, targetEntity);
+        const wasAlive = !Boolean(targetEntity.dead) &&
+            Number(targetEntity.entState ?? EntityState.ACTIVE) !== EntityState.DEAD &&
+            healthState.currentHp > 0;
         const minHp = authoritativeKill ? 0 : 1;
         const nextHp = Math.max(minHp, Math.min(healthState.maxHp, healthState.currentHp + amount));
 
@@ -3705,6 +3711,9 @@ export class CombatHandler {
             authoritativeKill,
             player: String(client.character?.name ?? 'unknown').replace(/\s+/g, '_')
         }, 0);
+        if (authoritativeKill && wasAlive && nextHp <= 0) {
+            CombatHandler.handleEnemyDefeatState(client, levelScope, entityId, targetEntity, { fromKillState: true });
+        }
         return true;
     }
 

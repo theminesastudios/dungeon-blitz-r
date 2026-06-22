@@ -184,6 +184,7 @@ export class MissionHandler {
     };
     private static readonly REQUIRED_DUNGEON_BOSS_NAME_ALIASES_BY_LEVEL: Record<string, ReadonlyMap<string, string>> = {
         JC_Mission3: new Map([
+            ['DefectorMageMarker', 'DefectorMage'],
             ['Prince Friedrich Hocke', 'DefectorMage'],
             ['PrinceFriedrichHocke', 'DefectorMage'],
             ['Prince Fredrich Hocke', 'DefectorMage'],
@@ -191,6 +192,8 @@ export class MissionHandler {
         ]),
         JC_Mission3Hard: new Map([
             ['DefectorMage', 'DefectorMageHard'],
+            ['DefectorMageMarker', 'DefectorMageHard'],
+            ['DefectorMageMarkerHard', 'DefectorMageHard'],
             ['Prince Friedrich Hocke', 'DefectorMageHard'],
             ['PrinceFriedrichHocke', 'DefectorMageHard'],
             ['Prince Fredrich Hocke', 'DefectorMageHard'],
@@ -212,6 +215,10 @@ export class MissionHandler {
         'JC_Mission9Hard'
     ]);
     private static readonly DUNGEONS_WHERE_CLIENT_COMPLETION_RELEASES_POST_DEATH_CUTSCENE = new Set([
+        'JC_Mission3',
+        'JC_Mission3Hard'
+    ]);
+    private static readonly DUNGEONS_WITH_REQUIRED_BOSS_PROXY_COPIES = new Set([
         'JC_Mission3',
         'JC_Mission3Hard'
     ]);
@@ -1292,6 +1299,10 @@ export class MissionHandler {
                 MissionHandler.hasMetRequiredDungeonCompletionObjectives(client, currentLevel, levelScope)
             ) {
                 client.pendingDungeonCompletionWaitForCutsceneEnd = false;
+                if (String(client.activeDungeonCutsceneScope ?? '').trim() === levelScope) {
+                    client.activeDungeonCutsceneScope = '';
+                    client.activeDungeonCutsceneRoomId = 0;
+                }
                 void MissionHandler.flushPendingDungeonCompletion(client);
             }
             return;
@@ -1796,7 +1807,9 @@ export class MissionHandler {
         }
 
         const isCutsceneActive = String(client.activeDungeonCutsceneScope ?? '').trim() === levelScope;
-        const isBossEntity = MissionHandler.isDungeonCompletionBossEntity(triggerEntity);
+        const isBossEntity =
+            MissionHandler.isDungeonCompletionBossEntity(triggerEntity) ||
+            MissionHandler.isRequiredDungeonCompletionBossEntity(currentLevel, triggerEntity);
         if (isBossEntity) {
             const bossRoomId = MissionHandler.getEntityRoomId(triggerEntity);
             if (bossRoomId > 0) {
@@ -2274,8 +2287,14 @@ export class MissionHandler {
 
         const activeCutsceneScope = String(client.activeDungeonCutsceneScope ?? '').trim();
         if (activeCutsceneScope && activeCutsceneScope === pendingScope) {
-            MissionHandler.armPendingDungeonCompletionTimer(client, MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS);
-            return;
+            const activeCutsceneWaitDeadlineAt = requestedAt + MissionHandler.DUNGEON_COMPLETION_MAX_DEFER_MS;
+            if (now < activeCutsceneWaitDeadlineAt) {
+                MissionHandler.armPendingDungeonCompletionTimer(client, MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS);
+                return;
+            }
+
+            client.activeDungeonCutsceneScope = '';
+            client.activeDungeonCutsceneRoomId = 0;
         }
 
         const lastSkitAt = Math.max(requestedAt, Number(client.pendingDungeonCompletionLastSkitAt ?? 0));
@@ -3748,6 +3767,13 @@ export class MissionHandler {
             return false;
         }
 
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        const requiredBossNames = normalizedLevel
+            ? MissionHandler.REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL[normalizedLevel]
+            : null;
+        const allowDefeatedRequiredBossProxyCopies =
+            Boolean(normalizedLevel && MissionHandler.DUNGEONS_WITH_REQUIRED_BOSS_PROXY_COPIES.has(normalizedLevel));
+        const progress = MissionHandler.dungeonCompletionObjectiveProgress.get(scopeKey);
         const bossRoomId = MissionHandler.getCompletionBossRoomId(scopeKey);
         for (const entity of levelMap.values()) {
             if (
@@ -3757,6 +3783,13 @@ export class MissionHandler {
                 MissionHandler.isRequiredDungeonCompletionBossEntity(levelName, entity) &&
                 MissionHandler.isAliveDungeonCompletionObjective(entity)
             ) {
+                const canonicalName = allowDefeatedRequiredBossProxyCopies && requiredBossNames?.size
+                    ? MissionHandler.getRequiredDungeonBossCanonicalName(levelName, entity)
+                    : '';
+                if (canonicalName && progress?.defeatedBossNames.has(canonicalName)) {
+                    continue;
+                }
+
                 const entityRoomId = MissionHandler.getEntityRoomId(entity);
                 if (bossRoomId <= 0 || entityRoomId <= 0 || entityRoomId === bossRoomId) {
                     return true;
