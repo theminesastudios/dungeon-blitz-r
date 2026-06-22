@@ -363,6 +363,39 @@ async function testDreadProdigalSonMarkerHpReportTriggersCompletion(): Promise<v
     );
 }
 
+async function testGenericBossHpReportDoesNotTriggerDungeonCompletion(): Promise<void> {
+    const client = createClient('GhostBossDungeon', MissionID.KillNephit, 'generic-hp-report');
+    const boss = {
+        id: 9310,
+        name: 'NephitLargeEye',
+        isPlayer: false,
+        team: EntityTeam.ENEMY,
+        entRank: 'Boss',
+        entState: EntityState.ACTIVE,
+        dead: false,
+        hp: 500,
+        maxHp: 500,
+        roomId: 4
+    };
+    setLevelEntities(client, [
+        [9310, boss]
+    ]);
+
+    CombatHandler.handleCharRegen(client as never, createCharRegenPacket(9310, -500));
+    await sleep(0);
+
+    assert.equal(
+        String(client.pendingDungeonCompletionScope ?? ''),
+        '',
+        'generic boss HP reports should not queue dungeon completion without the normal kill/destroy path'
+    );
+    assert.equal(
+        client.sentPackets.some((packet) => packet.id === 0x87),
+        false,
+        'generic boss HP reports should not send dungeon completion'
+    );
+}
+
 async function main(): Promise<void> {
     ensureDataLoaded();
     await testProdigalSonIgnoresClientCompletionBeforeDefectorDefeat();
@@ -370,6 +403,7 @@ async function main(): Promise<void> {
     await testDreadProdigalSonCompletionWaitsForCinematicEnd();
     await testDreadProdigalSonClientCompletionReleasesPendingCinematic();
     await testDreadProdigalSonMarkerHpReportTriggersCompletion();
+    await testGenericBossHpReportDoesNotTriggerDungeonCompletion();
     GlobalState.levelEntities.delete('JC_Mission3#prodigal-early');
     GlobalState.levelEntities.delete('JC_Mission3#prodigal-normal');
     GlobalState.levelEntities.delete('JC_Mission3#prodigal-marker-hp-report');
@@ -378,6 +412,7 @@ async function main(): Promise<void> {
     GlobalState.levelEntities.delete('JC_Mission3Hard#prodigal-hard-base-defector');
     GlobalState.levelEntities.delete('JC_Mission3Hard#prodigal-hard-cinematic');
     GlobalState.levelEntities.delete('JC_Mission3Hard#prodigal-hard-client-complete');
+    GlobalState.levelEntities.delete('GhostBossDungeon#prodigal-generic-hp-report');
     console.log('prodigal_son_completion_regression: ok');
 }
 

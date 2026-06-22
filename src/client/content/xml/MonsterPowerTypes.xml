@@ -10553,7 +10553,7 @@
 		<RecoverTime>0</RecoverTime>
 		<CoolDownTime>300</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>10</BaseDamageMult>
+		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
 		<DisplayName>***Canavar***</DisplayName>
 		<CastGfx/>

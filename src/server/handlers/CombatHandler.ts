@@ -3711,7 +3711,12 @@ export class CombatHandler {
             authoritativeKill,
             player: String(client.character?.name ?? 'unknown').replace(/\s+/g, '_')
         }, 0);
-        if (authoritativeKill && wasAlive && nextHp <= 0) {
+        if (
+            authoritativeKill &&
+            wasAlive &&
+            nextHp <= 0 &&
+            MissionHandler.shouldCompleteDungeonFromBossHpReport(client, targetEntity)
+        ) {
             CombatHandler.handleEnemyDefeatState(client, levelScope, entityId, targetEntity, { fromKillState: true });
         }
         return true;

@@ -2174,6 +2174,22 @@ export class MissionHandler {
         );
     }
 
+    static shouldCompleteDungeonFromBossHpReport(client: Client, entity: any): boolean {
+        if (!client.character) {
+            return false;
+        }
+
+        const currentLevel =
+            LevelConfig.normalizeLevelName(client.currentLevel || String(client.character.CurrentLevel?.name ?? '')) ||
+            client.currentLevel ||
+            String(client.character.CurrentLevel?.name ?? '');
+        return Boolean(
+            currentLevel &&
+            MissionHandler.DUNGEONS_WITH_REQUIRED_BOSS_PROXY_COPIES.has(currentLevel) &&
+            MissionHandler.isRequiredDungeonCompletionBossEntity(currentLevel, entity)
+        );
+    }
+
     private static trySchedulePostCutsceneDungeonCompletion(client: Client, levelScope: string): void {
         if (!client.character || !levelScope) {
             return;
