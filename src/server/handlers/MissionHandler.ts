@@ -137,6 +137,8 @@ export class MissionHandler {
     private static readonly DUNGEONS_REQUIRING_BOSS_DEFEAT = new Set([
         'AC_Mission6',
         'AC_Mission6Hard',
+        'BT_Mission1',
+        'BT_Mission1Hard',
         'AC_Mission2',
         'AC_Mission2Hard',
         'AC_Mission5',
@@ -165,6 +167,8 @@ export class MissionHandler {
         AC_Mission5Hard: new Set(['AncientDragonBlackHard', 'AncientDragonSilverHard']),
         AC_Mission6: new Set(['NephitLargeEye']),
         AC_Mission6Hard: new Set(['NephitLargeEyeHard']),
+        BT_Mission1: new Set(['BanditTwinA', 'BanditTwinB']),
+        BT_Mission1Hard: new Set(['BanditTwinAHard', 'BanditTwinBHard']),
         GhostBossDungeon: new Set(['NephitLargeEye']),
         GhostBossDungeonHard: new Set(['NephitLargeEyeHard']),
         JC_Mission1: new Set(['ImperialChampion']),
@@ -228,6 +232,8 @@ export class MissionHandler {
     private static readonly DUNGEONS_WITH_POST_DEATH_BOSS_CUTSCENE = new Set([
         'AC_Mission6',
         'AC_Mission6Hard',
+        'BT_Mission1',
+        'BT_Mission1Hard',
         'JC_Mission1',
         'JC_Mission1Hard',
         'JC_Mission2',
