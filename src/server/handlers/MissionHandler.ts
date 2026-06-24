@@ -1171,14 +1171,6 @@ export class MissionHandler {
             return false;
         }
 
-        const shouldDelayInLevel =
-            LevelConfig.isDungeonLevel(currentLevel) ||
-            currentLevel === 'Castle' ||
-            currentLevel === 'CastleHard';
-        if (!shouldDelayInLevel) {
-            return false;
-        }
-
         const missions = MissionHandler.getMissionStateMap(client.character);
         for (const [missionIdText, rawEntry] of Object.entries(missions)) {
             const missionId = Number(missionIdText);

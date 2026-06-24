@@ -3139,6 +3139,7 @@ export class CombatHandler {
         }
 
         if (
+            !options.fromDestroy &&
             !options.fromKillState &&
             MissionHandler.shouldWaitForEnemyKillStateMissionProgress(client, entity)
         ) {
