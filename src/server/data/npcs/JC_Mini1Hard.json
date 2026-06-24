@@ -1,0 +1,90 @@
+[
+  {
+    "id": 910001,
+    "name": "ImperialMagusHard",
+    "x": 12855,
+    "y": 4551,
+    "v": 0,
+    "team": 2,
+    "entState": 1,
+    "roomId": 1,
+    "sourceRoom": "a_Room_JCMini1_01",
+    "sayOnBloodied": "Princess Lotte needs here privacy!"
+  },
+  {
+    "id": 910002,
+    "name": "PortalFiend2Hard",
+    "x": 12830,
+    "y": 3732,
+    "v": 0,
+    "team": 2,
+    "entState": 1,
+    "roomId": 1,
+    "sourceRoom": "a_Room_JCMini1_01",
+    "sayOnActivate": "Innztruuuderzzz!"
+  },
+  {
+    "id": 910003,
+    "name": "DemonReaperHard",
+    "x": 13343,
+    "y": 2256,
+    "v": 0,
+    "team": 2,
+    "entState": 1,
+    "roomId": 2,
+    "sourceRoom": "a_Room_JCMini1_02",
+    "sayOnActivate": "Haaaaaaaawr!"
+  },
+  {
+    "id": 910004,
+    "name": "BoneGolemHard",
+    "x": 12723,
+    "y": 2471,
+    "v": 0,
+    "team": 2,
+    "entState": 1,
+    "roomId": 2,
+    "sourceRoom": "a_Room_JCMini1_02",
+    "sayOnActivate": "You violate The Pact.:We stand for the Hockes."
+  },
+  {
+    "id": 910005,
+    "name": "TowerGuard1Hard",
+    "x": 16661,
+    "y": 2586,
+    "v": 0,
+    "team": 2,
+    "entState": 1,
+    "roomId": 3,
+    "sourceRoom": "a_Room_JCMini1_03",
+    "boss": true,
+    "roomBoss": true,
+    "isRoomBoss": true,
+    "roomBossName": "Lotte, The 1st Daughter",
+    "displayName": "Lotte, The 1st Daughter"
+  },
+  {
+    "id": 910006,
+    "name": "DemonReaperHard",
+    "x": 16824,
+    "y": 4424,
+    "v": 0,
+    "team": 2,
+    "entState": 1,
+    "roomId": 4,
+    "sourceRoom": "a_Room_JCMini1_04",
+    "sayOnActivate": "Graaaaaaaaghhh!"
+  },
+  {
+    "id": 910007,
+    "name": "GreaterDemonMalignerHard",
+    "x": 15270,
+    "y": 4410,
+    "v": 0,
+    "team": 2,
+    "entState": 1,
+    "roomId": 4,
+    "sourceRoom": "a_Room_JCMini1_04",
+    "sayOnActivate": "This Palace is under our protection.:The Pact demands your blood."
+  }
+]

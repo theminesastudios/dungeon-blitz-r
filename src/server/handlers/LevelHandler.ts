@@ -35,6 +35,7 @@ import { normalizeCharacterKey, PendingTeleport } from '../core/SocialState';
 import { TransferTokenAllocator } from '../core/TransferTokenAllocator';
 import { areClientsInSameParty, getPartyIdForClient, sharesRoomIds } from '../core/PartySync';
 import { syncPotionReservationForLevelTransition } from '../utils/ConsumableState';
+import { logJcMini1Authority } from '../utils/JcMini1AuthorityLog';
 import {
     getSharedDungeonInitialProgress,
     getOrCreateSharedDungeonProgressState,
@@ -1318,27 +1319,41 @@ export class LevelHandler {
         roomId: number,
         allowRoomInput: boolean,
         levelInstanceId: string = ''
-    ): void {
+    ): boolean {
         const bb = new BitBuffer(false);
         bb.writeMethod9(Math.max(0, roomId));
         bb.writeMethod15(allowRoomInput);
         const payload = bb.toBuffer();
         const scopeKey = getLevelScopeKey(levelName, levelInstanceId);
+        if (
+            LevelConfig.isDungeonLevel(levelName) &&
+            !LevelHandler.beginSharedDungeonCutsceneForScope(scopeKey, roomId)
+        ) {
+            return false;
+        }
 
         for (const other of GlobalState.sessionsByToken.values()) {
             if (!other.playerSpawned || getClientLevelScope(other) !== scopeKey) {
                 continue;
             }
+            LevelHandler.markRoomEventStarted(other, roomId);
             MissionHandler.noteDungeonCutsceneStart(other, roomId);
             other.send(0xA5, payload);
         }
+        return true;
     }
 
-    private static sendRoomCutSceneEnd(levelName: string, roomId: number, levelInstanceId: string = ''): void {
+    private static sendRoomCutSceneEnd(levelName: string, roomId: number, levelInstanceId: string = ''): boolean {
         const bb = new BitBuffer(false);
         bb.writeMethod9(Math.max(0, roomId));
         const payload = bb.toBuffer();
         const scopeKey = getLevelScopeKey(levelName, levelInstanceId);
+        if (
+            LevelConfig.isDungeonLevel(levelName) &&
+            !LevelHandler.finishSharedDungeonCutsceneForScope(scopeKey, roomId)
+        ) {
+            return false;
+        }
 
         for (const other of GlobalState.sessionsByToken.values()) {
             if (!other.playerSpawned || getClientLevelScope(other) !== scopeKey) {
@@ -1347,6 +1362,7 @@ export class LevelHandler {
             other.send(0xA6, payload);
             MissionHandler.noteDungeonCutsceneEnd(other, roomId);
         }
+        return true;
     }
 
     private static sendRoomCamera(levelName: string, roomId: number, cameraId: number, levelInstanceId: string = ''): void {
@@ -2966,18 +2982,21 @@ export class LevelHandler {
         const lockUntil = Date.now() + LevelHandler.GOBLIN_RIVER_BOSS_INTRO_DEFAULT_MS;
         const existingLockUntil = Number(client.goblinRiverBossIntroLockUntil ?? 0);
         const wasLocked = Number.isFinite(existingLockUntil) && existingLockUntil > Date.now();
-        client.goblinRiverBossIntroLockUntil = Math.max(
-            Number.isFinite(existingLockUntil) ? existingLockUntil : 0,
-            lockUntil
-        );
         if (!wasLocked && client.currentLevel) {
-            LevelHandler.sendRoomCutSceneStart(
+            const didStartSharedCutscene = LevelHandler.sendRoomCutSceneStart(
                 client.currentLevel,
                 Math.max(0, client.currentRoomId),
                 false,
                 client.levelInstanceId
             );
+            if (!didStartSharedCutscene) {
+                return;
+            }
         }
+        client.goblinRiverBossIntroLockUntil = Math.max(
+            Number.isFinite(existingLockUntil) ? existingLockUntil : 0,
+            lockUntil
+        );
         LevelHandler.setGoblinRiverHostilesUntargetable(client, true);
 
         if (client.goblinRiverBossIntroUnlockTimer) {
@@ -2994,6 +3013,147 @@ export class LevelHandler {
             }
             LevelHandler.clearGoblinRiverBossIntroLock(client);
         }, LevelHandler.GOBLIN_RIVER_BOSS_INTRO_DEFAULT_MS);
+    }
+
+    private static getSharedDungeonCutsceneKey(levelScope: string, roomId: number): string {
+        return `${levelScope}:${Math.max(0, Math.round(Number(roomId) || 0))}`;
+    }
+
+    private static getSharedDungeonCutsceneState(levelScope: string, roomId: number) {
+        return GlobalState.dungeonCutscenes.get(LevelHandler.getSharedDungeonCutsceneKey(levelScope, roomId));
+    }
+
+    private static isSharedDungeonCutsceneScope(client: Client): boolean {
+        return Boolean(
+            client.currentLevel &&
+            LevelConfig.isDungeonLevel(client.currentLevel) &&
+            getClientLevelScope(client)
+        );
+    }
+
+    private static beginSharedDungeonCutscene(
+        client: Client,
+        roomId: number
+    ): 'not_shared' | 'started' | 'owner_active' | 'active_duplicate' | 'completed_duplicate' {
+        if (!LevelHandler.isSharedDungeonCutsceneScope(client)) {
+            return 'not_shared';
+        }
+
+        const levelScope = getClientLevelScope(client);
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
+        const key = LevelHandler.getSharedDungeonCutsceneKey(levelScope, normalizedRoomId);
+        const existing = GlobalState.dungeonCutscenes.get(key);
+        if (existing?.completed) {
+            return 'completed_duplicate';
+        }
+        if (existing?.active) {
+            return existing.ownerToken === client.token ? 'owner_active' : 'active_duplicate';
+        }
+
+        GlobalState.dungeonCutscenes.set(key, {
+            roomId: normalizedRoomId,
+            ownerToken: Math.max(0, Math.round(Number(client.token) || 0)),
+            active: true,
+            completed: false,
+            startedAt: Date.now(),
+            endedAt: 0
+        });
+        return 'started';
+    }
+
+    private static beginSharedDungeonCutsceneForScope(levelScope: string, roomId: number): boolean {
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
+        const key = LevelHandler.getSharedDungeonCutsceneKey(levelScope, normalizedRoomId);
+        const existing = GlobalState.dungeonCutscenes.get(key);
+        if (existing?.completed || existing?.active) {
+            return false;
+        }
+
+        GlobalState.dungeonCutscenes.set(key, {
+            roomId: normalizedRoomId,
+            ownerToken: 0,
+            active: true,
+            completed: false,
+            startedAt: Date.now(),
+            endedAt: 0
+        });
+        return true;
+    }
+
+    private static finishSharedDungeonCutscene(client: Client, roomId: number): 'not_shared' | 'finished' | 'active_duplicate' | 'completed_duplicate' {
+        if (!LevelHandler.isSharedDungeonCutsceneScope(client)) {
+            return 'not_shared';
+        }
+
+        const levelScope = getClientLevelScope(client);
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
+        const key = LevelHandler.getSharedDungeonCutsceneKey(levelScope, normalizedRoomId);
+        const existing = GlobalState.dungeonCutscenes.get(key);
+        if (existing?.completed) {
+            return 'completed_duplicate';
+        }
+        if (existing?.active && existing.ownerToken > 0 && existing.ownerToken !== client.token) {
+            return 'active_duplicate';
+        }
+
+        GlobalState.dungeonCutscenes.set(key, {
+            roomId: normalizedRoomId,
+            ownerToken: Math.max(0, Math.round(Number(existing?.ownerToken ?? client.token) || 0)),
+            active: false,
+            completed: true,
+            startedAt: Math.max(0, Math.round(Number(existing?.startedAt ?? Date.now()) || Date.now())),
+            endedAt: Date.now()
+        });
+        return 'finished';
+    }
+
+    private static finishSharedDungeonCutsceneForScope(levelScope: string, roomId: number): boolean {
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
+        const key = LevelHandler.getSharedDungeonCutsceneKey(levelScope, normalizedRoomId);
+        const existing = GlobalState.dungeonCutscenes.get(key);
+        if (existing?.completed) {
+            return false;
+        }
+
+        GlobalState.dungeonCutscenes.set(key, {
+            roomId: normalizedRoomId,
+            ownerToken: Math.max(0, Math.round(Number(existing?.ownerToken ?? 0) || 0)),
+            active: false,
+            completed: true,
+            startedAt: Math.max(0, Math.round(Number(existing?.startedAt ?? Date.now()) || Date.now())),
+            endedAt: Date.now()
+        });
+        return true;
+    }
+
+    private static shouldSuppressSharedDungeonCutscenePacket(client: Client, roomId: number): boolean {
+        if (!LevelHandler.isSharedDungeonCutsceneScope(client)) {
+            return false;
+        }
+
+        const state = LevelHandler.getSharedDungeonCutsceneState(getClientLevelScope(client), roomId);
+        if (!state) {
+            return false;
+        }
+        if (state.completed) {
+            return true;
+        }
+        return state.active && state.ownerToken > 0 && state.ownerToken !== client.token;
+    }
+
+    static shouldRelayDungeonCutsceneRoomThought(client: Client): boolean {
+        if (!LevelHandler.isSharedDungeonCutsceneScope(client)) {
+            return true;
+        }
+
+        const roomId = Number.isFinite(Number(client.currentRoomId))
+            ? Math.max(0, Math.round(Number(client.currentRoomId)))
+            : -1;
+        if (roomId < 0) {
+            return true;
+        }
+
+        return !LevelHandler.shouldSuppressSharedDungeonCutscenePacket(client, roomId);
     }
 
     private static markRoomEventStarted(client: Client, roomId: number): void {
@@ -3961,6 +4121,9 @@ export class LevelHandler {
         LevelHandler.cacheRoomId(client, roomId);
         br.readMethod26();
         br.readMethod9();
+        if (LevelHandler.shouldSuppressSharedDungeonCutscenePacket(client, roomId)) {
+            return;
+        }
 
         LevelHandler.relayToLevel(client, 0xA8, data);
     }
@@ -3970,6 +4133,9 @@ export class LevelHandler {
         const roomId = br.readMethod9();
         LevelHandler.cacheRoomId(client, roomId);
         br.readMethod9();
+        if (LevelHandler.shouldSuppressSharedDungeonCutscenePacket(client, roomId)) {
+            return;
+        }
 
         LevelHandler.relayToLevel(client, 0xAA, data);
     }
@@ -3979,6 +4145,9 @@ export class LevelHandler {
         const roomId = br.readMethod9();
         LevelHandler.cacheRoomId(client, roomId);
         br.readMethod9();
+        if (LevelHandler.shouldSuppressSharedDungeonCutscenePacket(client, roomId)) {
+            return;
+        }
 
         LevelHandler.relayToLevel(client, 0xA9, data);
     }
@@ -3988,10 +4157,18 @@ export class LevelHandler {
         const roomId = br.readMethod9();
         LevelHandler.cacheRoomId(client, roomId);
         br.readMethod15();
-        LevelHandler.markRoomEventStarted(client, roomId);
+        const sharedCutsceneDecision = LevelHandler.beginSharedDungeonCutscene(client, roomId);
+        if (
+            sharedCutsceneDecision === 'owner_active' ||
+            sharedCutsceneDecision === 'active_duplicate' ||
+            sharedCutsceneDecision === 'completed_duplicate'
+        ) {
+            return;
+        }
 
         LevelHandler.relayToLevel(client, 0xA5, data);
         for (const other of LevelHandler.forLevelRecipients(client, true)) {
+            LevelHandler.markRoomEventStarted(other, roomId);
             MissionHandler.noteDungeonCutsceneStart(other, roomId);
         }
     }
@@ -4004,6 +4181,9 @@ export class LevelHandler {
         br.readMethod26();
         br.readMethod9();
         br.readMethod26();
+        if (LevelHandler.shouldSuppressSharedDungeonCutscenePacket(client, roomId)) {
+            return;
+        }
 
         LevelHandler.relayToLevel(client, 0xAB, data);
     }
@@ -4012,6 +4192,13 @@ export class LevelHandler {
         const br = new BitReader(data);
         const roomId = br.readMethod9();
         LevelHandler.cacheRoomId(client, roomId);
+        const sharedCutsceneDecision = LevelHandler.finishSharedDungeonCutscene(client, roomId);
+        if (
+            sharedCutsceneDecision === 'active_duplicate' ||
+            sharedCutsceneDecision === 'completed_duplicate'
+        ) {
+            return;
+        }
 
         LevelHandler.relayToLevel(client, 0xA6, data);
         for (const other of LevelHandler.forLevelRecipients(client, true)) {
@@ -4035,6 +4222,10 @@ export class LevelHandler {
         const bossName = br.readMethod26();
         br.readMethod9();
         br.readMethod26();
+        if (LevelHandler.shouldSuppressSharedDungeonCutscenePacket(client, roomId)) {
+            return;
+        }
+        LevelHandler.beginSharedDungeonCutscene(client, roomId);
         for (const other of LevelHandler.forLevelRecipients(client, true)) {
             MissionHandler.noteDungeonCutsceneStart(other, roomId);
         }
@@ -4049,6 +4240,12 @@ export class LevelHandler {
         const br = new BitReader(data);
         br.readMethod4();
         br.readMethod15();
+        if (
+            Number.isFinite(Number(client.currentRoomId)) &&
+            LevelHandler.shouldSuppressSharedDungeonCutscenePacket(client, Math.max(0, Math.round(Number(client.currentRoomId))))
+        ) {
+            return;
+        }
 
         LevelHandler.relayToLevel(client, 0xAE, data);
     }
@@ -4300,9 +4497,20 @@ export class LevelHandler {
             ? LevelHandler.resolveVisitedCraftTownOwnerToken(newToken, hostChar)
             : undefined;
         const momentParams = DungeonEntryDisplay.buildMomentParams(targetLevel, isHard ? "Hard" : "");
+        const pendingTransferEntry = GlobalState.pendingWorld.get(newToken);
+        const pendingSyncAnchorToken = Number(
+            pendingTransferEntry?.syncAnchorToken ??
+            syncState?.syncAnchorToken ??
+            0
+        );
+        const enterWorldTransferToken = LevelConfig.isDungeonLevel(targetLevel) &&
+            Number.isFinite(pendingSyncAnchorToken) &&
+            pendingSyncAnchorToken > 0
+            ? Math.round(pendingSyncAnchorToken)
+            : newToken;
         
         const pkt = WorldEnter.buildEnterWorldPacket(
-            newToken,
+            enterWorldTransferToken,
             0,
             oldLevelSpec.swf,
             hasOldCoord,
@@ -4327,7 +4535,9 @@ export class LevelHandler {
             previousSwf: oldLevelSpec.swf,
             targetLevel,
             targetSwf: levelSpec.swf,
-            transferToken: newToken,
+            transferToken: enterWorldTransferToken,
+            allocatedTransferToken: newToken,
+            syncAnchorToken: pendingSyncAnchorToken > 0 ? Math.round(pendingSyncAnchorToken) : undefined,
             packetToken,
             effectivePreviousLevel,
             newHasCoord,
@@ -4373,7 +4583,12 @@ export class LevelHandler {
         // data passed from Client is already the payload (header stripped)
         const br = new BitReader(data);
         const rawEntityId = br.readMethod4();
-        const entityId = EntityHandler.resolveEntityAlias(client, rawEntityId);
+        let entityId = EntityHandler.resolveEntityAlias(client, rawEntityId);
+        const currentLevel = client.currentLevel || "NewbieRoad";
+        if (entityId === rawEntityId && LevelConfig.isDungeonLevel(currentLevel)) {
+            const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+            entityId = CombatHandler.resolveClientHostileAliasForSharedState(client, getClientLevelScope(client), rawEntityId);
+        }
 
         // If it's us and we haven't spawned, ignore
         // In TS we don't track 'player_spawned' explicitly like python yet, but usually we can ignore.
@@ -4405,18 +4620,230 @@ export class LevelHandler {
         const isSelf =
             EntityHandler.isClientOwnPlayerEntity(client, getClientLevelScope(client), entityId, ent) ||
             EntityHandler.isClientOwnPlayerEntity(client, getClientLevelScope(client), rawEntityId, ent);
-        const currentLevel = client.currentLevel || "NewbieRoad";
+        const isServerAuthorityProxyUpdate =
+            rawEntityId !== entityId &&
+            EntityHandler.isServerAuthorityHostileEntity(currentLevel, levelEntity);
+        if (isServerAuthorityProxyUpdate) {
+            EntityHandler.markSharedEntityRemoteUpdatesReady(client, entityId);
+            const canonicalDead = Boolean(levelEntity?.dead) ||
+                Number(levelEntity?.entState ?? EntityState.ACTIVE) === EntityState.DEAD ||
+                Math.round(Number(levelEntity?.hp ?? 1)) <= 0;
+            if (canonicalDead) {
+                const previousLocalHpValue = Number(ent?.hp ?? NaN);
+                const previousLocalHp = Number.isFinite(previousLocalHpValue)
+                    ? Math.max(0, Math.round(previousLocalHpValue))
+                    : 0;
+                const correctionMaxHp = Math.max(0, Math.round(Number(levelEntity?.maxHp ?? ent?.maxHp ?? 0)));
+                if (previousLocalHp > 0) {
+                    const hpCorrection = new BitBuffer(false);
+                    hpCorrection.writeMethod4(rawEntityId);
+                    hpCorrection.writeMethod45(-previousLocalHp);
+                    client.sendBitBuffer(0x78, hpCorrection);
+                    logJcMini1Authority('authoritative_hp_correction', {
+                        packetId: '0x78',
+                        reason: 'dead_proxy_active_state_rejected',
+                        entityId,
+                        localEntityId: rawEntityId,
+                        viewer: client.character?.name ?? '',
+                        viewerToken: client.token,
+                        scope: getClientLevelScope(client),
+                        previousHp: previousLocalHp,
+                        expectedDamage: 0,
+                        expectedPostPacketHp: previousLocalHp,
+                        canonicalHp: 0,
+                        maxHp: correctionMaxHp,
+                        delta: -previousLocalHp,
+                        dead: true,
+                        entState: EntityState.DEAD
+                    });
+                }
+                if (levelEntity && typeof levelEntity === 'object') {
+                    levelEntity.hp = 0;
+                    levelEntity.dead = true;
+                    levelEntity.entState = EntityState.DEAD;
+                    const maxHp = Math.max(0, Math.round(Number(levelEntity.maxHp ?? 0)));
+                    if (maxHp > 0) {
+                        levelEntity.healthDelta = -maxHp;
+                        levelEntity.health_delta = -maxHp;
+                    }
+                }
+                if (ent && typeof ent === 'object') {
+                    ent.hp = 0;
+                    ent.dead = true;
+                    ent.entState = EntityState.DEAD;
+                    const maxHp = Math.max(0, Math.round(Number(ent.maxHp ?? levelEntity?.maxHp ?? 0)));
+                    if (maxHp > 0) {
+                        ent.healthDelta = -maxHp;
+                        ent.health_delta = -maxHp;
+                    }
+                    client.entities.set(rawEntityId, ent);
+                }
+                const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+                CombatHandler.correctServerAuthorityHostileProxy(
+                    client,
+                    getClientLevelScope(client),
+                    levelEntity,
+                    isDefeatEntState ? 'dead_proxy_state_converge' : 'dead_proxy_active_state_rejected',
+                    rawEntityId
+                );
+                logJcMini1Authority('proxy_state_relay', {
+                    packetId: '0x07',
+                    reason: isDefeatEntState ? 'dead_proxy_state_ignored' : 'dead_proxy_active_state_rejected',
+                    entityId,
+                    localEntityId: rawEntityId,
+                    source: client.character?.name ?? '',
+                    sourceToken: client.token,
+                    scope: getClientLevelScope(client),
+                    deltaX,
+                    deltaY,
+                    requestedEntState: entState,
+                    canonicalEntState: EntityState.DEAD,
+                    hp: 0,
+                    maxHp: Math.round(Number(levelEntity?.maxHp ?? ent?.maxHp ?? 0)),
+                    dead: true
+                });
+                return;
+            }
+            if (isDefeatEntState && !canonicalDead) {
+                const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+                CombatHandler.correctServerAuthorityHostileProxy(
+                    client,
+                    getClientLevelScope(client),
+                    levelEntity,
+                    'proxy_predicted_state_rejected',
+                    rawEntityId
+                );
+                logJcMini1Authority('proxy_state_relay', {
+                    packetId: '0x07',
+                    reason: 'proxy_predicted_state_rejected',
+                    entityId,
+                    localEntityId: rawEntityId,
+                    source: client.character?.name ?? '',
+                    sourceToken: client.token,
+                    scope: getClientLevelScope(client),
+                    hp: Math.round(Number(levelEntity?.hp ?? 0)),
+                    maxHp: Math.round(Number(levelEntity?.maxHp ?? 0)),
+                    dead: Boolean(levelEntity?.dead),
+                    entState: levelEntity?.entState
+                });
+                return;
+            }
+
+            if (!EntityHandler.isServerAuthorityProxyOwner(client, levelEntity, rawEntityId)) {
+                logJcMini1Authority('proxy_state_relay', {
+                    packetId: '0x07',
+                    reason: 'follower_proxy_state_ignored',
+                    entityId,
+                    localEntityId: rawEntityId,
+                    source: client.character?.name ?? '',
+                    sourceToken: client.token,
+                    ownerToken: Math.round(Number(levelEntity?.proxyOwnerToken ?? 0)),
+                    scope: getClientLevelScope(client),
+                    deltaX,
+                    deltaY,
+                    entState
+                });
+                return;
+            }
+
+            logJcMini1Authority('proxy_state_relay', {
+                packetId: '0x07',
+                reason: 'owner_proxy_state_relay',
+                entityId,
+                localEntityId: rawEntityId,
+                source: client.character?.name ?? '',
+                sourceToken: client.token,
+                scope: getClientLevelScope(client),
+                deltaX,
+                deltaY,
+                entState
+            });
+        }
         const isAliasedSharedClientSpawnUpdate =
             rawEntityId !== entityId &&
             EntityHandler.shouldMirrorClientSpawnEntityToParty(currentLevel, levelEntity ?? ent);
-        if (isAliasedSharedClientSpawnUpdate) {
-            EntityHandler.markSharedEntityRemoteUpdatesReady(client, entityId);
-            const ownerToken = Math.round(Number((levelEntity ?? ent)?.ownerToken ?? 0));
-            if (ownerToken > 0 && ownerToken !== client.token) {
+        const isSharedClientSpawnEntity = EntityHandler.shouldMirrorClientSpawnEntityToParty(currentLevel, levelEntity ?? ent);
+        if (isSharedClientSpawnEntity) {
+            const sharedDead = Boolean((levelEntity ?? ent)?.dead) ||
+                Number((levelEntity ?? ent)?.entState ?? EntityState.ACTIVE) === EntityState.DEAD ||
+                Math.round(Number((levelEntity ?? ent)?.hp ?? 1)) <= 0;
+            if (sharedDead && !isDefeatEntState) {
+                if (ent && typeof ent === 'object') {
+                    ent.hp = 0;
+                    ent.dead = true;
+                    ent.entState = EntityState.DEAD;
+                    const maxHp = Math.max(0, Math.round(Number(ent.maxHp ?? levelEntity?.maxHp ?? 0)));
+                    if (maxHp > 0) {
+                        ent.healthDelta = -maxHp;
+                        ent.health_delta = -maxHp;
+                    }
+                    client.entities.set(rawEntityId, ent);
+                }
+                if (levelEntity && typeof levelEntity === 'object') {
+                    levelEntity.hp = 0;
+                    levelEntity.dead = true;
+                    levelEntity.entState = EntityState.DEAD;
+                    const maxHp = Math.max(0, Math.round(Number(levelEntity.maxHp ?? ent?.maxHp ?? 0)));
+                    if (maxHp > 0) {
+                        levelEntity.healthDelta = -maxHp;
+                        levelEntity.health_delta = -maxHp;
+                    }
+                }
+                client.send(
+                    0x07,
+                    LevelHandler.buildEntityIncrementalUpdatePayload(
+                        rawEntityId,
+                        0,
+                        0,
+                        0,
+                        EntityState.DEAD,
+                        {
+                            bLeft: Boolean(levelEntity?.facingLeft ?? ent?.facingLeft ?? flags.bLeft),
+                            bRunning: false,
+                            bJumping: false,
+                            bDropping: false,
+                            bBackpedal: false
+                        },
+                        false,
+                        0
+                    )
+                );
+                if (currentLevel === 'JC_Mini1Hard') {
+                    logJcMini1Authority('client_spawn_dead_state_rejected', {
+                        packetId: '0x07',
+                        entityId,
+                        localEntityId: rawEntityId,
+                        source: client.character?.name ?? '',
+                        sourceToken: client.token,
+                        scope: getClientLevelScope(client),
+                        requestedEntState: entState,
+                        canonicalEntState: EntityState.DEAD,
+                        hp: 0,
+                        maxHp: Math.round(Number(levelEntity?.maxHp ?? ent?.maxHp ?? 0)),
+                        dead: true
+                    });
+                }
                 return;
             }
+        }
+        if (isAliasedSharedClientSpawnUpdate) {
+            EntityHandler.markSharedEntityRemoteUpdatesReady(client, entityId);
         } else {
             EntityHandler.markSharedEntityRemoteUpdatesReady(client, entityId);
+        }
+        if (isSharedClientSpawnEntity) {
+            const sharedEntityAuthorityToken = Math.max(
+                0,
+                Math.round(Number(
+                    (levelEntity ?? ent)?.combatAuthorityToken ??
+                    (levelEntity ?? ent)?.firstCombatAuthorityToken ??
+                    (levelEntity ?? ent)?.ownerToken ??
+                    0
+                ) || 0)
+            );
+            if (sharedEntityAuthorityToken > 0 && sharedEntityAuthorityToken !== client.token) {
+                return;
+            }
         }
 
         const isEnemyEntity =
@@ -4458,6 +4885,9 @@ export class LevelHandler {
         const isActiveSelfState = isSelf && !canonicalIsDefeatState;
 
         const previousX = Number(ent.x ?? 0);
+        const previousCanonicalX = Number(levelEntity?.x ?? ent.x ?? 0);
+        const previousCanonicalY = Number(levelEntity?.y ?? ent.y ?? 0);
+        const previousCanonicalV = Number(levelEntity?.v ?? ent.v ?? 0);
         ent.x += deltaX;
         ent.y += deltaY;
         ent.v = Number(ent.v ?? 0) + deltaVX;
@@ -4585,13 +5015,25 @@ export class LevelHandler {
         }
 
         const relayEntity = levelEntity ?? ent;
+        const relayCanonicalDelta =
+            isSharedClientSpawnEntity &&
+            Boolean(levelEntity && levelEntity !== ent);
+        const relayDeltaX = relayCanonicalDelta
+            ? Math.round(Number((levelEntity ?? ent).x ?? 0) - previousCanonicalX)
+            : deltaX;
+        const relayDeltaY = relayCanonicalDelta
+            ? Math.round(Number((levelEntity ?? ent).y ?? 0) - previousCanonicalY)
+            : deltaY;
+        const relayDeltaVX = relayCanonicalDelta
+            ? Math.round(Number((levelEntity ?? ent).v ?? 0) - previousCanonicalV)
+            : deltaVX;
         const relayData = rawEntityId === entityId
             ? data
             : LevelHandler.buildEntityIncrementalUpdatePayload(
                 entityId,
-                deltaX,
-                deltaY,
-                deltaVX,
+                relayDeltaX,
+                relayDeltaY,
+                relayDeltaVX,
                 canonicalEntState,
                 flags,
                 isAirborne,
@@ -4602,23 +5044,36 @@ export class LevelHandler {
                 continue;
             }
             const isSharedClientSpawnEntity = EntityHandler.shouldMirrorClientSpawnEntityToParty(client.currentLevel, relayEntity);
+            let localEntityId = EntityHandler.resolveEntityLocalId(other, entityId);
             if (isSharedClientSpawnEntity) {
-                // These enemies are physically owned by each Flash client.
-                // Relaying remote movement into a joiner's local enemy can make
-                // LinkUpdater touch gfx before the client has built it.
-                continue;
+                // Wait until the joiner's local proxy is built; after that the
+                // owner must drive movement/state so party clients do not fork
+                // enemy simulation inside the same dungeon instance.
+                const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+                localEntityId = CombatHandler.resolvePartySharedHostileLocalIdForSharedState(
+                    other,
+                    getClientLevelScope(client),
+                    entityId,
+                    relayEntity
+                );
+                if (
+                    !EntityHandler.canClientResolveCanonicalEntity(other, entityId) &&
+                    !other.entities?.has(localEntityId) &&
+                    !other.knownEntityIds?.has(localEntityId)
+                ) {
+                    continue;
+                }
             } else if (!EntityHandler.ensureEntityKnown(other, client.currentLevel, entityId)) {
                 continue;
             }
 
-            const localEntityId = EntityHandler.resolveEntityLocalId(other, entityId);
             const outboundData = localEntityId === entityId
                 ? relayData
                 : LevelHandler.buildEntityIncrementalUpdatePayload(
                     localEntityId,
-                    deltaX,
-                    deltaY,
-                    deltaVX,
+                    relayDeltaX,
+                    relayDeltaY,
+                    relayDeltaVX,
                     canonicalEntState,
                     flags,
                     isAirborne,

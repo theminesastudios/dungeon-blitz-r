@@ -78,6 +78,79 @@ export class CharacterHandler {
         client.characters = await db.saveCharacterSnapshot(client.userId, client.character);
     }
 
+    private static resolveTransferTokenAlias(token: number): number {
+        let resolvedToken = Math.max(0, Math.round(Number(token) || 0));
+        const visitedTokens = new Set<number>([resolvedToken]);
+
+        while (resolvedToken > 0) {
+            const nextToken = GlobalState.transferTokenAliases.get(resolvedToken);
+            if (!nextToken || nextToken <= 0 || visitedTokens.has(nextToken)) {
+                return resolvedToken;
+            }
+
+            resolvedToken = Math.max(0, Math.round(Number(nextToken) || 0));
+            visitedTokens.add(resolvedToken);
+        }
+
+        return resolvedToken;
+    }
+
+    private static resolvePendingGameLogin(
+        client: Client,
+        loginToken: number
+    ): { token: number; entry: PendingTransfer; source: string } | null {
+        const normalizedToken = Math.max(0, Math.round(Number(loginToken) || 0));
+        if (normalizedToken <= 0) {
+            return null;
+        }
+
+        const directEntry = GlobalState.pendingWorld.get(normalizedToken);
+        if (directEntry) {
+            return { token: normalizedToken, entry: directEntry, source: 'direct' };
+        }
+
+        const aliasedToken = CharacterHandler.resolveTransferTokenAlias(normalizedToken);
+        if (aliasedToken !== normalizedToken) {
+            const aliasedEntry = GlobalState.pendingWorld.get(aliasedToken);
+            if (aliasedEntry) {
+                return { token: aliasedToken, entry: aliasedEntry, source: `alias:${normalizedToken}->${aliasedToken}` };
+            }
+        }
+
+        const userId = Math.max(0, Math.round(Number(client.userId ?? 0) || 0));
+        const characterKey = normalizeCharacterKey(client.character?.name);
+        const anchorCandidates = Array.from(GlobalState.pendingWorld.entries())
+            .filter(([, entry]) => {
+                const syncAnchorToken = Math.max(0, Math.round(Number(entry.syncAnchorToken ?? 0) || 0));
+                if (syncAnchorToken !== normalizedToken || !LevelConfig.isDungeonLevel(entry.targetLevel)) {
+                    return false;
+                }
+                if (userId > 0 && Math.max(0, Math.round(Number(entry.userId ?? 0) || 0)) !== userId) {
+                    return false;
+                }
+                if (characterKey && normalizeCharacterKey(entry.character?.name) !== characterKey) {
+                    return false;
+                }
+                return true;
+            })
+            .sort((left, right) => {
+                const leftStarted = Math.max(0, Math.round(Number(left[1].playSessionStartedAt ?? 0) || 0));
+                const rightStarted = Math.max(0, Math.round(Number(right[1].playSessionStartedAt ?? 0) || 0));
+                return leftStarted - rightStarted || left[0] - right[0];
+            });
+
+        const anchorCandidate = anchorCandidates[0];
+        if (!anchorCandidate) {
+            return null;
+        }
+
+        return {
+            token: anchorCandidate[0],
+            entry: anchorCandidate[1],
+            source: `sync-anchor:${normalizedToken}->${anchorCandidate[0]}`
+        };
+    }
+
     private static initializeFreshCharacterProgress(character: Character): void {
         const newbieSpawn = LevelConfig.getSpawn("NewbieRoad");
 
@@ -1064,15 +1137,19 @@ export class CharacterHandler {
 
     static async handleGameServerLogin(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
-        const token = br.readMethod9();
+        const loginToken = br.readMethod9();
         const levelSwf = br.readMethod26(); 
         const firstLogin = br.readMethod15();
         const isDev = br.readMethod15();
 
-        const entry = GlobalState.pendingWorld.get(token);
-        if (!entry) {
-            console.log(`[GameLogin] Invalid token ${token}`);
+        const pendingLogin = CharacterHandler.resolvePendingGameLogin(client, loginToken);
+        if (!pendingLogin) {
+            console.log(`[GameLogin] Invalid token ${loginToken}`);
             return;
+        }
+        const { token, entry } = pendingLogin;
+        if (token !== loginToken) {
+            console.log(`[GameLogin] Resolved login token ${loginToken} -> pending token ${token} (${pendingLogin.source})`);
         }
 
         const pendingExtended = Boolean(GlobalState.pendingExtended.get(token));
@@ -1171,6 +1248,8 @@ export class CharacterHandler {
 
         DebugLogger.logProgress('GameLogin:ready', client, client.character, {
             token,
+            loginToken,
+            tokenResolution: pendingLogin.source,
             firstLogin,
             sendExtended,
             levelSwf,
@@ -1186,6 +1265,7 @@ export class CharacterHandler {
         if (levelSwf !== expectedLevelSwf) {
             DebugLogger.logProgress('GameLogin:swfMismatch', client, client.character, {
                 token,
+                loginToken,
                 targetLevel: entry.targetLevel,
                 expectedLevelSwf,
                 clientLevelSwf: levelSwf,

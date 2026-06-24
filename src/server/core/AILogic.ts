@@ -93,6 +93,7 @@ export class AILogic {
         // Iterate over Map entries to get ID and Object
         for (const [entId, npc] of levelEntities.entries()) {
             if (npc.isPlayer || npc.team !== 2) continue; // Only Enemy NPCs
+            if (EntityHandler.usesServerAuthorityHostiles(levelName)) continue; // JC_Mini1Hard uses client proxies for AI/animation.
             if (npc.clientSpawned) continue; // Client-owned monsters should not receive server AI movement.
             // Simple dead check (if no hp prop, assume 100)
             if ((npc.hp !== undefined && npc.hp <= 0)) continue;
