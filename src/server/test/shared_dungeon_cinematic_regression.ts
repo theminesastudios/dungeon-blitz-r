@@ -141,6 +141,7 @@ function testSharedDungeonCinematicRunsOnceFromOwner(): void {
     LevelHandler.handleRoomClose(rogue as never, buildRoomClosePayload(2));
 
     assert.equal(packetCount(mage, 0xA5), 0, 'late viewer start should not restart the cutscene for the owner');
+    assert.equal(packetCount(rogue, 0xA5), 1, 'late viewer should receive its own cutscene border start');
     assert.equal(packetCount(mage, 0x76), 0, 'late viewer bubble should not relay');
     assert.equal(packetCount(mage, 0xA9), 0, 'late viewer camera timeline should not relay');
     assert.equal(packetCount(mage, 0xA6), 0, 'late viewer close should not end the owner timeline early');

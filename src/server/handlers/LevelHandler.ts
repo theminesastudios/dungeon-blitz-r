@@ -4158,9 +4158,14 @@ export class LevelHandler {
         LevelHandler.cacheRoomId(client, roomId);
         br.readMethod15();
         const sharedCutsceneDecision = LevelHandler.beginSharedDungeonCutscene(client, roomId);
+        if (sharedCutsceneDecision === 'active_duplicate') {
+            client.send(0xA5, data);
+            LevelHandler.markRoomEventStarted(client, roomId);
+            MissionHandler.noteDungeonCutsceneStart(client, roomId);
+            return;
+        }
         if (
             sharedCutsceneDecision === 'owner_active' ||
-            sharedCutsceneDecision === 'active_duplicate' ||
             sharedCutsceneDecision === 'completed_duplicate'
         ) {
             return;
@@ -4497,20 +4502,8 @@ export class LevelHandler {
             ? LevelHandler.resolveVisitedCraftTownOwnerToken(newToken, hostChar)
             : undefined;
         const momentParams = DungeonEntryDisplay.buildMomentParams(targetLevel, isHard ? "Hard" : "");
-        const pendingTransferEntry = GlobalState.pendingWorld.get(newToken);
-        const pendingSyncAnchorToken = Number(
-            pendingTransferEntry?.syncAnchorToken ??
-            syncState?.syncAnchorToken ??
-            0
-        );
-        const enterWorldTransferToken = LevelConfig.isDungeonLevel(targetLevel) &&
-            Number.isFinite(pendingSyncAnchorToken) &&
-            pendingSyncAnchorToken > 0
-            ? Math.round(pendingSyncAnchorToken)
-            : newToken;
-        
         const pkt = WorldEnter.buildEnterWorldPacket(
-            enterWorldTransferToken,
+            newToken,
             0,
             oldLevelSpec.swf,
             hasOldCoord,
@@ -4535,9 +4528,11 @@ export class LevelHandler {
             previousSwf: oldLevelSpec.swf,
             targetLevel,
             targetSwf: levelSpec.swf,
-            transferToken: enterWorldTransferToken,
+            transferToken: newToken,
             allocatedTransferToken: newToken,
-            syncAnchorToken: pendingSyncAnchorToken > 0 ? Math.round(pendingSyncAnchorToken) : undefined,
+            syncAnchorToken: Number(syncState?.syncAnchorToken ?? 0) > 0
+                ? Math.round(Number(syncState?.syncAnchorToken))
+                : undefined,
             packetToken,
             effectivePreviousLevel,
             newHasCoord,
@@ -4866,6 +4861,11 @@ export class LevelHandler {
         }
         if (isEnemyEntity && isDefeatEntState) {
             const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+            if (EntityHandler.shouldMirrorClientSpawnEntityToParty(currentLevel, levelEntity ?? ent)) {
+                console.log(
+                    `[MultiplayerSync][incremental-dead] scope=${getClientLevelScope(client)} source=${String(client.character?.name ?? '')} sourceToken=${client.token} rawEntityId=${rawEntityId} entityId=${entityId} name=${String((levelEntity ?? ent)?.name ?? '')} hp=${Math.round(Number((levelEntity ?? ent)?.hp ?? 0))} maxHp=${Math.round(Number((levelEntity ?? ent)?.maxHp ?? 0))}`
+                );
+            }
             const contributionSnapshot = CombatHandler.getContributionSnapshot(getClientLevelScope(client), entityId);
             if (contributionSnapshot.contributors.length) {
                 ent.clientDefeatVerified = true;

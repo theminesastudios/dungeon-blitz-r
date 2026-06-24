@@ -215,7 +215,14 @@ export class CharacterHandler {
     }
 
     private static repairUnsafeSavedDungeonLocation(character: Character): boolean {
-        let didMutate = clearStoredDungeonSnapshot(character);
+        const storedDungeonSnapshot = getStoredDungeonSnapshot(character);
+        if (storedDungeonSnapshot) {
+            return false;
+        }
+
+        let didMutate = character.DungeonSnapshot !== undefined
+            ? clearStoredDungeonSnapshot(character)
+            : false;
         const safeReturn = LevelConfig.resolveDungeonSafeReturn(
             character.CurrentLevel?.name,
             undefined,
@@ -1095,12 +1102,10 @@ export class CharacterHandler {
         const runtimeMapLevel = CharacterHandler.resolveDungeonMapPacketLevel(currentLevelName, levelSpec.mapId, char, client);
         const runtimeBaseLevel = levelSpec.baseId;
 
-        const pendingEntry = GlobalState.pendingWorld.get(token);
-        const resolvedTransferToken = pendingEntry?.syncAnchorToken || token;
         const momentParams = DungeonEntryDisplay.buildMomentParams(currentLevelName, isHard ? "Hard" : "");
 
         const pkt = WorldEnter.buildEnterWorldPacket(
-            resolvedTransferToken, // Ensure Flash client uses the Host's token for Room Event Generation Offset
+            token,
             0, "", false, 0, 0,
             Config.HOST,
             Config.PORTS[0],
@@ -1118,7 +1123,7 @@ export class CharacterHandler {
         );
 
         DebugLogger.logProgress('EnterWorld:initialPacket', client, char, {
-            transferToken: resolvedTransferToken,
+            transferToken: token,
             targetLevel: currentLevelName,
             targetSwf: levelSpec.swf,
             previousLevel: previousLevelName,

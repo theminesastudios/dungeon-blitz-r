@@ -1,13 +1,13 @@
 {
     "name": "dungeon-blitz-r",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "description": "Dungeon Blitz: R",
     "main": "index.js",
     "scripts": {
         "dev": "cd src/server && npm run dev",
         "multiplayer": "cd src/server && npm run multiplayer",
         "build": "cd src/server && npm run build",
-        "start:multiplayer": "concurrently -n GAME,RPC -c blue,magenta \"cd src/server && npm run start:multiplayer:game\" \"cd src/server && npm run start:discord-bridge:multiplayer\"",
+        "start:multiplayer": "cd src/server && npm run start:multiplayer:game",
         "start:discord-bridge": "cd src/server && npm run start:discord-bridge",
         "dev:discord": "npm run dev:with-discord",
         "launch:multiplayer-with-discord": "node src/server/tools/launchMultiplayerClient.js",

@@ -209,6 +209,10 @@ function buildStatusPayload(text: string): Buffer {
     return bb.toBuffer();
 }
 
+function shouldLogDiscordBridge(): boolean {
+    return process.env.DEBUG_DISCORD_BRIDGE === '1';
+}
+
 function resolveExecutablePath(config: DiscordSocialBridgeConfig): string {
     const configured = String(process.env.DISCORD_SOCIAL_BRIDGE_EXECUTABLE ?? config.executablePath ?? '').trim();
     if (configured) {
@@ -291,16 +295,25 @@ class DiscordSocialBridge {
         this.started = true;
 
         if (!this.appId) {
+            if (!shouldLogDiscordBridge()) {
+                return;
+            }
             console.warn('[DiscordSocialBridge] Bridge enabled but appId is missing.');
             return;
         }
 
         if (!this.channelId) {
+            if (!shouldLogDiscordBridge()) {
+                return;
+            }
             console.warn('[DiscordSocialBridge] Bridge enabled but channelId is missing.');
             return;
         }
 
         if (!fs.existsSync(this.executablePath)) {
+            if (!shouldLogDiscordBridge()) {
+                return;
+            }
             console.warn(`[DiscordSocialBridge] Native bridge executable not found: ${this.executablePath}`);
             console.warn('[DiscordSocialBridge] Build the native Social SDK bridge first.');
             return;
@@ -319,12 +332,14 @@ class DiscordSocialBridge {
             this.currentDiscordUserId = '';
             this.currentDiscordGuildId = '';
             this.child = null;
-            console.warn(`[DiscordSocialBridge] Native bridge exited (code=${code ?? 'null'}, signal=${signal ?? 'null'}).`);
+            if (shouldLogDiscordBridge()) {
+                console.warn(`[DiscordSocialBridge] Native bridge exited (code=${code ?? 'null'}, signal=${signal ?? 'null'}).`);
+            }
         });
 
         this.child.stderr.on('data', (chunk: Buffer) => {
             const text = chunk.toString('utf8').trim();
-            if (text) {
+            if (text && shouldLogDiscordBridge()) {
                 console.log(`[DiscordSocialBridge:native] ${text}`);
             }
         });

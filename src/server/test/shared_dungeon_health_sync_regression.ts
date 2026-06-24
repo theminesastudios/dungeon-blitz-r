@@ -279,6 +279,43 @@ async function testSharedHostileHpConvergesAcrossLocalIds(): Promise<void> {
     );
 }
 
+function testLeaderFlagDoesNotCreateSecondSharedHostile(): void {
+    const rogue = createFakeClient('Rogue', 12001, 2);
+    const mage = createFakeClient('Mage', 23002, 2);
+    setParty(rogue, mage);
+    attachPlayer(rogue);
+    attachPlayer(mage);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+
+    const scope = getLevelScopeKey(rogue.currentLevel, rogue.levelInstanceId);
+    attachHostile(rogue, 510001, 'AncientDragonGoldMini', 2400, 1200, 2);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(510001);
+    assert.ok(canonical, 'first dragon spawn should become canonical');
+
+    const party = GlobalState.partyGroups.get(8811);
+    assert.ok(party, 'test party should exist');
+    party.leader = mage.character.name;
+
+    attachHostile(mage, 610001, 'AncientDragonGoldMini', 2410, 1200, 2);
+
+    assert.equal(
+        EntityHandler.resolveEntityAlias(mage as never, 610001),
+        510001,
+        'later leader-side local dragon should alias to the existing canonical dragon'
+    );
+    assert.equal(
+        GlobalState.levelEntities.get(scope)?.has(610001),
+        false,
+        'later leader-side local dragon must not create a second server enemy'
+    );
+    assert.equal(
+        mage.entities.get(610001)?.sharedCanonicalId,
+        510001,
+        'leader-side local dragon should be retained only as a proxy to canonical HP'
+    );
+}
+
 async function testUnaliasedSharedHostileDestroyRelaysDeadState(): Promise<void> {
     const rogue = createFakeClient('Rogue', 55005, 2);
     const mage = createFakeClient('Mage', 66006, 2);
@@ -332,6 +369,181 @@ async function testUnaliasedSharedHostileDestroyRelaysDeadState(): Promise<void>
         rogue.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload).entityId === 500010),
         true,
         'destroy of an unaliased shared hostile should remove the viewer local id'
+    );
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 600010 && parseEntityState(packet.payload).entState === EntityState.DEAD),
+        true,
+        'destroy of a shared hostile should echo DEAD state back to the source local id'
+    );
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload).entityId === 600010),
+        true,
+        'destroy of a shared hostile should echo removal back to the source local id'
+    );
+}
+
+function testDeadCanonicalHpReportDestroysLiveViewerProxy(): void {
+    const rogue = createFakeClient('Rogue', 99009, 2);
+    const mage = createFakeClient('Mage', 99110, 2);
+    setParty(rogue, mage);
+    attachPlayer(rogue);
+    attachPlayer(mage);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+
+    const scope = getLevelScopeKey(rogue.currentLevel, rogue.levelInstanceId);
+    attachHostile(rogue, 500030, 'SharedBandit', 2800, 1200, 2);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(500030);
+    assert.ok(canonical, 'rogue hostile should become the canonical shared hostile');
+    canonical.maxHp = 10000;
+    canonical.hp = 1000;
+    canonical.dead = true;
+    canonical.entState = EntityState.DEAD;
+
+    attachHostile(mage, 600030, 'SharedBandit', 2800, 1200, 2);
+    mage.entities.set(600030, {
+        ...mage.entities.get(600030),
+        hp: 1000,
+        maxHp: 10000,
+        dead: false,
+        entState: EntityState.ACTIVE
+    });
+    rogue.entities.set(500030, {
+        ...rogue.entities.get(500030),
+        hp: 1000,
+        maxHp: 10000,
+        dead: true,
+        entState: EntityState.DEAD
+    });
+
+    rogue.sentPackets.length = 0;
+    mage.sentPackets.length = 0;
+    CombatHandler.handleCharRegen(rogue as never, buildHpDeltaPayload(500030, -1000));
+
+    assert.equal(canonical.hp, 0, 'dead canonical HP report should clamp canonical HP to zero');
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x78 && parseHpDelta(packet.payload).entityId === 600030 && parseHpDelta(packet.payload).delta === -1000),
+        true,
+        'dead canonical HP report should correct a stale viewer proxy to zero HP'
+    );
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 600030 && parseEntityState(packet.payload).entState === EntityState.DEAD),
+        true,
+        'dead canonical HP report should send DEAD state to the stale viewer local id'
+    );
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload).entityId === 600030),
+        true,
+        'dead canonical HP report should destroy the stale viewer local id'
+    );
+}
+
+function testLethalHpReportEchoesSourceSharedHostileProxy(): void {
+    const rogue = createFakeClient('Rogue', 99220, 2);
+    const mage = createFakeClient('Mage', 99330, 2);
+    setParty(rogue, mage);
+    attachPlayer(rogue);
+    attachPlayer(mage);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+
+    const scope = getLevelScopeKey(rogue.currentLevel, rogue.levelInstanceId);
+    attachHostile(rogue, 500040, 'SharedDragon', 3000, 1200, 2);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(500040);
+    assert.ok(canonical, 'source hostile should become the canonical shared hostile');
+    canonical.maxHp = 10000;
+    canonical.hp = 1640;
+    canonical.dead = false;
+    canonical.entState = EntityState.ACTIVE;
+
+    attachHostile(mage, 600040, 'SharedDragon', 3000, 1200, 2);
+    rogue.entities.set(500040, {
+        ...rogue.entities.get(500040),
+        hp: 1640,
+        maxHp: 10000,
+        dead: false,
+        entState: EntityState.ACTIVE
+    });
+    mage.entities.set(600040, {
+        ...mage.entities.get(600040),
+        hp: 1640,
+        maxHp: 10000,
+        dead: false,
+        entState: EntityState.ACTIVE
+    });
+
+    rogue.sentPackets.length = 0;
+    mage.sentPackets.length = 0;
+    CombatHandler.handleCharRegen(rogue as never, buildHpDeltaPayload(500040, -4212));
+
+    assert.equal(canonical.hp, 0, 'lethal HP report should kill the canonical shared hostile');
+    assert.equal(
+        rogue.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 500040 && parseEntityState(packet.payload).entState === EntityState.DEAD),
+        true,
+        'lethal HP report should echo DEAD state back to the source local id'
+    );
+    assert.equal(
+        rogue.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload).entityId === 500040),
+        true,
+        'lethal HP report should destroy the source local id'
+    );
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 600040 && parseEntityState(packet.payload).entState === EntityState.DEAD),
+        true,
+        'lethal HP report should still relay DEAD state to the party viewer local id'
+    );
+}
+
+async function testDeadSharedHostilePowerHitCannotKillPlayer(): Promise<void> {
+    const rogue = createFakeClient('Rogue', 99440, 2);
+    const mage = createFakeClient('Mage', 99550, 2);
+    setParty(rogue, mage);
+    attachPlayer(rogue);
+    attachPlayer(mage);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+
+    const scope = getLevelScopeKey(rogue.currentLevel, rogue.levelInstanceId);
+    attachHostile(rogue, 500050, 'SharedDeadDragon', 3200, 1200, 2);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(500050);
+    assert.ok(canonical, 'source hostile should become canonical before death');
+    canonical.maxHp = 10000;
+    canonical.hp = 0;
+    canonical.dead = true;
+    canonical.entState = EntityState.DEAD;
+
+    attachHostile(mage, 600050, 'SharedDeadDragon', 3200, 1200, 2);
+    mage.entities.set(600050, {
+        ...mage.entities.get(600050),
+        hp: 10000,
+        maxHp: 10000,
+        dead: false,
+        entState: EntityState.ACTIVE
+    });
+    mage.authoritativeCurrentHp = 5000;
+    mage.entities.set(mage.clientEntID, {
+        ...mage.entities.get(mage.clientEntID),
+        hp: 5000,
+        maxHp: 5000,
+        dead: false,
+        entState: EntityState.ACTIVE
+    });
+
+    rogue.sentPackets.length = 0;
+    mage.sentPackets.length = 0;
+    await CombatHandler.handlePowerHit(mage as never, buildPowerHitPayload(mage.clientEntID, 600050, 6000));
+
+    assert.equal(mage.authoritativeCurrentHp, 5000, 'dead shared hostile power hit must not damage the player');
+    assert.equal(mage.entities.get(mage.clientEntID)?.dead, false, 'dead shared hostile power hit must not mark player dead');
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 600050 && parseEntityState(packet.payload).entState === EntityState.DEAD),
+        true,
+        'dead shared hostile action should echo DEAD state for the stale local hostile id'
+    );
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload).entityId === 600050),
+        true,
+        'dead shared hostile action should destroy the stale local hostile id'
     );
 }
 
@@ -434,7 +646,31 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        testLeaderFlagDoesNotCreateSecondSharedHostile();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
         await testUnaliasedSharedHostileDestroyRelaysDeadState();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        testDeadCanonicalHpReportDestroysLiveViewerProxy();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        testLethalHpReportEchoesSourceSharedHostileProxy();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        await testDeadSharedHostilePowerHitCannotKillPlayer();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();

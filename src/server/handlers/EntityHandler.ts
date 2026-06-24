@@ -52,7 +52,11 @@ export class EntityHandler {
         'GoblinRiverDungeonHard'
     ]);
     private static readonly SERVER_AUTHORITY_HOSTILE_LEVELS = new Set<string>([
+        'AC_Mission1',
         'JC_Mini1Hard'
+    ]);
+    private static readonly FIRST_SIGHT_SERVER_AUTHORITY_HOSTILE_LEVELS = new Set<string>([
+        'AC_Mission1'
     ]);
     static readonly SERVER_AUTHORITY_ENTITY_LEVEL = 50;
     private static readonly HOSTILE_BASE_HITPOINTS = [
@@ -661,7 +665,8 @@ export class EntityHandler {
             return false;
         }
 
-        const canonical = EntityHandler.findServerAuthorityProxyCanonical(levelName, levelMap, entity);
+        const canonical = EntityHandler.findServerAuthorityProxyCanonical(levelName, levelMap, entity) ??
+            EntityHandler.promoteFirstSightServerAuthorityHostile(client, levelName, levelMap, entity, rawEntityId);
         if (!canonical) {
             return false;
         }
@@ -782,6 +787,57 @@ export class EntityHandler {
         }
 
         return true;
+    }
+
+    private static promoteFirstSightServerAuthorityHostile(
+        client: Client,
+        levelName: string | null | undefined,
+        levelMap: Map<number, any> | null,
+        entity: any,
+        rawEntityId: number
+    ): any | null {
+        const normalizedLevelName = LevelConfig.normalizeLevelName(levelName);
+        if (
+            !normalizedLevelName ||
+            !EntityHandler.FIRST_SIGHT_SERVER_AUTHORITY_HOSTILE_LEVELS.has(normalizedLevelName) ||
+            !levelMap ||
+            !entity ||
+            entity.isPlayer ||
+            Number(entity.team ?? 0) !== EntityTeam.ENEMY
+        ) {
+            return null;
+        }
+
+        const canonicalId = Math.max(0, Math.round(Number(rawEntityId || entity.id) || 0));
+        if (canonicalId <= 0) {
+            return null;
+        }
+
+        const existing = levelMap.get(canonicalId);
+        if (existing && !existing.isPlayer) {
+            return existing;
+        }
+
+        const canonical = {
+            ...entity,
+            id: canonicalId,
+            clientSpawned: false,
+            ownerToken: 0,
+            ownerUserId: 0,
+            ownerPartyId: 0,
+            ownerCharacterName: '',
+            canonicalEntityId: undefined,
+            sharedCanonicalId: undefined,
+            proxyOwnerToken: client.token,
+            proxyOwnerName: client.character?.name ?? '',
+            proxyOwnerLocalId: canonicalId
+        };
+        EntityHandler.normalizeServerAuthorityHostileState(normalizedLevelName, canonical);
+        levelMap.set(canonicalId, canonical);
+        console.log(
+            `[MultiplayerSync][first-sight-authority] scope=${getClientLevelScope(client)} source=${String(client.character?.name ?? '')} sourceToken=${client.token} entityId=${canonicalId} name=${String(canonical.name ?? '')} hp=${Math.round(Number(canonical.hp ?? 0))} maxHp=${Math.round(Number(canonical.maxHp ?? 0))}`
+        );
+        return canonical;
     }
 
     private static resetServerAuthorityScopeForFreshRun(client: Client, levelName: string, levelMap: Map<number, any>): void {
@@ -1140,8 +1196,7 @@ export class EntityHandler {
             !entity ||
             entity.isPlayer ||
             (Number(entity.team ?? 0) !== 2 && Number(entity.team ?? 0) !== 3) ||
-            partyId <= 0 ||
-            isClientPartyLeader(client)
+            partyId <= 0
         ) {
             return false;
         }
