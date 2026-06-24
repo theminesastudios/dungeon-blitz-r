@@ -3,6 +3,7 @@ import * as path from 'path';
 import { GlobalState } from '../core/GlobalState';
 import { GameData } from '../core/GameData';
 import { LevelConfig } from '../core/LevelConfig';
+import { CombatHandler } from '../handlers/CombatHandler';
 import { LevelHandler } from '../handlers/LevelHandler';
 import { SocialHandler } from '../handlers/SocialHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
@@ -24,6 +25,7 @@ type FakeClient = {
     startedRoomEvents: Set<string>;
     triggeredLevelStates: Set<string>;
     entities: Map<number, any>;
+    entityIdAliases: Map<number, number>;
     activeDungeonCutsceneScope: string;
     activeDungeonCutsceneRoomId: number;
     lastDungeonCutsceneStartScope: string;
@@ -65,6 +67,7 @@ function createFakeClient(name: string, token: number): FakeClient {
         startedRoomEvents: new Set<string>(),
         triggeredLevelStates: new Set<string>(),
         entities: new Map<number, any>(),
+        entityIdAliases: new Map<number, number>(),
         activeDungeonCutsceneScope: '',
         activeDungeonCutsceneRoomId: 0,
         lastDungeonCutsceneStartScope: '',
@@ -103,10 +106,32 @@ function buildRoomStatePayload(roomId: number, cameraId: number): Buffer {
     return bb.toBuffer();
 }
 
+function buildRoomBossInfoPayload(roomId: number, bossId: number, bossName: string): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod9(roomId);
+    bb.writeMethod9(bossId);
+    bb.writeMethod26(bossName);
+    bb.writeMethod9(0);
+    bb.writeMethod26('');
+    return bb.toBuffer();
+}
+
 function buildRoomThoughtPayload(entityId: number, text: string): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod4(entityId);
     bb.writeMethod13(text);
+    return bb.toBuffer();
+}
+
+function buildPowerHitPayload(targetId: number, sourceId: number, damage: number): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(targetId);
+    bb.writeMethod4(sourceId);
+    bb.writeMethod24(damage);
+    bb.writeMethod4(77);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
     return bb.toBuffer();
 }
 
@@ -137,12 +162,13 @@ function testSharedDungeonCinematicRunsOnceFromOwner(): void {
     rogue.sentPackets.length = 0;
     LevelHandler.handleRoomEventStart(rogue as never, buildRoomEventStartPayload(2));
     SocialHandler.handleRoomThought(rogue as never, buildRoomThoughtPayload(101, 'The dragon wakes.'));
+    SocialHandler.handleRoomThought(rogue as never, buildRoomThoughtPayload(101, 'A second warning.'));
     LevelHandler.handleRoomStateUpdate(rogue as never, buildRoomStatePayload(2, 7));
     LevelHandler.handleRoomClose(rogue as never, buildRoomClosePayload(2));
 
     assert.equal(packetCount(mage, 0xA5), 0, 'late viewer start should not restart the cutscene for the owner');
     assert.equal(packetCount(rogue, 0xA5), 1, 'late viewer should receive its own cutscene border start');
-    assert.equal(packetCount(mage, 0x76), 0, 'late viewer bubble should not relay');
+    assert.equal(packetCount(mage, 0x76), 2, 'active cutscene bubbles should keep relaying instead of stopping after the first line');
     assert.equal(packetCount(mage, 0xA9), 0, 'late viewer camera timeline should not relay');
     assert.equal(packetCount(mage, 0xA6), 0, 'late viewer close should not end the owner timeline early');
 
@@ -165,20 +191,84 @@ function testSharedDungeonCinematicRunsOnceFromOwner(): void {
     assert.equal(packetCount(mage, 0xA6), 0, 'completed cutscene should not close again');
 }
 
-function main(): void {
+function testSharedDungeonBossInfoStartsBorderForAllMembers(): void {
+    const mage = createFakeClient('Mage', 91001);
+    const rogue = createFakeClient('Rogue', 92002);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+
+    LevelHandler.handleRoomBossInfo(mage as never, buildRoomBossInfoPayload(2, 500001, 'AncientDragonGoldMini'));
+
+    assert.equal(packetCount(mage, 0xA5), 1, 'boss info should trigger cutscene border for the source client if room start has not arrived yet');
+    assert.equal(packetCount(rogue, 0xA5), 1, 'boss info should trigger cutscene border for party viewers if room start has not arrived yet');
+    assert.equal(packetCount(rogue, 0xAC), 1, 'boss info should still relay the boss bar packet to party viewers');
+
+    mage.sentPackets.length = 0;
+    rogue.sentPackets.length = 0;
+    LevelHandler.handleRoomEventStart(mage as never, buildRoomEventStartPayload(2));
+
+    assert.equal(packetCount(mage, 0xA5), 0, 'late owner room start should not replay cutscene border for source after boss info');
+    assert.equal(packetCount(rogue, 0xA5), 0, 'late owner room start should not replay cutscene border for viewers after boss info');
+}
+
+async function testSharedDungeonCinematicSuppressesPlayerDamage(): Promise<void> {
+    const mage = createFakeClient('Mage', 91001);
+    const rogue = createFakeClient('Rogue', 92002);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+
+    const scope = getLevelScopeKey(mage.currentLevel, mage.levelInstanceId);
+    GlobalState.levelEntities.set(scope, new Map<number, any>([
+        [500001, {
+            id: 500001,
+            name: 'AncientDragonGoldMini',
+            isPlayer: false,
+            team: 2,
+            hp: 10000,
+            maxHp: 10000,
+            entState: 0,
+            roomId: 2
+        }]
+    ]));
+
+    LevelHandler.handleRoomEventStart(mage as never, buildRoomEventStartPayload(2));
+    await CombatHandler.handlePowerHit(rogue as never, buildPowerHitPayload(500001, rogue.clientEntID, 9000));
+
+    assert.equal(
+        GlobalState.levelEntities.get(scope)?.get(500001)?.hp,
+        10000,
+        'player power hits during the shared cinematic should not damage the hostile'
+    );
+}
+
+async function main(): Promise<void> {
     const sessionsByToken = new Map(GlobalState.sessionsByToken);
     const dungeonCutscenes = new Map(GlobalState.dungeonCutscenes);
+    const levelEntities = new Map(GlobalState.levelEntities);
 
     ensureDataLoaded();
     try {
         GlobalState.sessionsByToken.clear();
         GlobalState.dungeonCutscenes.clear();
+        GlobalState.levelEntities.clear();
         testSharedDungeonCinematicRunsOnceFromOwner();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.dungeonCutscenes.clear();
+        GlobalState.levelEntities.clear();
+        testSharedDungeonBossInfoStartsBorderForAllMembers();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.dungeonCutscenes.clear();
+        GlobalState.levelEntities.clear();
+        await testSharedDungeonCinematicSuppressesPlayerDamage();
         console.log('shared_dungeon_cinematic_regression: ok');
     } finally {
         GlobalState.sessionsByToken = sessionsByToken;
         GlobalState.dungeonCutscenes = dungeonCutscenes;
+        GlobalState.levelEntities = levelEntities;
     }
 }
 
-void main();
+void main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+});

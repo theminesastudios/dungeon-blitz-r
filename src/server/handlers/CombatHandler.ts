@@ -2981,8 +2981,9 @@ export class CombatHandler {
         previousEntState: number;
     } {
         const canonicalId = Math.max(0, Math.round(Number(entity?.id ?? 0)));
+        const canonicalVisible = EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(getClientLevelScope(viewer));
         const localId = EntityHandler.resolveEntityLocalId(viewer, canonicalId);
-        const targetId = localId > 0 ? localId : canonicalId;
+        const targetId = canonicalVisible ? canonicalId : (localId > 0 ? localId : canonicalId);
         const existing = viewer.entities.get(targetId) ?? viewer.entities.get(canonicalId) ?? {};
         const previousHp = Math.round(Number(existing?.hp ?? NaN));
         const previousEntState = Math.round(Number(existing?.entState ?? EntityState.ACTIVE));
@@ -2991,9 +2992,9 @@ export class CombatHandler {
             ...existing,
             ...entity,
             id: targetId,
-            clientSpawned: targetId !== canonicalId ? true : Boolean(entity.clientSpawned),
-            sharedCanonicalId: targetId === canonicalId ? undefined : canonicalId,
-            canonicalEntityId: targetId === canonicalId ? undefined : canonicalId
+            clientSpawned: canonicalVisible ? false : (targetId !== canonicalId ? true : Boolean(entity.clientSpawned)),
+            sharedCanonicalId: canonicalVisible || targetId === canonicalId ? undefined : canonicalId,
+            canonicalEntityId: canonicalVisible || targetId === canonicalId ? undefined : canonicalId
         });
         viewer.knownEntityIds.add(canonicalId);
         return {
@@ -3174,6 +3175,43 @@ export class CombatHandler {
         CombatHandler.sendServerAuthorityAliveCorrection(viewer, levelScope, entity, reason, rawEntityId);
     }
 
+    private static snapshotServerAuthorityNpcViewerHealth(
+        anchor: Client,
+        levelScope: string,
+        entity: any
+    ): Map<number, HostileViewerHealthSnapshot> {
+        const snapshots = new Map<number, HostileViewerHealthSnapshot>();
+        if (!CombatHandler.isServerAuthoritySyncNpc(levelScope, entity)) {
+            return snapshots;
+        }
+
+        const canonicalId = Math.max(0, Math.round(Number(entity?.id ?? 0)));
+        if (canonicalId <= 0) {
+            return snapshots;
+        }
+
+        for (const viewer of GlobalState.sessionsByToken.values()) {
+            if (!CombatHandler.canReceiveServerAuthorityNpcRelay(anchor, viewer, levelScope)) {
+                continue;
+            }
+
+            const canonicalVisible = EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelScope);
+            const resolvedLocalId = EntityHandler.resolveEntityLocalId(viewer, canonicalId);
+            const localId = canonicalVisible ? canonicalId : (resolvedLocalId > 0 ? resolvedLocalId : canonicalId);
+            const existing =
+                viewer.entities.get(localId) ??
+                viewer.entities.get(canonicalId) ??
+                entity;
+            snapshots.set(viewer.token, {
+                localId,
+                previousHp: Math.round(Number(existing?.hp ?? entity?.hp ?? NaN)),
+                previousMaxHp: Math.max(0, Math.round(Number(existing?.maxHp ?? entity?.maxHp ?? 0)))
+            });
+        }
+
+        return snapshots;
+    }
+
     private static relayServerAuthorityNpcHit(
         anchor: Client,
         levelScope: string,
@@ -3181,7 +3219,8 @@ export class CombatHandler {
         payload: Buffer,
         referencedEntityIds: number[],
         appliedDamage: number,
-        sourceId: number
+        sourceId: number,
+        preHitSnapshots: Map<number, HostileViewerHealthSnapshot> = new Map<number, HostileViewerHealthSnapshot>()
     ): boolean {
         if (!CombatHandler.isServerAuthoritySyncNpc(levelScope, entity)) {
             return false;
@@ -3196,7 +3235,7 @@ export class CombatHandler {
                 continue;
             }
 
-            let missingRef = false;
+            let missingTargetRef = false;
             for (const refId of referencedEntityIds) {
                 const canonicalRefId = Math.max(0, Math.round(Number(refId) || 0));
                 if (canonicalRefId <= 0) {
@@ -3207,7 +3246,9 @@ export class CombatHandler {
                     ? CombatHandler.ensureServerAuthorityNpcKnown(viewer, levelScope, refEntity, 'hit_target_snapshot')
                     : CombatHandler.canViewerResolveCombatEntity(viewer, levelScope, canonicalRefId);
                 if (!refKnown) {
-                    missingRef = true;
+                    if (canonicalRefId === canonicalId) {
+                        missingTargetRef = true;
+                    }
                     logJcMini1Authority('viewer_resolve_failure', {
                         packetId: '0x0A',
                         entityId: canonicalId,
@@ -3220,14 +3261,17 @@ export class CombatHandler {
                         expectedScope: levelScope,
                         knownEntityIds: Array.from(viewer.knownEntityIds ?? []).slice(0, 80)
                     });
-                    break;
                 }
             }
-            if (missingRef) {
+            if (missingTargetRef) {
                 continue;
             }
 
             const cacheState = CombatHandler.syncServerAuthorityNpcViewerCache(viewer, entity);
+            const preHitSnapshot = preHitSnapshots.get(viewer.token);
+            const previousHpForCorrection = Number.isFinite(preHitSnapshot?.previousHp)
+                ? Math.max(0, Math.round(Number(preHitSnapshot?.previousHp)))
+                : cacheState.previousHp;
             if (
                 cacheState.previousDead &&
                 !Boolean(entity.dead) &&
@@ -3259,7 +3303,7 @@ export class CombatHandler {
                     levelScope,
                     entity,
                     cacheState.localId,
-                    cacheState.previousHp,
+                    previousHpForCorrection,
                     appliedDamage,
                     'post_hit_converge'
                 );
@@ -3271,26 +3315,27 @@ export class CombatHandler {
                     viewer: viewer.character?.name ?? '',
                     viewerToken: viewer.token,
                     localEntityId: cacheState.localId,
+                    previousHp: previousHpForCorrection,
                     hp: Math.round(Number(entity.hp ?? 0)),
                     maxHp: Math.round(Number(entity.maxHp ?? 0)),
                     dead: Boolean(entity.dead),
                     entState: entity.entState
                 });
             } else {
-                const previousHp = Number.isFinite(cacheState.previousHp) ? Math.max(0, Math.round(cacheState.previousHp)) : 0;
+                const previousHp = Number.isFinite(previousHpForCorrection) ? Math.max(0, Math.round(previousHpForCorrection)) : 0;
                 const canonicalHp = Math.max(0, Math.round(Number(entity.hp ?? 0)));
                 const canonicalDead = Boolean(entity.dead) ||
                     Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD ||
                     canonicalHp <= 0;
-                if (canonicalDead && previousHp > canonicalHp) {
+                if (previousHp > canonicalHp) {
                     CombatHandler.sendServerAuthorityHpCorrection(
                         viewer,
                         levelScope,
                         entity,
                         cacheState.localId,
-                        cacheState.previousHp,
+                        previousHpForCorrection,
                         0,
-                        'post_lethal_viewer_converge'
+                        canonicalDead ? 'post_lethal_viewer_converge' : 'post_hit_viewer_converge'
                     );
                 } else if (previousHp < canonicalHp) {
                     CombatHandler.sendServerAuthorityHpCorrection(
@@ -3298,7 +3343,7 @@ export class CombatHandler {
                         levelScope,
                         entity,
                         cacheState.localId,
-                        cacheState.previousHp,
+                        previousHpForCorrection,
                         0,
                         'post_hit_positive_converge'
                     );
@@ -3311,7 +3356,7 @@ export class CombatHandler {
                     viewer: viewer.character?.name ?? '',
                     viewerToken: viewer.token,
                     localEntityId: cacheState.localId,
-                    previousHp: cacheState.previousHp,
+                    previousHp,
                     hp: canonicalHp,
                     maxHp: Math.round(Number(entity.maxHp ?? 0)),
                     dead: Boolean(entity.dead),
@@ -4552,6 +4597,9 @@ export class CombatHandler {
         const { targetId, sourceId, damage } = info;
         const currentLevel = client.currentLevel;
         const levelScope = getClientLevelScope(client);
+        if (LevelHandler.isDungeonCutsceneCombatLocked(client)) {
+            return;
+        }
         if (CombatHandler.shouldSuppressCutsceneHostileCombat(client, levelScope, sourceId)) {
             return;
         }
@@ -4623,6 +4671,7 @@ export class CombatHandler {
             appliedDamage: number;
         } | null = null;
         let partySharedHostileDeathRelay: { entityId: number; entity: any; anchor: Client } | null = null;
+        let serverAuthorityNpcSnapshots = new Map<number, HostileViewerHealthSnapshot>();
         const targetSession = CombatHandler.findPlayerSessionByEntityId(targetId);
         if (targetSession && areClientsInSameLevelScope(client, targetSession)) {
             const resolution = CombatHandler.updatePlayerTargetAfterHit(targetSession, damage);
@@ -4647,6 +4696,10 @@ export class CombatHandler {
             const partySharedHostileSnapshots = targetEntity &&
                 CombatHandler.shouldMirrorClientSpawnEntityToParty(currentLevel, targetEntity)
                 ? CombatHandler.snapshotPartySharedHostileViewerHealth(sourceSession ?? client, levelScope, targetEntity)
+                : new Map<number, HostileViewerHealthSnapshot>();
+            serverAuthorityNpcSnapshots = targetEntity &&
+                CombatHandler.isServerAuthoritySyncNpc(levelScope, targetEntity)
+                ? CombatHandler.snapshotServerAuthorityNpcViewerHealth(sourceSession ?? client, levelScope, targetEntity)
                 : new Map<number, HostileViewerHealthSnapshot>();
             CombatHandler.assignPartySharedHostileCombatAuthority(levelScope, targetEntity, sourceSession ?? client);
             const resolution = CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage);
@@ -4733,7 +4786,8 @@ export class CombatHandler {
                 relayPayload,
                 [targetId, sourceId],
                 Math.max(0, Math.round(Number(serverAuthorityNpcResolution.appliedDamage ?? displayRelayDamage))),
-                sourceId
+                sourceId,
+                serverAuthorityNpcSnapshots
             );
             if (serverAuthorityNpcResolution.killed) {
                 CombatHandler.relayServerAuthorityNpcDeath(client, levelScope, serverAuthorityNpcResolution.entity);
@@ -4993,7 +5047,7 @@ export class CombatHandler {
                 noteSharedDungeonHostileDestroyed(levelScope, entityId, destroyedEntity);
             }
             if (CombatHandler.isServerAuthoritySyncNpc(levelScope, destroyedEntity)) {
-                EntityHandler.noteServerAuthorityHostileDestroyed(levelScope, entityId);
+                EntityHandler.noteServerAuthorityHostileDestroyed(levelScope, entityId, destroyedEntity);
             }
             const levelMap = GlobalState.levelEntities.get(levelScope);
             levelMap?.delete(entityId);
@@ -5441,6 +5495,12 @@ export class CombatHandler {
         );
         const entity = client.entities.get(entityId) ?? CombatHandler.resolveLevelEntity(levelScope, entityId);
         if (!EntityHandler.isClientOwnPlayerEntity(client, levelScope, entityId, entity)) {
+            if (amount < 0 && entity && !entity.isPlayer && Boolean(entity.untargetable)) {
+                return;
+            }
+            if (amount < 0 && LevelHandler.isDungeonCutsceneCombatLocked(client)) {
+                return;
+            }
             if (CombatHandler.recordClientHostileHpDelta(client, levelScope, rawEntityId, entityId, entity, amount)) {
                 return;
             }
@@ -5547,6 +5607,9 @@ export class CombatHandler {
             levelScope,
             EntityHandler.resolveEntityAlias(client, rawSourceId)
         );
+        if (LevelHandler.isDungeonCutsceneCombatLocked(client)) {
+            return;
+        }
 
         const { targetId, sourceId, damage } = info;
         const targetEntity = CombatHandler.resolveLevelEntity(levelScope, targetId);

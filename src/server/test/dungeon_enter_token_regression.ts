@@ -27,6 +27,7 @@ type FakeClient = {
     entities: Map<number, any>;
     startedRoomEvents: Set<string>;
     sentPackets: SentPacket[];
+    socket?: { destroyed?: boolean; readyState?: string };
     sendBitBuffer: (id: number, bb: BitBuffer) => void;
 };
 
@@ -183,38 +184,164 @@ function testPartyDungeonTransferKeepsAnchorSpawnCoordinates(): void {
     assert.equal(syncState.y, 1200, 'joiner transfer should spawn at the party anchor vertical position');
 }
 
+function testReturningDungeonRootLogsPhysicalPartyAnchor(): void {
+    const alex = createFakeClient('AlexMercer', 21927, 21950, 'rogue');
+    const neodevils = createFakeClient('Neodevils', 8084, 21950, 'mage');
+    alex.currentLevel = 'Castle';
+    alex.character.CurrentLevel = { name: 'Castle', x: -1280, y: -1941 };
+    alex.levelInstanceId = '';
+    neodevils.currentLevel = 'AC_Mission1';
+    neodevils.character.CurrentLevel = { name: 'AC_Mission1', x: -1584, y: -1875 };
+    neodevils.levelInstanceId = '37629';
+    neodevils.syncAnchorStartedAt = 37629;
+    neodevils.syncAnchorToken = 37629;
+    neodevils.syncAnchorCharacterName = 'AlexMercer';
+    neodevils.entities.set(neodevils.clientEntID, {
+        id: neodevils.clientEntID,
+        isPlayer: true,
+        x: -1584,
+        y: -1875
+    });
+
+    GlobalState.sessionsByToken.set(neodevils.token, neodevils as never);
+    GlobalState.partyGroups.set(8101, {
+        id: 8101,
+        leader: alex.character.name,
+        members: [alex.character.name, neodevils.character.name],
+        locked: false
+    });
+    GlobalState.partyByMember.set('alexmercer', 8101);
+    GlobalState.partyByMember.set('neodevils', 8101);
+
+    const logs: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => {
+        logs.push(args.map(String).join(' '));
+    };
+    try {
+        const syncState = (LevelHandler as any).buildTransferSyncState(alex, 'AC_Mission1', null);
+        assert.ok(syncState, 'returning root should reuse the live party dungeon instance');
+        assert.equal(syncState.levelInstanceId, neodevils.levelInstanceId, 'returning root should keep the shared dungeon instance');
+        assert.equal(syncState.syncAnchorToken, 37629, 'returning root should preserve the original dungeon sync anchor');
+        assert.equal(syncState.syncAnchorCharacterName, 'AlexMercer', 'sync anchor identity should still describe the dungeon root');
+        assert.equal(syncState.x, -1484, 'returning root should spawn beside the live party member');
+        assert.equal(syncState.y, -1875, 'returning root should use the live party member vertical position');
+    } finally {
+        console.log = originalLog;
+    }
+
+    assert.ok(
+        logs.some((line) => line.includes('Party dungeon anchor spawn AlexMercer -> AC_Mission1 beside Neodevils at -1484,-1875')),
+        'party anchor log should name the physical party member, not the inherited sync root'
+    );
+    assert.ok(
+        logs.every((line) => !line.includes('Party dungeon anchor spawn AlexMercer -> AC_Mission1 beside AlexMercer')),
+        'party anchor log should not report a self-anchor when coordinates came from another party member'
+    );
+}
+
+function testClosedPartySessionsDoNotProvideDungeonAnchorCoordinates(): void {
+    const alex = createFakeClient('AlexMercer', 21927, 21950, 'rogue');
+    const closed = createFakeClient('ClosedFriend', 4444, 33485, 'mage');
+    const live = createFakeClient('Neodevils', 8084, 99881, 'mage');
+    alex.currentLevel = 'Castle';
+    alex.levelInstanceId = '';
+    closed.currentLevel = 'AC_Mission1';
+    closed.levelInstanceId = '37629';
+    closed.syncAnchorStartedAt = 1;
+    closed.socket = { destroyed: true, readyState: 'closed' };
+    closed.entities.set(closed.clientEntID, {
+        id: closed.clientEntID,
+        isPlayer: true,
+        x: 100,
+        y: 200
+    });
+    live.currentLevel = 'AC_Mission1';
+    live.levelInstanceId = '37629';
+    live.syncAnchorStartedAt = 2;
+    live.entities.set(live.clientEntID, {
+        id: live.clientEntID,
+        isPlayer: true,
+        x: 400,
+        y: 500
+    });
+
+    GlobalState.sessionsByToken.set(closed.token, closed as never);
+    GlobalState.sessionsByToken.set(live.token, live as never);
+    GlobalState.partyGroups.set(8101, {
+        id: 8101,
+        leader: alex.character.name,
+        members: [alex.character.name, closed.character.name, live.character.name],
+        locked: false
+    });
+    GlobalState.partyByMember.set('alexmercer', 8101);
+    GlobalState.partyByMember.set('closedfriend', 8101);
+    GlobalState.partyByMember.set('neodevils', 8101);
+
+    const syncState = (LevelHandler as any).buildTransferSyncState(alex, 'AC_Mission1', null);
+    assert.ok(syncState, 'returning player should find the live party anchor');
+    assert.equal(syncState.x, 500, 'closed party sessions must not supply stale anchor coordinates');
+    assert.equal(syncState.y, 500, 'closed party sessions must not supply stale anchor coordinates');
+}
+
 function main(): void {
     const pendingWorld = new Map(GlobalState.pendingWorld);
     const pendingExtended = new Map(GlobalState.pendingExtended);
     const sessionsByToken = new Map(GlobalState.sessionsByToken);
+    const sessionsByCharacterName = new Map(GlobalState.sessionsByCharacterName);
     const partyGroups = new Map(GlobalState.partyGroups);
     const partyByMember = new Map(GlobalState.partyByMember);
     const tokenChar = new Map(GlobalState.tokenChar);
+    const usedTransferTokens = new Map(GlobalState.usedTransferTokens);
 
     ensureDataLoaded();
     try {
         GlobalState.pendingWorld.clear();
         GlobalState.pendingExtended.clear();
         GlobalState.sessionsByToken.clear();
+        GlobalState.sessionsByCharacterName.clear();
         GlobalState.partyGroups.clear();
         GlobalState.partyByMember.clear();
         GlobalState.tokenChar.clear();
+        GlobalState.usedTransferTokens.clear();
         testDungeonJoinerEnterWorldUsesOwnTransferToken();
         GlobalState.pendingWorld.clear();
         GlobalState.pendingExtended.clear();
         GlobalState.sessionsByToken.clear();
+        GlobalState.sessionsByCharacterName.clear();
         GlobalState.partyGroups.clear();
         GlobalState.partyByMember.clear();
         GlobalState.tokenChar.clear();
+        GlobalState.usedTransferTokens.clear();
         testPartyDungeonTransferKeepsAnchorSpawnCoordinates();
+        GlobalState.pendingWorld.clear();
+        GlobalState.pendingExtended.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.sessionsByCharacterName.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.tokenChar.clear();
+        GlobalState.usedTransferTokens.clear();
+        testReturningDungeonRootLogsPhysicalPartyAnchor();
+        GlobalState.pendingWorld.clear();
+        GlobalState.pendingExtended.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.sessionsByCharacterName.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.tokenChar.clear();
+        GlobalState.usedTransferTokens.clear();
+        testClosedPartySessionsDoNotProvideDungeonAnchorCoordinates();
         console.log('dungeon_enter_token_regression: ok');
     } finally {
         GlobalState.pendingWorld = pendingWorld;
         GlobalState.pendingExtended = pendingExtended;
         GlobalState.sessionsByToken = sessionsByToken;
+        GlobalState.sessionsByCharacterName = sessionsByCharacterName;
         GlobalState.partyGroups = partyGroups;
         GlobalState.partyByMember = partyByMember;
         GlobalState.tokenChar = tokenChar;
+        GlobalState.usedTransferTokens = usedTransferTokens;
     }
 }
 

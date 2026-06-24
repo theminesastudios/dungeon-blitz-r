@@ -1947,7 +1947,7 @@ export class SocialHandler {
         const br = new BitReader(data);
         const entityId = br.readMethod4();
         const text = br.readMethod13();
-        if (!LevelHandler.shouldRelayDungeonCutsceneRoomThought(client)) {
+        if (!LevelHandler.shouldRelayDungeonCutsceneRoomThought(client, entityId, text)) {
             return;
         }
         const payload = SocialHandler.buildRoomThoughtPayload(
@@ -1968,7 +1968,7 @@ export class SocialHandler {
         const entityId = playerThought && client.clientEntID > 0
             ? client.clientEntID
             : sourceEntityId;
-        if (!LevelHandler.shouldRelayDungeonCutsceneRoomThought(client)) {
+        if (!LevelHandler.shouldRelayDungeonCutsceneRoomThought(client, entityId, text)) {
             return;
         }
         const payload = SocialHandler.buildRoomThoughtPayload(
