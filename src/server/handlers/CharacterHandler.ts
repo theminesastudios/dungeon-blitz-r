@@ -1014,7 +1014,7 @@ export class CharacterHandler {
             ) ||
             char.PreviousLevel?.name ||
             "NewbieRoad";
-        const spawn = CharacterHandler.resolveEnterWorldSpawn(char, previousLevelName, currentLevelName, storedDungeonSnapshot);
+        let spawn = CharacterHandler.resolveEnterWorldSpawn(char, previousLevelName, currentLevelName, storedDungeonSnapshot);
         const isDungeonLevel = LevelConfig.isDungeonLevel(currentLevelName);
 
         // Generate Transfer Token
@@ -1051,6 +1051,16 @@ export class CharacterHandler {
 
                      // Found a party member in the same dungeon — reuse their level scope
                      levelInstanceId = normalizeLevelInstanceId(other.levelInstanceId) || createDungeonInstanceId(token);
+                     const otherEntity = other.clientEntID > 0 ? other.entities?.get(other.clientEntID) : null;
+                     const otherX = Number(otherEntity?.x);
+                     const otherY = Number(otherEntity?.y);
+                     if (Number.isFinite(otherX) && Number.isFinite(otherY)) {
+                         spawn = {
+                             x: Math.round(otherX + 100),
+                             y: Math.round(otherY),
+                             hasCoord: true
+                         };
+                     }
                      syncAnchorStartedAt = other.syncAnchorStartedAt > 0 ? other.syncAnchorStartedAt : Date.now();
                      syncAnchorToken = other.syncAnchorToken > 0 ? other.syncAnchorToken : token;
                      syncAnchorCharacterName = String(other.syncAnchorCharacterName || other.character.name).trim();

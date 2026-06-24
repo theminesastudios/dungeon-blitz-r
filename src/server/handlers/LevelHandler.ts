@@ -760,6 +760,18 @@ export class LevelHandler {
             syncAnchorToken = anchorState.syncAnchorToken ?? syncAnchorToken;
             syncAnchorCharacterName = anchorState.syncAnchorCharacterName ?? syncAnchorCharacterName;
             if (shouldSyncDungeonProgress) {
+                if (
+                    anchorState.hasCoord &&
+                    Number.isFinite(Number(anchorState.x)) &&
+                    Number.isFinite(Number(anchorState.y))
+                ) {
+                    x = Math.round(Number(anchorState.x) + 100);
+                    y = Math.round(Number(anchorState.y));
+                    hasCoord = true;
+                    console.log(
+                        `[Level] Party dungeon anchor spawn ${client.character?.name ?? 'unknown'} -> ${normalizedTargetLevel} beside ${anchorState.syncAnchorCharacterName ?? anchor.characterKey} at ${x},${y}`
+                    );
+                }
                 levelInstanceId = normalizeLevelInstanceId(anchorState.levelInstanceId) || levelInstanceId;
                 syncAnchorStartedAt = LevelHandler.normalizeSyncAnchorStartedAt(anchorState.syncAnchorStartedAt) ?? syncAnchorStartedAt;
                 if (shouldUseAnchorEntryReturn) {
@@ -816,7 +828,7 @@ export class LevelHandler {
                 x = Math.round(dungeonEntrySpawnOverride.x);
                 y = Math.round(dungeonEntrySpawnOverride.y);
                 hasCoord = true;
-            } else {
+            } else if (!hasCoord) {
                 // Dungeon start position is authored by the dungeon SWF unless a known level has broken spawn markers.
                 hasCoord = false;
             }
