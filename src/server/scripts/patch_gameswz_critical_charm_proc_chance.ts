@@ -15,7 +15,7 @@ const BASE_CRIT_CHANCE = 0.15;
 const CRITICAL_CHARM_FLAT_CHANCES = new Map<string, number>([
   ...Array.from({ length: 10 }, (_, index) => {
     const level = index + 1;
-    return [`Infernal${String(level).padStart(2, "0")}`, level * 0.005] as const;
+    return [`Infernal${String(level).padStart(2, "0")}`, level * 0.001] as const;
   }),
   ["TripleFind", 0.04],
   ["DoubleFind2", 0.04],
@@ -35,8 +35,25 @@ function expectedProcChanceByCharm(): Map<string, string> {
   );
 }
 
+function formatPercent(value: number): string {
+  return (value * 100).toFixed(1).replace(/0+$/, "").replace(/\.$/, "");
+}
+
+function expectedDescriptionByCharm(): Map<string, string> {
+  return new Map(
+    Array.from({ length: 10 }, (_, index) => {
+      const level = index + 1;
+      return [
+        `Infernal${String(level).padStart(2, "0")}`,
+        `+${formatPercent(level * 0.001)}%`,
+      ] as const;
+    }),
+  );
+}
+
 function replaceCharmProcChance(xml: string): PatchResult {
   const expected = expectedProcChanceByCharm();
+  const expectedDescriptions = expectedDescriptionByCharm();
   let changes = 0;
   const patched = xml.replace(/<CharmType\s+CharmName="([^"]+)">[\s\S]*?<\/CharmType>/g, (block, charmName: string) => {
     const nextValue = expected.get(charmName);
@@ -44,7 +61,7 @@ function replaceCharmProcChance(xml: string): PatchResult {
       return block;
     }
 
-    return block.replace(
+    let nextBlock = block.replace(
       /(<ProcChanceUp>)([\s\S]*?)(<\/ProcChanceUp>)/,
       (match, prefix: string, oldValue: string, suffix: string) => {
         if (oldValue.trim() === nextValue) {
@@ -54,6 +71,21 @@ function replaceCharmProcChance(xml: string): PatchResult {
         return `${prefix}${nextValue}${suffix}`;
       },
     );
+    const nextDescriptionPrefix = expectedDescriptions.get(charmName);
+    if (nextDescriptionPrefix) {
+      nextBlock = nextBlock.replace(
+        /(<Description>\s*)\+[\d.]+%(\s*[^<]*<\/Description>)/,
+        (match, prefix: string, suffix: string) => {
+          const replacement = `${prefix}${nextDescriptionPrefix}${suffix}`;
+          if (match === replacement) {
+            return match;
+          }
+          changes += 1;
+          return replacement;
+        },
+      );
+    }
+    return nextBlock;
   });
 
   return { xml: patched, changes };

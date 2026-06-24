@@ -134,6 +134,10 @@ export class MissionHandler {
         'JC_Mission10',
         'JC_Mission10Hard'
     ]);
+    private static readonly DUNGEONS_WITH_CLIENT_SCRIPTED_COMPLETION = new Set([
+        'AC_Mission1',
+        'AC_Mission1Hard'
+    ]);
     private static readonly DUNGEONS_REQUIRING_BOSS_DEFEAT = new Set([
         'AC_Mission6',
         'AC_Mission6Hard',
@@ -3349,7 +3353,15 @@ export class MissionHandler {
             return MissionHandler.isCraftTownTutorialBossEntity(entity);
         }
 
+        if (!Boolean(entity?.clientSpawned)) {
+            return false;
+        }
+
         return MissionHandler.isRequiredDungeonCompletionBossEntity(currentLevel, entity);
+    }
+
+    static isRequiredDungeonCompletionBossForLevel(levelName: string | null | undefined, entity: any): boolean {
+        return MissionHandler.isRequiredDungeonCompletionBossEntity(levelName, entity);
     }
 
     static shouldIgnoreUnverifiedDungeonBossDefeat(levelName: string | null | undefined, entity: any): boolean {
@@ -3710,6 +3722,10 @@ export class MissionHandler {
 
     private static shouldForceCompleteDungeonOnEnemyDefeat(levelScope: string, entity: any): boolean {
         const levelName = getScopeLevelName(levelScope);
+        if (MissionHandler.DUNGEONS_WITH_CLIENT_SCRIPTED_COMPLETION.has(LevelConfig.normalizeLevelName(levelName))) {
+            return false;
+        }
+
         if (MissionHandler.isFullClearOnlyDungeon(levelName)) {
             return false;
         }

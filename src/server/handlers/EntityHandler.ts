@@ -58,6 +58,7 @@ export class EntityHandler {
     private static readonly FIRST_SIGHT_SERVER_AUTHORITY_HOSTILE_LEVELS = new Set<string>([
         'AC_Mission1'
     ]);
+    private static readonly CANONICAL_VISIBLE_PROXY_MATCH_MAX_DISTANCE_SQ = 400 * 400;
     static readonly SERVER_AUTHORITY_ENTITY_LEVEL = 50;
     private static readonly HOSTILE_BASE_HITPOINTS = [
         100, 4920, 5580, 6020, 6520, 7040, 7580, 8180, 8800, 9480, 10180, 10960, 11740, 12640, 13540, 14540,
@@ -488,6 +489,7 @@ export class EntityHandler {
         const proxyY = Number(entity.y ?? NaN);
         const hasProxyPosition = Number.isFinite(proxyX) && Number.isFinite(proxyY);
 
+        const requireClosePosition = EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelName) && hasProxyPosition;
         for (const candidate of levelMap.values()) {
             if (!EntityHandler.isServerAuthorityHostileEntity(levelName, candidate)) {
                 continue;
@@ -501,6 +503,14 @@ export class EntityHandler {
             const distanceSq = hasProxyPosition && Number.isFinite(candidateX) && Number.isFinite(candidateY)
                 ? ((candidateX - proxyX) * (candidateX - proxyX)) + ((candidateY - proxyY) * (candidateY - proxyY))
                 : 0;
+            if (
+                requireClosePosition &&
+                Number.isFinite(candidateX) &&
+                Number.isFinite(candidateY) &&
+                distanceSq > EntityHandler.CANONICAL_VISIBLE_PROXY_MATCH_MAX_DISTANCE_SQ
+            ) {
+                continue;
+            }
             if (distanceSq < bestDistanceSq) {
                 bestDistanceSq = distanceSq;
                 bestMatch = candidate;
@@ -548,6 +558,64 @@ export class EntityHandler {
         }
 
         return 0;
+    }
+
+    private static findClientLocalServerAuthorityProxyForCanonical(
+        client: Client,
+        levelName: string | null | undefined,
+        canonical: any
+    ): number {
+        const canonicalId = Math.max(0, Math.round(Number(canonical?.id ?? 0) || 0));
+        if (canonicalId <= 0) {
+            return 0;
+        }
+
+        const canonicalName = EntityHandler.normalizeServerAuthorityProxyName(canonical?.name);
+        if (!canonicalName) {
+            return 0;
+        }
+
+        const canonicalX = Number(canonical?.x ?? NaN);
+        const canonicalY = Number(canonical?.y ?? NaN);
+        const hasCanonicalPosition = Number.isFinite(canonicalX) && Number.isFinite(canonicalY);
+        const requireClosePosition = EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelName) && hasCanonicalPosition;
+        let bestLocalId = 0;
+        let bestDistanceSq = Number.POSITIVE_INFINITY;
+
+        for (const [localId, localEntity] of client.entities.entries()) {
+            const local = Math.max(0, Math.round(Number(localId) || 0));
+            if (
+                local <= 0 ||
+                local === canonicalId ||
+                localEntity?.isPlayer ||
+                Number(localEntity?.team ?? 0) !== EntityTeam.ENEMY
+            ) {
+                continue;
+            }
+            if (EntityHandler.normalizeServerAuthorityProxyName(localEntity?.name) !== canonicalName) {
+                continue;
+            }
+
+            const localX = Number(localEntity?.x ?? NaN);
+            const localY = Number(localEntity?.y ?? NaN);
+            const distanceSq = hasCanonicalPosition && Number.isFinite(localX) && Number.isFinite(localY)
+                ? ((localX - canonicalX) * (localX - canonicalX)) + ((localY - canonicalY) * (localY - canonicalY))
+                : 0;
+            if (
+                requireClosePosition &&
+                Number.isFinite(localX) &&
+                Number.isFinite(localY) &&
+                distanceSq > EntityHandler.CANONICAL_VISIBLE_PROXY_MATCH_MAX_DISTANCE_SQ
+            ) {
+                continue;
+            }
+            if (distanceSq < bestDistanceSq) {
+                bestDistanceSq = distanceSq;
+                bestLocalId = local;
+            }
+        }
+
+        return bestLocalId;
     }
 
     private static buildHpDeltaPayload(entityId: number, delta: number): Buffer {
@@ -648,6 +716,16 @@ export class EntityHandler {
         if (instanceOwnerToken > 0 && client.token === instanceOwnerToken) {
             return true;
         }
+        if (instanceOwnerToken > 0) {
+            const instanceOwner = GlobalState.sessionsByToken.get(instanceOwnerToken);
+            if (
+                instanceOwner?.playerSpawned &&
+                !instanceOwner.socket?.destroyed &&
+                getClientLevelScope(instanceOwner) === levelScope
+            ) {
+                return false;
+            }
+        }
 
         let bestSession: Client | null = null;
         let bestStartedAt = Number.POSITIVE_INFINITY;
@@ -680,6 +758,113 @@ export class EntityHandler {
         return isClientPartyLeader(client);
     }
 
+    private static syncCanonicalVisibleServerAuthorityHostileFromProxy(
+        client: Client,
+        canonical: any,
+        proxy: any,
+        localEntityId: number
+    ): void {
+        if (!canonical || !proxy || typeof canonical !== 'object' || typeof proxy !== 'object') {
+            return;
+        }
+
+        const ownerToken = Math.max(0, Math.round(Number(canonical.proxyOwnerToken ?? 0)));
+        if (ownerToken > 0 && ownerToken !== client.token) {
+            return;
+        }
+
+        const preservedHp = canonical.hp;
+        const preservedMaxHp = canonical.maxHp;
+        const preservedHealthDelta = canonical.healthDelta;
+        const preservedHealthDeltaSnake = canonical.health_delta;
+        const preservedDead = canonical.dead;
+        const preservedUntargetable = canonical.untargetable;
+
+        const fields = [
+            'x',
+            'y',
+            'v',
+            'renderDepthOffset',
+            'characterName',
+            'dramaAnim',
+            'sleepAnim',
+            'summonerId',
+            'powerId',
+            'facingLeft',
+            'running',
+            'jumping',
+            'dropping',
+            'backpedal',
+            'roomId'
+        ];
+        for (const field of fields) {
+            if (proxy[field] !== undefined) {
+                canonical[field] = proxy[field];
+            }
+        }
+
+        canonical.proxyOwnerLocalId = Math.max(0, Math.round(Number(localEntityId) || 0));
+        canonical.lastProxyUpdateAt = Date.now();
+        canonical.hp = preservedHp;
+        canonical.maxHp = preservedMaxHp;
+        canonical.healthDelta = preservedHealthDelta;
+        canonical.health_delta = preservedHealthDeltaSnake;
+        canonical.dead = preservedDead;
+        canonical.untargetable = preservedUntargetable;
+        canonical.clientSpawned = false;
+    }
+
+    private static fanOutCanonicalVisibleServerAuthorityHostile(
+        source: Client,
+        levelName: string | null | undefined,
+        canonical: any
+    ): void {
+        if (!EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelName)) {
+            return;
+        }
+
+        const levelScope = getClientLevelScope(source);
+        const canonicalId = Math.max(0, Math.round(Number(canonical?.id ?? 0)));
+        if (!levelScope || canonicalId <= 0) {
+            return;
+        }
+
+        for (const viewer of GlobalState.sessionsByToken.values()) {
+            if (
+                viewer === source ||
+                !viewer.playerSpawned ||
+                viewer.socket?.destroyed ||
+                getClientLevelScope(viewer) !== levelScope
+            ) {
+                continue;
+            }
+
+            const localId = EntityHandler.findClientLocalServerAuthorityProxyForCanonical(viewer, levelName, canonical);
+            if (localId <= 0) {
+                logJcMini1Authority('canonical_visible_bridge_wait_for_proxy', {
+                    reason: 'first_sight_owner_canonical_fanout',
+                    entityId: Math.max(0, Math.round(Number(canonical?.id ?? 0))),
+                    localEntityId: 0,
+                    name: canonical?.name ?? '',
+                    viewer: viewer.character?.name ?? '',
+                    viewerToken: viewer.token,
+                    scope: levelScope
+                });
+                continue;
+            }
+
+            EntityHandler.bridgeCanonicalVisibleServerAuthorityProxy(
+                viewer,
+                levelName,
+                canonical,
+                viewer.entities.get(localId),
+                localId,
+                Boolean(canonical.dead) || Number(canonical.entState ?? EntityState.ACTIVE) === EntityState.DEAD,
+                'first_sight_owner_canonical_fanout'
+            );
+        }
+    }
+
     static isServerAuthorityProxyOwner(client: Client, canonicalEntity: any, localEntityId: number): boolean {
         if (!EntityHandler.isServerAuthorityHostileEntity(client.currentLevel, canonicalEntity)) {
             return false;
@@ -709,7 +894,8 @@ export class EntityHandler {
             return true;
         }
 
-        const canonical = EntityHandler.findServerAuthorityProxyCanonical(levelName, levelMap, entity) ??
+        const existingCanonical = EntityHandler.findServerAuthorityProxyCanonical(levelName, levelMap, entity);
+        const canonical = existingCanonical ??
             EntityHandler.promoteFirstSightServerAuthorityHostile(client, levelName, levelMap, entity, rawEntityId);
         if (!canonical) {
             return false;
@@ -833,6 +1019,38 @@ export class EntityHandler {
 
             return true;
         }
+        if (EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelName)) {
+            EntityHandler.bridgeCanonicalVisibleServerAuthorityProxy(
+                client,
+                levelName,
+                canonical,
+                entity,
+                localId,
+                isDead,
+                isDead ? 'proxy_bridge_attach_dead' : 'proxy_bridge_attach_live'
+            );
+
+            logJcMini1Authority('proxy_attach', {
+                entityId: canonicalId,
+                localEntityId: localId,
+                rawEntityId,
+                name: canonical.name,
+                proxyName: entity.name,
+                viewer: client.character?.name ?? '',
+                viewerToken: client.token,
+                ownerToken: canonical.proxyOwnerToken ?? 0,
+                scope: getClientLevelScope(client),
+                roomId: canonical.roomId,
+                viewerRoomId: client.currentRoomId,
+                entityLevel: canonical.level,
+                hp: Math.round(Number(canonical.hp ?? 0)),
+                maxHp: Math.round(Number(canonical.maxHp ?? 0)),
+                dead: isDead,
+                entState: canonical.entState,
+                bridge: true
+            });
+            return true;
+        }
         EntityHandler.replaceClientHostileProxyWithCanonical(
             client,
             levelName,
@@ -953,13 +1171,18 @@ export class EntityHandler {
         client.entities.set(canonicalId, { ...snapshot });
         client.knownEntityIds.add(canonicalId);
         EntityHandler.setSharedEntityRemoteUpdatesDeferred(client, canonicalId, false);
-        EntityHandler.sendEntity(client, snapshot);
-        if (Boolean(snapshot.untargetable)) {
-            EntityHandler.sendSetUntargetable(client, canonicalId, true);
+        const needsCanonicalSpawn = !hasServerCanonical || localId === canonicalId;
+        if (needsCanonicalSpawn) {
+            EntityHandler.sendEntity(client, snapshot);
+            if (Boolean(snapshot.untargetable)) {
+                EntityHandler.sendSetUntargetable(client, canonicalId, true);
+            }
         }
 
         logJcMini1Authority('canonical_spawn_replace_proxy', {
-            packetId: localId > 0 && (localId !== canonicalId || !hasServerCanonical) ? '0x0D+0x0F' : '0x0F',
+            packetId: localId > 0 && (localId !== canonicalId || !hasServerCanonical)
+                ? (needsCanonicalSpawn ? '0x0D+0x0F' : '0x0D')
+                : '0x0F',
             reason,
             entityId: canonicalId,
             localEntityId: localId,
@@ -972,7 +1195,110 @@ export class EntityHandler {
             healthDelta: Math.round(Number(snapshot.healthDelta ?? 0)),
             dead: Boolean(snapshot.dead),
             entState: snapshot.entState,
-            untargetable: Boolean(snapshot.untargetable)
+            untargetable: Boolean(snapshot.untargetable),
+            canonicalSpawnSent: needsCanonicalSpawn
+        });
+    }
+
+    private static bridgeCanonicalVisibleServerAuthorityProxy(
+        client: Client,
+        levelName: string | null | undefined,
+        canonical: any,
+        rawLocalEntity: any,
+        rawLocalEntityId: number,
+        isDead: boolean,
+        reason: string
+    ): void {
+        if (!EntityHandler.isServerAuthorityHostileEntity(levelName, canonical)) {
+            return;
+        }
+
+        EntityHandler.normalizeServerAuthorityHostileState(levelName, canonical);
+        const canonicalId = Math.max(0, Math.round(Number(canonical?.id ?? 0)));
+        const localId = Math.max(0, Math.round(Number(rawLocalEntityId) || 0));
+        if (canonicalId <= 0 || localId <= 0) {
+            return;
+        }
+
+        const localEntity = rawLocalEntity && typeof rawLocalEntity === 'object'
+            ? rawLocalEntity
+            : client.entities.get(localId) ?? canonical;
+        if (localId !== canonicalId) {
+            EntityHandler.rememberEntityAlias(client, localId, canonicalId);
+        }
+        client.knownEntityIds.add(localId);
+        client.knownEntityIds.add(canonicalId);
+        EntityHandler.setSharedEntityRemoteUpdatesDeferred(client, canonicalId, false);
+        EntityHandler.syncCanonicalVisibleServerAuthorityHostileFromProxy(client, canonical, localEntity, localId);
+
+        const maxHp = Math.max(0, Math.round(Number(canonical.maxHp ?? 0)));
+        const hp = Math.max(0, Math.round(Number(canonical.hp ?? 0)));
+        const healthDelta = hp - maxHp;
+        const bridgedEntity = {
+            ...localEntity,
+            id: localId,
+            level: EntityHandler.SERVER_AUTHORITY_ENTITY_LEVEL,
+            hp,
+            maxHp,
+            healthDelta,
+            health_delta: healthDelta,
+            dead: isDead,
+            entState: isDead ? EntityState.DEAD : Number(localEntity?.entState ?? canonical.entState ?? EntityState.ACTIVE),
+            canonicalEntityId: canonicalId,
+            sharedCanonicalId: canonicalId,
+            clientSpawned: true,
+            ownerToken: client.token,
+            ownerUserId: client.userId ?? 0,
+            ownerCharacterName: client.character?.name ?? '',
+            ownerPartyId: getPartyIdForClient(client)
+        };
+        client.entities.set(localId, bridgedEntity);
+
+        if (isDead) {
+            if (maxHp > 0) {
+                client.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -maxHp));
+            }
+            client.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
+            client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
+            client.entities.delete(localId);
+            client.knownEntityIds.delete(localId);
+            logJcMini1Authority('canonical_visible_proxy_dead_cleanup', {
+                packetId: maxHp > 0 ? '0x78+0x07+0x0D' : '0x07+0x0D',
+                reason,
+                entityId: canonicalId,
+                localEntityId: localId,
+                name: canonical.name,
+                viewer: client.character?.name ?? '',
+                viewerToken: client.token,
+                scope: getClientLevelScope(client),
+                hp: 0,
+                maxHp,
+                dead: true,
+                entState: EntityState.DEAD
+            });
+            return;
+        }
+
+        EntityHandler.sendServerAuthorityProxyInitialHpSync(client, canonical, localId, reason);
+        if (Boolean(canonical.untargetable)) {
+            EntityHandler.sendSetUntargetable(client, localId, true);
+        }
+
+        logJcMini1Authority('canonical_visible_proxy_bridge', {
+            packetId: '0x78',
+            reason,
+            entityId: canonicalId,
+            localEntityId: localId,
+            name: canonical.name,
+            proxyName: localEntity?.name ?? '',
+            viewer: client.character?.name ?? '',
+            viewerToken: client.token,
+            scope: getClientLevelScope(client),
+            hp,
+            maxHp,
+            dead: false,
+            entState: bridgedEntity.entState,
+            untargetable: Boolean(canonical.untargetable)
         });
     }
 
@@ -1082,6 +1408,7 @@ export class EntityHandler {
         console.log(
             `[MultiplayerSync][first-sight-authority] scope=${getClientLevelScope(client)} source=${String(client.character?.name ?? '')} sourceToken=${client.token} entityId=${canonicalId} name=${String(canonical.name ?? '')} hp=${Math.round(Number(canonical.hp ?? 0))} maxHp=${Math.round(Number(canonical.maxHp ?? 0))}`
         );
+        EntityHandler.fanOutCanonicalVisibleServerAuthorityHostile(client, normalizedLevelName, canonical);
         return canonical;
     }
 
@@ -3099,20 +3426,6 @@ export class EntityHandler {
                     });
                     continue;
                 }
-                if (canonicalDead) {
-                    client.send(0x07, EntityHandler.buildEntityStateDeadPayload(id));
-                    client.send(0x0D, EntityHandler.buildDestroyEntityPayload(id));
-                    client.entities.delete(id);
-                    client.knownEntityIds.delete(id);
-                } else {
-                    EntityHandler.replaceClientHostileProxyWithCanonical(
-                        client,
-                        levelName,
-                        entityProps,
-                        0,
-                        'joiner_initial_canonical'
-                    );
-                }
                 logJcMini1Authority('joiner_enemy_snapshot', {
                     entityId: id,
                     localEntityId: EntityHandler.resolveEntityLocalId(client, id),
@@ -3132,8 +3445,8 @@ export class EntityHandler {
                     playerHp: Math.round(Number(client.authoritativeCurrentHp ?? 0)),
                     playerMaxHp: Math.round(Number(client.authoritativeMaxHp ?? 0)),
                     knownCanonical: client.knownEntityIds.has(id),
-                    visibleSnapshotSent: !canonicalDead,
-                    reason: canonicalDead ? 'dead_canonical_cleanup' : 'live_canonical_snapshot'
+                    visibleSnapshotSent: false,
+                    reason: canonicalDead ? 'dead_wait_for_client_proxy_cleanup' : 'live_wait_for_client_proxy_bridge'
                 });
                 continue;
             }

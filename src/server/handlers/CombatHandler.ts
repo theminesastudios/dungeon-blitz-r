@@ -27,6 +27,7 @@ import { sendConsumableUpdate } from '../utils/ConsumableState';
 import { LevelConfig } from '../core/LevelConfig';
 import { isRoomBossEntity } from '../core/RoomBossState';
 import { logJcMini1Authority } from '../utils/JcMini1AuthorityLog';
+import { RewardHandler } from './RewardHandler';
 
 type CombatRelayOptions = {
     includeAnchor?: boolean;
@@ -74,6 +75,16 @@ type BuffTickDotInfo = {
     damage: number;
     rawDamage: number;
     tailBits: number;
+};
+
+type ServerAuthorityBuffSnapshot = {
+    key: string;
+    packetId: number;
+    targetId: number;
+    sourceToken: number;
+    sourceName: string;
+    payloadHex: string;
+    updatedAt: number;
 };
 
 type PlayerHitResolution = {
@@ -1990,6 +2001,91 @@ export class CombatHandler {
         return bb.toBuffer();
     }
 
+    private static getBufferBit(data: Buffer, bitIndex: number): number {
+        const byteIndex = Math.floor(bitIndex / 8);
+        const bitOffset = bitIndex & 7;
+        return (data[byteIndex] >> (7 - bitOffset)) & 1;
+    }
+
+    private static packBits(bits: number[]): Buffer {
+        while (bits.length % 8 !== 0) {
+            bits.push(0);
+        }
+
+        const out = Buffer.alloc(bits.length / 8);
+        for (let i = 0; i < bits.length; i += 8) {
+            let byte = 0;
+            for (let j = 0; j < 8; j++) {
+                byte = (byte << 1) | (bits[i + j] & 1);
+            }
+            out[i / 8] = byte;
+        }
+        return out;
+    }
+
+    private static encodeMethod9Bits(value: number): number[] {
+        const normalized = Math.max(0, Math.round(Number(value) || 0));
+        let bitLen = normalized > 0 ? Math.floor(Math.log2(normalized)) + 1 : 1;
+        if (bitLen % 2 !== 0) {
+            bitLen += 1;
+        }
+        const prefix = (bitLen / 2) - 1;
+        const bits: number[] = [];
+        for (let i = 3; i >= 0; i--) {
+            bits.push((prefix >> i) & 1);
+        }
+        for (let i = bitLen - 1; i >= 0; i--) {
+            bits.push((normalized >> i) & 1);
+        }
+        return bits;
+    }
+
+    private static leadingMethod9BitLength(data: Buffer): number {
+        if (!data.length) {
+            return 0;
+        }
+
+        const prefix = (CombatHandler.getBufferBit(data, 0) << 3) |
+            (CombatHandler.getBufferBit(data, 1) << 2) |
+            (CombatHandler.getBufferBit(data, 2) << 1) |
+            CombatHandler.getBufferBit(data, 3);
+        return 4 + ((prefix + 1) * 2);
+    }
+
+    private static replaceLeadingMethod9(data: Buffer, nextValue: number): Buffer {
+        const skipBits = CombatHandler.leadingMethod9BitLength(data);
+        if (skipBits <= 0 || skipBits > data.length * 8) {
+            return data;
+        }
+
+        const bits = CombatHandler.encodeMethod9Bits(nextValue);
+        for (let i = skipBits; i < data.length * 8; i++) {
+            bits.push(CombatHandler.getBufferBit(data, i));
+        }
+        return CombatHandler.packBits(bits);
+    }
+
+    private static trailingBitsAfterLeadingMethod9Hex(data: Buffer): string {
+        const skipBits = CombatHandler.leadingMethod9BitLength(data);
+        if (skipBits <= 0 || skipBits >= data.length * 8) {
+            return '';
+        }
+
+        const bits: number[] = [];
+        for (let i = skipBits; i < data.length * 8; i++) {
+            bits.push(CombatHandler.getBufferBit(data, i));
+        }
+        return CombatHandler.packBits(bits).toString('hex');
+    }
+
+    private static parseBuffTargetEntityId(data: Buffer): number {
+        try {
+            return new BitReader(data).readMethod9();
+        } catch {
+            return 0;
+        }
+    }
+
     private static translateEntityIdForViewer(viewer: Client, entityId: number): number {
         return EntityHandler.resolveEntityLocalId(viewer, entityId);
     }
@@ -2048,6 +2144,16 @@ export class CombatHandler {
                         targetId,
                         sourceId
                     });
+                }
+                case 0x0B:
+                case 0x0C: {
+                    const entityId = CombatHandler.parseBuffTargetEntityId(data);
+                    const localEntityId = CombatHandler.translateEntityIdForViewer(viewer, entityId);
+                    if (entityId <= 0 || localEntityId === entityId) {
+                        return data;
+                    }
+
+                    return CombatHandler.replaceLeadingMethod9(data, localEntityId);
                 }
                 case 0x07: {
                     const br = new BitReader(data);
@@ -2951,6 +3057,27 @@ export class CombatHandler {
             return true;
         }
 
+        if (EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelScope)) {
+            logJcMini1Authority('canonical_visible_bridge_wait_for_proxy', {
+                packetId: '0x0F',
+                reason,
+                snapshotSent: false,
+                entityId: canonicalId,
+                localEntityId: before.localId,
+                viewer: viewer.character?.name ?? '',
+                viewerToken: viewer.token,
+                currentRoomId: viewer.currentRoomId,
+                scope: getClientLevelScope(viewer),
+                expectedScope: levelScope,
+                knownCanonical: before.knownCanonical,
+                knownLocal: before.knownLocal,
+                hasCanonicalEntity: before.hasCanonicalEntity,
+                hasLocalEntity: before.hasLocalEntity,
+                knownEntityIds: Array.from(viewer.knownEntityIds ?? []).slice(0, 80)
+            });
+            return false;
+        }
+
         EntityHandler.sendEntity(viewer, entity);
         const after = CombatHandler.getServerAuthorityViewerEntityState(viewer, canonicalId);
         const resolved = after.knownCanonical || after.hasCanonicalEntity || after.knownLocal || after.hasLocalEntity;
@@ -2983,18 +3110,19 @@ export class CombatHandler {
         const canonicalId = Math.max(0, Math.round(Number(entity?.id ?? 0)));
         const canonicalVisible = EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(getClientLevelScope(viewer));
         const localId = EntityHandler.resolveEntityLocalId(viewer, canonicalId);
-        const targetId = canonicalVisible ? canonicalId : (localId > 0 ? localId : canonicalId);
+        const targetId = localId > 0 ? localId : canonicalId;
         const existing = viewer.entities.get(targetId) ?? viewer.entities.get(canonicalId) ?? {};
         const previousHp = Math.round(Number(existing?.hp ?? NaN));
         const previousEntState = Math.round(Number(existing?.entState ?? EntityState.ACTIVE));
         const previousDead = Boolean(existing?.dead) || previousEntState === EntityState.DEAD;
+        const keepClientProxy = canonicalVisible && Boolean(existing?.clientSpawned);
         viewer.entities.set(targetId, {
             ...existing,
             ...entity,
             id: targetId,
-            clientSpawned: canonicalVisible ? false : (targetId !== canonicalId ? true : Boolean(entity.clientSpawned)),
-            sharedCanonicalId: canonicalVisible || targetId === canonicalId ? undefined : canonicalId,
-            canonicalEntityId: canonicalVisible || targetId === canonicalId ? undefined : canonicalId
+            clientSpawned: keepClientProxy || targetId !== canonicalId ? true : Boolean(entity.clientSpawned),
+            sharedCanonicalId: targetId !== canonicalId ? canonicalId : existing?.sharedCanonicalId,
+            canonicalEntityId: targetId !== canonicalId ? canonicalId : existing?.canonicalEntityId
         });
         viewer.knownEntityIds.add(canonicalId);
         return {
@@ -3631,6 +3759,13 @@ export class CombatHandler {
         const entity = GlobalState.levelEntities.get(levelScope)?.get(entityId);
         if (!entity) {
             return false;
+        }
+
+        if (
+            EntityHandler.isServerAuthorityHostileEntity(viewer.currentLevel, entity) &&
+            EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(viewer.currentLevel)
+        ) {
+            return EntityHandler.canClientResolveCanonicalEntity(viewer, entityId);
         }
 
         if (EntityHandler.shouldTrackKnownEntity(viewer.currentLevel, entity)) {
@@ -4371,6 +4506,27 @@ export class CombatHandler {
         executeWork();
     }
 
+    private static handleCanonicalVisibleServerAuthorityDefeatSideEffects(
+        client: Client,
+        levelScope: string,
+        entity: any
+    ): void {
+        const levelName = getScopeLevelName(levelScope);
+        if (
+            !levelName ||
+            !EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelName) ||
+            !EntityHandler.isServerAuthorityHostileEntity(levelName, entity)
+        ) {
+            return;
+        }
+
+        RewardHandler.grantServerEnemyReward(client, entity);
+        if (MissionHandler.isRequiredDungeonCompletionBossForLevel(levelName, entity)) {
+            const roomId = Math.max(0, Math.round(Number(entity?.roomId ?? entity?.RoomID ?? entity?.room_id ?? 0) || 0));
+            LevelHandler.sendRoomUnlock(client, roomId);
+        }
+    }
+
     private static handleEnemyDefeatState(
         client: Client,
         levelScope: string,
@@ -4395,6 +4551,7 @@ export class CombatHandler {
         }
 
         CombatHandler.markEnemyDefeatProcessed(levelScope, entityId, entity);
+        CombatHandler.handleCanonicalVisibleServerAuthorityDefeatSideEffects(client, levelScope, entity);
         CombatHandler.fireAndForgetMissionWork(
             client,
             'enemy defeat mission progress',
@@ -5587,6 +5744,105 @@ export class CombatHandler {
         }
     }
 
+    private static getServerAuthorityActiveBuffs(entity: any): Record<string, ServerAuthorityBuffSnapshot> {
+        if (!entity || typeof entity !== 'object') {
+            return {};
+        }
+
+        const existing = entity.activeBuffs && typeof entity.activeBuffs === 'object' && !Array.isArray(entity.activeBuffs)
+            ? entity.activeBuffs as Record<string, ServerAuthorityBuffSnapshot>
+            : {};
+        entity.activeBuffs = existing;
+        return existing;
+    }
+
+    private static getServerAuthorityBuffPacketKey(data: Buffer): string {
+        const trailingHex = CombatHandler.trailingBitsAfterLeadingMethod9Hex(data);
+        return trailingHex || data.toString('hex');
+    }
+
+    private static mirrorServerAuthorityBuffStateToViewerCache(
+        viewer: Client,
+        canonicalId: number,
+        entity: any
+    ): void {
+        const localId = EntityHandler.resolveEntityLocalId(viewer, canonicalId);
+        const localEntity = viewer.entities.get(localId) ?? viewer.entities.get(canonicalId);
+        if (!localEntity || typeof localEntity !== 'object') {
+            return;
+        }
+
+        localEntity.activeBuffs = { ...(entity?.activeBuffs ?? {}) };
+        localEntity.buffStateVersion = Math.max(0, Math.round(Number(entity?.buffStateVersion ?? 0)));
+        localEntity.lastBuffStateAt = Math.max(0, Math.round(Number(entity?.lastBuffStateAt ?? 0)));
+        viewer.entities.set(localId > 0 ? localId : canonicalId, localEntity);
+    }
+
+    private static recordServerAuthorityBuffPacket(
+        client: Client,
+        packetId: number,
+        data: Buffer
+    ): { payload: Buffer; referencedEntityIds: number[] } {
+        const rawTargetId = CombatHandler.parseBuffTargetEntityId(data);
+        const levelScope = getClientLevelScope(client);
+        const canonicalTargetId = CombatHandler.resolveClientHostileEntityAlias(
+            client,
+            levelScope,
+            EntityHandler.resolveEntityAlias(client, rawTargetId)
+        );
+        const payload = rawTargetId > 0 && canonicalTargetId > 0 && rawTargetId !== canonicalTargetId
+            ? CombatHandler.replaceLeadingMethod9(data, canonicalTargetId)
+            : data;
+        const entity = CombatHandler.resolveLevelEntity(levelScope, canonicalTargetId);
+        if (!CombatHandler.isServerAuthoritySyncNpc(levelScope, entity)) {
+            return {
+                payload,
+                referencedEntityIds: CombatHandler.parseReferencedEntityIds(packetId, payload)
+            };
+        }
+
+        const key = CombatHandler.getServerAuthorityBuffPacketKey(payload);
+        const activeBuffs = CombatHandler.getServerAuthorityActiveBuffs(entity);
+        if (packetId === 0x0B) {
+            activeBuffs[key] = {
+                key,
+                packetId,
+                targetId: canonicalTargetId,
+                sourceToken: Math.max(0, Math.round(Number(client.token ?? 0))),
+                sourceName: String(client.character?.name ?? ''),
+                payloadHex: payload.toString('hex'),
+                updatedAt: Date.now()
+            };
+        } else {
+            delete activeBuffs[key];
+        }
+
+        entity.buffStateVersion = Math.max(0, Math.round(Number(entity.buffStateVersion ?? 0))) + 1;
+        entity.lastBuffStateAt = Date.now();
+        for (const viewer of GlobalState.sessionsByToken.values()) {
+            if (getClientLevelScope(viewer) !== levelScope) {
+                continue;
+            }
+            CombatHandler.mirrorServerAuthorityBuffStateToViewerCache(viewer, canonicalTargetId, entity);
+        }
+
+        CombatHandler.logMultiplayerSync(packetId === 0x0B ? 'server-buff-add' : 'server-buff-remove', {
+            scope: levelScope,
+            source: client.character?.name ?? '',
+            sourceToken: client.token,
+            rawTargetId,
+            targetId: canonicalTargetId,
+            name: entity?.name ?? '',
+            activeBuffCount: Object.keys(activeBuffs).length,
+            buffStateVersion: entity.buffStateVersion
+        });
+
+        return {
+            payload,
+            referencedEntityIds: [canonicalTargetId]
+        };
+    }
+
     static async handleBuffTickDot(client: Client, data: Buffer): Promise<void> {
         const info = CombatHandler.parseBuffTickDotInfo(data);
         if (!info) {
@@ -5757,14 +6013,16 @@ export class CombatHandler {
     }
 
     static async handleAddBuff(client: Client, data: Buffer): Promise<void> {
-        CombatHandler.broadcastCombatPacket(client, 0x0B, data, {
-            referencedEntityIds: CombatHandler.parseReferencedEntityIds(0x0B, data)
+        const recorded = CombatHandler.recordServerAuthorityBuffPacket(client, 0x0B, data);
+        CombatHandler.broadcastCombatPacket(client, 0x0B, recorded.payload, {
+            referencedEntityIds: recorded.referencedEntityIds
         });
     }
 
     static async handleRemoveBuff(client: Client, data: Buffer): Promise<void> {
-        CombatHandler.broadcastCombatPacket(client, 0x0C, data, {
-            referencedEntityIds: CombatHandler.parseReferencedEntityIds(0x0C, data)
+        const recorded = CombatHandler.recordServerAuthorityBuffPacket(client, 0x0C, data);
+        CombatHandler.broadcastCombatPacket(client, 0x0C, recorded.payload, {
+            referencedEntityIds: recorded.referencedEntityIds
         });
     }
 }

@@ -813,11 +813,14 @@ export class RewardHandler {
         if (!client.userId || !client.character) {
             return;
         }
-        const index = client.characters.findIndex((entry) => entry.name === client.character?.name);
+        const characters = Array.isArray((client as Client & { characters?: unknown }).characters)
+            ? client.characters
+            : [];
+        const index = characters.findIndex((entry) => entry.name === client.character?.name);
         if (index >= 0) {
-            client.characters[index] = client.character;
-        } else {
-            client.characters.push(client.character);
+            characters[index] = client.character;
+        } else if (characters === client.characters) {
+            characters.push(client.character);
         }
         if (typeof client.scheduleCharacterSave === 'function') {
             client.scheduleCharacterSave(reason);
@@ -985,6 +988,61 @@ export class RewardHandler {
         const sourceEntity = RewardHandler.resolveSourceEntity(client, reward.sourceId);
         const dropPosition = RewardHandler.resolveDropPosition(client, sourceEntity, reward.worldX, reward.worldY);
         const { rewardNonce, recipients } = RewardHandler.resolveEligibleRecipients(client, reward.sourceId);
+
+        for (const recipient of recipients) {
+            if (!recipient.playerSpawned || !areClientsInSameLevelScope(client, recipient)) {
+                continue;
+            }
+
+            RewardHandler.applyRewardToRecipient(recipient, reward, rewardNonce, sourceEntity, dropPosition);
+        }
+    }
+
+    static grantServerEnemyReward(client: Client, sourceEntity: any): void {
+        if (
+            !client.character ||
+            !client.currentLevel ||
+            !sourceEntity ||
+            sourceEntity.isPlayer ||
+            Number(sourceEntity.team ?? 0) !== 2
+        ) {
+            return;
+        }
+
+        const sourceId = Math.max(0, Math.round(Number(sourceEntity.id ?? 0)));
+        const entName = String(sourceEntity.name ?? sourceEntity.EntName ?? sourceEntity.entName ?? '').trim();
+        if (sourceId <= 0 || !entName) {
+            return;
+        }
+
+        const entType = GameData.getEntType(entName) ?? {};
+        const entLevel = Math.max(
+            1,
+            Math.round(Number(sourceEntity.level ?? entType.Level ?? client.character.level ?? 1) || 1)
+        );
+        const entRank = String(entType.EntRank ?? sourceEntity.entRank ?? sourceEntity.EntRank ?? 'Minion').trim();
+        const maxHp = Math.max(100, Math.round(Number(client.authoritativeMaxHp ?? sourceEntity.maxHp ?? 100) || 100));
+        const reward: RewardRequest = {
+            receiverId: Math.max(0, Math.round(Number(client.clientEntID ?? 0))),
+            sourceId,
+            dropItem: true,
+            itemMultiplier: 1,
+            dropGear: true,
+            gearMultiplier: 1,
+            dropMaterial: true,
+            dropTrove: false,
+            exp: GameData.calculateNpcExp(entName, entLevel),
+            petExp: 0,
+            hpGain: entRank === 'Boss' || entRank === 'MiniBoss'
+                ? Math.max(1, Math.floor(maxHp * 0.15))
+                : 0,
+            gold: GameData.calculateNpcGold(entName, entLevel),
+            worldX: Math.round(Number(sourceEntity.x ?? sourceEntity.pos_x ?? 0) || 0),
+            worldY: Math.round(Number(sourceEntity.y ?? sourceEntity.pos_y ?? 0) || 0),
+            combo: 0
+        };
+        const dropPosition = RewardHandler.resolveDropPosition(client, sourceEntity, reward.worldX, reward.worldY);
+        const { rewardNonce, recipients } = RewardHandler.resolveEligibleRecipients(client, sourceId);
 
         for (const recipient of recipients) {
             if (!recipient.playerSpawned || !areClientsInSameLevelScope(client, recipient)) {

@@ -4002,6 +4002,20 @@ export class LevelHandler {
         LevelHandler.markRoomEventStarted(client, roomId);
     }
 
+    static sendRoomUnlock(client: Client, roomId: number): void {
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId ?? 0)));
+        if (normalizedRoomId <= 0) {
+            return;
+        }
+
+        const bb = new BitBuffer(false);
+        bb.writeMethod9(normalizedRoomId);
+        const payload = bb.toBuffer();
+        for (const recipient of LevelHandler.forLevelRecipients(client, true)) {
+            recipient.send(0xAD, payload);
+        }
+    }
+
     static primeTutorialRoomEvents(client: Client): void {
         if (!['TutorialBoat', 'TutorialDungeon', 'CraftTownTutorial'].includes(client.currentLevel)) {
             return;
