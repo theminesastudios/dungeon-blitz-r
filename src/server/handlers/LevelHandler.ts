@@ -4849,6 +4849,14 @@ export class LevelHandler {
             console.log(
                 `[MultiplayerSync][alive-correction] canonicalId=${Math.max(0, Math.round(Number(canonicalEntity?.id ?? entityId) || 0))} localId=${rawEntityId} token=${client.token} hp=${canonicalHp}`
             );
+            const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+            CombatHandler.logLootSync('predicted-death-no-loot', {
+                canonicalId: Math.max(0, Math.round(Number(canonicalEntity?.id ?? entityId) || 0)),
+                localId: rawEntityId,
+                token: client.token,
+                hp: canonicalHp,
+                reason: 'canonical_alive'
+            });
             console.log(
                 `[MultiplayerSync][post-death-drop] kind=entity-incremental-predicted-death scope=${getClientLevelScope(client)} targetId=${entityId} rawEntityId=${rawEntityId} sourceToken=${client.token} source=${String(client.character?.name ?? '')} hp=${canonicalHp} dead=false destroyed=false entState=${canonicalEntity?.entState}`
             );

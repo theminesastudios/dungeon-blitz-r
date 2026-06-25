@@ -24,6 +24,19 @@ export interface PendingLootDrop {
     tier?: number;
     material?: number;
     dye?: number;
+    __lootDropMetadata?: {
+        lootdropId: number;
+        lootDropNonce: string;
+        sourceEnemyLootDropNonce: string;
+        sourceEnemyCanonicalId: number;
+        ownerToken: number;
+        partyId: number;
+        sharedScope: string;
+        amount: number;
+        type: string;
+        collected: boolean;
+        collectedBy: number;
+    };
 }
 
 export interface KeepTutorialState {

@@ -9,6 +9,7 @@ import { EntityHandler } from '../handlers/EntityHandler';
 import { CombatHandler } from '../handlers/CombatHandler';
 import { LevelHandler } from '../handlers/LevelHandler';
 import { MissionHandler } from '../handlers/MissionHandler';
+import { RewardHandler } from '../handlers/RewardHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { getLevelScopeKey } from '../core/LevelScope';
@@ -21,7 +22,7 @@ type SentPacket = {
 type FakeClient = {
     token: number;
     userId: number;
-    character: { name: string; level: number; class?: string; MasterClass?: number; CurrentLevel?: { name: string; x: number; y: number } };
+    character: { name: string; level: number; gold?: number; class?: string; MasterClass?: number; CurrentLevel?: { name: string; x: number; y: number } };
     currentLevel: string;
     levelInstanceId: string;
     syncAnchorStartedAt: number;
@@ -63,6 +64,7 @@ function createFakeClient(name: string, token: number, roomId: number): FakeClie
         character: {
             name,
             level: 50,
+            gold: 0,
             class: name === 'Neodevils' ? 'mage' : 'rogue',
             MasterClass: 0,
             CurrentLevel: { name: 'AC_Mission1', x: 1000, y: 1000 }
@@ -185,6 +187,12 @@ function buildBuffStatePayload(entityId: number, buffId: number = 17): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod4(entityId);
     bb.writeMethod4(buffId);
+    return bb.toBuffer();
+}
+
+function buildPickupLootdropPayload(lootdropId: number): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(lootdropId);
     return bb.toBuffer();
 }
 
@@ -561,6 +569,62 @@ async function testAcMission1GoldDragonDeathRewardsUnlocksWithoutCompleting(): P
     );
 }
 
+async function testAcMission1CanonicalLootIsPersonalAndIdempotent(): Promise<void> {
+    const rogue = createFakeClient('AlexMercer', 59395, 2);
+    const mage = createFakeClient('Neodevils', 45890, 2);
+    setParty(rogue, mage);
+    attachPlayer(rogue);
+    attachPlayer(mage);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+
+    const scope = getLevelScopeKey(rogue.currentLevel, rogue.levelInstanceId);
+    attachProxy(rogue, 3812092, 'AncientDragonGold', 3000, 1200, 2);
+    const gold = GlobalState.levelEntities.get(scope)?.get(3812092);
+    assert.ok(gold, 'gold dragon should be canonical before lethal hit');
+
+    await CombatHandler.handlePowerHit(
+        rogue as never,
+        buildPowerHitPayload(3812092, rogue.clientEntID, Math.round(Number(gold.maxHp ?? 0)) + 999)
+    );
+
+    assert.equal(gold.lootDropped, true, 'canonical enemy should record that loot was dropped');
+    assert.equal(typeof gold.lootDropNonce, 'string', 'canonical enemy should record a loot nonce');
+    assert.equal(gold.lootGrantedTokens.has(rogue.token), true, 'killer should receive one personal loot grant');
+    assert.equal(gold.lootGrantedTokens.has(mage.token), true, 'eligible party member should receive one personal loot grant');
+    assert.equal(
+        Array.from(rogue.pendingLoot.values()).some((loot) => Number(loot?.gold ?? 0) > 0),
+        true,
+        'killer should receive personal gold loot'
+    );
+    assert.equal(
+        Array.from(mage.pendingLoot.values()).some((loot) => Number(loot?.gold ?? 0) > 0),
+        true,
+        'eligible party member should receive personal gold loot'
+    );
+
+    const rogueLootCount = rogue.pendingLoot.size;
+    const mageLootCount = mage.pendingLoot.size;
+    RewardHandler.grantServerEnemyRewardToEligibleViewers(rogue as never, gold, {
+        levelScope: scope,
+        lootDropNonce: gold.lootDropNonce
+    });
+    assert.equal(rogue.pendingLoot.size, rogueLootCount, 'duplicate reward grant should not spawn extra killer loot');
+    assert.equal(mage.pendingLoot.size, mageLootCount, 'duplicate reward grant should not spawn extra party loot');
+
+    const goldEntry = Array.from(rogue.pendingLoot.entries()).find(([, loot]) => Number(loot?.gold ?? 0) > 0);
+    assert.ok(goldEntry, 'killer should have a gold lootdrop to pick up');
+    const [lootdropId, lootdrop] = goldEntry;
+    const goldBeforePickup = Number(rogue.character.gold ?? 0);
+    RewardHandler.handlePickupLootdrop(rogue as never, buildPickupLootdropPayload(lootdropId));
+    const goldAfterPickup = Number(rogue.character.gold ?? 0);
+    assert.ok(goldAfterPickup > goldBeforePickup, 'first pickup should grant gold');
+
+    rogue.pendingLoot.set(lootdropId, lootdrop);
+    RewardHandler.handlePickupLootdrop(rogue as never, buildPickupLootdropPayload(lootdropId));
+    assert.equal(Number(rogue.character.gold ?? 0), goldAfterPickup, 'duplicate pickup should not grant gold twice');
+}
+
 function testAcMission1DestroyedDragonDoesNotRespawnOnRejoin(): void {
     const rogue = createFakeClient('AlexMercer', 59395, 2);
     const rejoin = createFakeClient('Neodevils', 45890, 2);
@@ -723,6 +787,13 @@ async function main(): Promise<void> {
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         await testAcMission1GoldDragonDeathRewardsUnlocksWithoutCompleting();
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
+        await testAcMission1CanonicalLootIsPersonalAndIdempotent();
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();

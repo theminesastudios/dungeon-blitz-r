@@ -262,6 +262,14 @@ export class CombatHandler {
         return `${levelName}:${entityId}`;
     }
 
+    static logLootSync(event: string, fields: Record<string, unknown> = {}): void {
+        const parts = Object.entries(fields).map(([key, value]) => {
+            const normalized = String(value ?? '').replace(/\s+/g, '_');
+            return `${key}=${normalized}`;
+        });
+        console.log(`[LootSync][${event}]${parts.length ? ` ${parts.join(' ')}` : ''}`);
+    }
+
     private static getContributionKey(levelName: string, entityId: number, nonce: number): string {
         return `${levelName}:${entityId}:${nonce}`;
     }
@@ -2880,6 +2888,7 @@ export class CombatHandler {
         const maxHp = Math.max(1, Math.round(Number(entity.maxHp ?? 0)) || CombatHandler.estimateHostileMaxHp(entity) || 1);
         const hpBefore = Math.max(0, Math.round(Number(entity.hp ?? 0)));
         const alreadyDestroyed = Boolean(entity.destroyed);
+        const finalizedAt = Date.now();
         entity.maxHp = maxHp;
         entity.hp = 0;
         entity.healthDelta = -maxHp;
@@ -2887,6 +2896,8 @@ export class CombatHandler {
         entity.dead = true;
         entity.destroyed = true;
         entity.entState = EntityState.DEAD;
+        entity.deathFinalizedAt = Math.max(0, Math.round(Number(entity.deathFinalizedAt ?? 0))) || finalizedAt;
+        entity.finalDeathReason = options.reason ?? 'hostile_death';
         entity.aggroTargetEntityId = 0;
         entity.aggroTargetToken = 0;
         entity.targetEntityId = 0;
@@ -2903,6 +2914,8 @@ export class CombatHandler {
             levelEntity.dead = true;
             levelEntity.destroyed = true;
             levelEntity.entState = EntityState.DEAD;
+            levelEntity.deathFinalizedAt = Math.max(0, Math.round(Number(levelEntity.deathFinalizedAt ?? 0))) || entity.deathFinalizedAt;
+            levelEntity.finalDeathReason = options.reason ?? 'hostile_death_level_copy';
             levelEntity.aggroTargetEntityId = 0;
             levelEntity.aggroTargetToken = 0;
             levelEntity.targetEntityId = 0;
@@ -3610,6 +3623,13 @@ export class CombatHandler {
         CombatHandler.logMultiplayerSync('alive-correction', {
             canonicalId: Math.max(0, Math.round(Number(entity?.id ?? 0))),
             localId: cacheState.localId,
+            token: viewer.token,
+            hp: Math.max(0, Math.round(Number(entity?.hp ?? 0))),
+            reason
+        });
+        CombatHandler.logLootSync('predicted-death-no-loot', {
+            canonicalId: Math.max(0, Math.round(Number(entity?.id ?? 0))),
+            localId: rawEntityId || cacheState.localId,
             token: viewer.token,
             hp: Math.max(0, Math.round(Number(entity?.hp ?? 0))),
             reason
@@ -4871,17 +4891,87 @@ export class CombatHandler {
         entity: any
     ): void {
         const levelName = getScopeLevelName(levelScope);
+        const canonicalId = Math.max(0, Math.round(Number(entity?.id ?? 0)));
+        const canonicalEntity = canonicalId > 0
+            ? (GlobalState.levelEntities.get(levelScope)?.get(canonicalId) ?? entity)
+            : entity;
         if (
             !levelName ||
             !EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelName) ||
-            !EntityHandler.isServerAuthorityHostileEntity(levelName, entity)
+            !EntityHandler.isServerAuthorityHostileEntity(levelName, canonicalEntity)
         ) {
             return;
         }
 
-        RewardHandler.grantServerEnemyReward(client, entity);
-        if (MissionHandler.isRequiredDungeonCompletionBossForLevel(levelName, entity)) {
-            const roomId = Math.max(0, Math.round(Number(entity?.roomId ?? entity?.RoomID ?? entity?.room_id ?? 0) || 0));
+        const hp = Math.round(Number(canonicalEntity?.hp ?? 0));
+        const dead = Boolean(canonicalEntity?.dead) || Number(canonicalEntity?.entState ?? EntityState.ACTIVE) === EntityState.DEAD;
+        if (hp <= 0 && dead && !Boolean(canonicalEntity?.destroyed)) {
+            CombatHandler.finalizeHostileDeath(client, levelScope, canonicalId, canonicalEntity, {
+                includeAnchor: true,
+                sendHpCorrection: false,
+                reason: 'canonical_visible_reward_finalization'
+            });
+        }
+
+        const finalized = Math.round(Number(canonicalEntity?.hp ?? 0)) <= 0 &&
+            Boolean(canonicalEntity?.dead) &&
+            Boolean(canonicalEntity?.destroyed) &&
+            (
+                Math.max(0, Math.round(Number(canonicalEntity?.deathFinalizedAt ?? 0))) > 0 ||
+                Boolean(canonicalEntity?.finalDeathReason)
+            );
+        if (!finalized) {
+            CombatHandler.logLootSync('reward-blocked-not-finalized', {
+                canonicalId,
+                hp: Math.round(Number(canonicalEntity?.hp ?? 0)),
+                dead: Boolean(canonicalEntity?.dead),
+                destroyed: Boolean(canonicalEntity?.destroyed),
+                caller: client.character?.name ?? '',
+                token: client.token
+            });
+            return;
+        }
+
+        if (Boolean(canonicalEntity?.lootDropped)) {
+            CombatHandler.logLootSync('loot-side-effect-duplicate-drop', {
+                canonicalId,
+                scope: levelScope,
+                caller: client.character?.name ?? '',
+                token: client.token,
+                reason: 'already_dropped'
+            });
+        } else {
+            const lifeNonce = Math.max(0, Math.round(Number(
+                canonicalEntity?.lifeNonce ?? CombatHandler.getEntityLifeNonce(levelScope, canonicalId)
+            ) || 0));
+            const lootDropNonce = `${levelScope}:${canonicalId}:${lifeNonce}`;
+            canonicalEntity.lootDropped = true;
+            canonicalEntity.lootDropNonce = lootDropNonce;
+            canonicalEntity.lootGrantedTokens = canonicalEntity.lootGrantedTokens instanceof Set
+                ? canonicalEntity.lootGrantedTokens
+                : new Set<number>(Array.isArray(canonicalEntity.lootGrantedTokens) ? canonicalEntity.lootGrantedTokens.map((token: unknown) => Math.round(Number(token) || 0)) : []);
+            canonicalEntity.lootCollectedTokens = canonicalEntity.lootCollectedTokens instanceof Set
+                ? canonicalEntity.lootCollectedTokens
+                : new Set<string>(Array.isArray(canonicalEntity.lootCollectedTokens) ? canonicalEntity.lootCollectedTokens.map((token: unknown) => String(token)) : []);
+            canonicalEntity.lootDrops = canonicalEntity.lootDrops instanceof Map
+                ? canonicalEntity.lootDrops
+                : new Map<number, unknown>();
+            canonicalEntity.deathRewardGrantedAt = Date.now();
+            CombatHandler.logLootSync('loot-side-effect-start', {
+                canonicalId,
+                nonce: lootDropNonce,
+                killer: client.character?.name ?? '',
+                caller: client.character?.name ?? '',
+                scope: levelScope
+            });
+            RewardHandler.grantServerEnemyRewardToEligibleViewers(client, canonicalEntity, {
+                levelScope,
+                lootDropNonce
+            });
+        }
+
+        if (MissionHandler.isRequiredDungeonCompletionBossForLevel(levelName, canonicalEntity)) {
+            const roomId = Math.max(0, Math.round(Number(canonicalEntity?.roomId ?? canonicalEntity?.RoomID ?? canonicalEntity?.room_id ?? 0) || 0));
             LevelHandler.sendRoomUnlock(client, roomId);
         }
     }
