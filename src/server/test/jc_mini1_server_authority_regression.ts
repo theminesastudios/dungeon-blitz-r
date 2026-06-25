@@ -431,8 +431,12 @@ async function testProxyAttachHitDeathAndDestroy(): Promise<void> {
     const deathIndex = telahair.sentPackets.findIndex((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entState === EntityState.DEAD);
     assert.ok(deathIndex >= 0, 'viewer should receive DEAD after lethal canonical hit');
     assert.equal(parseEntityState(telahair.sentPackets[deathIndex].payload).entityId, 600001, 'death state should use viewer local proxy id');
-    assert.equal(telahair.entities.get(600001)?.hp, 0, 'viewer proxy HP should be zero after death relay');
-    assert.equal(telahair.entities.get(600001)?.dead, true, 'viewer proxy should be dead after death relay');
+    assert.equal(
+        telahair.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 600001),
+        true,
+        'viewer proxy should be destroyed locally after death relay'
+    );
+    assert.equal(telahair.entities.has(600001), false, 'viewer proxy cache should not stay alive after death relay');
 
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
@@ -448,7 +452,7 @@ async function testProxyAttachHitDeathAndDestroy(): Promise<void> {
     assert.equal(GlobalState.levelEntities.get(scope)?.has(910001), true, 'post-death proxy destroy should not re-finalize or remove canonical dead enemy');
     const sourceDestroy = zeus.sentPackets.find((packet) => packet.id === 0x0D);
     const viewerDestroy = telahair.sentPackets.find((packet) => packet.id === 0x0D);
-    assert.equal(Boolean(sourceDestroy), false, 'post-death destroy should be dropped for source proxy');
+    assert.equal(parseDestroy(sourceDestroy!.payload).entityId, 500001, 'post-death destroy should correct the source proxy local id');
     assert.equal(Boolean(viewerDestroy), false, 'post-death destroy should not rebroadcast to party viewer');
 }
 
@@ -487,8 +491,12 @@ async function testReversePowerHitLethalConvergesStarter(): Promise<void> {
     );
     assertLocalDeadPacket(telahair, 600002, 'reverse lethal power hit should send DEAD to joiner local proxy');
     assertLocalDeadPacket(zeus, 500002, 'reverse lethal power hit should reconverge starter local proxy to DEAD');
-    assert.equal(zeus.entities.get(500002)?.hp, 0, 'starter cache should be zero after reverse lethal power hit');
-    assert.equal(zeus.entities.get(500002)?.dead, true, 'starter cache should be dead after reverse lethal power hit');
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 500002),
+        true,
+        'starter proxy should be destroyed locally after reverse lethal power hit'
+    );
+    assert.equal(zeus.entities.has(500002), false, 'starter cache should not keep reverse lethal proxy alive');
 
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
@@ -496,7 +504,7 @@ async function testReversePowerHitLethalConvergesStarter(): Promise<void> {
     assert.equal(GlobalState.levelEntities.get(scope)?.has(910002), true, 'post-death destroy should not remove canonical dead enemy');
     const joinerDestroy = telahair.sentPackets.find((packet) => packet.id === 0x0D);
     const starterDestroy = zeus.sentPackets.find((packet) => packet.id === 0x0D);
-    assert.equal(Boolean(joinerDestroy), false, 'post-death destroy should not re-finalize joiner source proxy');
+    assert.equal(parseDestroy(joinerDestroy!.payload).entityId, 600002, 'post-death destroy should correct joiner source proxy');
     assert.equal(Boolean(starterDestroy), false, 'post-death destroy should not re-finalize starter viewer proxy');
 }
 
@@ -520,8 +528,12 @@ async function testReverseBuffTickLethalConvergesStarter(): Promise<void> {
     assert.equal(zeus.sentPackets.some((packet) => packet.id === 0x79), false, 'starter viewer should not receive echoed DoT tick');
     assertLocalDeadPacket(telahair, 600006, 'reverse lethal DoT tick should send DEAD to joiner local proxy');
     assertLocalDeadPacket(zeus, 500006, 'reverse lethal DoT tick should reconverge starter local proxy to DEAD');
-    assert.equal(zeus.entities.get(500006)?.hp, 0, 'starter cache should be zero after reverse lethal DoT tick');
-    assert.equal(zeus.entities.get(500006)?.dead, true, 'starter cache should be dead after reverse lethal DoT tick');
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 500006),
+        true,
+        'starter proxy should be destroyed locally after reverse lethal DoT tick'
+    );
+    assert.equal(zeus.entities.has(500006), false, 'starter cache should not keep reverse lethal DoT proxy alive');
 }
 
 async function testPredictedDestroyLateDeadProxyAndSummonPassthrough(): Promise<void> {

@@ -196,6 +196,26 @@ function buildPickupLootdropPayload(lootdropId: number): Buffer {
     return bb.toBuffer();
 }
 
+function buildGrantRewardPayload(sourceId: number, receiverId: number, gold: number, hpGain: number = 0): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod9(receiverId);
+    bb.writeMethod9(sourceId);
+    bb.writeMethod15(true);
+    bb.writeMethod309(1);
+    bb.writeMethod15(true);
+    bb.writeMethod309(1);
+    bb.writeMethod15(true);
+    bb.writeMethod15(false);
+    bb.writeMethod9(1);
+    bb.writeMethod9(0);
+    bb.writeMethod9(hpGain);
+    bb.writeMethod9(gold);
+    bb.writeMethod24(3000);
+    bb.writeMethod24(1200);
+    bb.writeMethod15(false);
+    return bb.toBuffer();
+}
+
 function buildRoomBossInfoPayload(roomId: number, bossId: number, bossName: string): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod9(roomId);
@@ -607,7 +627,9 @@ async function testAcMission1CanonicalLootIsPersonalAndIdempotent(): Promise<voi
     const mageLootCount = mage.pendingLoot.size;
     RewardHandler.grantServerEnemyRewardToEligibleViewers(rogue as never, gold, {
         levelScope: scope,
-        lootDropNonce: gold.lootDropNonce
+        lootDropNonce: gold.lootDropNonce,
+        sourceEnemyCanonicalId: 3812092,
+        caller: 'test_duplicate_canonical_reward'
     });
     assert.equal(rogue.pendingLoot.size, rogueLootCount, 'duplicate reward grant should not spawn extra killer loot');
     assert.equal(mage.pendingLoot.size, mageLootCount, 'duplicate reward grant should not spawn extra party loot');
@@ -623,6 +645,37 @@ async function testAcMission1CanonicalLootIsPersonalAndIdempotent(): Promise<voi
     rogue.pendingLoot.set(lootdropId, lootdrop);
     RewardHandler.handlePickupLootdrop(rogue as never, buildPickupLootdropPayload(lootdropId));
     assert.equal(Number(rogue.character.gold ?? 0), goldAfterPickup, 'duplicate pickup should not grant gold twice');
+}
+
+function testAcMission1LegacyEnemyRewardPacketDoesNotSpawnLootBeforeCanonicalDeath(): void {
+    const rogue = createFakeClient('AlexMercer', 59395, 2);
+    const mage = createFakeClient('Neodevils', 45890, 2);
+    setParty(rogue, mage);
+    attachPlayer(rogue);
+    attachPlayer(mage);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+
+    const scope = getLevelScopeKey(rogue.currentLevel, rogue.levelInstanceId);
+    attachProxy(rogue, 4669617, 'AncientDragonGoldMini', 3000, 1200, 2);
+    attachProxy(mage, 4879, 'AncientDragonGoldMini', 3010, 1200, 2);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(4669617);
+    assert.ok(canonical, 'canonical dragon should exist before legacy reward packet');
+    assert.ok(Math.round(Number(canonical.hp ?? 0)) > 0, 'canonical dragon should still be alive');
+    assert.equal(canonical.dead, false, 'canonical dragon should not be marked dead');
+
+    mage.sentPackets.length = 0;
+    RewardHandler.handleGrantReward(mage as never, buildGrantRewardPayload(4879, mage.clientEntID, 22635, 65547));
+
+    assert.equal(mage.pendingLoot.size, 0, 'legacy local hostile reward packet must not create personal loot before canonical death');
+    assert.equal(rogue.pendingLoot.size, 0, 'legacy local hostile reward packet must not create party loot before canonical death');
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x32),
+        false,
+        'legacy local hostile reward packet must not send a 0x32 lootdrop before canonical death'
+    );
+    assert.equal(canonical.dead, false, 'blocking legacy reward should not finalize the canonical dragon');
+    assert.equal(Math.round(Number(canonical.hp ?? 0)) > 0, true, 'blocking legacy reward should leave canonical HP above zero');
 }
 
 function testAcMission1DestroyedDragonDoesNotRespawnOnRejoin(): void {
@@ -645,6 +698,10 @@ function testAcMission1DestroyedDragonDoesNotRespawnOnRejoin(): void {
     canonical.dead = true;
     canonical.entState = EntityState.DEAD;
     (EntityHandler as any).noteServerAuthorityHostileDestroyed(scope, 4712451, canonical);
+    assert.ok(
+        GlobalState.deadServerAuthorityHostilesByScope.get(scope)?.size,
+        'canonical server hostile death should create a rejoin tombstone'
+    );
     levelMap.delete(4712451);
 
     rejoin.sentPackets.length = 0;
@@ -654,6 +711,11 @@ function testAcMission1DestroyedDragonDoesNotRespawnOnRejoin(): void {
         Array.from(levelMap.values()).some((entity) => !entity.isPlayer && Number(entity.team ?? 0) === EntityTeam.ENEMY),
         false,
         'rejoined local dragon must not promote a new canonical server enemy after the authored dragon died'
+    );
+    assert.equal(
+        rejoin.sentPackets.some((packet) => packet.id === 0x78 && parseHpDelta(packet.payload).entityId === 10999999 && parseHpDelta(packet.payload).delta < 0),
+        true,
+        'rejoined local dragon should receive authoritative zero HP on its local id'
     );
     assert.equal(
         rejoin.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 10999999 && parseEntityState(packet.payload).entState === EntityState.DEAD),
@@ -735,6 +797,7 @@ async function main(): Promise<void> {
     const sessionsByToken = new Map(GlobalState.sessionsByToken);
     const partyByMember = new Map(GlobalState.partyByMember);
     const partyGroups = new Map(GlobalState.partyGroups);
+    const deadServerAuthorityHostilesByScope = new Map(GlobalState.deadServerAuthorityHostilesByScope);
     const serverAuthorityDestroyedIdsByScope = new Map((EntityHandler as any).serverAuthorityDestroyedIdsByScope);
     const serverAuthorityDestroyedFingerprintsByScope = new Map((EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope);
 
@@ -744,11 +807,13 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
         await testAcMission1FirstSightAuthorityConvergesDragon();
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         await testAcMission1BuffStateBridgesThroughCanonicalEnemy();
@@ -756,6 +821,7 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         testAcMission1JoinerLocalSpawnBridgesAfterInitialCanonical();
@@ -763,6 +829,7 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         testAcMission1JoinerFirstSightPromotesBridgeWithoutDuplicate();
@@ -770,6 +837,7 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         testAcMission1FarSameNameHostilesPromoteSeparately();
@@ -777,6 +845,7 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         testAcMission1ServerOwnedDragonKillDoesNotForceDungeonCompletion();
@@ -784,6 +853,7 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         await testAcMission1GoldDragonDeathRewardsUnlocksWithoutCompleting();
@@ -791,6 +861,7 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         await testAcMission1CanonicalLootIsPersonalAndIdempotent();
@@ -798,6 +869,15 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
+        testAcMission1LegacyEnemyRewardPacketDoesNotSpawnLootBeforeCanonicalDeath();
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         testAcMission1DestroyedDragonDoesNotRespawnOnRejoin();
@@ -805,6 +885,7 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         testAcMission1ReconnectDoesNotResetLiveCanonicalScope();
@@ -812,6 +893,7 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         testAcMission1CutsceneLocksServerAuthorityHostiles();
@@ -821,6 +903,7 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken = sessionsByToken;
         GlobalState.partyByMember = partyByMember;
         GlobalState.partyGroups = partyGroups;
+        GlobalState.deadServerAuthorityHostilesByScope = deadServerAuthorityHostilesByScope;
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope = serverAuthorityDestroyedIdsByScope;
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope = serverAuthorityDestroyedFingerprintsByScope;
     }

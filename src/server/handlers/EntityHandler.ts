@@ -3,7 +3,7 @@ import { BitBuffer } from '../network/protocol/bitBuffer';
 import { Client, clearClientSpawnFallbackTimer, createKeepTutorialState } from '../core/Client';
 import { BitReader } from '../network/protocol/bitReader';
 import { DebugConfig } from '../core/Debug';
-import { GlobalState } from '../core/GlobalState';
+import { DeadHostileTombstone, GlobalState } from '../core/GlobalState';
 import { Entity, EntityProps, EntityState, EntityTeam } from '../core/Entity';
 import { LevelConfig } from '../core/LevelConfig';
 import { GameData } from '../core/GameData';
@@ -150,7 +150,7 @@ export class EntityHandler {
         return `${name}:${roomId}:${x}:${y}`;
     }
 
-    static noteServerAuthorityHostileDestroyed(levelScope: string, entityId: number, entity: any = null): void {
+    static noteServerAuthorityHostileDestroyed(levelScope: string, entityId: number, entity: any = null, killerToken: number = 0): void {
         const scopeKey = String(levelScope ?? '').trim();
         const id = Math.max(0, Math.round(Number(entityId) || 0));
         if (!scopeKey || id <= 0 || !EntityHandler.usesServerAuthorityHostiles(getScopeLevelName(scopeKey))) {
@@ -162,6 +162,118 @@ export class EntityHandler {
         if (fingerprint) {
             EntityHandler.getServerAuthorityDestroyedFingerprints(scopeKey).add(fingerprint);
         }
+        if (entity) {
+            EntityHandler.upsertDeadServerAuthorityHostileTombstone(scopeKey, entity, 'note_destroyed', killerToken);
+        }
+    }
+
+    static getDeadServerAuthorityHostileTombstones(levelScope: string): Map<string, DeadHostileTombstone> {
+        const scopeKey = String(levelScope ?? '').trim();
+        let tombstones = GlobalState.deadServerAuthorityHostilesByScope.get(scopeKey);
+        if (!tombstones) {
+            tombstones = new Map<string, DeadHostileTombstone>();
+            GlobalState.deadServerAuthorityHostilesByScope.set(scopeKey, tombstones);
+        }
+
+        return tombstones;
+    }
+
+    static clearDeadServerAuthorityHostileTombstones(levelScope: string, reason: string): void {
+        const scopeKey = String(levelScope ?? '').trim();
+        if (!scopeKey) {
+            return;
+        }
+
+        const count = GlobalState.deadServerAuthorityHostilesByScope.get(scopeKey)?.size ?? 0;
+        GlobalState.deadServerAuthorityHostilesByScope.delete(scopeKey);
+        console.log(`[MultiplayerSync][hostile-tombstones-clear] scope=${scopeKey} reason=${reason} count=${count}`);
+    }
+
+    static upsertDeadServerAuthorityHostileTombstone(
+        levelScope: string,
+        entity: any,
+        reason: string,
+        killerToken: number = 0
+    ): DeadHostileTombstone | null {
+        const scopeKey = String(levelScope ?? '').trim();
+        const canonicalId = Math.max(0, Math.round(Number(entity?.id ?? entity?.canonicalId ?? 0)));
+        if (!scopeKey || canonicalId <= 0 || !EntityHandler.isServerAuthorityHostileEntity(scopeKey, entity)) {
+            return null;
+        }
+
+        const spawnKey = String(entity.spawnKey || EntityHandler.getHostileSpawnKey(scopeKey, entity));
+        entity.spawnKey = spawnKey;
+        const tombstones = EntityHandler.getDeadServerAuthorityHostileTombstones(scopeKey);
+        const existing = tombstones.get(spawnKey);
+        const levelName = getScopeLevelName(scopeKey);
+        const deathFinalizedAt = Math.max(0, Math.round(Number(entity.deathFinalizedAt ?? Date.now())));
+        const tombstone: DeadHostileTombstone = {
+            canonicalId,
+            spawnKey,
+            levelScope: scopeKey,
+            levelName,
+            roomId: Math.max(-1, Math.round(Number(entity.roomId ?? -1))),
+            enemyType: String(entity.entType ?? entity.EntType ?? entity.name ?? entity.EntName ?? ''),
+            name: String(entity.name ?? entity.EntName ?? entity.entName ?? ''),
+            x: Math.round(Number(entity.x ?? entity.physPosX ?? 0) || 0),
+            y: Math.round(Number(entity.y ?? entity.physPosY ?? 0) || 0),
+            killedAt: Math.max(0, Math.round(Number(existing?.killedAt ?? deathFinalizedAt))),
+            killerToken: Math.max(0, Math.round(Number(killerToken || existing?.killerToken || 0))),
+            lootDropNonce: String(entity.lootDropNonce ?? existing?.lootDropNonce ?? ''),
+            deathFinalizedAt,
+            dead: true,
+            destroyed: true,
+            deathVersion: Math.max(1, Math.round(Number(entity.deathVersion ?? existing?.deathVersion ?? 1)))
+        };
+        tombstones.set(spawnKey, tombstone);
+        EntityHandler.getServerAuthorityDestroyedIds(scopeKey).add(canonicalId);
+        const fingerprint = EntityHandler.getServerAuthorityHostileFingerprint(entity);
+        if (fingerprint) {
+            EntityHandler.getServerAuthorityDestroyedFingerprints(scopeKey).add(fingerprint);
+        }
+
+        console.log(
+            `[MultiplayerSync][hostile-tombstone-create] scope=${scopeKey} canonicalId=${canonicalId} spawnKey=${spawnKey} name=${String(tombstone.name).replace(/\s+/g, '_')} killer=${tombstone.killerToken} deathVersion=${tombstone.deathVersion}`
+        );
+        return tombstone;
+    }
+
+    static findDeadServerAuthorityHostileTombstone(levelScope: string, entity: any): DeadHostileTombstone | null {
+        const scopeKey = String(levelScope ?? '').trim();
+        if (!scopeKey || !entity) {
+            return null;
+        }
+
+        const tombstones = GlobalState.deadServerAuthorityHostilesByScope.get(scopeKey);
+        if (!tombstones || tombstones.size === 0) {
+            return null;
+        }
+
+        const spawnKey = String(entity.spawnKey || EntityHandler.getHostileSpawnKey(scopeKey, entity));
+        const exact = tombstones.get(spawnKey);
+        if (exact) {
+            return exact;
+        }
+
+        const fingerprint = EntityHandler.getServerAuthorityHostileFingerprint(entity);
+        if (!fingerprint) {
+            return null;
+        }
+
+        for (const tombstone of tombstones.values()) {
+            const tombstoneFingerprint = EntityHandler.getServerAuthorityHostileFingerprint({
+                name: tombstone.name || tombstone.enemyType,
+                team: EntityTeam.ENEMY,
+                roomId: tombstone.roomId,
+                x: tombstone.x,
+                y: tombstone.y
+            });
+            if (tombstoneFingerprint === fingerprint) {
+                return tombstone;
+            }
+        }
+
+        return null;
     }
 
     private static getHostileBaseHpForLevel(level: number): number {
@@ -198,7 +310,10 @@ export class EntityHandler {
         const oldHp = Math.max(0, Math.round(Number(entity.hp ?? (oldMaxHp || 0))));
         const oldDamage = oldMaxHp > 0 ? Math.max(0, oldMaxHp - oldHp) : 0;
         const maxHp = EntityHandler.estimateServerAuthorityHostileMaxHp(entity);
-        const dead = Boolean(entity.dead) || Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD;
+        const dead = Boolean(entity.dead) ||
+            Boolean(entity.destroyed) ||
+            Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD ||
+            (Number.isFinite(Number(entity.hp)) && Math.round(Number(entity.hp)) <= 0);
         const hp = dead ? 0 : Math.max(1, Math.min(maxHp, maxHp - oldDamage));
         const healthDelta = hp - maxHp;
 
@@ -208,6 +323,7 @@ export class EntityHandler {
         entity.healthDelta = healthDelta;
         entity.health_delta = healthDelta;
         entity.dead = dead;
+        entity.destroyed = dead ? Boolean(entity.destroyed) : false;
         entity.entState = dead ? EntityState.DEAD : Number(entity.entState ?? EntityState.SLEEP);
         entity.clientSpawned = false;
     }
@@ -245,6 +361,10 @@ export class EntityHandler {
             }
 
             const entityProps = EntityHandler.createServerAuthorityEntityFromNpc(client, levelName, npc);
+            (entityProps as any).spawnKey = (entityProps as any).spawnKey || EntityHandler.getHostileSpawnKey(levelScope, entityProps);
+            if (EntityHandler.findDeadServerAuthorityHostileTombstone(levelScope, entityProps)) {
+                continue;
+            }
             levelMap.set(npcId, entityProps);
             logJcMini1Authority('seed_server_hostile', {
                 entityId: npcId,
@@ -873,6 +993,58 @@ export class EntityHandler {
         return EntityHandler.ensureServerAuthorityProxyOwner(client, canonicalEntity, localEntityId);
     }
 
+    private static sendTombstoneDeathCorrectionOnRejoin(
+        client: Client,
+        entity: any,
+        rawLocalId: number,
+        tombstone: DeadHostileTombstone
+    ): void {
+        const localId = Math.max(0, Math.round(Number(rawLocalId || entity?.id) || 0));
+        if (localId <= 0) {
+            return;
+        }
+
+        const scope = getClientLevelScope(client);
+        const maxHp = Math.max(
+            1,
+            Math.round(Number(entity?.maxHp ?? 0)) ||
+                EntityHandler.estimateServerAuthorityHostileMaxHp(entity) ||
+                1
+        );
+        client.entities.set(localId, {
+            ...entity,
+            id: localId,
+            hp: 0,
+            maxHp,
+            healthDelta: -maxHp,
+            health_delta: -maxHp,
+            dead: true,
+            destroyed: true,
+            entState: EntityState.DEAD,
+            canonicalEntityId: tombstone.canonicalId,
+            sharedCanonicalId: tombstone.canonicalId
+        });
+        client.knownEntityIds.add(localId);
+        if (tombstone.canonicalId > 0) {
+            client.knownEntityIds.add(tombstone.canonicalId);
+        }
+        client.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -maxHp));
+        client.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
+        client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
+        client.entities.delete(localId);
+        client.knownEntityIds.delete(localId);
+
+        console.log(
+            `[MultiplayerSync][rejoin-dead-hostile-suppressed] viewer=${String(client.character?.name ?? '')} token=${client.token} scope=${scope} rawLocalId=${localId} canonicalId=${tombstone.canonicalId} spawnKey=${tombstone.spawnKey}`
+        );
+        console.log(
+            `[MultiplayerSync][death-correction-on-rejoin] viewer=${String(client.character?.name ?? '')} token=${client.token} localId=${localId} canonicalId=${tombstone.canonicalId} spawnKey=${tombstone.spawnKey}`
+        );
+        console.log(
+            `[LootSync][rejoin-dead-hostile-no-loot] viewer=${String(client.character?.name ?? '')} token=${client.token} canonicalId=${tombstone.canonicalId} spawnKey=${tombstone.spawnKey} reason=tombstone_exists`
+        );
+    }
+
     private static attachServerAuthorityClientHostileProxy(
         client: Client,
         levelName: string | null | undefined,
@@ -889,6 +1061,21 @@ export class EntityHandler {
             return false;
         }
 
+        const levelScope = getClientLevelScope(client);
+        entity.spawnKey = entity.spawnKey || EntityHandler.getHostileSpawnKey(levelScope, entity);
+        const tombstone = EntityHandler.findDeadServerAuthorityHostileTombstone(levelScope, entity);
+        if (tombstone) {
+            const localId = Math.max(0, Math.round(Number(rawEntityId || entity.id) || 0));
+            if (localId > 0 && tombstone.canonicalId > 0 && localId !== tombstone.canonicalId) {
+                EntityHandler.rememberEntityAlias(client, localId, tombstone.canonicalId);
+            }
+            console.log(
+                `[MultiplayerSync][spawnkey-match] scope=${levelScope} rawLocalId=${localId} canonicalId=${tombstone.canonicalId} spawnKey=${tombstone.spawnKey} result=tombstone`
+            );
+            EntityHandler.sendTombstoneDeathCorrectionOnRejoin(client, entity, localId, tombstone);
+            return true;
+        }
+
         if (EntityHandler.isDestroyedServerAuthorityHostileProxy(client, entity)) {
             EntityHandler.destroyDeadServerAuthorityLocalProxy(client, entity, rawEntityId);
             return true;
@@ -898,6 +1085,9 @@ export class EntityHandler {
         const canonical = existingCanonical ??
             EntityHandler.promoteFirstSightServerAuthorityHostile(client, levelName, levelMap, entity, rawEntityId);
         if (!canonical) {
+            console.log(
+                `[MultiplayerSync][spawnkey-match] scope=${levelScope} rawLocalId=${Math.max(0, Math.round(Number(rawEntityId || entity.id) || 0))} canonicalId=0 spawnKey=${String(entity.spawnKey ?? '')} result=miss`
+            );
             return false;
         }
 
@@ -907,6 +1097,9 @@ export class EntityHandler {
         if (canonicalId <= 0 || localId <= 0) {
             return false;
         }
+        console.log(
+            `[MultiplayerSync][spawnkey-match] scope=${levelScope} rawLocalId=${localId} canonicalId=${canonicalId} spawnKey=${String(entity.spawnKey ?? EntityHandler.getHostileSpawnKey(levelScope, entity))} result=active`
+        );
 
         const existingLocalId = EntityHandler.findExistingServerAuthorityProxyLocalId(client, canonicalId, localId);
         if (existingLocalId > 0) {
@@ -1451,6 +1644,7 @@ export class EntityHandler {
         EntityHandler.serverAuthoritySeededScopes.delete(levelScope);
         EntityHandler.serverAuthorityDestroyedIdsByScope.delete(levelScope);
         EntityHandler.serverAuthorityDestroyedFingerprintsByScope.delete(levelScope);
+        EntityHandler.clearDeadServerAuthorityHostileTombstones(levelScope, 'new_run');
         GlobalState.levelQuestProgress.delete(levelScope);
         const keyPrefix = `${levelScope}:`;
         for (const key of Array.from(GlobalState.combatContributions.keys())) {
@@ -3858,6 +4052,18 @@ export class EntityHandler {
         if (levelMap) {
             for (const [entityId, entityProps] of Array.from(levelMap.entries())) {
                 const entityNameNorm = EntityHandler.normalizeIdentityName(entityProps?.name);
+                if (
+                    EntityHandler.isServerAuthorityHostileEntity(levelName, entityProps) &&
+                    (
+                        Math.max(0, Math.round(Number(entityProps?.ownerToken ?? 0))) === client.token ||
+                        Math.max(0, Math.round(Number(entityProps?.aiOwnerToken ?? 0))) === client.token ||
+                        Math.max(0, Math.round(Number(entityProps?.proxyOwnerToken ?? 0))) === client.token
+                    )
+                ) {
+                    console.log(
+                        `[MultiplayerSync][hostile-lifecycle-preserve-on-leave] scope=${getClientLevelScope(client)} canonicalId=${Math.max(0, Math.round(Number(entityId) || 0))} leavingToken=${client.token} dead=${Boolean(entityProps?.dead)} destroyed=${Boolean(entityProps?.destroyed)}`
+                    );
+                }
                 const isOwnedPlayer = Boolean(entityProps?.isPlayer) && (
                     (client.clientEntID > 0 && entityId === client.clientEntID) ||
                     (charNameNorm && entityNameNorm === charNameNorm)

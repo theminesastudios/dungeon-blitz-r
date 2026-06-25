@@ -34,6 +34,8 @@ export interface PendingLootDrop {
         sharedScope: string;
         amount: number;
         type: string;
+        reason: string;
+        caller: string;
         collected: boolean;
         collectedBy: number;
     };
