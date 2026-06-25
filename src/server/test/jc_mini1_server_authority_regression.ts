@@ -445,13 +445,11 @@ async function testProxyAttachHitDeathAndDestroy(): Promise<void> {
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
     await CombatHandler.handleEntityDestroy(zeus as never, buildDestroyEntityPayload(500001));
-    assert.equal(GlobalState.levelEntities.get(scope)?.has(910001), false, 'verified proxy destroy should remove canonical dead enemy');
+    assert.equal(GlobalState.levelEntities.get(scope)?.has(910001), true, 'post-death proxy destroy should not re-finalize or remove canonical dead enemy');
     const sourceDestroy = zeus.sentPackets.find((packet) => packet.id === 0x0D);
     const viewerDestroy = telahair.sentPackets.find((packet) => packet.id === 0x0D);
-    assert.ok(sourceDestroy, 'verified server-authority destroy should also force cleanup on source proxy');
-    assert.ok(viewerDestroy, 'verified destroy should broadcast local-id destroy to party viewer');
-    assert.equal(parseDestroy(sourceDestroy.payload).entityId, 500001, 'source destroy should use source local proxy id');
-    assert.equal(parseDestroy(viewerDestroy.payload).entityId, 600001, 'viewer destroy should use viewer local proxy id');
+    assert.equal(Boolean(sourceDestroy), false, 'post-death destroy should be dropped for source proxy');
+    assert.equal(Boolean(viewerDestroy), false, 'post-death destroy should not rebroadcast to party viewer');
 }
 
 async function testReversePowerHitLethalConvergesStarter(): Promise<void> {
@@ -495,13 +493,11 @@ async function testReversePowerHitLethalConvergesStarter(): Promise<void> {
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
     await CombatHandler.handleEntityDestroy(telahair as never, buildDestroyEntityPayload(600002));
-    assert.equal(GlobalState.levelEntities.get(scope)?.has(910002), false, 'reverse verified destroy should remove canonical dead enemy');
+    assert.equal(GlobalState.levelEntities.get(scope)?.has(910002), true, 'post-death destroy should not remove canonical dead enemy');
     const joinerDestroy = telahair.sentPackets.find((packet) => packet.id === 0x0D);
     const starterDestroy = zeus.sentPackets.find((packet) => packet.id === 0x0D);
-    assert.ok(joinerDestroy, 'reverse verified destroy should force cleanup on joiner source proxy');
-    assert.ok(starterDestroy, 'reverse verified destroy should broadcast local-id destroy to starter viewer');
-    assert.equal(parseDestroy(joinerDestroy.payload).entityId, 600002, 'reverse source destroy should use joiner local proxy id');
-    assert.equal(parseDestroy(starterDestroy.payload).entityId, 500002, 'reverse viewer destroy should use starter local proxy id');
+    assert.equal(Boolean(joinerDestroy), false, 'post-death destroy should not re-finalize joiner source proxy');
+    assert.equal(Boolean(starterDestroy), false, 'post-death destroy should not re-finalize starter viewer proxy');
 }
 
 async function testReverseBuffTickLethalConvergesStarter(): Promise<void> {
@@ -588,9 +584,17 @@ async function testPredictedDestroyLateDeadProxyAndSummonPassthrough(): Promise<
     await CombatHandler.handleEntityDestroy(zeus as never, buildDestroyEntityPayload(501000));
     assert.equal(GlobalState.levelEntities.get(scope)?.has(501000), false, 'seed-outside summon destroy should remove the mirrored client-spawn actor');
     assert.equal(zeus.sentPackets.some((packet) => packet.id === 0x0D), false, 'seed-outside summon destroy must not send local forced destroy to the source client');
-    assertLocalDeadPacket(telahair, 501000, 'seed-outside summon destroy should send DEAD to party viewer even when viewer only knows the canonical id');
-    assert.equal(telahair.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 501000), true, 'seed-outside party viewer should receive local destroy after DEAD state');
-    assert.equal(telahair.entities.has(501000), false, 'seed-outside party viewer cache should be removed after local destroy');
+    assert.equal(
+        telahair.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 501000),
+        false,
+        'seed-outside summon destroy must not send canonical DEAD to viewer without a registered local alias'
+    );
+    assert.equal(
+        telahair.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 501000),
+        false,
+        'seed-outside summon destroy must not send canonical destroy to viewer without a registered local alias'
+    );
+    assert.equal(telahair.entities.has(501000), false, 'seed-outside party viewer cache should stay absent without local alias');
 
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
@@ -624,13 +628,12 @@ function testProxyHpReportLethalConvergesParty(): void {
         zeus.sentPackets.length = 0;
         telahair.sentPackets.length = 0;
 
-        CombatHandler.handleCharRegen(telahair as never, buildHpDeltaPayload(600002, -Math.round(Number(canonical.hp ?? 0)) - 1));
-        assert.equal(canonical.hp, 0, 'joiner HP report lethal should set canonical HP to zero');
-        assert.equal(canonical.dead, true, 'joiner HP report lethal should kill canonical enemy');
-        assertLocalDeadPacket(telahair, 600002, 'joiner HP report lethal should receive local DEAD packet');
-        assertLocalDeadPacket(zeus, 500002, 'joiner HP report lethal should reconverge starter local proxy to DEAD');
-        assert.equal(zeus.entities.get(500002)?.hp, 0, 'starter cache should converge to zero HP after joiner HP-report kill');
-        assert.equal(zeus.entities.get(500002)?.dead, true, 'starter cache should be dead after joiner HP-report kill');
+        const hpBefore = Math.round(Number(canonical.hp ?? 0));
+        CombatHandler.handleCharRegen(telahair as never, buildHpDeltaPayload(600002, -hpBefore - 1));
+        assert.equal(canonical.hp, hpBefore, 'joiner HP report should not mutate canonical HP');
+        assert.equal(canonical.dead, false, 'joiner HP report should not kill canonical enemy');
+        assert.equal(telahair.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entState === EntityState.DEAD), false, 'joiner HP report should not receive local DEAD packet');
+        assert.equal(zeus.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entState === EntityState.DEAD), false, 'joiner HP report should not reconverge starter proxy to DEAD');
     }
 
     {
@@ -645,13 +648,12 @@ function testProxyHpReportLethalConvergesParty(): void {
         zeus.sentPackets.length = 0;
         telahair.sentPackets.length = 0;
 
-        CombatHandler.handleCharRegen(zeus as never, buildHpDeltaPayload(500003, -Math.round(Number(canonical.hp ?? 0)) - 1));
-        assert.equal(canonical.hp, 0, 'starter HP report lethal should set canonical HP to zero');
-        assert.equal(canonical.dead, true, 'starter HP report lethal should kill canonical enemy');
-        assertLocalDeadPacket(zeus, 500003, 'starter HP report lethal should receive local DEAD packet');
-        assertLocalDeadPacket(telahair, 600003, 'starter HP report lethal should reconverge joiner local proxy to DEAD');
-        assert.equal(telahair.entities.get(600003)?.hp, 0, 'joiner cache should converge to zero HP after starter HP-report kill');
-        assert.equal(telahair.entities.get(600003)?.dead, true, 'joiner cache should be dead after starter HP-report kill');
+        const hpBefore = Math.round(Number(canonical.hp ?? 0));
+        CombatHandler.handleCharRegen(zeus as never, buildHpDeltaPayload(500003, -hpBefore - 1));
+        assert.equal(canonical.hp, hpBefore, 'starter HP report should not mutate canonical HP');
+        assert.equal(canonical.dead, false, 'starter HP report should not kill canonical enemy');
+        assert.equal(zeus.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entState === EntityState.DEAD), false, 'starter HP report should not receive local DEAD packet');
+        assert.equal(telahair.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entState === EntityState.DEAD), false, 'starter HP report should not reconverge joiner proxy to DEAD');
     }
 }
 

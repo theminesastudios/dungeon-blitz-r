@@ -4722,6 +4722,9 @@ export class LevelHandler {
             const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
             entityId = CombatHandler.resolveClientHostileAliasForSharedState(client, getClientLevelScope(client), rawEntityId);
         }
+        console.log(
+            `[MultiplayerSync][alias-in] packet=0x07 source=${String(client.character?.name ?? '')} token=${client.token} rawId=${rawEntityId} canonicalId=${entityId}`
+        );
 
         // If it's us and we haven't spawned, ignore
         // In TS we don't track 'player_spawned' explicitly like python yet, but usually we can ignore.
@@ -4753,6 +4756,104 @@ export class LevelHandler {
         const isSelf =
             EntityHandler.isClientOwnPlayerEntity(client, getClientLevelScope(client), entityId, ent) ||
             EntityHandler.isClientOwnPlayerEntity(client, getClientLevelScope(client), rawEntityId, ent);
+        const canonicalEntity = levelEntity ?? ent;
+        const isEnemyCanonical =
+            !isSelf &&
+            canonicalEntity &&
+            !canonicalEntity.isPlayer &&
+            Number(canonicalEntity.team ?? 0) === EntityTeam.ENEMY;
+        const canonicalHp = Math.round(Number(canonicalEntity?.hp ?? 1));
+        const canonicalDestroyed = Boolean(canonicalEntity?.destroyed);
+        const canonicalTerminal = isEnemyCanonical && (
+            canonicalDestroyed ||
+            (Number.isFinite(canonicalHp) && canonicalHp <= 0)
+        );
+        if (canonicalTerminal) {
+            const previousLocalHpValue = Number(ent?.hp ?? NaN);
+            const previousLocalHp = Number.isFinite(previousLocalHpValue)
+                ? Math.max(0, Math.round(previousLocalHpValue))
+                : 0;
+            if (previousLocalHp > 0) {
+                const hpCorrection = new BitBuffer(false);
+                hpCorrection.writeMethod4(rawEntityId);
+                hpCorrection.writeMethod45(-previousLocalHp);
+                client.sendBitBuffer(0x78, hpCorrection);
+            }
+            if (canonicalEntity && typeof canonicalEntity === 'object') {
+                canonicalEntity.hp = 0;
+                canonicalEntity.dead = true;
+                canonicalEntity.destroyed = true;
+                canonicalEntity.entState = EntityState.DEAD;
+                const maxHp = Math.max(0, Math.round(Number(canonicalEntity.maxHp ?? ent?.maxHp ?? 0)));
+                if (maxHp > 0) {
+                    canonicalEntity.healthDelta = -maxHp;
+                    canonicalEntity.health_delta = -maxHp;
+                }
+            }
+            if (ent && typeof ent === 'object') {
+                ent.hp = 0;
+                ent.dead = true;
+                ent.destroyed = true;
+                ent.entState = EntityState.DEAD;
+                const maxHp = Math.max(0, Math.round(Number(ent.maxHp ?? canonicalEntity?.maxHp ?? 0)));
+                if (maxHp > 0) {
+                    ent.healthDelta = -maxHp;
+                    ent.health_delta = -maxHp;
+                }
+                client.entities.set(rawEntityId, ent);
+            }
+            const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+            CombatHandler.correctServerAuthorityHostileProxy(
+                client,
+                getClientLevelScope(client),
+                canonicalEntity,
+                'terminal_entity_incremental_rejected',
+                rawEntityId
+            );
+            console.log(
+                `[MultiplayerSync][post-death-drop] kind=entity-incremental scope=${getClientLevelScope(client)} targetId=${entityId} rawEntityId=${rawEntityId} sourceToken=${client.token} source=${String(client.character?.name ?? '')} hp=${Math.round(Number(canonicalEntity?.hp ?? 0))} dead=${Boolean(canonicalEntity?.dead)} destroyed=${Boolean(canonicalEntity?.destroyed)} entState=${canonicalEntity?.entState}`
+            );
+            return;
+        }
+        if (
+            isEnemyCanonical &&
+            isDefeatEntState &&
+            Number.isFinite(canonicalHp) &&
+            canonicalHp > 0
+        ) {
+            if (canonicalEntity && typeof canonicalEntity === 'object') {
+                canonicalEntity.dead = false;
+                if (Number(canonicalEntity.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
+                    canonicalEntity.entState = EntityState.ACTIVE;
+                }
+            }
+            client.send(
+                0x07,
+                LevelHandler.buildEntityIncrementalUpdatePayload(
+                    rawEntityId,
+                    0,
+                    0,
+                    0,
+                    Number(canonicalEntity?.entState ?? EntityState.ACTIVE),
+                    {
+                        bLeft: Boolean(canonicalEntity?.facingLeft ?? flags.bLeft),
+                        bRunning: false,
+                        bJumping: false,
+                        bDropping: false,
+                        bBackpedal: false
+                    },
+                    false,
+                    0
+                )
+            );
+            console.log(
+                `[MultiplayerSync][alive-correction] canonicalId=${Math.max(0, Math.round(Number(canonicalEntity?.id ?? entityId) || 0))} localId=${rawEntityId} token=${client.token} hp=${canonicalHp}`
+            );
+            console.log(
+                `[MultiplayerSync][post-death-drop] kind=entity-incremental-predicted-death scope=${getClientLevelScope(client)} targetId=${entityId} rawEntityId=${rawEntityId} sourceToken=${client.token} source=${String(client.character?.name ?? '')} hp=${canonicalHp} dead=false destroyed=false entState=${canonicalEntity?.entState}`
+            );
+            return;
+        }
         const isServerAuthorityProxyUpdate =
             rawEntityId !== entityId &&
             EntityHandler.isServerAuthorityHostileEntity(currentLevel, levelEntity);
@@ -5194,6 +5295,9 @@ export class LevelHandler {
                     entityId,
                     relayEntity
                 );
+                if (localEntityId <= 0) {
+                    continue;
+                }
                 if (
                     !EntityHandler.canClientResolveCanonicalEntity(other, entityId) &&
                     !other.entities?.has(localEntityId) &&
@@ -5217,6 +5321,9 @@ export class LevelHandler {
                     isAirborne,
                     velocityY
                 );
+            if (isSharedClientSpawnEntity) {
+                EntityHandler.logAliasOutbound('0x07', other, entityId, localEntityId);
+            }
             other.send(0x07, outboundData);
         }
     }

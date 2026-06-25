@@ -45,8 +45,8 @@ export class StaticServer {
     private host: string;
     private selectedSwfCache: { key: string; buffer: Buffer } | null;
     private readonly discordAccountLinks: DiscordAccountLinkService;
-    private readonly flashVersion = 'cdb';
-    private readonly gameVersion = 'cdb';
+    private readonly flashVersion = 'cdc';
+    private readonly gameVersion = 'cdc';
 
     private static shouldLog(): boolean {
         return process.env.DEBUG_STATIC_SERVER === '1';

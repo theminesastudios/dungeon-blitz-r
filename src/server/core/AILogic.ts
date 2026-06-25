@@ -24,6 +24,7 @@ export class AILogic {
     static readonly RANGED_ATTACK_RANGE = 300;
     static readonly ATTACK_COOLDOWN = 1000; // ms
     static readonly BASE_NPC_DAMAGE = 15;
+    static readonly ENABLE_SERVER_AUTHORITY_HOSTILE_AI = process.env.ENABLE_SERVER_AUTHORITY_HOSTILE_AI === '1';
 
     private static hasCombatPull(npc: any): boolean {
         return Math.max(0, Math.round(Number(npc?.lastCombatActivityAt ?? 0))) > 0 ||
@@ -86,14 +87,17 @@ export class AILogic {
             if (CombatHandler.hasOutOfCombatRegenPresence(levelScope)) {
                 CombatHandler.processOutOfCombatRegen(levelScope, nowMs);
             }
+            CombatHandler.processBuffExpirations(levelScope, nowMs);
             return;
         }
         CombatHandler.processOutOfCombatRegen(levelScope, nowMs);
+        CombatHandler.processBuffExpirations(levelScope, nowMs);
 
         // Iterate over Map entries to get ID and Object
         for (const [entId, npc] of levelEntities.entries()) {
             if (npc.isPlayer || npc.team !== 2) continue; // Only Enemy NPCs
-            if (EntityHandler.usesServerAuthorityHostiles(levelName)) continue; // JC_Mini1Hard uses client proxies for AI/animation.
+            if (EntityHandler.usesServerAuthorityHostiles(levelName) && !AILogic.ENABLE_SERVER_AUTHORITY_HOSTILE_AI) continue; // JC_Mini1Hard uses client proxies for AI/animation.
+            if (Boolean(npc.hybridCanonicalHostile) && !AILogic.ENABLE_SERVER_AUTHORITY_HOSTILE_AI) continue; // TODO: feature-flag server AI for promoted hybrid hostiles.
             if (npc.clientSpawned) continue; // Client-owned monsters should not receive server AI movement.
             // Simple dead check (if no hp prop, assume 100)
             if ((npc.hp !== undefined && npc.hp <= 0)) continue;

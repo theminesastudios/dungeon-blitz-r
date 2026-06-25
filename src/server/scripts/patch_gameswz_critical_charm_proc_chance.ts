@@ -12,27 +12,44 @@ const DATA_DIR = path.resolve(__dirname, "..", "data");
 const CBQ_DIR = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbq");
 
 const BASE_CRIT_CHANCE = 0.15;
-const CRITICAL_CHARM_FLAT_CHANCES = new Map<string, number>([
+const CRITICAL_CHARM_FLAT_CHANCES = new Map<string, { field: "ProcChanceUp" | "PowerBonus"; flatChance: number }>([
   ...Array.from({ length: 10 }, (_, index) => {
     const level = index + 1;
-    return [`Infernal${String(level).padStart(2, "0")}`, level * 0.001] as const;
+    return [
+      `Infernal${String(level).padStart(2, "0")}`,
+      { field: "ProcChanceUp" as const, flatChance: level * 0.001 },
+    ] as const;
   }),
-  ["TripleFind", 0.04],
-  ["DoubleFind2", 0.04],
-  ["DoubleFind3", 0.04],
+  ...Array.from({ length: 10 }, (_, index) => {
+    const level = index + 1;
+    return [
+      `Draconic${String(level).padStart(2, "0")}`,
+      { field: "PowerBonus" as const, flatChance: level * 0.001 },
+    ] as const;
+  }),
+  ["TripleFind", { field: "ProcChanceUp", flatChance: 0.04 }],
+  ["DoubleFind2", { field: "ProcChanceUp", flatChance: 0.04 }],
+  ["DoubleFind3", { field: "ProcChanceUp", flatChance: 0.04 }],
 ]);
 
 function storedProcChance(flatChance: number): string {
   return (flatChance / BASE_CRIT_CHANCE).toFixed(15).replace(/0+$/, "").replace(/\.$/, "");
 }
 
-function expectedProcChanceByCharm(): Map<string, string> {
+function expectedValueByCharm(): Map<string, { field: "ProcChanceUp" | "PowerBonus"; value: string }> {
   return new Map(
-    Array.from(CRITICAL_CHARM_FLAT_CHANCES, ([charmName, flatChance]) => [
+    Array.from(CRITICAL_CHARM_FLAT_CHANCES, ([charmName, { field, flatChance }]) => [
       charmName,
-      storedProcChance(flatChance),
+      {
+        field,
+        value: field === "ProcChanceUp" ? storedProcChance(flatChance) : formatDecimal(flatChance),
+      },
     ]),
   );
+}
+
+function formatDecimal(value: number): string {
+  return value.toFixed(15).replace(/0+$/, "").replace(/\.$/, "");
 }
 
 function formatPercent(value: number): string {
@@ -40,35 +57,43 @@ function formatPercent(value: number): string {
 }
 
 function expectedDescriptionByCharm(): Map<string, string> {
-  return new Map(
-    Array.from({ length: 10 }, (_, index) => {
+  const entries: Array<readonly [string, string]> = [
+    ...Array.from({ length: 10 }, (_, index) => {
       const level = index + 1;
       return [
         `Infernal${String(level).padStart(2, "0")}`,
         `+${formatPercent(level * 0.001)}%`,
       ] as const;
     }),
-  );
+    ...Array.from({ length: 10 }, (_, index) => {
+      const level = index + 1;
+      return [
+        `Draconic${String(level).padStart(2, "0")}`,
+        `+${formatPercent(level * 0.001)}%`,
+      ] as const;
+    }),
+  ];
+  return new Map(entries);
 }
 
 function replaceCharmProcChance(xml: string): PatchResult {
-  const expected = expectedProcChanceByCharm();
+  const expected = expectedValueByCharm();
   const expectedDescriptions = expectedDescriptionByCharm();
   let changes = 0;
   const patched = xml.replace(/<CharmType\s+CharmName="([^"]+)">[\s\S]*?<\/CharmType>/g, (block, charmName: string) => {
-    const nextValue = expected.get(charmName);
-    if (!nextValue) {
+    const next = expected.get(charmName);
+    if (!next) {
       return block;
     }
 
     let nextBlock = block.replace(
-      /(<ProcChanceUp>)([\s\S]*?)(<\/ProcChanceUp>)/,
+      new RegExp(`(<${next.field}>)([\\s\\S]*?)(</${next.field}>)`),
       (match, prefix: string, oldValue: string, suffix: string) => {
-        if (oldValue.trim() === nextValue) {
+        if (oldValue.trim() === next.value) {
           return match;
         }
         changes += 1;
-        return `${prefix}${nextValue}${suffix}`;
+        return `${prefix}${next.value}${suffix}`;
       },
     );
     const nextDescriptionPrefix = expectedDescriptions.get(charmName);
@@ -92,17 +117,17 @@ function replaceCharmProcChance(xml: string): PatchResult {
 }
 
 function replaceCharmProcChanceJsonText(xml: string): PatchResult {
-  const expected = expectedProcChanceByCharm();
+  const expected = expectedValueByCharm();
   let changes = 0;
   const patched = xml.replace(
-    /("CharmName"\s*:\s*"([^"]+)"[\s\S]*?"ProcChanceUp"\s*:\s*")([^"]*)(")/g,
-    (match, prefix: string, charmName: string, oldValue: string, suffix: string) => {
-      const nextValue = expected.get(charmName);
-      if (!nextValue || oldValue.trim() === nextValue) {
+    /("CharmName"\s*:\s*"([^"]+)"[\s\S]*?"(ProcChanceUp|PowerBonus)"\s*:\s*")([^"]*)(")/g,
+    (match, prefix: string, charmName: string, field: string, oldValue: string, suffix: string) => {
+      const next = expected.get(charmName);
+      if (!next || field !== next.field || oldValue.trim() === next.value) {
         return match;
       }
       changes += 1;
-      return `${prefix}${nextValue}${suffix}`;
+      return `${prefix}${next.value}${suffix}`;
     },
   );
   return { xml: patched, changes };
@@ -120,7 +145,7 @@ function patchXmlFile(filePath: string, verifyOnly: boolean): number {
 function patchCharmsJson(filePath: string, verifyOnly: boolean): number {
   const original = fs.readFileSync(filePath, "utf8");
   const data = JSON.parse(original);
-  const expected = expectedProcChanceByCharm();
+  const expected = expectedValueByCharm();
   let changes = 0;
 
   for (const charm of Array.isArray(data) ? data : Object.values(data)) {
@@ -128,15 +153,15 @@ function patchCharmsJson(filePath: string, verifyOnly: boolean): number {
       continue;
     }
     const charmName = String((charm as Record<string, unknown>).CharmName ?? "");
-    const nextValue = expected.get(charmName);
-    if (!nextValue) {
+    const next = expected.get(charmName);
+    if (!next) {
       continue;
     }
     const record = charm as Record<string, unknown>;
-    if (String(record.ProcChanceUp ?? "") === nextValue) {
+    if (String(record[next.field] ?? "") === next.value) {
       continue;
     }
-    record.ProcChanceUp = nextValue;
+    record[next.field] = next.value;
     changes += 1;
   }
 

@@ -198,6 +198,26 @@ function buildEntityStatePayload(entityId: number, entState: number): Buffer {
     return bb.toBuffer();
 }
 
+function buildBuffStatePayload(entityId: number, buffId: number = 17, durationMs: number = 0): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(entityId);
+    bb.writeMethod4(buffId);
+    if (durationMs > 0) {
+        bb.writeMethod24(durationMs);
+    }
+    return bb.toBuffer();
+}
+
+function buildBuffTickDotPayload(targetId: number, sourceId: number, damage: number, powerId: number = 77): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(targetId);
+    bb.writeMethod4(sourceId);
+    bb.writeMethod4(powerId);
+    bb.writeMethod45(-Math.abs(damage));
+    bb.writeMethod20(0, 5);
+    return bb.toBuffer();
+}
+
 function parseHpDelta(payload: Buffer): { entityId: number; delta: number } {
     const br = new BitReader(payload);
     return {
@@ -226,6 +246,10 @@ function parseDestroyEntity(payload: Buffer): { entityId: number; immediate: boo
     };
 }
 
+function parseBuffTargetId(payload: Buffer): number {
+    return new BitReader(payload).readMethod4();
+}
+
 async function testSharedHostileHpConvergesAcrossLocalIds(): Promise<void> {
     const rogue = createFakeClient('Rogue', 11001, 2);
     const mage = createFakeClient('Mage', 22002, 2);
@@ -239,6 +263,10 @@ async function testSharedHostileHpConvergesAcrossLocalIds(): Promise<void> {
     attachHostile(rogue, 500001, 'DefectorMage', 2000, 1200, 2);
     const canonical = GlobalState.levelEntities.get(scope)?.get(500001);
     assert.ok(canonical, 'starter hostile should become canonical');
+    assert.equal(canonical.hybridCanonicalHostile, true, 'starter hostile should be promoted into the hybrid canonical registry');
+    assert.equal(canonical.clientSpawned, false, 'canonical hostile should not remain a client-owned spawn');
+    assert.equal(canonical.aiOwnerToken, rogue.token, 'canonical hostile should remember the AI owner token');
+    assert.equal(canonical.ownerPartyId, 8811, 'canonical hostile should remember the owner party');
     canonical.maxHp = 10000;
     canonical.hp = 10000;
     canonical.healthDelta = 0;
@@ -382,7 +410,7 @@ async function testUnaliasedSharedHostileDestroyRelaysDeadState(): Promise<void>
     );
 }
 
-function testDeadCanonicalHpReportDestroysLiveViewerProxy(): void {
+function testPrematureDeadHpReportDoesNotFinalizeDeath(): void {
     const rogue = createFakeClient('Rogue', 99009, 2);
     const mage = createFakeClient('Mage', 99110, 2);
     setParty(rogue, mage);
@@ -420,25 +448,21 @@ function testDeadCanonicalHpReportDestroysLiveViewerProxy(): void {
     mage.sentPackets.length = 0;
     CombatHandler.handleCharRegen(rogue as never, buildHpDeltaPayload(500030, -1000));
 
-    assert.equal(canonical.hp, 0, 'dead canonical HP report should clamp canonical HP to zero');
+    assert.equal(canonical.hp, 1000, 'HP report must not clamp a positive-HP canonical hostile to zero');
+    assert.equal(canonical.dead, false, 'positive canonical HP should clear premature dead state');
     assert.equal(
-        mage.sentPackets.some((packet) => packet.id === 0x78 && parseHpDelta(packet.payload).entityId === 600030 && parseHpDelta(packet.payload).delta === -1000),
-        true,
-        'dead canonical HP report should correct a stale viewer proxy to zero HP'
+        mage.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload).entityId === 600030),
+        false,
+        'positive-HP HP report must not destroy the viewer local id'
     );
     assert.equal(
         mage.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 600030 && parseEntityState(packet.payload).entState === EntityState.DEAD),
-        true,
-        'dead canonical HP report should send DEAD state to the stale viewer local id'
-    );
-    assert.equal(
-        mage.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload).entityId === 600030),
-        true,
-        'dead canonical HP report should destroy the stale viewer local id'
+        false,
+        'positive-HP HP report must not send DEAD state to the viewer local id'
     );
 }
 
-function testLethalHpReportEchoesSourceSharedHostileProxy(): void {
+function testLethalHpReportDoesNotMutateCanonicalHostile(): void {
     const rogue = createFakeClient('Rogue', 99220, 2);
     const mage = createFakeClient('Mage', 99330, 2);
     setParty(rogue, mage);
@@ -476,22 +500,66 @@ function testLethalHpReportEchoesSourceSharedHostileProxy(): void {
     mage.sentPackets.length = 0;
     CombatHandler.handleCharRegen(rogue as never, buildHpDeltaPayload(500040, -4212));
 
-    assert.equal(canonical.hp, 0, 'lethal HP report should kill the canonical shared hostile');
+    assert.equal(canonical.hp, 1640, 'lethal-looking HP report must not mutate canonical shared hostile HP');
+    assert.equal(canonical.dead, false, 'lethal-looking HP report must not kill canonical shared hostile');
     assert.equal(
-        rogue.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 500040 && parseEntityState(packet.payload).entState === EntityState.DEAD),
-        true,
-        'lethal HP report should echo DEAD state back to the source local id'
+        rogue.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entState === EntityState.DEAD),
+        false,
+        'lethal-looking HP report must not echo DEAD state back to the source local id'
     );
     assert.equal(
-        rogue.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload).entityId === 500040),
-        true,
-        'lethal HP report should destroy the source local id'
+        mage.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entState === EntityState.DEAD),
+        false,
+        'lethal-looking HP report must not relay DEAD state to the party viewer local id'
     );
-    assert.equal(
-        mage.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 600040 && parseEntityState(packet.payload).entState === EntityState.DEAD),
-        true,
-        'lethal HP report should still relay DEAD state to the party viewer local id'
-    );
+}
+
+async function testPostDeathPacketsAreDropped(): Promise<void> {
+    const rogue = createFakeClient('Rogue', 99221, 2);
+    const mage = createFakeClient('Mage', 99331, 2);
+    setParty(rogue, mage);
+    attachPlayer(rogue);
+    attachPlayer(mage);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+
+    const scope = getLevelScopeKey(rogue.currentLevel, rogue.levelInstanceId);
+    attachHostile(rogue, 500041, 'SharedDeadLock', 3000, 1200, 2);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(500041);
+    assert.ok(canonical, 'source hostile should become the canonical shared hostile');
+    canonical.maxHp = 10000;
+    canonical.hp = 0;
+    canonical.dead = true;
+    canonical.destroyed = true;
+    canonical.entState = EntityState.DEAD;
+
+    attachHostile(mage, 600041, 'SharedDeadLock', 3000, 1200, 2);
+    mage.sentPackets.length = 0;
+    CombatHandler.handleCharRegen(mage as never, buildHpDeltaPayload(600041, -5000));
+    await CombatHandler.handleAddBuff(mage as never, buildBuffStatePayload(600041, 99, 5000));
+    await CombatHandler.handleBuffTickDot(mage as never, buildBuffTickDotPayload(600041, mage.clientEntID, 5000));
+    await CombatHandler.handlePowerHit(mage as never, buildPowerHitPayload(600041, mage.clientEntID, 5000));
+    await CombatHandler.handleEntityDestroy(mage as never, buildDestroyEntityPayload(600041));
+    LevelHandler.handleEntityIncrementalUpdate(mage as never, buildEntityStatePayload(600041, EntityState.ACTIVE));
+
+    assert.equal(canonical.hp, 0, 'post-death HP report must not change canonical HP');
+    assert.equal(canonical.destroyed, true, 'post-death HP report must keep destroyed terminal state');
+    assert.equal(Object.keys(canonical.activeBuffs ?? {}).length, 0, 'post-death AddBuff must not attach new canonical buffs');
+    assert.equal(canonical.entState, EntityState.DEAD, 'post-death incremental update must not revive canonical state');
+}
+
+/*
+ * 0x0B payload parsing is uncertain beyond targetId + buffId. Duration is only
+ * honored when a following method24 value is present; otherwise no fallback TTL
+ * is assigned.
+ */
+function testDeadCanonicalHpReportDestroysLiveViewerProxy(): void {
+    testPrematureDeadHpReportDoesNotFinalizeDeath();
+}
+
+async function testLethalHpReportEchoesSourceSharedHostileProxy(): Promise<void> {
+    testLethalHpReportDoesNotMutateCanonicalHostile();
+    await testPostDeathPacketsAreDropped();
 }
 
 async function testDeadSharedHostilePowerHitCannotKillPlayer(): Promise<void> {
@@ -547,6 +615,71 @@ async function testDeadSharedHostilePowerHitCannotKillPlayer(): Promise<void> {
     );
 }
 
+async function testFollowerHostileSourcePowerHitDoesNotDamagePlayer(): Promise<void> {
+    const rogue = createFakeClient('Rogue', 99660, 2);
+    const mage = createFakeClient('Mage', 99770, 2);
+    setParty(rogue, mage);
+    attachPlayer(rogue);
+    attachPlayer(mage);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+
+    const scope = getLevelScopeKey(rogue.currentLevel, rogue.levelInstanceId);
+    attachHostile(rogue, 500060, 'SharedOwnerDragon', 3400, 1200, 2);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(500060);
+    assert.ok(canonical, 'owner hostile should become canonical');
+    canonical.maxHp = 10000;
+    canonical.hp = 10000;
+    canonical.dead = false;
+    canonical.entState = EntityState.ACTIVE;
+
+    attachHostile(mage, 600060, 'SharedOwnerDragon', 3400, 1200, 2);
+    mage.authoritativeCurrentHp = 5000;
+    mage.entities.set(mage.clientEntID, {
+        ...mage.entities.get(mage.clientEntID),
+        hp: 5000,
+        maxHp: 5000,
+        dead: false,
+        entState: EntityState.ACTIVE
+    });
+
+    await CombatHandler.handlePowerHit(mage as never, buildPowerHitPayload(mage.clientEntID, 600060, 2000));
+
+    assert.equal(mage.authoritativeCurrentHp, 5000, 'follower hostile-source hit must not damage the player');
+    assert.equal(canonical.hp, 10000, 'follower hostile-source hit must not mutate canonical hostile HP');
+}
+
+async function testTimedBuffExpiresWithoutClientRemoveBuff(): Promise<void> {
+    const rogue = createFakeClient('Rogue', 99880, 2);
+    const mage = createFakeClient('Mage', 99990, 2);
+    setParty(rogue, mage);
+    attachPlayer(rogue);
+    attachPlayer(mage);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+
+    const scope = getLevelScopeKey(rogue.currentLevel, rogue.levelInstanceId);
+    attachHostile(rogue, 500070, 'SharedBuffDragon', 3600, 1200, 2);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(500070);
+    assert.ok(canonical, 'buff target hostile should become canonical');
+    attachHostile(mage, 600070, 'SharedBuffDragon', 3600, 1200, 2);
+
+    rogue.sentPackets.length = 0;
+    mage.sentPackets.length = 0;
+    await CombatHandler.handleAddBuff(rogue as never, buildBuffStatePayload(500070, 23, 1200));
+    assert.equal(Object.keys(canonical.activeBuffs ?? {}).length, 1, 'canonical hostile should record timed buff state');
+
+    const snapshot = Object.values(canonical.activeBuffs ?? {})[0] as any;
+    CombatHandler.processBuffExpirations(scope, Number(snapshot.expiresAt ?? 0) + 1);
+
+    assert.equal(Object.keys(canonical.activeBuffs ?? {}).length, 0, 'expired buff should be removed from canonical state');
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x0C && parseBuffTargetId(packet.payload) === 600070),
+        true,
+        'buff expiration should broadcast RemoveBuff on the viewer local hostile id'
+    );
+}
+
 function testUnaliasedSharedHostileIncrementalDeathRelaysToViewerLocalId(): void {
     const rogue = createFakeClient('Rogue', 77007, 2);
     const mage = createFakeClient('Mage', 88008, 2);
@@ -588,11 +721,15 @@ function testUnaliasedSharedHostileIncrementalDeathRelaysToViewerLocalId(): void
     mage.sentPackets.length = 0;
     LevelHandler.handleEntityIncrementalUpdate(mage as never, buildEntityStatePayload(600020, EntityState.DEAD));
 
-    assert.equal(EntityHandler.resolveEntityAlias(rogue as never, 500020), 600020, 'incremental death relay should bind stale rogue local hostile to canonical');
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 600020 && parseEntityState(packet.payload).entState === EntityState.ACTIVE),
+        true,
+        'predicted incremental DEAD state should correct the sender local hostile back to ACTIVE while HP is positive'
+    );
     assert.equal(
         rogue.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 500020 && parseEntityState(packet.payload).entState === EntityState.DEAD),
-        true,
-        'incremental DEAD state should relay to the viewer local shared hostile id'
+        false,
+        'predicted incremental DEAD state should not relay to a viewer while canonical HP is positive'
     );
 }
 
@@ -664,13 +801,25 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
-        testLethalHpReportEchoesSourceSharedHostileProxy();
+        await testLethalHpReportEchoesSourceSharedHostileProxy();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
         await testDeadSharedHostilePowerHitCannotKillPlayer();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        await testFollowerHostileSourcePowerHitDoesNotDamagePlayer();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        await testTimedBuffExpiresWithoutClientRemoveBuff();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
