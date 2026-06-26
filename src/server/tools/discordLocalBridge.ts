@@ -538,11 +538,6 @@ class LocalDiscordBridge {
     }
 
     private buildJoinUrl(): string {
-        const explicitJoinUrl = String(this.runtimeJoinUrl || this.config.joinUrl || '').trim();
-        if (explicitJoinUrl) {
-            return explicitJoinUrl;
-        }
-
         const activePresenceUrl = this.getActivePresenceUrl();
         if (!activePresenceUrl) {
             return '';
