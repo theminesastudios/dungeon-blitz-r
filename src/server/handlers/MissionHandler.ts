@@ -3190,6 +3190,14 @@ export class MissionHandler {
                 completedAt
             });
             if (missionUpdate.missionId !== MissionID.ClearYourHouse) {
+                if (didMutate) {
+                    MissionHandler.saveCharacter(other, 'party keep completion mission update');
+                    MissionHandler.logKeepCompletionProgress('keepRebuildStatePersisted', other, {
+                        levelScope,
+                        missionId: missionUpdate.missionId,
+                        sourceToken: authorityClient.token
+                    });
+                }
                 continue;
             }
 
