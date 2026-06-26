@@ -3,7 +3,6 @@ const path = require('path');
 const { spawn } = require('child_process');
 
 const SERVER_ROOT = path.resolve(__dirname, '..');
-const PROJECT_ROOT = path.resolve(SERVER_ROOT, '..', '..');
 const BRIDGE_CONFIG_PATH = path.join(SERVER_ROOT, 'discord-bridge.config.json');
 const LAUNCHER_CONFIG_PATH = path.join(SERVER_ROOT, 'launcher.config.json');
 const BRIDGE_ENTRY = path.join(SERVER_ROOT, 'dist', 'tools', 'discordLocalBridge.js');
@@ -14,6 +13,29 @@ function readJson(filePath) {
 
 function writeJson(filePath, value) {
     fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+}
+
+function normalizeHttpUrl(value, { loopbackOnly = false } = {}) {
+    const raw = String(value || '').trim();
+    if (!raw) {
+        return '';
+    }
+
+    try {
+        const parsed = new URL(raw);
+        const protocolAllowed = parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        const hasCredentials = Boolean(parsed.username || parsed.password);
+        const hostname = parsed.hostname.toLowerCase();
+        const isLoopback = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname === '[::1]';
+
+        if (!protocolAllowed || hasCredentials || (loopbackOnly && !isLoopback)) {
+            return '';
+        }
+
+        return parsed.toString();
+    } catch {
+        return '';
+    }
 }
 
 function ensureBuilt() {
@@ -33,9 +55,19 @@ function ensureLauncherConfig() {
 
 function updateBridgeConfig(launcherConfig) {
     const bridgeConfig = readJson(BRIDGE_CONFIG_PATH);
-    bridgeConfig.presenceUrl = String(launcherConfig.presenceUrl || bridgeConfig.presenceUrl || '').trim();
-    bridgeConfig.joinUrl = String(launcherConfig.joinUrl || bridgeConfig.joinUrl || '').trim();
-    bridgeConfig.playGameUrl = String(launcherConfig.playGameUrl || bridgeConfig.playGameUrl || '').trim();
+    const presenceUrl = normalizeHttpUrl(launcherConfig.presenceUrl || bridgeConfig.presenceUrl, { loopbackOnly: true });
+    const joinUrl = normalizeHttpUrl(launcherConfig.joinUrl || bridgeConfig.joinUrl, { loopbackOnly: true });
+    const playGameUrl = normalizeHttpUrl(launcherConfig.playGameUrl || bridgeConfig.playGameUrl);
+
+    if (presenceUrl) {
+        bridgeConfig.presenceUrl = presenceUrl;
+    }
+    if (joinUrl) {
+        bridgeConfig.joinUrl = joinUrl;
+    }
+    if (playGameUrl) {
+        bridgeConfig.playGameUrl = playGameUrl;
+    }
     bridgeConfig.characterName = String(launcherConfig.characterName || bridgeConfig.characterName || '').trim();
     writeJson(BRIDGE_CONFIG_PATH, bridgeConfig);
 }
@@ -44,37 +76,30 @@ function startBridge() {
     const child = spawn(process.execPath, [BRIDGE_ENTRY], {
         cwd: SERVER_ROOT,
         detached: true,
-        stdio: 'ignore'
+        stdio: 'ignore',
+        shell: false
     });
     child.unref();
 }
 
-function getClientCommand(config) {
-    if (process.platform === 'darwin') {
-        return {
-            command: Array.isArray(config.clientCommandMac) ? config.clientCommandMac : [],
-            cwd: String(config.clientWorkingDirectoryMac || '').trim()
-        };
-    }
-
-    if (process.platform === 'win32') {
-        return {
-            command: Array.isArray(config.clientCommandWindows) ? config.clientCommandWindows : [],
-            cwd: String(config.clientWorkingDirectoryWindows || '').trim()
-        };
-    }
-
-    return { command: [], cwd: '' };
-}
-
 function openUrl(url) {
+    const safeUrl = normalizeHttpUrl(url);
+    if (!safeUrl) {
+        console.error('[Launcher] Refusing to launch an invalid or unsafe clientUrl.');
+        process.exit(1);
+    }
+
     if (process.platform === 'darwin') {
-        spawn('open', [url], { detached: true, stdio: 'ignore' }).unref();
+        spawn('open', [safeUrl], { detached: true, stdio: 'ignore', shell: false }).unref();
         return;
     }
 
     if (process.platform === 'win32') {
-        spawn('cmd', ['/c', 'start', '', url], { detached: true, stdio: 'ignore' }).unref();
+        spawn('rundll32.exe', ['url.dll,FileProtocolHandler', safeUrl], {
+            detached: true,
+            stdio: 'ignore',
+            shell: false
+        }).unref();
         return;
     }
 
@@ -83,20 +108,9 @@ function openUrl(url) {
 }
 
 function startClient(config) {
-    const client = getClientCommand(config);
-    if (client.command.length > 0) {
-        const [command, ...args] = client.command;
-        spawn(command, args, {
-            cwd: client.cwd || PROJECT_ROOT,
-            detached: true,
-            stdio: 'ignore'
-        }).unref();
-        return;
-    }
-
-    const url = String(config.clientUrl || '').trim();
+    const url = normalizeHttpUrl(config.clientUrl);
     if (!url) {
-        console.error('[Launcher] No client command or clientUrl configured.');
+        console.error('[Launcher] No safe clientUrl configured.');
         process.exit(1);
     }
 
