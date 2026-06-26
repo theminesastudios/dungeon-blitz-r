@@ -2056,6 +2056,15 @@ export class MissionHandler {
         );
     }
 
+    static isWaitingForDungeonCompletionCutscene(client: Client): boolean {
+        const pendingScope = String(client.pendingDungeonCompletionScope ?? '').trim();
+        return Boolean(
+            pendingScope &&
+            getClientLevelScope(client) === pendingScope &&
+            client.pendingDungeonCompletionWaitForCutsceneEnd
+        );
+    }
+
     static noteDungeonCutsceneStart(client: Client, roomId: number): void {
         const scope = getClientLevelScope(client);
         if (!scope) {

@@ -3114,12 +3114,42 @@ export class LevelHandler {
         return GlobalState.dungeonCutscenes.get(LevelHandler.getSharedDungeonCutsceneKey(levelScope, roomId));
     }
 
-    private static isSharedDungeonCutsceneScope(client: Client): boolean {
-        return Boolean(
-            client.currentLevel &&
-            LevelConfig.isDungeonLevel(client.currentLevel) &&
-            getClientLevelScope(client)
+    private static hasSharedDungeonCutscenePeer(client: Client): boolean {
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (other !== client && other.playerSpawned && areClientsInSameLevelScope(client, other)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static setSharedDungeonCutsceneActive(levelScope: string, roomId: number, ownerToken: number): void {
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
+        GlobalState.dungeonCutscenes.set(
+            LevelHandler.getSharedDungeonCutsceneKey(levelScope, normalizedRoomId),
+            {
+                roomId: normalizedRoomId,
+                ownerToken: Math.max(0, Math.round(Number(ownerToken) || 0)),
+                active: true,
+                completed: false,
+                startedAt: Date.now(),
+                endedAt: 0
+            }
         );
+    }
+
+    private static isSharedDungeonCutsceneScope(client: Client): boolean {
+        if (!client.currentLevel || !LevelConfig.isDungeonLevel(client.currentLevel)) {
+            return false;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        if (!levelScope) {
+            return false;
+        }
+
+        return LevelHandler.hasSharedDungeonCutscenePeer(client);
     }
 
     private static beginSharedDungeonCutscene(
@@ -3135,20 +3165,17 @@ export class LevelHandler {
         const key = LevelHandler.getSharedDungeonCutsceneKey(levelScope, normalizedRoomId);
         const existing = GlobalState.dungeonCutscenes.get(key);
         if (existing?.completed) {
+            if (MissionHandler.isWaitingForDungeonCompletionCutscene(client)) {
+                LevelHandler.setSharedDungeonCutsceneActive(levelScope, normalizedRoomId, client.token);
+                return 'started';
+            }
             return 'completed_duplicate';
         }
         if (existing?.active) {
             return existing.ownerToken === client.token ? 'owner_active' : 'active_duplicate';
         }
 
-        GlobalState.dungeonCutscenes.set(key, {
-            roomId: normalizedRoomId,
-            ownerToken: Math.max(0, Math.round(Number(client.token) || 0)),
-            active: true,
-            completed: false,
-            startedAt: Date.now(),
-            endedAt: 0
-        });
+        LevelHandler.setSharedDungeonCutsceneActive(levelScope, normalizedRoomId, client.token);
         return 'started';
     }
 
@@ -3181,6 +3208,17 @@ export class LevelHandler {
         const key = LevelHandler.getSharedDungeonCutsceneKey(levelScope, normalizedRoomId);
         const existing = GlobalState.dungeonCutscenes.get(key);
         if (existing?.completed) {
+            if (MissionHandler.isWaitingForDungeonCompletionCutscene(client)) {
+                GlobalState.dungeonCutscenes.set(key, {
+                    roomId: normalizedRoomId,
+                    ownerToken: Math.max(0, Math.round(Number(client.token) || 0)),
+                    active: false,
+                    completed: true,
+                    startedAt: Date.now(),
+                    endedAt: Date.now()
+                });
+                return 'finished';
+            }
             return 'completed_duplicate';
         }
         if (existing?.active && existing.ownerToken > 0 && existing.ownerToken !== client.token) {
@@ -3227,7 +3265,7 @@ export class LevelHandler {
             return false;
         }
         if (state.completed) {
-            return true;
+            return !MissionHandler.isWaitingForDungeonCompletionCutscene(client);
         }
         return state.active && state.ownerToken > 0 && state.ownerToken !== client.token;
     }
@@ -3249,7 +3287,11 @@ export class LevelHandler {
             return true;
         }
         if (state.completed) {
-            return false;
+            if (!MissionHandler.isWaitingForDungeonCompletionCutscene(client)) {
+                return false;
+            }
+            LevelHandler.setSharedDungeonCutsceneActive(getClientLevelScope(client), roomId, client.token);
+            MissionHandler.noteDungeonCutsceneStart(client, roomId);
         }
 
         return true;
