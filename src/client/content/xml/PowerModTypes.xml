@@ -1766,11 +1766,11 @@
 		<ModName>BurnDmg1</ModName>
 		<ModID>186</ModID>
 		<DisplayName>Accelerant</DisplayName>
-		<Description>Increases Burn Damage@Burn Damage:, +6%, +18%, +36%, +60%, +75%</Description>
+		<Description>Increases Burn Damage@Burn Damage:, +6%, +14%, +20%, +34%, +50%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Burned</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.02</BuffValue>
+		<BuffValue>.019</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1780,7 +1780,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Burned</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.06</BuffValue>
+		<BuffValue>.042</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1790,7 +1790,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Burned</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.12</BuffValue>
+		<BuffValue>.061</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1800,7 +1800,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Burned</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.2</BuffValue>
+		<BuffValue>.103</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1810,7 +1810,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Burned</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.25</BuffValue>
+		<BuffValue>.152</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2266,11 +2266,11 @@
 		<ModName>ChilblainsDmg1</ModName>
 		<ModID>236</ModID>
 		<DisplayName>Chilblains</DisplayName>
-		<Description>Increases Chilblains Damage@Chilblains Damage:, +6%, +18%, +36%, +60%, +75%</Description>
+		<Description>Increases Chilblains Damage@Chilblains Damage:, +6%, +14%, +20%, +34%, +50%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains,ChilblainsPermafrostDot</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.02</BuffValue>
+		<BuffValue>.019</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2280,7 +2280,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains,ChilblainsPermafrostDot</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.06</BuffValue>
+		<BuffValue>.042</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2290,7 +2290,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains,ChilblainsPermafrostDot</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.12</BuffValue>
+		<BuffValue>.061</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2300,7 +2300,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains,ChilblainsPermafrostDot</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.2</BuffValue>
+		<BuffValue>.103</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2310,7 +2310,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Chilblains,ChilblainsPermafrostDot</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.25</BuffValue>
+		<BuffValue>.152</BuffValue>
 		<IconName>a_Signet_Chilblains01</IconName>
 	</PowerModType>
 	<PowerModType>

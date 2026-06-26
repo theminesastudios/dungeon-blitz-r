@@ -639,8 +639,8 @@ export function patchPlayerBuffs(xml: string): { xml: string; stats: PatchStats 
 function patchPowerModBlock(modName: string, block: string, stats: PatchStats): string {
   let next = block;
   const valueByMod: Record<string, string[]> = {
-    BurnDmg: [".02", ".06", ".12", ".2", ".25"],
-    ChilblainsDmg: [".02", ".06", ".12", ".2", ".25"],
+    BurnDmg: [".019", ".042", ".061", ".103", ".152"],
+    ChilblainsDmg: [".019", ".042", ".061", ".103", ".152"],
     DryIce: [".75", "1.5", "2.5", "3.75", "5"],
     IceCasket: ["1", "2", "3", "4", "5"],
     ColdHeart: ["-100", "-200", "-300", "-400", "-500"],
@@ -649,8 +649,8 @@ function patchPowerModBlock(modName: string, block: string, stats: PatchStats): 
     CurseCrit: [".02", ".04", ".06", ".08", ".1"],
   };
   const descriptions: Record<string, string> = {
-    BurnDmg: "Increases Burn Damage@Burn Damage:, +6%, +18%, +36%, +60%, +75%",
-    ChilblainsDmg: "Increases Chilblains Damage@Chilblains Damage:, +6%, +18%, +36%, +60%, +75%",
+    BurnDmg: "Increases Burn Damage@Burn Damage:, +6%, +14%, +20%, +34%, +50%",
+    ChilblainsDmg: "Increases Chilblains Damage@Chilblains Damage:, +6%, +14%, +20%, +34%, +50%",
     DryIce: "Increases Ice damage based on your Expertise.@Damage (%Expertise):, 75%, 150%, 250%, 375%, 500%",
     IceCasket: "Increases Freeze Durability based on your Expertise.@Durability (%Expertise):, 100%, 200%, 300%, 400%, 500%",
     ColdHeart: "Reduces the target's healing effects.@Healing Reduction:, 10%, 20%, 30%, 40%, 50%",
