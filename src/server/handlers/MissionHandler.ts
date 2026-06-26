@@ -3235,14 +3235,12 @@ export class MissionHandler {
                 sourceToken: authorityClient.token
             });
 
-            if (didMutate) {
-                MissionHandler.saveCharacter(other, 'party keep completion mission update');
-                MissionHandler.logKeepCompletionProgress('keepRebuildStatePersisted', other, {
-                    levelScope,
-                    missionId: MissionID.ClearYourHouse,
-                    sourceToken: authorityClient.token
-                });
-            }
+            MissionHandler.saveCharacter(other, 'party keep completion mission update');
+            MissionHandler.logKeepCompletionProgress('keepRebuildStatePersisted', other, {
+                levelScope,
+                missionId: MissionID.ClearYourHouse,
+                sourceToken: authorityClient.token
+            });
         }
     }
 
