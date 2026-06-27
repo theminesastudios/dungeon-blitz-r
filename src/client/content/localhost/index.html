@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Play Dungeon Blitz</title>
-  <script src="js/swfobject.min.js"></script>
-
   <style>
     html, body {
       margin: 0;
@@ -39,7 +37,7 @@
     #flash-hint {
       position: absolute;
       inset: 0;
-      display: flex;
+      display: none;
       align-items: center;
       justify-content: center;
       color: #3A3A45;
@@ -97,7 +95,7 @@
     document.cookie = "db_lang=; path=/; max-age=0; SameSite=Lax";
 
     const languageParam = urlLanguage ? `&lang=${urlLanguage}` : "";
-    const swfUrl = `p/cbp/DungeonBlitz.swf?fv=cdc&gv=cdc${languageParam}`;
+    const swfUrl = `/p/cbp/DungeonBlitz.swf?fv=cbp&gv=cbp${languageParam}`;
     console.log("[DungeonBlitzHost] Loading SWF", swfUrl);
     const localBridgeBaseUrl = "http://127.0.0.1:47631";
     const selfPresenceUrl = "/api/presence/self";
@@ -188,27 +186,41 @@
       }
     }
 
-    // Attempt native Flash immediately
-    swfobject.embedSWF(
-      swfUrl,
-      "game-container",
-      "100%",
-      "100%",
-      "10.0.0",
-      null,
-      { fv: "cdc", gv: "cdc" },
-      { allowScriptAccess: "always", allowFullScreen: "true" },
-      { id: "DungeonBlitz", name: "DungeonBlitz" },
-      function (e) {
-        if (!e.success) {
-          // Flash not installed or unavailable
-          showFallback();
-        }
-      }
-    );
+    function embedDungeonBlitzSwf() {
+      const container = document.getElementById("game-container");
+      const fallback = document.getElementById("fallback");
+      const object = document.createElement("object");
+      object.id = "DungeonBlitz";
+      object.name = "DungeonBlitz";
+      object.type = "application/x-shockwave-flash";
+      object.data = swfUrl;
+      object.width = "100%";
+      object.height = "100%";
 
-    // Give Flash time to initialize after permission
-    setTimeout(hideHint, 2500);
+      const params = {
+        movie: swfUrl,
+        allowScriptAccess: "always",
+        allowFullScreen: "true",
+        wmode: "direct"
+      };
+
+      for (const [name, value] of Object.entries(params)) {
+        const param = document.createElement("param");
+        param.name = name;
+        param.value = value;
+        object.appendChild(param);
+      }
+
+      const objectFallback = document.createElement("div");
+      objectFallback.innerHTML = fallback.innerHTML;
+      object.appendChild(objectFallback);
+      fallback.style.display = "none";
+
+      container.textContent = "";
+      container.appendChild(object);
+    }
+
+    embedDungeonBlitzSwf();
     if (localDiscordBridgeEnabled) {
       setTimeout(syncDiscordPresence, 2500);
       setInterval(syncDiscordPresence, presencePollMs);
