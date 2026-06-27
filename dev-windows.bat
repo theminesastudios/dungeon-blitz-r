@@ -131,6 +131,12 @@ if exist "%DISCORD_SOCIAL_BRIDGE_EXECUTABLE%" (
 )
 set DISCORD_SOCIAL_APP_ID=1447954255452311695
 set DISCORD_SOCIAL_DEVICE_FLOW=false
+if not defined STATIC_PORT set "STATIC_PORT=8000"
+if not defined FLASH_SWF_PATH set "FLASH_SWF_PATH=p/cbp/DungeonBlitz.swf"
+if not defined FLASH_FILE_VERSION set "FLASH_FILE_VERSION=cbp"
+if not defined FLASH_GAME_VERSION set "FLASH_GAME_VERSION=cbp"
+if not defined FLASH_BROWSER_URL set "FLASH_BROWSER_URL=http://localhost:%STATIC_PORT%/"
+set "FLASH_PLAYER_URL=!FLASH_BROWSER_URL!!FLASH_SWF_PATH!?fv=!FLASH_FILE_VERSION!^&gv=!FLASH_GAME_VERSION!"
 
 :: SERVER BASLAT
 echo Starting server with Discord RPC ^(npm run dev:discord^)^...
@@ -140,10 +146,9 @@ echo Discord chat relay mode: %DISCORD_SOCIAL_CHAT_RELAY_MODE%
 echo Discord Social SDK app id: %DISCORD_SOCIAL_APP_ID%
 echo Discord Social SDK device flow: %DISCORD_SOCIAL_DEVICE_FLOW%
 echo Discord Social SDK bridge: %DISCORD_SOCIAL_BRIDGE_EXECUTABLE%
-echo When it's ready, open the URL shown in the logs.
 echo.
 
-call npm run dev:discord
+call node tools\runDevDiscordWithUrls.js
 set EXIT_CODE=%errorlevel%
 
 echo.

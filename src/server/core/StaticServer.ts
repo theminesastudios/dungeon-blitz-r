@@ -45,8 +45,9 @@ export class StaticServer {
     private host: string;
     private selectedSwfCache: { key: string; buffer: Buffer } | null;
     private readonly discordAccountLinks: DiscordAccountLinkService;
-    private readonly flashVersion = 'cdc';
-    private readonly gameVersion = 'cdc';
+    private readonly selectedAssetVersion = 'cbp';
+    private readonly flashVersion = this.selectedAssetVersion;
+    private readonly gameVersion = this.selectedAssetVersion;
 
     private static shouldLog(): boolean {
         return process.env.DEBUG_STATIC_SERVER === '1';
@@ -71,7 +72,7 @@ export class StaticServer {
     }
 
     private getSelectedSwfPath(): string {
-        return path.join(this.contentDir, 'p', 'cbp', 'DungeonBlitz.swf');
+        return path.join(this.contentDir, 'p', this.selectedAssetVersion, 'DungeonBlitz.swf');
     }
 
     private getSelectedSwfBuffer(locale: DungeonBlitzSwfLocale): Buffer {
@@ -92,7 +93,7 @@ export class StaticServer {
     }
 
     private getSelectedSwfUrl(): string {
-        return `/p/cbp/DungeonBlitz.swf?fv=${this.flashVersion}&gv=${this.gameVersion}`;
+        return `/p/${this.selectedAssetVersion}/DungeonBlitz.swf?fv=${this.flashVersion}&gv=${this.gameVersion}`;
     }
 
     private getCanonicalSelectedSwfUrl(req?: Request): string {
@@ -116,7 +117,7 @@ export class StaticServer {
             }
         }
 
-        return `/p/cbp/DungeonBlitz.swf?${params.toString()}`;
+        return `/p/${this.selectedAssetVersion}/DungeonBlitz.swf?${params.toString()}`;
     }
 
     private isCanonicalSelectedSwfRequest(req: Request): boolean {
@@ -303,7 +304,7 @@ export class StaticServer {
             res.sendFile(path.join(this.contentDir, 'index.html'));
         });
 
-        this.app.get('/p/cbp/DungeonBlitz.swf', (req, res) => {
+        this.app.get(`/p/${this.selectedAssetVersion}/DungeonBlitz.swf`, (req, res) => {
             if (!this.isCanonicalSelectedSwfRequest(req)) {
                 res.redirect(302, this.getCanonicalSelectedSwfUrl(req));
                 return;
