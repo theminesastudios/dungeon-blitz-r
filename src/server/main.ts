@@ -43,6 +43,28 @@ import * as path from 'path';
 
 import { StaticServer } from './core/StaticServer';
 
+type DungeonCompletionPatchTarget = {
+    DUNGEONS_REQUIRING_BOSS_DEFEAT?: Set<string>;
+    REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL?: Record<string, ReadonlySet<string>>;
+};
+
+function applySvarSpiteDungeonCompletionPatch(): void {
+    const missionHandler = MissionHandler as unknown as DungeonCompletionPatchTarget;
+
+    missionHandler.DUNGEONS_REQUIRING_BOSS_DEFEAT?.add('SRN_Mission3');
+    missionHandler.DUNGEONS_REQUIRING_BOSS_DEFEAT?.add('SRN_Mission3Hard');
+
+    const requiredBossNames = missionHandler.REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL;
+    if (!requiredBossNames) {
+        return;
+    }
+
+    requiredBossNames.SRN_Mission3 = new Set(['YoungDragonGreen']);
+    requiredBossNames.SRN_Mission3Hard = new Set(['YoungDragonGreenHard']);
+}
+
+applySvarSpiteDungeonCompletionPatch();
+
 // Load Config
 const dataDir = path.join(Config.DATA_DIR, 'data');
 LevelConfig.load(dataDir);
