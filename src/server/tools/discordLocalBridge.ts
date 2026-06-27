@@ -1,5 +1,5 @@
 import express from 'express';
-import type { Request } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Config } from '../core/config';
@@ -70,10 +70,43 @@ function buildLocalPresenceEndpoint(pathname: string): string {
     return `http://127.0.0.1:${Config.STATIC_PORT}${pathname}`;
 }
 
+function isLoopbackHostname(hostname: string): boolean {
+    const normalized = hostname.trim().toLowerCase();
+    return normalized === 'localhost' || normalized === '127.0.0.1' || normalized === '::1' || normalized === '[::1]';
+}
+
+function normalizeHttpUrl(value: unknown, options: { loopbackOnly?: boolean } = {}): string {
+    const text = String(value ?? '').trim();
+    if (!text) {
+        return '';
+    }
+
+    try {
+        const parsed = new URL(text);
+        const isHttp = parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        const hasCredentials = Boolean(parsed.username || parsed.password);
+        const isLoopback = isLoopbackHostname(parsed.hostname);
+        if (!isHttp || hasCredentials || (options.loopbackOnly && !isLoopback)) {
+            return '';
+        }
+        return parsed.toString();
+    } catch {
+        return '';
+    }
+}
+
+function normalizeTargetProcessName(value: unknown): string {
+    const text = String(value ?? '').trim();
+    if (!text || text.length > 128 || /[\0\r\n]/.test(text)) {
+        return '';
+    }
+    return text;
+}
+
 function preferLocalDevUrl(rawUrl: string, pathname: string): string {
     const trimmed = String(rawUrl ?? '').trim();
     if (Config.MULTIPLAYER_MODE) {
-        return trimmed || buildLocalPresenceEndpoint(pathname);
+        return normalizeHttpUrl(trimmed, { loopbackOnly: false }) || buildLocalPresenceEndpoint(pathname);
     }
 
     if (!trimmed) {
@@ -91,11 +124,11 @@ function preferLocalDevUrl(rawUrl: string, pathname: string): string {
             parsed.hash = '';
             return parsed.toString();
         }
-    } catch (_error) {
+    } catch {
         return buildLocalPresenceEndpoint(pathname);
     }
 
-    return trimmed;
+    return normalizeHttpUrl(trimmed, { loopbackOnly: true }) || buildLocalPresenceEndpoint(pathname);
 }
 
 function resolveConfigPath(): string {
@@ -143,16 +176,7 @@ class LocalDiscordBridge {
     constructor(config: BridgeConfig) {
         this.config = config;
         this.app.use(express.json({ limit: '64kb' }));
-        this.app.use((req, res, next) => {
-            res.setHeader('Access-Control-Allow-Origin', '*');
-            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-            res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-            if (req.method === 'OPTIONS') {
-                res.status(204).end();
-                return;
-            }
-            next();
-        });
+        this.app.use((req, res, next) => this.handleCors(req, res, next));
         this.setupRoutes();
     }
 
@@ -188,7 +212,26 @@ class LocalDiscordBridge {
         await this.tryLogin();
     }
 
+    private handleCors(req: Request, res: Response, next: NextFunction): void {
+        const origin = String(req.headers.origin ?? '').trim();
+        if (origin) {
+            const safeOrigin = normalizeHttpUrl(origin, { loopbackOnly: true });
+            if (!safeOrigin) {
+                res.status(403).json({ ok: false, reason: 'origin-not-allowed' });
+                return;
+            }
+            res.setHeader('Access-Control-Allow-Origin', safeOrigin.replace(/\/$/, ''));
+            res.setHeader('Vary', 'Origin');
+        }
 
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+        if (req.method === 'OPTIONS') {
+            res.status(204).end();
+            return;
+        }
+        next();
+    }
 
     private async createRpcClient(): Promise<void> {
         if (!this.discordRpc) {
@@ -199,7 +242,7 @@ class LocalDiscordBridge {
             try {
                 await this.client.destroy();
             } catch {
-                // Ignore destruction errors
+                // Ignore destruction errors.
             }
         }
 
@@ -277,7 +320,6 @@ class LocalDiscordBridge {
             this.scheduleReconnect();
         }
     }
-
 
     private setupRoutes(): void {
         this.app.get('/healthz', (_req, res) => {
@@ -496,11 +538,6 @@ class LocalDiscordBridge {
     }
 
     private buildJoinUrl(): string {
-        const explicitJoinUrl = String(this.runtimeJoinUrl || this.config.joinUrl || '').trim();
-        if (explicitJoinUrl) {
-            return explicitJoinUrl;
-        }
-
         const activePresenceUrl = this.getActivePresenceUrl();
         if (!activePresenceUrl) {
             return '';
@@ -514,25 +551,7 @@ class LocalDiscordBridge {
     }
 
     private normalizeUrl(value: unknown): string {
-        const text = String(value ?? '').trim();
-        if (!text) {
-            return '';
-        }
-
-        try {
-            const parsed = new URL(text);
-            const isHttp = parsed.protocol === 'http:' || parsed.protocol === 'https:';
-            const isLoopbackHost = parsed.hostname === '127.0.0.1' || parsed.hostname === 'localhost';
-            const hasCredentials = Boolean(parsed.username || parsed.password);
-
-            if (!isHttp || !isLoopbackHost || hasCredentials) {
-                return '';
-            }
-
-            return parsed.toString();
-        } catch (_error) {
-            return '';
-        }
+        return normalizeHttpUrl(value, { loopbackOnly: true });
     }
 
     private async subscribeToDiscordEvents(): Promise<void> {
@@ -701,13 +720,12 @@ class LocalDiscordBridge {
             activity.largeImageText = payload.levelName || this.config.largeImageText;
         }
 
-        // Add Buttons
-        const buttons: any[] = [];
-        const playGameUrl = String(this.config.playGameUrl || '').trim();
+        const buttons: Array<{ label: string; url: string }> = [];
+        const playGameUrl = normalizeHttpUrl(this.config.playGameUrl);
         if (playGameUrl) {
             buttons.push({ label: 'Play Game', url: playGameUrl });
         }
-        
+
         if (buttons.length > 0) {
             activity.buttons = buttons;
         }
@@ -768,57 +786,70 @@ class LocalDiscordBridge {
     }
 
     private updateTargetPid(): number | null {
-        if (!this.config.targetProcessName) {
+        const targetName = normalizeTargetProcessName(this.config.targetProcessName);
+        if (!targetName) {
             return null;
         }
 
-        try {
-            const { execSync } = require('child_process');
-            // Try pgrep -f first (full command line match)
-            let output = '';
-            try {
-                output = execSync(`pgrep -f "${this.config.targetProcessName}"`, { encoding: 'utf8' }).trim();
-            } catch {
-                // Ignore pgrep failure (often happens if no match)
+        const pid = this.findTargetPidWithPgrep(targetName) ?? this.findTargetPidWithPs(targetName);
+        if (pid) {
+            if (this.targetPid !== pid) {
+                this.targetPid = pid;
+                console.log(`[DiscordBridge] Linked presence to process "${targetName}" (PID: ${pid})`);
             }
-
-            if (!output) {
-                // Try ps as fallback
-                try {
-                    const psOutput = execSync(`ps aux | grep -v grep | grep -i "${this.config.targetProcessName}"`, { encoding: 'utf8' });
-                    const lines = psOutput.trim().split('\n');
-                    if (lines.length > 0) {
-                        const parts = lines[0].trim().split(/\s+/);
-                        if (parts.length > 1) {
-                            output = parts[1];
-                        }
-                    }
-                } catch {
-                    // Ignore ps failure
-                }
-            }
-
-            if (output) {
-                const pid = parseInt(output.split('\n')[0], 10);
-                if (Number.isFinite(pid) && pid > 0) {
-                    if (this.targetPid !== pid) {
-                        this.targetPid = pid;
-                        console.log(`[DiscordBridge] Linked presence to process "${this.config.targetProcessName}" (PID: ${pid})`);
-                    }
-                    return pid;
-                }
-            }
-        } catch (error) {
-            if (this.config.logPayloads) {
-                console.error('[DiscordBridge] PID discovery failed:', error);
-            }
+            return pid;
         }
 
         if (this.targetPid !== null) {
             this.targetPid = null;
-            console.log(`[DiscordBridge] Process "${this.config.targetProcessName}" no longer found.`);
+            console.log(`[DiscordBridge] Process "${targetName}" no longer found.`);
         }
         return null;
+    }
+
+    private findTargetPidWithPgrep(targetName: string): number | null {
+        try {
+            const { execFileSync } = require('child_process') as typeof import('child_process');
+            const output = execFileSync('pgrep', ['-f', targetName], {
+                encoding: 'utf8',
+                timeout: 1000,
+                windowsHide: true
+            }).trim();
+            return this.parseFirstPid(output);
+        } catch (error) {
+            if (this.config.logPayloads) {
+                console.error('[DiscordBridge] pgrep PID discovery failed:', error);
+            }
+            return null;
+        }
+    }
+
+    private findTargetPidWithPs(targetName: string): number | null {
+        try {
+            const { execFileSync } = require('child_process') as typeof import('child_process');
+            const output = execFileSync('ps', ['-axo', 'pid=,command='], {
+                encoding: 'utf8',
+                timeout: 1000,
+                windowsHide: true
+            });
+            const normalizedTarget = targetName.toLowerCase();
+            const matchingLine = output
+                .split('\n')
+                .map((line) => line.trim())
+                .find((line) => line.toLowerCase().includes(normalizedTarget));
+            return matchingLine ? this.parseFirstPid(matchingLine) : null;
+        } catch (error) {
+            if (this.config.logPayloads) {
+                console.error('[DiscordBridge] ps PID discovery failed:', error);
+            }
+            return null;
+        }
+    }
+
+    private parseFirstPid(output: string): number | null {
+        const firstToken = String(output ?? '').trim().split(/\s+/)[0] ?? '';
+        const pid = Number.parseInt(firstToken, 10);
+        return Number.isFinite(pid) && pid > 0 ? pid : null;
     }
 }
 
@@ -846,18 +877,22 @@ function readConfig(): BridgeConfig {
     }
 
     const raw = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8')) as Record<string, unknown>;
+    const presenceUrl = preferLocalDevUrl(
+        String(raw.presenceUrl ?? defaults.presenceUrl).trim(),
+        '/api/presence/discord-target'
+    );
+    const joinUrl = preferLocalDevUrl(
+        String(raw.joinUrl ?? defaults.joinUrl).trim(),
+        '/api/presence/discord-join'
+    );
+    const playGameUrl = normalizeHttpUrl(raw.playGameUrl) || defaults.playGameUrl;
+
     return {
         appId: String(raw.appId ?? defaults.appId).trim(),
         port: Number.isFinite(Number(raw.port)) ? Math.max(1, Math.round(Number(raw.port))) : defaults.port,
-        presenceUrl: preferLocalDevUrl(
-            String(raw.presenceUrl ?? defaults.presenceUrl).trim(),
-            '/api/presence/discord-target'
-        ),
-        joinUrl: preferLocalDevUrl(
-            String(raw.joinUrl ?? defaults.joinUrl).trim(),
-            '/api/presence/discord-join'
-        ),
-        playGameUrl: String(raw.playGameUrl ?? defaults.playGameUrl).trim() || defaults.playGameUrl,
+        presenceUrl,
+        joinUrl,
+        playGameUrl,
         characterName: String(raw.characterName ?? defaults.characterName).trim(),
         pollMs: Number.isFinite(Number(raw.pollMs)) ? Math.max(1000, Math.round(Number(raw.pollMs))) : defaults.pollMs,
         largeImageText: String(raw.largeImageText ?? defaults.largeImageText).trim(),
@@ -867,7 +902,7 @@ function readConfig(): BridgeConfig {
         largeImageDungeonKey: String(raw.largeImageDungeonKey ?? defaults.largeImageDungeonKey).trim(),
         largeImageNewbieRoadKey: String(raw.largeImageNewbieRoadKey ?? defaults.largeImageNewbieRoadKey).trim(),
         logPayloads: Boolean(raw.logPayloads),
-        targetProcessName: String(raw.targetProcessName ?? defaults.targetProcessName).trim()
+        targetProcessName: normalizeTargetProcessName(raw.targetProcessName)
     };
 }
 

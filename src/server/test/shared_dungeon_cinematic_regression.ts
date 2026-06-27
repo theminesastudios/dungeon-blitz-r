@@ -86,6 +86,14 @@ function createFakeClient(name: string, token: number): FakeClient {
     };
 }
 
+function createKeepClient(name: string, token: number): FakeClient {
+    const client = createFakeClient(name, token);
+    client.currentLevel = 'NR_Tales1Keep';
+    client.levelInstanceId = 'keep-solo-cinematic';
+    client.character.CurrentLevel = { name: 'NR_Tales1Keep', x: 1000, y: 1000 };
+    return client;
+}
+
 function buildRoomEventStartPayload(roomId: number): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod9(roomId);
@@ -211,6 +219,38 @@ function testSharedDungeonBossInfoStartsBorderForAllMembers(): void {
     assert.equal(packetCount(rogue, 0xA5), 0, 'late owner room start should not replay cutscene border for viewers after boss info');
 }
 
+function testPostDeathCompletionCanReuseCompletedRoomCutscene(): void {
+    const mage = createFakeClient('Mage', 91001);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+
+    const scope = getLevelScopeKey(mage.currentLevel, mage.levelInstanceId);
+    LevelHandler.handleRoomEventStart(mage as never, buildRoomEventStartPayload(2));
+    LevelHandler.handleRoomClose(mage as never, buildRoomClosePayload(2));
+    assert.equal(mage.activeDungeonCutsceneScope, '', 'pre-boss room cutscene should be completed before the boss death sequence');
+
+    mage.pendingDungeonCompletionScope = scope;
+    mage.pendingDungeonCompletionWaitForCutsceneEnd = true;
+    mage.sentPackets.length = 0;
+
+    LevelHandler.handleRoomEventStart(mage as never, buildRoomEventStartPayload(2));
+    assert.equal(mage.activeDungeonCutsceneScope, scope, 'post-death boss cutscene should reopen a completed room cutscene');
+
+    SocialHandler.handleRoomThought(mage as never, buildRoomThoughtPayload(101, 'The defector is beaten.'));
+    assert.equal(packetCount(mage, 0x76), 1, 'post-death boss dialogue should relay while completion waits for the cutscene');
+}
+
+function testSoloKeepCutsceneSkitIsNotSuppressedBySharedState(): void {
+    const mage = createKeepClient('Mage', 91001);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+
+    LevelHandler.handleRoomEventStart(mage as never, buildRoomEventStartPayload(2));
+    LevelHandler.handleRoomClose(mage as never, buildRoomClosePayload(2));
+    mage.sentPackets.length = 0;
+
+    SocialHandler.handleRoomThought(mage as never, buildRoomThoughtPayload(101, 'I claim this keep.'));
+    assert.equal(packetCount(mage, 0x76), 1, 'solo keep cutscene skits should not be suppressed by shared cinematic duplicate state');
+}
+
 async function testSharedDungeonCinematicSuppressesPlayerDamage(): Promise<void> {
     const mage = createFakeClient('Mage', 91001);
     const rogue = createFakeClient('Rogue', 92002);
@@ -256,6 +296,14 @@ async function main(): Promise<void> {
         GlobalState.dungeonCutscenes.clear();
         GlobalState.levelEntities.clear();
         testSharedDungeonBossInfoStartsBorderForAllMembers();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.dungeonCutscenes.clear();
+        GlobalState.levelEntities.clear();
+        testPostDeathCompletionCanReuseCompletedRoomCutscene();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.dungeonCutscenes.clear();
+        GlobalState.levelEntities.clear();
+        testSoloKeepCutsceneSkitIsNotSuppressedBySharedState();
         GlobalState.sessionsByToken.clear();
         GlobalState.dungeonCutscenes.clear();
         GlobalState.levelEntities.clear();

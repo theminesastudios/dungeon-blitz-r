@@ -21,7 +21,7 @@ export class LoginHandler {
         const sidBytes = Buffer.alloc(2);
         sidBytes.writeUInt16BE(sid);
 
-        const digest = crypto.createHash('md5').update(Buffer.concat([sidBytes, secret])).digest('hex').substring(0, 12);
+        const digest = crypto.createHmac('sha256', secret).update(sidBytes).digest('hex').substring(0, 12);
         const challenge = `${sid.toString(16).padStart(4, '0')}${digest}`;
         client.challengeStr = challenge;
 

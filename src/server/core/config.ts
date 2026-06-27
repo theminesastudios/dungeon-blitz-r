@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -59,6 +60,22 @@ function parseStringEnv(name: string, fallback: string): string {
 
     const trimmed = raw.trim();
     return trimmed || fallback;
+}
+
+function parseHexEnv(name: string): string | null {
+    const raw = process.env[name];
+    if (raw == null) {
+        return null;
+    }
+
+    const normalized = raw.trim().toLowerCase();
+    return /^[0-9a-f]{32,128}$/.test(normalized) && normalized.length % 2 === 0
+        ? normalized
+        : null;
+}
+
+function resolveRuntimeKeyHex(): string {
+    return parseHexEnv('DUNGEONBLITZ_KEY_HEX') ?? crypto.randomBytes(16).toString('hex');
 }
 
 export function normalizeHostValue(raw: string | undefined, fallback: string): string {
@@ -175,6 +192,6 @@ export const Config = {
     POLICY_PORT: parseNumberEnv('POLICY_PORT', DEFAULT_POLICY_PORT),
     ENABLE_POLICY_SERVER: parseBooleanEnv('ENABLE_POLICY_SERVER', MULTIPLAYER_MODE),
     REWARD_ROLL_DEBUG,
-    SECRET: "815bfb010cd7b1b4e6aa90abc7679028", // Matches Python Global
+    SECRET: resolveRuntimeKeyHex(),
     DATA_DIR: resolveServerDataDir()
 };
