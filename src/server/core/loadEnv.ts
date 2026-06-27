@@ -65,4 +65,4 @@ export function loadEnv(): void {
 }
 
 loadEnv();
-void import('./SvarSpiteDungeonCompletionPatch');
+require('./SvarSpiteDungeonCompletionPatch');
