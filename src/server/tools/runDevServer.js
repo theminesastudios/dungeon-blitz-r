@@ -12,6 +12,7 @@ function startDevServer() {
     applyDevServerEnv();
 
     require('ts-node/register');
+    require('../patches/NephitCompletionPatch');
     require('../main.ts');
 }
 
