@@ -25,6 +25,20 @@ const readiness = {
 let printedUrls = false;
 let staticServerCheckStarted = false;
 
+function printUrls() {
+    if (printedUrls) {
+        return;
+    }
+
+    printedUrls = true;
+    process.stdout.write(`Flash Player URL:\n${flashPlayerUrl}\n\nFlash Browser URL:\n${flashBrowserUrl}\n\n`);
+}
+
+// Always print the URLs immediately. The readiness checks below remain as a
+// fallback for older launch flows, but the user should never have to wait for
+// GameServer/static health to see the Flash URLs.
+printUrls();
+
 function checkStaticServerReady() {
     if (readiness.staticServer || staticServerCheckStarted) {
         return;
@@ -76,8 +90,7 @@ function maybePrintUrls() {
         return;
     }
 
-    printedUrls = true;
-    process.stdout.write(`Flash Player URL:\n${flashPlayerUrl}\n\nFlash Browser URL:\n${flashBrowserUrl}\n`);
+    printUrls();
 }
 
 function handleLine(line) {
