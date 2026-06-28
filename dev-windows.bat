@@ -147,6 +147,12 @@ echo Discord Social SDK app id: %DISCORD_SOCIAL_APP_ID%
 echo Discord Social SDK device flow: %DISCORD_SOCIAL_DEVICE_FLOW%
 echo Discord Social SDK bridge: %DISCORD_SOCIAL_BRIDGE_EXECUTABLE%
 echo.
+echo Flash Player URL:
+echo !FLASH_PLAYER_URL!
+echo.
+echo Flash Browser URL:
+echo !FLASH_BROWSER_URL!
+echo.
 
 call node tools\runDevDiscordWithUrls.js
 set EXIT_CODE=%errorlevel%
