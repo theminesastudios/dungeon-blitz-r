@@ -2,6 +2,7 @@ import { LevelHandler } from '../handlers/LevelHandler';
 import { MissionHandler } from '../handlers/MissionHandler';
 import { SocialHandler } from '../handlers/SocialHandler';
 import { LevelConfig } from '../core/LevelConfig';
+import { GlobalState } from '../core/GlobalState';
 import { getClientLevelScope, getScopeLevelName } from '../core/LevelScope';
 import { BitReader } from '../network/protocol/bitReader';
 
@@ -16,6 +17,8 @@ type NephitMissionHandler = typeof MissionHandler & {
         defeatedBossNameTimes?: Map<string, number>;
         bossRoomId?: number;
     };
+    markRequiredDungeonBossDefeated?: (levelScope: string, levelName: string | null | undefined, entity: any) => void;
+    __nephitBossDefeatCompletionPatchInstalled?: boolean;
 };
 
 type PatchedLevelHandler = typeof LevelHandler & {
@@ -31,7 +34,13 @@ const NEPHIT_FINAL_DIALOGUE_TEXTS = new Set([
     'i wonder what the dream dragon he mentioned might be'
 ]);
 
+// Long enough for the authored post-boss cinematic/dialogue to finish, but only
+// armed after the server has seen the Nephit boss defeat evidence.
+const NEPHIT_STATS_AFTER_BOSS_DEFEAT_MS = 12500;
+const NEPHIT_STATS_AFTER_FINAL_DIALOGUE_MS = 2500;
+
 const pendingFinalDialogueTimers = new Map<string, NodeJS.Timeout>();
+const pendingBossDefeatTimers = new Map<string, NodeJS.Timeout>();
 
 function isNephitsQuestLevel(levelName: string | null | undefined): boolean {
     const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
@@ -42,6 +51,25 @@ function getNephitRequiredBossName(levelName: string | null | undefined): string
     return LevelConfig.normalizeLevelName(levelName) === 'GhostBossDungeonHard'
         ? 'NephitLargeEyeHard'
         : 'NephitLargeEye';
+}
+
+function normalizeRequiredName(value: string | null | undefined): string {
+    return String(value ?? '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function getEntityName(entity: any): string {
+    for (const raw of [entity?.name, entity?.EntName, entity?.entName, entity?.characterName, entity?.character_name]) {
+        const value = String(raw ?? '').replace(/^,+/, '').trim();
+        if (value) {
+            return value;
+        }
+    }
+    return '';
+}
+
+function isNephitBossName(name: string | null | undefined): boolean {
+    const key = normalizeRequiredName(name);
+    return key === 'nephit' || key === 'nephithard' || key === 'nephitlargeeye' || key === 'nephitlargeeyehard';
 }
 
 function normalizeDialogueText(text: string | null | undefined): string {
@@ -70,6 +98,105 @@ function markNephitBossDefeated(levelScope: string, levelName: string, roomId: n
     if (roomId > 0) {
         progress.bossRoomId = roomId;
     }
+
+    // Ensure the normal MissionHandler objective gate no longer sees a live
+    // Nephit copy/proxy in the completion room. The Flash client can leave a
+    // scripted boss proxy around visually while the encounter is already over.
+    const levelMap = GlobalState.levelEntities.get(levelScope);
+    if (levelMap?.size) {
+        for (const entity of levelMap.values()) {
+            if (!entity || entity.isPlayer || !isNephitBossName(getEntityName(entity))) {
+                continue;
+            }
+            entity.dead = true;
+            entity.hp = 0;
+            entity.untargetable = true;
+            entity.entState = 6;
+            if (roomId > 0 && !Number.isFinite(Number(entity.roomId))) {
+                entity.roomId = roomId;
+            }
+        }
+    }
+}
+
+function getNephitClientsInScope(levelScope: string, preferredClient?: any): any[] {
+    const clients: any[] = [];
+    const seen = new Set<any>();
+    if (preferredClient && getClientLevelScope(preferredClient) === levelScope) {
+        clients.push(preferredClient);
+        seen.add(preferredClient);
+    }
+
+    for (const session of GlobalState.sessionsByToken.values()) {
+        if (seen.has(session) || !session?.playerSpawned || getClientLevelScope(session) !== levelScope) {
+            continue;
+        }
+        clients.push(session);
+        seen.add(session);
+    }
+
+    return clients;
+}
+
+async function forceNephitCompletionForScope(
+    levelScope: string,
+    levelName: string,
+    roomId: number,
+    reason: 'roomClose' | 'finalDialogue' | 'bossDefeatTimer',
+    preferredClient?: any
+): Promise<void> {
+    const clients = getNephitClientsInScope(levelScope, preferredClient);
+    if (!clients.length) {
+        console.log(`[NephitsQuest] ${reason} completion skipped: no clients in scope=${levelScope}`);
+        return;
+    }
+
+    markNephitBossDefeated(levelScope, levelName, roomId);
+
+    const missionHandler = MissionHandler as NephitMissionHandler;
+    const payload = missionHandler.buildSyntheticLevelCompletePacket?.(100);
+    if (!payload) {
+        console.log(`[NephitsQuest] ${reason} completion failed: no synthetic completion packet builder`);
+        return;
+    }
+
+    for (const client of clients) {
+        if (!client?.character || missionHandler.hasFinalizedDungeonCompletion?.(client, levelScope)) {
+            continue;
+        }
+
+        const currentLevel =
+            LevelConfig.normalizeLevelName(client.currentLevel || String(client.character.CurrentLevel?.name ?? '')) ||
+            levelName;
+        if (!isNephitsQuestLevel(currentLevel)) {
+            continue;
+        }
+
+        client.character.questTrackerState = 100;
+        client.pendingDungeonCompletionWaitForCutsceneEnd = false;
+        if (String(client.pendingDungeonCompletionScope ?? '').trim() === levelScope) {
+            client.pendingDungeonCompletionScope = '';
+            client.pendingDungeonCompletionPayload = null;
+            if (client.pendingDungeonCompletionTimer) {
+                clearTimeout(client.pendingDungeonCompletionTimer);
+                client.pendingDungeonCompletionTimer = null;
+            }
+        }
+        if (String(client.activeDungeonCutsceneScope ?? '').trim() === levelScope) {
+            client.activeDungeonCutsceneScope = '';
+            client.activeDungeonCutsceneRoomId = 0;
+        }
+
+        client.forcedDungeonCompletionScope = levelScope;
+        const previousFlushActive = Boolean(client.pendingDungeonCompletionFlushActive);
+        client.pendingDungeonCompletionFlushActive = true;
+        try {
+            console.log(`[NephitsQuest] forcing rank/statistics reason=${reason} roomId=${roomId}`);
+            await MissionHandler.handleSetLevelComplete(client, Buffer.from(payload));
+        } finally {
+            client.pendingDungeonCompletionFlushActive = previousFlushActive;
+        }
+    }
 }
 
 async function finalizeNephitAfterBossScene(
@@ -77,7 +204,6 @@ async function finalizeNephitAfterBossScene(
     roomId: number,
     reason: 'roomClose' | 'finalDialogue'
 ): Promise<void> {
-    const missionHandler = MissionHandler as NephitMissionHandler;
     const levelScope = getClientLevelScope(client);
     const currentLevel =
         LevelConfig.normalizeLevelName(client?.currentLevel || String(client?.character?.CurrentLevel?.name ?? '')) ||
@@ -87,6 +213,7 @@ async function finalizeNephitAfterBossScene(
         return;
     }
 
+    const missionHandler = MissionHandler as NephitMissionHandler;
     if (missionHandler.hasFinalizedDungeonCompletion?.(client, levelScope)) {
         return;
     }
@@ -97,9 +224,9 @@ async function finalizeNephitAfterBossScene(
         ? !missionHandler.hasRemainingDungeonHostiles(levelScope)
         : false;
 
-    // The Nephit final dialogue is only authored after the boss death cinematic.
-    // In this dungeon the normal quest tracker may still be 26%, so the final
-    // dialogue itself is treated as the post-boss completion signal.
+    // The final dialogue is only authored after the boss death cinematic. The
+    // quest tracker may still be 26%, so the final dialogue itself is treated as
+    // a valid post-boss completion signal.
     if (reason !== 'finalDialogue' && !questComplete && !pendingCompletion && !noRemainingHostiles) {
         console.log(
             `[NephitsQuest] room close observed but completion blocked: ` +
@@ -109,43 +236,40 @@ async function finalizeNephitAfterBossScene(
         return;
     }
 
-    markNephitBossDefeated(levelScope, currentLevel, roomId);
+    await forceNephitCompletionForScope(levelScope, currentLevel, roomId, reason, client);
+}
 
-    const objectivesMet = Boolean(
-        missionHandler.hasMetRequiredDungeonCompletionObjectives?.(client, currentLevel, levelScope)
-    );
-    if (!objectivesMet) {
-        console.log(
-            `[NephitsQuest] ${reason} completion blocked after boss mark: ` +
-            `level=${currentLevel} roomId=${roomId} questComplete=${questComplete} ` +
-            `pending=${pendingCompletion} noRemainingHostiles=${noRemainingHostiles}`
-        );
+function scheduleNephitCompletionAfterBossDefeat(
+    levelScope: string,
+    levelName: string | null | undefined,
+    entity: any
+): void {
+    const normalizedLevel = LevelConfig.normalizeLevelName(levelName) || getScopeLevelName(levelScope);
+    if (!levelScope || !isNephitsQuestLevel(normalizedLevel)) {
         return;
     }
 
-    const payload = missionHandler.buildSyntheticLevelCompletePacket?.(100);
-    if (!payload) {
-        console.log(`[NephitsQuest] ${reason} completion failed: no synthetic completion packet builder`);
+    const entityName = getEntityName(entity);
+    if (entityName && !isNephitBossName(entityName)) {
         return;
     }
 
-    client.pendingDungeonCompletionWaitForCutsceneEnd = false;
-    if (String(client.pendingDungeonCompletionScope ?? '').trim() === levelScope) {
-        client.pendingDungeonCompletionScope = '';
-        client.pendingDungeonCompletionPayload = null;
-        if (client.pendingDungeonCompletionTimer) {
-            clearTimeout(client.pendingDungeonCompletionTimer);
-            client.pendingDungeonCompletionTimer = null;
-        }
-    }
-    if (String(client.activeDungeonCutsceneScope ?? '').trim() === levelScope) {
-        client.activeDungeonCutsceneScope = '';
-        client.activeDungeonCutsceneRoomId = 0;
+    const existingTimer = pendingBossDefeatTimers.get(levelScope);
+    if (existingTimer) {
+        clearTimeout(existingTimer);
     }
 
-    client.forcedDungeonCompletionScope = levelScope;
-    console.log(`[NephitsQuest] forcing rank/statistics after boss scene reason=${reason} roomId=${roomId}`);
-    await MissionHandler.handleSetLevelComplete(client, payload);
+    const roomId = Math.max(0, Math.round(Number(entity?.roomId ?? entity?.RoomID ?? 0)));
+    markNephitBossDefeated(levelScope, normalizedLevel, roomId);
+    console.log(`[NephitsQuest] boss defeat observed; scheduling rank/statistics roomId=${roomId}`);
+    const timer = setTimeout(() => {
+        pendingBossDefeatTimers.delete(levelScope);
+        void forceNephitCompletionForScope(levelScope, normalizedLevel, roomId, 'bossDefeatTimer').catch((error) => {
+            console.error('[NephitsQuest] failed to finalize after boss defeat timer:', error);
+        });
+    }, NEPHIT_STATS_AFTER_BOSS_DEFEAT_MS);
+    timer.unref?.();
+    pendingBossDefeatTimers.set(levelScope, timer);
 }
 
 function scheduleNephitFinalDialogueCompletion(client: any, text: string, source: 'roomThought' | 'startSkit'): void {
@@ -173,7 +297,8 @@ function scheduleNephitFinalDialogueCompletion(client: any, text: string, source
         void finalizeNephitAfterBossScene(client, roomId, 'finalDialogue').catch((error) => {
             console.error('[NephitsQuest] failed to finalize after final dialogue:', error);
         });
-    }, 2500);
+    }, NEPHIT_STATS_AFTER_FINAL_DIALOGUE_MS);
+    timer.unref?.();
     pendingFinalDialogueTimers.set(levelScope, timer);
 }
 
@@ -206,6 +331,25 @@ function readStartSkitText(data: Buffer): string {
     } catch {
         return '';
     }
+}
+
+export function installNephitBossDefeatCompletionPatch(): void {
+    const missionHandler = MissionHandler as NephitMissionHandler;
+    if (missionHandler.__nephitBossDefeatCompletionPatchInstalled) {
+        return;
+    }
+
+    const originalMarkRequiredDungeonBossDefeated = missionHandler.markRequiredDungeonBossDefeated?.bind(MissionHandler);
+    if (typeof originalMarkRequiredDungeonBossDefeated !== 'function') {
+        console.log('[NephitsQuest] boss defeat patch could not install: markRequiredDungeonBossDefeated missing');
+        return;
+    }
+
+    missionHandler.__nephitBossDefeatCompletionPatchInstalled = true;
+    missionHandler.markRequiredDungeonBossDefeated = (levelScope: string, levelName: string | null | undefined, entity: any): void => {
+        originalMarkRequiredDungeonBossDefeated(levelScope, levelName, entity);
+        scheduleNephitCompletionAfterBossDefeat(levelScope, levelName, entity);
+    };
 }
 
 export function installNephitRoomCloseCompletionPatch(): void {
@@ -249,5 +393,6 @@ export function installNephitFinalDialogueCompletionPatch(): void {
     };
 }
 
+installNephitBossDefeatCompletionPatch();
 installNephitRoomCloseCompletionPatch();
 installNephitFinalDialogueCompletionPatch();
