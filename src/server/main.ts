@@ -45,7 +45,11 @@ import { StaticServer } from './core/StaticServer';
 type DungeonCompletionPatchTarget = {
     DUNGEONS_REQUIRING_BOSS_DEFEAT?: Set<string>;
     REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL?: Record<string, ReadonlySet<string>>;
+    REQUIRED_DUNGEON_BOSS_NAME_ALIASES_BY_LEVEL?: Record<string, ReadonlyMap<string, string>>;
     DUNGEONS_REQUIRING_EXPLICIT_COMPLETION_CUTSCENE_END?: Set<string>;
+    CLIENT_AUTHORITY_REQUIRED_BOSS_LEVELS?: Set<string>;
+    CLIENT_AUTHORITY_REQUIRED_BOSS_NAMES?: Set<string>;
+    DUNGEONS_WITH_REQUIRED_BOSS_PROXY_COPIES?: Set<string>;
 };
 
 function applyDungeonCompletionPatches(): void {
@@ -62,15 +66,41 @@ function applyDungeonCompletionPatches(): void {
     missionHandler.DUNGEONS_REQUIRING_EXPLICIT_COMPLETION_CUTSCENE_END?.add('GhostBossDungeon');
     missionHandler.DUNGEONS_REQUIRING_EXPLICIT_COMPLETION_CUTSCENE_END?.add('GhostBossDungeonHard');
 
+    // The Flash boss bar exposes this encounter as "Nephit", while the authored
+    // server completion boss is NephitLargeEye. Treat the display name as the
+    // canonical completion boss, and allow client-authoritative defeat evidence
+    // because this scripted boss may remain at 1 HP on the server while its
+    // death cutscene is already playing.
+    missionHandler.CLIENT_AUTHORITY_REQUIRED_BOSS_LEVELS?.add('GhostBossDungeon');
+    missionHandler.CLIENT_AUTHORITY_REQUIRED_BOSS_LEVELS?.add('GhostBossDungeonHard');
+    missionHandler.CLIENT_AUTHORITY_REQUIRED_BOSS_NAMES?.add('Nephit');
+    missionHandler.CLIENT_AUTHORITY_REQUIRED_BOSS_NAMES?.add('NephitHard');
+    missionHandler.CLIENT_AUTHORITY_REQUIRED_BOSS_NAMES?.add('NephitLargeEye');
+    missionHandler.CLIENT_AUTHORITY_REQUIRED_BOSS_NAMES?.add('NephitLargeEyeHard');
+    missionHandler.DUNGEONS_WITH_REQUIRED_BOSS_PROXY_COPIES?.add('GhostBossDungeon');
+    missionHandler.DUNGEONS_WITH_REQUIRED_BOSS_PROXY_COPIES?.add('GhostBossDungeonHard');
+
     const requiredBossNames = missionHandler.REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL;
-    if (!requiredBossNames) {
-        return;
+    if (requiredBossNames) {
+        requiredBossNames.SRN_Mission3 = new Set(['YoungDragonGreen']);
+        requiredBossNames.SRN_Mission3Hard = new Set(['YoungDragonGreenHard']);
+        requiredBossNames.GhostBossDungeon = new Set(['NephitLargeEye']);
+        requiredBossNames.GhostBossDungeonHard = new Set(['NephitLargeEyeHard']);
     }
 
-    requiredBossNames.SRN_Mission3 = new Set(['YoungDragonGreen']);
-    requiredBossNames.SRN_Mission3Hard = new Set(['YoungDragonGreenHard']);
-    requiredBossNames.GhostBossDungeon = new Set(['NephitLargeEye']);
-    requiredBossNames.GhostBossDungeonHard = new Set(['NephitLargeEyeHard']);
+    const requiredBossAliases = missionHandler.REQUIRED_DUNGEON_BOSS_NAME_ALIASES_BY_LEVEL;
+    if (requiredBossAliases) {
+        requiredBossAliases.GhostBossDungeon = new Map([
+            ['Nephit', 'NephitLargeEye'],
+            ['NephitLargeEye', 'NephitLargeEye']
+        ]);
+        requiredBossAliases.GhostBossDungeonHard = new Map([
+            ['Nephit', 'NephitLargeEyeHard'],
+            ['NephitHard', 'NephitLargeEyeHard'],
+            ['NephitLargeEye', 'NephitLargeEyeHard'],
+            ['NephitLargeEyeHard', 'NephitLargeEyeHard']
+        ]);
+    }
 }
 
 applyDungeonCompletionPatches();
