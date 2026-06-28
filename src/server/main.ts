@@ -38,6 +38,7 @@ import { GuildHandler } from './handlers/GuildHandler';
 import { ForgeHandler } from './handlers/ForgeHandler';
 import { discordSocialBridge } from './integrations/DiscordSocialBridge';
 import { ProjectInfo } from './core/ProjectInfo';
+import { getClientLevelScope, getScopeLevelName } from './core/LevelScope';
 import * as path from 'path';
 
 import { StaticServer } from './core/StaticServer';
@@ -50,7 +51,129 @@ type DungeonCompletionPatchTarget = {
     CLIENT_AUTHORITY_REQUIRED_BOSS_LEVELS?: Set<string>;
     CLIENT_AUTHORITY_REQUIRED_BOSS_NAMES?: Set<string>;
     DUNGEONS_WITH_REQUIRED_BOSS_PROXY_COPIES?: Set<string>;
+    noteDungeonCutsceneEnd?: (client: any, roomId: number) => void;
+    scheduleDungeonCompletion?: (client: any, payload: Buffer, options?: {
+        forcedDungeonCompletionScope?: string;
+        initialDelayMs?: number;
+        settleDelayMs?: number;
+        waitForCutsceneEnd?: boolean;
+    }) => void;
+    buildSyntheticLevelCompletePacket?: (completionPercent: number) => Buffer;
+    flushPendingDungeonCompletion?: (client: any) => Promise<void>;
+    hasFinalizedDungeonCompletion?: (client: any, levelScope: string) => boolean;
+    hasMetRequiredDungeonCompletionObjectives?: (client: any, levelName: string, levelScope: string) => boolean;
+    hasRemainingDungeonHostiles?: (levelScope: string) => boolean;
+    getDungeonCompletionObjectiveProgress?: (levelScope: string) => {
+        bossDefeated?: boolean;
+        defeatedBossNames?: Set<string>;
+        defeatedBossNameTimes?: Map<string, number>;
+        bossRoomId?: number;
+    };
+    __nephitCutsceneCompletionPatchInstalled?: boolean;
 };
+
+function isNephitsQuestLevel(levelName: string | null | undefined): boolean {
+    const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+    return normalizedLevel === 'GhostBossDungeon' || normalizedLevel === 'GhostBossDungeonHard';
+}
+
+function getNephitsQuestRequiredBossName(levelName: string | null | undefined): string {
+    return LevelConfig.normalizeLevelName(levelName) === 'GhostBossDungeonHard'
+        ? 'NephitLargeEyeHard'
+        : 'NephitLargeEye';
+}
+
+function markNephitBossDefeatedForCompletion(
+    missionHandler: DungeonCompletionPatchTarget,
+    levelScope: string,
+    levelName: string,
+    roomId: number
+): boolean {
+    const progress = missionHandler.getDungeonCompletionObjectiveProgress?.(levelScope);
+    if (!progress) {
+        return false;
+    }
+
+    const bossName = getNephitsQuestRequiredBossName(levelName);
+    progress.bossDefeated = true;
+    progress.defeatedBossNames?.add(bossName);
+    progress.defeatedBossNameTimes?.set(bossName, Date.now());
+    if (roomId > 0) {
+        progress.bossRoomId = roomId;
+    }
+    return true;
+}
+
+function installNephitCutsceneCompletionPatch(missionHandler: DungeonCompletionPatchTarget): void {
+    if (missionHandler.__nephitCutsceneCompletionPatchInstalled) {
+        return;
+    }
+
+    const originalNoteDungeonCutsceneEnd = missionHandler.noteDungeonCutsceneEnd?.bind(MissionHandler);
+    if (typeof originalNoteDungeonCutsceneEnd !== 'function') {
+        return;
+    }
+
+    missionHandler.__nephitCutsceneCompletionPatchInstalled = true;
+    missionHandler.noteDungeonCutsceneEnd = (client: any, roomId: number): void => {
+        const levelScope = getClientLevelScope(client);
+        const currentLevel =
+            LevelConfig.normalizeLevelName(client?.currentLevel || String(client?.character?.CurrentLevel?.name ?? '')) ||
+            getScopeLevelName(levelScope);
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId ?? 0)));
+        const wasNephitLevel = isNephitsQuestLevel(currentLevel);
+
+        originalNoteDungeonCutsceneEnd(client, roomId);
+
+        if (!wasNephitLevel || !client?.character || !levelScope) {
+            return;
+        }
+
+        if (missionHandler.hasFinalizedDungeonCompletion?.(client, levelScope)) {
+            return;
+        }
+
+        const questComplete = Math.max(0, Number(client.character.questTrackerState ?? 0)) >= 100;
+        const noRemainingHostiles = missionHandler.hasRemainingDungeonHostiles
+            ? !missionHandler.hasRemainingDungeonHostiles(levelScope)
+            : false;
+        let objectivesMet = Boolean(
+            missionHandler.hasMetRequiredDungeonCompletionObjectives?.(client, currentLevel, levelScope)
+        );
+
+        if (!objectivesMet && (questComplete || noRemainingHostiles)) {
+            objectivesMet = markNephitBossDefeatedForCompletion(
+                missionHandler,
+                levelScope,
+                currentLevel,
+                normalizedRoomId
+            );
+        }
+
+        if (!objectivesMet) {
+            console.log(
+                `[NephitsQuest] cutscene ended but completion blocked: ` +
+                `questComplete=${questComplete} noRemainingHostiles=${noRemainingHostiles} roomId=${normalizedRoomId}`
+            );
+            return;
+        }
+
+        const completionPayload = missionHandler.buildSyntheticLevelCompletePacket?.(100);
+        if (!completionPayload) {
+            console.log('[NephitsQuest] cutscene ended but synthetic completion payload could not be built');
+            return;
+        }
+
+        console.log(`[NephitsQuest] finalizing completion after boss cutscene end roomId=${normalizedRoomId}`);
+        missionHandler.scheduleDungeonCompletion?.(client, completionPayload, {
+            forcedDungeonCompletionScope: levelScope,
+            initialDelayMs: 0,
+            settleDelayMs: 0,
+            waitForCutsceneEnd: false
+        });
+        void missionHandler.flushPendingDungeonCompletion?.(client);
+    };
+}
 
 function applyDungeonCompletionPatches(): void {
     const missionHandler = MissionHandler as unknown as DungeonCompletionPatchTarget;
@@ -101,6 +224,8 @@ function applyDungeonCompletionPatches(): void {
             ['NephitLargeEyeHard', 'NephitLargeEyeHard']
         ]);
     }
+
+    installNephitCutsceneCompletionPatch(missionHandler);
 }
 
 applyDungeonCompletionPatches();
