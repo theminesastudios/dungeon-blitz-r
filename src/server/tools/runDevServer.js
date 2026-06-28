@@ -13,6 +13,7 @@ function startDevServer() {
 
     require('ts-node/register');
     require('../patches/NephitCompletionPatch');
+    require('../patches/NephitDirectRankPatch');
     require('../main.ts');
 }
 
