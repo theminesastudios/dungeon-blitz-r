@@ -11,7 +11,10 @@ function startDevServer() {
     require('../scripts/cleanup-dev-instance');
     applyDevServerEnv();
 
-    require('ts-node/register');
+    // The local dev server should not fail to boot because of TypeScript-only
+    // Node ambient type errors. Runtime validation happens through the actual
+    // server startup and packet flow.
+    require('ts-node/register/transpile-only');
     require('../patches/NephitDirectRankPatch');
     require('../main.ts');
 }
