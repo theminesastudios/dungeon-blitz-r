@@ -45,7 +45,7 @@ import { StaticServer } from './core/StaticServer';
 type DungeonCompletionPatchTarget = {
     DUNGEONS_REQUIRING_BOSS_DEFEAT?: Set<string>;
     REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL?: Record<string, ReadonlySet<string>>;
-    DUNGEONS_WHERE_CLIENT_COMPLETION_RELEASES_POST_DEATH_CUTSCENE?: Set<string>;
+    DUNGEONS_REQUIRING_EXPLICIT_COMPLETION_CUTSCENE_END?: Set<string>;
 };
 
 function applyDungeonCompletionPatches(): void {
@@ -56,8 +56,11 @@ function applyDungeonCompletionPatches(): void {
     missionHandler.DUNGEONS_REQUIRING_BOSS_DEFEAT?.add('GhostBossDungeon');
     missionHandler.DUNGEONS_REQUIRING_BOSS_DEFEAT?.add('GhostBossDungeonHard');
 
-    missionHandler.DUNGEONS_WHERE_CLIENT_COMPLETION_RELEASES_POST_DEATH_CUTSCENE?.add('GhostBossDungeon');
-    missionHandler.DUNGEONS_WHERE_CLIENT_COMPLETION_RELEASES_POST_DEATH_CUTSCENE?.add('GhostBossDungeonHard');
+    // Nephit's Quest/GhostBossDungeon has a real post-boss cutscene. Do not let
+    // the boss death completion flush early; wait for the cutscene end packet,
+    // then show the rank/statistics screen immediately.
+    missionHandler.DUNGEONS_REQUIRING_EXPLICIT_COMPLETION_CUTSCENE_END?.add('GhostBossDungeon');
+    missionHandler.DUNGEONS_REQUIRING_EXPLICIT_COMPLETION_CUTSCENE_END?.add('GhostBossDungeonHard');
 
     const requiredBossNames = missionHandler.REQUIRED_DUNGEON_BOSS_NAMES_BY_LEVEL;
     if (!requiredBossNames) {
