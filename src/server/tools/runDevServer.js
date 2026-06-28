@@ -5,6 +5,8 @@ function applyDevServerEnv(env = process.env) {
     env.DEBUG_PROGRESS = env.DEBUG_PROGRESS || 'false';
     env.DEBUG_PACKETS = env.DEBUG_PACKETS || 'false';
     env.DEBUG_PAYLOAD_PREVIEW_BYTES = env.DEBUG_PAYLOAD_PREVIEW_BYTES || '64';
+    env.TS_NODE_TRANSPILE_ONLY = 'true';
+    env.TS_NODE_FILES = 'false';
 }
 
 function startDevServer() {
@@ -14,7 +16,16 @@ function startDevServer() {
     // The local dev server should not fail to boot because of TypeScript-only
     // Node ambient type errors. Runtime validation happens through the actual
     // server startup and packet flow.
-    require('ts-node/register/transpile-only');
+    require('ts-node').register({
+        transpileOnly: true,
+        files: false,
+        compilerOptions: {
+            module: 'commonjs',
+            moduleResolution: 'node',
+            skipLibCheck: true,
+            types: ['node']
+        }
+    });
     require('../patches/NephitDirectRankPatch');
     require('../main.ts');
 }
