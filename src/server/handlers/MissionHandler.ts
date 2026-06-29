@@ -246,7 +246,9 @@ export class MissionHandler {
     ]);
     private static readonly DUNGEONS_REQUIRING_EXPLICIT_COMPLETION_CUTSCENE_END = new Set([
         'JC_Mission9',
-        'JC_Mission9Hard'
+        'JC_Mission9Hard',
+        'GhostBossDungeon',
+        'GhostBossDungeonHard'
     ]);
     private static readonly DUNGEONS_WHERE_CLIENT_COMPLETION_RELEASES_POST_DEATH_CUTSCENE = new Set([
         'JC_Mission3',
@@ -281,6 +283,10 @@ export class MissionHandler {
         'GhostBossDungeonHard',
         'DreamDragonDungeon',
         'DreamDragonDungeonHard'
+    ]);
+    private static readonly NEPHIT_QUEST_COMPLETION_LEVELS = new Set([
+        'GhostBossDungeon',
+        'GhostBossDungeonHard'
     ]);
     private static readonly NEWBIE_ROAD_GOBLIN_KILL_NAMES = new Set([
         'GoblinArmorSword',
@@ -1403,6 +1409,16 @@ export class MissionHandler {
             forceSharedDungeonCompletionAllowed ||
             allowCraftTownTutorialClientCompletion ||
             (defeatedDungeonBossForcesCompletion && dungeonCompletionObjectivesMet);
+        MissionHandler.logNephitQuestCompletion('completionPacketReceived', client, {
+            levelScope,
+            completionPercent,
+            trackerCompletionPercent,
+            forceSharedDungeonCompletion,
+            forceSharedDungeonCompletionAllowed,
+            defeatedDungeonBossForcesCompletion,
+            dungeonCompletionObjectivesMet,
+            serverValidatedDungeonCompletion
+        });
         if (
             serverValidatedDungeonCompletion &&
             trackerCompletionPercent > 0 &&
@@ -1458,6 +1474,12 @@ export class MissionHandler {
         if (serverValidatedDungeonCompletion) {
             effectiveCompletionPercent = 100;
             clearedDungeon = true;
+            MissionHandler.logNephitQuestCompletion('dungeonCompletionValidated', client, {
+                levelScope,
+                effectiveCompletionPercent,
+                forceSharedDungeonCompletionAllowed,
+                defeatedDungeonBossForcesCompletion
+            });
         }
         noteDungeonRunCompletionProgress(client, effectiveCompletionPercent);
         const allowSharedServerFullClearCompletion =
@@ -1693,7 +1715,18 @@ export class MissionHandler {
         }
 
         if (didMutate) {
+            MissionHandler.logNephitQuestCompletion('savePersistenceStart', client, {
+                levelScope,
+                completedMissionId,
+                completedMissionState: completedMissionUpdate?.state ?? null,
+                questTrackerState: client.character.questTrackerState ?? null
+            });
             MissionHandler.saveCharacter(client, 'level completion mission update');
+            MissionHandler.logNephitQuestCompletion('savePersistenceComplete', client, {
+                levelScope,
+                completedMissionId,
+                completedMissionState: completedMissionUpdate?.state ?? null
+            });
             if (currentLevel === 'CraftTownTutorial' && completedMissionId === MissionID.ClearYourHouse) {
                 MissionHandler.logKeepCompletionProgress('keepRebuildStatePersisted', client, {
                     levelScope,
@@ -1860,6 +1893,15 @@ export class MissionHandler {
         }
 
         if (!MissionHandler.shouldForceCompleteDungeonOnEnemyDefeat(levelScope, destroyedEntity)) {
+            MissionHandler.logNephitQuestCompletion('bossDeathIgnored', client, {
+                levelScope,
+                reason: 'completion_objectives_not_met',
+                entityId: Math.max(0, Math.round(Number(destroyedEntity?.id ?? 0))),
+                entityName: MissionHandler.getEntityName(destroyedEntity),
+                hp: Number(destroyedEntity?.hp ?? NaN),
+                entState: Number(destroyedEntity?.entState ?? NaN),
+                dead: Boolean(destroyedEntity?.dead)
+            });
             return;
         }
 
@@ -1899,10 +1941,20 @@ export class MissionHandler {
     private static scheduleForcedDungeonCompletionIfAllowed(client: Client, currentLevel: string, levelScope: string, triggerEntity: any): void {
         const authorityToken = resolveSharedDungeonProgressAuthorityToken(levelScope);
         if (authorityToken > 0 && authorityToken !== client.token) {
+            MissionHandler.logNephitQuestCompletion('bossDeathIgnored', client, {
+                levelScope,
+                reason: 'not_progress_authority',
+                authorityToken,
+                clientToken: client.token
+            });
             return;
         }
 
         if (getActiveDungeonRunStats(client)?.finalizedStats) {
+            MissionHandler.logNephitQuestCompletion('bossDeathIgnored', client, {
+                levelScope,
+                reason: 'run_stats_finalized'
+            });
             return;
         }
 
@@ -1918,6 +1970,14 @@ export class MissionHandler {
         }
         const waitForCutsceneEnd = isCutsceneActive ||
             (isBossEntity && MissionHandler.hasPostDeathBossCutscene(currentLevel));
+        MissionHandler.logNephitQuestCompletion('bossDeathDetected', client, {
+            levelScope,
+            entityId: Math.max(0, Math.round(Number(triggerEntity?.id ?? 0))),
+            entityName: MissionHandler.getEntityName(triggerEntity),
+            isBossEntity,
+            isCutsceneActive,
+            waitForCutsceneEnd
+        });
         MissionHandler.scheduleDungeonCompletion(
             client,
             MissionHandler.buildSyntheticLevelCompletePacket(100),
@@ -1963,6 +2023,16 @@ export class MissionHandler {
             client.finalizingDungeonCompletionScope = '';
         }
         MissionHandler.dungeonCompletionObjectiveProgress.delete(scopeKey);
+        const sharedState = GlobalState.levelQuestProgress.get(scopeKey);
+        if (sharedState) {
+            sharedState.progress = 100;
+            sharedState.completionRequested = true;
+            sharedState.defeatedHostileIds = new Set(sharedState.trackedHostileIds ?? sharedState.defeatedHostileIds ?? []);
+        }
+        MissionHandler.logNephitQuestCompletion('dungeonCompletionFinalized', client, {
+            levelScope: scopeKey,
+            sharedProgress: sharedState?.progress ?? null
+        });
     }
 
     private static getPendingDungeonCompletionNextDelayMs(client: Client): number {
@@ -2105,6 +2175,13 @@ export class MissionHandler {
                 Boolean(client.pendingDungeonCompletionWaitForCutsceneEnd) ||
                 Boolean(options.waitForCutsceneEnd);
 
+            MissionHandler.logNephitQuestCompletion('dungeonCompletionTriggerMerged', client, {
+                levelScope,
+                forcedScope,
+                initialDelayMs,
+                settleDelayMs,
+                waitForCutsceneEnd: client.pendingDungeonCompletionWaitForCutsceneEnd
+            });
             MissionHandler.armPendingDungeonCompletionTimer(
                 client,
                 MissionHandler.getPendingDungeonCompletionNextDelayMs(client)
@@ -2121,6 +2198,13 @@ export class MissionHandler {
         client.pendingDungeonCompletionForceSharedScope = String(options.forcedDungeonCompletionScope ?? '').trim();
         client.pendingDungeonCompletionWaitForCutsceneEnd = Boolean(options.waitForCutsceneEnd);
 
+        MissionHandler.logNephitQuestCompletion('dungeonCompletionTriggered', client, {
+            levelScope,
+            forcedScope: client.pendingDungeonCompletionForceSharedScope,
+            initialDelayMs,
+            settleDelayMs,
+            waitForCutsceneEnd: client.pendingDungeonCompletionWaitForCutsceneEnd
+        });
         MissionHandler.armPendingDungeonCompletionTimer(
             client,
             MissionHandler.getPendingDungeonCompletionNextDelayMs(client)
@@ -2190,6 +2274,11 @@ export class MissionHandler {
         client.lastDungeonCutsceneStartScope = scope;
         client.lastDungeonCutsceneStartAt = Date.now();
         MissionHandler.activateBossRunStatsForCutsceneRoom(client, scope, client.activeDungeonCutsceneRoomId);
+        MissionHandler.logNephitQuestCompletion('cutsceneStart', client, {
+            levelScope: scope,
+            roomId: client.activeDungeonCutsceneRoomId,
+            pendingCompletion: String(client.pendingDungeonCompletionScope ?? '').trim() === scope
+        });
     }
 
     static noteDungeonCutsceneEnd(client: Client, roomId: number): void {
@@ -2223,6 +2312,12 @@ export class MissionHandler {
                 pendingCompletion: pendingScope === scope
             });
         }
+        MissionHandler.logNephitQuestCompletion('cutsceneEnd', client, {
+            levelScope: scope,
+            roomId: endedRoomId,
+            pendingCompletion: pendingScope === scope,
+            releasePendingCompletion: shouldReleasePendingCompletion
+        });
         if (!client.lastDungeonCutsceneStartScope) {
             client.lastDungeonCutsceneStartScope = scope;
             client.lastDungeonCutsceneStartAt = client.lastDungeonCutsceneEndAt;
@@ -2413,6 +2508,11 @@ export class MissionHandler {
                     ? Math.max(0, Number(client.lastDungeonCutsceneEndAt ?? 0))
                     : 0;
                 if (cutsceneEndAt < requestedAt) {
+                    MissionHandler.logNephitQuestCompletion('completionFlushWaitingForCutsceneEnd', client, {
+                        levelScope: pendingScope,
+                        requestedAt,
+                        cutsceneEndAt
+                    });
                     MissionHandler.armPendingDungeonCompletionTimer(client, MissionHandler.DUNGEON_COMPLETION_MAX_DEFER_MS);
                     return;
                 }
@@ -2433,12 +2533,22 @@ export class MissionHandler {
                         client.activeDungeonCutsceneRoomId = 0;
                     }
                 } else if (lastSkitAt > requestedAt && now < cutsceneWaitDeadlineAt) {
+                    MissionHandler.logNephitQuestCompletion('completionFlushWaitingForSkitQuiet', client, {
+                        levelScope: pendingScope,
+                        quietForMs,
+                        settleDelayMs,
+                        waitForCutsceneEnd: true
+                    });
                     MissionHandler.armPendingDungeonCompletionTimer(
                         client,
                         Math.max(0, Math.min(settleDelayMs - quietForMs, cutsceneWaitDeadlineAt - now))
                     );
                     return;
                 } else if (now < cutsceneWaitDeadlineAt) {
+                    MissionHandler.logNephitQuestCompletion('completionFlushWaitingForCutsceneActivity', client, {
+                        levelScope: pendingScope,
+                        remainingMs: cutsceneWaitDeadlineAt - now
+                    });
                     MissionHandler.armPendingDungeonCompletionTimer(client, cutsceneWaitDeadlineAt - now);
                     return;
                 } else {
@@ -2455,6 +2565,10 @@ export class MissionHandler {
         if (activeCutsceneScope && activeCutsceneScope === pendingScope) {
             const activeCutsceneWaitDeadlineAt = requestedAt + MissionHandler.DUNGEON_COMPLETION_MAX_DEFER_MS;
             if (now < activeCutsceneWaitDeadlineAt) {
+                MissionHandler.logNephitQuestCompletion('completionFlushWaitingForActiveCutscene', client, {
+                    levelScope: pendingScope,
+                    remainingMs: activeCutsceneWaitDeadlineAt - now
+                });
                 MissionHandler.armPendingDungeonCompletionTimer(client, MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS);
                 return;
             }
@@ -2473,6 +2587,10 @@ export class MissionHandler {
         );
 
         if (now < notBeforeAt) {
+            MissionHandler.logNephitQuestCompletion('completionFlushWaitingForNotBefore', client, {
+                levelScope: pendingScope,
+                remainingMs: notBeforeAt - now
+            });
             MissionHandler.armPendingDungeonCompletionTimer(client, notBeforeAt - now);
             return;
         }
@@ -2481,6 +2599,12 @@ export class MissionHandler {
             quietForMs < settleDelayMs &&
             now < maxQuietWaitDeadline
         ) {
+            MissionHandler.logNephitQuestCompletion('completionFlushWaitingForSkitQuiet', client, {
+                levelScope: pendingScope,
+                quietForMs,
+                settleDelayMs,
+                waitForCutsceneEnd: false
+            });
             MissionHandler.armPendingDungeonCompletionTimer(
                 client,
                 settleDelayMs - quietForMs
@@ -2494,6 +2618,11 @@ export class MissionHandler {
             forcedScope &&
             !MissionHandler.canHonorForcedDungeonCompletion(client, forcedLevelName, forcedScope, true)
         ) {
+            MissionHandler.logNephitQuestCompletion('completionFlushAborted', client, {
+                levelScope: pendingScope,
+                forcedScope,
+                reason: 'forced_completion_not_allowed'
+            });
             if (client.forcedDungeonCompletionScope === forcedScope) {
                 client.forcedDungeonCompletionScope = '';
             }
@@ -2509,6 +2638,10 @@ export class MissionHandler {
 
         try {
             client.pendingDungeonCompletionFlushActive = true;
+            MissionHandler.logNephitQuestCompletion('completionFlushDispatch', client, {
+                levelScope: pendingScope,
+                forcedScope
+            });
             await MissionHandler.handleSetLevelComplete(client, payload);
         } finally {
             client.pendingDungeonCompletionFlushActive = false;
@@ -3153,6 +3286,7 @@ export class MissionHandler {
             timeBonus: number;
         }
     ): void {
+        MissionHandler.logNephitQuestCompletion('rankScreenOpen', client, stats);
         const bb = new BitBuffer(false);
         bb.writeMethod6(Math.max(0, Math.min(stats.stars, 15)), 4);
         bb.writeMethod4(Math.max(0, stats.resultBar));
@@ -3546,6 +3680,44 @@ export class MissionHandler {
     private static hasPostDeathBossCutscene(levelName: string | null | undefined): boolean {
         const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
         return Boolean(normalizedLevel && MissionHandler.DUNGEONS_WITH_POST_DEATH_BOSS_CUTSCENE.has(normalizedLevel));
+    }
+
+    private static isNephitQuestCompletionLevel(levelName: string | null | undefined): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        return Boolean(normalizedLevel && MissionHandler.NEPHIT_QUEST_COMPLETION_LEVELS.has(normalizedLevel));
+    }
+
+    private static logNephitQuestCompletion(
+        event: string,
+        client: Client | null,
+        details: Record<string, unknown> = {}
+    ): void {
+        const detailScope = String(details.levelScope ?? '').trim();
+        const detailLevel = String(details.levelName ?? '').trim();
+        const levelName =
+            LevelConfig.normalizeLevelName(client?.currentLevel || String(client?.character?.CurrentLevel?.name ?? '')) ||
+            LevelConfig.normalizeLevelName(detailLevel) ||
+            getScopeLevelName(detailScope);
+        if (!MissionHandler.isNephitQuestCompletionLevel(levelName)) {
+            return;
+        }
+
+        const logDetails: Record<string, unknown> = {
+            level: levelName,
+            character: client?.character?.name ?? null,
+            token: client?.token ?? null,
+            ...details
+        };
+        const serializedDetails = JSON.stringify(logDetails, (_key, value) => {
+            if (value instanceof Set) {
+                return Array.from(value.values());
+            }
+            if (value instanceof Map) {
+                return Object.fromEntries(value.entries());
+            }
+            return value;
+        });
+        console.log(`[NephitQuestCompletion] ${event} ${serializedDetails}`);
     }
 
     private static isRequiredDungeonBossEntity(levelName: string | null | undefined, entity: any): boolean {
@@ -4114,6 +4286,25 @@ export class MissionHandler {
         return false;
     }
 
+    private static markRequiredBossNamesDefeatedFromRunStats(
+        levelScope: string,
+        levelName: string | null | undefined,
+        bossNames: ReadonlySet<string>
+    ): void {
+        const progress = MissionHandler.getDungeonCompletionObjectiveProgress(levelScope);
+        const now = Date.now();
+        for (const bossName of bossNames) {
+            progress.defeatedBossNames.add(bossName);
+            progress.defeatedBossNameTimes.set(bossName, now);
+        }
+        progress.bossDefeated = true;
+        MissionHandler.logNephitQuestCompletion('bossObjectiveRecoveredFromRunStats', null, {
+            levelScope,
+            levelName: LevelConfig.normalizeLevelName(levelName) || levelName,
+            bossNames: Array.from(bossNames.values()).join(',')
+        });
+    }
+
     private static hasDefeatedDungeonBoss(client: Client | null, levelScope: string | null | undefined): boolean {
         const scopeKey = String(levelScope ?? '').trim();
         if (!scopeKey) {
@@ -4132,8 +4323,19 @@ export class MissionHandler {
         }
 
         const levelMap = GlobalState.levelEntities.get(scopeKey);
-        if (levelMap?.size) {
-            for (const entity of levelMap.values()) {
+        const bossCandidateEntities = new Map<number, any>();
+        for (const [entityId, entity] of levelMap?.entries() ?? []) {
+            bossCandidateEntities.set(entityId, entity);
+        }
+        for (const entity of client?.entities?.values?.() ?? []) {
+            const entityId = Math.max(0, Math.round(Number(entity?.id ?? entity?.entId ?? entity?.EntityID ?? 0)));
+            if (entityId > 0 && !bossCandidateEntities.has(entityId)) {
+                bossCandidateEntities.set(entityId, entity);
+            }
+        }
+
+        if (bossCandidateEntities.size) {
+            for (const entity of bossCandidateEntities.values()) {
                 if (
                     requiresSimultaneousBossDefeat &&
                     entity &&
@@ -4179,6 +4381,15 @@ export class MissionHandler {
 
         const stats = client ? getActiveDungeonRunStats(client) : null;
         if (requiredBossNames?.size) {
+            if (
+                stats &&
+                stats.levelScope === scopeKey &&
+                stats.bossKilled &&
+                MissionHandler.isNephitQuestCompletionLevel(levelName)
+            ) {
+                MissionHandler.markRequiredBossNamesDefeatedFromRunStats(scopeKey, levelName, requiredBossNames);
+                return true;
+            }
             return false;
         }
         return Boolean(stats && stats.levelScope === scopeKey && stats.bossKilled);

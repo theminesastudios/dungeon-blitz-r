@@ -157,11 +157,77 @@ function createAliveNephitBoss(alias: string = 'Nephit'): any {
     };
 }
 
+function createBossDungeonClient(name: string, token: number, levelName: string): FakeClient {
+    const missionDef = MissionLoader.findPrimaryMissionByDungeon(levelName);
+    assert.ok(missionDef, `${levelName} should have a primary mission`);
+    const missionId = Number(missionDef.MissionID ?? 0);
+    assert.ok(missionId > 0, `${levelName} primary mission should have an id`);
+
+    const client = createFakeClient(name, token, 0);
+    client.currentLevel = levelName;
+    client.levelInstanceId = `${levelName.toLowerCase()}-run-${token}`;
+    client.character.CurrentLevel = { name: levelName, x: 3200, y: 1400 };
+    client.character.missions = {
+        [String(missionId)]: {
+            state: 1,
+            currCount: 0
+        }
+    };
+    return client;
+}
+
+function createImperialChampionBoss(): any {
+    return {
+        id: 9901,
+        name: 'ImperialChampion',
+        characterName: ',ImperialChampion',
+        character_name: ',ImperialChampion',
+        isPlayer: false,
+        roomId: 8,
+        team: EntityTeam.ENEMY,
+        entState: EntityState.DEAD,
+        hp: 0,
+        maxHp: 1,
+        dead: true,
+        clientSpawned: true,
+        clientDefeatVerified: true,
+        playerDamageContributed: true
+    };
+}
+
 function seedNephitRun(client: FakeClient, boss: any): void {
     const scope = getClientLevelScope(client as never);
     client.entities.set(boss.id, boss);
     GlobalState.levelEntities.set(scope, new Map([
         [boss.id, boss],
+        [
+            8802,
+            {
+                id: 8802,
+                name: 'SkeletonWarrior',
+                isPlayer: false,
+                roomId: 5,
+                team: EntityTeam.ENEMY,
+                entState: EntityState.ACTIVE,
+                hp: 100,
+                maxHp: 100,
+                dead: false,
+                clientSpawned: true
+            }
+        ]
+    ]));
+}
+
+function seedSingleBossRun(client: FakeClient, boss: any): void {
+    const scope = getClientLevelScope(client as never);
+    client.entities.set(boss.id, boss);
+    GlobalState.levelEntities.set(scope, new Map([[boss.id, boss]]));
+}
+
+function seedNephitRunWithClientOnlyBossProxy(client: FakeClient, boss: any): void {
+    const scope = getClientLevelScope(client as never);
+    client.entities.set(boss.id, boss);
+    GlobalState.levelEntities.set(scope, new Map([
         [
             8802,
             {
@@ -209,7 +275,11 @@ async function testNephitAliasCompletesAfterPostBossSkitQuiet(): Promise<void> {
     MissionHandler.noteDungeonSkitActivity(client as never);
     await waitForPendingSettle();
 
-    assert.equal(rankPacketCount(client), 1, 'normal dungeon rank/statistics packet should be sent after skit quiet');
+    assert.equal(rankPacketCount(client), 0, 'rank screen must wait for the post-boss cutscene close');
+    MissionHandler.noteDungeonCutsceneEnd(client as never, 12);
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 1, 'normal dungeon rank/statistics packet should be sent after the cutscene ends');
     assert.equal(Number(client.character.questTrackerState ?? 0), 100, 'completion should update tracker to 100 after validation');
     assert.ok(
         Number(client.character.missions[String(MissionID.KillNephit)]?.state ?? 0) >= 2,
@@ -233,11 +303,45 @@ async function testQuestTrackerTwentySixStillCompletesAfterBossSkit(): Promise<v
     assert.equal(Number(client.character.questTrackerState ?? 0), 26, 'tracker should remain partial before completion flush');
     assert.equal(rankPacketCount(client), 0);
 
+    MissionHandler.noteDungeonCutsceneStart(client as never, 12);
     MissionHandler.noteDungeonSkitActivity(client as never);
+    await waitForPendingSettle();
+    assert.equal(rankPacketCount(client), 0, 'boss objective should not complete before the ending cutscene closes');
+
+    MissionHandler.noteDungeonCutsceneEnd(client as never, 12);
     await waitForPendingSettle();
 
     assert.equal(rankPacketCount(client), 1, 'boss objective should complete even when tracker was stuck at 26 percent');
     assert.equal(Number(client.character.questTrackerState ?? 0), 100);
+}
+
+async function testPostCutsceneCompletesWhenDefeatedBossProxyOnlyExistsClientSide(): Promise<void> {
+    const client = createFakeClient('NephitProxyRunner', 83004, 37);
+    const boss = createNephitBoss('Nephit');
+    seedNephitRunWithClientOnlyBossProxy(client, boss);
+
+    MissionHandler.noteDungeonCutsceneStart(client as never, 12);
+    MissionHandler.noteDungeonCutsceneEnd(client as never, 12);
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 1, 'post-cutscene completion should recover defeated Nephit proxy from client cache');
+    assert.equal(Number(client.character.questTrackerState ?? 0), 100);
+    assert.ok(
+        Number(client.character.missions[String(MissionID.KillNephit)]?.state ?? 0) >= 2,
+        'recovered Nephit proxy completion should persist mission state'
+    );
+}
+
+async function testNonNephitBossDungeonStillOpensRankScreen(): Promise<void> {
+    const client = createBossDungeonClient('ImperialRunner', 83005, 'JC_Mission1');
+    const boss = createImperialChampionBoss();
+    seedSingleBossRun(client, boss);
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, boss);
+    MissionHandler.noteDungeonSkitActivity(client as never);
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 1, 'non-Nephit boss dungeon should still send the rank/statistics packet');
 }
 
 async function testEarlyCutsceneDoesNotCompleteBeforeBossDeath(): Promise<void> {
@@ -274,6 +378,16 @@ async function main(): Promise<void> {
         GlobalState.levelQuestProgress.clear();
         GlobalState.sessionsByToken.clear();
         await testQuestTrackerTwentySixStillCompletesAfterBossSkit();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        await testPostCutsceneCompletesWhenDefeatedBossProxyOnlyExistsClientSide();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        await testNonNephitBossDungeonStillOpensRankScreen();
 
         GlobalState.levelEntities.clear();
         GlobalState.levelQuestProgress.clear();
