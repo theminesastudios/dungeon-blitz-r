@@ -897,21 +897,29 @@ export class PetHandler {
 
         if (!client.character) return;
         const owned = PetHandler.normalizeOwnedEggIds(client.character);
-        if (slotIndex < 0 || slotIndex >= owned.length) return;
+        if (slotIndex < 0 || slotIndex >= owned.length) {
+            return;
+        }
 
         const eggID = Number(owned[slotIndex] ?? 0);
         const eggDef = PetConfig.getEggDef(eggID);
-        if (!eggDef) return;
+        if (!eggDef) {
+            return;
+        }
 
         const goldCost = PetConfig.EGG_GOLD_COST[slotIndex] || 0;
         const idolCost = PetConfig.EGG_IDOL_COST[slotIndex] || 0;
 
         if (useIdols) {
-            if ((client.character.mammothIdols || 0) < idolCost) return;
+            if ((client.character.mammothIdols || 0) < idolCost) {
+                return;
+            }
             client.character.mammothIdols = (client.character.mammothIdols || 0) - idolCost;
             PetHandler.sendMammothIdolUpdate(client);
         } else {
-            if ((client.character.gold || 0) < goldCost) return;
+            if ((client.character.gold || 0) < goldCost) {
+                return;
+            }
             client.character.gold = (client.character.gold || 0) - goldCost;
             PetHandler.sendGoldLoss(client, goldCost);
         }
@@ -945,7 +953,9 @@ export class PetHandler {
         const idolCost = br.readMethod9();
         
         if (!client.character) return;
-        if ((client.character.mammothIdols || 0) < idolCost) return;
+        if ((client.character.mammothIdols || 0) < idolCost) {
+            return;
+        }
         
         client.character.mammothIdols = (client.character.mammothIdols || 0) - idolCost;
         PetHandler.sendMammothIdolUpdate(client);
@@ -958,6 +968,7 @@ export class PetHandler {
             await PetHandler.saveCharacter(client);
             
             PetHandler.sendEggReadyPacket(client, eggData.EggID);
+            return;
         }
     }
 

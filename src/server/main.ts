@@ -36,6 +36,7 @@ import { AbilityHandler } from './handlers/AbilityHandler';
 import { DebugLogger } from './core/Debug';
 import { GuildHandler } from './handlers/GuildHandler';
 import { ForgeHandler } from './handlers/ForgeHandler';
+import { PetHandler } from './handlers/PetHandler';
 import { discordSocialBridge } from './integrations/DiscordSocialBridge';
 import { ProjectInfo } from './core/ProjectInfo';
 import * as path from 'path';
@@ -215,6 +216,17 @@ router.register(0xC3, TalentHandler.handleActiveTalentChangeRequest);
 router.register(0xDD, AbilityHandler.handleClearAbilityResearch);
 router.register(0xDE, AbilityHandler.handleSpeedupAbilityResearch);
 router.register(0xDF, TalentHandler.handleClearTalentResearch);
+
+router.register(0xB3, PetHandler.handleEquipPets);
+router.register(0xE4, PetHandler.handleRequestHatcheryEggs);
+router.register(0xE6, PetHandler.handleEggHatch);
+router.register(0xE8, PetHandler.handleCancelEggHatch);
+router.register(0xE9, PetHandler.handleEggSpeedUp);
+router.register(0xEA, PetHandler.handleCollectHatchedEgg);
+router.register(0xEC, PetHandler.handleTrainPet);
+router.register(0xED, PetHandler.handlePetTrainingCancel);
+router.register(0xEF, PetHandler.handlePetTrainingCollect);
+router.register(0xF0, PetHandler.handlePetSpeedUp);
 
 router.register(0x106, SigilHandler.handleRoyalSigilStorePurchase);
 

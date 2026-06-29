@@ -117,11 +117,45 @@ async function testExpiredActiveEggSendsReadyPacketOnce(): Promise<void> {
     assert.equal(client.sentPackets.length, 1, 'ready packet should not repeat after ReadyTime is already 0');
 }
 
+async function testCollectReadyEggSendsClientPetInventoryPacket(): Promise<void> {
+    const now = Math.floor(Date.now() / 1000);
+    const client = createFakeClient({
+        name: 'EggCollect',
+        pets: [],
+        OwnedEggsID: [5],
+        EggResetTime: now + 3600,
+        EggHachery: {
+            EggID: 5,
+            ReadyTime: 0,
+            slotIndex: 0
+        },
+        activeEggCount: 1
+    });
+
+    await PetHandler.handleCollectHatchedEgg(client as never, Buffer.alloc(0));
+
+    assert.equal(client.character.pets.length, 1, 'collect should persist the hatched pet');
+    assert.deepEqual(client.character.OwnedEggsID, [], 'collect should remove the hatched egg');
+    assert.equal(client.character.EggHachery.EggID, 0, 'collect should reset the active egg state');
+
+    const petPacket = client.sentPackets.find((packet) => packet.id === 0x37);
+    assert.ok(petPacket, 'collect should send the client new-pet inventory packet');
+
+    const petReader = new BitReader(petPacket.payload);
+    assert.equal(petReader.readMethod6(7), client.character.pets[0].typeID);
+    assert.equal(petReader.readMethod4(), client.character.pets[0].special_id);
+    assert.equal(petReader.readMethod6(6), 1);
+    assert.equal(petReader.readMethod15(), false);
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0x30), false, 'collect should not send the equipment update packet');
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0xE5), true, 'collect should refresh hatchery contents');
+}
+
 async function main(): Promise<void> {
     ensureDataLoaded();
     await testZeroPaddedEggsDoNotBlockDailyHatcherySeed();
     await testInvalidSavedEggIdsAreDroppedBeforePacketSerialization();
     await testExpiredActiveEggSendsReadyPacketOnce();
+    await testCollectReadyEggSendsClientPetInventoryPacket();
     console.log('hatchery_empty_egg_regression passed');
 }
 
