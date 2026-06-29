@@ -29,6 +29,7 @@ import {
     usesSharedDungeonProgress
 } from '../core/SharedDungeonProgress';
 import { Character } from '../database/Database';
+import { WalletService } from '../database/WalletService';
 import { MissionDef, MissionLoader } from '../data/MissionLoader';
 import { NpcLoader } from '../data/NpcLoader';
 import { MissionID } from '../data/runtime';
@@ -1644,7 +1645,7 @@ export class MissionHandler {
                 if (
                     missionUpdate.newlyCompleted &&
                     completedMissionId === MissionID.ClearYourHouse &&
-                    MissionHandler.claimKeepQuestCompletionReward(client, missionUpdate)
+                    await MissionHandler.claimKeepQuestCompletionReward(client, missionUpdate)
                 ) {
                     didMutate = true;
                     MissionHandler.logKeepCompletionProgress('questCompletionRewardClaimed', client, {
@@ -1655,7 +1656,7 @@ export class MissionHandler {
 
                 if (
                     missionUpdate.newlyCompleted &&
-                    MissionHandler.claimMeyloursEmbersRewardAndPrimeGlades(client, missionUpdate)
+                    await MissionHandler.claimMeyloursEmbersRewardAndPrimeGlades(client, missionUpdate)
                 ) {
                     didMutate = true;
                 }
@@ -1689,7 +1690,7 @@ export class MissionHandler {
             completedMissionId === MissionID.ClearYourHouse
         ) {
             if (completedMissionUpdate) {
-                MissionHandler.applyCraftTownTutorialCompletionToParty(client, levelScope, completedMissionUpdate);
+                await MissionHandler.applyCraftTownTutorialCompletionToParty(client, levelScope, completedMissionUpdate);
             }
             MissionHandler.sendCraftTownTutorialHomeDoorTarget(client);
             MissionHandler.logKeepCompletionProgress('tutorialTriggerFired', client, {
@@ -2495,7 +2496,7 @@ export class MissionHandler {
             { currCount: Math.max(1, Number(missionDef.CompleteCount ?? 1)) }
         );
 
-        client.character.mammothIdols = Number(client.character.mammothIdols ?? 0) + MissionHandler.ACHIEVEMENT_MAMMOTH_IDOL_REWARD;
+        await WalletService.grant(client, 'mammothIdols', MissionHandler.ACHIEVEMENT_MAMMOTH_IDOL_REWARD);
 
         MissionHandler.sendMissionProgress(client, missionId, 1);
         MissionHandler.sendMammothIdolUpdate(client);
@@ -2721,10 +2722,10 @@ export class MissionHandler {
         return '';
     }
 
-    private static claimKeepQuestCompletionReward(
+    private static async claimKeepQuestCompletionReward(
         client: Client,
         missionUpdate: DungeonMissionUpdateResult
-    ): boolean {
+    ): Promise<boolean> {
         if (!client.character || missionUpdate.missionId !== MissionID.ClearYourHouse) {
             return false;
         }
@@ -2751,14 +2752,14 @@ export class MissionHandler {
             missionUpdate.persistedStars,
             missionUpdate.persistedScore
         );
-        MissionHandler.grantMissionRewards(client, missionDef);
+        await MissionHandler.grantMissionRewards(client, missionDef);
         return true;
     }
 
-    private static claimMeyloursEmbersRewardAndPrimeGlades(
+    private static async claimMeyloursEmbersRewardAndPrimeGlades(
         client: Client,
         missionUpdate: DungeonMissionUpdateResult
-    ): boolean {
+    ): Promise<boolean> {
         if (!client.character) {
             return false;
         }
@@ -2779,7 +2780,7 @@ export class MissionHandler {
             return false;
         }
 
-        MissionHandler.grantMissionRewards(client, completedMissionDef);
+        await MissionHandler.grantMissionRewards(client, completedMissionDef);
 
         if (MissionHandler.getMissionState(client.character, followupMissionId) !== MissionHandler.MISSION_NOT_STARTED) {
             return true;
@@ -2800,7 +2801,7 @@ export class MissionHandler {
         return true;
     }
 
-    private static grantMissionRewards(client: Client, missionDef: MissionDef): void {
+    private static async grantMissionRewards(client: Client, missionDef: MissionDef): Promise<void> {
         if (!client.character) {
             return;
         }
@@ -2814,7 +2815,7 @@ export class MissionHandler {
 
         const goldReward = Math.max(0, Number(missionDef.GoldRewardValue ?? 0));
         if (goldReward > 0) {
-            client.character.gold = Number(client.character.gold ?? 0) + goldReward;
+            await WalletService.grant(client, 'gold', goldReward);
             RewardHandler.sendGoldReward(client, goldReward, false);
         }
     }
@@ -3150,11 +3151,11 @@ export class MissionHandler {
         });
     }
 
-    private static applyCraftTownTutorialCompletionToParty(
+    private static async applyCraftTownTutorialCompletionToParty(
         authorityClient: Client,
         levelScope: string,
         authorityMissionUpdate: DungeonMissionUpdateResult
-    ): void {
+    ): Promise<void> {
         if (!levelScope) {
             return;
         }
@@ -3218,7 +3219,7 @@ export class MissionHandler {
 
             if (
                 MissionHandler.getMissionState(other.character, MissionID.ClearYourHouse) < MissionHandler.MISSION_CLAIMED &&
-                MissionHandler.claimKeepQuestCompletionReward(other, missionUpdate)
+                await MissionHandler.claimKeepQuestCompletionReward(other, missionUpdate)
             ) {
                 didMutate = true;
                 MissionHandler.logKeepCompletionProgress('questCompletionRewardClaimed', other, {

@@ -1,5 +1,6 @@
 import abilityTypes from '../data/AbilityTypes.json';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { WalletService } from '../database/WalletService';
 import { Client } from '../core/Client';
 import { DebugLogger } from '../core/Debug';
 import { MasterClassID } from '../core/Enums';
@@ -181,14 +182,14 @@ export class AbilityHandler {
         const upgradeTime = Number(abilityDef.UpgradeTime ?? 0);
 
         if (payWithIdols) {
-            const idols = Number(client.character.mammothIdols ?? 0);
-            if (idols < idolCost) {
+            const didSpendIdols = await WalletService.spend(client, 'mammothIdols', idolCost);
+            if (!didSpendIdols) {
                 DebugLogger.logProgress('AbilityResearch:startRejected', client, client.character, {
                     abilityId,
                     rank,
                     payWithIdols,
                     idolCost,
-                    idols,
+                    idols: Number(client.character.mammothIdols ?? 0),
                     reason: 'not_enough_idols',
                     raw: DebugLogger.previewBuffer(data)
                 });
@@ -203,6 +204,7 @@ export class AbilityHandler {
 
             const claimResult = AbilityHandler.applyCompletedAbilityResearch(client.character);
             if (!claimResult) {
+                await WalletService.grant(client, 'mammothIdols', idolCost);
                 DebugLogger.logProgress('AbilityResearch:startRejected', client, client.character, {
                     abilityId,
                     rank,
@@ -214,7 +216,6 @@ export class AbilityHandler {
                 return;
             }
 
-            client.character.mammothIdols = idols - idolCost;
             await AbilityHandler.saveCharacter(client);
             DebugLogger.logProgress('AbilityResearch:instantApplied', client, client.character, {
                 abilityId,
@@ -228,20 +229,19 @@ export class AbilityHandler {
             AbilityHandler.refreshPlayerSnapshot(client);
             return;
         } else {
-            const gold = Number(client.character.gold ?? 0);
-            if (gold < goldCost) {
+            const didSpendGold = await WalletService.spend(client, 'gold', goldCost);
+            if (!didSpendGold) {
                 DebugLogger.logProgress('AbilityResearch:startRejected', client, client.character, {
                     abilityId,
                     rank,
                     payWithIdols,
                     goldCost,
-                    gold,
+                    gold: Number(client.character.gold ?? 0),
                     reason: 'not_enough_gold',
                     raw: DebugLogger.previewBuffer(data)
                 });
                 return;
             }
-            client.character.gold = gold - goldCost;
         }
 
         const now = Math.floor(Date.now() / 1000);
@@ -335,12 +335,12 @@ export class AbilityHandler {
             return;
         }
 
-        const idols = Number(client.character.mammothIdols ?? 0);
-        if (idols < idolCost) {
+        const didSpendIdols = await WalletService.spend(client, 'mammothIdols', idolCost);
+        if (!didSpendIdols) {
             DebugLogger.logProgress('AbilityResearch:speedupRejected', client, client.character, {
                 abilityId,
                 idolCost,
-                idols,
+                idols: Number(client.character.mammothIdols ?? 0),
                 reason: 'not_enough_idols',
                 raw: DebugLogger.previewBuffer(data)
             });
@@ -354,6 +354,7 @@ export class AbilityHandler {
 
         const claimResult = AbilityHandler.applyCompletedAbilityResearch(client.character);
         if (!claimResult) {
+            await WalletService.grant(client, 'mammothIdols', idolCost);
             DebugLogger.logProgress('AbilityResearch:speedupRejected', client, client.character, {
                 abilityId,
                 idolCost,
@@ -362,8 +363,6 @@ export class AbilityHandler {
             });
             return;
         }
-
-        client.character.mammothIdols = idols - idolCost;
 
         await AbilityHandler.saveCharacter(client);
         DebugLogger.logProgress('AbilityResearch:speedupApplied', client, client.character, {

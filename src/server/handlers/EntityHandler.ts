@@ -7,6 +7,7 @@ import { DeadHostileTombstone, GlobalState } from '../core/GlobalState';
 import { Entity, EntityProps, EntityState, EntityTeam } from '../core/Entity';
 import { LevelConfig } from '../core/LevelConfig';
 import { GameData } from '../core/GameData';
+import { MovementAuthority } from '../core/MovementAuthority';
 import { PetHandler } from './PetHandler';
 import { BuildingHandler } from './BuildingHandler';
 import { MissionHandler } from './MissionHandler';
@@ -3899,6 +3900,9 @@ export class EntityHandler {
         }
 
         client.entities.set(entityId, props);
+        if (ownsThisPlayerPacket) {
+            MovementAuthority.reset(client, 'entity_full_update', props.x, props.y);
+        }
         noteDungeonRunEntitySeen(client, entityId, props);
         EntityHandler.rememberEntityKnown(client, levelName, props);
 

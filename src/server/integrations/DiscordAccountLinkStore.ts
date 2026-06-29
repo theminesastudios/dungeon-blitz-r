@@ -30,6 +30,11 @@ function normalizeDiscordUserId(value: string | null | undefined): string {
     return String(value ?? '').trim();
 }
 
+function normalizeUserId(value: number | string | null | undefined): number {
+    const parsed = Number(value ?? 0);
+    return Number.isFinite(parsed) ? Math.max(0, Math.round(parsed)) : 0;
+}
+
 export class DiscordAccountLinkStore {
     private readonly linksPath: string;
 
@@ -55,6 +60,16 @@ export class DiscordAccountLinkStore {
 
         const file = await this.readLinksFile();
         return file.links.find((record) => normalizeDiscordUserId(record.discordUserId) === normalizedUserId) ?? null;
+    }
+
+    public async findByUserId(userId: number | string | null | undefined): Promise<DiscordAccountLinkRecord | null> {
+        const normalizedUserId = normalizeUserId(userId);
+        if (normalizedUserId <= 0) {
+            return null;
+        }
+
+        const file = await this.readLinksFile();
+        return file.links.find((record) => normalizeUserId(record.userId) === normalizedUserId) ?? null;
     }
 
     public async linkAccount(

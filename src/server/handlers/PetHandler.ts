@@ -2,6 +2,7 @@ import { Client } from '../core/Client';
 import { BitReader } from '../network/protocol/bitReader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { WalletService } from '../database/WalletService';
 import { PetConfig } from '../core/PetConfig';
 import { GameData } from '../core/GameData';
 import { GlobalState } from '../core/GlobalState';
@@ -734,12 +735,10 @@ export class PetHandler {
         const idolCost = PetConfig.TRAINING_IDOL_COST[nextRank] || 0;
 
         if (useIdols) {
-            if ((client.character.mammothIdols || 0) < idolCost) return;
-            client.character.mammothIdols = (client.character.mammothIdols || 0) - idolCost;
+            if (!await WalletService.spend(client, 'mammothIdols', idolCost)) return;
             PetHandler.sendMammothIdolUpdate(client);
         } else {
-            if ((client.character.gold || 0) < goldCost) return;
-            client.character.gold = (client.character.gold || 0) - goldCost;
+            if (!await WalletService.spend(client, 'gold', goldCost)) return;
             PetHandler.sendGoldLoss(client, goldCost);
         }
 
@@ -797,9 +796,7 @@ export class PetHandler {
         const idolCost = br.readMethod9();
         
         if (!client.character) return;
-        if ((client.character.mammothIdols || 0) < idolCost) return;
-        
-        client.character.mammothIdols = (client.character.mammothIdols || 0) - idolCost;
+        if (!await WalletService.spend(client, 'mammothIdols', idolCost)) return;
         PetHandler.sendMammothIdolUpdate(client);
         
         const tpList = client.character.trainingPet || [];
@@ -830,12 +827,10 @@ export class PetHandler {
         const idolCost = PetConfig.EGG_IDOL_COST[slotIndex] || 0;
 
         if (useIdols) {
-            if ((client.character.mammothIdols || 0) < idolCost) return;
-            client.character.mammothIdols = (client.character.mammothIdols || 0) - idolCost;
+            if (!await WalletService.spend(client, 'mammothIdols', idolCost)) return;
             PetHandler.sendMammothIdolUpdate(client);
         } else {
-            if ((client.character.gold || 0) < goldCost) return;
-            client.character.gold = (client.character.gold || 0) - goldCost;
+            if (!await WalletService.spend(client, 'gold', goldCost)) return;
             PetHandler.sendGoldLoss(client, goldCost);
         }
 
@@ -867,9 +862,7 @@ export class PetHandler {
         const idolCost = br.readMethod9();
         
         if (!client.character) return;
-        if ((client.character.mammothIdols || 0) < idolCost) return;
-        
-        client.character.mammothIdols = (client.character.mammothIdols || 0) - idolCost;
+        if (!await WalletService.spend(client, 'mammothIdols', idolCost)) return;
         PetHandler.sendMammothIdolUpdate(client);
         
         const eggData = PetHandler.getNormalizedEggHatchery(client.character);

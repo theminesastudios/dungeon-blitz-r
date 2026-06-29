@@ -2,6 +2,7 @@ import { Client } from '../core/Client';
 import { BitReader } from '../network/protocol/bitReader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { WalletService } from '../database/WalletService';
 import { TalentConfig } from '../core/TalentConfig';
 import { EntityHandler } from './EntityHandler';
 import { WorldEnter } from '../utils/WorldEnter';
@@ -185,12 +186,11 @@ export class TalentHandler {
         const now = Math.floor(Date.now() / 1000);
 
         if (isInstant) {
-            const idols = Number(client.character.mammothIdols ?? 0);
-            if (idols < idolCost) {
+            const didSpendIdols = await WalletService.spend(client, 'mammothIdols', idolCost);
+            if (!didSpendIdols) {
                 return;
             }
 
-            client.character.mammothIdols = idols - idolCost;
             TalentHandler.setPendingCompletedResearch(client.character, classIndex, now);
             await TalentHandler.completeTalentResearch(client, classIndex, false);
             TalentHandler.syncResearchTimer(client);
@@ -199,12 +199,11 @@ export class TalentHandler {
             return;
         }
 
-        const gold = Number(client.character.gold ?? 0);
-        if (gold < goldCost) {
+        const didSpendGold = await WalletService.spend(client, 'gold', goldCost);
+        if (!didSpendGold) {
             return;
         }
 
-        client.character.gold = gold - goldCost;
         TalentHandler.setPendingCompletedResearch(client.character, classIndex, now);
 
         await TalentHandler.completeTalentResearch(client, classIndex, false);
@@ -226,12 +225,10 @@ export class TalentHandler {
         }
 
         if (idolCost > 0) {
-            const idols = Number(client.character.mammothIdols ?? 0);
-            if (idols < idolCost) {
+            const didSpendIdols = await WalletService.spend(client, 'mammothIdols', idolCost);
+            if (!didSpendIdols) {
                 return;
             }
-
-            client.character.mammothIdols = idols - idolCost;
         }
 
         TalentHandler.setPendingCompletedResearch(client.character, classIndex, 0);

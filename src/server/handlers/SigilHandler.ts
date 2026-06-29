@@ -2,6 +2,7 @@ import { Client } from '../core/Client';
 import { GameData } from '../core/GameData';
 import { PetConfig } from '../core/PetConfig';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { WalletService } from '../database/WalletService';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 
@@ -50,28 +51,23 @@ export class SigilHandler {
             return;
         }
 
-        const currentSigils = Number(client.character.SilverSigils ?? 0);
-        const currentGold = Number(client.character.gold ?? 0);
         const costSigils = Number(item.cost_sigils ?? 0);
         const costGold = Number(item.cost_gold ?? 0);
 
-        if (costSigils > currentSigils) {
-            console.log(`[SigilHandler] Not enough sigils. Need ${costSigils}, have ${currentSigils}`);
-            return;
-        }
-
-        if (costGold > currentGold) {
-            console.log(`[SigilHandler] Not enough gold. Need ${costGold}, have ${currentGold}`);
+        const didSpendWallet = await WalletService.applyDelta(client, {
+            SilverSigils: -costSigils,
+            gold: -costGold
+        });
+        if (!didSpendWallet) {
+            console.log(`[SigilHandler] Not enough wallet balance for item ${itemId}`);
             return;
         }
 
         if (costSigils > 0) {
-            client.character.SilverSigils = currentSigils - costSigils;
             SigilHandler.sendSigilDecrease(client, costSigils);
         }
 
         if (costGold > 0) {
-            client.character.gold = currentGold - costGold;
             SigilHandler.sendGoldLoss(client, costGold);
         }
 

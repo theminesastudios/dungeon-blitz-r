@@ -17,6 +17,7 @@ import { WorldEnter } from '../utils/WorldEnter';
 import { normalizeCharacterInventoryGears } from '../utils/GearInventory';
 import { Config } from '../core/config';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { WalletService } from '../database/WalletService';
 import { Character } from '../database/Database';
 import { LoginHandler } from './LoginHandler';
 import { AbilityHandler } from './AbilityHandler';
@@ -744,11 +745,15 @@ export class CharacterHandler {
 
         if (changedUnits > 0) {
             if (payWithIdols) {
-                client.character.mammothIdols = Number(client.character.mammothIdols ?? 0) - (idolsPerUnit * changedUnits);
+                if (!await WalletService.spend(client, 'mammothIdols', idolsPerUnit * changedUnits)) {
+                    return;
+                }
                 CharacterHandler.sendMammothIdolUpdate(client);
             } else {
                 const goldCost = goldPerUnit * changedUnits;
-                client.character.gold = Number(client.character.gold ?? 0) - goldCost;
+                if (!await WalletService.spend(client, 'gold', goldCost)) {
+                    return;
+                }
                 CharacterHandler.sendGoldLoss(client, goldCost);
             }
         }

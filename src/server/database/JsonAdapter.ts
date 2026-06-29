@@ -3,6 +3,7 @@ import * as path from 'path';
 import { IDatabase, Character, UserSaveData } from './Database';
 import { Config } from '../core/config';
 import { GameData } from '../core/GameData';
+import { WalletService } from './WalletService';
 
 export class JsonAdapter implements IDatabase {
     private static readonly renameRetryDelaysMs = [25, 50, 100, 200, 350];
@@ -105,9 +106,12 @@ export class JsonAdapter implements IDatabase {
         savePath: string
     ): Promise<void> {
         await this.ensureSavesDir();
-        const normalizedCharacters = this.mergeLiveSessionCharacter(
+        const normalizedCharacters = await WalletService.applyMongoWalletsBeforeJsonSave(
             userId,
-            Array.isArray(characters) ? characters : []
+            this.mergeLiveSessionCharacter(
+                userId,
+                Array.isArray(characters) ? characters : []
+            )
         );
         const existing = await this.readSaveFile(userId);
 
@@ -234,7 +238,8 @@ export class JsonAdapter implements IDatabase {
         if (!save || !Array.isArray(save.characters)) {
             return [];
         }
-        return save.characters.map((entry) => this.normalizeCharacterProgress(entry) as Character);
+        const characters = save.characters.map((entry) => this.normalizeCharacterProgress(entry) as Character);
+        return WalletService.overlayWallets(userId, characters);
     }
 
     public async loadAllCharacterRecords(): Promise<UserSaveData[]> {

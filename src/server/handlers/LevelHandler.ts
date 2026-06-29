@@ -27,6 +27,7 @@ import { DialogueTranslationLoader } from '../data/DialogueTranslationLoader';
 import { MissionID } from '../data/runtime';
 import { Entity, EntityState, EntityTeam } from '../core/Entity';
 import { Character } from '../database/Database';
+import { MovementAuthority } from '../core/MovementAuthority';
 import { EntityHandler } from './EntityHandler';
 import { MissionHandler } from './MissionHandler';
 import { PetHandler } from './PetHandler';
@@ -1355,6 +1356,7 @@ export class LevelHandler {
             }
             LevelHandler.markRoomEventStarted(other, roomId);
             MissionHandler.noteDungeonCutsceneStart(other, roomId);
+            MovementAuthority.resetFromEntity(other, other.entities.get(other.clientEntID), 'cutscene_start');
             other.send(0xA5, payload);
         }
         LevelHandler.setServerAuthorityHostilesUntargetableForScope(scopeKey, roomId, true);
@@ -1377,6 +1379,7 @@ export class LevelHandler {
             if (!other.playerSpawned || getClientLevelScope(other) !== scopeKey) {
                 continue;
             }
+            MovementAuthority.resetFromEntity(other, other.entities.get(other.clientEntID), 'cutscene_end');
             other.send(0xA6, payload);
             MissionHandler.noteDungeonCutsceneEnd(other, roomId);
         }
@@ -2687,6 +2690,7 @@ export class LevelHandler {
         EntityHandler.removeOwnedEntities(client);
         client.clientEntID = 0;
         client.playerSpawned = false;
+        MovementAuthority.reset(client, 'level_transfer_clear');
         client.pendingLoot.clear();
         client.processedRewardSources.clear();
         client.triggeredLevelStates.clear();
@@ -4798,6 +4802,29 @@ export class LevelHandler {
         const isSelf =
             EntityHandler.isClientOwnPlayerEntity(client, getClientLevelScope(client), entityId, ent) ||
             EntityHandler.isClientOwnPlayerEntity(client, getClientLevelScope(client), rawEntityId, ent);
+        if (isSelf && !isDefeatEntState) {
+            const movementResult = MovementAuthority.validateIncrementalMovement(client, ent, deltaX, deltaY);
+            if (!movementResult.accepted) {
+                const correctionDeltaX = Math.round(movementResult.lastAcceptedX - movementResult.attemptedX);
+                const correctionDeltaY = Math.round(movementResult.lastAcceptedY - movementResult.attemptedY);
+                if (correctionDeltaX !== 0 || correctionDeltaY !== 0) {
+                    client.send(
+                        0x07,
+                        LevelHandler.buildEntityIncrementalUpdatePayload(
+                            rawEntityId,
+                            correctionDeltaX,
+                            correctionDeltaY,
+                            0,
+                            entState,
+                            flags,
+                            false,
+                            0
+                        )
+                    );
+                }
+                return;
+            }
+        }
         const canonicalEntity = levelEntity ?? ent;
         const isEnemyCanonical =
             !isSelf &&

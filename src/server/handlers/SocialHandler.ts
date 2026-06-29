@@ -5,6 +5,7 @@ import { BitBuffer } from '../network/protocol/bitBuffer';
 import { GlobalState } from '../core/GlobalState';
 import { EntityTeam } from '../core/Entity';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { WalletService } from '../database/WalletService';
 import { LevelConfig } from '../core/LevelConfig';
 import { GuildHandler } from './GuildHandler';
 import { LevelHandler } from './LevelHandler';
@@ -221,14 +222,13 @@ export class SocialHandler {
         }
 
         const cost = parsed.dread ? SocialHandler.DREAD_TELEPORT_COST_GOLD : SocialHandler.TELEPORT_COST_GOLD;
-        const currentGold = Math.max(0, Math.floor(Number(client.character.gold ?? 0)));
         const destinationName = `${parsed.dread ? 'Dread ' : ''}${destination.displayName}`;
         if (!LevelHandler.isLevelUnlockedForFastTravel(client, teleport.targetLevel)) {
             SocialHandler.sendChatStatus(client, `You haven't unlocked ${destinationName} yet.`);
             return true;
         }
 
-        if (currentGold < cost) {
+        if (!await WalletService.spend(client, 'gold', cost)) {
             SocialHandler.sendChatStatus(
                 client,
                 `You need ${cost.toLocaleString('en-US')} gold to teleport to ${destinationName}.`
@@ -236,7 +236,6 @@ export class SocialHandler {
             return true;
         }
 
-        client.character.gold = currentGold - cost;
         if (client.userId) {
             await db.saveCharacters(client.userId, client.characters);
         }

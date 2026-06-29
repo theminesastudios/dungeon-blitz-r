@@ -7,6 +7,7 @@ import { DebugLogger } from './Debug';
 import type { DungeonRunStats } from './DungeonRunStats';
 import { clearStoredDungeonSnapshot } from './DungeonSnapshot';
 import { LevelConfig } from './LevelConfig';
+import { MovementAuthority, MovementAuthorityState } from './MovementAuthority';
 
 const db = new JsonAdapter();
 const SOCKET_POLICY_REQUEST = '<policy-file-request/>';
@@ -230,6 +231,7 @@ export class Client {
     public lastDungeonCutsceneStartAt: number = 0;
     public lastDungeonCutsceneEndScope: string = "";
     public lastDungeonCutsceneEndAt: number = 0;
+    public movementAuthority: MovementAuthorityState = MovementAuthority.createState();
 
     constructor(socket: net.Socket, router: PacketRouter) {
         this.socket = socket;
@@ -376,6 +378,7 @@ export class Client {
 
     public armPendingTransferGrace(durationMs: number = Client.PENDING_TRANSFER_GRACE_MS): void {
         this.pendingTransferUntil = Math.max(this.pendingTransferUntil, Date.now() + Math.max(0, durationMs));
+        MovementAuthority.reset(this, 'pending_transfer_grace');
     }
 
     private createSessionCleanupSnapshot(): SessionCleanupSnapshot {
@@ -489,6 +492,7 @@ export class Client {
         this.lastDungeonCutsceneStartAt = 0;
         this.lastDungeonCutsceneEndScope = "";
         this.lastDungeonCutsceneEndAt = 0;
+        MovementAuthority.reset(this, 'gameplay_state_clear');
     }
 
     private clearIdentityState(): void {

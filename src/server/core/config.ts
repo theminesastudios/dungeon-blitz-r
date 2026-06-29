@@ -180,6 +180,7 @@ const DEFAULT_STATIC_PORT = MULTIPLAYER_MODE ? 80 : 8000;
 const DEFAULT_GAME_PORT = 8080;
 const DEFAULT_POLICY_PORT = 843;
 const REWARD_ROLL_DEBUG = parseBooleanEnv('REWARD_ROLL_DEBUG', process.env.NODE_ENV === 'test');
+const MONGODB_URI = parseStringEnv('MONGODB_URI', '');
 
 export const Config = {
     MULTIPLAYER_MODE,
@@ -192,6 +193,10 @@ export const Config = {
     POLICY_PORT: parseNumberEnv('POLICY_PORT', DEFAULT_POLICY_PORT),
     ENABLE_POLICY_SERVER: parseBooleanEnv('ENABLE_POLICY_SERVER', MULTIPLAYER_MODE),
     REWARD_ROLL_DEBUG,
+    MONGODB_URI,
+    MONGODB_DB_NAME: parseStringEnv('MONGODB_DB_NAME', 'dungeon_blitz_r'),
+    MONGODB_WALLET_COLLECTION: parseStringEnv('MONGODB_WALLET_COLLECTION', 'wallets'),
+    ENABLE_MONGO_WALLET: parseBooleanEnv('ENABLE_MONGO_WALLET', Boolean(MONGODB_URI)),
     SECRET: resolveRuntimeKeyHex(),
     DATA_DIR: resolveServerDataDir()
 };

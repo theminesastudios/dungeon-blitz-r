@@ -22,6 +22,7 @@ import {
 } from '../core/SharedDungeonProgress';
 import { EquipmentHandler } from './EquipmentHandler';
 import { GameData } from '../core/GameData';
+import { MovementAuthority } from '../core/MovementAuthority';
 import { CharacterSync } from '../utils/CharacterSync';
 import { sendConsumableUpdate } from '../utils/ConsumableState';
 import { LevelConfig } from '../core/LevelConfig';
@@ -6222,6 +6223,7 @@ export class CombatHandler {
             client.lastCombatActivityAt = 0;
             client.lastCombatRegenTickAt = 0;
             CombatHandler.clearEnemyDeathRegenArm(client);
+            MovementAuthority.resetFromEntity(client, ent, 'respawn');
             const facingLeft = Boolean(ent?.facingLeft ?? false);
             const statePayload = CombatHandler.buildEntityStatePayload(client.clientEntID, EntityState.ACTIVE, facingLeft);
             CombatHandler.broadcastToSameLevel(getClientLevelScope(client), 0x07, statePayload, [client.clientEntID], client);
