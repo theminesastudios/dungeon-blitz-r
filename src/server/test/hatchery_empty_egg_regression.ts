@@ -90,10 +90,38 @@ async function testInvalidSavedEggIdsAreDroppedBeforePacketSerialization(): Prom
     assert.deepEqual(client.character.OwnedEggsID, [4, 12]);
 }
 
+async function testExpiredActiveEggSendsReadyPacketOnce(): Promise<void> {
+    const now = Math.floor(Date.now() / 1000);
+    const client = createFakeClient({
+        name: 'EggReady',
+        OwnedEggsID: [4],
+        EggResetTime: now + 3600,
+        EggHachery: {
+            EggID: 4,
+            ReadyTime: now - 1,
+            slotIndex: 0
+        },
+        activeEggCount: 1
+    });
+
+    const didSync = await PetHandler.syncCompletedEggHatch(client as never, now);
+
+    assert.equal(didSync, true);
+    assert.equal(client.sentPackets.length, 1);
+    assert.equal(client.sentPackets[0].id, 0xE7);
+    assert.equal(new BitReader(client.sentPackets[0].payload).readMethod6(6), 4);
+    assert.equal(client.character.EggHachery.ReadyTime, 0);
+
+    const didSyncAgain = await PetHandler.syncCompletedEggHatch(client as never, now);
+    assert.equal(didSyncAgain, false);
+    assert.equal(client.sentPackets.length, 1, 'ready packet should not repeat after ReadyTime is already 0');
+}
+
 async function main(): Promise<void> {
     ensureDataLoaded();
     await testZeroPaddedEggsDoNotBlockDailyHatcherySeed();
     await testInvalidSavedEggIdsAreDroppedBeforePacketSerialization();
+    await testExpiredActiveEggSendsReadyPacketOnce();
     console.log('hatchery_empty_egg_regression passed');
 }
 

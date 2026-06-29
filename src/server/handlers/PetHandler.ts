@@ -20,6 +20,7 @@ export class PetHandler {
     private static readonly HATCHERY_RANK1_WEIGHT = 0.175;
     private static readonly HATCHERY_RANK2_WEIGHT = 0.075;
     private static readonly HATCHED_EGG_PET_FOOD_AMOUNT = 1;
+    private static readonly eggReadyTimers = new WeakMap<Client, NodeJS.Timeout>();
 
     private static sendMammothIdolUpdate(client: Client): void {
         if (!client.character) {
@@ -570,6 +571,7 @@ export class PetHandler {
 
     static async handleRequestHatcheryEggs(client: Client, data: Buffer): Promise<void> {
         if (!client.character) return;
+        await PetHandler.syncCompletedEggHatch(client);
         
         const hatchery = PetHandler.ensureAvailableHatcheryEggs(client.character);
         if (hatchery.changed) {
@@ -732,6 +734,58 @@ export class PetHandler {
         character.activeEggCount = 0;
     }
 
+    private static sendEggReadyPacket(client: Client, eggId: number): void {
+        const bb = new BitBuffer();
+        bb.writeMethod6(Math.max(0, eggId), 6);
+        client.sendBitBuffer(0xE7, bb);
+    }
+
+    private static clearEggReadyTimer(client: Client): void {
+        const timer = PetHandler.eggReadyTimers.get(client);
+        if (timer) {
+            clearTimeout(timer);
+            PetHandler.eggReadyTimers.delete(client);
+        }
+    }
+
+    private static scheduleEggReadyTimer(client: Client, readyTime: number): void {
+        PetHandler.clearEggReadyTimer(client);
+
+        const now = Math.floor(Date.now() / 1000);
+        const delayMs = Math.max(0, readyTime - now) * 1000;
+        const timer = setTimeout(() => {
+            PetHandler.eggReadyTimers.delete(client);
+            void PetHandler.syncCompletedEggHatch(client);
+        }, delayMs);
+        timer.unref?.();
+        PetHandler.eggReadyTimers.set(client, timer);
+    }
+
+    static async syncCompletedEggHatch(
+        client: Client,
+        now: number = Math.floor(Date.now() / 1000)
+    ): Promise<boolean> {
+        if (!client.character) {
+            return false;
+        }
+
+        const eggData = PetHandler.getNormalizedEggHatchery(client.character);
+        if (!eggData || eggData.EggID <= 0 || eggData.ReadyTime <= 0 || eggData.ReadyTime > now) {
+            return false;
+        }
+
+        eggData.ReadyTime = 0;
+        client.character.EggHachery = eggData;
+        PetHandler.clearEggReadyTimer(client);
+
+        if (client.userId) {
+            await PetHandler.saveCharacter(client);
+        }
+
+        PetHandler.sendEggReadyPacket(client, eggData.EggID);
+        return true;
+    }
+
     static async handleTrainPet(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
         const typeID = br.readMethod6(7);
@@ -883,6 +937,7 @@ export class PetHandler {
         client.character.activeEggCount = 1;
         
         await PetHandler.saveCharacter(client);
+        PetHandler.scheduleEggReadyTimer(client, readyTime);
     }
     
     static async handleEggSpeedUp(client: Client, data: Buffer): Promise<void> {
@@ -897,13 +952,12 @@ export class PetHandler {
         
         const eggData = PetHandler.getNormalizedEggHatchery(client.character);
         if (eggData && eggData.EggID > 0) {
+            PetHandler.clearEggReadyTimer(client);
             eggData.ReadyTime = 0;
             client.character.EggHachery = eggData;
             await PetHandler.saveCharacter(client);
             
-            const bb = new BitBuffer();
-            bb.writeMethod6(eggData.EggID, 6);
-            client.sendBitBuffer(0xE7, bb);
+            PetHandler.sendEggReadyPacket(client, eggData.EggID);
         }
     }
 
@@ -936,6 +990,7 @@ export class PetHandler {
                 PetHandler.HATCHED_EGG_PET_FOOD_AMOUNT
             );
             PetHandler.removeHatchedEggFromSlot(client.character, slotIndex);
+            PetHandler.clearEggReadyTimer(client);
 
             await PetHandler.saveCharacter(client);
 
@@ -966,6 +1021,7 @@ export class PetHandler {
         client.character.pets = pets;
         
         PetHandler.removeHatchedEggFromSlot(client.character, slotIndex);
+        PetHandler.clearEggReadyTimer(client);
         
         await PetHandler.saveCharacter(client);
         
@@ -984,6 +1040,7 @@ export class PetHandler {
 
     static async handleCancelEggHatch(client: Client, data: Buffer): Promise<void> {
         if (!client.character) return;
+        PetHandler.clearEggReadyTimer(client);
         PetHandler.resetEggHatchery(client.character);
         await PetHandler.saveCharacter(client);
     }
