@@ -10,6 +10,7 @@ function applyDevServerEnv(env = process.env) {
 }
 
 function startDevServer() {
+    require('./recoverLocalSaves').recoverLocalSaves();
     require('../scripts/cleanup-dev-instance');
     applyDevServerEnv();
 
