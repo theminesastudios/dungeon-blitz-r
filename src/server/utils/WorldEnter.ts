@@ -898,7 +898,8 @@ export class WorldEnter {
                 bb.writeMethod11(0, 1);
             }
 
-            const ownedEggs = WorldEnter.asArray(character.OwnedEggsID).slice(0, 8);
+            const hatcheryEggs = PetHandler.ensureAvailableHatcheryEggs(character, now);
+            const ownedEggs = hatcheryEggs.owned.slice(0, 8);
             while (ownedEggs.length < 8) {
                 ownedEggs.push(0);
             }

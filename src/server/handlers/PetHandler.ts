@@ -571,25 +571,8 @@ export class PetHandler {
     static async handleRequestHatcheryEggs(client: Client, data: Buffer): Promise<void> {
         if (!client.character) return;
         
-        const now = Math.floor(Date.now() / 1000);
-        let owned = PetHandler.normalizeOwnedEggIds(client.character);
-        let resetTime = client.character.EggResetTime || 0;
-
-        if (now >= resetTime) {
-            const maxSlots = PetConfig.MAX_EGG_SLOTS;
-            const openSlots = maxSlots - owned.length;
-            
-            if (openSlots > 0) {
-                const newCount = Math.min(openSlots, 3);
-                const addedEggs = PetHandler.pickDailyEggs(newCount);
-                owned = owned.concat(addedEggs);
-                console.log(`[PetHandler] Added eggs: ${addedEggs}`);
-            }
-
-            resetTime = now + PetConfig.NEW_EGG_SET_TIME;
-            client.character.EggResetTime = resetTime;
-            client.character.OwnedEggsID = owned;
-            
+        const hatchery = PetHandler.ensureAvailableHatcheryEggs(client.character);
+        if (hatchery.changed) {
             if (client.userId) {
                 await PetHandler.saveCharacter(client);
             }
@@ -597,7 +580,7 @@ export class PetHandler {
 
         client.character.EggNotifySent = false;
         
-        const pkt = PetHandler.buildHatcheryPacket(owned, resetTime);
+        const pkt = PetHandler.buildHatcheryPacket(hatchery.owned, hatchery.resetTime);
         client.sendBitBuffer(0xE5, pkt);
     }
     
@@ -650,6 +633,41 @@ export class PetHandler {
         return 0;
     }
 
+    static ensureAvailableHatcheryEggs(
+        character: any,
+        now: number = Math.floor(Date.now() / 1000)
+    ): { owned: number[]; resetTime: number; changed: boolean } {
+        const previousOwnedLength = Array.isArray(character?.OwnedEggsID) ? character.OwnedEggsID.length : 0;
+        let owned = PetHandler.normalizeOwnedEggIds(character);
+        let resetTime = Number(character?.EggResetTime ?? 0);
+        if (!Number.isFinite(resetTime) || resetTime < 0) {
+            resetTime = 0;
+        }
+        let changed = previousOwnedLength !== owned.length;
+
+        if (now >= resetTime || owned.length === 0) {
+            const maxSlots = PetConfig.MAX_EGG_SLOTS;
+            const openSlots = maxSlots - owned.length;
+
+            if (openSlots > 0) {
+                const newCount = Math.min(openSlots, 3);
+                const addedEggs = PetHandler.pickDailyEggs(newCount);
+                owned = owned.concat(addedEggs);
+                console.log(`[PetHandler] Added eggs: ${addedEggs}`);
+            }
+
+            resetTime = now + PetConfig.NEW_EGG_SET_TIME;
+            changed = true;
+        }
+
+        if (character) {
+            character.OwnedEggsID = owned;
+            character.EggResetTime = resetTime;
+        }
+
+        return { owned, resetTime, changed };
+    }
+
     private static buildHatcheryPacket(eggs: number[], resetTime: number): BitBuffer {
         const bb = new BitBuffer();
         const maxSlots = PetConfig.MAX_EGG_SLOTS;
@@ -667,11 +685,16 @@ export class PetHandler {
         return bb;
     }
 
-    private static normalizeOwnedEggIds(character: any): number[] {
+    static normalizeOwnedEggIds(character: any): number[] {
         const eggs = Array.isArray(character?.OwnedEggsID) ? character.OwnedEggsID : [];
         const normalized = eggs
             .map((eggId: unknown) => Number(eggId ?? 0))
-            .filter((eggId: number) => Number.isFinite(eggId) && eggId >= 0);
+            .filter((eggId: number) => (
+                Number.isInteger(eggId) &&
+                eggId > 0 &&
+                eggId < 64 &&
+                (PetConfig.EGG_TYPES.length === 0 || Boolean(PetConfig.getEggDef(eggId)))
+            ));
 
         if (character) {
             character.OwnedEggsID = normalized;
