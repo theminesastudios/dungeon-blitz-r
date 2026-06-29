@@ -96,6 +96,8 @@ export class MissionHandler {
     private static readonly CLIENT_AUTHORITY_REQUIRED_BOSS_LEVELS = new Set([
         'AC_Mission5',
         'AC_Mission5Hard',
+        'GhostBossDungeon',
+        'GhostBossDungeonHard',
         'JC_Mission1',
         'JC_Mission1Hard',
         'SRN_Mission1',
@@ -109,7 +111,11 @@ export class MissionHandler {
         'ImperialChampion',
         'ImperialChampionHard',
         'LizardLord',
-        'LizardLordHard'
+        'LizardLordHard',
+        'Nephit',
+        'NephitHard',
+        'NephitLargeEye',
+        'NephitLargeEyeHard'
     ]);
     static readonly DUNGEON_COMPLETION_MAX_DEFER_MS = 15000;
     static readonly CRAFT_TOWN_TUTORIAL_COMPLETION_DELAY_MS = 43 * 250;
@@ -143,6 +149,8 @@ export class MissionHandler {
         'CraftTownTutorial',
         'AC_Mission6',
         'AC_Mission6Hard',
+        'GhostBossDungeon',
+        'GhostBossDungeonHard',
         'BT_Mission1',
         'BT_Mission1Hard',
         'AC_Mission2',
@@ -197,6 +205,18 @@ export class MissionHandler {
         CraftTownTutorial: new Map([
             ['IntroGoblinShamanHood', 'GoblinShamanHood']
         ]),
+        GhostBossDungeon: new Map([
+            ['Nephit', 'NephitLargeEye'],
+            ['NephitHard', 'NephitLargeEye'],
+            ['NephitLargeEye', 'NephitLargeEye'],
+            ['NephitLargeEyeHard', 'NephitLargeEye']
+        ]),
+        GhostBossDungeonHard: new Map([
+            ['Nephit', 'NephitLargeEyeHard'],
+            ['NephitHard', 'NephitLargeEyeHard'],
+            ['NephitLargeEye', 'NephitLargeEyeHard'],
+            ['NephitLargeEyeHard', 'NephitLargeEyeHard']
+        ]),
         JC_Mission3: new Map([
             ['DefectorMageMarker', 'DefectorMage'],
             ['Prince Friedrich Hocke', 'DefectorMage'],
@@ -233,6 +253,8 @@ export class MissionHandler {
         'JC_Mission3Hard'
     ]);
     private static readonly DUNGEONS_WITH_REQUIRED_BOSS_PROXY_COPIES = new Set([
+        'GhostBossDungeon',
+        'GhostBossDungeonHard',
         'JC_Mission3',
         'JC_Mission3Hard'
     ]);
@@ -2111,12 +2133,28 @@ export class MissionHandler {
             return;
         }
 
-        client.pendingDungeonCompletionLastSkitAt = Date.now();
+        const now = Date.now();
+        const requestedAt = Math.max(0, Number(client.pendingDungeonCompletionRequestedAt ?? 0));
+        client.pendingDungeonCompletionLastSkitAt = Math.max(
+            now,
+            requestedAt > 0 ? requestedAt + 1 : 0
+        );
 
         if (client.pendingDungeonCompletionWaitForCutsceneEnd) {
             client.pendingDungeonCompletionSettleMs = Math.max(
                 MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS,
                 Number(client.pendingDungeonCompletionSettleMs ?? 0)
+            );
+            const remainingNotBeforeMs = Math.max(
+                0,
+                Number(client.pendingDungeonCompletionNotBeforeAt ?? 0) - Date.now()
+            );
+            MissionHandler.armPendingDungeonCompletionTimer(
+                client,
+                Math.max(
+                    remainingNotBeforeMs,
+                    Number(client.pendingDungeonCompletionSettleMs ?? MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS)
+                )
             );
             return;
         }
@@ -2382,15 +2420,33 @@ export class MissionHandler {
                 client.pendingDungeonCompletionWaitForCutsceneEnd = false;
             } else {
                 const cutsceneWaitDeadlineAt = requestedAt + MissionHandler.DUNGEON_COMPLETION_MAX_DEFER_MS;
-                if (now < cutsceneWaitDeadlineAt) {
+                const settleDelayMs = Math.max(
+                    0,
+                    Number(client.pendingDungeonCompletionSettleMs ?? MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS)
+                );
+                const lastSkitAt = Math.max(requestedAt, Number(client.pendingDungeonCompletionLastSkitAt ?? 0));
+                const quietForMs = now - lastSkitAt;
+                if (lastSkitAt > requestedAt && quietForMs >= settleDelayMs) {
+                    client.pendingDungeonCompletionWaitForCutsceneEnd = false;
+                    if (String(client.activeDungeonCutsceneScope ?? '').trim() === pendingScope) {
+                        client.activeDungeonCutsceneScope = '';
+                        client.activeDungeonCutsceneRoomId = 0;
+                    }
+                } else if (lastSkitAt > requestedAt && now < cutsceneWaitDeadlineAt) {
+                    MissionHandler.armPendingDungeonCompletionTimer(
+                        client,
+                        Math.max(0, Math.min(settleDelayMs - quietForMs, cutsceneWaitDeadlineAt - now))
+                    );
+                    return;
+                } else if (now < cutsceneWaitDeadlineAt) {
                     MissionHandler.armPendingDungeonCompletionTimer(client, cutsceneWaitDeadlineAt - now);
                     return;
-                }
-
-                client.pendingDungeonCompletionWaitForCutsceneEnd = false;
-                if (String(client.activeDungeonCutsceneScope ?? '').trim() === pendingScope) {
-                    client.activeDungeonCutsceneScope = '';
-                    client.activeDungeonCutsceneRoomId = 0;
+                } else {
+                    client.pendingDungeonCompletionWaitForCutsceneEnd = false;
+                    if (String(client.activeDungeonCutsceneScope ?? '').trim() === pendingScope) {
+                        client.activeDungeonCutsceneScope = '';
+                        client.activeDungeonCutsceneRoomId = 0;
+                    }
                 }
             }
         }

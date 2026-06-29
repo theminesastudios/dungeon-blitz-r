@@ -23,10 +23,10 @@ function startDevServer() {
             module: 'commonjs',
             moduleResolution: 'node',
             skipLibCheck: true,
+            ignoreDeprecations: '6.0',
             types: ['node']
         }
     });
-    require('../patches/NephitDirectRankPatch');
     require('../main.ts');
 }
 
