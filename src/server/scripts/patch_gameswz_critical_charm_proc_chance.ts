@@ -33,7 +33,11 @@ const CRITICAL_CHARM_FLAT_CHANCES = new Map<string, { field: "ProcChanceUp" | "P
 ]);
 
 function storedProcChance(flatChance: number): string {
-  return (flatChance / BASE_CRIT_CHANCE).toFixed(15).replace(/0+$/, "").replace(/\.$/, "");
+  const storedValue = flatChance / BASE_CRIT_CHANCE;
+  const precision = storedValue < 0.01 ? 3 : 2;
+  const scale = 10 ** precision;
+  const truncatedValue = Math.floor((storedValue + Number.EPSILON) * scale) / scale;
+  return formatDecimal(truncatedValue);
 }
 
 function expectedValueByCharm(): Map<string, { field: "ProcChanceUp" | "PowerBonus"; value: string }> {
