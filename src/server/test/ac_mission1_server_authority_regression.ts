@@ -10,6 +10,7 @@ import { CombatHandler } from '../handlers/CombatHandler';
 import { LevelHandler } from '../handlers/LevelHandler';
 import { MissionHandler } from '../handlers/MissionHandler';
 import { RewardHandler } from '../handlers/RewardHandler';
+import { LootDepthRewardHandler } from '../handlers/LootDepthRewardHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { getLevelScopeKey } from '../core/LevelScope';
@@ -257,6 +258,31 @@ function parseEntityState(payload: Buffer): { entityId: number; entState: number
 function parseDestroyEntity(payload: Buffer): number {
     const br = new BitReader(payload);
     return br.readMethod4();
+}
+
+function parseLootdropPacket(payload: Buffer): { kind: string; lootdropId: number; x: number; y: number; amount: number; tier?: number } {
+    const br = new BitReader(payload);
+    const lootdropId = br.readMethod4();
+    const x = br.readMethod45();
+    const y = br.readMethod45();
+
+    if (br.readMethod15()) {
+        const amount = br.readMethod6(11);
+        const tier = br.readMethod6(2);
+        return { kind: 'gear', lootdropId, x, y, amount, tier };
+    }
+    if (br.readMethod15()) {
+        return { kind: 'material', lootdropId, x, y, amount: br.readMethod4() };
+    }
+    if (br.readMethod15()) {
+        return { kind: 'gold', lootdropId, x, y, amount: br.readMethod4() };
+    }
+    if (br.readMethod15()) {
+        return { kind: 'health', lootdropId, x, y, amount: br.readMethod4() };
+    }
+
+    br.readMethod15();
+    return { kind: 'dye', lootdropId, x, y, amount: br.readMethod4() };
 }
 
 function parseRoomUnlock(payload: Buffer): number {
@@ -678,6 +704,42 @@ function testAcMission1LegacyEnemyRewardPacketDoesNotSpawnLootBeforeCanonicalDea
     assert.equal(Math.round(Number(canonical.hp ?? 0)) > 0, true, 'blocking legacy reward should leave canonical HP above zero');
 }
 
+function testLootDepthOrderingPreservesGearPickupFloorY(): void {
+    const rogue = createFakeClient('AlexMercer', 59395, 2);
+    rogue.currentLevel = 'TutorialDungeon';
+    rogue.character.CurrentLevel = { name: 'TutorialDungeon', x: 3000, y: 1200 };
+    attachPlayer(rogue);
+    rogue.entities.set(7001, {
+        id: 7001,
+        name: 'GoblinBoss1',
+        isPlayer: false,
+        team: EntityTeam.ENEMY,
+        x: 3000,
+        y: 1200,
+        entState: EntityState.DEAD
+    });
+
+    const originalRandom = Math.random;
+    Math.random = () => 0.5;
+    try {
+        LootDepthRewardHandler.handleGrantReward(rogue as never, buildGrantRewardPayload(7001, rogue.clientEntID, 4, 0));
+    } finally {
+        Math.random = originalRandom;
+    }
+
+    const lootdrops = rogue.sentPackets
+        .filter((packet) => packet.id === 0x32)
+        .map((packet) => parseLootdropPacket(packet.payload));
+    const gearDrop = lootdrops.find((drop) => drop.kind === 'gear');
+
+    assert.ok(gearDrop, 'deterministic GoblinBoss1 reward should create a gear lootdrop');
+    assert.equal(
+        gearDrop!.y,
+        1200,
+        'loot depth ordering must not move gear below its pickup floor Y'
+    );
+}
+
 function testAcMission1DestroyedDragonDoesNotRespawnOnRejoin(): void {
     const rogue = createFakeClient('AlexMercer', 59395, 2);
     const rejoin = createFakeClient('Neodevils', 45890, 2);
@@ -873,6 +935,14 @@ async function main(): Promise<void> {
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         testAcMission1LegacyEnemyRewardPacketDoesNotSpawnLootBeforeCanonicalDeath();
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
+        testLootDepthOrderingPreservesGearPickupFloorY();
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
