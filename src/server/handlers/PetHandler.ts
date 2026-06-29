@@ -365,6 +365,69 @@ export class PetHandler {
         return normalized;
     }
 
+    private static normalizeEquippedPetSlot(slot: any): { typeID: number; special_id: number } {
+        return {
+            typeID: Math.max(0, Math.round(Number(slot?.typeID ?? slot?.petID ?? 0) || 0)),
+            special_id: Math.max(0, Math.round(Number(slot?.special_id ?? slot?.uniqueID ?? 0) || 0))
+        };
+    }
+
+    private static sameEquippedPetSlot(left: any, right: any): boolean {
+        const normalizedLeft = PetHandler.normalizeEquippedPetSlot(left);
+        const normalizedRight = PetHandler.normalizeEquippedPetSlot(right);
+        return normalizedLeft.typeID === normalizedRight.typeID &&
+            normalizedLeft.special_id === normalizedRight.special_id;
+    }
+
+    static syncEquippedCompanionState(target: any, source: any): boolean {
+        if (!target || !source) {
+            return false;
+        }
+
+        let changed = false;
+
+        if (source.equippedMount !== undefined) {
+            const sourceMount = Math.max(0, Math.round(Number(source.equippedMount ?? 0) || 0));
+            const targetMount = Math.max(0, Math.round(Number(target.equippedMount ?? 0) || 0));
+            if (sourceMount !== targetMount) {
+                target.equippedMount = sourceMount;
+                changed = true;
+            }
+        }
+
+        if (source.activePet !== undefined) {
+            const sourceActivePet = PetHandler.normalizeEquippedPetSlot(source.activePet);
+            if (!PetHandler.sameEquippedPetSlot(target.activePet, sourceActivePet)) {
+                target.activePet = sourceActivePet.typeID > 0 ? sourceActivePet : {};
+                changed = true;
+            }
+        }
+
+        const sourceRestingPets = Array.isArray(source.restingPets)
+            ? source.restingPets
+                .map((pet: any) => PetHandler.normalizeEquippedPetSlot(pet))
+                .filter((pet: { typeID: number; special_id: number }) => pet.typeID > 0)
+                .slice(0, PetHandler.MAX_PASSIVE_PET_SLOTS)
+            : [];
+        const targetRestingPets = Array.isArray(target.restingPets)
+            ? target.restingPets.map((pet: any) => PetHandler.normalizeEquippedPetSlot(pet))
+            : [];
+        if (Array.isArray(source.restingPets) && (
+            sourceRestingPets.length !== targetRestingPets.length ||
+            sourceRestingPets.some((pet: { typeID: number; special_id: number }, index: number) =>
+                !PetHandler.sameEquippedPetSlot(targetRestingPets[index], pet)
+            )
+        )) {
+            target.restingPets = sourceRestingPets;
+            changed = true;
+        }
+
+        PetHandler.normalizeMountState(target);
+        PetHandler.normalizePetCollection(target);
+
+        return changed;
+    }
+
     static armMountTravelProtection(client: Client, durationMs: number = 4000, reassert: boolean = false): void {
         const mountId = Number(client.character?.equippedMount ?? 0);
         if (mountId <= 0) {

@@ -12,7 +12,13 @@ type FakeClient = {
     userId: null;
     character: any;
     characters: any[];
+    clientEntID?: number;
+    currentLevel?: string;
+    playerSpawned?: boolean;
+    mountTransferGraceUntil?: number;
+    entities?: Map<number, any>;
     sentPackets: SentPacket[];
+    send(id: number, payload: Buffer): void;
     sendBitBuffer(id: number, bb: BitBuffer): void;
 };
 
@@ -31,10 +37,28 @@ function createFakeClient(character: any): FakeClient {
         character,
         characters: [character],
         sentPackets,
+        send(id: number, payload: Buffer) {
+            sentPackets.push({ id, payload });
+        },
         sendBitBuffer(id: number, bb: BitBuffer) {
             sentPackets.push({ id, payload: bb.toBuffer() });
         }
     };
+}
+
+function buildPetEquipPacket(slots: Array<{ typeID: number; uniqueID: number }>): Buffer {
+    const bb = new BitBuffer(false);
+    const padded = slots.slice(0, 4);
+    while (padded.length < 4) {
+        padded.push({ typeID: 0, uniqueID: 0 });
+    }
+
+    for (const slot of padded) {
+        bb.writeMethod6(slot.typeID, 7);
+        bb.writeMethod9(slot.uniqueID);
+    }
+
+    return bb.toBuffer();
 }
 
 function decodeHatcheryPacket(payload: Buffer): { slotCount: number; eggs: number[]; resetTime: number } {
@@ -139,7 +163,9 @@ async function testCollectReadyEggSendsClientPetInventoryPacket(): Promise<void>
     assert.equal(client.character.EggHachery.EggID, 0, 'collect should reset the active egg state');
 
     const petPacket = client.sentPackets.find((packet) => packet.id === 0x37);
-    assert.ok(petPacket, 'collect should send the client new-pet inventory packet');
+    if (!petPacket) {
+        assert.fail('collect should send the client new-pet inventory packet');
+    }
 
     const petReader = new BitReader(petPacket.payload);
     assert.equal(petReader.readMethod6(7), client.character.pets[0].typeID);
@@ -150,12 +176,90 @@ async function testCollectReadyEggSendsClientPetInventoryPacket(): Promise<void>
     assert.equal(client.sentPackets.some((packet) => packet.id === 0xE5), true, 'collect should refresh hatchery contents');
 }
 
+async function testEquipPetsUpdatesSelectedPetSlots(): Promise<void> {
+    const client = createFakeClient({
+        name: 'PetEquip',
+        pets: [
+            { typeID: 11, special_id: 101, level: 3, xp: 0 },
+            { typeID: 12, special_id: 102, level: 2, xp: 0 },
+            { typeID: 13, special_id: 103, level: 1, xp: 0 }
+        ],
+        activePet: { typeID: 11, special_id: 101 },
+        restingPets: []
+    });
+
+    await PetHandler.handleEquipPets(
+        client as never,
+        buildPetEquipPacket([
+            { typeID: 12, uniqueID: 102 },
+            { typeID: 13, uniqueID: 103 }
+        ])
+    );
+
+    assert.deepEqual(client.character.activePet, { typeID: 12, special_id: 102 });
+    assert.deepEqual(client.character.restingPets, [
+        { typeID: 13, special_id: 103 },
+        { typeID: 0, special_id: 0 },
+        { typeID: 0, special_id: 0 }
+    ]);
+}
+
+async function testMountEquipPacketUpdatesSelectedMount(): Promise<void> {
+    const client = createFakeClient({
+        name: 'MountEquip',
+        mounts: [1, 7],
+        equippedMount: 1
+    });
+    client.clientEntID = 42;
+    client.entities = new Map([[42, { id: 42, equippedMount: 1 }]]);
+    client.playerSpawned = false;
+    client.currentLevel = '';
+    client.mountTransferGraceUntil = 0;
+
+    await PetHandler.handleMountEquipPacket(
+        client as never,
+        PetHandler.buildMountEquipPacket(42, 7)
+    );
+
+    assert.equal(client.character.equippedMount, 7);
+    assert.equal(client.entities.get(42).equippedMount, 7);
+}
+
+function testTransferCompanionStateWinsAfterReload(): void {
+    const loadedFromDisk = {
+        name: 'ReloadedCompanion',
+        mounts: [1, 7],
+        equippedMount: 1,
+        pets: [
+            { typeID: 11, special_id: 101, level: 3, xp: 0 },
+            { typeID: 12, special_id: 102, level: 2, xp: 0 }
+        ],
+        activePet: { typeID: 11, special_id: 101 },
+        restingPets: []
+    };
+    const pendingTransferState = {
+        equippedMount: 7,
+        activePet: { typeID: 12, special_id: 102 },
+        restingPets: [{ typeID: 11, special_id: 101 }]
+    };
+
+    const changed = PetHandler.syncEquippedCompanionState(loadedFromDisk, pendingTransferState);
+
+    assert.equal(changed, true);
+    assert.equal(loadedFromDisk.equippedMount, 7);
+    assert.deepEqual(loadedFromDisk.activePet, { typeID: 12, special_id: 102 });
+    assert.deepEqual(loadedFromDisk.restingPets, [{ typeID: 11, special_id: 101 }]);
+}
+
 async function main(): Promise<void> {
     ensureDataLoaded();
     await testZeroPaddedEggsDoNotBlockDailyHatcherySeed();
     await testInvalidSavedEggIdsAreDroppedBeforePacketSerialization();
     await testExpiredActiveEggSendsReadyPacketOnce();
     await testCollectReadyEggSendsClientPetInventoryPacket();
+    await testEquipPetsUpdatesSelectedPetSlots();
+    await testMountEquipPacketUpdatesSelectedMount();
+    testTransferCompanionStateWinsAfterReload();
     console.log('hatchery_empty_egg_regression passed');
 }
 

@@ -217,6 +217,7 @@ router.register(0xDD, AbilityHandler.handleClearAbilityResearch);
 router.register(0xDE, AbilityHandler.handleSpeedupAbilityResearch);
 router.register(0xDF, TalentHandler.handleClearTalentResearch);
 
+router.register(0xB2, PetHandler.handleMountEquipPacket);
 router.register(0xB3, PetHandler.handleEquipPets);
 router.register(0xE4, PetHandler.handleRequestHatcheryEggs);
 router.register(0xE6, PetHandler.handleEggHatch);

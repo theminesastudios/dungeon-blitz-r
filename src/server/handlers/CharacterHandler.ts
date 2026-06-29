@@ -1241,12 +1241,20 @@ export class CharacterHandler {
         client.pendingLoot.clear();
         client.processedRewardSources.clear();
         syncClientDungeonRunState(client);
+        const transferCompanionState = {
+            equippedMount: entry.character?.equippedMount,
+            activePet: entry.character?.activePet ? { ...entry.character.activePet } : undefined,
+            restingPets: Array.isArray(entry.character?.restingPets)
+                ? entry.character.restingPets.map((pet: any) => ({ ...pet }))
+                : []
+        };
 
         if (entry.targetLevel === 'CraftTownTutorial') {
             LevelHandler.resetCraftTownTutorialInstance();
         }
 
         await CharacterHandler.reloadCurrentCharacterFromSave(client);
+        const companionRepairDidMutate = PetHandler.syncEquippedCompanionState(client.character, transferCompanionState);
         await BuildingHandler.syncCompletionState(client);
         await ForgeHandler.syncCompletionState(client);
         TalentHandler.syncResearchTimer(client);
@@ -1256,7 +1264,7 @@ export class CharacterHandler {
         const abilityRepairDidMutate = AbilityHandler.repairCharacterAbilityState(client.character);
         const storyRepair = MissionHandler.repairEarlyStoryOnLogin(client.character, entry.targetLevel);
         const expectedLevelSwf = LevelConfig.get(entry.targetLevel).swf;
-        if ((socialRepairDidMutate || abilityRepairDidMutate || storyRepair.didMutate) && client.userId) {
+        if ((companionRepairDidMutate || socialRepairDidMutate || abilityRepairDidMutate || storyRepair.didMutate) && client.userId) {
             client.characters = CharacterHandler.upsertCharacterList(client.characters, client.character);
             void db.saveCharacters(client.userId, client.characters);
         }
@@ -1273,6 +1281,7 @@ export class CharacterHandler {
             isDev,
             storyRepairDidMutate: storyRepair.didMutate,
             storyRepairAddedMissionId: storyRepair.addedMissionId,
+            companionRepairDidMutate,
             socialRepairDidMutate,
             abilityRepairDidMutate
         });
