@@ -361,6 +361,84 @@ async function testDreadBossMapClientCompletionWaitsForBossDeath(): Promise<void
     assert.equal(Number(client.character.questTrackerState ?? 0), 0);
 }
 
+async function testOldMineHardBossMapClientCompletionWaitsForBossDeath(): Promise<void> {
+    const cases = [
+        ['VoiceStoneRunner', 'OMM_Mission1Hard', 'BlackGoblinBoss1Hard'],
+        ['EyeTyrantRunner', 'OMM_Mission3Hard', 'CyclopsChieftainHard'],
+        ['AbandonedArmoryRunner', 'OMM_Mission4Hard', 'BlackGhostLordHard'],
+        ['GnoleRoostRunner', 'OMM_Mission7Hard', 'GriffonSunHard']
+    ] as const;
+    let token = 83100;
+
+    for (const [runnerName, levelName, bossName] of cases) {
+        const client = createBossDungeonClient(runnerName, token++, levelName);
+        const boss = createRequiredBoss(bossName, token + 9000, 14, 5000);
+        client.entities.set(boss.id, boss);
+
+        await MissionHandler.handleSetLevelComplete(client as never, buildLevelCompletePacket(100));
+        await waitForPendingSettle();
+
+        assert.equal(rankPacketCount(client), 0, `${levelName} must not finish while ${bossName} is still alive`);
+        assert.equal(Number(client.character.questTrackerState ?? 0), 0);
+    }
+}
+
+async function testHuntedToTheEdgeRequiresBothBosses(): Promise<void> {
+    const client = createBossDungeonClient('HuntedEdgeRunner', 83110, 'OMM_Mission5Hard');
+    const dragon = createRequiredBoss('DragonWhiteHard', 9910, 12, 0);
+    const lion = createRequiredBoss('LionLordHard', 9911, 12, 5000);
+    const scope = getClientLevelScope(client as never);
+    client.entities.set(dragon.id, dragon);
+    client.entities.set(lion.id, lion);
+    GlobalState.levelEntities.set(scope, new Map([
+        [dragon.id, dragon],
+        [lion.id, lion]
+    ]));
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, dragon);
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 0, 'Hunted to the Edge must not complete after only one boss dies');
+    assert.equal(client.pendingDungeonCompletionScope, '');
+
+    lion.hp = 0;
+    lion.dead = true;
+    lion.entState = EntityState.DEAD;
+    lion.clientDefeatVerified = true;
+    lion.playerDamageContributed = true;
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, lion);
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 1, 'Hunted to the Edge should complete after both bosses die');
+    assert.equal(Number(client.character.questTrackerState ?? 0), 100);
+}
+
+async function testForgottenForgeWaitsForEndingCutsceneClose(): Promise<void> {
+    const client = createBossDungeonClient('ForgottenForgeRunner', 83120, 'OMM_Mission6Hard');
+    const boss = createRequiredBoss('DragonRedHard', 9920, 12, 0);
+    seedSingleBossRun(client, boss);
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, boss);
+
+    assert.equal(client.pendingDungeonCompletionScope, getClientLevelScope(client as never));
+    assert.equal(client.pendingDungeonCompletionWaitForCutsceneEnd, true);
+    assert.equal(rankPacketCount(client), 0);
+
+    MissionHandler.noteDungeonCutsceneStart(client as never, 12);
+    MissionHandler.noteDungeonSkitActivity(client as never);
+    await MissionHandler.handleSetLevelComplete(client as never, buildLevelCompletePacket(100));
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 0, 'Forgotten Forge completion must wait for the ending cutscene close');
+
+    MissionHandler.noteDungeonCutsceneEnd(client as never, 12);
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 1, 'Forgotten Forge should complete after the ending cutscene closes');
+    assert.equal(Number(client.character.questTrackerState ?? 0), 100);
+}
+
 async function testGnoleFortressWaitsForEndingCutsceneClose(): Promise<void> {
     const client = createBossDungeonClient('GnoleFortressRunner', 83007, 'CH_Mission8Hard');
     const boss = createRequiredBoss('JackalChieftainHard', 9907, 12, 0);
@@ -483,6 +561,21 @@ async function main(): Promise<void> {
         GlobalState.levelQuestProgress.clear();
         GlobalState.sessionsByToken.clear();
         await testDreadBossMapClientCompletionWaitsForBossDeath();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        await testOldMineHardBossMapClientCompletionWaitsForBossDeath();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        await testHuntedToTheEdgeRequiresBothBosses();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        await testForgottenForgeWaitsForEndingCutsceneClose();
 
         GlobalState.levelEntities.clear();
         GlobalState.levelQuestProgress.clear();
