@@ -279,10 +279,13 @@ const EXACT_PHRASES = new Map(Object.entries({
     'Candy Corn': 'Cadilar Sekeri',
     '+8% Gear Find': '+%8 ekipman bulma sansi',
     '+8% Gear Finding': '+%8 ekipman bulma sansi',
-    '+8% Gold Finding;+8% Gear Find;+4% Critical Chance': '+%8 altin bulma sansi;+%8 ekipman bulma sansi;+%4 kritik sans',
+    '+8% Gold Finding;+8% Gear Find;+4% Critical Chance': '+%8 altin bulma sansi;+%8 ekipman bulma sansi;+%0.8 kritik sans',
+    '+8% Gold Finding;+8% Gear Find;+0.8% Critical Chance': '+%8 altin bulma sansi;+%8 ekipman bulma sansi;+%0.8 kritik sans',
     '+8% Gold Finding;+8% Gear Find': '+%8 altin bulma sansi;+%8 ekipman bulma sansi',
-    '+8% Gold Finding;+4% Critical Chance': '+%8 altin bulma sansi;+%4 kritik sans',
-    '+8% Gear Find;+4% Critical Chance': '+%8 ekipman bulma sansi;+%4 kritik sans'
+    '+8% Gold Finding;+4% Critical Chance': '+%8 altin bulma sansi;+%0.8 kritik sans',
+    '+8% Gold Finding;+0.8% Critical Chance': '+%8 altin bulma sansi;+%0.8 kritik sans',
+    '+8% Gear Find;+4% Critical Chance': '+%8 ekipman bulma sansi;+%0.8 kritik sans',
+    '+8% Gear Find;+0.8% Critical Chance': '+%8 ekipman bulma sansi;+%0.8 kritik sans'
 }));
 
 const PROPER_PHRASES = new Map(Object.entries({

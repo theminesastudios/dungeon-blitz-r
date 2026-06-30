@@ -24,16 +24,20 @@ const CRITICAL_CHARM_FLAT_CHANCES = new Map<string, { field: "ProcChanceUp" | "P
     const level = index + 1;
     return [
       `Draconic${String(level).padStart(2, "0")}`,
-      { field: "PowerBonus" as const, flatChance: level * 0.001 },
+      { field: "PowerBonus" as const, flatChance: level * 0.005 },
     ] as const;
   }),
-  ["TripleFind", { field: "ProcChanceUp", flatChance: 0.04 }],
-  ["DoubleFind2", { field: "ProcChanceUp", flatChance: 0.04 }],
-  ["DoubleFind3", { field: "ProcChanceUp", flatChance: 0.04 }],
+  ["TripleFind", { field: "ProcChanceUp", flatChance: 0.008 }],
+  ["DoubleFind2", { field: "ProcChanceUp", flatChance: 0.008 }],
+  ["DoubleFind3", { field: "ProcChanceUp", flatChance: 0.008 }],
 ]);
 
 function storedProcChance(flatChance: number): string {
-  return (flatChance / BASE_CRIT_CHANCE).toFixed(15).replace(/0+$/, "").replace(/\.$/, "");
+  const storedValue = flatChance / BASE_CRIT_CHANCE;
+  const precision = storedValue < 0.01 ? 3 : 2;
+  const scale = 10 ** precision;
+  const truncatedValue = Math.floor((storedValue + Number.EPSILON) * scale) / scale;
+  return formatDecimal(truncatedValue);
 }
 
 function expectedValueByCharm(): Map<string, { field: "ProcChanceUp" | "PowerBonus"; value: string }> {
@@ -69,16 +73,56 @@ function expectedDescriptionByCharm(): Map<string, string> {
       const level = index + 1;
       return [
         `Draconic${String(level).padStart(2, "0")}`,
-        `+${formatPercent(level * 0.001)}%`,
+        `+${formatPercent(level * 0.005)}%`,
       ] as const;
     }),
   ];
   return new Map(entries);
 }
 
+function expectedTroveCriticalChanceDescriptionByCharm(): Map<string, string> {
+  return new Map([
+    ["TripleFind", formatPercent(0.008)],
+    ["DoubleFind2", formatPercent(0.008)],
+    ["DoubleFind3", formatPercent(0.008)],
+  ]);
+}
+
+function replaceTroveCriticalChanceDescription(block: string, percent: string): PatchResult {
+  let changes = 0;
+  const patched = block
+    .replace(/([+;]\s*)%[\d.]+(\s+kritik sans)/i, (match, prefix: string, suffix: string) => {
+      const replacement = `${prefix}%${percent}${suffix}`;
+      if (match === replacement) {
+        return match;
+      }
+      changes += 1;
+      return replacement;
+    })
+    .replace(/([+;]\s*)[\d.]+%(\s+kritik sans)/i, (match, prefix: string, suffix: string) => {
+      const replacement = `${prefix}${percent}%${suffix}`;
+      if (match === replacement) {
+        return match;
+      }
+      changes += 1;
+      return replacement;
+    })
+    .replace(/([+;]\s*)[\d.]+%(\s+Critical Chance)/i, (match, prefix: string, suffix: string) => {
+      const replacement = `${prefix}${percent}%${suffix}`;
+      if (match === replacement) {
+        return match;
+      }
+      changes += 1;
+      return replacement;
+    });
+
+  return { xml: patched, changes };
+}
+
 function replaceCharmProcChance(xml: string): PatchResult {
   const expected = expectedValueByCharm();
   const expectedDescriptions = expectedDescriptionByCharm();
+  const expectedTroveCriticalChanceDescriptions = expectedTroveCriticalChanceDescriptionByCharm();
   let changes = 0;
   const patched = xml.replace(/<CharmType\s+CharmName="([^"]+)">[\s\S]*?<\/CharmType>/g, (block, charmName: string) => {
     const next = expected.get(charmName);
@@ -109,6 +153,12 @@ function replaceCharmProcChance(xml: string): PatchResult {
           return replacement;
         },
       );
+    }
+    const nextTroveCriticalChancePercent = expectedTroveCriticalChanceDescriptions.get(charmName);
+    if (nextTroveCriticalChancePercent) {
+      const patchedDescription = replaceTroveCriticalChanceDescription(nextBlock, nextTroveCriticalChancePercent);
+      nextBlock = patchedDescription.xml;
+      changes += patchedDescription.changes;
     }
     return nextBlock;
   });
