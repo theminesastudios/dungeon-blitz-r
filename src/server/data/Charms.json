@@ -39,7 +39,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "1",
         "CharmSize": "1",
-        "ProcChanceUp": "0.006666666666667"
+        "ProcChanceUp": "0.006"
     },
     {
         "CharmName": "Undead01",
@@ -72,7 +72,7 @@
         "PrimaryType": "Draconic",
         "PrimaryCost": "1",
         "CharmSize": "1",
-        "PowerBonus": "0.001"
+        "PowerBonus": "0.005"
     },
     {
         "CharmName": "Sylvan01",
@@ -105,7 +105,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "8",
         "CharmSize": "2",
-        "ProcChanceUp": "0.013333333333333"
+        "ProcChanceUp": "0.01"
     },
     {
         "CharmName": "Undead02",
@@ -138,7 +138,7 @@
         "PrimaryType": "Draconic",
         "PrimaryCost": "16",
         "CharmSize": "2",
-        "PowerBonus": "0.002"
+        "PowerBonus": "0.01"
     },
     {
         "CharmName": "Sylvan02",
@@ -204,7 +204,7 @@
         "PrimaryType": "Draconic",
         "PrimaryCost": "41",
         "CharmSize": "3",
-        "PowerBonus": "0.003"
+        "PowerBonus": "0.015"
     },
     {
         "CharmName": "Sylvan03",
@@ -237,7 +237,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "57",
         "CharmSize": "4",
-        "ProcChanceUp": "0.026666666666667"
+        "ProcChanceUp": "0.02"
     },
     {
         "CharmName": "Undead04",
@@ -270,7 +270,7 @@
         "PrimaryType": "Draconic",
         "PrimaryCost": "75",
         "CharmSize": "4",
-        "PowerBonus": "0.004"
+        "PowerBonus": "0.02"
     },
     {
         "CharmName": "Sylvan04",
@@ -303,7 +303,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "95",
         "CharmSize": "5",
-        "ProcChanceUp": "0.033333333333333"
+        "ProcChanceUp": "0.03"
     },
     {
         "CharmName": "Undead05",
@@ -336,7 +336,7 @@
         "PrimaryType": "Draconic",
         "PrimaryCost": "117",
         "CharmSize": "5",
-        "PowerBonus": "0.005"
+        "PowerBonus": "0.025"
     },
     {
         "CharmName": "Sylvan05",
@@ -402,7 +402,7 @@
         "PrimaryType": "Draconic",
         "PrimaryCost": "168",
         "CharmSize": "6",
-        "PowerBonus": "0.006"
+        "PowerBonus": "0.03"
     },
     {
         "CharmName": "Sylvan06",
@@ -435,7 +435,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "197",
         "CharmSize": "7",
-        "ProcChanceUp": "0.046666666666667"
+        "ProcChanceUp": "0.04"
     },
     {
         "CharmName": "Undead07",
@@ -468,7 +468,7 @@
         "PrimaryType": "Draconic",
         "PrimaryCost": "228",
         "CharmSize": "7",
-        "PowerBonus": "0.007"
+        "PowerBonus": "0.035"
     },
     {
         "CharmName": "Sylvan07",
@@ -501,7 +501,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "261",
         "CharmSize": "8",
-        "ProcChanceUp": "0.053333333333333"
+        "ProcChanceUp": "0.05"
     },
     {
         "CharmName": "Undead08",
@@ -534,7 +534,7 @@
         "PrimaryType": "Draconic",
         "PrimaryCost": "296",
         "CharmSize": "8",
-        "PowerBonus": "0.008"
+        "PowerBonus": "0.04"
     },
     {
         "CharmName": "Sylvan08",
@@ -600,7 +600,7 @@
         "PrimaryType": "Draconic",
         "PrimaryCost": "372",
         "CharmSize": "9",
-        "PowerBonus": "0.009"
+        "PowerBonus": "0.045"
     },
     {
         "CharmName": "Sylvan09",
@@ -631,7 +631,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "400",
         "CharmSize": "10",
-        "ProcChanceUp": "0.066666666666667"
+        "ProcChanceUp": "0.06"
     },
     {
         "CharmName": "Undead10",
@@ -661,7 +661,7 @@
         "PrimaryType": "Draconic",
         "PrimaryCost": "400",
         "CharmSize": "10",
-        "PowerBonus": "0.01"
+        "PowerBonus": "0.05"
     },
     {
         "CharmName": "Sylvan10",
@@ -1018,7 +1018,7 @@
         "CharmSize": "8",
         "GoldDrop": "0.08",
         "ItemDrop": "0.08",
-        "ProcChanceUp": "0.266666666666667",
+        "ProcChanceUp": "0.05",
         "DisallowCrafting": "True"
     },
     {
@@ -1040,7 +1040,7 @@
         "PrimaryType": "Undead;Infernal",
         "CharmSize": "8",
         "GoldDrop": "0.08",
-        "ProcChanceUp": "0.266666666666667",
+        "ProcChanceUp": "0.05",
         "DisallowCrafting": "True"
     },
     {
@@ -1051,7 +1051,7 @@
         "PrimaryType": "Trog;Infernal",
         "CharmSize": "8",
         "ItemDrop": "0.08",
-        "ProcChanceUp": "0.266666666666667",
+        "ProcChanceUp": "0.05",
         "DisallowCrafting": "True"
     },
     {
