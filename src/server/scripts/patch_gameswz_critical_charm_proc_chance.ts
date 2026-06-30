@@ -24,7 +24,7 @@ const CRITICAL_CHARM_FLAT_CHANCES = new Map<string, { field: "ProcChanceUp" | "P
     const level = index + 1;
     return [
       `Draconic${String(level).padStart(2, "0")}`,
-      { field: "PowerBonus" as const, flatChance: level * 0.01 },
+      { field: "PowerBonus" as const, flatChance: level * 0.005 },
     ] as const;
   }),
   ["TripleFind", { field: "ProcChanceUp", flatChance: 0.008 }],
@@ -73,7 +73,7 @@ function expectedDescriptionByCharm(): Map<string, string> {
       const level = index + 1;
       return [
         `Draconic${String(level).padStart(2, "0")}`,
-        `+${formatPercent(level * 0.01)}%`,
+        `+${formatPercent(level * 0.005)}%`,
       ] as const;
     }),
   ];
