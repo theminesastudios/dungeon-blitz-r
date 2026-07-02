@@ -80,6 +80,9 @@ export type DeadHostileTombstone = {
 };
 
 export class GlobalState {
+    // Connected clients, including clients that have not authenticated yet.
+    static clients: Set<Client> = new Set();
+
     // Token -> Pending Transfer
     static pendingWorld: Map<number, PendingTransfer> = new Map();
     static pendingExtended: Map<number, boolean> = new Map();

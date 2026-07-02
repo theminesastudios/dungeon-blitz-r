@@ -1,6 +1,6 @@
 {
     "name": "dungeon-blitz-r",
-    "version": "1.5.21",
+    "version": "1.6.1",
     "description": "Dungeon Blitz: R",
     "main": "index.js",
     "scripts": {
@@ -15,7 +15,8 @@
         "install:discord-bridge-autostart": "node src/server/tools/installDiscordBridgeAutostart.js",
         "remove:discord-bridge-autostart": "node src/server/tools/removeDiscordBridgeAutostart.js",
         "dev:discord-bridge": "cd src/server && npm run dev:discord-bridge",
-        "dev:with-discord": "concurrently -n GAME,RPC -c blue,magenta \"npm run dev\" \"npm run dev:discord-bridge\""
+        "dev:with-discord": "concurrently -n GAME,RPC -c blue,magenta \"npm run dev\" \"npm run dev:discord-bridge\"",
+        "reset-password": "cd src/server && npm run reset-password --"
     },
     "devDependencies": {
         "concurrently": "^10.0.3"

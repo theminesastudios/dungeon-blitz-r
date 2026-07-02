@@ -1,6 +1,32 @@
+import { PasswordRecord } from '../auth/PasswordAuth';
+
 export interface UserAccount {
     email: string;
+    emailAliases?: string[];
     user_id: number;
+    passwordKdf?: string;
+    passwordSalt?: string;
+    passwordHash?: string;
+    passwordParams?: {
+        N?: number;
+        r?: number;
+        p?: number;
+        keylen?: number;
+    };
+    discordId?: string;
+    discordUsername?: string;
+    discordGlobalName?: string;
+    discordEmail?: string;
+    discordAvatar?: string;
+    discordLinkedAt?: string;
+}
+
+export interface DiscordAccountProfile {
+    id: string;
+    username?: string;
+    globalName?: string;
+    email?: string;
+    avatar?: string;
 }
 
 export interface Character {
@@ -43,8 +69,13 @@ export interface UserSaveData {
 }
 
 export interface IDatabase {
+    getAccount(email: string): Promise<UserAccount | null>;
+    getAccountById(userId: number): Promise<UserAccount | null>;
     getAccountId(email: string): Promise<number | null>;
-    createAccount(email: string): Promise<number>;
+    findAccountByDiscordId(discordId: string): Promise<UserAccount | null>;
+    linkDiscordToAccount(userId: number, discordUser: DiscordAccountProfile): Promise<UserAccount>;
+    createAccount(email: string, passwordRecord: PasswordRecord): Promise<UserAccount>;
+    updateAccountPassword(email: string, passwordRecord: PasswordRecord): Promise<UserAccount | null>;
     loadCharacters(userId: number): Promise<Character[]>;
     saveCharacters(userId: number, characters: Character[]): Promise<void>;
     isCharacterNameTaken(name: string): Promise<boolean>;

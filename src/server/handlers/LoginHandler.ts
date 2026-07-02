@@ -4,18 +4,25 @@ import { BitBuffer } from '../network/protocol/bitBuffer';
 import { Config } from '../core/config';
 import * as crypto from 'crypto';
 import { JsonAdapter } from '../database/JsonAdapter';
+import {
+    hashPassword,
+    isValidPasswordInput,
+    isValidRegistrationPassword,
+    normalizeAccountIdentifier,
+    verifyPassword
+} from '../auth/PasswordAuth';
 
-const db = new JsonAdapter();
+const INVALID_CREDENTIALS_MESSAGE = "Invalid email or password";
+
+interface LoginPayload {
+    email: string;
+    password: string;
+}
 
 export class LoginHandler {
-    static async handleLoginVersion(client: Client, data: Buffer): Promise<void> {
-        // 0x11
-        await client.resetForLoginCycle('login version');
+    public static db: JsonAdapter = new JsonAdapter();
 
-        const br = new BitReader(data);
-        const version = br.readMethod9();
-        
-        // Generate Challenge
+    private static issueChallenge(client: Client): string {
         const sid = crypto.randomInt(0, 65536);
         const secret = Buffer.from(Config.SECRET, 'hex');
         const sidBytes = Buffer.alloc(2);
@@ -25,96 +32,143 @@ export class LoginHandler {
         const challenge = `${sid.toString(16).padStart(4, '0')}${digest}`;
         client.challengeStr = challenge;
 
-        console.log(`[Login] Version: ${version}, Challenge: ${challenge}`);
-
-        // Send 0x12
-        // payload = len(utf_bytes) + utf_bytes
-        // packet = 0x12 + len(payload) + payload
-        // But logic says: "payload = struct.pack('>H', len(utf_bytes)) + utf_bytes"
-        
         const challengeBuf = Buffer.from(challenge, 'utf-8');
         const payload = Buffer.alloc(2 + challengeBuf.length);
         payload.writeUInt16BE(challengeBuf.length, 0);
         challengeBuf.copy(payload, 2);
 
-        client.send(0x12, payload);
+        const send = (client as Client & { send?: (id: number, payload: Buffer) => void }).send;
+        if (typeof send === 'function') {
+            send.call(client, 0x12, payload);
+        }
+
+        return challenge;
+    }
+
+    private static parseLoginPayload(data: Buffer): LoginPayload | null {
+        try {
+            const br = new BitReader(data);
+            br.readMethod26(); // fbId
+            br.readMethod26(); // kongId
+            const email = normalizeAccountIdentifier(br.readMethod26());
+            const password = br.readMethod26();
+            br.readMethod26(); // legacyKey
+
+            if (!email || !isValidPasswordInput(password)) {
+                return null;
+            }
+
+            return { email, password };
+        } catch (err) {
+            console.warn(`[Login] Rejected malformed login payload: ${(err as Error).message}`);
+            return null;
+        }
+    }
+
+    private static clearFailedAuthState(client: Client): void {
+        client.userId = null;
+        client.account = null;
+        client.authenticated = false;
+        client.characters = [];
+        client.character = null;
+    }
+
+    private static rejectLogin(client: Client, email: string, reason: string): void {
+        LoginHandler.clearFailedAuthState(client);
+        console.warn(`[Login] Authentication failed for ${email || '(missing account id)'}: ${reason}`);
+        LoginHandler.sendPopup(client, INVALID_CREDENTIALS_MESSAGE, false);
+        LoginHandler.issueChallenge(client);
+    }
+
+    static async handleLoginVersion(client: Client, data: Buffer): Promise<void> {
+        // 0x11
+        await client.resetForLoginCycle('login version');
+
+        const br = new BitReader(data);
+        const version = br.readMethod9();
+        
+        const challenge = LoginHandler.issueChallenge(client);
+
+        console.log(`[Login] Version: ${version}, Challenge: ${challenge}`);
     }
 
     static async handleLoginCreate(client: Client, data: Buffer): Promise<void> {
         // 0x13
         await client.resetForLoginCycle('login create');
 
-        const br = new BitReader(data);
-        const fbId = br.readMethod26();
-        const kongId = br.readMethod26();
-        const email = br.readMethod26().trim().toLowerCase();
-        const password = br.readMethod26();
-        const legacyKey = br.readMethod26();
+        const payload = LoginHandler.parseLoginPayload(data);
+        if (!payload) {
+            LoginHandler.rejectLogin(client, '', 'invalid registration payload');
+            return;
+        }
+
+        const { email, password } = payload;
+        if (!isValidRegistrationPassword(password)) {
+            LoginHandler.clearFailedAuthState(client);
+            console.warn(`[Login] Registration rejected for ${email}: password failed validation`);
+            LoginHandler.sendPopup(client, "Password must be at least 6 characters", false);
+            return;
+        }
 
         console.log(`[Login] Create Account: ${email}`);
         
-        // Create or Get User
-        // Note: Python logic just gets or creates. We should ideally verify logic.
-        // Assuming "Create" packet implies registration.
-        
-        // We'll mimic Python `get_or_create_user_id`
-        // Wait, `get_or_create_user_id` is used in `handle_login_create`.
-        
-        // NOTE: In a real app we'd hash passwords. Here we are following the Python "no-auth" logic mostly?
-        // Actually Python didn't check password in `handle_login_create`. It just creates.
-        
-        // TODO: We need to properly implement `get_or_create_user_id` logic inside DB adapter
-        // Currently `JsonAdapter.createAccount` does it.
-        
-        // However, `get_or_create_user_id` in Python:
-        // checks `Accounts.json`. If email exists -> return ID. Else -> Create.
-        // So it's idempotent.
-
-        // Is there a strict "Register" vs "Login"? 
-        // 0x13 is handle_login_create.
-        // 0x14 is handle_login_authenticate.
-        
-        let userId = await db.getAccountId(email);
-        if (!userId) {
-            userId = await db.createAccount(email);
+        let account;
+        try {
+            account = await LoginHandler.db.createAccount(email, await hashPassword(password));
+        } catch (err) {
+            LoginHandler.clearFailedAuthState(client);
+            const message = (err as Error).message;
+            console.warn(`[Login] Registration failed for ${email}: ${message}`);
+            LoginHandler.sendPopup(client, message === 'Account already exists.' ? "Account already exists" : "Account creation failed", false);
+            return;
         }
-        
-        client.userId = userId;
-        client.account = { email, user_id: userId };
+
+        client.userId = account.user_id;
+        client.account = account;
         client.authenticated = true;
-        client.characters = await db.loadCharacters(userId);
+        client.characters = await LoginHandler.db.loadCharacters(account.user_id);
 
         LoginHandler.sendCharacterList(client);
     }
 
     static async handleLoginAuthenticate(client: Client, data: Buffer): Promise<void> {
         // 0x14
-        await client.resetForLoginCycle('login authenticate');
-
-        const br = new BitReader(data);
-        const fbId = br.readMethod26();
-        const kongId = br.readMethod26();
-        const email = br.readMethod26().trim().toLowerCase();
-        const encPassword = br.readMethod26();
-        const legacyKey = br.readMethod26();
-
-        console.log(`[Login] Authenticate: ${email}`);
-
-        const userId = await db.getAccountId(email);
-
-        if (!userId) {
-            // Send Popup "Account not found"
-            LoginHandler.sendPopup(client, "Account not found", true);
+        const payload = LoginHandler.parseLoginPayload(data);
+        if (!payload) {
+            LoginHandler.rejectLogin(client, '', 'invalid login payload');
             return;
         }
 
-        // Validate password? Python `handle_login_authenticate` DOES NOT validate password!
-        // It just `load_accounts()` and checks if email exists.
-        
-        client.userId = userId;
-        client.account = { email, user_id: userId };
+        const { email, password } = payload;
+        console.log(`[Login] Authenticate: ${email}`);
+
+        const account = await LoginHandler.db.getAccount(email);
+        if (!account) {
+            LoginHandler.rejectLogin(client, email, 'account not found');
+            return;
+        }
+
+        let passwordMatches = false;
+        try {
+            passwordMatches = await verifyPassword(password, account);
+        } catch (err) {
+            console.warn(`[Login] Password verification error for ${email}: ${(err as Error).message}`);
+        }
+
+        if (!passwordMatches) {
+            const reason = account.passwordHash
+                ? 'password mismatch'
+                : 'Account exists but has no password hash; password reset required';
+            LoginHandler.rejectLogin(client, email, reason);
+            return;
+        }
+
+        await client.resetForLoginCycle('login authenticate');
+
+        client.userId = account.user_id;
+        client.account = account;
         client.authenticated = true;
-        client.characters = await db.loadCharacters(userId);
+        client.characters = await LoginHandler.db.loadCharacters(account.user_id);
 
         LoginHandler.sendCharacterList(client);
     }

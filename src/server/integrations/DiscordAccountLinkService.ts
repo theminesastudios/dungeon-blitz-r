@@ -1,12 +1,13 @@
 import * as crypto from 'crypto';
 
 import { Config } from '../core/config';
+import { DiscordAccountProfile, UserAccount } from '../database/Database';
 import { JsonAdapter } from '../database/JsonAdapter';
-import { DiscordAccountLinkRecord, DiscordAccountLinkStore, DiscordUserProfile } from './DiscordAccountLinkStore';
 
-interface LinkStatePayload {
-    email: string;
-    userId: number;
+interface DiscordOAuthStatePayload {
+    mode: 'login' | 'link';
+    email?: string;
+    userId?: number;
     expiresAt: number;
     nonce: string;
 }
@@ -21,23 +22,32 @@ interface DiscordTokenResponse {
     error_description?: string;
 }
 
-const DEFAULT_PUBLIC_REDIRECT_URI =
-    'https://discord-github-assistant-bot.vercel.app/api/discord/link/callback';
+interface DiscordApiUser {
+    id?: string;
+    username?: string;
+    global_name?: string | null;
+    email?: string | null;
+    avatar?: string | null;
+}
 
 export interface DiscordLinkStartResult {
     ok: boolean;
     reason: string;
     authorizeUrl?: string;
-    link?: DiscordAccountLinkRecord;
+    link?: UserAccount;
     message?: string;
 }
 
-export interface DiscordLinkCompleteResult {
+export interface DiscordOAuthCompleteResult {
     ok: boolean;
     reason: string;
-    link?: DiscordAccountLinkRecord;
+    mode: 'login' | 'link';
+    account?: UserAccount;
+    discordUser?: DiscordAccountProfile;
     message?: string;
 }
+
+export type DiscordLinkCompleteResult = DiscordOAuthCompleteResult;
 
 function base64UrlEncode(value: string | Buffer): string {
     return Buffer.from(value).toString('base64url');
@@ -51,18 +61,32 @@ function normalizeEmail(email: string | null | undefined): string {
     return String(email ?? '').trim().toLowerCase();
 }
 
+export function normalizeDiscordUser(discordUser: DiscordApiUser | null | undefined): DiscordAccountProfile | null {
+    const id = String(discordUser?.id ?? '').trim();
+    if (!id) {
+        return null;
+    }
+
+    return {
+        id,
+        username: String(discordUser?.username ?? '').trim(),
+        globalName: String(discordUser?.global_name ?? '').trim(),
+        email: normalizeEmail(discordUser?.email ?? ''),
+        avatar: String(discordUser?.avatar ?? '').trim()
+    };
+}
+
 export class DiscordAccountLinkService {
     private readonly db = new JsonAdapter();
-    private readonly store = new DiscordAccountLinkStore();
     private readonly appId: string;
     private readonly clientSecret: string;
     private readonly redirectUri: string;
     private readonly stateSecret: string;
 
     constructor() {
-        this.appId = String(process.env.DISCORD_APPLICATION_ID ?? process.env.DISCORD_SOCIAL_APP_ID ?? '').trim();
-        this.clientSecret = String(process.env.DISCORD_CLIENT_SECRET ?? '').trim();
-        this.redirectUri = this.resolveRedirectUri();
+        this.appId = Config.DISCORD_CLIENT_ID;
+        this.clientSecret = Config.DISCORD_CLIENT_SECRET;
+        this.redirectUri = Config.DISCORD_REDIRECT_URI;
         this.stateSecret = String(process.env.DISCORD_ACCOUNT_LINK_STATE_SECRET ?? Config.SECRET).trim();
     }
 
@@ -70,12 +94,28 @@ export class DiscordAccountLinkService {
         return Boolean(this.appId && this.clientSecret && this.redirectUri && this.stateSecret);
     }
 
+    public getRedirectUri(): string {
+        return this.redirectUri;
+    }
+
+    public async createLoginAuthorizeUrl(): Promise<DiscordLinkStartResult> {
+        return this.createAuthorizeUrlForState({ mode: 'login' });
+    }
+
+    public async createLinkAuthorizeUrlForAccount(account: UserAccount): Promise<DiscordLinkStartResult> {
+        return this.createAuthorizeUrlForState({
+            mode: 'link',
+            email: normalizeEmail(account.email),
+            userId: account.user_id
+        });
+    }
+
     public async createAuthorizeUrl(email: string): Promise<DiscordLinkStartResult> {
         if (!this.isConfigured()) {
             return {
                 ok: false,
                 reason: 'not-configured',
-                message: 'Discord account linking requires DISCORD_APPLICATION_ID and DISCORD_CLIENT_SECRET.'
+                message: 'Discord OAuth requires DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, and DISCORD_REDIRECT_URI.'
             };
         }
 
@@ -88,8 +128,8 @@ export class DiscordAccountLinkService {
             };
         }
 
-        const userId = await this.db.getAccountId(normalizedEmail);
-        if (!userId) {
+        const account = await this.db.getAccount(normalizedEmail);
+        if (!account) {
             return {
                 ok: false,
                 reason: 'account-not-found',
@@ -97,42 +137,29 @@ export class DiscordAccountLinkService {
             };
         }
 
-        const existingLink = await this.store.findByEmail(normalizedEmail);
-        if (existingLink && existingLink.userId === userId) {
+        if (account.discordId) {
             return {
                 ok: true,
                 reason: 'already-linked',
-                link: existingLink,
+                link: account,
                 message: 'Discord account is already linked.'
             };
         }
 
-        const state = this.signState({
-            email: normalizedEmail,
-            userId,
-            expiresAt: Date.now() + 10 * 60 * 1000,
-            nonce: crypto.randomBytes(12).toString('hex')
-        });
-        const authorizeUrl = new URL('https://discord.com/oauth2/authorize');
-        authorizeUrl.searchParams.set('client_id', this.appId);
-        authorizeUrl.searchParams.set('redirect_uri', this.redirectUri);
-        authorizeUrl.searchParams.set('response_type', 'code');
-        authorizeUrl.searchParams.set('scope', 'identify');
-        authorizeUrl.searchParams.set('state', state);
-
-        return {
-            ok: true,
-            reason: 'ok',
-            authorizeUrl: authorizeUrl.toString()
-        };
+        return this.createLinkAuthorizeUrlForAccount(account);
     }
 
     public async completeLink(code: string, state: string): Promise<DiscordLinkCompleteResult> {
+        return this.completeOAuth(code, state);
+    }
+
+    public async completeOAuth(code: string, state: string): Promise<DiscordOAuthCompleteResult> {
         if (!this.isConfigured()) {
             return {
                 ok: false,
                 reason: 'not-configured',
-                message: 'Discord account linking is not configured.'
+                mode: 'login',
+                message: 'Discord OAuth is not configured.'
             };
         }
 
@@ -141,7 +168,8 @@ export class DiscordAccountLinkService {
             return {
                 ok: false,
                 reason: 'invalid-state',
-                message: 'Discord account link state is invalid or expired.'
+                mode: 'login',
+                message: 'Discord OAuth state is invalid or expired.'
             };
         }
 
@@ -150,6 +178,7 @@ export class DiscordAccountLinkService {
             return {
                 ok: false,
                 reason: 'missing-code',
+                mode: payload.mode,
                 message: 'Discord did not return an authorization code.'
             };
         }
@@ -159,42 +188,126 @@ export class DiscordAccountLinkService {
             return {
                 ok: false,
                 reason: 'token-exchange-failed',
+                mode: payload.mode,
                 message: token.error_description || token.error || 'Discord token exchange failed.'
             };
         }
 
-        const discordUser = await this.fetchCurrentUser(token.access_token);
-        if (!discordUser?.id) {
+        const discordUser = normalizeDiscordUser(await this.fetchCurrentUser(token.access_token));
+        if (!discordUser) {
             return {
                 ok: false,
                 reason: 'user-fetch-failed',
+                mode: payload.mode,
                 message: 'Could not fetch Discord user profile.'
             };
         }
 
-        const link = await this.store.linkAccount(payload.email, payload.userId, discordUser);
+        if (payload.mode === 'link') {
+            return this.completeLinkMode(payload, discordUser);
+        }
+
+        const linkedAccount = await this.db.findAccountByDiscordId(discordUser.id);
+        if (!linkedAccount) {
+            return {
+                ok: false,
+                reason: 'not-linked',
+                mode: 'login',
+                discordUser,
+                message: 'Discord account is not linked. Log in with email/password first, then link Discord.'
+            };
+        }
+
         return {
             ok: true,
             reason: 'ok',
-            link
+            mode: 'login',
+            account: linkedAccount,
+            discordUser,
+            message: 'Discord login successful.'
         };
     }
 
-    private resolveRedirectUri(): string {
-        const configured = String(process.env.DISCORD_ACCOUNT_LINK_REDIRECT_URI ?? '').trim();
-        if (configured) {
-            return configured;
+    private async createAuthorizeUrlForState(
+        state: Pick<DiscordOAuthStatePayload, 'mode' | 'email' | 'userId'>
+    ): Promise<DiscordLinkStartResult> {
+        if (!this.isConfigured()) {
+            return {
+                ok: false,
+                reason: 'not-configured',
+                message: 'Discord OAuth requires DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, and DISCORD_REDIRECT_URI.'
+            };
         }
 
-        const baseUrl = String(process.env.DISCORD_ACCOUNT_LINK_BASE_URL ?? '').trim();
-        if (baseUrl) {
-            return `${baseUrl.replace(/\/+$/, '')}/api/discord/link/callback`;
+        if (state.mode === 'link' && (!state.email || !state.userId)) {
+            return {
+                ok: false,
+                reason: 'missing-account',
+                message: 'Discord linking requires an authenticated game account.'
+            };
         }
 
-        return DEFAULT_PUBLIC_REDIRECT_URI;
+        const signedState = this.signState({
+            mode: state.mode,
+            email: normalizeEmail(state.email),
+            userId: Math.max(0, Math.round(Number(state.userId ?? 0))) || undefined,
+            expiresAt: Date.now() + 10 * 60 * 1000,
+            nonce: crypto.randomBytes(16).toString('hex')
+        });
+        const authorizeUrl = new URL('https://discord.com/oauth2/authorize');
+        authorizeUrl.searchParams.set('client_id', this.appId);
+        authorizeUrl.searchParams.set('redirect_uri', this.redirectUri);
+        authorizeUrl.searchParams.set('response_type', 'code');
+        authorizeUrl.searchParams.set('scope', 'identify email');
+        authorizeUrl.searchParams.set('state', signedState);
+        if (process.env.DISCORD_OAUTH_PROMPT_CONSENT === '1') {
+            authorizeUrl.searchParams.set('prompt', 'consent');
+        }
+
+        return {
+            ok: true,
+            reason: 'ok',
+            authorizeUrl: authorizeUrl.toString()
+        };
     }
 
-    private signState(payload: LinkStatePayload): string {
+    private async completeLinkMode(
+        payload: DiscordOAuthStatePayload,
+        discordUser: DiscordAccountProfile
+    ): Promise<DiscordOAuthCompleteResult> {
+        const userId = Math.max(0, Math.round(Number(payload.userId ?? 0)));
+        if (!userId) {
+            return {
+                ok: false,
+                reason: 'missing-account',
+                mode: 'link',
+                discordUser,
+                message: 'Discord linking requires an authenticated game account.'
+            };
+        }
+
+        try {
+            const account = await this.db.linkDiscordToAccount(userId, discordUser);
+            return {
+                ok: true,
+                reason: 'ok',
+                mode: 'link',
+                account,
+                discordUser,
+                message: 'Discord linked successfully.'
+            };
+        } catch (err) {
+            return {
+                ok: false,
+                reason: 'link-failed',
+                mode: 'link',
+                discordUser,
+                message: (err as Error).message || 'Discord link failed.'
+            };
+        }
+    }
+
+    private signState(payload: DiscordOAuthStatePayload): string {
         const body = base64UrlEncode(JSON.stringify(payload));
         const signature = crypto
             .createHmac('sha256', this.stateSecret)
@@ -203,7 +316,7 @@ export class DiscordAccountLinkService {
         return `${body}.${signature}`;
     }
 
-    private verifyState(state: string): LinkStatePayload | null {
+    private verifyState(state: string): DiscordOAuthStatePayload | null {
         const [body, signature] = String(state ?? '').split('.');
         if (!body || !signature) {
             return null;
@@ -220,13 +333,16 @@ export class DiscordAccountLinkService {
         }
 
         try {
-            const parsed = JSON.parse(base64UrlDecode(body)) as LinkStatePayload;
-            if (!parsed.email || !parsed.userId || Date.now() > Number(parsed.expiresAt ?? 0)) {
+            const parsed = JSON.parse(base64UrlDecode(body)) as DiscordOAuthStatePayload;
+            const mode = parsed.mode === 'link' ? 'link' : parsed.mode === 'login' ? 'login' : null;
+            if (!mode || Date.now() > Number(parsed.expiresAt ?? 0)) {
                 return null;
             }
+
             return {
+                mode,
                 email: normalizeEmail(parsed.email),
-                userId: Math.max(0, Math.round(Number(parsed.userId))),
+                userId: Math.max(0, Math.round(Number(parsed.userId ?? 0))) || undefined,
                 expiresAt: Number(parsed.expiresAt),
                 nonce: String(parsed.nonce ?? '')
             };
@@ -260,7 +376,7 @@ export class DiscordAccountLinkService {
         return parsed;
     }
 
-    private async fetchCurrentUser(accessToken: string): Promise<DiscordUserProfile | null> {
+    private async fetchCurrentUser(accessToken: string): Promise<DiscordApiUser | null> {
         const response = await fetch('https://discord.com/api/v10/users/@me', {
             headers: {
                 Authorization: `Bearer ${accessToken}`
@@ -269,6 +385,6 @@ export class DiscordAccountLinkService {
         if (!response.ok) {
             return null;
         }
-        return await response.json().catch(() => null) as DiscordUserProfile | null;
+        return await response.json().catch(() => null) as DiscordApiUser | null;
     }
 }

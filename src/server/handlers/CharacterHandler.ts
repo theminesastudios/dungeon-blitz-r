@@ -50,6 +50,14 @@ export class CharacterHandler {
     private static readonly DYE_GOLD_COST = [0, 455, 550, 595, 650, 735, 795, 890, 965, 1075, 1155, 1285, 1385, 1520, 1685, 1810, 1985, 2180, 2380, 2600, 2845, 3090, 3375, 3710, 4025, 4410, 4790, 5225, 5705, 6215, 6750, 7340, 8020, 8690, 9455, 10300, 11230, 12185, 13255, 14405, 15635, 17010, 18475, 20050, 21725, 23650, 25640, 27835, 30165, 32730, 35540] as const;
     private static readonly DYE_IDOLS_COST = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7, 7, 8, 8, 9, 10, 11, 11, 12, 13, 14, 16, 17] as const;
 
+    private static sendCharacterCreateFailure(client: Client, message: string): void {
+        if (client.userId) {
+            LoginHandler.sendCharacterList(client);
+        }
+
+        LoginHandler.sendPopup(client, message, false);
+    }
+
     private static resolveDungeonMapPacketLevel(
         levelName: string,
         configuredLevel: number,
@@ -869,85 +877,99 @@ export class CharacterHandler {
     }
 
     static async handleLoginCharacterCreate(client: Client, data: Buffer): Promise<void> {
-        const br = new BitReader(data);
-        const name = br.readMethod26();
-        const className = br.readMethod26();
-        const gender = br.readMethod26();
-        const head = br.readMethod26();
-        const hair = br.readMethod26();
-        const mouth = br.readMethod26();
-        const face = br.readMethod26();
-        const hairColor = br.readMethod20(24);
-        const skinColor = br.readMethod20(24);
-        const shirtColor = br.readMethod20(24);
-        const pantColor = br.readMethod20(24);
+        let name = "";
+        try {
+            const br = new BitReader(data);
+            name = br.readMethod26().trim();
+            const className = br.readMethod26().trim();
+            const gender = br.readMethod26();
+            const head = br.readMethod26();
+            const hair = br.readMethod26();
+            const mouth = br.readMethod26();
+            const face = br.readMethod26();
+            const hairColor = br.readMethod20(24);
+            const skinColor = br.readMethod20(24);
+            const shirtColor = br.readMethod20(24);
+            const pantColor = br.readMethod20(24);
 
-        if (!client.userId) {
-            console.log(`[CharCreate] No userId for client`);
-            return;
+            if (!client.authenticated || !client.userId) {
+                console.log(`[CharCreate] Unauthenticated client attempted character creation`);
+                CharacterHandler.sendCharacterCreateFailure(client, "You must log in before creating a character.");
+                return;
+            }
+
+            client.characters = await db.loadCharacters(client.userId);
+            const normalizedName = CharacterHandler.normalizeCharacterName(name);
+            if (!normalizedName) {
+                CharacterHandler.sendCharacterCreateFailure(client, "Enter a character name and try again.");
+                return;
+            }
+
+            const existingOwnCharacter = client.characters.find((entry) =>
+                CharacterHandler.normalizeCharacterName(entry?.name) === normalizedName
+            );
+            if (existingOwnCharacter) {
+                client.character = existingOwnCharacter;
+                console.log(`[CharCreate] ${name} already exists for user ${client.userId}; entering existing character`);
+                CharacterHandler.sendEnterWorld(client, existingOwnCharacter);
+                return;
+            }
+
+            const isTaken = await db.isCharacterNameTaken(name);
+            if (isTaken) {
+                CharacterHandler.sendCharacterCreateFailure(client, "Character name is unavailable.");
+                return;
+            }
+
+            let newChar = CharacterTemplates.get(className);
+
+            if (!newChar) {
+                console.error(`[CharCreate] No template found for class ${className}, using fallback.`);
+                newChar = {
+                    class: className || "Rogue",
+                    level: 1,
+                    xp: 0,
+                    gold: 0
+                };
+            }
+
+            newChar.name = name;
+            newChar.gender = normalizeGender(gender);
+            newChar.headSet = head;
+            newChar.hairSet = hair;
+            newChar.mouthSet = mouth;
+            newChar.faceSet = face;
+            newChar.hairColor = hairColor;
+            newChar.skinColor = skinColor;
+            newChar.shirtColor = shirtColor;
+            newChar.pantColor = pantColor;
+
+            CharacterHandler.initializeFreshCharacterProgress(newChar);
+            AbilityHandler.repairCharacterAbilityState(newChar);
+
+            if (!newChar.equippedGears) newChar.equippedGears = [];
+            if (!newChar.inventoryGears) newChar.inventoryGears = [];
+            if (!newChar.friends) newChar.friends = [];
+
+            const nextCharacters = CharacterHandler.upsertCharacterList(client.characters, newChar);
+            await db.saveCharacters(client.userId, nextCharacters);
+            client.characters = nextCharacters;
+            client.character = newChar;
+
+            console.log(`[CharCreate] Created char ${name} for user ${client.userId}`);
+            CharacterHandler.sendEnterWorld(client, newChar);
+        } catch (err) {
+            console.error(`[CharCreate] Failed to create character ${name || '(unparsed)'}:`, err);
+            CharacterHandler.sendCharacterCreateFailure(client, "Character creation failed. Please try again.");
         }
-
-        // Check if name taken
-        const isTaken = await db.isCharacterNameTaken(name);
-        if (isTaken) {
-             // Send Popup
-             const bb = new BitBuffer();
-             bb.writeMethod13("Character name is unavailable.");
-             bb.writeMethod6(0, 1); // Disconnect = false
-             client.sendBitBuffer(0x1B, bb);
-             return;
-        }
-
-        // Create Character Object from Template
-        let newChar = CharacterTemplates.get(className);
-        
-        if (!newChar) {
-             console.error(`[CharCreate] No template found for class ${className}, using fallback.`);
-             newChar = {
-                class: className,
-                level: 1,
-                xp: 0,
-                gold: 0,
-                // ... minimal defaults ...
-             };
-        }
-
-        // Apply Customization
-        newChar.name = name;
-        newChar.gender = normalizeGender(gender);
-        newChar.headSet = head;
-        newChar.hairSet = hair;
-        newChar.mouthSet = mouth;
-        newChar.faceSet = face;
-        newChar.hairColor = hairColor;
-        newChar.skinColor = skinColor;
-        newChar.shirtColor = shirtColor;
-        newChar.pantColor = pantColor;
-
-        CharacterHandler.initializeFreshCharacterProgress(newChar);
-        AbilityHandler.repairCharacterAbilityState(newChar);
-        
-        // Initialize arrays if missing
-        if (!newChar.equippedGears) newChar.equippedGears = [];
-        if (!newChar.inventoryGears) newChar.inventoryGears = [];
-        if (!newChar.friends) newChar.friends = [];
-
-        client.characters.push(newChar);
-        await db.saveCharacters(client.userId, client.characters);
-        client.character = newChar;
-
-        console.log(`[CharCreate] Created char ${name} for user ${client.userId}`);
-
-        // Enter World
-        CharacterHandler.sendEnterWorld(client, newChar);
     }
 
     static async handleCharacterSelect(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
         const charName = br.readMethod26().trim();
 
-        if (!client.userId) {
-            console.log(`[CharacterSelect] No userId for client`);
+        if (!client.authenticated || !client.userId) {
+            console.log(`[CharacterSelect] Unauthenticated client attempted character selection`);
             return;
         }
 

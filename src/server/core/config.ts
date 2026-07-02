@@ -180,6 +180,19 @@ const DEFAULT_STATIC_PORT = MULTIPLAYER_MODE ? 80 : 8000;
 const DEFAULT_GAME_PORT = 8080;
 const DEFAULT_POLICY_PORT = 843;
 const REWARD_ROLL_DEBUG = parseBooleanEnv('REWARD_ROLL_DEBUG', process.env.NODE_ENV === 'test');
+const DEFAULT_PUBLIC_HOST = MULTIPLAYER_MODE ? MULTIPLAYER_HOST : LOCAL_HOST;
+const DEFAULT_PUBLIC_BASE_URL = `http://${DEFAULT_PUBLIC_HOST}${DEFAULT_STATIC_PORT === 80 ? '' : `:${DEFAULT_STATIC_PORT}`}`;
+const PUBLIC_BASE_URL = parseStringEnv(
+    'PUBLIC_BASE_URL',
+    parseStringEnv('BASE_URL', DEFAULT_PUBLIC_BASE_URL)
+).replace(/\/+$/, '');
+const PASSWORD_RESET_URL = parseStringEnv('PASSWORD_RESET_URL', `${PUBLIC_BASE_URL}/lostpw`);
+const DISCORD_CLIENT_ID = parseStringEnv(
+    'DISCORD_CLIENT_ID',
+    parseStringEnv('DISCORD_APPLICATION_ID', parseStringEnv('DISCORD_SOCIAL_APP_ID', ''))
+);
+const DISCORD_CLIENT_SECRET = parseStringEnv('DISCORD_CLIENT_SECRET', '');
+const DISCORD_REDIRECT_URI = parseStringEnv('DISCORD_REDIRECT_URI', `${PUBLIC_BASE_URL}/auth/discord/callback`);
 
 export const Config = {
     MULTIPLAYER_MODE,
@@ -193,5 +206,12 @@ export const Config = {
     ENABLE_POLICY_SERVER: parseBooleanEnv('ENABLE_POLICY_SERVER', MULTIPLAYER_MODE),
     REWARD_ROLL_DEBUG,
     SECRET: resolveRuntimeKeyHex(),
-    DATA_DIR: resolveServerDataDir()
+    DATA_DIR: resolveServerDataDir(),
+    PUBLIC_BASE_URL,
+    PASSWORD_RESET_URL,
+    ALLOW_DEV_PASSWORD_RESET: parseBooleanEnv('ALLOW_DEV_PASSWORD_RESET', process.env.NODE_ENV !== 'production'),
+    DISCORD_CLIENT_ID,
+    DISCORD_CLIENT_SECRET,
+    DISCORD_REDIRECT_URI,
+    DISCORD_OAUTH_CONFIGURED: Boolean(DISCORD_CLIENT_ID && DISCORD_CLIENT_SECRET && DISCORD_REDIRECT_URI)
 };

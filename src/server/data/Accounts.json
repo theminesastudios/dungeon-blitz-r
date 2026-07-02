@@ -33,11 +33,32 @@
   },
   {
     "email": "1@gmail.com",
-    "user_id": 9
+    "user_id": 9,
+    "passwordKdf": "scrypt",
+    "passwordSalt": "bO92eQvDei/H6xZxpDHlkg==",
+    "passwordHash": "W0XUyw1+8ykBER/ON9l723uofM1vdrvL843JTDUgpRa0+cvJgdupMdgMkwROwlbU+F/t22Kyj+tyHXmDxWe3Qg==",
+    "passwordParams": {
+      "N": 16384,
+      "r": 8,
+      "p": 1,
+      "keylen": 64
+    }
   },
   {
     "email": "tela@gmail.com",
-    "user_id": 10
+    "emailAliases": [
+      "telahair@gmail.com"
+    ],
+    "user_id": 10,
+    "passwordKdf": "scrypt",
+    "passwordSalt": "1BN1U7MMKH+dMNU2kYrPEw==",
+    "passwordHash": "XjuoAQh+ouusd0LWf+2ZJz4wpH7pbDdzUETtbknL1HWeV0VDDeu1POQRZcpCq1GhtfpPWdx7g+1K3KZWz1x7/g==",
+    "passwordParams": {
+      "N": 16384,
+      "r": 8,
+      "p": 1,
+      "keylen": 64
+    }
   },
   {
     "email": "ekmek@gg.com",
@@ -50,5 +71,18 @@
   {
     "email": "urmom@gmail.com",
     "user_id": 13
+  },
+  {
+    "email": "3@gmail.com",
+    "user_id": 14,
+    "passwordKdf": "scrypt",
+    "passwordSalt": "50gqCRUyx0cGZ3H/uBNLvA==",
+    "passwordHash": "HNggFj9FspMWuotZ/tYMbkDTiP+gL6wc0gdvE7X6mgvmdz7oMucydrooZqPqKcIjCBwucQ0aCKm4H8sOufZKmw==",
+    "passwordParams": {
+      "N": 16384,
+      "r": 8,
+      "p": 1,
+      "keylen": 64
+    }
   }
 ]

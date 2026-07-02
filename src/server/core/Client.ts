@@ -246,6 +246,9 @@ export class Client {
         this.socket.on('end', () => this.onEnd());
         this.socket.on('close', (hadError: boolean) => this.onClose(hadError));
         this.socket.on('error', (err: Error) => this.onError(err));
+
+        const { GlobalState } = require('./GlobalState') as typeof import('./GlobalState');
+        GlobalState.clients.add(this);
     }
 
     private onData(data: Buffer): void {
@@ -782,6 +785,7 @@ export class Client {
         }
 
         this.cleanupSessionState(snapshot, transferInProgress);
+        GlobalState.clients.delete(this);
 
         console.log(
             `[Client] Disconnected: ${addr} hadError=${hadError} bytesIn=${this.rawBytesIn} bytesOut=${this.rawBytesOut} authenticated=${snapshot.authenticated} token=${snapshot.token} char=${snapshot.characterName || '(none)'}`

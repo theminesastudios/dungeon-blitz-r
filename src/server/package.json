@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "1.5.21",
+  "version": "1.6.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,8 @@
     "build": "tsc",
     "start:multiplayer": "node tools/startMultiplayerServer.js",
     "start:discord-bridge": "node tools/startDiscordBridge.js",
-    "start:discord-bridge:multiplayer": "node tools/startDiscordBridge.js"
+    "start:discord-bridge:multiplayer": "node tools/startDiscordBridge.js",
+    "reset-password": "ts-node scripts/set_account_password.ts"
   },
   "keywords": [],
   "author": "",
