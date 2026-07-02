@@ -26,13 +26,52 @@ export interface PendingTeleport {
     syncQuestProgress?: number;
 }
 
+export const MAX_FRIEND_ENTRIES = 100;
+export const MAX_FRIEND_INPUT_ITEMS = MAX_FRIEND_ENTRIES * 4;
+export const MAX_SOCIAL_NAME_BYTES = 48;
+
+export function sanitizeSocialText(value: unknown, fallback = ''): string {
+    if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') {
+        return fallback;
+    }
+
+    const text = String(value)
+        .replace(/[\u0000-\u001f\u007f]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    if (!text) {
+        return fallback;
+    }
+
+    const encoded = Buffer.from(text, 'utf8');
+    if (encoded.length <= MAX_SOCIAL_NAME_BYTES) {
+        return text;
+    }
+
+    let end = MAX_SOCIAL_NAME_BYTES;
+    while (end > 0 && (encoded[end] & 0xc0) === 0x80) {
+        end--;
+    }
+
+    return encoded.subarray(0, end).toString('utf8').trim() || fallback;
+}
+
+export function clampSocialLevel(value: unknown): number {
+    const level = Number(value);
+    if (!Number.isFinite(level)) {
+        return 1;
+    }
+
+    return Math.max(1, Math.min(Math.floor(level), 63));
+}
+
 export function normalizeCharacterKey(value: unknown): string {
     return String(value ?? '').trim().toLowerCase();
 }
 
 export function normalizeFriendEntry(value: unknown): FriendEntry | null {
     if (typeof value === 'string') {
-        const name = String(value).trim();
+        const name = sanitizeSocialText(value);
         return name ? { name, isRequest: false } : null;
     }
 
@@ -41,7 +80,7 @@ export function normalizeFriendEntry(value: unknown): FriendEntry | null {
     }
 
     const raw = value as Record<string, unknown>;
-    const name = String(raw.name ?? '').trim();
+    const name = sanitizeSocialText(raw.name);
     if (!name) {
         return null;
     }
@@ -53,10 +92,14 @@ export function normalizeFriendEntry(value: unknown): FriendEntry | null {
 }
 
 export function normalizeFriendEntries(value: unknown): FriendEntry[] {
-    const items = Array.isArray(value) ? value : [];
+    const items = Array.isArray(value) ? value.slice(0, MAX_FRIEND_INPUT_ITEMS) : [];
     const deduped = new Map<string, FriendEntry>();
 
     for (const item of items) {
+        if (deduped.size >= MAX_FRIEND_ENTRIES) {
+            break;
+        }
+
         const entry = normalizeFriendEntry(item);
         if (!entry) {
             continue;
@@ -77,9 +120,25 @@ export function normalizeFriendEntries(value: unknown): FriendEntry[] {
     return Array.from(deduped.values());
 }
 
+export function getFriendListSanitizationSummary(value: unknown): {
+    rawCount: number;
+    normalizedCount: number;
+    droppedCount: number;
+    truncated: boolean;
+} {
+    const rawCount = Array.isArray(value) ? value.length : 0;
+    const normalizedCount = normalizeFriendEntries(value).length;
+    return {
+        rawCount,
+        normalizedCount,
+        droppedCount: Math.max(0, rawCount - normalizedCount),
+        truncated: rawCount > MAX_FRIEND_ENTRIES
+    };
+}
+
 export function normalizeIgnoredEntry(value: unknown): string | null {
     if (typeof value === 'string') {
-        const name = String(value).trim();
+        const name = sanitizeSocialText(value);
         return name || null;
     }
 
@@ -88,7 +147,7 @@ export function normalizeIgnoredEntry(value: unknown): string | null {
     }
 
     const raw = value as Record<string, unknown>;
-    const name = String(raw.name ?? raw.charName ?? '').trim();
+    const name = sanitizeSocialText(raw.name ?? raw.charName);
     return name || null;
 }
 
