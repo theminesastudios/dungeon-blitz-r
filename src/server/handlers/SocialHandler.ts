@@ -1947,15 +1947,21 @@ export class SocialHandler {
         const br = new BitReader(data);
         const entityId = br.readMethod4();
         const text = br.readMethod13();
-        if (!LevelHandler.shouldRelayDungeonCutsceneRoomThought(client, entityId, text)) {
+        LevelHandler.maybeStartGoblinRiverBossIntroLock(client, entityId, text);
+        const delivery = LevelHandler.getDungeonCutsceneRoomThoughtDelivery(client, entityId, text);
+        if (delivery === 'suppress') {
             return;
         }
         const payload = SocialHandler.buildRoomThoughtPayload(
             entityId,
             SocialHandler.translateRoomThought(client, entityId, text)
         );
-        LevelHandler.maybeStartGoblinRiverBossIntroLock(client, entityId, text);
         MissionHandler.noteDungeonSkitActivity(client);
+
+        if (delivery === 'local') {
+            client.send(0x76, payload);
+            return;
+        }
 
         SocialHandler.relayToLevel(client, 0x76, payload, true);
     }
@@ -1968,15 +1974,21 @@ export class SocialHandler {
         const entityId = playerThought && client.clientEntID > 0
             ? client.clientEntID
             : sourceEntityId;
-        if (!LevelHandler.shouldRelayDungeonCutsceneRoomThought(client, entityId, text)) {
+        LevelHandler.maybeStartGoblinRiverBossIntroLock(client, sourceEntityId, text);
+        const delivery = LevelHandler.getDungeonCutsceneRoomThoughtDelivery(client, entityId, text);
+        if (delivery === 'suppress') {
             return;
         }
         const payload = SocialHandler.buildRoomThoughtPayload(
             entityId,
             SocialHandler.translateRoomThought(client, entityId, text)
         );
-        LevelHandler.maybeStartGoblinRiverBossIntroLock(client, sourceEntityId, text);
         MissionHandler.noteDungeonSkitActivity(client);
+
+        if (delivery === 'local') {
+            client.send(0x76, payload);
+            return;
+        }
 
         SocialHandler.relayToLevel(client, 0x76, payload, true);
     }
@@ -1985,6 +1997,10 @@ export class SocialHandler {
         const br = new BitReader(data);
         br.readMethod4();
         br.readMethod13();
+
+        if (LevelHandler.relaySharedDungeonCutscenePresentationPacket(client, 0x7e, data)) {
+            return;
+        }
 
         SocialHandler.relayToLevel(client, 0x7e, data);
     }
@@ -2010,6 +2026,10 @@ export class SocialHandler {
     static handleEmoteEnd(client: Client, data: Buffer): void {
         const br = new BitReader(data);
         br.readMethod4();
+
+        if (LevelHandler.relaySharedDungeonCutscenePresentationPacket(client, 0x7f, data)) {
+            return;
+        }
 
         SocialHandler.relayToLevel(client, 0x7f, data);
     }

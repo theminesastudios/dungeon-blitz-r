@@ -226,6 +226,8 @@ export class Client {
     public deferredCharacterSaveReason: string = "";
     public activeDungeonCutsceneScope: string = "";
     public activeDungeonCutsceneRoomId: number = 0;
+    public activeDungeonCutsceneJoinedAtDialogIndex: number = 0;
+    public activeDungeonCutsceneLocalDialogIndex: number = 0;
     public lastDungeonCutsceneStartScope: string = "";
     public lastDungeonCutsceneStartAt: number = 0;
     public lastDungeonCutsceneEndScope: string = "";
@@ -485,6 +487,8 @@ export class Client {
         this.pendingDungeonCompletionWaitForCutsceneEnd = false;
         this.activeDungeonCutsceneScope = "";
         this.activeDungeonCutsceneRoomId = 0;
+        this.activeDungeonCutsceneJoinedAtDialogIndex = 0;
+        this.activeDungeonCutsceneLocalDialogIndex = 0;
         this.lastDungeonCutsceneStartScope = "";
         this.lastDungeonCutsceneStartAt = 0;
         this.lastDungeonCutsceneEndScope = "";

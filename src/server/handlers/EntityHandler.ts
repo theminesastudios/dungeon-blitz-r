@@ -3065,6 +3065,31 @@ export class EntityHandler {
         client.sendBitBuffer(0xA5, bb);
     }
 
+    private static hasSharedDungeonCutsceneState(levelScope: string, roomId: number): boolean {
+        if (!levelScope) {
+            return false;
+        }
+
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
+        return GlobalState.dungeonCutscenes.has(`${levelScope}:${normalizedRoomId}`);
+    }
+
+    private static logCutsceneReplaySkip(joiner: Client, roomId: number): void {
+        if (String(process.env.DEBUG_CUTSCENE_SYNC ?? '').trim() !== '1') {
+            return;
+        }
+
+        console.log(
+            `[CutsceneSync][joiner-replay-skip-active-cutscene] ` +
+            JSON.stringify({
+                character: String(joiner.character?.name ?? ''),
+                token: joiner.token,
+                scope: getClientLevelScope(joiner),
+                roomId
+            })
+        );
+    }
+
     private static replayStartedDungeonRoomEventsToJoiner(joiner: Client): void {
         const levelName = LevelConfig.normalizeLevelName(joiner.currentLevel);
         if (!levelName || !LevelConfig.isDungeonLevel(levelName) || !joiner.playerSpawned) {
@@ -3105,11 +3130,21 @@ export class EntityHandler {
         }
 
         const anchorRoomId = Number(anchor.currentRoomId ?? -1);
-        if (Number.isFinite(anchorRoomId) && anchorRoomId >= 0) {
+        const levelScope = getClientLevelScope(joiner);
+        if (
+            Number.isFinite(anchorRoomId) &&
+            anchorRoomId >= 0 &&
+            !EntityHandler.hasSharedDungeonCutsceneState(levelScope, anchorRoomId)
+        ) {
             joiner.currentRoomId = anchorRoomId;
         }
 
         for (const roomId of anchorStartedRoomIds) {
+            if (EntityHandler.hasSharedDungeonCutsceneState(levelScope, roomId)) {
+                EntityHandler.logCutsceneReplaySkip(joiner, roomId);
+                continue;
+            }
+
             const key = `${levelName}:${roomId}`;
             if (joiner.startedRoomEvents.has(key)) {
                 continue;

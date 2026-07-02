@@ -4,6 +4,7 @@ import { GlobalState } from '../core/GlobalState';
 import { GameData } from '../core/GameData';
 import { LevelConfig } from '../core/LevelConfig';
 import { CombatHandler } from '../handlers/CombatHandler';
+import { EntityHandler } from '../handlers/EntityHandler';
 import { LevelHandler } from '../handlers/LevelHandler';
 import { SocialHandler } from '../handlers/SocialHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
@@ -28,6 +29,8 @@ type FakeClient = {
     entityIdAliases: Map<number, number>;
     activeDungeonCutsceneScope: string;
     activeDungeonCutsceneRoomId: number;
+    activeDungeonCutsceneJoinedAtDialogIndex: number;
+    activeDungeonCutsceneLocalDialogIndex: number;
     lastDungeonCutsceneStartScope: string;
     lastDungeonCutsceneStartAt: number;
     lastDungeonCutsceneEndScope: string;
@@ -70,6 +73,8 @@ function createFakeClient(name: string, token: number): FakeClient {
         entityIdAliases: new Map<number, number>(),
         activeDungeonCutsceneScope: '',
         activeDungeonCutsceneRoomId: 0,
+        activeDungeonCutsceneJoinedAtDialogIndex: 0,
+        activeDungeonCutsceneLocalDialogIndex: 0,
         lastDungeonCutsceneStartScope: '',
         lastDungeonCutsceneStartAt: 0,
         lastDungeonCutsceneEndScope: '',
@@ -114,6 +119,14 @@ function buildRoomStatePayload(roomId: number, cameraId: number): Buffer {
     return bb.toBuffer();
 }
 
+function buildRoomPlaySoundPayload(roomId: number, soundName: string): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod9(roomId);
+    bb.writeMethod26(soundName);
+    bb.writeMethod9(100);
+    return bb.toBuffer();
+}
+
 function buildRoomBossInfoPayload(roomId: number, bossId: number, bossName: string): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod9(roomId);
@@ -128,6 +141,19 @@ function buildRoomThoughtPayload(entityId: number, text: string): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod4(entityId);
     bb.writeMethod13(text);
+    return bb.toBuffer();
+}
+
+function buildEmoteBeginPayload(entityId: number, emote: string): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(entityId);
+    bb.writeMethod13(emote);
+    return bb.toBuffer();
+}
+
+function buildEmoteEndPayload(entityId: number): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(entityId);
     return bb.toBuffer();
 }
 
@@ -156,15 +182,23 @@ function testSharedDungeonCinematicRunsOnceFromOwner(): void {
     const scope = getLevelScopeKey(mage.currentLevel, mage.levelInstanceId);
     LevelHandler.handleRoomEventStart(mage as never, buildRoomEventStartPayload(2));
 
-    assert.equal(packetCount(rogue, 0xA5), 1, 'first cutscene start should relay to the party viewer');
+    assert.equal(packetCount(rogue, 0xA5), 0, 'first cutscene start should not show borders for party viewers behind the trigger');
     assert.equal(mage.activeDungeonCutsceneScope, scope, 'owner should record active cutscene scope');
-    assert.equal(rogue.activeDungeonCutsceneScope, scope, 'viewer should record active cutscene scope');
+    assert.equal(rogue.activeDungeonCutsceneScope, '', 'viewer should not join the cutscene before entering locally');
 
     mage.sentPackets.length = 0;
     rogue.sentPackets.length = 0;
     SocialHandler.handleRoomThought(mage as never, buildRoomThoughtPayload(101, 'The dragon wakes.'));
     assert.equal(packetCount(mage, 0x76), 1, 'owner cutscene bubble should still echo locally');
-    assert.equal(packetCount(rogue, 0x76), 1, 'owner cutscene bubble should relay to the viewer');
+    assert.equal(packetCount(rogue, 0x76), 0, 'owner cutscene bubble should not relay to party viewers');
+    LevelHandler.handleRoomStateUpdate(mage as never, buildRoomStatePayload(2, 7));
+    assert.equal(packetCount(rogue, 0xA9), 0, 'owner cutscene camera should not relay to party viewers behind the trigger');
+    LevelHandler.handlePlaySound(mage as never, buildRoomPlaySoundPayload(2, 'CutsceneWarning'));
+    assert.equal(packetCount(rogue, 0xA8), 0, 'owner cutscene sound should not relay to party viewers behind the trigger');
+    SocialHandler.handleEmoteBegin(mage as never, buildEmoteBeginPayload(mage.clientEntID, 'Talk'));
+    SocialHandler.handleEmoteEnd(mage as never, buildEmoteEndPayload(mage.clientEntID));
+    assert.equal(packetCount(rogue, 0x7e), 0, 'owner cutscene emote begin should not relay to party viewers behind the trigger');
+    assert.equal(packetCount(rogue, 0x7f), 0, 'owner cutscene emote end should not relay to party viewers behind the trigger');
 
     mage.sentPackets.length = 0;
     rogue.sentPackets.length = 0;
@@ -172,12 +206,19 @@ function testSharedDungeonCinematicRunsOnceFromOwner(): void {
     SocialHandler.handleRoomThought(rogue as never, buildRoomThoughtPayload(101, 'The dragon wakes.'));
     SocialHandler.handleRoomThought(rogue as never, buildRoomThoughtPayload(101, 'A second warning.'));
     LevelHandler.handleRoomStateUpdate(rogue as never, buildRoomStatePayload(2, 7));
+    LevelHandler.handlePlaySound(rogue as never, buildRoomPlaySoundPayload(2, 'CutsceneWarning'));
+    SocialHandler.handleEmoteBegin(rogue as never, buildEmoteBeginPayload(rogue.clientEntID, 'Talk'));
+    SocialHandler.handleEmoteEnd(rogue as never, buildEmoteEndPayload(rogue.clientEntID));
     LevelHandler.handleRoomClose(rogue as never, buildRoomClosePayload(2));
 
     assert.equal(packetCount(mage, 0xA5), 0, 'late viewer start should not restart the cutscene for the owner');
     assert.equal(packetCount(rogue, 0xA5), 1, 'late viewer should receive its own cutscene border start');
-    assert.equal(packetCount(mage, 0x76), 2, 'active cutscene bubbles should keep relaying instead of stopping after the first line');
+    assert.equal(packetCount(mage, 0x76), 0, 'late viewer cutscene bubbles should not relay back to the owner');
+    assert.equal(packetCount(rogue, 0x76), 1, 'late viewer should skip stale lines and continue from the joined dialog index');
     assert.equal(packetCount(mage, 0xA9), 0, 'late viewer camera timeline should not relay');
+    assert.equal(packetCount(mage, 0xA8), 0, 'late viewer sound timeline should not relay');
+    assert.equal(packetCount(mage, 0x7e), 0, 'late viewer emote begin timeline should not relay');
+    assert.equal(packetCount(mage, 0x7f), 0, 'late viewer emote end timeline should not relay');
     assert.equal(packetCount(mage, 0xA6), 0, 'late viewer close should not end the owner timeline early');
 
     mage.sentPackets.length = 0;
@@ -199,7 +240,7 @@ function testSharedDungeonCinematicRunsOnceFromOwner(): void {
     assert.equal(packetCount(mage, 0xA6), 0, 'completed cutscene should not close again');
 }
 
-function testSharedDungeonBossInfoStartsBorderForAllMembers(): void {
+function testSharedDungeonBossInfoStartsBorderOnlyForSource(): void {
     const mage = createFakeClient('Mage', 91001);
     const rogue = createFakeClient('Rogue', 92002);
     GlobalState.sessionsByToken.set(mage.token, mage as never);
@@ -208,7 +249,7 @@ function testSharedDungeonBossInfoStartsBorderForAllMembers(): void {
     LevelHandler.handleRoomBossInfo(mage as never, buildRoomBossInfoPayload(2, 500001, 'AncientDragonGoldMini'));
 
     assert.equal(packetCount(mage, 0xA5), 1, 'boss info should trigger cutscene border for the source client if room start has not arrived yet');
-    assert.equal(packetCount(rogue, 0xA5), 1, 'boss info should trigger cutscene border for party viewers if room start has not arrived yet');
+    assert.equal(packetCount(rogue, 0xA5), 0, 'boss info should not trigger cutscene borders for party viewers behind the trigger');
     assert.equal(packetCount(rogue, 0xAC), 1, 'boss info should still relay the boss bar packet to party viewers');
 
     mage.sentPackets.length = 0;
@@ -217,6 +258,110 @@ function testSharedDungeonBossInfoStartsBorderForAllMembers(): void {
 
     assert.equal(packetCount(mage, 0xA5), 0, 'late owner room start should not replay cutscene border for source after boss info');
     assert.equal(packetCount(rogue, 0xA5), 0, 'late owner room start should not replay cutscene border for viewers after boss info');
+}
+
+function testSharedDungeonSuppressesOtherPlayerThoughtTargets(): void {
+    const mage = createFakeClient('Mage', 91001);
+    const rogue = createFakeClient('Rogue', 92002);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+    mage.entities.set(mage.clientEntID, {
+        id: mage.clientEntID,
+        isPlayer: true,
+        ownerToken: mage.token,
+        name: mage.character.name
+    });
+    mage.entities.set(rogue.clientEntID, {
+        id: rogue.clientEntID,
+        isPlayer: true,
+        ownerToken: rogue.token,
+        name: rogue.character.name
+    });
+
+    const scope = getLevelScopeKey(mage.currentLevel, mage.levelInstanceId);
+    LevelHandler.handleRoomEventStart(mage as never, buildRoomEventStartPayload(2));
+
+    mage.sentPackets.length = 0;
+    rogue.sentPackets.length = 0;
+    SocialHandler.handleRoomThought(mage as never, buildRoomThoughtPayload(rogue.clientEntID, '@That is not my line.'));
+    assert.equal(packetCount(mage, 0x76), 0, 'owner should not see local cutscene player bubbles over another player');
+    assert.equal(packetCount(rogue, 0x76), 0, 'other player target should not receive the owner cutscene bubble');
+
+    SocialHandler.handleRoomThought(mage as never, buildRoomThoughtPayload(mage.clientEntID, '@This is my line.'));
+    assert.equal(packetCount(mage, 0x76), 1, 'owner should still see local cutscene bubbles over their own player');
+    assert.equal(packetCount(rogue, 0x76), 0, 'own-player cutscene bubble should remain local to the owner');
+    assert.equal(
+        GlobalState.dungeonCutscenes.get(`${scope}:2`)?.dialogIndex,
+        1,
+        'suppressed other-player thoughts should not advance the shared dialog index'
+    );
+}
+
+function testSharedDungeonRoomThoughtSurvivesCurrentRoomDrift(): void {
+    const mage = createFakeClient('Mage', 91001);
+    const rogue = createFakeClient('Rogue', 92002);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+
+    const scope = getLevelScopeKey(mage.currentLevel, mage.levelInstanceId);
+    LevelHandler.handleRoomEventStart(mage as never, buildRoomEventStartPayload(2));
+    mage.currentRoomId = 2003367144;
+
+    mage.sentPackets.length = 0;
+    rogue.sentPackets.length = 0;
+    SocialHandler.handleRoomThought(mage as never, buildRoomThoughtPayload(mage.clientEntID, '@Still my local line.'));
+
+    assert.equal(packetCount(mage, 0x76), 1, 'active cutscene room should be used when currentRoomId has drifted');
+    assert.equal(packetCount(rogue, 0x76), 0, 'drifted currentRoomId should not fall back to global bubble relay');
+    assert.equal(
+        GlobalState.dungeonCutscenes.get(`${scope}:2`)?.dialogIndex,
+        1,
+        'drifted currentRoomId should still advance the canonical cutscene dialog index'
+    );
+    assert.equal(
+        GlobalState.dungeonCutscenes.has(`${scope}:2003367144`),
+        false,
+        'drifted currentRoomId should not create a bogus shared cutscene state'
+    );
+}
+
+function testJoinerRoomReplayDoesNotStartSharedCutscene(): void {
+    const mage = createFakeClient('Mage', 91001);
+    const rogue = createFakeClient('Rogue', 92002);
+    const scope = getLevelScopeKey(mage.currentLevel, mage.levelInstanceId);
+    mage.startedRoomEvents.add('JC_Mission3:2');
+    mage.currentRoomId = 2;
+    rogue.currentRoomId = 1;
+
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+    GlobalState.partyGroups.set(1001, {
+        id: 1001,
+        leader: mage.character.name,
+        members: [mage.character.name, rogue.character.name],
+        locked: false
+    });
+    GlobalState.partyByMember.set('mage', 1001);
+    GlobalState.partyByMember.set('rogue', 1001);
+    GlobalState.dungeonCutscenes.set(`${scope}:2`, {
+        roomId: 2,
+        ownerToken: mage.token,
+        active: true,
+        completed: false,
+        startedAt: Date.now(),
+        endedAt: 0,
+        dialogIndex: 1
+    });
+
+    (EntityHandler as any).replayStartedDungeonRoomEventsToJoiner(rogue);
+
+    assert.equal(packetCount(rogue, 0xA5), 0, 'joiner replay should not force active shared cutscene borders');
+    assert.equal(rogue.currentRoomId, 1, 'joiner room id should not be moved into the anchor cutscene room');
+    assert.equal(
+        rogue.startedRoomEvents.has('JC_Mission3:2'),
+        false,
+        'joiner should not be marked as having entered the shared cutscene room'
+    );
 }
 
 function testPostDeathCompletionCanReuseCompletedRoomCutscene(): void {
@@ -283,6 +428,8 @@ async function testSharedDungeonCinematicSuppressesPlayerDamage(): Promise<void>
 
 async function main(): Promise<void> {
     const sessionsByToken = new Map(GlobalState.sessionsByToken);
+    const partyGroups = new Map(GlobalState.partyGroups);
+    const partyByMember = new Map(GlobalState.partyByMember);
     const dungeonCutscenes = new Map(GlobalState.dungeonCutscenes);
     const levelEntities = new Map(GlobalState.levelEntities);
 
@@ -295,8 +442,24 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.dungeonCutscenes.clear();
         GlobalState.levelEntities.clear();
-        testSharedDungeonBossInfoStartsBorderForAllMembers();
+        testSharedDungeonBossInfoStartsBorderOnlyForSource();
         GlobalState.sessionsByToken.clear();
+        GlobalState.dungeonCutscenes.clear();
+        GlobalState.levelEntities.clear();
+        testSharedDungeonSuppressesOtherPlayerThoughtTargets();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.dungeonCutscenes.clear();
+        GlobalState.levelEntities.clear();
+        testSharedDungeonRoomThoughtSurvivesCurrentRoomDrift();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.dungeonCutscenes.clear();
+        GlobalState.levelEntities.clear();
+        testJoinerRoomReplayDoesNotStartSharedCutscene();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.partyByMember.clear();
         GlobalState.dungeonCutscenes.clear();
         GlobalState.levelEntities.clear();
         testPostDeathCompletionCanReuseCompletedRoomCutscene();
@@ -311,6 +474,8 @@ async function main(): Promise<void> {
         console.log('shared_dungeon_cinematic_regression: ok');
     } finally {
         GlobalState.sessionsByToken = sessionsByToken;
+        GlobalState.partyGroups = partyGroups;
+        GlobalState.partyByMember = partyByMember;
         GlobalState.dungeonCutscenes = dungeonCutscenes;
         GlobalState.levelEntities = levelEntities;
     }

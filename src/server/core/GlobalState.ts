@@ -57,6 +57,7 @@ export type SharedDungeonCutsceneState = {
     completed: boolean;
     startedAt: number;
     endedAt: number;
+    dialogIndex: number;
 };
 
 export type DeadHostileTombstone = {
