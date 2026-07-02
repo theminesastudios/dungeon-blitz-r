@@ -113,6 +113,46 @@ async function testDiscordRoutesDisabled(): Promise<void> {
     }
 }
 
+async function testDiscordClientLaunchRedirect(): Promise<void> {
+    const staticServer = new StaticServer(0);
+    (staticServer as any).discordAccountLinks = {
+        isConfigured: () => true,
+        getRedirectUri: () => 'http://127.0.0.1:8000/auth/discord/callback',
+        createLoginAuthorizeUrl: async () => ({
+            ok: true,
+            reason: 'ok',
+            authorizeUrl: 'https://discord.com/oauth2/authorize?client_id=test-client&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify+email&state=test-state'
+        }),
+        createLinkAuthorizeUrlForAccount: async () => ({
+            ok: true,
+            reason: 'ok',
+            authorizeUrl: 'https://discord.com/oauth2/authorize?client_id=test-client&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify+email&state=test-link-state'
+        })
+    };
+    staticServer.start();
+
+    try {
+        const port = await waitForListening(staticServer);
+        const baseUrl = `http://127.0.0.1:${port}`;
+        const configResponse = await fetch(`${baseUrl}/api/auth/discord/config`);
+        const config = await configResponse.json() as {
+            configured: boolean;
+            clientAuthUrl: string;
+        };
+        assert.equal(config.configured, true, 'Discord OAuth should be reported as configured');
+        assert.equal(config.clientAuthUrl, '/auth/discord?client=discord', 'config should expose the Discord client launcher URL');
+
+        const redirectResponse = await fetch(`${baseUrl}/auth/discord?client=discord`, { redirect: 'manual' });
+        assert.equal(redirectResponse.status, 302, 'Discord client launch should redirect');
+        const location = redirectResponse.headers.get('location') ?? '';
+        assert.match(location, /^discord:\/\/-\/oauth2\/authorize\?/, 'Discord client launch should use the Discord protocol');
+        assert.match(location, /client_id=test-client/, 'Discord client launch should preserve OAuth parameters');
+        assert.match(location, /state=test-state/, 'Discord client launch should preserve OAuth state');
+    } finally {
+        await staticServer.stop();
+    }
+}
+
 async function testDiscordOAuthCreatesLinkedAccount(): Promise<void> {
     const { adapter, dataDir, accountsPath, savesDir } = await createTempAdapter();
     try {
@@ -260,6 +300,7 @@ async function testMissingOrUnverifiedDiscordEmailDoesNotCreateAccount(): Promis
 
 async function main(): Promise<void> {
     await testDiscordRoutesDisabled();
+    await testDiscordClientLaunchRedirect();
     await testDiscordOAuthCreatesLinkedAccount();
     await testRepeatedDiscordLoginReusesSameAccount();
     await testDiscordAccountLinkGuards();

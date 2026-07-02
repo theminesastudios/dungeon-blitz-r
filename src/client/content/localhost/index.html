@@ -146,6 +146,7 @@
       window.location.protocol === "http:" || window.location.protocol === "https:";
     let lastPresenceHash = "";
     let discordAuthUrl = "/auth/discord";
+    let discordClientAuthUrl = "";
 
     function showFallback() {
       document.getElementById("flash-hint").style.display = "none";
@@ -253,9 +254,15 @@
         }
 
         discordAuthUrl = config.mode === "link" && config.linkUrl ? config.linkUrl : config.authUrl || "/auth/discord";
+        discordClientAuthUrl = config.mode === "link" && config.clientLinkUrl
+          ? config.clientLinkUrl
+          : config.clientAuthUrl || "";
         button.innerHTML = config.mode === "link" ? "Discord Hesab&#305;n&#305; Ba&#287;la" : "Discord ile Giri&#351; Yap";
         container.style.display = "block";
         console.log("[DungeonBlitzHost] Discord OAuth URL", new URL(discordAuthUrl, window.location.origin).toString());
+        if (discordClientAuthUrl) {
+          console.log("[DungeonBlitzHost] Discord client OAuth URL", new URL(discordClientAuthUrl, window.location.origin).toString());
+        }
       } catch (_error) {
         // Discord OAuth is optional; keep the Flash game usable when config cannot load.
       }
@@ -263,7 +270,16 @@
 
     function openDiscordLogin() {
       const absoluteUrl = new URL(discordAuthUrl, window.location.origin).toString();
+      const absoluteClientUrl = discordClientAuthUrl
+        ? new URL(discordClientAuthUrl, window.location.origin).toString()
+        : "";
       try {
+        if (absoluteClientUrl) {
+          showDiscordStatus(`Discord Client aciliyor. Acilmazsa bu URL'i dis tarayicida ac: ${absoluteUrl}`);
+          window.location.href = absoluteClientUrl;
+          return;
+        }
+
         const popup = window.open(absoluteUrl, "_blank", "noopener,noreferrer");
         if (!popup) {
           window.location.href = absoluteUrl;

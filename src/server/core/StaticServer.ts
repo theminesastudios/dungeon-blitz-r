@@ -279,6 +279,16 @@ export class StaticServer {
         );
     }
 
+    private isDiscordClientLaunchRequest(req: Request): boolean {
+        const requestedClient = String(req.query.client ?? req.query.launch ?? '').trim().toLowerCase();
+        return requestedClient === 'discord' || requestedClient === 'desktop';
+    }
+
+    private toDiscordClientAuthorizeUrl(authorizeUrl: string): string {
+        const parsed = new URL(authorizeUrl);
+        return `discord://-/oauth2/authorize?${parsed.searchParams.toString()}`;
+    }
+
     private renderLostPasswordPage(message: string = '', isError: boolean = false): string {
         const resetEnabled = Config.ALLOW_DEV_PASSWORD_RESET;
         const statusClass = isError ? 'error' : 'success';
@@ -492,12 +502,16 @@ export class StaticServer {
 
         this.app.get('/api/auth/discord/config', async (req, res) => {
             const requesterAccount = await this.resolveRequesterAccount(req);
+            const authUrl = '/auth/discord';
+            const linkUrl = requesterAccount ? '/auth/discord?mode=link' : null;
             res.setHeader('Cache-Control', 'no-store');
             res.json({
                 configured: this.discordAccountLinks.isConfigured(),
                 required: true,
-                authUrl: '/auth/discord',
-                linkUrl: requesterAccount ? '/auth/discord?mode=link' : null,
+                authUrl,
+                linkUrl,
+                clientAuthUrl: `${authUrl}?client=discord`,
+                clientLinkUrl: linkUrl ? `${linkUrl}&client=discord` : null,
                 mode: requesterAccount ? 'link' : 'login',
                 redirectUri: this.discordAccountLinks.getRedirectUri()
             });
@@ -532,7 +546,11 @@ export class StaticServer {
             }
 
             console.log(`[DiscordOAuth] Starting ${useLinkMode ? 'link' : 'login'} flow`);
-            res.redirect(result.authorizeUrl);
+            res.redirect(
+                this.isDiscordClientLaunchRequest(req)
+                    ? this.toDiscordClientAuthorizeUrl(result.authorizeUrl)
+                    : result.authorizeUrl
+            );
         });
 
         this.app.get('/auth/discord/callback', async (req, res) => {

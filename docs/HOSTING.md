@@ -63,6 +63,8 @@ DISCORD_ACCOUNT_LINK_STATE_SECRET=hex_or_long_random_secret
 
 Discord OAuth requests the `identify email` scope. Account creation requires a verified Discord email. New OAuth-created accounts use a deterministic internal email derived from the verified Discord email and Discord user id, while the original Discord email is stored separately as `discordEmail`. Password login is accepted only after the account has `discordId`, `discordEmail`, `discordLinkedAt`, and `discordSyncRequired: true`.
 
+The game host page tries the Discord desktop client protocol first because older FlashBrowser builds cannot render Discord's modern OAuth web page. If the Discord client does not open, copy the shown OAuth URL into a modern external browser.
+
 Do not store Discord client secrets, bot tokens, MongoDB credentials, passwords, OAuth tokens, or session secrets in committed files.
 
 ### Optional MongoDB wallet authority
