@@ -11,7 +11,13 @@ import { GlobalState } from './GlobalState';
 import { DiscordAccountLinkService } from '../integrations/DiscordAccountLinkService';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { UserAccount } from '../database/Database';
-import { hashPassword, isValidRegistrationPassword, normalizeAccountIdentifier } from '../auth/PasswordAuth';
+import {
+    DISCORD_SYNC_REQUIRED_MESSAGE,
+    hashPassword,
+    hasValidDiscordSync,
+    isValidRegistrationPassword,
+    normalizeAccountIdentifier
+} from '../auth/PasswordAuth';
 import { LoginHandler } from '../handlers/LoginHandler';
 
 function resolveContentDir(relativeContentPath: string): string {
@@ -452,9 +458,26 @@ export class StaticServer {
                 return;
             }
 
+            const existingAccount = await this.db.getAccount(email);
+            if (!existingAccount) {
+                console.warn(`[LostPassword] Reset failed for ${email}: account not found`);
+                res.status(400).type('text/html').send(
+                    this.renderLostPasswordPage('Could not reset password. Check the form fields and try again.', true)
+                );
+                return;
+            }
+
+            if (!hasValidDiscordSync(existingAccount)) {
+                console.warn(`[LostPassword] Reset failed for ${email}: Discord sync required`);
+                res.status(403).type('text/html').send(
+                    this.renderLostPasswordPage(DISCORD_SYNC_REQUIRED_MESSAGE, true)
+                );
+                return;
+            }
+
             const account = await this.db.updateAccountPassword(email, await hashPassword(password));
             if (!account) {
-                console.warn(`[LostPassword] Reset failed for ${email}: account not found`);
+                console.warn(`[LostPassword] Reset failed for ${email}: account update failed`);
                 res.status(400).type('text/html').send(
                     this.renderLostPasswordPage('Could not reset password. Check the form fields and try again.', true)
                 );
@@ -472,6 +495,7 @@ export class StaticServer {
             res.setHeader('Cache-Control', 'no-store');
             res.json({
                 configured: this.discordAccountLinks.isConfigured(),
+                required: true,
                 authUrl: '/auth/discord',
                 linkUrl: requesterAccount ? '/auth/discord?mode=link' : null,
                 mode: requesterAccount ? 'link' : 'login',
@@ -526,10 +550,20 @@ export class StaticServer {
             const result = await this.discordAccountLinks.completeOAuth(code, state);
             if (!result.ok || !result.account) {
                 console.warn(`[DiscordOAuth] Callback rejected: ${result.reason}`);
-                const status = result.reason === 'not-linked' ? 409 : 400;
+                const status = [
+                    'duplicate-discord-linked-account',
+                    'account-sync-failed'
+                ].includes(result.reason) ? 409 : 400;
+                const title = result.reason === 'duplicate-discord-linked-account'
+                    ? 'Discord Account Already Linked'
+                    : result.reason === 'missing-discord-email'
+                        ? 'Discord Email Required'
+                        : result.reason === 'discord-email-unverified'
+                            ? 'Discord Email Not Verified'
+                            : 'Discord Login Failed';
                 res.status(status).type('text/html').send(
                     this.renderDiscordOAuthPage(
-                        result.reason === 'not-linked' ? 'Discord Account Not Linked' : 'Discord Login Failed',
+                        title,
                         result.message ?? 'Discord login failed.',
                         true
                     )

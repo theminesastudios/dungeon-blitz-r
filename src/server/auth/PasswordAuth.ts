@@ -24,6 +24,15 @@ export interface PasswordProtectedAccount {
     };
 }
 
+export interface DiscordLinkedAccount {
+    discordId?: unknown;
+    discordEmail?: unknown;
+    discordLinkedAt?: unknown;
+    discordSyncRequired?: unknown;
+}
+
+export const DISCORD_SYNC_REQUIRED_MESSAGE = 'Discord sync is required before password login.';
+
 const DEFAULT_PASSWORD_PARAMS: PasswordRecord['passwordParams'] = {
     N: 16384,
     r: 8,
@@ -77,6 +86,18 @@ export function isValidPasswordInput(password: unknown): password is string {
 
 export function isValidRegistrationPassword(password: unknown): password is string {
     return isValidPasswordInput(password) && password.length >= 6;
+}
+
+export function hasValidDiscordSync(account: DiscordLinkedAccount | null | undefined): boolean {
+    return (
+        typeof account?.discordId === 'string' &&
+        account.discordId.trim().length > 0 &&
+        typeof account.discordEmail === 'string' &&
+        normalizeAccountIdentifier(account.discordEmail).length > 0 &&
+        typeof account.discordLinkedAt === 'string' &&
+        account.discordLinkedAt.trim().length > 0 &&
+        account.discordSyncRequired === true
+    );
 }
 
 export async function hashPassword(password: string): Promise<PasswordRecord> {

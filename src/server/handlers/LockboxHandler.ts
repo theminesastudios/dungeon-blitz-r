@@ -2,6 +2,7 @@ import { Client } from '../core/Client';
 import { GameData } from '../core/GameData';
 import { PetConfig } from '../core/PetConfig';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { WalletService } from '../database/WalletService';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { ensureSigilStoreAlertState } from '../utils/AlertState';
@@ -162,13 +163,13 @@ export class LockboxHandler {
             return;
         }
 
-        const currentGold = Number(client.character.gold ?? 0);
-        if (currentGold < option.cost) {
+        const didApplyWallet = await WalletService.applyDelta(client, {
+            gold: -option.cost,
+            lockboxes: [{ lockboxID: LockboxHandler.TROVE_LOCKBOX_ID, delta: option.quantity }]
+        });
+        if (!didApplyWallet) {
             return;
         }
-
-        client.character.gold = currentGold - option.cost;
-        LockboxHandler.addLockboxes(client.character, LockboxHandler.TROVE_LOCKBOX_ID, option.quantity);
 
         LockboxHandler.sendGoldLoss(client, option.cost);
         LockboxHandler.sendLockboxInventoryDelta(client, LockboxHandler.TROVE_LOCKBOX_ID, option.quantity);
@@ -194,13 +195,13 @@ export class LockboxHandler {
             return;
         }
 
-        const currentIdols = Number(client.character.mammothIdols ?? 0);
-        if (currentIdols < option.cost) {
+        const didApplyWallet = await WalletService.applyDelta(client, {
+            mammothIdols: -option.cost,
+            DragonKeys: option.quantity
+        });
+        if (!didApplyWallet) {
             return;
         }
-
-        client.character.mammothIdols = currentIdols - option.cost;
-        client.character.DragonKeys = Number(client.character.DragonKeys ?? 0) + option.quantity;
 
         LockboxHandler.sendIdolLoss(client, `DragonKeys_x${option.quantity}`, option.cost);
         await LockboxHandler.saveCharacter(client);
@@ -217,15 +218,21 @@ export class LockboxHandler {
             return;
         }
 
-        LockboxHandler.addLockboxes(client.character, LockboxHandler.TROVE_LOCKBOX_ID, -1);
-        client.character.DragonKeys = currentKeys - 1;
-
         const rewardPool = LockboxHandler.buildRewardPool(client.character);
         const reward = LockboxHandler.selectReward(client.character, rewardPool);
+        const sigilReward = 50 + Math.floor(Math.random() * 101);
+        const didApplyWallet = await WalletService.applyDelta(client, {
+            DragonKeys: -1,
+            SilverSigils: sigilReward,
+            gold: reward.type === 'gold' ? Number(reward.goldAmount ?? 0) : 0,
+            lockboxes: [{ lockboxID: LockboxHandler.TROVE_LOCKBOX_ID, delta: -1 }]
+        });
+        if (!didApplyWallet) {
+            return;
+        }
+
         LockboxHandler.sendLockboxReveal(client, reward);
 
-        const sigilReward = 50 + Math.floor(Math.random() * 101);
-        client.character.SilverSigils = Number(client.character.SilverSigils ?? 0) + sigilReward;
         ensureSigilStoreAlertState(client.character);
         LockboxHandler.sendRoyalSigilReward(client, sigilReward);
 
@@ -253,7 +260,7 @@ export class LockboxHandler {
             `remainingKeys=${Number(client.character.DragonKeys ?? 0)}`
         );
 
-        await LockboxHandler.applyReward(client, reward);
+        await LockboxHandler.applyReward(client, reward, true);
         await LockboxHandler.saveCharacter(client);
     }
 
@@ -624,7 +631,7 @@ export class LockboxHandler {
         return LockboxHandler.formatPercent(Math.max(0, Math.min(1, Number(value ?? 0))) * 100);
     }
 
-    private static async applyReward(client: Client, reward: ResolvedLockboxReward): Promise<void> {
+    private static async applyReward(client: Client, reward: ResolvedLockboxReward, walletAlreadyUpdated: boolean = false): Promise<void> {
         const character = client.character;
         if (!character) {
             return;
@@ -633,7 +640,9 @@ export class LockboxHandler {
         if (reward.type === 'gold') {
             const goldAmount = Number(reward.goldAmount ?? 0);
             if (goldAmount > 0) {
-                character.gold = Number(character.gold ?? 0) + goldAmount;
+                if (!walletAlreadyUpdated) {
+                    await WalletService.grant(client, 'gold', goldAmount);
+                }
                 RewardHandler.sendGoldReward(client, goldAmount, false);
             }
             return;

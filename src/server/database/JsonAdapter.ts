@@ -4,6 +4,7 @@ import { IDatabase, Character, DiscordAccountProfile, UserAccount, UserSaveData 
 import { Config } from '../core/config';
 import { GameData } from '../core/GameData';
 import { normalizeAccountIdentifier, PasswordRecord } from '../auth/PasswordAuth';
+import { WalletService } from './WalletService';
 
 export class JsonAdapter implements IDatabase {
     private static readonly renameRetryDelaysMs = [25, 50, 100, 200, 350];
@@ -106,9 +107,12 @@ export class JsonAdapter implements IDatabase {
         savePath: string
     ): Promise<void> {
         await this.ensureSavesDir();
-        const normalizedCharacters = this.mergeLiveSessionCharacter(
+        const normalizedCharacters = await WalletService.applyMongoWalletsBeforeJsonSave(
             userId,
-            Array.isArray(characters) ? characters : []
+            this.mergeLiveSessionCharacter(
+                userId,
+                Array.isArray(characters) ? characters : []
+            )
         );
         const existing = await this.readSaveFile(userId);
 
@@ -196,6 +200,49 @@ export class JsonAdapter implements IDatabase {
         return this.normalizeEmailAliases(account.emailAliases).includes(normalizedEmail);
     }
 
+    private normalizeDiscordId(value: unknown): string {
+        return String(value ?? '').trim();
+    }
+
+    private assertUsableDiscordProfile(discordUser: DiscordAccountProfile): { discordId: string; discordEmail: string } {
+        const discordId = this.normalizeDiscordId(discordUser?.id);
+        const discordEmail = normalizeAccountIdentifier(discordUser?.email);
+        if (!discordId) {
+            throw new Error('Cannot link Discord without a Discord user id.');
+        }
+        if (!discordEmail || discordUser.emailVerified !== true) {
+            throw new Error('Discord account must include a verified email before it can be linked.');
+        }
+        return { discordId, discordEmail };
+    }
+
+    private applyDiscordProfile(account: UserAccount, discordUser: DiscordAccountProfile): UserAccount {
+        const { discordId, discordEmail } = this.assertUsableDiscordProfile(discordUser);
+        const displayName = String(
+            discordUser.displayName ||
+            discordUser.globalName ||
+            discordUser.username ||
+            ''
+        ).trim();
+        const sponsorStatus = String(account.sponsorStatus ?? '').trim() || 'unknown';
+
+        return {
+            ...account,
+            discordId,
+            discordUsername: String(discordUser.username ?? '').trim(),
+            discordGlobalName: String(discordUser.globalName ?? '').trim(),
+            discordDisplayName: displayName,
+            discordEmail,
+            discordEmailVerified: true,
+            discordAvatar: String(discordUser.avatar ?? '').trim(),
+            discordLinkedAt: account.discordLinkedAt || new Date().toISOString(),
+            discordSyncRequired: true,
+            accountSource: account.accountSource || 'discord_oauth',
+            sponsorStatus,
+            sponsorEligible: Boolean(account.sponsorEligible ?? false)
+        };
+    }
+
     private async readAccounts(): Promise<UserAccount[]> {
         for (const accountsPath of [this.accountsPath, this.legacyAccountsPath]) {
             try {
@@ -265,22 +312,22 @@ export class JsonAdapter implements IDatabase {
     }
 
     public async findAccountByDiscordId(discordId: string): Promise<UserAccount | null> {
-        const normalizedDiscordId = String(discordId ?? '').trim();
+        const normalizedDiscordId = this.normalizeDiscordId(discordId);
         if (!normalizedDiscordId) {
             return null;
         }
 
         const accounts = await this.readAccounts();
-        return accounts.find(acc => String(acc.discordId ?? '').trim() === normalizedDiscordId) ?? null;
+        return accounts.find(acc => this.normalizeDiscordId(acc.discordId) === normalizedDiscordId) ?? null;
     }
 
     public async linkDiscordToAccount(userId: number, discordUser: DiscordAccountProfile): Promise<UserAccount> {
         await fs.mkdir(path.dirname(this.accountsPath), { recursive: true });
 
         const normalizedUserId = Math.max(0, Math.round(Number(userId ?? 0)));
-        const discordId = String(discordUser?.id ?? '').trim();
-        if (!normalizedUserId || !discordId) {
-            throw new Error('Cannot link Discord without a game account and Discord user id.');
+        const { discordId } = this.assertUsableDiscordProfile(discordUser);
+        if (!normalizedUserId) {
+            throw new Error('Cannot link Discord without a game account.');
         }
 
         const accounts = await this.readAccounts();
@@ -291,28 +338,66 @@ export class JsonAdapter implements IDatabase {
 
         const existingDiscordOwner = accounts.find(acc =>
             acc.user_id !== normalizedUserId &&
-            String(acc.discordId ?? '').trim() === discordId
+            this.normalizeDiscordId(acc.discordId) === discordId
         );
         if (existingDiscordOwner) {
             throw new Error('Discord account is already linked to another game account.');
         }
 
-        const existingAccountDiscordId = String(accounts[accountIndex].discordId ?? '').trim();
+        const existingAccountDiscordId = this.normalizeDiscordId(accounts[accountIndex].discordId);
         if (existingAccountDiscordId && existingAccountDiscordId !== discordId) {
             throw new Error('Game account is already linked to another Discord account.');
         }
 
-        const account: UserAccount = {
-            ...accounts[accountIndex],
-            discordId,
-            discordUsername: String(discordUser.username ?? '').trim(),
-            discordGlobalName: String(discordUser.globalName ?? '').trim(),
-            discordEmail: normalizeAccountIdentifier(discordUser.email),
-            discordAvatar: String(discordUser.avatar ?? '').trim(),
-            discordLinkedAt: accounts[accountIndex].discordLinkedAt || new Date().toISOString()
-        };
+        const account = this.applyDiscordProfile(accounts[accountIndex], discordUser);
         accounts[accountIndex] = account;
         await fs.writeFile(this.accountsPath, JSON.stringify(accounts, null, 2));
+        return account;
+    }
+
+    public async createDiscordAccount(email: string, discordUser: DiscordAccountProfile): Promise<UserAccount> {
+        await this.ensureSavesDir();
+        await fs.mkdir(path.dirname(this.accountsPath), { recursive: true });
+
+        const normalizedEmail = normalizeAccountIdentifier(email);
+        const { discordId, discordEmail } = this.assertUsableDiscordProfile(discordUser);
+        if (!normalizedEmail) {
+            throw new Error('Cannot create Discord account without a generated email.');
+        }
+
+        const accounts = await this.readAccounts();
+        const existingDiscordIndex = accounts.findIndex(acc => this.normalizeDiscordId(acc.discordId) === discordId);
+        if (existingDiscordIndex >= 0) {
+            const account = this.applyDiscordProfile(accounts[existingDiscordIndex], discordUser);
+            accounts[existingDiscordIndex] = account;
+            await fs.writeFile(this.accountsPath, JSON.stringify(accounts, null, 2));
+            return account;
+        }
+
+        const existingEmailOwner = accounts.find(acc => this.accountMatchesEmail(acc, normalizedEmail));
+        if (existingEmailOwner) {
+            throw new Error('Discord-derived account email is already used by another game account.');
+        }
+
+        const maxId = accounts.length > 0 ? Math.max(...accounts.map(a => a.user_id)) : 0;
+        const newId = maxId + 1;
+        const aliases = discordEmail !== normalizedEmail &&
+            !accounts.some(acc => this.accountMatchesEmail(acc, discordEmail))
+            ? [discordEmail]
+            : [];
+        const account = this.applyDiscordProfile({
+            email: normalizedEmail,
+            ...(aliases.length > 0 ? { emailAliases: aliases } : {}),
+            user_id: newId,
+            accountSource: 'discord_oauth'
+        }, discordUser);
+
+        accounts.push(account);
+        await fs.writeFile(this.accountsPath, JSON.stringify(accounts, null, 2));
+
+        const saveData: UserSaveData = { user_id: newId, characters: [] };
+        await fs.writeFile(path.join(this.savesDir, `${newId}.json`), JSON.stringify(saveData, null, 2));
+
         return account;
     }
 
@@ -383,7 +468,8 @@ export class JsonAdapter implements IDatabase {
         if (!save || !Array.isArray(save.characters)) {
             return [];
         }
-        return save.characters.map((entry) => this.normalizeCharacterProgress(entry) as Character);
+        const characters = save.characters.map((entry) => this.normalizeCharacterProgress(entry) as Character);
+        return WalletService.overlayWallets(userId, characters);
     }
 
     public async loadAllCharacterRecords(): Promise<UserSaveData[]> {

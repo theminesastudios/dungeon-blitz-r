@@ -5,6 +5,8 @@ import { Config } from '../core/config';
 import * as crypto from 'crypto';
 import { JsonAdapter } from '../database/JsonAdapter';
 import {
+    DISCORD_SYNC_REQUIRED_MESSAGE,
+    hasValidDiscordSync,
     hashPassword,
     isValidPasswordInput,
     isValidRegistrationPassword,
@@ -13,6 +15,8 @@ import {
 } from '../auth/PasswordAuth';
 
 const INVALID_CREDENTIALS_MESSAGE = "Invalid email or password";
+const DISCORD_BOOTSTRAP_REQUIRED_MESSAGE = "Use Discord login first to create or sync this account.";
+const PASSWORD_NOT_SET_MESSAGE = "Set a password after Discord sync before using password login.";
 
 interface LoginPayload {
     email: string;
@@ -73,10 +77,15 @@ export class LoginHandler {
         client.character = null;
     }
 
-    private static rejectLogin(client: Client, email: string, reason: string): void {
+    private static rejectLogin(
+        client: Client,
+        email: string,
+        reason: string,
+        publicMessage: string = INVALID_CREDENTIALS_MESSAGE
+    ): void {
         LoginHandler.clearFailedAuthState(client);
         console.warn(`[Login] Authentication failed for ${email || '(missing account id)'}: ${reason}`);
-        LoginHandler.sendPopup(client, INVALID_CREDENTIALS_MESSAGE, false);
+        LoginHandler.sendPopup(client, publicMessage, false);
         LoginHandler.issueChallenge(client);
     }
 
@@ -110,16 +119,47 @@ export class LoginHandler {
             return;
         }
 
-        console.log(`[Login] Create Account: ${email}`);
-        
+        console.log(`[Login] Set Password: ${email}`);
+
+        const existingAccount = await LoginHandler.db.getAccount(email);
+        if (!existingAccount) {
+            LoginHandler.rejectLogin(
+                client,
+                email,
+                'password registration attempted before Discord OAuth account bootstrap',
+                DISCORD_BOOTSTRAP_REQUIRED_MESSAGE
+            );
+            return;
+        }
+
+        if (!hasValidDiscordSync(existingAccount)) {
+            LoginHandler.rejectLogin(
+                client,
+                email,
+                'password registration attempted before valid Discord sync/link',
+                DISCORD_SYNC_REQUIRED_MESSAGE
+            );
+            return;
+        }
+
+        if (existingAccount.passwordHash) {
+            LoginHandler.clearFailedAuthState(client);
+            console.warn(`[Login] Password setup rejected for ${email}: account already has a password`);
+            LoginHandler.sendPopup(client, "Account already exists", false);
+            return;
+        }
+
         let account;
         try {
-            account = await LoginHandler.db.createAccount(email, await hashPassword(password));
+            account = await LoginHandler.db.updateAccountPassword(email, await hashPassword(password));
+            if (!account) {
+                throw new Error('Account not found.');
+            }
         } catch (err) {
             LoginHandler.clearFailedAuthState(client);
             const message = (err as Error).message;
-            console.warn(`[Login] Registration failed for ${email}: ${message}`);
-            LoginHandler.sendPopup(client, message === 'Account already exists.' ? "Account already exists" : "Account creation failed", false);
+            console.warn(`[Login] Password setup failed for ${email}: ${message}`);
+            LoginHandler.sendPopup(client, "Password setup failed", false);
             return;
         }
 
@@ -148,6 +188,16 @@ export class LoginHandler {
             return;
         }
 
+        if (!hasValidDiscordSync(account)) {
+            LoginHandler.rejectLogin(
+                client,
+                email,
+                'password login attempted before valid Discord sync/link',
+                DISCORD_SYNC_REQUIRED_MESSAGE
+            );
+            return;
+        }
+
         let passwordMatches = false;
         try {
             passwordMatches = await verifyPassword(password, account);
@@ -158,8 +208,13 @@ export class LoginHandler {
         if (!passwordMatches) {
             const reason = account.passwordHash
                 ? 'password mismatch'
-                : 'Account exists but has no password hash; password reset required';
-            LoginHandler.rejectLogin(client, email, reason);
+                : 'Account exists but has no password hash; password setup required';
+            LoginHandler.rejectLogin(
+                client,
+                email,
+                reason,
+                account.passwordHash ? INVALID_CREDENTIALS_MESSAGE : PASSWORD_NOT_SET_MESSAGE
+            );
             return;
         }
 

@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -29,6 +29,7 @@
   "dependencies": {
     "@types/express": "^5.0.6",
     "discord-rpc": "^4.0.1",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mongodb": "^7.4.0"
   }
 }

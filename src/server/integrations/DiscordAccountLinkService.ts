@@ -27,6 +27,7 @@ interface DiscordApiUser {
     username?: string;
     global_name?: string | null;
     email?: string | null;
+    verified?: boolean | null;
     avatar?: string | null;
 }
 
@@ -61,6 +62,44 @@ function normalizeEmail(email: string | null | undefined): string {
     return String(email ?? '').trim().toLowerCase();
 }
 
+function normalizeDiscordId(value: string | null | undefined): string {
+    return String(value ?? '').trim();
+}
+
+function toDiscordOAuthFailure(
+    reason: string,
+    mode: 'login' | 'link',
+    discordUser: DiscordAccountProfile | undefined,
+    message: string
+): DiscordOAuthCompleteResult {
+    return {
+        ok: false,
+        reason,
+        mode,
+        discordUser,
+        message
+    };
+}
+
+export function deriveDiscordAccountEmail(discordEmail: string, discordId: string): string {
+    const normalizedEmail = normalizeEmail(discordEmail);
+    const normalizedDiscordId = normalizeDiscordId(discordId).replace(/[^a-zA-Z0-9_-]/g, '');
+    const atIndex = normalizedEmail.lastIndexOf('@');
+    if (atIndex <= 0 || atIndex >= normalizedEmail.length - 1 || !normalizedDiscordId) {
+        return '';
+    }
+
+    const localPart = normalizedEmail
+        .slice(0, atIndex)
+        .replace(/[^a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]/g, '_') || 'discord';
+    const domain = normalizedEmail
+        .slice(atIndex + 1)
+        .replace(/[^a-zA-Z0-9.-]/g, '')
+        .toLowerCase();
+
+    return domain ? `${localPart}+discord-${normalizedDiscordId}@${domain}`.toLowerCase() : '';
+}
+
 export function normalizeDiscordUser(discordUser: DiscordApiUser | null | undefined): DiscordAccountProfile | null {
     const id = String(discordUser?.id ?? '').trim();
     if (!id) {
@@ -71,7 +110,9 @@ export function normalizeDiscordUser(discordUser: DiscordApiUser | null | undefi
         id,
         username: String(discordUser?.username ?? '').trim(),
         globalName: String(discordUser?.global_name ?? '').trim(),
+        displayName: String(discordUser?.global_name || discordUser?.username || '').trim(),
         email: normalizeEmail(discordUser?.email ?? ''),
+        emailVerified: discordUser?.verified === true,
         avatar: String(discordUser?.avatar ?? '').trim()
     };
 }
@@ -207,25 +248,118 @@ export class DiscordAccountLinkService {
             return this.completeLinkMode(payload, discordUser);
         }
 
-        const linkedAccount = await this.db.findAccountByDiscordId(discordUser.id);
-        if (!linkedAccount) {
-            return {
-                ok: false,
-                reason: 'not-linked',
-                mode: 'login',
+        return this.completeLoginMode(discordUser);
+    }
+
+    private requireVerifiedDiscordEmail(
+        mode: 'login' | 'link',
+        discordUser: DiscordAccountProfile
+    ): DiscordOAuthCompleteResult | null {
+        if (!normalizeEmail(discordUser.email)) {
+            return toDiscordOAuthFailure(
+                'missing-discord-email',
+                mode,
                 discordUser,
-                message: 'Discord account is not linked. Log in with email/password first, then link Discord.'
+                'Discord did not provide an email address. Verify an email on Discord, then try again.'
+            );
+        }
+
+        if (discordUser.emailVerified !== true) {
+            return toDiscordOAuthFailure(
+                'discord-email-unverified',
+                mode,
+                discordUser,
+                'Discord email must be verified before a game account can be created or linked.'
+            );
+        }
+
+        return null;
+    }
+
+    private async completeLoginMode(discordUser: DiscordAccountProfile): Promise<DiscordOAuthCompleteResult> {
+        const emailFailure = this.requireVerifiedDiscordEmail('login', discordUser);
+        if (emailFailure) {
+            return emailFailure;
+        }
+
+        const linkedAccount = await this.db.findAccountByDiscordId(discordUser.id);
+        if (linkedAccount) {
+            const syncedAccount = await this.db.linkDiscordToAccount(linkedAccount.user_id, discordUser);
+            return {
+                ok: true,
+                reason: 'ok',
+                mode: 'login',
+                account: syncedAccount,
+                discordUser,
+                message: 'Discord login successful.'
             };
         }
 
-        return {
-            ok: true,
-            reason: 'ok',
-            mode: 'login',
-            account: linkedAccount,
+        const existingEmailAccount = await this.db.getAccount(discordUser.email ?? '');
+        if (existingEmailAccount) {
+            const existingDiscordId = normalizeDiscordId(existingEmailAccount.discordId);
+            if (existingDiscordId && existingDiscordId !== discordUser.id) {
+                return toDiscordOAuthFailure(
+                    'duplicate-discord-linked-account',
+                    'login',
+                    discordUser,
+                    'That Discord email is already tied to a different linked game account.'
+                );
+            }
+
+            try {
+                const linkedExistingAccount = await this.db.linkDiscordToAccount(existingEmailAccount.user_id, discordUser);
+                return {
+                    ok: true,
+                    reason: 'ok',
+                    mode: 'login',
+                    account: linkedExistingAccount,
+                    discordUser,
+                    message: 'Discord linked and login successful.'
+                };
+            } catch (err) {
+                return this.accountWriteFailure('login', discordUser, err);
+            }
+        }
+
+        const generatedEmail = deriveDiscordAccountEmail(discordUser.email ?? '', discordUser.id);
+        if (!generatedEmail) {
+            return toDiscordOAuthFailure(
+                'missing-discord-email',
+                'login',
+                discordUser,
+                'Discord did not provide a usable verified email address.'
+            );
+        }
+
+        try {
+            const account = await this.db.createDiscordAccount(generatedEmail, discordUser);
+            return {
+                ok: true,
+                reason: 'created',
+                mode: 'login',
+                account,
+                discordUser,
+                message: 'Discord account created and login successful.'
+            };
+        } catch (err) {
+            return this.accountWriteFailure('login', discordUser, err);
+        }
+    }
+
+    private accountWriteFailure(
+        mode: 'login' | 'link',
+        discordUser: DiscordAccountProfile,
+        err: unknown
+    ): DiscordOAuthCompleteResult {
+        const message = (err as Error).message || 'Discord account synchronization failed.';
+        const duplicate = /already linked|already used|different linked/i.test(message);
+        return toDiscordOAuthFailure(
+            duplicate ? 'duplicate-discord-linked-account' : 'account-sync-failed',
+            mode,
             discordUser,
-            message: 'Discord login successful.'
-        };
+            message
+        );
     }
 
     private async createAuthorizeUrlForState(
@@ -275,6 +409,11 @@ export class DiscordAccountLinkService {
         payload: DiscordOAuthStatePayload,
         discordUser: DiscordAccountProfile
     ): Promise<DiscordOAuthCompleteResult> {
+        const emailFailure = this.requireVerifiedDiscordEmail('link', discordUser);
+        if (emailFailure) {
+            return emailFailure;
+        }
+
         const userId = Math.max(0, Math.round(Number(payload.userId ?? 0)));
         if (!userId) {
             return {
@@ -297,13 +436,7 @@ export class DiscordAccountLinkService {
                 message: 'Discord linked successfully.'
             };
         } catch (err) {
-            return {
-                ok: false,
-                reason: 'link-failed',
-                mode: 'link',
-                discordUser,
-                message: (err as Error).message || 'Discord link failed.'
-            };
+            return this.accountWriteFailure('link', discordUser, err);
         }
     }
 

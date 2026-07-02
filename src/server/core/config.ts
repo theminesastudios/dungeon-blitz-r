@@ -193,6 +193,7 @@ const DISCORD_CLIENT_ID = parseStringEnv(
 );
 const DISCORD_CLIENT_SECRET = parseStringEnv('DISCORD_CLIENT_SECRET', '');
 const DISCORD_REDIRECT_URI = parseStringEnv('DISCORD_REDIRECT_URI', `${PUBLIC_BASE_URL}/auth/discord/callback`);
+const MONGODB_URI = parseStringEnv('MONGODB_URI', '');
 
 export const Config = {
     MULTIPLAYER_MODE,
@@ -205,6 +206,11 @@ export const Config = {
     POLICY_PORT: parseNumberEnv('POLICY_PORT', DEFAULT_POLICY_PORT),
     ENABLE_POLICY_SERVER: parseBooleanEnv('ENABLE_POLICY_SERVER', MULTIPLAYER_MODE),
     REWARD_ROLL_DEBUG,
+    MONGODB_URI,
+    MONGODB_DB_NAME: parseStringEnv('MONGODB_DB_NAME', 'dungeon_blitz_r'),
+    MONGODB_WALLET_COLLECTION: parseStringEnv('MONGODB_WALLET_COLLECTION', 'wallets'),
+    MONGO_WALLET_FLUSH_INTERVAL_MS: parseNumberEnv('MONGO_WALLET_FLUSH_INTERVAL_MS', 5000),
+    ENABLE_MONGO_WALLET: parseBooleanEnv('ENABLE_MONGO_WALLET', Boolean(MONGODB_URI)),
     SECRET: resolveRuntimeKeyHex(),
     DATA_DIR: resolveServerDataDir(),
     PUBLIC_BASE_URL,

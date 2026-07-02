@@ -16,6 +16,7 @@ import { normalizeCharacterMaterials } from '../utils/MaterialInventory';
 import { PetHandler } from './PetHandler';
 import { Config } from '../core/config';
 import { EntityHandler } from './EntityHandler';
+import { WalletService } from '../database/WalletService';
 
 interface RewardRequest {
     receiverId: number;
@@ -1389,7 +1390,7 @@ export class RewardHandler {
         });
     }
 
-    static handlePickupLootdrop(client: Client, data: Buffer): void {
+    static async handlePickupLootdrop(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
         const lootId = br.readMethod9();
         const reward = client.pendingLoot.get(lootId);
@@ -1456,7 +1457,7 @@ export class RewardHandler {
         let shouldSave = false;
 
         if (reward.gold && reward.gold > 0) {
-            client.character.gold = Number(client.character.gold ?? 0) + reward.gold;
+            await WalletService.grant(client, 'gold', reward.gold);
             noteDungeonRunTreasure(client, reward.gold);
             RewardHandler.sendGoldReward(client, reward.gold, false);
             shouldSave = true;

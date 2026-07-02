@@ -21,7 +21,15 @@ async function createTempAdapter(): Promise<{ adapter: JsonAdapter; dataDir: str
     const savesDir = path.join(dataDir, 'data', 'saves');
     await fs.mkdir(savesDir, { recursive: true });
     await fs.writeFile(accountsPath, JSON.stringify([
-        { email: 'legacy@example.com', user_id: 1 }
+        { email: 'legacy@example.com', user_id: 1 },
+        {
+            email: 'linked@example.com',
+            user_id: 2,
+            discordId: 'discord-linked',
+            discordEmail: 'linked@example.com',
+            discordLinkedAt: '2026-07-02T00:00:00.000Z',
+            discordSyncRequired: true
+        }
     ], null, 2));
     return {
         adapter: createAdapterForPaths(dataDir, accountsPath, savesDir),
@@ -79,7 +87,7 @@ async function main(): Promise<void> {
         });
         assert.equal(mismatchResponse.status, 400, 'mismatched confirmation should fail');
 
-        const resetResponse = await fetch(`${baseUrl}/lostpw`, {
+        const unlinkedResponse = await fetch(`${baseUrl}/lostpw`, {
             method: 'POST',
             headers: { 'content-type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
@@ -88,10 +96,21 @@ async function main(): Promise<void> {
                 confirmPassword: 'new-password'
             })
         });
+        assert.equal(unlinkedResponse.status, 403, 'unlinked account reset should require Discord sync');
+
+        const resetResponse = await fetch(`${baseUrl}/lostpw`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                email: ' Linked@Example.COM ',
+                password: 'new-password',
+                confirmPassword: 'new-password'
+            })
+        });
         assert.equal(resetResponse.status, 200, 'valid reset should succeed');
 
         const accounts = await readAccounts(accountsPath);
-        const account = accounts.find((entry) => entry.email === 'legacy@example.com');
+        const account = accounts.find((entry) => entry.email === 'linked@example.com');
         assert.ok(account, 'reset account should remain present');
         assert.equal(account.password, undefined, 'reset must not store plaintext password');
         assert.equal(account.passwordKdf, 'scrypt', 'reset should store the password KDF');

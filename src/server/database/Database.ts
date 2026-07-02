@@ -16,16 +16,24 @@ export interface UserAccount {
     discordId?: string;
     discordUsername?: string;
     discordGlobalName?: string;
+    discordDisplayName?: string;
     discordEmail?: string;
+    discordEmailVerified?: boolean;
     discordAvatar?: string;
     discordLinkedAt?: string;
+    discordSyncRequired?: boolean;
+    accountSource?: 'discord_oauth' | 'password' | string;
+    sponsorStatus?: 'unknown' | 'none' | 'eligible' | 'active' | string;
+    sponsorEligible?: boolean;
 }
 
 export interface DiscordAccountProfile {
     id: string;
     username?: string;
     globalName?: string;
+    displayName?: string;
     email?: string;
+    emailVerified?: boolean;
     avatar?: string;
 }
 
@@ -74,6 +82,7 @@ export interface IDatabase {
     getAccountId(email: string): Promise<number | null>;
     findAccountByDiscordId(discordId: string): Promise<UserAccount | null>;
     linkDiscordToAccount(userId: number, discordUser: DiscordAccountProfile): Promise<UserAccount>;
+    createDiscordAccount(email: string, discordUser: DiscordAccountProfile): Promise<UserAccount>;
     createAccount(email: string, passwordRecord: PasswordRecord): Promise<UserAccount>;
     updateAccountPassword(email: string, passwordRecord: PasswordRecord): Promise<UserAccount | null>;
     loadCharacters(userId: number): Promise<Character[]>;
