@@ -57,7 +57,7 @@ Required `.env` values:
 PUBLIC_BASE_URL=https://your-game-host.example
 DISCORD_CLIENT_ID=your_discord_application_id
 DISCORD_CLIENT_SECRET=your_discord_client_secret
-DISCORD_REDIRECT_URI=https://your-game-host.example/auth/discord/callback
+DISCORD_REDIRECT_URI=https://your-game-host.example/api/discord-linked-roles/callback
 DISCORD_ACCOUNT_LINK_STATE_SECRET=hex_or_long_random_secret
 ```
 

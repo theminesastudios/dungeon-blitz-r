@@ -56,7 +56,7 @@ function createConfiguredService(adapter: JsonAdapter, discordUser: DiscordApiUs
     service.db = adapter;
     service.appId = 'test-client-id';
     service.clientSecret = 'test-client-secret';
-    service.redirectUri = 'http://127.0.0.1:8000/auth/discord/callback';
+    service.redirectUri = 'http://127.0.0.1:8000/api/discord-linked-roles/callback';
     service.stateSecret = 'test-state-secret';
     service.exchangeCode = async () => ({ access_token: 'test-access-token' });
     service.fetchCurrentUser = async () => discordUser;
@@ -101,10 +101,16 @@ async function testDiscordRoutesDisabled(): Promise<void> {
         const baseUrl = `http://127.0.0.1:${port}`;
         const configResponse = await fetch(`${baseUrl}/api/auth/discord/config`);
         assert.equal(configResponse.status, 200, 'Discord config endpoint should render when disabled');
-        const config = await configResponse.json() as { configured: boolean; authUrl: string; required: boolean };
+        const config = await configResponse.json() as {
+            configured: boolean;
+            authUrl: string;
+            required: boolean;
+            redirectUri: string;
+        };
         assert.equal(config.configured, false, 'Discord OAuth should be disabled without env vars');
         assert.equal(config.required, true, 'Discord bootstrap should be reported as required');
         assert.equal(config.authUrl, '/auth/discord');
+        assert.match(config.redirectUri, /\/api\/discord-linked-roles\/callback$/, 'Discord redirect should match the registered local callback path');
 
         const startResponse = await fetch(`${baseUrl}/auth/discord`, { redirect: 'manual' });
         assert.equal(startResponse.status, 503, 'Discord OAuth start should fail safely when disabled');
@@ -117,16 +123,16 @@ async function testDiscordClientLaunchRedirect(): Promise<void> {
     const staticServer = new StaticServer(0);
     (staticServer as any).discordAccountLinks = {
         isConfigured: () => true,
-        getRedirectUri: () => 'http://127.0.0.1:8000/auth/discord/callback',
+        getRedirectUri: () => 'http://127.0.0.1:8000/api/discord-linked-roles/callback',
         createLoginAuthorizeUrl: async () => ({
             ok: true,
             reason: 'ok',
-            authorizeUrl: 'https://discord.com/oauth2/authorize?client_id=test-client&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify+email&state=test-state'
+            authorizeUrl: 'https://discord.com/oauth2/authorize?client_id=test-client&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fdiscord-linked-roles%2Fcallback&response_type=code&scope=identify+email&state=test-state'
         }),
         createLinkAuthorizeUrlForAccount: async () => ({
             ok: true,
             reason: 'ok',
-            authorizeUrl: 'https://discord.com/oauth2/authorize?client_id=test-client&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fauth%2Fdiscord%2Fcallback&response_type=code&scope=identify+email&state=test-link-state'
+            authorizeUrl: 'https://discord.com/oauth2/authorize?client_id=test-client&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Fapi%2Fdiscord-linked-roles%2Fcallback&response_type=code&scope=identify+email&state=test-link-state'
         })
     };
     staticServer.start();

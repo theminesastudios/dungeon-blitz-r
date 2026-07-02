@@ -192,7 +192,7 @@ const DISCORD_CLIENT_ID = parseStringEnv(
     parseStringEnv('DISCORD_APPLICATION_ID', parseStringEnv('DISCORD_SOCIAL_APP_ID', ''))
 );
 const DISCORD_CLIENT_SECRET = parseStringEnv('DISCORD_CLIENT_SECRET', '');
-const DISCORD_REDIRECT_URI = parseStringEnv('DISCORD_REDIRECT_URI', `${PUBLIC_BASE_URL}/auth/discord/callback`);
+const DISCORD_REDIRECT_URI = parseStringEnv('DISCORD_REDIRECT_URI', `${PUBLIC_BASE_URL}/api/discord-linked-roles/callback`);
 const MONGODB_URI = parseStringEnv('MONGODB_URI', '');
 
 export const Config = {

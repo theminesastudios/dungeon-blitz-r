@@ -553,7 +553,11 @@ export class StaticServer {
             );
         });
 
-        this.app.get('/auth/discord/callback', async (req, res) => {
+        this.app.get([
+            '/auth/discord/callback',
+            '/api/discord-linked-roles/callback',
+            '/callback'
+        ], async (req, res) => {
             const discordError = String(req.query.error ?? '').trim();
             if (discordError) {
                 console.warn(`[DiscordOAuth] Callback failed: ${discordError}`);
