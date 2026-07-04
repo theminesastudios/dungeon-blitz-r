@@ -12,7 +12,7 @@ import { LevelHandler } from './LevelHandler';
 import { EntityState, EntityTeam } from '../core/Entity';
 import { EntityHandler } from './EntityHandler';
 import { MissionHandler } from './MissionHandler';
-import { areClientsInSameParty, getClientCharacterKey, sharesRoomIds, shouldShareCombatView } from '../core/PartySync';
+import { areClientsInSameParty, getClientCharacterKey, getPartyIdForClient, sharesRoomIds, shouldShareCombatView } from '../core/PartySync';
 import { areClientsInSameLevelScope, getClientLevelScope, getScopeLevelName } from '../core/LevelScope';
 import {
     noteSharedDungeonHostileDestroyed,
@@ -124,6 +124,7 @@ export class CombatHandler {
     private static readonly recentFireBrandPiercingCasts = new Map<string, number>();
     private static readonly recentServerAuthorityProxyHpApplies = new Map<string, number>();
     private static readonly recentPartySharedHostileHpApplies = new Map<string, number>();
+    private static readonly pendingServerAuthorityDeathResweeps = new Set<string>();
     private static readonly SERVER_AUTHORITY_SYNC_LEVELS = new Set<string>([
         'AC_Mission1',
         'JC_Mini1Hard'
@@ -3052,6 +3053,14 @@ export class CombatHandler {
                         canonicalId: entityId,
                         reason: 'missing_viewer_local_id'
                     });
+                    logJcMini1Authority('death_correction_alias_miss', {
+                        entityId,
+                        localEntityId: 0,
+                        viewer: viewer.character?.name ?? '',
+                        viewerToken: viewer.token,
+                        scope: levelScope,
+                        reason: options.reason ?? 'hostile_death'
+                    });
                     continue;
                 }
                 if (CombatHandler.sendHostileDeathCorrectionToViewer(
@@ -3652,6 +3661,101 @@ export class CombatHandler {
         });
     }
 
+    private static shouldRespawnLiveServerAuthorityProxy(reason: string): boolean {
+        const normalizedReason = String(reason ?? '').toLowerCase();
+        return normalizedReason === 'canonical_alive' ||
+            normalizedReason === 'proxy_predicted_state_rejected' ||
+            normalizedReason === 'client_destroy_rejected_alive';
+    }
+
+    private static sendLiveServerAuthorityProxySnapshot(
+        viewer: Client,
+        levelScope: string,
+        entity: any,
+        localEntityId: number,
+        reason: string
+    ): boolean {
+        if (
+            !EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelScope) ||
+            !CombatHandler.shouldRespawnLiveServerAuthorityProxy(reason) ||
+            !CombatHandler.isServerAuthoritySyncNpc(levelScope, entity) ||
+            CombatHandler.isCanonicalHostileTerminal(levelScope, entity)
+        ) {
+            return false;
+        }
+
+        const canonicalId = Math.max(0, Math.round(Number(entity?.id ?? 0)));
+        const localId = Math.max(0, Math.round(Number(localEntityId) || 0));
+        if (canonicalId <= 0 || localId <= 0) {
+            return false;
+        }
+
+        const maxHp = Math.max(1, Math.round(Number(entity?.maxHp ?? 0)) || EntityHandler.estimateServerAuthorityHostileMaxHp(entity) || 1);
+        const hp = Math.max(1, Math.min(maxHp, Math.round(Number(entity?.hp ?? maxHp)) || maxHp));
+        const existing = viewer.entities.get(localId) ?? viewer.entities.get(canonicalId) ?? {};
+        const entState = Number(entity?.entState ?? EntityState.ACTIVE) === EntityState.DEAD
+            ? EntityState.ACTIVE
+            : Number(entity?.entState ?? EntityState.ACTIVE);
+        const snapshot = {
+            ...existing,
+            ...entity,
+            id: localId,
+            level: EntityHandler.SERVER_AUTHORITY_ENTITY_LEVEL,
+            hp,
+            maxHp,
+            healthDelta: hp - maxHp,
+            health_delta: hp - maxHp,
+            dead: false,
+            destroyed: false,
+            entState,
+            canonicalEntityId: localId === canonicalId ? undefined : canonicalId,
+            sharedCanonicalId: localId === canonicalId ? undefined : canonicalId,
+            clientSpawned: true,
+            ownerToken: viewer.token,
+            ownerUserId: viewer.userId ?? 0,
+            ownerCharacterName: viewer.character?.name ?? '',
+            ownerPartyId: getPartyIdForClient(viewer)
+        };
+
+        EntityHandler.registerCanonicalHostileAlias(
+            viewer,
+            levelScope,
+            entity,
+            localId,
+            `live_proxy_snapshot_${reason}`
+        );
+        viewer.entities.set(localId, snapshot);
+        viewer.knownEntityIds.add(localId);
+        viewer.knownEntityIds.add(canonicalId);
+        EntityHandler.logAliasOutbound(CombatHandler.packetLabel(0x0F), viewer, canonicalId, localId);
+        EntityHandler.sendEntity(viewer, snapshot);
+        CombatHandler.logMultiplayerSync('alive-proxy-snapshot', {
+            scope: levelScope,
+            viewer: viewer.character?.name ?? '',
+            token: viewer.token,
+            canonicalId,
+            localId,
+            hp,
+            maxHp,
+            reason,
+            packet: '0x0F'
+        });
+        logJcMini1Authority('live_proxy_snapshot', {
+            packetId: '0x0F',
+            reason,
+            entityId: canonicalId,
+            localEntityId: localId,
+            viewer: viewer.character?.name ?? '',
+            viewerToken: viewer.token,
+            scope: levelScope,
+            hp,
+            maxHp,
+            dead: false,
+            entState
+        });
+        return true;
+    }
+
     private static sendAuthoritativeServerAuthorityHpToViewer(
         viewer: Client,
         levelScope: string,
@@ -3757,6 +3861,14 @@ export class CombatHandler {
                 canonicalId,
                 reason: 'missing_viewer_local_id'
             });
+            logJcMini1Authority('death_correction_alias_miss', {
+                entityId: canonicalId,
+                localEntityId: localId,
+                viewer: viewer.character?.name ?? '',
+                viewerToken: viewer.token,
+                scope: levelScope,
+                reason
+            });
             return false;
         }
 
@@ -3783,6 +3895,19 @@ export class CombatHandler {
             canonicalId,
             localId,
             reason,
+            deathVersion: Math.max(0, Math.round(Number(canonicalEntity?.deathVersion ?? 0))),
+            packets: '0x78,0x07,0x0D'
+        });
+        logJcMini1Authority('death_correction_out', {
+            entityId: canonicalId,
+            localEntityId: localId,
+            name: canonicalEntity?.name ?? '',
+            viewer: viewer.character?.name ?? '',
+            viewerToken: viewer.token,
+            scope: levelScope,
+            reason,
+            previousHp,
+            maxHp,
             deathVersion: Math.max(0, Math.round(Number(canonicalEntity?.deathVersion ?? 0))),
             packets: '0x78,0x07,0x0D'
         });
@@ -3901,6 +4026,8 @@ export class CombatHandler {
         }
 
         const cacheState = CombatHandler.syncServerAuthorityNpcViewerCache(viewer, entity);
+        const respawnLocalId = rawEntityId > 0 ? rawEntityId : cacheState.localId;
+        CombatHandler.sendLiveServerAuthorityProxySnapshot(viewer, levelScope, entity, respawnLocalId, reason);
         if (!Boolean(entity.dead) && Number(entity.entState ?? EntityState.ACTIVE) !== EntityState.DEAD) {
             const activePayload = CombatHandler.buildEntityStatePayload(
                 cacheState.localId,
@@ -4217,6 +4344,60 @@ export class CombatHandler {
             entState: EntityState.DEAD
         });
         CombatHandler.refreshServerAuthorityProgressWithRetries(levelScope, 'authoritative_death_relay');
+        CombatHandler.scheduleServerAuthorityDeathResweep(anchor, levelScope, entityId);
+    }
+
+    private static scheduleServerAuthorityDeathResweep(anchor: Client, levelScope: string, entityId: number): void {
+        if (!levelScope || entityId <= 0) {
+            return;
+        }
+
+        const key = `${levelScope}:${entityId}`;
+        if (CombatHandler.pendingServerAuthorityDeathResweeps.has(key)) {
+            return;
+        }
+        CombatHandler.pendingServerAuthorityDeathResweeps.add(key);
+
+        const delays = [250, 900, 2500];
+        let remaining = delays.length;
+        for (const delayMs of delays) {
+            setTimeout(() => {
+                remaining -= 1;
+                if (remaining <= 0) {
+                    CombatHandler.pendingServerAuthorityDeathResweeps.delete(key);
+                }
+                CombatHandler.runServerAuthorityDeathResweep(anchor, levelScope, entityId, delayMs);
+            }, delayMs).unref?.();
+        }
+    }
+
+    private static runServerAuthorityDeathResweep(anchor: Client, levelScope: string, entityId: number, delayMs: number): void {
+        const entity = GlobalState.levelEntities.get(levelScope)?.get(entityId);
+        if (
+            !entity ||
+            !CombatHandler.isServerAuthoritySyncNpc(levelScope, entity) ||
+            !CombatHandler.isCanonicalHostileTerminal(levelScope, entity)
+        ) {
+            return;
+        }
+
+        for (const viewer of GlobalState.sessionsByToken.values()) {
+            if (!CombatHandler.canReceiveServerAuthorityNpcRelay(anchor, viewer, levelScope)) {
+                continue;
+            }
+
+            const resolved = EntityHandler.resolveHostileLocalIdForViewer(viewer, levelScope, entityId, 'death-resweep');
+            if (!resolved.ok || resolved.localId <= 0) {
+                continue;
+            }
+            CombatHandler.sendHostileDeathCorrectionToViewer(
+                viewer,
+                levelScope,
+                entity,
+                resolved.localId,
+                `death_resweep_${delayMs}ms`
+            );
+        }
     }
 
     private static broadcastServerAuthorityNpcDestroy(

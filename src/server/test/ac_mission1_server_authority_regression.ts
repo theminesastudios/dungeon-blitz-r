@@ -185,6 +185,26 @@ function buildHpDeltaPayload(entityId: number, delta: number): Buffer {
     return bb.toBuffer();
 }
 
+function buildEntityStatePayload(entityId: number, entState: number): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(entityId);
+    bb.writeMethod45(0);
+    bb.writeMethod45(0);
+    bb.writeMethod45(0);
+    bb.writeMethod6(entState, 2);
+    for (let i = 0; i < 6; i++) {
+        bb.writeMethod15(false);
+    }
+    return bb.toBuffer();
+}
+
+function buildDestroyEntityPayload(entityId: number): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(entityId);
+    bb.writeMethod15(true);
+    return bb.toBuffer();
+}
+
 function buildBuffStatePayload(entityId: number, buffId: number = 17): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod4(entityId);
@@ -388,6 +408,20 @@ async function testAcMission1FirstSightAuthorityConvergesDragon(): Promise<void>
         true,
         'mage should receive DEAD state on its local bridged dragon id'
     );
+
+    rogue.sentPackets.length = 0;
+    mage.sentPackets.length = 0;
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 10859330 && parseEntityState(packet.payload).entState === EntityState.DEAD),
+        true,
+        'mage should receive a delayed death-resweep DEAD state on its local bridged dragon id'
+    );
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload) === 10859330),
+        true,
+        'mage should receive a delayed death-resweep destroy on its local bridged dragon id'
+    );
 }
 
 async function testAcMission1BuffStateBridgesThroughCanonicalEnemy(): Promise<void> {
@@ -428,6 +462,65 @@ async function testAcMission1BuffStateBridgesThroughCanonicalEnemy(): Promise<vo
         rogue.sentPackets.some((packet) => packet.id === 0x0C && parseBuffTargetId(packet.payload) === 4712451),
         true,
         'rogue should receive remove-buff packet on its local bridged dragon id'
+    );
+}
+
+async function testAcMission1LiveCanonicalRespawnsLocalProxyAfterPredictedDeath(): Promise<void> {
+    const rogue = createFakeClient('AlexMercer', 59395, 2);
+    const mage = createFakeClient('Neodevils', 45890, 2);
+    setParty(rogue, mage);
+    attachPlayer(rogue);
+    attachPlayer(mage);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+    GlobalState.sessionsByToken.set(mage.token, mage as never);
+
+    const scope = getLevelScopeKey(rogue.currentLevel, rogue.levelInstanceId);
+    attachProxy(rogue, 4712451, 'AncientDragonGoldMini', 3000, 1200, 2);
+    attachProxy(mage, 10859330, 'AncientDragonGoldMini', 3010, 1200, 2);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(4712451);
+    assert.ok(canonical, 'canonical dragon should exist before predicted local death');
+    canonical.hp = Math.max(1000, Math.round(Number(canonical.maxHp ?? 0)) - 5000);
+    canonical.dead = false;
+    canonical.destroyed = false;
+    canonical.entState = EntityState.ACTIVE;
+
+    rogue.sentPackets.length = 0;
+    mage.sentPackets.length = 0;
+    LevelHandler.handleEntityIncrementalUpdate(mage as never, buildEntityStatePayload(10859330, EntityState.DEAD));
+
+    assert.equal(canonical.hp > 0, true, 'canonical dragon should stay alive after a rejected local death prediction');
+    assert.equal(canonical.dead, false, 'canonical dragon should not inherit rejected local dead state');
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x0F && parseSpawnEntityId(packet.payload) === 10859330),
+        true,
+        'predicted local death should respawn the viewer local dragon id'
+    );
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 10859330 && parseEntityState(packet.payload).entState === EntityState.ACTIVE),
+        true,
+        'predicted local death should correct the viewer local dragon back to ACTIVE'
+    );
+    assert.equal(
+        rogue.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entState === EntityState.DEAD),
+        false,
+        'predicted local death should not relay a DEAD state to the other viewer while canonical HP is positive'
+    );
+
+    rogue.sentPackets.length = 0;
+    mage.sentPackets.length = 0;
+    await CombatHandler.handleEntityDestroy(mage as never, buildDestroyEntityPayload(10859330));
+
+    assert.equal(canonical.hp > 0, true, 'canonical dragon should stay alive after a rejected local destroy');
+    assert.equal(canonical.dead, false, 'canonical dragon should not inherit rejected local destroy state');
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x0F && parseSpawnEntityId(packet.payload) === 10859330),
+        true,
+        'rejected local destroy should respawn the viewer local dragon id'
+    );
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x0F && parseSpawnEntityId(packet.payload) === 4712451),
+        false,
+        'rejected local destroy should not spawn an unrendered canonical dragon id'
     );
 }
 
@@ -880,6 +973,14 @@ async function main(): Promise<void> {
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         await testAcMission1BuffStateBridgesThroughCanonicalEnemy();
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
+        await testAcMission1LiveCanonicalRespawnsLocalProxyAfterPredictedDeath();
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
