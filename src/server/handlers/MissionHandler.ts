@@ -122,6 +122,8 @@ export class MissionHandler {
     ]);
     private static readonly FULL_CLEAR_ONLY_DUNGEON_PATTERN = /^CH_MiniMission\d+(Hard)?$/;
     private static readonly FULL_CLEAR_ONLY_DUNGEON_NAMES = new Set([
+        'AC_Mission3',
+        'AC_Mission3Hard',
         'AC_Mission4',
         'AC_Mission4Hard',
         'JC_Mini1',
@@ -548,6 +550,7 @@ export class MissionHandler {
         'MarbleRockHulk',
         'RockHulkGreater',
         'RockHulkKing',
+        'RockHulkBoss',
         'MagmaRockHulkMini',
         'MagmaRockHulk'
     ]);
@@ -561,6 +564,7 @@ export class MissionHandler {
         'MarbleRockHulkHard',
         'RockHulkGreaterHard',
         'RockHulkKingHard',
+        'RockHulkBoss',
         'MagmaRockHulkMiniHard',
         'MagmaRockHulkHard'
     ]);

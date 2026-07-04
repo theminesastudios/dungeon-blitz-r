@@ -6,6 +6,7 @@ import { GlobalState } from '../core/GlobalState';
 import { LevelConfig } from '../core/LevelConfig';
 import { getLevelScopeKey } from '../core/LevelScope';
 import { NpcLoader } from '../data/NpcLoader';
+import { MissionID } from '../data/runtime';
 import { CombatHandler } from '../handlers/CombatHandler';
 import { MissionHandler } from '../handlers/MissionHandler';
 import { RewardHandler } from '../handlers/RewardHandler';
@@ -169,27 +170,47 @@ function assertExplicitBossDungeonRequiresBossEvidence(): void {
 }
 
 function assertFullClearOnlyDungeonRequiresFullProgress(): void {
-    const client = createFakeClient('AC_Mission4Hard', 'full-clear');
-    const scope = getLevelScopeKey(client.currentLevel, client.levelInstanceId);
-    GlobalState.levelEntities.set(scope, new Map<number, any>());
+    for (const levelName of ['AC_Mission3Hard', 'AC_Mission4Hard']) {
+        const client = createFakeClient(levelName, `full-clear-${levelName}`);
+        const scope = getLevelScopeKey(client.currentLevel, client.levelInstanceId);
+        GlobalState.levelEntities.set(scope, new Map<number, any>());
 
-    const early = (MissionHandler as any).canAcceptClientReportedDungeonCompletion(
-        client,
-        client.currentLevel,
-        scope,
-        true,
-        99
+        const early = (MissionHandler as any).canAcceptClientReportedDungeonCompletion(
+            client,
+            client.currentLevel,
+            scope,
+            true,
+            99
+        );
+        const complete = (MissionHandler as any).canAcceptClientReportedDungeonCompletion(
+            client,
+            client.currentLevel,
+            scope,
+            true,
+            100
+        );
+
+        assert.equal(early, false, `${levelName} must reject sub-100 completion`);
+        assert.equal(complete, true, `${levelName} should accept 100 percent completion`);
+    }
+}
+
+function assertRockHulkBossCountsForCollectRockShards(): void {
+    const normal = (MissionHandler as any).matchesEnemyKillProgress(
+        MissionID.CollectRockShards,
+        {},
+        ['RockHulkBoss'],
+        'OMM_Mission2'
     );
-    const complete = (MissionHandler as any).canAcceptClientReportedDungeonCompletion(
-        client,
-        client.currentLevel,
-        scope,
-        true,
-        100
+    const hard = (MissionHandler as any).matchesEnemyKillProgress(
+        MissionID.CollectRockShardsHard,
+        {},
+        ['RockHulkBoss'],
+        'OMM_Mission2Hard'
     );
 
-    assert.equal(early, false, 'full-clear-only dungeons must reject sub-100 completion');
-    assert.equal(complete, true, 'full-clear-only dungeons should accept 100 percent completion');
+    assert.equal(normal, true, 'RockHulkBoss should count for normal Rock Hulk shard collection');
+    assert.equal(hard, true, 'RockHulkBoss should count for dread Rock Hulk shard collection');
 }
 
 function assertDamagedBossRegensOutOfCombat(): void {
@@ -290,6 +311,8 @@ resetGlobalState();
 assertExplicitBossDungeonRequiresBossEvidence();
 resetGlobalState();
 assertFullClearOnlyDungeonRequiresFullProgress();
+resetGlobalState();
+assertRockHulkBossCountsForCollectRockShards();
 resetGlobalState();
 assertDamagedBossRegensOutOfCombat();
 resetGlobalState();
