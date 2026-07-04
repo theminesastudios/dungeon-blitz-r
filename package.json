@@ -1,6 +1,6 @@
 {
     "name": "dungeon-blitz-r",
-    "version": "1.5.23",
+    "version": "1.5.24",
     "description": "Dungeon Blitz: R",
     "main": "index.js",
     "scripts": {

@@ -559,6 +559,36 @@ export class ForgeHandler {
         return true;
     }
 
+    private static enforceActiveForgeDuration(client: Client, forgeState: ForgeState, context: string): boolean {
+        const primary = Math.max(0, Math.round(Number(forgeState.primary ?? 0) || 0));
+        const readyTime = Math.max(0, Math.round(Number(forgeState.ReadyTime ?? 0) || 0));
+        if (primary <= 0 || readyTime <= 0) {
+            return false;
+        }
+
+        const now = ForgeHandler.getNowSeconds();
+        if (readyTime <= now) {
+            return false;
+        }
+
+        const legalDuration = Math.max(1, ForgeHandler.computeForgeDurationSeconds(client.character, primary));
+        const maxReadyTime = now + legalDuration;
+        if (readyTime <= maxReadyTime + ForgeHandler.FREE_SPEEDUP_CLOCK_GRACE_SECONDS) {
+            return false;
+        }
+
+        forgeState.ReadyTime = maxReadyTime;
+        ForgeHandler.logForgeEvent('forge-duration-clamped', client, {
+            context,
+            primary,
+            oldReadyTime: readyTime,
+            newReadyTime: forgeState.ReadyTime,
+            oldRemainingSeconds: readyTime - now,
+            clampedDurationSeconds: legalDuration
+        });
+        return true;
+    }
+
     static async syncCompletionState(client: Client): Promise<void> {
         if (!client.character) {
             return;
@@ -567,11 +597,12 @@ export class ForgeHandler {
         ForgeHandler.clearCompletionTimer(client.userId, client.character.name);
 
         const initialForgeState = ForgeHandler.ensureForgeState(client.character);
+        const didClampForgeDuration = ForgeHandler.enforceActiveForgeDuration(client, initialForgeState, 'sync');
         const didForceRespecDuration = ForgeHandler.enforceActiveRespecStoneDuration(client, initialForgeState, 'sync');
         const didForceCharmRemoverDuration = ForgeHandler.enforceActiveCharmRemoverDuration(client, initialForgeState, 'sync');
 
         const didFinalizeExpiredForge = ForgeHandler.finalizeCompletedForgeIfNeeded(client.character);
-        if (didForceRespecDuration || didForceCharmRemoverDuration || didFinalizeExpiredForge) {
+        if (didClampForgeDuration || didForceRespecDuration || didForceCharmRemoverDuration || didFinalizeExpiredForge) {
             await ForgeHandler.saveCharacter(client);
         }
 
@@ -749,9 +780,10 @@ export class ForgeHandler {
         const br = new BitReader(data);
         const idolCost = br.readMethod9();
         const forgeState = ForgeHandler.ensureForgeState(client.character);
+        const didClampForgeDuration = ForgeHandler.enforceActiveForgeDuration(client, forgeState, 'speedup');
         const didForceRespecDuration = ForgeHandler.enforceActiveRespecStoneDuration(client, forgeState, 'speedup');
         const didForceCharmRemoverDuration = ForgeHandler.enforceActiveCharmRemoverDuration(client, forgeState, 'speedup');
-        if (didForceRespecDuration || didForceCharmRemoverDuration) {
+        if (didClampForgeDuration || didForceRespecDuration || didForceCharmRemoverDuration) {
             await ForgeHandler.saveCharacter(client);
         }
 
@@ -852,9 +884,10 @@ export class ForgeHandler {
         }
 
         const forgeState = ForgeHandler.ensureForgeState(client.character);
+        const didClampForgeDuration = ForgeHandler.enforceActiveForgeDuration(client, forgeState, 'collect');
         const didForceRespecDuration = ForgeHandler.enforceActiveRespecStoneDuration(client, forgeState, 'collect');
         const didForceCharmRemoverDuration = ForgeHandler.enforceActiveCharmRemoverDuration(client, forgeState, 'collect');
-        if (didForceRespecDuration || didForceCharmRemoverDuration) {
+        if (didClampForgeDuration || didForceRespecDuration || didForceCharmRemoverDuration) {
             await ForgeHandler.saveCharacter(client);
         }
 
