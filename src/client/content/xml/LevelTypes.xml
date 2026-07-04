@@ -663,7 +663,7 @@
 	</LevelType>
 	<LevelType LevelName="CH_Mission8Hard">
 		<ZoneSet>CemeteryHillHard</ZoneSet>
-		<DisplayName>dehset son Stand</DisplayName>
+		<DisplayName>Dread The Gnole Fortress</DisplayName>
 		<RankingsURL>dread/dogfather</RankingsURL>
 		<MusicLoop>MedievalOddLongLoopWithSomeDrama_32.mp3</MusicLoop>
 	</LevelType>

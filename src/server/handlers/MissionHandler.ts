@@ -122,22 +122,14 @@ export class MissionHandler {
     ]);
     private static readonly FULL_CLEAR_ONLY_DUNGEON_PATTERN = /^CH_MiniMission\d+(Hard)?$/;
     private static readonly FULL_CLEAR_ONLY_DUNGEON_NAMES = new Set([
-        'BT_Mission4',
-        'BT_Mission4Hard',
-        'CH_Mission5',
-        'CH_Mission5Hard',
         'AC_Mission4',
         'AC_Mission4Hard',
-        'OMM_Mission7',
-        'OMM_Mission7Hard',
         'JC_Mini1',
         'JC_Mini1Hard',
         'JC_Mini2',
         'JC_Mini2Hard',
         'OMM_Mission2',
         'OMM_Mission2Hard',
-        'OMM_Mission5',
-        'OMM_Mission5Hard',
         'JC_Mission8',
         'JC_Mission8Hard',
         'JC_Mission10',
@@ -159,6 +151,8 @@ export class MissionHandler {
         'AC_Mission6Hard',
         'BT_Mission1',
         'BT_Mission1Hard',
+        'BT_Mission2',
+        'BT_Mission2Hard',
         'BT_Mission3',
         'BT_Mission3Hard',
         'AC_Mission2',
@@ -175,10 +169,14 @@ export class MissionHandler {
         'JC_Mission3Hard',
         'JC_Mission9',
         'JC_Mission9Hard',
+        'GhostBossDungeon',
+        'GhostBossDungeonHard',
         'SD_Mission3',
         'SD_Mission3Hard',
         'SRN_Mission1',
         'SRN_Mission1Hard',
+        'SRN_Mission3',
+        'SRN_Mission3Hard',
         'SRN_Mission4',
         'SRN_Mission4Hard'
     ]);
@@ -192,8 +190,30 @@ export class MissionHandler {
         AC_Mission6Hard: new Set(['NephitLargeEyeHard']),
         BT_Mission1: new Set(['BanditTwinA', 'BanditTwinB']),
         BT_Mission1Hard: new Set(['BanditTwinAHard', 'BanditTwinBHard']),
+        BT_Mission2: new Set(['BanditBoss']),
+        BT_Mission2Hard: new Set(['BanditBossHard']),
         BT_Mission3: new Set(['MeylourBossMage']),
         BT_Mission3Hard: new Set(['MeylourBossMageHard']),
+        BT_Mission4: new Set(['AbominationBrute']),
+        BT_Mission4Hard: new Set(['AbominationBruteHard']),
+        CH_Mission1: new Set(['YoungDragonGray']),
+        CH_Mission1Hard: new Set(['YoungDragonGrayHard']),
+        CH_Mission2: new Set(['DogChieftain']),
+        CH_Mission2Hard: new Set(['DogChieftainHard']),
+        CH_Mission3: new Set(['RedGhostLord']),
+        CH_Mission3Hard: new Set(['RedGhostLordHard']),
+        CH_Mission4: new Set(['GreaterSkeletonBoss']),
+        CH_Mission4Hard: new Set(['GreaterSkeletonBossHard']),
+        CH_Mission5: new Set(['DemonMaligner']),
+        CH_Mission5Hard: new Set(['DemonMalignerHard']),
+        CH_Mission6: new Set(['MummyBoss']),
+        CH_Mission6Hard: new Set(['MummyBossHard']),
+        CH_Mission7: new Set(['DragonBone']),
+        CH_Mission7Hard: new Set(['DragonBoneHard']),
+        CH_Mission8: new Set(['JackalChieftain']),
+        CH_Mission8Hard: new Set(['JackalChieftainHard']),
+        DreamDragonDungeon: new Set(['YoungDragonDream']),
+        DreamDragonDungeonHard: new Set(['YoungDragonDreamHard']),
         GhostBossDungeon: new Set(['NephitLargeEye']),
         GhostBossDungeonHard: new Set(['NephitLargeEyeHard']),
         JC_Mission1: new Set(['ImperialChampion']),
@@ -204,12 +224,37 @@ export class MissionHandler {
         JC_Mission3Hard: new Set(['DefectorMageHard']),
         JC_Mission9: new Set(['RisenBandit', 'RisenBandit2']),
         JC_Mission9Hard: new Set(['RisenBanditHard', 'RisenBandit2Hard']),
+        OMM_Mission1: new Set(['BlackGoblinBoss1']),
+        OMM_Mission1Hard: new Set(['BlackGoblinBoss1Hard']),
+        OMM_Mission3: new Set(['CyclopsChieftain']),
+        OMM_Mission3Hard: new Set(['CyclopsChieftainHard']),
+        OMM_Mission4: new Set(['BlackGhostLord']),
+        OMM_Mission4Hard: new Set(['BlackGhostLordHard']),
+        OMM_Mission5: new Set(['DragonWhite', 'LionLord']),
+        OMM_Mission5Hard: new Set(['DragonWhiteHard', 'LionLordHard']),
+        OMM_Mission6: new Set(['DragonRed']),
+        OMM_Mission6Hard: new Set(['DragonRedHard']),
+        OMM_Mission7: new Set(['GriffonSun']),
+        OMM_Mission7Hard: new Set(['GriffonSunHard']),
+        OMM_Mission9: new Set(['GriffonMoon']),
+        OMM_Mission9Hard: new Set(['GriffonMoonHard']),
         SD_Mission3: new Set(['OutlanderWyrm']),
         SD_Mission3Hard: new Set(['OutlanderWyrmHard']),
         SRN_Mission1: new Set(['LizardLord']),
         SRN_Mission1Hard: new Set(['LizardLordHard']),
+        SRN_Mission2: new Set(['SwampKing']),
+        SRN_Mission2Hard: new Set(['SwampKingHard']),
+        SRN_Mission3: new Set(['YoungDragonGreen']),
+        SRN_Mission3Hard: new Set(['YoungDragonGreenHard']),
         SRN_Mission4: new Set(['WyrmGreat']),
-        SRN_Mission4Hard: new Set(['WyrmGreatHard'])
+        SRN_Mission4Hard: new Set(['WyrmGreatHard']),
+        SRN_Mission5: new Set(['GreatLizardLord']),
+        SRN_Mission5Hard: new Set(['GreatLizardLordHard']),
+        SRN_Mission6: new Set(['DevourerGreat']),
+        SRN_Mission6Hard: new Set(['DevourerGreatHard']),
+        SRN_Mission7: new Set(['DragonGreen']),
+        SRN_Mission7Hard: new Set(['DragonGreenHard']),
+        TutorialDungeonHard: new Set(['GoblinBoss1Hard'])
     };
     private static readonly REQUIRED_DUNGEON_BOSS_NAME_ALIASES_BY_LEVEL: Record<string, ReadonlyMap<string, string>> = {
         CraftTownTutorial: new Map([
@@ -266,12 +311,20 @@ export class MissionHandler {
         'BT_Mission3Hard'
     ]);
     private static readonly DUNGEONS_REQUIRING_EXPLICIT_COMPLETION_CUTSCENE_END = new Set([
+        'BT_Mission1',
+        'BT_Mission1Hard',
+        'CH_Mission8',
+        'CH_Mission8Hard',
+        'OMM_Mission6',
+        'OMM_Mission6Hard',
         'JC_Mission9',
         'JC_Mission9Hard',
         'GhostBossDungeon',
         'GhostBossDungeonHard'
     ]);
     private static readonly DUNGEONS_WHERE_CLIENT_COMPLETION_RELEASES_POST_DEATH_CUTSCENE = new Set([
+        'GhostBossDungeon',
+        'GhostBossDungeonHard',
         'JC_Mission3',
         'JC_Mission3Hard',
         // The BT_Mission3 client script fires SetLevelComplete right after the
@@ -296,6 +349,10 @@ export class MissionHandler {
         'BT_Mission1Hard',
         'BT_Mission3',
         'BT_Mission3Hard',
+        'CH_Mission8',
+        'CH_Mission8Hard',
+        'OMM_Mission6',
+        'OMM_Mission6Hard',
         'JC_Mission1',
         'JC_Mission1Hard',
         'JC_Mission2',
@@ -1378,6 +1435,7 @@ export class MissionHandler {
             client.pendingDungeonCompletionPayload = Buffer.from(data);
             if (
                 client.pendingDungeonCompletionWaitForCutsceneEnd &&
+                !MissionHandler.requiresExplicitCompletionCutsceneEnd(currentLevel) &&
                 MissionHandler.clientCompletionReleasesPostDeathBossCutscene(currentLevel) &&
                 MissionHandler.hasMetRequiredDungeonCompletionObjectives(client, currentLevel, levelScope)
             ) {
@@ -1514,6 +1572,7 @@ export class MissionHandler {
             usesSharedDungeonProgress(currentLevel) &&
             effectiveCompletionPercent >= 100 &&
             levelScope &&
+            !dungeonRequiresSpecificCompletionObjectives &&
             !MissionHandler.hasRemainingDungeonHostiles(levelScope);
 
         if (
@@ -2463,7 +2522,8 @@ export class MissionHandler {
             String(client.character.CurrentLevel?.name ?? '');
         return Boolean(
             currentLevel &&
-            MissionHandler.DUNGEONS_WITH_REQUIRED_BOSS_PROXY_COPIES.has(currentLevel) &&
+            LevelConfig.isDungeonLevel(currentLevel) &&
+            MissionHandler.requiresCompletionBossDefeatForDungeon(currentLevel) &&
             MissionHandler.isRequiredDungeonCompletionBossEntity(currentLevel, entity)
         );
     }
@@ -4266,7 +4326,7 @@ export class MissionHandler {
     ): boolean {
         if (!MissionHandler.requiresBossAndChestCompletionForDungeon(levelName)) {
             return MissionHandler.hasDefeatedDungeonBoss(client, levelScope) &&
-                !MissionHandler.hasAliveRequiredDungeonBossInCompletionRoom(levelScope, levelName);
+                !MissionHandler.hasAliveRequiredDungeonBossInCompletionRoom(client, levelScope, levelName);
         }
 
         return MissionHandler.hasDefeatedDungeonBoss(client, levelScope) &&
@@ -4288,6 +4348,10 @@ export class MissionHandler {
         }
 
         if (MissionHandler.requiresBossAndChestCompletionForDungeon(levelName)) {
+            return false;
+        }
+
+        if (GameData.hasDungeonBossEntities(levelName)) {
             return false;
         }
 
@@ -4370,6 +4434,7 @@ export class MissionHandler {
     }
 
     private static hasAliveRequiredDungeonBossInCompletionRoom(
+        client: Client | null,
         levelScope: string | null | undefined,
         levelName: string | null | undefined
     ): boolean {
@@ -4378,8 +4443,16 @@ export class MissionHandler {
             return false;
         }
 
+        const bossCandidateEntities: any[] = [];
         const levelMap = GlobalState.levelEntities.get(scopeKey);
-        if (!levelMap?.size) {
+        for (const entity of levelMap?.values() ?? []) {
+            bossCandidateEntities.push(entity);
+        }
+        for (const entity of client?.entities?.values?.() ?? []) {
+            bossCandidateEntities.push(entity);
+        }
+
+        if (!bossCandidateEntities.length) {
             return false;
         }
 
@@ -4391,7 +4464,7 @@ export class MissionHandler {
             Boolean(normalizedLevel && MissionHandler.DUNGEONS_WITH_REQUIRED_BOSS_PROXY_COPIES.has(normalizedLevel));
         const progress = MissionHandler.dungeonCompletionObjectiveProgress.get(scopeKey);
         const bossRoomId = MissionHandler.getCompletionBossRoomId(scopeKey);
-        for (const entity of levelMap.values()) {
+        for (const entity of bossCandidateEntities) {
             if (
                 entity &&
                 !entity.isPlayer &&

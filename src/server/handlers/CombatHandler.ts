@@ -6391,6 +6391,56 @@ export class CombatHandler {
             if (!healthState || healthState.maxHp <= 0) {
                 return true;
             }
+            const requiredBossHpReport =
+                MissionHandler.shouldCompleteDungeonFromBossHpReport(client, targetEntity);
+            const reportedNextHp = Math.max(
+                0,
+                Math.min(healthState.maxHp, Math.round(healthState.currentHp + amount))
+            );
+            if (
+                requiredBossHpReport &&
+                (
+                    CombatHandler.isTerminalHostileEntity(targetEntity) ||
+                    (amount < 0 && reportedNextHp <= 0)
+                )
+            ) {
+                CombatHandler.syncHostileHealthCopies(levelScope, targetEntity, 0, healthState.maxHp);
+                const completedEntity = CombatHandler.resolveLevelEntity(levelScope, canonicalId) ?? targetEntity;
+                for (const copy of CombatHandler.collectHostileHealthCopies(levelScope, completedEntity, true)) {
+                    copy.clientDefeatVerified = true;
+                    copy.playerDamageContributed = true;
+                }
+                if (completedEntity && typeof completedEntity === 'object') {
+                    completedEntity.clientDefeatVerified = true;
+                    completedEntity.playerDamageContributed = true;
+                }
+
+                const contributorKey = getClientCharacterKey(client);
+                if (contributorKey) {
+                    noteDungeonRunKill(levelScope, [contributorKey], canonicalId, completedEntity);
+                }
+                if (usesSharedDungeonProgress(getScopeLevelName(levelScope))) {
+                    noteSharedDungeonHostileDestroyed(levelScope, canonicalId, completedEntity);
+                    LevelHandler.refreshSharedDungeonQuestProgress(levelScope);
+                }
+                CombatHandler.handleEnemyDefeatState(client, levelScope, canonicalId, completedEntity, { fromKillState: true });
+                CombatHandler.logMultiplayerSync('hostile-hp-report', {
+                    scope: levelScope,
+                    source: client.character?.name ?? '',
+                    sourceToken: client.token,
+                    rawEntityId,
+                    canonicalId,
+                    amount,
+                    previousHp: healthState.currentHp,
+                    nextHp: 0,
+                    maxHp: healthState.maxHp,
+                    appliedDelta: -healthState.currentHp,
+                    killed: true,
+                    telemetryOnly: false,
+                    name: completedEntity?.name ?? ''
+                });
+                return true;
+            }
 
             const snapshots = CombatHandler.snapshotPartySharedHostileViewerHealth(client, levelScope, targetEntity);
             if (healthState.currentHp > 0) {
@@ -6448,6 +6498,52 @@ export class CombatHandler {
                 amount,
                 player: String(client.character?.name ?? 'unknown').replace(/\s+/g, '_')
             });
+            return true;
+        }
+
+        const requiredBossHpReport =
+            MissionHandler.shouldCompleteDungeonFromBossHpReport(client, targetEntity);
+        const reportedNextHp = Math.max(
+            0,
+            Math.min(healthState.maxHp, Math.round(healthState.currentHp + amount))
+        );
+        if (
+            requiredBossHpReport &&
+            (
+                CombatHandler.isTerminalHostileEntity(targetEntity) ||
+                (amount < 0 && reportedNextHp <= 0)
+            )
+        ) {
+            CombatHandler.syncHostileHealthCopies(levelScope, targetEntity, 0, healthState.maxHp);
+            const completedEntity = CombatHandler.resolveLevelEntity(levelScope, entityId) ?? targetEntity;
+            for (const copy of CombatHandler.collectHostileHealthCopies(levelScope, completedEntity, true)) {
+                copy.clientDefeatVerified = true;
+                copy.playerDamageContributed = true;
+            }
+            if (completedEntity && typeof completedEntity === 'object') {
+                completedEntity.clientDefeatVerified = true;
+                completedEntity.playerDamageContributed = true;
+            }
+
+            const contributorKey = getClientCharacterKey(client);
+            if (contributorKey) {
+                noteDungeonRunKill(levelScope, [contributorKey], entityId, completedEntity);
+            }
+            if (usesSharedDungeonProgress(getScopeLevelName(levelScope))) {
+                noteSharedDungeonHostileDestroyed(levelScope, entityId, completedEntity);
+                LevelHandler.refreshSharedDungeonQuestProgress(levelScope);
+            }
+            CombatHandler.handleEnemyDefeatState(client, levelScope, entityId, completedEntity, { fromKillState: true });
+            CombatHandler.logBossRegen('boss-hp-report', levelScope, completedEntity, {
+                rawEntityId,
+                entityId,
+                amount,
+                previousHp: healthState.currentHp,
+                nextHp: 0,
+                maxHp: healthState.maxHp,
+                authoritativeKill: true,
+                player: String(client.character?.name ?? 'unknown').replace(/\s+/g, '_')
+            }, 0);
             return true;
         }
 

@@ -7,6 +7,7 @@ import { LevelConfig } from '../core/LevelConfig';
 import { getClientLevelScope } from '../core/LevelScope';
 import { MissionLoader } from '../data/MissionLoader';
 import { MissionID } from '../data/runtime';
+import { CombatHandler } from '../handlers/CombatHandler';
 import { MissionHandler } from '../handlers/MissionHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 
@@ -195,6 +196,39 @@ function createImperialChampionBoss(): any {
     };
 }
 
+function createRequiredBoss(name: string, id: number = 9902, roomId: number = 12, hp: number = 1000): any {
+    return {
+        id,
+        name,
+        characterName: `,${name}`,
+        character_name: `,${name}`,
+        isPlayer: false,
+        roomId,
+        team: EntityTeam.ENEMY,
+        entState: hp <= 0 ? EntityState.DEAD : EntityState.ACTIVE,
+        hp,
+        maxHp: Math.max(1, hp),
+        dead: hp <= 0,
+        clientSpawned: true,
+        clientDefeatVerified: hp <= 0,
+        playerDamageContributed: hp <= 0
+    };
+}
+
+function buildLevelCompletePacket(completionPercent: number = 100): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod9(completionPercent);
+    bb.writeMethod9(0);
+    bb.writeMethod9(0);
+    bb.writeMethod9(0);
+    bb.writeMethod9(0);
+    bb.writeMethod9(0);
+    bb.writeMethod9(1);
+    bb.writeMethod9(1);
+    bb.writeMethod9(3);
+    return bb.toBuffer();
+}
+
 function seedNephitRun(client: FakeClient, boss: any): void {
     const scope = getClientLevelScope(client as never);
     client.entities.set(boss.id, boss);
@@ -315,6 +349,190 @@ async function testQuestTrackerTwentySixStillCompletesAfterBossSkit(): Promise<v
     assert.equal(Number(client.character.questTrackerState ?? 0), 100);
 }
 
+async function testDreadBossMapClientCompletionWaitsForBossDeath(): Promise<void> {
+    const client = createBossDungeonClient('DreadDragonRunner', 83006, 'CH_Mission7Hard');
+    const boss = createRequiredBoss('DragonBoneHard', 9906, 14, 5000);
+    client.entities.set(boss.id, boss);
+
+    await MissionHandler.handleSetLevelComplete(client as never, buildLevelCompletePacket(100));
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 0, 'client completion must not finish a boss-map dungeon while the boss is still alive');
+    assert.equal(Number(client.character.questTrackerState ?? 0), 0);
+}
+
+async function testOldMineHardBossMapClientCompletionWaitsForBossDeath(): Promise<void> {
+    const cases = [
+        ['VoiceStoneRunner', 'OMM_Mission1Hard', 'BlackGoblinBoss1Hard'],
+        ['EyeTyrantRunner', 'OMM_Mission3Hard', 'CyclopsChieftainHard'],
+        ['AbandonedArmoryRunner', 'OMM_Mission4Hard', 'BlackGhostLordHard'],
+        ['GnoleRoostRunner', 'OMM_Mission7Hard', 'GriffonSunHard']
+    ] as const;
+    let token = 83100;
+
+    for (const [runnerName, levelName, bossName] of cases) {
+        const client = createBossDungeonClient(runnerName, token++, levelName);
+        const boss = createRequiredBoss(bossName, token + 9000, 14, 5000);
+        client.entities.set(boss.id, boss);
+
+        await MissionHandler.handleSetLevelComplete(client as never, buildLevelCompletePacket(100));
+        await waitForPendingSettle();
+
+        assert.equal(rankPacketCount(client), 0, `${levelName} must not finish while ${bossName} is still alive`);
+        assert.equal(Number(client.character.questTrackerState ?? 0), 0);
+    }
+}
+
+async function testDreadSvaggClientCompletionWaitsForLiveBossDeath(): Promise<void> {
+    const client = createBossDungeonClient('DreadSvaggRunner', 83105, 'BT_Mission2Hard');
+    const staleDefeatedBoss = createRequiredBoss('BanditBossHard', 9915, 12, 0);
+    const liveBoss = createRequiredBoss('BanditBossHard', 9915, 12, 5000);
+    const scope = getClientLevelScope(client as never);
+
+    GlobalState.levelEntities.set(scope, new Map([[staleDefeatedBoss.id, staleDefeatedBoss]]));
+    client.entities.set(liveBoss.id, liveBoss);
+
+    await MissionHandler.handleSetLevelComplete(client as never, buildLevelCompletePacket(100));
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 0, 'Dread Svagg must not finish while the live boss copy is still alive');
+    assert.equal(Number(client.character.questTrackerState ?? 0), 0);
+}
+
+async function testEveryDreadBossMapDungeonRequiresBossDefeat(): Promise<void> {
+    const dungeonEnemyElements = require('../data/dungeon_enemy_elements.json') as Record<string, unknown>;
+    const dreadBossDungeons = Object.keys(dungeonEnemyElements)
+        .filter((levelName) => /Hard$/.test(levelName) && LevelConfig.isDungeonLevel(levelName));
+
+    assert.ok(dreadBossDungeons.length > 0, 'expected hard dungeon boss maps to be loaded');
+
+    let checkedBossDungeons = 0;
+    for (const levelName of dreadBossDungeons) {
+        if (!GameData.hasDungeonBossEntities(levelName)) {
+            continue;
+        }
+
+        checkedBossDungeons += 1;
+        assert.equal(
+            (MissionHandler as any).requiresCompletionBossDefeatForDungeon(levelName),
+            true,
+            `${levelName} must require boss defeat before dungeon completion`
+        );
+    }
+
+    assert.ok(checkedBossDungeons > 0, 'expected at least one hard dungeon with boss entities');
+}
+
+async function testHuntedToTheEdgeRequiresBothBosses(): Promise<void> {
+    const client = createBossDungeonClient('HuntedEdgeRunner', 83110, 'OMM_Mission5Hard');
+    const dragon = createRequiredBoss('DragonWhiteHard', 9910, 12, 0);
+    const lion = createRequiredBoss('LionLordHard', 9911, 12, 5000);
+    const scope = getClientLevelScope(client as never);
+    client.entities.set(dragon.id, dragon);
+    client.entities.set(lion.id, lion);
+    GlobalState.levelEntities.set(scope, new Map([
+        [dragon.id, dragon],
+        [lion.id, lion]
+    ]));
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, dragon);
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 0, 'Hunted to the Edge must not complete after only one boss dies');
+    assert.equal(client.pendingDungeonCompletionScope, '');
+
+    lion.hp = 0;
+    lion.dead = true;
+    lion.entState = EntityState.DEAD;
+    lion.clientDefeatVerified = true;
+    lion.playerDamageContributed = true;
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, lion);
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 1, 'Hunted to the Edge should complete after both bosses die');
+    assert.equal(Number(client.character.questTrackerState ?? 0), 100);
+}
+
+async function testForgottenForgeWaitsForEndingCutsceneClose(): Promise<void> {
+    const client = createBossDungeonClient('ForgottenForgeRunner', 83120, 'OMM_Mission6Hard');
+    const boss = createRequiredBoss('DragonRedHard', 9920, 12, 0);
+    seedSingleBossRun(client, boss);
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, boss);
+
+    assert.equal(client.pendingDungeonCompletionScope, getClientLevelScope(client as never));
+    assert.equal(client.pendingDungeonCompletionWaitForCutsceneEnd, true);
+    assert.equal(rankPacketCount(client), 0);
+
+    MissionHandler.noteDungeonCutsceneStart(client as never, 12);
+    MissionHandler.noteDungeonSkitActivity(client as never);
+    await MissionHandler.handleSetLevelComplete(client as never, buildLevelCompletePacket(100));
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 0, 'Forgotten Forge completion must wait for the ending cutscene close');
+
+    MissionHandler.noteDungeonCutsceneEnd(client as never, 12);
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 1, 'Forgotten Forge should complete after the ending cutscene closes');
+    assert.equal(Number(client.character.questTrackerState ?? 0), 100);
+}
+
+async function testGnoleFortressWaitsForEndingCutsceneClose(): Promise<void> {
+    const client = createBossDungeonClient('GnoleFortressRunner', 83007, 'CH_Mission8Hard');
+    const boss = createRequiredBoss('JackalChieftainHard', 9907, 12, 0);
+    seedSingleBossRun(client, boss);
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, boss);
+
+    assert.equal(client.pendingDungeonCompletionScope, getClientLevelScope(client as never));
+    assert.equal(client.pendingDungeonCompletionWaitForCutsceneEnd, true);
+    assert.equal(rankPacketCount(client), 0, 'rank screen must not appear immediately on boss death');
+
+    MissionHandler.noteDungeonCutsceneStart(client as never, 12);
+    MissionHandler.noteDungeonSkitActivity(client as never);
+    await MissionHandler.handleSetLevelComplete(client as never, buildLevelCompletePacket(100));
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 0, 'Gnole Fortress completion must wait for the ending cutscene close');
+
+    MissionHandler.noteDungeonCutsceneEnd(client as never, 12);
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 1, 'Gnole Fortress should complete after the ending cutscene closes');
+    assert.equal(Number(client.character.questTrackerState ?? 0), 100);
+}
+
+async function testHardNephitHpReportCompletesAfterPostBossSkit(): Promise<void> {
+    const client = createBossDungeonClient('HardNephitHpRunner', 83008, 'GhostBossDungeonHard');
+    const boss = createAliveNephitBoss('Nephit');
+    seedSingleBossRun(client, boss);
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    const handled = (CombatHandler as any).recordClientHostileHpDelta(
+        client,
+        getClientLevelScope(client as never),
+        boss.id,
+        boss.id,
+        boss,
+        -1000
+    );
+    assert.equal(handled, true, 'hard Nephit lethal HP report should be accepted as boss telemetry');
+    await sleep(0);
+
+    assert.equal(client.pendingDungeonCompletionScope, getClientLevelScope(client as never));
+    assert.equal(client.pendingDungeonCompletionWaitForCutsceneEnd, true);
+    assert.equal(rankPacketCount(client), 0, 'hard Nephit completion must wait for the post-boss skit');
+
+    MissionHandler.noteDungeonCutsceneStart(client as never, 12);
+    MissionHandler.noteDungeonCutsceneEnd(client as never, 12);
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 1, 'hard Nephit should complete after the post-boss skit closes');
+    assert.equal(Number(client.character.questTrackerState ?? 0), 100);
+}
+
 async function testPostCutsceneCompletesWhenDefeatedBossProxyOnlyExistsClientSide(): Promise<void> {
     const client = createFakeClient('NephitProxyRunner', 83004, 37);
     const boss = createNephitBoss('Nephit');
@@ -378,6 +596,46 @@ async function main(): Promise<void> {
         GlobalState.levelQuestProgress.clear();
         GlobalState.sessionsByToken.clear();
         await testQuestTrackerTwentySixStillCompletesAfterBossSkit();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        await testDreadBossMapClientCompletionWaitsForBossDeath();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        await testOldMineHardBossMapClientCompletionWaitsForBossDeath();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        await testDreadSvaggClientCompletionWaitsForLiveBossDeath();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        await testEveryDreadBossMapDungeonRequiresBossDefeat();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        await testHuntedToTheEdgeRequiresBothBosses();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        await testForgottenForgeWaitsForEndingCutsceneClose();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        await testGnoleFortressWaitsForEndingCutsceneClose();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        await testHardNephitHpReportCompletesAfterPostBossSkit();
 
         GlobalState.levelEntities.clear();
         GlobalState.levelQuestProgress.clear();

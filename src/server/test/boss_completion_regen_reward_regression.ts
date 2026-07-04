@@ -144,8 +144,32 @@ function assertClientReportedCompletionNeedsBossEvidence(): void {
     assert.equal(accepted, false, 'boss dungeons must not accept client completion before boss defeat evidence');
 }
 
+function assertExplicitBossDungeonRequiresBossEvidence(): void {
+    const client = createFakeClient('OMM_Mission7Hard', 'explicit-boss');
+    const scope = getLevelScopeKey(client.currentLevel, client.levelInstanceId);
+    GlobalState.levelEntities.set(scope, new Map<number, any>());
+
+    const early = (MissionHandler as any).canAcceptClientReportedDungeonCompletion(
+        client,
+        client.currentLevel,
+        scope,
+        true,
+        99
+    );
+    const complete = (MissionHandler as any).canAcceptClientReportedDungeonCompletion(
+        client,
+        client.currentLevel,
+        scope,
+        true,
+        100
+    );
+
+    assert.equal(early, false, 'explicit boss dungeons must reject sub-100 completion');
+    assert.equal(complete, false, 'explicit boss dungeons must reject 100 percent completion without boss evidence');
+}
+
 function assertFullClearOnlyDungeonRequiresFullProgress(): void {
-    const client = createFakeClient('OMM_Mission7Hard', 'full-clear');
+    const client = createFakeClient('AC_Mission4Hard', 'full-clear');
     const scope = getLevelScopeKey(client.currentLevel, client.levelInstanceId);
     GlobalState.levelEntities.set(scope, new Map<number, any>());
 
@@ -262,6 +286,8 @@ function assertRevivableBossRepeatRewardIsHealthOnly(): void {
 ensureDataLoaded();
 resetGlobalState();
 assertClientReportedCompletionNeedsBossEvidence();
+resetGlobalState();
+assertExplicitBossDungeonRequiresBossEvidence();
 resetGlobalState();
 assertFullClearOnlyDungeonRequiresFullProgress();
 resetGlobalState();
