@@ -1,3 +1,4 @@
+import './helpers/disable_production_mongo';
 import { strict as assert } from 'assert';
 import { GlobalState } from '../core/GlobalState';
 import { MovementAuthority, MovementAuthorityClient } from '../core/MovementAuthority';

@@ -415,6 +415,26 @@ export class LevelConfig {
         return Boolean(this.LEVELS[normalized]?.isDungeon);
     }
 
+    // Castle Hocke ("Castle"/"CastleHard") is flagged isDungeon:true so it gets the
+    // same party-shared canonical hostile sync (HP/position/level, death, shared
+    // dungeon-completion progress, loot/potion rules, etc.) as every other real
+    // dungeon. Its cinematic/cutscene/entry-presentation behavior must stay exactly
+    // as it was when it was isDungeon:false, so presentation-only call sites (room
+    // cutscene sync, dungeon-entry moment display, door icon, EnterWorld's isDungeon
+    // flag, presence activity label) check isPresentationDungeonLevel() instead.
+    private static readonly PRESENTATION_DUNGEON_OVERRIDES = new Set<string>([
+        'Castle',
+        'CastleHard'
+    ]);
+
+    static isPresentationDungeonLevel(levelName: string | null | undefined): boolean {
+        const normalized = this.normalizeLevelName(levelName);
+        if (!normalized) {
+            return false;
+        }
+        return this.isDungeonLevel(normalized) && !this.PRESENTATION_DUNGEON_OVERRIDES.has(normalized);
+    }
+
     static isPersistentDungeonLevel(levelName: string | null | undefined): boolean {
         const normalized = this.normalizeLevelName(levelName);
         if (!normalized || normalized === 'TutorialBoat') {

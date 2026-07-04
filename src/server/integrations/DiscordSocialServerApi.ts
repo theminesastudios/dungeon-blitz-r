@@ -353,6 +353,49 @@ export class DiscordSocialServerApi {
         return Number.isFinite(parsed) ? parsed : null;
     }
 
+    public async sendDirectMessage(discordUserId: string, content: string): Promise<boolean> {
+        if (!this.enabled) {
+            console.warn('[DiscordSocialServerApi] DISCORD_BOT_TOKEN is missing; cannot send Discord direct message.');
+            return false;
+        }
+
+        const targetUserId = DiscordSocialServerApi.cleanSnowflake(discordUserId);
+        const targetContent = String(content ?? '').trim();
+        if (!targetUserId || !targetContent) {
+            return false;
+        }
+
+        try {
+            const channelResponse = await fetch('https://discord.com/api/v10/users/@me/channels', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bot ${this.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ recipient_id: targetUserId })
+            });
+
+            if (!channelResponse.ok) {
+                const errorText = await channelResponse.text().catch(() => '');
+                console.error(
+                    `[DiscordSocialServerApi] Failed to open DM channel for ${targetUserId}: ${channelResponse.status} ${channelResponse.statusText}${errorText ? `: ${errorText}` : ''}`
+                );
+                return false;
+            }
+
+            const channel = await channelResponse.json().catch(() => null) as { id?: string } | null;
+            const channelId = String(channel?.id ?? '').trim();
+            if (!channelId) {
+                return false;
+            }
+
+            return await this.sendChannelMessage(channelId, targetContent);
+        } catch (error) {
+            console.error('[DiscordSocialServerApi] sendDirectMessage request failed:', error);
+            return false;
+        }
+    }
+
     public async sendChannelMessage(channelId: string, content: string): Promise<boolean> {
         if (!this.enabled) {
             console.warn('[DiscordSocialServerApi] DISCORD_BOT_TOKEN is missing; cannot send Discord channel message.');

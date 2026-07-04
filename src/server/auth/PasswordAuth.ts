@@ -39,6 +39,7 @@ const DEFAULT_PASSWORD_PARAMS: PasswordRecord['passwordParams'] = {
     p: 1,
     keylen: 64
 };
+const CLIENT_PASSWORD_DIGEST_PATTERN = /^[0-9a-f]{64}$/i;
 
 function scryptAsync(
     password: string,
@@ -100,6 +101,62 @@ export function hasValidDiscordSync(account: DiscordLinkedAccount | null | undef
     );
 }
 
+/**
+ * The Flash client never sends the plaintext password: ScreenLogin submits
+ * Crypto.method_164("#bmg#" + password), a lowercase-hex SHA-256 digest.
+ * Any server-side flow that starts from a plaintext password (web reset,
+ * generated credentials, admin script) must store the scrypt hash of this
+ * digest so in-game login can match it.
+ */
+export function deriveClientPasswordDigest(plainPassword: string): string {
+    return crypto.createHash('sha256').update(`#bmg#${plainPassword}`, 'utf8').digest('hex');
+}
+
+export function isClientPasswordDigest(password: unknown): password is string {
+    return typeof password === 'string' && CLIENT_PASSWORD_DIGEST_PATTERN.test(password);
+}
+
+export function normalizeClientPasswordInput(password: string): string {
+    return isClientPasswordDigest(password)
+        ? password.toLowerCase()
+        : deriveClientPasswordDigest(password);
+}
+
+/**
+ * Before sending, Game.method_267's login path XORs each hex nibble of the
+ * SHA-256 password digest with the matching nibble of the 16-char login
+ * challenge (see Game.as: parseInt(challenge.charAt(i),16) ^ parseInt(digest
+ * .charAt(i),16)). Past the challenge length parseInt('') is NaN, which AS3
+ * coerces to 0, leaving the remaining 48 nibbles unchanged. This reverses
+ * that mask; XOR is its own inverse, so the same nibble walk recovers the
+ * plain digest. Non-digest inputs (web/plaintext flows) pass through as-is.
+ */
+export function unmaskChallengeXorClientPassword(password: string, challenge: string | null | undefined): string {
+    const masked = String(password ?? '');
+    const challengeStr = String(challenge ?? '');
+    if (!challengeStr || !isClientPasswordDigest(masked)) {
+        return masked;
+    }
+
+    let unmasked = '';
+    for (let i = 0; i < masked.length; i += 1) {
+        const maskedNibble = parseInt(masked.charAt(i), 16);
+        const challengeNibbleRaw = parseInt(challengeStr.charAt(i), 16);
+        const challengeNibble = Number.isNaN(challengeNibbleRaw) ? 0 : challengeNibbleRaw;
+        unmasked += (maskedNibble ^ challengeNibble).toString(16);
+    }
+
+    return unmasked;
+}
+
+export async function hashClientPasswordInput(password: string): Promise<PasswordRecord> {
+    return hashPassword(normalizeClientPasswordInput(password));
+}
+
+export async function hashPlaintextPasswordForClient(plainPassword: string): Promise<PasswordRecord> {
+    return hashPassword(deriveClientPasswordDigest(plainPassword));
+}
+
 export async function hashPassword(password: string): Promise<PasswordRecord> {
     const salt = crypto.randomBytes(16);
     const hash = await scryptAsync(password, salt, DEFAULT_PASSWORD_PARAMS.keylen, {
@@ -150,4 +207,8 @@ export async function verifyPassword(password: string, account: PasswordProtecte
     });
 
     return actualHash.length === expectedHash.length && crypto.timingSafeEqual(actualHash, expectedHash);
+}
+
+export async function verifyClientPasswordInput(password: string, account: PasswordProtectedAccount): Promise<boolean> {
+    return verifyPassword(normalizeClientPasswordInput(password), account);
 }

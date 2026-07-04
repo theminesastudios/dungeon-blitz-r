@@ -12,9 +12,7 @@ import { DiscordAccountLinkService } from '../integrations/DiscordAccountLinkSer
 import { JsonAdapter } from '../database/JsonAdapter';
 import { UserAccount } from '../database/Database';
 import {
-    DISCORD_SYNC_REQUIRED_MESSAGE,
-    hashPassword,
-    hasValidDiscordSync,
+    hashPlaintextPasswordForClient,
     isValidRegistrationPassword,
     normalizeAccountIdentifier
 } from '../auth/PasswordAuth';
@@ -143,14 +141,7 @@ export class StaticServer {
     }
 
     private normalizeRemoteAddress(value: string | null | undefined): string {
-        const address = String(value ?? '').trim();
-        if (!address) {
-            return '';
-        }
-        if (address.startsWith('::ffff:')) {
-            return address.slice('::ffff:'.length);
-        }
-        return address === '::1' ? '127.0.0.1' : address;
+        return GlobalState.normalizeRemoteAddress(value);
     }
 
     private resolveSessionLocale(req: Request): 'en' | 'tr' | null {
@@ -290,7 +281,7 @@ export class StaticServer {
     }
 
     private renderLostPasswordPage(message: string = '', isError: boolean = false): string {
-        const resetEnabled = Config.ALLOW_DEV_PASSWORD_RESET;
+        const resetEnabled = Config.ALLOW_DEV_PASSWORD_RESET || this.discordAccountLinks.canDeliverPasswordReset();
         const statusClass = isError ? 'error' : 'success';
         const safeMessage = message
             ? `<p class="message ${statusClass}">${escapeHtml(message)}</p>`
@@ -328,20 +319,28 @@ export class StaticServer {
     <form method="post" action="/lostpw" autocomplete="off">
       <label for="email">Email</label>
       <input id="email" name="email" type="email" required ${disabled}>
-      <label for="password">New password</label>
-      <input id="password" name="password" type="password" minlength="6" required ${disabled}>
-      <label for="confirmPassword">Confirm new password</label>
-      <input id="confirmPassword" name="confirmPassword" type="password" minlength="6" required ${disabled}>
-      <button type="submit" ${disabled}>Reset password</button>
+      <button type="submit" ${disabled}>Send Discord password</button>
     </form>
-    <p class="note">Local/dev reset only. Passwords are stored as salted hashes, never plaintext.</p>
+    <p class="note">For Discord-linked accounts, the bot sends a fresh password by DM.</p>
   </main>
 </body>
 </html>`;
     }
 
-    private renderDiscordOAuthPage(title: string, message: string, isError: boolean = false): string {
+    private renderDiscordOAuthPage(
+        title: string,
+        message: string,
+        isError: boolean = false,
+        notifyDiscordOAuthComplete: boolean = false
+    ): string {
         const statusClass = isError ? 'error' : 'success';
+        const completionScript = notifyDiscordOAuthComplete
+            ? `<script>
+try {
+  localStorage.setItem('db_discord_oauth_complete', String(Date.now()));
+} catch (_error) {}
+</script>`
+            : '';
         return `<!doctype html>
 <html lang="en">
 <head>
@@ -364,6 +363,7 @@ export class StaticServer {
     <p class="message ${statusClass}">${escapeHtml(message)}</p>
     <p><a href="/">Return to the game</a></p>
   </main>
+  ${completionScript}
 </body>
 </html>`;
     }
@@ -449,21 +449,14 @@ export class StaticServer {
             const email = normalizeAccountIdentifier(body.email);
             const password = typeof body.password === 'string' ? body.password : '';
             const confirmPassword = typeof body.confirmPassword === 'string' ? body.confirmPassword : '';
+            const hasManualPassword = password.length > 0 || confirmPassword.length > 0;
 
             console.log(`[LostPassword] Reset attempted for ${email || '(missing account id)'}`);
 
-            if (!Config.ALLOW_DEV_PASSWORD_RESET) {
-                console.warn(`[LostPassword] Reset rejected for ${email || '(missing account id)'}: reset disabled`);
-                res.status(403).type('text/html').send(
-                    this.renderLostPasswordPage('Password reset is not configured for this server mode.', true)
-                );
-                return;
-            }
-
-            if (!email || !isValidRegistrationPassword(password) || password !== confirmPassword) {
+            if (!email) {
                 console.warn(`[LostPassword] Reset failed for ${email || '(missing account id)'}: invalid form`);
                 res.status(400).type('text/html').send(
-                    this.renderLostPasswordPage('Could not reset password. Check the form fields and try again.', true)
+                    this.renderLostPasswordPage('Could not reset password. Check the email and try again.', true)
                 );
                 return;
             }
@@ -477,15 +470,43 @@ export class StaticServer {
                 return;
             }
 
-            if (!hasValidDiscordSync(existingAccount)) {
-                console.warn(`[LostPassword] Reset failed for ${email}: Discord sync required`);
-                res.status(403).type('text/html').send(
-                    this.renderLostPasswordPage(DISCORD_SYNC_REQUIRED_MESSAGE, true)
+            if (existingAccount.discordId) {
+                const delivery = await this.discordAccountLinks.deliverPasswordReset(existingAccount);
+                if (!delivery.ok) {
+                    console.warn(`[LostPassword] Discord DM reset failed for ${email}: ${delivery.reason}`);
+                    res.status(delivery.reason === 'bot-disabled' ? 503 : 400).type('text/html').send(
+                        this.renderLostPasswordPage(delivery.message, true)
+                    );
+                    return;
+                }
+
+                console.log(`[LostPassword] Discord DM reset sent for ${delivery.account?.email ?? existingAccount.email}`);
+                res.type('text/html').send(
+                    this.renderLostPasswordPage('A new password was sent to the linked Discord DM.', false)
                 );
                 return;
             }
 
-            const account = await this.db.updateAccountPassword(email, await hashPassword(password));
+            if (!Config.ALLOW_DEV_PASSWORD_RESET) {
+                console.warn(`[LostPassword] Reset rejected for ${email}: reset disabled`);
+                res.status(403).type('text/html').send(
+                    this.renderLostPasswordPage('Password reset is not configured for this server mode.', true)
+                );
+                return;
+            }
+
+            if (!hasManualPassword || !isValidRegistrationPassword(password) || password !== confirmPassword) {
+                console.warn(`[LostPassword] Reset failed for ${email}: account is not Discord-linked`);
+                res.status(400).type('text/html').send(
+                    this.renderLostPasswordPage('That account is not linked to Discord. Use Discord login first, then try again.', true)
+                );
+                return;
+            }
+
+            const account = await this.db.updateAccountPassword(
+                email,
+                await hashPlaintextPasswordForClient(password)
+            );
             if (!account) {
                 console.warn(`[LostPassword] Reset failed for ${email}: account update failed`);
                 res.status(400).type('text/html').send(
@@ -513,7 +534,20 @@ export class StaticServer {
                 clientAuthUrl: `${authUrl}?client=discord`,
                 clientLinkUrl: linkUrl ? `${linkUrl}&client=discord` : null,
                 mode: requesterAccount ? 'link' : 'login',
-                redirectUri: this.discordAccountLinks.getRedirectUri()
+                redirectUri: this.discordAccountLinks.getRedirectUri(),
+                linkedRolesConnectUrl: this.discordAccountLinks.getLinkedRolesConnectUrl(),
+                sponsorRequired: Config.SPONSOR_ACCOUNT_CREATION_REQUIRED
+            });
+        });
+
+        this.app.get('/api/auth/discord/pending', (req, res) => {
+            const pending = GlobalState.peekDiscordOAuthLogin(this.resolveRequesterAddress(req));
+            res.setHeader('Cache-Control', 'no-store');
+            res.json({
+                pending: Boolean(pending),
+                email: pending?.account.email ?? null,
+                userId: pending?.account.user_id ?? null,
+                expiresAt: pending?.expiresAt ?? null
             });
         });
 
@@ -571,7 +605,11 @@ export class StaticServer {
             const state = String(req.query.state ?? '').trim();
             const result = await this.discordAccountLinks.completeOAuth(code, state);
             if (!result.ok || !result.account) {
-                console.warn(`[DiscordOAuth] Callback rejected: ${result.reason}`);
+                const failureMessage = String(result.message ?? '').replace(/\s+/g, ' ').slice(0, 500);
+                console.warn(
+                    `[DiscordOAuth] Callback rejected: ${result.reason}` +
+                    (failureMessage ? ` message=${failureMessage}` : '')
+                );
                 const status = [
                     'duplicate-discord-linked-account',
                     'account-sync-failed'
@@ -579,10 +617,14 @@ export class StaticServer {
                 const title = result.reason === 'duplicate-discord-linked-account'
                     ? 'Discord Account Already Linked'
                     : result.reason === 'missing-discord-email'
-                        ? 'Discord Email Required'
-                        : result.reason === 'discord-email-unverified'
-                            ? 'Discord Email Not Verified'
-                            : 'Discord Login Failed';
+                            ? 'Discord Email Required'
+                            : result.reason === 'discord-email-unverified'
+                                ? 'Discord Email Not Verified'
+                                : result.reason === 'sponsor-verification-required'
+                                    ? 'Discord Sponsor Verification Required'
+                                    : result.reason === 'sponsor-check-unavailable'
+                                        ? 'Discord Sponsor Verification Unavailable'
+                                        : 'Discord Login Failed';
                 res.status(status).type('text/html').send(
                     this.renderDiscordOAuthPage(
                         title,
@@ -602,13 +644,24 @@ export class StaticServer {
             }
 
             const didAuthenticateClient = await this.authenticateRequesterLoginClient(req, result.account);
-            console.log(`[DiscordOAuth] Login succeeded for ${result.account.email}; activeClient=${didAuthenticateClient}`);
+            const pendingClient = didAuthenticateClient
+                ? false
+                : GlobalState.rememberDiscordOAuthLogin(
+                    this.resolveRequesterAddress(req),
+                    result.account
+                );
+            console.log(
+                `[DiscordOAuth] Login succeeded for ${result.account.email}; ` +
+                `activeClient=${didAuthenticateClient} pendingClient=${pendingClient}`
+            );
             res.type('text/html').send(
                 this.renderDiscordOAuthPage(
                     'Discord Login Successful',
                     didAuthenticateClient
                         ? 'Discord login successful. Return to the game.'
-                        : 'Discord login successful. Return to the game; if it did not update, reopen the game login screen and try again.'
+                        : 'Discord login successful. Return to the game; the next login connection will be authenticated automatically.',
+                    false,
+                    true
                 )
             );
         });
@@ -857,6 +910,9 @@ export class StaticServer {
             console.log(
                 `[StaticServer] Discord OAuth login: ${this.discordAccountLinks.isConfigured() ? 'configured' : 'disabled'}`
             );
+            if (this.discordAccountLinks.isConfigured()) {
+                console.log(`[StaticServer] Discord OAuth redirect URI: ${this.discordAccountLinks.getRedirectUri()}`);
+            }
             if (StaticServer.shouldLog()) {
                 const portSuffix = this.port === 80 ? '' : `:${this.port}`;
                 const baseUrl = `http://${Config.HOST}${portSuffix}`;
@@ -885,7 +941,7 @@ export class StaticServer {
 
     public stop(): Promise<void> {
         if (!this.server || !this.server.listening) {
-            return Promise.resolve();
+            return this.discordAccountLinks.close();
         }
 
         return new Promise((resolve, reject) => {
@@ -895,7 +951,7 @@ export class StaticServer {
                     return;
                 }
 
-                resolve();
+                this.discordAccountLinks.close().then(resolve, reject);
             });
         });
     }

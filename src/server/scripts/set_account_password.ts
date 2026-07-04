@@ -1,6 +1,6 @@
 /// <reference types="node" />
 
-import { hashPassword, isValidRegistrationPassword, normalizeAccountIdentifier } from '../auth/PasswordAuth';
+import { hashPlaintextPasswordForClient, isValidRegistrationPassword, normalizeAccountIdentifier } from '../auth/PasswordAuth';
 import { JsonAdapter } from '../database/JsonAdapter';
 
 function readArg(name: string): string {
@@ -29,7 +29,7 @@ async function main(): Promise<void> {
     }
 
     const db = new JsonAdapter();
-    const account = await db.updateAccountPassword(email, await hashPassword(password));
+    const account = await db.updateAccountPassword(email, await hashPlaintextPasswordForClient(password));
     if (account) {
         console.log(`[set_account_password] Account found: ${account.email}`);
         console.log(`[set_account_password] Password hash updated for ${account.email}`);

@@ -1,3 +1,4 @@
+import './helpers/disable_production_mongo';
 import { strict as assert } from 'assert';
 import * as path from 'path';
 import { GlobalState } from '../core/GlobalState';

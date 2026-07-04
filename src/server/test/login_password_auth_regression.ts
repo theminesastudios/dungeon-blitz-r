@@ -1,14 +1,16 @@
+import './helpers/disable_production_mongo';
 import { strict as assert } from 'assert';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import { LoginHandler } from '../handlers/LoginHandler';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { GlobalState } from '../core/GlobalState';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import {
-    DISCORD_SYNC_REQUIRED_MESSAGE,
-    hashPassword
+    deriveClientPasswordDigest,
+    hashPlaintextPasswordForClient
 } from '../auth/PasswordAuth';
 import { deriveDiscordAccountEmail } from '../integrations/DiscordAccountLinkService';
 
@@ -18,6 +20,11 @@ type SentPacket = {
 };
 
 type FakeClient = {
+    socket: {
+        remoteAddress: string;
+        destroyed: boolean;
+        readyState: string;
+    };
     userId: number | null;
     account: any;
     authenticated: boolean;
@@ -30,20 +37,34 @@ type FakeClient = {
     sendBitBuffer: (id: number, bb: BitBuffer) => void;
 };
 
-function buildLoginPacket(email: string, password: string): Buffer {
+function buildVersionPacket(version: number = 100): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod9(version);
+    return bb.toBuffer();
+}
+
+function buildLoginPacket(email: string, password: string, options: { rawPassword?: boolean } = {}): Buffer {
+    const passwordInput = options.rawPassword || password.length === 0
+        ? password
+        : deriveClientPasswordDigest(password);
     const bb = new BitBuffer(false);
     bb.writeMethod26('');
     bb.writeMethod26('');
     bb.writeMethod26(email);
-    bb.writeMethod26(password);
+    bb.writeMethod26(passwordInput);
     bb.writeMethod26('');
     return bb.toBuffer();
 }
 
-function createFakeClient(): FakeClient {
+function createFakeClient(remoteAddress: string = '127.0.0.1'): FakeClient {
     const sentPackets: SentPacket[] = [];
     const rawPackets: SentPacket[] = [];
     return {
+        socket: {
+            remoteAddress,
+            destroyed: false,
+            readyState: 'open'
+        },
         userId: null,
         account: null,
         authenticated: false,
@@ -99,7 +120,7 @@ async function readAccounts(accountsPath: string): Promise<any[]> {
 function getLastPopupMessage(client: FakeClient): string {
     const popup = [...client.sentPackets].reverse().find((packet) => packet.id === 0x1B);
     assert.ok(popup, 'failure popup should be sent');
-    return new BitReader(popup.payload).readMethod13();
+    return new BitReader(popup!.payload).readMethod13();
 }
 
 function assertLoginFailed(client: FakeClient, message: string): void {
@@ -222,16 +243,19 @@ async function testUnknownAndEmptyPasswordFail(): Promise<void> {
     assertLoginFailed(unknown, 'unknown account');
 
     const emptyPassword = createFakeClient();
-    await LoginHandler.handleLoginAuthenticate(emptyPassword as any, buildLoginPacket('newuser@example.com', ''));
+    await LoginHandler.handleLoginAuthenticate(
+        emptyPassword as any,
+        buildLoginPacket('newuser@example.com', '', { rawPassword: true })
+    );
     assertLoginFailed(emptyPassword, 'empty password');
 }
 
-async function testPasswordLoginRejectedWithoutDiscordLink(accountsPath: string, savesDir: string): Promise<void> {
+async function testPasswordLoginAllowsPasswordOnlyAccount(accountsPath: string, savesDir: string): Promise<void> {
     const accounts = await readAccounts(accountsPath);
     accounts.push({
         email: 'legacy@example.com',
         user_id: 2,
-        ...(await hashPassword('legacy-password'))
+        ...(await hashPlaintextPasswordForClient('legacy-password'))
     });
     await fs.writeFile(accountsPath, JSON.stringify(accounts, null, 2));
     await fs.writeFile(path.join(savesDir, '2.json'), JSON.stringify({
@@ -242,8 +266,11 @@ async function testPasswordLoginRejectedWithoutDiscordLink(accountsPath: string,
     const client = createFakeClient();
     await LoginHandler.handleLoginAuthenticate(client as any, buildLoginPacket('legacy@example.com', 'legacy-password'));
 
-    assertLoginFailed(client, 'legacy account without Discord sync');
-    assert.equal(getLastPopupMessage(client), DISCORD_SYNC_REQUIRED_MESSAGE);
+    assert.equal(client.authenticated, true, 'password-only account should authenticate with the correct hash');
+    assert.equal(client.userId, 2, 'password-only login should set user id');
+    assert.equal(client.account.email, 'legacy@example.com', 'password-only login should load the account');
+    assert.deepEqual(client.characters, [{ name: 'LegacyHero', class: 'mage', gender: 'male', level: 1 }]);
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0x15), true, 'password-only login should send character list');
 }
 
 async function testDiscordLinkedAccountWithoutHashFails(adapter: JsonAdapter): Promise<void> {
@@ -259,7 +286,7 @@ async function testDiscordLinkedAccountWithoutHashFails(adapter: JsonAdapter): P
     await LoginHandler.handleLoginAuthenticate(client as any, buildLoginPacket('nopassword@example.com', 'any-password'));
 
     assertLoginFailed(client, 'Discord-linked account without password hash');
-    assert.equal(getLastPopupMessage(client), 'Set a password after Discord sync before using password login.');
+    assert.equal(getLastPopupMessage(client), 'Set a password before using password login.');
 }
 
 async function testAliasResetPreservesSave(accountsPath: string, savesDir: string, expectedEmail: string): Promise<void> {
@@ -271,7 +298,7 @@ async function testAliasResetPreservesSave(accountsPath: string, savesDir: strin
     const beforeSave = await fs.readFile(savePath, 'utf8');
     const resetAccount = await LoginHandler.db.updateAccountPassword(
         'ALIAS@example.com',
-        await hashPassword('alias-password')
+        await hashPlaintextPasswordForClient('alias-password')
     );
     const afterSave = await fs.readFile(savePath, 'utf8');
 
@@ -285,6 +312,113 @@ async function testAliasResetPreservesSave(accountsPath: string, savesDir: strin
     assert.equal(aliasClient.authenticated, true, 'alias email should authenticate after reset');
     assert.equal(aliasClient.userId, 1, 'alias login should use the primary account user id');
     assert.equal(aliasClient.account.email, expectedEmail, 'alias login should return the primary derived account');
+}
+
+async function testPendingDiscordOAuthLoginDelaysCharacterListAfterVersion(accountsPath: string, savesDir: string): Promise<void> {
+    const accounts = await readAccounts(accountsPath);
+    const account = {
+        email: 'oauth-version@example.com',
+        user_id: 3,
+        discordId: 'oauth-version-discord',
+        discordEmail: 'oauth-version@example.com',
+        discordLinkedAt: '2026-07-03T00:00:00.000Z',
+        discordSyncRequired: true
+    };
+    accounts.push(account);
+    await fs.writeFile(accountsPath, JSON.stringify(accounts, null, 2));
+    await fs.writeFile(path.join(savesDir, '3.json'), JSON.stringify({
+        user_id: 3,
+        characters: [{ name: 'OAuthVersionHero', class: 'warrior', gender: 'male', level: 1 }]
+    }, null, 2));
+
+    GlobalState.pendingDiscordOAuthLogins.clear();
+    assert.equal(GlobalState.rememberDiscordOAuthLogin('127.0.0.1', account), true, 'pending OAuth login should be recorded');
+
+    const client = createFakeClient('::ffff:127.0.0.1');
+    await LoginHandler.handleLoginVersion(client as any, buildVersionPacket());
+
+    assert.equal(client.authenticated, true, 'version handshake should attach pending OAuth account state');
+    assert.equal(client.userId, 3, 'version handshake should set pending OAuth user id');
+    assert.equal(client.account.email, 'oauth-version@example.com', 'version handshake should attach the pending OAuth account');
+    assert.deepEqual(client.characters, [{ name: 'OAuthVersionHero', class: 'warrior', gender: 'male', level: 1 }]);
+    assert.equal(client.rawPackets.some((packet) => packet.id === 0x12), true, 'version handshake should still issue challenge');
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0x15), false, 'version handshake must not send early character list');
+    assert.equal(GlobalState.pendingDiscordOAuthLogins.size, 1, 'pending OAuth login should stay available until submit fallback or expiry');
+
+    await new Promise((resolve) => setTimeout(resolve, 550));
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0x15), true, 'pending OAuth login should send delayed character list');
+
+    client.sentPackets.length = 0;
+    await LoginHandler.handleLoginAuthenticate(client as any, buildLoginPacket('oauth-version@example.com', 'wrong-password'));
+    assert.equal(client.authenticated, true, 'duplicate authenticate after OAuth auto-login must not clear session');
+    assert.equal(client.userId, 3, 'duplicate authenticate should keep OAuth user id');
+    const authenticatedAccount = (client as any).account;
+    assert.ok(authenticatedAccount, 'duplicate authenticate should keep the account attached');
+    assert.equal(authenticatedAccount.email, 'oauth-version@example.com', 'duplicate authenticate should keep the OAuth account');
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0x15), true, 'duplicate authenticate should resend character list');
+    assert.equal(GlobalState.pendingDiscordOAuthLogins.size, 0, 'duplicate authenticate should consume pending OAuth fallback');
+}
+
+async function testPendingDiscordOAuthLoginAuthenticateFallback(accountsPath: string, savesDir: string): Promise<void> {
+    const accounts = await readAccounts(accountsPath);
+    const account = {
+        email: 'oauth-authenticate@example.com',
+        user_id: 4,
+        discordId: 'oauth-authenticate-discord',
+        discordEmail: 'oauth-authenticate@example.com',
+        discordLinkedAt: '2026-07-03T00:00:00.000Z',
+        discordSyncRequired: true
+    };
+    accounts.push(account);
+    await fs.writeFile(accountsPath, JSON.stringify(accounts, null, 2));
+    await fs.writeFile(path.join(savesDir, '4.json'), JSON.stringify({
+        user_id: 4,
+        characters: [{ name: 'OAuthAuthenticateHero', class: 'mage', gender: 'female', level: 1 }]
+    }, null, 2));
+
+    GlobalState.pendingDiscordOAuthLogins.clear();
+    assert.equal(GlobalState.rememberDiscordOAuthLogin('127.0.0.1', account), true, 'pending OAuth login should be recorded');
+
+    const client = createFakeClient('127.0.0.1');
+    await LoginHandler.handleLoginAuthenticate(client as any, buildLoginPacket('oauth-authenticate@example.com', 'wrong-password'));
+
+    assert.equal(client.authenticated, true, 'pending OAuth login should authenticate before password verification fallback');
+    assert.equal(client.userId, 4, 'pending OAuth authenticate fallback should set user id');
+    assert.equal(client.account.email, 'oauth-authenticate@example.com', 'pending OAuth fallback should load the account');
+    assert.deepEqual(client.characters, [{ name: 'OAuthAuthenticateHero', class: 'mage', gender: 'female', level: 1 }]);
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0x15), true, 'pending OAuth fallback should send character list');
+    assert.equal(GlobalState.pendingDiscordOAuthLogins.size, 0, 'pending OAuth fallback should consume the handoff');
+}
+
+async function testPendingDiscordOAuthLoginCreateFallback(accountsPath: string, savesDir: string): Promise<void> {
+    const accounts = await readAccounts(accountsPath);
+    const account = {
+        email: 'oauth-create@example.com',
+        user_id: 5,
+        discordId: 'oauth-create-discord',
+        discordEmail: 'oauth-create@example.com',
+        discordLinkedAt: '2026-07-03T00:00:00.000Z',
+        discordSyncRequired: true
+    };
+    accounts.push(account);
+    await fs.writeFile(accountsPath, JSON.stringify(accounts, null, 2));
+    await fs.writeFile(path.join(savesDir, '5.json'), JSON.stringify({
+        user_id: 5,
+        characters: [{ name: 'OAuthCreateHero', class: 'ranger', gender: 'male', level: 1 }]
+    }, null, 2));
+
+    GlobalState.pendingDiscordOAuthLogins.clear();
+    assert.equal(GlobalState.rememberDiscordOAuthLogin('127.0.0.1', account), true, 'pending OAuth login should be recorded');
+
+    const client = createFakeClient('127.0.0.1');
+    await LoginHandler.handleLoginCreate(client as any, buildLoginPacket('oauth-create@example.com', 'short'));
+
+    assert.equal(client.authenticated, true, 'pending OAuth create fallback should authenticate before registration validation');
+    assert.equal(client.userId, 5, 'pending OAuth create fallback should set user id');
+    assert.equal(client.account.email, 'oauth-create@example.com', 'pending OAuth create fallback should load the account');
+    assert.deepEqual(client.characters, [{ name: 'OAuthCreateHero', class: 'ranger', gender: 'male', level: 1 }]);
+    assert.equal(client.sentPackets.some((packet) => packet.id === 0x15), true, 'pending OAuth create fallback should send character list');
+    assert.equal(GlobalState.pendingDiscordOAuthLogins.size, 0, 'pending OAuth create fallback should consume the handoff');
 }
 
 async function main(): Promise<void> {
@@ -302,12 +436,16 @@ async function main(): Promise<void> {
         await testWrongPasswordFails();
         await testRetryAfterInvalidPassword();
         await testUnknownAndEmptyPasswordFail();
-        await testPasswordLoginRejectedWithoutDiscordLink(accountsPath, savesDir);
+        await testPasswordLoginAllowsPasswordOnlyAccount(accountsPath, savesDir);
         await testDiscordLinkedAccountWithoutHashFails(LoginHandler.db);
         await testAliasResetPreservesSave(accountsPath, savesDir, expectedEmail);
+        await testPendingDiscordOAuthLoginDelaysCharacterListAfterVersion(accountsPath, savesDir);
+        await testPendingDiscordOAuthLoginAuthenticateFallback(accountsPath, savesDir);
+        await testPendingDiscordOAuthLoginCreateFallback(accountsPath, savesDir);
         console.log('login_password_auth_regression: ok');
     } finally {
         LoginHandler.db = originalDb;
+        GlobalState.pendingDiscordOAuthLogins.clear();
         await fs.rm(dataDir, { recursive: true, force: true });
     }
 }

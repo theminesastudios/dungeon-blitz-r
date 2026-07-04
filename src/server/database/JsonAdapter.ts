@@ -1,6 +1,6 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { IDatabase, Character, DiscordAccountProfile, UserAccount, UserSaveData } from './Database';
+import { IDatabase, Character, DiscordAccountProfile, SponsorAccountMetadata, UserAccount, UserSaveData } from './Database';
 import { Config } from '../core/config';
 import { GameData } from '../core/GameData';
 import { normalizeAccountIdentifier, PasswordRecord } from '../auth/PasswordAuth';
@@ -216,7 +216,31 @@ export class JsonAdapter implements IDatabase {
         return { discordId, discordEmail };
     }
 
-    private applyDiscordProfile(account: UserAccount, discordUser: DiscordAccountProfile): UserAccount {
+    private applySponsorMetadata(account: UserAccount, sponsor?: SponsorAccountMetadata): UserAccount {
+        if (!sponsor) {
+            return account;
+        }
+
+        const sponsorEligible = sponsor.sponsorEligible === true;
+        const sponsorStatus = String(sponsor.sponsorStatus ?? '').trim() ||
+            (sponsorEligible ? 'active' : 'none');
+
+        return {
+            ...account,
+            isSponsor: sponsorEligible,
+            sponsorEligible,
+            sponsorStatus,
+            sponsorSource: String(sponsor.sponsorSource ?? '').trim() || account.sponsorSource,
+            sponsorCheckedAt: String(sponsor.sponsorCheckedAt ?? '').trim() || new Date().toISOString(),
+            sponsorRecordId: String(sponsor.sponsorRecordId ?? '').trim() || account.sponsorRecordId
+        };
+    }
+
+    private applyDiscordProfile(
+        account: UserAccount,
+        discordUser: DiscordAccountProfile,
+        sponsor?: SponsorAccountMetadata
+    ): UserAccount {
         const { discordId, discordEmail } = this.assertUsableDiscordProfile(discordUser);
         const displayName = String(
             discordUser.displayName ||
@@ -226,7 +250,7 @@ export class JsonAdapter implements IDatabase {
         ).trim();
         const sponsorStatus = String(account.sponsorStatus ?? '').trim() || 'unknown';
 
-        return {
+        return this.applySponsorMetadata({
             ...account,
             discordId,
             discordUsername: String(discordUser.username ?? '').trim(),
@@ -240,7 +264,7 @@ export class JsonAdapter implements IDatabase {
             accountSource: account.accountSource || 'discord_oauth',
             sponsorStatus,
             sponsorEligible: Boolean(account.sponsorEligible ?? false)
-        };
+        }, sponsor);
     }
 
     private async readAccounts(): Promise<UserAccount[]> {
@@ -321,7 +345,11 @@ export class JsonAdapter implements IDatabase {
         return accounts.find(acc => this.normalizeDiscordId(acc.discordId) === normalizedDiscordId) ?? null;
     }
 
-    public async linkDiscordToAccount(userId: number, discordUser: DiscordAccountProfile): Promise<UserAccount> {
+    public async linkDiscordToAccount(
+        userId: number,
+        discordUser: DiscordAccountProfile,
+        sponsor?: SponsorAccountMetadata
+    ): Promise<UserAccount> {
         await fs.mkdir(path.dirname(this.accountsPath), { recursive: true });
 
         const normalizedUserId = Math.max(0, Math.round(Number(userId ?? 0)));
@@ -349,13 +377,17 @@ export class JsonAdapter implements IDatabase {
             throw new Error('Game account is already linked to another Discord account.');
         }
 
-        const account = this.applyDiscordProfile(accounts[accountIndex], discordUser);
+        const account = this.applyDiscordProfile(accounts[accountIndex], discordUser, sponsor);
         accounts[accountIndex] = account;
         await fs.writeFile(this.accountsPath, JSON.stringify(accounts, null, 2));
         return account;
     }
 
-    public async createDiscordAccount(email: string, discordUser: DiscordAccountProfile): Promise<UserAccount> {
+    public async createDiscordAccount(
+        email: string,
+        discordUser: DiscordAccountProfile,
+        sponsor?: SponsorAccountMetadata
+    ): Promise<UserAccount> {
         await this.ensureSavesDir();
         await fs.mkdir(path.dirname(this.accountsPath), { recursive: true });
 
@@ -368,7 +400,7 @@ export class JsonAdapter implements IDatabase {
         const accounts = await this.readAccounts();
         const existingDiscordIndex = accounts.findIndex(acc => this.normalizeDiscordId(acc.discordId) === discordId);
         if (existingDiscordIndex >= 0) {
-            const account = this.applyDiscordProfile(accounts[existingDiscordIndex], discordUser);
+            const account = this.applyDiscordProfile(accounts[existingDiscordIndex], discordUser, sponsor);
             accounts[existingDiscordIndex] = account;
             await fs.writeFile(this.accountsPath, JSON.stringify(accounts, null, 2));
             return account;
@@ -390,7 +422,7 @@ export class JsonAdapter implements IDatabase {
             ...(aliases.length > 0 ? { emailAliases: aliases } : {}),
             user_id: newId,
             accountSource: 'discord_oauth'
-        }, discordUser);
+        }, discordUser, sponsor);
 
         accounts.push(account);
         await fs.writeFile(this.accountsPath, JSON.stringify(accounts, null, 2));

@@ -1,10 +1,12 @@
+import './helpers/disable_production_mongo';
 import { strict as assert } from 'assert';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import { StaticServer } from '../core/StaticServer';
 import { JsonAdapter } from '../database/JsonAdapter';
-import { verifyPassword } from '../auth/PasswordAuth';
+import { deriveClientPasswordDigest, verifyPassword } from '../auth/PasswordAuth';
+import { DiscordAccountLinkService } from '../integrations/DiscordAccountLinkService';
 
 function createAdapterForPaths(dataDir: string, accountsPath: string, savesDir: string): JsonAdapter {
     const adapter: any = new JsonAdapter();
@@ -64,8 +66,20 @@ async function waitForListening(staticServer: StaticServer): Promise<number> {
 
 async function main(): Promise<void> {
     const { adapter, dataDir, accountsPath } = await createTempAdapter();
+    const sentDms: Array<{ discordUserId: string; content: string }> = [];
+    const discordAccountLinks = new DiscordAccountLinkService() as any;
+    discordAccountLinks.db = adapter;
+    discordAccountLinks.botApi = {
+        isEnabled: () => true,
+        sendDirectMessage: async (discordUserId: string, content: string) => {
+            sentDms.push({ discordUserId, content });
+            return true;
+        }
+    };
+
     const staticServer = new StaticServer(0);
     (staticServer as any).db = adapter;
+    (staticServer as any).discordAccountLinks = discordAccountLinks;
     staticServer.start();
 
     try {
@@ -74,7 +88,9 @@ async function main(): Promise<void> {
 
         const pageResponse = await fetch(`${baseUrl}/lostpw`);
         assert.equal(pageResponse.status, 200, 'GET /lostpw should render');
-        assert.match(await pageResponse.text(), /Password Reset/, 'reset page should include the form title');
+        const pageHtml = await pageResponse.text();
+        assert.match(pageHtml, /Password Reset/, 'reset page should include the form title');
+        assert.doesNotMatch(pageHtml, /New password/, 'visible reset form should not ask players to type a new password');
 
         const mismatchResponse = await fetch(`${baseUrl}/lostpw`, {
             method: 'POST',
@@ -87,27 +103,27 @@ async function main(): Promise<void> {
         });
         assert.equal(mismatchResponse.status, 400, 'mismatched confirmation should fail');
 
-        const unlinkedResponse = await fetch(`${baseUrl}/lostpw`, {
+        const unlinkedDiscordResponse = await fetch(`${baseUrl}/lostpw`, {
             method: 'POST',
             headers: { 'content-type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
-                email: ' Legacy@Example.COM ',
-                password: 'new-password',
-                confirmPassword: 'new-password'
+                email: ' Legacy@Example.COM '
             })
         });
-        assert.equal(unlinkedResponse.status, 403, 'unlinked account reset should require Discord sync');
+        assert.equal(unlinkedDiscordResponse.status, 400, 'email-only reset should require a Discord-linked account');
 
         const resetResponse = await fetch(`${baseUrl}/lostpw`, {
             method: 'POST',
             headers: { 'content-type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
-                email: ' Linked@Example.COM ',
-                password: 'new-password',
-                confirmPassword: 'new-password'
+                email: ' Linked@Example.COM '
             })
         });
-        assert.equal(resetResponse.status, 200, 'valid reset should succeed');
+        assert.equal(resetResponse.status, 200, 'Discord-linked reset should send a DM');
+        assert.equal(sentDms.length, 1, 'Discord-linked reset should send one DM');
+        assert.equal(sentDms[0].discordUserId, 'discord-linked', 'reset DM should target the linked Discord id');
+        const dmPassword = /^Password: ([A-Za-z0-9]+)$/m.exec(sentDms[0].content)?.[1] ?? '';
+        assert.ok(dmPassword, 'reset DM should include the generated password as plain text');
 
         const accounts = await readAccounts(accountsPath);
         const account = accounts.find((entry) => entry.email === 'linked@example.com');
@@ -116,8 +132,35 @@ async function main(): Promise<void> {
         assert.equal(account.passwordKdf, 'scrypt', 'reset should store the password KDF');
         assert.equal(typeof account.passwordSalt, 'string', 'reset should store a salt');
         assert.equal(typeof account.passwordHash, 'string', 'reset should store a hash');
-        assert.equal(await verifyPassword('new-password', account), true, 'new password should verify');
-        assert.equal(await verifyPassword('wrong-password', account), false, 'wrong password should not verify');
+        assert.equal(
+            await verifyPassword(deriveClientPasswordDigest(dmPassword), account),
+            true,
+            'DM reset password must verify against the digest the game client sends'
+        );
+        assert.equal(await verifyPassword(dmPassword, account), false, 'plaintext must not verify directly');
+        assert.equal(
+            await verifyPassword(deriveClientPasswordDigest('wrong-password'), account),
+            false,
+            'wrong password should not verify'
+        );
+
+        const manualResponse = await fetch(`${baseUrl}/lostpw`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                email: ' Legacy@Example.COM ',
+                password: 'manual-password',
+                confirmPassword: 'manual-password'
+            })
+        });
+        assert.equal(manualResponse.status, 200, 'dev/admin manual reset fallback should still work for unlinked accounts');
+        const afterManualAccounts = await readAccounts(accountsPath);
+        const legacyAccount = afterManualAccounts.find((entry) => entry.email === 'legacy@example.com');
+        assert.equal(
+            await verifyPassword(deriveClientPasswordDigest('manual-password'), legacyAccount),
+            true,
+            'manual fallback should also store the client digest hash'
+        );
 
         console.log('lost_password_route_regression: ok');
     } finally {

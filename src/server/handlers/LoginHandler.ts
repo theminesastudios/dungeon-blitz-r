@@ -4,19 +4,22 @@ import { BitBuffer } from '../network/protocol/bitBuffer';
 import { Config } from '../core/config';
 import * as crypto from 'crypto';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { UserAccount } from '../database/Database';
+import { GlobalState } from '../core/GlobalState';
 import {
     DISCORD_SYNC_REQUIRED_MESSAGE,
     hasValidDiscordSync,
-    hashPassword,
+    hashClientPasswordInput,
     isValidPasswordInput,
     isValidRegistrationPassword,
     normalizeAccountIdentifier,
-    verifyPassword
+    unmaskChallengeXorClientPassword,
+    verifyClientPasswordInput
 } from '../auth/PasswordAuth';
 
 const INVALID_CREDENTIALS_MESSAGE = "Invalid email or password";
 const DISCORD_BOOTSTRAP_REQUIRED_MESSAGE = "Use Discord login first to create or sync this account.";
-const PASSWORD_NOT_SET_MESSAGE = "Set a password after Discord sync before using password login.";
+const PASSWORD_NOT_SET_MESSAGE = "Set a password before using password login.";
 
 interface LoginPayload {
     email: string;
@@ -25,6 +28,8 @@ interface LoginPayload {
 
 export class LoginHandler {
     public static db: JsonAdapter = new JsonAdapter();
+    private static readonly discordOAuthAutoAuthenticatedClients = new WeakSet<Client>();
+    private static readonly DISCORD_OAUTH_CHARACTER_LIST_RETRY_MS = 500;
 
     private static issueChallenge(client: Client): string {
         const sid = crypto.randomInt(0, 65536);
@@ -77,6 +82,50 @@ export class LoginHandler {
         client.character = null;
     }
 
+    private static async completeAuthentication(
+        client: Client,
+        account: UserAccount,
+        reason: string,
+        resetForLoginCycle: boolean = false,
+        sendCharacters: boolean = true
+    ): Promise<void> {
+        if (resetForLoginCycle) {
+            await client.resetForLoginCycle(reason);
+        }
+
+        client.userId = account.user_id;
+        client.account = account;
+        client.authenticated = true;
+        client.characters = await LoginHandler.db.loadCharacters(account.user_id);
+
+        if (reason.startsWith('discord oauth')) {
+            LoginHandler.discordOAuthAutoAuthenticatedClients.add(client);
+        } else {
+            LoginHandler.discordOAuthAutoAuthenticatedClients.delete(client);
+        }
+
+        console.log(`[Login] Authenticated ${account.email}: ${reason}`);
+        if (sendCharacters) {
+            LoginHandler.sendCharacterList(client);
+        }
+    }
+
+    private static scheduleDiscordOAuthCharacterListRetry(client: Client, account: UserAccount): void {
+        setTimeout(() => {
+            if (
+                client.socket.destroyed ||
+                client.socket.readyState !== 'open' ||
+                !client.authenticated ||
+                client.userId !== account.user_id
+            ) {
+                return;
+            }
+
+            console.log(`[Login] Sending delayed Discord OAuth character list for ${account.email}`);
+            LoginHandler.sendCharacterList(client);
+        }, LoginHandler.DISCORD_OAUTH_CHARACTER_LIST_RETRY_MS);
+    }
+
     private static rejectLogin(
         client: Client,
         email: string,
@@ -99,6 +148,19 @@ export class LoginHandler {
         const challenge = LoginHandler.issueChallenge(client);
 
         console.log(`[Login] Version: ${version}, Challenge: ${challenge}`);
+
+        const pending = GlobalState.peekDiscordOAuthLogin(client.socket.remoteAddress);
+        if (pending) {
+            await LoginHandler.completeAuthentication(
+                client,
+                pending.account,
+                'discord oauth pending version',
+                false,
+                false
+            );
+            LoginHandler.scheduleDiscordOAuthCharacterListRetry(client, pending.account);
+            console.log(`[Login] Discord OAuth pending for ${pending.account.email}; delayed character list scheduled`);
+        }
     }
 
     static async handleLoginCreate(client: Client, data: Buffer): Promise<void> {
@@ -112,6 +174,17 @@ export class LoginHandler {
         }
 
         const { email, password } = payload;
+        const pending = GlobalState.consumeDiscordOAuthLogin(client.socket.remoteAddress, email);
+        if (pending) {
+            await LoginHandler.completeAuthentication(
+                client,
+                pending.account,
+                'discord oauth pending create',
+                true
+            );
+            return;
+        }
+
         if (!isValidRegistrationPassword(password)) {
             LoginHandler.clearFailedAuthState(client);
             console.warn(`[Login] Registration rejected for ${email}: password failed validation`);
@@ -151,7 +224,13 @@ export class LoginHandler {
 
         let account;
         try {
-            account = await LoginHandler.db.updateAccountPassword(email, await hashPassword(password));
+            // The create packet masks the digest with the challenge exactly like
+            // the authenticate packet; store the unmasked digest so later logins
+            // (which arrive under different challenges) can verify it.
+            account = await LoginHandler.db.updateAccountPassword(
+                email,
+                await hashClientPasswordInput(unmaskChallengeXorClientPassword(password, client.challengeStr))
+            );
             if (!account) {
                 throw new Error('Account not found.');
             }
@@ -163,12 +242,7 @@ export class LoginHandler {
             return;
         }
 
-        client.userId = account.user_id;
-        client.account = account;
-        client.authenticated = true;
-        client.characters = await LoginHandler.db.loadCharacters(account.user_id);
-
-        LoginHandler.sendCharacterList(client);
+        await LoginHandler.completeAuthentication(client, account, 'password setup');
     }
 
     static async handleLoginAuthenticate(client: Client, data: Buffer): Promise<void> {
@@ -188,19 +262,39 @@ export class LoginHandler {
             return;
         }
 
-        if (!hasValidDiscordSync(account)) {
-            LoginHandler.rejectLogin(
+        if (
+            client.authenticated &&
+            client.userId === account.user_id &&
+            LoginHandler.discordOAuthAutoAuthenticatedClients.has(client)
+        ) {
+            LoginHandler.discordOAuthAutoAuthenticatedClients.delete(client);
+            GlobalState.consumeDiscordOAuthLogin(client.socket.remoteAddress, email);
+            console.log(`[Login] Duplicate authenticate ignored for already-authenticated account ${account.email}`);
+            LoginHandler.sendCharacterList(client);
+            return;
+        }
+
+        const pending = GlobalState.consumeDiscordOAuthLogin(client.socket.remoteAddress, email);
+        if (pending && pending.account.user_id === account.user_id) {
+            await LoginHandler.completeAuthentication(
                 client,
-                email,
-                'password login attempted before valid Discord sync/link',
-                DISCORD_SYNC_REQUIRED_MESSAGE
+                pending.account,
+                'discord oauth pending authenticate',
+                true
             );
             return;
         }
 
+        // The Flash client XORs the password digest with the login challenge
+        // before sending; try the unmasked digest first, then the raw input so
+        // plain-digest/plaintext flows (tests, non-Flash tools) keep working.
+        const unmaskedPassword = unmaskChallengeXorClientPassword(password, client.challengeStr);
         let passwordMatches = false;
         try {
-            passwordMatches = await verifyPassword(password, account);
+            passwordMatches = await verifyClientPasswordInput(unmaskedPassword, account);
+            if (!passwordMatches && unmaskedPassword !== password) {
+                passwordMatches = await verifyClientPasswordInput(password, account);
+            }
         } catch (err) {
             console.warn(`[Login] Password verification error for ${email}: ${(err as Error).message}`);
         }
@@ -218,14 +312,7 @@ export class LoginHandler {
             return;
         }
 
-        await client.resetForLoginCycle('login authenticate');
-
-        client.userId = account.user_id;
-        client.account = account;
-        client.authenticated = true;
-        client.characters = await LoginHandler.db.loadCharacters(account.user_id);
-
-        LoginHandler.sendCharacterList(client);
+        await LoginHandler.completeAuthentication(client, account, 'login authenticate', true);
     }
 
     static sendCharacterList(client: Client): void {

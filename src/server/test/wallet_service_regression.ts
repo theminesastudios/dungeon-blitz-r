@@ -1,3 +1,4 @@
+import './helpers/disable_production_mongo';
 import { strict as assert } from 'assert';
 import { Character } from '../database/Database';
 import { WalletJournalDeltaEntry, WalletJournalStore } from '../database/WalletJournal';

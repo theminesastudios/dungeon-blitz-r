@@ -1341,7 +1341,7 @@ export class LevelHandler {
         levelInstanceId: string = '',
         sourceClient: Client | null = null
     ): void {
-        if (sourceClient && LevelConfig.isDungeonLevel(levelName)) {
+        if (sourceClient && LevelConfig.isPresentationDungeonLevel(levelName)) {
             const delivery = LevelHandler.getDungeonCutsceneRoomThoughtDelivery(sourceClient, entityId, text);
             if (delivery === 'suppress') {
                 return;
@@ -1386,7 +1386,7 @@ export class LevelHandler {
         bb.writeMethod15(allowRoomInput);
         const payload = bb.toBuffer();
         const scopeKey = getLevelScopeKey(levelName, levelInstanceId);
-        if (sourceClient && LevelConfig.isDungeonLevel(levelName)) {
+        if (sourceClient && LevelConfig.isPresentationDungeonLevel(levelName)) {
             const decision = LevelHandler.beginSharedDungeonCutscene(sourceClient, roomId);
             if (decision === 'completed_duplicate') {
                 return false;
@@ -1409,7 +1409,7 @@ export class LevelHandler {
         }
 
         if (
-            LevelConfig.isDungeonLevel(levelName) &&
+            LevelConfig.isPresentationDungeonLevel(levelName) &&
             !LevelHandler.beginSharedDungeonCutsceneForScope(scopeKey, roomId)
         ) {
             return false;
@@ -1438,7 +1438,7 @@ export class LevelHandler {
         bb.writeMethod9(Math.max(0, roomId));
         const payload = bb.toBuffer();
         const scopeKey = getLevelScopeKey(levelName, levelInstanceId);
-        if (sourceClient && LevelConfig.isDungeonLevel(levelName)) {
+        if (sourceClient && LevelConfig.isPresentationDungeonLevel(levelName)) {
             const decision = LevelHandler.finishSharedDungeonCutscene(sourceClient, roomId);
             if (decision === 'active_duplicate' || decision === 'completed_duplicate') {
                 return false;
@@ -1451,7 +1451,7 @@ export class LevelHandler {
         }
 
         if (
-            LevelConfig.isDungeonLevel(levelName) &&
+            LevelConfig.isPresentationDungeonLevel(levelName) &&
             !LevelHandler.finishSharedDungeonCutsceneForScope(scopeKey, roomId)
         ) {
             return false;
@@ -1483,7 +1483,7 @@ export class LevelHandler {
         const scopeKey = getLevelScopeKey(levelName, levelInstanceId);
         if (
             sourceClient &&
-            LevelConfig.isDungeonLevel(levelName) &&
+            LevelConfig.isPresentationDungeonLevel(levelName) &&
             LevelHandler.isSharedDungeonCutsceneParticipant(sourceClient, scopeKey, roomId)
         ) {
             sourceClient.send(0xA9, payload);
@@ -3251,7 +3251,7 @@ export class LevelHandler {
     }
 
     private static isSharedDungeonCutsceneScope(client: Client): boolean {
-        if (!client.currentLevel || !LevelConfig.isDungeonLevel(client.currentLevel)) {
+        if (!client.currentLevel || !LevelConfig.isPresentationDungeonLevel(client.currentLevel)) {
             return false;
         }
 
@@ -4506,7 +4506,7 @@ export class LevelHandler {
             let doorState: number;
             if (completedStars > 0) {
                 doorState = LevelHandler.DOORSTATE_MISSIONREPEAT;
-            } else if (LevelConfig.isDungeonLevel(target)) {
+            } else if (LevelConfig.isPresentationDungeonLevel(target)) {
                 doorState = LevelHandler.DOORSTATE_DUNGEON;
             } else {
                 doorState = LevelHandler.DOORSTATE_STATIC;
@@ -5119,7 +5119,7 @@ export class LevelHandler {
             targetLevel,
             momentParams,
             isHard ? "Hard" : "",
-            levelSpec.isDungeon,
+            LevelConfig.isPresentationDungeonLevel(targetLevel),
             newHasCoord, newX, newY,
             hostChar,
             craftTownOwnerToken

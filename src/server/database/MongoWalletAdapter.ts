@@ -7,6 +7,7 @@ import {
     LockboxDelta,
     normalizeWalletDocument,
     normalizeWalletNumber,
+    WalletCurrencyField,
     WalletDelta,
     WalletDocument,
     WalletOwnerIdentity,
@@ -20,10 +21,83 @@ export interface WalletPersistenceAdapter {
     applyDelta(identity: WalletOwnerIdentity, character: Character, delta: WalletDelta): Promise<WalletDocument | null>;
 }
 
+type MongoWalletDocument = { _id: string } & Record<string, unknown>;
+
+// Stored field names are shortened to keep wallet documents small in the shared
+// minidb collection. Long names remain on the in-process WalletDocument type.
+const MONGO_FIELD: Record<WalletCurrencyField, string> = {
+    gold: 'g',
+    mammothIdols: 'mi',
+    DragonKeys: 'dk',
+    dragonOre: 'do',
+    SilverSigils: 'ss',
+    RoyalSigils: 'rs'
+};
+const F_LOCKBOXES = 'lb';
+const F_GAME_USER_ID = 'uid';
+const F_CHARACTER_NAME_KEY = 'ck';
+const F_CHARACTER_NAME = 'cn';
+const F_VERSION = 'v';
+const F_UPDATED_AT = 'u';
+
+// Long-named fields written by earlier wallet document versions.
+const LEGACY_FIELDS = [
+    'userId',
+    'discordUserId',
+    'identityProvider',
+    'createdAt',
+    'lastUpdated',
+    'gameUserId',
+    'characterNameKey',
+    'characterName',
+    'updatedAt',
+    'version',
+    'gold',
+    'mammothIdols',
+    'DragonKeys',
+    'dragonOre',
+    'SilverSigils',
+    'RoyalSigils',
+    'lockboxes'
+] as const;
+
+function encodeLockboxes(lockboxes: Array<{ lockboxID: number; count: number }>): Array<{ id: number; c: number }> {
+    return lockboxes.map(({ lockboxID, count }) => ({ id: lockboxID, c: count }));
+}
+
+function decodeWalletDocument(raw: MongoWalletDocument): WalletDocument {
+    const rawLockboxes = Array.isArray(raw[F_LOCKBOXES])
+        ? raw[F_LOCKBOXES] as unknown[]
+        : Array.isArray(raw.lockboxes) ? raw.lockboxes as unknown[] : [];
+    const lockboxes = rawLockboxes.map((entry) => {
+        const item = entry as Record<string, unknown>;
+        return {
+            lockboxID: normalizeWalletNumber(item.id ?? item.lockboxID),
+            count: normalizeWalletNumber(item.c ?? item.count)
+        };
+    });
+
+    return normalizeWalletDocument({
+        _id: raw._id,
+        gameUserId: raw[F_GAME_USER_ID] ?? raw.gameUserId ?? raw.userId,
+        characterNameKey: raw[F_CHARACTER_NAME_KEY] ?? raw.characterNameKey,
+        characterName: raw[F_CHARACTER_NAME] ?? raw.characterName,
+        gold: raw[MONGO_FIELD.gold] ?? raw.gold,
+        mammothIdols: raw[MONGO_FIELD.mammothIdols] ?? raw.mammothIdols,
+        DragonKeys: raw[MONGO_FIELD.DragonKeys] ?? raw.DragonKeys,
+        dragonOre: raw[MONGO_FIELD.dragonOre] ?? raw.dragonOre,
+        SilverSigils: raw[MONGO_FIELD.SilverSigils] ?? raw.SilverSigils,
+        RoyalSigils: raw[MONGO_FIELD.RoyalSigils] ?? raw.RoyalSigils,
+        lockboxes,
+        version: raw[F_VERSION] ?? raw.version,
+        updatedAt: raw[F_UPDATED_AT] ?? raw.updatedAt
+    } as unknown as WalletDocument);
+}
+
 export class MongoWalletAdapter implements WalletPersistenceAdapter {
     private client: MongoClient | null = null;
     private db: Db | null = null;
-    private collection: Collection<WalletDocument> | null = null;
+    private collection: Collection<MongoWalletDocument> | null = null;
 
     constructor(
         private readonly uri: string,
@@ -43,10 +117,10 @@ export class MongoWalletAdapter implements WalletPersistenceAdapter {
         const client = new MongoClient(this.uri, { ignoreUndefined: true });
         await client.connect();
         const db = client.db(this.dbName);
-        const collection = db.collection<WalletDocument>(this.collectionName);
+        const collection = db.collection<MongoWalletDocument>(this.collectionName);
         await collection.createIndex(
-            { gameUserId: 1, characterNameKey: 1 },
-            { unique: true, partialFilterExpression: { gameUserId: { $exists: true } } }
+            { [F_GAME_USER_ID]: 1, [F_CHARACTER_NAME_KEY]: 1 },
+            { unique: true, partialFilterExpression: { [F_GAME_USER_ID]: { $exists: true } } }
         );
 
         this.client = client;
@@ -62,7 +136,7 @@ export class MongoWalletAdapter implements WalletPersistenceAdapter {
         await client?.close();
     }
 
-    private getCollection(): Collection<WalletDocument> {
+    private getCollection(): Collection<MongoWalletDocument> {
         if (!this.collection) {
             throw new Error('Mongo wallet adapter is not connected');
         }
@@ -76,34 +150,32 @@ export class MongoWalletAdapter implements WalletPersistenceAdapter {
         const now = new Date();
         const initialDocument = createWalletDocument(identity, character);
         const insertOnlyDocument = {
-            gold: initialDocument.gold,
-            mammothIdols: initialDocument.mammothIdols,
-            DragonKeys: initialDocument.DragonKeys,
-            dragonOre: initialDocument.dragonOre,
-            SilverSigils: initialDocument.SilverSigils,
-            RoyalSigils: initialDocument.RoyalSigils,
-            lockboxes: initialDocument.lockboxes,
-            version: initialDocument.version
+            [MONGO_FIELD.gold]: initialDocument.gold,
+            [MONGO_FIELD.mammothIdols]: initialDocument.mammothIdols,
+            [MONGO_FIELD.DragonKeys]: initialDocument.DragonKeys,
+            [MONGO_FIELD.dragonOre]: initialDocument.dragonOre,
+            [MONGO_FIELD.SilverSigils]: initialDocument.SilverSigils,
+            [MONGO_FIELD.RoyalSigils]: initialDocument.RoyalSigils,
+            [F_LOCKBOXES]: encodeLockboxes(initialDocument.lockboxes),
+            [F_VERSION]: initialDocument.version
         };
         const identityUpdate: Record<string, unknown> = {
-            gameUserId: identity.gameUserId,
-            characterNameKey,
-            characterName: String(character.name ?? '').trim(),
-            updatedAt: now
+            [F_GAME_USER_ID]: identity.gameUserId,
+            [F_CHARACTER_NAME_KEY]: characterNameKey,
+            [F_CHARACTER_NAME]: String(character.name ?? '').trim(),
+            [F_UPDATED_AT]: now
         };
+        const legacyUnset: Record<string, ''> = {};
+        for (const field of LEGACY_FIELDS) {
+            legacyUnset[field] = '';
+        }
 
         const result = await this.getCollection().findOneAndUpdate(
             { _id: documentId },
             {
                 $setOnInsert: insertOnlyDocument,
                 $set: identityUpdate,
-                $unset: {
-                    userId: '',
-                    discordUserId: '',
-                    identityProvider: '',
-                    createdAt: '',
-                    lastUpdated: ''
-                }
+                $unset: legacyUnset
             },
             {
                 upsert: true,
@@ -115,7 +187,7 @@ export class MongoWalletAdapter implements WalletPersistenceAdapter {
             throw new Error(`Mongo wallet upsert returned no document for user ${identity.gameUserId}/${characterNameKey}`);
         }
 
-        return normalizeWalletDocument(result);
+        return decodeWalletDocument(result);
     }
 
     async applyDelta(identity: WalletOwnerIdentity, character: Character, delta: WalletDelta): Promise<WalletDocument | null> {
@@ -135,7 +207,7 @@ export class MongoWalletAdapter implements WalletPersistenceAdapter {
             { returnDocument: 'after' }
         );
 
-        return result ? normalizeWalletDocument(result) : null;
+        return result ? decodeWalletDocument(result) : null;
     }
 
     private buildSufficientBalanceFilter(delta: WalletDelta): Record<string, unknown> {
@@ -144,17 +216,17 @@ export class MongoWalletAdapter implements WalletPersistenceAdapter {
         for (const field of WALLET_CURRENCY_FIELDS) {
             const amount = normalizeSignedDelta(delta[field]);
             if (amount < 0) {
-                filter[field] = { $gte: Math.abs(amount) };
+                filter[MONGO_FIELD[field]] = { $gte: Math.abs(amount) };
             }
         }
 
         for (const lockboxDelta of this.normalizeLockboxDeltas(delta.lockboxes)) {
             if (lockboxDelta.delta < 0) {
                 lockboxBalanceFilters.push({
-                    lockboxes: {
+                    [F_LOCKBOXES]: {
                         $elemMatch: {
-                            lockboxID: lockboxDelta.lockboxID,
-                            count: { $gte: Math.abs(lockboxDelta.delta) }
+                            id: lockboxDelta.lockboxID,
+                            c: { $gte: Math.abs(lockboxDelta.delta) }
                         }
                     }
                 });
@@ -172,7 +244,7 @@ export class MongoWalletAdapter implements WalletPersistenceAdapter {
 
     private buildDeltaPipeline(delta: WalletDelta): Record<string, unknown>[] {
         const setStage: Record<string, unknown> = {
-            updatedAt: '$$NOW'
+            [F_UPDATED_AT]: '$$NOW'
         };
 
         for (const field of WALLET_CURRENCY_FIELDS) {
@@ -181,12 +253,12 @@ export class MongoWalletAdapter implements WalletPersistenceAdapter {
                 continue;
             }
 
-            setStage[field] = {
+            setStage[MONGO_FIELD[field]] = {
                 $max: [
                     0,
                     {
                         $add: [
-                            { $ifNull: [`$${field}`, 0] },
+                            { $ifNull: [`$${MONGO_FIELD[field]}`, 0] },
                             amount
                         ]
                     }
@@ -196,14 +268,14 @@ export class MongoWalletAdapter implements WalletPersistenceAdapter {
 
         const lockboxDeltas = this.normalizeLockboxDeltas(delta.lockboxes);
         if (lockboxDeltas.length > 0) {
-            let lockboxesExpression: unknown = { $ifNull: ['$lockboxes', []] };
+            let lockboxesExpression: unknown = { $ifNull: [`$${F_LOCKBOXES}`, []] };
             for (const lockboxDelta of lockboxDeltas) {
                 lockboxesExpression = this.buildLockboxDeltaExpression(lockboxesExpression, lockboxDelta);
             }
-            setStage.lockboxes = lockboxesExpression;
+            setStage[F_LOCKBOXES] = lockboxesExpression;
         }
 
-        if (Object.keys(setStage).length === 1 && setStage.updatedAt) {
+        if (Object.keys(setStage).length === 1 && setStage[F_UPDATED_AT]) {
             return [];
         }
 
@@ -219,15 +291,15 @@ export class MongoWalletAdapter implements WalletPersistenceAdapter {
                 as: 'lockbox',
                 in: {
                     $cond: [
-                        { $eq: ['$$lockbox.lockboxID', lockboxId] },
+                        { $eq: ['$$lockbox.id', lockboxId] },
                         {
-                            lockboxID: '$$lockbox.lockboxID',
-                            count: {
+                            id: '$$lockbox.id',
+                            c: {
                                 $max: [
                                     0,
                                     {
                                         $add: [
-                                            { $ifNull: ['$$lockbox.count', 0] },
+                                            { $ifNull: ['$$lockbox.c', 0] },
                                             delta
                                         ]
                                     }
@@ -248,7 +320,7 @@ export class MongoWalletAdapter implements WalletPersistenceAdapter {
                             $map: {
                                 input: inputExpression,
                                 as: 'lockbox',
-                                in: { $eq: ['$$lockbox.lockboxID', lockboxId] }
+                                in: { $eq: ['$$lockbox.id', lockboxId] }
                             }
                         }
                     },
@@ -256,7 +328,7 @@ export class MongoWalletAdapter implements WalletPersistenceAdapter {
                     {
                         $concatArrays: [
                             inputExpression,
-                            [{ lockboxID: lockboxId, count: delta }]
+                            [{ id: lockboxId, c: delta }]
                         ]
                     }
                 ]
@@ -269,10 +341,10 @@ export class MongoWalletAdapter implements WalletPersistenceAdapter {
                     $filter: {
                         input: withAddedLockbox,
                         as: 'lockbox',
-                        cond: { $gt: ['$$lockbox.count', 0] }
+                        cond: { $gt: ['$$lockbox.c', 0] }
                     }
                 },
-                sortBy: { lockboxID: 1 }
+                sortBy: { id: 1 }
             }
         };
     }

@@ -1152,7 +1152,7 @@ export class CharacterHandler {
             currentLevelName,
             momentParams,
             isHard ? "Hard" : "",
-            levelSpec.isDungeon,
+            LevelConfig.isPresentationDungeonLevel(currentLevelName),
             spawn.hasCoord,
             spawn.x,
             spawn.y,

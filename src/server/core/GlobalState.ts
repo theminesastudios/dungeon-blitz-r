@@ -1,4 +1,4 @@
-import { Character } from '../database/Database';
+import { Character, UserAccount } from '../database/Database';
 import { Client } from './Client';
 import { normalizeCharacterKey, PartyGroup, PendingTeleport } from './SocialState';
 
@@ -79,9 +79,21 @@ export type DeadHostileTombstone = {
     deathVersion: number;
 };
 
+export type PendingDiscordOAuthLogin = {
+    account: UserAccount;
+    remoteAddress: string;
+    createdAt: number;
+    expiresAt: number;
+};
+
 export class GlobalState {
+    private static readonly PENDING_DISCORD_OAUTH_LOGIN_TTL_MS = 2 * 60 * 1000;
+
     // Connected clients, including clients that have not authenticated yet.
     static clients: Set<Client> = new Set();
+
+    // Normalized remote address -> pending Discord OAuth account handoff.
+    static pendingDiscordOAuthLogins: Map<string, PendingDiscordOAuthLogin> = new Map();
 
     // Token -> Pending Transfer
     static pendingWorld: Map<number, PendingTransfer> = new Map();
@@ -144,6 +156,103 @@ export class GlobalState {
         }
 
         return sessions;
+    }
+
+    static normalizeRemoteAddress(value: string | null | undefined): string {
+        const address = String(value ?? '').trim();
+        if (!address) {
+            return '';
+        }
+        if (address.startsWith('::ffff:')) {
+            return address.slice('::ffff:'.length);
+        }
+        return address === '::1' ? '127.0.0.1' : address;
+    }
+
+    static rememberDiscordOAuthLogin(remoteAddress: string | null | undefined, account: UserAccount): boolean {
+        const normalizedAddress = GlobalState.normalizeRemoteAddress(remoteAddress);
+        if (!normalizedAddress || !account?.user_id) {
+            return false;
+        }
+
+        const now = Date.now();
+        GlobalState.purgeExpiredDiscordOAuthLogins(now);
+        GlobalState.pendingDiscordOAuthLogins.set(normalizedAddress, {
+            account,
+            remoteAddress: normalizedAddress,
+            createdAt: now,
+            expiresAt: now + GlobalState.PENDING_DISCORD_OAUTH_LOGIN_TTL_MS
+        });
+        return true;
+    }
+
+    static consumeDiscordOAuthLogin(
+        remoteAddress: string | null | undefined,
+        expectedIdentifier?: string | null
+    ): PendingDiscordOAuthLogin | null {
+        const normalizedAddress = GlobalState.normalizeRemoteAddress(remoteAddress);
+        if (!normalizedAddress) {
+            return null;
+        }
+
+        const now = Date.now();
+        GlobalState.purgeExpiredDiscordOAuthLogins(now);
+        const pending = GlobalState.pendingDiscordOAuthLogins.get(normalizedAddress);
+        if (!pending || pending.expiresAt <= now) {
+            GlobalState.pendingDiscordOAuthLogins.delete(normalizedAddress);
+            return null;
+        }
+
+        if (expectedIdentifier && !GlobalState.accountMatchesIdentifier(pending.account, expectedIdentifier)) {
+            return null;
+        }
+
+        GlobalState.pendingDiscordOAuthLogins.delete(normalizedAddress);
+        return pending;
+    }
+
+    static peekDiscordOAuthLogin(remoteAddress: string | null | undefined): PendingDiscordOAuthLogin | null {
+        const normalizedAddress = GlobalState.normalizeRemoteAddress(remoteAddress);
+        if (!normalizedAddress) {
+            return null;
+        }
+
+        const now = Date.now();
+        GlobalState.purgeExpiredDiscordOAuthLogins(now);
+        const pending = GlobalState.pendingDiscordOAuthLogins.get(normalizedAddress);
+        if (!pending || pending.expiresAt <= now) {
+            GlobalState.pendingDiscordOAuthLogins.delete(normalizedAddress);
+            return null;
+        }
+
+        return pending;
+    }
+
+    private static purgeExpiredDiscordOAuthLogins(now: number = Date.now()): void {
+        for (const [remoteAddress, pending] of GlobalState.pendingDiscordOAuthLogins.entries()) {
+            if (pending.expiresAt <= now) {
+                GlobalState.pendingDiscordOAuthLogins.delete(remoteAddress);
+            }
+        }
+    }
+
+    private static normalizeAccountIdentifier(value: unknown): string {
+        return typeof value === 'string' ? value.trim().toLowerCase() : '';
+    }
+
+    private static accountMatchesIdentifier(account: UserAccount, identifier: string): boolean {
+        const normalizedIdentifier = GlobalState.normalizeAccountIdentifier(identifier);
+        if (!normalizedIdentifier) {
+            return false;
+        }
+        if (GlobalState.normalizeAccountIdentifier(account.email) === normalizedIdentifier) {
+            return true;
+        }
+        if (GlobalState.normalizeAccountIdentifier(account.discordEmail) === normalizedIdentifier) {
+            return true;
+        }
+        return Array.isArray(account.emailAliases) &&
+            account.emailAliases.some((alias) => GlobalState.normalizeAccountIdentifier(alias) === normalizedIdentifier);
     }
 
     static isSessionOpen(session: Client | null | undefined): session is Client {

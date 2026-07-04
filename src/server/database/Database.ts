@@ -23,8 +23,12 @@ export interface UserAccount {
     discordLinkedAt?: string;
     discordSyncRequired?: boolean;
     accountSource?: 'discord_oauth' | 'password' | string;
+    isSponsor?: boolean;
     sponsorStatus?: 'unknown' | 'none' | 'eligible' | 'active' | string;
     sponsorEligible?: boolean;
+    sponsorSource?: string;
+    sponsorCheckedAt?: string;
+    sponsorRecordId?: string;
 }
 
 export interface DiscordAccountProfile {
@@ -35,6 +39,14 @@ export interface DiscordAccountProfile {
     email?: string;
     emailVerified?: boolean;
     avatar?: string;
+}
+
+export interface SponsorAccountMetadata {
+    sponsorEligible: boolean;
+    sponsorStatus: 'unknown' | 'none' | 'eligible' | 'active' | string;
+    sponsorSource?: string;
+    sponsorCheckedAt?: string;
+    sponsorRecordId?: string;
 }
 
 export interface Character {
@@ -81,8 +93,8 @@ export interface IDatabase {
     getAccountById(userId: number): Promise<UserAccount | null>;
     getAccountId(email: string): Promise<number | null>;
     findAccountByDiscordId(discordId: string): Promise<UserAccount | null>;
-    linkDiscordToAccount(userId: number, discordUser: DiscordAccountProfile): Promise<UserAccount>;
-    createDiscordAccount(email: string, discordUser: DiscordAccountProfile): Promise<UserAccount>;
+    linkDiscordToAccount(userId: number, discordUser: DiscordAccountProfile, sponsor?: SponsorAccountMetadata): Promise<UserAccount>;
+    createDiscordAccount(email: string, discordUser: DiscordAccountProfile, sponsor?: SponsorAccountMetadata): Promise<UserAccount>;
     createAccount(email: string, passwordRecord: PasswordRecord): Promise<UserAccount>;
     updateAccountPassword(email: string, passwordRecord: PasswordRecord): Promise<UserAccount | null>;
     loadCharacters(userId: number): Promise<Character[]>;

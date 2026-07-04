@@ -1,8 +1,11 @@
 import * as crypto from 'crypto';
 
+import { hashPlaintextPasswordForClient } from '../auth/PasswordAuth';
 import { Config } from '../core/config';
-import { DiscordAccountProfile, UserAccount } from '../database/Database';
+import { DiscordAccountProfile, SponsorAccountMetadata, UserAccount } from '../database/Database';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { DiscordSocialServerApi } from './DiscordSocialServerApi';
+import { SponsorEligibilityService } from './SponsorEligibilityService';
 
 interface DiscordOAuthStatePayload {
     mode: 'login' | 'link';
@@ -10,6 +13,9 @@ interface DiscordOAuthStatePayload {
     userId?: number;
     expiresAt: number;
     nonce: string;
+    // Return origin for the Vercel OAuth relay; it redirects the browser back
+    // to `${cb}/api/discord-linked-roles/callback` on this game server.
+    cb?: string;
 }
 
 interface DiscordTokenResponse {
@@ -50,6 +56,15 @@ export interface DiscordOAuthCompleteResult {
 
 export type DiscordLinkCompleteResult = DiscordOAuthCompleteResult;
 
+export interface DiscordPasswordDeliveryResult {
+    ok: boolean;
+    reason: string;
+    account?: UserAccount;
+    message: string;
+}
+
+type PasswordDeliveryPurpose = 'account-ready' | 'password-reset';
+
 function base64UrlEncode(value: string | Buffer): string {
     return Buffer.from(value).toString('base64url');
 }
@@ -64,6 +79,19 @@ function normalizeEmail(email: string | null | undefined): string {
 
 function normalizeDiscordId(value: string | null | undefined): string {
     return String(value ?? '').trim();
+}
+
+// Alphanumeric only: safe inside Discord markdown and free of look-alike
+// characters (0/O, 1/l/I) that players mistype when copying by hand.
+const PW_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+
+function generatePassword(length = 12): string {
+    const bytes = crypto.randomBytes(length);
+    let pw = '';
+    for (let i = 0; i < length; i++) {
+        pw += PW_CHARS[bytes[i] % PW_CHARS.length];
+    }
+    return pw;
 }
 
 function toDiscordOAuthFailure(
@@ -119,6 +147,8 @@ export function normalizeDiscordUser(discordUser: DiscordApiUser | null | undefi
 
 export class DiscordAccountLinkService {
     private readonly db = new JsonAdapter();
+    private readonly sponsorEligibility = new SponsorEligibilityService();
+    private readonly botApi = new DiscordSocialServerApi();
     private readonly appId: string;
     private readonly clientSecret: string;
     private readonly redirectUri: string;
@@ -137,6 +167,27 @@ export class DiscordAccountLinkService {
 
     public getRedirectUri(): string {
         return this.redirectUri;
+    }
+
+    public getLinkedRolesConnectUrl(): string {
+        return Config.DISCORD_LINKED_ROLES_CONNECT_URL;
+    }
+
+    public async close(): Promise<void> {
+        await this.sponsorEligibility.close();
+    }
+
+    public canDeliverPasswordReset(): boolean {
+        return this.botApi.isEnabled();
+    }
+
+    public async deliverPasswordReset(account: UserAccount): Promise<DiscordPasswordDeliveryResult> {
+        return this.deliverGeneratedPasswordToDiscord(
+            account,
+            normalizeDiscordId(account.discordId),
+            'password-reset',
+            true
+        );
     }
 
     public async createLoginAuthorizeUrl(): Promise<DiscordLinkStartResult> {
@@ -284,12 +335,13 @@ export class DiscordAccountLinkService {
 
         const linkedAccount = await this.db.findAccountByDiscordId(discordUser.id);
         if (linkedAccount) {
-            const syncedAccount = await this.db.linkDiscordToAccount(linkedAccount.user_id, discordUser);
+            const sponsor = await this.optionalSponsorMetadata(discordUser);
+            const syncedAccount = await this.db.linkDiscordToAccount(linkedAccount.user_id, discordUser, sponsor);
             return {
                 ok: true,
                 reason: 'ok',
                 mode: 'login',
-                account: syncedAccount,
+                account: await this.deliverGeneratedPassword(syncedAccount, discordUser),
                 discordUser,
                 message: 'Discord login successful.'
             };
@@ -307,13 +359,22 @@ export class DiscordAccountLinkService {
                 );
             }
 
+            const sponsor = await this.requireSponsorEligibility('login', discordUser);
+            if (!sponsor.ok) {
+                return sponsor.result;
+            }
+
             try {
-                const linkedExistingAccount = await this.db.linkDiscordToAccount(existingEmailAccount.user_id, discordUser);
+                const linkedExistingAccount = await this.db.linkDiscordToAccount(
+                    existingEmailAccount.user_id,
+                    discordUser,
+                    sponsor.metadata
+                );
                 return {
                     ok: true,
                     reason: 'ok',
                     mode: 'login',
-                    account: linkedExistingAccount,
+                    account: await this.deliverGeneratedPassword(linkedExistingAccount, discordUser),
                     discordUser,
                     message: 'Discord linked and login successful.'
                 };
@@ -322,8 +383,8 @@ export class DiscordAccountLinkService {
             }
         }
 
-        const generatedEmail = deriveDiscordAccountEmail(discordUser.email ?? '', discordUser.id);
-        if (!generatedEmail) {
+        const accountEmail = normalizeEmail(discordUser.email);
+        if (!accountEmail) {
             return toDiscordOAuthFailure(
                 'missing-discord-email',
                 'login',
@@ -332,13 +393,18 @@ export class DiscordAccountLinkService {
             );
         }
 
+        const sponsor = await this.requireSponsorEligibility('login', discordUser);
+        if (!sponsor.ok) {
+            return sponsor.result;
+        }
+
         try {
-            const account = await this.db.createDiscordAccount(generatedEmail, discordUser);
+            const account = await this.db.createDiscordAccount(accountEmail, discordUser, sponsor.metadata);
             return {
                 ok: true,
                 reason: 'created',
                 mode: 'login',
-                account,
+                account: await this.deliverGeneratedPassword(account, discordUser),
                 discordUser,
                 message: 'Discord account created and login successful.'
             };
@@ -386,7 +452,8 @@ export class DiscordAccountLinkService {
             email: normalizeEmail(state.email),
             userId: Math.max(0, Math.round(Number(state.userId ?? 0))) || undefined,
             expiresAt: Date.now() + 10 * 60 * 1000,
-            nonce: crypto.randomBytes(16).toString('hex')
+            nonce: crypto.randomBytes(16).toString('hex'),
+            cb: Config.PUBLIC_BASE_URL
         });
         const authorizeUrl = new URL('https://discord.com/oauth2/authorize');
         authorizeUrl.searchParams.set('client_id', this.appId);
@@ -425,19 +492,176 @@ export class DiscordAccountLinkService {
             };
         }
 
+        const sponsor = await this.requireSponsorEligibility('link', discordUser);
+        if (!sponsor.ok) {
+            return sponsor.result;
+        }
+
         try {
-            const account = await this.db.linkDiscordToAccount(userId, discordUser);
+            const account = await this.db.linkDiscordToAccount(userId, discordUser, sponsor.metadata);
             return {
                 ok: true,
                 reason: 'ok',
                 mode: 'link',
-                account,
+                account: await this.deliverGeneratedPassword(account, discordUser),
                 discordUser,
                 message: 'Discord linked successfully.'
             };
         } catch (err) {
             return this.accountWriteFailure('link', discordUser, err);
         }
+    }
+
+    /**
+     * Multiplayer clients cannot rely on the localhost IP-matching auto-login,
+     * so first-time Discord players get generated credentials over Discord DM.
+     * The password is only persisted after the DM is delivered; otherwise the
+     * player could end up with a password they never saw.
+     */
+    private async deliverGeneratedPassword(
+        account: UserAccount,
+        discordUser: DiscordAccountProfile
+    ): Promise<UserAccount> {
+        const delivery = await this.deliverGeneratedPasswordToDiscord(
+            account,
+            discordUser.id,
+            'account-ready',
+            false
+        );
+        if (!delivery.ok) {
+            console.warn(
+                `[DiscordOAuth] Could not deliver generated password for ${account.email}: ${delivery.reason}`
+            );
+        }
+        return delivery.account ?? account;
+    }
+
+    private async deliverGeneratedPasswordToDiscord(
+        account: UserAccount,
+        discordUserId: string,
+        purpose: PasswordDeliveryPurpose,
+        force: boolean
+    ): Promise<DiscordPasswordDeliveryResult> {
+        if (!force && account.passwordHash) {
+            return {
+                ok: true,
+                reason: 'password-exists',
+                account,
+                message: 'Account already has a password.'
+            };
+        }
+
+        if (!this.botApi.isEnabled()) {
+            return {
+                ok: false,
+                reason: 'bot-disabled',
+                account,
+                message: 'Discord bot DM delivery is not configured on this server.'
+            };
+        }
+
+        const targetDiscordId = normalizeDiscordId(discordUserId || account.discordId);
+        if (!targetDiscordId) {
+            return {
+                ok: false,
+                reason: 'missing-discord-id',
+                account,
+                message: 'That account is not linked to Discord.'
+            };
+        }
+
+        const pw = generatePassword();
+        const sent = await this.botApi.sendDirectMessage(
+            targetDiscordId,
+            this.buildGeneratedPasswordMessage(account, pw, purpose)
+        );
+        if (!sent) {
+            return {
+                ok: false,
+                reason: 'dm-failed',
+                account,
+                message: 'Could not send a Discord DM. Check Discord privacy settings, then try again.'
+            };
+        }
+
+        try {
+            const updated = await this.db.updateAccountPassword(
+                account.email,
+                await hashPlaintextPasswordForClient(pw)
+            );
+            if (!updated) {
+                throw new Error('Account not found while storing generated password.');
+            }
+            console.log(`[DiscordOAuth] Generated password delivered via DM for ${updated.email}`);
+            return {
+                ok: true,
+                reason: 'ok',
+                account: updated,
+                message: 'Generated password delivered by Discord DM.'
+            };
+        } catch (err) {
+            console.warn(`[DiscordOAuth] Failed to store generated password for ${account.email}: ${(err as Error).message}`);
+            return {
+                ok: false,
+                reason: 'account-update-failed',
+                account,
+                message: 'Could not store the generated password. Try again.'
+            };
+        }
+    }
+
+    private buildGeneratedPasswordMessage(
+        account: UserAccount,
+        password: string,
+        purpose: PasswordDeliveryPurpose
+    ): string {
+        const aliasNote = account.discordEmail && normalizeEmail(account.discordEmail) !== normalizeEmail(account.email)
+            ? `You can also log in with your Discord email: ${account.discordEmail}`
+            : '';
+        return [
+            purpose === 'password-reset'
+                ? 'Your Dungeon Blitz password was reset.'
+                : 'Your Dungeon Blitz account is ready.',
+            `Email: ${account.email}`,
+            `Password: ${password}`,
+            aliasNote,
+            'Use this password in the game login screen. Keep it private.',
+            `Password reset: ${Config.PASSWORD_RESET_URL}`
+        ].filter(Boolean).join('\n');
+    }
+
+    private async optionalSponsorMetadata(discordUser: DiscordAccountProfile): Promise<SponsorAccountMetadata | undefined> {
+        const result = await this.sponsorEligibility.checkDiscordUser(discordUser);
+        return result.eligible ? result.metadata : undefined;
+    }
+
+    private async requireSponsorEligibility(
+        mode: 'login' | 'link',
+        discordUser: DiscordAccountProfile
+    ): Promise<
+        { ok: true; metadata: SponsorAccountMetadata } |
+        { ok: false; result: DiscordOAuthCompleteResult }
+    > {
+        const result = await this.sponsorEligibility.checkDiscordUser(discordUser);
+        if (result.eligible) {
+            return { ok: true, metadata: result.metadata };
+        }
+
+        const connectUrl = Config.DISCORD_LINKED_ROLES_CONNECT_URL;
+        const suffix = connectUrl
+            ? ` Complete Discord Linked Roles verification first: ${connectUrl}`
+            : '';
+        return {
+            ok: false,
+            result: toDiscordOAuthFailure(
+                result.reason === 'not-configured' || result.reason === 'query-failed'
+                    ? 'sponsor-check-unavailable'
+                    : 'sponsor-verification-required',
+                mode,
+                discordUser,
+                `${result.message}${suffix}`
+            )
+        };
     }
 
     private signState(payload: DiscordOAuthStatePayload): string {
@@ -501,6 +725,12 @@ export class DiscordAccountLinkService {
         });
         const parsed = await response.json().catch(() => ({})) as DiscordTokenResponse;
         if (!response.ok) {
+            console.warn(
+                `[DiscordOAuth] Token exchange failed status=${response.status} ` +
+                `error=${String(parsed.error || `http-${response.status}`)} ` +
+                `description=${String(parsed.error_description || response.statusText)} ` +
+                `redirectUri=${this.redirectUri}`
+            );
             return {
                 error: parsed.error || `http-${response.status}`,
                 error_description: parsed.error_description || response.statusText

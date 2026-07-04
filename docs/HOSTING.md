@@ -61,7 +61,7 @@ DISCORD_REDIRECT_URI=https://your-game-host.example/api/discord-linked-roles/cal
 DISCORD_ACCOUNT_LINK_STATE_SECRET=hex_or_long_random_secret
 ```
 
-Discord OAuth requests the `identify email` scope. Account creation requires a verified Discord email. New OAuth-created accounts use a deterministic internal email derived from the verified Discord email and Discord user id, while the original Discord email is stored separately as `discordEmail`. Password login is accepted only after the account has `discordId`, `discordEmail`, `discordLinkedAt`, and `discordSyncRequired: true`.
+Discord OAuth requests the `identify email` scope. Account creation requires a verified Discord email. New OAuth-created accounts use the verified Discord email as the game account email, and Discord profile fields are stored only as account metadata. Password login checks the account email and password hash; Discord metadata is not required for password authentication.
 
 The game host page tries the Discord desktop client protocol first because older FlashBrowser builds cannot render Discord's modern OAuth web page. If the Discord client does not open, copy the shown OAuth URL into a modern external browser.
 
