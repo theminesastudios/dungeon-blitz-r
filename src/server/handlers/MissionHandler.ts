@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { Client } from '../core/Client';
 import { DebugLogger } from '../core/Debug';
 import {
@@ -137,7 +139,13 @@ export class MissionHandler {
     ]);
     private static readonly DUNGEONS_WITH_CLIENT_SCRIPTED_COMPLETION = new Set([
         'AC_Mission1',
-        'AC_Mission1Hard'
+        'AC_Mission1Hard',
+        // Tessa's multi-phase fight reports scripted boss deaths mid-fight, so
+        // server-forced completion cannot distinguish a phase death from the real
+        // one. Only the client's own SetLevelComplete may finish this dungeon
+        // (still gated on the boss actually being dead).
+        'BT_Mission3',
+        'BT_Mission3Hard'
     ]);
     private static readonly DUNGEONS_REQUIRING_BOSS_DEFEAT = new Set([
         'CraftTownTutorial',
@@ -145,6 +153,8 @@ export class MissionHandler {
         'AC_Mission6Hard',
         'BT_Mission1',
         'BT_Mission1Hard',
+        'BT_Mission3',
+        'BT_Mission3Hard',
         'AC_Mission2',
         'AC_Mission2Hard',
         'AC_Mission5',
@@ -176,6 +186,8 @@ export class MissionHandler {
         AC_Mission6Hard: new Set(['NephitLargeEyeHard']),
         BT_Mission1: new Set(['BanditTwinA', 'BanditTwinB']),
         BT_Mission1Hard: new Set(['BanditTwinAHard', 'BanditTwinBHard']),
+        BT_Mission3: new Set(['MeylourBossMage']),
+        BT_Mission3Hard: new Set(['MeylourBossMageHard']),
         GhostBossDungeon: new Set(['NephitLargeEye']),
         GhostBossDungeonHard: new Set(['NephitLargeEyeHard']),
         JC_Mission1: new Set(['ImperialChampion']),
@@ -234,7 +246,18 @@ export class MissionHandler {
     private static readonly SIMULTANEOUS_REQUIRED_BOSS_DEFEAT_WINDOW_MS = 3000;
     private static readonly DUNGEONS_REQUIRING_SIMULTANEOUS_BOSS_DEFEAT = new Set([
         'JC_Mission9',
-        'JC_Mission9Hard'
+        'JC_Mission9Hard',
+        // Tessa's fight has scripted phase deaths: a live MeylourBossMage copy
+        // re-appearing must invalidate an earlier recorded boss defeat.
+        'BT_Mission3',
+        'BT_Mission3Hard'
+    ]);
+    // Bosses that report a scripted death mid-fight and then return to an active
+    // state. Their dead/hp flags must be cleared again on active updates, and a
+    // recorded defeat only counts once no revive follows within the settle window.
+    private static readonly DUNGEONS_WITH_PHASE_REVIVING_REQUIRED_BOSS = new Set([
+        'BT_Mission3',
+        'BT_Mission3Hard'
     ]);
     private static readonly DUNGEONS_REQUIRING_EXPLICIT_COMPLETION_CUTSCENE_END = new Set([
         'JC_Mission9',
@@ -244,7 +267,13 @@ export class MissionHandler {
     ]);
     private static readonly DUNGEONS_WHERE_CLIENT_COMPLETION_RELEASES_POST_DEATH_CUTSCENE = new Set([
         'JC_Mission3',
-        'JC_Mission3Hard'
+        'JC_Mission3Hard',
+        // The BT_Mission3 client script fires SetLevelComplete right after the
+        // end-of-dungeon treasure chest is destroyed (boss death and its cutscene
+        // are already over by then), so the completion must not sit in the
+        // post-death-cutscene wait gate for the 15s defer window.
+        'BT_Mission3',
+        'BT_Mission3Hard'
     ]);
     private static readonly DUNGEONS_WITH_REQUIRED_BOSS_PROXY_COPIES = new Set([
         'JC_Mission3',
@@ -259,6 +288,8 @@ export class MissionHandler {
         'AC_Mission6Hard',
         'BT_Mission1',
         'BT_Mission1Hard',
+        'BT_Mission3',
+        'BT_Mission3Hard',
         'JC_Mission1',
         'JC_Mission1Hard',
         'JC_Mission2',
@@ -277,6 +308,12 @@ export class MissionHandler {
     private static readonly NEPHIT_QUEST_COMPLETION_LEVELS = new Set([
         'GhostBossDungeon',
         'GhostBossDungeonHard'
+    ]);
+    // Levels whose completion pipeline events should be traced to the console
+    // (same event stream as the Nephit logger, without its recovery behaviors).
+    private static readonly DUNGEON_COMPLETION_TRACE_LEVELS = new Set([
+        'BT_Mission3',
+        'BT_Mission3Hard'
     ]);
     private static readonly NEWBIE_ROAD_GOBLIN_KILL_NAMES = new Set([
         'GoblinArmorSword',
@@ -1486,6 +1523,11 @@ export class MissionHandler {
             !dungeonCompletionObjectivesMet &&
             !allowSharedServerFullClearCompletion
         ) {
+            MissionHandler.logNephitQuestCompletion('completionRejected', client, {
+                levelScope,
+                reason: 'completion_objectives_not_met',
+                effectiveCompletionPercent
+            });
             return;
         }
 
@@ -1500,6 +1542,12 @@ export class MissionHandler {
                 effectiveCompletionPercent
             )
         ) {
+            MissionHandler.logNephitQuestCompletion('completionRejected', client, {
+                levelScope,
+                reason: 'client_report_not_accepted',
+                clearedDungeon,
+                effectiveCompletionPercent
+            });
             return;
         }
 
@@ -2320,7 +2368,20 @@ export class MissionHandler {
 
         if (pendingScope && pendingScope === scope) {
             client.pendingDungeonCompletionWaitForCutsceneEnd = false;
-            void MissionHandler.flushPendingDungeonCompletion(client);
+            if (MissionHandler.hasPhaseRevivingRequiredBoss(getScopeLevelName(scope))) {
+                // Give the client a moment to report the boss reviving (scripted
+                // phase death) before the completion is finalized.
+                client.pendingDungeonCompletionNotBeforeAt = Math.max(
+                    Number(client.pendingDungeonCompletionNotBeforeAt ?? 0),
+                    Date.now() + MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS
+                );
+                MissionHandler.armPendingDungeonCompletionTimer(
+                    client,
+                    MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS
+                );
+            } else {
+                void MissionHandler.flushPendingDungeonCompletion(client);
+            }
         }
 
         MissionHandler.trySchedulePostCutsceneDungeonCompletion(client, scope);
@@ -2427,7 +2488,8 @@ export class MissionHandler {
         if (
             !currentLevel ||
             !LevelConfig.isDungeonLevel(currentLevel) ||
-            !MissionHandler.hasPostDeathBossCutscene(currentLevel)
+            !MissionHandler.hasPostDeathBossCutscene(currentLevel) ||
+            MissionHandler.DUNGEONS_WITH_CLIENT_SCRIPTED_COMPLETION.has(LevelConfig.normalizeLevelName(currentLevel))
         ) {
             return;
         }
@@ -3688,7 +3750,10 @@ export class MissionHandler {
             LevelConfig.normalizeLevelName(client?.currentLevel || String(client?.character?.CurrentLevel?.name ?? '')) ||
             LevelConfig.normalizeLevelName(detailLevel) ||
             getScopeLevelName(detailScope);
-        if (!MissionHandler.isNephitQuestCompletionLevel(levelName)) {
+        if (
+            !MissionHandler.isNephitQuestCompletionLevel(levelName) &&
+            !(levelName && MissionHandler.DUNGEON_COMPLETION_TRACE_LEVELS.has(levelName))
+        ) {
             return;
         }
 
@@ -3708,6 +3773,21 @@ export class MissionHandler {
             return value;
         });
         console.log(`[NephitQuestCompletion] ${event} ${serializedDetails}`);
+        if (levelName && MissionHandler.DUNGEON_COMPLETION_TRACE_LEVELS.has(levelName)) {
+            try {
+                const repoRoot = process.cwd().endsWith(path.join('src', 'server'))
+                    ? path.resolve(process.cwd(), '..', '..')
+                    : process.cwd();
+                const logDir = path.join(repoRoot, 'logs');
+                fs.mkdirSync(logDir, { recursive: true });
+                fs.appendFileSync(
+                    path.join(logDir, 'dungeon_completion_trace.log'),
+                    `${new Date().toISOString()} ${event} ${serializedDetails}\n`
+                );
+            } catch {
+                // Trace logging must never interrupt gameplay packet handling.
+            }
+        }
     }
 
     private static isRequiredDungeonBossEntity(levelName: string | null | undefined, entity: any): boolean {
@@ -3937,6 +4017,70 @@ export class MissionHandler {
         return Boolean(normalizedLevel && MissionHandler.DUNGEONS_REQUIRING_SIMULTANEOUS_BOSS_DEFEAT.has(normalizedLevel));
     }
 
+    private static hasPhaseRevivingRequiredBoss(levelName: string | null | undefined): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        return Boolean(normalizedLevel && MissionHandler.DUNGEONS_WITH_PHASE_REVIVING_REQUIRED_BOSS.has(normalizedLevel));
+    }
+
+    static isPhaseRevivableDungeonBossEntity(levelName: string | null | undefined, entity: any): boolean {
+        if (!MissionHandler.hasPhaseRevivingRequiredBoss(levelName)) {
+            return false;
+        }
+
+        return MissionHandler.isRequiredDungeonCompletionBossEntity(levelName, entity);
+    }
+
+    static noteRequiredDungeonBossRevived(client: Client, entity: any): void {
+        const scopeKey = String(getClientLevelScope(client) ?? '').trim();
+        if (!scopeKey) {
+            return;
+        }
+
+        const levelName = getScopeLevelName(scopeKey);
+        if (!MissionHandler.hasPhaseRevivingRequiredBoss(levelName)) {
+            return;
+        }
+
+        const canonicalName =
+            MissionHandler.getRequiredDungeonBossCanonicalName(levelName, entity) ||
+            MissionHandler.getEntityName(entity);
+        const entityId = Math.max(0, Math.round(Number(entity?.id ?? 0)));
+        const scopedEntity = entityId > 0 ? GlobalState.levelEntities.get(scopeKey)?.get(entityId) : null;
+        for (const target of [entity, scopedEntity]) {
+            if (target && typeof target === 'object') {
+                target.questDefeatProcessed = false;
+            }
+        }
+
+        const progress = MissionHandler.dungeonCompletionObjectiveProgress.get(scopeKey);
+        const hadRecordedDefeat = Boolean(canonicalName && progress?.defeatedBossNames.has(canonicalName));
+        if (progress && canonicalName && hadRecordedDefeat) {
+            progress.defeatedBossNames.delete(canonicalName);
+            progress.defeatedBossNameTimes.delete(canonicalName);
+            progress.bossDefeated = false;
+        }
+
+        // Drop any pending forced completion in this scope: the boss is alive again.
+        for (const session of GlobalState.sessionsByToken.values()) {
+            if (!session.playerSpawned || getClientLevelScope(session) !== scopeKey) {
+                continue;
+            }
+            if (
+                String(session.pendingDungeonCompletionScope ?? '').trim() === scopeKey &&
+                String(session.pendingDungeonCompletionForceSharedScope ?? '').trim() === scopeKey
+            ) {
+                MissionHandler.clearPendingDungeonCompletion(session);
+            }
+        }
+
+        MissionHandler.logNephitQuestCompletion('requiredBossRevived', client, {
+            levelScope: scopeKey,
+            entityId,
+            entityName: canonicalName,
+            hadRecordedDefeat
+        });
+    }
+
     private static hasSimultaneousRequiredBossDefeat(
         levelName: string | null | undefined,
         progress: DungeonCompletionObjectiveProgress | undefined
@@ -4091,6 +4235,18 @@ export class MissionHandler {
         if (roomId > 0) {
             progress.bossRoomId = roomId;
         }
+        MissionHandler.logNephitQuestCompletion('requiredBossDefeatMarked', null, {
+            levelScope,
+            levelName: normalizedLevel ?? levelName,
+            entityId,
+            entityName,
+            roomId,
+            hp: Number(entity?.hp ?? NaN),
+            entState: Number(entity?.entState ?? NaN),
+            dead: Boolean(entity?.dead),
+            bossDefeated: progress.bossDefeated,
+            defeatedBossNames: Array.from(progress.defeatedBossNames.values())
+        });
     }
 
     private static hasRequiredDungeonBossDefeatEvidence(
@@ -4335,10 +4491,17 @@ export class MissionHandler {
                     MissionHandler.isAliveDungeonCompletionObjective(entity)
                 ) {
                     const entityName = MissionHandler.getEntityName(entity);
-                    if (entityName && progress) {
+                    if (entityName && progress && progress.defeatedBossNames.has(entityName)) {
                         progress.defeatedBossNames.delete(entityName);
                         progress.defeatedBossNameTimes.delete(entityName);
                         progress.bossDefeated = false;
+                        MissionHandler.logNephitQuestCompletion('requiredBossDefeatRevoked', client, {
+                            levelScope: scopeKey,
+                            entityName,
+                            entityId: Math.max(0, Math.round(Number(entity?.id ?? 0))),
+                            hp: Number(entity?.hp ?? NaN),
+                            entState: Number(entity?.entState ?? NaN)
+                        });
                     }
                 }
 

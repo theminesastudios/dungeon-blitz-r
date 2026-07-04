@@ -5591,6 +5591,24 @@ export class LevelHandler {
         const canonicalIsDefeatState = LevelHandler.isDefeatedEntityStateValue(canonicalEntState);
         const isActiveSelfState = isSelf && !canonicalIsDefeatState;
 
+        if (
+            isEnemyEntity &&
+            !canonicalIsDefeatState &&
+            Boolean((levelEntity ?? ent)?.dead) &&
+            MissionHandler.isPhaseRevivableDungeonBossEntity(currentLevel, levelEntity ?? ent)
+        ) {
+            // Scripted phase revive: the boss reported a death earlier but is
+            // active again — clear the sticky defeat flags so completion logic
+            // sees it alive, and revoke the recorded boss defeat.
+            for (const target of levelEntity && levelEntity !== ent ? [ent, levelEntity] : [ent]) {
+                target.dead = false;
+                if (Number(target.hp ?? 0) <= 0) {
+                    target.hp = Math.max(1, Math.round(Number(target.maxHp ?? 1)));
+                }
+            }
+            MissionHandler.noteRequiredDungeonBossRevived(client, levelEntity ?? ent);
+        }
+
         const previousX = Number(ent.x ?? 0);
         const previousCanonicalX = Number(levelEntity?.x ?? ent.x ?? 0);
         const previousCanonicalY = Number(levelEntity?.y ?? ent.y ?? 0);
