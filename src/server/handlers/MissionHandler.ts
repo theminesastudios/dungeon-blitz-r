@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import { Client } from '../core/Client';
 import { DebugLogger } from '../core/Debug';
 import {
@@ -124,6 +122,14 @@ export class MissionHandler {
     ]);
     private static readonly FULL_CLEAR_ONLY_DUNGEON_PATTERN = /^CH_MiniMission\d+(Hard)?$/;
     private static readonly FULL_CLEAR_ONLY_DUNGEON_NAMES = new Set([
+        'BT_Mission4',
+        'BT_Mission4Hard',
+        'CH_Mission5',
+        'CH_Mission5Hard',
+        'AC_Mission4',
+        'AC_Mission4Hard',
+        'OMM_Mission7',
+        'OMM_Mission7Hard',
         'JC_Mini1',
         'JC_Mini1Hard',
         'JC_Mini2',
@@ -308,12 +314,6 @@ export class MissionHandler {
     private static readonly NEPHIT_QUEST_COMPLETION_LEVELS = new Set([
         'GhostBossDungeon',
         'GhostBossDungeonHard'
-    ]);
-    // Levels whose completion pipeline events should be traced to the console
-    // (same event stream as the Nephit logger, without its recovery behaviors).
-    private static readonly DUNGEON_COMPLETION_TRACE_LEVELS = new Set([
-        'BT_Mission3',
-        'BT_Mission3Hard'
     ]);
     private static readonly NEWBIE_ROAD_GOBLIN_KILL_NAMES = new Set([
         'GoblinArmorSword',
@@ -2153,7 +2153,7 @@ export class MissionHandler {
             return Math.max(0, Number(completionPercent ?? 0)) >= 100;
         }
 
-        if (MissionHandler.requiresBossDefeatForDungeon(currentLevel)) {
+        if (MissionHandler.requiresCompletionBossDefeatForDungeon(currentLevel)) {
             return MissionHandler.hasMetRequiredDungeonCompletionObjectives(client, currentLevel, levelScope);
         }
 
@@ -3751,8 +3751,7 @@ export class MissionHandler {
             LevelConfig.normalizeLevelName(detailLevel) ||
             getScopeLevelName(detailScope);
         if (
-            !MissionHandler.isNephitQuestCompletionLevel(levelName) &&
-            !(levelName && MissionHandler.DUNGEON_COMPLETION_TRACE_LEVELS.has(levelName))
+            !MissionHandler.isNephitQuestCompletionLevel(levelName)
         ) {
             return;
         }
@@ -3773,21 +3772,6 @@ export class MissionHandler {
             return value;
         });
         console.log(`[NephitQuestCompletion] ${event} ${serializedDetails}`);
-        if (levelName && MissionHandler.DUNGEON_COMPLETION_TRACE_LEVELS.has(levelName)) {
-            try {
-                const repoRoot = process.cwd().endsWith(path.join('src', 'server'))
-                    ? path.resolve(process.cwd(), '..', '..')
-                    : process.cwd();
-                const logDir = path.join(repoRoot, 'logs');
-                fs.mkdirSync(logDir, { recursive: true });
-                fs.appendFileSync(
-                    path.join(logDir, 'dungeon_completion_trace.log'),
-                    `${new Date().toISOString()} ${event} ${serializedDetails}\n`
-                );
-            } catch {
-                // Trace logging must never interrupt gameplay packet handling.
-            }
-        }
     }
 
     private static isRequiredDungeonBossEntity(levelName: string | null | undefined, entity: any): boolean {

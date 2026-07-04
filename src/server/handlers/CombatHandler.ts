@@ -1839,17 +1839,22 @@ export class CombatHandler {
             (CombatHandler.isEntityDead(entity) || healthState!.currentHp <= 0);
         const verifiedDefeat = deathRegenArmed &&
             CombatHandler.isHostileDefeatVerified(levelScope, entity);
+        const finalizedDeath = CombatHandler.isTerminalHostileEntity(entity) ||
+            Boolean(entity?.lootDropped) ||
+            Boolean(entity?.deathRewardGrantedAt);
         if (
             !healthState ||
             healthState.currentHp >= healthState.maxHp ||
-            (zeroHpOrDead && (!deadDeathRegenPlayer || verifiedDefeat))
+            zeroHpOrDead ||
+            verifiedDefeat ||
+            finalizedDeath
         ) {
             CombatHandler.logBossRegen('boss-regen-skip', levelScope, entity, {
                 reason: !healthState
                     ? 'no-health'
                     : healthState.currentHp >= healthState.maxHp
                         ? 'full'
-                        : verifiedDefeat
+                        : verifiedDefeat || finalizedDeath
                             ? 'verified-dead'
                             : 'dead',
                 currentHp: healthState?.currentHp ?? 0,
@@ -1892,17 +1897,6 @@ export class CombatHandler {
                 maxHp: healthState.maxHp,
                 aggroTargetEntityId: Math.round(Number(entity?.aggroTargetEntityId ?? 0)),
                 aggroTargetToken: Math.round(Number(entity?.aggroTargetToken ?? 0))
-            }, CombatHandler.BOSS_REGEN_LOG_THROTTLE_MS, nowMs);
-            return;
-        }
-
-        if (!deathRegenArmed) {
-            CombatHandler.logBossRegen('boss-regen-skip', levelScope, entity, {
-                reason: 'death-not-armed',
-                currentHp: healthState.currentHp,
-                maxHp: healthState.maxHp,
-                healthDelta: CombatHandler.getNpcHealthDelta(entity),
-                roomId: Math.round(Number(entity?.roomId ?? -1))
             }, CombatHandler.BOSS_REGEN_LOG_THROTTLE_MS, nowMs);
             return;
         }
@@ -2567,6 +2561,13 @@ export class CombatHandler {
             ) {
                 continue;
             }
+            if (
+                CombatHandler.isTerminalHostileEntity(entity) ||
+                Boolean(entity?.lootDropped) ||
+                Boolean(entity?.deathRewardGrantedAt)
+            ) {
+                continue;
+            }
 
             const alreadyArmedForThisDeath = String(entity.deathRegenArmedForPlayerKey ?? '') === deathRegenArmKey;
             CombatHandler.clearHostileAggroTargetForPlayer(entity, client);
@@ -2662,6 +2663,14 @@ export class CombatHandler {
                 continue;
             }
             if (Boolean(entity?.isPlayer) || Number(entity?.team ?? 0) !== 2) {
+                continue;
+            }
+            if (
+                CombatHandler.isTerminalHostileEntity(entity) ||
+                Boolean(entity?.lootDropped) ||
+                Boolean(entity?.deathRewardGrantedAt) ||
+                CombatHandler.isHostileDefeatVerified(levelScope, entity)
+            ) {
                 continue;
             }
 

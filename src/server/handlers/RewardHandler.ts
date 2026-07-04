@@ -87,8 +87,19 @@ type XpRewardDebug = {
     finalExp: number;
 };
 
+type ResolvedReward = {
+    exp: number;
+    gold: number;
+    hpGain: number;
+    materialId: number;
+    gearId: number;
+    gearTier: number;
+    dyeId: number;
+};
+
 export class RewardHandler {
     private static nextLootId = 900000;
+    private static readonly revivableBossRewardDropsByScope = new Set<string>();
     private static readonly MATERIAL_DROP_CHANCE_BY_RANK: Record<string, number> = {
         Minion: 0.03,
         Lieutenant: 0.15,
@@ -775,15 +786,7 @@ export class RewardHandler {
         );
     }
 
-    private static maybeOverrideDungeonReward(client: Client, sourceEntity: any, reward: RewardRequest): {
-        exp: number;
-        gold: number;
-        hpGain: number;
-        materialId: number;
-        gearId: number;
-        gearTier: number;
-        dyeId: number;
-    } {
+    private static maybeOverrideDungeonReward(client: Client, sourceEntity: any, reward: RewardRequest): ResolvedReward {
         let exp = reward.exp;
         let gold = reward.gold;
         const packetGold = gold;
@@ -1016,6 +1019,52 @@ export class RewardHandler {
         return result;
     }
 
+    private static hasNonHealthReward(reward: ResolvedReward): boolean {
+        return reward.exp > 0 ||
+            reward.gold > 0 ||
+            reward.materialId > 0 ||
+            reward.gearId > 0 ||
+            reward.dyeId > 0;
+    }
+
+    private static normalizeRevivableBossReward(client: Client, sourceEntity: any, reward: ResolvedReward): ResolvedReward {
+        if (!RewardHandler.hasNonHealthReward(reward)) {
+            return reward;
+        }
+
+        const normalizedLevel = LevelConfig.normalizeLevelName(client.currentLevel);
+        if (normalizedLevel !== 'JC_Mission9' && normalizedLevel !== 'JC_Mission9Hard') {
+            return reward;
+        }
+
+        const entName = String(sourceEntity?.name ?? sourceEntity?.EntName ?? sourceEntity?.entName ?? '').trim();
+        if (!entName) {
+            return reward;
+        }
+
+        const entType = GameData.getEntType(entName) ?? {};
+        const behavior = String(entType?.Behavior ?? sourceEntity?.Behavior ?? sourceEntity?.behavior ?? '').trim();
+        if (!/^Revivable/i.test(behavior) || String(entType?.EntRank ?? '') !== 'Boss') {
+            return reward;
+        }
+
+        const scopeKey = `${getClientLevelScope(client)}:${entName}`;
+        if (!RewardHandler.revivableBossRewardDropsByScope.has(scopeKey)) {
+            RewardHandler.revivableBossRewardDropsByScope.add(scopeKey);
+            return reward;
+        }
+
+        return {
+            ...reward,
+            exp: 0,
+            gold: 0,
+            materialId: 0,
+            gearId: 0,
+            gearTier: 0,
+            dyeId: 0
+        };
+    }
+
     private static persistCharacter(client: Client, reason: string): void {
         if (!client.userId || !client.character) {
             return;
@@ -1124,7 +1173,11 @@ export class RewardHandler {
         }
         client.processedRewardSources.add(rewardKey);
 
-        const resolved = RewardHandler.maybeOverrideDungeonReward(client, sourceEntity, reward);
+        const resolved = RewardHandler.normalizeRevivableBossReward(
+            client,
+            sourceEntity,
+            RewardHandler.maybeOverrideDungeonReward(client, sourceEntity, reward)
+        );
         const reason = context.reason ?? 'unknown';
         const caller = context.caller ?? 'unknown';
         if (context.sourceLootDropNonce) {
