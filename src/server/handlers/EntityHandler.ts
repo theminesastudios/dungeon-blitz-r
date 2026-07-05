@@ -256,6 +256,19 @@ export class EntityHandler {
             return exact;
         }
 
+        // roomId is viewer-dependent (each client reports its own currentRoomId)
+        // while spawn positions are level-global, so a joiner's key can differ
+        // from the killer's only in the room component. Match ignoring it, or a
+        // dead enemy would be re-promoted alive for the whole instance.
+        const roomAgnosticKey = EntityHandler.stripRoomFromHostileSpawnKey(spawnKey);
+        if (roomAgnosticKey) {
+            for (const tombstone of tombstones.values()) {
+                if (EntityHandler.stripRoomFromHostileSpawnKey(tombstone.spawnKey) === roomAgnosticKey) {
+                    return tombstone;
+                }
+            }
+        }
+
         const fingerprint = EntityHandler.getServerAuthorityHostileFingerprint(entity);
         if (!fingerprint) {
             return null;
@@ -275,6 +288,15 @@ export class EntityHandler {
         }
 
         return null;
+    }
+
+    private static stripRoomFromHostileSpawnKey(spawnKey: unknown): string {
+        const key = String(spawnKey ?? '').trim();
+        if (!key) {
+            return '';
+        }
+
+        return key.replace(/\|room:-?\d+\|/, '|room:*|');
     }
 
     private static getHostileBaseHpForLevel(level: number): number {
@@ -602,6 +624,30 @@ export class EntityHandler {
         );
         if (!proxyName) {
             return null;
+        }
+
+        // The canonical's x/y follow the proxy owner's simulation, so a joiner's
+        // fresh cue spawn can be far from it. The spawnKey keeps the original
+        // spawn identity (type + level-global spawn position); a unique match on
+        // it beats any distance heuristic and prevents duplicate canonicals. The
+        // room component is ignored because each client reports its own roomId.
+        const proxySpawnKey = EntityHandler.stripRoomFromHostileSpawnKey(entity.spawnKey);
+        if (proxySpawnKey) {
+            let spawnKeyMatch: any | null = null;
+            let spawnKeyMatchCount = 0;
+            for (const candidate of levelMap.values()) {
+                if (!EntityHandler.isServerAuthorityHostileEntity(levelName, candidate)) {
+                    continue;
+                }
+                if (EntityHandler.stripRoomFromHostileSpawnKey(candidate.spawnKey) !== proxySpawnKey) {
+                    continue;
+                }
+                spawnKeyMatchCount++;
+                spawnKeyMatch = candidate;
+            }
+            if (spawnKeyMatchCount === 1) {
+                return spawnKeyMatch;
+            }
         }
 
         let bestMatch: any | null = null;
@@ -1884,9 +1930,10 @@ export class EntityHandler {
         const aliasMap = EntityHandler.getHostileAliasMap(canonical);
         const registeredLocalId = Math.max(0, Math.round(Number(aliasMap.get(viewer.token)) || 0));
         if (registeredLocalId > 0) {
-            if (registeredLocalId !== entityId || viewer.entities.has(registeredLocalId) || viewer.knownEntityIds.has(registeredLocalId)) {
-                return { ok: true, localId: registeredLocalId, entity: canonical, reason: 'registered' };
-            }
+            // Trust the registration even after the viewer-side caches were purged
+            // by an earlier death correction; the client ignores unknown ids, while
+            // a miss here would leave the viewer's local copy alive forever.
+            return { ok: true, localId: registeredLocalId, entity: canonical, reason: 'registered' };
         }
 
         const legacyLocalId = EntityHandler.resolveEntityLocalId(viewer, entityId);

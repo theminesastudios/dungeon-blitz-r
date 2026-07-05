@@ -35,8 +35,8 @@
     "email": "1@gmail.com",
     "user_id": 9,
     "passwordKdf": "scrypt",
-    "passwordSalt": "bO92eQvDei/H6xZxpDHlkg==",
-    "passwordHash": "W0XUyw1+8ykBER/ON9l723uofM1vdrvL843JTDUgpRa0+cvJgdupMdgMkwROwlbU+F/t22Kyj+tyHXmDxWe3Qg==",
+    "passwordSalt": "EvnVXB5U3W2Qw57JR15zQA==",
+    "passwordHash": "gLBA2JIsCAfgHfQfXWJpzImVpqo91AFOjRMzlrCadLWsKuRVW+POLtECiz4tCOAvMVEn+hHZKni8Umd6FevhEw==",
     "passwordParams": {
       "N": 16384,
       "r": 8,
@@ -84,5 +84,34 @@
       "p": 1,
       "keylen": 64
     }
+  },
+  {
+    "email": "neodevils_contact@icloud.com",
+    "user_id": 15,
+    "passwordKdf": "scrypt",
+    "passwordSalt": "YGt5lO5UfKCPpZMRQsqVPQ==",
+    "passwordHash": "pEuITQ65x+W3aOC4bV399lgXsGr9a/e4eI4QbGlKZHqJ4Urv3Ta5ukqGoLZ6Ufwqud1TlvhSPRGwen6gu4mLiw==",
+    "passwordParams": {
+      "N": 16384,
+      "r": 8,
+      "p": 1,
+      "keylen": 64
+    },
+    "discordId": "285118390031351809",
+    "discordUsername": "neodevils",
+    "discordGlobalName": "Neo",
+    "discordDisplayName": "Neo",
+    "discordEmail": "neodevils_contact@icloud.com",
+    "discordEmailVerified": true,
+    "discordAvatar": "55416dd2732dcdca87c294f23d4c3996",
+    "discordLinkedAt": "2026-07-03T08:13:35.918Z",
+    "discordSyncRequired": true,
+    "accountSource": "discord_oauth",
+    "sponsorStatus": "active",
+    "sponsorEligible": true,
+    "isSponsor": true,
+    "sponsorSource": "mongodb:minidb.data",
+    "sponsorCheckedAt": "2026-07-03T09:44:37.413Z",
+    "sponsorRecordId": "285118390031351809"
   }
 ]

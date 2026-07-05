@@ -390,6 +390,8 @@ async function testAcMission1FirstSightAuthorityConvergesDragon(): Promise<void>
 
     rogue.sentPackets.length = 0;
     mage.sentPackets.length = 0;
+    // Shorten the corpse-destroy deferral so the test can observe it firing.
+    (CombatHandler as unknown as { HOSTILE_CORPSE_DESTROY_DELAY_MS: number }).HOSTILE_CORPSE_DESTROY_DELAY_MS = 700;
     await CombatHandler.handlePowerHit(mage as never, buildPowerHitPayload(10859330, mage.clientEntID, Math.round(Number(canonical.hp ?? 0)) + 999));
     assert.equal(canonical.hp, 0, 'lethal mage hit should kill the same canonical dragon');
     assert.equal(canonical.dead, true, 'lethal mage hit should mark canonical dragon dead');
@@ -419,9 +421,16 @@ async function testAcMission1FirstSightAuthorityConvergesDragon(): Promise<void>
     );
     assert.equal(
         mage.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload) === 10859330),
-        true,
-        'mage should receive a delayed death-resweep destroy on its local bridged dragon id'
+        false,
+        'mage corpse destroy must stay deferred so the death animation can play out'
     );
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    assert.equal(
+        mage.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload) === 10859330),
+        true,
+        'mage should receive the deferred corpse destroy after the death animation window'
+    );
+    (CombatHandler as unknown as { HOSTILE_CORPSE_DESTROY_DELAY_MS: number }).HOSTILE_CORPSE_DESTROY_DELAY_MS = 12_000;
 }
 
 async function testAcMission1BuffStateBridgesThroughCanonicalEnemy(): Promise<void> {
@@ -883,6 +892,38 @@ function testAcMission1DestroyedDragonDoesNotRespawnOnRejoin(): void {
         true,
         'rejoined local dragon should be destroyed locally instead of staying alive'
     );
+
+    // A player who joins the party mid-run reports a different currentRoomId,
+    // so their spawnKey differs from the tombstone's in the room component.
+    // The dead enemy must still stay dead for the whole instance.
+    const lateJoiner = createFakeClient('LateJoiner', 77777, 5);
+    setParty(rogue, rejoin, lateJoiner);
+    attachPlayer(lateJoiner);
+    GlobalState.sessionsByToken.set(lateJoiner.token, lateJoiner as never);
+    lateJoiner.sentPackets.length = 0;
+    attachProxy(lateJoiner, 11999999, 'AncientDragonGoldMini', 3010, 1200, 5);
+
+    assert.equal(
+        Array.from(levelMap.values()).some((entity) => !entity.isPlayer && Number(entity.team ?? 0) === EntityTeam.ENEMY),
+        false,
+        'mid-run party joiner in another room must not resurrect the dead dragon as a new canonical'
+    );
+    assert.equal(
+        lateJoiner.sentPackets.some((packet) => packet.id === 0x78 && parseHpDelta(packet.payload).entityId === 11999999 && parseHpDelta(packet.payload).delta < 0),
+        true,
+        'mid-run party joiner should receive authoritative zero HP for the dead dragon'
+    );
+    assert.equal(
+        lateJoiner.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 11999999 && parseEntityState(packet.payload).entState === EntityState.DEAD),
+        true,
+        'mid-run party joiner should see the dead dragon in DEAD state'
+    );
+    assert.equal(
+        lateJoiner.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload) === 11999999),
+        true,
+        'mid-run party joiner local dragon copy should be cleaned up instead of staying alive'
+    );
+    GlobalState.sessionsByToken.delete(lateJoiner.token);
 }
 
 function testAcMission1ReconnectDoesNotResetLiveCanonicalScope(): void {

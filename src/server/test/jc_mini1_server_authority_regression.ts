@@ -421,6 +421,8 @@ async function testProxyAttachHitDeathAndDestroy(): Promise<void> {
     const remainingHp = Math.round(Number(canonicalAfterHit.hp ?? 0));
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
+    // Shorten the corpse-destroy deferral so the test can observe it firing.
+    (CombatHandler as unknown as { HOSTILE_CORPSE_DESTROY_DELAY_MS: number }).HOSTILE_CORPSE_DESTROY_DELAY_MS = 300;
     await CombatHandler.handlePowerHit(zeus as never, buildPowerHitPayload(500001, zeus.clientEntID, remainingHp + 999));
     assert.equal(zeus.sentPackets.some((packet) => packet.id === 0x0A), false, 'attacker should not receive echoed lethal hit packet');
     assert.equal(
@@ -434,10 +436,17 @@ async function testProxyAttachHitDeathAndDestroy(): Promise<void> {
     assert.equal(parseEntityState(telahair.sentPackets[deathIndex].payload).entityId, 600001, 'death state should use viewer local proxy id');
     assert.equal(
         telahair.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 600001),
-        true,
-        'viewer proxy should be destroyed locally after death relay'
+        false,
+        'viewer proxy destroy must stay deferred so the death animation can play out'
     );
     assert.equal(telahair.entities.has(600001), false, 'viewer proxy cache should not stay alive after death relay');
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    assert.equal(
+        telahair.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 600001),
+        true,
+        'viewer proxy should receive the deferred corpse destroy after the death animation window'
+    );
+    (CombatHandler as unknown as { HOSTILE_CORPSE_DESTROY_DELAY_MS: number }).HOSTILE_CORPSE_DESTROY_DELAY_MS = 12_000;
 
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
@@ -479,6 +488,8 @@ async function testReversePowerHitLethalConvergesStarter(): Promise<void> {
     const remainingHp = Math.round(Number(canonicalAfterHit.hp ?? 0));
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
+    // Shorten the corpse-destroy deferral so the test can observe it firing.
+    (CombatHandler as unknown as { HOSTILE_CORPSE_DESTROY_DELAY_MS: number }).HOSTILE_CORPSE_DESTROY_DELAY_MS = 300;
     await CombatHandler.handlePowerHit(telahair as never, buildPowerHitPayload(600002, telahair.clientEntID, remainingHp + 999));
 
     assert.equal(canonicalAfterHit.hp, 0, 'reverse lethal power hit should set canonical HP to zero');
@@ -494,10 +505,17 @@ async function testReversePowerHitLethalConvergesStarter(): Promise<void> {
     assertLocalDeadPacket(zeus, 500002, 'reverse lethal power hit should reconverge starter local proxy to DEAD');
     assert.equal(
         zeus.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 500002),
-        true,
-        'starter proxy should be destroyed locally after reverse lethal power hit'
+        false,
+        'starter proxy destroy must stay deferred so the death animation can play out'
     );
     assert.equal(zeus.entities.has(500002), false, 'starter cache should not keep reverse lethal proxy alive');
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 500002),
+        true,
+        'starter proxy should receive the deferred corpse destroy after the death animation window'
+    );
+    (CombatHandler as unknown as { HOSTILE_CORPSE_DESTROY_DELAY_MS: number }).HOSTILE_CORPSE_DESTROY_DELAY_MS = 12_000;
 
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
@@ -521,6 +539,8 @@ async function testReverseBuffTickLethalConvergesStarter(): Promise<void> {
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
 
+    // Shorten the corpse-destroy deferral so the test can observe it firing.
+    (CombatHandler as unknown as { HOSTILE_CORPSE_DESTROY_DELAY_MS: number }).HOSTILE_CORPSE_DESTROY_DELAY_MS = 300;
     await CombatHandler.handleBuffTickDot(telahair as never, buildBuffTickDotPayload(600006, telahair.clientEntID, Math.round(Number(canonical.hp ?? 0)) + 99));
 
     assert.equal(canonical.hp, 0, 'reverse lethal DoT tick should set canonical HP to zero');
@@ -531,10 +551,17 @@ async function testReverseBuffTickLethalConvergesStarter(): Promise<void> {
     assertLocalDeadPacket(zeus, 500006, 'reverse lethal DoT tick should reconverge starter local proxy to DEAD');
     assert.equal(
         zeus.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 500006),
-        true,
-        'starter proxy should be destroyed locally after reverse lethal DoT tick'
+        false,
+        'starter proxy destroy must stay deferred so the death animation can play out'
     );
     assert.equal(zeus.entities.has(500006), false, 'starter cache should not keep reverse lethal DoT proxy alive');
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 500006),
+        true,
+        'starter proxy should receive the deferred corpse destroy after the death animation window'
+    );
+    (CombatHandler as unknown as { HOSTILE_CORPSE_DESTROY_DELAY_MS: number }).HOSTILE_CORPSE_DESTROY_DELAY_MS = 12_000;
 }
 
 async function testPredictedDestroyLateDeadProxyAndSummonPassthrough(): Promise<void> {
