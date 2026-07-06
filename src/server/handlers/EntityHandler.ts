@@ -63,6 +63,9 @@ export class EntityHandler {
         'Castle',
         'CastleHard'
     ]);
+    private static readonly CANONICAL_REPLACE_CLIENT_HOSTILE_LEVELS = new Set<string>([
+        'AC_Mission1'
+    ]);
     private static readonly CANONICAL_VISIBLE_PROXY_MATCH_MAX_DISTANCE_SQ = 400 * 400;
     static readonly SERVER_AUTHORITY_ENTITY_LEVEL = 50;
     private static readonly HOSTILE_BASE_HITPOINTS = [
@@ -113,6 +116,12 @@ export class EntityHandler {
 
     static usesCanonicalVisibleServerAuthorityHostiles(levelName: string | null | undefined): boolean {
         return EntityHandler.FIRST_SIGHT_SERVER_AUTHORITY_HOSTILE_LEVELS.has(
+            LevelConfig.normalizeLevelName(getScopeLevelName(String(levelName ?? '')))
+        );
+    }
+
+    private static replacesClientHostileWithCanonical(levelName: string | null | undefined): boolean {
+        return EntityHandler.CANONICAL_REPLACE_CLIENT_HOSTILE_LEVELS.has(
             LevelConfig.normalizeLevelName(getScopeLevelName(String(levelName ?? '')))
         );
     }
@@ -1013,6 +1022,16 @@ export class EntityHandler {
                 continue;
             }
 
+            if (EntityHandler.replacesClientHostileWithCanonical(levelName)) {
+                EntityHandler.sendCanonicalServerAuthorityHostileSnapshot(
+                    viewer,
+                    levelName,
+                    canonical,
+                    'first_sight_owner_canonical_fanout'
+                );
+                continue;
+            }
+
             const localId = EntityHandler.findClientLocalServerAuthorityProxyForCanonical(viewer, levelName, canonical);
             if (localId <= 0) {
                 logJcMini1Authority('canonical_visible_bridge_wait_for_proxy', {
@@ -1037,6 +1056,78 @@ export class EntityHandler {
                 'first_sight_owner_canonical_fanout'
             );
         }
+    }
+
+    private static sendCanonicalServerAuthorityHostileSnapshot(
+        client: Client,
+        levelName: string | null | undefined,
+        canonical: any,
+        reason: string
+    ): void {
+        if (!EntityHandler.isServerAuthorityHostileEntity(levelName, canonical)) {
+            return;
+        }
+
+        EntityHandler.normalizeServerAuthorityHostileState(levelName, canonical);
+        const canonicalId = Math.max(0, Math.round(Number(canonical?.id ?? 0)));
+        if (canonicalId <= 0) {
+            return;
+        }
+
+        const snapshot = {
+            ...canonical,
+            id: canonicalId,
+            clientSpawned: false,
+            canonicalEntityId: undefined,
+            sharedCanonicalId: undefined,
+            ownerToken: 0,
+            ownerUserId: 0,
+            ownerPartyId: 0,
+            ownerCharacterName: ''
+        };
+        const existing = client.entities.get(canonicalId);
+        const needsSpawn =
+            !existing ||
+            Boolean(existing?.clientSpawned) ||
+            !client.knownEntityIds.has(canonicalId);
+
+        EntityHandler.registerCanonicalHostileAlias(
+            client,
+            getClientLevelScope(client),
+            canonical,
+            canonicalId,
+            reason
+        );
+        client.entities.set(canonicalId, { ...snapshot });
+        client.knownEntityIds.add(canonicalId);
+        EntityHandler.setSharedEntityRemoteUpdatesDeferred(client, canonicalId, false);
+
+        if (needsSpawn) {
+            EntityHandler.sendEntity(client, snapshot);
+            if (Boolean(snapshot.untargetable)) {
+                EntityHandler.sendSetUntargetable(client, canonicalId, true);
+            }
+        }
+
+        logJcMini1Authority('canonical_snapshot_to_viewer', {
+            packetId: needsSpawn ? '0x0F' : 'cached',
+            reason,
+            entityId: canonicalId,
+            localEntityId: canonicalId,
+            name: snapshot.name,
+            viewer: client.character?.name ?? '',
+            viewerToken: client.token,
+            scope: getClientLevelScope(client),
+            roomId: snapshot.roomId,
+            viewerRoomId: client.currentRoomId,
+            entityLevel: snapshot.level,
+            hp: Math.round(Number(snapshot.hp ?? 0)),
+            maxHp: Math.round(Number(snapshot.maxHp ?? 0)),
+            healthDelta: Math.round(Number(snapshot.healthDelta ?? 0)),
+            dead: Boolean(snapshot.dead),
+            entState: snapshot.entState,
+            untargetable: Boolean(snapshot.untargetable)
+        });
     }
 
     static isServerAuthorityProxyOwner(client: Client, canonicalEntity: any, localEntityId: number): boolean {
@@ -1160,13 +1251,16 @@ export class EntityHandler {
         }
 
         const isDead = Boolean(canonical.dead) || Number(canonical.entState ?? EntityState.ACTIVE) === EntityState.DEAD;
+        const replaceClientHostileWithCanonical = EntityHandler.replacesClientHostileWithCanonical(levelName);
         EntityHandler.ensureServerAuthorityProxyOwner(client, canonical, localId);
         EntityHandler.registerCanonicalHostileAlias(
             client,
             getClientLevelScope(client),
             canonical,
-            localId,
-            localId === canonicalId ? 'server_authority_same_id_attach' : 'server_authority_proxy_attach'
+            replaceClientHostileWithCanonical ? canonicalId : localId,
+            replaceClientHostileWithCanonical
+                ? 'server_authority_canonical_replace_attach'
+                : (localId === canonicalId ? 'server_authority_same_id_attach' : 'server_authority_proxy_attach')
         );
         if (!EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelName)) {
             if (localId !== canonicalId) {
@@ -1237,7 +1331,10 @@ export class EntityHandler {
 
             return true;
         }
-        if (EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelName)) {
+        if (
+            EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelName) &&
+            !EntityHandler.replacesClientHostileWithCanonical(levelName)
+        ) {
             EntityHandler.bridgeCanonicalVisibleServerAuthorityProxy(
                 client,
                 levelName,
@@ -3986,6 +4083,7 @@ export class EntityHandler {
         const clientSpawnLevel = EntityHandler.usesClientSpawn(levelName);
         const serverAuthorityHostiles = EntityHandler.usesServerAuthorityHostiles(levelName);
         const canonicalVisibleServerAuthority = EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelName);
+        const replaceClientHostileWithCanonical = EntityHandler.replacesClientHostileWithCanonical(levelName);
         if (clientSpawnLevel) {
             const removedCount = EntityHandler.pruneStaleServerNpcs(levelName, levelMap);
             if (removedCount > 0) {
@@ -4008,6 +4106,15 @@ export class EntityHandler {
                 noteDungeonRunEntitySeen(client, id, entityProps);
                 const canonicalDead = Boolean((entityProps as any).dead) ||
                     Number(entityProps.entState ?? EntityState.ACTIVE) === EntityState.DEAD;
+                if (replaceClientHostileWithCanonical) {
+                    EntityHandler.sendCanonicalServerAuthorityHostileSnapshot(
+                        client,
+                        levelName,
+                        entityProps,
+                        canonicalDead ? 'joiner_dead_canonical_snapshot' : 'joiner_live_canonical_snapshot'
+                    );
+                    continue;
+                }
                 if (!canonicalVisibleServerAuthority) {
                     logJcMini1Authority('joiner_enemy_snapshot', {
                         entityId: id,

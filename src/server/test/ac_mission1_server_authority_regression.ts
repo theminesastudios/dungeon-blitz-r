@@ -14,6 +14,7 @@ import { LootDepthRewardHandler } from '../handlers/LootDepthRewardHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { getLevelScopeKey } from '../core/LevelScope';
+import { getSharedDungeonProgressTotals, recomputeSharedDungeonProgress } from '../core/SharedDungeonProgress';
 
 type SentPacket = {
     id: number;
@@ -356,48 +357,47 @@ async function testAcMission1FirstSightAuthorityConvergesDragon(): Promise<void>
     assert.equal(canonical.clientSpawned, false, 'promoted AC_Mission1 dragon should be server canonical');
     assert.equal(canonical.hp, canonical.maxHp, 'promoted AC_Mission1 dragon should start at canonical full HP');
     assert.ok(Number(canonical.maxHp ?? 0) > 100000, 'promoted dragon should use server-side level-50 HP scaling');
-    assert.equal(rogue.entities.has(4712451), true, 'first viewer should keep its local authored dragon in its cache');
-    assert.equal(rogue.entities.get(4712451)?.clientSpawned, true, 'first viewer should keep the authored local dragon logic alive');
-    assert.equal(rogue.entities.get(4712451)?.canonicalEntityId, 4712451, 'first viewer local dragon should bridge to the canonical id');
+    assert.equal(rogue.entities.has(4712451), true, 'first viewer should cache the server-owned canonical dragon');
+    assert.equal(rogue.entities.get(4712451)?.clientSpawned, false, 'first viewer should not keep authored local dragon logic alive');
+    assert.equal(rogue.entities.get(4712451)?.canonicalEntityId, undefined, 'first viewer canonical dragon should not be a bridged local proxy');
     assert.equal(
         rogue.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload) === 4712451),
-        false,
-        'first viewer should not receive a destroy for its authored local dragon'
+        true,
+        'first viewer should receive a destroy for its authored local dragon before the canonical spawn'
     );
     assert.equal(
         rogue.sentPackets.some((packet) => packet.id === 0x0F && parseSpawnEntityId(packet.payload) === 4712451),
-        false,
-        'first viewer should not receive a replacement server canonical dragon spawn'
+        true,
+        'first viewer should receive a replacement server canonical dragon spawn'
     );
 
     attachProxy(mage, 10859330, 'AncientDragonGoldMini', 3010, 1200, 2);
     assert.equal(EntityHandler.resolveEntityAlias(mage as never, 10859330), 4712451, 'second client dragon id should alias to first canonical dragon');
     assert.equal(GlobalState.levelEntities.get(scope)?.has(10859330), false, 'second client dragon must not create a second server enemy');
-    assert.equal(mage.entities.has(10859330), true, 'second client local authored dragon should stay alive for client logic');
-    assert.equal(mage.knownEntityIds.has(10859330), true, 'second client should keep the authored local dragon id as known');
-    assert.equal(mage.entities.get(10859330)?.clientSpawned, true, 'second client should keep the authored local dragon as client-spawned');
-    assert.equal(mage.entities.get(10859330)?.canonicalEntityId, 4712451, 'second client local dragon should bridge to the canonical server dragon');
-    assert.equal(mage.entities.has(4712451), false, 'second client should not render a separate canonical server dragon');
+    assert.equal(mage.entities.has(10859330), false, 'second client local authored dragon should be removed from client logic');
+    assert.equal(mage.knownEntityIds.has(10859330), false, 'second client should not keep the authored local dragon id as known');
+    assert.equal(mage.entities.has(4712451), true, 'second client should render the server-owned canonical dragon');
+    assert.equal(mage.entities.get(4712451)?.clientSpawned, false, 'second client canonical dragon should be server-owned');
     assert.equal(
         mage.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload) === 10859330),
-        false,
-        'second client should not receive a destroy for its authored local dragon'
+        true,
+        'second client should receive a destroy for its authored local dragon'
     );
     assert.equal(
         mage.sentPackets.some((packet) => packet.id === 0x0F && parseSpawnEntityId(packet.payload) === 4712451),
-        false,
-        'second client should not receive a replacement canonical server dragon spawn'
+        true,
+        'second client should receive a replacement canonical server dragon spawn'
     );
 
     rogue.sentPackets.length = 0;
     mage.sentPackets.length = 0;
     await CombatHandler.handlePowerHit(rogue as never, buildPowerHitPayload(4712451, rogue.clientEntID, 16282));
     assert.equal(canonical.hp, canonical.maxHp - 16282, 'non-lethal hit should reduce only the canonical dragon HP');
-    assert.equal(mage.entities.get(10859330)?.hp, canonical.hp, 'mage local bridged dragon should converge to server HP');
+    assert.equal(mage.entities.get(4712451)?.hp, canonical.hp, 'mage canonical dragon should converge to server HP');
     assert.equal(
-        mage.sentPackets.some((packet) => packet.id === 0x78 && parseHpDelta(packet.payload).entityId === 10859330 && parseHpDelta(packet.payload).delta < 0),
+        mage.sentPackets.some((packet) => packet.id === 0x78 && parseHpDelta(packet.payload).entityId === 4712451 && parseHpDelta(packet.payload).delta < 0),
         true,
-        'mage should receive HP correction on its local bridged dragon id when server HP changes'
+        'mage should receive HP correction on the canonical dragon id when server HP changes'
     );
 
     rogue.sentPackets.length = 0;
@@ -412,13 +412,8 @@ async function testAcMission1FirstSightAuthorityConvergesDragon(): Promise<void>
     );
     assert.equal(
         mage.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 4712451 && parseEntityState(packet.payload).entState === EntityState.DEAD),
-        false,
-        'mage should not receive DEAD state on an unrendered canonical server dragon id'
-    );
-    assert.equal(
-        mage.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 10859330 && parseEntityState(packet.payload).entState === EntityState.DEAD),
         true,
-        'mage should receive DEAD state on its local bridged dragon id'
+        'mage should receive DEAD state on the rendered canonical server dragon id'
     );
 }
 
@@ -442,8 +437,8 @@ async function testAcMission1BuffStateBridgesThroughCanonicalEnemy(): Promise<vo
     await CombatHandler.handleAddBuff(mage as never, buildBuffStatePayload(10859330, 17));
 
     assert.equal(Object.keys(canonical.activeBuffs ?? {}).length, 1, 'server canonical dragon should record active buff state');
-    assert.equal(mage.entities.get(10859330)?.buffStateVersion, canonical.buffStateVersion, 'mage local bridged dragon should mirror canonical buff version');
-    assert.equal(rogue.entities.get(4712451)?.buffStateVersion, canonical.buffStateVersion, 'rogue local bridged dragon should mirror canonical buff version');
+    assert.equal(mage.entities.get(4712451)?.buffStateVersion, canonical.buffStateVersion, 'mage canonical dragon should mirror canonical buff version');
+    assert.equal(rogue.entities.get(4712451)?.buffStateVersion, canonical.buffStateVersion, 'rogue canonical dragon should mirror canonical buff version');
     assert.equal(
         rogue.sentPackets.some((packet) => packet.id === 0x0B && parseBuffTargetId(packet.payload) === 4712451),
         true,
@@ -455,7 +450,7 @@ async function testAcMission1BuffStateBridgesThroughCanonicalEnemy(): Promise<vo
     await CombatHandler.handleRemoveBuff(mage as never, buildBuffStatePayload(10859330, 17));
 
     assert.equal(Object.keys(canonical.activeBuffs ?? {}).length, 0, 'server canonical dragon should remove active buff state');
-    assert.equal(mage.entities.get(10859330)?.buffStateVersion, canonical.buffStateVersion, 'mage local bridged dragon should mirror canonical buff removal');
+    assert.equal(mage.entities.get(4712451)?.buffStateVersion, canonical.buffStateVersion, 'mage canonical dragon should mirror canonical buff removal');
     assert.equal(
         rogue.sentPackets.some((packet) => packet.id === 0x0C && parseBuffTargetId(packet.payload) === 4712451),
         true,
@@ -480,26 +475,58 @@ function testAcMission1JoinerLocalSpawnBridgesAfterInitialCanonical(): void {
     EntityHandler.sendInitialLevelEntities(mage as never, mage.currentLevel);
     assert.equal(
         mage.sentPackets.some((packet) => packet.id === 0x0F && parseSpawnEntityId(packet.payload) === 4712451),
-        false,
-        'joiner initial sync should wait for the joiner authored dragon instead of spawning a canonical visual'
+        true,
+        'joiner initial sync should send the existing server canonical dragon before local room cues spawn'
     );
+    assert.equal(mage.entities.has(4712451), true, 'joiner should cache the server canonical dragon during initial sync');
+    assert.equal(mage.entities.get(4712451)?.clientSpawned, false, 'joiner initial dragon snapshot should be server-owned');
 
     mage.sentPackets.length = 0;
     attachProxy(mage, 10859330, 'AncientDragonGoldMini', 3010, 1200, 2);
 
-    assert.equal(mage.entities.has(10859330), true, 'joiner authored local dragon should stay in cache');
-    assert.equal(mage.entities.get(10859330)?.clientSpawned, true, 'joiner should keep the authored local dragon for client logic');
-    assert.equal(mage.entities.get(10859330)?.canonicalEntityId, 4712451, 'joiner authored local dragon should bridge to the existing canonical dragon');
+    assert.equal(mage.entities.has(10859330), false, 'joiner authored local dragon should be removed from cache');
+    assert.equal(mage.entities.has(4712451), true, 'joiner should keep the server-owned canonical dragon for client logic');
+    assert.equal(mage.entities.get(4712451)?.clientSpawned, false, 'joiner canonical dragon should be server-owned');
     assert.equal(
         mage.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload) === 10859330),
-        false,
-        'joiner local authored dragon should not be destroyed when it appears after canonical sync'
+        true,
+        'joiner local authored dragon should be destroyed when it appears after canonical sync'
     );
     assert.equal(
         mage.sentPackets.some((packet) => packet.id === 0x0F && parseSpawnEntityId(packet.payload) === 4712451),
         false,
-        'joiner should not receive a canonical visual spawn after the local authored enemy is bridged'
+        'joiner should not receive a duplicate canonical spawn after initial canonical sync'
     );
+}
+
+function testAcMission1SharedProgressCountsServerOwnedHostiles(): void {
+    const rogue = createFakeClient('AlexMercer', 59395, 2);
+    attachPlayer(rogue);
+    GlobalState.sessionsByToken.set(rogue.token, rogue as never);
+    GlobalState.levelQuestProgress.clear();
+
+    const scope = getLevelScopeKey(rogue.currentLevel, rogue.levelInstanceId);
+    attachProxy(rogue, 4712451, 'AncientDragonGoldMini', 3000, 1200, 2);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(4712451);
+    assert.ok(canonical, 'canonical dragon should exist before shared progress recompute');
+    assert.equal(canonical.clientSpawned, false, 'progress regression should use the server-owned hostile');
+
+    let state = recomputeSharedDungeonProgress(scope);
+    let totals = getSharedDungeonProgressTotals(scope);
+    assert.equal(totals.total, 1, 'shared progress should count server-owned AC_Mission1 hostiles');
+    assert.equal(totals.defeated, 0, 'live server-owned hostile should not count defeated');
+    assert.equal(state?.progress, 0, 'live server-owned hostile should keep shared progress at 0%');
+
+    canonical.hp = 0;
+    canonical.dead = true;
+    canonical.entState = EntityState.DEAD;
+
+    state = recomputeSharedDungeonProgress(scope);
+    totals = getSharedDungeonProgressTotals(scope);
+    assert.equal(totals.total, 1, 'defeated server-owned hostile should remain tracked');
+    assert.equal(totals.defeated, 1, 'defeated server-owned hostile should count as defeated');
+    assert.equal(state?.progress, 100, 'defeating all tracked server-owned hostiles should reach 100%');
+    GlobalState.levelQuestProgress.delete(scope);
 }
 
 function testAcMission1JoinerFirstSightPromotesBridgeWithoutDuplicate(): void {
@@ -522,30 +549,33 @@ function testAcMission1JoinerFirstSightPromotesBridgeWithoutDuplicate(): void {
     assert.equal(
         mage.entities.has(10859330),
         true,
-        'joiner authored first-sight dragon should stay alive locally'
+        'joiner first-sight canonical dragon should use the first reported id'
     );
+    assert.equal(mage.entities.get(10859330)?.clientSpawned, false, 'joiner first-sight dragon should be server-owned');
     assert.equal(
         mage.sentPackets.some((packet) => packet.id === 0x0D && parseDestroyEntity(packet.payload) === 10859330),
-        false,
-        'joiner authored first-sight dragon should not receive a local destroy'
+        true,
+        'joiner authored first-sight dragon should receive a local destroy before canonical spawn'
     );
     assert.equal(
         mage.sentPackets.some((packet) => packet.id === 0x0F),
-        false,
-        'joiner first sight should not spawn a separate canonical visual'
+        true,
+        'joiner first sight should spawn the server-owned canonical visual'
     );
 
     mage.sentPackets.length = 0;
     attachProxy(rogue, 4712451, 'AncientDragonGoldMini', 3000, 1200, 2);
     assert.equal(EntityHandler.resolveEntityAlias(rogue as never, 4712451), 10859330, 'owner local dragon should alias to the joiner-promoted canonical dragon');
     assert.equal(levelMap.has(4712451), false, 'owner first sight should not promote a duplicate canonical dragon');
-    assert.equal(rogue.entities.get(4712451)?.clientSpawned, true, 'owner should keep its authored local dragon logic alive');
+    assert.equal(rogue.entities.has(4712451), false, 'owner should not keep its authored local dragon logic alive');
+    assert.equal(rogue.entities.has(10859330), true, 'owner should render the joiner-promoted canonical dragon');
+    assert.equal(rogue.entities.get(10859330)?.clientSpawned, false, 'owner canonical dragon should be server-owned');
     assert.equal(
         mage.sentPackets.some((packet) => packet.id === 0x0F),
         false,
         'owner attach should not fan out a replacement canonical visual to the joiner'
     );
-    assert.equal(mage.entities.get(10859330)?.clientSpawned, true, 'waiting joiner should still render its local bridged dragon');
+    assert.equal(mage.entities.get(10859330)?.clientSpawned, false, 'waiting joiner should still render its server-owned canonical dragon');
 }
 
 function testAcMission1FarSameNameHostilesPromoteSeparately(): void {
@@ -941,9 +971,10 @@ function testAcMission1ReconnectDoesNotResetLiveCanonicalScope(): void {
     );
     assert.equal(
         rogue.sentPackets.some((packet) => packet.id === 0x0F && parseSpawnEntityId(packet.payload) === 4712451),
-        false,
-        'reconnect initial entity sync should not send a canonical visual before the client local proxy respawns'
+        true,
+        'reconnect initial entity sync should send the live canonical server hostile before local room cues respawn'
     );
+    assert.equal(rogue.entities.get(4712451)?.clientSpawned, false, 'reconnect canonical hostile should remain server-owned');
 }
 
 function testAcMission1CutsceneLocksServerAuthorityHostiles(): void {
@@ -973,9 +1004,9 @@ function testAcMission1CutsceneLocksServerAuthorityHostiles(): void {
         'source should receive untargetable for its canonical/local dragon id'
     );
     assert.equal(
-        mage.sentPackets.some((packet) => packet.id === 0xAE && parseUntargetable(packet.payload).entityId === 10859330 && parseUntargetable(packet.payload).untargetable),
+        mage.sentPackets.some((packet) => packet.id === 0xAE && parseUntargetable(packet.payload).entityId === 4712451 && parseUntargetable(packet.payload).untargetable),
         true,
-        'party viewer should receive untargetable for its local bridged dragon id'
+        'party viewer should receive untargetable for its canonical server dragon id'
     );
 
     CombatHandler.handleCharRegen(mage as never, buildHpDeltaPayload(10859330, -50000));
@@ -1070,6 +1101,7 @@ async function main(): Promise<void> {
     const sessionsByToken = new Map(GlobalState.sessionsByToken);
     const partyByMember = new Map(GlobalState.partyByMember);
     const partyGroups = new Map(GlobalState.partyGroups);
+    const levelQuestProgress = new Map(GlobalState.levelQuestProgress);
     const deadServerAuthorityHostilesByScope = new Map(GlobalState.deadServerAuthorityHostilesByScope);
     const serverAuthorityDestroyedIdsByScope = new Map((EntityHandler as any).serverAuthorityDestroyedIdsByScope);
     const serverAuthorityDestroyedFingerprintsByScope = new Map((EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope);
@@ -1102,6 +1134,16 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
+        testAcMission1SharedProgressCountsServerOwnedHostiles();
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.levelQuestProgress.clear();
         GlobalState.deadServerAuthorityHostilesByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
@@ -1198,6 +1240,7 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken = sessionsByToken;
         GlobalState.partyByMember = partyByMember;
         GlobalState.partyGroups = partyGroups;
+        GlobalState.levelQuestProgress = levelQuestProgress;
         GlobalState.deadServerAuthorityHostilesByScope = deadServerAuthorityHostilesByScope;
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope = serverAuthorityDestroyedIdsByScope;
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope = serverAuthorityDestroyedFingerprintsByScope;

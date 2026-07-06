@@ -1,5 +1,6 @@
 import { GlobalState, SharedDungeonProgressState } from './GlobalState';
 import { getActiveDungeonRunStats } from './DungeonRunStats';
+import { EntityTeam } from './Entity';
 import { LevelConfig } from './LevelConfig';
 import { getClientLevelScope, getScopeLevelName } from './LevelScope';
 import { getClientCharacterKey, getPartyLeaderCharacterKeyForClient } from './PartySync';
@@ -15,6 +16,11 @@ const SHARED_DUNGEON_PROGRESS_EXCLUDED_LEVELS = new Set<string>([
     'TutorialBoat',
     'TutorialDungeon',
     'TutorialDungeonHard'
+]);
+const SERVER_AUTHORITY_HOSTILE_PROGRESS_LEVELS = new Set<string>([
+    'AC_Mission1',
+    'Castle',
+    'CastleHard'
 ]);
 
 function normalizeAuthorityToken(value: unknown): number {
@@ -133,8 +139,26 @@ function refreshSharedDungeonLiveStats(
     }
 }
 
-function isSharedDungeonTrackedHostile(entity: any): boolean {
-    return Boolean(entity?.clientSpawned) && isDungeonStatsHostile(entity);
+function usesServerAuthorityHostileProgress(levelNameOrScope: string | null | undefined): boolean {
+    const levelName = getScopeLevelName(String(levelNameOrScope ?? ''));
+    const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+    return typeof normalizedLevel === 'string' &&
+        normalizedLevel.length > 0 &&
+        SERVER_AUTHORITY_HOSTILE_PROGRESS_LEVELS.has(normalizedLevel);
+}
+
+function isSharedDungeonTrackedHostile(levelNameOrScope: string | null | undefined, entity: any): boolean {
+    if (!isDungeonStatsHostile(entity)) {
+        return false;
+    }
+
+    if (Boolean(entity?.clientSpawned)) {
+        return true;
+    }
+
+    return usesServerAuthorityHostileProgress(levelNameOrScope) &&
+        !Boolean(entity?.isPlayer) &&
+        Number(entity?.team ?? EntityTeam.UNKNOWN) === EntityTeam.ENEMY;
 }
 
 function isEntityDefeated(entity: any): boolean {
@@ -215,7 +239,7 @@ export function hasSharedDungeonProgressHostiles(levelScope: string | null | und
 }
 
 export function noteSharedDungeonHostileState(levelScope: string | null | undefined, entityId: number, entity: any): void {
-    if (!entityId || !isSharedDungeonTrackedHostile(entity)) {
+    if (!entityId || !isSharedDungeonTrackedHostile(levelScope, entity)) {
         return;
     }
 
@@ -233,7 +257,7 @@ export function noteSharedDungeonHostileState(levelScope: string | null | undefi
 }
 
 export function noteSharedDungeonHostileDestroyed(levelScope: string | null | undefined, entityId: number, entity: any): void {
-    if (!entityId || !isSharedDungeonTrackedHostile(entity)) {
+    if (!entityId || !isSharedDungeonTrackedHostile(levelScope, entity)) {
         return;
     }
 
@@ -266,7 +290,7 @@ export function getSharedDungeonProgressTotals(
     const levelMap = GlobalState.levelEntities.get(scopeKey);
 
     for (const [entityId, entity] of levelMap?.entries() ?? []) {
-        if (!isSharedDungeonTrackedHostile(entity)) {
+        if (!isSharedDungeonTrackedHostile(scopeKey, entity)) {
             continue;
         }
 

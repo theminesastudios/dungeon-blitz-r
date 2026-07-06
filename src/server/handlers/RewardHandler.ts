@@ -282,6 +282,12 @@ export class RewardHandler {
             return client.entities.get(sourceId);
         }
         const levelMap = client.currentLevel ? GlobalState.levelEntities.get(getClientLevelScope(client)) : null;
+        if (EntityHandler.usesServerAuthorityHostiles(client.currentLevel)) {
+            const canonicalSourceId = EntityHandler.resolveEntityAlias(client, sourceId);
+            if (canonicalSourceId !== sourceId) {
+                return client.entities.get(canonicalSourceId) ?? levelMap?.get(canonicalSourceId) ?? null;
+            }
+        }
         return levelMap?.get(sourceId) ?? null;
     }
 
