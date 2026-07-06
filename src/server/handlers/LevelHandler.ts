@@ -163,6 +163,8 @@ export class LevelHandler {
     private static readonly DEEPGARD_DRAGON_MINIBOSS_TRIGGER_X = -2560;
     private static readonly DEEPGARD_DRAGON_MINIBOSS_TRIGGER_MIN_Y = -3100;
     private static readonly DEEPGARD_DRAGON_MINIBOSS_TRIGGER_MAX_Y = -1750;
+    private static readonly DEEPGARD_DRAGON_MINIBOSS_DONE_TRIGGER = 'am_Trigger_MiniBossDone';
+    private static readonly DEEPGARD_DRAGON_MINIBOSS_NAME_PREFIX = 'ancientdragongoldmini';
     private static readonly BACK_ALLEY_DEALS_BOSS_ROOM_ID = 2553897284;
     private static readonly BACK_ALLEY_DEALS_BOSS_TRIGGER_X = 25480;
     private static readonly BACK_ALLEY_DEALS_BOSS_TRIGGER_MIN_Y = 2550;
@@ -242,10 +244,10 @@ export class LevelHandler {
         return LevelConfig.resolveSafeReturnLevel(
             [
                 syncState?.syncEntryLevel,
-                client.entryLevel,
-                character?.PreviousLevel?.name,
                 oldLevel,
-                character?.CurrentLevel?.name
+                character?.CurrentLevel?.name,
+                client.entryLevel,
+                character?.PreviousLevel?.name
             ],
             {
                 fallbackLevel: 'NewbieRoad',
@@ -260,7 +262,7 @@ export class LevelHandler {
         entity: { x?: number; y?: number } | null | undefined
     ): void {
         const normalizedSourceLevel = LevelConfig.normalizeLevelName(sourceLevel);
-        if (!character || !normalizedSourceLevel || LevelConfig.isDungeonLevel(normalizedSourceLevel)) {
+        if (!character || !normalizedSourceLevel || !LevelConfig.isSaveAllowedLevel(normalizedSourceLevel)) {
             return;
         }
 
@@ -2974,6 +2976,66 @@ export class LevelHandler {
         }
     }
 
+    private static isDeepgardDragonMiniBossDefeatedInScope(client: Client): boolean {
+        const levelScope = getClientLevelScope(client);
+        for (const tombstone of EntityHandler.getDeadServerAuthorityHostileTombstones(levelScope).values()) {
+            const tombstoneName = String(tombstone?.name ?? tombstone?.enemyType ?? '').toLowerCase();
+            if (tombstoneName.startsWith(LevelHandler.DEEPGARD_DRAGON_MINIBOSS_NAME_PREFIX)) {
+                return true;
+            }
+        }
+
+        const levelMap = GlobalState.levelEntities.get(levelScope);
+        if (levelMap) {
+            for (const entity of levelMap.values()) {
+                if (entity?.isPlayer) {
+                    continue;
+                }
+                const entityName = String(entity?.name ?? entity?.EntName ?? '').toLowerCase();
+                if (!entityName.startsWith(LevelHandler.DEEPGARD_DRAGON_MINIBOSS_NAME_PREFIX)) {
+                    continue;
+                }
+                if (
+                    Boolean(entity?.dead) ||
+                    Boolean(entity?.destroyed) ||
+                    Number(entity?.entState ?? EntityState.ACTIVE) === EntityState.DEAD ||
+                    Math.round(Number(entity?.hp ?? 1)) <= 0
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    static maybeSyncDeepgardDragonMiniBossAlreadyDefeated(client: Client): void {
+        const currentLevel = LevelConfig.normalizeLevelName(client.currentLevel);
+        if (currentLevel !== 'AC_Mission1' && currentLevel !== 'AC_Mission1Hard') {
+            return;
+        }
+        if (!client.triggeredLevelStates) {
+            return;
+        }
+
+        const roomId = LevelHandler.DEEPGARD_DRAGON_MINIBOSS_ROOM_ID;
+        const doneKey = `${currentLevel}:${roomId}:${LevelHandler.DEEPGARD_DRAGON_MINIBOSS_DONE_TRIGGER}`;
+        if (client.triggeredLevelStates.has(doneKey)) {
+            return;
+        }
+
+        if (!LevelHandler.isDeepgardDragonMiniBossDefeatedInScope(client)) {
+            return;
+        }
+
+        client.triggeredLevelStates.add(doneKey);
+        client.triggeredLevelStates.add(`${currentLevel}:${roomId}:am_Trigger_Cutscene`);
+        LevelHandler.sendRoomTriggerState(client, roomId, LevelHandler.DEEPGARD_DRAGON_MINIBOSS_DONE_TRIGGER);
+        console.log(
+            `[MultiplayerSync][deepgard-miniboss-done-sync] viewer=${String(client.character?.name ?? '')} token=${client.token} scope=${getClientLevelScope(client)} roomId=${roomId}`
+        );
+    }
+
     private static maybeTriggerDeepgardDragonMiniBossIntro(
         client: Client,
         previousX: number,
@@ -5046,7 +5108,14 @@ export class LevelHandler {
         const newHasCoord = spawn.hasCoord;
         syncPotionReservationForLevelTransition(activeCharacter, oldLevel, targetLevel);
         client.activePotionDrainAtMs = 0;
-        LevelConfig.updateSavedLevelsOnTransfer(activeCharacter, oldLevel, targetLevel, newX, newY);
+        LevelConfig.updateSavedLevelsOnTransfer(
+            activeCharacter,
+            oldLevel,
+            targetLevel,
+            newX,
+            newY,
+            { x: oldX, y: oldY, hasCoord: hasOldCoord }
+        );
         if (!LevelConfig.isDungeonLevel(targetLevel)) {
             clearStoredDungeonSnapshot(activeCharacter);
         }
@@ -5186,9 +5255,6 @@ export class LevelHandler {
             const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
             entityId = CombatHandler.resolveClientHostileAliasForSharedState(client, getClientLevelScope(client), rawEntityId);
         }
-        console.log(
-            `[MultiplayerSync][alias-in] packet=0x07 source=${String(client.character?.name ?? '')} token=${client.token} rawId=${rawEntityId} canonicalId=${entityId}`
-        );
 
         // If it's us and we haven't spawned, ignore
         // In TS we don't track 'player_spawned' explicitly like python yet, but usually we can ignore.
@@ -5256,11 +5322,12 @@ export class LevelHandler {
             (Number.isFinite(canonicalHp) && canonicalHp <= 0)
         );
         if (canonicalTerminal) {
+            const isServerAuthorityTerminal = EntityHandler.isServerAuthorityHostileEntity(currentLevel, canonicalEntity);
             const previousLocalHpValue = Number(ent?.hp ?? NaN);
             const previousLocalHp = Number.isFinite(previousLocalHpValue)
                 ? Math.max(0, Math.round(previousLocalHpValue))
                 : 0;
-            if (previousLocalHp > 0) {
+            if (!isServerAuthorityTerminal && previousLocalHp > 0) {
                 const hpCorrection = new BitBuffer(false);
                 hpCorrection.writeMethod4(rawEntityId);
                 hpCorrection.writeMethod45(-previousLocalHp);
@@ -5368,34 +5435,6 @@ export class LevelHandler {
                 Number(levelEntity?.entState ?? EntityState.ACTIVE) === EntityState.DEAD ||
                 Math.round(Number(levelEntity?.hp ?? 1)) <= 0;
             if (canonicalDead) {
-                const previousLocalHpValue = Number(ent?.hp ?? NaN);
-                const previousLocalHp = Number.isFinite(previousLocalHpValue)
-                    ? Math.max(0, Math.round(previousLocalHpValue))
-                    : 0;
-                const correctionMaxHp = Math.max(0, Math.round(Number(levelEntity?.maxHp ?? ent?.maxHp ?? 0)));
-                if (previousLocalHp > 0) {
-                    const hpCorrection = new BitBuffer(false);
-                    hpCorrection.writeMethod4(rawEntityId);
-                    hpCorrection.writeMethod45(-previousLocalHp);
-                    client.sendBitBuffer(0x78, hpCorrection);
-                    logJcMini1Authority('authoritative_hp_correction', {
-                        packetId: '0x78',
-                        reason: 'dead_proxy_active_state_rejected',
-                        entityId,
-                        localEntityId: rawEntityId,
-                        viewer: client.character?.name ?? '',
-                        viewerToken: client.token,
-                        scope: getClientLevelScope(client),
-                        previousHp: previousLocalHp,
-                        expectedDamage: 0,
-                        expectedPostPacketHp: previousLocalHp,
-                        canonicalHp: 0,
-                        maxHp: correctionMaxHp,
-                        delta: -previousLocalHp,
-                        dead: true,
-                        entState: EntityState.DEAD
-                    });
-                }
                 if (levelEntity && typeof levelEntity === 'object') {
                     levelEntity.hp = 0;
                     levelEntity.dead = true;
@@ -5662,9 +5701,7 @@ export class LevelHandler {
         
         // Update Saved Coords if it's us and safe level
         if (isSelf && client.character) {
-            const isDungeon = LevelConfig.get(currentLevel).isDungeon;
-            
-            if (currentLevel === "CraftTown" || !isDungeon) {
+            if (LevelConfig.isSaveAllowedLevel(currentLevel)) {
                 if (!client.character.CurrentLevel) {
                     client.character.CurrentLevel = { name: currentLevel, x: ent.x, y: ent.y };
                 } else {
@@ -5689,6 +5726,8 @@ export class LevelHandler {
                     }
                 );
             }
+
+            LevelHandler.maybeSyncDeepgardDragonMiniBossAlreadyDefeated(client);
 
             LevelHandler.maybeTriggerDeepgardDragonMiniBossIntro(
                 client,

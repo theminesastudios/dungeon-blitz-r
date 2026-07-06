@@ -596,6 +596,16 @@ export class RewardHandler {
         );
     }
 
+    private static didRecipientEnterAfterSourceDeath(recipient: Client, sourceEntity: any): boolean {
+        const deathFinalizedAt = Math.max(0, Math.round(Number(sourceEntity?.deathFinalizedAt ?? sourceEntity?.killedAt ?? 0) || 0));
+        const worldEnteredAt = Math.max(0, Math.round(Number(
+            (recipient as unknown as { worldEnteredAt?: number }).worldEnteredAt ??
+            (recipient as unknown as { playSessionStartedAt?: number }).playSessionStartedAt ??
+            0
+        ) || 0));
+        return deathFinalizedAt > 0 && worldEnteredAt > 0 && worldEnteredAt > deathFinalizedAt;
+    }
+
     private static isHostileRewardSource(sourceEntity: any): boolean {
         return Boolean(sourceEntity && !sourceEntity.isPlayer && Number(sourceEntity.team ?? 0) === 2);
     }
@@ -1267,10 +1277,15 @@ export class RewardHandler {
         }
     }
 
-    private static resolveServerEnemyRewardViewers(client: Client, levelScope: string): Client[] {
+    private static resolveServerEnemyRewardViewers(client: Client, levelScope: string, sourceEntity: any): Client[] {
         const partyId = getPartyIdForClient(client);
         if (partyId <= 0) {
-            return client.character && client.playerSpawned && getClientLevelScope(client) === levelScope ? [client] : [];
+            return client.character &&
+                client.playerSpawned &&
+                getClientLevelScope(client) === levelScope &&
+                !RewardHandler.didRecipientEnterAfterSourceDeath(client, sourceEntity)
+                ? [client]
+                : [];
         }
 
         const recipients: Client[] = [];
@@ -1279,7 +1294,8 @@ export class RewardHandler {
                 !other.playerSpawned ||
                 !other.character ||
                 getClientLevelScope(other) !== levelScope ||
-                getPartyIdForClient(other) !== partyId
+                getPartyIdForClient(other) !== partyId ||
+                RewardHandler.didRecipientEnterAfterSourceDeath(other, sourceEntity)
             ) {
                 continue;
             }
@@ -1356,7 +1372,7 @@ export class RewardHandler {
             combo: 0
         };
         const dropPosition = RewardHandler.resolveDropPosition(client, sourceEntity, reward.worldX, reward.worldY);
-        const recipients = RewardHandler.resolveServerEnemyRewardViewers(client, levelScope);
+        const recipients = RewardHandler.resolveServerEnemyRewardViewers(client, levelScope, sourceEntity);
         sourceEntity.lootGrantedTokens = RewardHandler.normalizeNumberSet(sourceEntity.lootGrantedTokens);
 
         for (const recipient of recipients) {

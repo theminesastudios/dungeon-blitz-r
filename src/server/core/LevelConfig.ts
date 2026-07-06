@@ -46,6 +46,10 @@ export class LevelConfig {
     private static readonly NON_DUNGEON_OVERRIDES = new Set([
         'CraftTown'
     ]);
+    private static readonly NON_PERSISTENT_DUNGEON_OVERRIDES = new Set([
+        'Castle',
+        'CastleHard'
+    ]);
     private static readonly LEVEL_ALIASES: Record<string, string> = {
         "blackrosemire": "SwampRoadNorth",
         "blackrosemirehard": "SwampRoadNorthHard",
@@ -440,7 +444,9 @@ export class LevelConfig {
         if (!normalized || normalized === 'TutorialBoat') {
             return false;
         }
-        return this.isDungeonLevel(normalized);
+        return this.isDungeonLevel(normalized)
+            && !this.NON_PERSISTENT_DUNGEON_OVERRIDES.has(normalized)
+            && !this.PRESENTATION_DUNGEON_OVERRIDES.has(normalized);
     }
 
     static isSaveAllowedLevel(levelName: string | null | undefined): boolean {
@@ -448,7 +454,11 @@ export class LevelConfig {
         if (!normalized) {
             return false;
         }
-        if (normalized === 'CraftTown') {
+        if (
+            normalized === 'CraftTown' ||
+            this.NON_PERSISTENT_DUNGEON_OVERRIDES.has(normalized) ||
+            this.PRESENTATION_DUNGEON_OVERRIDES.has(normalized)
+        ) {
             return true;
         }
         return !this.isDungeonLevel(normalized);
@@ -717,7 +727,7 @@ export class LevelConfig {
             return { x: Math.round(spawn.x), y: Math.round(spawn.y), hasCoord: true };
         }
 
-        if (this.isDungeonLevel(targetLevel)) {
+        if (this.isDungeonLevel(targetLevel) && !this.isSaveAllowedLevel(targetLevel)) {
             return { x: 0, y: 0, hasCoord: false };
         }
 
@@ -758,13 +768,15 @@ export class LevelConfig {
         _oldLevelName: string | null | undefined,
         newLevelName: string | null | undefined,
         newX: number,
-        newY: number
+        newY: number,
+        sourcePosition?: { x?: number; y?: number; hasCoord?: boolean }
     ): void {
         const newLevel = this.normalizeLevelName(newLevelName);
         if (!newLevel || !this.isSaveAllowedLevel(newLevel)) {
             return;
         }
 
+        const oldLevel = this.normalizeLevelName(_oldLevelName);
         const currentRecord = this.asLevelRecord(char?.CurrentLevel);
         const previousRecord = this.asLevelRecord(char?.PreviousLevel);
         const currentName = this.normalizeLevelName(currentRecord.name);
@@ -772,7 +784,25 @@ export class LevelConfig {
 
         if (newLevel === 'CraftTown') {
             let safeFrom: { name: string; x: number; y: number } | null = null;
-            if (currentName && this.isSaveAllowedLevel(currentName) && currentName !== 'CraftTown') {
+            const sourceX = Number(sourcePosition?.x);
+            const sourceY = Number(sourcePosition?.y);
+            if (
+                oldLevel &&
+                oldLevel !== 'CraftTown' &&
+                this.isSaveAllowedLevel(oldLevel) &&
+                sourcePosition?.hasCoord &&
+                Number.isFinite(sourceX) &&
+                Number.isFinite(sourceY)
+            ) {
+                safeFrom = { name: oldLevel, x: Math.round(sourceX), y: Math.round(sourceY) };
+            } else if (oldLevel && oldLevel !== 'CraftTown' && this.isSaveAllowedLevel(oldLevel) && currentName === oldLevel) {
+                safeFrom = this.copyLevelRecord(currentRecord);
+            } else if (oldLevel && oldLevel !== 'CraftTown' && this.isSaveAllowedLevel(oldLevel) && previousName === oldLevel) {
+                safeFrom = this.copyLevelRecord(previousRecord);
+            } else if (oldLevel && oldLevel !== 'CraftTown' && this.isSaveAllowedLevel(oldLevel) && this.hasDefaultSpawn(oldLevel)) {
+                const spawn = this.getSpawn(oldLevel);
+                safeFrom = { name: oldLevel, x: Math.round(spawn.x), y: Math.round(spawn.y) };
+            } else if (currentName && this.isSaveAllowedLevel(currentName) && currentName !== 'CraftTown') {
                 safeFrom = this.copyLevelRecord(currentRecord);
             } else if (previousName && this.isSaveAllowedLevel(previousName) && previousName !== 'CraftTown') {
                 safeFrom = this.copyLevelRecord(previousRecord);

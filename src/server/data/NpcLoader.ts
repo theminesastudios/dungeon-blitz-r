@@ -28,6 +28,8 @@ export class NpcLoader {
     private static readonly SERVER_HOSTILE_LEVELS = new Set<string>([
         'GoblinRiverDungeon',
         'GoblinRiverDungeonHard',
+        'Castle',
+        'CastleHard',
         'JC_Mini1Hard'
     ]);
 

@@ -24,6 +24,7 @@ type FakeClient = {
     currentLevel: string;
     levelInstanceId: string;
     syncAnchorStartedAt: number;
+    worldEnteredAt: number;
     currentRoomId: number;
     playerSpawned: boolean;
     clientEntID: number;
@@ -68,6 +69,7 @@ function createFakeClient(name: string, instanceId: string, token: number, roomI
         currentLevel: 'JC_Mini1Hard',
         levelInstanceId: instanceId,
         syncAnchorStartedAt: token,
+        worldEnteredAt: token,
         currentRoomId: roomId,
         playerSpawned: true,
         clientEntID: token + 1000,
@@ -332,7 +334,16 @@ async function testPartyJoinerAdoptsStarterScope(): Promise<void> {
     telahair.sentPackets.length = 0;
     attachProxy(telahair, 600001, 'ImperialMagus', 12855, 4551, 99);
     assert.equal(EntityHandler.resolveEntityAlias(telahair as never, 600001), 910001, 'late joiner proxy should map to starter canonical id');
-    assertLocalDeadPacket(telahair, 600001, 'late joiner should receive DEAD for enemy killed before entry');
+    assert.equal(
+        telahair.sentPackets.some((packet) => packet.id === 0x78 && parseHpDelta(packet.payload).entityId === 600001),
+        false,
+        'late joiner should not receive HP correction for enemy killed before entry'
+    );
+    assert.equal(
+        telahair.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 600001),
+        false,
+        'late joiner should not receive DEAD for enemy killed before entry'
+    );
     assert.equal(
         telahair.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 600001),
         true,
@@ -589,9 +600,19 @@ async function testPredictedDestroyLateDeadProxyAndSummonPassthrough(): Promise<
     assert.equal(boss.dead, true, 'hostile respawn broadcast must not revive dead canonical boss');
     assert.equal(boss.hp, 0, 'hostile respawn broadcast must keep dead canonical boss HP at zero');
     assert.equal(
-        zeus.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 500005 && parseEntityState(packet.payload).entState === EntityState.DEAD),
+        zeus.sentPackets.some((packet) => packet.id === 0x78 && parseHpDelta(packet.payload).entityId === 500005),
+        false,
+        'hostile respawn broadcast must not replay HP death correction'
+    );
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 500005),
+        false,
+        'hostile respawn broadcast must not replay DEAD state correction'
+    );
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 500005),
         true,
-        'hostile respawn broadcast should return local DEAD correction'
+        'hostile respawn broadcast should only destroy the stale local proxy'
     );
     const late = createFakeClient('LateJoiner', zeus.levelInstanceId, 77777, 3);
     setParty(zeus, telahair, late);
@@ -603,11 +624,19 @@ async function testPredictedDestroyLateDeadProxyAndSummonPassthrough(): Promise<
     assert.equal(late.entities.has(700005), false, 'late dead boss proxy should not stay alive locally');
     assert.equal(
         late.sentPackets.some((packet) => packet.id === 0x78 && parseHpDelta(packet.payload).entityId === 700005 && parseHpDelta(packet.payload).delta < 0),
-        true,
-        'late dead proxy should receive HP zero correction before local cleanup'
+        false,
+        'late dead proxy should not receive HP zero correction that can replay death animation'
     );
-    assert.equal(late.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entState === EntityState.DEAD), true, 'late dead proxy should receive DEAD state');
-    assert.equal(late.sentPackets.some((packet) => packet.id === 0x0D), true, 'late dead proxy should be destroyed locally');
+    assert.equal(
+        late.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 700005),
+        false,
+        'late dead proxy should not receive DEAD state that can replay death animation'
+    );
+    assert.equal(
+        late.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 700005),
+        true,
+        'late dead proxy should be destroyed locally'
+    );
 
     const beforeFireBombPackets = zeus.sentPackets.length;
     attachProxy(zeus, 501000, 'FireBombHard', 17000, 2600, 3);
@@ -735,37 +764,43 @@ function testProxyOwnerStateRelay(): void {
     assert.equal(Math.round(Number(canonical.x ?? 0)), deadX, 'dead canonical proxy movement should not mutate canonical position');
     assert.equal(canonical.dead, true, 'dead canonical proxy must stay dead after owner active update');
     assert.equal(canonical.entState, EntityState.DEAD, 'dead canonical proxy must keep DEAD entState');
-    const ownerDeadCorrection = zeus.sentPackets.find((packet) => packet.id === 0x07);
-    assert.ok(ownerDeadCorrection, 'dead owner proxy active update should receive local DEAD correction');
-    assert.equal(parseEntityState(ownerDeadCorrection.payload).entityId, 500004, 'owner dead correction should use owner local proxy id');
-    assert.equal(parseEntityState(ownerDeadCorrection.payload).entState, EntityState.DEAD, 'owner dead correction should keep DEAD state');
     assert.equal(
         zeus.sentPackets.some((packet) => packet.id === 0x78 && parseHpDelta(packet.payload).entityId === 500004 && parseHpDelta(packet.payload).delta < 0),
-        true,
-        'dead owner proxy active update should force local HP to canonical zero before DEAD'
+        false,
+        'dead owner proxy active update must not replay HP death correction'
     );
-    const ownerPartyDeadCorrection = telahair.sentPackets.find((packet) => packet.id === 0x07);
-    assert.ok(ownerPartyDeadCorrection, 'dead owner proxy active update should reconverge party viewer to DEAD');
-    assert.equal(parseEntityState(ownerPartyDeadCorrection.payload).entityId, 600004, 'party dead correction should use viewer local proxy id');
-    assert.equal(parseEntityState(ownerPartyDeadCorrection.payload).entState, EntityState.DEAD, 'party dead correction should keep DEAD state');
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 500004),
+        false,
+        'dead owner proxy active update must not replay local DEAD state'
+    );
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 500004),
+        true,
+        'dead owner proxy active update should only destroy the stale local proxy'
+    );
+    assert.equal(telahair.sentPackets.some((packet) => packet.id === 0x07 || packet.id === 0x78), false, 'dead owner proxy active update must stay local');
 
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
     zeus.entities.set(500004, { ...zeus.entities.get(500004), hp: 1, dead: false, entState: EntityState.ACTIVE });
     LevelHandler.handleEntityIncrementalUpdate(telahair as never, buildIncrementalUpdatePayload(600004, 55, 0, EntityState.ACTIVE));
     assert.equal(Math.round(Number(canonical.x ?? 0)), deadX, 'dead follower proxy movement should not mutate canonical position');
-    const followerDeadCorrection = telahair.sentPackets.find((packet) => packet.id === 0x07);
-    assert.ok(followerDeadCorrection, 'dead follower proxy active update should receive local DEAD correction');
-    assert.equal(parseEntityState(followerDeadCorrection.payload).entityId, 600004, 'follower dead correction should use follower local proxy id');
-    assert.equal(parseEntityState(followerDeadCorrection.payload).entState, EntityState.DEAD, 'follower dead correction should keep DEAD state');
-    const followerPartyDeadCorrection = zeus.sentPackets.find((packet) => packet.id === 0x07);
-    assert.ok(followerPartyDeadCorrection, 'dead follower proxy active update should reconverge party viewer to DEAD');
-    assert.equal(parseEntityState(followerPartyDeadCorrection.payload).entityId, 500004, 'follower party dead correction should use viewer local proxy id');
-    assert.equal(parseEntityState(followerPartyDeadCorrection.payload).entState, EntityState.DEAD, 'follower party dead correction should keep DEAD state');
+    assert.equal(
+        telahair.sentPackets.some((packet) => packet.id === 0x07 && parseEntityState(packet.payload).entityId === 600004),
+        false,
+        'dead follower proxy active update must not replay local DEAD state'
+    );
+    assert.equal(
+        telahair.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 600004),
+        true,
+        'dead follower proxy active update should only destroy the stale local proxy'
+    );
+    assert.equal(zeus.sentPackets.some((packet) => packet.id === 0x07 || packet.id === 0x78), false, 'dead follower proxy active update must stay local');
     assert.equal(
         zeus.sentPackets.some((packet) => packet.id === 0x78 && parseHpDelta(packet.payload).entityId === 500004 && parseHpDelta(packet.payload).delta < 0),
-        true,
-        'dead follower proxy active update should force party viewer HP to canonical zero before DEAD'
+        false,
+        'dead follower proxy active update must not replay party HP death correction'
     );
 }
 
