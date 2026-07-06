@@ -16,6 +16,10 @@ const SHARED_DUNGEON_PROGRESS_EXCLUDED_LEVELS = new Set<string>([
     'TutorialDungeon',
     'TutorialDungeonHard'
 ]);
+const EAST_WING_LEVELS = new Set<string>([
+    'JC_Mini2',
+    'JC_Mini2Hard'
+]);
 
 function normalizeAuthorityToken(value: unknown): number {
     const token = Number(value ?? 0);
@@ -134,7 +138,12 @@ function refreshSharedDungeonLiveStats(
 }
 
 function isSharedDungeonTrackedHostile(entity: any): boolean {
-    return Boolean(entity?.clientSpawned) && isDungeonStatsHostile(entity);
+    // Server-authority dungeon hostiles (e.g. the East/West Wing seeds) carry
+    // clientSpawned=false but must still count toward shared progress —
+    // otherwise the broadcast percentage only reflects the extra client-spawn
+    // mirrors, and progress can hit 100% while seeded bosses are still alive.
+    return (Boolean(entity?.clientSpawned) || Boolean(entity?.serverAuthorityHostile)) &&
+        isDungeonStatsHostile(entity);
 }
 
 function isEntityDefeated(entity: any): boolean {
@@ -300,6 +309,23 @@ export function recomputeSharedDungeonProgress(levelScope: string | null | undef
 
     const totals = getSharedDungeonProgressTotals(levelScope);
     const levelName = getScopeLevelName(levelScope);
+    const previousProgress = clampProgress(state.progress);
+    const preserveEastWingProgress =
+        EAST_WING_LEVELS.has(levelName) &&
+        previousProgress > 0 &&
+        (
+            totals.total <= 0 ||
+            Boolean(state.bossDead) ||
+            Boolean(state.bossDeathCommitted) ||
+            Boolean(state.bossTombstoned) ||
+            Boolean(state.pendingCompletion) ||
+            Boolean(state.completionFinalized)
+        );
+    if (preserveEastWingProgress) {
+        state.progress = previousProgress;
+        refreshSharedDungeonLiveStats(state, scopeKey);
+        return state;
+    }
     if (usesSharedDungeonProgress(levelName)) {
         const initialProgress = getSharedDungeonInitialProgress(levelName);
         state.progress = totals.total > 0

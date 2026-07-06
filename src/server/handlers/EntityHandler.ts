@@ -53,7 +53,9 @@ export class EntityHandler {
     ]);
     private static readonly SERVER_AUTHORITY_HOSTILE_LEVELS = new Set<string>([
         'AC_Mission1',
-        'JC_Mini1Hard'
+        'JC_Mini1Hard',
+        'JC_Mini2',
+        'JC_Mini2Hard'
     ]);
     private static readonly FIRST_SIGHT_SERVER_AUTHORITY_HOSTILE_LEVELS = new Set<string>([
         'AC_Mission1'
@@ -332,6 +334,7 @@ export class EntityHandler {
         const entityProps = {
             ...Entity.fromNpc(npc),
             clientSpawned: false,
+            serverAuthorityHostile: true,
             boss: Boolean(npc.boss),
             roomBoss: Boolean(npc.roomBoss),
             isRoomBoss: Boolean(npc.isRoomBoss ?? npc.roomBoss),
@@ -1064,10 +1067,24 @@ export class EntityHandler {
         const levelScope = getClientLevelScope(client);
         entity.spawnKey = entity.spawnKey || EntityHandler.getHostileSpawnKey(levelScope, entity);
         const tombstone = EntityHandler.findDeadServerAuthorityHostileTombstone(levelScope, entity);
+        const eastWingLevel = LevelConfig.normalizeLevelName(levelName) === 'JC_Mini2' || LevelConfig.normalizeLevelName(levelName) === 'JC_Mini2Hard';
+        const eastWingBossSpawn = eastWingLevel && Boolean(entity?.roomBoss ?? entity?.isRoomBoss);
+        if (eastWingBossSpawn) {
+            const sharedState = GlobalState.levelQuestProgress.get(levelScope);
+            const bossDead = Boolean(sharedState?.bossDead ?? sharedState?.bossDeathCommitted) || Boolean(tombstone);
+            console.log(
+                `[MultiplayerSync][eastwing-spawn-check] player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} scope=${levelScope} bossDead=${bossDead} tombstone=${Boolean(tombstone)} allowSpawn=${!bossDead} reason=client_hostile_proxy`
+            );
+        }
         if (tombstone) {
             const localId = Math.max(0, Math.round(Number(rawEntityId || entity.id) || 0));
             if (localId > 0 && tombstone.canonicalId > 0 && localId !== tombstone.canonicalId) {
                 EntityHandler.rememberEntityAlias(client, localId, tombstone.canonicalId);
+            }
+            if (eastWingBossSpawn) {
+                console.log(
+                    `[MultiplayerSync][eastwing-spawn-blocked-reentry-dead] player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} scope=${levelScope} canonicalId=${tombstone.canonicalId}`
+                );
             }
             console.log(
                 `[MultiplayerSync][spawnkey-match] scope=${levelScope} rawLocalId=${localId} canonicalId=${tombstone.canonicalId} spawnKey=${tombstone.spawnKey} result=tombstone`
@@ -1633,6 +1650,15 @@ export class EntityHandler {
             return;
         }
 
+        if (MissionHandler.shouldPreserveEastWingInstanceStateForReentry(levelScope)) {
+            const sharedState = GlobalState.levelQuestProgress.get(levelScope);
+            console.log(
+                `[MultiplayerSync][eastwing-instance-restore] player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} scope=${levelScope} bossDead=${Boolean(sharedState?.bossDead)} progress=${Math.max(0, Math.round(Number(sharedState?.progress ?? 0)))} postDeathCutsceneFinished=${Boolean(sharedState?.postDeathCutsceneFinished)} completionFinalized=${Boolean(sharedState?.completionFinalized)} statsDelivered=${Boolean(sharedState?.statsDeliveredTokens?.has(client.token))}`
+            );
+            return;
+        }
+
+        const oldEastWingState = GlobalState.levelQuestProgress.get(levelScope);
         let removed = 0;
         for (const [entityId, entity] of Array.from(levelMap.entries())) {
             if (!entity?.isPlayer && Number(entity?.team ?? 0) === EntityTeam.ENEMY) {
@@ -1646,6 +1672,14 @@ export class EntityHandler {
         EntityHandler.serverAuthorityDestroyedFingerprintsByScope.delete(levelScope);
         EntityHandler.clearDeadServerAuthorityHostileTombstones(levelScope, 'new_run');
         GlobalState.levelQuestProgress.delete(levelScope);
+        // A fresh run of the same instance must replay boss intros: drop the
+        // shared cutscene states recorded for the previous run of this scope.
+        const cutsceneKeyPrefix = `${levelScope}:`;
+        for (const key of Array.from(GlobalState.dungeonCutscenes.keys())) {
+            if (key.startsWith(cutsceneKeyPrefix)) {
+                GlobalState.dungeonCutscenes.delete(key);
+            }
+        }
         const keyPrefix = `${levelScope}:`;
         for (const key of Array.from(GlobalState.combatContributions.keys())) {
             if (key.startsWith(keyPrefix)) {
@@ -1663,6 +1697,12 @@ export class EntityHandler {
             }
         }
 
+        MissionHandler.logEastWingFreshReset(levelScope, 'server_authority_scope_reset', {
+            progress: oldEastWingState?.progress ?? 0,
+            bossDead: Boolean(oldEastWingState?.bossDead),
+            postDeathCutsceneFinished: Boolean(oldEastWingState?.postDeathCutsceneFinished),
+            completionFinalized: Boolean(oldEastWingState?.completionFinalized)
+        });
         logJcMini1Authority('fresh_scope_reset', {
             scope: levelScope,
             viewer: client.character?.name ?? '',
@@ -2267,6 +2307,20 @@ export class EntityHandler {
             Math.round(Number(entity.v ?? 0)) !== 0
         );
         client.knownEntityIds.add(canonicalId);
+
+        // A client re-spawn of an already-dead shared hostile must never be
+        // cached as a live local copy: kill it immediately instead.
+        const canonicalHp = Number(canonical?.hp);
+        const canonicalDead =
+            Boolean(canonical?.dead) ||
+            Boolean(canonical?.destroyed) ||
+            Number(canonical?.entState ?? EntityState.ACTIVE) === EntityState.DEAD ||
+            (Number.isFinite(canonicalHp) && Math.round(canonicalHp) <= 0);
+        if (canonicalDead) {
+            EntityHandler.sendDeadSharedCanonicalCleanup(client, localId, entity, canonical);
+            return true;
+        }
+
         client.entities.set(localId, {
             ...entity,
             canonicalEntityId: canonicalId,
@@ -2750,6 +2804,24 @@ export class EntityHandler {
             return;
         }
 
+        const canonicalId = Math.max(0, Math.round(Number(canonical?.id ?? 0)));
+        console.log(
+            `[MultiplayerSync][post-death-duplicate-found] viewer=${String(client.character?.name ?? '').replace(/\s+/g, '_')} viewerToken=${client.token} localId=${localId} canonicalId=${canonicalId} name=${String(entity?.name ?? canonical?.name ?? '').replace(/\s+/g, '_')} roomId=${Math.round(Number(entity?.roomId ?? canonical?.roomId ?? -1))} x=${Math.round(Number(entity?.x ?? 0))} y=${Math.round(Number(entity?.y ?? 0))}`
+        );
+        // Mark this id as already killed for this viewer, so later death sweeps
+        // for the same canonical hostile stay idempotent.
+        if (canonical && typeof canonical === 'object') {
+            if (!(canonical.deadSweptLocalIdsByToken instanceof Map)) {
+                canonical.deadSweptLocalIdsByToken = new Map<number, Set<number>>();
+            }
+            let swept = canonical.deadSweptLocalIdsByToken.get(client.token);
+            if (!swept) {
+                swept = new Set<number>();
+                canonical.deadSweptLocalIdsByToken.set(client.token, swept);
+            }
+            swept.add(localId);
+        }
+
         const maxHp = Math.max(
             0,
             Math.round(Number(entity?.maxHp ?? canonical?.maxHp ?? entity?.hp ?? canonical?.hp ?? 0) || 0)
@@ -2760,6 +2832,9 @@ export class EntityHandler {
         client.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
         client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
         client.entities.delete(localId);
+        console.log(
+            `[MultiplayerSync][post-death-forced-destroy] viewer=${String(client.character?.name ?? '').replace(/\s+/g, '_')} viewerToken=${client.token} duplicateLocalId=${localId} canonicalId=${canonicalId} discovery=respawn_reconcile packets=${maxHp > 0 ? '0x78,0x07,0x0D' : '0x07,0x0D'}`
+        );
     }
 
     private static syncDamagedSharedCanonicalToLocalSpawn(
@@ -3991,6 +4066,29 @@ export class EntityHandler {
         if (EntityHandler.usesServerAuthorityHostiles(levelName)) {
             EntityHandler.resetServerAuthorityScopeForFreshRun(client, levelName, levelMap);
             EntityHandler.seedServerAuthorityHostiles(client, levelName, levelMap);
+
+            const restoreScope = getLevelScopeKey(levelName, client.levelInstanceId);
+            let bossCanonicalId = 0;
+            let bossDead = false;
+            let bossRoomId = -1;
+            for (const entity of levelMap.values()) {
+                if (!entity || entity.isPlayer || !Boolean(entity.roomBoss ?? entity.isRoomBoss)) {
+                    continue;
+                }
+                bossCanonicalId = Math.max(0, Math.round(Number(entity.id ?? 0)));
+                bossRoomId = Math.round(Number(entity.roomId ?? -1));
+                bossDead = Boolean(entity.dead) ||
+                    Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD ||
+                    Math.round(Number(entity.hp ?? 1)) <= 0;
+                break;
+            }
+            const introFinished = bossRoomId >= 0 &&
+                Boolean(GlobalState.dungeonCutscenes.get(`${restoreScope}:${bossRoomId}`)?.completed);
+            const sharedProgress = Math.max(0, Math.round(Number(GlobalState.levelQuestProgress.get(restoreScope)?.progress ?? 0)));
+            console.log(
+                `[MultiplayerSync][reentry-state-restore] player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} scope=${restoreScope} bossCanonicalId=${bossCanonicalId} bossRoomId=${bossRoomId} bossDead=${bossDead} introFinished=${introFinished} progress=${sharedProgress}`
+            );
+            MissionHandler.trySendEastWingCompletionAfterReentry(client);
         }
 
         const clientSpawnLevel = EntityHandler.usesClientSpawn(levelName);

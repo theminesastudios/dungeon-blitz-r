@@ -1101,6 +1101,12 @@ export class LevelHandler {
             }
 
             if (other.character) {
+                const oldProgress = Math.max(0, Math.round(Number(other.character.questTrackerState ?? 0)));
+                if (oldProgress !== progress) {
+                    console.log(
+                        `[MultiplayerSync][stale-progress-corrected] viewer=${String(other.character.name ?? '').replace(/\s+/g, '_')} viewerToken=${other.token} scope=${levelScope} oldProgress=${oldProgress} newProgress=${progress}`
+                    );
+                }
                 other.character.questTrackerState = progress;
             }
             other.send(0xB7, payload);
@@ -1206,7 +1212,7 @@ export class LevelHandler {
     }
 
     static syncSharedDungeonQuestProgressState(client: Client): void {
-        if (!client.currentLevel || !client.character || !usesSharedDungeonProgress(client.currentLevel)) {
+        if (!client.currentLevel || !client.character || !LevelHandler.usesAuthoritativeQuestProgress(client.currentLevel)) {
             return;
         }
 
@@ -1232,10 +1238,16 @@ export class LevelHandler {
 
     static shouldSkipDungeonRoomProgressSync(levelName: string | null | undefined): boolean {
         const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
-        return usesSharedDungeonProgress(normalizedLevel) ||
+        return LevelHandler.usesAuthoritativeQuestProgress(normalizedLevel) ||
             normalizedLevel === 'TutorialDungeon' ||
             normalizedLevel === 'TutorialDungeonHard' ||
             normalizedLevel === 'CraftTownTutorial';
+    }
+
+    private static usesAuthoritativeQuestProgress(levelName: string | null | undefined): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        return usesSharedDungeonProgress(normalizedLevel) ||
+            EntityHandler.usesServerAuthorityHostiles(normalizedLevel);
     }
 
     static prepareGoblinRiverDungeonEntryState(client: Client): void {
@@ -1400,8 +1412,11 @@ export class LevelHandler {
                     roomId,
                     payload,
                     joinedAtDialogIndex,
-                    decision === 'active_duplicate'
+                    false
                 );
+                if (LevelHandler.shouldEagerShareEastWingBossIntro(levelName)) {
+                    LevelHandler.relayRoomEventStartToMissingRecipients(sourceClient, roomId, payload, false);
+                }
                 LevelHandler.setServerAuthorityHostilesUntargetableForScope(scopeKey, roomId, true);
                 return true;
             }
@@ -1418,8 +1433,7 @@ export class LevelHandler {
             if (!other.playerSpawned || getClientLevelScope(other) !== scopeKey) {
                 continue;
             }
-            LevelHandler.markRoomEventStarted(other, roomId);
-            MissionHandler.noteDungeonCutsceneStart(other, roomId);
+            LevelHandler.markSharedDungeonCutsceneParticipant(other, roomId, 0);
             other.send(0xA5, payload);
         }
         LevelHandler.setServerAuthorityHostilesUntargetableForScope(scopeKey, roomId, true);
@@ -3220,6 +3234,11 @@ export class LevelHandler {
         return Math.max(0, Math.round(Number(state?.dialogIndex ?? 0) || 0));
     }
 
+    private static shouldEagerShareEastWingBossIntro(levelName: string | null | undefined): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        return normalizedLevel === 'JC_Mini2' || normalizedLevel === 'JC_Mini2Hard';
+    }
+
     private static hasSharedDungeonCutscenePeer(client: Client): boolean {
         for (const other of GlobalState.sessionsByToken.values()) {
             if (other !== client && other.playerSpawned && areClientsInSameLevelScope(client, other)) {
@@ -3284,6 +3303,53 @@ export class LevelHandler {
 
         LevelHandler.setSharedDungeonCutsceneActive(levelScope, normalizedRoomId, client.token);
         return 'started';
+    }
+
+    // The shared cutscene machinery only engages when another player is in
+    // scope at trigger time. In server-authority dungeons the intro state must
+    // survive solo triggers too, so a party member who joins later (or a
+    // re-entering player) never restarts a finished boss intro.
+    private static shouldSkipSoloDungeonCutsceneStart(client: Client, roomId: number, source: string): boolean {
+        const levelName = LevelConfig.normalizeLevelName(client.currentLevel);
+        const levelScope = getClientLevelScope(client);
+        if (
+            !levelScope ||
+            !LevelConfig.isDungeonLevel(levelName) ||
+            !EntityHandler.usesServerAuthorityHostiles(levelName)
+        ) {
+            return false;
+        }
+
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
+        const existing = LevelHandler.getSharedDungeonCutsceneState(levelScope, normalizedRoomId);
+        if (existing?.completed) {
+            console.log(
+                `[MultiplayerSync][boss-intro-skip-finished] scope=${levelScope} roomId=${normalizedRoomId} player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} source=${source}`
+            );
+            return true;
+        }
+
+        if (!existing) {
+            LevelHandler.setSharedDungeonCutsceneActive(levelScope, normalizedRoomId, client.token);
+            console.log(
+                `[MultiplayerSync][boss-intro-start] scope=${levelScope} roomId=${normalizedRoomId} startedBy=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} source=${source}`
+            );
+        }
+        return false;
+    }
+
+    private static finishSoloDungeonCutscene(client: Client, roomId: number): void {
+        const levelName = LevelConfig.normalizeLevelName(client.currentLevel);
+        const levelScope = getClientLevelScope(client);
+        if (
+            !levelScope ||
+            !LevelConfig.isDungeonLevel(levelName) ||
+            !EntityHandler.usesServerAuthorityHostiles(levelName)
+        ) {
+            return;
+        }
+
+        LevelHandler.finishSharedDungeonCutsceneForScope(levelScope, Math.max(0, Math.round(Number(roomId) || 0)));
     }
 
     private static beginSharedDungeonCutsceneForScope(levelScope: string, roomId: number): boolean {
@@ -3508,6 +3574,47 @@ export class LevelHandler {
         }
     }
 
+    // Combat can still interrupt the shared boss intro if a stale/early packet
+    // arrives mid-cinematic. A Flash client that receives the boss death while
+    // inside the cinematic restores its held boss actor when the cinematic
+    // ends, leaving a live-looking phantom boss on that screen. Close the
+    // cutscene for every participant BEFORE combat/death packets land.
+    static forceEndActiveSharedDungeonCutscene(levelScope: string, roomId: number, reason: string): boolean {
+        const scopeKey = String(levelScope ?? '').trim();
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
+        if (!scopeKey || normalizedRoomId <= 0) {
+            return false;
+        }
+
+        const state = LevelHandler.getSharedDungeonCutsceneState(scopeKey, normalizedRoomId);
+        if (!state?.active) {
+            return false;
+        }
+
+        LevelHandler.finishSharedDungeonCutsceneForScope(scopeKey, normalizedRoomId);
+        const closePayload = new BitBuffer(false);
+        closePayload.writeMethod9(normalizedRoomId);
+        const payload = closePayload.toBuffer();
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (!other.playerSpawned || getClientLevelScope(other) !== scopeKey) {
+                continue;
+            }
+            if (!LevelHandler.isSharedDungeonCutsceneParticipant(other, scopeKey, normalizedRoomId)) {
+                continue;
+            }
+
+            other.send(0xA6, payload);
+            MissionHandler.noteDungeonCutsceneEnd(other, normalizedRoomId);
+            other.activeDungeonCutsceneJoinedAtDialogIndex = 0;
+            other.activeDungeonCutsceneLocalDialogIndex = 0;
+            console.log(
+                `[MultiplayerSync][boss-intro-force-end] scope=${scopeKey} roomId=${normalizedRoomId} player=${String(other.character?.name ?? '').replace(/\s+/g, '_')} token=${other.token} reason=${reason}`
+            );
+        }
+        LevelHandler.setServerAuthorityHostilesUntargetableForScope(scopeKey, normalizedRoomId, false);
+        return true;
+    }
+
     private static relaySharedDungeonCutscenePacketToParticipants(
         sourceClient: Client,
         roomId: number,
@@ -3692,13 +3799,17 @@ export class LevelHandler {
         includeSender: boolean = false
     ): void {
         for (const other of LevelHandler.forLevelRecipients(client, includeSender)) {
-            if (LevelHandler.hasRoomEventStarted(other, roomId)) {
+            const levelScope = getClientLevelScope(other);
+            const alreadyStarted = LevelHandler.hasRoomEventStarted(other, roomId);
+            const alreadyParticipant = LevelHandler.isSharedDungeonCutsceneParticipant(other, levelScope, roomId);
+            if (alreadyStarted && alreadyParticipant) {
                 continue;
             }
 
-            LevelHandler.markRoomEventStarted(other, roomId);
-            MissionHandler.noteDungeonCutsceneStart(other, roomId);
-            other.send(0xA5, payload);
+            if (!alreadyStarted) {
+                other.send(0xA5, payload);
+            }
+            LevelHandler.markSharedDungeonCutsceneParticipant(other, roomId, 0);
         }
         LevelHandler.setServerAuthorityHostilesUntargetableForScope(getClientLevelScope(client), roomId, true);
     }
@@ -4624,7 +4735,12 @@ export class LevelHandler {
         }
 
         const levelScope = getClientLevelScope(client);
-        if (usesSharedDungeonProgress(currentLevel) && levelScope) {
+        if (LevelHandler.usesAuthoritativeQuestProgress(currentLevel) && levelScope) {
+            const staleRequestedProgress = Math.max(0, Math.round(Number(requestedProgress ?? 0) || 0));
+            const previousSharedProgress = Math.max(
+                0,
+                Math.round(Number(GlobalState.levelQuestProgress.get(levelScope)?.progress ?? 0) || 0)
+            );
             const sharedState = recomputeSharedDungeonProgress(levelScope);
             if (sharedState) {
                 const liveAuthorityToken = resolveSharedDungeonProgressAuthorityToken(levelScope);
@@ -4632,6 +4748,17 @@ export class LevelHandler {
                     sharedState.authorityToken = liveAuthorityToken;
                 }
                 progress = sharedState.progress;
+                if (
+                    LevelConfig.normalizeLevelName(currentLevel) === 'JC_Mini2' ||
+                    LevelConfig.normalizeLevelName(currentLevel) === 'JC_Mini2Hard'
+                ) {
+                    const sharedProgress = Math.max(0, Math.round(Number(progress ?? 0) || 0));
+                    if (staleRequestedProgress < sharedProgress || staleRequestedProgress < previousSharedProgress) {
+                        console.log(
+                            `[MultiplayerSync][eastwing-stale-progress-blocked] player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} staleProgress=${staleRequestedProgress} sharedProgress=${Math.max(sharedProgress, previousSharedProgress)}`
+                        );
+                    }
+                }
             } else {
                 progress = getSharedDungeonInitialProgress(currentLevel);
             }
@@ -4661,7 +4788,7 @@ export class LevelHandler {
             });
         }
 
-        if (usesSharedDungeonProgress(currentLevel) && levelScope) {
+        if (LevelHandler.usesAuthoritativeQuestProgress(currentLevel) && levelScope) {
             LevelHandler.broadcastSharedDungeonQuestProgress(levelScope, progress);
             return;
         }
@@ -4729,22 +4856,36 @@ export class LevelHandler {
         }
         if (sharedCutsceneDecision === 'active_duplicate') {
             const state = LevelHandler.getSharedDungeonCutsceneState(getClientLevelScope(client), roomId);
+            console.log(
+                `[MultiplayerSync][boss-intro-join] scope=${getClientLevelScope(client)} roomId=${roomId} player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} currentStep=${LevelHandler.getSharedDungeonCutsceneDialogIndex(state)}`
+            );
             LevelHandler.sendSharedDungeonCutsceneStartToClient(
                 client,
                 roomId,
                 data,
                 LevelHandler.getSharedDungeonCutsceneDialogIndex(state),
-                true
+                false
             );
             return;
         }
         if (sharedCutsceneDecision === 'completed_duplicate') {
+            console.log(
+                `[MultiplayerSync][boss-intro-skip-finished] scope=${getClientLevelScope(client)} roomId=${roomId} player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} source=room-event-start`
+            );
             return;
         }
 
         if (sharedCutsceneDecision === 'owner_active' || sharedCutsceneDecision === 'started') {
             LevelHandler.markSharedDungeonCutsceneParticipant(client, roomId, 0);
+            if (LevelHandler.shouldEagerShareEastWingBossIntro(client.currentLevel)) {
+                LevelHandler.relayRoomEventStartToMissingRecipients(client, roomId, data, false);
+            }
             LevelHandler.setServerAuthorityHostilesUntargetableForScope(getClientLevelScope(client), roomId, true);
+            return;
+        }
+
+        if (LevelHandler.shouldSkipSoloDungeonCutsceneStart(client, roomId, 'room-event-start')) {
+            LevelHandler.markRoomEventStarted(client, roomId);
             return;
         }
 
@@ -4788,6 +4929,7 @@ export class LevelHandler {
             sharedCutsceneDecision === 'active_duplicate' ||
             sharedCutsceneDecision === 'completed_duplicate'
         ) {
+            MissionHandler.noteEastWingPostDeathCutsceneAck(client, roomId, sharedCutsceneDecision);
             return;
         }
         if (sharedCutsceneDecision === 'finished') {
@@ -4796,6 +4938,7 @@ export class LevelHandler {
             return;
         }
 
+        LevelHandler.finishSoloDungeonCutscene(client, roomId);
         LevelHandler.relayToLevel(client, 0xA6, data);
         for (const other of LevelHandler.forLevelRecipients(client, true)) {
             MissionHandler.noteDungeonCutsceneEnd(other, roomId);
@@ -4826,12 +4969,24 @@ export class LevelHandler {
         const cutsceneStart = new BitBuffer(false);
         cutsceneStart.writeMethod9(Math.max(0, roomId));
         cutsceneStart.writeMethod15(false);
+        let suppressedFinishedIntro = sharedCutsceneDecision === 'completed_duplicate';
         if (sharedCutsceneDecision === 'not_shared') {
-            LevelHandler.relayRoomEventStartToMissingRecipients(client, roomId, cutsceneStart.toBuffer(), true);
-        } else if (sharedCutsceneDecision !== 'completed_duplicate') {
+            if (LevelHandler.shouldSkipSoloDungeonCutsceneStart(client, roomId, 'room-boss-info')) {
+                suppressedFinishedIntro = true;
+            } else {
+                LevelHandler.relayRoomEventStartToMissingRecipients(client, roomId, cutsceneStart.toBuffer(), true);
+            }
+        } else if (!suppressedFinishedIntro) {
             LevelHandler.sendSharedDungeonCutsceneStartToClient(client, roomId, cutsceneStart.toBuffer(), 0);
+            if (LevelHandler.shouldEagerShareEastWingBossIntro(client.currentLevel)) {
+                LevelHandler.relayRoomEventStartToMissingRecipients(client, roomId, cutsceneStart.toBuffer(), false);
+            }
         }
-        LevelHandler.setServerAuthorityHostilesUntargetableForScope(getClientLevelScope(client), roomId, true);
+        if (!suppressedFinishedIntro) {
+            // Only freeze hostiles when an intro cutscene is actually running;
+            // a suppressed replay must not leave the boss stuck untargetable.
+            LevelHandler.setServerAuthorityHostilesUntargetableForScope(getClientLevelScope(client), roomId, true);
+        }
         const levelScope = getClientLevelScope(client);
         markRoomBossEntity(levelScope, bossId, roomId, bossName);
         noteDungeonRunBossCutscene(levelScope, roomId, bossId);
@@ -5270,6 +5425,51 @@ export class LevelHandler {
                 'terminal_entity_incremental_rejected',
                 rawEntityId
             );
+            if (!isDefeatEntState) {
+                // The sender still runs a live local copy of this dead hostile
+                // (movement/active-state updates keep arriving). Kill that copy
+                // now instead of only dropping the packet, once per local id.
+                const canonicalId = Math.max(0, Math.round(Number(canonicalEntity?.id ?? entityId) || 0));
+                if (!(canonicalEntity.deadSweptLocalIdsByToken instanceof Map)) {
+                    canonicalEntity.deadSweptLocalIdsByToken = new Map<number, Set<number>>();
+                }
+                let swept = canonicalEntity.deadSweptLocalIdsByToken.get(client.token);
+                if (!swept) {
+                    swept = new Set<number>();
+                    canonicalEntity.deadSweptLocalIdsByToken.set(client.token, swept);
+                }
+                if (!swept.has(rawEntityId)) {
+                    swept.add(rawEntityId);
+                    const floorMaxHp = Math.max(0, Math.round(Number(canonicalEntity?.maxHp ?? ent?.maxHp ?? 0)));
+                    if (floorMaxHp > 0) {
+                        const lethalFloor = new BitBuffer(false);
+                        lethalFloor.writeMethod4(rawEntityId);
+                        lethalFloor.writeMethod45(-floorMaxHp);
+                        client.sendBitBuffer(0x78, lethalFloor);
+                    }
+                    client.send(0x07, LevelHandler.buildEntityIncrementalUpdatePayload(
+                        rawEntityId,
+                        0,
+                        0,
+                        0,
+                        EntityState.DEAD,
+                        { bLeft: Boolean(flags.bLeft), bRunning: false, bJumping: false, bDropping: false, bBackpedal: false },
+                        false,
+                        0
+                    ));
+                    const destroyPayload = new BitBuffer(false);
+                    destroyPayload.writeMethod4(rawEntityId);
+                    destroyPayload.writeMethod15(true);
+                    client.send(0x0D, destroyPayload.toBuffer());
+                    client.entities.delete(rawEntityId);
+                    console.log(
+                        `[MultiplayerSync][post-death-forced-destroy] viewer=${String(client.character?.name ?? '').replace(/\s+/g, '_')} viewerToken=${client.token} duplicateLocalId=${rawEntityId} canonicalId=${canonicalId} discovery=live_incremental_after_death packets=0x07,0x0D`
+                    );
+                }
+                console.log(
+                    `[MultiplayerSync][dead-alias-suppressed] packet=0x07 rawId=${rawEntityId} canonicalId=${canonicalId} source=${String(client.character?.name ?? '').replace(/\s+/g, '_')} sourceToken=${client.token} entState=${entState}`
+                );
+            }
             console.log(
                 `[MultiplayerSync][post-death-drop] kind=entity-incremental scope=${getClientLevelScope(client)} targetId=${entityId} rawEntityId=${rawEntityId} sourceToken=${client.token} source=${String(client.character?.name ?? '')} hp=${Math.round(Number(canonicalEntity?.hp ?? 0))} dead=${Boolean(canonicalEntity?.dead)} destroyed=${Boolean(canonicalEntity?.destroyed)} entState=${canonicalEntity?.entState}`
             );

@@ -32,7 +32,29 @@ export interface PendingTransfer {
 export type SharedDungeonProgressState = {
     progress: number;
     authorityToken: number;
+    instanceId?: string;
+    instanceCreatedAt?: number;
+    partyId?: number;
+    ownerToken?: number;
+    ownerName?: string;
+    missionId?: number;
+    bossCanonicalId?: number;
     completionRequested?: boolean;
+    bossDeathCommitted?: boolean;
+    bossDead?: boolean;
+    bossTombstoned?: boolean;
+    bossRespawnBlocked?: boolean;
+    bossDeathRoomId?: number;
+    postDeathCutsceneStarted?: boolean;
+    postDeathCutsceneFinished?: boolean;
+    postDeathCutsceneStartedAt?: number;
+    postDeathCutsceneFinishedAt?: number;
+    postDeathCutsceneWatchdogArmed?: boolean;
+    completionFinalized?: boolean;
+    pendingCompletion?: boolean;
+    postDeathCutsceneExpectedTokens?: Set<number>;
+    postDeathCutsceneAckTokens?: Set<number>;
+    statsDeliveredTokens?: Set<number>;
     trackedHostileIds?: Set<number>;
     defeatedHostileIds?: Set<number>;
     liveStatsByCharacter?: Map<string, {
