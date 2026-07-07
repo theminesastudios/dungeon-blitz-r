@@ -1,0 +1,66 @@
+[
+  {
+    "id": 920001,
+    "name": "GreaterDemonMaligner",
+    "x": 15055,
+    "y": 3249,
+    "v": 0,
+    "team": 2,
+    "entState": 1,
+    "roomId": 1,
+    "sourceRoom": "a_Room_JCMini2_01",
+    "sayOnActivate": "We expected you, #tn#.:Tanja wants your head."
+  },
+  {
+    "id": 920002,
+    "name": "ImperialMagus",
+    "x": 16165,
+    "y": 4689,
+    "v": 0,
+    "team": 2,
+    "entState": 1,
+    "roomId": 2,
+    "sourceRoom": "a_Room_JCMini2_02",
+    "sayOnActivate": "You have no secrets here, #tn#."
+  },
+  {
+    "id": 920003,
+    "name": "ShadeSummoner",
+    "x": 15049,
+    "y": 4713,
+    "v": 0,
+    "team": 2,
+    "entState": 1,
+    "roomId": 2,
+    "sourceRoom": "a_Room_JCMini2_02",
+    "sayOnActivate": "Princess Tanja knows your schemes."
+  },
+  {
+    "id": 920004,
+    "name": "TowerGuard2",
+    "x": 11978,
+    "y": 4756,
+    "v": 0,
+    "team": 2,
+    "entState": 1,
+    "roomId": 3,
+    "sourceRoom": "a_Room_JCMini2_03",
+    "boss": true,
+    "roomBoss": true,
+    "isRoomBoss": true,
+    "roomBossName": "Tanja, The 2nd Daughter",
+    "displayName": "Tanja, The 2nd Daughter"
+  },
+  {
+    "id": 920005,
+    "name": "ImperialGuard",
+    "x": 15358,
+    "y": 6594,
+    "v": 0,
+    "team": 2,
+    "entState": 1,
+    "roomId": 4,
+    "sourceRoom": "a_Room_JCMini2_04",
+    "sayOnActivate": "The Hocke family saved this city.:You're a monster to defy them!"
+  }
+]

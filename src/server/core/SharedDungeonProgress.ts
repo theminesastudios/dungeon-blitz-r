@@ -20,7 +20,13 @@ const SHARED_DUNGEON_PROGRESS_EXCLUDED_LEVELS = new Set<string>([
 const SERVER_AUTHORITY_HOSTILE_PROGRESS_LEVELS = new Set<string>([
     'AC_Mission1',
     'Castle',
-    'CastleHard'
+    'CastleHard',
+    'JC_Mini2',
+    'JC_Mini2Hard'
+]);
+const EAST_WING_LEVELS = new Set<string>([
+    'JC_Mini2',
+    'JC_Mini2Hard'
 ]);
 
 function normalizeAuthorityToken(value: unknown): number {
@@ -153,16 +159,17 @@ function isSharedDungeonTrackedHostile(levelNameOrScope: string | null | undefin
     }
 
     if (usesServerAuthorityHostileProgress(levelNameOrScope)) {
-        return !Boolean(entity?.clientSpawned) &&
-            !Boolean(entity?.isPlayer) &&
-            Number(entity?.team ?? EntityTeam.UNKNOWN) === EntityTeam.ENEMY;
+        return (
+            Boolean(entity?.serverAuthorityHostile) ||
+            (
+                !Boolean(entity?.clientSpawned) &&
+                !Boolean(entity?.isPlayer) &&
+                Number(entity?.team ?? EntityTeam.UNKNOWN) === EntityTeam.ENEMY
+            )
+        );
     }
 
-    if (Boolean(entity?.clientSpawned)) {
-        return true;
-    }
-
-    return false;
+    return Boolean(entity?.clientSpawned) || Boolean(entity?.serverAuthorityHostile);
 }
 
 function isEntityDefeated(entity: any): boolean {
@@ -338,11 +345,31 @@ export function recomputeSharedDungeonProgress(levelScope: string | null | undef
 
     const totals = getSharedDungeonProgressTotals(levelScope);
     const levelName = getScopeLevelName(levelScope);
+    const previousProgress = clampProgress(state.progress);
+    const preserveEastWingProgress =
+        EAST_WING_LEVELS.has(levelName) &&
+        previousProgress > 0 &&
+        (
+            totals.total <= 0 ||
+            Boolean(state.bossDead) ||
+            Boolean(state.bossDeathCommitted) ||
+            Boolean(state.bossTombstoned) ||
+            Boolean(state.pendingCompletion) ||
+            Boolean(state.completionFinalized)
+        );
+    if (preserveEastWingProgress) {
+        state.progress = previousProgress;
+        refreshSharedDungeonLiveStats(state, scopeKey);
+        return state;
+    }
     if (usesSharedDungeonProgress(levelName)) {
         const initialProgress = getSharedDungeonInitialProgress(levelName);
-        state.progress = totals.total > 0
+        const computedProgress = totals.total > 0
             ? clampProgress(initialProgress + ((totals.defeated / totals.total) * (100 - initialProgress)))
             : initialProgress;
+        state.progress = EAST_WING_LEVELS.has(levelName) && Boolean(state.bossDeathCommitted)
+            ? Math.max(25, computedProgress)
+            : computedProgress;
         if (usesServerAuthorityHostileProgress(levelScope)) {
             console.log(
                 `[MultiplayerSync][progress_server_registry] total=${totals.total} dead=${totals.defeated} ignoredClientOnly=${totals.ignoredClientOnly ?? 0} percent=${state.progress}`
@@ -352,9 +379,12 @@ export function recomputeSharedDungeonProgress(levelScope: string | null | undef
         return state;
     }
 
-    state.progress = totals.total > 0
+    const computedProgress = totals.total > 0
         ? clampProgress((totals.defeated / totals.total) * 100)
         : 0;
+    state.progress = EAST_WING_LEVELS.has(levelName) && Boolean(state.bossDeathCommitted)
+        ? Math.max(25, computedProgress)
+        : computedProgress;
     refreshSharedDungeonLiveStats(state, scopeKey);
     return state;
 }

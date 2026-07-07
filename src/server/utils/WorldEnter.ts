@@ -6,7 +6,7 @@ import { MissionDef, MissionLoader } from '../data/MissionLoader';
 import { BuildingID, ClassID, MasterClassID } from '../core/Enums';
 import { GameData } from '../core/GameData';
 import { GlobalState } from '../core/GlobalState';
-import { normalizeFriendEntries } from '../core/SocialState';
+import { clampSocialLevel, normalizeFriendEntries, sanitizeSocialText } from '../core/SocialState';
 import { normalizeGender } from './normalizeGender';
 import { getVisibleConsumableCount, reconcileConsumableSelectionState } from './ConsumableState';
 import { ensureSigilStoreAlertState } from './AlertState';
@@ -770,7 +770,7 @@ export class WorldEnter {
             const friends = normalizeFriendEntries(character.friends);
             bb.writeMethod4(friends.length);
             for (const friend of friends) {
-                const friendName = String(friend.name ?? '');
+                const friendName = sanitizeSocialText(friend.name, 'Unknown');
                 const isRequest = Boolean(friend.isRequest);
                 let isOnline = false;
                 let className = '';
@@ -780,7 +780,7 @@ export class WorldEnter {
                 if (session?.character) {
                     isOnline = true;
                     className = String(session.character.class ?? '');
-                    level = Number(session.character.level ?? 1);
+                    level = clampSocialLevel(session.character.level);
                 }
 
                 bb.writeMethod13(friendName);

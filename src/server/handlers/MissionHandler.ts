@@ -19,7 +19,7 @@ import { buildDungeonRunScoreSummary } from '../core/DungeonRunStats';
 import { EntityState, EntityTeam } from '../core/Entity';
 import { BuildingID } from '../core/Enums';
 import { LevelConfig } from '../core/LevelConfig';
-import { getClientLevelScope, getScopeLevelName } from '../core/LevelScope';
+import { getClientLevelScope, getScopeLevelInstanceId, getScopeLevelName } from '../core/LevelScope';
 import {
     getSharedDungeonProgressTotals,
     getOrCreateSharedDungeonProgressState,
@@ -28,6 +28,7 @@ import {
     resolveSharedDungeonProgressAuthorityToken,
     usesSharedDungeonProgress
 } from '../core/SharedDungeonProgress';
+import { areClientsInSameParty, getPartyIdForClient } from '../core/PartySync';
 import { Character } from '../database/Database';
 import { WalletService } from '../database/WalletService';
 import { MissionDef, MissionLoader } from '../data/MissionLoader';
@@ -251,6 +252,14 @@ export class MissionHandler {
         'JC_Mission3',
         'JC_Mission3Hard'
     ]);
+    private static readonly SERVER_AUTHORITY_BOSS_COMPLETION_WITH_PARTIAL_PROGRESS_LEVELS = new Set([
+        'JC_Mini2',
+        'JC_Mini2Hard'
+    ]);
+    private static readonly EAST_WING_POST_DEATH_COMPLETION_LEVELS = new Set([
+        'JC_Mini2',
+        'JC_Mini2Hard'
+    ]);
     private static readonly FLASH_DEFEATED_ENTITY_STATE = 6;
     private static readonly dungeonCompletionObjectiveProgress = new Map<string, DungeonCompletionObjectiveProgress>();
     // These boss kills intentionally open a post-death room cutscene before the stats screen.
@@ -268,6 +277,8 @@ export class MissionHandler {
         'JC_Mission3Hard',
         'JC_Mission9',
         'JC_Mission9Hard',
+        'JC_Mini2',
+        'JC_Mini2Hard',
         'GoblinRiverDungeon',
         'GoblinRiverDungeonHard',
         'GhostBossDungeon',
@@ -1333,6 +1344,31 @@ export class MissionHandler {
             return;
         }
 
+        // A client that reports level completion has finished (or skipped) its
+        // local post-boss flow: count that as its post-death cutscene ack so a
+        // missing room-close packet cannot stall the shared completion gate.
+        if (levelScope && !client.pendingDungeonCompletionFlushActive) {
+            MissionHandler.noteEastWingPostDeathCutsceneAck(client, 0, 'set-level-complete');
+        }
+
+        if (
+            levelScope &&
+            !client.pendingDungeonCompletionFlushActive &&
+            !MissionHandler.canSendEastWingCompletionUi(client, levelScope, 'handleSetLevelComplete')
+        ) {
+            MissionHandler.scheduleDungeonCompletion(
+                client,
+                data,
+                {
+                    forcedDungeonCompletionScope: levelScope,
+                    initialDelayMs: 0,
+                    settleDelayMs: 0,
+                    waitForCutsceneEnd: true
+                }
+            );
+            return;
+        }
+
         const pendingScope = String(client.pendingDungeonCompletionScope ?? '').trim();
         if (
             pendingScope &&
@@ -1367,6 +1403,18 @@ export class MissionHandler {
 
         const forceSharedDungeonCompletion = Boolean(levelScope) && client.forcedDungeonCompletionScope === levelScope;
         const defeatedDungeonBossForcesCompletion = MissionHandler.hasDefeatedDungeonBoss(client, levelScope);
+        const fullClearOnlyDungeon = MissionHandler.isFullClearOnlyDungeon(currentLevel);
+        const remainingFullClearHostiles =
+            Boolean(fullClearOnlyDungeon && levelScope && MissionHandler.hasRemainingDungeonHostiles(levelScope));
+        const preserveSharedProgressForBossCompletion =
+            defeatedDungeonBossForcesCompletion &&
+            remainingFullClearHostiles &&
+            MissionHandler.shouldPreserveSharedProgressForServerAuthorityBossCompletion(
+                currentLevel,
+                levelScope
+            );
+        const defeatedDungeonBossCanForceCompletion =
+            defeatedDungeonBossForcesCompletion && (!remainingFullClearHostiles || preserveSharedProgressForBossCompletion);
 
         const trackerCompletionPercent = Math.max(
             0,
@@ -1399,7 +1447,7 @@ export class MissionHandler {
         const serverValidatedDungeonCompletion =
             forceSharedDungeonCompletionAllowed ||
             allowCraftTownTutorialClientCompletion ||
-            (defeatedDungeonBossForcesCompletion && dungeonCompletionObjectivesMet);
+            (defeatedDungeonBossCanForceCompletion && dungeonCompletionObjectivesMet);
         MissionHandler.logNephitQuestCompletion('completionPacketReceived', client, {
             levelScope,
             completionPercent,
@@ -1407,6 +1455,8 @@ export class MissionHandler {
             forceSharedDungeonCompletion,
             forceSharedDungeonCompletionAllowed,
             defeatedDungeonBossForcesCompletion,
+            defeatedDungeonBossCanForceCompletion,
+            remainingFullClearHostiles,
             dungeonCompletionObjectivesMet,
             serverValidatedDungeonCompletion
         });
@@ -1438,10 +1488,17 @@ export class MissionHandler {
                 }
 
                 if (serverValidatedDungeonCompletion) {
-                    sharedState.progress = 100;
+                    const sharedProgress = Math.max(
+                        0,
+                        Math.min(100, Math.round(Number(sharedState.progress ?? trackerCompletionPercent) || 0))
+                    );
+                    sharedState.progress = preserveSharedProgressForBossCompletion ? sharedProgress : 100;
                     effectiveCompletionPercent = 100;
-                    client.character.questTrackerState = 100;
-                    MissionHandler.broadcastSharedDungeonQuestProgress(levelScope, 100);
+                    client.character.questTrackerState = preserveSharedProgressForBossCompletion ? sharedProgress : 100;
+                    MissionHandler.broadcastSharedDungeonQuestProgress(
+                        levelScope,
+                        preserveSharedProgressForBossCompletion ? sharedProgress : 100
+                    );
                 } else {
                     effectiveCompletionPercent = Math.max(effectiveCompletionPercent, Number(sharedState.progress ?? 0));
                     scoringCompletionPercent = effectiveCompletionPercent;
@@ -1469,7 +1526,8 @@ export class MissionHandler {
                 levelScope,
                 effectiveCompletionPercent,
                 forceSharedDungeonCompletionAllowed,
-                defeatedDungeonBossForcesCompletion
+                defeatedDungeonBossForcesCompletion,
+                defeatedDungeonBossCanForceCompletion
             });
         }
         noteDungeonRunCompletionProgress(client, effectiveCompletionPercent);
@@ -1513,12 +1571,12 @@ export class MissionHandler {
                 defeatedDungeonBossForcesCompletion &&
                 dungeonCompletionObjectivesMet
             ) &&
-            MissionHandler.shouldWaitForDungeonCompletionGate(
-                client,
-                currentLevel,
-                levelScope,
-                defeatedDungeonBossForcesCompletion
-            )
+                MissionHandler.shouldWaitForDungeonCompletionGate(
+                    client,
+                    currentLevel,
+                    levelScope,
+                    defeatedDungeonBossCanForceCompletion
+                )
         ) {
             MissionHandler.scheduleDungeonCompletion(
                 client,
@@ -1560,11 +1618,23 @@ export class MissionHandler {
             !MissionHandler.isTutorialRescueDungeon(currentLevel)
         ) {
             const previousProgress = Number(client.character.questTrackerState ?? 0);
-            if (Number(client.character.questTrackerState ?? 0) !== 100) {
-                client.character.questTrackerState = 100;
-                didMutate = true;
+            if (preserveSharedProgressForBossCompletion && levelScope) {
+                const sharedProgress = Math.max(
+                    0,
+                    Math.min(100, Math.round(Number(GlobalState.levelQuestProgress.get(levelScope)?.progress ?? previousProgress) || 0))
+                );
+                if (Number(client.character.questTrackerState ?? 0) !== sharedProgress) {
+                    client.character.questTrackerState = sharedProgress;
+                    didMutate = true;
+                }
+                MissionHandler.sendQuestProgress(client, sharedProgress);
+            } else {
+                if (Number(client.character.questTrackerState ?? 0) !== 100) {
+                    client.character.questTrackerState = 100;
+                    didMutate = true;
+                }
+                MissionHandler.sendQuestProgress(client, 100);
             }
-            MissionHandler.sendQuestProgress(client, 100);
             if (currentLevel === 'CraftTownTutorial') {
                 MissionHandler.logKeepCompletionProgress('questObjectiveUpdated', client, {
                     levelScope,
@@ -1727,7 +1797,7 @@ export class MissionHandler {
         }
 
         if (clearedDungeon) {
-            MissionHandler.markDungeonCompletionFinalized(client, levelScope);
+            MissionHandler.markDungeonCompletionFinalized(client, levelScope, preserveSharedProgressForBossCompletion);
         }
 
         if (
@@ -1754,8 +1824,86 @@ export class MissionHandler {
                 timeBonus: completionResult.timeBonusScore
             });
         }
+        if (clearedDungeon) {
+            MissionHandler.propagateDungeonCompletionToPartyMembers(client, currentLevel, levelScope, requiredKills);
+        }
         if (forceSharedDungeonCompletion && client.forcedDungeonCompletionScope === levelScope) {
             client.forcedDungeonCompletionScope = '';
+        }
+    }
+
+    private static buildPartyDungeonCompletionPayload(requiredKills: number): Buffer {
+        const bb = new BitBuffer(false);
+        bb.writeMethod9(100);
+        bb.writeMethod9(0);
+        bb.writeMethod9(0);
+        bb.writeMethod9(0);
+        bb.writeMethod9(0);
+        bb.writeMethod9(0);
+        bb.writeMethod9(Math.max(1, requiredKills));
+        bb.writeMethod9(3);
+        return bb.toBuffer();
+    }
+
+    // The rank/completion screen is finalized per client. Historically each
+    // client had to reach the completion trigger on its own, so when only the
+    // party owner's client (or the shared-progress authority) completed, the
+    // other party members stayed stuck in an unfinished dungeon with stale
+    // progress. Once one member's completion is server-validated, pull every
+    // other same-scope party member through the same completion flow.
+    private static propagateDungeonCompletionToPartyMembers(
+        client: Client,
+        currentLevel: string,
+        levelScope: string,
+        requiredKills: number
+    ): void {
+        const normalizedLevel = LevelConfig.normalizeLevelName(currentLevel) || currentLevel;
+        if (
+            !levelScope ||
+            !LevelConfig.isDungeonLevel(normalizedLevel) ||
+            normalizedLevel === 'CraftTownTutorial' ||
+            normalizedLevel === 'TutorialBoat' ||
+            getPartyIdForClient(client) <= 0
+        ) {
+            return;
+        }
+
+        const members: string[] = [];
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (
+                other === client ||
+                !other.playerSpawned ||
+                !other.character ||
+                getClientLevelScope(other) !== levelScope ||
+                !areClientsInSameParty(client, other)
+            ) {
+                continue;
+            }
+            if (MissionHandler.hasFinalizedDungeonCompletion(other, levelScope)) {
+                continue;
+            }
+
+            members.push(String(other.character.name ?? other.token));
+            console.log(
+                `[MultiplayerSync][completion-ui-relay] viewer=${String(other.character.name ?? '').replace(/\s+/g, '_')} viewerToken=${other.token} level=${normalizedLevel} scope=${levelScope} source=${String(client.character?.name ?? '').replace(/\s+/g, '_')} sourceToken=${client.token} pendingScope=${String(other.pendingDungeonCompletionScope ?? '')}`
+            );
+            const scheduleOptions = MissionHandler.getSharedDungeonAutoCompleteScheduleOptions(other, levelScope);
+            if (MissionHandler.shouldPreserveSharedProgressForServerAuthorityBossCompletion(normalizedLevel, levelScope)) {
+                scheduleOptions.initialDelayMs = 0;
+                scheduleOptions.settleDelayMs = 0;
+                scheduleOptions.waitForCutsceneEnd = true;
+            }
+            MissionHandler.scheduleDungeonCompletion(
+                other,
+                MissionHandler.buildPartyDungeonCompletionPayload(requiredKills),
+                scheduleOptions
+            );
+        }
+
+        if (members.length > 0) {
+            console.log(
+                `[MultiplayerSync][completion-broadcast] level=${normalizedLevel} scope=${levelScope} source=${String(client.character?.name ?? '').replace(/\s+/g, '_')} sourceToken=${client.token} members=${members.join('|')} requiredKills=${Math.max(1, requiredKills)}`
+            );
         }
     }
 
@@ -1930,8 +2078,11 @@ export class MissionHandler {
     }
 
     private static scheduleForcedDungeonCompletionIfAllowed(client: Client, currentLevel: string, levelScope: string, triggerEntity: any): void {
+        const preserveSharedProgressBossCompletion =
+            MissionHandler.shouldPreserveSharedProgressForServerAuthorityBossCompletion(currentLevel, levelScope) &&
+            MissionHandler.isRequiredDungeonCompletionBossEntity(currentLevel, triggerEntity);
         const authorityToken = resolveSharedDungeonProgressAuthorityToken(levelScope);
-        if (authorityToken > 0 && authorityToken !== client.token) {
+        if (!preserveSharedProgressBossCompletion && authorityToken > 0 && authorityToken !== client.token) {
             MissionHandler.logNephitQuestCompletion('bossDeathIgnored', client, {
                 levelScope,
                 reason: 'not_progress_authority',
@@ -1974,11 +2125,14 @@ export class MissionHandler {
             MissionHandler.buildSyntheticLevelCompletePacket(100),
             {
                 forcedDungeonCompletionScope: levelScope,
-                initialDelayMs: waitForCutsceneEnd ? 0 : undefined,
-                settleDelayMs: waitForCutsceneEnd ? 0 : undefined,
+                initialDelayMs: (waitForCutsceneEnd || preserveSharedProgressBossCompletion) ? 0 : undefined,
+                settleDelayMs: (waitForCutsceneEnd || preserveSharedProgressBossCompletion) ? 0 : undefined,
                 waitForCutsceneEnd
             }
         );
+        if (preserveSharedProgressBossCompletion) {
+            MissionHandler.scheduleEastWingCompletionForParty(client, currentLevel, levelScope, triggerEntity);
+        }
     }
 
     private static hasFinalizedDungeonCompletion(client: Client, levelScope: string | null | undefined): boolean {
@@ -2002,7 +2156,11 @@ export class MissionHandler {
         return true;
     }
 
-    private static markDungeonCompletionFinalized(client: Client, levelScope: string | null | undefined): void {
+    private static markDungeonCompletionFinalized(
+        client: Client,
+        levelScope: string | null | undefined,
+        preserveSharedProgress: boolean = false
+    ): void {
         const scopeKey = String(levelScope ?? '').trim();
         if (!scopeKey) {
             return;
@@ -2016,14 +2174,442 @@ export class MissionHandler {
         MissionHandler.dungeonCompletionObjectiveProgress.delete(scopeKey);
         const sharedState = GlobalState.levelQuestProgress.get(scopeKey);
         if (sharedState) {
-            sharedState.progress = 100;
             sharedState.completionRequested = true;
-            sharedState.defeatedHostileIds = new Set(sharedState.trackedHostileIds ?? sharedState.defeatedHostileIds ?? []);
+            if (MissionHandler.isEastWingPostDeathCompletionLevel(getScopeLevelName(scopeKey))) {
+                sharedState.completionFinalized = true;
+                sharedState.pendingCompletion = false;
+                if (sharedState.bossDeathCommitted && !sharedState.postDeathCutsceneFinished) {
+                    sharedState.postDeathCutsceneFinished = true;
+                    sharedState.postDeathCutsceneFinishedAt = Date.now();
+                }
+            }
+            if (!preserveSharedProgress) {
+                sharedState.progress = 100;
+                sharedState.defeatedHostileIds = new Set(sharedState.trackedHostileIds ?? sharedState.defeatedHostileIds ?? []);
+            }
         }
         MissionHandler.logNephitQuestCompletion('dungeonCompletionFinalized', client, {
             levelScope: scopeKey,
             sharedProgress: sharedState?.progress ?? null
         });
+    }
+
+    private static shouldPreserveSharedProgressForServerAuthorityBossCompletion(
+        levelName: string | null | undefined,
+        levelScope: string | null | undefined
+    ): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        return Boolean(
+            normalizedLevel &&
+            levelScope &&
+            MissionHandler.SERVER_AUTHORITY_BOSS_COMPLETION_WITH_PARTIAL_PROGRESS_LEVELS.has(normalizedLevel)
+        );
+    }
+
+    private static isEastWingPostDeathCompletionLevel(levelName: string | null | undefined): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        return Boolean(normalizedLevel && MissionHandler.EAST_WING_POST_DEATH_COMPLETION_LEVELS.has(normalizedLevel));
+    }
+
+    private static getEastWingSharedState(levelScope: string | null | undefined) {
+        const scopeKey = String(levelScope ?? '').trim();
+        if (!scopeKey || !MissionHandler.isEastWingPostDeathCompletionLevel(getScopeLevelName(scopeKey))) {
+            return null;
+        }
+
+        const existed = GlobalState.levelQuestProgress.has(scopeKey);
+        const state = getOrCreateSharedDungeonProgressState(scopeKey);
+        if (!state) {
+            return null;
+        }
+
+        state.instanceId ||= getScopeLevelInstanceId(scopeKey) || scopeKey;
+        state.instanceCreatedAt ||= Date.now();
+        state.missionId ||= 0;
+        if (!existed) {
+            console.log(
+                `[MultiplayerSync][eastwing-instance-create] scope=${scopeKey} instanceId=${state.instanceId} partyId=${Math.max(0, Math.round(Number(state.partyId ?? 0)))} owner=${String(state.ownerName ?? '')}`
+            );
+        }
+
+        return state;
+    }
+
+    private static getEastWingPostDeathRoomId(levelScope: string): number {
+        const stateRoomId = Math.max(0, Math.round(Number(GlobalState.levelQuestProgress.get(levelScope)?.bossDeathRoomId ?? 0)));
+        if (stateRoomId > 0) {
+            return stateRoomId;
+        }
+
+        for (const entity of GlobalState.levelEntities.get(levelScope)?.values() ?? []) {
+            if (!entity || entity.isPlayer || !Boolean(entity.roomBoss ?? entity.isRoomBoss)) {
+                continue;
+            }
+            const roomId = Math.max(0, Math.round(Number(entity.roomId ?? entity.roomBossRoomId ?? 0)));
+            if (roomId > 0) {
+                return roomId;
+            }
+        }
+
+        return 3;
+    }
+
+    static shouldPreserveEastWingInstanceStateForReentry(levelScope: string | null | undefined): boolean {
+        const scopeKey = String(levelScope ?? '').trim();
+        if (!scopeKey || !MissionHandler.isEastWingPostDeathCompletionLevel(getScopeLevelName(scopeKey))) {
+            return false;
+        }
+
+        const sharedState = GlobalState.levelQuestProgress.get(scopeKey);
+        const hasCutsceneState = Array.from(GlobalState.dungeonCutscenes.keys()).some((key) => key.startsWith(`${scopeKey}:`));
+        const hasTombstoneState = (GlobalState.deadServerAuthorityHostilesByScope.get(scopeKey)?.size ?? 0) > 0;
+        return Boolean(
+            hasTombstoneState ||
+            hasCutsceneState ||
+            (sharedState && (
+                Number(sharedState.progress ?? 0) > 0 ||
+                Boolean(sharedState.bossDead) ||
+                Boolean(sharedState.bossDeathCommitted) ||
+                Boolean(sharedState.bossTombstoned) ||
+                Boolean(sharedState.postDeathCutsceneStarted) ||
+                Boolean(sharedState.postDeathCutsceneFinished) ||
+                Boolean(sharedState.pendingCompletion) ||
+                Boolean(sharedState.completionFinalized) ||
+                Boolean(sharedState.completionRequested)
+            ))
+        );
+    }
+
+    static logEastWingFreshReset(levelScope: string, reason: string, oldState: unknown = null): void {
+        if (!MissionHandler.isEastWingPostDeathCompletionLevel(getScopeLevelName(levelScope))) {
+            return;
+        }
+        console.log(
+            `[MultiplayerSync][eastwing-instance-fresh-reset] scope=${levelScope} oldState=${JSON.stringify(oldState ?? {})} newState={"progress":0,"bossDead":false,"completionFinalized":false} reason=${reason}`
+        );
+    }
+
+    private static getEastWingCompletionEligibleClients(source: Client, levelScope: string, roomId: number): Client[] {
+        const sourcePartyId = getPartyIdForClient(source);
+        const clients: Client[] = [];
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (
+                !other.playerSpawned ||
+                !other.character ||
+                getClientLevelScope(other) !== levelScope
+            ) {
+                continue;
+            }
+            if (sourcePartyId > 0 && other !== source && !areClientsInSameParty(source, other)) {
+                continue;
+            }
+            if (roomId > 0) {
+                const otherRoomId = Math.max(0, Math.round(Number(other.currentRoomId ?? 0)));
+                if (otherRoomId > 0 && otherRoomId !== roomId) {
+                    continue;
+                }
+            }
+            clients.push(other);
+        }
+        return clients;
+    }
+
+    private static ensureEastWingPostDeathGate(
+        source: Client,
+        levelScope: string,
+        triggerEntity: any,
+        sourcePath: string
+    ): void {
+        const sharedState = MissionHandler.getEastWingSharedState(levelScope);
+        if (!sharedState) {
+            return;
+        }
+
+        const roomId = Math.max(
+            1,
+            Math.round(Number(triggerEntity?.roomId ?? triggerEntity?.roomBossRoomId ?? 0)) ||
+            MissionHandler.getEastWingPostDeathRoomId(levelScope)
+        );
+        const expectedTokens = sharedState.postDeathCutsceneExpectedTokens instanceof Set
+            ? sharedState.postDeathCutsceneExpectedTokens
+            : new Set<number>();
+        for (const participant of MissionHandler.getEastWingCompletionEligibleClients(source, levelScope, roomId)) {
+            expectedTokens.add(Math.max(0, Math.round(Number(participant.token) || 0)));
+        }
+
+        sharedState.bossDeathCommitted = true;
+        sharedState.bossDead = true;
+        sharedState.bossTombstoned = true;
+        sharedState.bossRespawnBlocked = true;
+        sharedState.bossCanonicalId = Math.max(0, Math.round(Number(triggerEntity?.id ?? 0)));
+        sharedState.bossDeathRoomId = roomId;
+        sharedState.partyId = getPartyIdForClient(source);
+        sharedState.ownerToken = Math.max(0, Math.round(Number(source.token) || 0));
+        sharedState.ownerName = String(source.character?.name ?? '');
+        sharedState.postDeathCutsceneStarted = true;
+        sharedState.postDeathCutsceneFinished = false;
+        sharedState.postDeathCutsceneStartedAt ||= Date.now();
+        sharedState.completionFinalized = false;
+        sharedState.pendingCompletion = true;
+        sharedState.postDeathCutsceneExpectedTokens = expectedTokens;
+        sharedState.postDeathCutsceneAckTokens ??= new Set<number>();
+        sharedState.statsDeliveredTokens ??= new Set<number>();
+
+        console.log(
+            `[MultiplayerSync][eastwing-boss-death-commit-once] scope=${levelScope} source=${String(source.character?.name ?? '').replace(/\s+/g, '_')} sourceToken=${source.token} canonicalId=${Math.max(0, Math.round(Number(triggerEntity?.id ?? 0)))} deathVersion=${Math.max(0, Math.round(Number(triggerEntity?.deathVersion ?? 0)))}`
+        );
+        console.log(
+            `[MultiplayerSync][eastwing-postdeath-cutscene-start] scope=${levelScope} playersInRoom=${Array.from(expectedTokens.values()).join('|')} startedBy=${String(source.character?.name ?? '').replace(/\s+/g, '_')} sourcePath=${sourcePath}`
+        );
+
+        // A skipped/closed cutscene can leave some expected players without a
+        // room-close ack (their client never joined the shared cutscene). The
+        // completion gate must never stall the whole party forever: after the
+        // defer window the gate force-finishes and the stat/rank screens flush.
+        if (!sharedState.postDeathCutsceneWatchdogArmed) {
+            sharedState.postDeathCutsceneWatchdogArmed = true;
+            setTimeout(() => {
+                const watchedState = GlobalState.levelQuestProgress.get(levelScope);
+                if (!watchedState || watchedState.postDeathCutsceneFinished || !watchedState.bossDeathCommitted) {
+                    return;
+                }
+                watchedState.postDeathCutsceneFinished = true;
+                watchedState.postDeathCutsceneFinishedAt = Date.now();
+                console.log(
+                    `[MultiplayerSync][eastwing-postdeath-cutscene-timeout] scope=${levelScope} ackCount=${(watchedState.postDeathCutsceneAckTokens?.size ?? 0)} expectedCount=${(watchedState.postDeathCutsceneExpectedTokens?.size ?? 0)} reason=ack_watchdog`
+                );
+                MissionHandler.releaseEastWingPendingCompletions(levelScope);
+            }, MissionHandler.DUNGEON_COMPLETION_MAX_DEFER_MS).unref?.();
+        }
+    }
+
+    private static scheduleEastWingCompletionForParty(
+        source: Client,
+        levelName: string,
+        levelScope: string,
+        triggerEntity: any
+    ): void {
+        if (!MissionHandler.isEastWingPostDeathCompletionLevel(levelName)) {
+            return;
+        }
+
+        MissionHandler.ensureEastWingPostDeathGate(source, levelScope, triggerEntity, 'boss-death');
+        const roomId = MissionHandler.getEastWingPostDeathRoomId(levelScope);
+        for (const other of MissionHandler.getEastWingCompletionEligibleClients(source, levelScope, roomId)) {
+            if (MissionHandler.hasFinalizedDungeonCompletion(other, levelScope)) {
+                continue;
+            }
+            MissionHandler.scheduleDungeonCompletion(
+                other,
+                MissionHandler.buildSyntheticLevelCompletePacket(100),
+                {
+                    forcedDungeonCompletionScope: levelScope,
+                    initialDelayMs: 0,
+                    settleDelayMs: 0,
+                    waitForCutsceneEnd: true
+                }
+            );
+        }
+    }
+
+    static noteEastWingPostDeathCutsceneStart(client: Client, roomId: number): void {
+        const levelScope = getClientLevelScope(client);
+        const sharedState = MissionHandler.getEastWingSharedState(levelScope);
+        if (!levelScope || !sharedState?.bossDeathCommitted || sharedState.postDeathCutsceneFinished) {
+            return;
+        }
+
+        const expectedRoomId = MissionHandler.getEastWingPostDeathRoomId(levelScope);
+        if (expectedRoomId > 0 && roomId > 0 && expectedRoomId !== roomId) {
+            return;
+        }
+
+        sharedState.postDeathCutsceneStarted = true;
+        sharedState.postDeathCutsceneStartedAt ||= Date.now();
+        sharedState.postDeathCutsceneExpectedTokens ??= new Set<number>();
+        sharedState.postDeathCutsceneExpectedTokens.add(Math.max(0, Math.round(Number(client.token) || 0)));
+        console.log(
+            `[MultiplayerSync][eastwing-postdeath-cutscene-join] scope=${levelScope} player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} currentStep=${Math.max(0, Math.round(Number(client.activeDungeonCutsceneJoinedAtDialogIndex ?? 0)))}`
+        );
+    }
+
+    static noteEastWingPostDeathCutsceneAck(client: Client, roomId: number, reason: string = 'room-close'): boolean {
+        const levelScope = getClientLevelScope(client);
+        const sharedState = MissionHandler.getEastWingSharedState(levelScope);
+        if (!levelScope || !sharedState?.bossDeathCommitted || !sharedState.postDeathCutsceneStarted) {
+            return true;
+        }
+
+        const expectedRoomId = MissionHandler.getEastWingPostDeathRoomId(levelScope);
+        if (expectedRoomId > 0 && roomId > 0 && expectedRoomId !== roomId) {
+            return true;
+        }
+
+        const expected = sharedState.postDeathCutsceneExpectedTokens ?? new Set<number>();
+        const acked = sharedState.postDeathCutsceneAckTokens ?? new Set<number>();
+        sharedState.postDeathCutsceneExpectedTokens = expected;
+        sharedState.postDeathCutsceneAckTokens = acked;
+        const token = Math.max(0, Math.round(Number(client.token) || 0));
+        if (token > 0) {
+            expected.add(token);
+            acked.add(token);
+        }
+
+        for (const expectedToken of Array.from(expected.values())) {
+            const session = GlobalState.sessionsByToken.get(expectedToken);
+            if (
+                !session ||
+                !session.playerSpawned ||
+                getClientLevelScope(session) !== levelScope ||
+                (expectedRoomId > 0 && Math.max(0, Math.round(Number(session.currentRoomId ?? 0))) !== expectedRoomId)
+            ) {
+                expected.delete(expectedToken);
+            }
+        }
+
+        console.log(
+            `[MultiplayerSync][eastwing-postdeath-cutscene-ack] scope=${levelScope} player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} ackCount=${acked.size} expectedCount=${expected.size}`
+        );
+
+        const complete = expected.size === 0 || Array.from(expected.values()).every((expectedToken) => acked.has(expectedToken));
+        if (!complete) {
+            return false;
+        }
+
+        if (!sharedState.postDeathCutsceneFinished) {
+            sharedState.postDeathCutsceneFinished = true;
+            sharedState.postDeathCutsceneFinishedAt = Date.now();
+            console.log(
+                `[MultiplayerSync][eastwing-postdeath-cutscene-finished] scope=${levelScope} reason=${reason} players=${Array.from(expected.values()).join('|')}`
+            );
+            MissionHandler.releaseEastWingPendingCompletions(levelScope);
+        }
+        return true;
+    }
+
+    private static releaseEastWingPendingCompletions(levelScope: string): void {
+        const sharedState = MissionHandler.getEastWingSharedState(levelScope);
+        if (!sharedState?.postDeathCutsceneFinished) {
+            return;
+        }
+
+        const roomId = MissionHandler.getEastWingPostDeathRoomId(levelScope);
+        console.log(
+            `[MultiplayerSync][eastwing-completion-finalize-after-cutscene] scope=${levelScope} progress=${Math.max(0, Math.round(Number(sharedState.progress ?? 0)))} players=${Array.from(sharedState.postDeathCutsceneExpectedTokens ?? []).join('|')}`
+        );
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (!other.character || getClientLevelScope(other) !== levelScope) {
+                continue;
+            }
+            if (
+                String(other.activeDungeonCutsceneScope ?? '').trim() === levelScope &&
+                (
+                    roomId <= 0 ||
+                    Math.max(0, Math.round(Number(other.activeDungeonCutsceneRoomId ?? 0))) === roomId
+                )
+            ) {
+                other.activeDungeonCutsceneScope = '';
+                other.activeDungeonCutsceneRoomId = 0;
+            }
+            if (String(other.pendingDungeonCompletionScope ?? '').trim() === levelScope) {
+                other.pendingDungeonCompletionWaitForCutsceneEnd = false;
+                void MissionHandler.flushPendingDungeonCompletion(other);
+            }
+        }
+    }
+
+    private static canSendEastWingCompletionUi(client: Client, levelScope: string, sourcePath: string): boolean {
+        const sharedState = MissionHandler.getEastWingSharedState(levelScope);
+        if (!sharedState?.bossDeathCommitted) {
+            return true;
+        }
+
+        console.log(
+            `[MultiplayerSync][eastwing-completion-attempt] scope=${levelScope} sourcePath=${sourcePath} viewer=${String(client.character?.name ?? '').replace(/\s+/g, '_')} bossDead=${Boolean(sharedState.bossDead)} progress=${Math.max(0, Math.round(Number(sharedState.progress ?? 0)))} postDeathCutsceneFinished=${Boolean(sharedState.postDeathCutsceneFinished)} completionFinalized=${Boolean(sharedState.completionFinalized)}`
+        );
+
+        if (sharedState.postDeathCutsceneFinished) {
+            return true;
+        }
+
+        sharedState.pendingCompletion = true;
+        console.log(
+            `[MultiplayerSync][eastwing-completion-deferred] scope=${levelScope} sourcePath=${sourcePath} reason=postdeath_cutscene_not_finished`
+        );
+        console.log(
+            `[MultiplayerSync][eastwing-completion-ui-blocked-early] scope=${levelScope} viewer=${String(client.character?.name ?? '').replace(/\s+/g, '_')} reason=postdeath_cutscene_not_finished`
+        );
+        return false;
+    }
+
+    static trySendEastWingCompletionAfterReentry(client: Client): void {
+        const levelScope = getClientLevelScope(client);
+        const sharedState = MissionHandler.getEastWingSharedState(levelScope);
+        if (!levelScope || !sharedState?.bossDeathCommitted) {
+            return;
+        }
+
+        const sharedProgress = Math.max(0, Math.min(100, Math.round(Number(sharedState.progress ?? 0) || 0)));
+        if (client.character && sharedProgress > 0) {
+            client.character.questTrackerState = sharedProgress;
+            MissionHandler.sendQuestProgress(client, sharedProgress);
+            console.log(
+                `[MultiplayerSync][eastwing-progress-restore] player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} scope=${levelScope} progress=${sharedProgress}`
+            );
+        }
+        console.log(
+            `[MultiplayerSync][eastwing-reentry-state-restore] player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} scope=${levelScope} bossDead=${Boolean(sharedState.bossDead)} tombstone=${Boolean(sharedState.bossTombstoned)} progress=${sharedProgress} completionFinalized=${Boolean(sharedState.completionFinalized)}`
+        );
+        console.log(
+            `[MultiplayerSync][eastwing-cutscene-state-restore] player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} scope=${levelScope} introFinished=${Boolean(GlobalState.dungeonCutscenes.get(`${levelScope}:${MissionHandler.getEastWingPostDeathRoomId(levelScope)}`)?.completed)} postDeathStarted=${Boolean(sharedState.postDeathCutsceneStarted)} postDeathFinished=${Boolean(sharedState.postDeathCutsceneFinished)}`
+        );
+
+        const delivered = sharedState.statsDeliveredTokens ?? new Set<number>();
+        sharedState.statsDeliveredTokens = delivered;
+        if (!sharedState.postDeathCutsceneFinished) {
+            sharedState.postDeathCutsceneExpectedTokens ??= new Set<number>();
+            sharedState.postDeathCutsceneExpectedTokens.add(Math.max(0, Math.round(Number(client.token) || 0)));
+            if (!MissionHandler.hasFinalizedDungeonCompletion(client, levelScope)) {
+                MissionHandler.scheduleDungeonCompletion(
+                    client,
+                    MissionHandler.buildSyntheticLevelCompletePacket(100),
+                    {
+                        forcedDungeonCompletionScope: levelScope,
+                        initialDelayMs: 0,
+                        settleDelayMs: 0,
+                        waitForCutsceneEnd: true
+                    }
+                );
+            }
+            console.log(
+                `[MultiplayerSync][eastwing-reentry-after-boss-death-before-cutscene-end] player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} scope=${levelScope}`
+            );
+            return;
+        }
+
+        console.log(
+            `[MultiplayerSync][eastwing-reentry-after-completion] player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} scope=${levelScope} statsDelivered=${delivered.has(client.token)}`
+        );
+        if (delivered.has(client.token) || MissionHandler.hasFinalizedDungeonCompletion(client, levelScope)) {
+            console.log(
+                `[MultiplayerSync][eastwing-completion-ui-restore] player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} scope=${levelScope} alreadyDelivered=${delivered.has(client.token)} sent=false`
+            );
+            return;
+        }
+
+        MissionHandler.scheduleDungeonCompletion(
+            client,
+            MissionHandler.buildSyntheticLevelCompletePacket(100),
+            {
+                forcedDungeonCompletionScope: levelScope,
+                initialDelayMs: 0,
+                settleDelayMs: 0,
+                waitForCutsceneEnd: false
+            }
+        );
+        console.log(
+            `[MultiplayerSync][eastwing-completion-ui-restore] player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} scope=${levelScope} alreadyDelivered=false sent=true`
+        );
     }
 
     private static getPendingDungeonCompletionNextDelayMs(client: Client): number {
@@ -2103,7 +2689,8 @@ export class MissionHandler {
         }
 
         if (MissionHandler.isFullClearOnlyDungeon(currentLevel)) {
-            return Math.max(0, Number(completionPercent ?? 0)) >= 100;
+            return Math.max(0, Number(completionPercent ?? 0)) >= 100 &&
+                (!levelScope || !MissionHandler.hasRemainingDungeonHostiles(levelScope));
         }
 
         if (MissionHandler.requiresBossDefeatForDungeon(currentLevel)) {
@@ -2270,6 +2857,7 @@ export class MissionHandler {
             roomId: client.activeDungeonCutsceneRoomId,
             pendingCompletion: String(client.pendingDungeonCompletionScope ?? '').trim() === scope
         });
+        MissionHandler.noteEastWingPostDeathCutsceneStart(client, client.activeDungeonCutsceneRoomId);
     }
 
     static noteDungeonCutsceneEnd(client: Client, roomId: number): void {
@@ -2309,6 +2897,8 @@ export class MissionHandler {
             pendingCompletion: pendingScope === scope,
             releasePendingCompletion: shouldReleasePendingCompletion
         });
+        const eastWingPostDeathCutsceneReady =
+            MissionHandler.noteEastWingPostDeathCutsceneAck(client, endedRoomId, 'room-close');
         if (!client.lastDungeonCutsceneStartScope) {
             client.lastDungeonCutsceneStartScope = scope;
             client.lastDungeonCutsceneStartAt = client.lastDungeonCutsceneEndAt;
@@ -2320,6 +2910,11 @@ export class MissionHandler {
         }
 
         if (pendingScope && pendingScope === scope) {
+            if (!eastWingPostDeathCutsceneReady) {
+                client.pendingDungeonCompletionWaitForCutsceneEnd = true;
+                MissionHandler.armPendingDungeonCompletionTimer(client, MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS);
+                return;
+            }
             client.pendingDungeonCompletionWaitForCutsceneEnd = false;
             void MissionHandler.flushPendingDungeonCompletion(client);
         }
@@ -2488,6 +3083,11 @@ export class MissionHandler {
         }
         if (MissionHandler.hasFinalizedDungeonCompletion(client, pendingScope)) {
             MissionHandler.clearPendingDungeonCompletion(client);
+            return;
+        }
+        if (!MissionHandler.canSendEastWingCompletionUi(client, pendingScope, 'flushPendingDungeonCompletion')) {
+            client.pendingDungeonCompletionWaitForCutsceneEnd = true;
+            MissionHandler.armPendingDungeonCompletionTimer(client, MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS);
             return;
         }
 
@@ -3277,6 +3877,15 @@ export class MissionHandler {
             timeBonus: number;
         }
     ): void {
+        const levelScope = getClientLevelScope(client);
+        const sharedState = MissionHandler.getEastWingSharedState(levelScope);
+        if (levelScope && sharedState?.bossDeathCommitted) {
+            sharedState.statsDeliveredTokens ??= new Set<number>();
+            sharedState.statsDeliveredTokens.add(Math.max(0, Math.round(Number(client.token) || 0)));
+            console.log(
+                `[MultiplayerSync][eastwing-completion-ui-send] scope=${levelScope} viewer=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} statsDelivered=${sharedState.statsDeliveredTokens.has(client.token)}`
+            );
+        }
         MissionHandler.logNephitQuestCompletion('rankScreenOpen', client, stats);
         const bb = new BitBuffer(false);
         bb.writeMethod6(Math.max(0, Math.min(stats.stars, 15)), 4);
@@ -4140,6 +4749,19 @@ export class MissionHandler {
         levelScope: string | null | undefined,
         allowLastHostileFallback: boolean
     ): boolean {
+        const scopeKey = String(levelScope ?? '').trim();
+        const preserveSharedProgressBossCompletion =
+            MissionHandler.shouldPreserveSharedProgressForServerAuthorityBossCompletion(levelName, scopeKey) &&
+            MissionHandler.hasMetRequiredDungeonCompletionObjectives(client, levelName, scopeKey);
+        if (
+            MissionHandler.isFullClearOnlyDungeon(levelName) &&
+            scopeKey &&
+            MissionHandler.hasRemainingDungeonHostiles(scopeKey) &&
+            !preserveSharedProgressBossCompletion
+        ) {
+            return false;
+        }
+
         if (!MissionHandler.requiresCompletionBossDefeatForDungeon(levelName)) {
             return true;
         }
@@ -4171,6 +4793,18 @@ export class MissionHandler {
         const levelName = getScopeLevelName(levelScope);
         if (MissionHandler.DUNGEONS_WITH_CLIENT_SCRIPTED_COMPLETION.has(LevelConfig.normalizeLevelName(levelName))) {
             return false;
+        }
+
+        if (
+            MissionHandler.shouldPreserveSharedProgressForServerAuthorityBossCompletion(levelName, levelScope) &&
+            MissionHandler.isRequiredDungeonCompletionBossEntity(levelName, entity)
+        ) {
+            if (MissionHandler.shouldIgnoreUnverifiedDungeonBossDefeat(levelName, entity)) {
+                return false;
+            }
+
+            MissionHandler.markRequiredDungeonBossDefeated(levelScope, levelName, entity);
+            return MissionHandler.hasMetRequiredDungeonCompletionObjectives(null, levelName, levelScope);
         }
 
         if (MissionHandler.isFullClearOnlyDungeon(levelName)) {

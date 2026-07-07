@@ -96,7 +96,7 @@ export class AILogic {
         // Iterate over Map entries to get ID and Object
         for (const [entId, npc] of levelEntities.entries()) {
             if (npc.isPlayer || npc.team !== 2) continue; // Only Enemy NPCs
-            if (EntityHandler.usesServerAuthorityHostiles(levelName) && !AILogic.ENABLE_SERVER_AUTHORITY_HOSTILE_AI) continue; // JC_Mini1Hard uses client proxies for AI/animation.
+            if (EntityHandler.usesServerAuthorityHostiles(levelName) && !AILogic.ENABLE_SERVER_AUTHORITY_HOSTILE_AI) continue; // Server-authority hostile dungeons (JC_Mini1Hard, JC_Mini2/Hard) use client proxies for AI/animation.
             if (Boolean(npc.hybridCanonicalHostile) && !AILogic.ENABLE_SERVER_AUTHORITY_HOSTILE_AI) continue; // TODO: feature-flag server AI for promoted hybrid hostiles.
             if (npc.clientSpawned) continue; // Client-owned monsters should not receive server AI movement.
             // Simple dead check (if no hp prop, assume 100)

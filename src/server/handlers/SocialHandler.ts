@@ -14,13 +14,17 @@ import { PetHandler } from './PetHandler';
 import { DialogueTranslationLoader } from '../data/DialogueTranslationLoader';
 import { discordSocialBridge } from '../integrations/DiscordSocialBridge';
 import {
+    clampSocialLevel,
     ensureCharacterSocialState,
     FriendEntry,
+    getFriendListSanitizationSummary,
     getCharacterIgnoredEntries,
     isCharacterIgnoring,
+    MAX_FRIEND_ENTRIES,
     normalizeCharacterKey,
     PartyGroup,
-    PendingTeleport
+    PendingTeleport,
+    sanitizeSocialText
 } from '../core/SocialState';
 import { areClientsInSameLevelScope, getClientLevelScope } from '../core/LevelScope';
 
@@ -59,6 +63,7 @@ export class SocialHandler {
     private static readonly TELEPORT_COMMAND_PREFIXES = ['/teleport:', 'teleport:'];
     private static readonly TELEPORT_COST_GOLD = 20_000;
     private static readonly DREAD_TELEPORT_COST_GOLD = 40_000;
+    private static readonly SOCIAL_LOG_THROTTLE_MS = 30_000;
     private static readonly TELEPORT_DESTINATIONS: Map<
         string,
         { level: string; dreadLevel: string; displayName: string }
@@ -75,6 +80,7 @@ export class SocialHandler {
         ['valhaven', { level: 'JadeCity', dreadLevel: 'JadeCityHard', displayName: 'Valhaven' }]
     ]);
     private static readonly pendingFriendRequestPrompts: Map<number, PendingFriendRequestPrompt> = new Map();
+    private static readonly lastSocialWarningByCharacter: Map<string, number> = new Map();
 
     private static normalizeName(value: unknown): string {
         return normalizeCharacterKey(value);
@@ -112,12 +118,6 @@ export class SocialHandler {
             case 'paladin':
             default:
                 return 0;
-        }
-    }
-
-    private static appendBuffer(bb: BitBuffer, buffer: Buffer): void {
-        for (const byte of buffer) {
-            bb.writeMethod11(byte, 8);
         }
     }
 
@@ -329,6 +329,16 @@ export class SocialHandler {
         return Array.isArray(character?.friends) ? (character.friends as FriendEntry[]) : [];
     }
 
+    private static getSerializableFriendEntries(character: Character | null | undefined): FriendEntry[] {
+        return SocialHandler.getFriendEntries(character)
+            .map((entry) => ({
+                name: sanitizeSocialText(entry?.name),
+                isRequest: Boolean(entry?.isRequest)
+            }))
+            .filter((entry) => Boolean(entry.name))
+            .slice(0, MAX_FRIEND_ENTRIES);
+    }
+
     private static findFriendIndex(character: Character | null | undefined, friendName: string): number {
         const friendKey = SocialHandler.normalizeName(friendName);
         return SocialHandler.getFriendEntries(character).findIndex((entry) =>
@@ -351,7 +361,7 @@ export class SocialHandler {
         }
 
         const normalizedEntry = {
-            name: String(entry.name ?? '').trim(),
+            name: sanitizeSocialText(entry.name),
             isRequest: Boolean(entry.isRequest)
         };
         if (!normalizedEntry.name) {
@@ -393,25 +403,28 @@ export class SocialHandler {
         return removed ?? null;
     }
 
-    private static buildFriendStatusPayload(friendName: string, isRequest: boolean, session: Client | null): Buffer {
-        const normalizedFriendName = String(friendName ?? '').trim();
-        const bb = new BitBuffer(false);
+    private static writeFriendStatus(bb: BitBuffer, friendName: string, isRequest: boolean, session: Client | null): void {
+        const normalizedFriendName = sanitizeSocialText(friendName, 'Unknown');
         bb.writeMethod13(normalizedFriendName);
         bb.writeMethod15(isRequest);
 
         const online = Boolean(session?.character);
         bb.writeMethod15(online);
         if (online && session?.character) {
-            const displayName = String(session.character.name ?? '').trim() || normalizedFriendName;
+            const displayName = sanitizeSocialText(session.character.name, normalizedFriendName);
             const hasCustomCharacterName = displayName !== normalizedFriendName;
             bb.writeMethod15(hasCustomCharacterName);
             if (hasCustomCharacterName) {
                 bb.writeMethod13(displayName);
             }
             bb.writeMethod6(SocialHandler.classIdFromName(String(session.character.class ?? 'Paladin')), 2);
-            bb.writeMethod6(Math.max(1, Math.min(Number(session.character.level ?? 1), 63)), 6);
+            bb.writeMethod6(clampSocialLevel(session.character.level), 6);
         }
+    }
 
+    private static buildFriendStatusPayload(friendName: string, isRequest: boolean, session: Client | null): Buffer {
+        const bb = new BitBuffer(false);
+        SocialHandler.writeFriendStatus(bb, friendName, isRequest, session);
         return bb.toBuffer();
     }
 
@@ -434,8 +447,29 @@ export class SocialHandler {
         }
 
         const bb = new BitBuffer(false);
-        bb.writeMethod13(friendName);
+        bb.writeMethod13(sanitizeSocialText(friendName, 'Unknown'));
         target.sendBitBuffer(0x93, bb);
+    }
+
+    private static logFriendListSanitization(character: Character, source: string): void {
+        const summary = getFriendListSanitizationSummary(character.friends);
+        if (summary.droppedCount <= 0 && !summary.truncated) {
+            return;
+        }
+
+        const name = sanitizeSocialText(character.name, 'unknown');
+        const key = `${SocialHandler.normalizeName(name)}:${source}`;
+        const now = Date.now();
+        const last = SocialHandler.lastSocialWarningByCharacter.get(key) ?? 0;
+        if (now - last < SocialHandler.SOCIAL_LOG_THROTTLE_MS) {
+            return;
+        }
+
+        SocialHandler.lastSocialWarningByCharacter.set(key, now);
+        console.warn(
+            `[SocialHandler] Sanitized ${source} friend list for ${name}: raw=${summary.rawCount}, ` +
+            `sent=${summary.normalizedCount}, dropped=${summary.droppedCount}, truncated=${summary.truncated}`
+        );
     }
 
     private static sendFullFriendList(client: Client): void {
@@ -443,18 +477,17 @@ export class SocialHandler {
             return;
         }
 
+        SocialHandler.logFriendListSanitization(client.character, 'request');
         const bb = new BitBuffer(false);
-        const friends = SocialHandler.getFriendEntries(client.character);
+        const friends = SocialHandler.getSerializableFriendEntries(client.character);
         bb.writeMethod4(friends.length);
 
         for (const friend of friends) {
-            SocialHandler.appendBuffer(
+            SocialHandler.writeFriendStatus(
                 bb,
-                SocialHandler.buildFriendStatusPayload(
-                    friend.name,
-                    friend.isRequest,
-                    SocialHandler.getOnlineSession(friend.name)
-                )
+                friend.name,
+                friend.isRequest,
+                SocialHandler.getOnlineSession(friend.name)
             );
         }
 

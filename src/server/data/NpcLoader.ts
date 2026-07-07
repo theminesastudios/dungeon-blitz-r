@@ -33,7 +33,9 @@ export class NpcLoader {
         'GoblinRiverDungeonHard',
         'Castle',
         'CastleHard',
-        'JC_Mini1Hard'
+        'JC_Mini1Hard',
+        'JC_Mini2',
+        'JC_Mini2Hard'
     ]);
     private static readonly DERIVED_SERVER_HOSTILE_LEVELS = new Set<string>([
         'AC_Mission1',

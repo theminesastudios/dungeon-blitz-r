@@ -1245,6 +1245,14 @@ async function main(): Promise<void> {
         (EntityHandler as any).serverAuthoritySeededScopes.clear();
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
+        testLootDepthOrderingPreservesGearPickupFloorY();
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         testAcMission1DestroyedDragonDoesNotRespawnOnRejoin();
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
