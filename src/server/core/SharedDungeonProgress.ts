@@ -152,13 +152,17 @@ function isSharedDungeonTrackedHostile(levelNameOrScope: string | null | undefin
         return false;
     }
 
+    if (usesServerAuthorityHostileProgress(levelNameOrScope)) {
+        return !Boolean(entity?.clientSpawned) &&
+            !Boolean(entity?.isPlayer) &&
+            Number(entity?.team ?? EntityTeam.UNKNOWN) === EntityTeam.ENEMY;
+    }
+
     if (Boolean(entity?.clientSpawned)) {
         return true;
     }
 
-    return usesServerAuthorityHostileProgress(levelNameOrScope) &&
-        !Boolean(entity?.isPlayer) &&
-        Number(entity?.team ?? EntityTeam.UNKNOWN) === EntityTeam.ENEMY;
+    return false;
 }
 
 function isEntityDefeated(entity: any): boolean {
@@ -274,22 +278,31 @@ export function noteSharedDungeonHostileDestroyed(levelScope: string | null | un
 
 export function getSharedDungeonProgressTotals(
     levelScope: string | null | undefined
-): { total: number; defeated: number } {
+): { total: number; defeated: number; ignoredClientOnly: number } {
     const scopeKey = String(levelScope ?? '').trim();
     if (!scopeKey) {
-        return { total: 0, defeated: 0 };
+        return { total: 0, defeated: 0, ignoredClientOnly: 0 };
     }
 
     const state = getOrCreateSharedDungeonProgressState(scopeKey);
     if (!state) {
-        return { total: 0, defeated: 0 };
+        return { total: 0, defeated: 0, ignoredClientOnly: 0 };
     }
 
     const tracked = state.trackedHostileIds ?? new Set<number>();
     const defeated = state.defeatedHostileIds ?? new Set<number>();
     const levelMap = GlobalState.levelEntities.get(scopeKey);
+    let ignoredClientOnly = 0;
 
     for (const [entityId, entity] of levelMap?.entries() ?? []) {
+        if (
+            usesServerAuthorityHostileProgress(scopeKey) &&
+            Boolean(entity?.clientSpawned) &&
+            !Boolean(entity?.isPlayer) &&
+            Number(entity?.team ?? EntityTeam.UNKNOWN) === EntityTeam.ENEMY
+        ) {
+            ignoredClientOnly++;
+        }
         if (!isSharedDungeonTrackedHostile(scopeKey, entity)) {
             continue;
         }
@@ -311,7 +324,8 @@ export function getSharedDungeonProgressTotals(
 
     return {
         total: tracked.size,
-        defeated: defeatedCount
+        defeated: defeatedCount,
+        ignoredClientOnly
     };
 }
 
@@ -329,6 +343,11 @@ export function recomputeSharedDungeonProgress(levelScope: string | null | undef
         state.progress = totals.total > 0
             ? clampProgress(initialProgress + ((totals.defeated / totals.total) * (100 - initialProgress)))
             : initialProgress;
+        if (usesServerAuthorityHostileProgress(levelScope)) {
+            console.log(
+                `[MultiplayerSync][progress_server_registry] total=${totals.total} dead=${totals.defeated} ignoredClientOnly=${totals.ignoredClientOnly ?? 0} percent=${state.progress}`
+            );
+        }
         refreshSharedDungeonLiveStats(state, scopeKey);
         return state;
     }

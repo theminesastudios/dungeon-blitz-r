@@ -5686,6 +5686,38 @@ export class CombatHandler {
                 EquipmentHandler.broadcastGearChange(targetSession, true);
             }
         } else {
+            if (
+                EntityHandler.usesServerAuthorityHostiles(currentLevel) &&
+                damage > 0 &&
+                targetId > 0 &&
+                !CombatHandler.isServerAuthoritySyncNpc(levelScope, targetEntity) &&
+                (
+                    !targetEntity ||
+                    (
+                        !Boolean(targetEntity?.isPlayer) &&
+                        Number(targetEntity?.team ?? rawTargetEntity?.team ?? 0) === EntityTeam.ENEMY
+                    ) ||
+                    (
+                        rawTargetEntity &&
+                        !Boolean(rawTargetEntity?.isPlayer) &&
+                        Number(rawTargetEntity?.team ?? 0) === EntityTeam.ENEMY
+                    )
+                )
+            ) {
+                logJcMini1Authority('hostile_hp_rejected_unknown_canonical', {
+                    targetId,
+                    rawTargetId: parsedInfo.targetId,
+                    source: client.character?.name ?? '',
+                    sourceToken: client.token,
+                    scope: levelScope,
+                    packetId: '0x0A',
+                    reason: 'powerhit_unknown_canonical'
+                });
+                console.log(
+                    `[MultiplayerSync][hostile_hp_rejected_unknown_canonical] targetId=${targetId} source=${String(client.character?.name ?? '')}`
+                );
+                return;
+            }
             const deferDungeonCompletionUntilDestroy = Boolean(
                 targetEntity &&
                 !targetEntity.isPlayer &&
@@ -6432,6 +6464,18 @@ export class CombatHandler {
                 ignoredForAuthority: true,
                 resolvedCanonical: false
             });
+            logJcMini1Authority('hostile_hp_rejected_unknown_canonical', {
+                targetId: entityId,
+                rawEntityId,
+                source: client.character?.name ?? '',
+                sourceToken: client.token,
+                scope: levelScope,
+                packetId: '0x78',
+                reason: 'hp_report_unknown_canonical'
+            });
+            console.log(
+                `[MultiplayerSync][hostile_hp_rejected_unknown_canonical] targetId=${entityId} source=${String(client.character?.name ?? '')}`
+            );
             return true;
         }
 

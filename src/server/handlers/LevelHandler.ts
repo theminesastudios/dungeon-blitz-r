@@ -1595,6 +1595,50 @@ export class LevelHandler {
         }
     }
 
+    private static setServerAuthorityHostileUntargetableById(
+        levelScope: string,
+        canonicalEntityId: number,
+        untargetable: boolean
+    ): void {
+        const canonicalId = Math.max(0, Math.round(Number(canonicalEntityId) || 0));
+        if (!levelScope || canonicalId <= 0) {
+            return;
+        }
+
+        const levelMap = GlobalState.levelEntities.get(levelScope);
+        const entity = levelMap?.get(canonicalId);
+        const levelName = getScopeLevelName(levelScope);
+        if (
+            !EntityHandler.isServerAuthorityHostileEntity(levelName, entity) ||
+            Boolean(entity.dead) ||
+            Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD
+        ) {
+            return;
+        }
+
+        entity.untargetable = untargetable;
+        for (const viewer of GlobalState.sessionsByToken.values()) {
+            if (!viewer.playerSpawned || getClientLevelScope(viewer) !== levelScope) {
+                continue;
+            }
+
+            const localId = LevelHandler.resolveViewerLocalEntityId(viewer, levelScope, canonicalId, entity);
+            const localEntity = viewer.entities.get(localId) ?? viewer.entities.get(canonicalId);
+            if (localEntity && typeof localEntity === 'object') {
+                localEntity.untargetable = untargetable;
+            }
+            if (
+                !EntityHandler.canClientResolveCanonicalEntity(viewer, canonicalId) &&
+                !viewer.entities?.has(localId) &&
+                !viewer.knownEntityIds?.has(localId)
+            ) {
+                continue;
+            }
+
+            LevelHandler.sendSetUntargetable(viewer, localId, untargetable);
+        }
+    }
+
     private static scheduleCraftTownTutorialIntroLine(
         client: Client,
         state: KeepTutorialState,
@@ -4897,10 +4941,12 @@ export class LevelHandler {
         } else if (sharedCutsceneDecision !== 'completed_duplicate') {
             LevelHandler.sendSharedDungeonCutsceneStartToClient(client, roomId, cutsceneStart.toBuffer(), 0);
         }
-        LevelHandler.setServerAuthorityHostilesUntargetableForScope(getClientLevelScope(client), roomId, true);
         const levelScope = getClientLevelScope(client);
-        markRoomBossEntity(levelScope, bossId, roomId, bossName);
-        noteDungeonRunBossCutscene(levelScope, roomId, bossId);
+        const canonicalBossId = EntityHandler.resolveEntityAlias(client, bossId);
+        LevelHandler.setServerAuthorityHostilesUntargetableForScope(levelScope, roomId, true);
+        LevelHandler.setServerAuthorityHostileUntargetableById(levelScope, canonicalBossId, true);
+        markRoomBossEntity(levelScope, canonicalBossId, roomId, bossName);
+        noteDungeonRunBossCutscene(levelScope, roomId, canonicalBossId);
 
         LevelHandler.relayToLevel(client, 0xAC, data);
     }
