@@ -328,16 +328,22 @@ export function recomputeSharedDungeonProgress(levelScope: string | null | undef
     }
     if (usesSharedDungeonProgress(levelName)) {
         const initialProgress = getSharedDungeonInitialProgress(levelName);
-        state.progress = totals.total > 0
+        const computedProgress = totals.total > 0
             ? clampProgress(initialProgress + ((totals.defeated / totals.total) * (100 - initialProgress)))
             : initialProgress;
+        state.progress = EAST_WING_LEVELS.has(levelName) && Boolean(state.bossDeathCommitted)
+            ? Math.max(25, computedProgress)
+            : computedProgress;
         refreshSharedDungeonLiveStats(state, scopeKey);
         return state;
     }
 
-    state.progress = totals.total > 0
+    const computedProgress = totals.total > 0
         ? clampProgress((totals.defeated / totals.total) * 100)
         : 0;
+    state.progress = EAST_WING_LEVELS.has(levelName) && Boolean(state.bossDeathCommitted)
+        ? Math.max(25, computedProgress)
+        : computedProgress;
     refreshSharedDungeonLiveStats(state, scopeKey);
     return state;
 }

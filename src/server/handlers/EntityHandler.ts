@@ -1232,6 +1232,29 @@ export class EntityHandler {
                 });
             } else {
                 EntityHandler.sendServerAuthorityProxyInitialHpSync(client, canonical, localId, 'proxy_attach');
+                // A proxy attached while the shared boss intro is running
+                // (player transferred in mid-cinematic) missed the scope-wide
+                // freeze broadcast; replay the untargetable state so this
+                // viewer's boss stays non-hostile until the intro finishes.
+                if (Boolean(canonical.untargetable)) {
+                    const proxy = client.entities.get(localId);
+                    if (proxy && typeof proxy === 'object') {
+                        proxy.untargetable = true;
+                    }
+                    const untargetablePayload = new BitBuffer(false);
+                    untargetablePayload.writeMethod4(localId);
+                    untargetablePayload.writeMethod15(true);
+                    client.sendBitBuffer(0xAE, untargetablePayload);
+                    logJcMini1Authority('proxy_attach_untargetable_sync', {
+                        entityId: canonicalId,
+                        localEntityId: localId,
+                        name: canonical.name,
+                        viewer: client.character?.name ?? '',
+                        viewerToken: client.token,
+                        scope: getClientLevelScope(client),
+                        roomId: canonical.roomId
+                    });
+                }
             }
 
             return true;
@@ -4084,10 +4107,18 @@ export class EntityHandler {
             }
             const introFinished = bossRoomId >= 0 &&
                 Boolean(GlobalState.dungeonCutscenes.get(`${restoreScope}:${bossRoomId}`)?.completed);
+            const introState = bossRoomId >= 0
+                ? GlobalState.dungeonCutscenes.get(`${restoreScope}:${bossRoomId}`)
+                : null;
             const sharedProgress = Math.max(0, Math.round(Number(GlobalState.levelQuestProgress.get(restoreScope)?.progress ?? 0)));
             console.log(
                 `[MultiplayerSync][reentry-state-restore] player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} scope=${restoreScope} bossCanonicalId=${bossCanonicalId} bossRoomId=${bossRoomId} bossDead=${bossDead} introFinished=${introFinished} progress=${sharedProgress}`
             );
+            if (levelName === 'JC_Mini2' || levelName === 'JC_Mini2Hard') {
+                console.log(
+                    `[MultiplayerSync][eastwing-intro-reentry-restore] scope=${restoreScope} runId=${String(client.levelInstanceId ?? '').replace(/\s+/g, '_')} player=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} introActive=${Boolean(introState?.active)} introFinished=${Boolean(introState?.completed)} currentStep=${Math.max(0, Math.round(Number(introState?.dialogIndex ?? 0) || 0))}`
+                );
+            }
             MissionHandler.trySendEastWingCompletionAfterReentry(client);
         }
 

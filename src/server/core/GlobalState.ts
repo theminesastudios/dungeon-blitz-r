@@ -80,6 +80,12 @@ export type SharedDungeonCutsceneState = {
     startedAt: number;
     endedAt: number;
     dialogIndex: number;
+    // Boss-intro close barrier (East Wing): tokens whose own client started
+    // the intro cutscene (sent 0xA5 themselves) and tokens that closed it.
+    // The shared intro only completes once every eligible active client has
+    // closed, so an early finisher cannot tear down a late joiner's intro.
+    introActiveClientTokens?: Set<number>;
+    introClosedClientTokens?: Set<number>;
 };
 
 export type DeadHostileTombstone = {

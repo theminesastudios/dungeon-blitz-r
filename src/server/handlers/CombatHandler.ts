@@ -2697,12 +2697,33 @@ export class CombatHandler {
     }
 
     private static shouldSuppressCutsceneHostileCombat(client: Client, levelScope: string, sourceId: number): boolean {
-        if (!LevelHandler.isDungeonCutsceneCombatLocked(client) || !levelScope || sourceId <= 0) {
+        if (!levelScope || sourceId <= 0) {
             return false;
         }
 
         const sourceEntity = CombatHandler.resolveLevelEntity(levelScope, sourceId) ?? client.entities.get(sourceId);
-        return Boolean(sourceEntity && !sourceEntity.isPlayer && Number(sourceEntity.team ?? 0) === EntityTeam.ENEMY);
+        if (!sourceEntity || sourceEntity.isPlayer || Number(sourceEntity.team ?? 0) !== EntityTeam.ENEMY) {
+            return false;
+        }
+
+        const sourceRoomId = Number.isFinite(Number(sourceEntity?.roomId))
+            ? Math.round(Number(sourceEntity.roomId))
+            : (
+                Number.isFinite(Number(client.currentRoomId))
+                    ? Math.round(Number(client.currentRoomId))
+                    : -1
+            );
+        const locked = LevelHandler.isDungeonCutsceneCombatLockedForScope(levelScope, sourceRoomId);
+        if (!locked) {
+            return false;
+        }
+
+        if (LevelHandler.isEastWingIntroCutsceneActive(levelScope, sourceRoomId)) {
+            console.log(
+                `[MultiplayerSync][eastwing-boss-ai-blocked-intro-active] scope=${levelScope} roomId=${sourceRoomId} targetPlayer=${String(client.character?.name ?? '').replace(/\s+/g, '_')} token=${client.token} sourceId=${sourceId} action=hostile_combat`
+            );
+        }
+        return true;
     }
 
     private static shouldMirrorClientSpawnEntityToParty(levelName: string, entity: any): boolean {
@@ -5827,6 +5848,9 @@ export class CombatHandler {
             !sourceEntity.isPlayer &&
             Number(sourceEntity.team ?? 0) === EntityTeam.ENEMY
         );
+        if (isHostileNpcSource && CombatHandler.shouldSuppressCutsceneHostileCombat(client, levelScope, sourceId)) {
+            return;
+        }
         if (LevelHandler.isDungeonCutsceneCombatLocked(client)) {
             if (
                 targetEntity &&
@@ -5842,9 +5866,6 @@ export class CombatHandler {
             if (LevelHandler.isDungeonCutsceneCombatLocked(client)) {
                 return;
             }
-        }
-        if (CombatHandler.shouldSuppressCutsceneHostileCombat(client, levelScope, sourceId)) {
-            return;
         }
         const powerSourceEntity = CombatHandler.resolvePowerCastSourceEntity(levelScope, sourceId, client);
         if (CombatHandler.shouldSuppressHostileBossPower(levelScope, powerSourceEntity)) {

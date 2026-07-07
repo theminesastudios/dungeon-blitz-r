@@ -493,7 +493,7 @@ async function testTanjaCanonicalDeathFanoutSingleKill(
     const zeusProgress = Math.round(Number((zeus.character as any).questTrackerState ?? -1));
     const telahairProgress = Math.round(Number((telahair.character as any).questTrackerState ?? -2));
     assert.equal(zeusProgress, telahairProgress, 'single canonical death should mirror the same progress to both players');
-    assert.ok(zeusProgress > 0 && zeusProgress < 100, `single Tanja death should keep shared partial progress (got ${zeusProgress})`);
+    assert.equal(zeusProgress, 25, 'single Tanja death should award the shared East Wing boss progress floor');
     const sharedState = GlobalState.levelQuestProgress.get(scope);
     assert.equal(Boolean(sharedState?.bossDeathCommitted), true, 'shared East Wing state must record committed boss death');
     assert.equal(Boolean(sharedState?.postDeathCutsceneStarted), true, 'boss death should arm the shared post-death cutscene gate');
@@ -679,7 +679,7 @@ async function testSharedProgressAndCompletionPropagation(): Promise<void> {
     const zeusProgress = Math.round(Number((zeus.character as any).questTrackerState ?? -1));
     const telahairProgress = Math.round(Number((telahair.character as any).questTrackerState ?? -2));
     assert.equal(zeusProgress, telahairProgress, 'both party members must share the same progress percentage');
-    assert.ok(zeusProgress > 0 && zeusProgress < 100, `progress should be partial after one of five kills (got ${zeusProgress})`);
+    assert.equal(zeusProgress, 25, 'Tanja death should broadcast the shared East Wing 25% progress floor');
 
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
@@ -995,6 +995,235 @@ async function testBossIntroSharedTriggerDirections(): Promise<void> {
     );
 }
 
+async function testNonLeaderFirstEntryStartsIntroAndBlocksBossCombat(): Promise<void> {
+    const { zeus, telahair, scope } = setupTwoPlayers('JC_Mini2', 'jc-mini2-nonleader-first-intro', {
+        zeusRoom: 1,
+        telahairRoom: 3
+    });
+    setParty(zeus, telahair);
+    assert.equal(GlobalState.partyGroups.get(7702)?.leader, 'Zeus', 'Zeus must be the party leader for this regression');
+
+    const tanja = GlobalState.levelEntities.get(scope)?.get(TANJA_CANONICAL_ID);
+    assert.ok(tanja, 'canonical Tanja should exist');
+
+    zeus.sentPackets.length = 0;
+    telahair.sentPackets.length = 0;
+    LevelHandler.handleRoomEventStart(telahair as never, buildRoomEventPayload(3));
+
+    const introState = GlobalState.dungeonCutscenes.get(`${scope}:3`);
+    assert.ok(introState?.active, 'non-leader first entry must start the shared Tanja intro');
+    assert.equal(introState?.ownerToken, telahair.token, 'non-leader trigger must own the active shared intro');
+    assert.equal(Boolean(introState?.completed), false, 'shared intro must not be completed at start');
+    assert.equal(String((telahair as any).activeDungeonCutsceneScope ?? ''), scope, 'non-leader must enter the shared intro state');
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0xA5),
+        true,
+        'leader must receive Tanja intro when the non-leader enters first'
+    );
+    assert.equal(
+        String((zeus as any).activeDungeonCutsceneScope ?? ''),
+        scope,
+        'leader must be attached to the same shared intro state'
+    );
+    assert.equal(Boolean(tanja.untargetable), true, 'Tanja must be frozen while the non-leader-started intro is active');
+
+    telahair.sentPackets.length = 0;
+    attachProxy(telahair, 620004, 'TowerGuard2', 11978, 4756, 3);
+    assert.equal(
+        telahair.sentPackets.some((packet) => {
+            if (packet.id !== 0xAE) {
+                return false;
+            }
+            const br = new BitReader(packet.payload);
+            return br.readMethod4() === 620004 && br.readMethod15() === true;
+        }),
+        true,
+        'non-leader local Tanja proxy must stay untargetable during intro'
+    );
+
+    const hpBefore = telahair.authoritativeCurrentHp;
+    await CombatHandler.handlePowerHit(telahair as never, buildPowerHitPayload(telahair.clientEntID, 620004, 999999));
+    assert.equal(telahair.authoritativeCurrentHp, hpBefore, 'Tanja must not damage the non-leader while intro is active');
+    assert.notEqual(telahair.entities.get(telahair.clientEntID)?.dead, true, 'non-leader must not die from intro-active Tanja damage');
+
+    zeus.currentRoomId = 3;
+    zeus.sentPackets.length = 0;
+    LevelHandler.handleRoomEventStart(zeus as never, buildRoomEventPayload(3));
+    assert.equal(
+        Number((zeus as any).activeDungeonCutsceneJoinedAtDialogIndex ?? -1),
+        0,
+        'leader room-entry echo must join the current shared intro step'
+    );
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0xA5),
+        true,
+        'leader actual room entry must receive a local intro start even if the eager shared packet was sent earlier'
+    );
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0xAE),
+        false,
+        'leader entering during the active intro must not receive a targeting unlock'
+    );
+
+    LevelHandler.handleRoomClose(telahair as never, buildRoomEventPayload(3));
+    assert.equal(Boolean(GlobalState.dungeonCutscenes.get(`${scope}:3`)?.active), true, 'non-leader close must wait for the leader watcher');
+    assert.equal(Boolean(tanja.untargetable), true, 'Tanja must remain frozen until the leader also finishes');
+    LevelHandler.handleRoomClose(zeus as never, buildRoomEventPayload(3));
+    assert.equal(Boolean(GlobalState.dungeonCutscenes.get(`${scope}:3`)?.completed), true, 'shared intro must complete after both players close');
+    assert.equal(Boolean(tanja.untargetable), false, 'Tanja combat must enable only after the shared intro finishes');
+}
+
+// Join-in-progress for the Tanja intro: the Flash client replays the intro
+// locally when its own boss fight starts and keeps hostiles frozen only while
+// its room stays in cutscene-border mode (cleared by any inbound 0xA6). The
+// shared intro must therefore stay open until every active watcher has closed
+// it, a late joiner must attach at the current dialog step, and a player who
+// arrives after the finished intro must be closed out instead of replaying it.
+async function testBossIntroLateJoinCloseBarrier(): Promise<void> {
+    const { zeus, telahair, scope } = setupTwoPlayers('JC_Mini2', 'jc-mini2-intro-late-join', {
+        zeusRoom: 3,
+        telahairRoom: 1
+    });
+    const tanja = GlobalState.levelEntities.get(scope)?.get(TANJA_CANONICAL_ID);
+    assert.ok(tanja, 'canonical Tanja should exist');
+
+    // Player A reaches the boss room first and starts the shared intro.
+    LevelHandler.handleRoomEventStart(zeus as never, buildRoomEventPayload(3));
+    const introState = GlobalState.dungeonCutscenes.get(`${scope}:3`);
+    assert.ok(introState?.active, 'intro must be active after the first trigger');
+    assert.equal(Boolean(tanja.untargetable), true, 'Tanja must be frozen while the intro runs');
+    assert.equal(introState?.introActiveClientTokens?.has(zeus.token), true, 'intro must track the triggering client');
+
+    // The intro advances to dialog step 2 before the second player arrives.
+    introState!.dialogIndex = 2;
+
+    // The Flash client of a late joiner resets a remotely-opened border state
+    // (spurious 0xA6) right before starting its own cutscene; that stale close
+    // must not end the shared intro.
+    telahair.currentRoomId = 3;
+    LevelHandler.handleRoomClose(telahair as never, buildRoomEventPayload(3));
+    assert.equal(
+        Boolean(GlobalState.dungeonCutscenes.get(`${scope}:3`)?.active),
+        true,
+        'stale close from a client that never started its intro must not end the shared intro'
+    );
+
+    // The late joiner's own cutscene start joins at the current dialog step.
+    telahair.sentPackets.length = 0;
+    LevelHandler.handleRoomEventStart(telahair as never, buildRoomEventPayload(3));
+    assert.equal(
+        telahair.sentPackets.some((packet) => packet.id === 0xA5),
+        true,
+        'late joiner actual room entry must receive a local intro start at the shared current step'
+    );
+    assert.equal(String((telahair as any).activeDungeonCutsceneScope ?? ''), scope, 'late joiner must become an intro participant');
+    assert.equal(
+        Number((telahair as any).activeDungeonCutsceneJoinedAtDialogIndex ?? -1),
+        2,
+        'late joiner must join at the current shared dialog step'
+    );
+    assert.equal(introState?.introActiveClientTokens?.has(telahair.token), true, 'late joiner must be tracked as an active intro watcher');
+    assert.equal(
+        telahair.sentPackets.some((packet) => packet.id === 0xA6),
+        false,
+        'joining a running intro must not close the cutscene for the late joiner'
+    );
+
+    // A proxy attached while the intro runs must be delivered frozen.
+    zeus.sentPackets.length = 0;
+    attachProxy(zeus, 540004, 'TowerGuard2', 11978, 4756, 3);
+    assert.equal(
+        zeus.sentPackets.some((packet) => {
+            if (packet.id !== 0xAE) {
+                return false;
+            }
+            const br = new BitReader(packet.payload);
+            return br.readMethod4() === 540004 && br.readMethod15() === true;
+        }),
+        true,
+        'a boss proxy attached mid-intro must receive the untargetable freeze'
+    );
+
+    // Hostile damage against a watcher is rejected while the intro is active.
+    const hpBefore = zeus.authoritativeCurrentHp;
+    await CombatHandler.handlePowerHit(zeus as never, buildPowerHitPayload(zeus.clientEntID, 540004, 500));
+    assert.equal(zeus.authoritativeCurrentHp, hpBefore, 'boss damage must be rejected while the shared intro is active');
+
+    // The late joiner finishes first: the shared intro must stay open for the
+    // player still watching.
+    zeus.sentPackets.length = 0;
+    telahair.sentPackets.length = 0;
+    LevelHandler.handleRoomClose(telahair as never, buildRoomEventPayload(3));
+    assert.equal(Boolean(GlobalState.dungeonCutscenes.get(`${scope}:3`)?.active), true, 'first finisher must not end the shared intro');
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0xA6),
+        false,
+        'first finisher must not relay a cutscene end to the still-watching player'
+    );
+    assert.equal(Boolean(tanja.untargetable), true, 'Tanja must stay frozen until every watcher finishes');
+    assert.equal(String((telahair as any).activeDungeonCutsceneScope ?? ''), '', 'first finisher must leave cutscene participant state');
+
+    // Re-entering the still-active intro re-joins the barrier.
+    telahair.sentPackets.length = 0;
+    LevelHandler.handleRoomEventStart(telahair as never, buildRoomEventPayload(3));
+    assert.equal(
+        telahair.sentPackets.some((packet) => packet.id === 0xA5),
+        true,
+        'same-instance re-entry while intro is active must receive a fresh local intro start'
+    );
+    assert.equal(
+        introState?.introClosedClientTokens?.has(telahair.token),
+        false,
+        're-joining the running intro must clear the stale closed mark'
+    );
+    assert.equal(String((telahair as any).activeDungeonCutsceneScope ?? ''), scope, 're-joining player must become a participant again');
+
+    // The original trigger closes while the re-joined player still watches:
+    // this is the exact live failure — the first player's close must not tear
+    // down the late joiner's cutscene or unfreeze the boss.
+    telahair.sentPackets.length = 0;
+    LevelHandler.handleRoomClose(zeus as never, buildRoomEventPayload(3));
+    assert.equal(Boolean(GlobalState.dungeonCutscenes.get(`${scope}:3`)?.active), true, 'trigger close must hold while the late joiner still watches');
+    assert.equal(
+        telahair.sentPackets.some((packet) => packet.id === 0xA6),
+        false,
+        'trigger close must not send a cutscene end to the late joiner mid-intro'
+    );
+    assert.equal(Boolean(tanja.untargetable), true, 'Tanja must stay frozen for the late joiner after the trigger finishes');
+
+    // The last watcher closes: intro completes and the boss unfreezes.
+    zeus.sentPackets.length = 0;
+    LevelHandler.handleRoomClose(telahair as never, buildRoomEventPayload(3));
+    assert.equal(Boolean(GlobalState.dungeonCutscenes.get(`${scope}:3`)?.completed), true, 'last close must complete the shared intro');
+    assert.equal(Boolean(tanja.untargetable), false, 'Tanja must unfreeze after the shared intro finishes');
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0xA6),
+        false,
+        'players who already finished must not receive another cutscene end at completion'
+    );
+
+    // A player entering after the finished intro is closed out immediately so
+    // the local replay never runs, and the boss stays combat-ready.
+    const late = createFakeClient('LateArrival', 'JC_Mini2', zeus.levelInstanceId, 88888, 3);
+    setParty(zeus, telahair, late);
+    attachPlayer(late);
+    GlobalState.sessionsByToken.set(late.token, late as never);
+    EntityHandler.sendInitialLevelEntities(late as never, late.currentLevel);
+    late.sentPackets.length = 0;
+    LevelHandler.handleRoomEventStart(late as never, buildRoomEventPayload(3));
+    assert.equal(
+        late.sentPackets.some((packet) => packet.id === 0xA5),
+        false,
+        'finished intro must not restart for a player entering afterwards'
+    );
+    assert.equal(
+        late.sentPackets.some((packet) => packet.id === 0xA6),
+        true,
+        'player entering after the finished intro must receive an immediate close instead of a local replay'
+    );
+    assert.equal(Boolean(tanja.untargetable), false, 'the finished-intro skip must not re-freeze the boss');
+}
+
 // The post-death completion gate must release the stat/rank screen for the
 // whole party once every expected player has acked (via room close OR its own
 // level-complete report). A missing room-close from a skipped cutscene must
@@ -1064,14 +1293,14 @@ async function testBossDeathDuringIntroForcesCutsceneEnd(): Promise<void> {
         'non-leader must receive the shared boss intro when the leader starts it'
     );
 
-    // Non-leader Telahair's own room-start echo must not bypass the encounter
-    // state or force an extra targeting unlock.
+    // Non-leader Telahair's own room-start echo must attach to the current
+    // shared intro locally without bypassing state or unlocking the boss.
     telahair.sentPackets.length = 0;
     LevelHandler.handleRoomEventStart(telahair as never, buildRoomEventPayload(3));
     assert.equal(
         telahair.sentPackets.some((packet) => packet.id === 0xA5),
-        false,
-        'non-leader must not receive a duplicate start for the same shared boss intro'
+        true,
+        'non-leader actual room entry must receive a local start for the active shared boss intro'
     );
     assert.equal(
         String((telahair as any).activeDungeonCutsceneScope ?? ''),
@@ -1220,6 +1449,20 @@ async function main(): Promise<void> {
         GlobalState.partyGroups.clear();
         GlobalState.dungeonCutscenes.clear();
         await testBossIntroSharedTriggerDirections();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.dungeonCutscenes.clear();
+        await testNonLeaderFirstEntryStartsIntroAndBlocksBossCombat();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.dungeonCutscenes.clear();
+        await testBossIntroLateJoinCloseBarrier();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
