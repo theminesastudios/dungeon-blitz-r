@@ -1,4 +1,5 @@
 import { GlobalState, SharedDungeonProgressState } from './GlobalState';
+import { DungeonSpawnLoader, DungeonSpawnConfig } from '../data/DungeonSpawnLoader';
 import { getActiveDungeonRunStats } from './DungeonRunStats';
 import { EntityTeam } from './Entity';
 import { LevelConfig } from './LevelConfig';
@@ -43,11 +44,64 @@ function clampProgress(value: unknown): number {
     return Math.max(0, Math.min(100, Math.round(progress)));
 }
 
+function getRequiredForClearProgressConfig(levelName: string | null | undefined): DungeonSpawnConfig | null {
+    return DungeonSpawnLoader.getSpawnConfigForLevel(LevelConfig.normalizeLevelName(levelName));
+}
+
+function usesRequiredForClearProgress(levelScope: string | null | undefined, levelName: string | null | undefined): boolean {
+    if (getRequiredForClearProgressConfig(levelName)) {
+        return true;
+    }
+
+    const levelMap = GlobalState.levelEntities.get(String(levelScope ?? '').trim());
+    for (const entity of levelMap?.values() ?? []) {
+        if (entity?.requiredForClear === true) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function logRequiredForClearProgress(
+    levelScope: string,
+    levelName: string | null | undefined,
+    totals: { total: number; defeated: number },
+    progress: number
+): void {
+    const config = getRequiredForClearProgressConfig(levelName);
+    if (!config) {
+        return;
+    }
+
+    console.log(
+        `[DungeonProgress] level=${config.levelId || config.levelName} levelName=${config.levelName} dungeon="${config.dungeonName}" scope=${levelScope} totalRequired=${totals.total} deadRequired=${totals.defeated} percent=${progress}`
+    );
+}
+
+function hasDefeatedEastWingBoss(levelScope: string): boolean {
+    const levelMap = GlobalState.levelEntities.get(levelScope);
+    for (const entity of levelMap?.values() ?? []) {
+        if (
+            entity?.requiredForClear === true &&
+            (entity?.boss === true || entity?.roomBoss === true || entity?.isRoomBoss === true) &&
+            isEntityDefeated(entity)
+        ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 export function usesSharedDungeonProgress(levelName: string | null | undefined): boolean {
     const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
     return Boolean(normalizedLevel) &&
         !SHARED_DUNGEON_PROGRESS_EXCLUDED_LEVELS.has(normalizedLevel) &&
-        isWolfsEndDungeonLevel(normalizedLevel);
+        (
+            isWolfsEndDungeonLevel(normalizedLevel) ||
+            Boolean(getRequiredForClearProgressConfig(normalizedLevel))
+        );
 }
 
 export function getSharedDungeonInitialProgress(levelName: string | null | undefined): number {
@@ -156,6 +210,10 @@ function usesServerAuthorityHostileProgress(levelNameOrScope: string | null | un
 function isSharedDungeonTrackedHostile(levelNameOrScope: string | null | undefined, entity: any): boolean {
     if (!isDungeonStatsHostile(entity)) {
         return false;
+    }
+
+    if (entity?.requiredForClear === true) {
+        return true;
     }
 
     if (usesServerAuthorityHostileProgress(levelNameOrScope)) {
@@ -362,6 +420,19 @@ export function recomputeSharedDungeonProgress(levelScope: string | null | undef
         refreshSharedDungeonLiveStats(state, scopeKey);
         return state;
     }
+
+    if (usesRequiredForClearProgress(scopeKey, levelName)) {
+        const computedProgress = totals.total > 0
+            ? clampProgress(Math.floor((totals.defeated / totals.total) * 100))
+            : 0;
+        state.progress = EAST_WING_LEVELS.has(levelName) && (Boolean(state.bossDeathCommitted) || hasDefeatedEastWingBoss(scopeKey))
+            ? Math.max(25, computedProgress)
+            : computedProgress;
+        logRequiredForClearProgress(scopeKey, levelName, totals, state.progress);
+        refreshSharedDungeonLiveStats(state, scopeKey);
+        return state;
+    }
+
     if (usesSharedDungeonProgress(levelName)) {
         const initialProgress = getSharedDungeonInitialProgress(levelName);
         const computedProgress = totals.total > 0

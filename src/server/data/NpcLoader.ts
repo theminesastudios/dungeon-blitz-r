@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import dungeonEnemyElements from './dungeon_enemy_elements.json';
+import { DungeonSpawnLoader } from './DungeonSpawnLoader';
 
 export interface NpcDef {
     id: number;
@@ -186,6 +187,9 @@ export class NpcLoader {
     }
 
     static load(serverDataDir: string) {
+        this.levelsRaw.clear();
+        this.levelsFiltered.clear();
+
         // serverDataDir is '.../src/server/data' (or similar based on config).
         // New path is directly inside 'src/server/data/npcs'.
         const npcDir = path.join(serverDataDir, 'npcs');
@@ -226,6 +230,29 @@ export class NpcLoader {
                 }
                 this.levelsRaw.set(levelName, this.normalizeNpcList(derivedNpcs));
                 this.levelsFiltered.set(levelName, this.normalizeNpcList(this.filterLevelNpcs(levelName, derivedNpcs)));
+            }
+            DungeonSpawnLoader.load(serverDataDir);
+            for (const levelName of DungeonSpawnLoader.getLoadedLevelNames()) {
+                const generatedNpcs = DungeonSpawnLoader.getNpcsForLevel(levelName);
+                if (generatedNpcs.length === 0) {
+                    continue;
+                }
+
+                const existingRaw = this.levelsRaw.get(levelName) ?? [];
+                const mergedById = new Map<number, NpcDef>();
+                for (const npc of existingRaw) {
+                    mergedById.set(Math.round(Number(npc.id ?? 0)), npc);
+                }
+                for (const npc of generatedNpcs) {
+                    mergedById.set(Math.round(Number(npc.id ?? 0)), npc);
+                }
+                const mergedRaw = Array.from(mergedById.values());
+                this.levelsRaw.set(levelName, this.normalizeNpcList(mergedRaw));
+                this.levelsFiltered.set(
+                    levelName,
+                    this.normalizeNpcList(this.filterLevelNpcs(levelName, mergedRaw))
+                );
+                console.log(`[NpcLoader] Merged ${generatedNpcs.length} generated dungeon spawns for ${levelName}.`);
             }
             console.log(`[NpcLoader] Loaded NPCs for ${this.levelsRaw.size} levels.`);
         } catch (e) {
