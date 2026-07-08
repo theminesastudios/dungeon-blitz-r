@@ -29,6 +29,8 @@ export interface DungeonSpawnEnemy {
     sourceCharacterId?: number;
     depth?: number;
     spawnKey?: string;
+    hp?: number;
+    maxHp?: number;
     [key: string]: unknown;
 }
 
@@ -103,6 +105,18 @@ export class DungeonSpawnLoader {
             if (!type || !Number.isFinite(x) || !Number.isFinite(y)) {
                 console.error(`[DungeonSpawnLoader] Invalid enemy at ${file}#${index}`);
                 return null;
+            }
+
+            for (const healthField of ['hp', 'maxHp'] as const) {
+                if (enemy?.[healthField] === undefined || enemy?.[healthField] === null) {
+                    continue;
+                }
+
+                const health = Number(enemy[healthField]);
+                if (!Number.isFinite(health) || health <= 0) {
+                    console.error(`[DungeonSpawnLoader] Invalid ${healthField} at ${file}#${index}`);
+                    return null;
+                }
             }
 
             const canonicalId = Math.round(Number(enemy?.canonicalId ?? enemy?.id ?? 0));

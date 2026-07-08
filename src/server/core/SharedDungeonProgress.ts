@@ -11,6 +11,11 @@ import {
     isDungeonStatsDefeated,
     isDungeonStatsHostile
 } from './WolfsEndDungeonStatsPolicy';
+import {
+    hasEastWingCombatDeathEvidence,
+    isEastWingRequiredEnemy,
+    logEastWingProgressBlocked
+} from './EastWingEnemyDebug';
 
 const GOBLIN_RIVER_INITIAL_PROGRESS = 11;
 const SHARED_DUNGEON_PROGRESS_EXCLUDED_LEVELS = new Set<string>([
@@ -77,6 +82,24 @@ function logRequiredForClearProgress(
     console.log(
         `[DungeonProgress] level=${config.levelId || config.levelName} levelName=${config.levelName} dungeon="${config.dungeonName}" scope=${levelScope} totalRequired=${totals.total} deadRequired=${totals.defeated} percent=${progress}`
     );
+    if (EAST_WING_LEVELS.has(config.levelName)) {
+        let rawDeadEntities = 0;
+        let ignoredRawDeadWithoutCombat = 0;
+        for (const entity of GlobalState.levelEntities.get(levelScope)?.values() ?? []) {
+            if (!isEastWingRequiredEnemy(levelScope, entity)) {
+                continue;
+            }
+            if (isEntityDefeated(entity)) {
+                rawDeadEntities++;
+                if (!hasEastWingCombatDeathEvidence(entity)) {
+                    ignoredRawDeadWithoutCombat++;
+                }
+            }
+        }
+        console.log(
+            `[EastWingProgress] totalRequired=${totals.total} deadRequired=${totals.defeated} acceptedCombatKills=${totals.defeated} rawDeadEntities=${rawDeadEntities} ignoredRawDeadWithoutCombat=${ignoredRawDeadWithoutCombat} percent=${progress}`
+        );
+    }
 }
 
 function hasDefeatedEastWingBoss(levelScope: string): boolean {
@@ -85,7 +108,7 @@ function hasDefeatedEastWingBoss(levelScope: string): boolean {
         if (
             entity?.requiredForClear === true &&
             (entity?.boss === true || entity?.roomBoss === true || entity?.isRoomBoss === true) &&
-            isEntityDefeated(entity)
+            isCombatValidDefeatedEntity(levelScope, Math.max(0, Math.round(Number(entity?.id ?? 0))), entity, 'SharedDungeonProgress.hasDefeatedEastWingBoss')
         ) {
             return true;
         }
@@ -234,6 +257,29 @@ function isEntityDefeated(entity: any): boolean {
     return isDungeonStatsDefeated(entity);
 }
 
+function isCombatValidDefeatedEntity(levelScope: string | null | undefined, entityId: number, entity: any, sourcePath: string): boolean {
+    if (!isEntityDefeated(entity)) {
+        return false;
+    }
+
+    if (!isEastWingRequiredEnemy(levelScope, entity)) {
+        return true;
+    }
+
+    if (hasEastWingCombatDeathEvidence(entity)) {
+        return true;
+    }
+
+    logEastWingProgressBlocked('non_combat_death_attempt', sourcePath, String(levelScope ?? ''), entity, {
+        entityId,
+        hpBefore: Math.round(Number(entity?.combatDeathHpBefore ?? entity?.hp ?? 0)),
+        hpAfter: Math.round(Number(entity?.hp ?? 0)),
+        deathCause: entity?.deathCause ?? entity?.combatDeathCause ?? 'unknown',
+        eventId: entity?.combatDeathEventId ?? ''
+    });
+    return false;
+}
+
 export function resolveSharedDungeonProgressAuthorityToken(levelScope: string | null | undefined): number {
     const scopeKey = String(levelScope ?? '').trim();
     if (!scopeKey) {
@@ -318,7 +364,7 @@ export function noteSharedDungeonHostileState(levelScope: string | null | undefi
     }
 
     state.trackedHostileIds?.add(entityId);
-    if (isEntityDefeated(entity)) {
+    if (isCombatValidDefeatedEntity(levelScope, entityId, entity, 'SharedDungeonProgress.noteSharedDungeonHostileState')) {
         state.defeatedHostileIds?.add(entityId);
     } else {
         state.defeatedHostileIds?.delete(entityId);
@@ -336,7 +382,7 @@ export function noteSharedDungeonHostileDestroyed(levelScope: string | null | un
     }
 
     state.trackedHostileIds?.add(entityId);
-    if (isEntityDefeated(entity)) {
+    if (isCombatValidDefeatedEntity(levelScope, entityId, entity, 'SharedDungeonProgress.noteSharedDungeonHostileDestroyed')) {
         state.defeatedHostileIds?.add(entityId);
     }
 }
@@ -373,7 +419,7 @@ export function getSharedDungeonProgressTotals(
         }
 
         tracked.add(entityId);
-        if (isEntityDefeated(entity)) {
+        if (isCombatValidDefeatedEntity(scopeKey, entityId, entity, 'SharedDungeonProgress.getSharedDungeonProgressTotals')) {
             defeated.add(entityId);
         } else {
             defeated.delete(entityId);

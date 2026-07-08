@@ -58,6 +58,12 @@ import {
 import { markRoomBossEntity } from '../core/RoomBossState';
 import { getCharacterRuntimeLevel, getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
 import { getCraftTownHomeInstanceId } from '../utils/HomeVisitGuard';
+import {
+    hasEastWingCombatDeathEvidence,
+    isEastWingRequiredEnemy,
+    logEastWingEnemyMutation,
+    logEastWingProgressBlocked
+} from '../core/EastWingEnemyDebug';
 
 const db = new JsonAdapter();
 
@@ -5848,12 +5854,103 @@ export class LevelHandler {
             canonicalEntity &&
             !canonicalEntity.isPlayer &&
             Number(canonicalEntity.team ?? 0) === EntityTeam.ENEMY;
+        const levelScope = getClientLevelScope(client);
+        const isEastWingServerAuthorityEnemy =
+            isEnemyCanonical &&
+            EntityHandler.isServerAuthorityHostileEntity(currentLevel, canonicalEntity) &&
+            isEastWingRequiredEnemy(levelScope, canonicalEntity);
         const canonicalHp = Math.round(Number(canonicalEntity?.hp ?? 1));
         const canonicalDestroyed = Boolean(canonicalEntity?.destroyed);
         const canonicalTerminal = isEnemyCanonical && (
             canonicalDestroyed ||
             (Number.isFinite(canonicalHp) && canonicalHp <= 0)
         );
+        if (
+            isEastWingServerAuthorityEnemy &&
+            isDefeatEntState &&
+            Number.isFinite(canonicalHp) &&
+            canonicalHp > 0
+        ) {
+            const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+            logEastWingEnemyMutation({
+                action: 'mark_dead',
+                sourcePath: 'LevelHandler.handleEntityIncrementalUpdate',
+                reason: 'client_incremental_defeat_state_rejected',
+                scope: levelScope,
+                hpBefore: canonicalHp,
+                hpAfter: canonicalHp,
+                attackerId: client.clientEntID,
+                damageSource: 'room_sync',
+                isCombatDamage: false,
+                deathCause: 'room_sync',
+                rawEntityId,
+                entityId,
+                requestedEntState: entState
+            }, canonicalEntity);
+            CombatHandler.correctServerAuthorityHostileProxy(
+                client,
+                levelScope,
+                canonicalEntity,
+                'east_wing_client_dead_state_rejected',
+                rawEntityId
+            );
+            return;
+        }
+        if (
+            isEastWingServerAuthorityEnemy &&
+            canonicalTerminal &&
+            !hasEastWingCombatDeathEvidence(canonicalEntity)
+        ) {
+            const hpBefore = Math.max(0, Math.round(Number(canonicalEntity?.hp ?? 0)));
+            const restoreHp = Math.max(
+                1,
+                Math.round(Number(canonicalEntity?.maxHp ?? 0)) ||
+                    EntityHandler.estimateServerAuthorityHostileMaxHp(canonicalEntity)
+            );
+            canonicalEntity.hp = restoreHp;
+            canonicalEntity.maxHp = Math.max(restoreHp, Math.round(Number(canonicalEntity.maxHp ?? 0)) || restoreHp);
+            canonicalEntity.healthDelta = canonicalEntity.hp - canonicalEntity.maxHp;
+            canonicalEntity.health_delta = canonicalEntity.healthDelta;
+            canonicalEntity.dead = false;
+            canonicalEntity.destroyed = false;
+            canonicalEntity.entState = EntityState.ACTIVE;
+            if (ent && typeof ent === 'object') {
+                ent.hp = canonicalEntity.hp;
+                ent.maxHp = canonicalEntity.maxHp;
+                ent.healthDelta = canonicalEntity.healthDelta;
+                ent.health_delta = canonicalEntity.health_delta;
+                ent.dead = false;
+                ent.destroyed = false;
+                ent.entState = EntityState.ACTIVE;
+                client.entities.set(rawEntityId, ent);
+            }
+            logEastWingProgressBlocked(
+                'non_combat_terminal_state_repaired',
+                'LevelHandler.handleEntityIncrementalUpdate',
+                levelScope,
+                canonicalEntity,
+                {
+                    action: 'set_hp_zero',
+                    hpBefore,
+                    hpAfter: canonicalEntity.hp,
+                    attackerId: client.clientEntID,
+                    damageSource: 'room_sync',
+                    deathCause: 'room_sync',
+                    rawEntityId,
+                    entityId,
+                    requestedEntState: entState
+                }
+            );
+            const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+            CombatHandler.correctServerAuthorityHostileProxy(
+                client,
+                levelScope,
+                canonicalEntity,
+                'east_wing_non_combat_terminal_repaired',
+                rawEntityId
+            );
+            return;
+        }
         if (canonicalTerminal) {
             const isServerAuthorityTerminal = EntityHandler.isServerAuthorityHostileEntity(currentLevel, canonicalEntity);
             const previousLocalHpValue = Number(ent?.hp ?? NaN);

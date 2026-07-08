@@ -28,6 +28,15 @@ import { LevelConfig } from '../core/LevelConfig';
 import { isRoomBossEntity } from '../core/RoomBossState';
 import { logJcMini1Authority } from '../utils/JcMini1AuthorityLog';
 import { RewardHandler } from './RewardHandler';
+import {
+    buildEastWingDeathEventId,
+    EnemyDeathContext,
+    hasEastWingCombatDeathEvidence,
+    isEastWingRequiredEnemy,
+    isValidEastWingCombatDeathContext,
+    logEastWingEnemyMutation,
+    logEastWingProgressBlocked
+} from '../core/EastWingEnemyDebug';
 
 type CombatRelayOptions = {
     includeAnchor?: boolean;
@@ -137,6 +146,8 @@ export class CombatHandler {
     private static readonly pendingHostileCorpseDestroys = new Set<string>();
     private static readonly POST_DEATH_SOURCE_CORRECTION_THROTTLE_MS = 1_000;
     private static readonly recentPostDeathSourceCorrections = new Map<string, number>();
+    private static readonly EAST_WING_DAMAGE_CAST_WINDOW_MS = 2_500;
+    private static readonly recentEastWingPlayerCasts = new Map<string, number>();
     private static clampRelayPowerHitDamage(damage: number): number {
         return Math.max(0, Math.min(CombatHandler.MAX_RELAY_POWER_HIT_DAMAGE, Math.round(Number(damage) || 0)));
     }
@@ -881,6 +892,27 @@ export class CombatHandler {
         CombatHandler.noteHostileCombatActivity(entity, atMs);
         entity.aggroTargetEntityId = targetSession.clientEntID;
         entity.aggroTargetToken = targetSession.token;
+        const levelScope = getClientLevelScope(targetSession);
+        if (isEastWingRequiredEnemy(levelScope, entity)) {
+            logEastWingEnemyMutation({
+                action: 'aggro',
+                sourcePath: 'CombatHandler.noteHostileAggroTarget',
+                reason: 'aggro_target_set_no_hp_change',
+                scope: levelScope,
+                hpBefore: Math.round(Number(entity?.hp ?? 0)),
+                hpAfter: Math.round(Number(entity?.hp ?? 0)),
+                attackerId: targetSession.clientEntID,
+                damageSource: 'aggro',
+                isCombatDamage: false,
+                deathCause: 'aggro'
+            }, entity);
+            console.log(
+                `[EastWingEnemyAggro] scope=${levelScope} enemyId=${Math.max(0, Math.round(Number(entity?.id ?? 0)))} hpBefore=${Math.round(Number(entity?.hp ?? 0))} hpAfter=${Math.round(Number(entity?.hp ?? 0))} killed=false`
+            );
+            console.log(
+                `[EastWingAggroEnter] player=${String(targetSession.character?.name ?? targetSession.token)} enemyId=${Math.max(0, Math.round(Number(entity?.id ?? 0)))} instanceId=${Math.max(0, Math.round(Number(entity?.id ?? 0)))} hp=${Math.round(Number(entity?.hp ?? 0))} dead=${Boolean(entity?.dead)} entState=${Number(entity?.entState ?? EntityState.ACTIVE)} noMutation=true`
+            );
+        }
     }
 
     private static getPendingRegenTicks(
@@ -1346,6 +1378,49 @@ export class CombatHandler {
             return [];
         }
 
+        if (
+            isEastWingRequiredEnemy(levelScope, entity) &&
+            EntityHandler.isServerAuthorityHostileEntity(levelScope, entity)
+        ) {
+            const canonical = GlobalState.levelEntities.get(levelScope)?.get(entityId) ?? entity;
+            const canonicalHp = Math.max(0, Math.round(Number(canonical?.hp ?? 0)));
+            for (const session of GlobalState.sessionsByToken.values()) {
+                if (getClientLevelScope(session) !== levelScope) {
+                    continue;
+                }
+
+                for (const candidate of session.entities.values()) {
+                    if (
+                        !candidate ||
+                        typeof candidate !== 'object' ||
+                        Boolean(candidate.isPlayer) ||
+                        Number(candidate.team ?? 0) !== EntityTeam.ENEMY
+                    ) {
+                        continue;
+                    }
+
+                    const candidateId = Math.max(0, Math.round(Number(candidate.id ?? 0)));
+                    const mapsToCanonical =
+                        candidateId === entityId ||
+                        Math.max(0, Math.round(Number(candidate.canonicalEntityId ?? candidate.sharedCanonicalId ?? 0))) === entityId ||
+                        (includeEquivalent && CombatHandler.isEquivalentHostileEntity(levelScope, canonical, candidate));
+                    if (!mapsToCanonical || candidate === canonical) {
+                        continue;
+                    }
+
+                    const incomingHp = Math.round(Number(candidate.hp ?? 0));
+                    const incomingDead = Boolean(candidate.dead) || Boolean(candidate.destroyed);
+                    const incomingEntState = Number(candidate.entState ?? EntityState.ACTIVE);
+                    const incomingTerminal = incomingDead || incomingEntState === EntityState.DEAD || incomingHp <= 0;
+                    console.warn(
+                        `[EastWingHealthReconcile] source=client_copy enemyId=${entityId} instanceId=${candidateId} canonicalHpBefore=${canonicalHp} incomingHp=${incomingHp} incomingDead=${incomingDead} incomingEntState=${incomingEntState} hasCombatDamageEvent=${hasEastWingCombatDeathEvidence(canonical)} action=${incomingTerminal && !hasEastWingCombatDeathEvidence(canonical) ? 'ignored_client_death' : 'corrected_client_copy'} stack=${String(new Error().stack ?? '').split(/\r?\n/).slice(1, 8).map((line) => line.trim()).join(' <- ')}`
+                    );
+                }
+            }
+
+            return [canonical];
+        }
+
         const copies: any[] = [];
         const add = (candidate: any, ownerSession: Client | null = null): void => {
             if (
@@ -1506,14 +1581,56 @@ export class CombatHandler {
         };
     }
 
-    private static applyNpcHealthState(entity: any, maxHp: number, currentHp: number, authoritativeKill: boolean): number {
+    private static applyNpcHealthState(
+        entity: any,
+        maxHp: number,
+        currentHp: number,
+        authoritativeKill: boolean,
+        context: EnemyDeathContext | null = null
+    ): number {
         if (!entity || typeof entity !== 'object') {
             return 0;
         }
 
-        const normalizedHp = authoritativeKill
+        let normalizedHp = authoritativeKill
             ? Math.max(0, Math.min(maxHp, Math.round(currentHp)))
             : Math.max(1, Math.min(maxHp, Math.round(currentHp)));
+        const attemptedDead = authoritativeKill && normalizedHp <= 0;
+        const levelScope = String(context?.levelScope ?? '').trim();
+        let blockedEastWingNonCombatDeath = false;
+        if (
+            attemptedDead &&
+            isEastWingRequiredEnemy(levelScope, entity) &&
+            !isValidEastWingCombatDeathContext(context)
+        ) {
+            const hpBefore = Math.max(0, Math.round(Number(entity.hp ?? 0)));
+            const restoreHp = Math.max(
+                1,
+                Math.min(
+                    Math.max(1, Math.round(Number(maxHp) || 1)),
+                    hpBefore > 0 ? hpBefore : Math.max(1, Math.round(Number(entity.maxHp ?? maxHp) || maxHp || 1))
+                )
+            );
+            console.warn(
+                `[EastWingDeathBlocked] cause=${String(context?.cause ?? 'unknown')} enemyId=${Math.max(0, Math.round(Number(entity?.id ?? 0)))} instanceId=${Math.max(0, Math.round(Number(entity?.id ?? 0)))} hpBefore=${hpBefore} attemptedHpAfter=${normalizedHp} deadBefore=${Boolean(entity.dead)} attemptedDead=true entStateBefore=${Number(entity.entState ?? EntityState.ACTIVE)} attemptedEntState=${EntityState.DEAD} stack=${String(new Error().stack ?? '').split(/\r?\n/).slice(1, 8).map((line) => line.trim()).join(' <- ')}`
+            );
+            logEastWingEnemyMutation({
+                action: 'set_hp_zero',
+                sourcePath: context?.sourcePath ?? 'CombatHandler.applyNpcHealthState',
+                reason: 'blocked_non_combat_death',
+                scope: levelScope,
+                hpBefore,
+                hpAfter: restoreHp,
+                attackerId: Math.max(0, Math.round(Number(context?.attackerId ?? 0))),
+                damageSource: context?.cause ?? 'unknown',
+                isCombatDamage: false,
+                deathCause: context?.cause ?? 'unknown',
+                damageEventId: context?.damageEventId ?? ''
+            }, entity);
+            normalizedHp = restoreHp;
+            authoritativeKill = false;
+            blockedEastWingNonCombatDeath = true;
+        }
         const healthDelta = normalizedHp - maxHp;
 
         entity.maxHp = maxHp;
@@ -1521,6 +1638,10 @@ export class CombatHandler {
         entity.healthDelta = healthDelta;
         entity.health_delta = healthDelta;
         entity.dead = authoritativeKill ? normalizedHp <= 0 : false;
+        if (blockedEastWingNonCombatDeath) {
+            entity.destroyed = false;
+            entity.entState = EntityState.ACTIVE;
+        }
         if (entity.dead) {
             entity.entState = EntityState.DEAD;
         } else if (Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
@@ -1976,7 +2097,12 @@ export class CombatHandler {
             entity,
             healthState.maxHp,
             healthState.currentHp + requestedHeal,
-            healthState.authoritativeKill
+            healthState.authoritativeKill,
+            {
+                cause: 'health_reconcile',
+                levelScope,
+                sourcePath: 'CombatHandler.processHostileOutOfCombatRegen'
+            }
         );
         const actualHeal = nextHp - healthState.currentHp;
         if (actualHeal <= 0) {
@@ -2166,6 +2292,82 @@ export class CombatHandler {
         for (const entity of CombatHandler.collectHostileRegenCandidates(levelScope)) {
             CombatHandler.processHostileOutOfCombatRegen(levelScope, entity, nowMs);
         }
+    }
+
+    private static getEastWingCastKey(levelScope: string, sourceId: number, powerId: number): string {
+        return [
+            String(levelScope ?? '').trim(),
+            Math.max(0, Math.round(Number(sourceId) || 0)),
+            Math.max(0, Math.round(Number(powerId) || 0))
+        ].join(':');
+    }
+
+    private static rememberEastWingPlayerCast(levelScope: string, sourceId: number, powerId: number, sourceSession: Client | null): void {
+        if (!isEastWingRequiredEnemy(levelScope, { team: EntityTeam.ENEMY, requiredForClear: true }) || !sourceSession || sourceId <= 0 || powerId <= 0) {
+            return;
+        }
+
+        CombatHandler.recentEastWingPlayerCasts.set(
+            CombatHandler.getEastWingCastKey(levelScope, sourceId, powerId),
+            Date.now()
+        );
+    }
+
+    private static consumeRecentEastWingPlayerCast(levelScope: string, sourceId: number, powerId: number): boolean {
+        const key = CombatHandler.getEastWingCastKey(levelScope, sourceId, powerId);
+        const castAt = Math.max(0, Math.round(Number(CombatHandler.recentEastWingPlayerCasts.get(key) ?? 0)));
+        if (castAt <= 0) {
+            return false;
+        }
+
+        const ageMs = Date.now() - castAt;
+        if (ageMs < 0 || ageMs > CombatHandler.EAST_WING_DAMAGE_CAST_WINDOW_MS) {
+            CombatHandler.recentEastWingPlayerCasts.delete(key);
+            return false;
+        }
+
+        return true;
+    }
+
+    private static buildEastWingDamageContext(
+        levelScope: string,
+        targetEntity: any,
+        sourceSession: Client | null,
+        sourceId: number,
+        powerId: number,
+        damage: number,
+        hpBefore: number,
+        hpAfter: number,
+        sourcePath: string
+    ): EnemyDeathContext | null {
+        if (!isEastWingRequiredEnemy(levelScope, targetEntity) || !sourceSession || sourceId <= 0 || powerId <= 0 || damage <= 0) {
+            return null;
+        }
+
+        const hasRecentCast = CombatHandler.consumeRecentEastWingPlayerCast(levelScope, sourceId, powerId);
+        if (!hasRecentCast) {
+            return null;
+        }
+
+        return {
+            cause: 'combat_damage',
+            attackerId: sourceId,
+            playerId: sourceSession.userId || sourceSession.token || sourceSession.clientEntID,
+            skillId: powerId,
+            damageEventId: [
+                levelScope,
+                Math.max(0, Math.round(Number(targetEntity?.id ?? 0))),
+                sourceId,
+                powerId,
+                Math.max(0, Math.round(Number(damage) || 0)),
+                Date.now()
+            ].join(':'),
+            damageAmount: damage,
+            hpBefore,
+            hpAfter,
+            aliveBefore: hpBefore > 0 && !Boolean(targetEntity?.dead) && Number(targetEntity?.entState ?? EntityState.ACTIVE) !== EntityState.DEAD,
+            sourcePath
+        };
     }
 
     private static buildPowerCastPayload(info: PowerCastRelayInfo): Buffer {
@@ -2997,6 +3199,33 @@ export class CombatHandler {
         options: { includeAnchor?: boolean; sendHpCorrection?: boolean; destroyLocal?: boolean; reason?: string } = {}
     ): void {
         if (!levelScope || entityId <= 0 || !entity || entity.isPlayer || Number(entity.team ?? 0) !== EntityTeam.ENEMY) {
+            return;
+        }
+        if (
+            isEastWingRequiredEnemy(levelScope, entity) &&
+            !hasEastWingCombatDeathEvidence(entity)
+        ) {
+            logEastWingProgressBlocked('non_combat_death_attempt', 'CombatHandler.finalizeHostileDeath', levelScope, entity, {
+                action: 'mark_dead',
+                hpBefore: Math.round(Number(entity?.hp ?? 0)),
+                hpAfter: 0,
+                attackerId: Math.max(0, Math.round(Number(anchor?.clientEntID ?? 0))),
+                damageSource: options.reason ?? 'unknown',
+                deathCause: entity?.deathCause ?? entity?.combatDeathCause ?? 'unknown',
+                entityId
+            });
+            entity.dead = false;
+            entity.destroyed = false;
+            entity.entState = EntityState.ACTIVE;
+            const restoreHp = Math.max(
+                1,
+                Math.round(Number(entity.maxHp ?? 0)) ||
+                    EntityHandler.estimateServerAuthorityHostileMaxHp(entity)
+            );
+            entity.maxHp = Math.max(restoreHp, Math.round(Number(entity.maxHp ?? 0)) || restoreHp);
+            entity.hp = restoreHp;
+            entity.healthDelta = entity.hp - entity.maxHp;
+            entity.health_delta = entity.healthDelta;
             return;
         }
 
@@ -4125,6 +4354,22 @@ export class CombatHandler {
         const destroyOnly = Boolean(options.destroyOnly) ||
             CombatHandler.didViewerEnterAfterHostileDeath(viewer, canonicalEntity);
         if (destroyOnly) {
+            if (isEastWingRequiredEnemy(levelScope, canonicalEntity)) {
+                logEastWingEnemyMutation({
+                    action: 'send_destroy',
+                    sourcePath: 'CombatHandler.sendHostileDeathCorrectionToViewer',
+                    reason,
+                    scope: levelScope,
+                    hpBefore: Math.round(Number(canonicalEntity?.hp ?? 0)),
+                    hpAfter: Math.round(Number(canonicalEntity?.hp ?? 0)),
+                    attackerId: 0,
+                    damageSource: 'destroy_only',
+                    isCombatDamage: false,
+                    deathCause: 'destroy_only',
+                    canonicalId,
+                    localId
+                }, canonicalEntity);
+            }
             EntityHandler.logAliasOutbound(CombatHandler.packetLabel(0x0D), viewer, canonicalId, localId);
             viewer.send(0x0D, CombatHandler.buildDestroyEntityPayload(localId, true));
             viewer.entities.delete(localId);
@@ -4164,6 +4409,22 @@ export class CombatHandler {
         // send a guaranteed-lethal floor instead (clients clamp HP at zero) so
         // the hostile dies on every screen at the same time.
         const lethalDelta = -Math.max(previousHp, maxHp);
+        if (isEastWingRequiredEnemy(levelScope, canonicalEntity)) {
+            logEastWingEnemyMutation({
+                action: 'send_destroy',
+                sourcePath: 'CombatHandler.sendHostileDeathCorrectionToViewer',
+                reason,
+                scope: levelScope,
+                hpBefore: Math.round(Number(canonicalEntity?.combatDeathHpBefore ?? previousHp)),
+                hpAfter: 0,
+                attackerId: Math.max(0, Math.round(Number(canonicalEntity?.combatDeathAttackerId ?? 0))),
+                damageSource: 'combat_damage',
+                isCombatDamage: hasEastWingCombatDeathEvidence(canonicalEntity),
+                deathCause: canonicalEntity?.deathCause ?? canonicalEntity?.combatDeathCause ?? 'unknown',
+                canonicalId,
+                localId
+            }, canonicalEntity);
+        }
         EntityHandler.logAliasOutbound(CombatHandler.packetLabel(0x78), viewer, canonicalId, localId);
         viewer.send(0x78, CombatHandler.buildHpDeltaPayload(localId, lethalDelta));
         EntityHandler.logAliasOutbound(CombatHandler.packetLabel(0x07), viewer, canonicalId, localId);
@@ -4590,6 +4851,17 @@ export class CombatHandler {
         if (!CombatHandler.isServerAuthoritySyncNpc(levelScope, entity)) {
             return;
         }
+        if (isEastWingRequiredEnemy(levelScope, entity) && !hasEastWingCombatDeathEvidence(entity)) {
+            logEastWingProgressBlocked('non_combat_death_attempt', 'CombatHandler.relayServerAuthorityNpcDeath', levelScope, entity, {
+                action: 'send_destroy',
+                hpBefore: Math.round(Number(entity?.hp ?? 0)),
+                hpAfter: Math.round(Number(entity?.hp ?? 0)),
+                attackerId: Math.max(0, Math.round(Number(anchor?.clientEntID ?? 0))),
+                damageSource: 'death_relay',
+                deathCause: entity?.deathCause ?? entity?.combatDeathCause ?? 'unknown'
+            });
+            return;
+        }
 
         // If the room boss dies while the intro cinematic is still running for
         // any participant, close the cinematic first: death packets processed
@@ -4608,6 +4880,43 @@ export class CombatHandler {
             includeAnchor: true,
             reason: 'server_authority_hostile_death'
         });
+        if (isEastWingRequiredEnemy(levelScope, entity) && !Boolean(entity.lootDropped)) {
+            const lifeNonce = Math.max(0, Math.round(Number(
+                entity?.lifeNonce ?? CombatHandler.getEntityLifeNonce(levelScope, entityId)
+            ) || 0));
+            const lootDropNonce = `${levelScope}:${entityId}:${lifeNonce}`;
+            entity.lootDropped = true;
+            entity.lootDropNonce = lootDropNonce;
+            entity.lootGrantedTokens = entity.lootGrantedTokens instanceof Set
+                ? entity.lootGrantedTokens
+                : new Set<number>(Array.isArray(entity.lootGrantedTokens) ? entity.lootGrantedTokens.map((token: unknown) => Math.round(Number(token) || 0)) : []);
+            entity.lootCollectedTokens = entity.lootCollectedTokens instanceof Set
+                ? entity.lootCollectedTokens
+                : new Set<string>(Array.isArray(entity.lootCollectedTokens) ? entity.lootCollectedTokens.map((token: unknown) => String(token)) : []);
+            entity.lootDrops = entity.lootDrops instanceof Map
+                ? entity.lootDrops
+                : new Map<number, unknown>();
+            entity.deathRewardGrantedAt = Date.now();
+            RewardHandler.grantServerEnemyRewardToEligibleViewers(anchor, entity, {
+                levelScope,
+                lootDropNonce,
+                sourceEnemyCanonicalId: entityId,
+                caller: 'east_wing_combat_death'
+            });
+            if (Math.max(0, Math.round(Number(entity.lootDrops?.size ?? 0))) <= 0) {
+                console.error(
+                    `[EastWingInvalidDeathNoReward] enemyId=${entityId} instanceId=${entityId} cause=combat_damage sourcePath=CombatHandler.relayServerAuthorityNpcDeath stack=${String(new Error().stack ?? '').split(/\r?\n/).slice(1, 8).map((line) => line.trim()).join(' <- ')}`
+                );
+            }
+            console.log(
+                `[EastWingRewardDrop] dropCount=${Math.max(0, Math.round(Number(entity.lootDrops?.size ?? 0)))} entityId=${entityId} eventId=${String(entity.combatDeathEventId ?? '')}`
+            );
+        }
+        if (isEastWingRequiredEnemy(levelScope, entity)) {
+            console.log(
+                `[EastWingDeathAccepted] cause=combat_damage rewardSpawned=${Boolean(entity.lootDropped)} progressCounted=${Boolean(entity.questDefeatProcessed)} entityId=${entityId} eventId=${String(entity.combatDeathEventId ?? '')}`
+            );
+        }
         entity.level = EntityHandler.SERVER_AUTHORITY_ENTITY_LEVEL;
         entity.maxHp = maxHp;
         entity.hp = 0;
@@ -5164,7 +5473,19 @@ export class CombatHandler {
                 MissionHandler.shouldProcessEnemyKillStateDungeonCompletion(client, targetEntity)
             );
             CombatHandler.assignPartySharedHostileCombatAuthority(levelScope, targetEntity, sourceSession);
-            const resolution = CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage);
+            const hpBefore = Math.max(0, Math.round(Number(targetEntity?.hp ?? 0)));
+            const deathContext = CombatHandler.buildEastWingDamageContext(
+                levelScope,
+                targetEntity,
+                sourceSession,
+                info.sourceId,
+                info.powerId,
+                damage,
+                hpBefore,
+                Math.max(0, hpBefore - Math.max(0, Math.round(Number(damage) || 0))),
+                'CombatHandler.applyFireBrandPiercingCastDamage'
+            );
+            const resolution = CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage, info.sourceId, deathContext);
             if (resolution.killed && resolution.entity && !deferDungeonCompletionUntilDestroy) {
                 CombatHandler.handleEnemyDefeatState(sourceSession, levelScope, targetId, resolution.entity);
             }
@@ -5471,7 +5792,13 @@ export class CombatHandler {
         };
     }
 
-    private static updateNpcTargetAfterHit(levelName: string, targetId: number, damage: number): NpcHitResolution {
+    private static updateNpcTargetAfterHit(
+        levelName: string,
+        targetId: number,
+        damage: number,
+        attackerId: number = 0,
+        deathContext: EnemyDeathContext | null = null
+    ): NpcHitResolution {
         if (!levelName || targetId <= 0 || damage <= 0) {
             return {
                 entity: null,
@@ -5528,12 +5855,110 @@ export class CombatHandler {
         const minHpAfterHit = authoritativeKill ? 0 : 1;
         const appliedDamage = Math.max(0, Math.min(requestedDamage, healthState.currentHp - minHpAfterHit));
         const nextHp = Math.max(minHpAfterHit, healthState.currentHp - appliedDamage);
+        if (isEastWingRequiredEnemy(levelName, entity) && !deathContext) {
+            logEastWingProgressBlocked('no_valid_combat_damage', 'CombatHandler.updateNpcTargetAfterHit', levelName, entity, {
+                action: 'set_hp_zero',
+                hpBefore: healthState.currentHp,
+                hpAfter: healthState.currentHp,
+                attackerId,
+                damageSource: 'unknown',
+                deathCause: 'unknown',
+                damageAmount: damage,
+                targetId
+            });
+            return {
+                entity,
+                entityId: Math.max(0, Math.round(Number(entity.id ?? targetId))),
+                appliedDamage: 0,
+                killed: false
+            };
+        }
 
-        CombatHandler.applyNpcHealthState(entity, healthState.maxHp, nextHp, authoritativeKill);
+        CombatHandler.applyNpcHealthState(entity, healthState.maxHp, nextHp, authoritativeKill, deathContext);
         if (appliedDamage > 0) {
             CombatHandler.incrementHostileHpVersion(entity);
         }
         CombatHandler.syncHostileHealthCopies(levelName, entity, nextHp, healthState.maxHp);
+
+        const killed = authoritativeKill &&
+            wasAlive &&
+            appliedDamage > 0 &&
+            healthState.currentHp > 0 &&
+            nextHp <= 0 &&
+            (Boolean(entity.dead) || Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD);
+        if (killed) {
+            const validEastWingContext = !isEastWingRequiredEnemy(levelName, entity) ||
+                (deathContext !== null && isValidEastWingCombatDeathContext({
+                        ...deathContext,
+                        hpBefore: healthState.currentHp,
+                        hpAfter: nextHp,
+                        damageAmount: appliedDamage,
+                        aliveBefore: wasAlive
+                    }));
+            if (!validEastWingContext) {
+                CombatHandler.applyNpcHealthState(entity, healthState.maxHp, healthState.currentHp, false, {
+                    cause: 'health_reconcile',
+                    levelScope: levelName,
+                    sourcePath: 'CombatHandler.updateNpcTargetAfterHit.rollback'
+                });
+                CombatHandler.syncHostileHealthCopies(levelName, entity, healthState.currentHp, healthState.maxHp);
+                logEastWingProgressBlocked('no_valid_combat_damage', 'CombatHandler.updateNpcTargetAfterHit', levelName, entity, {
+                    action: 'set_hp_zero',
+                    hpBefore: healthState.currentHp,
+                    hpAfter: healthState.currentHp,
+                    attackerId,
+                    damageSource: deathContext?.cause ?? 'unknown',
+                    deathCause: deathContext?.cause ?? 'unknown',
+                    damageEventId: deathContext?.damageEventId ?? '',
+                    damageAmount: appliedDamage,
+                    targetId
+                });
+                return {
+                    entity,
+                    entityId: Math.max(0, Math.round(Number(entity.id ?? targetId))),
+                    appliedDamage: 0,
+                    killed: false
+                };
+            }
+            const canonicalId = Math.max(0, Math.round(Number(entity.id ?? targetId)));
+            entity.deathCause = 'combat_damage';
+            entity.combatDeathCause = 'combat_damage';
+            entity.combatDeathValidated = true;
+            entity.defeatedByCombatDamage = true;
+            entity.combatDeathSourceType = 'validated_combat_damage';
+            entity.combatDeathHpBefore = healthState.currentHp;
+            entity.combatDeathHpAfter = nextHp;
+            entity.combatDeathAppliedDamage = appliedDamage;
+            entity.combatDeathAttackerId = Math.max(0, Math.round(Number(attackerId) || 0));
+            entity.combatDeathEventId = String(deathContext?.damageEventId ?? '') || buildEastWingDeathEventId(
+                levelName,
+                canonicalId,
+                entity.combatDeathAttackerId,
+                healthState.currentHp,
+                nextHp
+            );
+            entity.combatDeathValidatedAt = Date.now();
+            if (isEastWingRequiredEnemy(levelName, entity)) {
+                logEastWingEnemyMutation({
+                    action: 'set_hp_zero',
+                    sourcePath: 'CombatHandler.updateNpcTargetAfterHit',
+                    reason: 'validated_combat_damage',
+                    scope: levelName,
+                    hpBefore: healthState.currentHp,
+                    hpAfter: nextHp,
+                    attackerId: entity.combatDeathAttackerId,
+                    damageSource: 'combat_damage',
+                    isCombatDamage: true,
+                    deathCause: 'combat_damage',
+                    damage,
+                    appliedDamage,
+                    eventId: entity.combatDeathEventId
+                }, entity);
+                console.log(
+                    `[EastWingDamageAccepted] hpBefore=${healthState.currentHp} hpAfter=${nextHp} source=combat_damage attackerId=${entity.combatDeathAttackerId} eventId=${entity.combatDeathEventId}`
+                );
+            }
+        }
 
         if (usesSharedDungeonProgress(getScopeLevelName(levelName))) {
             noteSharedDungeonHostileState(levelName, targetId, entity);
@@ -5544,9 +5969,7 @@ export class CombatHandler {
             entity,
             entityId: Math.max(0, Math.round(Number(entity.id ?? targetId))),
             appliedDamage,
-            killed: authoritativeKill &&
-                wasAlive &&
-                (Boolean(entity.dead) || Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD)
+            killed
         };
     }
 
@@ -5698,6 +6121,18 @@ export class CombatHandler {
         if (!entity || entity.isPlayer || Number(entity.team ?? 0) !== EntityTeam.ENEMY) {
             return;
         }
+        if (isEastWingRequiredEnemy(levelScope, entity) && !hasEastWingCombatDeathEvidence(entity)) {
+            logEastWingProgressBlocked('non_combat_death_attempt', 'CombatHandler.handleEnemyDefeatState', levelScope, entity, {
+                action: 'progress_increment',
+                hpBefore: Math.round(Number(entity?.combatDeathHpBefore ?? entity?.hp ?? 0)),
+                hpAfter: Math.round(Number(entity?.hp ?? 0)),
+                attackerId: Math.max(0, Math.round(Number(client?.clientEntID ?? 0))),
+                damageSource: options.fromDestroy ? 'destroy_only' : options.fromKillState ? 'kill_state' : 'unknown',
+                deathCause: entity?.deathCause ?? entity?.combatDeathCause ?? 'unknown',
+                entityId
+            });
+            return;
+        }
 
         if (
             !options.fromDestroy &&
@@ -5713,6 +6148,21 @@ export class CombatHandler {
 
         CombatHandler.markEnemyDefeatProcessed(levelScope, entityId, entity);
         CombatHandler.handleCanonicalVisibleServerAuthorityDefeatSideEffects(client, levelScope, entity);
+        if (isEastWingRequiredEnemy(levelScope, entity)) {
+            logEastWingEnemyMutation({
+                action: 'progress_increment',
+                sourcePath: 'CombatHandler.handleEnemyDefeatState',
+                reason: 'combat_damage',
+                scope: levelScope,
+                hpBefore: Math.round(Number(entity.combatDeathHpBefore ?? 0)),
+                hpAfter: Math.round(Number(entity.combatDeathHpAfter ?? entity.hp ?? 0)),
+                attackerId: Math.max(0, Math.round(Number(entity.combatDeathAttackerId ?? 0))),
+                damageSource: 'combat_damage',
+                isCombatDamage: true,
+                deathCause: 'combat_damage',
+                eventId: entity.combatDeathEventId ?? ''
+            }, entity);
+        }
         CombatHandler.fireAndForgetMissionWork(
             client,
             'enemy defeat mission progress',
@@ -5894,6 +6344,7 @@ export class CombatHandler {
             return;
         }
         if (sourceSession) {
+            CombatHandler.rememberEastWingPlayerCast(levelScope, info.sourceId, info.powerId, sourceSession);
             noteDungeonRunCast(sourceSession, {
                 sourceId: info.sourceId,
                 powerId: info.powerId,
@@ -6144,7 +6595,18 @@ export class CombatHandler {
                 : new Map<number, HostileViewerHealthSnapshot>();
             CombatHandler.assignPartySharedHostileCombatAuthority(levelScope, targetEntity, sourceSession ?? client);
             const hpBefore = Math.max(0, Math.round(Number(targetEntity?.hp ?? 0)));
-            const resolution = CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage);
+            const deathContext = CombatHandler.buildEastWingDamageContext(
+                levelScope,
+                targetEntity,
+                sourceSession,
+                sourceId,
+                info.powerId,
+                damage,
+                hpBefore,
+                Math.max(0, hpBefore - Math.max(0, Math.round(Number(damage) || 0))),
+                'CombatHandler.handlePowerHit'
+            );
+            const resolution = CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage, sourceId, deathContext);
             if (resolution.entity && Math.max(0, Math.round(Number(resolution.appliedDamage ?? 0))) > 0) {
                 CombatHandler.logHpMutation(
                     'powerhit',
@@ -7436,7 +7898,18 @@ export class CombatHandler {
             : new Map<number, HostileViewerHealthSnapshot>();
         CombatHandler.assignPartySharedHostileCombatAuthority(levelScope, targetEntity, sourceSession ?? client);
         const hpBefore = Math.max(0, Math.round(Number(targetEntity?.hp ?? 0)));
-        const resolution = CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage);
+        const deathContext = CombatHandler.buildEastWingDamageContext(
+            levelScope,
+            targetEntity,
+            sourceSession,
+            sourceId,
+            info.powerId,
+            damage,
+            hpBefore,
+            Math.max(0, hpBefore - Math.max(0, Math.round(Number(damage) || 0))),
+            'CombatHandler.handleBuffTickDot'
+        );
+        const resolution = CombatHandler.updateNpcTargetAfterHit(levelScope, targetId, damage, sourceId, deathContext);
         if (resolution.entity && Math.max(0, Math.round(Number(resolution.appliedDamage ?? 0))) > 0) {
             CombatHandler.logHpMutation(
                 'buff-tick-dot',

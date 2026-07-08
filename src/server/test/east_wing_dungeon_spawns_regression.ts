@@ -14,6 +14,7 @@ import { DungeonSpawnLoader, DungeonSpawnConfig } from '../data/DungeonSpawnLoad
 import { NpcLoader } from '../data/NpcLoader';
 import { CombatHandler } from '../handlers/CombatHandler';
 import { EntityHandler } from '../handlers/EntityHandler';
+import { LevelHandler } from '../handlers/LevelHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 
@@ -152,6 +153,45 @@ function buildPowerHitPayload(targetId: number, sourceId: number, damage: number
     return bb.toBuffer();
 }
 
+function buildPowerCastPayload(sourceId: number, powerId: number = 77): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(sourceId);
+    bb.writeMethod4(powerId);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    return bb.toBuffer();
+}
+
+function buildIncrementalUpdatePayload(entityId: number, entState: number): Buffer {
+    return (LevelHandler as any).buildEntityIncrementalUpdatePayload(
+        entityId,
+        0,
+        0,
+        0,
+        entState,
+        {
+            bLeft: false,
+            bRunning: false,
+            bJumping: false,
+            bDropping: false,
+            bBackpedal: false
+        },
+        false,
+        0
+    );
+}
+
+function buildDestroyPayload(entityId: number, immediate: boolean = true): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(entityId);
+    bb.writeMethod15(immediate);
+    return bb.toBuffer();
+}
+
 function buildClientHostileFullUpdate(
     entityId: number,
     name: string,
@@ -280,18 +320,45 @@ async function testProxyAttachKillProgressAndLateJoiner(): Promise<void> {
         true,
         'proxy attach should receive initial level-50 HP sync'
     );
+    const hpBeforeAggro = Math.round(Number(canonical.hp ?? 0));
+    (CombatHandler as any).noteHostileAggroTarget(canonical, zeus);
+    assert.equal(Math.round(Number(canonical.hp ?? 0)), hpBeforeAggro, 'aggro activation must not change East Wing enemy HP');
+    assert.equal(canonical.dead, false, 'aggro activation must not mark East Wing enemy dead');
 
     await CombatHandler.handlePowerHit(
         zeus as never,
         buildPowerHitPayload(500001, zeus.clientEntID, Math.round(Number(canonical.hp ?? 0)) + 999)
     );
+    assert.equal(canonical.dead, false, 'lethal hit without a recent player cast must be rejected for East Wing');
+    assert.equal(Math.round(Number(canonical.hp ?? 0)), hpBeforeAggro, 'rejected lethal hit must not change East Wing enemy HP');
+    assert.equal(getSharedDungeonProgressTotals(starterScope).defeated, 0, 'rejected lethal hit must not count progress');
+
+    await CombatHandler.handlePowerCast(zeus as never, buildPowerCastPayload(zeus.clientEntID));
+    await CombatHandler.handlePowerHit(
+        zeus as never,
+        buildPowerHitPayload(500001, zeus.clientEntID, Math.round(Number(canonical.hp ?? 0)) + 999)
+    );
     assert.equal(canonical.dead, true, 'starter should kill canonical GreaterDemonMaligner');
+    assert.equal(canonical.deathCause, 'combat_damage', 'canonical death should record combat damage as cause');
+    assert.equal(canonical.combatDeathValidated, true, 'canonical death should have validated combat evidence');
+    assert.equal(canonical.lootDropped, true, 'validated East Wing combat death should spawn/drop loot through the reward path');
+    const combatDeathEventId = String(canonical.combatDeathEventId ?? '');
+    const pendingLootAfterKill = zeus.pendingLoot.size;
 
     const totals = getSharedDungeonProgressTotals(starterScope);
     const progressState = recomputeSharedDungeonProgress(starterScope);
     assert.equal(totals.total, 5, 'required-for-clear totals should count all server canonical enemies');
     assert.equal(totals.defeated, 1, 'required-for-clear totals should count defeated server canonical enemies');
     assert.equal(progressState?.progress, 20, 'East Wing progress should be floor(deadRequired / totalRequired * 100)');
+
+    await CombatHandler.handlePowerHit(
+        zeus as never,
+        buildPowerHitPayload(500001, zeus.clientEntID, Math.round(Number(canonical.maxHp ?? 0)) + 999)
+    );
+    assert.equal(getSharedDungeonProgressTotals(starterScope).defeated, 1, 'duplicate lethal hit must not double-count progress');
+    assert.equal(recomputeSharedDungeonProgress(starterScope)?.progress, 20, 'duplicate lethal hit must not advance progress again');
+    assert.equal(zeus.pendingLoot.size, pendingLootAfterKill, 'duplicate lethal hit must not spawn duplicate loot');
+    assert.equal(String(canonical.combatDeathEventId ?? ''), combatDeathEventId, 'duplicate lethal hit must not replace the original combat death event');
 
     attachPlayer(telahair);
     GlobalState.sessionsByToken.set(telahair.token, telahair as never);
@@ -306,6 +373,129 @@ async function testProxyAttachKillProgressAndLateJoiner(): Promise<void> {
         true,
         'late joiner dead proxy should be destroyed instead of respawning alive'
     );
+}
+
+function testIncrementalDeadStateDoesNotKillOrProgress(): void {
+    const zeus = createFakeClient('Zeus', 'east-wing-incremental-dead', 13933, 1);
+    attachPlayer(zeus);
+    GlobalState.sessionsByToken.set(zeus.token, zeus as never);
+    EntityHandler.sendInitialLevelEntities(zeus as never, zeus.currentLevel);
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+
+    attachProxy(zeus, 500001, 0);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(920001);
+    assert.ok(canonical, 'canonical hostile should exist before incremental DEAD test');
+    const hpBefore = Math.round(Number(canonical.hp ?? 0));
+    zeus.entities.set(920001, canonical);
+    zeus.knownEntityIds.add(920001);
+
+    LevelHandler.handleEntityIncrementalUpdate(
+        zeus as never,
+        buildIncrementalUpdatePayload(920001, EntityState.DEAD)
+    );
+
+    assert.equal(canonical.dead, false, 'client incremental DEAD state on canonical id must be rejected');
+    assert.equal(canonical.destroyed, false, 'client incremental DEAD state must not destroy canonical enemy');
+    assert.equal(Math.round(Number(canonical.hp ?? 0)), hpBefore, 'client incremental DEAD state must not change HP');
+    assert.equal(getSharedDungeonProgressTotals(scope).defeated, 0, 'client incremental DEAD state must not count progress');
+    assert.equal(recomputeSharedDungeonProgress(scope)?.progress, 0, 'client incremental DEAD state must keep progress at zero');
+}
+
+function testNonCombatTerminalStateIsRepairedWithoutProgress(): void {
+    const zeus = createFakeClient('Zeus', 'east-wing-terminal-repair', 13933, 1);
+    attachPlayer(zeus);
+    GlobalState.sessionsByToken.set(zeus.token, zeus as never);
+    EntityHandler.sendInitialLevelEntities(zeus as never, zeus.currentLevel);
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+
+    attachProxy(zeus, 500001, 0);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(920001);
+    assert.ok(canonical, 'canonical hostile should exist before terminal repair test');
+    const maxHp = Math.round(Number(canonical.maxHp ?? 0));
+    canonical.hp = 0;
+    canonical.dead = true;
+    canonical.destroyed = true;
+    canonical.entState = EntityState.DEAD;
+    delete canonical.deathCause;
+    delete canonical.combatDeathValidated;
+    zeus.entities.set(920001, canonical);
+    zeus.knownEntityIds.add(920001);
+
+    LevelHandler.handleEntityIncrementalUpdate(
+        zeus as never,
+        buildIncrementalUpdatePayload(920001, EntityState.ACTIVE)
+    );
+
+    assert.equal(canonical.dead, false, 'non-combat terminal state should be repaired to alive');
+    assert.equal(canonical.destroyed, false, 'non-combat terminal state should not stay destroyed');
+    assert.equal(Math.round(Number(canonical.hp ?? 0)), maxHp, 'non-combat terminal state should restore HP from maxHp');
+    assert.equal(getSharedDungeonProgressTotals(scope).defeated, 0, 'non-combat terminal state must not count progress');
+    assert.equal(recomputeSharedDungeonProgress(scope)?.progress, 0, 'non-combat terminal state must keep progress at zero');
+}
+
+async function testDestroyOnlyDoesNotKillOrProgress(): Promise<void> {
+    const zeus = createFakeClient('Zeus', 'east-wing-destroy-only', 13933, 1);
+    attachPlayer(zeus);
+    GlobalState.sessionsByToken.set(zeus.token, zeus as never);
+    EntityHandler.sendInitialLevelEntities(zeus as never, zeus.currentLevel);
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+
+    attachProxy(zeus, 500001, 0);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(920001);
+    assert.ok(canonical, 'canonical hostile should exist before destroy-only test');
+    const hpBefore = Math.round(Number(canonical.hp ?? 0));
+
+    await CombatHandler.handleEntityDestroy(zeus as never, buildDestroyPayload(500001, true));
+
+    assert.equal(canonical.dead, false, 'destroy-only cleanup must not kill a live East Wing enemy');
+    assert.equal(canonical.destroyed, false, 'destroy-only cleanup must not destroy canonical state');
+    assert.equal(Math.round(Number(canonical.hp ?? 0)), hpBefore, 'destroy-only cleanup must not change HP');
+    assert.equal(getSharedDungeonProgressTotals(scope).defeated, 0, 'destroy-only cleanup must not count progress');
+    assert.equal(recomputeSharedDungeonProgress(scope)?.progress, 0, 'destroy-only cleanup must keep progress at zero');
+}
+
+function testClientGhostHealthCannotPoisonCanonical(): void {
+    const zeus = createFakeClient('Zeus', 'east-wing-health-reconcile', 13933, 1);
+    attachPlayer(zeus);
+    GlobalState.sessionsByToken.set(zeus.token, zeus as never);
+    EntityHandler.sendInitialLevelEntities(zeus as never, zeus.currentLevel);
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+
+    attachProxy(zeus, 500001, 0);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(920001);
+    assert.ok(canonical, 'canonical hostile should exist before health reconcile test');
+    const hpBefore = Math.round(Number(canonical.hp ?? 0));
+    const maxHp = Math.round(Number(canonical.maxHp ?? 0));
+    zeus.entities.set(500001, {
+        ...zeus.entities.get(500001),
+        id: 500001,
+        canonicalEntityId: 920001,
+        sharedCanonicalId: 920001,
+        clientSpawned: true,
+        team: EntityTeam.ENEMY,
+        hp: 0,
+        maxHp,
+        healthDelta: -maxHp,
+        health_delta: -maxHp,
+        dead: true,
+        destroyed: true,
+        entState: EntityState.DEAD
+    });
+
+    const healthState = (CombatHandler as any).resolveHostileHealthStateAcrossCopies(scope, canonical);
+    assert.equal(Math.round(Number(healthState.currentHp ?? 0)), hpBefore, 'stale client ghost HP must not poison canonical health resolution');
+    assert.equal(
+        (CombatHandler as any).applyNpcHealthState(canonical, maxHp, 0, true, {
+            cause: 'health_reconcile',
+            levelScope: scope,
+            sourcePath: 'testClientGhostHealthCannotPoisonCanonical'
+        }),
+        hpBefore,
+        'non-combat applyNpcHealthState death attempt must clamp East Wing canonical alive'
+    );
+    assert.equal(canonical.dead, false, 'health reconciliation must not mark canonical dead');
+    assert.equal(canonical.entState, EntityState.ACTIVE, 'health reconciliation must keep canonical active');
+    assert.equal(getSharedDungeonProgressTotals(scope).defeated, 0, 'stale client ghost must not count progress');
 }
 
 function resetRuntime(): void {
@@ -336,6 +526,18 @@ async function main(): Promise<void> {
 
         resetRuntime();
         testInitialCanonicalNoVisibleServerSnapshots();
+
+        resetRuntime();
+        testIncrementalDeadStateDoesNotKillOrProgress();
+
+        resetRuntime();
+        testNonCombatTerminalStateIsRepairedWithoutProgress();
+
+        resetRuntime();
+        await testDestroyOnlyDoesNotKillOrProgress();
+
+        resetRuntime();
+        testClientGhostHealthCannotPoisonCanonical();
 
         resetRuntime();
         await testProxyAttachKillProgressAndLateJoiner();

@@ -18,6 +18,7 @@ import { areClientsInSameLevelScope, getClientLevelScope, getLevelScopeKey, getS
 import { getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
 import { markRoomBossEntity } from '../core/RoomBossState';
 import { logJcMini1Authority } from '../utils/JcMini1AuthorityLog';
+import { isEastWingLevel, isEastWingRequiredEnemy, logEastWingEnemyMutation } from '../core/EastWingEnemyDebug';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
@@ -526,7 +527,41 @@ export class EntityHandler {
             if (EntityHandler.findDeadServerAuthorityHostileTombstone(levelScope, entityProps)) {
                 continue;
             }
+            const normalizedMaxHp = Math.round(Number((entityProps as any).maxHp ?? 0));
+            const normalizedHp = Math.round(Number((entityProps as any).hp ?? 0));
+            if (!Number.isFinite(normalizedMaxHp) || !Number.isFinite(normalizedHp) || normalizedMaxHp <= 0 || normalizedHp <= 0) {
+                logEastWingEnemyMutation({
+                    action: 'spawn_invalid_hp',
+                    sourcePath: 'EntityHandler.seedServerAuthorityHostiles',
+                    reason: 'invalid_server_spawn_hp',
+                    scope: levelScope,
+                    hpBefore: normalizedHp,
+                    hpAfter: normalizedHp,
+                    damageSource: 'spawn_replace',
+                    deathCause: 'spawn_replace',
+                    isCombatDamage: false,
+                    enemyId: npcId
+                }, entityProps);
+                console.error(
+                    `[DungeonSpawnServer] rejected invalid hostile hp level=${levelName} scope=${levelScope} canonicalId=${npcId} type=${String(entityProps.name ?? '')} hp=${String((entityProps as any).hp)} maxHp=${String((entityProps as any).maxHp)}`
+                );
+                continue;
+            }
             levelMap.set(npcId, entityProps);
+            if (isEastWingRequiredEnemy(levelScope, entityProps)) {
+                logEastWingEnemyMutation({
+                    action: 'spawn_enemy',
+                    sourcePath: 'EntityHandler.seedServerAuthorityHostiles',
+                    reason: 'validated_server_spawn_hp',
+                    scope: levelScope,
+                    hpBefore: normalizedHp,
+                    hpAfter: normalizedHp,
+                    damageSource: 'server_spawn',
+                    deathCause: 'unknown',
+                    isCombatDamage: false,
+                    enemyId: npcId
+                }, entityProps);
+            }
             const spawnKey = String((entityProps as any).spawnKey ?? '');
             console.log(
                 `[MultiplayerSync][server_spawn_enemy] spawnKey=${spawnKey} canonicalId=${npcId} type=${String(entityProps.name ?? '')} room=${String((entityProps as any).sourceRoom ?? entityProps.roomId ?? '')} pos=${Math.round(Number(entityProps.x ?? 0))},${Math.round(Number(entityProps.y ?? 0))}`
@@ -2058,6 +2093,16 @@ export class EntityHandler {
         client.knownEntityIds.delete(localId);
         client.entityIdAliases?.delete(localId);
         client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
+        if (
+            isEastWingLevel(getClientLevelScope(client)) &&
+            entity &&
+            !Boolean(entity?.isPlayer) &&
+            Number(entity?.team ?? 0) === EntityTeam.ENEMY
+        ) {
+            console.warn(
+                `[EastWingGhostEnemyRemoved] enemyId=${Math.max(0, Math.round(Number(entity?.canonicalEntityId ?? entity?.sharedCanonicalId ?? 0)))} instanceId=${localId} reason=${reason} duplicate_client_spawn noKill=true noProgress=true noReward=true`
+            );
+        }
         logJcMini1Authority('client_local_hostile_destroy', {
             reason,
             rawEntityId: localId,
@@ -2487,6 +2532,13 @@ export class EntityHandler {
 
     private static isSharedClientSpawnRegionActor(levelName: string | null | undefined, entity: any): boolean {
         if (!levelName || entity?.isPlayer) {
+            return false;
+        }
+
+        if (
+            EntityHandler.usesServerAuthorityHostiles(levelName) &&
+            Number(entity?.team ?? 0) === EntityTeam.ENEMY
+        ) {
             return false;
         }
 
