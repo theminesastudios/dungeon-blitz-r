@@ -50,6 +50,12 @@ const LOCAL_REFRESH_URL = 'http://localhost:8000/p/cbp/DungeonBlitz.swf?fv=cbz&g
 const LOCAL_REFRESH_URL_LEGACY = 'http://localhost/p/cbp/DungeonBlitz.swf?fv=cbz&gv=cbx';
 const REMOTE_REFRESH_URL = `http://${REMOTE_HOST}/p/cbp/DungeonBlitz.swf?fv=cbz&gv=cbx`;
 const REMOTE_REFRESH_URL_LEGACY = `http://${REMOTE_HOST}/p/cbp/DungeonBlitz.swf?fv=cbz&gv=cbx`;
+const OLD_LOST_PASSWORD_URLS = [
+    'http://www.dungeonblitz.com/lostpw',
+    'https://www.dungeonblitz.com/lostpw',
+    'http://dungeonblitz.com/lostpw',
+    'https://dungeonblitz.com/lostpw'
+];
 const MOUNT_SPEED_PATCH_CLASS = 'CombatState';
 const MOUNT_SPEED_PATCH_METHOD = 'method_960';
 const MOUNT_SPEED_DUNGEON_FLAG = 'bInstanced';
@@ -123,6 +129,10 @@ function getReplacements(mode: DungeonBlitzSwfMode, locale: DungeonBlitzSwfLocal
     const localeReplacements = locale === 'tr'
         ? TURKISH_DISCIPLINE_REPLACEMENTS
         : DISCONNECT_SCREEN_RESTORE_ENGLISH;
+    const lostPasswordReplacements = OLD_LOST_PASSWORD_URLS.map((oldValue) => ({
+        oldValue,
+        newValue: Config.PASSWORD_RESET_URL
+    }));
     if (mode === 'local') {
         return [
             { oldValue: REMOTE_HOST, newValue: LOCAL_HOST },
@@ -158,6 +168,7 @@ function getReplacements(mode: DungeonBlitzSwfMode, locale: DungeonBlitzSwfLocal
             { oldValue: REMOTE_REFRESH_URL, newValue: LOCAL_REFRESH_URL },
             { oldValue: REMOTE_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
             { oldValue: LOCAL_REFRESH_URL_LEGACY, newValue: LOCAL_REFRESH_URL },
+            ...lostPasswordReplacements,
             ...localeReplacements
         ];
     }
@@ -196,6 +207,7 @@ function getReplacements(mode: DungeonBlitzSwfMode, locale: DungeonBlitzSwfLocal
         { oldValue: LOCAL_REFRESH_URL, newValue: REMOTE_REFRESH_URL },
         { oldValue: REMOTE_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
         { oldValue: LOCAL_REFRESH_URL_LEGACY, newValue: REMOTE_REFRESH_URL },
+        ...lostPasswordReplacements,
         ...localeReplacements
     ];
 }

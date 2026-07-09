@@ -1,3 +1,4 @@
+import './helpers/disable_production_mongo';
 import { strict as assert } from 'assert';
 import * as path from 'path';
 import { GlobalState } from '../core/GlobalState';
@@ -284,6 +285,82 @@ function testClosedPartySessionsDoNotProvideDungeonAnchorCoordinates(): void {
     assert.equal(syncState.y, 500, 'closed party sessions must not supply stale anchor coordinates');
 }
 
+function testCastleHockeHomeReturnPreservesCastleRegion(): void {
+    assert.equal(LevelConfig.isDungeonLevel('Castle'), true, 'Castle Hocke should keep dungeon authority classification');
+    assert.equal(LevelConfig.isPresentationDungeonLevel('Castle'), false, 'Castle Hocke should keep region-style presentation');
+    assert.equal(LevelConfig.isPersistentDungeonLevel('Castle'), false, 'Castle Hocke should not be repaired as an unsafe saved dungeon');
+    assert.equal(LevelConfig.isSaveAllowedLevel('Castle'), true, 'Castle Hocke should be a saveable return region');
+
+    const character = createCharacter('CastleRunner', 'rogue');
+    character.CurrentLevel = { name: 'Castle', x: -1280, y: -1941 };
+    character.PreviousLevel = { name: 'BridgeTown', x: 5120, y: 880 };
+
+    (LevelHandler as any).syncTransferSourcePositionFromLiveEntity(
+        character,
+        'Castle',
+        { x: -920, y: -1880 }
+    );
+    assert.deepEqual(
+        character.CurrentLevel,
+        { name: 'Castle', x: -920, y: -1880 },
+        'Castle live position should be saved before entering Home'
+    );
+
+    LevelConfig.updateSavedLevelsOnTransfer(character, 'Castle', 'CraftTown', 360, 1460);
+    assert.deepEqual(
+        character.PreviousLevel,
+        { name: 'Castle', x: -920, y: -1880 },
+        'entering Home from Castle should preserve Castle as previous region'
+    );
+    assert.deepEqual(
+        character.CurrentLevel,
+        { name: 'CraftTown', x: 360, y: 1460 },
+        'entering Home should still save the Home position as current'
+    );
+
+    const returnLevel = (LevelHandler as any).resolveCraftTownReturnLevel(
+        {
+            entryLevel: '',
+            character
+        },
+        character,
+        'CraftTown',
+        null
+    );
+    assert.equal(returnLevel, 'Castle', 'leaving Home should return to Castle Hocke, not Felbridge');
+
+    const spawn = LevelConfig.getSpawnCoordinates(character, 'CraftTown', returnLevel);
+    assert.deepEqual(
+        spawn,
+        { x: -920, y: -1880, hasCoord: true },
+        'returning to Castle Hocke should use the saved Castle coordinates'
+    );
+
+    const staleCharacter = createCharacter('CastleRunnerStale', 'rogue');
+    staleCharacter.CurrentLevel = { name: 'BridgeTown', x: 5120, y: 880 };
+    staleCharacter.PreviousLevel = { name: 'BridgeTown', x: 5120, y: 880 };
+
+    LevelConfig.updateSavedLevelsOnTransfer(
+        staleCharacter,
+        'Castle',
+        'CraftTown',
+        360,
+        1460,
+        { x: -900, y: -1885, hasCoord: true }
+    );
+    assert.deepEqual(
+        staleCharacter.PreviousLevel,
+        { name: 'Castle', x: -900, y: -1885 },
+        'entering Home from Castle should use the active source level even when the saved record is stale'
+    );
+
+    assert.equal(
+        (LevelHandler as any).resolveCraftTownReturnLevel({ entryLevel: 'BridgeTown' }, staleCharacter, 'Castle', null),
+        'Castle',
+        'Home return should prefer the active Castle source over stale Felbridge entry state'
+    );
+}
+
 function main(): void {
     const pendingWorld = new Map(GlobalState.pendingWorld);
     const pendingExtended = new Map(GlobalState.pendingExtended);
@@ -332,6 +409,15 @@ function main(): void {
         GlobalState.tokenChar.clear();
         GlobalState.usedTransferTokens.clear();
         testClosedPartySessionsDoNotProvideDungeonAnchorCoordinates();
+        GlobalState.pendingWorld.clear();
+        GlobalState.pendingExtended.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.sessionsByCharacterName.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.tokenChar.clear();
+        GlobalState.usedTransferTokens.clear();
+        testCastleHockeHomeReturnPreservesCastleRegion();
         console.log('dungeon_enter_token_regression: ok');
     } finally {
         GlobalState.pendingWorld = pendingWorld;

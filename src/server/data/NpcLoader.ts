@@ -1,5 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import dungeonEnemyElements from './dungeon_enemy_elements.json';
+import { DungeonSpawnLoader } from './DungeonSpawnLoader';
 
 export interface NpcDef {
     id: number;
@@ -26,12 +28,24 @@ export class NpcLoader {
     private static levelsFiltered: Map<string, NpcDef[]> = new Map();
     private static levelsRaw: Map<string, NpcDef[]> = new Map();
     private static readonly SERVER_HOSTILE_LEVELS = new Set<string>([
+        'AC_Mission1',
+        'AC_Mission1Hard',
         'GoblinRiverDungeon',
         'GoblinRiverDungeonHard',
+        'Castle',
+        'CastleHard',
         'JC_Mini1Hard',
         'JC_Mini2',
         'JC_Mini2Hard'
     ]);
+    private static readonly DERIVED_SERVER_HOSTILE_LEVELS = new Set<string>([
+        'AC_Mission1',
+        'AC_Mission1Hard'
+    ]);
+    private static readonly DERIVED_SERVER_HOSTILE_BASE_IDS: Record<string, number> = {
+        AC_Mission1: 86000000,
+        AC_Mission1Hard: 87000000
+    };
 
     private static normalizeLevelName(levelName: string): string {
         return String(levelName ?? '').trim();
@@ -114,7 +128,68 @@ export class NpcLoader {
         }));
     }
 
+    private static buildDerivedServerHostileNpcs(levelName: string): NpcDef[] {
+        const normalizedLevel = this.normalizeLevelName(levelName);
+        if (!this.DERIVED_SERVER_HOSTILE_LEVELS.has(normalizedLevel)) {
+            return [];
+        }
+
+        const source = (dungeonEnemyElements as Record<string, any>)[normalizedLevel];
+        const enemyTypes = Array.isArray(source?.enemyTypes) ? source.enemyTypes : [];
+        const rooms = Array.isArray(source?.rooms) && source.rooms.length > 0
+            ? source.rooms.map((room: unknown) => String(room || 'server_room'))
+            : [`${normalizedLevel}_server_room`];
+        const baseId = this.DERIVED_SERVER_HOSTILE_BASE_IDS[normalizedLevel] ?? 86000000;
+        const npcs: NpcDef[] = [];
+
+        let spawnIndex = 0;
+        for (const enemyType of enemyTypes) {
+            const name = String(enemyType?.enemyType ?? '').trim();
+            const count = Math.max(0, Math.round(Number(enemyType?.count ?? 0)));
+            if (!name || count <= 0) {
+                continue;
+            }
+
+            for (let typeIndex = 0; typeIndex < count; typeIndex++) {
+                const roomIndex = spawnIndex % rooms.length;
+                const roomName = rooms[roomIndex];
+                const lane = Math.floor(roomIndex / 5);
+                const slot = roomIndex % 5;
+                npcs.push({
+                    id: baseId + spawnIndex + 1,
+                    name,
+                    x: 1200 + (slot * 1800) + (typeIndex * 175),
+                    y: -2200 + (lane * 850),
+                    v: 0,
+                    team: 2,
+                    untargetable: false,
+                    render_depth_offset: -50 - spawnIndex,
+                    character_name: '',
+                    DramaAnim: '',
+                    SleepAnim: '',
+                    summonerId: 0,
+                    power_id: 0,
+                    entState: 1,
+                    facing_left: false,
+                    health_delta: 0,
+                    buffs: [],
+                    roomId: roomIndex,
+                    sourceRoom: roomName,
+                    spawnGroup: roomName,
+                    spawnIndex,
+                    serverSpawned: true
+                });
+                spawnIndex++;
+            }
+        }
+
+        return npcs;
+    }
+
     static load(serverDataDir: string) {
+        this.levelsRaw.clear();
+        this.levelsFiltered.clear();
+
         // serverDataDir is '.../src/server/data' (or similar based on config).
         // New path is directly inside 'src/server/data/npcs'.
         const npcDir = path.join(serverDataDir, 'npcs');
@@ -144,6 +219,40 @@ export class NpcLoader {
                         console.error(`[NpcLoader] Error loading ${file}:`, err);
                     }
                 }
+            }
+            for (const levelName of this.DERIVED_SERVER_HOSTILE_LEVELS) {
+                if (this.levelsRaw.has(levelName)) {
+                    continue;
+                }
+                const derivedNpcs = this.buildDerivedServerHostileNpcs(levelName);
+                if (derivedNpcs.length === 0) {
+                    continue;
+                }
+                this.levelsRaw.set(levelName, this.normalizeNpcList(derivedNpcs));
+                this.levelsFiltered.set(levelName, this.normalizeNpcList(this.filterLevelNpcs(levelName, derivedNpcs)));
+            }
+            DungeonSpawnLoader.load(serverDataDir);
+            for (const levelName of DungeonSpawnLoader.getLoadedLevelNames()) {
+                const generatedNpcs = DungeonSpawnLoader.getNpcsForLevel(levelName);
+                if (generatedNpcs.length === 0) {
+                    continue;
+                }
+
+                const existingRaw = this.levelsRaw.get(levelName) ?? [];
+                const mergedById = new Map<number, NpcDef>();
+                for (const npc of existingRaw) {
+                    mergedById.set(Math.round(Number(npc.id ?? 0)), npc);
+                }
+                for (const npc of generatedNpcs) {
+                    mergedById.set(Math.round(Number(npc.id ?? 0)), npc);
+                }
+                const mergedRaw = Array.from(mergedById.values());
+                this.levelsRaw.set(levelName, this.normalizeNpcList(mergedRaw));
+                this.levelsFiltered.set(
+                    levelName,
+                    this.normalizeNpcList(this.filterLevelNpcs(levelName, mergedRaw))
+                );
+                console.log(`[NpcLoader] Merged ${generatedNpcs.length} generated dungeon spawns for ${levelName}.`);
             }
             console.log(`[NpcLoader] Loaded NPCs for ${this.levelsRaw.size} levels.`);
         } catch (e) {

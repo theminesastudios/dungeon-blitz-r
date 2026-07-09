@@ -7,6 +7,7 @@ import { DebugLogger } from './Debug';
 import type { DungeonRunStats } from './DungeonRunStats';
 import { clearStoredDungeonSnapshot } from './DungeonSnapshot';
 import { LevelConfig } from './LevelConfig';
+import { MovementAuthority, MovementAuthorityState } from './MovementAuthority';
 
 const db = new JsonAdapter();
 const SOCKET_POLICY_REQUEST = '<policy-file-request/>';
@@ -232,6 +233,7 @@ export class Client {
     public lastDungeonCutsceneStartAt: number = 0;
     public lastDungeonCutsceneEndScope: string = "";
     public lastDungeonCutsceneEndAt: number = 0;
+    public movementAuthority: MovementAuthorityState = MovementAuthority.createState();
 
     constructor(socket: net.Socket, router: PacketRouter) {
         this.socket = socket;
@@ -246,6 +248,9 @@ export class Client {
         this.socket.on('end', () => this.onEnd());
         this.socket.on('close', (hadError: boolean) => this.onClose(hadError));
         this.socket.on('error', (err: Error) => this.onError(err));
+
+        const { GlobalState } = require('./GlobalState') as typeof import('./GlobalState');
+        GlobalState.clients.add(this);
     }
 
     private onData(data: Buffer): void {
@@ -378,6 +383,7 @@ export class Client {
 
     public armPendingTransferGrace(durationMs: number = Client.PENDING_TRANSFER_GRACE_MS): void {
         this.pendingTransferUntil = Math.max(this.pendingTransferUntil, Date.now() + Math.max(0, durationMs));
+        MovementAuthority.reset(this, 'pending_transfer_grace');
     }
 
     private createSessionCleanupSnapshot(): SessionCleanupSnapshot {
@@ -493,6 +499,7 @@ export class Client {
         this.lastDungeonCutsceneStartAt = 0;
         this.lastDungeonCutsceneEndScope = "";
         this.lastDungeonCutsceneEndAt = 0;
+        MovementAuthority.reset(this, 'gameplay_state_clear');
     }
 
     private clearIdentityState(): void {
@@ -782,6 +789,7 @@ export class Client {
         }
 
         this.cleanupSessionState(snapshot, transferInProgress);
+        GlobalState.clients.delete(this);
 
         console.log(
             `[Client] Disconnected: ${addr} hadError=${hadError} bytesIn=${this.rawBytesIn} bytesOut=${this.rawBytesOut} authenticated=${snapshot.authenticated} token=${snapshot.token} char=${snapshot.characterName || '(none)'}`

@@ -3,6 +3,7 @@ import { Client } from '../core/Client';
 import { Config } from '../core/config';
 import { GameData } from '../core/GameData';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { WalletService } from '../database/WalletService';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { CharmID } from '../data/runtime/Charms';
@@ -820,7 +821,8 @@ export class ForgeHandler {
             return;
         }
 
-        if (Number(client.character.mammothIdols ?? 0) < authoritativeCost) {
+        const didSpendIdols = await WalletService.spend(client, 'mammothIdols', authoritativeCost);
+        if (!didSpendIdols) {
             ForgeHandler.logForgeEvent('speedup-blocked-idols', client, {
                 clientIdolCost: idolCost,
                 authoritativeCost,
@@ -830,7 +832,6 @@ export class ForgeHandler {
         }
 
         ForgeHandler.clearCompletionTimer(client.userId, client.character.name);
-        client.character.mammothIdols = Number(client.character.mammothIdols ?? 0) - authoritativeCost;
         ForgeHandler.sendPremiumPurchase(client, 'Forge Speed-Up', authoritativeCost);
 
         ForgeHandler.markCompletedForgeMilestones(client.character, forgeState);
@@ -991,12 +992,11 @@ export class ForgeHandler {
 
         const forgeLevel = ForgeHandler.getForgeLevel(forgeState);
         const rerollCost = ForgeHandler.FORGE_REROLL_COSTS[forgeLevel - 1] ?? ForgeHandler.FORGE_REROLL_COSTS[ForgeHandler.FORGE_REROLL_COSTS.length - 1];
-        const currentIdols = Math.max(0, Number(client.character.mammothIdols ?? 0));
-        if (currentIdols < rerollCost) {
+        const didSpendIdols = await WalletService.spend(client, 'mammothIdols', rerollCost);
+        if (!didSpendIdols) {
             return;
         }
 
-        client.character.mammothIdols = currentIdols - rerollCost;
         ForgeHandler.sendPremiumPurchase(client, 'Forge Reroll', rerollCost);
 
         const tier = Math.max(1, Number(forgeState.secondary_tier ?? 0));

@@ -5,6 +5,7 @@ import { BuildingID } from '../core/Enums';
 import { BitReader } from '../network/protocol/bitReader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { JsonAdapter } from '../database/JsonAdapter';
+import { WalletService } from '../database/WalletService';
 import { WorldEnter } from '../utils/WorldEnter';
 import { isVisitingAnotherPlayersCraftTown } from '../utils/HomeVisitGuard';
 import buildingTypes from '../data/BuildingTypes.json';
@@ -200,33 +201,31 @@ export class BuildingHandler {
         const upgradeTime = BuildingHandler.getUpgradeTimeSeconds(buildingDef.UpgradeTime);
 
         if (usedIdols) {
-            const idols = Number(client.character.mammothIdols ?? 0);
-            if (idols < idolCost) {
+            const didSpendIdols = await WalletService.spend(client, 'mammothIdols', idolCost);
+            if (!didSpendIdols) {
                 DebugLogger.logProgress('BuildingUpgrade:rejected', client, client.character, {
                     buildingId,
                     targetRank,
                     usedIdols,
                     idolCost,
-                    idols,
+                    idols: Number(client.character.mammothIdols ?? 0),
                     reason: 'not_enough_idols'
                 });
                 return;
             }
-            client.character.mammothIdols = idols - idolCost;
         } else {
-            const gold = Number(client.character.gold ?? 0);
-            if (gold < goldCost) {
+            const didSpendGold = await WalletService.spend(client, 'gold', goldCost);
+            if (!didSpendGold) {
                 DebugLogger.logProgress('BuildingUpgrade:rejected', client, client.character, {
                     buildingId,
                     targetRank,
                     usedIdols,
                     goldCost,
-                    gold,
+                    gold: Number(client.character.gold ?? 0),
                     reason: 'not_enough_gold'
                 });
                 return;
             }
-            client.character.gold = gold - goldCost;
         }
 
         const readyTime = Math.floor(Date.now() / 1000) + upgradeTime;
@@ -293,12 +292,10 @@ export class BuildingHandler {
         }
 
         if (idolCost > 0) {
-            const idols = Number(client.character.mammothIdols ?? 0);
-            if (idols < idolCost) {
+            const didSpendIdols = await WalletService.spend(client, 'mammothIdols', idolCost);
+            if (!didSpendIdols) {
                 return;
             }
-
-            client.character.mammothIdols = idols - idolCost;
         }
 
         // Apply Upgrade Immediately

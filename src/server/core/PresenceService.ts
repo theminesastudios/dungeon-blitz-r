@@ -266,7 +266,7 @@ export class PresenceService {
         const levelSpec = levelKey ? LevelConfig.get(levelKey) : null;
         const activityKind = levelKey === 'CraftTown'
             ? 'zone'
-            : levelSpec?.isDungeon
+            : LevelConfig.isPresentationDungeonLevel(levelKey)
                 ? 'dungeon'
                 : 'zone';
         const party = PresenceService.getPartySnapshot(characterName);

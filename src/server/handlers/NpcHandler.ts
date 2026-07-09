@@ -2,6 +2,7 @@ import { Client } from '../core/Client';
 import { GlobalState } from '../core/GlobalState';
 import { GameData } from '../core/GameData';
 import { Character } from '../database/Database';
+import { WalletService } from '../database/WalletService';
 import { MissionDialogueLoader } from '../data/MissionDialogueLoader';
 import { NpcDialogueLoader } from '../data/NpcDialogueLoader';
 import { MissionDef, MissionLoader } from '../data/MissionLoader';
@@ -61,7 +62,7 @@ export class NpcHandler {
         }
     }
 
-    static handleTalkToNpc(client: Client, data: Buffer): void {
+    static async handleTalkToNpc(client: Client, data: Buffer): Promise<void> {
         if (!client.character) {
             return;
         }
@@ -188,7 +189,7 @@ export class NpcHandler {
 
                             // Начисление золота
                             if (goldReward > 0) {
-                                client.character.gold = Number(client.character.gold ?? 0) + goldReward;
+                                await WalletService.grant(client, 'gold', goldReward);
                                 RewardHandler.sendGoldReward(client, goldReward, false);
                             }
                         }
@@ -814,7 +815,7 @@ export class NpcHandler {
         }, delayMs);
     }
 
-    private static finalizeFirstMissionTurnIn(client: Client, npcKey: string): void {
+    private static async finalizeFirstMissionTurnIn(client: Client, npcKey: string): Promise<void> {
         try {
             if (!client.character) {
                 return;
@@ -844,7 +845,7 @@ export class NpcHandler {
 
                 // Начисление золота
                 if (goldReward > 0) {
-                    client.character.gold = Number(client.character.gold ?? 0) + goldReward;
+                    await WalletService.grant(client, 'gold', goldReward);
                     RewardHandler.sendGoldReward(client, goldReward, false);
                 }
             }

@@ -16,6 +16,7 @@ import { normalizeCharacterMaterials } from '../utils/MaterialInventory';
 import { PetHandler } from './PetHandler';
 import { Config } from '../core/config';
 import { EntityHandler } from './EntityHandler';
+import { WalletService } from '../database/WalletService';
 
 interface RewardRequest {
     receiverId: number;
@@ -281,6 +282,12 @@ export class RewardHandler {
             return client.entities.get(sourceId);
         }
         const levelMap = client.currentLevel ? GlobalState.levelEntities.get(getClientLevelScope(client)) : null;
+        if (EntityHandler.usesServerAuthorityHostiles(client.currentLevel)) {
+            const canonicalSourceId = EntityHandler.resolveEntityAlias(client, sourceId);
+            if (canonicalSourceId !== sourceId) {
+                return client.entities.get(canonicalSourceId) ?? levelMap?.get(canonicalSourceId) ?? null;
+            }
+        }
         return levelMap?.get(sourceId) ?? null;
     }
 
@@ -593,6 +600,16 @@ export class RewardHandler {
             Math.max(0, Math.round(Number(canonicalEntity.deathFinalizedAt ?? 0))) > 0 &&
             String(canonicalEntity.lootDropNonce ?? '') === sourceEnemyLootDropNonce
         );
+    }
+
+    private static didRecipientEnterAfterSourceDeath(recipient: Client, sourceEntity: any): boolean {
+        const deathFinalizedAt = Math.max(0, Math.round(Number(sourceEntity?.deathFinalizedAt ?? sourceEntity?.killedAt ?? 0) || 0));
+        const worldEnteredAt = Math.max(0, Math.round(Number(
+            (recipient as unknown as { worldEnteredAt?: number }).worldEnteredAt ??
+            (recipient as unknown as { playSessionStartedAt?: number }).playSessionStartedAt ??
+            0
+        ) || 0));
+        return deathFinalizedAt > 0 && worldEnteredAt > 0 && worldEnteredAt > deathFinalizedAt;
     }
 
     private static isHostileRewardSource(sourceEntity: any): boolean {
@@ -1266,10 +1283,15 @@ export class RewardHandler {
         }
     }
 
-    private static resolveServerEnemyRewardViewers(client: Client, levelScope: string): Client[] {
+    private static resolveServerEnemyRewardViewers(client: Client, levelScope: string, sourceEntity: any): Client[] {
         const partyId = getPartyIdForClient(client);
         if (partyId <= 0) {
-            return client.character && client.playerSpawned && getClientLevelScope(client) === levelScope ? [client] : [];
+            return client.character &&
+                client.playerSpawned &&
+                getClientLevelScope(client) === levelScope &&
+                !RewardHandler.didRecipientEnterAfterSourceDeath(client, sourceEntity)
+                ? [client]
+                : [];
         }
 
         const recipients: Client[] = [];
@@ -1278,7 +1300,8 @@ export class RewardHandler {
                 !other.playerSpawned ||
                 !other.character ||
                 getClientLevelScope(other) !== levelScope ||
-                getPartyIdForClient(other) !== partyId
+                getPartyIdForClient(other) !== partyId ||
+                RewardHandler.didRecipientEnterAfterSourceDeath(other, sourceEntity)
             ) {
                 continue;
             }
@@ -1355,7 +1378,7 @@ export class RewardHandler {
             combo: 0
         };
         const dropPosition = RewardHandler.resolveDropPosition(client, sourceEntity, reward.worldX, reward.worldY);
-        const recipients = RewardHandler.resolveServerEnemyRewardViewers(client, levelScope);
+        const recipients = RewardHandler.resolveServerEnemyRewardViewers(client, levelScope, sourceEntity);
         sourceEntity.lootGrantedTokens = RewardHandler.normalizeNumberSet(sourceEntity.lootGrantedTokens);
 
         for (const recipient of recipients) {
@@ -1389,7 +1412,7 @@ export class RewardHandler {
         });
     }
 
-    static handlePickupLootdrop(client: Client, data: Buffer): void {
+    static async handlePickupLootdrop(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
         const lootId = br.readMethod9();
         const reward = client.pendingLoot.get(lootId);
@@ -1456,7 +1479,7 @@ export class RewardHandler {
         let shouldSave = false;
 
         if (reward.gold && reward.gold > 0) {
-            client.character.gold = Number(client.character.gold ?? 0) + reward.gold;
+            await WalletService.grant(client, 'gold', reward.gold);
             noteDungeonRunTreasure(client, reward.gold);
             RewardHandler.sendGoldReward(client, reward.gold, false);
             shouldSave = true;

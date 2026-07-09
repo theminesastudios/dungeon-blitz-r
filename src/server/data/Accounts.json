@@ -33,11 +33,32 @@
   },
   {
     "email": "1@gmail.com",
-    "user_id": 9
+    "user_id": 9,
+    "passwordKdf": "scrypt",
+    "passwordSalt": "EvnVXB5U3W2Qw57JR15zQA==",
+    "passwordHash": "gLBA2JIsCAfgHfQfXWJpzImVpqo91AFOjRMzlrCadLWsKuRVW+POLtECiz4tCOAvMVEn+hHZKni8Umd6FevhEw==",
+    "passwordParams": {
+      "N": 16384,
+      "r": 8,
+      "p": 1,
+      "keylen": 64
+    }
   },
   {
     "email": "tela@gmail.com",
-    "user_id": 10
+    "emailAliases": [
+      "telahair@gmail.com"
+    ],
+    "user_id": 10,
+    "passwordKdf": "scrypt",
+    "passwordSalt": "1BN1U7MMKH+dMNU2kYrPEw==",
+    "passwordHash": "XjuoAQh+ouusd0LWf+2ZJz4wpH7pbDdzUETtbknL1HWeV0VDDeu1POQRZcpCq1GhtfpPWdx7g+1K3KZWz1x7/g==",
+    "passwordParams": {
+      "N": 16384,
+      "r": 8,
+      "p": 1,
+      "keylen": 64
+    }
   },
   {
     "email": "ekmek@gg.com",
@@ -50,5 +71,47 @@
   {
     "email": "urmom@gmail.com",
     "user_id": 13
+  },
+  {
+    "email": "3@gmail.com",
+    "user_id": 14,
+    "passwordKdf": "scrypt",
+    "passwordSalt": "50gqCRUyx0cGZ3H/uBNLvA==",
+    "passwordHash": "HNggFj9FspMWuotZ/tYMbkDTiP+gL6wc0gdvE7X6mgvmdz7oMucydrooZqPqKcIjCBwucQ0aCKm4H8sOufZKmw==",
+    "passwordParams": {
+      "N": 16384,
+      "r": 8,
+      "p": 1,
+      "keylen": 64
+    }
+  },
+  {
+    "email": "neodevils_contact@icloud.com",
+    "user_id": 15,
+    "passwordKdf": "scrypt",
+    "passwordSalt": "YGt5lO5UfKCPpZMRQsqVPQ==",
+    "passwordHash": "pEuITQ65x+W3aOC4bV399lgXsGr9a/e4eI4QbGlKZHqJ4Urv3Ta5ukqGoLZ6Ufwqud1TlvhSPRGwen6gu4mLiw==",
+    "passwordParams": {
+      "N": 16384,
+      "r": 8,
+      "p": 1,
+      "keylen": 64
+    },
+    "discordId": "285118390031351809",
+    "discordUsername": "neodevils",
+    "discordGlobalName": "Neo",
+    "discordDisplayName": "Neo",
+    "discordEmail": "neodevils_contact@icloud.com",
+    "discordEmailVerified": true,
+    "discordAvatar": "55416dd2732dcdca87c294f23d4c3996",
+    "discordLinkedAt": "2026-07-03T08:13:35.918Z",
+    "discordSyncRequired": true,
+    "accountSource": "discord_oauth",
+    "sponsorStatus": "active",
+    "sponsorEligible": true,
+    "isSponsor": true,
+    "sponsorSource": "mongodb:minidb.data",
+    "sponsorCheckedAt": "2026-07-03T09:44:37.413Z",
+    "sponsorRecordId": "285118390031351809"
   }
 ]

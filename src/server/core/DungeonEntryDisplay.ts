@@ -157,7 +157,7 @@ export class DungeonEntryDisplay {
             .map((token) => token.trim())
             .filter((token) => token && !token.startsWith(MOMENT_PREFIX));
 
-        if (!levelName || !LevelConfig.isDungeonLevel(levelName)) {
+        if (!levelName || !LevelConfig.isPresentationDungeonLevel(levelName)) {
             return momentTokens.filter((token) => token !== 'Normal').join(',');
         }
 
