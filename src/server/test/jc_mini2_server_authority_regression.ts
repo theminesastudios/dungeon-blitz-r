@@ -153,6 +153,19 @@ function buildPowerHitPayload(targetId: number, sourceId: number, damage: number
     return bb.toBuffer();
 }
 
+function buildPowerCastPayload(sourceId: number, powerId: number = 77): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(sourceId);
+    bb.writeMethod4(powerId);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    return bb.toBuffer();
+}
+
 function buildClientHostileFullUpdate(
     entityId: number,
     name: string,
@@ -378,6 +391,7 @@ async function testSharedTanjaFightDeathAndNoRespawn(): Promise<void> {
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
     const hpBefore = Math.round(Number(tanja.hp ?? 0));
+    await CombatHandler.handlePowerCast(zeus as never, buildPowerCastPayload(zeus.clientEntID));
     await CombatHandler.handlePowerHit(zeus as never, buildPowerHitPayload(500004, zeus.clientEntID, 1000));
     assert.ok(Math.round(Number(tanja.hp ?? 0)) < hpBefore, 'starter power hit should reduce shared canonical Tanja HP');
     assert.equal(telahair.entities.get(600004)?.hp, tanja.hp, 'joiner proxy cache should converge to shared Tanja HP after starter hit');
@@ -385,6 +399,7 @@ async function testSharedTanjaFightDeathAndNoRespawn(): Promise<void> {
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
     const remainingHp = Math.round(Number(tanja.hp ?? 0));
+    await CombatHandler.handlePowerCast(telahair as never, buildPowerCastPayload(telahair.clientEntID));
     await CombatHandler.handlePowerHit(telahair as never, buildPowerHitPayload(600004, telahair.clientEntID, remainingHp + 999));
     assert.equal(tanja.hp, 0, 'lethal hit should set shared canonical Tanja HP to zero');
     assert.equal(tanja.dead, true, 'lethal hit should kill canonical Tanja');
@@ -472,6 +487,7 @@ async function testTanjaCanonicalDeathFanoutSingleKill(
 
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
+    await CombatHandler.handlePowerCast(source as never, buildPowerCastPayload(source.clientEntID));
     await CombatHandler.handlePowerHit(source as never, buildPowerHitPayload(sourceLocalId, source.clientEntID, 999999));
     await waitForPendingTimers();
 
@@ -509,6 +525,7 @@ async function testTanjaCanonicalDeathFanoutSingleKill(
 
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
+    await CombatHandler.handlePowerCast(viewer as never, buildPowerCastPayload(viewer.clientEntID));
     await CombatHandler.handlePowerHit(viewer as never, buildPowerHitPayload(viewerDuplicateId, viewer.clientEntID, 999999));
     await waitForPendingTimers();
     assert.equal(Math.max(0, Math.round(Number(tanja.deathVersion ?? 0))), 1, 'late local Tanja hit must not commit a second boss death');
@@ -526,11 +543,9 @@ async function testTanjaCanonicalDeathFanoutSingleKill(
     );
 }
 
-// Reproduces the live report: a seed-outside mirror hostile (ImperialMagi is
-// not in the JC_Mini2 seed roster) dies on the server, but a party member kept
-// a live local copy because the death relay only destroyed the single
-// registered local id while stale/regenerated ids stayed alive.
-async function testMirrorHostileDeathDestroysAllViewerLocalIds(): Promise<void> {
+// Strict East Wing authority must not accept combat mutations for seed-outside
+// mirror hostiles. The generated server roster owns this level's hostile state.
+async function testStrictEastWingRejectsSeedOutsideMirrorHostiles(): Promise<void> {
     const { zeus, telahair, scope } = setupTwoPlayers('JC_Mini2', 'jc-mini2-mirror-death-sweep');
 
     const canonicalId = 33186039;
@@ -556,87 +571,15 @@ async function testMirrorHostileDeathDestroysAllViewerLocalIds(): Promise<void> 
 
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
+    await CombatHandler.handlePowerCast(telahair as never, buildPowerCastPayload(telahair.clientEntID));
     await CombatHandler.handlePowerHit(telahair as never, buildPowerHitPayload(canonicalId, telahair.clientEntID, 999999));
-    assert.equal(canonical.dead, true, 'lethal hit should kill the mirror canonical on the server');
-
-    for (const localId of [15905179, 15999999]) {
-        assertLocalDeadPacket(zeus, localId, `party member should receive DEAD for local id ${localId}`);
-        assert.equal(
-            zeus.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === localId),
-            true,
-            `party member local id ${localId} should be destroyed on death commit`
-        );
-        assert.equal(zeus.entities.has(localId), false, `party member cache must not keep local id ${localId} alive`);
-        assert.equal(
-            zeus.sentPackets.some((packet) =>
-                packet.id === 0x78 &&
-                parseHpDelta(packet.payload).entityId === localId &&
-                parseHpDelta(packet.payload).delta <= -134560
-            ),
-            true,
-            `party member local id ${localId} must receive a lethal HP floor so no sliver of HP survives`
-        );
-    }
-    for (const localId of [canonicalId, 33710327]) {
-        assertLocalDeadPacket(telahair, localId, `owner should receive DEAD for local id ${localId}`);
-        assert.equal(
-            telahair.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === localId),
-            true,
-            `owner local id ${localId} should be destroyed on death commit`
-        );
-        assert.equal(telahair.entities.has(localId), false, `owner cache must not keep local id ${localId} alive`);
-    }
-
-    // Stale movement packets for any dead id must be dropped without reviving
-    // the canonical or re-broadcasting kill packets.
-    zeus.sentPackets.length = 0;
-    telahair.sentPackets.length = 0;
-    LevelHandler.handleEntityIncrementalUpdate(telahair as never, buildIncrementalUpdatePayload(canonicalId, 12, 0, EntityState.ACTIVE));
-    assert.equal(canonical.dead, true, 'stale movement for a dead mirror hostile must not revive it');
+    assert.equal(canonical.dead, false, 'strict East Wing authority must reject HP mutation for seed-outside mirror hostiles');
+    assert.equal(canonical.hp, 134560, 'rejected seed-outside mirror hit must not mutate canonical HP');
     assert.equal(
         zeus.sentPackets.some((packet) => packet.id === 0x0D),
         false,
-        'idempotent death sweep must not re-broadcast destroys on stale movement'
+        'rejected seed-outside mirror hit must not fan out destroys'
     );
-
-    // A live duplicate discovered only after death must be force-killed.
-    zeus.sentPackets.length = 0;
-    attachProxy(zeus, 16111111, 'ImperialMagi', 16200, 4700, 2);
-    assert.equal(zeus.entities.has(16111111), false, 'post-death duplicate spawn must not stay alive locally');
-    assertLocalDeadPacket(zeus, 16111111, 'post-death duplicate spawn should receive DEAD');
-    assert.equal(
-        zeus.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 16111111),
-        true,
-        'post-death duplicate spawn should be force-destroyed'
-    );
-
-    // A live phantom that only shows up through movement packets must be
-    // force-killed by the terminal-drop path.
-    const phantomId = 16222222;
-    zeus.entities.set(phantomId, {
-        id: phantomId,
-        name: 'ImperialMagi',
-        team: EntityTeam.ENEMY,
-        isPlayer: false,
-        clientSpawned: true,
-        canonicalEntityId: canonicalId,
-        hp: 5000,
-        maxHp: 134560,
-        entState: EntityState.ACTIVE,
-        roomId: 2,
-        x: 16200,
-        y: 4700
-    });
-    (zeus.entityIdAliases as Map<number, number>).set(phantomId, canonicalId);
-    zeus.sentPackets.length = 0;
-    LevelHandler.handleEntityIncrementalUpdate(zeus as never, buildIncrementalUpdatePayload(phantomId, 5, 0, EntityState.ACTIVE));
-    assertLocalDeadPacket(zeus, phantomId, 'live phantom movement after death should trigger a forced DEAD state');
-    assert.equal(
-        zeus.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === phantomId),
-        true,
-        'live phantom movement after death should trigger a forced destroy'
-    );
-    assert.equal(zeus.entities.has(phantomId), false, 'live phantom must not stay in the viewer cache after forced destroy');
 }
 
 // The live failure was a split state after Tanja died once: rank/progress/boss
@@ -660,6 +603,7 @@ async function testSharedProgressAndCompletionPropagation(): Promise<void> {
     assert.ok(tanja, 'canonical Tanja should exist');
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
+    await CombatHandler.handlePowerCast(telahair as never, buildPowerCastPayload(telahair.clientEntID));
     await CombatHandler.handlePowerHit(telahair as never, buildPowerHitPayload(620004, telahair.clientEntID, 999999));
     await waitForPendingTimers();
     assert.equal(tanja.dead, true, 'Tanja should be dead on the server');
@@ -784,6 +728,7 @@ async function testCompletionWaitsForSharedPostDeathCutsceneBarrier(): Promise<v
 
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
+    await CombatHandler.handlePowerCast(zeus as never, buildPowerCastPayload(zeus.clientEntID));
     await CombatHandler.handlePowerHit(zeus as never, buildPowerHitPayload(520004, zeus.clientEntID, 999999));
     await waitForPendingTimers();
 
@@ -818,6 +763,7 @@ async function testLateJoinAfterEastWingCompletionReceivesMissingStats(): Promis
     const tanja = GlobalState.levelEntities.get(scope)?.get(TANJA_CANONICAL_ID);
     assert.ok(tanja, 'canonical Tanja should exist');
 
+    await CombatHandler.handlePowerCast(telahair as never, buildPowerCastPayload(telahair.clientEntID));
     await CombatHandler.handlePowerHit(telahair as never, buildPowerHitPayload(620004, telahair.clientEntID, 999999));
     await waitForPendingTimers();
     await finishEastWingPostDeathCutscene(telahair, zeus);
@@ -846,6 +792,7 @@ async function testPostCompletionHostileDamageSuppressed(): Promise<void> {
 
     const tanja = GlobalState.levelEntities.get(scope)?.get(TANJA_CANONICAL_ID);
     assert.ok(tanja, 'canonical Tanja should exist');
+    await CombatHandler.handlePowerCast(telahair as never, buildPowerCastPayload(telahair.clientEntID));
     await CombatHandler.handlePowerHit(telahair as never, buildPowerHitPayload(620004, telahair.clientEntID, 999999));
     await waitForPendingTimers();
     await finishEastWingPostDeathCutscene(telahair, zeus);
@@ -1321,6 +1268,7 @@ async function testBossDeathDuringIntroForcesCutsceneEnd(): Promise<void> {
     assert.ok(tanja, 'canonical Tanja should exist');
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
+    await CombatHandler.handlePowerCast(telahair as never, buildPowerCastPayload(telahair.clientEntID));
     await CombatHandler.handlePowerHit(telahair as never, buildPowerHitPayload(630004, telahair.clientEntID, 999999));
 
     assert.equal(tanja.dead, true, 'Tanja must die on the server');
@@ -1410,7 +1358,7 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();
         GlobalState.partyGroups.clear();
-        await testMirrorHostileDeathDestroysAllViewerLocalIds();
+        await testStrictEastWingRejectsSeedOutsideMirrorHostiles();
 
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();

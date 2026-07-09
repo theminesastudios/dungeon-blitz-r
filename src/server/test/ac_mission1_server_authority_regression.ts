@@ -946,6 +946,7 @@ async function testAcMission1LateDeadDragonSourcePacketsStayLocal(): Promise<voi
     rogue.sentPackets.length = 0;
     mage.sentPackets.length = 0;
     late.sentPackets.length = 0;
+    await new Promise((resolve) => setTimeout(resolve, 1_050));
 
     await CombatHandler.handlePowerCast(late as never, buildPowerCastPayload(15374319, 77));
     await CombatHandler.handlePowerHit(late as never, buildPowerHitPayload(rogue.clientEntID, 15374319, 5188));
@@ -1253,7 +1254,24 @@ async function main(): Promise<void> {
         GlobalState.deadServerAuthorityHostilesByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
         (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
+        testLootDepthOrderingPreservesGearPickupFloorY();
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
         testAcMission1DestroyedDragonDoesNotRespawnOnRejoin();
+        GlobalState.levelEntities.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.deadServerAuthorityHostilesByScope.clear();
+        (EntityHandler as any).serverAuthoritySeededScopes.clear();
+        (EntityHandler as any).serverAuthorityDestroyedIdsByScope.clear();
+        (EntityHandler as any).serverAuthorityDestroyedFingerprintsByScope.clear();
+        await testAcMission1LateDeadDragonSourcePacketsStayLocal();
         GlobalState.levelEntities.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyByMember.clear();

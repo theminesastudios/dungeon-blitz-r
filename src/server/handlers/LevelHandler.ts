@@ -5365,7 +5365,6 @@ export class LevelHandler {
             LevelHandler.setServerAuthorityHostilesUntargetableForScope(getClientLevelScope(client), roomId, false);
             return;
         }
-
         LevelHandler.finishSoloDungeonCutscene(client, roomId);
         LevelHandler.relayToLevel(client, 0xA6, data);
         for (const other of LevelHandler.forLevelRecipients(client, true)) {
