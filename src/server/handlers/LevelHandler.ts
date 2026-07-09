@@ -5787,6 +5787,18 @@ export class LevelHandler {
         // data passed from Client is already the payload (header stripped)
         const br = new BitReader(data);
         const rawEntityId = br.readMethod4();
+        const levelScope = getClientLevelScope(client);
+        if (
+            EntityHandler.usesServerAuthorityHostiles(getScopeLevelName(levelScope)) &&
+            EntityHandler.isRejectedServerAuthorityLocalEntityId(client, levelScope, rawEntityId)
+        ) {
+            if (EntityHandler.shouldLogRejectedServerAuthorityLocalEntityId(client, levelScope, rawEntityId, '0x07:incremental_update')) {
+                console.warn(
+                    `[MultiplayerSync][rejected_local_hostile_packet_suppressed] scope=${levelScope} rawLocalId=${Math.max(0, Math.round(Number(rawEntityId) || 0))} packet=0x07 reason=incremental_update viewer=${String(client.character?.name ?? '')} noKill=true noProgress=true noReward=true`
+                );
+            }
+            return;
+        }
         let entityId = EntityHandler.resolveEntityAlias(client, rawEntityId);
         const currentLevel = client.currentLevel || "NewbieRoad";
         if (entityId === rawEntityId && LevelConfig.isDungeonLevel(currentLevel)) {
@@ -5853,7 +5865,6 @@ export class LevelHandler {
             canonicalEntity &&
             !canonicalEntity.isPlayer &&
             Number(canonicalEntity.team ?? 0) === EntityTeam.ENEMY;
-        const levelScope = getClientLevelScope(client);
         const isEastWingServerAuthorityEnemy =
             isEnemyCanonical &&
             EntityHandler.isServerAuthorityHostileEntity(currentLevel, canonicalEntity) &&

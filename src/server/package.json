@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "1.6.22",
+  "version": "1.6.24",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,9 @@
     "start:multiplayer": "node tools/startMultiplayerServer.js",
     "start:discord-bridge": "node tools/startDiscordBridge.js",
     "start:discord-bridge:multiplayer": "node tools/startDiscordBridge.js",
-    "reset-password": "ts-node scripts/set_account_password.ts"
+    "reset-password": "ts-node scripts/set_account_password.ts",
+    "validate:east-wing-spawns": "node tools/exportTheEastWingEnemies.js",
+    "validate:dungeon-spawns": "node tools/exportTheEastWingEnemies.js"
   },
   "keywords": [],
   "author": "",

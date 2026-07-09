@@ -69,6 +69,7 @@ function usesRequiredForClearProgress(levelScope: string | null | undefined, lev
 }
 
 function logRequiredForClearProgress(
+    state: SharedDungeonProgressState,
     levelScope: string,
     levelName: string | null | undefined,
     totals: { total: number; defeated: number },
@@ -78,6 +79,16 @@ function logRequiredForClearProgress(
     if (!config) {
         return;
     }
+    if (
+        state.lastLoggedRequiredTotal === totals.total &&
+        state.lastLoggedRequiredDefeated === totals.defeated &&
+        state.lastLoggedRequiredProgress === progress
+    ) {
+        return;
+    }
+    state.lastLoggedRequiredTotal = totals.total;
+    state.lastLoggedRequiredDefeated = totals.defeated;
+    state.lastLoggedRequiredProgress = progress;
 
     console.log(
         `[DungeonProgress] level=${config.levelId || config.levelName} levelName=${config.levelName} dungeon="${config.dungeonName}" scope=${levelScope} totalRequired=${totals.total} deadRequired=${totals.defeated} percent=${progress}`
@@ -474,7 +485,7 @@ export function recomputeSharedDungeonProgress(levelScope: string | null | undef
         state.progress = EAST_WING_LEVELS.has(levelName) && (Boolean(state.bossDeathCommitted) || hasDefeatedEastWingBoss(scopeKey))
             ? Math.max(25, computedProgress)
             : computedProgress;
-        logRequiredForClearProgress(scopeKey, levelName, totals, state.progress);
+        logRequiredForClearProgress(state, scopeKey, levelName, totals, state.progress);
         refreshSharedDungeonLiveStats(state, scopeKey);
         return state;
     }

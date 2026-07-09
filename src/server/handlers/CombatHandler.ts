@@ -147,7 +147,9 @@ export class CombatHandler {
     private static readonly POST_DEATH_SOURCE_CORRECTION_THROTTLE_MS = 1_000;
     private static readonly recentPostDeathSourceCorrections = new Map<string, number>();
     private static readonly EAST_WING_DAMAGE_CAST_WINDOW_MS = 2_500;
+    private static readonly EAST_WING_HEALTH_RECONCILE_LOG_THROTTLE_MS = 10_000;
     private static readonly recentEastWingPlayerCasts = new Map<string, number>();
+    private static readonly recentEastWingHealthReconcileLogs = new Map<string, number>();
     private static clampRelayPowerHitDamage(damage: number): number {
         return Math.max(0, Math.min(CombatHandler.MAX_RELAY_POWER_HIT_DAMAGE, Math.round(Number(damage) || 0)));
     }
@@ -1289,9 +1291,16 @@ export class CombatHandler {
         if (
             !levelScope ||
             localId <= 0 ||
-            localId === Math.max(0, Math.round(Number(client?.clientEntID ?? 0))) ||
-            CombatHandler.resolveLevelEntity(levelScope, localId)
+            localId === Math.max(0, Math.round(Number(client?.clientEntID ?? 0)))
         ) {
+            return localId;
+        }
+
+        if (EntityHandler.isRejectedServerAuthorityLocalEntityId(client, levelScope, localId)) {
+            return localId;
+        }
+
+        if (CombatHandler.resolveLevelEntity(levelScope, localId)) {
             return localId;
         }
 
@@ -1329,6 +1338,34 @@ export class CombatHandler {
         }
 
         return localId;
+    }
+
+    private static shouldSuppressRejectedServerAuthorityLocalReference(
+        client: Client,
+        levelScope: string,
+        packetId: string,
+        rawEntityIds: number[],
+        reason: string
+    ): boolean {
+        if (!EntityHandler.usesServerAuthorityHostiles(getScopeLevelName(levelScope))) {
+            return false;
+        }
+
+        for (const rawEntityId of rawEntityIds) {
+            const localId = Math.max(0, Math.round(Number(rawEntityId) || 0));
+            if (localId <= 0 || !EntityHandler.isRejectedServerAuthorityLocalEntityId(client, levelScope, localId)) {
+                continue;
+            }
+
+            if (EntityHandler.shouldLogRejectedServerAuthorityLocalEntityId(client, levelScope, localId, `${packetId}:${reason}`)) {
+                console.warn(
+                    `[MultiplayerSync][rejected_local_hostile_packet_suppressed] scope=${levelScope} rawLocalId=${localId} packet=${packetId} reason=${reason} viewer=${String(client.character?.name ?? '')} noKill=true noProgress=true noReward=true`
+                );
+            }
+            return true;
+        }
+
+        return false;
     }
 
     static resolveClientHostileAliasForSharedState(client: Client, levelScope: string, entityId: number): number {
@@ -1412,9 +1449,15 @@ export class CombatHandler {
                     const incomingDead = Boolean(candidate.dead) || Boolean(candidate.destroyed);
                     const incomingEntState = Number(candidate.entState ?? EntityState.ACTIVE);
                     const incomingTerminal = incomingDead || incomingEntState === EntityState.DEAD || incomingHp <= 0;
-                    console.warn(
-                        `[EastWingHealthReconcile] source=client_copy enemyId=${entityId} instanceId=${candidateId} canonicalHpBefore=${canonicalHp} incomingHp=${incomingHp} incomingDead=${incomingDead} incomingEntState=${incomingEntState} hasCombatDamageEvent=${hasEastWingCombatDeathEvidence(canonical)} action=${incomingTerminal && !hasEastWingCombatDeathEvidence(canonical) ? 'ignored_client_death' : 'corrected_client_copy'} stack=${String(new Error().stack ?? '').split(/\r?\n/).slice(1, 8).map((line) => line.trim()).join(' <- ')}`
-                    );
+                    const reconcileKey = `${levelScope}:${entityId}:${candidateId}:${incomingHp}:${incomingDead}:${incomingEntState}`;
+                    const now = Date.now();
+                    const lastLoggedAt = Math.max(0, Math.round(Number(CombatHandler.recentEastWingHealthReconcileLogs.get(reconcileKey) ?? 0)));
+                    if (now - lastLoggedAt >= CombatHandler.EAST_WING_HEALTH_RECONCILE_LOG_THROTTLE_MS) {
+                        CombatHandler.recentEastWingHealthReconcileLogs.set(reconcileKey, now);
+                        console.warn(
+                            `[EastWingHealthReconcile] source=client_copy enemyId=${entityId} instanceId=${candidateId} canonicalHpBefore=${canonicalHp} incomingHp=${incomingHp} incomingDead=${incomingDead} incomingEntState=${incomingEntState} hasCombatDamageEvent=${hasEastWingCombatDeathEvidence(canonical)} action=${incomingTerminal && !hasEastWingCombatDeathEvidence(canonical) ? 'ignored_client_death' : 'corrected_client_copy'} throttledMs=${CombatHandler.EAST_WING_HEALTH_RECONCILE_LOG_THROTTLE_MS}`
+                        );
+                    }
                 }
             }
 
@@ -6376,11 +6419,22 @@ export class CombatHandler {
         if (!parsedInfo) {
             return;
         }
+        const levelScope = getClientLevelScope(client);
+        if (
+            CombatHandler.shouldSuppressRejectedServerAuthorityLocalReference(
+                client,
+                levelScope,
+                '0x0A',
+                [parsedInfo.targetId, parsedInfo.sourceId],
+                'power_hit'
+            )
+        ) {
+            return;
+        }
         const info = CombatHandler.resolveClientEntityAliases(client, parsedInfo);
 
         const { targetId, sourceId, damage } = info;
         const currentLevel = client.currentLevel;
-        const levelScope = getClientLevelScope(client);
         CombatHandler.logAliasInbound(0x0A, client, parsedInfo.targetId, targetId);
         CombatHandler.logAliasInbound(0x0A, client, parsedInfo.sourceId, sourceId);
         const rawTargetEntity = client.entities.get(parsedInfo.targetId) ?? null;
@@ -7797,6 +7851,17 @@ export class CombatHandler {
         const rawTargetId = info.targetId;
         const rawSourceId = info.sourceId;
         const levelScope = getClientLevelScope(client);
+        if (
+            CombatHandler.shouldSuppressRejectedServerAuthorityLocalReference(
+                client,
+                levelScope,
+                '0x79',
+                [rawTargetId, rawSourceId],
+                'buff_tick_dot'
+            )
+        ) {
+            return;
+        }
         info.targetId = CombatHandler.resolveClientHostileEntityAlias(
             client,
             levelScope,
@@ -8022,6 +8087,17 @@ export class CombatHandler {
     static async handleAddBuff(client: Client, data: Buffer): Promise<void> {
         const rawTargetId = CombatHandler.parseBuffTargetEntityId(data);
         const levelScope = getClientLevelScope(client);
+        if (
+            CombatHandler.shouldSuppressRejectedServerAuthorityLocalReference(
+                client,
+                levelScope,
+                '0x0B',
+                [rawTargetId],
+                'add_buff'
+            )
+        ) {
+            return;
+        }
         const targetId = CombatHandler.resolveClientHostileEntityAlias(
             client,
             levelScope,
@@ -8042,6 +8118,19 @@ export class CombatHandler {
     }
 
     static async handleRemoveBuff(client: Client, data: Buffer): Promise<void> {
+        const rawTargetId = CombatHandler.parseBuffTargetEntityId(data);
+        const levelScope = getClientLevelScope(client);
+        if (
+            CombatHandler.shouldSuppressRejectedServerAuthorityLocalReference(
+                client,
+                levelScope,
+                '0x0C',
+                [rawTargetId],
+                'remove_buff'
+            )
+        ) {
+            return;
+        }
         const recorded = CombatHandler.recordServerAuthorityBuffPacket(client, 0x0C, data);
         CombatHandler.broadcastCombatPacket(client, 0x0C, recorded.payload, {
             referencedEntityIds: recorded.referencedEntityIds

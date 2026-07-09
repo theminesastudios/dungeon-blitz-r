@@ -57,6 +57,9 @@ export type SharedDungeonProgressState = {
     statsDeliveredTokens?: Set<number>;
     trackedHostileIds?: Set<number>;
     defeatedHostileIds?: Set<number>;
+    lastLoggedRequiredTotal?: number;
+    lastLoggedRequiredDefeated?: number;
+    lastLoggedRequiredProgress?: number;
     liveStatsByCharacter?: Map<string, {
         updatedAt: number;
         levelName: string;

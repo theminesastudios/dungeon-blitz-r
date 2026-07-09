@@ -548,37 +548,37 @@ async function testTanjaCanonicalDeathFanoutSingleKill(
 async function testStrictEastWingRejectsSeedOutsideMirrorHostiles(): Promise<void> {
     const { zeus, telahair, scope } = setupTwoPlayers('JC_Mini2', 'jc-mini2-mirror-death-sweep');
 
-    const canonicalId = 33186039;
-    attachProxy(telahair, canonicalId, 'ImperialMagi', 16200, 4700, 2);
-    const canonical = GlobalState.levelEntities.get(scope)?.get(canonicalId);
-    assert.ok(canonical, 'owner-reported seed-outside hostile should become the shared mirror canonical');
-    assert.equal(Boolean(canonical.clientSpawned), true, 'seed-outside hostile should stay on the client-spawn mirror path');
-    // Full-update payloads carry no HP; give the shared canonical its live
-    // pool the way real combat traffic does before the kill.
-    canonical.maxHp = 134560;
-    canonical.hp = 134560;
-    canonical.dead = false;
-    canonical.entState = EntityState.ACTIVE;
+    const firstLocalId = 33186039;
+    attachProxy(telahair, firstLocalId, 'ImperialMagi', 16200, 4700, 2);
+    assert.equal(GlobalState.levelEntities.get(scope)?.has(firstLocalId), false, 'seed-outside hostile must not become a shared mirror canonical');
+    assert.equal(telahair.entities.has(firstLocalId), false, 'owner seed-outside hostile should be destroyed locally');
+    assert.equal(EntityHandler.resolveEntityAlias(telahair as never, firstLocalId), firstLocalId, 'seed-outside hostile must not alias to a canonical enemy');
+    assert.equal(
+        telahair.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === firstLocalId),
+        true,
+        'owner seed-outside hostile should receive immediate destroy'
+    );
 
-    // Owner re-reports the same enemy under a regenerated local id, leaving the
-    // single-slot registry pointing away from the client's visible id.
+    // Re-reported/generated local copies must also stay outside canonical state.
     attachProxy(telahair, 33710327, 'ImperialMagi', 16200, 4700, 2);
-    // Party member reports two generations of its local copy as well.
     attachProxy(zeus, 15905179, 'ImperialMagi', 16200, 4700, 2);
     attachProxy(zeus, 15999999, 'ImperialMagi', 16200, 4700, 2);
-    assert.equal(EntityHandler.resolveEntityAlias(zeus as never, 15905179), canonicalId, 'first viewer local id should alias to the mirror canonical');
-    assert.equal(EntityHandler.resolveEntityAlias(zeus as never, 15999999), canonicalId, 'regenerated viewer local id should alias to the mirror canonical');
+    assert.equal(GlobalState.levelEntities.get(scope)?.has(33710327), false, 'regenerated owner hostile must not enter canonical state');
+    assert.equal(GlobalState.levelEntities.get(scope)?.has(15905179), false, 'viewer seed-outside hostile must not enter canonical state');
+    assert.equal(GlobalState.levelEntities.get(scope)?.has(15999999), false, 'regenerated viewer hostile must not enter canonical state');
+    assert.equal(EntityHandler.resolveEntityAlias(zeus as never, 15905179), 15905179, 'viewer seed-outside hostile must not alias to a random canonical');
+    assert.equal(EntityHandler.resolveEntityAlias(zeus as never, 15999999), 15999999, 'regenerated viewer seed-outside hostile must not alias to a random canonical');
 
     zeus.sentPackets.length = 0;
     telahair.sentPackets.length = 0;
+    const totalsBefore = getSharedDungeonProgressTotals(scope);
     await CombatHandler.handlePowerCast(telahair as never, buildPowerCastPayload(telahair.clientEntID));
-    await CombatHandler.handlePowerHit(telahair as never, buildPowerHitPayload(canonicalId, telahair.clientEntID, 999999));
-    assert.equal(canonical.dead, false, 'strict East Wing authority must reject HP mutation for seed-outside mirror hostiles');
-    assert.equal(canonical.hp, 134560, 'rejected seed-outside mirror hit must not mutate canonical HP');
+    await CombatHandler.handlePowerHit(telahair as never, buildPowerHitPayload(firstLocalId, telahair.clientEntID, 999999));
+    assert.deepEqual(getSharedDungeonProgressTotals(scope), totalsBefore, 'seed-outside hostile hit must not mutate shared progress totals');
     assert.equal(
         zeus.sentPackets.some((packet) => packet.id === 0x0D),
         false,
-        'rejected seed-outside mirror hit must not fan out destroys'
+        'rejected seed-outside hit must not fan out canonical destroys'
     );
 }
 

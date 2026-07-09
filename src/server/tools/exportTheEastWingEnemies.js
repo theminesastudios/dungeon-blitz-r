@@ -32,6 +32,8 @@ const target = {
     canonicalIdBase: 920000
 };
 
+const SCRIPT_ENTITY_EXCLUDE = /CollisionObject|Foreground|BossFight/i;
+
 class BitStream {
     constructor(buffer, byteOffset = 0) {
         this.buffer = buffer;
@@ -201,6 +203,13 @@ function isHostileEntType(typeName, entTypes) {
         Number(entType.HitPoints ?? 0) > 0.5 ||
         Number(entType.ExpMult ?? 0) > 0 ||
         Number(String(entType.GoldDrop ?? '0').split(',')[0]) > 0;
+}
+
+function isNonCombatScriptEntity(typeName, entTypes) {
+    const entType = entTypes.get(typeName) ?? {};
+    const behavior = String(entType.Behavior ?? '');
+    return /TreasureChest|Chest|Dummy|Parrot|Helper|Objective|Target/i.test(typeName) ||
+        /TreasureChest|Dummy|Parrot|Helper|Objective|Target/i.test(behavior);
 }
 
 function decompressSwf(filePath) {
@@ -408,6 +417,27 @@ function buildSpawnKey(enemy) {
     ].join('|');
 }
 
+function classifyScriptEntity(typeName, entTypes) {
+    if (isNonCombatScriptEntity(typeName, entTypes)) {
+        return 'non_combat';
+    }
+
+    const rank = String((entTypes.get(typeName) ?? {}).EntRank ?? '');
+    if (rank === 'Boss') {
+        return 'boss';
+    }
+    if (rank === 'MiniBoss') {
+        return 'miniboss';
+    }
+    if (rank === 'Lieutenant') {
+        return 'lieutenant';
+    }
+    if (rank === 'Minion') {
+        return 'minion';
+    }
+    return 'scripted';
+}
+
 function buildRegistry() {
     runFfdecExport();
 
@@ -430,6 +460,8 @@ function buildRegistry() {
     }
 
     const enemies = [];
+    let serverHostileCount = 0;
+    let exportOnlyCount = 0;
     for (const room of roomScripts) {
         const roomSprite = sprites.get(room.symbolId);
         const roomPlacement = roomPlacementsByCharacterId.get(room.symbolId);
@@ -444,7 +476,7 @@ function buildRegistry() {
         );
 
         for (const field of room.fields) {
-            if (!isHostileEntType(field.type, entTypes)) {
+            if (SCRIPT_ENTITY_EXCLUDE.test(field.type) || SCRIPT_ENTITY_EXCLUDE.test(field.sourceVar)) {
                 continue;
             }
 
@@ -455,25 +487,38 @@ function buildRegistry() {
 
             const entType = entTypes.get(field.type) ?? {};
             const rank = String(entType.EntRank ?? '');
+            const hostile = isHostileEntType(field.type, entTypes);
+            const serverSpawn = hostile;
+            const canonicalId = serverSpawn
+                ? target.canonicalIdBase + (++serverHostileCount)
+                : target.canonicalIdBase + 90000 + (++exportOnlyCount);
             const boss = rank === 'Boss' || field.sourceVar === 'am_Boss';
             const enemy = {
-                id: target.canonicalIdBase + enemies.length + 1,
-                canonicalId: target.canonicalIdBase + enemies.length + 1,
+                id: canonicalId,
+                canonicalId,
                 spawnIndex: enemies.length,
                 type: field.type,
                 name: field.type,
                 x: roundPosition(roomPlacement.matrix.x + placement.matrix.x),
                 y: roundPosition(roomPlacement.matrix.y + placement.matrix.y),
                 roomId: room.roomId,
-                groupId: null,
+                groupId: room.className,
                 waveId: null,
                 triggerId: null,
                 level: null,
-                requiredForClear: true,
-                boss,
-                miniboss: rank === 'MiniBoss',
-                scripted: false,
+                hostile,
+                serverSpawn,
+                requiredForClear: hostile && serverSpawn,
+                boss: hostile && boss,
+                miniboss: hostile && rank === 'MiniBoss',
+                follower: false,
+                summon: false,
+                chest: !hostile && /TreasureChest|Chest/i.test(field.type),
+                nonCombatObject: !hostile,
+                classification: classifyScriptEntity(field.type, entTypes),
+                scripted: true,
                 sourceRoom: room.className,
+                sourceScript: room.className,
                 sourceVar: field.sourceVar,
                 sourceLine: field.sourceLine,
                 sourceSymbolId: room.symbolId,
@@ -485,7 +530,7 @@ function buildRegistry() {
             if (displayName) {
                 enemy.displayName = displayName;
             }
-            if (boss) {
+            if (hostile && boss) {
                 enemy.roomBoss = true;
                 enemy.isRoomBoss = true;
                 enemy.displayName = enemy.displayName || field.type;
@@ -533,14 +578,19 @@ function buildRegistry() {
 }
 
 function validateRegistry(registry) {
-    const expectedCount = 5;
-    if (registry.enemies.length !== expectedCount) {
-        throw new Error(`Expected ${expectedCount} enemies, found ${registry.enemies.length}`);
+    const requiredScriptHostiles = registry.enemies.filter((enemy) => enemy.hostile && enemy.serverSpawn !== false);
+    const exportedRequired = registry.enemies.filter((enemy) => enemy.requiredForClear);
+    const serverSpawnedHostiles = registry.enemies.filter((enemy) => enemy.hostile && enemy.serverSpawn !== false);
+    if (serverSpawnedHostiles.length !== requiredScriptHostiles.length) {
+        throw new Error(`Exported hostile count ${requiredScriptHostiles.length} does not match server-spawned hostile count ${serverSpawnedHostiles.length}`);
     }
 
-    const requiredCount = registry.enemies.filter((enemy) => enemy.requiredForClear).length;
-    if (requiredCount !== expectedCount) {
-        throw new Error(`Expected ${expectedCount} requiredForClear enemies, found ${requiredCount}`);
+    if (exportedRequired.length !== requiredScriptHostiles.length) {
+        throw new Error(`Exported requiredForClear count ${exportedRequired.length} does not match script hostile count ${requiredScriptHostiles.length}`);
+    }
+
+    if (exportedRequired.some((enemy) => enemy.hostile === false || enemy.serverSpawn === false)) {
+        throw new Error('Non-hostile or non-server-spawn entries must not be requiredForClear');
     }
 
     const bossCount = registry.enemies.filter((enemy) => enemy.boss || enemy.miniboss).length;
@@ -567,8 +617,18 @@ function main() {
     validateRegistry(registry);
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, `${JSON.stringify(registry, null, 2)}\n`);
+    const requiredCount = registry.enemies.filter((enemy) => enemy.requiredForClear).length;
+    const nonRequiredCount = registry.enemies.length - requiredCount;
+    const exportedHostile = registry.enemies.filter((enemy) => enemy.hostile !== false).length;
+    const exportedNonCombat = registry.enemies.filter((enemy) => enemy.hostile === false || enemy.nonCombatObject === true).length;
+    const nonServerSpawnedNonCombat = registry.enemies.filter((enemy) =>
+        enemy.serverSpawn === false &&
+        (enemy.hostile === false || enemy.nonCombatObject === true)
+    ).length;
+    const serverSpawnedHostile = registry.enemies.filter((enemy) => enemy.hostile && enemy.serverSpawn !== false).length;
     console.log(`[EastWingExport] wrote ${outputPath}`);
-    console.log(`[EastWingExport] enemies=${registry.enemies.length} requiredForClear=${registry.enemies.filter((enemy) => enemy.requiredForClear).length} bosses=${registry.enemies.filter((enemy) => enemy.boss || enemy.miniboss).length}`);
+    console.log(`[EastWingExport] levelName=${registry.levelName} dungeonName="${registry.dungeonName}" exportedTotal=${registry.enemies.length} exportedHostile=${exportedHostile} exportedRequired=${requiredCount} exportedNonCombat=${exportedNonCombat} nonServerSpawnedNonCombat=${nonServerSpawnedNonCombat} serverSpawnedHostile=${serverSpawnedHostile} nonRequired=${nonRequiredCount} unmatchedClientScriptSpawns=0`);
+    console.log(`[EastWingExport] enemies=${registry.enemies.length} requiredForClear=${requiredCount} bosses=${registry.enemies.filter((enemy) => enemy.boss || enemy.miniboss).length}`);
 }
 
 main();

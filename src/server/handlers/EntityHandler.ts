@@ -71,7 +71,9 @@ export class EntityHandler {
         'AC_Mission1'
     ]);
     private static readonly STRICT_SERVER_SPAWN_HOSTILE_LEVELS = new Set<string>([
-        'AC_Mission1'
+        'AC_Mission1',
+        'JC_Mini2',
+        'JC_Mini2Hard'
     ]);
     private static readonly CANONICAL_VISIBLE_PROXY_MATCH_MAX_DISTANCE_SQ = 400 * 400;
     static readonly SERVER_AUTHORITY_ENTITY_LEVEL = 50;
@@ -119,6 +121,67 @@ export class EntityHandler {
 
     static usesServerAuthorityHostiles(levelName: string | null | undefined): boolean {
         return EntityHandler.SERVER_AUTHORITY_HOSTILE_LEVELS.has(LevelConfig.normalizeLevelName(levelName));
+    }
+
+    static markRejectedServerAuthorityLocalEntityId(client: Client, levelScope: string | null | undefined, entityId: number): void {
+        const scopeKey = String(levelScope ?? '').trim();
+        const localId = Math.max(0, Math.round(Number(entityId) || 0));
+        if (!scopeKey || localId <= 0 || !EntityHandler.usesServerAuthorityHostiles(getScopeLevelName(scopeKey))) {
+            return;
+        }
+
+        const session = client as any;
+        if (!(session.rejectedServerAuthorityLocalEntityIdsByScope instanceof Map)) {
+            session.rejectedServerAuthorityLocalEntityIdsByScope = new Map<string, Set<number>>();
+        }
+        let rejectedIds = session.rejectedServerAuthorityLocalEntityIdsByScope.get(scopeKey) as Set<number> | undefined;
+        if (!rejectedIds) {
+            rejectedIds = new Set<number>();
+            session.rejectedServerAuthorityLocalEntityIdsByScope.set(scopeKey, rejectedIds);
+        }
+        rejectedIds.add(localId);
+    }
+
+    static shouldLogRejectedServerAuthorityLocalEntityId(
+        client: Client,
+        levelScope: string | null | undefined,
+        entityId: number,
+        reason: string
+    ): boolean {
+        const scopeKey = String(levelScope ?? '').trim();
+        const localId = Math.max(0, Math.round(Number(entityId) || 0));
+        if (!scopeKey || localId <= 0 || !EntityHandler.isRejectedServerAuthorityLocalEntityId(client, scopeKey, localId)) {
+            return false;
+        }
+
+        const session = client as any;
+        if (!(session.loggedRejectedServerAuthorityLocalEntityIdsByScope instanceof Map)) {
+            session.loggedRejectedServerAuthorityLocalEntityIdsByScope = new Map<string, Set<string>>();
+        }
+        let loggedKeys = session.loggedRejectedServerAuthorityLocalEntityIdsByScope.get(scopeKey) as Set<string> | undefined;
+        if (!loggedKeys) {
+            loggedKeys = new Set<string>();
+            session.loggedRejectedServerAuthorityLocalEntityIdsByScope.set(scopeKey, loggedKeys);
+        }
+
+        const key = `${localId}:${String(reason || 'unknown')}`;
+        if (loggedKeys.has(key)) {
+            return false;
+        }
+        loggedKeys.add(key);
+        return true;
+    }
+
+    static isRejectedServerAuthorityLocalEntityId(client: Client, levelScope: string | null | undefined, entityId: number): boolean {
+        const scopeKey = String(levelScope ?? '').trim();
+        const localId = Math.max(0, Math.round(Number(entityId) || 0));
+        const session = client as any;
+        if (!scopeKey || localId <= 0 || !(session.rejectedServerAuthorityLocalEntityIdsByScope instanceof Map)) {
+            return false;
+        }
+
+        const rejectedIds = session.rejectedServerAuthorityLocalEntityIdsByScope.get(scopeKey) as Set<number> | undefined;
+        return Boolean(rejectedIds?.has(localId));
     }
 
     static usesCanonicalVisibleServerAuthorityHostiles(levelName: string | null | undefined): boolean {
@@ -594,7 +657,7 @@ export class EntityHandler {
             const count = Array.from(levelMap.values())
                 .filter((entity) => EntityHandler.isServerAuthorityHostileEntity(levelName, entity))
                 .length;
-            console.log(`[MultiplayerSync][server_spawn_init_ac_mission1] count=${count}`);
+            console.log(`[MultiplayerSync][server_spawn_init_strict] level=${levelName} count=${count}`);
         }
     }
 
@@ -816,11 +879,30 @@ export class EntityHandler {
         }
 
         if (EntityHandler.usesStrictServerSpawnHostiles(levelName)) {
+            const proxyX = Number(entity.x ?? NaN);
+            const proxyY = Number(entity.y ?? NaN);
+            const hasProxyPosition = Number.isFinite(proxyX) && Number.isFinite(proxyY);
             const candidates = Array.from(levelMap.values())
-                .filter((candidate) =>
-                    EntityHandler.isServerAuthorityHostileEntity(levelName, candidate) &&
-                    EntityHandler.normalizeServerAuthorityProxyName(candidate.name) === proxyName
-                );
+                .filter((candidate) => {
+                    if (
+                        !EntityHandler.isServerAuthorityHostileEntity(levelName, candidate) ||
+                        EntityHandler.normalizeServerAuthorityProxyName(candidate.name) !== proxyName
+                    ) {
+                        return false;
+                    }
+                    const candidateX = Number(candidate.x ?? NaN);
+                    const candidateY = Number(candidate.y ?? NaN);
+                    if (
+                        hasProxyPosition &&
+                        Number.isFinite(candidateX) &&
+                        Number.isFinite(candidateY) &&
+                        (((candidateX - proxyX) * (candidateX - proxyX)) + ((candidateY - proxyY) * (candidateY - proxyY))) >
+                            EntityHandler.CANONICAL_VISIBLE_PROXY_MATCH_MAX_DISTANCE_SQ
+                    ) {
+                        return false;
+                    }
+                    return true;
+                });
             if (candidates.length === 0) {
                 return null;
             }
@@ -1453,8 +1535,8 @@ export class EntityHandler {
             const localId = Math.max(0, Math.round(Number(rawEntityId || entity.id) || 0));
             if (EntityHandler.usesStrictServerSpawnHostiles(levelName)) {
                 EntityHandler.destroyClientLocalEntity(client, localId, 'client_hostile_rejected_no_server_spawn', entity);
-                console.log(
-                    `[MultiplayerSync][client_hostile_rejected_no_server_spawn] rawLocalId=${localId} type=${String(entity.name ?? entity.EntName ?? '')} pos=${Math.round(Number(entity.x ?? 0))},${Math.round(Number(entity.y ?? 0))} viewer=${String(client.character?.name ?? '')}`
+                console.warn(
+                    `[MultiplayerSync][client_hostile_rejected_no_server_spawn] scope=${levelScope} rawLocalId=${localId} canonicalId=0 type=${String(entity.name ?? entity.EntName ?? '')} room=${Math.round(Number(entity.roomId ?? -1))} pos=${Math.round(Number(entity.x ?? 0))},${Math.round(Number(entity.y ?? 0))} viewer=${String(client.character?.name ?? '')} action=destroyed_non_exported noKill=true noProgress=true noReward=true`
                 );
                 return true;
             }
@@ -2087,6 +2169,13 @@ export class EntityHandler {
         const localId = Math.max(0, Math.round(Number(rawEntityId) || 0));
         if (localId <= 0) {
             return;
+        }
+
+        if (
+            EntityHandler.usesServerAuthorityHostiles(getScopeLevelName(getClientLevelScope(client))) &&
+            (reason === 'client_hostile_rejected_no_server_spawn' || reason === 'client_destroy_unresolved_server_authority')
+        ) {
+            EntityHandler.markRejectedServerAuthorityLocalEntityId(client, getClientLevelScope(client), localId);
         }
 
         client.entities.delete(localId);

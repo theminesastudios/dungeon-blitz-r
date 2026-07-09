@@ -15,6 +15,8 @@ export interface DungeonSpawnEnemy {
     triggerId?: string | null;
     level?: number | null;
     requiredForClear?: boolean;
+    hostile?: boolean;
+    serverSpawn?: boolean;
     boss?: boolean;
     miniboss?: boolean;
     roomBoss?: boolean;
@@ -22,7 +24,13 @@ export interface DungeonSpawnEnemy {
     roomBossName?: string;
     displayName?: string;
     scripted?: boolean;
+    follower?: boolean;
+    summon?: boolean;
+    chest?: boolean;
+    nonCombatObject?: boolean;
+    classification?: string;
     sourceRoom?: string;
+    sourceScript?: string;
     sourceVar?: string;
     sourceLine?: number;
     sourceSymbolId?: number;
@@ -209,11 +217,20 @@ export class DungeonSpawnLoader {
                 }
 
                 const levelName = this.normalizeLevelName(config.levelName);
-                const npcs = config.enemies.map((enemy) => this.toNpcDef(config, enemy));
+                const npcs = config.enemies
+                    .filter((enemy) => enemy.serverSpawn !== false && enemy.hostile !== false)
+                    .map((enemy) => this.toNpcDef(config, enemy));
                 this.configsByLevel.set(levelName, config);
                 this.npcsByLevel.set(levelName, npcs);
+                const exportedHostile = config.enemies.filter((enemy) => enemy.hostile !== false).length;
+                const exportedRequired = config.enemies.filter((enemy) => enemy.requiredForClear).length;
+                const exportedNonCombat = config.enemies.filter((enemy) => enemy.hostile === false || enemy.nonCombatObject === true).length;
+                const nonServerSpawnedNonCombat = config.enemies.filter((enemy) =>
+                    enemy.serverSpawn === false &&
+                    (enemy.hostile === false || enemy.nonCombatObject === true)
+                ).length;
                 console.log(
-                    `[DungeonSpawnLoader] loaded level=${config.levelId} levelName=${levelName} dungeon="${config.dungeonName}" enemies=${npcs.length} requiredForClear=${npcs.filter((npc) => npc.requiredForClear).length}`
+                    `[DungeonSpawnLoader] loaded level=${config.levelId} levelName=${levelName} dungeon="${config.dungeonName}" exportedTotal=${config.enemies.length} exportedHostile=${exportedHostile} exportedRequired=${exportedRequired} exportedNonCombat=${exportedNonCombat} nonServerSpawnedNonCombat=${nonServerSpawnedNonCombat} serverSpawnedHostile=${npcs.length} requiredForClear=${npcs.filter((npc) => npc.requiredForClear).length}`
                 );
             } catch (error) {
                 console.error(`[DungeonSpawnLoader] Error loading ${file}:`, error);

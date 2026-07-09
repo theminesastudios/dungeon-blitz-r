@@ -678,6 +678,17 @@ export class RewardHandler {
             reason
         });
         const isServerAuthorityHostileLevel = EntityHandler.usesServerAuthorityHostiles(getScopeLevelName(levelScope));
+        if (isServerAuthorityHostileLevel && reason === 'unknown') {
+            CombatHandler.logLootSync('legacy-loot-blocked', {
+                viewer: client.character?.name ?? '',
+                token: client.token,
+                scope: levelScope,
+                sourceEnemy: metadata.sourceEnemyCanonicalId,
+                reason: 'rejected_or_unknown_server_authority_target',
+                caller
+            });
+            return;
+        }
         if (
             isServerAuthorityHostileLevel &&
             RewardHandler.isEnemyLootReason(reason) &&
@@ -1243,17 +1254,34 @@ export class RewardHandler {
         const reason = RewardHandler.getRewardSourceReason(sourceEntity);
         const caller = 'handleGrantReward';
         const levelScope = getClientLevelScope(client);
+        const sourceId = Math.max(0, Math.round(Number(reward.sourceId) || 0));
+        const rejectedSource = EntityHandler.isRejectedServerAuthorityLocalEntityId(client, levelScope, sourceId);
+        if (
+            EntityHandler.usesServerAuthorityHostiles(client.currentLevel) &&
+            (rejectedSource || reason === 'unknown')
+        ) {
+            if (
+                rejectedSource &&
+                EntityHandler.shouldLogRejectedServerAuthorityLocalEntityId(client, levelScope, sourceId, '0x32:grant_reward')
+            ) {
+                console.warn(
+                    `[MultiplayerSync][rejected_local_hostile_packet_suppressed] scope=${levelScope} rawLocalId=${sourceId} packet=0x32 reason=grant_reward viewer=${String(client.character?.name ?? '')} noKill=true noProgress=true noReward=true`
+                );
+            }
+            CombatHandler.logLootSync('legacy-loot-blocked', {
+                viewer: client.character?.name ?? '',
+                token: client.token,
+                scope: levelScope,
+                sourceEnemy: 0,
+                reason: 'rejected_or_unknown_server_authority_target',
+                caller
+            });
+            return;
+        }
         if (
             EntityHandler.usesServerAuthorityHostiles(client.currentLevel) &&
             reason === 'legacy_enemy_reward'
         ) {
-            CombatHandler.logLootSync('spawnLoot-callsite', {
-                caller,
-                viewer: client.character?.name ?? '',
-                token: client.token,
-                sourceEnemy: 0,
-                reason
-            });
             CombatHandler.logLootSync('enemy-reward-blocked-no-canonical-context', {
                 viewer: client.character?.name ?? '',
                 token: client.token,
@@ -1265,7 +1293,7 @@ export class RewardHandler {
                 token: client.token,
                 scope: levelScope,
                 sourceEnemy: 0,
-                reason: 'missing_canonical_death',
+                reason: 'rejected_or_unknown_server_authority_target',
                 caller
             });
             return;

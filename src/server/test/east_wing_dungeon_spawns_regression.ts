@@ -15,6 +15,7 @@ import { NpcLoader } from '../data/NpcLoader';
 import { CombatHandler } from '../handlers/CombatHandler';
 import { EntityHandler } from '../handlers/EntityHandler';
 import { LevelHandler } from '../handlers/LevelHandler';
+import { RewardHandler } from '../handlers/RewardHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 
@@ -166,6 +167,43 @@ function buildPowerCastPayload(sourceId: number, powerId: number = 77): Buffer {
     return bb.toBuffer();
 }
 
+function buildBuffStatePayload(entityId: number, buffId: number = 17): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(entityId);
+    bb.writeMethod4(buffId);
+    return bb.toBuffer();
+}
+
+function buildBuffTickDotPayload(targetId: number, sourceId: number, damage: number, powerId: number = 77): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(targetId);
+    bb.writeMethod4(sourceId);
+    bb.writeMethod4(powerId);
+    bb.writeMethod45(-Math.abs(damage));
+    bb.writeMethod20(0, 5);
+    return bb.toBuffer();
+}
+
+function buildGrantRewardPayload(sourceId: number, receiverId: number, gold: number, hpGain: number = 0): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod9(receiverId);
+    bb.writeMethod9(sourceId);
+    bb.writeMethod15(true);
+    bb.writeMethod309(1);
+    bb.writeMethod15(true);
+    bb.writeMethod309(1);
+    bb.writeMethod15(true);
+    bb.writeMethod15(false);
+    bb.writeMethod9(1);
+    bb.writeMethod9(0);
+    bb.writeMethod9(hpGain);
+    bb.writeMethod9(gold);
+    bb.writeMethod24(3000);
+    bb.writeMethod24(1200);
+    bb.writeMethod15(false);
+    return bb.toBuffer();
+}
+
 function buildIncrementalUpdatePayload(entityId: number, entState: number): Buffer {
     return (LevelHandler as any).buildEntityIncrementalUpdatePayload(
         entityId,
@@ -261,7 +299,7 @@ function attachProxy(client: FakeClient, localId: number, enemyIndex: number): v
 
 function assertFiveCanonicalHostiles(scope: string): void {
     const hostiles = getHostiles(scope);
-    assert.equal(hostiles.length, 5, 'JC_Mini2 should seed exactly five canonical hostiles');
+    assert.equal(hostiles.length, 5, 'JC_Mini2 should seed exactly five required canonical hostiles');
     for (const hostile of hostiles) {
         assert.equal(hostile.clientSpawned, false, `${hostile.name} should be server canonical`);
         assert.equal(hostile.level, 50, `${hostile.name} should be normalized to level 50`);
@@ -279,14 +317,92 @@ function assertFiveCanonicalHostiles(scope: string): void {
 function testRegistryLoad(): void {
     const config = getConfig();
     assert.equal(config.source?.swf, 'src/client/content/localhost/p/cbp/LevelsJC.swf', 'registry should identify the source SWF');
-    assert.equal(config.enemies.length, 5, 'registry should contain five enemies');
-    assert.equal(config.enemies.filter((enemy) => enemy.requiredForClear).length, 5, 'all East Wing enemies should be required for clear');
+    assert.equal(config.enemies.length, 7, 'registry should contain all exported East Wing script spawns');
+    assert.equal(config.enemies.filter((enemy) => enemy.requiredForClear).length, 5, 'only scripted hostiles should be required for clear');
+    assert.equal(config.enemies.filter((enemy: any) => enemy.hostile === false && enemy.serverSpawn === false).length, 2, 'treasure chests should be exported as non-server non-hostiles');
     assert.equal(config.enemies.filter((enemy) => enemy.boss || enemy.miniboss).length, 1, 'registry should identify one boss/miniboss');
 
     const npcs = NpcLoader.getNpcsForLevel('JC_Mini2');
-    assert.equal(npcs.length, 5, 'NpcLoader should expose the generated East Wing enemies');
+    assert.equal(npcs.length, 5, 'NpcLoader should expose only generated East Wing server hostiles');
     assert.equal(npcs[0].id, 920001, 'generated canonical ids should be stable');
     assert.equal(usesSharedDungeonProgress('JC_Mini2'), true, 'generated required-for-clear dungeon should use shared progress');
+}
+
+function testNonExportedClientHostileIsDestroyed(): void {
+    const zeus = createFakeClient('Zeus', 'east-wing-non-exported-hostile', 13933, 0);
+    attachPlayer(zeus);
+    GlobalState.sessionsByToken.set(zeus.token, zeus as never);
+    EntityHandler.sendInitialLevelEntities(zeus as never, zeus.currentLevel);
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+
+    zeus.sentPackets.length = 0;
+    EntityHandler.handleEntityFullUpdate(
+        zeus as never,
+        buildClientHostileFullUpdate(500777, 'ShadeSummoner2', 14000, 4800, 0)
+    );
+
+    assert.equal(EntityHandler.resolveEntityAlias(zeus as never, 500777), 500777, 'non-exported hostile should not alias to a random canonical enemy');
+    assert.equal(GlobalState.levelEntities.get(scope)?.has(500777), false, 'non-exported local hostile must not enter canonical level map');
+    assert.equal(zeus.entities.has(500777), false, 'non-exported local hostile should be removed from viewer cache');
+    assert.equal(
+        zeus.sentPackets.some((packet) => packet.id === 0x0D && parseDestroy(packet.payload).entityId === 500777),
+        true,
+        'non-exported local hostile should receive immediate destroy'
+    );
+    assert.equal(getSharedDungeonProgressTotals(scope).defeated, 0, 'non-exported local hostile must not count progress');
+}
+
+async function testRejectedClientHostilePacketsStayInert(): Promise<void> {
+    const zeus = createFakeClient('Zeus', 'east-wing-rejected-local-inert', 13933, 0);
+    attachPlayer(zeus);
+    GlobalState.sessionsByToken.set(zeus.token, zeus as never);
+    EntityHandler.sendInitialLevelEntities(zeus as never, zeus.currentLevel);
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+    const rejectedLocalId = 500778;
+
+    EntityHandler.handleEntityFullUpdate(
+        zeus as never,
+        buildClientHostileFullUpdate(rejectedLocalId, 'ShadeSummoner2', 14000, 4800, 0)
+    );
+    assert.equal(EntityHandler.isRejectedServerAuthorityLocalEntityId(zeus as never, scope, rejectedLocalId), true, 'non-exported hostile should be tombstoned as rejected for the viewer');
+
+    zeus.sentPackets.length = 0;
+    const progressBefore = getSharedDungeonProgressTotals(scope);
+    await CombatHandler.handlePowerHit(zeus as never, buildPowerHitPayload(rejectedLocalId, zeus.clientEntID, 999999));
+    await CombatHandler.handleBuffTickDot(zeus as never, buildBuffTickDotPayload(rejectedLocalId, zeus.clientEntID, 999999));
+    await CombatHandler.handleAddBuff(zeus as never, buildBuffStatePayload(rejectedLocalId, 99));
+    await CombatHandler.handleRemoveBuff(zeus as never, buildBuffStatePayload(rejectedLocalId, 99));
+    LevelHandler.handleEntityIncrementalUpdate(zeus as never, buildIncrementalUpdatePayload(rejectedLocalId, EntityState.DEAD));
+    RewardHandler.handleGrantReward(zeus as never, buildGrantRewardPayload(rejectedLocalId, zeus.clientEntID, 5000, 500));
+
+    assert.deepEqual(getSharedDungeonProgressTotals(scope), progressBefore, 'rejected local packets must not mutate progress');
+    assert.equal(zeus.pendingLoot.size, 0, 'rejected local reward packet must not create pending loot');
+    assert.equal(zeus.sentPackets.some((packet) => packet.id === 0x32), false, 'rejected local reward packet must not emit loot');
+    assert.equal(zeus.sentPackets.some((packet) => packet.id === 0x0B || packet.id === 0x0C || packet.id === 0x79), false, 'rejected local buff packets must not relay');
+}
+
+function testDistantImperialGuardDoesNotAliasToCanonical(): void {
+    const zeus = createFakeClient('Zeus', 'east-wing-imperialguard-distance', 13933, 4);
+    attachPlayer(zeus);
+    GlobalState.sessionsByToken.set(zeus.token, zeus as never);
+    EntityHandler.sendInitialLevelEntities(zeus as never, zeus.currentLevel);
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+
+    const distantLocalId = 501111;
+    EntityHandler.handleEntityFullUpdate(
+        zeus as never,
+        buildClientHostileFullUpdate(distantLocalId, 'ImperialGuard', 16545, 5259, 4)
+    );
+    assert.equal(EntityHandler.resolveEntityAlias(zeus as never, distantLocalId), distantLocalId, 'distant ImperialGuard must not alias to canonical 920005');
+    assert.equal(EntityHandler.isRejectedServerAuthorityLocalEntityId(zeus as never, scope, distantLocalId), true, 'distant ImperialGuard should be rejected as non-exported/mismatched');
+    assert.equal(GlobalState.levelEntities.get(scope)?.has(distantLocalId), false, 'distant ImperialGuard must not become canonical');
+
+    const closeLocalId = 501112;
+    EntityHandler.handleEntityFullUpdate(
+        zeus as never,
+        buildClientHostileFullUpdate(closeLocalId, 'ImperialGuard', 15358, 6619, 4)
+    );
+    assert.equal(EntityHandler.resolveEntityAlias(zeus as never, closeLocalId), 920005, 'close ImperialGuard should alias to exported canonical 920005');
 }
 
 function testInitialCanonicalNoVisibleServerSnapshots(): void {
@@ -538,6 +654,15 @@ async function main(): Promise<void> {
 
         resetRuntime();
         testClientGhostHealthCannotPoisonCanonical();
+
+        resetRuntime();
+        testNonExportedClientHostileIsDestroyed();
+
+        resetRuntime();
+        await testRejectedClientHostilePacketsStayInert();
+
+        resetRuntime();
+        testDistantImperialGuardDoesNotAliasToCanonical();
 
         resetRuntime();
         await testProxyAttachKillProgressAndLateJoiner();
