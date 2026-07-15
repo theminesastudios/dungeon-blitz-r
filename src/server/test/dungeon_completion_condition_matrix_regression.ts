@@ -201,6 +201,86 @@ function satisfyCondition(scenario: Scenario, participantKey: string, baseTime: 
     );
 }
 
+const NEVER_ENDING_DUNGEON_LEVELS = [
+    'TutorialDungeon',
+    'TutorialDungeonHard',
+    'SwampRoadConnectionMission',
+    'SwampRoadConnectionMissionHard',
+    'OMM_Mission2',
+    'OMM_Mission2Hard',
+    'OMM_Mission5',
+    'OMM_Mission5Hard',
+    'AC_Mission1',
+    'AC_Mission1Hard',
+    'OMM_Mission8',
+    'OMM_Mission8Hard',
+    'JC_Mission9',
+    'JC_Mission9Hard'
+] as const;
+
+function satisfyObjectivesAfterIntroCutscene(
+    scenario: Scenario,
+    participantKey: string,
+    baseTime: number
+): void {
+    const { condition, entities, levelScope } = scenario;
+    DungeonCompletionSystem.noteCutsceneStart(levelScope, 7, baseTime);
+
+    if (condition.mode === 'client-signal') {
+        DungeonCompletionSystem.noteClientCompletionSignal(levelScope, participantKey, 100, baseTime + 1);
+        return;
+    }
+
+    entities.forEach((entity, index) => defeatEntity(scenario, entity, baseTime + 1 + index));
+    if (condition.mode === 'full-clear' || condition.autoCompleteOnObjectives === false) {
+        DungeonCompletionSystem.noteClientCompletionSignal(
+            levelScope,
+            participantKey,
+            100,
+            baseTime + entities.length + 1
+        );
+    }
+}
+
+function verifyIntroCutsceneDoesNotPermanentlyBlockCompletion(
+    levelName: string,
+    ordinal: number
+): void {
+    const scenario = createScenario(levelName, `intro-cutscene-${ordinal}`);
+    const participantKey = 'intro-cutscene-player';
+    const baseTime = 5_000_000 + ordinal * 1_000;
+    satisfyObjectivesAfterIntroCutscene(scenario, participantKey, baseTime);
+
+    const beforeClose = DungeonCompletionSystem.evaluate(
+        scenario.levelScope,
+        baseTime + scenario.entities.length + 10
+    );
+    if (scenario.condition.cutscene?.requiredAfterObjectives) {
+        assert.strictEqual(
+            beforeClose.ready,
+            false,
+            `${levelName}: explicit post-objective cutscene gate was bypassed`
+        );
+        assert.strictEqual(
+            DungeonCompletionSystem.noteCutsceneEnd(
+                scenario.levelScope,
+                7,
+                baseTime + scenario.entities.length + 11
+            ),
+            true,
+            `${levelName}: pre-objective intro close after objectives did not release the explicit gate`
+        );
+    } else {
+        assert.strictEqual(
+            beforeClose.ready,
+            true,
+            `${levelName}: unmatched pre-objective intro cutscene permanently blocked completion`
+        );
+    }
+
+    cleanupScenario(scenario);
+}
+
 function verifyIdempotentFinalization(scenario: Scenario, participantCount: 1 | 2): void {
     if (scenario.condition.mode === 'disabled') {
         return;
@@ -276,6 +356,9 @@ function main(): void {
     dungeonLevels.forEach((levelName, index) => {
         runScenario(levelName, 1, index);
         runScenario(levelName, 2, index);
+    });
+    NEVER_ENDING_DUNGEON_LEVELS.forEach((levelName, index) => {
+        verifyIntroCutsceneDoesNotPermanentlyBlockCompletion(levelName, index);
     });
 
     assert.strictEqual(GlobalState.dungeonCompletions.size, 0, 'Matrix leaked dungeon completion states');

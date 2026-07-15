@@ -1615,6 +1615,31 @@ export class MissionHandler {
         }
     }
 
+    static tryRestoreDungeonCompletionAfterReentry(client: Client): void {
+        const levelScope = getClientLevelScope(client);
+        if (!TutorialDungeonMechanics.isTutorialDungeon(levelScope)) {
+            return;
+        }
+        const completionState = DungeonCompletionSystem.getState(levelScope);
+        if (!completionState) {
+            return;
+        }
+        const participantKey = DungeonCompletionSystem.getParticipantKey(client);
+        if (DungeonCompletionSystem.hasFinalized(levelScope, participantKey)) {
+            TutorialDungeonMechanics.noteCompletionPhase(levelScope, 'completed', client.token);
+            return;
+        }
+        const evaluation = DungeonCompletionSystem.evaluate(levelScope);
+        TutorialDungeonMechanics.noteCompletionPhase(
+            levelScope,
+            evaluation.ready ? 'ready' : evaluation.phase === 'waiting-gates' ? 'waiting-gates' : 'running',
+            client.token
+        );
+        if (evaluation.ready) {
+            MissionHandler.scheduleDungeonCompletionForScope(levelScope, client);
+        }
+    }
+
     private static hasFinalizedDungeonCompletion(client: Client, levelScope: string | null | undefined): boolean {
         const scopeKey = String(levelScope ?? '').trim();
         return Boolean(scopeKey && DungeonCompletionSystem.hasFinalized(
@@ -1639,6 +1664,12 @@ export class MissionHandler {
 
         const participantKey = DungeonCompletionSystem.getParticipantKey(client);
         DungeonCompletionSystem.markFinalized(scopeKey, participantKey);
+        const completionState = DungeonCompletionSystem.getState(scopeKey);
+        TutorialDungeonMechanics.noteCompletionPhase(
+            scopeKey,
+            completionState?.phase === 'completed' ? 'completed' : 'ready',
+            client.token
+        );
         const sharedState = GlobalState.levelQuestProgress.get(scopeKey);
         if (sharedState) {
             sharedState.progress = 100;
@@ -1768,6 +1799,7 @@ export class MissionHandler {
         client.lastDungeonCutsceneStartScope = scope;
         client.lastDungeonCutsceneStartAt = Date.now();
         DungeonCompletionSystem.noteCutsceneStart(scope, roomId, client.lastDungeonCutsceneStartAt);
+        TutorialDungeonMechanics.noteCutscenePhase(scope, roomId, 'active', client.token);
         MissionHandler.activateBossRunStatsForCutsceneRoom(client, scope, client.activeDungeonCutsceneRoomId);
     }
 
@@ -1796,6 +1828,10 @@ export class MissionHandler {
             endedRoomId,
             client.lastDungeonCutsceneEndAt
         );
+        TutorialDungeonMechanics.noteCutscenePhase(scope, endedRoomId, 'completed', client.token);
+        if (completionReady) {
+            TutorialDungeonMechanics.noteCompletionPhase(scope, 'ready', client.token);
+        }
         if (getScopeLevelName(scope) === 'CraftTownTutorial') {
             MissionHandler.logKeepCompletionProgress('cutsceneEndProcessed', client, {
                 levelScope: scope,

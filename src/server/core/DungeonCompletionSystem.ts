@@ -9,6 +9,7 @@ import { EntityState, EntityTeam } from './Entity';
 import { GlobalState } from './GlobalState';
 import { getClientLevelScope, getScopeLevelName } from './LevelScope';
 import { getSharedDungeonProgressTotals } from './SharedDungeonProgress';
+import { TutorialDungeonMechanics } from './TutorialDungeonMechanics';
 
 function getEntityId(entity: any): number {
     return Math.max(0, Math.round(Number(entity?.id ?? entity?.canonicalId ?? entity?.entId ?? entity?.EntityID ?? 0)));
@@ -105,6 +106,13 @@ export class DungeonCompletionSystem {
         const state = DungeonCompletionSystem.getState(levelScope);
         const participantKey = DungeonCompletionSystem.getParticipantKey(client);
         state?.finalizingParticipants.delete(participantKey);
+        for (const [cutsceneKey, cutsceneState] of GlobalState.dungeonCutscenes.entries()) {
+            if (!cutsceneKey.startsWith(`${levelScope}:`)) {
+                continue;
+            }
+            cutsceneState.participantKeys?.delete(participantKey);
+            cutsceneState.closedParticipantKeys?.delete(participantKey);
+        }
 
         const hasActivePeer = [...GlobalState.sessionsByToken.values()].some((session) =>
             session !== client &&
@@ -118,6 +126,7 @@ export class DungeonCompletionSystem {
 
         GlobalState.dungeonCompletions.delete(levelScope);
         GlobalState.levelQuestProgress.delete(levelScope);
+        TutorialDungeonMechanics.resetState(levelScope);
         for (const key of [...GlobalState.dungeonCutscenes.keys()]) {
             if (key.startsWith(`${levelScope}:`)) {
                 GlobalState.dungeonCutscenes.delete(key);
@@ -136,7 +145,15 @@ export class DungeonCompletionSystem {
         const canonicalBoss = DungeonCompletionConditions.getCanonicalBossName(state.levelName, entity);
         const objectiveRole = DungeonCompletionConditions.getObjectiveRole(state.levelName, entity);
         const eventIdentity = canonicalBoss || objectiveRole || String(entity?.name ?? entity?.EntName ?? 'hostile');
-        const eventKey = `${eventIdentity}:${entityId}:${lifeNonce}`;
+        const tutorialAuthority = TutorialDungeonMechanics.isTutorialDungeon(state.levelName)
+            ? TutorialDungeonMechanics.getAuthorityEntity(entity)
+            : null;
+        const tutorialObjectVersion = tutorialAuthority
+            ? TutorialDungeonMechanics.getWorldObjectState(state.levelScope, tutorialAuthority.stableId)?.version ?? 0
+            : 0;
+        const eventKey = tutorialAuthority
+            ? `${eventIdentity}:${tutorialAuthority.stableId}:${tutorialObjectVersion}`
+            : `${eventIdentity}:${entityId}:${lifeNonce}`;
         if (state.processedDeathEvents.has(eventKey)) {
             DungeonCompletionSystem.evaluate(levelScope, now);
             return false;
@@ -244,6 +261,7 @@ export class DungeonCompletionSystem {
         }
 
         const activeSharedCutscene = state.cutsceneStartedAt > 0 &&
+            state.cutsceneStartedSequence > state.objectivesMetSequence &&
             state.cutsceneEndedSequence < state.cutsceneStartedSequence;
         let gateMet = !activeSharedCutscene;
         if (condition.cutscene?.requiredAfterObjectives) {

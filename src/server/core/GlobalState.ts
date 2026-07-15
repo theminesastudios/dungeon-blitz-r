@@ -1,6 +1,7 @@
 import { Character, UserAccount } from '../database/Database';
 import { Client } from './Client';
 import type { DungeonCompletionRunState } from './DungeonCompletionTypes';
+import type { TutorialDungeonMechanicsState } from './TutorialDungeonMechanics';
 import { normalizeCharacterKey, PartyGroup, PendingTeleport } from './SocialState';
 
 export interface PendingTransfer {
@@ -60,6 +61,8 @@ export type SharedDungeonCutsceneState = {
     startedAt: number;
     endedAt: number;
     dialogIndex: number;
+    participantKeys?: Set<string>;
+    closedParticipantKeys?: Set<string>;
 };
 
 export type DeadHostileTombstone = {
@@ -135,6 +138,8 @@ export class GlobalState {
     // Level scope -> the single authoritative completion state for that dungeon run.
     static dungeonCompletions: Map<string, DungeonCompletionRunState> = new Map();
     static dungeonCutscenes: Map<string, SharedDungeonCutsceneState> = new Map();
+    // Scope-owned scripted world state. Visual Flash cues remain viewer-local proxies.
+    static tutorialDungeonWorldStates: Map<string, TutorialDungeonMechanicsState> = new Map();
     static deadServerAuthorityHostilesByScope: Map<string, Map<string, DeadHostileTombstone>> = new Map();
     static combatContributions: Map<string, Map<string, number>> = new Map();
     static entityLifeNonces: Map<string, number> = new Map();

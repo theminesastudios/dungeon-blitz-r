@@ -17,6 +17,7 @@ import { PetHandler } from './PetHandler';
 import { Config } from '../core/config';
 import { EntityHandler } from './EntityHandler';
 import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
+import { DungeonCompletionSystem } from '../core/DungeonCompletionSystem';
 
 interface RewardRequest {
     receiverId: number;
@@ -1055,6 +1056,67 @@ export class RewardHandler {
         return true;
     }
 
+    private static handleAuthoritativeTutorialChestReward(
+        client: Client,
+        reward: RewardRequest,
+        sourceEntity: any,
+        dropPosition: { x: number; y: number }
+    ): boolean {
+        if (!TutorialDungeonMechanics.isTutorialDungeon(client.currentLevel)) {
+            return false;
+        }
+        const authority = TutorialDungeonMechanics.getAuthorityEntity(
+            sourceEntity ?? { id: reward.sourceId },
+            Number(client.currentRoomId ?? 0)
+        );
+        if (!authority || (authority.role !== 'tutorial_chest' && authority.role !== 'boss_chest')) {
+            return false;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        if (!TutorialDungeonMechanics.isWorldObjectResolved(levelScope, authority.stableId)) {
+            const transition = TutorialDungeonMechanics.commitClientObjectDefeat(client, sourceEntity);
+            if (!transition.accepted) {
+                return true;
+            }
+            EntityHandler.broadcastTutorialDungeonObjectTransition(client, authority);
+        }
+
+        const recipients = Array.from(GlobalState.sessionsByToken.values()).filter((recipient) =>
+            recipient.playerSpawned &&
+            Boolean(recipient.character) &&
+            getClientLevelScope(recipient) === levelScope
+        );
+        for (const recipient of recipients) {
+            const participantKey = DungeonCompletionSystem.getParticipantKey(recipient);
+            const claim = TutorialDungeonMechanics.claimChestReward(
+                levelScope,
+                authority.stableId,
+                participantKey,
+                client.token
+            );
+            if (!claim.accepted) {
+                continue;
+            }
+            RewardHandler.applyRewardToRecipient(
+                recipient,
+                { ...reward, sourceId: authority.id },
+                `${authority.stableId}:${claim.openVersion}:${participantKey}`,
+                sourceEntity ?? {
+                    id: authority.id,
+                    name: authority.name,
+                    x: authority.x,
+                    y: authority.y,
+                    roomId: authority.roomId,
+                    tutorialDungeonStableId: authority.stableId
+                },
+                dropPosition,
+                { reason: 'chest_reward', caller: 'authoritative_tutorial_chest' }
+            );
+        }
+        return true;
+    }
+
     static handleGrantReward(client: Client, data: Buffer): void {
         const br = new BitReader(data);
         const reward: RewardRequest = {
@@ -1081,6 +1143,9 @@ export class RewardHandler {
 
         const sourceEntity = RewardHandler.resolveSourceEntity(client, reward.sourceId);
         const dropPosition = RewardHandler.resolveDropPosition(client, sourceEntity, reward.worldX, reward.worldY);
+        if (RewardHandler.handleAuthoritativeTutorialChestReward(client, reward, sourceEntity, dropPosition)) {
+            return;
+        }
         const { rewardNonce, recipients } = RewardHandler.resolveEligibleRecipients(client, reward.sourceId);
         const reason = RewardHandler.getRewardSourceReason(sourceEntity);
         const caller = 'handleGrantReward';

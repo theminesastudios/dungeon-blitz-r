@@ -55,8 +55,31 @@ function patchRoom(source) {
         .replace('var _loc34_:SuperAnimInstance = this.method_67(null);', 'var _loc34_:SuperAnimInstance = this.method_67(_loc33_);')
         .replace('_loc17_.x = null.m_TheDO.x + 200 + Math.random() * 200;', '_loc17_.x = _loc34_.m_TheDO.x + 200 + Math.random() * 200;');
 
-    if (source.includes('param1 == "Trigger"')) {
+    if (source.includes('param1 == "GoblinKidnappersAuthority"')) {
         return source;
+    }
+
+    const authorityBranch = [
+        '         else if(param1 == "GoblinKidnappersAuthority")',
+        '         {',
+        '            if(Boolean(this.var_150) && this.var_150.hasOwnProperty("ApplyServerAuthoritySnapshot"))',
+        '            {',
+        '               this.var_150["ApplyServerAuthoritySnapshot"](this.var_122,param3);',
+        '            }',
+        '         }'
+    ].join(eol);
+
+    const triggerBranch = [
+        '         else if(param1 == "Trigger")',
+        '         {',
+        '            this.method_79(param2);',
+        '         }'
+    ].join(eol);
+    if (source.includes('param1 == "Trigger"')) {
+        if (!source.includes(triggerBranch)) {
+            throw new Error('Could not find existing Room Trigger branch');
+        }
+        return source.replace(triggerBranch, `${triggerBranch}${eol}${authorityBranch}`);
     }
 
     const needle = [
@@ -78,10 +101,8 @@ function patchRoom(source) {
         '               _loc5_.gfx.m_Seq.method_34(Seq.C_USEPOWER,param3,true);',
         '            }',
         '         }',
-        '         else if(param1 == "Trigger")',
-        '         {',
-        '            this.method_79(param2);',
-        '         }'
+        triggerBranch,
+        authorityBranch
     ].join(eol);
 
     if (!source.includes(needle)) {

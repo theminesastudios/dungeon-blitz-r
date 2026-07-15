@@ -154,8 +154,14 @@ function replaceMethod(source, methodName, replacement) {
 }
 
 function insertBeforeInternalSetter(source, insertion, label) {
-  const marker = '      internal function __setProp_';
-  const start = source.indexOf(marker);
+  const markers = [
+    '      internal function __setProp_',
+    '      internal function frame1()'
+  ];
+  const start = markers
+    .map((marker) => source.indexOf(marker))
+    .filter((index) => index >= 0)
+    .sort((left, right) => left - right)[0] ?? -1;
   if (start === -1) {
     throw new Error(`Could not find helper insertion point for ${label}`);
   }
@@ -180,6 +186,59 @@ function patchTutorial01(source) {
     );
   }
 
+  if (!patched.includes('public function ApplyServerAuthoritySnapshot(')) {
+    patched = insertBeforeInternalSetter(
+      patched,
+      normalizeBlock(`
+      public function ServerAuthoritySnapshotValue(param1:String, param2:String) : String
+      {
+         var _loc3_:Array = param1.split("|");
+         var _loc4_:String = null;
+         var _loc5_:Array = null;
+         for each(_loc4_ in _loc3_)
+         {
+            _loc5_ = _loc4_.split("=");
+            if(_loc5_.length == 2 && _loc5_[0] == param2)
+            {
+               return String(_loc5_[1]);
+            }
+         }
+         return "";
+      }
+
+      public function ApplyServerAuthoritySnapshot(param1:a_GameHook, param2:String) : void
+      {
+         var _loc3_:uint = uint(this.ServerAuthoritySnapshotValue(param2,"revision"));
+         if(_loc3_ <= uint(this["serverAuthorityRevision"]))
+         {
+            return;
+         }
+         this["serverAuthorityRevision"] = _loc3_;
+         if(this.ServerAuthoritySnapshotValue(param2,"earlyChain") == "1" && !Boolean(this["serverAuthorityEarlyChainResolved"]))
+         {
+            this["serverAuthorityEarlyChainResolved"] = true;
+            this.am_Chains.bHoldSpawn = true;
+            this.am_Chains.Remove();
+            param1.Animate("am_ChainsTut","Remove",true);
+            param1.Animate("am_ChainGlow","Remove",true);
+            param1.CollisionOff("am_DynamicCollision_WaitingForHelp");
+            param1.SetPhase(this.ExitingRoom);
+         }
+      }
+    `, eol),
+      'a_Room_Tutorial_01 snapshot'
+    );
+  }
+
+  patched = patched.replace(
+    'if(this.ServerAuthoritySnapshotValue(param2,"earlyChain") == "1")',
+    'if(this.ServerAuthoritySnapshotValue(param2,"earlyChain") == "1" && !Boolean(this["serverAuthorityEarlyChainResolved"]))'
+  );
+  patched = patched.replace(
+    /(if\(this\.ServerAuthoritySnapshotValue\(param2,"earlyChain"\) == "1" && !Boolean\(this\["serverAuthorityEarlyChainResolved"\]\)\)\r?\n\s*\{\r?\n)(\s*this\.am_Chains\.bHoldSpawn = true;)/,
+    `$1            this["serverAuthorityEarlyChainResolved"] = true;${eol}$2`
+  );
+  patched = patched.replace('            this.bTriggerTripped = true;', '');
   patched = patched.replace(/this\.am_Chains\.Defeated\(\)/g, 'this.ServerAuthorityVisualCueDefeated(this.am_Chains)');
   verifyTutorial01(patched, 'patched a_Room_Tutorial_01');
   return patched;
@@ -205,6 +264,76 @@ function patchTutorial02(source) {
     patched = replaceMethod(patched, 'DummyDefeated', `${helper}${eol}      ${eol}${dummyDefeated}`);
   }
 
+
+  if (!patched.includes('public function ApplyServerAuthoritySnapshot(')) {
+    patched = insertBeforeInternalSetter(
+      patched,
+      normalizeBlock(`
+      public function ServerAuthoritySnapshotValue(param1:String, param2:String) : String
+      {
+         var _loc3_:Array = param1.split("|");
+         var _loc4_:String = null;
+         var _loc5_:Array = null;
+         for each(_loc4_ in _loc3_)
+         {
+            _loc5_ = _loc4_.split("=");
+            if(_loc5_.length == 2 && _loc5_[0] == param2)
+            {
+               return String(_loc5_[1]);
+            }
+         }
+         return "";
+      }
+
+      public function ApplyServerAuthoritySnapshot(param1:a_GameHook, param2:String) : void
+      {
+         var _loc3_:uint = uint(this.ServerAuthoritySnapshotValue(param2,"revision"));
+         if(_loc3_ <= uint(this["serverAuthorityRevision"]))
+         {
+            return;
+         }
+         this["serverAuthorityRevision"] = _loc3_;
+         if(this.ServerAuthoritySnapshotValue(param2,"d1") == "1" && !this.bDummyOneHandled)
+         {
+            this.bDummyOneDead = true;
+            this.bDummyOneHandled = true;
+            this.am_Dummy1.bHoldSpawn = true;
+            this.am_Dummy1.Remove();
+         }
+         if(this.ServerAuthoritySnapshotValue(param2,"d2") == "1" && !this.bDummyTwoHandled)
+         {
+            this.bDummyTwoHandled = true;
+            this.am_Dummy2.bHoldSpawn = true;
+            this.am_Dummy2.Remove();
+         }
+         if(this.ServerAuthoritySnapshotValue(param2,"d3") == "1" && !this.bDummyThreeHandled)
+         {
+            this.bDummyThreeHandled = true;
+            this.am_Dummy3.bHoldSpawn = true;
+            this.am_Dummy3.Remove();
+         }
+         if(this.ServerAuthoritySnapshotValue(param2,"gate") == "1" && !Boolean(this["serverAuthorityGateOpen"]))
+         {
+            this["serverAuthorityGateOpen"] = true;
+            param1.CollisionOff("am_DynamicCollision_GateBlock");
+            param1.Animate("am_Gate","Open",true);
+            param1.SetPhase(null);
+         }
+      }
+    `, eol),
+      'a_Room_Tutorial_02 snapshot'
+    );
+  }
+
+  patched = patched
+    .replace('if(this.ServerAuthoritySnapshotValue(param2,"d1") == "1")', 'if(this.ServerAuthoritySnapshotValue(param2,"d1") == "1" && !this.bDummyOneHandled)')
+    .replace('if(this.ServerAuthoritySnapshotValue(param2,"d2") == "1")', 'if(this.ServerAuthoritySnapshotValue(param2,"d2") == "1" && !this.bDummyTwoHandled)')
+    .replace('if(this.ServerAuthoritySnapshotValue(param2,"d3") == "1")', 'if(this.ServerAuthoritySnapshotValue(param2,"d3") == "1" && !this.bDummyThreeHandled)')
+    .replace('if(this.ServerAuthoritySnapshotValue(param2,"gate") == "1")', 'if(this.ServerAuthoritySnapshotValue(param2,"gate") == "1" && !Boolean(this["serverAuthorityGateOpen"]))')
+    .replace(
+      /(if\(this\.ServerAuthoritySnapshotValue\(param2,"gate"\) == "1" && !Boolean\(this\["serverAuthorityGateOpen"\]\)\)\r?\n\s*\{\r?\n)(\s*param1\.CollisionOff)/,
+      `$1            this["serverAuthorityGateOpen"] = true;${eol}$2`
+    );
   verifyTutorial02(patched, 'patched a_Room_Tutorial_02');
   return patched;
 }
@@ -226,6 +355,52 @@ function patchTutorial05Alt(source) {
     );
   }
 
+  if (!patched.includes('public function ApplyServerAuthoritySnapshot(')) {
+    patched = insertBeforeInternalSetter(
+      patched,
+      normalizeBlock(`
+      public function ServerAuthoritySnapshotValue(param1:String, param2:String) : String
+      {
+         var _loc3_:Array = param1.split("|");
+         var _loc4_:String = null;
+         var _loc5_:Array = null;
+         for each(_loc4_ in _loc3_)
+         {
+            _loc5_ = _loc4_.split("=");
+            if(_loc5_.length == 2 && _loc5_[0] == param2)
+            {
+               return String(_loc5_[1]);
+            }
+         }
+         return "";
+      }
+
+      public function ApplyServerAuthoritySnapshot(param1:a_GameHook, param2:String) : void
+      {
+         var _loc3_:uint = uint(this.ServerAuthoritySnapshotValue(param2,"revision"));
+         if(_loc3_ <= uint(this["serverAuthorityRevision"]))
+         {
+            return;
+         }
+         this["serverAuthorityRevision"] = _loc3_;
+         if(this.ServerAuthoritySnapshotValue(param2,"tutorialChest") == "1" && !this.bChestOpened)
+         {
+            this.bChestOpened = true;
+            this.am_WaveBoss.bHoldSpawn = true;
+            this.am_WaveBoss.Remove();
+            param1.CollisionOff("am_DynamicCollision_PathBlock02");
+            param1.PlayScript(this.Script_Ambush);
+         }
+      }
+    `, eol),
+      'a_Room_Tutorial_05_ALT snapshot'
+    );
+  }
+
+  patched = patched.replace(
+    'if(this.ServerAuthoritySnapshotValue(param2,"tutorialChest") == "1")',
+    'if(this.ServerAuthoritySnapshotValue(param2,"tutorialChest") == "1" && !this.bChestOpened)'
+  );
   patched = patched.replace(
     'this.am_WaveBoss.Defeated() && !this.bChestOpened',
     'this.ServerAuthorityVisualChestOpened(this.am_WaveBoss) && !this.bChestOpened'
@@ -246,7 +421,7 @@ function patchBossRoom(source) {
       {
          return Boolean(param1) && param1.AtHealth(param2);
       }
-      
+
       public function ServerAuthorityVisualCueDefeated(param1:a_Cue) : Boolean
       {
          return Boolean(param1) && (param1.Defeated() || param1.Health() <= 0);
@@ -256,7 +431,142 @@ function patchBossRoom(source) {
     );
   }
 
-  patched = patched.replace(`         this.am_Boss.bHoldSpawn = true;${eol}`, '');
+  if (!patched.includes('public function ApplyServerAuthoritySnapshot(')) {
+    patched = insertBeforeInternalSetter(
+      patched,
+      normalizeBlock(`
+      public function ServerAuthoritySnapshotValue(param1:String, param2:String) : String
+      {
+         var _loc3_:Array = param1.split("|");
+         var _loc4_:String = null;
+         var _loc5_:Array = null;
+         for each(_loc4_ in _loc3_)
+         {
+            _loc5_ = _loc4_.split("=");
+            if(_loc5_.length == 2 && _loc5_[0] == param2)
+            {
+               return String(_loc5_[1]);
+            }
+         }
+         return "";
+      }
+
+      public function ApplyServerAuthoritySnapshot(param1:a_GameHook, param2:String) : void
+      {
+         var _loc3_:uint = uint(this.ServerAuthoritySnapshotValue(param2,"revision"));
+         if(_loc3_ <= uint(this["serverAuthorityRevision"]))
+         {
+            return;
+         }
+         this["serverAuthorityRevision"] = _loc3_;
+         if(this.ServerAuthoritySnapshotValue(param2,"bossDead") != "1" && this.ServerAuthoritySnapshotValue(param2,"w80") == "1" && !Boolean(this["serverAuthorityBossWave80"]))
+         {
+            this["serverAuthorityBossWave80"] = true;
+            param1.Ambush("am_WaveOne");
+         }
+         if(this.ServerAuthoritySnapshotValue(param2,"bossDead") != "1" && this.ServerAuthoritySnapshotValue(param2,"w50") == "1" && !Boolean(this["serverAuthorityBossWave50"]))
+         {
+            this["serverAuthorityBossWave50"] = true;
+            param1.Ambush("am_WaveTwo");
+         }
+         if(this.ServerAuthoritySnapshotValue(param2,"bossDead") != "1" && this.ServerAuthoritySnapshotValue(param2,"w33") == "1" && !Boolean(this["serverAuthorityBossWave33"]))
+         {
+            this["serverAuthorityBossWave33"] = true;
+            param1.Ambush("am_WaveThree");
+         }
+         if(this.ServerAuthoritySnapshotValue(param2,"annaFreed") == "1" && !this.bChainsBroken)
+         {
+            this.bChainsBroken = true;
+            this.am_Chains.bHoldSpawn = true;
+            this.am_Chains.Remove();
+            this.am_Anna.SetAnimation("Sexy");
+         }
+         if(this.ServerAuthoritySnapshotValue(param2,"bossChest") == "1" && !Boolean(this["serverAuthorityBossChestOpened"]))
+         {
+            this["serverAuthorityBossChestOpened"] = true;
+            this.__id462_.bHoldSpawn = true;
+            this.__id462_.Remove();
+         }
+         if(this.ServerAuthoritySnapshotValue(param2,"bossDead") == "1" && !Boolean(this["serverAuthorityBossDead"]))
+         {
+            this["serverAuthorityBossDead"] = true;
+            this.am_Boss.bHoldSpawn = true;
+            this.am_Boss.bHoldSpawn = true;
+            this.am_Boss.Remove();
+            param1.SetPhase(this.AfterBossTick);
+         }
+         if(this.ServerAuthoritySnapshotValue(param2,"annaFreed") == "1" && this.ServerAuthoritySnapshotValue(param2,"bossDead") == "1" && !Boolean(this["serverAuthorityBossRoomComplete"]))
+         {
+            this["serverAuthorityBossRoomComplete"] = true;
+            param1.SetPhase(null);
+         }
+      }
+    `, eol),
+      'a_Room_NRM02RGoblinCaveBoss snapshot'
+    );
+  }
+
+  patched = patched
+    .replace(/this\["serverAuthorityBossWave80"\] = this\.ServerAuthoritySnapshotValue\(param2,"w80"\) == "1";\r?\n\s*this\["serverAuthorityBossWave50"\] = this\.ServerAuthoritySnapshotValue\(param2,"w50"\) == "1";\r?\n\s*this\["serverAuthorityBossWave33"\] = this\.ServerAuthoritySnapshotValue\(param2,"w33"\) == "1";/, normalizeBlock(`
+         if(this.ServerAuthoritySnapshotValue(param2,"bossDead") != "1" && this.ServerAuthoritySnapshotValue(param2,"w80") == "1" && !Boolean(this["serverAuthorityBossWave80"]))
+         {
+            this["serverAuthorityBossWave80"] = true;
+            param1.Ambush("am_WaveOne");
+         }
+         if(this.ServerAuthoritySnapshotValue(param2,"bossDead") != "1" && this.ServerAuthoritySnapshotValue(param2,"w50") == "1" && !Boolean(this["serverAuthorityBossWave50"]))
+         {
+            this["serverAuthorityBossWave50"] = true;
+            param1.Ambush("am_WaveTwo");
+         }
+         if(this.ServerAuthoritySnapshotValue(param2,"bossDead") != "1" && this.ServerAuthoritySnapshotValue(param2,"w33") == "1" && !Boolean(this["serverAuthorityBossWave33"]))
+         {
+            this["serverAuthorityBossWave33"] = true;
+            param1.Ambush("am_WaveThree");
+         }
+    `, eol))
+    .replace('if(this.ServerAuthoritySnapshotValue(param2,"annaFreed") == "1")', 'if(this.ServerAuthoritySnapshotValue(param2,"annaFreed") == "1" && !this.bChainsBroken)')
+    .replace('if(this.ServerAuthoritySnapshotValue(param2,"bossChest") == "1")', 'if(this.ServerAuthoritySnapshotValue(param2,"bossChest") == "1" && !Boolean(this["serverAuthorityBossChestOpened"]))')
+    .replace(
+      /(if\(this\.ServerAuthoritySnapshotValue\(param2,"bossChest"\) == "1" && !Boolean\(this\["serverAuthorityBossChestOpened"\]\)\)\r?\n\s*\{\r?\n)(\s*this\.__id462_)/,
+      `$1            this["serverAuthorityBossChestOpened"] = true;${eol}$2`
+    )
+    .replace('if(this.ServerAuthoritySnapshotValue(param2,"bossDead") == "1")', 'if(this.ServerAuthoritySnapshotValue(param2,"bossDead") == "1" && !Boolean(this["serverAuthorityBossDead"]))')
+    .replace(
+      /(if\(this\.ServerAuthoritySnapshotValue\(param2,"bossDead"\) == "1" && !Boolean\(this\["serverAuthorityBossDead"\]\)\)\r?\n\s*\{\r?\n)(\s*this\.am_Boss\.Remove\(\);)/,
+      `$1            this["serverAuthorityBossDead"] = true;${eol}            this.am_Boss.bHoldSpawn = true;${eol}$2`
+    )
+    .replace(
+      'if(this.ServerAuthoritySnapshotValue(param2,"annaFreed") == "1" && this.ServerAuthoritySnapshotValue(param2,"bossDead") == "1")',
+      'if(this.ServerAuthoritySnapshotValue(param2,"annaFreed") == "1" && this.ServerAuthoritySnapshotValue(param2,"bossDead") == "1" && !Boolean(this["serverAuthorityBossRoomComplete"]))'
+    )
+    .replace(
+      /(if\(this\.ServerAuthoritySnapshotValue\(param2,"annaFreed"\) == "1" && this\.ServerAuthoritySnapshotValue\(param2,"bossDead"\) == "1" && !Boolean\(this\["serverAuthorityBossRoomComplete"\]\)\)\r?\n\s*\{\r?\n)(\s*param1\.SetPhase\(null\);)/,
+      `$1            this["serverAuthorityBossRoomComplete"] = true;${eol}$2`
+    );
+
+  patched = patched.replace(
+    '         return Boolean(param1) && param1.AtHealth(param2);',
+    [
+      '         if(param2 == 0.8 && Boolean(this["serverAuthorityBossWave80"]))',
+      '         {',
+      '            return false;',
+      '         }',
+      '         if(param2 == 0.5 && Boolean(this["serverAuthorityBossWave50"]))',
+      '         {',
+      '            return false;',
+      '         }',
+      '         if(param2 == 0.33 && Boolean(this["serverAuthorityBossWave33"]))',
+      '         {',
+      '            return false;',
+      '         }',
+      '         return Boolean(param1) && param1.AtHealth(param2);'
+    ].join(eol)
+  );
+
+  const initRoomRange = findMethodRange(patched, 'InitRoom');
+  const initRoomSource = patched.slice(initRoomRange.start, initRoomRange.end)
+    .replace(`         this.am_Boss.bHoldSpawn = true;${eol}`, '');
+  patched = `${patched.slice(0, initRoomRange.start)}${initRoomSource}${patched.slice(initRoomRange.end)}`;
 
   patched = patched.replace(/this\.am_Boss\.AtHealth\(0\.8\)/g, 'this.ServerAuthorityVisualBossAtHealth(this.am_Boss,0.8)');
   patched = patched.replace(/this\.am_Boss\.AtHealth\(0\.5\)/g, 'this.ServerAuthorityVisualBossAtHealth(this.am_Boss,0.5)');
@@ -270,6 +580,9 @@ function patchBossRoom(source) {
 function verifyTutorial01(source, label) {
   requireMarkers(source, label, [
     'public function ServerAuthorityVisualCueDefeated(param1:a_Cue) : Boolean',
+    'public function ApplyServerAuthoritySnapshot(param1:a_GameHook, param2:String) : void',
+    'this["serverAuthorityEarlyChainResolved"] = true;',
+    'param1.CollisionOff("am_DynamicCollision_WaitingForHelp");',
     'this.ServerAuthorityVisualCueDefeated(this.am_Chains)',
     'param1.Animate("am_ChainsTut","Remove",true);',
     'param1.CollisionOff("am_DynamicCollision_WaitingForHelp");'
@@ -280,6 +593,9 @@ function verifyTutorial01(source, label) {
 function verifyTutorial02(source, label) {
   requireMarkers(source, label, [
     'public function ServerAuthorityVisualDummyDefeated(param1:a_Cue) : Boolean',
+    'public function ApplyServerAuthoritySnapshot(param1:a_GameHook, param2:String) : void',
+    'this["serverAuthorityGateOpen"] = true;',
+    'param1.Animate("am_Gate","Open",true);',
     'return this.ServerAuthorityVisualDummyDefeated(param1);',
     'this.am_Dummy1.Spawn();',
     'this.am_Dummy2.Spawn();',
@@ -292,6 +608,8 @@ function verifyTutorial02(source, label) {
 function verifyTutorial05Alt(source, label) {
   requireMarkers(source, label, [
     'public function ServerAuthorityVisualChestOpened(param1:a_Cue) : Boolean',
+    'public function ApplyServerAuthoritySnapshot(param1:a_GameHook, param2:String) : void',
+    'this.ServerAuthoritySnapshotValue(param2,"tutorialChest") == "1" && !this.bChestOpened',
     'this.ServerAuthorityVisualChestOpened(this.am_WaveBoss) && !this.bChestOpened',
     'param1.CollisionOff("am_DynamicCollision_PathBlock02");',
     'param1.PlayScript(this.Script_Ambush);'
@@ -303,6 +621,13 @@ function verifyBossRoom(source, label) {
     'this.am_Boss.displayName = "Tag Ugo";',
     'public function ServerAuthorityVisualBossAtHealth(param1:a_Cue, param2:Number) : Boolean',
     'public function ServerAuthorityVisualCueDefeated(param1:a_Cue) : Boolean',
+    'public function ApplyServerAuthoritySnapshot(param1:a_GameHook, param2:String) : void',
+    'this["serverAuthorityBossWave80"]',
+    'param1.Ambush("am_WaveOne");',
+    'this["serverAuthorityBossDead"] = true;',
+    'this["serverAuthorityBossRoomComplete"] = true;',
+    'this.am_Boss.bHoldSpawn = true;',
+    'param2 == 0.8 && Boolean(this["serverAuthorityBossWave80"])',
     'this.ServerAuthorityVisualBossAtHealth(this.am_Boss,0.8)',
     'this.ServerAuthorityVisualBossAtHealth(this.am_Boss,0.5)',
     'this.ServerAuthorityVisualBossAtHealth(this.am_Boss,0.33)',
@@ -312,7 +637,6 @@ function verifyBossRoom(source, label) {
     'param1.cutSceneDefeatBoss = ['
   ]);
   rejectMarkers(source, label, [
-    'this.am_Boss.bHoldSpawn = true;',
     'this.am_Boss.AtHealth(0.8)',
     'this.am_Boss.AtHealth(0.5)',
     'this.am_Boss.AtHealth(0.33)',

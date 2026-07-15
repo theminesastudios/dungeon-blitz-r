@@ -55,6 +55,7 @@ import { markRoomBossEntity } from '../core/RoomBossState';
 import { getCharacterRuntimeLevel, getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
 import { getCraftTownHomeInstanceId } from '../utils/HomeVisitGuard';
 import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
+import { DungeonCompletionSystem } from '../core/DungeonCompletionSystem';
 
 const db = new JsonAdapter();
 
@@ -3177,7 +3178,9 @@ export class LevelHandler {
                 completed: false,
                 startedAt: Date.now(),
                 endedAt: 0,
-                dialogIndex: 0
+                dialogIndex: 0,
+                participantKeys: new Set<string>(),
+                closedParticipantKeys: new Set<string>()
             }
         );
     }
@@ -3192,7 +3195,8 @@ export class LevelHandler {
             return false;
         }
 
-        return LevelHandler.hasSharedDungeonCutscenePeer(client);
+        return TutorialDungeonMechanics.isTutorialDungeon(client.currentLevel) ||
+            LevelHandler.hasSharedDungeonCutscenePeer(client);
     }
 
     private static beginSharedDungeonCutscene(
@@ -3242,7 +3246,7 @@ export class LevelHandler {
         return true;
     }
 
-    private static finishSharedDungeonCutscene(client: Client, roomId: number): 'not_shared' | 'finished' | 'active_duplicate' | 'completed_duplicate' {
+    private static finishSharedDungeonCutscene(client: Client, roomId: number): 'not_shared' | 'finished' | 'participant_finished' | 'active_duplicate' | 'completed_duplicate' {
         if (!LevelHandler.isSharedDungeonCutsceneScope(client)) {
             return 'not_shared';
         }
@@ -3266,7 +3270,20 @@ export class LevelHandler {
             }
             return 'completed_duplicate';
         }
-        if (existing?.active && existing.ownerToken > 0 && existing.ownerToken !== client.token) {
+        if (existing?.active && TutorialDungeonMechanics.isTutorialDungeon(levelScope)) {
+            const participantKey = DungeonCompletionSystem.getParticipantKey(client);
+            existing.participantKeys = existing.participantKeys ?? new Set<string>();
+            existing.closedParticipantKeys = existing.closedParticipantKeys ?? new Set<string>();
+            existing.participantKeys.add(participantKey);
+            existing.closedParticipantKeys.add(participantKey);
+            const waitingFor = [...existing.participantKeys]
+                .some((keyValue) => !existing.closedParticipantKeys?.has(keyValue));
+            if (waitingFor) {
+                return 'participant_finished';
+            }
+        }
+        if (existing?.active && existing.ownerToken > 0 && existing.ownerToken !== client.token &&
+            !TutorialDungeonMechanics.isTutorialDungeon(levelScope)) {
             return 'active_duplicate';
         }
 
@@ -3277,7 +3294,9 @@ export class LevelHandler {
             completed: true,
             startedAt: Math.max(0, Math.round(Number(existing?.startedAt ?? Date.now()) || Date.now())),
             endedAt: Date.now(),
-            dialogIndex: LevelHandler.getSharedDungeonCutsceneDialogIndex(existing)
+            dialogIndex: LevelHandler.getSharedDungeonCutsceneDialogIndex(existing),
+            participantKeys: existing?.participantKeys ?? new Set<string>(),
+            closedParticipantKeys: existing?.closedParticipantKeys ?? new Set<string>()
         });
         return 'finished';
     }
@@ -3384,8 +3403,11 @@ export class LevelHandler {
             Math.round(Number(joinedAtDialogIndex) || 0)
         );
         client.activeDungeonCutsceneLocalDialogIndex = 0;
+        const state = LevelHandler.getSharedDungeonCutsceneState(getClientLevelScope(client), roomId);
+        state?.participantKeys?.add(DungeonCompletionSystem.getParticipantKey(client));
         LevelHandler.markRoomEventStarted(client, roomId);
         MissionHandler.noteDungeonCutsceneStart(client, roomId);
+        EntityHandler.sendTutorialDungeonWorldSnapshot(client, 'cutscene_start');
     }
 
     private static sendSharedDungeonCutsceneStartToClient(
@@ -4591,6 +4613,7 @@ export class LevelHandler {
         const br = new BitReader(data);
         const roomId = br.readMethod9();
         LevelHandler.cacheRoomId(client, roomId);
+        EntityHandler.sendTutorialDungeonWorldSnapshot(client, 'room_state_ready');
         br.readMethod9();
         if (LevelHandler.shouldSuppressSharedDungeonCutscenePacket(client, roomId)) {
             return;
@@ -4684,8 +4707,19 @@ export class LevelHandler {
         ) {
             return;
         }
+        if (sharedCutsceneDecision === 'participant_finished') {
+            EntityHandler.sendTutorialDungeonWorldSnapshot(client, 'cutscene_participant_end');
+            client.activeDungeonCutsceneScope = '';
+            client.activeDungeonCutsceneRoomId = 0;
+            client.activeDungeonCutsceneJoinedAtDialogIndex = 0;
+            client.activeDungeonCutsceneLocalDialogIndex = 0;
+            return;
+        }
         if (sharedCutsceneDecision === 'finished') {
             LevelHandler.sendSharedDungeonCutsceneEndToParticipants(client, roomId, data);
+            for (const viewer of LevelHandler.forLevelRecipients(client, true)) {
+                EntityHandler.sendTutorialDungeonWorldSnapshot(viewer, 'cutscene_completed');
+            }
             LevelHandler.setServerAuthorityHostilesUntargetableForScope(getClientLevelScope(client), roomId, false);
             return;
         }
@@ -5079,6 +5113,32 @@ export class LevelHandler {
         const levelEntity = LevelHandler.getCurrentLevelMap(client)?.get(entityId);
         const ent = client.entities.get(rawEntityId) ?? client.entities.get(entityId) ?? levelEntity;
         if (!ent) return;
+        const tutorialAuthority = TutorialDungeonMechanics.isTutorialDungeon(currentLevel)
+            ? TutorialDungeonMechanics.getAuthorityEntity(ent, Number(client.currentRoomId ?? 0))
+            : null;
+        if (
+            isDefeatEntState &&
+            tutorialAuthority &&
+            tutorialAuthority.role !== 'boss' &&
+            tutorialAuthority.role !== 'anna'
+        ) {
+            const transition = TutorialDungeonMechanics.commitClientObjectDefeat(client, ent);
+            if (transition.accepted && transition.authority) {
+                ent.dead = true;
+                ent.destroyed = true;
+                ent.hp = 0;
+                ent.entState = EntityState.DEAD;
+                EntityHandler.broadcastTutorialDungeonObjectTransition(client, transition.authority);
+                if (transition.authority.role === 'anna_chain') {
+                    void MissionHandler.handleForcedDungeonObjectiveCompletion(client, ent).catch((error) => {
+                        console.error('[GoblinKidnappersAuthority] anna_chain_completion_failed', error);
+                    });
+                }
+            } else if (transition.dedupe) {
+                EntityHandler.applyTutorialDungeonWorldSnapshotToLocalObject(client, ent, rawEntityId);
+            }
+            return;
+        }
         const isSelf =
             EntityHandler.isClientOwnPlayerEntity(client, getClientLevelScope(client), entityId, ent) ||
             EntityHandler.isClientOwnPlayerEntity(client, getClientLevelScope(client), rawEntityId, ent);

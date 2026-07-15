@@ -16,6 +16,7 @@ import { areClientsInSameParty, getPartyIdForClient, isClientPartyLeader, shares
 import { areClientsInSameLevelScope, getClientLevelScope, getLevelScopeKey, getScopeLevelName } from '../core/LevelScope';
 import { getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
 import { markRoomBossEntity } from '../core/RoomBossState';
+import { TutorialDungeonAuthorityEntity, TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
@@ -989,6 +990,16 @@ export class EntityHandler {
         entity.spawnKey = entity.spawnKey || EntityHandler.getHostileSpawnKey(levelScope, entity);
         const tombstone = EntityHandler.findDeadServerAuthorityHostileTombstone(levelScope, entity);
         if (tombstone) {
+            TutorialDungeonMechanics.noteBossHealth(client, {
+                ...entity,
+                id: tombstone.canonicalId,
+                hp: 0,
+                dead: true,
+                destroyed: true,
+                deathVersion: tombstone.deathVersion,
+                deathFinalizedAt: tombstone.deathFinalizedAt
+            });
+            EntityHandler.sendTutorialDungeonWorldSnapshot(client, 'boss_tombstone_attach');
             const localId = Math.max(0, Math.round(Number(rawEntityId || entity.id) || 0));
             if (localId > 0 && tombstone.canonicalId > 0 && localId !== tombstone.canonicalId) {
                 EntityHandler.rememberEntityAlias(client, localId, tombstone.canonicalId);
@@ -1010,6 +1021,10 @@ export class EntityHandler {
         }
 
         EntityHandler.normalizeServerAuthorityHostileState(levelName, canonical);
+        if (TutorialDungeonMechanics.isCompletionBoss(levelName, canonical)) {
+            TutorialDungeonMechanics.noteBossHealth(client, canonical);
+            EntityHandler.sendTutorialDungeonWorldSnapshot(client, 'boss_proxy_attach');
+        }
         const canonicalId = Math.max(0, Math.round(Number(canonical.id ?? 0)));
         const localId = Math.max(0, Math.round(Number(rawEntityId || entity.id) || 0));
         if (canonicalId <= 0 || localId <= 0) {
@@ -1362,6 +1377,7 @@ export class EntityHandler {
         EntityHandler.clearDeadServerAuthorityHostileTombstones(levelScope, 'new_run');
         GlobalState.levelQuestProgress.delete(levelScope);
         DungeonCompletionSystem.reset(levelScope);
+        TutorialDungeonMechanics.resetState(levelScope);
         const keyPrefix = `${levelScope}:`;
         for (const key of Array.from(GlobalState.combatContributions.keys())) {
             if (key.startsWith(keyPrefix)) {
@@ -1412,6 +1428,102 @@ export class EntityHandler {
         client.knownEntityIds.delete(localId);
         client.entityIdAliases?.delete(localId);
         client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
+    }
+
+    static sendTutorialDungeonWorldSnapshot(client: Client, reason: string): boolean {
+        if (!TutorialDungeonMechanics.isTutorialDungeon(client.currentLevel)) {
+            return false;
+        }
+        const levelScope = getClientLevelScope(client);
+        const wireRoomId = Math.max(0, Math.round(Number(client.currentRoomId ?? 0)));
+        const snapshot = TutorialDungeonMechanics.serializeSnapshot(levelScope);
+        if (!levelScope || wireRoomId <= 0 || !snapshot) {
+            return false;
+        }
+        const bb = new BitBuffer(false);
+        bb.writeMethod26(`${wireRoomId}^GoblinKidnappersAuthority^ApplySnapshot`);
+        bb.writeMethod26(snapshot);
+        client.sendBitBuffer(0x40, bb);
+        return true;
+    }
+
+    static applyTutorialDungeonWorldSnapshotToLocalObject(
+        client: Client,
+        entity: any,
+        rawEntityId: number
+    ): boolean {
+        if (!TutorialDungeonMechanics.isTutorialDungeon(client.currentLevel) || !entity || entity.isPlayer) {
+            return false;
+        }
+        const authority = TutorialDungeonMechanics.tagClientObject(entity, Number(client.currentRoomId ?? 0));
+        if (!authority || authority.role === 'boss' || authority.role === 'anna') {
+            return false;
+        }
+        const levelScope = getClientLevelScope(client);
+        EntityHandler.sendTutorialDungeonWorldSnapshot(client, 'room_object_ready');
+        if (!TutorialDungeonMechanics.isWorldObjectResolved(levelScope, authority.stableId)) {
+            return false;
+        }
+
+        const localId = Math.max(0, Math.round(Number(rawEntityId || entity.id) || 0));
+        if (localId <= 0) {
+            return false;
+        }
+        entity.dead = true;
+        entity.destroyed = true;
+        entity.hp = 0;
+        entity.entState = EntityState.DEAD;
+        client.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
+        client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
+        client.entities.delete(localId);
+        client.knownEntityIds.delete(localId);
+        TutorialDungeonMechanics.logSnapshotApplied(client, authority.stableId, 1, false);
+        return true;
+    }
+
+    static broadcastTutorialDungeonObjectTransition(
+        sourceClient: Client,
+        authority: TutorialDungeonAuthorityEntity
+    ): number {
+        const levelScope = getClientLevelScope(sourceClient);
+        const state = TutorialDungeonMechanics.getClientState(sourceClient);
+        if (!levelScope || !state) {
+            return 0;
+        }
+
+        let recipients = 0;
+        for (const viewer of GlobalState.sessionsByToken.values()) {
+            if (!viewer.playerSpawned || getClientLevelScope(viewer) !== levelScope) {
+                continue;
+            }
+            EntityHandler.sendTutorialDungeonWorldSnapshot(viewer, 'world_transition');
+            const localEntity = TutorialDungeonMechanics.findClientLocalObject(viewer, authority.stableId);
+            const localId = Math.max(0, Math.round(Number(localEntity?.id ?? 0)));
+            if (localId <= 0) {
+                continue;
+            }
+            localEntity.dead = true;
+            localEntity.destroyed = true;
+            localEntity.hp = 0;
+            localEntity.entState = EntityState.DEAD;
+            viewer.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
+            viewer.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
+            viewer.entities.delete(localId);
+            viewer.knownEntityIds.delete(localId);
+            recipients++;
+        }
+        const objectState = state.objects.get(authority.stableId);
+        TutorialDungeonMechanics.logTransition(
+            state,
+            authority,
+            'active',
+            objectState?.lifecycle ?? 'destroyed',
+            sourceClient.token,
+            recipients,
+            false,
+            'broadcast'
+        );
+        return recipients;
     }
 
     private static usesLeaderAuthoritativeClientSpawns(levelName: string | null | undefined): boolean {
@@ -3486,6 +3598,19 @@ export class EntityHandler {
             }
         }
 
+        const tutorialAuthority = TutorialDungeonMechanics.isTutorialDungeon(levelName)
+            ? TutorialDungeonMechanics.tagClientObject(props, Number(client.currentRoomId ?? 0))
+            : null;
+        if (tutorialAuthority && tutorialAuthority.role !== 'boss') {
+            client.entities.set(rawEntityId, props);
+            if (EntityHandler.applyTutorialDungeonWorldSnapshotToLocalObject(client, props, rawEntityId)) {
+                return;
+            }
+            noteDungeonRunEntitySeen(client, rawEntityId, props);
+            EntityHandler.rememberEntityKnown(client, levelName, props);
+            return;
+        }
+
         if (EntityHandler.suppressServerAuthorityClientHostileSpawn(client, levelName, props, rawEntityId)) {
             return;
         }
@@ -3501,6 +3626,12 @@ export class EntityHandler {
         }
 
         client.entities.set(entityId, props);
+        if (
+            !isPlayer &&
+            EntityHandler.applyTutorialDungeonWorldSnapshotToLocalObject(client, props, rawEntityId)
+        ) {
+            return;
+        }
         noteDungeonRunEntitySeen(client, entityId, props);
         EntityHandler.rememberEntityKnown(client, levelName, props);
 
@@ -3598,6 +3729,8 @@ export class EntityHandler {
             noteDungeonRunEntitySeen(client, id, entityProps);
             EntityHandler.sendEntity(client, entityProps);
         }
+        EntityHandler.sendTutorialDungeonWorldSnapshot(client, 'initial_entities_ready');
+        MissionHandler.tryRestoreDungeonCompletionAfterReentry(client);
     }
 
     static removeOwnedEntities(client: Client): number[] {

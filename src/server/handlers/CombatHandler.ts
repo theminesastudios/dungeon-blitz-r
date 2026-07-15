@@ -124,6 +124,7 @@ export class CombatHandler {
     private static readonly recentFireBrandPiercingCasts = new Map<string, number>();
     private static readonly recentServerAuthorityProxyHpApplies = new Map<string, number>();
     private static readonly recentPartySharedHostileHpApplies = new Map<string, number>();
+    private static readonly recentTutorialBossHitPackets = new Map<string, number>();
     private static readonly SERVER_AUTHORITY_SYNC_LEVELS = new Set<string>([
         'AC_Mission1',
         'JC_Mini1Hard',
@@ -2377,7 +2378,11 @@ export class CombatHandler {
         return Boolean(
             viewer.playerSpawned &&
             getClientLevelScope(viewer) === levelScope &&
-            (viewer === anchor || areClientsInSameParty(anchor, viewer))
+            (
+                viewer === anchor ||
+                TutorialDungeonMechanics.isTutorialDungeon(levelScope) ||
+                areClientsInSameParty(anchor, viewer)
+            )
         );
     }
 
@@ -2612,6 +2617,10 @@ export class CombatHandler {
         entity.health_delta = -maxHp;
         entity.dead = true;
         entity.destroyed = true;
+        if (TutorialDungeonMechanics.isCompletionBoss(levelScope, entity)) {
+            entity.bossDeathCommitted = true;
+            entity.bossRespawnBlocked = true;
+        }
         entity.entState = EntityState.DEAD;
         entity.deathFinalizedAt = Math.max(0, Math.round(Number(entity.deathFinalizedAt ?? 0))) || finalizedAt;
         entity.finalDeathReason = options.reason ?? 'hostile_death';
@@ -2630,6 +2639,10 @@ export class CombatHandler {
             levelEntity.health_delta = -maxHp;
             levelEntity.dead = true;
             levelEntity.destroyed = true;
+            if (TutorialDungeonMechanics.isCompletionBoss(levelScope, levelEntity)) {
+                levelEntity.bossDeathCommitted = true;
+                levelEntity.bossRespawnBlocked = true;
+            }
             levelEntity.entState = EntityState.DEAD;
             levelEntity.deathFinalizedAt = Math.max(0, Math.round(Number(levelEntity.deathFinalizedAt ?? 0))) || entity.deathFinalizedAt;
             levelEntity.finalDeathReason = options.reason ?? 'hostile_death_level_copy';
@@ -2652,6 +2665,9 @@ export class CombatHandler {
         if (CombatHandler.isServerAuthoritySyncNpc(levelScope, entity)) {
             EntityHandler.noteServerAuthorityHostileDestroyed(levelScope, entityId, entity, anchor.token);
         }
+        if (TutorialDungeonMechanics.isCompletionBoss(levelScope, entity)) {
+            TutorialDungeonMechanics.noteBossHealth(anchor, entity);
+        }
 
         let viewers = 0;
         if (CombatHandler.isServerAuthoritySyncNpc(levelScope, entity)) {
@@ -2667,14 +2683,29 @@ export class CombatHandler {
                     entityId,
                     'death-correction'
                 );
-                if (!resolved.ok || resolved.localId <= 0) {
+                const registeredLocalId = EntityHandler.getRegisteredHostileLocalIdForViewer(
+                    viewer,
+                    canonicalEntity
+                );
+                const isTutorialCompletionBoss = TutorialDungeonMechanics.isCompletionBoss(
+                    levelScope,
+                    canonicalEntity
+                );
+                const resolvedLocalId = resolved.ok && resolved.localId > 0
+                    ? resolved.localId
+                    : isTutorialCompletionBoss && registeredLocalId > 0
+                        ? registeredLocalId
+                        : isTutorialCompletionBoss
+                            ? EntityHandler.resolveEntityLocalId(viewer, entityId)
+                            : 0;
+                if (resolvedLocalId <= 0) {
                     continue;
                 }
                 if (CombatHandler.sendHostileDeathCorrectionToViewer(
                     viewer,
                     levelScope,
                     canonicalEntity,
-                    resolved.localId,
+                    resolvedLocalId,
                     options.reason ?? 'hostile_death'
                 )) {
                     viewers++;
@@ -2926,11 +2957,12 @@ export class CombatHandler {
             EntityHandler.ensureJcMini1PartySharedScope(viewer, getScopeLevelName(levelScope), 'combat_relay_scope_guard');
         }
 
-        return Boolean(
-            viewer.playerSpawned &&
-            getClientLevelScope(viewer) === levelScope &&
-            (viewer === anchor || areClientsInSameParty(anchor, viewer))
-        );
+        const sameScope = viewer.playerSpawned && getClientLevelScope(viewer) === levelScope;
+        if (TutorialDungeonMechanics.isTutorialDungeon(getScopeLevelName(levelScope))) {
+            return Boolean(sameScope);
+        }
+
+        return Boolean(sameScope && (viewer === anchor || areClientsInSameParty(anchor, viewer)));
     }
 
     private static refreshServerAuthorityProgressWithRetries(levelScope: string, reason: string): void {
@@ -3100,8 +3132,16 @@ export class CombatHandler {
         const previousHp = Number.isFinite(previousHpRaw)
             ? Math.max(0, Math.round(previousHpRaw))
             : maxHp;
-        const delta = canonicalHp - previousHp;
-        viewer.send(0x78, CombatHandler.buildHpDeltaPayload(localId, delta));
+        if (TutorialDungeonMechanics.isCompletionBoss(levelScope, entity)) {
+            viewer.send(0x78, CombatHandler.buildHpDeltaPayload(localId, maxHp));
+            const damageTaken = Math.max(0, maxHp - canonicalHp);
+            if (damageTaken > 0) {
+                viewer.send(0x78, CombatHandler.buildHpDeltaPayload(localId, -damageTaken));
+            }
+        } else {
+            const delta = canonicalHp - previousHp;
+            viewer.send(0x78, CombatHandler.buildHpDeltaPayload(localId, delta));
+        }
         viewer.entities.set(localId, {
             ...(existing ?? {}),
             ...entity,
@@ -3143,6 +3183,14 @@ export class CombatHandler {
 
             if (CombatHandler.sendAuthoritativeServerAuthorityHpToViewer(viewer, levelScope, entity, resolved.localId, reason, hpVersion)) {
                 count++;
+            }
+        }
+
+        if (TutorialDungeonMechanics.isCompletionBoss(levelScope, entity)) {
+            for (const viewer of GlobalState.sessionsByToken.values()) {
+                if (getClientLevelScope(viewer) === levelScope) {
+                    EntityHandler.sendTutorialDungeonWorldSnapshot(viewer, reason);
+                }
             }
         }
 
@@ -4598,6 +4646,11 @@ export class CombatHandler {
         }
 
         const sourceSession = CombatHandler.resolveCombatSourceSession(levelScope, info.sourceId, client);
+        if (sourceSession && TutorialDungeonMechanics.isTutorialDungeon(levelScope)) {
+            const sequences = ((sourceSession as any).serverAuthorityCastSequences ??= new Map<string, number>()) as Map<string, number>;
+            const castKey = `${levelScope}:${info.sourceId}:${info.powerId}`;
+            sequences.set(castKey, Math.max(0, Math.round(Number(sequences.get(castKey) ?? 0))) + 1);
+        }
         const sourceEntity = CombatHandler.resolvePowerCastSourceEntity(levelScope, info.sourceId, client);
         if (CombatHandler.shouldSuppressHostileBossPower(levelScope, sourceEntity)) {
             return;
@@ -4705,6 +4758,27 @@ export class CombatHandler {
             CombatHandler.didRecentlyApplyFireBrandPiercingCastDamage(levelScope, sourceId)
         ) {
             return;
+        }
+        if (targetEntity && TutorialDungeonMechanics.isCompletionBoss(levelScope, targetEntity)) {
+            const authorityClient = sourceSession ?? client;
+            const sequences = ((authorityClient as any).serverAuthorityCastSequences ?? new Map<string, number>()) as Map<string, number>;
+            const castSequence = Math.max(0, Math.round(Number(sequences.get(`${levelScope}:${sourceId}:${info.powerId}`) ?? 0)));
+            const eventId = `${sourceId}:${targetId}:${info.powerId}:${castSequence}:${damage}:${info.isCrit ? 1 : 0}`;
+            const processed = (targetEntity.processedDamageEventIds ??= new Set<string>()) as Set<string>;
+            if (castSequence > 0) {
+                if (processed.has(eventId)) {
+                    return;
+                }
+                processed.add(eventId);
+            } else {
+                const fallbackKey = `${levelScope}:${authorityClient.token}:${data.toString('hex')}`;
+                const now = Date.now();
+                const lastAt = Math.max(0, Number(CombatHandler.recentTutorialBossHitPackets.get(fallbackKey) ?? 0));
+                CombatHandler.recentTutorialBossHitPackets.set(fallbackKey, now);
+                if (lastAt > 0 && now - lastAt <= 100) {
+                    return;
+                }
+            }
         }
 
         if (client.currentLevel === 'CraftTownTutorial' && client.keepTutorialState) {
@@ -4932,6 +5006,25 @@ export class CombatHandler {
         const destroyedEntity = EntityHandler.usesServerAuthorityHostiles(levelName)
             ? (canonicalServerAuthorityEntity ?? client.entities.get(entityId) ?? rawLocalDestroyedEntity ?? canonicalDestroyedEntity)
             : (client.entities.get(entityId) ?? canonicalDestroyedEntity ?? rawLocalDestroyedEntity);
+        const scriptedAuthority = TutorialDungeonMechanics.isTutorialDungeon(levelName)
+            ? TutorialDungeonMechanics.getAuthorityEntity(rawLocalDestroyedEntity, Number(client.currentRoomId ?? 0))
+            : null;
+        if (scriptedAuthority && scriptedAuthority.role !== 'boss' && scriptedAuthority.role !== 'anna') {
+            const transition = TutorialDungeonMechanics.commitClientObjectDefeat(client, rawLocalDestroyedEntity);
+            if (transition.accepted && transition.authority) {
+                rawLocalDestroyedEntity.dead = true;
+                rawLocalDestroyedEntity.destroyed = true;
+                rawLocalDestroyedEntity.hp = 0;
+                rawLocalDestroyedEntity.entState = EntityState.DEAD;
+                EntityHandler.broadcastTutorialDungeonObjectTransition(client, transition.authority);
+                if (transition.authority.role === 'anna_chain') {
+                    await MissionHandler.handleForcedDungeonObjectiveCompletion(client, rawLocalDestroyedEntity);
+                }
+            } else if (transition.dedupe) {
+                EntityHandler.applyTutorialDungeonWorldSnapshotToLocalObject(client, rawLocalDestroyedEntity, rawEntityId);
+            }
+            return;
+        }
         let isSeedOutsideClientSpawnDestroy = false;
         if (
             destroyedEntity &&
