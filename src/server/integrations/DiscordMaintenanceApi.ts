@@ -7,18 +7,56 @@ import { JsonAdapter } from '../database/JsonAdapter';
 import type { Character } from '../database/Database';
 
 const MAX_MAINTENANCE_WARNING_SECONDS = 86_400;
+const ADMIN_RATE_LIMIT_WINDOW_MS = 60_000;
+const ADMIN_RATE_LIMIT_MAX_REQUESTS = 30;
 const registeredApps = new WeakSet<express.Application>();
+const adminRateLimitEntries = new Map<string, { startedAt: number; count: number }>();
 const db = new JsonAdapter();
 
 function readBearerToken(authorization: string | undefined): string {
-    const match = /^Bearer\s+(.+)$/i.exec(String(authorization ?? '').trim());
-    return match?.[1]?.trim() ?? '';
+    const value = String(authorization ?? '').trim();
+    if (value.length <= 7 || value.slice(0, 7).toLowerCase() !== 'bearer ') {
+        return '';
+    }
+    return value.slice(7).trim();
 }
 
 function secretsMatch(provided: string, expected: string): boolean {
     const providedBuffer = Buffer.from(provided);
     const expectedBuffer = Buffer.from(expected);
     return providedBuffer.length === expectedBuffer.length && timingSafeEqual(providedBuffer, expectedBuffer);
+}
+
+function adminRateLimit(req: express.Request, res: express.Response, next: express.NextFunction): void {
+    const now = Date.now();
+    const key = String(req.socket.remoteAddress ?? 'unknown');
+    const current = adminRateLimitEntries.get(key);
+    const entry = !current || now - current.startedAt >= ADMIN_RATE_LIMIT_WINDOW_MS
+        ? { startedAt: now, count: 1 }
+        : { startedAt: current.startedAt, count: current.count + 1 };
+    adminRateLimitEntries.set(key, entry);
+
+    const remaining = Math.max(0, ADMIN_RATE_LIMIT_MAX_REQUESTS - entry.count);
+    const resetAt = Math.ceil((entry.startedAt + ADMIN_RATE_LIMIT_WINDOW_MS) / 1000);
+    res.setHeader('RateLimit-Limit', String(ADMIN_RATE_LIMIT_MAX_REQUESTS));
+    res.setHeader('RateLimit-Remaining', String(remaining));
+    res.setHeader('RateLimit-Reset', String(resetAt));
+
+    if (entry.count > ADMIN_RATE_LIMIT_MAX_REQUESTS) {
+        res.setHeader('Retry-After', String(Math.max(1, resetAt - Math.floor(now / 1000))));
+        res.status(429).json({ error: 'Too many admin requests.' });
+        return;
+    }
+
+    if (adminRateLimitEntries.size > 1_000) {
+        for (const [entryKey, candidate] of adminRateLimitEntries) {
+            if (now - candidate.startedAt >= ADMIN_RATE_LIMIT_WINDOW_MS) {
+                adminRateLimitEntries.delete(entryKey);
+            }
+        }
+    }
+
+    next();
 }
 
 function isAuthorized(req: express.Request, res: express.Response): boolean {
@@ -145,7 +183,7 @@ export function registerDiscordMaintenanceApi(staticServer: StaticServer): void 
     }
     registeredApps.add(app);
 
-    app.post('/api/admin/maintenance', (req, res) => {
+    app.post('/api/admin/maintenance', adminRateLimit, (req, res) => {
         res.setHeader('Cache-Control', 'no-store');
         if (!isAuthorized(req, res)) {
             return;
@@ -171,7 +209,7 @@ export function registerDiscordMaintenanceApi(staticServer: StaticServer): void 
         res.json({ ok: true, seconds, recipients });
     });
 
-    app.post('/api/admin/idols', async (req, res) => {
+    app.post('/api/admin/idols', adminRateLimit, async (req, res) => {
         res.setHeader('Cache-Control', 'no-store');
         if (!isAuthorized(req, res)) {
             return;
