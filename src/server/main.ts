@@ -38,6 +38,7 @@ import { GuildHandler } from './handlers/GuildHandler';
 import { ForgeHandler } from './handlers/ForgeHandler';
 import { PetHandler } from './handlers/PetHandler';
 import { discordSocialBridge } from './integrations/DiscordSocialBridge';
+import { registerDiscordMaintenanceApi } from './integrations/DiscordMaintenanceApi';
 import { ProjectInfo } from './core/ProjectInfo';
 import { JsonAdapter } from './database/JsonAdapter';
 import * as path from 'path';
@@ -213,6 +214,7 @@ router.register(0x106, SigilHandler.handleRoyalSigilStorePurchase);
 
 let policyServer: PolicyServer | null = null;
 const staticServer = new StaticServer(Config.STATIC_PORT, '../client/content/localhost', Config.BIND_HOST);
+registerDiscordMaintenanceApi(staticServer);
 const gameServer = new GameServer(Config.PORTS[0], router, Config.BIND_HOST);
 
 async function startServers(): Promise<void> {
