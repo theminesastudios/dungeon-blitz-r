@@ -11,6 +11,7 @@ import { getClientLevelScope, getScopeLevelName } from './LevelScope';
 import { getSharedDungeonProgressTotals } from './SharedDungeonProgress';
 import { TutorialDungeonMechanics } from './TutorialDungeonMechanics';
 import { getRoomBossAwareRoomId } from './RoomBossState';
+import { LevelConfig } from './LevelConfig';
 
 const CUTSCENE_OBJECTIVE_REORDER_TOLERANCE_MS = 15_000;
 
@@ -25,11 +26,93 @@ function isDefeated(entity: any): boolean {
         Number(entity?.entState ?? EntityState.ACTIVE) === 6;
 }
 
-function isTrackableHostile(entity: any): boolean {
-    return Boolean(entity) &&
-        !Boolean(entity.isPlayer) &&
-        Number(entity.team ?? 0) === EntityTeam.ENEMY &&
-        !Boolean(entity.untargetable);
+function normalizeEntityName(entity: any): string {
+    return String(
+        entity?.name ??
+        entity?.EntName ??
+        entity?.entName ??
+        entity?.displayName ??
+        ''
+    )
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
+}
+
+const IGNORED_FULL_CLEAR_ENTITIES_BY_LEVEL: Record<string, ReadonlySet<string>> = {
+    CH_MiniMission1: new Set([
+        'vigilwaterfall',
+        'vigilstraight'
+    ]),
+
+    CH_MiniMission2: new Set([
+        'vigilmeteordown',
+        'vigilflameup'
+    ]),
+
+    CH_MiniMission3: new Set([
+        'vigilflameup',
+        'vigilstraight'
+    ]),
+
+    CH_MiniMission4: new Set([
+        'vigilstraight',
+        'vigilflameup',
+        'vigilflamedown'
+    ]),
+
+    CH_MiniMission5: new Set([
+        'vigilflame',
+        'vigilmeteordown'
+    ]),
+
+    CH_MiniMission6: new Set([
+    ]),
+
+    CH_MiniMission7: new Set([
+        'vigilflameup',
+        'vigilflamedown',
+        'vigilstraight',
+        'vigilflame',
+        'greaterskeletonclub'
+    ]),
+
+    CH_MiniMission8: new Set([
+        'yellowghostknight',
+        'greaterskeletonsorcerer',
+        'vigilmeteordown'
+    ]),
+
+    CH_MiniMission9: new Set([
+        'greaterskeletonfist'
+        
+    ])
+};
+
+function isTrackableHostile(
+    entity: any,
+    levelName: string = ''
+): boolean {
+    if (
+        !entity ||
+        Boolean(entity.isPlayer) ||
+        Number(entity.team ?? 0) !== EntityTeam.ENEMY ||
+        Boolean(entity.untargetable)
+    ) {
+        return false;
+    }
+
+    const normalizedLevel = String(levelName ?? '').trim();
+    const normalizedName = normalizeEntityName(entity);
+
+    if (
+        IGNORED_FULL_CLEAR_ENTITIES_BY_LEVEL[normalizedLevel]
+            ?.has(normalizedName)
+    ) {
+        return false;
+    }
+
+    return true;
 }
 
 function createRunState(levelScope: string, levelName: string, now: number): DungeonCompletionRunState {
@@ -181,7 +264,7 @@ export class DungeonCompletionSystem {
         state.eventSequence += 1;
         state.updatedAt = now;
 
-        if (entityId > 0 && isTrackableHostile(entity)) {
+        if (entityId > 0 && isTrackableHostile(entity, state.levelName)) {
             state.defeatedHostileIds.add(entityId);
         }
         if (canonicalBoss) {
@@ -437,7 +520,7 @@ export class DungeonCompletionSystem {
                 }
             }
             const entityId = getEntityId(entity);
-            if (entityId > 0 && isTrackableHostile(entity)) {
+            if (entityId > 0 && isTrackableHostile(entity, state.levelName)) {
                 state.defeatedHostileIds.add(entityId);
             }
         }
@@ -460,15 +543,75 @@ export class DungeonCompletionSystem {
         }
         if (condition.mode === 'full-clear') {
             const totals = getSharedDungeonProgressTotals(state.levelScope);
+
+            const entities = [
+                ...(GlobalState.levelEntities.get(state.levelScope)?.values() ?? [])
+            ];
+
+            const hostiles = entities.filter((entity) =>
+                isTrackableHostile(entity, state.levelName)
+            );
+            const livingHostiles = hostiles.filter((entity) => !isDefeated(entity));
+
+            console.log("========== FULL CLEAR DEBUG ==========");
+            console.log("Level:", state.levelName);
+            console.log("Scope:", state.levelScope);
+            console.log("Shared totals:", {
+                defeated: totals.defeated,
+                total: totals.total
+            });
+
+            console.log(
+                "All tracked hostiles:",
+                hostiles.map((entity: any) => ({
+                    id: getEntityId(entity),
+                    name:
+                        entity?.name ??
+                        entity?.EntName ??
+                        entity?.entName ??
+                        entity?.displayName ??
+                        "unknown",
+                    hp: entity?.hp,
+                    dead: entity?.dead,
+                    destroyed: entity?.destroyed,
+                    entState: entity?.entState,
+                    team: entity?.team,
+                    untargetable: entity?.untargetable,
+                    defeated: isDefeated(entity)
+                }))
+            );
+
+            console.log(
+                "Living hostiles blocking completion:",
+                livingHostiles.map((entity: any) => ({
+                    id: getEntityId(entity),
+                    name:
+                        entity?.name ??
+                        entity?.EntName ??
+                        entity?.entName ??
+                        entity?.displayName ??
+                        "unknown",
+                    hp: entity?.hp,
+                    dead: entity?.dead,
+                    destroyed: entity?.destroyed,
+                    entState: entity?.entState,
+                    team: entity?.team,
+                    untargetable: entity?.untargetable
+                }))
+            );
+
+            console.log("======================================");
+
             if (totals.total > 0) {
                 return totals.defeated >= totals.total;
             }
-            const hostiles = [...(GlobalState.levelEntities.get(state.levelScope)?.values() ?? [])]
-                .filter(isTrackableHostile);
+
             if (hostiles.length > 0) {
-                return hostiles.every(isDefeated);
+                return hostiles.every((entity) => isDefeated(entity));
             }
-            return state.clientCompletionSignals.size > 0 && state.defeatedHostileIds.size > 0;
+
+            return state.clientCompletionSignals.size > 0 &&
+                state.defeatedHostileIds.size > 0;
         }
         if (condition.mode !== 'bosses') {
             return false;

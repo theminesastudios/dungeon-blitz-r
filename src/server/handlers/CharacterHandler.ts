@@ -1153,6 +1153,9 @@ export class CharacterHandler {
         client.token = token;
         client.clientEntID = 0;
         client.currentLevel = entry.targetLevel;
+        
+
+
         client.levelInstanceId = entry.targetLevel === 'CraftTown'
             ? normalizeLevelInstanceId(entry.levelInstanceId) || getCraftTownHomeInstanceId(entry.character, entry.craftTownHostCharacter)
             : LevelConfig.isDungeonLevel(entry.targetLevel)
