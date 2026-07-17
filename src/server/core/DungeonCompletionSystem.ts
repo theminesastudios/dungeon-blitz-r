@@ -246,6 +246,7 @@ export class DungeonCompletionSystem {
         const lifeNonce = Math.max(0, Math.round(Number(entity?.lifeNonce ?? entity?.deathVersion ?? 0)));
         const canonicalBoss = DungeonCompletionConditions.getCanonicalBossName(state.levelName, entity, state.levelScope);
         const objectiveRole = DungeonCompletionConditions.getObjectiveRole(state.levelName, entity);
+
         const eventIdentity = canonicalBoss || objectiveRole || String(entity?.name ?? entity?.EntName ?? 'hostile');
         const tutorialAuthority = TutorialDungeonMechanics.isTutorialDungeon(state.levelName)
             ? TutorialDungeonMechanics.getAuthorityEntity(entity)
@@ -503,6 +504,7 @@ export class DungeonCompletionSystem {
                 continue;
             }
             const canonicalBoss = DungeonCompletionConditions.getCanonicalBossName(state.levelName, entity, state.levelScope);
+            
             if (canonicalBoss) {
                 state.defeatedBosses.add(canonicalBoss);
                 if (!state.defeatedBossAt.has(canonicalBoss)) {

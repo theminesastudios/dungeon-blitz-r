@@ -140,7 +140,7 @@
     "SD_Mission2Hard": {"mode":"bosses","bossGroups":[["ScarabScorpionHard"]]},
     "SD_Mission3": {"mode":"bosses","bossGroups":[["OutlanderWyrm"]]},
     "SD_Mission3Hard": {"mode":"bosses","bossGroups":[["OutlanderWyrmHard"]]},
-    "SD_Mission4": {"mode":"bosses","bossGroups":[["OasisVizier"]],"bossAliases":{"Dejih the Ogre-Magus":"OasisVizier","OasisVizierYellow":"OasisVizier","OasisVizierGreen":"OasisVizier","OasisVizierRed":"OasisVizier"},"cutscene":{"requiredAfterObjectives":true},"clientAuthorityBosses":["OasisVizier"],"requireRoomBossMarker":true,"allowVerifiedClientBossWithoutRoomBossMarker":true},
+    "SD_Mission4":{"mode":"bosses","bossGroups":[["OasisVizier"]],"bossAliases":{"Dejih the Ogre-Magus":"OasisVizier"},"clientAuthorityBosses":["OasisVizier"],"requireRoomBossMarker":true,"allowVerifiedClientBossWithoutRoomBossMarker":true},
     "SD_Mission4Hard": {"mode":"bosses","bossGroups":[["OasisVizierHard"]],"bossAliases":{"OasisVizier":"OasisVizierHard","Dejih the Ogre-Magus":"OasisVizierHard","OasisVizierYellow":"OasisVizierHard","OasisVizierGreen":"OasisVizierHard","OasisVizierRed":"OasisVizierHard","OasisVizierYellowHard":"OasisVizierHard","OasisVizierGreenHard":"OasisVizierHard","OasisVizierRedHard":"OasisVizierHard"},"cutscene":{"requiredAfterObjectives":true},"clientAuthorityBosses":["OasisVizierHard"],"requireRoomBossMarker":true,"allowVerifiedClientBossWithoutRoomBossMarker":true},
     "SD_Mission5": {"mode":"bosses","bossGroups":[["SandWormGreater"]]},
     "SD_Mission5Hard": {"mode":"bosses","bossGroups":[["SandWormGreaterHard"]]},

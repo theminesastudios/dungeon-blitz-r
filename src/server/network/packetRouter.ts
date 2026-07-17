@@ -10,6 +10,7 @@ export class PacketRouter {
     }
 
     public async handle(client: Client, packetId: number, data: Buffer): Promise<void> {
+        
         const handler = this.handlers.get(packetId);
         if (handler) {
             try {
