@@ -638,16 +638,56 @@ export class TutorialDungeonMechanics {
         return TutorialDungeonMechanics.commitObjectTransition(client, entity, true);
     }
 
-    static noteEntityDefeated(client: Client, entity: any): TutorialDungeonMechanicEvent[] {
-        if (!client || !TutorialDungeonMechanics.isTutorialDungeon(client.currentLevel) || !entity || entity.isPlayer) {
+    static noteEntityDefeated(
+        client: Client,
+        entity: any
+    ): TutorialDungeonMechanicEvent[] {
+        console.log('[TutorialMechanics] noteEntityDefeated called', {
+            level: client?.currentLevel,
+            entityId: getEntityId(entity),
+            entityName: getEntityName(entity),
+            roomId: getEntityRoomId(entity, Number(client?.currentRoomId ?? 0)),
+            team: Number(entity?.team ?? EntityTeam.ENEMY),
+            dead: Boolean(entity?.dead),
+            destroyed: Boolean(entity?.destroyed),
+            hp: entity?.hp
+        });
+
+        if (
+            !client ||
+            !TutorialDungeonMechanics.isTutorialDungeon(client.currentLevel) ||
+            !entity ||
+            entity.isPlayer
+        ) {
+            console.log('[TutorialMechanics] rejected invalid level/entity');
             return [];
         }
-        const transition = TutorialDungeonMechanics.commitObjectTransition(client, entity, false);
+
+        const authority = TutorialDungeonMechanics.getAuthorityEntity(
+            entity,
+            Number(client.currentRoomId ?? 0)
+        );
+
+        console.log('[TutorialMechanics] resolved authority', {
+            authorityRole: authority?.role ?? 'none',
+            authorityName: authority?.name ?? 'none',
+            authorityId: authority?.id ?? 0
+        });
+
+        const transition = TutorialDungeonMechanics.commitObjectTransition(
+            client,
+            entity,
+            false
+        );
+
+        console.log('[TutorialMechanics] transition result', transition);
+
         if (transition.accepted) {
             entity.dead = true;
             entity.hp = 0;
             entity.entState = EntityState.DEAD;
         }
+
         return transition.events;
     }
 

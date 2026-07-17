@@ -3087,67 +3087,225 @@ export class LevelHandler {
         LevelHandler.setGoblinRiverHostilesUntargetable(client, false);
     }
 
-    private static isGoblinRiverBossIntroLevel(levelName: string | null | undefined): boolean {
+    private static isGoblinRiverBossIntroLevel(
+        levelName: string | null | undefined
+        ): boolean {
         const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
-        return normalizedLevel === 'GoblinRiverDungeon' || normalizedLevel === 'GoblinRiverDungeonHard';
+
+        return (
+            normalizedLevel === 'TutorialDungeon' ||
+            normalizedLevel === 'TutorialDungeonHard' ||
+            normalizedLevel === 'GoblinRiverDungeon' ||
+            normalizedLevel === 'GoblinRiverDungeonHard'
+        );
     }
 
-    static maybeStartGoblinRiverBossIntroLock(client: Client, entityId: number, text: string): void {
+    private static normalizeGoblinRiverDialogue(text: string): string {
+        return String(text ?? '')
+            .replace(/<[^>]+>/g, '')
+            .replace(/^\^t/, '')
+            .trim();
+    }
+
+    static maybeStartGoblinRiverBossIntroLock(
+        client: Client,
+        entityId: number,
+        text: string
+    ): void {
         if (!LevelHandler.isGoblinRiverBossIntroLevel(client.currentLevel)) {
             return;
         }
-        if (!LevelHandler.GOBLIN_RIVER_BOSS_INTRO_TEXTS.has(String(text ?? '').trim())) {
+
+        const normalizedText = LevelHandler.normalizeGoblinRiverDialogue(text);
+
+        if (!LevelHandler.GOBLIN_RIVER_BOSS_INTRO_TEXTS.has(normalizedText)) {
             return;
         }
 
         const entity =
             client.entities.get(entityId) ??
             LevelHandler.getCurrentLevelMap(client)?.get(entityId);
+
         const entityName = String(entity?.name ?? '');
-        if (
-            entityName !== 'GoblinBoss1' &&
-            entityName !== 'GoblinBoss1Hard' &&
-            entityName !== 'GoblinBoss2' &&
-            entityName !== 'GoblinBoss2Hard'
-        ) {
+
+        const isGoblinRiverBoss =
+            entityName === 'GoblinBoss1' ||
+            entityName === 'GoblinBoss1Hard' ||
+            entityName === 'GoblinBoss2' ||
+            entityName === 'GoblinBoss2Hard';
+
+        if (!isGoblinRiverBoss) {
             return;
         }
 
-        const lockUntil = Date.now() + LevelHandler.GOBLIN_RIVER_BOSS_INTRO_DEFAULT_MS;
-        const existingLockUntil = Number(client.goblinRiverBossIntroLockUntil ?? 0);
-        const wasLocked = Number.isFinite(existingLockUntil) && existingLockUntil > Date.now();
+        const now = Date.now();
+        const lockUntil =
+            now + LevelHandler.GOBLIN_RIVER_BOSS_INTRO_DEFAULT_MS;
+
+        const existingLockUntil = Number(
+            client.goblinRiverBossIntroLockUntil ?? 0
+        );
+
+        const wasLocked =
+            Number.isFinite(existingLockUntil) &&
+            existingLockUntil > now;
+
         if (!wasLocked && client.currentLevel) {
-            const didStartSharedCutscene = LevelHandler.sendRoomCutSceneStart(
-                client.currentLevel,
-                Math.max(0, client.currentRoomId),
-                false,
-                client.levelInstanceId,
-                client
-            );
+            const didStartSharedCutscene =
+                LevelHandler.sendRoomCutSceneStart(
+                    client.currentLevel,
+                    Math.max(0, client.currentRoomId),
+                    false,
+                    client.levelInstanceId,
+                    client
+                );
+
             if (!didStartSharedCutscene) {
                 return;
             }
         }
+
         client.goblinRiverBossIntroLockUntil = Math.max(
-            Number.isFinite(existingLockUntil) ? existingLockUntil : 0,
+            Number.isFinite(existingLockUntil)
+                ? existingLockUntil
+                : 0,
             lockUntil
         );
-        LevelHandler.setGoblinRiverHostilesUntargetable(client, true);
+
+        LevelHandler.setGoblinRiverHostilesUntargetable(
+            client,
+            true
+        );
 
         if (client.goblinRiverBossIntroUnlockTimer) {
-            clearTimeout(client.goblinRiverBossIntroUnlockTimer);
+            clearTimeout(
+                client.goblinRiverBossIntroUnlockTimer
+            );
         }
 
         const levelScope = getClientLevelScope(client);
         const levelName = client.currentLevel;
+
         client.goblinRiverBossIntroUnlockTimer = setTimeout(() => {
             client.goblinRiverBossIntroUnlockTimer = null;
-            if (client.currentLevel !== levelName || getClientLevelScope(client) !== levelScope) {
+
+            if (
+                client.currentLevel !== levelName ||
+                getClientLevelScope(client) !== levelScope
+            ) {
                 client.goblinRiverBossIntroLockUntil = 0;
                 return;
             }
+
             LevelHandler.clearGoblinRiverBossIntroLock(client);
         }, LevelHandler.GOBLIN_RIVER_BOSS_INTRO_DEFAULT_MS);
+    }
+
+    static maybeFinishTutorialDungeonAfterAnnaCutscene(
+        client: Client,
+        text: string
+    ): void {
+        const isTutorialDungeon =
+            client.currentLevel === 'TutorialDungeon' ||
+            client.currentLevel === 'TutorialDungeonHard';
+
+        if (!isTutorialDungeon) {
+            return;
+        }
+
+        const normalizedText =
+            LevelHandler.normalizeGoblinRiverDialogue(text);
+
+        if (normalizedText !== "Let's head back to town.") {
+            return;
+        }
+
+        const levelScope = getClientLevelScope(client);
+
+        if (!levelScope) {
+            return;
+        }
+
+        const roomId =
+            Math.max(
+                0,
+                Math.round(Number(client.currentRoomId ?? 11))
+            ) || 11;
+
+        const now = Date.now();
+
+        const bossEntity = {
+            id: TutorialDungeonMechanics.TAG_UGO_BOSS_ID,
+            name:
+                client.currentLevel === 'TutorialDungeonHard'
+                    ? 'GoblinBoss1Hard'
+                    : 'GoblinBoss1',
+            displayName: 'Tag Ugo',
+            roomBossName: 'Tag Ugo',
+            roomId,
+            roomBossRoomId: roomId,
+            team: EntityTeam.ENEMY,
+            isPlayer: false,
+            dead: true,
+            destroyed: true,
+            hp: 0,
+            entState: EntityState.DEAD,
+            deathFinalizedAt: now
+        };
+
+        const annaChainEntity = {
+            id: TutorialDungeonMechanics.ANNA_CHAIN_ID,
+            name: 'Chains03',
+            roomId,
+            team: EntityTeam.ENEMY,
+            isPlayer: false,
+            dead: true,
+            destroyed: true,
+            hp: 0,
+            entState: EntityState.DEAD,
+            deathFinalizedAt: now
+        };
+
+        TutorialDungeonMechanics.noteEntityDefeated(
+            client,
+            bossEntity
+        );
+
+        TutorialDungeonMechanics.noteEntityDefeated(
+            client,
+            annaChainEntity
+        );
+
+        DungeonCompletionSystem.noteEntityDefeated(
+            levelScope,
+            bossEntity
+        );
+
+        DungeonCompletionSystem.noteEntityDefeated(
+            levelScope,
+            annaChainEntity
+        );
+
+        MissionHandler.noteDungeonCutsceneStart(
+            client,
+            roomId
+        );
+
+        MissionHandler.noteDungeonCutsceneEnd(
+            client,
+            roomId
+        );
+
+        const evaluation =
+            DungeonCompletionSystem.evaluate(levelScope);
+
+        console.log('[TutorialCompletion]', {
+            levelScope,
+            roomId,
+            ready: evaluation.ready,
+            phase: evaluation.phase,
+            reason: evaluation.reason
+        });
     }
 
     private static getSharedDungeonCutsceneKey(levelScope: string, roomId: number): string {

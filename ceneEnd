@@ -1,0 +1,17 @@
+[35msrc/server/core/DungeonCompletionSystem.ts[m[36m:[m[32m226[m[36m:[m    static [1;31mnoteCutsceneStart[m(
+[35msrc/server/handlers/MissionHandler.ts[m[36m:[m[32m1836[m[36m:[m        DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(
+[35msrc/server/test/castle_hocke_client_authority_regression.ts[m[36m:[m[32m203[m[36m:[m    DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(levelScope, clientBoss.roomId, Date.now());
+[35msrc/server/test/dungeon_boss_hp_report_completion_regression.ts[m[36m:[m[32m116[m[36m:[m    DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(scope, boss.roomId, client.lastDungeonCutsceneStartAt);
+[35msrc/server/test/dungeon_boss_hp_report_completion_regression.ts[m[36m:[m[32m194[m[36m:[m    DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(scope, boss.roomId, 3000);
+[35msrc/server/test/dungeon_boss_hp_report_completion_regression.ts[m[36m:[m[32m225[m[36m:[m    DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(scope, boss.roomId, Date.now());
+[35msrc/server/test/dungeon_completion_condition_matrix_regression.ts[m[36m:[m[32m188[m[36m:[m    DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(levelScope, 7, gateBaseTime + 11);
+[35msrc/server/test/dungeon_completion_condition_matrix_regression.ts[m[36m:[m[32m255[m[36m:[m    DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(levelScope, 7, baseTime);
+[35msrc/server/test/dungeon_completion_condition_matrix_regression.ts[m[36m:[m[32m368[m[36m:[m    DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(overlapping.levelScope, 11, 10_000);
+[35msrc/server/test/dungeon_completion_condition_matrix_regression.ts[m[36m:[m[32m369[m[36m:[m    DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(overlapping.levelScope, 5, 10_001);
+[35msrc/server/test/dungeon_completion_condition_matrix_regression.ts[m[36m:[m[32m386[m[36m:[m    DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(reordered.levelScope, 11, 20_000, true);
+[35msrc/server/test/dungeon_completion_condition_matrix_regression.ts[m[36m:[m[32m406[m[36m:[m    DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(scenario.levelScope, 7, baseTime);
+[35msrc/server/test/dungeon_completion_condition_matrix_regression.ts[m[36m:[m[32m415[m[36m:[m    DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(scenario.levelScope, 7, baseTime + 31);
+[35msrc/server/test/dungeon_completion_open_issues_regression.ts[m[36m:[m[32m108[m[36m:[m        DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(levelScope, 99, now++);
+[35msrc/server/test/goblin_diplomacy_completion_regression.ts[m[36m:[m[32m127[m[36m:[m    DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(levelScope, boss.roomId, introStartedAt);
+[35msrc/server/test/goblin_diplomacy_completion_regression.ts[m[36m:[m[32m163[m[36m:[m    DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(levelScope, boss.roomId, startedAt);
+[35msrc/server/test/reported_dungeon_completion_targets_regression.ts[m[36m:[m[32m130[m[36m:[m        DungeonCompletionSystem.[1;31mnoteCutsceneStart[m(levelScope, boss.roomId, 10_000 + ordinal);

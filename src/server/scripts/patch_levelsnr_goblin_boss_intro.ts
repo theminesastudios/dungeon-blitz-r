@@ -13,7 +13,7 @@ import {
 
 const LINE_REPLACEMENTS = [
   {
-    current: "4 Boss <Goto Red 1>You're the one that killed our Kraken!",
+    current: "4 Boss You're the one that killed our Kraken!",
     target: "4 Boss <Run Loop><Goto Red 1>You're the one that killed our Kraken!",
     detail: "Force looping Run emote during boss walk-in line",
   },
