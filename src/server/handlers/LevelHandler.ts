@@ -224,10 +224,10 @@ export class LevelHandler {
     ): string {
         return LevelConfig.resolveSafeReturnLevel(
             [
+                oldLevel,
                 syncState?.syncEntryLevel,
                 client.entryLevel,
                 character?.PreviousLevel?.name,
-                oldLevel,
                 character?.CurrentLevel?.name
             ],
             {
@@ -243,7 +243,7 @@ export class LevelHandler {
         entity: { x?: number; y?: number } | null | undefined
     ): void {
         const normalizedSourceLevel = LevelConfig.normalizeLevelName(sourceLevel);
-        if (!character || !normalizedSourceLevel || LevelConfig.isDungeonLevel(normalizedSourceLevel)) {
+        if (!character || !normalizedSourceLevel || !LevelConfig.isSaveAllowedLevel(normalizedSourceLevel)) {
             return;
         }
 
@@ -914,6 +914,34 @@ export class LevelHandler {
             ? client.lastDoorId
             : null;
         return LevelConfig.getSpawnCoordinates(activeCharacter, oldLevel, targetLevel, activeDoorId);
+    }
+
+    private static readonly HOME_RETURN_GROUNDING_LIFT_PX = 64;
+
+    private static stabilizeHomeReturnSpawn(
+        oldLevel: string,
+        targetLevel: string,
+        spawn: { x: number; y: number; hasCoord: boolean }
+    ): { x: number; y: number; hasCoord: boolean } {
+        const normalizedOldLevel = LevelConfig.normalizeLevelName(oldLevel);
+        const normalizedTargetLevel = LevelConfig.normalizeLevelName(targetLevel);
+        if (
+            !spawn.hasCoord ||
+            (normalizedOldLevel !== 'CraftTown' && normalizedOldLevel !== 'CraftTownTutorial') ||
+            !normalizedTargetLevel ||
+            normalizedTargetLevel === 'CraftTown' ||
+            normalizedTargetLevel === 'CraftTownTutorial'
+        ) {
+            return spawn;
+        }
+
+        // The Flash client projects an explicit spawn onto nearby collision. Starting slightly
+        // above the saved point prevents elevated or multi-floor terrain from loading below it.
+        return {
+            x: Math.round(spawn.x),
+            y: Math.round(spawn.y) - LevelHandler.HOME_RETURN_GROUNDING_LIFT_PX,
+            hasCoord: true
+        };
     }
 
     private static readonly CLIENT_SPAWN_FALLBACK_MS = 5000;
@@ -5111,19 +5139,27 @@ export class LevelHandler {
         LevelHandler.clearTransferState(client, oldLevel, oldClientEntId);
 
         // 3. Calculate New Spawn / save logic like Python
-        const spawn = LevelHandler.resolveDungeonExitSpawn(
+        const savedSpawn = LevelHandler.resolveDungeonExitSpawn(
             client,
             activeCharacter,
             oldLevel,
             targetLevel,
             syncState
         );
+        const spawn = LevelHandler.stabilizeHomeReturnSpawn(oldLevel, targetLevel, savedSpawn);
         const newX = spawn.x;
         const newY = spawn.y;
         const newHasCoord = spawn.hasCoord;
         syncPotionReservationForLevelTransition(activeCharacter, oldLevel, targetLevel);
         client.activePotionDrainAtMs = 0;
-        LevelConfig.updateSavedLevelsOnTransfer(activeCharacter, oldLevel, targetLevel, newX, newY);
+        LevelConfig.updateSavedLevelsOnTransfer(
+            activeCharacter,
+            oldLevel,
+            targetLevel,
+            savedSpawn.x,
+            savedSpawn.y,
+            { x: oldX, y: oldY, hasCoord: hasOldCoord }
+        );
         if (!LevelConfig.isDungeonLevel(targetLevel)) {
             clearStoredDungeonSnapshot(activeCharacter);
         }
@@ -5722,9 +5758,7 @@ export class LevelHandler {
         
         // Update Saved Coords if it's us and safe level
         if (isSelf && client.character) {
-            const isDungeon = LevelConfig.get(currentLevel).isDungeon;
-            
-            if (currentLevel === "CraftTown" || !isDungeon) {
+            if (LevelConfig.isSaveAllowedLevel(currentLevel)) {
                 if (!client.character.CurrentLevel) {
                     client.character.CurrentLevel = { name: currentLevel, x: ent.x, y: ent.y };
                 } else {

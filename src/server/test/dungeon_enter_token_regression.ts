@@ -284,6 +284,81 @@ function testClosedPartySessionsDoNotProvideDungeonAnchorCoordinates(): void {
     assert.equal(syncState.y, 500, 'closed party sessions must not supply stale anchor coordinates');
 }
 
+function testCastleHockeHomeReturnPreservesLiveSourcePosition(): void {
+    assert.equal(LevelConfig.isSaveAllowedLevel('Castle'), true, 'Castle should be a saveable Home return region');
+
+    const character = createCharacter('CastleRunner', 'rogue');
+    character.CurrentLevel = { name: 'BridgeTown', x: 3944, y: 838 };
+    character.PreviousLevel = { name: 'NewbieRoad', x: 1421, y: 826 };
+
+    (LevelHandler as any).syncTransferSourcePositionFromLiveEntity(
+        character,
+        'Castle',
+        { x: -920, y: -1880 }
+    );
+    assert.deepEqual(
+        character.CurrentLevel,
+        { name: 'Castle', x: -920, y: -1880 },
+        'live Castle movement should replace stale saved-region coordinates before entering Home'
+    );
+
+    LevelConfig.updateSavedLevelsOnTransfer(
+        character,
+        'Castle',
+        'CraftTown',
+        360,
+        1460,
+        { x: -900, y: -1885, hasCoord: true }
+    );
+    assert.deepEqual(
+        character.PreviousLevel,
+        { name: 'Castle', x: -900, y: -1885 },
+        'entering Home should preserve the exact live Castle source record'
+    );
+    assert.equal(
+        (LevelHandler as any).resolveCraftTownReturnLevel(
+            { entryLevel: 'BridgeTown', character },
+            character,
+            'Castle',
+            null
+        ),
+        'Castle',
+        'the active Castle source should win over stale entry-level state'
+    );
+}
+
+function testHomeReturnSpawnGetsGroundingMarginWithoutChangingHorizontalPosition(): void {
+    for (const targetLevel of ['ShazariDesert', 'ShazariDesertHard', 'Castle', 'CastleHard']) {
+        const savedSpawn = { x: 3210, y: -1885, hasCoord: true };
+        const transferSpawn = (LevelHandler as any).stabilizeHomeReturnSpawn(
+            'CraftTown',
+            targetLevel,
+            savedSpawn
+        );
+
+        assert.deepEqual(
+            transferSpawn,
+            { x: 3210, y: -1949, hasCoord: true },
+            `${targetLevel} Home return should start above the saved point so client collision can ground it safely`
+        );
+        assert.deepEqual(
+            savedSpawn,
+            { x: 3210, y: -1885, hasCoord: true },
+            `${targetLevel} grounding margin must not mutate the canonical saved location`
+        );
+    }
+
+    assert.deepEqual(
+        (LevelHandler as any).stabilizeHomeReturnSpawn(
+            'BridgeTown',
+            'ShazariDesert',
+            { x: 618, y: 647, hasCoord: true }
+        ),
+        { x: 618, y: 647, hasCoord: true },
+        'ordinary door travel should not receive the Home-return grounding margin'
+    );
+}
+
 function main(): void {
     const pendingWorld = new Map(GlobalState.pendingWorld);
     const pendingExtended = new Map(GlobalState.pendingExtended);
@@ -332,6 +407,8 @@ function main(): void {
         GlobalState.tokenChar.clear();
         GlobalState.usedTransferTokens.clear();
         testClosedPartySessionsDoNotProvideDungeonAnchorCoordinates();
+        testCastleHockeHomeReturnPreservesLiveSourcePosition();
+        testHomeReturnSpawnGetsGroundingMarginWithoutChangingHorizontalPosition();
         console.log('dungeon_enter_token_regression: ok');
     } finally {
         GlobalState.pendingWorld = pendingWorld;
