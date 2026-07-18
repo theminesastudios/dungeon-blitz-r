@@ -1091,6 +1091,26 @@ export class CombatHandler {
             return canonicalId;
         }
 
+        const localEntityName = String(
+            localEntity?.name ??
+            localEntity?.EntName ??
+            localEntity?.entName ??
+            ''
+        )
+            .trim()
+            .toLowerCase();
+
+        if (
+            getScopeLevelName(levelScope) === 'SD_Mission4' &&
+            (
+                localEntityName === 'oasisvizierred' ||
+                localEntityName === 'oasisviziergreen' ||
+                localEntityName === 'oasisvizieryellow' 
+            )
+        ) {
+            return localId;
+        }
+
         const roomBoss = CombatHandler.findSingleRoomBossForUnknownClientHostile(client, levelScope);
         const roomBossId = Math.max(0, Math.round(Number(roomBoss?.id ?? 0)));
         if (roomBossId > 0) {
@@ -2012,6 +2032,7 @@ export class CombatHandler {
 
     private static translateOutboundPacketForViewer(viewer: Client, packetId: number, data: Buffer): Buffer | null {
         try {
+            
             switch (packetId) {
                 case 0x09: {
                     const info = CombatHandler.parsePowerCastRelayInfo(data);
@@ -4631,6 +4652,7 @@ export class CombatHandler {
         const br = new BitReader(data);
 
         try {
+            
             switch (packetId) {
                 case 0x09: {
                     refs.push(br.readMethod9());
@@ -4839,6 +4861,8 @@ export class CombatHandler {
     }
 
     static async handlePowerHit(client: Client, data: Buffer): Promise<void> {
+        
+
         if (LevelHandler.isGoblinRiverBossIntroLocked(client)) {
             return;
         }
