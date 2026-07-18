@@ -1105,8 +1105,7 @@ export class CombatHandler {
             (
                 localEntityName === 'oasisvizierred' ||
                 localEntityName === 'oasisviziergreen' ||
-                localEntityName === 'oasisvizieryellow' ||
-                localEntityName === 'oasispuck'
+                localEntityName === 'oasisvizieryellow' 
             )
         ) {
             return localId;
