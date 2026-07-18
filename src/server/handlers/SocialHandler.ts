@@ -2030,6 +2030,7 @@ export class SocialHandler {
         const text = br.readMethod13();
         LevelHandler.maybeStartGoblinRiverBossIntroLock(client, entityId, text);
         LevelHandler.maybeFinishTutorialDungeonAfterAnnaCutscene(client, text);
+        LevelHandler.maybeFinishSDMission4AfterBossDialogue(client, text);
         const delivery = LevelHandler.getDungeonCutsceneRoomThoughtDelivery(client, entityId, text);
         if (delivery === 'suppress') {
             return;
@@ -2058,6 +2059,7 @@ export class SocialHandler {
             : sourceEntityId;
         LevelHandler.maybeStartGoblinRiverBossIntroLock(client, sourceEntityId, text);
         LevelHandler.maybeFinishTutorialDungeonAfterAnnaCutscene(client, text);
+        LevelHandler.maybeFinishSDMission4AfterBossDialogue(client, text);
         const delivery = LevelHandler.getDungeonCutsceneRoomThoughtDelivery(client, entityId, text);
         if (delivery === 'suppress') {
             return;

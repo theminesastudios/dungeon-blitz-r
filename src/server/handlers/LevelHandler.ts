@@ -3336,6 +3336,56 @@ export class LevelHandler {
         });
     }
 
+    static maybeFinishSDMission4AfterBossDialogue(
+        client: Client,
+        text: string
+    ): void {
+        if (client.currentLevel !== 'SD_Mission4') {
+            return;
+        }
+
+        const normalizedText = String(text ?? '')
+            .replace(/[<>]/g, '')
+            .trim();
+
+        if (normalizedText !== 'It really is quite nice here...') {
+            return;
+        }
+
+        const levelScope = getClientLevelScope(client);
+
+        const roomId =
+            Math.max(
+                0,
+                Math.round(Number(client.currentRoomId ?? 0))
+            );
+
+        const now = Date.now();
+
+        const bossEntity = {
+            id: -1004,
+            name: 'OasisVizier',
+            displayName: 'Dejih the Ogre-Magus',
+            roomBossName: 'Dejih the Ogre-Magus',
+            roomId,
+            roomBossRoomId: roomId,
+            isRoomBoss: true,
+            roomBoss: true,
+            team: EntityTeam.ENEMY,
+            isPlayer: false,
+            dead: true,
+            destroyed: true,
+            hp: 0,
+            entState: EntityState.DEAD,
+            deathFinalizedAt: now
+        };
+
+        DungeonCompletionSystem.noteEntityDefeated(
+            levelScope,
+            bossEntity
+        );
+    }
+
     private static getSharedDungeonCutsceneKey(levelScope: string, roomId: number): string {
         return `${levelScope}:${Math.max(0, Math.round(Number(roomId) || 0))}`;
     }
