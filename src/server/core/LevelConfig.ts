@@ -745,13 +745,15 @@ export class LevelConfig {
         _oldLevelName: string | null | undefined,
         newLevelName: string | null | undefined,
         newX: number,
-        newY: number
+        newY: number,
+        sourcePosition?: { x?: number; y?: number; hasCoord?: boolean }
     ): void {
         const newLevel = this.normalizeLevelName(newLevelName);
         if (!newLevel || !this.isSaveAllowedLevel(newLevel)) {
             return;
         }
 
+        const oldLevel = this.normalizeLevelName(_oldLevelName);
         const currentRecord = this.asLevelRecord(char?.CurrentLevel);
         const previousRecord = this.asLevelRecord(char?.PreviousLevel);
         const currentName = this.normalizeLevelName(currentRecord.name);
@@ -759,7 +761,25 @@ export class LevelConfig {
 
         if (newLevel === 'CraftTown') {
             let safeFrom: { name: string; x: number; y: number } | null = null;
-            if (currentName && this.isSaveAllowedLevel(currentName) && currentName !== 'CraftTown') {
+            const sourceX = Number(sourcePosition?.x);
+            const sourceY = Number(sourcePosition?.y);
+            if (
+                oldLevel &&
+                oldLevel !== 'CraftTown' &&
+                this.isSaveAllowedLevel(oldLevel) &&
+                sourcePosition?.hasCoord &&
+                Number.isFinite(sourceX) &&
+                Number.isFinite(sourceY)
+            ) {
+                safeFrom = { name: oldLevel, x: Math.round(sourceX), y: Math.round(sourceY) };
+            } else if (oldLevel && oldLevel !== 'CraftTown' && this.isSaveAllowedLevel(oldLevel) && currentName === oldLevel) {
+                safeFrom = this.copyLevelRecord(currentRecord);
+            } else if (oldLevel && oldLevel !== 'CraftTown' && this.isSaveAllowedLevel(oldLevel) && previousName === oldLevel) {
+                safeFrom = this.copyLevelRecord(previousRecord);
+            } else if (oldLevel && oldLevel !== 'CraftTown' && this.isSaveAllowedLevel(oldLevel) && this.hasDefaultSpawn(oldLevel)) {
+                const spawn = this.getSpawn(oldLevel);
+                safeFrom = { name: oldLevel, x: Math.round(spawn.x), y: Math.round(spawn.y) };
+            } else if (currentName && this.isSaveAllowedLevel(currentName) && currentName !== 'CraftTown') {
                 safeFrom = this.copyLevelRecord(currentRecord);
             } else if (previousName && this.isSaveAllowedLevel(previousName) && previousName !== 'CraftTown') {
                 safeFrom = this.copyLevelRecord(previousRecord);
