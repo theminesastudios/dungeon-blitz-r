@@ -3317,7 +3317,7 @@ export class LevelHandler {
         }
 
         const normalizedText = String(text ?? '')
-            .replace(/<[^>]+>/g, '')
+            .replace(/[<>]/g, '')
             .trim();
 
         if (normalizedText !== 'It really is quite nice here...') {
