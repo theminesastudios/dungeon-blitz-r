@@ -161,9 +161,9 @@ export class RewardHandler {
             { tier: 2, weight: (1 / 100) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.MiniBoss }
         ],
         Boss: [
-            { tier: 0, weight: 1 - ((1 / 5) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss) - ((1 / 25) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss) },
+            { tier: 0, weight: 1 - ((1 / 5) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss) - ((1 / 60) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss) },
             { tier: 1, weight: (1 / 5) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss },
-            { tier: 2, weight: (1 / 25) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss }
+            { tier: 2, weight: (1 / 60) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss }
         ]
     };
     private static readonly DUNGEON_REALM_MAP: Record<string, string> = {
@@ -329,32 +329,72 @@ export class RewardHandler {
         return { value: weights[weights.length - 1]!.value, roll };
     }
 
-    private static getGearRarityWeights(client: Client, entRank: string): Array<{ tier: 0 | 1 | 2; weight: number }> {
+    private static getGearRarityWeights(client: Client, entRank: string, itemMultiplier: number = 1): Array<{ tier: 0 | 1 | 2; weight: number }> {
         const rankWeights = RewardHandler.isHardDungeon(client.currentLevel)
             ? RewardHandler.GEAR_RARITY_WEIGHTS_HARD_BY_RANK[entRank]
             : RewardHandler.GEAR_RARITY_WEIGHTS_NORMAL_BY_RANK[entRank];
 
-        return rankWeights ?? (
+        const baseWeights = rankWeights ?? (
             RewardHandler.isHardDungeon(client.currentLevel)
                 ? RewardHandler.GEAR_RARITY_WEIGHTS_HARD
                 : RewardHandler.GEAR_RARITY_WEIGHTS_NORMAL
         );
+
+        if (entRank !== 'Boss') {
+            return baseWeights;
+        }
+
+        return RewardHandler.applyBossGearFindOverflow(baseWeights, itemMultiplier);
     }
 
-    private static resolveGearTier(client: Client, entRank: string): number {
-        const weights = RewardHandler.getGearRarityWeights(client, entRank);
+    private static applyBossGearFindOverflow(
+        weights: Array<{ tier: 0 | 1 | 2; weight: number }>,
+        itemMultiplier: number
+    ): Array<{ tier: 0 | 1 | 2; weight: number }> {
+        const multiplier = RewardHandler.sanitizeDropMultiplier(itemMultiplier);
+        if (multiplier <= 1) {
+            return weights;
+        }
+
+        const commonWeight = weights.find((entry) => entry.tier === 0)?.weight ?? 0;
+        const rareWeight = weights.find((entry) => entry.tier === 1)?.weight ?? 0;
+        const legendaryWeight = weights.find((entry) => entry.tier === 2)?.weight ?? 0;
+        if (commonWeight <= 0 || (rareWeight <= 0 && legendaryWeight <= 0)) {
+            return weights;
+        }
+
+        const boostedRare = Math.max(0, rareWeight * multiplier);
+        const boostedLegendary = Math.max(0, legendaryWeight * multiplier);
+        const boostedValuable = boostedRare + boostedLegendary;
+        if (boostedValuable >= 1) {
+            return [
+                { tier: 0, weight: 0 },
+                { tier: 1, weight: boostedValuable > 0 ? boostedRare / boostedValuable : 0 },
+                { tier: 2, weight: boostedValuable > 0 ? boostedLegendary / boostedValuable : 0 }
+            ];
+        }
+
+        return [
+            { tier: 0, weight: 1 - boostedValuable },
+            { tier: 1, weight: boostedRare },
+            { tier: 2, weight: boostedLegendary }
+        ];
+    }
+
+    private static resolveGearTier(client: Client, entRank: string, itemMultiplier: number = 1): number {
+        const weights = RewardHandler.getGearRarityWeights(client, entRank, itemMultiplier);
         return RewardHandler.pickWeighted<number>(weights.map((entry) => ({
             value: entry.tier,
             weight: entry.weight
         })));
     }
 
-    private static resolveGearTierDebug(client: Client, entRank: string): {
+    private static resolveGearTierDebug(client: Client, entRank: string, itemMultiplier: number = 1): {
         tier: number;
         tierRoll: number | null;
         tierWeights: Array<{ tier: number; weight: number }>;
     } {
-        const tierWeights = RewardHandler.getGearRarityWeights(client, entRank);
+        const tierWeights = RewardHandler.getGearRarityWeights(client, entRank, itemMultiplier);
         const weights = tierWeights.map((entry) => ({
             value: entry.tier,
             weight: entry.weight
@@ -367,8 +407,8 @@ export class RewardHandler {
         };
     }
 
-    private static getGearTierWeights(client: Client, entRank: string): Array<{ tier: number; weight: number }> {
-        return RewardHandler.getGearRarityWeights(client, entRank);
+    private static getGearTierWeights(client: Client, entRank: string, itemMultiplier: number = 1): Array<{ tier: number; weight: number }> {
+        return RewardHandler.getGearRarityWeights(client, entRank, itemMultiplier);
     }
 
     private static sanitizeDropMultiplier(value: number | undefined): number {
@@ -382,14 +422,22 @@ export class RewardHandler {
         return Math.max(0, Math.min(1, baseChance * multiplier));
     }
 
-    private static resolveGearDropChance(entType: any, reward: RewardRequest): number {
+    private static resolveGearDropChance(entType: any, itemMultiplier: number): number {
         const rawChance = Number(entType?.ItemDropChance ?? 0);
         if (rawChance <= 0) {
             return 0;
         }
 
-        const multiplier = RewardHandler.sanitizeDropMultiplier(reward.itemMultiplier);
+        const multiplier = RewardHandler.sanitizeDropMultiplier(itemMultiplier);
         return Math.max(0, Math.min(1, rawChance * multiplier));
+    }
+
+    private static resolveGearFindMultiplier(client: Client): number {
+        const petBonuses = PetHandler.getEquippedPetBonusRates(client.character);
+        const charmBonuses = getEquippedCharmBonuses(client.character);
+        const potionBonuses = getActivePotionBonuses(client.character, client.currentLevel);
+        const gearFindRate = Math.max(0, petBonuses.itemFind + charmBonuses.itemFind + potionBonuses.itemFind);
+        return RewardHandler.sanitizeDropMultiplier(1 + gearFindRate);
     }
 
     private static resolveMaterialDropRarity(client: Client): 'M' | 'R' | 'L' {
@@ -835,8 +883,9 @@ export class RewardHandler {
         const materialChance = shouldRollMaterial
             ? RewardHandler.resolveMaterialDropChance(entType, reward)
             : 0;
+        const gearFindMultiplier = RewardHandler.resolveGearFindMultiplier(client);
         const gearChance = shouldRollGear
-            ? RewardHandler.resolveGearDropChance(entType, reward)
+            ? RewardHandler.resolveGearDropChance(entType, gearFindMultiplier)
             : 0;
         const dyeDebug = shouldApplyDropTables
             ? RewardHandler.resolveDyeDropRarityDebug(client, entType)
@@ -860,7 +909,7 @@ export class RewardHandler {
             dyeId = GameData.getRandomDyeId([dyeDebug.rarity], RewardHandler.collectOwnedDyeIds(client));
         }
         if (allowItemDrop && gearChance > 0 && Math.random() < gearChance) {
-            const tierResult = RewardHandler.resolveGearTierDebug(client, entRank);
+            const tierResult = RewardHandler.resolveGearTierDebug(client, entRank, gearFindMultiplier);
             gearTier = tierResult.tier;
             gearId = GameData.getGearIdForEntity(
                 entName,
