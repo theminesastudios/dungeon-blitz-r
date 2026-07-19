@@ -1,7 +1,6 @@
 #!/usr/bin/env sh
 
 cd /opt/games/dungeon-blitz-r/src/server
-npm install
-npm run build
-
-npm run start:multiplayer
+export MULTIPLAYER_MODE=true
+export ENABLE_POLICY_SERVER=true
+exec node dist/main.js

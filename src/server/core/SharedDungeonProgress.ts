@@ -124,8 +124,8 @@ function refreshSharedDungeonLiveStats(
     state.liveStatsByCharacter ??= new Map();
     state.liveStatsByCharacter.clear();
 
-    for (const session of GlobalState.sessionsByToken.values()) {
-        if (!session?.playerSpawned || getClientLevelScope(session) !== levelScope) {
+    for (const session of GlobalState.getSessionsInLevelScope(levelScope)) {
+        if (!session?.playerSpawned) {
             continue;
         }
 
@@ -175,8 +175,9 @@ export function resolveSharedDungeonProgressAuthorityToken(levelScope: string | 
     }
 
     let scopedPartyLeaderKey = '';
-    for (const session of GlobalState.sessionsByToken.values()) {
-        if (!session?.playerSpawned || getClientLevelScope(session) !== scopeKey) {
+    const scopedSessions = Array.from(GlobalState.getSessionsInLevelScope(scopeKey));
+    for (const session of scopedSessions) {
+        if (!session?.playerSpawned) {
             continue;
         }
 
@@ -188,11 +189,10 @@ export function resolveSharedDungeonProgressAuthorityToken(levelScope: string | 
     }
 
     if (scopedPartyLeaderKey) {
-        for (const session of GlobalState.sessionsByToken.values()) {
+        for (const session of scopedSessions) {
             if (
                 session?.playerSpawned &&
                 session.token > 0 &&
-                getClientLevelScope(session) === scopeKey &&
                 normalizeCharacterKey(session.character?.name) === scopedPartyLeaderKey
             ) {
                 return session.token;

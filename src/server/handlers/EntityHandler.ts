@@ -393,7 +393,7 @@ export class EntityHandler {
     }
 
     private static hasOtherActiveSessionInScope(client: Client, levelScope: string): boolean {
-        for (const session of GlobalState.sessionsByToken.values()) {
+        for (const session of GlobalState.getSessionsInLevelScope(levelScope)) {
             if (
                 session !== client &&
                 session.playerSpawned &&
@@ -414,7 +414,7 @@ export class EntityHandler {
 
         let bestSession: Client | null = null;
         let bestStartedAt = Number.POSITIVE_INFINITY;
-        for (const session of GlobalState.sessionsByToken.values()) {
+        for (const session of GlobalState.getSessionsInParty(getPartyIdForClient(client))) {
             if (
                 session === client ||
                 !session.playerSpawned ||
@@ -488,7 +488,7 @@ export class EntityHandler {
         }
 
         const partyMembers: any[] = [];
-        for (const session of GlobalState.sessionsByToken.values()) {
+        for (const session of GlobalState.getSessionsInParty(getPartyIdForClient(client))) {
             if (!session.character || !areClientsInSameParty(client, session)) {
                 continue;
             }
@@ -532,12 +532,14 @@ export class EntityHandler {
             const anchorOldScope = getLevelScopeKey(levelName, anchor.levelInstanceId);
             anchor.levelInstanceId = targetInstanceId;
             EntityHandler.moveClientOwnedEntitiesBetweenScopes(anchor, anchorOldScope, getLevelScopeKey(levelName, targetInstanceId));
+            GlobalState.refreshSessionIndexes(anchor);
         }
 
         const newScope = getLevelScopeKey(levelName, targetInstanceId);
         if (oldScope !== newScope || oldInstanceId !== targetInstanceId) {
             client.levelInstanceId = targetInstanceId;
             EntityHandler.moveClientOwnedEntitiesBetweenScopes(client, oldScope, newScope);
+            GlobalState.refreshSessionIndexes(client);
         }
 
         EntityHandler.emitJcMini1PartyScopeSnapshot(client, levelName, reason);
@@ -793,7 +795,7 @@ export class EntityHandler {
 
         let bestSession: Client | null = null;
         let bestStartedAt = Number.POSITIVE_INFINITY;
-        for (const session of GlobalState.sessionsByToken.values()) {
+        for (const session of GlobalState.getSessionsInLevelScope(levelScope)) {
             if (
                 !session.playerSpawned ||
                 session.socket?.destroyed ||
@@ -893,7 +895,7 @@ export class EntityHandler {
             return;
         }
 
-        for (const viewer of GlobalState.sessionsByToken.values()) {
+        for (const viewer of GlobalState.getSessionsInLevelScope(levelScope)) {
             if (
                 viewer === source ||
                 !viewer.playerSpawned ||
@@ -1492,7 +1494,7 @@ export class EntityHandler {
         }
 
         let recipients = 0;
-        for (const viewer of GlobalState.sessionsByToken.values()) {
+        for (const viewer of GlobalState.getSessionsInLevelScope(levelScope)) {
             if (!viewer.playerSpawned || getClientLevelScope(viewer) !== levelScope) {
                 continue;
             }
@@ -1769,7 +1771,7 @@ export class EntityHandler {
                 const oldHp = Math.round(Number(entity.hp ?? 0));
                 const oldMaxHp = Math.round(Number(entity.maxHp ?? 0));
                 EntityHandler.normalizeServerAuthorityHostileState(levelName, entity);
-                for (const session of GlobalState.sessionsByToken.values()) {
+                for (const session of GlobalState.getSessionsInLevelScope(levelScope)) {
                     if (!session.playerSpawned || getClientLevelScope(session) !== levelScope) {
                         continue;
                     }
@@ -1798,7 +1800,7 @@ export class EntityHandler {
             }
 
             entity.level = runtimeLevel;
-            for (const session of GlobalState.sessionsByToken.values()) {
+            for (const session of GlobalState.getSessionsInLevelScope(levelScope)) {
                 if (!session.playerSpawned || getClientLevelScope(session) !== levelScope) {
                     continue;
                 }
@@ -2281,7 +2283,7 @@ export class EntityHandler {
             return true;
         }
 
-        for (const other of GlobalState.sessionsByToken.values()) {
+        for (const other of GlobalState.getSessionsInLevelScope(levelScope)) {
             if (other === client || getClientLevelScope(other) !== levelScope) {
                 continue;
             }
@@ -2309,7 +2311,7 @@ export class EntityHandler {
             return false;
         }
 
-        for (const other of GlobalState.sessionsByToken.values()) {
+        for (const other of GlobalState.getSessionsInLevelScope(levelScope)) {
             if (other === client || getClientLevelScope(other) !== levelScope) {
                 continue;
             }
@@ -2340,7 +2342,7 @@ export class EntityHandler {
         for (const id of levelMap?.keys() ?? []) {
             candidate = Math.max(candidate, Math.round(Number(id) || 0));
         }
-        for (const session of GlobalState.sessionsByToken.values()) {
+        for (const session of GlobalState.getSessionsInLevelScope(levelScope)) {
             if (getClientLevelScope(session) !== levelScope) {
                 continue;
             }
@@ -2810,7 +2812,7 @@ export class EntityHandler {
         let anchor: Client | null = null;
         let anchorStartedRoomIds: number[] = [];
 
-        for (const other of GlobalState.sessionsByToken.values()) {
+        for (const other of GlobalState.getSessionsInParty(getPartyIdForClient(joiner))) {
             if (other === joiner) {
                 continue;
             }
@@ -2845,6 +2847,7 @@ export class EntityHandler {
             !EntityHandler.hasSharedDungeonCutsceneState(levelScope, anchorRoomId)
         ) {
             joiner.currentRoomId = anchorRoomId;
+            GlobalState.refreshSessionIndexes(joiner);
         }
 
         for (const roomId of anchorStartedRoomIds) {
@@ -2955,7 +2958,7 @@ export class EntityHandler {
         }
 
         const scopeKey = getLevelScopeKey(levelName, levelInstanceId);
-        for (const other of GlobalState.sessionsByToken.values()) {
+        for (const other of GlobalState.getSessionsInLevelScope(scopeKey)) {
             if (getClientLevelScope(other) === scopeKey) {
                 other.knownEntityIds.delete(entityId);
             }
@@ -3075,7 +3078,7 @@ export class EntityHandler {
 
         const scopeKey = getLevelScopeKey(levelName, levelInstanceId);
         markRoomBossEntity(scopeKey, bossId, roomId, bossName);
-        for (const other of GlobalState.sessionsByToken.values()) {
+        for (const other of GlobalState.getSessionsInLevelScope(scopeKey)) {
             if (!other.playerSpawned || getClientLevelScope(other) !== scopeKey) {
                 continue;
             }
@@ -3098,7 +3101,7 @@ export class EntityHandler {
         const payload = bb.toBuffer();
 
         const scopeKey = getLevelScopeKey(levelName, levelInstanceId);
-        for (const other of GlobalState.sessionsByToken.values()) {
+        for (const other of GlobalState.getSessionsInLevelScope(scopeKey)) {
             if (!other.playerSpawned || getClientLevelScope(other) !== scopeKey) {
                 continue;
             }
@@ -3186,7 +3189,7 @@ export class EntityHandler {
         const payload = EntityHandler.buildDestroyEntityPayload(entityId);
         const scopeKey = getLevelScopeKey(levelName, levelInstanceId);
         const destroyedEntity = entityProps ?? EntityHandler.getLevelMap(levelName, levelInstanceId)?.get(entityId) ?? null;
-        for (const other of GlobalState.sessionsByToken.values()) {
+        for (const other of GlobalState.getSessionsInLevelScope(scopeKey)) {
             if (
                 other === excludedClient ||
                 !other.playerSpawned ||
@@ -3314,7 +3317,7 @@ export class EntityHandler {
             return;
         }
 
-        for (const other of GlobalState.sessionsByToken.values()) {
+        for (const other of GlobalState.getSessionsInLevelScope(getClientLevelScope(client))) {
             if (other === client || !other.playerSpawned || !areClientsInSameLevelScope(client, other)) {
                 continue;
             }
@@ -3793,7 +3796,7 @@ export class EntityHandler {
     }
 
     private static sendExistingPlayersToJoiner(joiner: Client): void {
-        for (const other of GlobalState.sessionsByToken.values()) {
+        for (const other of GlobalState.getSessionsInLevelScope(getClientLevelScope(joiner))) {
             if (other === joiner) {
                 continue;
             }
@@ -3866,7 +3869,7 @@ export class EntityHandler {
             return;
         }
 
-        for (const other of GlobalState.sessionsByToken.values()) {
+        for (const other of GlobalState.getSessionsInLevelScope(getClientLevelScope(client))) {
             if ((!includeSelf && other === client) || !other.playerSpawned || !areClientsInSameLevelScope(client, other)) {
                 continue;
             }
@@ -3879,7 +3882,7 @@ export class EntityHandler {
         const myScope = getClientLevelScope(sender);
         if (!myLevel || !myScope || !sender.playerSpawned) return;
 
-        for (const other of GlobalState.sessionsByToken.values()) {
+        for (const other of GlobalState.getSessionsInLevelScope(myScope)) {
             if (other === sender || !other.playerSpawned || getClientLevelScope(other) !== myScope) {
                 continue;
             }

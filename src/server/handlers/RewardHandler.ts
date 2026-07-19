@@ -915,8 +915,8 @@ export class RewardHandler {
     }
 
     private static findOnlineContributor(levelName: string, contributorKey: string): Client | null {
-        for (const other of GlobalState.sessionsByToken.values()) {
-            if (!other.playerSpawned || !other.character || getClientLevelScope(other) !== levelName) {
+        for (const other of GlobalState.getSessionsInLevelScope(levelName)) {
+            if (!other.playerSpawned || !other.character) {
                 continue;
             }
             if (getClientCharacterKey(other) === contributorKey) {
@@ -939,7 +939,7 @@ export class RewardHandler {
             return;
         }
 
-        for (const other of GlobalState.sessionsByToken.values()) {
+        for (const other of GlobalState.getSessionsInParty(contributorPartyId)) {
             if (
                 !other.playerSpawned ||
                 !other.character ||
@@ -1091,10 +1091,9 @@ export class RewardHandler {
             EntityHandler.broadcastTutorialDungeonObjectTransition(client, authority);
         }
 
-        const recipients = Array.from(GlobalState.sessionsByToken.values()).filter((recipient) =>
+        const recipients = Array.from(GlobalState.getSessionsInLevelScope(levelScope)).filter((recipient) =>
             recipient.playerSpawned &&
-            Boolean(recipient.character) &&
-            getClientLevelScope(recipient) === levelScope
+            Boolean(recipient.character)
         );
         for (const recipient of recipients) {
             const participantKey = DungeonCompletionSystem.getParticipantKey(recipient);
@@ -1188,7 +1187,7 @@ export class RewardHandler {
         }
 
         const recipients: Client[] = [];
-        for (const other of GlobalState.sessionsByToken.values()) {
+        for (const other of GlobalState.getSessionsInParty(partyId)) {
             if (
                 !other.playerSpawned ||
                 !other.character ||

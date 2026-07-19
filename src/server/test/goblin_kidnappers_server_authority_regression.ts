@@ -887,18 +887,19 @@ async function testLateAnnaChainCannotDeadlockBossCompletion(): Promise<void> {
     MissionHandler.noteDungeonCutsceneStart(client as never, 11);
     const beforeCutsceneEnd = DungeonCompletionSystem.evaluate(scope);
     assert.equal(beforeCutsceneEnd.ready, false, 'boss completion must not bypass the active end cutscene');
-    assert.equal(beforeCutsceneEnd.reason, 'cutscene_gate_pending');
+    assert.equal(beforeCutsceneEnd.reason, 'objectives_pending');
     assert.equal(packetCount(client, 0x87), 0, 'rank result must remain hidden until the end cutscene finishes');
 
     MissionHandler.noteDungeonCutsceneEnd(client as never, 11);
     await sleep(5);
 
-    assert.equal(DungeonCompletionSystem.evaluate(scope).objectivesMet, true);
-    assert.equal(packetCount(client, 0x87), 1, 'boss defeat cutscene should emit one rank result');
+    assert.equal(DungeonCompletionSystem.evaluate(scope).objectivesMet, false);
+    assert.equal(packetCount(client, 0x87), 0, 'missing Anna chain objective must keep completion pending');
 
     await MissionHandler.handleForcedDungeonObjectiveCompletion(client as never, annaChainEntity());
     await sleep(5);
-    assert.equal(packetCount(client, 0x87), 1, 'late chain state must not deadlock or duplicate completion');
+    assert.equal(DungeonCompletionSystem.evaluate(scope).objectivesMet, true);
+    assert.equal(packetCount(client, 0x87), 1, 'late chain state must complete once without deadlocking or duplicating');
 }
 
 function testScriptedObjectiveStateIsIdempotent(): void {

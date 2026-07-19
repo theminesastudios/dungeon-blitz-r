@@ -7,6 +7,8 @@ import type { DungeonRunStats } from './DungeonRunStats';
 import { clearStoredDungeonSnapshot } from './DungeonSnapshot';
 import { LevelConfig } from './LevelConfig';
 import { MovementAuthority, MovementAuthorityState } from './MovementAuthority';
+import { performance } from 'perf_hooks';
+import { getActiveMovementPacketKey, mergeActiveMovementPackets } from '../network/movementPacket';
 
 const db = new JsonAdapter();
 const SOCKET_POLICY_REQUEST = '<policy-file-request/>';
@@ -71,6 +73,14 @@ interface SessionCleanupSnapshot {
     characterName: string;
     normalizedCharName: string;
 }
+
+type QueuedPacket = {
+    packetId: number;
+    data: Buffer;
+    enqueuedAt: number;
+    depthAtEnqueue: number;
+    coalesceKey: string | null;
+};
 
 export function createKeepTutorialState(): KeepTutorialState {
     return {
@@ -146,8 +156,13 @@ export class Client {
     public socket: net.Socket;
     public router: PacketRouter;
     private buffer: Buffer;
-    private packetQueue: Promise<void>;
-    private queuedPacketCount: number;
+    private packetQueue: QueuedPacket[];
+    private queuedMovementByKey: Map<string, QueuedPacket>;
+    private packetQueueDrainActive: boolean;
+    private packetQueueEnqueued: number;
+    private packetQueueProcessed: number;
+    private packetQueueCoalesced: number;
+    private packetQueueMaxDepth: number;
     private outboundUncorkScheduled: boolean;
     private rawBytesIn: number;
     private rawBytesOut: number;
@@ -222,6 +237,8 @@ export class Client {
     public pendingDungeonCompletionFlushActive: boolean = false;
     public deferredCharacterSaveTimer: NodeJS.Timeout | null = null;
     public deferredCharacterSaveReason: string = "";
+    private deferredCharacterSaveInFlight: Promise<void> | null = null;
+    private deferredCharacterSaveGeneration: number = 0;
     public activeDungeonCutsceneScope: string = "";
     public activeDungeonCutsceneRoomId: number = 0;
     public activeDungeonCutsceneJoinedAtDialogIndex: number = 0;
@@ -235,8 +252,13 @@ export class Client {
         this.socket = socket;
         this.router = router;
         this.buffer = Buffer.alloc(0);
-        this.packetQueue = Promise.resolve();
-        this.queuedPacketCount = 0;
+        this.packetQueue = [];
+        this.queuedMovementByKey = new Map();
+        this.packetQueueDrainActive = false;
+        this.packetQueueEnqueued = 0;
+        this.packetQueueProcessed = 0;
+        this.packetQueueCoalesced = 0;
+        this.packetQueueMaxDepth = 0;
         this.outboundUncorkScheduled = false;
         this.rawBytesIn = 0;
         this.rawBytesOut = 0;
@@ -275,23 +297,99 @@ export class Client {
             const payload = Buffer.from(this.buffer.subarray(4, total));
             this.buffer = this.buffer.subarray(total);
 
-            if (this.queuedPacketCount >= Client.MAX_QUEUED_PACKETS) {
-                console.warn(`[Client] Closing excessive packet queue count=${this.queuedPacketCount} token=${this.token}`);
-                this.buffer = Buffer.alloc(0);
-                this.socket.destroy();
-                return;
-            }
-            this.queuedPacketCount += 1;
-
-            this.packetQueue = this.packetQueue
-                .then(() => this.router.handle(this, packetId, payload))
-                .catch((err: unknown) => {
-                    console.error(`[Client] Error handling packet 0x${packetId.toString(16)}:`, err);
-                })
-                .finally(() => {
-                    this.queuedPacketCount = Math.max(0, this.queuedPacketCount - 1);
-                });
+            this.enqueuePacket(packetId, payload);
         }
+    }
+
+    private enqueuePacket(packetId: number, data: Buffer): void {
+        const enqueuedAt = performance.now();
+        const coalesceKey = getActiveMovementPacketKey(packetId, data);
+        this.packetQueueEnqueued += 1;
+
+        if (coalesceKey) {
+            const queued = this.queuedMovementByKey.get(coalesceKey);
+            if (queued) {
+                const merged = mergeActiveMovementPackets(queued.data, data);
+                if (merged) {
+                    queued.data = merged;
+                    queued.enqueuedAt = enqueuedAt;
+                    this.packetQueueCoalesced += 1;
+                    return;
+                }
+            }
+        } else {
+            // Ordered packets are barriers. A later movement update must not
+            // be folded into a movement update that precedes combat/death.
+            this.queuedMovementByKey.clear();
+        }
+
+        if (this.packetQueue.length >= Client.MAX_QUEUED_PACKETS) {
+            console.warn(`[Client] Closing excessive packet queue count=${this.packetQueue.length} token=${this.token}`);
+            this.buffer = Buffer.alloc(0);
+            this.socket.destroy();
+            return;
+        }
+
+        const queuedPacket: QueuedPacket = {
+            packetId,
+            data,
+            enqueuedAt,
+            depthAtEnqueue: this.packetQueue.length + 1,
+            coalesceKey
+        };
+        this.packetQueue.push(queuedPacket);
+        if (coalesceKey) {
+            this.queuedMovementByKey.set(coalesceKey, queuedPacket);
+        }
+        this.packetQueueMaxDepth = Math.max(this.packetQueueMaxDepth, this.packetQueue.length);
+        this.router.noteQueueDepth(this, this.packetQueue.length);
+        void this.drainPacketQueue();
+    }
+
+    private async drainPacketQueue(): Promise<void> {
+        if (this.packetQueueDrainActive) {
+            return;
+        }
+        this.packetQueueDrainActive = true;
+        try {
+            while (this.packetQueue.length > 0) {
+                const packet = this.packetQueue.shift();
+                if (!packet) {
+                    break;
+                }
+                if (packet.coalesceKey && this.queuedMovementByKey.get(packet.coalesceKey) === packet) {
+                    this.queuedMovementByKey.delete(packet.coalesceKey);
+                }
+                await this.router.handle(this, packet.packetId, packet.data, {
+                    enqueuedAt: packet.enqueuedAt,
+                    depthAtEnqueue: packet.depthAtEnqueue
+                });
+                this.packetQueueProcessed += 1;
+            }
+        } catch (err) {
+            console.error('[Client] Packet queue drain failed:', err);
+        } finally {
+            this.packetQueueDrainActive = false;
+            if (this.packetQueue.length > 0) {
+                void this.drainPacketQueue();
+            }
+        }
+    }
+
+    public getPacketQueueMetrics(): {
+        enqueued: number;
+        processed: number;
+        coalesced: number;
+        currentDepth: number;
+        maxDepth: number;
+    } {
+        return {
+            enqueued: this.packetQueueEnqueued,
+            processed: this.packetQueueProcessed,
+            coalesced: this.packetQueueCoalesced,
+            currentDepth: this.packetQueue.length,
+            maxDepth: this.packetQueueMaxDepth
+        };
     }
 
     private tryServeSocketPolicy(): boolean {
@@ -366,6 +464,7 @@ export class Client {
             return;
         }
 
+        this.deferredCharacterSaveGeneration += 1;
         this.deferredCharacterSaveReason = reason;
         if (this.deferredCharacterSaveTimer) {
             clearTimeout(this.deferredCharacterSaveTimer);
@@ -374,21 +473,43 @@ export class Client {
         const safeDelay = this.resolveDeferredCharacterSaveDelay(reason, delayMs);
         this.deferredCharacterSaveTimer = setTimeout(() => {
             this.deferredCharacterSaveTimer = null;
-            const userId = this.userId;
-            const character = this.character;
-            if (!userId || !character) {
-                return;
-            }
-
-            void db.saveCharacterSnapshot(userId, character).then((characters) => {
-                if (this.userId === userId && this.character === character) {
-                    this.characters = characters;
-                }
-            }).catch((err) => {
-                console.error(`[Client] Deferred character save failed after ${this.deferredCharacterSaveReason || reason}:`, err);
-            });
+            void this.flushDeferredCharacterSave(reason);
         }, safeDelay);
         this.deferredCharacterSaveTimer.unref?.();
+    }
+
+    private async flushDeferredCharacterSave(reason: string): Promise<void> {
+        if (this.deferredCharacterSaveInFlight) {
+            await this.deferredCharacterSaveInFlight.catch(() => undefined);
+        }
+
+        const userId = this.userId;
+        const character = this.character;
+        const generation = this.deferredCharacterSaveGeneration;
+        if (!userId || !character) {
+            return;
+        }
+
+        const save = db.saveCharacterSnapshot(userId, character).then((characters) => {
+            if (this.userId === userId && this.character === character) {
+                this.characters = characters;
+            }
+        }).catch((err) => {
+            console.error(`[Client] Deferred character save failed after ${this.deferredCharacterSaveReason || reason}:`, err);
+        });
+        this.deferredCharacterSaveInFlight = save;
+        await save;
+        if (this.deferredCharacterSaveInFlight === save) {
+            this.deferredCharacterSaveInFlight = null;
+        }
+
+        if (generation !== this.deferredCharacterSaveGeneration && !this.deferredCharacterSaveTimer) {
+            this.deferredCharacterSaveTimer = setTimeout(() => {
+                this.deferredCharacterSaveTimer = null;
+                void this.flushDeferredCharacterSave(this.deferredCharacterSaveReason || reason);
+            }, 0);
+            this.deferredCharacterSaveTimer.unref?.();
+        }
     }
 
     public armPendingTransferGrace(durationMs: number = Client.PENDING_TRANSFER_GRACE_MS): void {
@@ -642,6 +763,7 @@ export class Client {
         const { SocialHandler } = require('../handlers/SocialHandler') as typeof import('../handlers/SocialHandler');
 
         EntityHandler.removeOwnedEntities(this);
+        GlobalState.removeSessionIndexes(this);
         const removedTransferTokens = new Set<number>();
 
         const sessionTokens = new Set<number>();
