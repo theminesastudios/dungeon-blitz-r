@@ -909,8 +909,7 @@ export class RewardHandler {
             dyeId = GameData.getRandomDyeId([dyeDebug.rarity], RewardHandler.collectOwnedDyeIds(client));
         }
         if (allowItemDrop && gearChance > 0 && Math.random() < gearChance) {
-            const tierResult = RewardHandler.resolveGearTierDebug(client, entRank, gearFindMultiplier);
-            gearTier = tierResult.tier;
+            gearTier = RewardHandler.resolveGearTier(client, entRank, gearFindMultiplier);
             gearId = GameData.getGearIdForEntity(
                 entName,
                 playerClass,
