@@ -1318,6 +1318,7 @@ export class CharacterHandler {
         console.log(`[GameLogin] Sent 0x10 (Player Data)`);
 
         MissionHandler.syncMissionStateToClient(client);
+        MissionHandler.syncFullClearDungeonEntryMissionToClient(client);
         CharacterHandler.sendBootstrappedStoryMission(client, storyRepair.addedMissionId);
 
         SocialHandler.handleSessionReady(client);

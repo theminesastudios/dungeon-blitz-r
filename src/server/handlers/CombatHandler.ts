@@ -201,7 +201,6 @@ export class CombatHandler {
     private static readonly ORIGINAL_REGEN_INTERVAL_MS = 1_000;
     private static readonly DUNGEON_BOSS_OUT_OF_COMBAT_REGEN_DELAY_MS = 500;
     private static readonly DUNGEON_BOSS_REGEN_INTERVAL_MS = CombatHandler.ORIGINAL_REGEN_INTERVAL_MS;
-    private static readonly HOSTILE_REGEN_RATE = 0.01;
     private static readonly CLIENT_HEAL_PACKET_ID = 0x78;
     private static readonly BOSS_MELEE_AGGRO_RADIUS = 180;
     private static readonly BOSS_RANGED_AGGRO_RADIUS = 260;
@@ -1259,6 +1258,14 @@ export class CombatHandler {
     }
 
     private static isHostileDefeatVerified(levelScope: string, entity: any): boolean {
+        const explicitHp = Number(entity?.hp);
+        if (
+            CombatHandler.isEntityDead(entity) ||
+            (Number.isFinite(explicitHp) && Math.round(explicitHp) <= 0)
+        ) {
+            return true;
+        }
+
         return CombatHandler.collectHostileHealthCopies(levelScope, entity, true)
             .some((copy) =>
                 Boolean(copy?.clientDefeatVerified) ||
@@ -1640,15 +1647,15 @@ export class CombatHandler {
         const deadDeathRegenPlayer = deathRegenArmed
             ? CombatHandler.getDeadPlayerForHostileDeathRegen(levelScope, entity)
             : null;
-        const zeroHpOrDead = Boolean(healthState) &&
-            (CombatHandler.isEntityDead(entity) || healthState!.currentHp <= 0);
         const verifiedDefeat = CombatHandler.isHostileDefeatVerified(levelScope, entity);
         if (
             !healthState ||
             verifiedDefeat ||
-            healthState.currentHp >= healthState.maxHp ||
-            (zeroHpOrDead && (!deadDeathRegenPlayer || verifiedDefeat))
+            healthState.currentHp >= healthState.maxHp
         ) {
+            if (verifiedDefeat && deathRegenArmed) {
+                CombatHandler.clearHostileDeathRegenArm(levelScope, entity, deathRegenArmKey);
+            }
             return;
         }
 
@@ -1666,7 +1673,9 @@ export class CombatHandler {
             return;
         }
 
-        if (!deathRegenArmed) {
+        const disengagedAfterCombat = !deathRegenArmed &&
+            CombatHandler.getEntityCombatActivityAt(entity) > 0;
+        if (!deathRegenArmed && !disengagedAfterCombat) {
             return;
         }
 
@@ -1681,11 +1690,15 @@ export class CombatHandler {
             return;
         }
 
-        const healPerTick = Math.max(1, Math.round(CombatHandler.HOSTILE_REGEN_RATE * healthState.maxHp));
-        const requestedHeal = Math.min(healthState.maxHp - healthState.currentHp, healPerTick * regenState.ticks);
+        // A boss reset is a lifecycle boundary, not ordinary periodic healing.
+        // Restore the complete encounter once its target is dead or has fully
+        // disengaged so a stale partial bar cannot leak into the next attempt.
+        const requestedHeal = healthState.maxHp - healthState.currentHp;
         if (requestedHeal <= 0) {
             return;
         }
+
+        CombatHandler.returnHostileToRoomBossHome(levelScope, entity);
 
         const nextHp = CombatHandler.applyNpcHealthState(
             entity,
@@ -2442,29 +2455,6 @@ export class CombatHandler {
         const deathRegenArmKey = CombatHandler.getDeathRegenArmKeyForPlayer(client);
         for (const entity of CombatHandler.collectHostileRegenCandidates(levelScope)) {
             CombatHandler.clearHostileDeathRegenArm(levelScope, entity, deathRegenArmKey);
-        }
-    }
-
-    private static clearLevelEnemyRewardTrackingForRespawn(client: Client): void {
-        if (!client.currentLevel) {
-            return;
-        }
-
-        const levelScope = getClientLevelScope(client);
-        const levelMap = GlobalState.levelEntities.get(levelScope);
-        if (!levelMap) {
-            return;
-        }
-
-        for (const [entityId, entity] of levelMap.entries()) {
-            if (entityId <= 0 || EntityHandler.isClientOwnPlayerEntity(client, levelScope, entityId, entity)) {
-                continue;
-            }
-            if (Boolean(entity?.isPlayer) || Number(entity?.team ?? 0) !== 2) {
-                continue;
-            }
-
-            CombatHandler.clearEntityRewardTracking(levelScope, entityId);
         }
     }
 
@@ -5482,8 +5472,6 @@ export class CombatHandler {
 
         if (!usePotion && !hadPendingRespawn) {
             noteDungeonRunDeath(client);
-            client.processedRewardSources.clear();
-            CombatHandler.clearLevelEnemyRewardTrackingForRespawn(client);
             CombatHandler.notePlayerDeathState(client);
         }
 

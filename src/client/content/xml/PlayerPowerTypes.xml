@@ -9099,7 +9099,7 @@
 		<PowerGroup>AxeFlurry</PowerGroup>
 		<DisplayName>Axe Flurry</DisplayName>
 		<Description>The Justicar's signature throwing axes.</Description>
-		<IconName>a_PowerIcon_JusticarRanged</IconName>
+		<IconName>a_PowerIcon_AxeFlurry</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>
@@ -9131,7 +9131,7 @@
 		<DisplayName>Axe Flurry</DisplayName>
 		<BasePowerName>AxeFlurry</BasePowerName>
 		<Description>The Justicar's signature throwing axes.</Description>
-		<IconName>a_PowerIcon_JusticarRanged</IconName>
+		<IconName>a_PowerIcon_AxeFlurry</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>

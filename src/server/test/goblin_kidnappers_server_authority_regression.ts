@@ -374,6 +374,15 @@ function packetCount(client: FakeClient, packetId: number): number {
     return client.sentPackets.filter((packet) => packet.id === packetId).length;
 }
 
+function dungeonResultStars(client: FakeClient): number[] {
+    return client.sentPackets
+        .filter((packet) => packet.id === 0x87)
+        .map((packet) => {
+            const br = new BitReader(packet.payload);
+            return br.readMethod6(4);
+        });
+}
+
 function hpDeltasFor(client: FakeClient, entityId: number): number[] {
     return client.sentPackets
         .filter((packet) => packet.id === 0x78)
@@ -1178,6 +1187,16 @@ async function testCompletionAndRankAreOncePerEligibleParticipant(): Promise<voi
 
     assert.equal(packetCount(playerOne, 0x87), 1, 'player one should receive one rank result');
     assert.equal(packetCount(playerTwo, 0x87), 1, 'player two should receive one rank result');
+    assert.deepEqual(
+        dungeonResultStars(playerOne),
+        [10],
+        'a fully completed Goblin Kidnappers run should award all five full stars'
+    );
+    assert.deepEqual(
+        dungeonResultStars(playerTwo),
+        [10],
+        'each eligible participant should receive all five full stars after the authoritative full clear'
+    );
     assert.equal(
         DungeonCompletionSystem.getState(scope)?.completedParticipants.size,
         2,
