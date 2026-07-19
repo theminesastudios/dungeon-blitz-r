@@ -21,9 +21,9 @@ const DEFAULT_SWF_CANDIDATES = [
 const DEFAULT_SWF = DEFAULT_SWF_CANDIDATES.find((candidate) => fs.existsSync(candidate)) ?? DEFAULT_SWF_CANDIDATES[0];
 
 const OLD_CHARM_DURATIONS_SECONDS = [1800, 4800, 10800, 21600, 36000, 64800, 96000, 144000, 192000, 288000] as const;
-const PREVIOUS_MODERN_CHARM_DURATIONS_SECONDS = [300, 900, 1800, 3600, 7200, 14400, 21600, 28800, 43200, 86400] as const;
-const MODERN_CHARM_DURATIONS_SECONDS = [300, 900, 1800, 3600, 7200, 14400, 21600, 28800, 43200, 43200] as const;
+const MODERN_CHARM_DURATIONS_SECONDS = [300, 900, 1800, 3600, 7200, 14400, 21600, 28800, 43200, 86400] as const;
 const BAD_UNSIGNED_PATCH_DURATIONS_SECONDS = [300, 900, 1800, 3600, 7200, -1984, 21600, 28800, 43200, 86400] as const;
+const BAD_CAPPED_UNSIGNED_PATCH_DURATIONS_SECONDS = [300, 900, 1800, 3600, 7200, -1984, 21600, 28800, 43200, 43200] as const;
 
 function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
   let swfPath = DEFAULT_SWF;
@@ -124,17 +124,17 @@ function findPatches(swfPath: string): { patches: BytePatch[]; oldSequenceCount:
     }
     const oldSequence = findDurationSequence(abc, instructions, OLD_CHARM_DURATIONS_SECONDS);
     const badSequence = findDurationSequence(abc, instructions, BAD_UNSIGNED_PATCH_DURATIONS_SECONDS);
-    const previousModernSequence = findDurationSequence(abc, instructions, PREVIOUS_MODERN_CHARM_DURATIONS_SECONDS);
+    const cappedBadSequence = findDurationSequence(abc, instructions, BAD_CAPPED_UNSIGNED_PATCH_DURATIONS_SECONDS);
     const modernSequence = findDurationSequence(abc, instructions, MODERN_CHARM_DURATIONS_SECONDS);
 
     if (modernSequence !== null) {
       modernSequenceCount += 1;
     }
-    const sourceSequence = oldSequence ?? badSequence ?? previousModernSequence;
+    const sourceSequence = oldSequence ?? badSequence ?? cappedBadSequence;
     const sourceDurations =
       oldSequence !== null ? OLD_CHARM_DURATIONS_SECONDS :
         badSequence !== null ? BAD_UNSIGNED_PATCH_DURATIONS_SECONDS :
-          PREVIOUS_MODERN_CHARM_DURATIONS_SECONDS;
+          BAD_CAPPED_UNSIGNED_PATCH_DURATIONS_SECONDS;
     if (sourceSequence === null) {
       continue;
     }

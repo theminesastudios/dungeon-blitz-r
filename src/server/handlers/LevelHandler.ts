@@ -5078,13 +5078,31 @@ export class LevelHandler {
 
     static handleSetUntargetable(client: Client, data: Buffer): void {
         const br = new BitReader(data);
-        br.readMethod4();
-        br.readMethod15();
+        const rawEntityId = br.readMethod4();
+        const untargetable = br.readMethod15();
         if (
             Number.isFinite(Number(client.currentRoomId)) &&
             LevelHandler.shouldSuppressSharedDungeonCutscenePacket(client, Math.max(0, Math.round(Number(client.currentRoomId))))
         ) {
             return;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        let canonicalEntityId = rawEntityId;
+        if (LevelConfig.isDungeonLevel(client.currentLevel)) {
+            const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+            canonicalEntityId = CombatHandler.resolveClientHostileAliasForSharedState(client, levelScope, rawEntityId);
+        }
+
+        const localEntity = client.entities.get(rawEntityId) ?? client.entities.get(canonicalEntityId);
+        if (localEntity && !localEntity.isPlayer) {
+            localEntity.untargetable = untargetable;
+        }
+
+        const levelMap = LevelHandler.getCurrentLevelMap(client);
+        const canonicalEntity = levelMap?.get(canonicalEntityId) ?? levelMap?.get(rawEntityId);
+        if (canonicalEntity && !canonicalEntity.isPlayer) {
+            canonicalEntity.untargetable = untargetable;
         }
 
         LevelHandler.relayToLevel(client, 0xAE, data);

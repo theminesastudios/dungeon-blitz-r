@@ -214,6 +214,7 @@
       },
       "npctraveller": {
         "displayName": "Bella Sagesword",
+        "scriptedText": "Have a care! Did I restore the Dreadfold Gate so you could stumble to your doom?=@I'm guessing no?=Long ago, the wizard Caphrax sundered the world into two time-rivers=The two branches are close but separated=Into one branch the wizard channeled the dread magic of the Sleeping Lands, creating The Dreadfold=@Ooooh=Yes, a dark, magic-drenched mirror of our world lies through this gate=@Can I have a look?=Are you mad? Only a battle-hardened team of adventurers stands any chance through that gate=@So, no?=I'd suggest you master the perils of this world first",
         "defaultLines": [
           "Have a care! Did I restore the Dreadfold Gate so you could stumble to your doom?",
           "Long ago, the wizard Caphrax sundered the world into two time-rivers",

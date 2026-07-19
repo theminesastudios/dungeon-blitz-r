@@ -977,6 +977,36 @@ export class RewardHandler {
         };
     }
 
+    private static getBossPrimaryRewardKey(client: Client, sourceEntity: any, sourceId: number): string {
+        if (
+            !RewardHandler.isDungeonLevel(client.currentLevel) ||
+            !sourceEntity ||
+            sourceEntity.isPlayer
+        ) {
+            return '';
+        }
+
+        const isBoss = GameData.isDungeonBossEntity(client.currentLevel, sourceEntity) ||
+            GameData.getEntityRank(sourceEntity) === 'Boss';
+        if (!isBoss) {
+            return '';
+        }
+
+        const canonicalId = Math.max(
+            0,
+            Math.round(Number(
+                sourceEntity.canonicalEntityId ??
+                sourceEntity.sharedCanonicalId ??
+                sourceEntity.id ??
+                sourceId ??
+                0
+            ))
+        );
+        return canonicalId > 0
+            ? `${getClientLevelScope(client)}:boss-primary:${canonicalId}`
+            : '';
+    }
+
     private static applyRewardToRecipient(
         client: Client,
         reward: RewardRequest,
@@ -996,13 +1026,30 @@ export class RewardHandler {
             return false;
         }
 
+        const bossPrimaryRewardKey = RewardHandler.getBossPrimaryRewardKey(client, sourceEntity, reward.sourceId);
+        const bossPrimaryRewardAlreadyGranted = Boolean(
+            bossPrimaryRewardKey && client.processedRewardSources.has(bossPrimaryRewardKey)
+        );
         const resolved = RewardHandler.maybeOverrideDungeonReward(client, sourceEntity, reward);
+        if (bossPrimaryRewardAlreadyGranted) {
+            // Scripted phase revives may still produce the authored health drop,
+            // but XP, currency and hunting loot belong to the boss's first life.
+            resolved.exp = 0;
+            resolved.gold = 0;
+            resolved.materialId = 0;
+            resolved.gearId = 0;
+            resolved.gearTier = 0;
+            resolved.dyeId = 0;
+        }
         const hasReward = resolved.exp > 0 || resolved.gold > 0 || resolved.hpGain > 0 ||
             resolved.gearId > 0 || resolved.materialId > 0 || resolved.dyeId > 0;
         if (!hasReward) {
             return false;
         }
         client.processedRewardSources.add(rewardKey);
+        if (bossPrimaryRewardKey) {
+            client.processedRewardSources.add(bossPrimaryRewardKey);
+        }
         const reason = context.reason ?? 'unknown';
         const caller = context.caller ?? 'unknown';
         if (context.sourceLootDropNonce) {
