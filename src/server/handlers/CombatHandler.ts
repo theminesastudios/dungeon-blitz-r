@@ -991,6 +991,27 @@ export class CombatHandler {
             return true;
         }
 
+        const levelName = getScopeLevelName(levelScope);
+        const sourceRequiredBoss = DungeonCompletionConditions.getCanonicalBossName(
+            levelName,
+            sourceEntity,
+            levelScope
+        );
+        const candidateRequiredBoss = DungeonCompletionConditions.getCanonicalBossName(
+            levelName,
+            candidate,
+            levelScope
+        );
+        // Scripted multi-boss encounters can give distinct bosses the same display name.
+        if (
+            sourceRequiredBoss &&
+            candidateRequiredBoss &&
+            CombatHandler.normalizeCombatLookupKey(sourceRequiredBoss) !==
+                CombatHandler.normalizeCombatLookupKey(candidateRequiredBoss)
+        ) {
+            return false;
+        }
+
         const sourceRoomId = Math.round(Number(sourceEntity.roomId ?? -1));
         const candidateRoomId = Math.round(Number(candidate.roomId ?? -1));
         if (sourceRoomId >= 0 && candidateRoomId >= 0 && sourceRoomId !== candidateRoomId) {
