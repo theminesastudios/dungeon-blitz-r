@@ -10,12 +10,19 @@ type PatchResult = {
 const XML_DIR = path.resolve(__dirname, "..", "..", "client", "content", "xml");
 const CBQ_DIR = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbq");
 
+const PYROMANIA_MANA_COST = "10,50";
+const PYROMANIA_POWER_NAMES = [
+  "Pyromania",
+  ...Array.from({ length: 10 }, (_, index) => `Pyromania${index + 1}`),
+];
+
 const POWER_MANA_COSTS = new Map<string, string>([
   ["IceSpike10", "25"],
   ["PainBender10", "25"],
+  ...PYROMANIA_POWER_NAMES.map((powerName): [string, string] => [powerName, PYROMANIA_MANA_COST]),
 ]);
 
-function patchPowerManaCosts(xml: string): PatchResult {
+export function patchPowerManaCosts(xml: string): PatchResult {
   let changes = 0;
   const patched = xml.replace(/<Power PowerName="([^"]+)">[\s\S]*?<\/Power>/g, (block: string, powerName: string) => {
     const expectedManaCost = POWER_MANA_COSTS.get(powerName);
