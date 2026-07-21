@@ -370,10 +370,150 @@ async function testEarlyCutsceneDoesNotCompleteBeforeBossDeath(): Promise<void> 
     assert.equal(Number(client.character.questTrackerState ?? 0), 26);
 }
 
+function createDreadLordBoss(): any {
+    return {
+        id: 9902,
+        name: 'DreadLord',
+        characterName: ',DreadLord',
+        character_name: ',DreadLord',
+        isPlayer: false,
+        roomId: 8,
+        team: EntityTeam.ENEMY,
+        entState: EntityState.DEAD,
+        hp: 0,
+        maxHp: 1,
+        dead: true,
+        clientSpawned: true,
+        clientDefeatVerified: true,
+        playerDamageContributed: true
+    };
+}
+
+/** Chief Tourzahl: client-owned, so the server's cached HP is stale on death. */
+function createChiefTourzahlBoss(hp: number): any {
+    return {
+        id: 7701,
+        name: 'GoblinBoss2',
+        characterName: ',GoblinBoss2',
+        character_name: ',GoblinBoss2',
+        displayName: 'Chief Tourzahl',
+        isPlayer: false,
+        roomId: 11,
+        team: EntityTeam.ENEMY,
+        entState: EntityState.DEAD,
+        hp,
+        maxHp: 5000,
+        dead: true,
+        destroyed: true,
+        clientSpawned: true
+        // Deliberately no clientDefeatVerified/playerDamageContributed: the Flash
+        // client owns this boss, so the final damage delta never reaches the server.
+    };
+}
+
+/**
+ * GoblinRiverDungeon leaves Chief Tourzahl on the Flash client, so his defeat only
+ * ever arrives as a client-reported destroy with a stale server HP snapshot. Unless
+ * he is declared a client-authority boss the death is thrown away as unverified and
+ * the run can never complete.
+ */
+function testChiefTourzahlDefeatIsAcceptedAsClientAuthority(): void {
+    for (const [levelName, bossName] of [
+        ['GoblinRiverDungeon', 'GoblinBoss2'],
+        ['GoblinRiverDungeonHard', 'GoblinBoss2Hard']
+    ] as [string, string][]) {
+        for (const hp of [900, 1, 0]) {
+            const boss = { ...createChiefTourzahlBoss(hp), name: bossName, characterName: `,${bossName}` };
+            assert.equal(
+                MissionHandler.shouldIgnoreUnverifiedDungeonBossDefeat(levelName, boss, ''),
+                false,
+                `${levelName}: ${bossName} defeat at hp=${hp} must not be discarded as unverified`
+            );
+        }
+    }
+}
+
+/**
+ * The cutscene close is the authoritative "dialogue done, cinematic gone" signal,
+ * so the rank/statistics plate must follow it with no further settle delay.
+ */
+async function testChiefTourzahlPlateFollowsCutsceneWithoutDelay(): Promise<void> {
+    const client = createBossDungeonClient('RiverRunner', 83007, 'GoblinRiverDungeon');
+    const boss = createChiefTourzahlBoss(0);
+    seedSingleBossRun(client, boss);
+    const missionId = Number(MissionLoader.findPrimaryMissionByDungeon('GoblinRiverDungeon')?.MissionID ?? 0);
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, boss);
+    assert.equal(rankPacketCount(client), 0, 'plate must not appear before the defeat cutscene');
+
+    MissionHandler.noteDungeonCutsceneStart(client as never, 11);
+    MissionHandler.noteDungeonSkitActivity(client as never);
+    await waitForPendingSettle();
+    assert.equal(rankPacketCount(client), 0, 'plate must stay hidden while the defeat dialogue plays');
+
+    // No awaits here: the plate has to be dispatched by the cutscene close itself.
+    MissionHandler.noteDungeonCutsceneEnd(client as never, 11);
+    assert.equal(
+        rankPacketCount(client),
+        1,
+        'rank/statistics plate must be sent immediately on cutscene close, with no extra settle delay'
+    );
+    assert.equal(Number(client.character.questTrackerState ?? 0), 100);
+    assert.ok(
+        missionId > 0 && Number(client.character.missions[String(missionId)]?.state ?? 0) >= 2,
+        'the Goblin River mission should be completed alongside the plate'
+    );
+}
+
+/**
+ * AC_Mission2 has no authoritative cutscene gate, so the completion is armed the
+ * moment the boss dies. If the victory cinematic then opens, the plate must wait
+ * for its close rather than being dropped: dropping it stranded the run with no
+ * plate and no quest credit whenever the cinematic ended up being the last thing
+ * to reschedule it.
+ */
+async function testPlateWaitsForCinematicCloseInsteadOfBeingDropped(): Promise<void> {
+    const client = createBossDungeonClient('DreadLordRunner', 83006, 'AC_Mission2');
+    const boss = createDreadLordBoss();
+    seedSingleBossRun(client, boss);
+    const scope = getClientLevelScope(client as never);
+    const missionId = Number(MissionLoader.findPrimaryMissionByDungeon('AC_Mission2')?.MissionID ?? 0);
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, boss);
+    assert.equal(
+        client.pendingDungeonCompletionScope,
+        scope,
+        'a gate-less boss dungeon should arm the completion on boss death'
+    );
+
+    // Victory cinematic opens before the armed completion flushes.
+    MissionHandler.noteDungeonCutsceneStart(client as never, 8);
+    MissionHandler.noteDungeonSkitActivity(client as never);
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 0, 'completion plate must stay hidden while the cinematic is open');
+    assert.equal(
+        client.pendingDungeonCompletionScope,
+        scope,
+        'the armed completion must survive the cinematic instead of being discarded'
+    );
+
+    MissionHandler.noteDungeonCutsceneEnd(client as never, 8);
+    await waitForPendingSettle();
+
+    assert.equal(rankPacketCount(client), 1, 'plate should appear once the cinematic closed and dialogue went quiet');
+    assert.equal(Number(client.character.questTrackerState ?? 0), 100);
+    assert.ok(
+        missionId > 0 && Number(client.character.missions[String(missionId)]?.state ?? 0) >= 2,
+        'the dungeon mission should be completed alongside the plate'
+    );
+}
+
 async function main(): Promise<void> {
     ensureDataLoaded();
 
     const originalSettleMs = MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS;
+    const originalMaxDeferMs = MissionHandler.DUNGEON_COMPLETION_MAX_DEFER_MS;
     const levelEntities = new Map(GlobalState.levelEntities);
     const levelQuestProgress = new Map(GlobalState.levelQuestProgress);
     const sessionsByToken = new Map(GlobalState.sessionsByToken);
@@ -381,6 +521,7 @@ async function main(): Promise<void> {
 
     try {
         (MissionHandler as any).DUNGEON_COMPLETION_SKIT_SETTLE_MS = TEST_SETTLE_MS;
+        (MissionHandler as any).DUNGEON_COMPLETION_MAX_DEFER_MS = TEST_SETTLE_MS * 2;
 
         GlobalState.levelEntities.clear();
         GlobalState.levelQuestProgress.clear();
@@ -411,8 +552,22 @@ async function main(): Promise<void> {
         GlobalState.sessionsByToken.clear();
         GlobalState.dungeonCompletions.clear();
         await testEarlyCutsceneDoesNotCompleteBeforeBossDeath();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.dungeonCompletions.clear();
+        await testPlateWaitsForCinematicCloseInsteadOfBeingDropped();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.dungeonCompletions.clear();
+        testChiefTourzahlDefeatIsAcceptedAsClientAuthority();
+        await testChiefTourzahlPlateFollowsCutsceneWithoutDelay();
     } finally {
         (MissionHandler as any).DUNGEON_COMPLETION_SKIT_SETTLE_MS = originalSettleMs;
+        (MissionHandler as any).DUNGEON_COMPLETION_MAX_DEFER_MS = originalMaxDeferMs;
         GlobalState.levelEntities = levelEntities;
         GlobalState.levelQuestProgress = levelQuestProgress;
         GlobalState.dungeonCompletions = dungeonCompletions;

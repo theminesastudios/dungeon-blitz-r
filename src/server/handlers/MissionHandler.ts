@@ -89,6 +89,11 @@ export class MissionHandler {
     private static readonly ATTACK_OF_OPPORTUNITY_HARD_SATELLITE_IDS = new Set([255, 256, 257]);
     static readonly DUNGEON_COMPLETION_SKIT_SETTLE_MS = 1500;
     static readonly DUNGEON_COMPLETION_MAX_DEFER_MS = 15000;
+    // The victory cinematic (boss death skit + speech bubbles) has no bounded
+    // duration, so the quiet-settle deadline above must never fire while it is
+    // still on screen. This is the hard safety net for a cinematic that never
+    // reports its close (client crashed or dropped mid-skit).
+    static readonly DUNGEON_COMPLETION_CINEMATIC_MAX_WAIT_MS = 120000;
     static readonly CRAFT_TOWN_TUTORIAL_COMPLETION_DELAY_MS = 43 * 250;
     private static readonly PRIMED_CONTACT_DIALOGUE_COUNT = -1;
     private static readonly ACHIEVEMENT_MAMMOTH_IDOL_REWARD = 10;
@@ -1625,7 +1630,11 @@ export class MissionHandler {
         await MissionHandler.handleForcedDungeonBossCompletion(client, destroyedEntity);
     }
 
-    private static scheduleDungeonCompletionForScope(levelScope: string, sourceClient?: Client): void {
+    private static scheduleDungeonCompletionForScope(
+        levelScope: string,
+        sourceClient?: Client,
+        options: { immediate?: boolean } = {}
+    ): void {
         if (!levelScope || !DungeonCompletionSystem.evaluate(levelScope).ready) {
             return;
         }
@@ -1643,10 +1652,12 @@ export class MissionHandler {
             ) {
                 continue;
             }
-            MissionHandler.scheduleDungeonCompletion(session, payload, {
-                initialDelayMs: MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS,
-                settleDelayMs: MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS
-            });
+            MissionHandler.scheduleDungeonCompletion(session, payload, options.immediate
+                ? { initialDelayMs: 0, settleDelayMs: 0, replaceExistingSchedule: true }
+                : {
+                    initialDelayMs: MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS,
+                    settleDelayMs: MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS
+                });
         }
     }
 
@@ -1737,6 +1748,7 @@ export class MissionHandler {
         options: {
             initialDelayMs?: number;
             settleDelayMs?: number;
+            replaceExistingSchedule?: boolean;
         } = {}
     ): void {
         const levelScope = getClientLevelScope(client);
@@ -1762,7 +1774,10 @@ export class MissionHandler {
             Math.round(Number(options.settleDelayMs ?? MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS))
         );
         const pendingScope = String(client.pendingDungeonCompletionScope ?? '').trim();
-        if (pendingScope === levelScope) {
+        // A replacing schedule overrides an already-armed one instead of merging with
+        // it, so a cutscene close can retire the settle window an earlier boss-death
+        // schedule had set up rather than inheriting its remaining delay.
+        if (pendingScope === levelScope && !options.replaceExistingSchedule) {
             const requestedAt = Math.max(0, Number(client.pendingDungeonCompletionRequestedAt ?? 0)) || now;
             const existingNotBeforeAt = Math.max(0, Number(client.pendingDungeonCompletionNotBeforeAt ?? 0));
             const nextNotBeforeAt = now + initialDelayMs;
@@ -1912,12 +1927,14 @@ export class MissionHandler {
             client.activeDungeonCutsceneRoomId = 0;
         }
 
-        if (pendingScope && pendingScope === scope) {
-            void MissionHandler.flushPendingDungeonCompletion(client);
-        }
-
         if (completionReady) {
-            MissionHandler.scheduleDungeonCompletionForScope(scope, client);
+            // The cutscene close is the authoritative "dialogue finished and the
+            // cinematic is gone" signal, so there is nothing left to settle for:
+            // show the rank/statistics plate immediately instead of waiting out
+            // another skit-settle window.
+            MissionHandler.scheduleDungeonCompletionForScope(scope, client, { immediate: true });
+        } else if (pendingScope && pendingScope === scope) {
+            void MissionHandler.flushPendingDungeonCompletion(client);
         }
     }
 
@@ -2017,6 +2034,28 @@ export class MissionHandler {
         client.pendingDungeonCompletionFlushActive = false;
     }
 
+    /**
+     * True while a boss/room cinematic is still on screen for this client: the client
+     * entered a cutscene in this scope and the shared record for that room has not
+     * been closed yet. Checking the shared room record rather than only the client's
+     * own 0xA6 keeps a participant whose close was folded into a peer's close from
+     * waiting forever, while a room that is genuinely still playing keeps the plate
+     * off screen.
+     */
+    private static isDungeonCinematicOpen(client: Client, levelScope: string): boolean {
+        if (String(client.activeDungeonCutsceneScope ?? '').trim() !== levelScope) {
+            return false;
+        }
+
+        const roomId = Math.max(0, Math.round(Number(client.activeDungeonCutsceneRoomId ?? 0)));
+        const roomState = DungeonCompletionSystem.getState(levelScope)?.cutscenesByRoom.get(roomId);
+        if (!roomState) {
+            return true;
+        }
+
+        return roomState.startedAt > 0 && roomState.endedSequence < roomState.startedSequence;
+    }
+
     private static async flushPendingDungeonCompletion(client: Client): Promise<void> {
         const pendingScope = String(client.pendingDungeonCompletionScope ?? '').trim();
         const currentScope = getClientLevelScope(client);
@@ -2036,13 +2075,31 @@ export class MissionHandler {
         const notBeforeAt = Math.max(requestedAt, Number(client.pendingDungeonCompletionNotBeforeAt ?? 0));
         const settleDelayMs = Math.max(0, Number(client.pendingDungeonCompletionSettleMs ?? MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS));
         const quietForMs = now - lastSkitAt;
+        const cinematicEndedAt = String(client.lastDungeonCutsceneEndScope ?? '').trim() === pendingScope
+            ? Math.max(0, Number(client.lastDungeonCutsceneEndAt ?? 0))
+            : 0;
+        // Anchor the quiet-settle deadline on the cinematic close, not on the
+        // (possibly much older) completion request, so the closing skit lines
+        // still get their full settle window before the plate is shown.
+        const quietWaitAnchor = Math.max(requestedAt, cinematicEndedAt);
+        const cinematicWaitDeadline = requestedAt + MissionHandler.DUNGEON_COMPLETION_CINEMATIC_MAX_WAIT_MS;
         const maxQuietWaitDeadline = Math.max(
-            requestedAt + MissionHandler.DUNGEON_COMPLETION_MAX_DEFER_MS,
+            quietWaitAnchor + MissionHandler.DUNGEON_COMPLETION_MAX_DEFER_MS,
             notBeforeAt + settleDelayMs
         );
 
         if (now < notBeforeAt) {
             MissionHandler.armPendingDungeonCompletionTimer(client, notBeforeAt - now);
+            return;
+        }
+
+        // Never show the completion plate underneath a running cinematic. Wait
+        // for the client's own room close (0xA6) to be observed first.
+        if (now < cinematicWaitDeadline && MissionHandler.isDungeonCinematicOpen(client, pendingScope)) {
+            MissionHandler.armPendingDungeonCompletionTimer(
+                client,
+                Math.max(settleDelayMs, MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS)
+            );
             return;
         }
 
@@ -2057,7 +2114,25 @@ export class MissionHandler {
             return;
         }
 
-        if (!DungeonCompletionSystem.evaluate(pendingScope).ready) {
+        const evaluation = DungeonCompletionSystem.evaluate(pendingScope);
+        if (!evaluation.ready) {
+            // A pending gate means the objectives are already met and we are only
+            // waiting on the cinematic/client handshake. Keep the pending payload
+            // armed instead of dropping the run's completion on the floor.
+            if (
+                now < cinematicWaitDeadline &&
+                evaluation.objectivesMet &&
+                (
+                    evaluation.reason === 'cutscene_gate_pending' ||
+                    evaluation.reason === 'client_completion_signal_pending'
+                )
+            ) {
+                MissionHandler.armPendingDungeonCompletionTimer(
+                    client,
+                    Math.max(settleDelayMs, MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS)
+                );
+                return;
+            }
             MissionHandler.clearPendingDungeonCompletion(client);
             return;
         }
