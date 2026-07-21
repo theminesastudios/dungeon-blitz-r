@@ -89,7 +89,19 @@ export class MissionHandler {
     private static readonly ATTACK_OF_OPPORTUNITY_HARD_SATELLITE_IDS = new Set([255, 256, 257]);
     static readonly DUNGEON_COMPLETION_SKIT_SETTLE_MS = 1500;
     static readonly DUNGEON_COMPLETION_MAX_DEFER_MS = 15000;
-    static readonly DUNGEON_COMPLETION_CUTSCENE_START_GRACE_MS = 15000;
+    // How long to wait for a post-objective cinematic that has not started yet.
+    // Cutscenes are client-driven: the client sends its 0xA5 start as soon as it
+    // plays one, so a start that has not arrived within this window means the
+    // level has no post-objective cinematic at all and the gate is released.
+    // This must stay short — levels flagged `cutscene.requiredAfterObjectives`
+    // that never actually play one (e.g. GoblinRiverDungeon) pay it in full as
+    // dead time on the completion plate. A cinematic that DID start but has not
+    // closed is covered by DUNGEON_COMPLETION_CINEMATIC_MAX_WAIT_MS instead, so
+    // shortening this cannot cut a running cinematic short.
+    static readonly DUNGEON_COMPLETION_CUTSCENE_START_GRACE_MS = Math.max(
+        250,
+        Number(process.env.DUNGEON_COMPLETION_CUTSCENE_START_GRACE_MS ?? 2500)
+    );
     // The victory cinematic (boss death skit + speech bubbles) has no bounded
     // duration, so the quiet-settle deadline above must never fire while it is
     // still on screen. This is the hard safety net for a cinematic that never
@@ -2089,9 +2101,15 @@ export class MissionHandler {
         const cinematicEndedAt = String(client.lastDungeonCutsceneEndScope ?? '').trim() === pendingScope
             ? Math.max(0, Number(client.lastDungeonCutsceneEndAt ?? 0))
             : 0;
+        // The client's 0xA6 close is sent only after the cutscene timeline has
+        // played out every line, so an observed close already means "dialogue
+        // finished and the cinematic is gone" — there is nothing left to settle.
+        // Drop the quiet-settle in that case and show the rank plate immediately;
+        // the window still applies to skits with no cinematic around them.
+        const effectiveSettleMs = cinematicEndedAt > 0 ? 0 : settleDelayMs;
         // Anchor the quiet-settle deadline on the cinematic close, not on the
-        // (possibly much older) completion request, so the closing skit lines
-        // still get their full settle window before the plate is shown.
+        // (possibly much older) completion request, so trailing skit lines in a
+        // non-cinematic dungeon still get their full settle window.
         const quietWaitAnchor = Math.max(requestedAt, cinematicEndedAt);
         const cinematicWaitDeadline = requestedAt + MissionHandler.DUNGEON_COMPLETION_CINEMATIC_MAX_WAIT_MS;
         const completionState = DungeonCompletionSystem.getState(pendingScope);
@@ -2119,12 +2137,12 @@ export class MissionHandler {
         }
 
         if (
-            quietForMs < settleDelayMs &&
+            quietForMs < effectiveSettleMs &&
             now < maxQuietWaitDeadline
         ) {
             MissionHandler.armPendingDungeonCompletionTimer(
                 client,
-                settleDelayMs - quietForMs
+                effectiveSettleMs - quietForMs
             );
             return;
         }

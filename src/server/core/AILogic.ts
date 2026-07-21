@@ -17,10 +17,12 @@ import { performance } from 'perf_hooks';
 export class AILogic {
     static readonly INTERVAL = 125; // ms (0.125s)
     static readonly TIMESTEP = 1 / 60.0;
-    static readonly MELEE_AGGRO_RADIUS = 240;
-    static readonly RANGED_AGGRO_RADIUS = 360;
-    static readonly BOSS_MELEE_AGGRO_RADIUS = 180;
-    static readonly BOSS_RANGED_AGGRO_RADIUS = 260;
+    // Aggro radii, halved from their original values (240/360/180/260) so enemies
+    // pull from roughly half the distance they used to.
+    static readonly MELEE_AGGRO_RADIUS = 120;
+    static readonly RANGED_AGGRO_RADIUS = 180;
+    static readonly BOSS_MELEE_AGGRO_RADIUS = 90;
+    static readonly BOSS_RANGED_AGGRO_RADIUS = 130;
     static readonly LEASH_RADIUS = 1800;
     static readonly RETURN_SPEED = 20;
     static readonly HOME_EPSILON = 1;
@@ -28,6 +30,13 @@ export class AILogic {
     static readonly ATTACK_RANGE = 95;
     static readonly RANGED_ATTACK_RANGE = 300;
     static readonly ATTACK_COOLDOWN = 1000; // ms
+    // Grace period between a room going empty and the enemy resetting home, so a
+    // player stepping back and forth across a room boundary cannot drive an
+    // aggro/reset loop. Cleared the moment a valid player is seen again.
+    static readonly RESET_DEBOUNCE_MS = Math.max(
+        0,
+        Number(process.env.AI_RESET_DEBOUNCE_MS ?? 1500)
+    );
     static readonly BASE_NPC_DAMAGE = 15;
     static readonly ENABLE_SERVER_AUTHORITY_HOSTILE_AI = process.env.ENABLE_SERVER_AUTHORITY_HOSTILE_AI === '1';
     static readonly SLOW_TICK_MS = Math.max(25, Number(process.env.AI_SLOW_TICK_MS ?? 100));
@@ -169,6 +178,34 @@ export class AILogic {
         AILogic.broadcastMovement(levelScope, npc, moveX, moveY, EntityState.ACTIVE, true);
     }
 
+    /**
+     * Debounced reset. Returns true only when the enemy actually changed state.
+     *
+     * The first empty tick just arms `aiResetPendingAt`; the reset lands once the
+     * room has stayed empty for RESET_DEBOUNCE_MS. An enemy that is already home
+     * and idle short-circuits so a quiet room costs one cheap check per tick.
+     */
+    private static resetHomeAndIdleDebounced(npc: any, levelScope: string, nowMs: number): boolean {
+        if (Boolean(npc.aiIdleAtHome) && !AILogic.hasCombatPull(npc)) {
+            npc.aiResetPendingAt = 0;
+            return false;
+        }
+
+        let pendingAt = Number(npc.aiResetPendingAt ?? 0);
+        if (!Number.isFinite(pendingAt) || pendingAt <= 0) {
+            pendingAt = nowMs;
+            npc.aiResetPendingAt = nowMs;
+        }
+        // Fall through rather than return, so a zero debounce still resets on the
+        // first empty tick instead of always costing one extra tick.
+        if (nowMs - pendingAt < AILogic.RESET_DEBOUNCE_MS) {
+            return false;
+        }
+
+        npc.aiResetPendingAt = 0;
+        return AILogic.resetHomeAndIdle(npc, levelScope);
+    }
+
     private static clearDeadAggroTarget(npc: any, players: Client[], levelScope: string): void {
         const aggroTargetEntityId = Math.max(0, Math.round(Number(npc?.aggroTargetEntityId ?? 0)));
         const aggroTargetToken = Math.max(0, Math.round(Number(npc?.aggroTargetToken ?? 0)));
@@ -275,16 +312,16 @@ export class AILogic {
                 ? (playersByRoom.get(npcRoomId) ?? [])
                 : players;
             if (candidates.length === 0) {
-                if (AILogic.resetHomeAndIdle(npc, levelScope)) updatedNpcs += 1;
+                if (AILogic.resetHomeAndIdleDebounced(npc, levelScope, nowMs)) updatedNpcs += 1;
                 continue;
             }
-            AILogic.updateNpc(npc, candidates, levelScope);
+            AILogic.updateNpc(npc, candidates, levelScope, nowMs);
             updatedNpcs += 1;
         }
         return { players: players.length, npcs: updatedNpcs };
     }
 
-    static updateNpc(npc: any, players: Client[], levelScope: string) {
+    static updateNpc(npc: any, players: Client[], levelScope: string, nowMs: number = Date.now()) {
         const home = AILogic.ensureHomePosition(npc);
         let target: Client | null = null;
         let minDist = Number.MAX_VALUE;
@@ -322,7 +359,9 @@ export class AILogic {
         }
 
         if (!target || !target.character || !target.character.CurrentLevel) {
-            AILogic.resetHomeAndIdle(npc, levelScope);
+            // Players are in the room but none are a valid target (all dead, or
+            // locked to a different aggro holder) — same debounce as an empty room.
+            AILogic.resetHomeAndIdleDebounced(npc, levelScope, nowMs);
             return;
         }
 
@@ -338,11 +377,14 @@ export class AILogic {
         }
 
         if (minDist > aggroRadius) {
-            AILogic.resetHomeAndIdle(npc, levelScope);
+            AILogic.resetHomeAndIdleDebounced(npc, levelScope, nowMs);
             return;
         }
 
         if (minDist <= aggroRadius) {
+            // A live target cancels any armed reset, so a player re-entering while
+            // the enemy is walking home resumes combat instead of finishing the walk.
+            npc.aiResetPendingAt = 0;
             AILogic.setActive(levelScope, npc);
             const targetX = target.character.CurrentLevel.x;
             const targetY = target.character.CurrentLevel.y;

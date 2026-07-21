@@ -17,7 +17,9 @@ function createPlayer(currentLevel: string): any {
         levelInstanceId: 'aggro-regression',
         currentRoomId: 4,
         authoritativeCurrentHp: 100,
-        character: { name: 'AggroTarget', CurrentLevel: { name: currentLevel, x: 200, y: 0 } },
+        // Inside the melee aggro radius but outside melee attack range, so a pulled
+        // enemy chases (moves) rather than standing still to swing.
+        character: { name: 'AggroTarget', CurrentLevel: { name: currentLevel, x: 110, y: 0 } },
         entities: new Map<number, any>(),
         send(): void { /* test stub */ }
     };
@@ -60,9 +62,15 @@ function main(): void {
     AILogic.updateNpc(minion, [dungeonPlayer], dungeonScope);
     assert.notEqual(minion.x, 0, 'dungeon minion lost proximity aggro with a combat timestamp');
 
-    const roomBoss = createNpc('GoblinMiniBoss', { id: 88_202, isRoomBoss: true, roomBossRoomId: 4, roomId: 2, x: 50, spawnX: 50 });
+    // Boss aggro radius is below melee attack range, so a pulled boss swings in
+    // place instead of moving. Assert the wake itself rather than a position
+    // change, which keeps this covering live-room resolution under any tuning.
+    const roomBoss = createNpc('GoblinMiniBoss', {
+        id: 88_202, isRoomBoss: true, roomBossRoomId: 4, roomId: 2,
+        x: 50, spawnX: 50, entState: EntityState.SLEEP, aiIdleAtHome: true
+    });
     AILogic.updateNpc(roomBoss, [dungeonPlayer], dungeonScope);
-    assert.notEqual(roomBoss.x, 50, 'dungeon miniboss did not use its live room when proximity-pulling');
+    assert.equal(roomBoss.entState, EntityState.ACTIVE, 'dungeon miniboss did not use its live room when proximity-pulling');
 
     minion.aggroTargetEntityId = dungeonPlayer.clientEntID;
     minion.aggroTargetToken = dungeonPlayer.token;
@@ -101,7 +109,15 @@ function main(): void {
             aggroTargetToken: dungeonPlayer.token,
             nextAttack: Date.now() + 10_000
         });
-        AILogic.updateNpc(abandonedNpc, [], dungeonScope);
+        const abandonedAt = Date.now();
+        // The first empty tick only arms the debounce: the enemy must hold position
+        // so a player crossing a room boundary cannot drive an aggro/reset loop.
+        AILogic.updateNpc(abandonedNpc, [], dungeonScope, abandonedAt);
+        assert.equal(abandonedNpc.x, 300, 'enemy reset home before the debounce elapsed');
+        assert.equal(movementPackets, 0, 'debounced reset emitted a packet on the first empty tick');
+
+        // Once the room has stayed empty past the debounce, the reset lands.
+        AILogic.updateNpc(abandonedNpc, [], dungeonScope, abandonedAt + AILogic.RESET_DEBOUNCE_MS + 1);
         assert.equal(abandonedNpc.x, 25, 'enemy did not return to its original X after its room emptied');
         assert.equal(abandonedNpc.y, 10, 'enemy did not return to its original Y after its room emptied');
         assert.equal(abandonedNpc.entState, EntityState.SLEEP, 'enemy did not sleep after returning home');
@@ -145,19 +161,27 @@ function main(): void {
             entState: EntityState.DRAMA,
             spawnEntState: EntityState.DRAMA
         });
-        AILogic.updateNpc(stagedNpc, [], dungeonScope);
+        const stagedAt = Date.now();
+        AILogic.updateNpc(stagedNpc, [], dungeonScope, stagedAt);
+        assert.equal(stagedNpc.x, 40, 'scripted enemy reset before the debounce elapsed');
+        AILogic.updateNpc(stagedNpc, [], dungeonScope, stagedAt + AILogic.RESET_DEBOUNCE_MS + 1);
         assert.equal(stagedNpc.x, 10, 'scripted enemy did not return to its staged position');
         assert.equal(stagedNpc.entState, EntityState.DRAMA, 'scripted enemy lost its authored drama state');
 
         const emptyScope = 'OMM_Mission2#empty-ai-room';
         const emptyScopeNpc = createNpc('GoblinBrute', { id: 88_207, x: 75, spawnX: 5 });
         GlobalState.levelEntities.set(emptyScope, new Map([[emptyScopeNpc.id, emptyScopeNpc]]));
+        // updateLevel reads the clock itself, so drop the debounce for this block:
+        // it asserts that an empty scope resets a displaced enemy, not the timing.
+        const originalDebounceMs = AILogic.RESET_DEBOUNCE_MS;
+        (AILogic as any).RESET_DEBOUNCE_MS = 0;
         try {
             const result = AILogic.updateLevel(emptyScope);
             assert.equal(result.players, 0, 'empty scope unexpectedly found a player');
             assert.equal(emptyScopeNpc.x, 5, 'scope with no players preserved a displaced enemy');
             assert.equal(emptyScopeNpc.entState, EntityState.SLEEP, 'scope with no players preserved active AI');
         } finally {
+            (AILogic as any).RESET_DEBOUNCE_MS = originalDebounceMs;
             GlobalState.levelEntities.delete(emptyScope);
         }
     } finally {
