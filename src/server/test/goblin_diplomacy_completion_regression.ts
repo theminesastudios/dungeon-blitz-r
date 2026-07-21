@@ -98,6 +98,27 @@ function buildDeadStatePayload(entityId: number): Buffer {
     return bb.toBuffer();
 }
 
+function verifyTerminalCanonicalBossWithoutMarker(): void {
+    const client = createClient('SD_Mission4', 5);
+    const levelScope = getClientLevelScope(client as never);
+    const boss = createBoss(64_005, 'OasisVizier', 0);
+    boss.clientSpawned = false;
+    client.entities.set(boss.id, boss);
+    GlobalState.levelEntities.set(levelScope, new Map([[boss.id, boss]]));
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    LevelHandler.handleEntityIncrementalUpdate(client as never, buildDeadStatePayload(boss.id));
+    assert.equal(
+        DungeonCompletionSystem.evaluate(levelScope).reason,
+        'cutscene_gate_pending',
+        'terminal canonical Oasis Vizier without a marker did not reach completion'
+    );
+
+    DungeonCompletionSystem.reset(levelScope);
+    GlobalState.levelEntities.delete(levelScope);
+    GlobalState.sessionsByToken.delete(client.token);
+}
+
 function verifyClientBossDeath(
     levelName: string,
     bossName: string,
@@ -178,6 +199,7 @@ function main(): void {
     verifyClientBossDeath('SD_Mission4Hard', 'OasisVizier', 2, 1000);
     verifyClientBossDeath('SD_Mission4', 'OasisVizier', 3, 0);
     verifyClientBossDeath('SD_Mission4Hard', 'OasisVizier', 4, 0);
+    verifyTerminalCanonicalBossWithoutMarker();
     console.log('goblin_diplomacy_completion_regression: ok');
 }
 

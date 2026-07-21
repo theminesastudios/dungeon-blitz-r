@@ -24,6 +24,7 @@ export type DungeonCompletionCondition = {
     clientAuthorityBosses?: string[];
     requireRoomBossMarker?: boolean;
     allowVerifiedClientBossWithoutRoomBossMarker?: boolean;
+    allowTerminalCanonicalBossWithoutRoomBossMarker?: boolean;
 };
 
 export type DungeonCompletionPhase =

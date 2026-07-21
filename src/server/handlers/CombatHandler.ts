@@ -1106,7 +1106,6 @@ export class CombatHandler {
         if (localEntity && (Boolean(localEntity?.isPlayer) || Number(localEntity?.team ?? 0) !== EntityTeam.ENEMY)) {
             return localId;
         }
-
         const explicitCanonicalId = Math.max(
             0,
             Math.round(Number(localEntity?.canonicalEntityId ?? localEntity?.sharedCanonicalId ?? 0))
@@ -5245,6 +5244,14 @@ export class CombatHandler {
                 EntityHandler.applyTutorialDungeonWorldSnapshotToLocalObject(client, rawLocalDestroyedEntity, rawEntityId);
             }
             return;
+        }
+        if (
+            destroyedEntity &&
+            CombatHandler.isTerminalHostileEntity(destroyedEntity) &&
+            DungeonCompletionConditions.isRequiredBoss(levelName, destroyedEntity, levelScope)
+        ) {
+            destroyedEntity.clientDefeatVerified = true;
+            await MissionHandler.handleForcedDungeonBossCompletion(client, destroyedEntity);
         }
         let isSeedOutsideClientSpawnDestroy = false;
         if (
