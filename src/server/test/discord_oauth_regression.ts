@@ -249,8 +249,8 @@ async function testServedHostBootstrapsPendingDiscordLogin(): Promise<void> {
         );
         assert.match(
             html,
-            /DungeonBlitz\.swf\?fv=cbp&gv=cbp&clientrev=discord-oauth-bootstrap-2/,
-            'the fixed SWF should use a distinct cache-safe asset URL'
+            /DungeonBlitz\.swf\?fv=cbp&gv=cbp&clientrev=maintenance-command-1/,
+            'the currently served SWF should use its cache-safe asset revision'
         );
     } finally {
         await staticServer.stop();

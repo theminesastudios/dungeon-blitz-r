@@ -41,7 +41,7 @@
 		<AnimationFrame>26</AnimationFrame>
 		<FlipAnimation>false</FlipAnimation>
 		<YOffset>5</YOffset>
-		<FlavorText>First Place, Clintt Heykeli Heykeli=Her ustalik buyu...=ve prowess ile bir asa.=Shamed yesil Knight...=ve gave her son laugh.</FlavorText>
+		<FlavorText>First Place, Clintt Heykeli Heykeli:Her ustalik buyu...:ve prowess ile bir asa.:Shamed yesil Knight...:ve gave her son laugh.</FlavorText>
 	</Statue>
 	<Statue StatueName="PurpleRed">
 		<StatueID>2</StatueID>
@@ -62,7 +62,7 @@
 		<AnimationFrame>30</AnimationFrame>
 		<FlipAnimation>false</FlipAnimation>
 		<YOffset>5</YOffset>
-		<FlavorText>First Place, mor kirmizi=ile arcane guc ve beceri...= yesil Knight did she avla.=Now mor ve kirmizi...=Are colors day.</FlavorText>
+		<FlavorText>First Place, mor kirmizi:ile arcane guc ve beceri...: yesil Knight did she avla.:Now mor ve kirmizi...:Are colors day.</FlavorText>
 	</Statue>
 	<Statue StatueName="LuBu">
 		<StatueID>3</StatueID>
@@ -83,7 +83,7 @@
 		<AnimationFrame>12</AnimationFrame>
 		<FlipAnimation>false</FlipAnimation>
 		<XOffset>-15</XOffset>
-		<FlavorText>Third Place, Lu Bu=ile ilahi might icinde his arms...=ve holy vengeance icinde his swing...=Lu Bu cut down yesil Knight.=icin glory ve his kral.</FlavorText>
+		<FlavorText>Third Place, Lu Bu:ile ilahi might icinde his arms...:ve holy vengeance icinde his swing...:Lu Bu cut down yesil Knight.:icin glory ve his kral.</FlavorText>
 	</Statue>
 	<Statue StatueName="JeromeLin">
 		<StatueID>4</StatueID>
@@ -105,6 +105,6 @@
 		<FlipAnimation>false</FlipAnimation>
 		<XOffset>-30</XOffset>
 		<YOffset>15</YOffset>
-		<FlavorText>Fourth Place, Jerome Lin=kaynakli shadows he struck...=His bicak hizli ve true.=Jerome Lin beat yesil Knight...=Many daha sure than did sen.</FlavorText>
+		<FlavorText>Fourth Place, Jerome Lin:kaynakli shadows he struck...:His bicak hizli ve true.:Jerome Lin beat yesil Knight...:Many daha sure than did sen.</FlavorText>
 	</Statue>
 </StatueTypes>

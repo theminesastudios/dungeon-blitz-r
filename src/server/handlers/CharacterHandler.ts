@@ -1153,7 +1153,12 @@ export class CharacterHandler {
         client.token = token;
         client.clientEntID = 0;
         client.currentLevel = entry.targetLevel;
-        
+        console.log("========== PLAYER ENTERED LEVEL ==========");
+        console.log("Target level:", entry.targetLevel);
+        console.log("Client currentLevel:", client.currentLevel);
+        console.log("Character:", client.character?.name);
+        console.log("Is dungeon:", LevelConfig.isDungeonLevel(client.currentLevel));
+        console.log("==========================================");
 
 
         client.levelInstanceId = entry.targetLevel === 'CraftTown'
@@ -1313,6 +1318,7 @@ export class CharacterHandler {
         console.log(`[GameLogin] Sent 0x10 (Player Data)`);
 
         MissionHandler.syncMissionStateToClient(client);
+        MissionHandler.syncFullClearDungeonEntryMissionToClient(client);
         CharacterHandler.sendBootstrappedStoryMission(client, storyRepair.addedMissionId);
 
         SocialHandler.handleSessionReady(client);

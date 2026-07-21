@@ -374,6 +374,15 @@ function packetCount(client: FakeClient, packetId: number): number {
     return client.sentPackets.filter((packet) => packet.id === packetId).length;
 }
 
+function dungeonResultStars(client: FakeClient): number[] {
+    return client.sentPackets
+        .filter((packet) => packet.id === 0x87)
+        .map((packet) => {
+            const br = new BitReader(packet.payload);
+            return br.readMethod6(4);
+        });
+}
+
 function hpDeltasFor(client: FakeClient, entityId: number): number[] {
     return client.sentPackets
         .filter((packet) => packet.id === 0x78)
@@ -390,6 +399,17 @@ function hpDeltasFor(client: FakeClient, entityId: number): number[] {
 
 function sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function settleScheduledCompletion(client: FakeClient): Promise<void> {
+    if (client.pendingDungeonCompletionTimer) {
+        clearTimeout(client.pendingDungeonCompletionTimer);
+        client.pendingDungeonCompletionTimer = null;
+    }
+    client.pendingDungeonCompletionNotBeforeAt = Date.now() - 1;
+    client.pendingDungeonCompletionLastSkitAt = Date.now() - 1;
+    client.pendingDungeonCompletionSettleMs = 0;
+    await (MissionHandler as any).flushPendingDungeonCompletion(client);
 }
 
 function resetFor(client: FakeClient): void {
@@ -887,18 +907,19 @@ async function testLateAnnaChainCannotDeadlockBossCompletion(): Promise<void> {
     MissionHandler.noteDungeonCutsceneStart(client as never, 11);
     const beforeCutsceneEnd = DungeonCompletionSystem.evaluate(scope);
     assert.equal(beforeCutsceneEnd.ready, false, 'boss completion must not bypass the active end cutscene');
-    assert.equal(beforeCutsceneEnd.reason, 'cutscene_gate_pending');
+    assert.equal(beforeCutsceneEnd.reason, 'objectives_pending');
     assert.equal(packetCount(client, 0x87), 0, 'rank result must remain hidden until the end cutscene finishes');
 
     MissionHandler.noteDungeonCutsceneEnd(client as never, 11);
     await sleep(5);
 
-    assert.equal(DungeonCompletionSystem.evaluate(scope).objectivesMet, true);
-    assert.equal(packetCount(client, 0x87), 1, 'boss defeat cutscene should emit one rank result');
+    assert.equal(DungeonCompletionSystem.evaluate(scope).objectivesMet, false);
+    assert.equal(packetCount(client, 0x87), 0, 'missing Anna chain objective must keep completion pending');
 
     await MissionHandler.handleForcedDungeonObjectiveCompletion(client as never, annaChainEntity());
-    await sleep(5);
-    assert.equal(packetCount(client, 0x87), 1, 'late chain state must not deadlock or duplicate completion');
+    await settleScheduledCompletion(client);
+    assert.equal(DungeonCompletionSystem.evaluate(scope).objectivesMet, true);
+    assert.equal(packetCount(client, 0x87), 1, 'late chain state must complete once without deadlocking or duplicating');
 }
 
 function testScriptedObjectiveStateIsIdempotent(): void {
@@ -1173,10 +1194,23 @@ async function testCompletionAndRankAreOncePerEligibleParticipant(): Promise<voi
         100
     );
     MissionHandler.noteDungeonCutsceneEnd(playerTwo as never, 11);
-    await sleep(5);
+    await Promise.all([
+        settleScheduledCompletion(playerOne),
+        settleScheduledCompletion(playerTwo)
+    ]);
 
     assert.equal(packetCount(playerOne, 0x87), 1, 'player one should receive one rank result');
     assert.equal(packetCount(playerTwo, 0x87), 1, 'player two should receive one rank result');
+    assert.deepEqual(
+        dungeonResultStars(playerOne),
+        [10],
+        'a fully completed Goblin Kidnappers run should award all five full stars'
+    );
+    assert.deepEqual(
+        dungeonResultStars(playerTwo),
+        [10],
+        'each eligible participant should receive all five full stars after the authoritative full clear'
+    );
     assert.equal(
         DungeonCompletionSystem.getState(scope)?.completedParticipants.size,
         2,

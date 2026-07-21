@@ -7,6 +7,7 @@ import { GlobalState } from '../core/GlobalState';
 import { LevelConfig } from '../core/LevelConfig';
 import { getClientLevelScope } from '../core/LevelScope';
 import { CombatHandler } from '../handlers/CombatHandler';
+import { MissionHandler } from '../handlers/MissionHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 
 type SentPacket = { id: number; payload: Buffer };
@@ -94,7 +95,7 @@ function testGameplayDiagnosticsAreRemoved(): void {
     assert.equal(fs.existsSync(path.resolve(__dirname, '..', 'utils', 'JcMini1AuthorityLog.ts')), false);
 }
 
-async function testSrnBossCompletionIsObservedBeforeEventLoopYield(): Promise<void> {
+async function testSrnBossCompletionReservesAWindowForEndingSkits(): Promise<void> {
     const client = createSrnClient();
     const boss = createDefeatedLizardLord();
     const levelScope = getClientLevelScope(client);
@@ -112,13 +113,27 @@ async function testSrnBossCompletionIsObservedBeforeEventLoopYield(): Promise<vo
 
         const state = DungeonCompletionSystem.getState(levelScope);
         assert(state, 'SRN completion observation was deferred out of the destroy transaction');
-        assert.equal(state.phase, 'completed', 'SRN completion did not finalize inline');
+        assert.equal(state.phase, 'ready', 'SRN boss death did not make completion ready');
+        assert.equal(
+            client.sentPackets.filter((packet: SentPacket) => packet.id === 0x87).length,
+            0,
+            'SRN rank plate bypassed the ending-skit observation window'
+        );
+        assert(client.pendingDungeonCompletionTimer, 'SRN completion did not arm the ending-skit observation window');
+
+        clearTimeout(client.pendingDungeonCompletionTimer);
+        client.pendingDungeonCompletionTimer = null;
+        client.pendingDungeonCompletionNotBeforeAt = Date.now() - 1;
+        client.pendingDungeonCompletionLastSkitAt = Date.now() - 1;
+        client.pendingDungeonCompletionSettleMs = 0;
+        await (MissionHandler as any).flushPendingDungeonCompletion(client);
+
+        assert.equal(state.phase, 'completed', 'SRN completion did not finalize after the skit window settled');
         assert.equal(
             client.sentPackets.filter((packet: SentPacket) => packet.id === 0x87).length,
             1,
-            'SRN rank plate was not dispatched before yielding to the packet backlog'
+            'SRN rank plate was not dispatched after the skit window settled'
         );
-        assert.equal(client.pendingDungeonCompletionTimer, null, 'zero-delay SRN completion still used a timer');
 
         (CombatHandler as any).handleEnemyDefeatState(
             client,
@@ -146,7 +161,7 @@ async function testSrnBossCompletionIsObservedBeforeEventLoopYield(): Promise<vo
 async function main(): Promise<void> {
     LevelConfig.load(path.resolve(__dirname, '..', 'data'));
     testGameplayDiagnosticsAreRemoved();
-    await testSrnBossCompletionIsObservedBeforeEventLoopYield();
+    await testSrnBossCompletionReservesAWindowForEndingSkits();
     console.log('runtime_hot_path_latency_regression: ok');
 }
 

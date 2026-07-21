@@ -59,7 +59,7 @@ function testEveryBossGroupHasAnAuthoredPacketIdentity(): void {
             );
         }
     }
-    assert.equal(bossLevelCount, 125, 'boss-mode catalog coverage changed without updating the authored audit');
+    assert.equal(bossLevelCount, 127, 'boss-mode catalog coverage changed without updating the authored audit');
 }
 
 function deadBoss(id: number, name: string): any {
@@ -171,8 +171,18 @@ function assertPacketOnlyBossCompletes(levelName: string, bossName: string, ordi
     const scope = getLevelScopeKey(levelName, `packet-only-boss-${ordinal}`);
     const boss = deadBoss(40_000 + ordinal * 10, bossName);
     DungeonCompletionSystem.noteEntityDefeated(scope, boss, 1000);
+    const condition = DungeonCompletionConditions.get(levelName);
+    if (condition?.cutscene?.requiredAfterObjectives) {
+        assert.equal(
+            DungeonCompletionSystem.evaluate(scope, 1001).reason,
+            'cutscene_gate_pending',
+            `${levelName}: packet-only boss defeat bypassed its authored ending skit`
+        );
+        DungeonCompletionSystem.noteCutsceneStart(scope, 99, 1002);
+        DungeonCompletionSystem.noteCutsceneEnd(scope, 99, 1003);
+    }
     assert.equal(
-        DungeonCompletionSystem.evaluate(scope, 1001).ready,
+        DungeonCompletionSystem.evaluate(scope, 1004).ready,
         true,
         `${levelName}: packet-only boss defeat did not complete without a scoped entity map`
     );
@@ -239,7 +249,7 @@ function main(): void {
     NpcLoader.load(dataDir);
     testEveryBossGroupHasAnAuthoredPacketIdentity();
     testScriptedIdentityAndEarlyEndingGuardrails();
-    console.log('Authored boss catalog regression passed (125 boss-mode dungeons).');
+    console.log('Authored boss catalog regression passed (127 boss-mode dungeons).');
 }
 
 main();

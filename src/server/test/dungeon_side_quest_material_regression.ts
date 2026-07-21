@@ -88,10 +88,10 @@ async function testDungeonDefeatAwardsEveryEligibleQuestHolder(): Promise<void> 
         name: 'GoblinShamanHood',
         characterName: ',GoblinShamanHood',
         team: EntityTeam.ENEMY,
-        entState: EntityState.DEAD,
-        hp: 0,
-        dead: true,
-        destroyed: true
+        entState: EntityState.ACTIVE,
+        hp: 50,
+        dead: false,
+        destroyed: false
     };
     const levelScope = getClientLevelScope(authority as never);
 
@@ -112,8 +112,26 @@ async function testDungeonDefeatAwardsEveryEligibleQuestHolder(): Promise<void> 
             authority,
             levelScope,
             defeatedShaman.id,
+            defeatedShaman
+        );
+        await new Promise<void>((resolve) => setImmediate(resolve));
+        assert.equal(
+            questHolder.character.missions[String(MissionID.GetGoblinWands)].currCount,
+            0,
+            'a non-terminal enemy hit awarded a side-quest item'
+        );
+
+        defeatedShaman.entState = EntityState.DEAD;
+        defeatedShaman.hp = 0;
+        defeatedShaman.dead = true;
+        defeatedShaman.destroyed = true;
+
+        (CombatHandler as any).handleEnemyDefeatState(
+            authority,
+            levelScope,
+            defeatedShaman.id,
             defeatedShaman,
-            { fromDestroy: true }
+            { fromKillState: true }
         );
         await new Promise<void>((resolve) => setImmediate(resolve));
 
@@ -206,12 +224,23 @@ async function testAuthoredDungeonSideQuestVariants(): Promise<void> {
         [MissionID.SpiritProblem, 'CastleLizardBanner2'],
         [MissionID.SpiritProblem, 'CastleLizardMaster'],
         [MissionID.SpiritProblemHard, 'CastleLizardBanner2Hard'],
-        [MissionID.SpiritProblemHard, 'CastleLizardMasterHard']
+        [MissionID.SpiritProblemHard, 'CastleLizardMasterHard'],
+        [MissionID.GatherDreadMasks, 'DreadPaladin'],
+        [MissionID.GatherDreadMasks, 'DreadChampion3'],
+        [MissionID.GatherDreadMasksHard, 'DreadPaladinHard'],
+        [MissionID.GatherDreadMasksHard, 'DreadLordHard']
     ];
 
     for (let index = 0; index < cases.length; index++) {
         const [missionId, enemyName] = cases[index];
         const client = createClient(94_000 + index, `Variant${index}`, false);
+        if (missionId === MissionID.GatherDreadMasks) {
+            client.currentLevel = 'Castle';
+            client.character.CurrentLevel.name = 'Castle';
+        } else if (missionId === MissionID.GatherDreadMasksHard) {
+            client.currentLevel = 'CastleHard';
+            client.character.CurrentLevel.name = 'CastleHard';
+        }
         client.character.missions[String(missionId)] = { state: 1, currCount: 0 };
         const enemy = {
             id: 95_000 + index,

@@ -152,6 +152,8 @@ function main(): void {
     verifyTerminalClientBossPacketCompletes('SD_Mission4Hard', 'OasisVizierGreenHard', 6, true);
     verifyTerminalClientBossPacketCompletes('JC_Mission5', 'NephitDragonMarker', 7, false);
     verifyTerminalClientBossPacketCompletes('JC_Mission5Hard', 'NephitDragonMarkerHard', 8, false);
+    verifyTerminalClientBossPacketCompletes('JC_Mission10', 'DragonTemple', 9, false);
+    verifyTerminalClientBossPacketCompletes('JC_Mission10Hard', 'DragonTempleHard', 10, false);
     console.log('reported_dungeon_completion_targets_regression: ok');
 }
 

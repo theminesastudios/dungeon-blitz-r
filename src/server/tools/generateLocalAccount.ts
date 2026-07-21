@@ -1,4 +1,4 @@
-import { hashPlaintextPasswordForClient } from '../src/auth/PasswordAuth';
+import { hashPlaintextPasswordForClient } from '../auth/PasswordAuth';
 
 async function main(): Promise<void> {
     const email = process.argv[2]?.trim().toLowerCase();

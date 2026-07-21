@@ -66,6 +66,9 @@ export type DungeonCompletionRunState = {
     objectiveRoomIds: Set<number>;
     objectivesMetAt: number;
     objectivesMetSequence: number;
+    cutsceneFallbackReleasedAt: number;
+    cutsceneFallbackSequence: number;
+    cutsceneFallbackReason: '' | 'missing-start-timeout' | 'active-timeout';
     readyAt: number;
     finalizingParticipants: Set<string>;
     completedParticipants: Set<string>;
