@@ -7,7 +7,7 @@ import { DungeonCompletionSystem } from '../core/DungeonCompletionSystem';
 import { EntityState, EntityTeam } from '../core/Entity';
 import { GlobalState } from '../core/GlobalState';
 import { LevelConfig } from '../core/LevelConfig';
-import { getClientLevelScope } from '../core/LevelScope';
+import { getClientLevelScope, getLevelScopeKey } from '../core/LevelScope';
 import { LevelHandler } from '../handlers/LevelHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 
@@ -131,12 +131,70 @@ function verifyLiveCanonicalBossStillNeedsMarker(levelName: string, ordinal: num
     );
 }
 
+// The ending skit gates the summary while it is on screen, and the rank plate
+// must appear the moment it closes rather than after another settle window.
+function verifyCutsceneEndReleasesSummary(levelName: string, ordinal: number): void {
+    const scope = getLevelScopeKey(levelName, `cutscene-end-${ordinal}`);
+    const boss = createBoss(76_000 + ordinal, 'BrigandChamp', 0);
+    boss.dead = true;
+    boss.destroyed = true;
+    boss.entState = EntityState.DEAD;
+    GlobalState.levelEntities.set(scope, new Map([[boss.id, boss]]));
+
+    DungeonCompletionSystem.noteEntityDefeated(scope, boss, 1000);
+    DungeonCompletionSystem.noteCutsceneStart(scope, 5, 1002, true);
+    assert.equal(
+        DungeonCompletionSystem.evaluate(scope, 1003).reason,
+        'cutscene_gate_pending',
+        `${levelName}: the summary was released while the ending skit was still playing`
+    );
+    assert.equal(
+        DungeonCompletionSystem.noteCutsceneEnd(scope, 5, 1004),
+        true,
+        `${levelName}: the rank screen was not ready the moment the cutscene closed`
+    );
+
+    DungeonCompletionSystem.reset(scope);
+    GlobalState.levelEntities.delete(scope);
+}
+
+// A cutscene whose close packet is lost must not gate the run forever; the
+// caller's cinematic timeout is the safety net.
+function verifyLostCutsceneCloseStillCompletes(levelName: string, ordinal: number): void {
+    const scope = getLevelScopeKey(levelName, `lost-cutscene-close-${ordinal}`);
+    const boss = createBoss(77_000 + ordinal, 'BrigandChamp', 0);
+    boss.dead = true;
+    boss.destroyed = true;
+    boss.entState = EntityState.DEAD;
+    GlobalState.levelEntities.set(scope, new Map([[boss.id, boss]]));
+
+    DungeonCompletionSystem.noteEntityDefeated(scope, boss, 1000);
+    DungeonCompletionSystem.noteCutsceneStart(scope, 5, 1002, true);
+    assert.equal(
+        DungeonCompletionSystem.evaluate(scope, 1003).reason,
+        'cutscene_gate_pending',
+        `${levelName}: an active cutscene did not gate the summary`
+    );
+    assert.equal(
+        DungeonCompletionSystem.forceReleaseActiveCutsceneGate(scope, 1003 + 600_000),
+        true,
+        `${levelName}: a cutscene that never reported its close gated the run forever`
+    );
+
+    DungeonCompletionSystem.reset(scope);
+    GlobalState.levelEntities.delete(scope);
+}
+
 function main(): void {
     LevelConfig.load(path.resolve(__dirname, '../data'));
     verifyTerminalCanonicalBossWithoutMarker('JC_Mission11', 1);
     verifyTerminalCanonicalBossWithoutMarker('JC_Mission11Hard', 2);
     verifyLiveCanonicalBossStillNeedsMarker('JC_Mission11', 3);
     verifyLiveCanonicalBossStillNeedsMarker('JC_Mission11Hard', 4);
+    verifyCutsceneEndReleasesSummary('JC_Mission11', 5);
+    verifyCutsceneEndReleasesSummary('JC_Mission11Hard', 6);
+    verifyLostCutsceneCloseStillCompletes('JC_Mission11', 7);
+    verifyLostCutsceneCloseStillCompletes('JC_Mission11Hard', 8);
     console.log('ring_of_fire_completion_regression: ok');
 }
 

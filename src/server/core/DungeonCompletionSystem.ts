@@ -411,13 +411,16 @@ export class DungeonCompletionSystem {
         return DungeonCompletionSystem.evaluate(levelScope, now).ready;
     }
 
+    // The caller's cinematic timeout is the hard safety net for a skit that never
+    // reports its close. It must apply to every level that stalls on the cutscene
+    // gate, not only the ones flagged `cutscene.requiredAfterObjectives`: a level
+    // without that flag still blocks on an active cutscene, and used to have no
+    // way out at all if the closing packet was lost (e.g. Ring of Fire).
     static forceReleaseActiveCutsceneGate(levelScope: string, now: number = Date.now()): boolean {
         const state = DungeonCompletionSystem.getState(levelScope);
-        const condition = state ? DungeonCompletionConditions.get(state.levelName) : null;
         const evaluation = DungeonCompletionSystem.evaluate(levelScope, now);
         if (
             !state ||
-            !condition?.cutscene?.requiredAfterObjectives ||
             !evaluation.objectivesMet ||
             evaluation.reason !== 'cutscene_gate_pending'
         ) {
@@ -467,7 +470,16 @@ export class DungeonCompletionSystem {
         const activeSharedCutscene = relevantCutscenes.some((cutscene) =>
             cutscene.startedAt > 0 && cutscene.endedSequence < cutscene.startedSequence
         );
-        let gateMet = !activeSharedCutscene;
+        // An `active-timeout` release means the caller waited out its cinematic
+        // safety net, so a cutscene still marked active is a lost close packet
+        // rather than a skit on screen. This must be honoured even when the level
+        // does not require a post-objective cutscene, otherwise the run stays
+        // gated forever with no fallback.
+        const activeTimeoutReleased =
+            state.cutsceneFallbackReleasedAt > 0 &&
+            state.cutsceneFallbackSequence > state.objectivesMetSequence &&
+            state.cutsceneFallbackReason === 'active-timeout';
+        let gateMet = !activeSharedCutscene || activeTimeoutReleased;
         if (condition.cutscene?.requiredAfterObjectives) {
             const sharedCutsceneEnded = relevantCutscenes.some((cutscene) =>
                 cutscene.startedAt > 0 &&
