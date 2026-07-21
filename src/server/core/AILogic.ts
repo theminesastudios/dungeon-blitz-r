@@ -12,6 +12,7 @@ import { DungeonCompletionConditions } from './DungeonCompletionConditions';
 import { getRoomBossAwareRoomId, isRoomBossEntity } from './RoomBossState';
 import { EntityState } from './Entity';
 import { performance } from 'perf_hooks';
+import { AdminRuntimeSettings } from './AdminRuntimeSettings';
 
 
 export class AILogic {
@@ -286,6 +287,10 @@ export class AILogic {
 
         CombatHandler.processOutOfCombatRegen(levelScope, nowMs);
         CombatHandler.processBuffExpirations(levelScope, nowMs);
+
+        if (AdminRuntimeSettings.snapshot.freezeEnemies) {
+            return { players: players.length, npcs: 0 };
+        }
 
         const playersByRoom = new Map<number, Client[]>();
         for (const player of players) {

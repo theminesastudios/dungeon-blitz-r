@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "1.10.19",
+  "version": "1.11.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,8 @@
     "start:discord-bridge": "node tools/startDiscordBridge.js",
     "start:discord-bridge:multiplayer": "node tools/startDiscordBridge.js",
     "reset-password": "ts-node scripts/set_account_password.ts",
-    "migrate:game-data-to-mongo": "node --env-file-if-exists=.env -r ts-node/register scripts/migrate_game_data_to_mongo.ts"
+    "migrate:game-data-to-mongo": "node --env-file-if-exists=.env -r ts-node/register scripts/migrate_game_data_to_mongo.ts",
+    "admin": "node --env-file-if-exists=.env tools/adminPanelServer.js"
   },
   "keywords": [],
   "author": "",

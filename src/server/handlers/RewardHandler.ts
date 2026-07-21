@@ -18,6 +18,7 @@ import { Config } from '../core/config';
 import { EntityHandler } from './EntityHandler';
 import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { DungeonCompletionSystem } from '../core/DungeonCompletionSystem';
+import { AdminRuntimeSettings } from '../core/AdminRuntimeSettings';
 
 interface RewardRequest {
     receiverId: number;
@@ -419,7 +420,7 @@ export class RewardHandler {
         const rank = String(entType?.EntRank ?? 'Minion');
         const baseChance = RewardHandler.MATERIAL_DROP_CHANCE_BY_RANK[rank] ?? RewardHandler.MATERIAL_DROP_CHANCE_BY_RANK.Minion;
         const multiplier = RewardHandler.sanitizeDropMultiplier(reward.gearMultiplier);
-        return Math.max(0, Math.min(1, baseChance * multiplier));
+        return AdminRuntimeSettings.scaleMaterialChance(baseChance * multiplier);
     }
 
     private static resolveGearDropChance(entType: any, itemMultiplier: number): number {
@@ -429,7 +430,7 @@ export class RewardHandler {
         }
 
         const multiplier = RewardHandler.sanitizeDropMultiplier(itemMultiplier);
-        return Math.max(0, Math.min(1, rawChance * multiplier));
+        return AdminRuntimeSettings.scaleGearChance(rawChance * multiplier);
     }
 
     private static resolveGearFindMultiplier(client: Client): number {
@@ -841,8 +842,8 @@ export class RewardHandler {
         gearTier: number;
         dyeId: number;
     } {
-        let exp = reward.exp;
-        let gold = reward.gold;
+        let exp = AdminRuntimeSettings.scaleXp(reward.exp);
+        let gold = AdminRuntimeSettings.scaleGold(reward.gold);
         const packetGold = gold;
         let hpGain = reward.hpGain;
         let materialId = 0;
