@@ -879,7 +879,7 @@ export class RewardHandler {
             itemLootAllowedByClass;
         const goldFindRate = petBonuses.goldFind + charmBonuses.goldFind + gearGoldFind + potionBonuses.goldFind;
         const shouldRollMaterial = shouldApplyDropTables && Boolean(realm);
-        const shouldRollGear = shouldApplyDropTables;
+        const shouldRollGear = shouldApplyDropTables && isLargeEnemy;
         const materialChance = shouldRollMaterial
             ? RewardHandler.resolveMaterialDropChance(entType, reward)
             : 0;
@@ -908,7 +908,7 @@ export class RewardHandler {
         if (allowItemDrop && dyeDebug.rarity) {
             dyeId = GameData.getRandomDyeId([dyeDebug.rarity], RewardHandler.collectOwnedDyeIds(client));
         }
-        if (allowItemDrop && gearChance > 0 && Math.random() < gearChance) {
+        if (shouldRollGear && gearChance > 0 && Math.random() < gearChance) {
             gearTier = RewardHandler.resolveGearTier(client, entRank, gearFindMultiplier);
             gearId = GameData.getGearIdForEntity(
                 entName,
