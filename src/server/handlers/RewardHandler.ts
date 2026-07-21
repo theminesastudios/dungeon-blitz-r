@@ -161,8 +161,8 @@ export class RewardHandler {
             { tier: 2, weight: (1 / 100) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.MiniBoss }
         ],
         Boss: [
-            { tier: 0, weight: 1 - ((1 / 5) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss) - ((1 / 60) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss) },
-            { tier: 1, weight: (1 / 5) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss },
+            { tier: 0, weight: 1 - ((1 / 8) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss) - ((1 / 60) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss) },
+            { tier: 1, weight: (1 / 8) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss },
             { tier: 2, weight: (1 / 60) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss }
         ]
     };
