@@ -435,6 +435,31 @@ export class DungeonCompletionSystem {
         return DungeonCompletionSystem.evaluate(levelScope, now).ready;
     }
 
+    // An observed cutscene close is the client saying "the skit finished and the
+    // cinematic is gone". Once the objectives are met there is nothing left the
+    // gate can legitimately be waiting for, so the close releases it outright
+    // instead of leaving the run to burn the 120s cinematic safety net. This
+    // also covers a run whose shared state still carries a cutscene marked
+    // active because its own close was booked against another room.
+    static releaseCutsceneGateOnClose(levelScope: string, now: number = Date.now()): boolean {
+        const state = DungeonCompletionSystem.getState(levelScope);
+        const evaluation = DungeonCompletionSystem.evaluate(levelScope, now);
+        if (
+            !state ||
+            !evaluation.objectivesMet ||
+            evaluation.reason !== 'cutscene_gate_pending'
+        ) {
+            return evaluation.ready;
+        }
+
+        state.eventSequence += 1;
+        state.cutsceneFallbackReleasedAt = now;
+        state.cutsceneFallbackSequence = state.eventSequence;
+        state.cutsceneFallbackReason = 'close-observed';
+        state.updatedAt = now;
+        return DungeonCompletionSystem.evaluate(levelScope, now).ready;
+    }
+
     static evaluate(levelScope: string, now: number = Date.now()): DungeonCompletionEvaluation {
         const state = DungeonCompletionSystem.getOrCreateState(levelScope, now);
         const condition = state ? DungeonCompletionConditions.get(state.levelName) : null;
@@ -471,15 +496,19 @@ export class DungeonCompletionSystem {
             cutscene.startedAt > 0 && cutscene.endedSequence < cutscene.startedSequence
         );
         // An `active-timeout` release means the caller waited out its cinematic
-        // safety net, so a cutscene still marked active is a lost close packet
-        // rather than a skit on screen. This must be honoured even when the level
-        // does not require a post-objective cutscene, otherwise the run stays
+        // safety net, and a `close-observed` release means the client reported the
+        // skit closing, so a cutscene still marked active is a lost/misrouted close
+        // packet rather than a skit on screen. Both must be honoured even when the
+        // level does not require a post-objective cutscene, otherwise the run stays
         // gated forever with no fallback.
-        const activeTimeoutReleased =
+        const activeCutsceneOverridden =
             state.cutsceneFallbackReleasedAt > 0 &&
             state.cutsceneFallbackSequence > state.objectivesMetSequence &&
-            state.cutsceneFallbackReason === 'active-timeout';
-        let gateMet = !activeSharedCutscene || activeTimeoutReleased;
+            (
+                state.cutsceneFallbackReason === 'active-timeout' ||
+                state.cutsceneFallbackReason === 'close-observed'
+            );
+        let gateMet = !activeSharedCutscene || activeCutsceneOverridden;
         if (condition.cutscene?.requiredAfterObjectives) {
             const sharedCutsceneEnded = relevantCutscenes.some((cutscene) =>
                 cutscene.startedAt > 0 &&
@@ -496,8 +525,10 @@ export class DungeonCompletionSystem {
             const fallbackReleased =
                 state.cutsceneFallbackReleasedAt > 0 &&
                 state.cutsceneFallbackSequence > state.objectivesMetSequence;
-            const fallbackOverridesActiveCutscene =
-                fallbackReleased && state.cutsceneFallbackReason === 'active-timeout';
+            const fallbackOverridesActiveCutscene = fallbackReleased && (
+                state.cutsceneFallbackReason === 'active-timeout' ||
+                state.cutsceneFallbackReason === 'close-observed'
+            );
             gateMet =
                 fallbackOverridesActiveCutscene ||
                 (!activeSharedCutscene && (sharedCutsceneEnded || fallbackReleased));

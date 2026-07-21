@@ -1930,9 +1930,6 @@ export class MissionHandler {
             client.lastDungeonCutsceneEndAt
         );
         TutorialDungeonMechanics.noteCutscenePhase(scope, endedRoomId, 'completed', client.token);
-        if (completionReady) {
-            TutorialDungeonMechanics.noteCompletionPhase(scope, 'ready', client.token);
-        }
         if (getScopeLevelName(scope) === 'CraftTownTutorial') {
             MissionHandler.logKeepCompletionProgress('cutsceneEndProcessed', client, {
                 levelScope: scope,
@@ -1950,11 +1947,23 @@ export class MissionHandler {
             client.activeDungeonCutsceneRoomId = 0;
         }
 
-        if (completionReady) {
+        // The boss is already down and the skit that was playing over it just
+        // closed, so the rank plate is what comes next. Release the ending gate
+        // here instead of leaving the run to sit out the cinematic safety net:
+        // a run whose ending cutscene was never registered as a fresh start (or
+        // whose start was booked against another room) has no other way out, and
+        // the player is left standing in a finished dungeon.
+        const releasedByClose = completionReady || (
+            !MissionHandler.isDungeonCinematicOpen(client, scope) &&
+            DungeonCompletionSystem.releaseCutsceneGateOnClose(scope, client.lastDungeonCutsceneEndAt)
+        );
+
+        if (releasedByClose) {
             // The cutscene close is the authoritative "dialogue finished and the
             // cinematic is gone" signal, so there is nothing left to settle for:
             // show the rank/statistics plate immediately instead of waiting out
             // another skit-settle window.
+            TutorialDungeonMechanics.noteCompletionPhase(scope, 'ready', client.token);
             MissionHandler.scheduleDungeonCompletionForScope(scope, client, { immediate: true });
         } else if (pendingScope && pendingScope === scope) {
             void MissionHandler.flushPendingDungeonCompletion(client);
@@ -2161,7 +2170,14 @@ export class MissionHandler {
                         now
                     );
                     evaluation = DungeonCompletionSystem.evaluate(pendingScope, now);
-                } else if (cinematicOpen && now >= cinematicWaitDeadline) {
+                }
+                // The cinematic safety net must not depend on THIS client still
+                // having a cinematic open. A cutscene left marked active in the
+                // shared run state — by a peer, or by a close that was booked
+                // against another room — blocks the missing-start release above,
+                // and used to leave the run past its deadline with no release
+                // path at all: the completion was then dropped for good.
+                if (!evaluation.ready && now >= cinematicWaitDeadline) {
                     DungeonCompletionSystem.forceReleaseActiveCutsceneGate(pendingScope, now);
                     evaluation = DungeonCompletionSystem.evaluate(pendingScope, now);
                 }
