@@ -901,6 +901,7 @@ export class SocialHandler {
 
         GlobalState.partyGroups.set(partyId, group);
         GlobalState.partyByMember.set(SocialHandler.normalizeName(displayName), partyId);
+        GlobalState.refreshSessionIndexesByCharacterName(displayName);
         return group;
     }
 
@@ -917,6 +918,7 @@ export class SocialHandler {
 
         GlobalState.partyGroups.set(group.id, group);
         GlobalState.partyByMember.set(memberKey, group.id);
+        GlobalState.refreshSessionIndexesByCharacterName(displayName);
         return group;
     }
 
@@ -929,6 +931,7 @@ export class SocialHandler {
         const memberKey = SocialHandler.normalizeName(memberName);
         party.group.members = party.group.members.filter((entry) => SocialHandler.normalizeName(entry) !== memberKey);
         GlobalState.partyByMember.delete(memberKey);
+        GlobalState.refreshSessionIndexesByCharacterName(memberName);
 
         if (SocialHandler.normalizeName(party.group.leader) === memberKey) {
             party.group.leader = party.group.members[0] ?? '';
@@ -965,6 +968,7 @@ export class SocialHandler {
         GlobalState.partyGroups.delete(partyId);
         for (const member of group.members) {
             GlobalState.partyByMember.delete(SocialHandler.normalizeName(member));
+            GlobalState.refreshSessionIndexesByCharacterName(member);
         }
 
         return [...group.members];
@@ -2030,6 +2034,7 @@ export class SocialHandler {
         const text = br.readMethod13();
         LevelHandler.maybeStartGoblinRiverBossIntroLock(client, entityId, text);
         LevelHandler.maybeFinishTutorialDungeonAfterAnnaCutscene(client, text);
+        LevelHandler.maybeFinishSDMission4AfterBossDialogue(client, text);
         const delivery = LevelHandler.getDungeonCutsceneRoomThoughtDelivery(client, entityId, text);
         if (delivery === 'suppress') {
             return;
@@ -2058,6 +2063,7 @@ export class SocialHandler {
             : sourceEntityId;
         LevelHandler.maybeStartGoblinRiverBossIntroLock(client, sourceEntityId, text);
         LevelHandler.maybeFinishTutorialDungeonAfterAnnaCutscene(client, text);
+        LevelHandler.maybeFinishSDMission4AfterBossDialogue(client, text);
         const delivery = LevelHandler.getDungeonCutsceneRoomThoughtDelivery(client, entityId, text);
         if (delivery === 'suppress') {
             return;

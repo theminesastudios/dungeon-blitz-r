@@ -503,6 +503,7 @@ export class DungeonCompletionSystem {
                 continue;
             }
             const canonicalBoss = DungeonCompletionConditions.getCanonicalBossName(state.levelName, entity, state.levelScope);
+			
             if (canonicalBoss) {
                 state.defeatedBosses.add(canonicalBoss);
                 if (!state.defeatedBossAt.has(canonicalBoss)) {

@@ -3,6 +3,52 @@ import { Client } from './Client';
 import type { DungeonCompletionRunState } from './DungeonCompletionTypes';
 import type { TutorialDungeonMechanicsState } from './TutorialDungeonMechanics';
 import { normalizeCharacterKey, PartyGroup, PendingTeleport } from './SocialState';
+import { getClientLevelScope } from './LevelScope';
+
+type SessionIndexSnapshot = {
+    levelScope: string;
+    partyId: number;
+    roomId: number;
+};
+
+class IndexedSessionMap extends Map<number, Client> {
+    override set(token: number, session: Client): this {
+        const previous = super.get(token);
+        if (previous && previous !== session) {
+            GlobalState.removeSessionIndexes(previous);
+        }
+        super.set(token, session);
+        GlobalState.refreshSessionIndexes(session);
+        return this;
+    }
+
+    override delete(token: number): boolean {
+        const session = super.get(token);
+        const deleted = super.delete(token);
+        if (deleted && session) {
+            GlobalState.refreshSessionIndexes(session);
+        }
+        return deleted;
+    }
+
+    override clear(): void {
+        const sessions = new Set(super.values());
+        super.clear();
+        for (const session of sessions) {
+            GlobalState.removeSessionIndexes(session);
+        }
+    }
+
+    replaceFrom(source: Map<number, Client>): void {
+        if (source === this) {
+            return;
+        }
+        this.clear();
+        for (const [token, session] of source) {
+            this.set(token, session);
+        }
+    }
+}
 
 export interface PendingTransfer {
     character: Character;
@@ -106,7 +152,21 @@ export class GlobalState {
     static usedTransferTokens: Map<number, PendingTransfer> = new Map();
     
     // Token -> Client Session (Active)
-    static sessionsByToken: Map<number, Client> = new Map();
+    private static readonly indexedSessionsByToken = new IndexedSessionMap();
+    private static readonly sessionIndexSnapshots = new WeakMap<Client, SessionIndexSnapshot>();
+    private static readonly EMPTY_SESSION_SET: ReadonlySet<Client> = new Set<Client>();
+
+    static get sessionsByToken(): Map<number, Client> {
+        return GlobalState.indexedSessionsByToken;
+    }
+
+    static set sessionsByToken(source: Map<number, Client>) {
+        GlobalState.indexedSessionsByToken.replaceFrom(source);
+    }
+
+    static sessionsByLevelScope: Map<string, Set<Client>> = new Map();
+    static sessionsByPartyId: Map<number, Set<Client>> = new Map();
+    static sessionsByRoom: Map<string, Map<number, Set<Client>>> = new Map();
     
     // UserId -> Client Session
     static sessionsByUserId: Map<number, Client> = new Map();
@@ -146,6 +206,123 @@ export class GlobalState {
     static entityLastRewardNonces: Map<string, number> = new Map();
     // Level Name -> LevelInstance (if needed) or just keys of levelEntities
     static levelRegistry: { [key: string]: any } = {};
+
+    private static deleteFromSessionSetIndex<K>(index: Map<K, Set<Client>>, key: K, session: Client): void {
+        const sessions = index.get(key);
+        if (!sessions) {
+            return;
+        }
+        sessions.delete(session);
+        if (sessions.size === 0) {
+            index.delete(key);
+        }
+    }
+
+    private static addToSessionSetIndex<K>(index: Map<K, Set<Client>>, key: K, session: Client): void {
+        let sessions = index.get(key);
+        if (!sessions) {
+            sessions = new Set<Client>();
+            index.set(key, sessions);
+        }
+        sessions.add(session);
+    }
+
+    static removeSessionIndexes(session: Client): void {
+        const previous = GlobalState.sessionIndexSnapshots.get(session);
+        if (!previous) {
+            return;
+        }
+
+        if (previous.levelScope) {
+            GlobalState.deleteFromSessionSetIndex(GlobalState.sessionsByLevelScope, previous.levelScope, session);
+            if (previous.roomId >= 0) {
+                const rooms = GlobalState.sessionsByRoom.get(previous.levelScope);
+                if (rooms) {
+                    GlobalState.deleteFromSessionSetIndex(rooms, previous.roomId, session);
+                    if (rooms.size === 0) {
+                        GlobalState.sessionsByRoom.delete(previous.levelScope);
+                    }
+                }
+            }
+        }
+        if (previous.partyId > 0) {
+            GlobalState.deleteFromSessionSetIndex(GlobalState.sessionsByPartyId, previous.partyId, session);
+        }
+        GlobalState.sessionIndexSnapshots.delete(session);
+    }
+
+    static refreshSessionIndexes(session: Client): void {
+        GlobalState.removeSessionIndexes(session);
+
+        const token = Math.max(0, Math.round(Number(session?.token ?? 0)));
+        if (token <= 0 || GlobalState.indexedSessionsByToken.get(token) !== session) {
+            return;
+        }
+
+        const levelScope = getClientLevelScope(session);
+        const characterKey = normalizeCharacterKey(session.character?.name);
+        const partyId = characterKey ? Math.max(0, Math.round(Number(GlobalState.partyByMember.get(characterKey) ?? 0))) : 0;
+        const rawRoomId = Number(session.currentRoomId);
+        const roomId = Number.isFinite(rawRoomId) && rawRoomId >= 0 ? Math.round(rawRoomId) : -1;
+
+        if (levelScope) {
+            GlobalState.addToSessionSetIndex(GlobalState.sessionsByLevelScope, levelScope, session);
+            if (roomId >= 0) {
+                let rooms = GlobalState.sessionsByRoom.get(levelScope);
+                if (!rooms) {
+                    rooms = new Map<number, Set<Client>>();
+                    GlobalState.sessionsByRoom.set(levelScope, rooms);
+                }
+                GlobalState.addToSessionSetIndex(rooms, roomId, session);
+            }
+        }
+        if (partyId > 0) {
+            GlobalState.addToSessionSetIndex(GlobalState.sessionsByPartyId, partyId, session);
+        }
+
+        GlobalState.sessionIndexSnapshots.set(session, { levelScope, partyId, roomId });
+    }
+
+    static refreshSessionIndexesByCharacterName(name: unknown): void {
+        const characterKey = normalizeCharacterKey(name);
+        if (!characterKey) {
+            return;
+        }
+        const session = GlobalState.sessionsByCharacterName.get(characterKey);
+        if (session) {
+            GlobalState.refreshSessionIndexes(session);
+        }
+    }
+
+    static getSessionsInLevelScope(levelScope: string | null | undefined): ReadonlySet<Client> {
+        return GlobalState.sessionsByLevelScope.get(String(levelScope ?? '')) ?? GlobalState.EMPTY_SESSION_SET;
+    }
+
+    static getSessionsInParty(partyId: number | null | undefined): ReadonlySet<Client> {
+        const normalizedPartyId = Math.max(0, Math.round(Number(partyId ?? 0)));
+        const indexed = GlobalState.sessionsByPartyId.get(normalizedPartyId);
+        if (indexed || normalizedPartyId <= 0) {
+            return indexed ?? GlobalState.EMPTY_SESSION_SET;
+        }
+
+        // Compatibility for tests and maintenance scripts that mutate the
+        // legacy party maps directly. Runtime party flows refresh eagerly.
+        for (const session of GlobalState.indexedSessionsByToken.values()) {
+            const characterKey = normalizeCharacterKey(session.character?.name);
+            if (Number(GlobalState.partyByMember.get(characterKey) ?? 0) === normalizedPartyId) {
+                GlobalState.refreshSessionIndexes(session);
+            }
+        }
+        return GlobalState.sessionsByPartyId.get(normalizedPartyId) ?? GlobalState.EMPTY_SESSION_SET;
+    }
+
+    static getSessionsInRoom(levelScope: string | null | undefined, roomId: number | null | undefined): ReadonlySet<Client> {
+        const normalizedRoomId = Math.round(Number(roomId ?? -1));
+        if (!Number.isFinite(normalizedRoomId) || normalizedRoomId < 0) {
+            return GlobalState.EMPTY_SESSION_SET;
+        }
+        return GlobalState.sessionsByRoom.get(String(levelScope ?? ''))?.get(normalizedRoomId) ?? GlobalState.EMPTY_SESSION_SET;
+    }
 
     static getActiveSessionsByUserId(userId: number | null | undefined): Client[] {
         const normalizedUserId = Number(userId ?? 0);

@@ -206,12 +206,23 @@ async function testAuthoredDungeonSideQuestVariants(): Promise<void> {
         [MissionID.SpiritProblem, 'CastleLizardBanner2'],
         [MissionID.SpiritProblem, 'CastleLizardMaster'],
         [MissionID.SpiritProblemHard, 'CastleLizardBanner2Hard'],
-        [MissionID.SpiritProblemHard, 'CastleLizardMasterHard']
+        [MissionID.SpiritProblemHard, 'CastleLizardMasterHard'],
+        [MissionID.GatherDreadMasks, 'DreadPaladin'],
+        [MissionID.GatherDreadMasks, 'DreadChampion3'],
+        [MissionID.GatherDreadMasksHard, 'DreadPaladinHard'],
+        [MissionID.GatherDreadMasksHard, 'DreadLordHard']
     ];
 
     for (let index = 0; index < cases.length; index++) {
         const [missionId, enemyName] = cases[index];
         const client = createClient(94_000 + index, `Variant${index}`, false);
+        if (missionId === MissionID.GatherDreadMasks) {
+            client.currentLevel = 'Castle';
+            client.character.CurrentLevel.name = 'Castle';
+        } else if (missionId === MissionID.GatherDreadMasksHard) {
+            client.currentLevel = 'CastleHard';
+            client.character.CurrentLevel.name = 'CastleHard';
+        }
         client.character.missions[String(missionId)] = { state: 1, currCount: 0 };
         const enemy = {
             id: 95_000 + index,

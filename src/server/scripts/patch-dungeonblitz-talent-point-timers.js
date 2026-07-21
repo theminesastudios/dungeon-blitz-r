@@ -145,16 +145,26 @@ function patchClass69(source) {
 }
 
 function patchLinkUpdater(source) {
-    return source.replace(
+    let patched = source.replace(
         /         if\(this\.var_1\.mMasterClassTower\)\r?\n         \{\r?\n            this\.var_1\.mMasterClassTower\.mStatus = class_66\.const_534;\r?\n            this\.var_1\.mMasterClassTower\.method_469\(\);\r?\n         \}/,
         [
             '         if(this.var_1.mMasterClassTower)',
             '         {',
             '            this.var_1.mMasterClassTower.SetCurrentResearch(_loc2_,0);',
+            '            this.var_1.mMasterClassTower.GiveNewResearchPoint();',
             '            this.var_1.mMasterClassTower.method_469();',
             '         }'
         ].join('\n')
     );
+
+    if (!patched.includes('this.var_1.mMasterClassTower.GiveNewResearchPoint();')) {
+        patched = patched.replace(
+            /(            this\.var_1\.mMasterClassTower\.SetCurrentResearch\(_loc2_,0\);\r?\n)(            this\.var_1\.mMasterClassTower\.method_469\(\);)/,
+            '$1            this.var_1.mMasterClassTower.GiveNewResearchPoint();\n$2'
+        );
+    }
+
+    return patched;
 }
 
 function verifySources(scriptsRoot) {
@@ -185,6 +195,9 @@ function verifySources(scriptsRoot) {
     }
     if (!linkUpdater.includes('this.var_1.mMasterClassTower.SetCurrentResearch(_loc2_,0);')) {
         throw new Error('LinkUpdater does not retain the completed Talent Point research index');
+    }
+    if (!linkUpdater.includes('this.var_1.mMasterClassTower.GiveNewResearchPoint();')) {
+        throw new Error('LinkUpdater does not immediately apply the completed Talent Point');
     }
     if (linkUpdater.includes('this.var_1.mMasterClassTower.mStatus = class_66.const_534;')) {
         throw new Error('LinkUpdater still marks Talent Point completion without setting the research index');

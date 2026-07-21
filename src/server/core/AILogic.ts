@@ -11,6 +11,7 @@ import { getClientLevelScope, getScopeLevelName } from './LevelScope';
 import { LevelConfig } from './LevelConfig';
 import { DungeonCompletionConditions } from './DungeonCompletionConditions';
 import { getRoomBossAwareRoomId, isRoomBossEntity } from './RoomBossState';
+import { performance } from 'perf_hooks';
 
 
 export class AILogic {
@@ -27,6 +28,8 @@ export class AILogic {
     static readonly ATTACK_COOLDOWN = 1000; // ms
     static readonly BASE_NPC_DAMAGE = 15;
     static readonly ENABLE_SERVER_AUTHORITY_HOSTILE_AI = process.env.ENABLE_SERVER_AUTHORITY_HOSTILE_AI === '1';
+    static readonly SLOW_TICK_MS = Math.max(25, Number(process.env.AI_SLOW_TICK_MS ?? 100));
+    private static tickInProgress = false;
 
     private static hasCombatPull(npc: any): boolean {
         return Math.max(0, Math.round(Number(npc?.aggroTargetEntityId ?? 0))) > 0 ||
@@ -61,23 +64,55 @@ export class AILogic {
 
     // Run AI loop for all levels
     static start() {
-        setInterval(() => {
-            // Iterate over all active levels (keys of levelEntities)
-            for (const levelScope of GlobalState.levelEntities.keys()) {
-                AILogic.updateLevel(levelScope);
-            }
-        }, AILogic.INTERVAL);
+        const timer = setInterval(() => AILogic.runTick(), AILogic.INTERVAL);
+        timer.unref?.();
     }
 
-    static updateLevel(levelScope: string) {
+    static runTick(): void {
+        if (AILogic.tickInProgress) {
+            console.warn('[AILogic] Skipped overlapping AI tick');
+            return;
+        }
+
+        AILogic.tickInProgress = true;
+        const startedAt = performance.now();
+        let scopeCount = 0;
+        let playerCount = 0;
+        let npcCount = 0;
+        try {
+            for (const [levelScope, indexedSessions] of GlobalState.sessionsByLevelScope.entries()) {
+                const levelEntities = GlobalState.levelEntities.get(levelScope);
+                if (indexedSessions.size === 0 || !levelEntities || levelEntities.size === 0) {
+                    continue;
+                }
+                const result = AILogic.updateLevel(levelScope);
+                if (result.players === 0) {
+                    continue;
+                }
+                scopeCount += 1;
+                playerCount += result.players;
+                npcCount += result.npcs;
+            }
+        } finally {
+            AILogic.tickInProgress = false;
+            const durationMs = performance.now() - startedAt;
+            if (durationMs >= AILogic.SLOW_TICK_MS) {
+                console.warn(
+                    `[AILogic] Slow tick durationMs=${durationMs.toFixed(1)} scopes=${scopeCount} players=${playerCount} npcs=${npcCount}`
+                );
+            }
+        }
+    }
+
+    static updateLevel(levelScope: string): { players: number; npcs: number } {
         const levelEntities = GlobalState.levelEntities.get(levelScope);
-        if (!levelEntities) return;
+        if (!levelEntities || levelEntities.size === 0) return { players: 0, npcs: 0 };
         const levelName = getScopeLevelName(levelScope);
         const nowMs = Date.now();
 
         const players: Client[] = [];
         const activeCutsceneRoomIds = new Set<number>();
-        for (const session of GlobalState.sessionsByToken.values()) {
+        for (const session of GlobalState.getSessionsInLevelScope(levelScope)) {
             if (session.playerSpawned && getClientLevelScope(session) === levelScope && session.character) {
                 players.push(session);
                 if (String(session.activeDungeonCutsceneScope ?? '').trim() === levelScope) {
@@ -94,12 +129,26 @@ export class AILogic {
                 CombatHandler.processOutOfCombatRegen(levelScope, nowMs);
             }
             CombatHandler.processBuffExpirations(levelScope, nowMs);
-            return;
+            return { players: 0, npcs: 0 };
         }
         CombatHandler.processOutOfCombatRegen(levelScope, nowMs);
         CombatHandler.processBuffExpirations(levelScope, nowMs);
 
+        const playersByRoom = new Map<number, Client[]>();
+        const playersWithUnknownRoom: Client[] = [];
+        for (const player of players) {
+            const roomId = Number.isFinite(Number(player.currentRoomId)) ? Math.round(Number(player.currentRoomId)) : -1;
+            if (roomId < 0) {
+                playersWithUnknownRoom.push(player);
+                continue;
+            }
+            const roomPlayers = playersByRoom.get(roomId) ?? [];
+            roomPlayers.push(player);
+            playersByRoom.set(roomId, roomPlayers);
+        }
+
         // Iterate over Map entries to get ID and Object
+        let updatedNpcs = 0;
         for (const [entId, npc] of levelEntities.entries()) {
             if (npc.isPlayer || npc.team !== 2) continue; // Only Enemy NPCs
             if (EntityHandler.usesServerAuthorityHostiles(levelName) && !AILogic.ENABLE_SERVER_AUTHORITY_HOSTILE_AI) continue; // JC_Mini1Hard uses client proxies for AI/animation.
@@ -110,8 +159,14 @@ export class AILogic {
             const npcRoomId = Number.isFinite(Number(npc?.roomId)) ? Math.round(Number(npc.roomId)) : -1;
             if (npcRoomId >= 0 && activeCutsceneRoomIds.has(npcRoomId)) continue;
 
-            AILogic.updateNpc(npc, players, levelScope);
+            const candidates = npcRoomId >= 0
+                ? [...(playersByRoom.get(npcRoomId) ?? []), ...playersWithUnknownRoom]
+                : players;
+            if (candidates.length === 0) continue;
+            AILogic.updateNpc(npc, candidates, levelScope);
+            updatedNpcs += 1;
         }
+        return { players: players.length, npcs: updatedNpcs };
     }
 
     static updateNpc(npc: any, players: Client[], levelScope: string) {

@@ -280,8 +280,6 @@ async function main(): Promise<void> {
         const authoredBossFlows = [
             ['OMM_Mission2', 'CaveWizard'],
             ['OMM_Mission2Hard', 'CaveWizardHard'],
-            ['OMM_Mission5', 'DragonWhite'],
-            ['OMM_Mission5Hard', 'DragonWhiteHard'],
             ['SwampRoadConnectionMission', 'Aracnae'],
             ['SwampRoadConnectionMissionHard', 'Aracnae'],
             ['OMM_Mission12', 'MagmaCyclopsBoss'],
