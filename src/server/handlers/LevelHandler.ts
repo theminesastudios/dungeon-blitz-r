@@ -5390,6 +5390,7 @@ export class LevelHandler {
             )
         );
         const canonicalTerminal = isEnemyCanonical && (
+            acceptsClientAuthorityTerminal ||
             canonicalDestroyed ||
             (Number.isFinite(canonicalHp) && canonicalHp <= 0)
         );

@@ -166,7 +166,20 @@ export class DungeonCompletionConditions {
                             .map(normalizeIdentity)
                             .includes(normalizeIdentity(canonical))
                     );
-                    if (!verifiedClientBossWithoutMarker) {
+                    const terminalCanonicalBossWithoutMarker = Boolean(
+                        condition.allowTerminalCanonicalBossWithoutRoomBossMarker &&
+                        !entity?.clientSpawned &&
+                        (
+                            normalizedEntityName === normalizeIdentity(canonical) ||
+                            normalizedEntityName === normalizeIdentity(canonical).replace(/hard$/, '')
+                        ) &&
+                        (
+                            entity?.dead ||
+                            entity?.destroyed ||
+                            Number(entity?.hp ?? 1) <= 0
+                        )
+                    );
+                    if (!verifiedClientBossWithoutMarker && !terminalCanonicalBossWithoutMarker) {
                         return '';
                     }
                 }
@@ -251,6 +264,12 @@ export class DungeonCompletionConditions {
                 }
                 if (condition.requireRoomBossMarker !== undefined && typeof condition.requireRoomBossMarker !== 'boolean') {
                     errors.push(`${levelName}: requireRoomBossMarker must be boolean`);
+                }
+                if (
+                    condition.allowTerminalCanonicalBossWithoutRoomBossMarker !== undefined &&
+                    typeof condition.allowTerminalCanonicalBossWithoutRoomBossMarker !== 'boolean'
+                ) {
+                    errors.push(`${levelName}: allowTerminalCanonicalBossWithoutRoomBossMarker must be boolean`);
                 }
             }
             if (condition.mode !== 'bosses' && (condition.bossGroups?.length || condition.bossAliases)) {
