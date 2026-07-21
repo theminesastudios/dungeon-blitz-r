@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dungeon Blitz — Command Deck</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">DUNGEON BLITZ / LIVE OPS</p>
+        <h1>Command Deck</h1>
+      </div>
+      <div class="connection"><span id="liveDot" class="dot"></span><span id="liveText">Bağlanıyor</span><small id="lastUpdate">—</small></div>
+    </header>
+
+    <section class="metrics" id="metrics"></section>
+
+    <section class="layout">
+      <aside class="panel players-panel">
+        <div class="panel-head"><div><p class="kicker">AKTİF OTURUMLAR</p><h2>Oyuncular</h2></div><span id="playerCount" class="count">0</span></div>
+        <div id="players" class="player-list empty">Aktif oyuncu bekleniyor…</div>
+      </aside>
+
+      <section class="stack">
+        <article class="panel target-panel">
+          <div class="panel-head"><div><p class="kicker">SEÇİLİ HEDEF</p><h2 id="targetName">Oyuncu seçin</h2></div><span id="targetLocation" class="tag">—</span></div>
+          <div class="action-grid">
+            <button data-action="kill-room" class="danger"><span>☠</span>Odadaki düşmanları öldür</button>
+            <button data-action="heal-player"><span>✦</span>Canı doldur</button>
+            <button data-action="kick-player" class="ghost danger-text"><span>↯</span>Bağlantıyı kes</button>
+            <button data-action="heal-all" class="ghost"><span>✦</span>Herkesi iyileştir</button>
+          </div>
+        </article>
+
+        <article class="panel settings-panel">
+          <div class="panel-head"><div><p class="kicker">RUNTIME OVERRIDES</p><h2>Oyun Kuralları</h2></div><button id="resetSettings" class="text-button">Varsayılana dön</button></div>
+          <div class="toggle-grid">
+            <label class="toggle-card"><span><b>Tek vuruş</b><small>Oyuncu saldırıları ölümcül</small></span><input id="oneHitEnabled" type="checkbox"><i></i></label>
+            <label class="toggle-card"><span><b>Tanrı modu</b><small>Oyuncular hasar almaz</small></span><input id="godModeEnabled" type="checkbox"><i></i></label>
+            <label class="toggle-card"><span><b>AI dondur</b><small>Düşman karar döngüsünü durdur</small></span><input id="freezeEnemies" type="checkbox"><i></i></label>
+          </div>
+          <div id="sliders" class="sliders"></div>
+          <button id="saveSettings" class="primary wide">Ayarları canlı sunucuya uygula</button>
+        </article>
+
+        <article class="panel announce-panel">
+          <div><p class="kicker">SUNUCU YAYINI</p><h2>Duyuru gönder</h2></div>
+          <form id="announceForm"><input id="announcement" maxlength="240" placeholder="Tüm çevrimiçi oyunculara mesaj…"><button class="primary">Gönder</button></form>
+        </article>
+      </section>
+
+      <aside class="panel rooms-panel">
+        <div class="panel-head"><div><p class="kicker">CANLI HARİTA</p><h2>Odalar</h2></div><span id="roomCount" class="count">0</span></div>
+        <div id="rooms" class="room-list empty">Aktif oda bekleniyor…</div>
+      </aside>
+    </section>
+    <div id="toast" class="toast"></div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

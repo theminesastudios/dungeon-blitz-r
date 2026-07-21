@@ -1,6 +1,6 @@
 {
     "name": "dungeon-blitz-r",
-    "version": "1.10.19",
+    "version": "1.11.0",
     "description": "Dungeon Blitz: R",
     "main": "index.js",
     "scripts": {
@@ -17,7 +17,8 @@
         "dev:discord-bridge": "cd src/server && npm run dev:discord-bridge",
         "dev:with-discord": "concurrently -n GAME,RPC -c blue,magenta \"npm run dev\" \"npm run dev:discord-bridge\"",
         "reset-password": "cd src/server && npm run reset-password --",
-        "migrate:game-data-to-mongo": "cd src/server && npm run migrate:game-data-to-mongo --"
+        "migrate:game-data-to-mongo": "cd src/server && npm run migrate:game-data-to-mongo --",
+        "admin": "node --env-file-if-exists=src/server/.env src/server/tools/adminPanelServer.js"
     },
     "devDependencies": {
         "concurrently": "^10.0.3"
