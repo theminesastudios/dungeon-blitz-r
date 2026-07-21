@@ -1644,8 +1644,8 @@ export class MissionHandler {
                 continue;
             }
             MissionHandler.scheduleDungeonCompletion(session, payload, {
-                initialDelayMs: 0,
-                settleDelayMs: 0
+                initialDelayMs: MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS,
+                settleDelayMs: MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS
             });
         }
     }

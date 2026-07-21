@@ -50,15 +50,16 @@ function main(): void {
     const dungeonScope = 'OMM_Mission2#aggro-regression';
     const minion = createNpc('GoblinBrute');
     AILogic.updateNpc(minion, [dungeonPlayer], dungeonScope);
-    assert.equal(minion.x, 0, 'unhit dungeon minion proximity-pulled');
+    assert.notEqual(minion.x, 0, 'dungeon minion did not proximity-pull');
 
+    minion.x = 0;
     minion.lastCombatActivityAt = Date.now();
     AILogic.updateNpc(minion, [dungeonPlayer], dungeonScope);
-    assert.equal(minion.x, 0, 'stale combat timestamp permanently re-armed dungeon aggro');
+    assert.notEqual(minion.x, 0, 'dungeon minion lost proximity aggro with a combat timestamp');
 
-    const roomBoss = createNpc('GoblinMiniBoss', { id: 88_202, isRoomBoss: true, roomBossRoomId: 4 });
+    const roomBoss = createNpc('GoblinMiniBoss', { id: 88_202, isRoomBoss: true, roomBossRoomId: 4, x: 50 });
     AILogic.updateNpc(roomBoss, [dungeonPlayer], dungeonScope);
-    assert.equal(roomBoss.x, 0, 'unhit dungeon miniboss proximity-pulled');
+    assert.notEqual(roomBoss.x, 50, 'dungeon miniboss did not proximity-pull');
 
     minion.aggroTargetEntityId = dungeonPlayer.clientEntID;
     minion.aggroTargetToken = dungeonPlayer.token;
@@ -69,7 +70,7 @@ function main(): void {
     minion.aggroTargetEntityId = 999_999;
     minion.aggroTargetToken = 999_999;
     AILogic.updateNpc(minion, [dungeonPlayer], dungeonScope);
-    assert.equal(minion.x, 0, 'hostile retargeted a bystander after its recorded target disappeared');
+    assert.notEqual(minion.x, 0, 'hostile did not reacquire a nearby player after its recorded target disappeared');
     assert.equal(minion.aggroTargetEntityId, 0, 'missing aggro target was not cleared');
 
     const outdoorPlayer = createPlayer('NewbieRoad');

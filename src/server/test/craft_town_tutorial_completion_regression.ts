@@ -149,8 +149,15 @@ function decodeDoorTarget(payload: Buffer): { doorId: number; targetLevel: strin
     };
 }
 
-function sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+async function settleScheduledCompletion(client: FakeClient): Promise<void> {
+    if (client.pendingDungeonCompletionTimer) {
+        clearTimeout(client.pendingDungeonCompletionTimer);
+        client.pendingDungeonCompletionTimer = null;
+    }
+    client.pendingDungeonCompletionNotBeforeAt = Date.now() - 1;
+    client.pendingDungeonCompletionLastSkitAt = Date.now() - 1;
+    client.pendingDungeonCompletionSettleMs = 0;
+    await (MissionHandler as any).flushPendingDungeonCompletion(client);
 }
 
 async function testKeepBossDeathCompletesQuestAfterCutsceneDespiteAliveHelpers(): Promise<void> {
@@ -166,7 +173,7 @@ async function testKeepBossDeathCompletesQuestAfterCutsceneDespiteAliveHelpers()
 
     MissionHandler.noteDungeonCutsceneStart(client as never, 7);
     MissionHandler.noteDungeonCutsceneEnd(client as never, 7);
-    await sleep(0);
+    await settleScheduledCompletion(client);
 
     assert.equal(client.sentPackets.some((packet) => packet.id === 0x87), false, 'keep completion should not show dungeon stats');
     assert.equal(Number(client.character.questTrackerState ?? 0), 100, 'quest tracker should update to 1/1');
@@ -189,7 +196,10 @@ async function testKeepBossDeathPropagatesCompletionToParty(): Promise<void> {
     await MissionHandler.handleForcedDungeonBossCompletion(host as never, bossDeathReport());
     MissionHandler.noteDungeonCutsceneStart(host as never, 7);
     MissionHandler.noteDungeonCutsceneEnd(host as never, 7);
-    await sleep(10);
+    await Promise.all([
+        settleScheduledCompletion(host),
+        settleScheduledCompletion(party)
+    ]);
 
     for (const client of [host, party]) {
         assert.equal(Number(client.character.questTrackerState ?? 0), 100);

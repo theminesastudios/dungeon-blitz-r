@@ -8,7 +8,6 @@ import { NpcDef } from '../data/NpcLoader';
 import { Client } from './Client';
 import { sharesRoomIds } from './PartySync';
 import { getClientLevelScope, getScopeLevelName } from './LevelScope';
-import { LevelConfig } from './LevelConfig';
 import { DungeonCompletionConditions } from './DungeonCompletionConditions';
 import { getRoomBossAwareRoomId, isRoomBossEntity } from './RoomBossState';
 import { performance } from 'perf_hooks';
@@ -180,14 +179,9 @@ export class AILogic {
         const isRanged = entType?.RangedPower ? true : false;
         const isBoss = DungeonCompletionConditions.isRequiredBoss(levelName, npc, levelScope) ||
             isRoomBossEntity(levelScope, npc);
-        const isDungeonLevel = LevelConfig.isDungeonLevel(levelName);
         AILogic.clearDeadAggroTarget(npc, players, levelScope);
         const aggroTargetEntityId = Math.max(0, Math.round(Number(npc?.aggroTargetEntityId ?? 0)));
         const aggroTargetToken = Math.max(0, Math.round(Number(npc?.aggroTargetToken ?? 0)));
-
-        if (isDungeonLevel && !AILogic.hasCombatPull(npc)) {
-            return;
-        }
 
         for (const p of players) {
             if (!p.character || !p.character.CurrentLevel) continue;

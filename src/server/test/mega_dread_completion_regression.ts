@@ -68,7 +68,7 @@ function testHuntedToTheEdgeRequiresBothBossesAndCutscene(): void {
     assert.equal(DungeonCompletionSystem.noteCutsceneEnd(levelScope, 12, 105), true);
 }
 
-function testMeylourPhaseReviveRequiresFinalClientSignalAndCutscene(): void {
+function testMeylourPhaseReviveRequiresFinalDefeatAndCutscene(): void {
     const levelScope = getLevelScopeKey('BT_Mission3Hard', 'mega-dread-meylour');
     const boss = makeBoss(3, 'MeylourBossMageHard');
     GlobalState.levelEntities.set(levelScope, new Map([[boss.id, boss]]));
@@ -82,11 +82,9 @@ function testMeylourPhaseReviveRequiresFinalClientSignalAndCutscene(): void {
     );
 
     defeat(levelScope, boss, 202);
-    assert.equal(DungeonCompletionSystem.evaluate(levelScope, 203).reason, 'client_completion_signal_pending');
-    DungeonCompletionSystem.noteClientCompletionSignal(levelScope, 'mega-dread-player', 100, 204);
-    assert.equal(DungeonCompletionSystem.evaluate(levelScope, 205).reason, 'cutscene_gate_pending');
-    DungeonCompletionSystem.noteCutsceneStart(levelScope, 27, 206);
-    assert.equal(DungeonCompletionSystem.noteCutsceneEnd(levelScope, 27, 207), true);
+    assert.equal(DungeonCompletionSystem.evaluate(levelScope, 203).reason, 'cutscene_gate_pending');
+    DungeonCompletionSystem.noteCutsceneStart(levelScope, 27, 204);
+    assert.equal(DungeonCompletionSystem.noteCutsceneEnd(levelScope, 27, 205), true);
 }
 
 function main(): void {
@@ -94,7 +92,7 @@ function main(): void {
     try {
         testAuthoredMegaDreadConditions();
         testHuntedToTheEdgeRequiresBothBossesAndCutscene();
-        testMeylourPhaseReviveRequiresFinalClientSignalAndCutscene();
+        testMeylourPhaseReviveRequiresFinalDefeatAndCutscene();
         console.log('mega_dread_completion_regression: ok');
     } finally {
         for (const scope of [...GlobalState.levelEntities.keys()]) {

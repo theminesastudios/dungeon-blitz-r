@@ -88,10 +88,10 @@ async function testDungeonDefeatAwardsEveryEligibleQuestHolder(): Promise<void> 
         name: 'GoblinShamanHood',
         characterName: ',GoblinShamanHood',
         team: EntityTeam.ENEMY,
-        entState: EntityState.DEAD,
-        hp: 0,
-        dead: true,
-        destroyed: true
+        entState: EntityState.ACTIVE,
+        hp: 50,
+        dead: false,
+        destroyed: false
     };
     const levelScope = getClientLevelScope(authority as never);
 
@@ -112,8 +112,26 @@ async function testDungeonDefeatAwardsEveryEligibleQuestHolder(): Promise<void> 
             authority,
             levelScope,
             defeatedShaman.id,
+            defeatedShaman
+        );
+        await new Promise<void>((resolve) => setImmediate(resolve));
+        assert.equal(
+            questHolder.character.missions[String(MissionID.GetGoblinWands)].currCount,
+            0,
+            'a non-terminal enemy hit awarded a side-quest item'
+        );
+
+        defeatedShaman.entState = EntityState.DEAD;
+        defeatedShaman.hp = 0;
+        defeatedShaman.dead = true;
+        defeatedShaman.destroyed = true;
+
+        (CombatHandler as any).handleEnemyDefeatState(
+            authority,
+            levelScope,
+            defeatedShaman.id,
             defeatedShaman,
-            { fromDestroy: true }
+            { fromKillState: true }
         );
         await new Promise<void>((resolve) => setImmediate(resolve));
 
