@@ -10,6 +10,7 @@ import { sharesRoomIds } from './PartySync';
 import { getClientLevelScope, getScopeLevelName } from './LevelScope';
 import { DungeonCompletionConditions } from './DungeonCompletionConditions';
 import { getRoomBossAwareRoomId, isRoomBossEntity } from './RoomBossState';
+import { EntityState } from './Entity';
 import { performance } from 'perf_hooks';
 
 
@@ -21,6 +22,8 @@ export class AILogic {
     static readonly BOSS_MELEE_AGGRO_RADIUS = 180;
     static readonly BOSS_RANGED_AGGRO_RADIUS = 260;
     static readonly LEASH_RADIUS = 1800;
+    static readonly RETURN_SPEED = 20;
+    static readonly HOME_EPSILON = 1;
     static readonly STOP_DISTANCE = 50;
     static readonly ATTACK_RANGE = 95;
     static readonly RANGED_ATTACK_RANGE = 300;
@@ -43,6 +46,127 @@ export class AILogic {
         npc.aggroTargetEntityId = 0;
         npc.aggroTargetToken = 0;
         npc.nextAttack = 0;
+    }
+
+    private static ensureHomePosition(npc: any): { x: number; y: number } {
+        if (!Number.isFinite(Number(npc.aiHomeX))) {
+            npc.aiHomeX = Number(npc.roomBossHomeX ?? npc.spawnX ?? npc.homeX ?? npc.x ?? 0);
+        }
+        if (!Number.isFinite(Number(npc.aiHomeY))) {
+            npc.aiHomeY = Number(npc.roomBossHomeY ?? npc.spawnY ?? npc.homeY ?? npc.y ?? 0);
+        }
+        return { x: Number(npc.aiHomeX), y: Number(npc.aiHomeY) };
+    }
+
+    private static getIdleState(npc: any): EntityState {
+        if (!Number.isFinite(Number(npc.aiHomeEntState))) {
+            npc.aiHomeEntState = Number(npc.spawnEntState ?? npc.entState ?? EntityState.SLEEP);
+        }
+        return Number(npc.aiHomeEntState) === EntityState.DRAMA ? EntityState.DRAMA : EntityState.SLEEP;
+    }
+
+    private static applyStateToCopies(levelScope: string, npc: any, apply: (copy: any) => void): void {
+        const entityId = Math.max(0, Math.round(Number(npc?.id ?? 0)));
+        if (entityId <= 0) return;
+
+        apply(npc);
+        const canonical = GlobalState.levelEntities.get(levelScope)?.get(entityId);
+        if (canonical && canonical !== npc) apply(canonical);
+        for (const session of GlobalState.getSessionsInLevelScope(levelScope)) {
+            if (getClientLevelScope(session) !== levelScope) continue;
+            const copy = session.entities.get(entityId);
+            if (copy && copy !== npc && copy !== canonical) apply(copy);
+        }
+    }
+
+    private static broadcastMovement(
+        levelScope: string,
+        npc: any,
+        deltaX: number,
+        deltaY: number,
+        entState: EntityState,
+        running: boolean
+    ): void {
+        const bbMove = new BitBuffer(false);
+        bbMove.writeMethod4(npc.id);
+        bbMove.writeMethod45(Math.round(deltaX));
+        bbMove.writeMethod45(Math.round(deltaY));
+        bbMove.writeMethod45(0);
+        bbMove.writeMethod6(entState, 2);
+        bbMove.writeMethod15(Boolean(npc.facingLeft));
+        bbMove.writeMethod15(running);
+        bbMove.writeMethod15(false);
+        bbMove.writeMethod15(false);
+        bbMove.writeMethod15(false);
+        bbMove.writeMethod15(false);
+        CombatHandler.broadcastEntityViewPacket(levelScope, npc, 0x07, bbMove.toBuffer(), [npc.id]);
+    }
+
+    private static setActive(levelScope: string, npc: any): void {
+        if (Number(npc.entState ?? EntityState.ACTIVE) === EntityState.ACTIVE && !npc.aiIdleAtHome) return;
+        AILogic.applyStateToCopies(levelScope, npc, (copy) => {
+            copy.entState = EntityState.ACTIVE;
+            copy.aiIdleAtHome = false;
+        });
+        AILogic.broadcastMovement(levelScope, npc, 0, 0, EntityState.ACTIVE, false);
+    }
+
+    private static resetHomeAndIdle(npc: any, levelScope: string): boolean {
+        const home = AILogic.ensureHomePosition(npc);
+        const idleState = AILogic.getIdleState(npc);
+        const currentX = Number(npc.x ?? 0);
+        const currentY = Number(npc.y ?? 0);
+        const deltaX = home.x - currentX;
+        const deltaY = home.y - currentY;
+        const alreadyReset = Math.abs(deltaX) <= AILogic.HOME_EPSILON &&
+            Math.abs(deltaY) <= AILogic.HOME_EPSILON &&
+            Number(npc.entState ?? EntityState.ACTIVE) === idleState &&
+            Boolean(npc.aiIdleAtHome) &&
+            !AILogic.hasCombatPull(npc);
+        if (alreadyReset) return false;
+
+        AILogic.applyStateToCopies(levelScope, npc, (copy) => {
+            copy.x = home.x;
+            copy.y = home.y;
+            copy.v = 0;
+            copy.entState = idleState;
+            copy.running = false;
+            copy.bRunning = false;
+            copy.backpedal = false;
+            copy.bBackpedal = false;
+            copy.aiIdleAtHome = true;
+            AILogic.clearAggroTarget(copy);
+        });
+        AILogic.broadcastMovement(levelScope, npc, deltaX, deltaY, idleState, false);
+        return true;
+    }
+
+    private static returnTowardHome(npc: any, levelScope: string): void {
+        AILogic.clearAggroTarget(npc);
+        const home = AILogic.ensureHomePosition(npc);
+        const dx = home.x - Number(npc.x ?? 0);
+        const dy = home.y - Number(npc.y ?? 0);
+        const distance = Math.hypot(dx, dy);
+        if (distance <= AILogic.RETURN_SPEED + AILogic.HOME_EPSILON) {
+            AILogic.resetHomeAndIdle(npc, levelScope);
+            return;
+        }
+
+        const moveX = (dx / distance) * AILogic.RETURN_SPEED;
+        const moveY = (dy / distance) * AILogic.RETURN_SPEED;
+        const nextX = Number(npc.x ?? 0) + moveX;
+        const nextY = Number(npc.y ?? 0) + moveY;
+        AILogic.applyStateToCopies(levelScope, npc, (copy) => {
+            copy.x = nextX;
+            copy.y = nextY;
+            copy.v = 0;
+            copy.facingLeft = dx < 0;
+            copy.entState = EntityState.ACTIVE;
+            copy.running = true;
+            copy.bRunning = true;
+            copy.aiIdleAtHome = false;
+        });
+        AILogic.broadcastMovement(levelScope, npc, moveX, moveY, EntityState.ACTIVE, true);
     }
 
     private static clearDeadAggroTarget(npc: any, players: Client[], levelScope: string): void {
@@ -123,24 +247,13 @@ export class AILogic {
             }
         }
 
-        if (players.length === 0) {
-            if (CombatHandler.hasOutOfCombatRegenPresence(levelScope)) {
-                CombatHandler.processOutOfCombatRegen(levelScope, nowMs);
-            }
-            CombatHandler.processBuffExpirations(levelScope, nowMs);
-            return { players: 0, npcs: 0 };
-        }
         CombatHandler.processOutOfCombatRegen(levelScope, nowMs);
         CombatHandler.processBuffExpirations(levelScope, nowMs);
 
         const playersByRoom = new Map<number, Client[]>();
-        const playersWithUnknownRoom: Client[] = [];
         for (const player of players) {
             const roomId = Number.isFinite(Number(player.currentRoomId)) ? Math.round(Number(player.currentRoomId)) : -1;
-            if (roomId < 0) {
-                playersWithUnknownRoom.push(player);
-                continue;
-            }
+            if (roomId < 0) continue;
             const roomPlayers = playersByRoom.get(roomId) ?? [];
             roomPlayers.push(player);
             playersByRoom.set(roomId, roomPlayers);
@@ -155,13 +268,16 @@ export class AILogic {
             if (npc.clientSpawned) continue; // Client-owned monsters should not receive server AI movement.
             // Simple dead check (if no hp prop, assume 100)
             if ((npc.hp !== undefined && npc.hp <= 0)) continue;
-            const npcRoomId = Number.isFinite(Number(npc?.roomId)) ? Math.round(Number(npc.roomId)) : -1;
+            const npcRoomId = getRoomBossAwareRoomId(npc);
             if (npcRoomId >= 0 && activeCutsceneRoomIds.has(npcRoomId)) continue;
 
             const candidates = npcRoomId >= 0
-                ? [...(playersByRoom.get(npcRoomId) ?? []), ...playersWithUnknownRoom]
+                ? (playersByRoom.get(npcRoomId) ?? [])
                 : players;
-            if (candidates.length === 0) continue;
+            if (candidates.length === 0) {
+                if (AILogic.resetHomeAndIdle(npc, levelScope)) updatedNpcs += 1;
+                continue;
+            }
             AILogic.updateNpc(npc, candidates, levelScope);
             updatedNpcs += 1;
         }
@@ -169,6 +285,7 @@ export class AILogic {
     }
 
     static updateNpc(npc: any, players: Client[], levelScope: string) {
+        const home = AILogic.ensureHomePosition(npc);
         let target: Client | null = null;
         let minDist = Number.MAX_VALUE;
         const npcX = npc.x || 0;
@@ -205,9 +322,7 @@ export class AILogic {
         }
 
         if (!target || !target.character || !target.character.CurrentLevel) {
-            if (AILogic.hasCombatPull(npc)) {
-                AILogic.clearAggroTarget(npc);
-            }
+            AILogic.resetHomeAndIdle(npc, levelScope);
             return;
         }
 
@@ -216,12 +331,19 @@ export class AILogic {
             ? (isRanged ? AILogic.BOSS_RANGED_AGGRO_RADIUS : AILogic.BOSS_MELEE_AGGRO_RADIUS)
             : (isRanged ? AILogic.RANGED_AGGRO_RADIUS : AILogic.MELEE_AGGRO_RADIUS);
 
-        if (isBoss && minDist > aggroRadius) {
-            AILogic.clearAggroTarget(npc);
+        const distanceFromHome = Math.hypot(Number(npc.x ?? 0) - home.x, Number(npc.y ?? 0) - home.y);
+        if (minDist > AILogic.LEASH_RADIUS || (minDist > aggroRadius && distanceFromHome > AILogic.HOME_EPSILON)) {
+            AILogic.returnTowardHome(npc, levelScope);
+            return;
+        }
+
+        if (minDist > aggroRadius) {
+            AILogic.resetHomeAndIdle(npc, levelScope);
             return;
         }
 
         if (minDist <= aggroRadius) {
+            AILogic.setActive(levelScope, npc);
             const targetX = target.character.CurrentLevel.x;
             const targetY = target.character.CurrentLevel.y;
 
@@ -274,32 +396,20 @@ export class AILogic {
                     const moveX = (dx / dist) * speed;
                     const moveY = (dy / dist) * speed;
 
-                    // Update NPC Position
-                    npc.x += moveX;
-                    npc.y += moveY;
-                    npc.facingLeft = dx < 0;
+                    const nextX = Number(npc.x ?? 0) + moveX;
+                    const nextY = Number(npc.y ?? 0) + moveY;
+                    AILogic.applyStateToCopies(levelScope, npc, (copy) => {
+                        copy.x = nextX;
+                        copy.y = nextY;
+                        copy.v = 0;
+                        copy.facingLeft = dx < 0;
+                        copy.entState = EntityState.ACTIVE;
+                        copy.running = true;
+                        copy.bRunning = true;
+                        copy.aiIdleAtHome = false;
+                    });
 
-                    // Broadcast Movement (0x07)
-                    // Delta compression usually implies sending *changes* since last ack, 
-                    // but here we just send absolute delta maybe?
-                    // Python sends delta.
-                    // Packet 0x07 expects deltaX, deltaY.
-                    
-                    const bbMove = new BitBuffer(false);
-                    bbMove.writeMethod4(npc.id);
-                    bbMove.writeMethod45(Math.round(moveX));
-                    bbMove.writeMethod45(Math.round(moveY));
-                    bbMove.writeMethod45(0); // DeltaV
-                    bbMove.writeMethod6(0, 2); // State
-                    
-                    bbMove.writeMethod15(npc.facingLeft); // bLeft
-                    bbMove.writeMethod15(true);  // bRunning
-                    bbMove.writeMethod15(false); // bJumping
-                    bbMove.writeMethod15(false); // bDropping
-                    bbMove.writeMethod15(false); // bBackpedal
-                    bbMove.writeMethod15(false); // isAirborne
-
-                    CombatHandler.broadcastEntityViewPacket(levelScope, npc, 0x07, bbMove.toBuffer(), [npc.id]);
+                    AILogic.broadcastMovement(levelScope, npc, moveX, moveY, EntityState.ACTIVE, true);
                 }
             }
         }

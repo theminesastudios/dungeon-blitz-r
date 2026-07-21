@@ -266,12 +266,17 @@ async function testNephitAliasCompletesAfterPostBossSkitQuiet(): Promise<void> {
     const client = createFakeClient('NephitRunner', 83001, 0);
     const boss = createNephitBoss('Nephit');
     seedNephitRun(client, boss);
+    const scope = getClientLevelScope(client as never);
 
     assert.equal(rankPacketCount(client), 0, 'rank screen must not appear before boss defeat');
 
     await MissionHandler.handleForcedDungeonBossCompletion(client as never, boss);
 
-    assert.equal(client.pendingDungeonCompletionScope, '', 'completion must not queue before the shared cutscene gate');
+    assert.equal(
+        client.pendingDungeonCompletionScope,
+        scope,
+        'boss objectives should queue a recoverable completion before the shared cutscene gate'
+    );
     assert.equal(rankPacketCount(client), 0, 'rank screen must not appear before post-boss skit settles');
 
     await MissionHandler.handleSetLevelComplete(client as never, buildLevelCompletePacket());
@@ -301,6 +306,61 @@ async function testNephitAliasCompletesAfterPostBossSkitQuiet(): Promise<void> {
     await waitForPendingSettle();
 
     assert.equal(rankPacketCount(client), 1, 'rank/statistics packet should be sent exactly once per run');
+}
+
+async function testMissingNephitCutsceneUsesBoundedFallback(): Promise<void> {
+    const client = createFakeClient('NephitFallbackRunner', 83007, 0);
+    const boss = createNephitBoss('Nephit');
+    seedNephitRun(client, boss);
+    const scope = getClientLevelScope(client as never);
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, boss);
+    assert.equal(client.pendingDungeonCompletionScope, scope, 'missing-cutscene run did not arm completion');
+    assert.equal(rankPacketCount(client), 0, 'fallback completed before the ending-skit grace expired');
+
+    if (client.pendingDungeonCompletionTimer) {
+        clearTimeout(client.pendingDungeonCompletionTimer);
+        client.pendingDungeonCompletionTimer = null;
+    }
+    const state = GlobalState.dungeonCompletions.get(scope);
+    assert(state, 'missing-cutscene run has no shared completion state');
+    state.objectivesMetAt = Date.now() - MissionHandler.DUNGEON_COMPLETION_CUTSCENE_START_GRACE_MS - 1;
+    client.pendingDungeonCompletionNotBeforeAt = Date.now() - 1;
+    client.pendingDungeonCompletionLastSkitAt = Date.now() - 1;
+    client.pendingDungeonCompletionSettleMs = 0;
+
+    await (MissionHandler as any).flushPendingDungeonCompletion(client);
+
+    assert.equal(rankPacketCount(client), 1, 'missing ending skit did not release through the bounded fallback');
+    assert.equal(state.cutsceneFallbackReason, 'missing-start-timeout');
+    assert.equal(Number(client.character.questTrackerState ?? 0), 100);
+}
+
+async function testStuckNephitCutsceneUsesHardSafetyFallback(): Promise<void> {
+    const client = createFakeClient('NephitStuckCutsceneRunner', 83008, 0);
+    const boss = createNephitBoss('Nephit');
+    seedNephitRun(client, boss);
+    const scope = getClientLevelScope(client as never);
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, boss);
+    MissionHandler.noteDungeonCutsceneStart(client as never, 12);
+    if (client.pendingDungeonCompletionTimer) {
+        clearTimeout(client.pendingDungeonCompletionTimer);
+        client.pendingDungeonCompletionTimer = null;
+    }
+    client.pendingDungeonCompletionRequestedAt = Date.now() -
+        MissionHandler.DUNGEON_COMPLETION_CINEMATIC_MAX_WAIT_MS - 1;
+    client.pendingDungeonCompletionNotBeforeAt = Date.now() - 1;
+    client.pendingDungeonCompletionLastSkitAt = Date.now() - 1;
+    client.pendingDungeonCompletionSettleMs = 0;
+
+    await (MissionHandler as any).flushPendingDungeonCompletion(client);
+
+    assert.equal(rankPacketCount(client), 1, 'permanently open ending cinematic stranded completion');
+    assert.equal(
+        GlobalState.dungeonCompletions.get(scope)?.cutsceneFallbackReason,
+        'active-timeout'
+    );
 }
 
 async function testQuestTrackerTwentySixStillCompletesAfterBossSkit(): Promise<void> {
@@ -514,6 +574,7 @@ async function main(): Promise<void> {
 
     const originalSettleMs = MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS;
     const originalMaxDeferMs = MissionHandler.DUNGEON_COMPLETION_MAX_DEFER_MS;
+    const originalCutsceneStartGraceMs = MissionHandler.DUNGEON_COMPLETION_CUTSCENE_START_GRACE_MS;
     const levelEntities = new Map(GlobalState.levelEntities);
     const levelQuestProgress = new Map(GlobalState.levelQuestProgress);
     const sessionsByToken = new Map(GlobalState.sessionsByToken);
@@ -522,12 +583,25 @@ async function main(): Promise<void> {
     try {
         (MissionHandler as any).DUNGEON_COMPLETION_SKIT_SETTLE_MS = TEST_SETTLE_MS;
         (MissionHandler as any).DUNGEON_COMPLETION_MAX_DEFER_MS = TEST_SETTLE_MS * 2;
+        (MissionHandler as any).DUNGEON_COMPLETION_CUTSCENE_START_GRACE_MS = TEST_SETTLE_MS * 2;
 
         GlobalState.levelEntities.clear();
         GlobalState.levelQuestProgress.clear();
         GlobalState.sessionsByToken.clear();
         GlobalState.dungeonCompletions.clear();
         await testNephitAliasCompletesAfterPostBossSkitQuiet();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.dungeonCompletions.clear();
+        await testMissingNephitCutsceneUsesBoundedFallback();
+
+        GlobalState.levelEntities.clear();
+        GlobalState.levelQuestProgress.clear();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.dungeonCompletions.clear();
+        await testStuckNephitCutsceneUsesHardSafetyFallback();
 
         GlobalState.levelEntities.clear();
         GlobalState.levelQuestProgress.clear();
@@ -568,6 +642,7 @@ async function main(): Promise<void> {
     } finally {
         (MissionHandler as any).DUNGEON_COMPLETION_SKIT_SETTLE_MS = originalSettleMs;
         (MissionHandler as any).DUNGEON_COMPLETION_MAX_DEFER_MS = originalMaxDeferMs;
+        (MissionHandler as any).DUNGEON_COMPLETION_CUTSCENE_START_GRACE_MS = originalCutsceneStartGraceMs;
         GlobalState.levelEntities = levelEntities;
         GlobalState.levelQuestProgress = levelQuestProgress;
         GlobalState.dungeonCompletions = dungeonCompletions;

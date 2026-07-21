@@ -89,6 +89,7 @@ export class MissionHandler {
     private static readonly ATTACK_OF_OPPORTUNITY_HARD_SATELLITE_IDS = new Set([255, 256, 257]);
     static readonly DUNGEON_COMPLETION_SKIT_SETTLE_MS = 1500;
     static readonly DUNGEON_COMPLETION_MAX_DEFER_MS = 15000;
+    static readonly DUNGEON_COMPLETION_CUTSCENE_START_GRACE_MS = 15000;
     // The victory cinematic (boss death skit + speech bubbles) has no bounded
     // duration, so the quiet-settle deadline above must never fire while it is
     // still on screen. This is the hard safety net for a cinematic that never
@@ -1248,6 +1249,12 @@ export class MissionHandler {
             }
             const evaluation = DungeonCompletionSystem.evaluate(levelScope);
             if (!evaluation.ready) {
+                if (DungeonCompletionSystem.canQueueCompletion(levelScope)) {
+                    MissionHandler.scheduleDungeonCompletionForScope(levelScope, client);
+                    if (String(client.pendingDungeonCompletionScope ?? '').trim() === levelScope) {
+                        client.pendingDungeonCompletionPayload = Buffer.from(data);
+                    }
+                }
                 return;
             }
             clearedDungeon = true;
@@ -1610,6 +1617,9 @@ export class MissionHandler {
 
         const evaluation = DungeonCompletionSystem.evaluate(levelScope);
         if (!evaluation.ready) {
+            if (DungeonCompletionSystem.canQueueCompletion(levelScope)) {
+                MissionHandler.scheduleDungeonCompletionForScope(levelScope, client);
+            }
             return;
         }
 
@@ -1623,6 +1633,7 @@ export class MissionHandler {
                 );
             }
         }
+
         MissionHandler.scheduleDungeonCompletionForScope(levelScope, client);
     }
 
@@ -1635,7 +1646,7 @@ export class MissionHandler {
         sourceClient?: Client,
         options: { immediate?: boolean } = {}
     ): void {
-        if (!levelScope || !DungeonCompletionSystem.evaluate(levelScope).ready) {
+        if (!levelScope || !DungeonCompletionSystem.canQueueCompletion(levelScope)) {
             return;
         }
 
@@ -1681,7 +1692,7 @@ export class MissionHandler {
             evaluation.ready ? 'ready' : evaluation.phase === 'waiting-gates' ? 'waiting-gates' : 'running',
             client.token
         );
-        if (evaluation.ready) {
+        if (DungeonCompletionSystem.canQueueCompletion(levelScope)) {
             MissionHandler.scheduleDungeonCompletionForScope(levelScope, client);
         }
     }
@@ -1760,7 +1771,7 @@ export class MissionHandler {
             return;
         }
         const condition = DungeonCompletionConditions.get(getScopeLevelName(levelScope));
-        if (condition && !DungeonCompletionSystem.evaluate(levelScope).ready) {
+        if (condition && !DungeonCompletionSystem.canQueueCompletion(levelScope)) {
             return;
         }
 
@@ -2083,6 +2094,10 @@ export class MissionHandler {
         // still get their full settle window before the plate is shown.
         const quietWaitAnchor = Math.max(requestedAt, cinematicEndedAt);
         const cinematicWaitDeadline = requestedAt + MissionHandler.DUNGEON_COMPLETION_CINEMATIC_MAX_WAIT_MS;
+        const completionState = DungeonCompletionSystem.getState(pendingScope);
+        const objectivesMetAt = Math.max(0, Number(completionState?.objectivesMetAt ?? 0));
+        const cutsceneStartDeadline = (objectivesMetAt || requestedAt) +
+            MissionHandler.DUNGEON_COMPLETION_CUTSCENE_START_GRACE_MS;
         const maxQuietWaitDeadline = Math.max(
             quietWaitAnchor + MissionHandler.DUNGEON_COMPLETION_MAX_DEFER_MS,
             notBeforeAt + settleDelayMs
@@ -2114,27 +2129,54 @@ export class MissionHandler {
             return;
         }
 
-        const evaluation = DungeonCompletionSystem.evaluate(pendingScope);
+        let evaluation = DungeonCompletionSystem.evaluate(pendingScope);
         if (!evaluation.ready) {
             // A pending gate means the objectives are already met and we are only
             // waiting on the cinematic/client handshake. Keep the pending payload
             // armed instead of dropping the run's completion on the floor.
+            if (evaluation.objectivesMet && evaluation.reason === 'cutscene_gate_pending') {
+                const cinematicOpen = MissionHandler.isDungeonCinematicOpen(client, pendingScope);
+                if (!cinematicOpen && now >= cutsceneStartDeadline) {
+                    DungeonCompletionSystem.tryReleaseMissingCutsceneGate(
+                        pendingScope,
+                        MissionHandler.DUNGEON_COMPLETION_CUTSCENE_START_GRACE_MS,
+                        now
+                    );
+                    evaluation = DungeonCompletionSystem.evaluate(pendingScope, now);
+                } else if (cinematicOpen && now >= cinematicWaitDeadline) {
+                    DungeonCompletionSystem.forceReleaseActiveCutsceneGate(pendingScope, now);
+                    evaluation = DungeonCompletionSystem.evaluate(pendingScope, now);
+                }
+            }
+
             if (
-                now < cinematicWaitDeadline &&
+                !evaluation.ready &&
                 evaluation.objectivesMet &&
                 (
                     evaluation.reason === 'cutscene_gate_pending' ||
                     evaluation.reason === 'client_completion_signal_pending'
-                )
+                ) &&
+                now < cinematicWaitDeadline
             ) {
+                const nextGateDeadline = MissionHandler.isDungeonCinematicOpen(client, pendingScope)
+                    ? cinematicWaitDeadline
+                    : cutsceneStartDeadline;
                 MissionHandler.armPendingDungeonCompletionTimer(
                     client,
-                    Math.max(settleDelayMs, MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS)
+                    Math.max(
+                        1,
+                        Math.min(
+                            Math.max(settleDelayMs, MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS),
+                            Math.max(1, nextGateDeadline - now)
+                        )
+                    )
                 );
                 return;
             }
-            MissionHandler.clearPendingDungeonCompletion(client);
-            return;
+            if (!evaluation.ready) {
+                MissionHandler.clearPendingDungeonCompletion(client);
+                return;
+            }
         }
 
         MissionHandler.clearPendingDungeonCompletion(client);

@@ -138,6 +138,9 @@ function createRunState(levelScope: string, levelName: string, now: number): Dun
         objectiveRoomIds: new Set(),
         objectivesMetAt: 0,
         objectivesMetSequence: 0,
+        cutsceneFallbackReleasedAt: 0,
+        cutsceneFallbackSequence: 0,
+        cutsceneFallbackReason: '',
         readyAt: 0,
         finalizingParticipants: new Set<string>(),
         completedParticipants: new Set<string>(),
@@ -367,6 +370,68 @@ export class DungeonCompletionSystem {
         return DungeonCompletionSystem.evaluate(levelScope, now).ready;
     }
 
+    static canQueueCompletion(levelScope: string, now: number = Date.now()): boolean {
+        const evaluation = DungeonCompletionSystem.evaluate(levelScope, now);
+        return evaluation.ready || (
+            evaluation.objectivesMet &&
+            evaluation.reason === 'cutscene_gate_pending'
+        );
+    }
+
+    static tryReleaseMissingCutsceneGate(
+        levelScope: string,
+        graceMs: number,
+        now: number = Date.now()
+    ): boolean {
+        const state = DungeonCompletionSystem.getState(levelScope);
+        const condition = state ? DungeonCompletionConditions.get(state.levelName) : null;
+        const evaluation = DungeonCompletionSystem.evaluate(levelScope, now);
+        if (
+            !state ||
+            !condition?.cutscene?.requiredAfterObjectives ||
+            !evaluation.objectivesMet ||
+            evaluation.reason !== 'cutscene_gate_pending' ||
+            now < state.objectivesMetAt + Math.max(0, Math.round(Number(graceMs ?? 0)))
+        ) {
+            return evaluation.ready;
+        }
+
+        const hasActiveCutscene = [...state.cutscenesByRoom.values()].some((cutscene) =>
+            cutscene.startedAt > 0 && cutscene.endedSequence < cutscene.startedSequence
+        );
+        if (hasActiveCutscene) {
+            return false;
+        }
+
+        state.eventSequence += 1;
+        state.cutsceneFallbackReleasedAt = now;
+        state.cutsceneFallbackSequence = state.eventSequence;
+        state.cutsceneFallbackReason = 'missing-start-timeout';
+        state.updatedAt = now;
+        return DungeonCompletionSystem.evaluate(levelScope, now).ready;
+    }
+
+    static forceReleaseActiveCutsceneGate(levelScope: string, now: number = Date.now()): boolean {
+        const state = DungeonCompletionSystem.getState(levelScope);
+        const condition = state ? DungeonCompletionConditions.get(state.levelName) : null;
+        const evaluation = DungeonCompletionSystem.evaluate(levelScope, now);
+        if (
+            !state ||
+            !condition?.cutscene?.requiredAfterObjectives ||
+            !evaluation.objectivesMet ||
+            evaluation.reason !== 'cutscene_gate_pending'
+        ) {
+            return evaluation.ready;
+        }
+
+        state.eventSequence += 1;
+        state.cutsceneFallbackReleasedAt = now;
+        state.cutsceneFallbackSequence = state.eventSequence;
+        state.cutsceneFallbackReason = 'active-timeout';
+        state.updatedAt = now;
+        return DungeonCompletionSystem.evaluate(levelScope, now).ready;
+    }
+
     static evaluate(levelScope: string, now: number = Date.now()): DungeonCompletionEvaluation {
         const state = DungeonCompletionSystem.getOrCreateState(levelScope, now);
         const condition = state ? DungeonCompletionConditions.get(state.levelName) : null;
@@ -416,7 +481,14 @@ export class DungeonCompletionSystem {
                     )
                 )
             );
-            gateMet = !activeSharedCutscene && sharedCutsceneEnded;
+            const fallbackReleased =
+                state.cutsceneFallbackReleasedAt > 0 &&
+                state.cutsceneFallbackSequence > state.objectivesMetSequence;
+            const fallbackOverridesActiveCutscene =
+                fallbackReleased && state.cutsceneFallbackReason === 'active-timeout';
+            gateMet =
+                fallbackOverridesActiveCutscene ||
+                (!activeSharedCutscene && (sharedCutsceneEnded || fallbackReleased));
         }
         if (!gateMet) {
             if (!finalizationPhase) {

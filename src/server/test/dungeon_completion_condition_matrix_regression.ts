@@ -444,6 +444,80 @@ function verifyAuthoredEndingGate(levelName: string, ordinal: number): void {
     cleanupScenario(scenario);
 }
 
+function verifyAuthoredEndingFallback(levelName: string, ordinal: number): void {
+    const scenario = createScenario(levelName, `authored-fallback-${ordinal}`);
+    const baseTime = 9_000_000 + ordinal * 1_000;
+    scenario.entities.forEach((entity, index) => defeatEntity(scenario, entity, baseTime + index));
+    if (scenario.condition.autoCompleteOnObjectives === false) {
+        DungeonCompletionSystem.noteClientCompletionSignal(
+            scenario.levelScope,
+            'authored-fallback-player',
+            100,
+            baseTime + scenario.entities.length + 1
+        );
+    }
+
+    const fallbackGraceMs = 500;
+    const objectivesMetAt = DungeonCompletionSystem.getState(scenario.levelScope)?.objectivesMetAt ?? baseTime;
+    const fallbackAt = objectivesMetAt + fallbackGraceMs;
+    assert.equal(
+        DungeonCompletionSystem.canQueueCompletion(scenario.levelScope, fallbackAt - 2),
+        true,
+        `${levelName}: objectives did not create a queueable ending-gate state`
+    );
+    assert.equal(
+        DungeonCompletionSystem.tryReleaseMissingCutsceneGate(
+            scenario.levelScope,
+            fallbackGraceMs,
+            fallbackAt - 1
+        ),
+        false,
+        `${levelName}: missing-cutscene fallback released before its grace deadline`
+    );
+    assert.equal(
+        DungeonCompletionSystem.tryReleaseMissingCutsceneGate(
+            scenario.levelScope,
+            fallbackGraceMs,
+            fallbackAt
+        ),
+        true,
+        `${levelName}: missing ending cutscene permanently blocked completion`
+    );
+    assert.equal(
+        DungeonCompletionSystem.getState(scenario.levelScope)?.cutsceneFallbackReason,
+        'missing-start-timeout',
+        `${levelName}: fallback reason was not recorded`
+    );
+    cleanupScenario(scenario);
+}
+
+function verifyActiveEndingCannotUseMissingStartFallback(): void {
+    const scenario = createScenario('OMM_Mission2', 'active-ending-fallback');
+    const baseTime = 10_000_000;
+    defeatEntity(scenario, scenario.entities[0], baseTime);
+    DungeonCompletionSystem.noteCutsceneStart(scenario.levelScope, 7, baseTime + 1);
+
+    assert.equal(
+        DungeonCompletionSystem.tryReleaseMissingCutsceneGate(
+            scenario.levelScope,
+            2,
+            baseTime + 20_000
+        ),
+        false,
+        'an active ending cinematic was mistaken for a missing cutscene'
+    );
+    assert.equal(
+        DungeonCompletionSystem.forceReleaseActiveCutsceneGate(scenario.levelScope, baseTime + 120_000),
+        true,
+        'the hard safety release did not recover a permanently open cinematic'
+    );
+    assert.equal(
+        DungeonCompletionSystem.getState(scenario.levelScope)?.cutsceneFallbackReason,
+        'active-timeout'
+    );
+    cleanupScenario(scenario);
+}
+
 function verifyGrowingFlameRequiresBothBosses(): void {
     for (const levelName of ['OMM_Mission9', 'OMM_Mission9Hard']) {
         const scenario = createScenario(levelName, 'double-boss');
@@ -498,6 +572,8 @@ function main(): void {
     });
     verifyOverlappingAndReorderedCutscenes();
     AUTHORED_ENDING_GATE_LEVELS.forEach(verifyAuthoredEndingGate);
+    AUTHORED_ENDING_GATE_LEVELS.forEach(verifyAuthoredEndingFallback);
+    verifyActiveEndingCannotUseMissingStartFallback();
     verifyGrowingFlameRequiresBothBosses();
     verifyAshenMotherClientAuthorityAliases();
 
