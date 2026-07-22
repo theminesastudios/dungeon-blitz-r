@@ -27,6 +27,25 @@ const contentTypes = {
     '.svg': 'image/svg+xml'
 };
 
+function sanitizeApiSuffix(pathname) {
+    const rawSuffix = pathname.slice(5);
+    let decodedSuffix;
+    try {
+        decodedSuffix = decodeURIComponent(rawSuffix);
+    } catch (_error) {
+        return null;
+    }
+
+    if (!decodedSuffix || /(^|\/)\.\.?(\/|$)/.test(decodedSuffix) || decodedSuffix.includes('\\') || /^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(decodedSuffix) || decodedSuffix.startsWith('/') || /[\r\n\0]/.test(decodedSuffix)) {
+        return null;
+    }
+
+    return decodedSuffix
+        .split('/')
+        .map((segment) => encodeURIComponent(segment))
+        .join('/');
+}
+
 function targetRequest(req, res, targetPath, stream = false) {
     const transport = targetBase.protocol === 'https:' ? https : http;
     const headers = {
@@ -65,7 +84,13 @@ const server = http.createServer((req, res) => {
         return;
     }
     if (url.pathname.startsWith('/api/')) {
-        targetRequest(req, res, `/api/admin/control/${url.pathname.slice(5)}${url.search}`);
+        const sanitizedSuffix = sanitizeApiSuffix(url.pathname);
+        if (!sanitizedSuffix) {
+            res.writeHead(400, { 'content-type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ error: 'Invalid API path.' }));
+            return;
+        }
+        targetRequest(req, res, `/api/admin/control/${sanitizedSuffix}${url.search}`);
         return;
     }
 
