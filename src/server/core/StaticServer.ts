@@ -57,7 +57,7 @@ export class StaticServer {
     private readonly selectedAssetVersion = 'cbp';
     private readonly flashVersion = this.selectedAssetVersion;
     private readonly gameVersion = this.selectedAssetVersion;
-    private readonly clientRevision = 'maintenance-command-1';
+    private readonly clientRevision = 'armory-unrolled-2';
 
     private static shouldLog(): boolean {
         return process.env.DEBUG_STATIC_SERVER === '1';
