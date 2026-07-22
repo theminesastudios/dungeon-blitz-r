@@ -1628,6 +1628,41 @@ export class MissionHandler {
         }
 
         const evaluation = DungeonCompletionSystem.evaluate(levelScope);
+
+        MissionHandler.logDungeonDiag('bossDeathDetected', {
+            level: currentLevel,
+            entityId: Math.max(0, Math.round(Number(destroyedEntity?.id ?? 0))),
+            entityName: MissionHandler.getEntityName(destroyedEntity),
+            // Every name the matcher actually sees, so a mismatch is visible.
+            names: [
+                destroyedEntity?.name,
+                destroyedEntity?.EntName,
+                destroyedEntity?.entName,
+                destroyedEntity?.characterName,
+                destroyedEntity?.roomBossName,
+                destroyedEntity?.displayName
+            ].filter((value) => String(value ?? '').trim().length > 0),
+            canonicalBoss: DungeonCompletionConditions.getCanonicalBossName(
+                currentLevel,
+                destroyedEntity,
+                levelScope
+            ),
+            isRequiredBoss: DungeonCompletionConditions.isRequiredBoss(
+                currentLevel,
+                destroyedEntity,
+                levelScope
+            ),
+            roomId: MissionHandler.getEntityRoomId(destroyedEntity),
+            clientSpawned: Boolean(destroyedEntity?.clientSpawned),
+            hp: destroyedEntity?.hp,
+            dead: Boolean(destroyedEntity?.dead),
+            destroyed: Boolean(destroyedEntity?.destroyed),
+            ready: evaluation.ready,
+            reason: evaluation.reason,
+            objectivesMet: evaluation.objectivesMet,
+            gateMet: evaluation.gateMet
+        });
+
         if (!evaluation.ready) {
             if (DungeonCompletionSystem.canQueueCompletion(levelScope)) {
                 MissionHandler.scheduleDungeonCompletionForScope(levelScope, client);
@@ -1902,6 +1937,15 @@ export class MissionHandler {
         );
         TutorialDungeonMechanics.noteCutscenePhase(scope, roomId, 'active', client.token);
         MissionHandler.activateBossRunStatsForCutsceneRoom(client, scope, client.activeDungeonCutsceneRoomId);
+
+        MissionHandler.logDungeonDiag('cutsceneStart', {
+            level: getScopeLevelName(scope),
+            roomId: Math.max(0, Math.round(Number(roomId ?? 0))),
+            bossId,
+            // False here means the gate will not accept this skit as the ending
+            // one, so the run waits for a second cutscene that never comes.
+            completionEligibleAtStart
+        });
     }
 
     static noteDungeonCutsceneEnd(client: Client, roomId: number): void {
@@ -1919,6 +1963,14 @@ export class MissionHandler {
             endedRoomId > 0 &&
             client.activeDungeonCutsceneRoomId !== endedRoomId
         ) {
+            // A close booked against another room must not end the skit that is
+            // actually on screen, so the cutscene bookkeeping above is skipped.
+            // The ending gate is a different question: once the objectives are
+            // met, a closing skit is still the player's "dialogue finished"
+            // signal. Dropping it here left the run to burn the full 120s
+            // cinematic safety net standing in a finished dungeon — the exact
+            // case releaseCutsceneGateOnClose documents but never got wired to.
+            MissionHandler.releaseEndingGateOnMismatchedRoomClose(client, scope, endedRoomId);
             return;
         }
 
@@ -1937,6 +1989,19 @@ export class MissionHandler {
                 pendingCompletion: pendingScope === scope
             });
         }
+
+        const cutsceneEndEvaluation = DungeonCompletionSystem.evaluate(scope);
+        MissionHandler.logDungeonDiag('cutsceneEndProcessed', {
+            level: getScopeLevelName(scope),
+            roomId: endedRoomId,
+            activeCutsceneRoomId: client.activeDungeonCutsceneRoomId,
+            pendingCompletion: pendingScope === scope,
+            completionReady,
+            ready: cutsceneEndEvaluation.ready,
+            reason: cutsceneEndEvaluation.reason,
+            objectivesMet: cutsceneEndEvaluation.objectivesMet,
+            gateMet: cutsceneEndEvaluation.gateMet
+        });
         if (!client.lastDungeonCutsceneStartScope) {
             client.lastDungeonCutsceneStartScope = scope;
             client.lastDungeonCutsceneStartAt = client.lastDungeonCutsceneEndAt;
@@ -1968,6 +2033,36 @@ export class MissionHandler {
         } else if (pendingScope && pendingScope === scope) {
             void MissionHandler.flushPendingDungeonCompletion(client);
         }
+    }
+
+    // Releases only the completion gate, never the cutscene bookkeeping: the skit
+    // on screen keeps its own active record. Plating is still guarded downstream —
+    // flushPendingDungeonCompletion re-checks isDungeonCinematicOpen and defers if
+    // a cinematic is genuinely running for this client.
+    private static releaseEndingGateOnMismatchedRoomClose(
+        client: Client,
+        scope: string,
+        endedRoomId: number
+    ): void {
+        const evaluation = DungeonCompletionSystem.evaluate(scope);
+        if (!evaluation.objectivesMet || evaluation.reason !== 'cutscene_gate_pending') {
+            return;
+        }
+
+        const released = DungeonCompletionSystem.releaseCutsceneGateOnClose(scope, Date.now());
+        MissionHandler.logDungeonDiag('cutsceneEndMismatchedRoom', {
+            level: getScopeLevelName(scope),
+            endedRoomId,
+            activeCutsceneRoomId: client.activeDungeonCutsceneRoomId,
+            released
+        });
+
+        if (!released) {
+            return;
+        }
+
+        TutorialDungeonMechanics.noteCompletionPhase(scope, 'ready', client.token);
+        MissionHandler.scheduleDungeonCompletionForScope(scope, client, { immediate: true });
     }
 
     private static activateBossRunStatsForCutsceneRoom(client: Client, levelScope: string, roomId: number): void {
@@ -2157,6 +2252,21 @@ export class MissionHandler {
         }
 
         let evaluation = DungeonCompletionSystem.evaluate(pendingScope);
+
+        if (!evaluation.ready) {
+            MissionHandler.logDungeonDiag('completionGateWait', {
+                level: getScopeLevelName(pendingScope),
+                reason: evaluation.reason,
+                objectivesMet: evaluation.objectivesMet,
+                // True here is why the 2.5s missing-start release is skipped and
+                // the run falls through to the 120s cinematic safety net.
+                cinematicOpen: MissionHandler.isDungeonCinematicOpen(client, pendingScope),
+                activeCutsceneRoomId: client.activeDungeonCutsceneRoomId,
+                msUntilCutsceneStartDeadline: cutsceneStartDeadline - now,
+                msUntilCinematicWaitDeadline: cinematicWaitDeadline - now
+            });
+        }
+
         if (!evaluation.ready) {
             // A pending gate means the objectives are already met and we are only
             // waiting on the cinematic/client handshake. Keep the pending payload
@@ -2733,6 +2843,24 @@ export class MissionHandler {
     }
 
     private static logKeepCompletionProgress(scope: string, client: Client, extra: Record<string, unknown> = {}): void {
+    }
+
+    // Opt-out diagnostic trace for the dungeons that stall instead of showing the
+    // rank plate. Boss deaths and cutscene closes are low-frequency events, so a
+    // compact single line per event is cheap. Silence with DUNGEON_DIAG=0.
+    private static isDungeonDiagEnabled(): boolean {
+        return String(process.env.DUNGEON_DIAG ?? '1').trim() !== '0';
+    }
+
+    private static logDungeonDiag(event: string, extra: Record<string, unknown> = {}): void {
+        if (!MissionHandler.isDungeonDiagEnabled()) {
+            return;
+        }
+        try {
+            console.log(`[DUNGEON-DIAG] ${event} ${JSON.stringify(extra)}`);
+        } catch {
+            console.log(`[DUNGEON-DIAG] ${event} <unserializable>`);
+        }
     }
 
     private static buildQuestProgressPayload(percent: number): Buffer {
