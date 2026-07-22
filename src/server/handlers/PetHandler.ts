@@ -313,6 +313,21 @@ export class PetHandler {
         return PetHandler.getEquippedPetBonusRates(character);
     }
 
+    /**
+     * Loot magnet pets collect gold and materials for the player, so those drops are
+     * granted on the spot instead of being spawned on the ground for a walk-over pickup.
+     */
+    static hasEquippedLootMagnetPet(character: any): boolean {
+        for (const pet of PetHandler.getEquippedPetRecords(character)) {
+            const petDef = PetConfig.getPetDef(Number(pet.typeID ?? 0));
+            if (petDef?.LootMagnet) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     static applyActivePetExperience(client: Client, xpAmount: number, bonusLevelUps: number = 0): boolean {
         if (!client.character || xpAmount <= 0) {
             return false;

@@ -19,6 +19,7 @@ import { EntityHandler } from './EntityHandler';
 import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { DungeonCompletionSystem } from '../core/DungeonCompletionSystem';
 import { AdminRuntimeSettings } from '../core/AdminRuntimeSettings';
+import { CharacterSync } from '../utils/CharacterSync';
 
 interface RewardRequest {
     receiverId: number;
@@ -701,6 +702,82 @@ export class RewardHandler {
             .join(' ');
     }
 
+    /**
+     * Only crafting materials are magnet-eligible. Gold deliberately keeps its ground drop so the
+     * player still sees the pickup, and gear, health and dye were never in scope.
+     */
+    private static isLootMagnetReward(reward: LootReward): boolean {
+        if (Number(reward.material ?? 0) <= 0) {
+            return false;
+        }
+
+        return !(
+            Number(reward.gold ?? 0) > 0 ||
+            Number(reward.gear ?? 0) > 0 ||
+            Number(reward.health ?? 0) > 0 ||
+            Number(reward.dye ?? 0) > 0
+        );
+    }
+
+    private static grantMagnetCollectedLoot(client: Client, reward: LootReward): boolean {
+        return RewardHandler.grantMaterialLoot(client, Number(reward.material ?? 0));
+    }
+
+    /**
+     * With a loot magnet pet equipped, drop gold at the player's feet instead of at the kill site.
+     * The client's own proximity check then fires straight away and plays the normal pickup
+     * animation and sound, which reads as the pet having fetched the coins back to you.
+     *
+     * Entity positions and lootdrop coordinates share the same method24 space — handleGrantReward
+     * already feeds `sourceEntity.x` in as `worldX` — so no conversion is needed.
+     */
+    private static resolveMagnetGoldDropPosition(
+        client: Client,
+        fallback: { x: number; y: number }
+    ): { x: number; y: number } {
+        if (!PetHandler.hasEquippedLootMagnetPet(client.character)) {
+            return fallback;
+        }
+
+        const playerEntityId = Math.max(0, Math.round(Number(client.clientEntID ?? 0)));
+        const playerEntity = playerEntityId > 0 ? client.entities?.get(playerEntityId) : null;
+        const x = Number(playerEntity?.x);
+        const y = Number(playerEntity?.y);
+        if (!Number.isFinite(x) || !Number.isFinite(y) || (x === 0 && y === 0)) {
+            return fallback;
+        }
+
+        return { x: Math.round(x), y: Math.round(y) };
+    }
+
+    private static grantGoldLoot(client: Client, amount: number): boolean {
+        if (!client.character || amount <= 0) {
+            return false;
+        }
+
+        client.character.gold = Number(client.character.gold ?? 0) + amount;
+        noteDungeonRunTreasure(client, amount);
+        RewardHandler.sendGoldReward(client, amount, false);
+        return true;
+    }
+
+    private static grantMaterialLoot(client: Client, materialId: number): boolean {
+        if (!client.character || materialId <= 0) {
+            return false;
+        }
+
+        const materials = normalizeCharacterMaterials(client.character);
+        const existing = materials.find((entry: any) => Number(entry.materialID ?? 0) === materialId);
+        if (existing) {
+            existing.count = Number(existing.count ?? 0) + 1;
+        } else {
+            materials.push({ materialID: materialId, count: 1 });
+        }
+        client.character.materials = materials;
+        RewardHandler.sendMaterialReward(client, materialId, 1);
+        return true;
+    }
+
     private static spawnLoot(
         client: Client,
         x: number,
@@ -754,6 +831,24 @@ export class RewardHandler {
             }
             return;
         }
+        // The pet picks these up for the player, so skip the ground drop and the 0x38 round trip.
+        // Nothing is registered in pendingLoot, so the client can never claim this drop a second time.
+        if (RewardHandler.isLootMagnetReward(reward) && PetHandler.hasEquippedLootMagnetPet(client.character)) {
+            const collected = RewardHandler.grantMagnetCollectedLoot(client, reward);
+            if (collected) {
+                RewardHandler.persistCharacter(client, 'pet loot magnet');
+            }
+            console.log(`[RewardHandler][PetLootMagnet] ${RewardHandler.formatLootSyncFields({
+                character: client.character?.name ?? '',
+                type,
+                amount: metadata.amount,
+                granted: collected,
+                gold: client.character?.gold ?? 0,
+                reason
+            })}`);
+            return;
+        }
+
         const pendingReward: LootReward = { ...reward, __lootDropMetadata: metadata };
         client.pendingLoot.set(lootId, pendingReward);
         const sourceEntity = RewardHandler.getCanonicalLootSource(metadata);
@@ -781,19 +876,36 @@ export class RewardHandler {
         };
     }
 
-    private static applyXpReward(client: Client, amount: number): boolean {
+    static grantExperience(client: Client, amount: number): number {
         if (!client.character || amount <= 0) {
-            return false;
+            return 0;
         }
 
         const xpDebug = RewardHandler.resolveXpRewardDebug(client, amount);
         const totalAmount = xpDebug.finalExp;
+        if (totalAmount <= 0) {
+            return 0;
+        }
 
+        const previousLevel = Math.max(1, Number(client.character.level ?? 1));
         client.character.xp = Number(client.character.xp ?? 0) + totalAmount;
         client.character.level = GameData.getPlayerLevelFromXp(Number(client.character.xp ?? 0));
         RewardHandler.sendXpReward(client, totalAmount);
         PetHandler.applyActivePetExperience(client, totalAmount);
-        return true;
+
+        if (Number(client.character.level) !== previousLevel) {
+            EntityHandler.refreshPlayerSnapshot(client);
+            client.combatStatsDirty = true;
+            client.allowDirtyCombatStatsRegen = true;
+            client.lastCombatStatsRefreshRequestAt = Date.now();
+            CharacterSync.requestCombatStatsRefresh(client);
+        }
+
+        return totalAmount;
+    }
+
+    private static applyXpReward(client: Client, amount: number): boolean {
+        return RewardHandler.grantExperience(client, amount) > 0;
     }
 
     private static collectOwnedGearTierKeys(client: Client): Set<string> {
@@ -1108,7 +1220,8 @@ export class RewardHandler {
         noteDungeonRunChestOpened(client, reward.sourceId, sourceEntity);
 
         if (resolved.gold > 0) {
-            RewardHandler.spawnLoot(client, dropPosition.x, dropPosition.y, { gold: resolved.gold }, 0, 0, context);
+            const goldPosition = RewardHandler.resolveMagnetGoldDropPosition(client, dropPosition);
+            RewardHandler.spawnLoot(client, goldPosition.x, goldPosition.y, { gold: resolved.gold }, 0, 0, context);
         }
         if (resolved.hpGain > 0) {
             RewardHandler.spawnLoot(
@@ -1430,23 +1543,11 @@ export class RewardHandler {
 
         let shouldSave = false;
 
-        if (reward.gold && reward.gold > 0) {
-            client.character.gold = Number(client.character.gold ?? 0) + reward.gold;
-            noteDungeonRunTreasure(client, reward.gold);
-            RewardHandler.sendGoldReward(client, reward.gold, false);
+        if (RewardHandler.grantGoldLoot(client, Number(reward.gold ?? 0))) {
             shouldSave = true;
         }
 
-        if (reward.material && reward.material > 0) {
-            const materials = normalizeCharacterMaterials(client.character);
-            const existing = materials.find((entry: any) => Number(entry.materialID ?? 0) === reward.material);
-            if (existing) {
-                existing.count = Number(existing.count ?? 0) + 1;
-            } else {
-                materials.push({ materialID: reward.material, count: 1 });
-            }
-            client.character.materials = materials;
-            RewardHandler.sendMaterialReward(client, reward.material, 1);
+        if (RewardHandler.grantMaterialLoot(client, Number(reward.material ?? 0))) {
             shouldSave = true;
         }
 
