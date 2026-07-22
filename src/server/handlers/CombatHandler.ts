@@ -272,6 +272,12 @@ export class CombatHandler {
     private static readonly ORIGINAL_REGEN_INTERVAL_MS = 1_000;
     private static readonly DUNGEON_BOSS_OUT_OF_COMBAT_REGEN_DELAY_MS = 500;
     private static readonly DUNGEON_BOSS_REGEN_INTERVAL_MS = CombatHandler.ORIGINAL_REGEN_INTERVAL_MS;
+    // A boss whose target died walks its bar back up instead of snapping to
+    // full: 5% of its max HP per regen tick, the same shape the player's own
+    // out-of-combat regen uses. The reset still only ever arms on a confirmed
+    // player death, so a boss can no longer flash from a sliver to 100% in the
+    // single tick that death is observed.
+    private static readonly DUNGEON_BOSS_DEATH_REGEN_RATE = 0.05;
     private static readonly CLIENT_HEAL_PACKET_ID = 0x78;
     private static readonly BOSS_MELEE_AGGRO_RADIUS = 180;
     private static readonly BOSS_RANGED_AGGRO_RADIUS = 260;
@@ -1785,8 +1791,15 @@ export class CombatHandler {
 
         // A boss reset is a lifecycle boundary, not ordinary periodic healing.
         // Only a confirmed player death arms this reset; range or temporary
-        // disengagement must not refill a living boss during an attempt.
-        const requestedHeal = healthState.maxHp - healthState.currentHp;
+        // disengagement must not refill a living boss during an attempt. The
+        // restore itself is paced over the ticks the arm survives rather than
+        // applied in one jump, so the encounter visibly heals back up while its
+        // killer is down instead of blinking to full.
+        const healPerTick = Math.max(1, Math.round(healthState.maxHp * CombatHandler.DUNGEON_BOSS_DEATH_REGEN_RATE));
+        const requestedHeal = Math.min(
+            healthState.maxHp - healthState.currentHp,
+            healPerTick * regenState.ticks
+        );
         if (requestedHeal <= 0) {
             return;
         }
