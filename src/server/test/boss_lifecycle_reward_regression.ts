@@ -126,14 +126,22 @@ function testReportedBossesOnlyRestoreAfterPlayerDeath(): void {
                 `${displayName} emitted a heal packet while the player was alive`
             );
 
+            // The death reset is paced, not a snap: the tick that observes the
+            // death restores one 5% step, and the bar climbs from there while
+            // the player stays down.
             CombatHandler.notePlayerDeathState(client, 20_000);
-            assert.equal(boss.hp, boss.maxHp, `${displayName} did not reset after the player died`);
+            assert.equal(boss.hp, 450, `${displayName} did not take its first restore step after the player died`);
             assert.equal(boss.dead, false, `${displayName} became terminal during its player-death reset`);
             assert.equal(
                 client.sentPacketIds.includes(0x78),
                 true,
                 `${displayName} did not emit a heal packet after the player died`
             );
+
+            for (let tick = 1; tick <= 12; tick++) {
+                CombatHandler.processOutOfCombatRegen(scope, 20_000 + tick * 1_000);
+            }
+            assert.equal(boss.hp, boss.maxHp, `${displayName} never finished restoring while the player stayed dead`);
         } finally {
             clear(client, scope);
         }
@@ -159,8 +167,13 @@ function testPlayerDeathRestoresLivingBossCompletely(): void {
     const scope = seed(client, boss);
     try {
         CombatHandler.notePlayerDeathState(client, 10_000);
-        assert.equal(boss.hp, boss.maxHp, 'a living boss did not fully reset after its player target died');
+        assert.equal(boss.hp, 400, 'a living boss did not begin restoring after its player target died');
         assert.equal(boss.dead, false, 'a living boss became terminal during a player-death reset');
+
+        for (let tick = 1; tick <= 13; tick++) {
+            CombatHandler.processOutOfCombatRegen(scope, 10_000 + tick * 1_000);
+        }
+        assert.equal(boss.hp, boss.maxHp, 'a living boss did not fully reset while its player target stayed dead');
     } finally {
         clear(client, scope);
     }
