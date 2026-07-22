@@ -2134,6 +2134,48 @@ export class MissionHandler {
         );
     }
 
+    // A client HP report that would kill something but does not resolve to a
+    // required boss is dropped silently. That silence is exactly how a boss
+    // reported under an unexpected name vanishes: no bossDeathDetected line is
+    // ever emitted and the run sits on objectives_pending forever. Log the
+    // killing reports so the name the client actually sent is visible.
+    static logRejectedBossHpReport(
+        client: Client,
+        entity: any,
+        amount: number,
+        currentHp: number
+    ): void {
+        const currentLevel =
+            LevelConfig.normalizeLevelName(client.currentLevel || String(client.character?.CurrentLevel?.name ?? '')) ||
+            client.currentLevel ||
+            String(client.character?.CurrentLevel?.name ?? '');
+        if (!currentLevel || !DungeonCompletionConditions.requiresBosses(currentLevel)) {
+            return;
+        }
+        // Only reports that would finish the entity off.
+        if (Number(amount ?? 0) >= 0 || Number(currentHp ?? 0) + Number(amount ?? 0) > 0) {
+            return;
+        }
+
+        MissionHandler.logDungeonDiag('bossHpReportRejected', {
+            level: currentLevel,
+            entityId: Math.max(0, Math.round(Number(entity?.id ?? 0))),
+            entityName: MissionHandler.getEntityName(entity),
+            names: [
+                entity?.name,
+                entity?.EntName,
+                entity?.entName,
+                entity?.characterName,
+                entity?.roomBossName,
+                entity?.displayName
+            ].filter((value) => String(value ?? '').trim().length > 0),
+            clientSpawned: Boolean(entity?.clientSpawned),
+            roomId: MissionHandler.getEntityRoomId(entity),
+            currentHp,
+            amount
+        });
+    }
+
     private static armPendingDungeonCompletionTimer(client: Client, delayMs: number): void {
         if (client.pendingDungeonCompletionTimer) {
             clearTimeout(client.pendingDungeonCompletionTimer);

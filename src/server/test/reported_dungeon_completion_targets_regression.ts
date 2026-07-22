@@ -152,8 +152,9 @@ function main(): void {
     verifyTerminalClientBossPacketCompletes('SD_Mission1Hard', 'Amenrahtep', 4, false);
     verifyTerminalClientBossPacketCompletes('SD_Mission4', 'OasisVizierGreen', 5, true);
     verifyTerminalClientBossPacketCompletes('SD_Mission4Hard', 'OasisVizierGreenHard', 6, true);
-    verifyTerminalClientBossPacketCompletes('JC_Mission5', 'NephitDragonMarker', 7, false);
-    verifyTerminalClientBossPacketCompletes('JC_Mission5Hard', 'NephitDragonMarkerHard', 8, false);
+    // Were NephitDragonMarker: Fable of the Lost Temple's boss is PhantomKnight1.
+    verifyTerminalClientBossPacketCompletes('JC_Mission5', 'PhantomKnightMarker', 7, false);
+    verifyTerminalClientBossPacketCompletes('JC_Mission5Hard', 'PhantomKnightMarkerHard', 8, false);
     verifyTerminalClientBossPacketCompletes('JC_Mission10', 'DragonTemple', 9, false);
     verifyTerminalClientBossPacketCompletes('JC_Mission10Hard', 'DragonTempleHard', 10, false);
     console.log('reported_dungeon_completion_targets_regression: ok');

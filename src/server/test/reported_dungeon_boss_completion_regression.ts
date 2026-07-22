@@ -56,8 +56,11 @@ const REPORTED_LEVELS = [
 const NON_BOSS_LOOKALIKES: Record<string, string[]> = {
     AC_Mission1: ['AncientDragonGoldMini'],
     AC_Mission1Hard: ['AncientDragonGoldMini', 'AncientDragonGoldMiniHard'],
-    JC_Mission5: ['NephitDragonPortal'],
-    JC_Mission5Hard: ['NephitDragonPortal', 'NephitDragonPortalHard'],
+    // The three numbered Phantom Knights are separate earlier fights in Fable of
+    // the Lost Temple. Aliasing any of them onto the boss would end the run at
+    // the first knight instead of at PhantomKnightMarker.
+    JC_Mission5: ['PhantomKnight1', 'PhantomKnight2', 'PhantomKnight3'],
+    JC_Mission5Hard: ['PhantomKnight1', 'PhantomKnight2', 'PhantomKnight3'],
     JC_Mission10: ['DragonTempleFlare'],
     JC_Mission10Hard: ['DragonTempleFlare', 'DragonTempleFlareHard']
 };
@@ -66,8 +69,10 @@ const NON_BOSS_LOOKALIKES: Record<string, string[]> = {
 // spell: the authored room-boss marker, and — on Hard — the base entity name.
 // Each entry must resolve to the level's canonical boss or the kill is dropped.
 const EXTRA_BOSS_NAMES: Record<string, string[]> = {
-    JC_Mission5: ['NephitDragonMarker'],
-    JC_Mission5Hard: ['NephitDragon', 'NephitDragonMarker', 'NephitDragonMarkerHard'],
+    // Fable of the Lost Temple's boss is PhantomKnightMarker, not NephitDragon.
+    // The numbered knights are earlier encounters and belong in
+    // NON_BOSS_LOOKALIKES, not here.
+    JC_Mission5Hard: ['PhantomKnightMarker'],
     JC_Mission10: ['DragonTempleMarker'],
     JC_Mission10Hard: ['DragonTemple', 'DragonTempleMarker', 'DragonTempleMarkerHard'],
     // Was ['RaptorHornedGreater'] / ['RaptorHorned', 'RaptorHornedGreaterHard'],

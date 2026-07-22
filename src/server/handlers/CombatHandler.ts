@@ -5863,6 +5863,7 @@ export class CombatHandler {
         amount: number
     ): boolean {
         if (!MissionHandler.shouldCompleteDungeonFromBossHpReport(client, targetEntity)) {
+            MissionHandler.logRejectedBossHpReport(client, targetEntity, amount, healthState.currentHp);
             return false;
         }
 

@@ -33,7 +33,21 @@ const SCRIPTED_PACKET_IDENTITIES: Record<string, string[]> = {
     GhostBossDungeon: ['GrayGhostLord', 'NRGhostBoss'],
     GhostBossDungeonHard: ['GrayGhostLordHard', 'NRGhostBoss'],
     SD_Mission1: ['RageGuardian'],
-    SD_Mission1Hard: ['RageGuardianHard']
+    SD_Mission1Hard: ['RageGuardianHard'],
+    // JC_Mission5 (Fable of the Lost Temple) is the starkest case: not one of the
+    // enemies the level actually spawns appears in its manifest. A live trace
+    // shows Ghoul2, AbyssalStinger, ShadeSummoner and PhantomKnight1 — none of
+    // which appear in ANY level's manifest — while the manifest claims the level
+    // holds Dream* wisps and NephitDragon. The SWF has no am_Boss in
+    // a_Room_JCMission5_*, only am_MiniBoss (rooms 06/12/16), and defines
+    // ac_PhantomKnight1..3 plus ac_PhantomKnightMarker. PhantomKnight1 is the
+    // boss room holds PhantomKnightMarker: a full trace showed four distinct
+    // entity ids at 269120 HP dying in order — PhantomKnight1, PhantomKnight3,
+    // PhantomKnight2, then PhantomKnightMarker, which the client re-reported ~20
+    // times while the server rejected it. The Marker is the final encounter; the
+    // numbered knights are separate fights and must not complete the run.
+    JC_Mission5: ['PhantomKnightMarker'],
+    JC_Mission5Hard: ['PhantomKnightMarkerHard']
 };
 
 function authoredIdentities(levelName: string): string[] {
@@ -256,9 +270,12 @@ function testScriptedIdentityAndEarlyEndingGuardrails(): void {
     assertPacketOnlyBossCompletes('SD_Mission1Hard', 'RageGuardianHard', 14);
     assertPacketOnlyBossCompletes('SD_Mission1', 'Amenrahtep', 15);
     assertPacketOnlyBossCompletes('SD_Mission1Hard', 'Amenrahtep', 16);
-    assertPacketOnlyBossCompletes('JC_Mission5', 'NephitDragonMarker', 17);
-    assertPacketOnlyBossCompletes('JC_Mission5Hard', 'NephitDragonMarkerHard', 18);
-    assertPacketOnlyBossCompletes('JC_Mission5Hard', 'NephitDragonMarker', 19);
+    // Were NephitDragonMarker/NephitDragonPortal. Fable of the Lost Temple never
+    // spawns a NephitDragon — its boss is PhantomKnight1, and the stale config
+    // silently dropped every kill report, leaving the run on objectives_pending.
+    assertPacketOnlyBossCompletes('JC_Mission5', 'PhantomKnightMarker', 17);
+    assertPacketOnlyBossCompletes('JC_Mission5Hard', 'PhantomKnightMarkerHard', 18);
+    assertPacketOnlyBossCompletes('JC_Mission5Hard', 'PhantomKnightMarker', 19);
     assertPacketOnlyBossDoesNotComplete('JC_Mission5', 'NephitDragonPortal', 20);
     assertPacketOnlyBossDoesNotComplete('JC_Mission5Hard', 'NephitDragonPortalHard', 21);
 }
