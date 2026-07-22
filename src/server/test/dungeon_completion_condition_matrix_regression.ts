@@ -58,6 +58,14 @@ function createScenario(levelName: string, suffix: string): Scenario {
         for (const objective of condition.entityObjectives ?? []) {
             entities.push(makeEntity(nextEntityId++, objective.names[0]));
         }
+    } else if (condition.mode === 'objectives') {
+        for (const objective of condition.entityObjectives ?? []) {
+            const requiredCount = Math.max(1, Number(objective.requiredCount ?? 1));
+            for (let index = 0; index < requiredCount; index++) {
+                entities.push(makeEntity(nextEntityId++, objective.names[0]));
+            }
+        }
+        entities.push(makeEntity(nextEntityId++, 'MatrixUnrelatedHostile'));
     } else if (condition.mode === 'full-clear') {
         entities.push(makeEntity(nextEntityId++, 'MatrixHostileA'));
         entities.push(makeEntity(nextEntityId++, 'MatrixHostileB'));
@@ -121,6 +129,37 @@ function satisfyCondition(scenario: Scenario, participantKey: string, baseTime: 
             DungeonCompletionSystem.evaluate(levelScope, baseTime + 6).ready,
             true,
             `${levelName}: full-clear never completed`
+        );
+        return;
+    }
+
+    if (condition.mode === 'objectives') {
+        const objectiveEntityCount = (condition.entityObjectives ?? [])
+            .reduce((total, objective) => total + Math.max(1, Number(objective.requiredCount ?? 1)), 0);
+        DungeonCompletionSystem.noteClientCompletionSignal(levelScope, participantKey, 100, baseTime + 1);
+        assert.strictEqual(
+            DungeonCompletionSystem.evaluate(levelScope, baseTime + 2).ready,
+            false,
+            `${levelName}: completed before its entity objective was destroyed`
+        );
+        entities.slice(0, Math.max(0, objectiveEntityCount - 1)).forEach((entity, index) =>
+            defeatEntity(scenario, entity, baseTime + 3 + index)
+        );
+        assert.strictEqual(
+            DungeonCompletionSystem.evaluate(levelScope, baseTime + 3 + objectiveEntityCount).ready,
+            false,
+            `${levelName}: completed before every required objective entity was destroyed`
+        );
+        defeatEntity(scenario, entities[objectiveEntityCount - 1], baseTime + 4 + objectiveEntityCount);
+        assert.strictEqual(
+            entities.at(-1)?.dead,
+            false,
+            `${levelName}: objective regression did not leave its unrelated hostile alive`
+        );
+        assert.strictEqual(
+            DungeonCompletionSystem.evaluate(levelScope, baseTime + 5 + objectiveEntityCount).ready,
+            true,
+            `${levelName}: destroyed objectives did not complete while unrelated hostiles remained`
         );
         return;
     }

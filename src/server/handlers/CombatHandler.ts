@@ -1080,6 +1080,21 @@ export class CombatHandler {
         }
 
         const levelName = getScopeLevelName(levelScope);
+        const sourceObjectiveRole = DungeonCompletionConditions.getObjectiveRole(levelName, sourceEntity);
+        const candidateObjectiveRole = DungeonCompletionConditions.getObjectiveRole(levelName, candidate);
+        if (sourceObjectiveRole || candidateObjectiveRole) {
+            if (!sourceObjectiveRole || sourceObjectiveRole !== candidateObjectiveRole) {
+                return false;
+            }
+            const sourceSpawnKey = String(
+                sourceEntity?.spawnKey ?? EntityHandler.getHostileSpawnKey(levelScope, sourceEntity)
+            );
+            const candidateSpawnKey = String(
+                candidate?.spawnKey ?? EntityHandler.getHostileSpawnKey(levelScope, candidate)
+            );
+            return Boolean(sourceSpawnKey && candidateSpawnKey && sourceSpawnKey === candidateSpawnKey);
+        }
+
         const sourceRequiredBoss = DungeonCompletionConditions.getCanonicalBossName(
             levelName,
             sourceEntity,

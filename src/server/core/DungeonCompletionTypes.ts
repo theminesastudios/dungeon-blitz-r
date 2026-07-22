@@ -1,9 +1,10 @@
-export type DungeonCompletionMode = 'bosses' | 'full-clear' | 'client-signal' | 'disabled';
+export type DungeonCompletionMode = 'bosses' | 'objectives' | 'full-clear' | 'client-signal' | 'disabled';
 
 export type DungeonCompletionEntityObjective = {
     names: string[];
     aliases?: string[];
     role: string;
+    requiredCount?: number;
 };
 
 export type DungeonCompletionCutsceneCondition = {
@@ -56,6 +57,7 @@ export type DungeonCompletionRunState = {
     defeatedBosses: Set<string>;
     defeatedBossAt: Map<string, number>;
     destroyedObjectives: Set<string>;
+    destroyedObjectiveEntityIds: Map<string, Set<number>>;
     defeatedHostileIds: Set<number>;
     processedDeathEvents: Set<string>;
     clientCompletionSignals: Map<string, number>;

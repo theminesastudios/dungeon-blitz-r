@@ -17,6 +17,7 @@ When working on this project, prioritize stability, original behavior, and regre
 - Never “fix” a crash by ignoring the underlying broken state.
 - Do not remove existing working logic unless there is clear evidence it is wrong.
 - Always check whether a change can affect fullscreen, 2K/4K scaling, cutscenes, boss spawns, combat state, or dungeon sequencing.
+- Do not bump project or package versions unless the user explicitly requests a version change.
 
 ## Debugging Priorities
 
