@@ -2075,6 +2075,7 @@ export class EntityHandler {
     ): any | null {
         const targetName = EntityHandler.normalizeIdentityName(entity?.name);
         const targetTeam = Number(entity?.team ?? 0);
+        const targetObjectiveRole = DungeonCompletionConditions.getObjectiveRole(levelName, entity);
         const targetSpawnKey = String(entity?.spawnKey ?? EntityHandler.getHostileSpawnKey(getLevelScopeKey(levelName, ''), entity));
         let bestMatch: any | null = null;
         let bestDistanceSq = Number.POSITIVE_INFINITY;
@@ -2099,6 +2100,16 @@ export class EntityHandler {
             const candidateSpawnKey = String(candidate?.spawnKey ?? '');
             if (targetSpawnKey && candidateSpawnKey && targetSpawnKey === candidateSpawnKey) {
                 return candidate;
+            }
+            // Authored objectives can intentionally place several objects with
+            // the same type in one dungeon. Only an exact spawn key may merge
+            // those copies; name-only matching would collapse distinct chests
+            // and make required destruction counts unreachable.
+            if (
+                targetObjectiveRole &&
+                DungeonCompletionConditions.getObjectiveRole(levelName, candidate) === targetObjectiveRole
+            ) {
+                continue;
             }
             if (EntityHandler.normalizeIdentityName(candidate?.name) !== targetName) {
                 continue;

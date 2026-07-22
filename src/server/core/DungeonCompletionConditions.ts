@@ -13,7 +13,7 @@ type RawCatalog = {
 };
 
 const catalog = rawConditions as RawCatalog;
-const VALID_MODES = new Set<DungeonCompletionMode>(['bosses', 'full-clear', 'client-signal', 'disabled']);
+const VALID_MODES = new Set<DungeonCompletionMode>(['bosses', 'objectives', 'full-clear', 'client-signal', 'disabled']);
 const VALID_PARTY_HOSTILE_SYNC_POLICIES = new Set(['all', 'bosses-only', 'none']);
 
 function normalizeIdentity(value: unknown): string {
@@ -55,7 +55,8 @@ function cloneObjective(objective: DungeonCompletionEntityObjective): DungeonCom
     return {
         names: [...objective.names],
         aliases: objective.aliases ? [...objective.aliases] : undefined,
-        role: objective.role
+        role: objective.role,
+        requiredCount: objective.requiredCount
     };
 }
 
@@ -299,6 +300,9 @@ export class DungeonCompletionConditions {
                     errors.push(`${levelName}: acceptRoomBossClearSignal must be boolean`);
                 }
             }
+            if (condition.mode === 'objectives' && !condition.entityObjectives?.length) {
+                errors.push(`${levelName}: objectives mode requires non-empty entityObjectives`);
+            }
             if (condition.mode !== 'bosses' && (condition.bossGroups?.length || condition.bossAliases)) {
                 errors.push(`${levelName}: non-boss mode must not define bosses`);
             }
@@ -311,6 +315,12 @@ export class DungeonCompletionConditions {
             for (const objective of condition.entityObjectives ?? []) {
                 if (!objective.role.trim() || !objective.names.length) {
                     errors.push(`${levelName}: entity objective requires role and names`);
+                }
+                if (
+                    objective.requiredCount !== undefined &&
+                    (!Number.isInteger(objective.requiredCount) || objective.requiredCount <= 0)
+                ) {
+                    errors.push(`${levelName}: entity objective requiredCount must be a positive integer`);
                 }
             }
         }

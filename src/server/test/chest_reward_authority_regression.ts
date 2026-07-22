@@ -1,6 +1,8 @@
 import { strict as assert } from 'assert';
 import * as path from 'path';
 import { EntityTeam } from '../core/Entity';
+import { EntityHandler } from '../handlers/EntityHandler';
+import { CombatHandler } from '../handlers/CombatHandler';
 import { GameData } from '../core/GameData';
 import { GlobalState } from '../core/GlobalState';
 import { LevelConfig } from '../core/LevelConfig';
@@ -55,6 +57,61 @@ function main(): void {
     const dataDir = path.resolve(__dirname, '../data');
     LevelConfig.load(dataDir);
     GameData.load(dataDir);
+
+    const objectiveScope = 'CH_MiniMission2#objective-chest-identity';
+    const canonicalChest = {
+        id: 96_201,
+        name: 'TreasureChestEmpty',
+        team: EntityTeam.ENEMY,
+        roomId: 4,
+        x: 1000,
+        y: 800,
+        hybridCanonicalHostile: true,
+        clientSpawned: false,
+        ownerToken: 96_001,
+        ownerPartyId: 700,
+        spawnKey: `${objectiveScope}|room:4|type:treasurechestempty|pos:1000:800`
+    };
+    const distinctChest = {
+        ...canonicalChest,
+        id: 96_202,
+        x: 1400,
+        spawnKey: `${objectiveScope}|room:4|type:treasurechestempty|pos:1400:800`
+    };
+    const objectiveMap = new Map([[canonicalChest.id, canonicalChest]]);
+    const distinctMatch = (EntityHandler as any).findSharedClientSpawnCanonicalMatch(
+        'CH_MiniMission2',
+        objectiveMap,
+        700,
+        4,
+        distinctChest,
+        96_001
+    );
+    assert.equal(distinctMatch, null, 'distinct completion chests collapsed onto one canonical entity');
+    const duplicateMatch = (EntityHandler as any).findSharedClientSpawnCanonicalMatch(
+        'CH_MiniMission2',
+        objectiveMap,
+        700,
+        4,
+        { ...distinctChest, spawnKey: canonicalChest.spawnKey },
+        96_001
+    );
+    assert.equal(duplicateMatch, canonicalChest, 'the same completion chest no longer deduplicates by spawn key');
+    assert.equal(
+        (CombatHandler as any).isEquivalentHostileEntity(objectiveScope, canonicalChest, distinctChest),
+        false,
+        'combat health sync treated distinct completion chests as equivalent copies'
+    );
+    assert.equal(
+        (CombatHandler as any).isEquivalentHostileEntity(
+            objectiveScope,
+            canonicalChest,
+            { ...distinctChest, spawnKey: canonicalChest.spawnKey }
+        ),
+        true,
+        'combat health sync stopped recognizing the same completion chest spawn'
+    );
+
     const client = createClient();
     client.characters = [client.character];
     const scope = getClientLevelScope(client);

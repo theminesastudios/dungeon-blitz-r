@@ -125,6 +125,7 @@ function createRunState(levelScope: string, levelName: string, now: number): Dun
         defeatedBosses: new Set<string>(),
         defeatedBossAt: new Map<string, number>(),
         destroyedObjectives: new Set<string>(),
+        destroyedObjectiveEntityIds: new Map<string, Set<number>>(),
         defeatedHostileIds: new Set<number>(),
         processedDeathEvents: new Set<string>(),
         clientCompletionSignals: new Map<string, number>(),
@@ -310,6 +311,11 @@ export class DungeonCompletionSystem {
         }
         if (objectiveRole) {
             state.destroyedObjectives.add(objectiveRole);
+            const destroyedIds = state.destroyedObjectiveEntityIds.get(objectiveRole) ?? new Set<number>();
+            if (entityId > 0) {
+                destroyedIds.add(entityId);
+            }
+            state.destroyedObjectiveEntityIds.set(objectiveRole, destroyedIds);
         }
         if (canonicalBoss || objectiveRole) {
             const objectiveRoomId = getRoomBossAwareRoomId(entity);
@@ -710,6 +716,12 @@ export class DungeonCompletionSystem {
             const objectiveRole = DungeonCompletionConditions.getObjectiveRole(state.levelName, entity);
             if (objectiveRole) {
                 state.destroyedObjectives.add(objectiveRole);
+                const entityId = getEntityId(entity);
+                const destroyedIds = state.destroyedObjectiveEntityIds.get(objectiveRole) ?? new Set<number>();
+                if (entityId > 0) {
+                    destroyedIds.add(entityId);
+                }
+                state.destroyedObjectiveEntityIds.set(objectiveRole, destroyedIds);
             }
             if (canonicalBoss || objectiveRole) {
                 const objectiveRoomId = getRoomBossAwareRoomId(entity);
@@ -739,6 +751,22 @@ export class DungeonCompletionSystem {
         if (condition.mode === 'client-signal') {
             return state.clientCompletionSignals.size > 0;
         }
+        if (condition.mode === 'objectives') {
+            const objectives = condition.entityObjectives ?? [];
+            const entities = [...(GlobalState.levelEntities.get(state.levelScope)?.values() ?? [])];
+            return objectives.length > 0 && objectives.every((objective) => {
+                const requiredCount = Math.max(1, Math.round(Number(objective.requiredCount ?? 1)));
+                const destroyedCount = state.destroyedObjectiveEntityIds?.get(objective.role)?.size ?? 0;
+                if (destroyedCount < requiredCount) {
+                    return false;
+                }
+                return entities
+                    .filter((entity) =>
+                        DungeonCompletionConditions.getObjectiveRole(state.levelName, entity) === objective.role
+                    )
+                    .every((entity) => isDefeated(entity));
+            });
+        }
         if (condition.mode === 'full-clear') {
             const totals = getSharedDungeonProgressTotals(state.levelScope);
 
@@ -751,54 +779,26 @@ export class DungeonCompletionSystem {
             );
             const livingHostiles = hostiles.filter((entity) => !isDefeated(entity));
 
-            console.log("========== FULL CLEAR DEBUG ==========");
-            console.log("Level:", state.levelName);
-            console.log("Scope:", state.levelScope);
-            console.log("Shared totals:", {
-                defeated: totals.defeated,
-                total: totals.total
-            });
-
-            console.log(
-                "All tracked hostiles:",
-                hostiles.map((entity: any) => ({
-                    id: getEntityId(entity),
-                    name:
-                        entity?.name ??
-                        entity?.EntName ??
-                        entity?.entName ??
-                        entity?.displayName ??
-                        "unknown",
-                    hp: entity?.hp,
-                    dead: entity?.dead,
-                    destroyed: entity?.destroyed,
-                    entState: entity?.entState,
-                    team: entity?.team,
-                    untargetable: entity?.untargetable,
-                    defeated: isDefeated(entity)
-                }))
-            );
-
-            console.log(
-                "Living hostiles blocking completion:",
-                livingHostiles.map((entity: any) => ({
-                    id: getEntityId(entity),
-                    name:
-                        entity?.name ??
-                        entity?.EntName ??
-                        entity?.entName ??
-                        entity?.displayName ??
-                        "unknown",
-                    hp: entity?.hp,
-                    dead: entity?.dead,
-                    destroyed: entity?.destroyed,
-                    entState: entity?.entState,
-                    team: entity?.team,
-                    untargetable: entity?.untargetable
-                }))
-            );
-
-            console.log("======================================");
+            if (String(process.env.DUNGEON_DIAG ?? '0').trim() === '1') {
+                console.log('[DUNGEON-DIAG] fullClearState', {
+                    level: state.levelName,
+                    scope: state.levelScope,
+                    sharedTotals: {
+                        defeated: totals.defeated,
+                        total: totals.total
+                    },
+                    hostiles: hostiles.map((entity: any) => ({
+                        id: getEntityId(entity),
+                        name: entity?.name ?? entity?.EntName ?? entity?.entName ?? entity?.displayName ?? 'unknown',
+                        hp: entity?.hp,
+                        dead: entity?.dead,
+                        destroyed: entity?.destroyed,
+                        entState: entity?.entState,
+                        defeated: isDefeated(entity)
+                    })),
+                    livingHostileIds: livingHostiles.map((entity) => getEntityId(entity))
+                });
+            }
 
             if (totals.total > 0) {
                 return totals.defeated >= totals.total;
