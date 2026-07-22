@@ -28,8 +28,8 @@ type EnemyManifest = Record<string, { enemyTypes?: Array<{ enemyType?: string }>
 // SD_Mission2..6, which take ScarabScorpion, OutlanderWyrm, OasisVizier,
 // SandWormGreater and GolemLord respectively.
 const SCRIPTED_PACKET_IDENTITIES: Record<string, string[]> = {
-    AC_Mission6: ['NephitLargeEye'],
-    AC_Mission6Hard: ['NephitLargeEyeHard'],
+    AC_Mission6: ['NephitSpireMarker'],
+    AC_Mission6Hard: ['NephitSpireMarkerHard'],
     GhostBossDungeon: ['GrayGhostLord', 'NRGhostBoss'],
     GhostBossDungeonHard: ['GrayGhostLordHard', 'NRGhostBoss'],
     SD_Mission1: ['RageGuardian'],

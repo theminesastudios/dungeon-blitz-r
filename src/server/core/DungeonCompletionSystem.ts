@@ -267,6 +267,36 @@ export class DungeonCompletionSystem {
         state.eventSequence += 1;
         state.updatedAt = now;
 
+        // Every defeat that reaches the completion system funnels through here,
+        // whatever handler reported it. MissionHandler's bossDeathDetected only
+        // covers the kills routed via handleForcedDungeonBossCompletion, so a
+        // boss dying on any other path left no trace at all. Diffing the two
+        // tells you whether a missing boss kill never happened or merely
+        // bypassed MissionHandler. Silence with DUNGEON_DIAG=0.
+        if (String(process.env.DUNGEON_DIAG ?? '1').trim() !== '0') {
+            try {
+                console.log(`[DUNGEON-DIAG] defeatRegistered ${JSON.stringify({
+                    level: state.levelName,
+                    entityId,
+                    entityName: String(entity?.name ?? entity?.EntName ?? ''),
+                    names: [
+                        entity?.name,
+                        entity?.EntName,
+                        entity?.entName,
+                        entity?.characterName,
+                        entity?.roomBossName,
+                        entity?.displayName
+                    ].filter((value) => String(value ?? '').trim().length > 0),
+                    canonicalBoss,
+                    objectiveRole,
+                    maxHp: entity?.maxHp,
+                    clientSpawned: Boolean(entity?.clientSpawned)
+                })}`);
+            } catch {
+                console.log('[DUNGEON-DIAG] defeatRegistered <unserializable>');
+            }
+        }
+
         if (entityId > 0 && isTrackableHostile(entity, state.levelName)) {
             state.defeatedHostileIds.add(entityId);
         }

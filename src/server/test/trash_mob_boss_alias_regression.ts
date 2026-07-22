@@ -60,6 +60,19 @@ function verifyNoTrashMobIsConfiguredAsABoss(): void {
         ]);
 
         for (const name of configured) {
+            // "*Marker" entities are script-driven boss proxies, and their
+            // EntTypes rank is nominal rather than real: NephitSpireMarker is
+            // listed as EntRank Minion with HitPoints 1, yet a live Capstone
+            // trace shows it fighting with 134560 HP and being the only kill the
+            // client reports (28 times, while the server rejected it). The
+            // codebase already treats markers as boss identities — NephitDragon-
+            // Marker, DragonTempleMarker, BrigandChampMarker, PhantomKnight-
+            // Marker. They are singletons, never ordinary trash, so the rank
+            // check below cannot say anything useful about them.
+            if (/Marker(Hard)?$/.test(name)) {
+                continue;
+            }
+
             const entType = byName.get(name);
             // Display-name aliases ("Amenrahtep") have no EntType entry.
             if (!entType) {
