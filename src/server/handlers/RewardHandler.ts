@@ -19,6 +19,7 @@ import { EntityHandler } from './EntityHandler';
 import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { DungeonCompletionSystem } from '../core/DungeonCompletionSystem';
 import { AdminRuntimeSettings } from '../core/AdminRuntimeSettings';
+import { CharacterSync } from '../utils/CharacterSync';
 
 interface RewardRequest {
     receiverId: number;
@@ -875,19 +876,36 @@ export class RewardHandler {
         };
     }
 
-    private static applyXpReward(client: Client, amount: number): boolean {
+    static grantExperience(client: Client, amount: number): number {
         if (!client.character || amount <= 0) {
-            return false;
+            return 0;
         }
 
         const xpDebug = RewardHandler.resolveXpRewardDebug(client, amount);
         const totalAmount = xpDebug.finalExp;
+        if (totalAmount <= 0) {
+            return 0;
+        }
 
+        const previousLevel = Math.max(1, Number(client.character.level ?? 1));
         client.character.xp = Number(client.character.xp ?? 0) + totalAmount;
         client.character.level = GameData.getPlayerLevelFromXp(Number(client.character.xp ?? 0));
         RewardHandler.sendXpReward(client, totalAmount);
         PetHandler.applyActivePetExperience(client, totalAmount);
-        return true;
+
+        if (Number(client.character.level) !== previousLevel) {
+            EntityHandler.refreshPlayerSnapshot(client);
+            client.combatStatsDirty = true;
+            client.allowDirtyCombatStatsRegen = true;
+            client.lastCombatStatsRefreshRequestAt = Date.now();
+            CharacterSync.requestCombatStatsRefresh(client);
+        }
+
+        return totalAmount;
+    }
+
+    private static applyXpReward(client: Client, amount: number): boolean {
+        return RewardHandler.grantExperience(client, amount) > 0;
     }
 
     private static collectOwnedGearTierKeys(client: Client): Set<string> {
