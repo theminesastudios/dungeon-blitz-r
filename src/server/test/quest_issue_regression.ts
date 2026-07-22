@@ -135,7 +135,42 @@ async function testCemeteryMiniMissionsSyncOnEntry(): Promise<void> {
         MissionHandler.syncFullClearDungeonEntryMissionToClient(client as never);
         assert.equal(client.sentPackets.length, 1, `${levelName} did not sync its active tomb mission`);
         assert.deepEqual(decodeMissionAdded(client.sentPackets[0]), { missionId, active: 1 });
+
+        const missionUpdate = (MissionHandler as any).updateDungeonMissionResult(
+            client.character,
+            levelName,
+            { stars: 3, score: 1234, completedAt: 1700000000 }
+        );
+        assert.equal(missionUpdate.missionId, missionId, `${levelName} completion did not resolve its tomb mission`);
+        assert.equal(missionUpdate.newlyCompleted, true, `${levelName} completion did not advance its tomb mission`);
+        assert.equal(
+            client.character.missions[String(missionId)]?.state,
+            3,
+            `${levelName} completion was not persisted as claimed`
+        );
+        assert.equal(client.character.lastCompletedDungeonLevel, levelName);
     }
+}
+
+function testObjectiveDungeonCompletionRecoversMissingMissionEntry(): void {
+    const client = createClient('CH_MiniMission2', 71999);
+    client.character.missions[String(MissionID.DeliverToSwamp)] = {
+        state: 3,
+        currCount: 1,
+        claimed: 1,
+        complete: 1
+    };
+
+    const missionUpdate = (MissionHandler as any).updateDungeonMissionResult(
+        client.character,
+        'CH_MiniMission2',
+        { stars: 3, score: 1234, completedAt: 1700000000 }
+    );
+
+    assert.equal(missionUpdate.missionId, MissionID.ClearMini2);
+    assert.equal(missionUpdate.newlyCompleted, true);
+    assert.equal(client.character.missions[String(MissionID.ClearMini2)]?.state, 3);
+    assert.equal(client.character.lastCompletedDungeonLevel, 'CH_MiniMission2');
 }
 
 function primeFollowup(
@@ -260,6 +295,7 @@ function testBellaDialogueIncludesPlayerResponses(): void {
 async function main(): Promise<void> {
     ensureDataLoaded();
     await testCemeteryMiniMissionsSyncOnEntry();
+    testObjectiveDungeonCompletionRecoversMissingMissionEntry();
     testDungeonFollowupAutoAcceptAndTeleport();
     testBellaDialogueIncludesPlayerResponses();
     console.log('quest_issue_regression: ok');

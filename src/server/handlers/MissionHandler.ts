@@ -924,7 +924,7 @@ export class MissionHandler {
             LevelConfig.normalizeLevelName(client.currentLevel || String(client.character.CurrentLevel?.name ?? '')) ||
             client.currentLevel ||
             String(client.character.CurrentLevel?.name ?? '');
-        if (!MissionHandler.isFullClearOnlyDungeon(currentLevel)) {
+        if (!MissionHandler.shouldAutoStartDungeonMission(currentLevel)) {
             return;
         }
 
@@ -985,6 +985,11 @@ export class MissionHandler {
         return DungeonCompletionConditions.isFullClear(levelName);
     }
 
+    private static shouldAutoStartDungeonMission(levelName: string | null | undefined): boolean {
+        const mode = DungeonCompletionConditions.get(levelName)?.mode;
+        return mode === 'full-clear' || mode === 'objectives';
+    }
+
     static syncFullClearDungeonEntryMissionToClient(client: Client): void {
         if (!client.character) {
             return;
@@ -994,7 +999,7 @@ export class MissionHandler {
             LevelConfig.normalizeLevelName(client.currentLevel || String(client.character.CurrentLevel?.name ?? '')) ||
             client.currentLevel ||
             String(client.character.CurrentLevel?.name ?? '');
-        if (!MissionHandler.isFullClearOnlyDungeon(currentLevel)) {
+        if (!MissionHandler.shouldAutoStartDungeonMission(currentLevel)) {
             return;
         }
 
@@ -2436,8 +2441,33 @@ export class MissionHandler {
             completedAt: number;
         }
     ): DungeonMissionUpdateResult {
-        const missions = MissionHandler.getMissionStateMap(character);
         const normalizedCurrentLevel = LevelConfig.normalizeLevelName(currentLevel) || String(currentLevel ?? '').trim();
+        const primaryMissionDef = MissionLoader.findPrimaryMissionByDungeon(normalizedCurrentLevel);
+        if (
+            MissionHandler.shouldAutoStartDungeonMission(normalizedCurrentLevel) &&
+            primaryMissionDef &&
+            MissionHandler.getMissionState(character, primaryMissionDef.MissionID) === MissionHandler.MISSION_NOT_STARTED &&
+            MissionHandler.canStartMission(character, primaryMissionDef)
+        ) {
+            const existingEntry = MissionHandler.asMissionEntry(
+                MissionHandler.getMissionStateMap(character)[String(primaryMissionDef.MissionID)]
+            );
+            const hasHistoricalCompletion =
+                Number(existingEntry.Time ?? 0) > 0 ||
+                Number(existingEntry.highscore ?? 0) > 0 ||
+                Number(existingEntry.Tier ?? 0) > 0;
+            if (!hasHistoricalCompletion) {
+                MissionHandler.setMissionState(
+                    character,
+                    primaryMissionDef.MissionID,
+                    MissionHandler.MISSION_IN_PROGRESS,
+                    primaryMissionDef,
+                    { currCount: 0 }
+                );
+            }
+        }
+
+        const missions = MissionHandler.getMissionStateMap(character);
 
         for (const [missionIdText, rawEntry] of Object.entries(missions)) {
             const missionId = Number(missionIdText);
