@@ -162,8 +162,8 @@ export class RewardHandler {
             { tier: 2, weight: (1 / 100) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.MiniBoss }
         ],
         Boss: [
-            { tier: 0, weight: 1 - ((1 / 5) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss) - ((1 / 60) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss) },
-            { tier: 1, weight: (1 / 5) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss },
+            { tier: 0, weight: 1 - ((1 / 8) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss) - ((1 / 60) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss) },
+            { tier: 1, weight: (1 / 8) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss },
             { tier: 2, weight: (1 / 60) / RewardHandler.GEAR_DROP_CHANCE_BY_RANK.Boss }
         ]
     };
@@ -880,7 +880,7 @@ export class RewardHandler {
             itemLootAllowedByClass;
         const goldFindRate = petBonuses.goldFind + charmBonuses.goldFind + gearGoldFind + potionBonuses.goldFind;
         const shouldRollMaterial = shouldApplyDropTables && Boolean(realm);
-        const shouldRollGear = shouldApplyDropTables;
+        const shouldRollGear = shouldApplyDropTables && isLargeEnemy;
         const materialChance = shouldRollMaterial
             ? RewardHandler.resolveMaterialDropChance(entType, reward)
             : 0;
@@ -909,7 +909,7 @@ export class RewardHandler {
         if (allowItemDrop && dyeDebug.rarity) {
             dyeId = GameData.getRandomDyeId([dyeDebug.rarity], RewardHandler.collectOwnedDyeIds(client));
         }
-        if (allowItemDrop && gearChance > 0 && Math.random() < gearChance) {
+        if (shouldRollGear && gearChance > 0 && Math.random() < gearChance) {
             gearTier = RewardHandler.resolveGearTier(client, entRank, gearFindMultiplier);
             gearId = GameData.getGearIdForEntity(
                 entName,

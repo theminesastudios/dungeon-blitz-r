@@ -90,6 +90,7 @@ function createFakeClient(name: string, token: number): FakeClient {
             }
         },
         questTrackerState: 11,
+        class: 'mage',
         level: 12,
         xp: 0,
         gold: 0
@@ -367,6 +368,22 @@ function shareScope(...clients: FakeClient[]): void {
     for (const client of clients) {
         client.levelInstanceId = instanceId;
         GlobalState.sessionsByToken.set(client.token, client as never);
+    }
+}
+
+function shareParty(partyId: number, ...clients: FakeClient[]): void {
+    if (clients.length === 0) {
+        return;
+    }
+
+    GlobalState.partyGroups.set(partyId, {
+        id: partyId,
+        leader: clients[0].character.name,
+        members: clients.map((client) => client.character.name),
+        locked: false
+    });
+    for (const client of clients) {
+        GlobalState.partyByMember.set(String(client.character.name).toLowerCase(), partyId);
     }
 }
 
@@ -1037,6 +1054,7 @@ async function testSharedTagUgoHpDeathAndReplayDedupe(): Promise<void> {
     playerTwo.currentRoomId = 11;
     resetFor(playerOne);
     shareScope(playerOne, playerTwo);
+    shareParty(61300, playerOne, playerTwo);
     EntityHandler.sendInitialLevelEntities(playerOne as never, 'TutorialDungeon');
     EntityHandler.handleEntityFullUpdate(playerOne as never, buildHostileFullUpdate(TutorialDungeonMechanics.TAG_UGO_BOSS_ID, 'GoblinBoss1', 11));
     EntityHandler.handleEntityFullUpdate(playerTwo as never, buildHostileFullUpdate(TutorialDungeonMechanics.TAG_UGO_BOSS_ID, 'GoblinBoss1', 11));
@@ -1080,6 +1098,8 @@ async function testSharedTagUgoHpDeathAndReplayDedupe(): Promise<void> {
     await CombatHandler.handlePowerHit(playerOne as never, hit);
     assert.equal(Number(canonicalBoss.hp), hpAfterFirstHit, 'replayed hit from the same cast must be ignored');
 
+    const playerTwoLootBeforeBossKill = playerTwo.pendingLoot.size;
+    const playerOneLootBeforeBossKill = playerOne.pendingLoot.size;
     await CombatHandler.handlePowerCast(playerTwo as never, buildPowerCastPayload(playerTwo.clientEntID, 101));
     await CombatHandler.handlePowerHit(
         playerTwo as never,
@@ -1092,6 +1112,26 @@ async function testSharedTagUgoHpDeathAndReplayDedupe(): Promise<void> {
     assert.equal(Math.round(Number(canonicalBoss.deathVersion)), 1, 'Tag Ugo death must commit once');
     assert.equal(packetCount(playerOne, 0x0D) > 0, true);
     assert.equal(packetCount(playerTwo, 0x0D) > 0, true);
+    assert.ok(
+        playerTwo.pendingLoot.size > playerTwoLootBeforeBossKill,
+        'Tag Ugo death should grant boss loot to the killing player'
+    );
+    assert.ok(
+        playerOne.pendingLoot.size > playerOneLootBeforeBossKill,
+        'Tag Ugo death should grant boss loot to eligible party members in the same dungeon'
+    );
+    const playerTwoBossLoot = Array.from(playerTwo.pendingLoot.values());
+    const playerOneBossLoot = Array.from(playerOne.pendingLoot.values());
+    assert.ok(playerTwoBossLoot.some((reward: any) => Number(reward.gold ?? 0) > 0), 'Tag Ugo should drop gold');
+    assert.ok(playerTwoBossLoot.some((reward: any) => Number(reward.health ?? 0) > 0), 'Tag Ugo should drop health');
+    assert.ok(playerTwoBossLoot.some((reward: any) => Number(reward.material ?? 0) > 0), 'Tag Ugo should drop material');
+    assert.ok(playerTwoBossLoot.some((reward: any) => Number(reward.gear ?? 0) > 0), 'Tag Ugo should drop gear');
+    assert.ok(playerOneBossLoot.some((reward: any) => Number(reward.gold ?? 0) > 0), 'Tag Ugo should drop party-member gold');
+    assert.ok(playerOneBossLoot.some((reward: any) => Number(reward.health ?? 0) > 0), 'Tag Ugo should drop party-member health');
+    assert.ok(playerOneBossLoot.some((reward: any) => Number(reward.material ?? 0) > 0), 'Tag Ugo should drop party-member material');
+    assert.ok(playerOneBossLoot.some((reward: any) => Number(reward.gear ?? 0) > 0), 'Tag Ugo should drop party-member gear');
+    const playerTwoLootAfterBossKill = playerTwo.pendingLoot.size;
+    const playerOneLootAfterBossKill = playerOne.pendingLoot.size;
 
     (playerOne as any).authoritativeCurrentHp = 0;
     (CombatHandler as any).armBossRegenForPlayerDeath(playerOne, Date.now(), true);
@@ -1110,6 +1150,9 @@ async function testSharedTagUgoHpDeathAndReplayDedupe(): Promise<void> {
     GlobalState.sessionsByToken.set(lateJoiner.token, lateJoiner as never);
     EntityHandler.handleEntityFullUpdate(lateJoiner as never, buildHostileFullUpdate(TutorialDungeonMechanics.TAG_UGO_BOSS_ID, 'GoblinBoss1', 11));
     assert.equal(packetCount(lateJoiner, 0x0D), 1, 'late joiner must receive the Tag Ugo tombstone');
+    await MissionHandler.handleForcedDungeonBossCompletion(playerTwo as never, bossEntity());
+    assert.equal(playerTwo.pendingLoot.size, playerTwoLootAfterBossKill, 'replayed Tag Ugo completion must not duplicate boss loot');
+    assert.equal(playerOne.pendingLoot.size, playerOneLootAfterBossKill, 'replayed Tag Ugo completion must not duplicate party-member boss loot');
 }
 
 function testChestRewardIsOncePerEligibleParticipant(): void {

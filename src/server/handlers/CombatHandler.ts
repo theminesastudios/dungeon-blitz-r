@@ -2949,6 +2949,12 @@ export class CombatHandler {
             }
 
             CombatHandler.handleCanonicalVisibleServerAuthorityDefeatSideEffects(anchor, levelScope, entity);
+            CombatHandler.grantTutorialCompletionBossReward(
+                anchor,
+                levelScope,
+                canonicalEntity,
+                options.reason ?? 'server_authority_hostile_death'
+            );
         }
     }
 
@@ -4736,6 +4742,64 @@ export class CombatHandler {
             const roomId = Math.max(0, Math.round(Number(canonicalEntity?.roomId ?? canonicalEntity?.RoomID ?? canonicalEntity?.room_id ?? 0) || 0));
             LevelHandler.sendRoomUnlock(client, roomId);
         }
+    }
+
+    private static grantTutorialCompletionBossReward(
+        client: Client,
+        levelScope: string,
+        entity: any,
+        caller: string
+    ): void {
+        const levelName = getScopeLevelName(levelScope);
+        if (
+            !TutorialDungeonMechanics.isTutorialDungeon(levelName) ||
+            !TutorialDungeonMechanics.isCompletionBoss(levelScope, entity)
+        ) {
+            return;
+        }
+
+        const canonicalId = Math.max(0, Math.round(Number(entity?.id ?? 0)));
+        const canonicalEntity = canonicalId > 0
+            ? (GlobalState.levelEntities.get(levelScope)?.get(canonicalId) ?? entity)
+            : entity;
+        if (
+            canonicalId <= 0 ||
+            !EntityHandler.isServerAuthorityHostileEntity(levelName, canonicalEntity) ||
+            Math.round(Number(canonicalEntity?.hp ?? 0)) > 0 ||
+            !Boolean(canonicalEntity?.dead) ||
+            !Boolean(canonicalEntity?.destroyed) ||
+            Math.max(0, Math.round(Number(canonicalEntity?.deathFinalizedAt ?? 0))) <= 0 ||
+            Boolean(canonicalEntity?.lootDropped)
+        ) {
+            return;
+        }
+
+        const lifeNonce = Math.max(0, Math.round(Number(
+            canonicalEntity?.lifeNonce ?? CombatHandler.getEntityLifeNonce(levelScope, canonicalId)
+        ) || 0));
+        const lootDropNonce = `${levelScope}:${canonicalId}:${lifeNonce}`;
+        canonicalEntity.lootDropped = true;
+        canonicalEntity.lootDropNonce = lootDropNonce;
+        canonicalEntity.lootGrantedTokens = canonicalEntity.lootGrantedTokens instanceof Set
+            ? canonicalEntity.lootGrantedTokens
+            : new Set<number>(Array.isArray(canonicalEntity.lootGrantedTokens)
+                ? canonicalEntity.lootGrantedTokens.map((token: unknown) => Math.round(Number(token) || 0))
+                : []);
+        canonicalEntity.lootCollectedTokens = canonicalEntity.lootCollectedTokens instanceof Set
+            ? canonicalEntity.lootCollectedTokens
+            : new Set<string>(Array.isArray(canonicalEntity.lootCollectedTokens)
+                ? canonicalEntity.lootCollectedTokens.map((token: unknown) => String(token))
+                : []);
+        canonicalEntity.lootDrops = canonicalEntity.lootDrops instanceof Map
+            ? canonicalEntity.lootDrops
+            : new Map<number, unknown>();
+        canonicalEntity.deathRewardGrantedAt = Date.now();
+        RewardHandler.grantServerEnemyRewardToEligibleViewers(client, canonicalEntity, {
+            levelScope,
+            lootDropNonce,
+            sourceEnemyCanonicalId: canonicalId,
+            caller
+        });
     }
 
     private static handleEnemyDefeatState(
