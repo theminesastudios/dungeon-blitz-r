@@ -181,9 +181,7 @@ export class NpcHandler {
 
                             // Начисление опыта
                             if (expReward > 0) {
-                                client.character.xp = Number(client.character.xp ?? 0) + expReward;
-                                client.character.level = GameData.getPlayerLevelFromXp(Number(client.character.xp ?? 0));
-                                NpcHandler.sendXpReward(client, expReward);
+                                RewardHandler.grantExperience(client, expReward);
                             }
 
                             // Начисление золота
@@ -837,9 +835,7 @@ export class NpcHandler {
 
                 // Начисление опыта
                 if (expReward > 0) {
-                    client.character.xp = Number(client.character.xp ?? 0) + expReward;
-                    client.character.level = GameData.getPlayerLevelFromXp(Number(client.character.xp ?? 0));
-                    NpcHandler.sendXpReward(client, expReward);
+                    RewardHandler.grantExperience(client, expReward);
                 }
 
                 // Начисление золота

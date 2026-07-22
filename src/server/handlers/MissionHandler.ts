@@ -2801,9 +2801,7 @@ export class MissionHandler {
 
         const expReward = Math.max(0, Number(missionDef.ExpRewardValue ?? 0));
         if (expReward > 0) {
-            client.character.xp = Number(client.character.xp ?? 0) + expReward;
-            client.character.level = GameData.getPlayerLevelFromXp(Number(client.character.xp ?? 0));
-            MissionHandler.sendXpReward(client, expReward);
+            RewardHandler.grantExperience(client, expReward);
         }
 
         const goldReward = Math.max(0, Number(missionDef.GoldRewardValue ?? 0));
