@@ -26,6 +26,9 @@ export interface EntityProps {
     isPlayer: boolean;
     x: number;
     y: number;
+    spawnX?: number;
+    spawnY?: number;
+    spawnEntState?: number;
     v: number; // velocity
     team: number;
     renderDepthOffset?: number;
@@ -140,12 +143,18 @@ export class Entity {
     static fromNpc(npc: any): EntityProps {
         const cueData = (npc && typeof npc.cue_data === 'object') ? npc.cue_data : {};
         const isPlayer = Boolean(npc?.is_player);
+        const x = Number(npc?.x ?? npc?.pos_x ?? 0);
+        const y = Number(npc?.y ?? npc?.pos_y ?? 0);
+        const entState = Number(npc?.entState ?? 0);
         return {
             id: Number(npc?.id ?? 0),
             name: String(npc?.name ?? ''),
             isPlayer,
-            x: Number(npc?.x ?? npc?.pos_x ?? 0),
-            y: Number(npc?.y ?? npc?.pos_y ?? 0),
+            x,
+            y,
+            spawnX: x,
+            spawnY: y,
+            spawnEntState: entState,
             v: Number(npc?.v ?? npc?.velocity_x ?? 0),
             team: Number(npc?.team ?? 0),
             renderDepthOffset: Number(npc?.render_depth_offset ?? 0),
@@ -154,7 +163,7 @@ export class Entity {
             sleepAnim: String(npc?.SleepAnim ?? cueData.SleepAnim ?? ''),
             summonerId: Number(npc?.summonerId ?? 0),
             powerId: Number(npc?.power_id ?? 0),
-            entState: Number(npc?.entState ?? 0),
+            entState,
             facingLeft: Boolean(npc?.facing_left),
             running: Boolean(npc?.running),
             jumping: Boolean(npc?.jumping),

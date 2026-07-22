@@ -160,8 +160,14 @@ function testPlayerDataAlwaysUsesVisitorAuthority(): void {
         pendingExtended: boolean,
         entry: { targetLevel: string }
     ) => boolean;
-    assert.equal(shouldSendExtended(false, false, { targetLevel: 'CraftTown' }), true);
-    assert.equal((LevelHandler as any).shouldSendExtendedOnTransfer('CraftTown'), true);
+    assert.equal(
+        shouldSendExtended(false, false, { targetLevel: 'CraftTown' }),
+        false,
+        'Home transfers must not replay append-only inventory collections'
+    );
+    assert.equal(shouldSendExtended(true, false, { targetLevel: 'CraftTown' }), true);
+    assert.equal(shouldSendExtended(false, true, { targetLevel: 'CraftTown' }), true);
+    assert.equal((LevelHandler as any).shouldSendExtendedOnTransfer('CraftTown'), false);
 }
 
 function testHouseHostIsExplicitAndStaleStateIsCleared(): void {

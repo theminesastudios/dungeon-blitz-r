@@ -1,9 +1,10 @@
-export type DungeonCompletionMode = 'bosses' | 'full-clear' | 'client-signal' | 'disabled';
+export type DungeonCompletionMode = 'bosses' | 'objectives' | 'full-clear' | 'client-signal' | 'disabled';
 
 export type DungeonCompletionEntityObjective = {
     names: string[];
     aliases?: string[];
     role: string;
+    requiredCount?: number;
 };
 
 export type DungeonCompletionCutsceneCondition = {
@@ -18,12 +19,16 @@ export type DungeonCompletionCondition = {
     entityObjectives?: DungeonCompletionEntityObjective[];
     cutscene?: DungeonCompletionCutsceneCondition;
     simultaneousBossWindowMs?: number;
+    requireBossesCurrentlyDefeated?: boolean;
+    acceptRoomBossClearSignal?: boolean;
     autoCompleteOnObjectives?: boolean;
     allowDefeatedBossProxyCopies?: boolean;
     requirePlayerDamageForClientBosses?: boolean;
+    requireBossDefeatSignal?: boolean;
     clientAuthorityBosses?: string[];
     requireRoomBossMarker?: boolean;
     allowVerifiedClientBossWithoutRoomBossMarker?: boolean;
+    allowTerminalCanonicalBossWithoutRoomBossMarker?: boolean;
 };
 
 export type DungeonCompletionPhase =
@@ -52,9 +57,11 @@ export type DungeonCompletionRunState = {
     defeatedBosses: Set<string>;
     defeatedBossAt: Map<string, number>;
     destroyedObjectives: Set<string>;
+    destroyedObjectiveEntityIds: Map<string, Set<number>>;
     defeatedHostileIds: Set<number>;
     processedDeathEvents: Set<string>;
     clientCompletionSignals: Map<string, number>;
+    roomBossClearSequence: number;
     eventSequence: number;
     cutsceneRoomId: number;
     cutsceneStartedAt: number;
@@ -65,6 +72,9 @@ export type DungeonCompletionRunState = {
     objectiveRoomIds: Set<number>;
     objectivesMetAt: number;
     objectivesMetSequence: number;
+    cutsceneFallbackReleasedAt: number;
+    cutsceneFallbackSequence: number;
+    cutsceneFallbackReason: '' | 'missing-start-timeout' | 'active-timeout' | 'close-observed';
     readyAt: number;
     finalizingParticipants: Set<string>;
     completedParticipants: Set<string>;

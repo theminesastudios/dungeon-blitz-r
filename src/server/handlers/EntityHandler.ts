@@ -1344,6 +1344,52 @@ export class EntityHandler {
         return canonical;
     }
 
+    // A dungeon scope key is `levelName#levelInstanceId`, and for a solo run the
+    // instance id is just the session token — so re-entering the same dungeon in
+    // one session lands on the identical scope. Both the entity map and the
+    // completion state are only built when the scope is new (see the `!levelMap`
+    // guard in sendInitialLevelEntities), so a second run inherited the first
+    // run's dead bosses: defeatedBosses still held the boss, objectivesMet was
+    // already true on entry, and the rank plate fired before the boss had even
+    // spawned. resetServerAuthorityScopeForFreshRun does clear all of this, but
+    // it bails out on its first line for anything outside SERVER_AUTHORITY_
+    // HOSTILE_LEVELS — i.e. for every ordinary dungeon.
+    private static resetFinishedDungeonRunScope(client: Client, levelName: string): void {
+        if (!LevelConfig.isDungeonLevel(levelName)) {
+            return;
+        }
+
+        const levelScope = getLevelScopeKey(levelName, client.levelInstanceId);
+        if (!levelScope) {
+            return;
+        }
+
+        // A joiner must never wipe a run its party is still playing.
+        if (EntityHandler.hasOtherActiveSessionInScope(client, levelScope)) {
+            return;
+        }
+
+        const levelMap = EntityHandler.getLevelMap(levelName, client.levelInstanceId);
+        if (!levelMap) {
+            return;
+        }
+
+        // Drop the whole scope rather than just its hostiles. Clearing the state
+        // alone is not enough: recoverDefeatedObjectivesFromScope re-derives
+        // defeatedBosses from whatever defeated entities are still sitting in the
+        // scope, so the reset would be undone on the very next evaluate(). And
+        // emptying the map in place is not enough either — sendInitialLevelEntities
+        // only seeds NPCs when the map is absent (`!levelMap`), so an emptied but
+        // present map would leave the new run with no enemies at all.
+        GlobalState.levelEntities.delete(levelScope);
+        GlobalState.levelQuestProgress.delete(levelScope);
+        DungeonCompletionSystem.reset(levelScope);
+        console.log(
+            `[EntityHandler] Cleared finished dungeon run scope ${levelScope} ` +
+            `(${levelMap.size} stale entities) for a fresh run`
+        );
+    }
+
     private static resetServerAuthorityScopeForFreshRun(client: Client, levelName: string, levelMap: Map<number, any>): void {
         if (!EntityHandler.usesServerAuthorityHostiles(levelName)) {
             return;
@@ -2029,6 +2075,7 @@ export class EntityHandler {
     ): any | null {
         const targetName = EntityHandler.normalizeIdentityName(entity?.name);
         const targetTeam = Number(entity?.team ?? 0);
+        const targetObjectiveRole = DungeonCompletionConditions.getObjectiveRole(levelName, entity);
         const targetSpawnKey = String(entity?.spawnKey ?? EntityHandler.getHostileSpawnKey(getLevelScopeKey(levelName, ''), entity));
         let bestMatch: any | null = null;
         let bestDistanceSq = Number.POSITIVE_INFINITY;
@@ -2053,6 +2100,16 @@ export class EntityHandler {
             const candidateSpawnKey = String(candidate?.spawnKey ?? '');
             if (targetSpawnKey && candidateSpawnKey && targetSpawnKey === candidateSpawnKey) {
                 return candidate;
+            }
+            // Authored objectives can intentionally place several objects with
+            // the same type in one dungeon. Only an exact spawn key may merge
+            // those copies; name-only matching would collapse distinct chests
+            // and make required destruction counts unreachable.
+            if (
+                targetObjectiveRole &&
+                DungeonCompletionConditions.getObjectiveRole(levelName, candidate) === targetObjectiveRole
+            ) {
+                continue;
             }
             if (EntityHandler.normalizeIdentityName(candidate?.name) !== targetName) {
                 continue;
@@ -3675,7 +3732,9 @@ export class EntityHandler {
         levelName = LevelConfig.normalizeLevelName(levelName) || levelName;
         EntityHandler.ensureJcMini1PartySharedScope(client, levelName, 'send_initial_level_entities');
         console.log(`[EntityHandler] Sending initial entities for ${levelName} to ${client.character?.name}`);
-        
+
+        EntityHandler.resetFinishedDungeonRunScope(client, levelName);
+
         let levelMap = EntityHandler.getLevelMap(levelName, client.levelInstanceId);
         if (!levelMap) {
             levelMap = EntityHandler.getLevelMap(levelName, client.levelInstanceId, true) ?? new Map<number, any>();

@@ -9,11 +9,11 @@ import { CombatHandler } from '../handlers/CombatHandler';
 import { RewardHandler } from '../handlers/RewardHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 
-function createClient(token: number, instanceId: string): any {
+function createClient(token: number, instanceId: string, levelName: string = 'JC_Mission9'): any {
     const client: any = {
         token,
         userId: token,
-        currentLevel: 'JC_Mission9',
+        currentLevel: levelName,
         levelInstanceId: instanceId,
         currentRoomId: 4,
         playerSpawned: true,
@@ -24,7 +24,7 @@ function createClient(token: number, instanceId: string): any {
             level: 30,
             xp: 0,
             gold: 0,
-            CurrentLevel: { name: 'JC_Mission9', x: 5_000, y: 5_000 }
+            CurrentLevel: { name: levelName, x: 5_000, y: 5_000 }
         },
         characters: [],
         entities: new Map<number, any>(),
@@ -63,11 +63,10 @@ function playerEntity(client: any, dead: boolean = false): any {
     };
 }
 
-function bossEntity(id: number, hp: number = 400): any {
+function bossEntity(id: number, hp: number = 400, name: string = 'RisenBandit'): any {
     return {
         id,
-        // RisenBandit is the authored revivable Hiding Out boss (#586).
-        name: 'RisenBandit',
+        name,
         entRank: 'Boss',
         isPlayer: false,
         team: EntityTeam.ENEMY,
@@ -104,14 +103,59 @@ function clear(client: any, scope: string): void {
     GlobalState.levelEntities.delete(scope);
 }
 
-function testDisengagedLivingBossRestoresCompletely(): void {
-    const client = createClient(71_001, 'boss-disengage');
-    const boss = bossEntity(72_001, 400);
+function testReportedBossesOnlyRestoreAfterPlayerDeath(): void {
+    const affectedLevels = [
+        ['Svagg\'s Last Stand', 'BT_Mission2', 'BanditBoss'],
+        ['Dread Svagg\'s Last Stand', 'BT_Mission2Hard', 'BanditBossHard'],
+        ['Embodiment of Evil', 'CH_Mission5', 'DemonMaligner'],
+        ['Dread Embodiment of Evil', 'CH_Mission5Hard', 'DemonMalignerHard'],
+        ['Last Stand (Castle Hocke)', 'AC_Mission5', 'AncientDragonBlack'],
+        ['Dread Last Stand (Castle Hocke)', 'AC_Mission5Hard', 'AncientDragonBlackHard']
+    ] as const;
+
+    affectedLevels.forEach(([displayName, levelName, bossName], index) => {
+        const client = createClient(71_001 + index, `boss-death-only-${levelName}`, levelName);
+        const boss = bossEntity(72_001 + index, 400, bossName);
+        const scope = seed(client, boss);
+        try {
+            (CombatHandler as any).processHostileOutOfCombatRegen(scope, boss, 10_000);
+            assert.equal(boss.hp, 400, `${displayName} regenerated while the player was alive`);
+            assert.equal(
+                client.sentPacketIds.includes(0x78),
+                false,
+                `${displayName} emitted a heal packet while the player was alive`
+            );
+
+            // The death reset is paced, not a snap: the tick that observes the
+            // death restores one 5% step, and the bar climbs from there while
+            // the player stays down.
+            CombatHandler.notePlayerDeathState(client, 20_000);
+            assert.equal(boss.hp, 450, `${displayName} did not take its first restore step after the player died`);
+            assert.equal(boss.dead, false, `${displayName} became terminal during its player-death reset`);
+            assert.equal(
+                client.sentPacketIds.includes(0x78),
+                true,
+                `${displayName} did not emit a heal packet after the player died`
+            );
+
+            for (let tick = 1; tick <= 12; tick++) {
+                CombatHandler.processOutOfCombatRegen(scope, 20_000 + tick * 1_000);
+            }
+            assert.equal(boss.hp, boss.maxHp, `${displayName} never finished restoring while the player stayed dead`);
+        } finally {
+            clear(client, scope);
+        }
+    });
+}
+
+function testUnarmedLivingBossDoesNotRestoreAfterDisengaging(): void {
+    const client = createClient(71_010, 'boss-disengage');
+    const boss = bossEntity(72_010, 400);
     const scope = seed(client, boss);
     try {
         (CombatHandler as any).processHostileOutOfCombatRegen(scope, boss, 10_000);
-        assert.equal(boss.hp, boss.maxHp, 'a fully disengaged living boss retained partial HP');
-        assert.equal(boss.dead, false, 'a disengaged living boss was not restored to active state');
+        assert.equal(boss.hp, 400, 'a living boss regenerated without a player-death arm');
+        assert.equal(client.sentPacketIds.includes(0x78), false, 'an unarmed boss emitted a heal packet');
     } finally {
         clear(client, scope);
     }
@@ -123,8 +167,13 @@ function testPlayerDeathRestoresLivingBossCompletely(): void {
     const scope = seed(client, boss);
     try {
         CombatHandler.notePlayerDeathState(client, 10_000);
-        assert.equal(boss.hp, boss.maxHp, 'a living boss did not fully reset after its player target died');
+        assert.equal(boss.hp, 400, 'a living boss did not begin restoring after its player target died');
         assert.equal(boss.dead, false, 'a living boss became terminal during a player-death reset');
+
+        for (let tick = 1; tick <= 13; tick++) {
+            CombatHandler.processOutOfCombatRegen(scope, 10_000 + tick * 1_000);
+        }
+        assert.equal(boss.hp, boss.maxHp, 'a living boss did not fully reset while its player target stayed dead');
     } finally {
         clear(client, scope);
     }
@@ -259,7 +308,8 @@ function main(): void {
     LevelConfig.load(dataDir);
     GameData.load(dataDir);
 
-    testDisengagedLivingBossRestoresCompletely();
+    testReportedBossesOnlyRestoreAfterPlayerDeath();
+    testUnarmedLivingBossDoesNotRestoreAfterDisengaging();
     testPlayerDeathRestoresLivingBossCompletely();
     testTerminalBossCorpseNeverRegenerates();
     testPlayerRespawnPreservesRunRewardLedger();

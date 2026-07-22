@@ -321,6 +321,51 @@ export class LevelHandler {
         };
     }
 
+    private static resolveDoorResponseId(
+        currentLevelName: string | null | undefined,
+        targetLevelName: string | null | undefined,
+        requestedDoorId: number
+    ): number {
+        const currentLevel = LevelConfig.normalizeLevelName(currentLevelName);
+        const targetLevel = LevelConfig.normalizeLevelName(targetLevelName);
+        const normalizedDoorId = Math.max(0, Math.round(Number(requestedDoorId) || 0));
+        if (currentLevel && targetLevel && LevelConfig.isDungeonLevel(currentLevel)) {
+            // The dungeon's completion door id belongs to the dungeon map. Resolve the reverse
+            // DoorTypes link so the destination map selects the authored door that entered this
+            // dungeon (for example CH_MiniMission6 -> CemeteryHill door 206).
+            const entranceDoorId = LevelConfig.getDungeonEntranceDoorId(currentLevel, targetLevel);
+            if (entranceDoorId !== null) {
+                return entranceDoorId;
+            }
+
+            // Some dungeons have no authored reverse link. Door 0 lets their explicit transfer
+            // coordinates remain the fallback instead of selecting an unrelated destination door.
+            if (
+                (normalizedDoorId === 0 || normalizedDoorId === 2) &&
+                !LevelConfig.isDungeonLevel(targetLevel)
+            ) {
+                return 0;
+            }
+        }
+
+        return normalizedDoorId;
+    }
+
+    private static shouldSendTransferCoordinates(
+        currentLevelName: string | null | undefined,
+        targetLevelName: string | null | undefined,
+        hasCoordinates: boolean,
+        preferExplicitCoordinates: boolean
+    ): boolean {
+        if (!hasCoordinates) {
+            return false;
+        }
+        if (preferExplicitCoordinates) {
+            return true;
+        }
+        return LevelConfig.getDungeonEntranceDoorId(currentLevelName, targetLevelName) === null;
+    }
+
     private static findActiveTransferSession(userId: number | null, characterName: string | null | undefined): Client | null {
         const normalizedCharName = normalizeCharacterKey(characterName);
 
@@ -820,16 +865,34 @@ export class LevelHandler {
             const entryEntity = client.clientEntID > 0 ? client.entities.get(client.clientEntID) : null;
             const sourceLevel = LevelConfig.normalizeLevelName(client.currentLevel);
             if (
-                !syncEntryHasCoord &&
-                syncEntryLevel &&
-                sourceLevel === syncEntryLevel &&
+                sourceLevel &&
                 !LevelConfig.isDungeonLevel(sourceLevel) &&
-                Number.isFinite(Number(entryEntity?.x)) &&
-                Number.isFinite(Number(entryEntity?.y))
+                LevelConfig.isSaveAllowedLevel(sourceLevel)
             ) {
-                syncEntryX = Math.round(Number(entryEntity.x));
-                syncEntryY = Math.round(Number(entryEntity.y));
-                syncEntryHasCoord = true;
+                // Dungeon progress and instance state are shared, but the exit point belongs to
+                // the individual player. Never replace this player's entrance with the party
+                // anchor's region or coordinates.
+                syncEntryLevel = sourceLevel;
+                const liveEntryX = Number(entryEntity?.x);
+                const liveEntryY = Number(entryEntity?.y);
+                const recordedEntry = LevelConfig.resolveDungeonEntryCoordinates(
+                    normalizedTargetLevel,
+                    sourceLevel,
+                    client.character
+                );
+                if (Number.isFinite(liveEntryX) && Number.isFinite(liveEntryY)) {
+                    syncEntryX = Math.round(liveEntryX);
+                    syncEntryY = Math.round(liveEntryY);
+                    syncEntryHasCoord = true;
+                } else if (recordedEntry.hasCoord) {
+                    syncEntryX = Math.round(recordedEntry.x);
+                    syncEntryY = Math.round(recordedEntry.y);
+                    syncEntryHasCoord = true;
+                } else {
+                    syncEntryX = undefined;
+                    syncEntryY = undefined;
+                    syncEntryHasCoord = false;
+                }
             }
             const dungeonEntrySpawnOverride =
                 !anchor &&
@@ -885,9 +948,10 @@ export class LevelHandler {
         activeCharacter: any,
         oldLevel: string,
         targetLevel: string,
-        syncState: LevelSyncState | null
+        syncState: LevelSyncState | null,
+        preferExplicitSpawn: boolean = false
     ): { x: number; y: number; hasCoord: boolean } {
-        if (syncState?.hasCoord) {
+        if (preferExplicitSpawn && syncState?.hasCoord) {
             return {
                 x: Math.round(Number(syncState.x ?? 0)),
                 y: Math.round(Number(syncState.y ?? 0)),
@@ -910,6 +974,14 @@ export class LevelHandler {
             return {
                 x: Math.round(Number(client.entryX)),
                 y: Math.round(Number(client.entryY)),
+                hasCoord: true
+            };
+        }
+
+        if (syncState?.hasCoord) {
+            return {
+                x: Math.round(Number(syncState.x ?? 0)),
+                y: Math.round(Number(syncState.y ?? 0)),
                 hasCoord: true
             };
         }
@@ -4380,8 +4452,8 @@ export class LevelHandler {
         GlobalState.pendingExtended.set(token, sendExtended);
     }
 
-    private static shouldSendExtendedOnTransfer(targetLevel: string): boolean {
-        return targetLevel === 'CraftTown';
+    private static shouldSendExtendedOnTransfer(_targetLevel: string): boolean {
+        return false;
     }
 
     private static isDifferentCharacter(left: Character | null | undefined, right: Character | null | undefined): boolean {
@@ -4842,7 +4914,13 @@ export class LevelHandler {
             client.armPendingTransferGrace();
             PetHandler.armMountTravelProtection(client, 5000, false);
             const bb = new BitBuffer();
-            bb.writeMethod4(doorId);
+            const responseDoorId = LevelHandler.resolveDoorResponseId(currentLevel, targetLevel, doorId);
+            if (responseDoorId !== doorId) {
+                console.log(
+                    `[Level] Dungeon exit door response ${currentLevel} -> ${targetLevel}: ${doorId} -> ${responseDoorId}`
+                );
+            }
+            bb.writeMethod4(responseDoorId);
             bb.writeMethod13(targetLevel);
             client.sendBitBuffer(0x2E, bb);
         }
@@ -5043,6 +5121,12 @@ export class LevelHandler {
         const br = new BitReader(data);
         const roomId = br.readMethod9();
         LevelHandler.cacheRoomId(client, roomId);
+
+        // Despite the historical handler name, the client emits 0xAD from
+        // BossFight when every boss slot is at zero HP and the boss UI closes.
+        // Cue-owned bosses can be entirely local, so forward that exact finale
+        // signal into the configured dungeon objective system.
+        DungeonCompletionSystem.noteRoomBossClear(getClientLevelScope(client), roomId);
 
         LevelHandler.relayToLevel(client, 0xAD, data);
     }
@@ -5280,12 +5364,29 @@ export class LevelHandler {
             activeCharacter,
             oldLevel,
             targetLevel,
-            syncState
+            syncState,
+            Boolean(teleportOverride?.hasCoord)
         );
         const spawn = LevelHandler.stabilizeHomeReturnSpawn(oldLevel, targetLevel, savedSpawn);
         const newX = spawn.x;
         const newY = spawn.y;
-        const newHasCoord = spawn.hasCoord;
+        const authoredDungeonEntranceDoorId = !teleportOverride?.hasCoord
+            ? LevelConfig.getDungeonEntranceDoorId(oldLevel, targetLevel)
+            : null;
+        // Player Data clears the client's targetDoor whenever explicit coordinates are present.
+        // Suppress that coordinate flag when an authored reverse door exists so the destination
+        // client can place the player at the exact entrance door selected by 0x2E.
+        const newHasCoord = LevelHandler.shouldSendTransferCoordinates(
+            oldLevel,
+            targetLevel,
+            spawn.hasCoord,
+            Boolean(teleportOverride?.hasCoord)
+        );
+        if (authoredDungeonEntranceDoorId !== null) {
+            console.log(
+                `[Level] Dungeon exit ${oldLevel} -> ${targetLevel} using entrance door ${authoredDungeonEntranceDoorId}`
+            );
+        }
         syncPotionReservationForLevelTransition(activeCharacter, oldLevel, targetLevel);
         client.activePotionDrainAtMs = 0;
         LevelConfig.updateSavedLevelsOnTransfer(
@@ -5562,6 +5663,7 @@ export class LevelHandler {
             )
         );
         const canonicalTerminal = isEnemyCanonical && (
+            acceptsClientAuthorityTerminal ||
             canonicalDestroyed ||
             (Number.isFinite(canonicalHp) && canonicalHp <= 0)
         );

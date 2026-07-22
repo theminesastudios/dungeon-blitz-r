@@ -125,16 +125,19 @@ function getCredentialFingerprint(req: express.Request): string {
     return createHash('sha256').update(readBearerToken(req.headers.authorization)).digest('hex').slice(0, 16);
 }
 
-function requireAdminAuthorization(limiter: DiscordAdminRateLimiter): express.RequestHandler {
+export function requireAdminAuthorization(limiter: DiscordAdminRateLimiter): express.RequestHandler {
     return (req, res, next): void => {
-        const configuredSecret = String(process.env.DISCORD_MAINTENANCE_API_SECRET ?? '').trim();
-        if (!configuredSecret) {
+        const configuredSecrets = [
+            process.env.ADMIN_API_SECRET,
+            process.env.DISCORD_MAINTENANCE_API_SECRET
+        ].map((value) => String(value ?? '').trim()).filter(Boolean);
+        if (configuredSecrets.length === 0) {
             res.status(503).json({ error: 'Discord admin API is not configured.' });
             return;
         }
 
         const providedSecret = readBearerToken(req.headers.authorization);
-        if (providedSecret && secretsMatch(providedSecret, configuredSecret)) {
+        if (providedSecret && configuredSecrets.some((secret) => secretsMatch(providedSecret, secret))) {
             next();
             return;
         }

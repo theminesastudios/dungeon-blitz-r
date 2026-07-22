@@ -3,14 +3,11 @@ import {
   applyPatchesToBody,
   BytePatch,
   classIndexByName,
-  disassemble,
   ensureBackup,
   methodIdxForTrait,
   parseAbc,
   parseSwf,
   PatchError,
-  readU30,
-  u30OperandName,
   writeSwf,
   writeU30,
 } from "./swfPatchUtils";
@@ -27,7 +24,7 @@ function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
     if (arg === "--swf" || arg === "-s") swfPath = path.resolve(argv[++index] || "");
     else if (arg === "--verify" || arg === "--dry-run") verify = true;
     else if (arg === "--help" || arg === "-h") {
-      console.log("Usage: npm exec tsx src/server/scripts/patch-dungeonblitz-brain-instanced-aggro-guard.ts [--verify] [--swf <path>]");
+      console.log("Usage: npm exec tsx src/server/scripts/patch-dungeonblitz-brain-instanced-aggro-guard.ts [--verify] [--swf <path>]\nRemoves the obsolete instanced-dungeon aggro guards; --verify confirms they are absent.");
       process.exit(0);
     } else throw new Error(`Unknown argument: ${arg}`);
   }
@@ -92,13 +89,13 @@ function buildGuard(abc: ReturnType<typeof parseAbc>, methodName: TargetMethod):
   ]);
 }
 
-function patchSwf(swfPath: string, verify: boolean): void {
+function restoreSwfAggro(swfPath: string, verify: boolean): void {
   const ctx = parseSwf(swfPath);
   const abc = parseAbc(ctx);
   const classIndex = classIndexByName(abc, "Brain");
   if (classIndex === null) throw new PatchError("Could not find Brain class.");
   const patches: BytePatch[] = [];
-  const missing: TargetMethod[] = [];
+  const guarded: TargetMethod[] = [];
 
   for (const methodName of ["FindClosestEnemy", "CallForHelp"] as const) {
     const methodIdx = methodIdxForTrait(abc.instances[classIndex].traits, abc, methodName);
@@ -107,32 +104,26 @@ function patchSwf(swfPath: string, verify: boolean): void {
     if (!body) throw new PatchError(`Could not find body for Brain.${methodName}.`);
     if (body.exceptionCount > 0) throw new PatchError(`Brain.${methodName} has an unexpected exception table.`);
     const code = ctx.body.subarray(body.codeStart, body.codeStart + body.codeLen);
-    const instructions = disassemble(code, `Brain.${methodName}.verify`);
-    const patched = instructions[0]?.opcode === 0xd0 &&
-      instructions[1]?.opcode === 0x66 && u30OperandName(instructions[1], abc.multinameNames) === "var_1" &&
-      instructions[2]?.opcode === 0x66 && u30OperandName(instructions[2], abc.multinameNames) === "level" &&
-      instructions[3]?.opcode === 0x2a;
-    if (patched) continue;
-    missing.push(methodName);
-    const patchedCode = Buffer.concat([buildGuard(abc, methodName), code]);
+    const guard = buildGuard(abc, methodName);
+    if (!code.subarray(0, guard.length).equals(guard)) continue;
+    guarded.push(methodName);
+    const restoredCode = code.subarray(guard.length);
     patches.push(
-      { key: `Brain.${methodName}.code`, start: body.codeStart, end: body.codeStart + body.codeLen, data: patchedCode, detail: "disable automatic aggro in instanced dungeons" },
-      { key: `Brain.${methodName}.codeLen`, start: body.codeLenPos, end: body.codeStart, data: writeU30(patchedCode.length), detail: `update Brain.${methodName} code length` },
+      { key: `Brain.${methodName}.code`, start: body.codeStart, end: body.codeStart + body.codeLen, data: restoredCode, detail: "restore automatic aggro in instanced dungeons" },
+      { key: `Brain.${methodName}.codeLen`, start: body.codeLenPos, end: body.codeStart, data: writeU30(restoredCode.length), detail: `update Brain.${methodName} code length` },
     );
-    const [maxStack] = readU30(ctx.body, body.maxStackPos, `Brain.${methodName}.max_stack`);
-    if (maxStack < 2) patches.push({ key: `Brain.${methodName}.maxStack`, start: body.maxStackPos, end: body.localCountPos, data: writeU30(2), detail: `raise Brain.${methodName} max_stack` });
   }
 
-  if (missing.length === 0) {
-    console.log(`${swfPath}: already patched (instanced Brain aggro guards present).`);
+  if (guarded.length === 0) {
+    console.log(`${swfPath}: verified (instanced Brain aggro guards absent).`);
     return;
   }
-  if (verify) throw new PatchError(`${swfPath}: verify failed; missing Brain guards: ${missing.join(", ")}.`);
+  if (verify) throw new PatchError(`${swfPath}: verify failed; obsolete Brain guards present: ${guarded.join(", ")}.`);
   ensureBackup(swfPath);
   const { body, delta } = applyPatchesToBody(ctx.body, patches);
   writeSwf(ctx, body, delta);
-  console.log(`${swfPath}: patched instanced Brain aggro guards (${missing.join(", ")}).`);
+  console.log(`${swfPath}: restored instanced Brain aggro (${guarded.join(", ")}).`);
 }
 
 const { swfPath, verify } = parseArgs(process.argv);
-patchSwf(swfPath, verify);
+restoreSwfAggro(swfPath, verify);

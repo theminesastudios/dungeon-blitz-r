@@ -13,7 +13,7 @@ type RawCatalog = {
 };
 
 const catalog = rawConditions as RawCatalog;
-const VALID_MODES = new Set<DungeonCompletionMode>(['bosses', 'full-clear', 'client-signal', 'disabled']);
+const VALID_MODES = new Set<DungeonCompletionMode>(['bosses', 'objectives', 'full-clear', 'client-signal', 'disabled']);
 const VALID_PARTY_HOSTILE_SYNC_POLICIES = new Set(['all', 'bosses-only', 'none']);
 
 function normalizeIdentity(value: unknown): string {
@@ -55,7 +55,8 @@ function cloneObjective(objective: DungeonCompletionEntityObjective): DungeonCom
     return {
         names: [...objective.names],
         aliases: objective.aliases ? [...objective.aliases] : undefined,
-        role: objective.role
+        role: objective.role,
+        requiredCount: objective.requiredCount
     };
 }
 
@@ -114,8 +115,20 @@ export class DungeonCompletionConditions {
         return Boolean(DungeonCompletionConditions.get(levelName)?.requirePlayerDamageForClientBosses);
     }
 
+    static requiresBossDefeatSignal(levelName: string | null | undefined): boolean {
+        return Boolean(DungeonCompletionConditions.get(levelName)?.requireBossDefeatSignal);
+    }
+
     static getSimultaneousBossWindowMs(levelName: string | null | undefined): number {
         return Math.max(0, Math.round(Number(DungeonCompletionConditions.get(levelName)?.simultaneousBossWindowMs ?? 0)));
+    }
+
+    static requiresBossesCurrentlyDefeated(levelName: string | null | undefined): boolean {
+        return Boolean(DungeonCompletionConditions.get(levelName)?.requireBossesCurrentlyDefeated);
+    }
+
+    static acceptsRoomBossClearSignal(levelName: string | null | undefined): boolean {
+        return Boolean(DungeonCompletionConditions.get(levelName)?.acceptRoomBossClearSignal);
     }
 
     static getRequiredBossNames(levelName: string | null | undefined): ReadonlySet<string> {
@@ -166,7 +179,20 @@ export class DungeonCompletionConditions {
                             .map(normalizeIdentity)
                             .includes(normalizeIdentity(canonical))
                     );
-                    if (!verifiedClientBossWithoutMarker) {
+                    const terminalCanonicalBossWithoutMarker = Boolean(
+                        condition.allowTerminalCanonicalBossWithoutRoomBossMarker &&
+                        !entity?.clientSpawned &&
+                        (
+                            normalizedEntityName === normalizeIdentity(canonical) ||
+                            normalizedEntityName === normalizeIdentity(canonical).replace(/hard$/, '')
+                        ) &&
+                        (
+                            entity?.dead ||
+                            entity?.destroyed ||
+                            Number(entity?.hp ?? 1) <= 0
+                        )
+                    );
+                    if (!verifiedClientBossWithoutMarker && !terminalCanonicalBossWithoutMarker) {
                         return '';
                     }
                 }
@@ -252,6 +278,30 @@ export class DungeonCompletionConditions {
                 if (condition.requireRoomBossMarker !== undefined && typeof condition.requireRoomBossMarker !== 'boolean') {
                     errors.push(`${levelName}: requireRoomBossMarker must be boolean`);
                 }
+                if (condition.requireBossDefeatSignal !== undefined && typeof condition.requireBossDefeatSignal !== 'boolean') {
+                    errors.push(`${levelName}: requireBossDefeatSignal must be boolean`);
+                }
+                if (
+                    condition.allowTerminalCanonicalBossWithoutRoomBossMarker !== undefined &&
+                    typeof condition.allowTerminalCanonicalBossWithoutRoomBossMarker !== 'boolean'
+                ) {
+                    errors.push(`${levelName}: allowTerminalCanonicalBossWithoutRoomBossMarker must be boolean`);
+                }
+                if (
+                    condition.requireBossesCurrentlyDefeated !== undefined &&
+                    typeof condition.requireBossesCurrentlyDefeated !== 'boolean'
+                ) {
+                    errors.push(`${levelName}: requireBossesCurrentlyDefeated must be boolean`);
+                }
+                if (
+                    condition.acceptRoomBossClearSignal !== undefined &&
+                    typeof condition.acceptRoomBossClearSignal !== 'boolean'
+                ) {
+                    errors.push(`${levelName}: acceptRoomBossClearSignal must be boolean`);
+                }
+            }
+            if (condition.mode === 'objectives' && !condition.entityObjectives?.length) {
+                errors.push(`${levelName}: objectives mode requires non-empty entityObjectives`);
             }
             if (condition.mode !== 'bosses' && (condition.bossGroups?.length || condition.bossAliases)) {
                 errors.push(`${levelName}: non-boss mode must not define bosses`);
@@ -265,6 +315,12 @@ export class DungeonCompletionConditions {
             for (const objective of condition.entityObjectives ?? []) {
                 if (!objective.role.trim() || !objective.names.length) {
                     errors.push(`${levelName}: entity objective requires role and names`);
+                }
+                if (
+                    objective.requiredCount !== undefined &&
+                    (!Number.isInteger(objective.requiredCount) || objective.requiredCount <= 0)
+                ) {
+                    errors.push(`${levelName}: entity objective requiredCount must be a positive integer`);
                 }
             }
         }

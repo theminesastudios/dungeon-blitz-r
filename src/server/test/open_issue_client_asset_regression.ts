@@ -59,6 +59,7 @@ for (const script of [
     'patch-dungeonblitz-entity-method900-null-guard.ts',
     'patch-dungeonblitz-superanim-method200-bitmapdata-guard.ts',
     'patch-dungeonblitz-game-superanim-tick-guard.ts',
+    'patch-dungeonblitz-demon-maligner-passive-regen.ts',
     'patch_dungeonblitz_buff_back_vfx_depth.ts',
     'patch-dungeonblitz-dungeon-quest-helper.ts',
     'patch_dungeonblitz_cutscene_untargetable.ts'

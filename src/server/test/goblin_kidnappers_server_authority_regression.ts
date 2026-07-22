@@ -418,6 +418,17 @@ function sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function settleScheduledCompletion(client: FakeClient): Promise<void> {
+    if (client.pendingDungeonCompletionTimer) {
+        clearTimeout(client.pendingDungeonCompletionTimer);
+        client.pendingDungeonCompletionTimer = null;
+    }
+    client.pendingDungeonCompletionNotBeforeAt = Date.now() - 1;
+    client.pendingDungeonCompletionLastSkitAt = Date.now() - 1;
+    client.pendingDungeonCompletionSettleMs = 0;
+    await (MissionHandler as any).flushPendingDungeonCompletion(client);
+}
+
 function resetFor(client: FakeClient): void {
     const scope = getClientLevelScope(client as never);
     TutorialDungeonMechanics.resetState(scope);
@@ -923,7 +934,7 @@ async function testLateAnnaChainCannotDeadlockBossCompletion(): Promise<void> {
     assert.equal(packetCount(client, 0x87), 0, 'missing Anna chain objective must keep completion pending');
 
     await MissionHandler.handleForcedDungeonObjectiveCompletion(client as never, annaChainEntity());
-    await sleep(5);
+    await settleScheduledCompletion(client);
     assert.equal(DungeonCompletionSystem.evaluate(scope).objectivesMet, true);
     assert.equal(packetCount(client, 0x87), 1, 'late chain state must complete once without deadlocking or duplicating');
 }
@@ -1226,7 +1237,10 @@ async function testCompletionAndRankAreOncePerEligibleParticipant(): Promise<voi
         100
     );
     MissionHandler.noteDungeonCutsceneEnd(playerTwo as never, 11);
-    await sleep(5);
+    await Promise.all([
+        settleScheduledCompletion(playerOne),
+        settleScheduledCompletion(playerTwo)
+    ]);
 
     assert.equal(packetCount(playerOne, 0x87), 1, 'player one should receive one rank result');
     assert.equal(packetCount(playerTwo, 0x87), 1, 'player two should receive one rank result');

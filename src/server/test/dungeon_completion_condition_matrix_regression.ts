@@ -58,6 +58,14 @@ function createScenario(levelName: string, suffix: string): Scenario {
         for (const objective of condition.entityObjectives ?? []) {
             entities.push(makeEntity(nextEntityId++, objective.names[0]));
         }
+    } else if (condition.mode === 'objectives') {
+        for (const objective of condition.entityObjectives ?? []) {
+            const requiredCount = Math.max(1, Number(objective.requiredCount ?? 1));
+            for (let index = 0; index < requiredCount; index++) {
+                entities.push(makeEntity(nextEntityId++, objective.names[0]));
+            }
+        }
+        entities.push(makeEntity(nextEntityId++, 'MatrixUnrelatedHostile'));
     } else if (condition.mode === 'full-clear') {
         entities.push(makeEntity(nextEntityId++, 'MatrixHostileA'));
         entities.push(makeEntity(nextEntityId++, 'MatrixHostileB'));
@@ -121,6 +129,37 @@ function satisfyCondition(scenario: Scenario, participantKey: string, baseTime: 
             DungeonCompletionSystem.evaluate(levelScope, baseTime + 6).ready,
             true,
             `${levelName}: full-clear never completed`
+        );
+        return;
+    }
+
+    if (condition.mode === 'objectives') {
+        const objectiveEntityCount = (condition.entityObjectives ?? [])
+            .reduce((total, objective) => total + Math.max(1, Number(objective.requiredCount ?? 1)), 0);
+        DungeonCompletionSystem.noteClientCompletionSignal(levelScope, participantKey, 100, baseTime + 1);
+        assert.strictEqual(
+            DungeonCompletionSystem.evaluate(levelScope, baseTime + 2).ready,
+            false,
+            `${levelName}: completed before its entity objective was destroyed`
+        );
+        entities.slice(0, Math.max(0, objectiveEntityCount - 1)).forEach((entity, index) =>
+            defeatEntity(scenario, entity, baseTime + 3 + index)
+        );
+        assert.strictEqual(
+            DungeonCompletionSystem.evaluate(levelScope, baseTime + 3 + objectiveEntityCount).ready,
+            false,
+            `${levelName}: completed before every required objective entity was destroyed`
+        );
+        defeatEntity(scenario, entities[objectiveEntityCount - 1], baseTime + 4 + objectiveEntityCount);
+        assert.strictEqual(
+            entities.at(-1)?.dead,
+            false,
+            `${levelName}: objective regression did not leave its unrelated hostile alive`
+        );
+        assert.strictEqual(
+            DungeonCompletionSystem.evaluate(levelScope, baseTime + 5 + objectiveEntityCount).ready,
+            true,
+            `${levelName}: destroyed objectives did not complete while unrelated hostiles remained`
         );
         return;
     }
@@ -228,6 +267,24 @@ const NEVER_ENDING_DUNGEON_LEVELS = [
 ] as const;
 
 const AUTHORED_ENDING_GATE_LEVELS = [
+    'TutorialDungeon',
+    'TutorialDungeonHard',
+    'GoblinRiverDungeon',
+    'GoblinRiverDungeonHard',
+    'DreamDragonDungeon',
+    'DreamDragonDungeonHard',
+    'SwampRoadConnectionMission',
+    'SwampRoadConnectionMissionHard',
+    'OMM_Mission2',
+    'OMM_Mission2Hard',
+    'OMM_Mission5',
+    'OMM_Mission5Hard',
+    'AC_Mission1',
+    'AC_Mission1Hard',
+    'BT_Mission3',
+    'BT_Mission3Hard',
+    'JC_Mission9',
+    'JC_Mission9Hard',
     'SD_Mission4',
     'SD_Mission4Hard',
     'OMM_Mission7',
@@ -426,6 +483,80 @@ function verifyAuthoredEndingGate(levelName: string, ordinal: number): void {
     cleanupScenario(scenario);
 }
 
+function verifyAuthoredEndingFallback(levelName: string, ordinal: number): void {
+    const scenario = createScenario(levelName, `authored-fallback-${ordinal}`);
+    const baseTime = 9_000_000 + ordinal * 1_000;
+    scenario.entities.forEach((entity, index) => defeatEntity(scenario, entity, baseTime + index));
+    if (scenario.condition.autoCompleteOnObjectives === false) {
+        DungeonCompletionSystem.noteClientCompletionSignal(
+            scenario.levelScope,
+            'authored-fallback-player',
+            100,
+            baseTime + scenario.entities.length + 1
+        );
+    }
+
+    const fallbackGraceMs = 500;
+    const objectivesMetAt = DungeonCompletionSystem.getState(scenario.levelScope)?.objectivesMetAt ?? baseTime;
+    const fallbackAt = objectivesMetAt + fallbackGraceMs;
+    assert.equal(
+        DungeonCompletionSystem.canQueueCompletion(scenario.levelScope, fallbackAt - 2),
+        true,
+        `${levelName}: objectives did not create a queueable ending-gate state`
+    );
+    assert.equal(
+        DungeonCompletionSystem.tryReleaseMissingCutsceneGate(
+            scenario.levelScope,
+            fallbackGraceMs,
+            fallbackAt - 1
+        ),
+        false,
+        `${levelName}: missing-cutscene fallback released before its grace deadline`
+    );
+    assert.equal(
+        DungeonCompletionSystem.tryReleaseMissingCutsceneGate(
+            scenario.levelScope,
+            fallbackGraceMs,
+            fallbackAt
+        ),
+        true,
+        `${levelName}: missing ending cutscene permanently blocked completion`
+    );
+    assert.equal(
+        DungeonCompletionSystem.getState(scenario.levelScope)?.cutsceneFallbackReason,
+        'missing-start-timeout',
+        `${levelName}: fallback reason was not recorded`
+    );
+    cleanupScenario(scenario);
+}
+
+function verifyActiveEndingCannotUseMissingStartFallback(): void {
+    const scenario = createScenario('OMM_Mission2', 'active-ending-fallback');
+    const baseTime = 10_000_000;
+    defeatEntity(scenario, scenario.entities[0], baseTime);
+    DungeonCompletionSystem.noteCutsceneStart(scenario.levelScope, 7, baseTime + 1);
+
+    assert.equal(
+        DungeonCompletionSystem.tryReleaseMissingCutsceneGate(
+            scenario.levelScope,
+            2,
+            baseTime + 20_000
+        ),
+        false,
+        'an active ending cinematic was mistaken for a missing cutscene'
+    );
+    assert.equal(
+        DungeonCompletionSystem.forceReleaseActiveCutsceneGate(scenario.levelScope, baseTime + 120_000),
+        true,
+        'the hard safety release did not recover a permanently open cinematic'
+    );
+    assert.equal(
+        DungeonCompletionSystem.getState(scenario.levelScope)?.cutsceneFallbackReason,
+        'active-timeout'
+    );
+    cleanupScenario(scenario);
+}
+
 function verifyGrowingFlameRequiresBothBosses(): void {
     for (const levelName of ['OMM_Mission9', 'OMM_Mission9Hard']) {
         const scenario = createScenario(levelName, 'double-boss');
@@ -480,6 +611,8 @@ function main(): void {
     });
     verifyOverlappingAndReorderedCutscenes();
     AUTHORED_ENDING_GATE_LEVELS.forEach(verifyAuthoredEndingGate);
+    AUTHORED_ENDING_GATE_LEVELS.forEach(verifyAuthoredEndingFallback);
+    verifyActiveEndingCannotUseMissingStartFallback();
     verifyGrowingFlameRequiresBothBosses();
     verifyAshenMotherClientAuthorityAliases();
 

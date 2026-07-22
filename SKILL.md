@@ -17,6 +17,7 @@ When working on this project, prioritize stability, original behavior, and regre
 - Never “fix” a crash by ignoring the underlying broken state.
 - Do not remove existing working logic unless there is clear evidence it is wrong.
 - Always check whether a change can affect fullscreen, 2K/4K scaling, cutscenes, boss spawns, combat state, or dungeon sequencing.
+- Do not bump project or package versions unless the user explicitly requests a version change.
 
 ## Debugging Priorities
 
@@ -146,6 +147,17 @@ Before finalizing any fix, verify:
 - Bosses cannot attack while invisible/dead.
 - Other dungeons are not affected.
 - Existing working systems are not rewritten unnecessarily.
+
+## Test File and Credit Efficiency
+
+Keep test inspection and execution proportional to the change.
+
+- Start with `rg --files` and targeted `rg -n` searches; do not dump an entire large test file into context.
+- Read only the relevant helper, regression case, and test entrypoint. Expand inspection only when a failure requires it.
+- Prefer one focused regression test plus the build for a narrow fix.
+- Run the full regression suite only when the user requests it or when the change crosses shared systems and focused coverage is insufficient.
+- When a full suite is necessary, cap tool output and capture only pass/fail summaries; do not spend context on repetitive logs.
+- Avoid adding broad duplicate fixtures when a parameterized focused test can cover the affected levels or states.
 
 ## Preferred Fix Style
 

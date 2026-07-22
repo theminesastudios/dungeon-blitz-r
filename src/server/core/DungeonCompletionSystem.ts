@@ -125,9 +125,11 @@ function createRunState(levelScope: string, levelName: string, now: number): Dun
         defeatedBosses: new Set<string>(),
         defeatedBossAt: new Map<string, number>(),
         destroyedObjectives: new Set<string>(),
+        destroyedObjectiveEntityIds: new Map<string, Set<number>>(),
         defeatedHostileIds: new Set<number>(),
         processedDeathEvents: new Set<string>(),
         clientCompletionSignals: new Map<string, number>(),
+        roomBossClearSequence: 0,
         eventSequence: 0,
         cutsceneRoomId: 0,
         cutsceneStartedAt: 0,
@@ -138,6 +140,9 @@ function createRunState(levelScope: string, levelName: string, now: number): Dun
         objectiveRoomIds: new Set(),
         objectivesMetAt: 0,
         objectivesMetSequence: 0,
+        cutsceneFallbackReleasedAt: 0,
+        cutsceneFallbackSequence: 0,
+        cutsceneFallbackReason: '',
         readyAt: 0,
         finalizingParticipants: new Set<string>(),
         completedParticipants: new Set<string>(),
@@ -264,6 +269,36 @@ export class DungeonCompletionSystem {
         state.eventSequence += 1;
         state.updatedAt = now;
 
+        // Every defeat that reaches the completion system funnels through here,
+        // whatever handler reported it. MissionHandler's bossDeathDetected only
+        // covers the kills routed via handleForcedDungeonBossCompletion, so a
+        // boss dying on any other path left no trace at all. Diffing the two
+        // tells you whether a missing boss kill never happened or merely
+        // bypassed MissionHandler. Silence with DUNGEON_DIAG=0.
+        if (String(process.env.DUNGEON_DIAG ?? '1').trim() !== '0') {
+            try {
+                console.log(`[DUNGEON-DIAG] defeatRegistered ${JSON.stringify({
+                    level: state.levelName,
+                    entityId,
+                    entityName: String(entity?.name ?? entity?.EntName ?? ''),
+                    names: [
+                        entity?.name,
+                        entity?.EntName,
+                        entity?.entName,
+                        entity?.characterName,
+                        entity?.roomBossName,
+                        entity?.displayName
+                    ].filter((value) => String(value ?? '').trim().length > 0),
+                    canonicalBoss,
+                    objectiveRole,
+                    maxHp: entity?.maxHp,
+                    clientSpawned: Boolean(entity?.clientSpawned)
+                })}`);
+            } catch {
+                console.log('[DUNGEON-DIAG] defeatRegistered <unserializable>');
+            }
+        }
+
         if (entityId > 0 && isTrackableHostile(entity, state.levelName)) {
             state.defeatedHostileIds.add(entityId);
         }
@@ -276,6 +311,11 @@ export class DungeonCompletionSystem {
         }
         if (objectiveRole) {
             state.destroyedObjectives.add(objectiveRole);
+            const destroyedIds = state.destroyedObjectiveEntityIds.get(objectiveRole) ?? new Set<number>();
+            if (entityId > 0) {
+                destroyedIds.add(entityId);
+            }
+            state.destroyedObjectiveEntityIds.set(objectiveRole, destroyedIds);
         }
         if (canonicalBoss || objectiveRole) {
             const objectiveRoomId = getRoomBossAwareRoomId(entity);
@@ -285,6 +325,51 @@ export class DungeonCompletionSystem {
         }
         DungeonCompletionSystem.evaluate(levelScope, now);
         return Boolean(canonicalBoss || objectiveRole || entityId > 0);
+    }
+
+    static noteRoomBossClear(levelScope: string, roomId: number, now: number = Date.now()): boolean {
+        const state = DungeonCompletionSystem.getOrCreateState(levelScope, now);
+        const condition = state ? DungeonCompletionConditions.get(state.levelName) : null;
+        if (
+            !state ||
+            !condition ||
+            condition.mode !== 'bosses' ||
+            !DungeonCompletionConditions.acceptsRoomBossClearSignal(state.levelName)
+        ) {
+            return false;
+        }
+
+        // BossFight sends this only after every boss slot in the room has
+        // reached zero HP. Some cue-owned bosses never publish full entities to
+        // the server, so this authored room signal is the only canonical proof
+        // that the whole double-boss encounter has ended.
+        state.eventSequence += 1;
+        state.roomBossClearSequence = state.eventSequence;
+        for (const group of condition.bossGroups ?? []) {
+            const canonicalBoss = group[0];
+            if (!canonicalBoss) {
+                continue;
+            }
+            state.defeatedBosses.add(canonicalBoss);
+            state.defeatedBossAt.set(canonicalBoss, now);
+        }
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId ?? 0)));
+        if (normalizedRoomId > 0) {
+            state.objectiveRoomIds.add(normalizedRoomId);
+        }
+        state.updatedAt = now;
+
+        const evaluation = DungeonCompletionSystem.evaluate(levelScope, now);
+        if (String(process.env.DUNGEON_DIAG ?? '1').trim() !== '0') {
+            console.log(`[DUNGEON-DIAG] roomBossClearAccepted ${JSON.stringify({
+                level: state.levelName,
+                roomId: normalizedRoomId,
+                defeatedBosses: [...state.defeatedBosses],
+                objectivesMet: evaluation.objectivesMet,
+                reason: evaluation.reason
+            })}`);
+        }
+        return evaluation.objectivesMet;
     }
 
     static noteClientCompletionSignal(
@@ -367,6 +452,96 @@ export class DungeonCompletionSystem {
         return DungeonCompletionSystem.evaluate(levelScope, now).ready;
     }
 
+    static canQueueCompletion(levelScope: string, now: number = Date.now()): boolean {
+        const evaluation = DungeonCompletionSystem.evaluate(levelScope, now);
+        return evaluation.ready || (
+            evaluation.objectivesMet &&
+            evaluation.reason === 'cutscene_gate_pending'
+        );
+    }
+
+    static tryReleaseMissingCutsceneGate(
+        levelScope: string,
+        graceMs: number,
+        now: number = Date.now()
+    ): boolean {
+        const state = DungeonCompletionSystem.getState(levelScope);
+        const condition = state ? DungeonCompletionConditions.get(state.levelName) : null;
+        const evaluation = DungeonCompletionSystem.evaluate(levelScope, now);
+        if (
+            !state ||
+            !condition?.cutscene?.requiredAfterObjectives ||
+            !evaluation.objectivesMet ||
+            evaluation.reason !== 'cutscene_gate_pending' ||
+            now < state.objectivesMetAt + Math.max(0, Math.round(Number(graceMs ?? 0)))
+        ) {
+            return evaluation.ready;
+        }
+
+        const hasActiveCutscene = [...state.cutscenesByRoom.values()].some((cutscene) =>
+            cutscene.startedAt > 0 && cutscene.endedSequence < cutscene.startedSequence
+        );
+        if (hasActiveCutscene) {
+            return false;
+        }
+
+        state.eventSequence += 1;
+        state.cutsceneFallbackReleasedAt = now;
+        state.cutsceneFallbackSequence = state.eventSequence;
+        state.cutsceneFallbackReason = 'missing-start-timeout';
+        state.updatedAt = now;
+        return DungeonCompletionSystem.evaluate(levelScope, now).ready;
+    }
+
+    // The caller's cinematic timeout is the hard safety net for a skit that never
+    // reports its close. It must apply to every level that stalls on the cutscene
+    // gate, not only the ones flagged `cutscene.requiredAfterObjectives`: a level
+    // without that flag still blocks on an active cutscene, and used to have no
+    // way out at all if the closing packet was lost (e.g. Ring of Fire).
+    static forceReleaseActiveCutsceneGate(levelScope: string, now: number = Date.now()): boolean {
+        const state = DungeonCompletionSystem.getState(levelScope);
+        const evaluation = DungeonCompletionSystem.evaluate(levelScope, now);
+        if (
+            !state ||
+            !evaluation.objectivesMet ||
+            evaluation.reason !== 'cutscene_gate_pending'
+        ) {
+            return evaluation.ready;
+        }
+
+        state.eventSequence += 1;
+        state.cutsceneFallbackReleasedAt = now;
+        state.cutsceneFallbackSequence = state.eventSequence;
+        state.cutsceneFallbackReason = 'active-timeout';
+        state.updatedAt = now;
+        return DungeonCompletionSystem.evaluate(levelScope, now).ready;
+    }
+
+    // An observed cutscene close is the client saying "the skit finished and the
+    // cinematic is gone". Once the objectives are met there is nothing left the
+    // gate can legitimately be waiting for, so the close releases it outright
+    // instead of leaving the run to burn the 120s cinematic safety net. This
+    // also covers a run whose shared state still carries a cutscene marked
+    // active because its own close was booked against another room.
+    static releaseCutsceneGateOnClose(levelScope: string, now: number = Date.now()): boolean {
+        const state = DungeonCompletionSystem.getState(levelScope);
+        const evaluation = DungeonCompletionSystem.evaluate(levelScope, now);
+        if (
+            !state ||
+            !evaluation.objectivesMet ||
+            evaluation.reason !== 'cutscene_gate_pending'
+        ) {
+            return evaluation.ready;
+        }
+
+        state.eventSequence += 1;
+        state.cutsceneFallbackReleasedAt = now;
+        state.cutsceneFallbackSequence = state.eventSequence;
+        state.cutsceneFallbackReason = 'close-observed';
+        state.updatedAt = now;
+        return DungeonCompletionSystem.evaluate(levelScope, now).ready;
+    }
+
     static evaluate(levelScope: string, now: number = Date.now()): DungeonCompletionEvaluation {
         const state = DungeonCompletionSystem.getOrCreateState(levelScope, now);
         const condition = state ? DungeonCompletionConditions.get(state.levelName) : null;
@@ -402,7 +577,20 @@ export class DungeonCompletionSystem {
         const activeSharedCutscene = relevantCutscenes.some((cutscene) =>
             cutscene.startedAt > 0 && cutscene.endedSequence < cutscene.startedSequence
         );
-        let gateMet = !activeSharedCutscene;
+        // An `active-timeout` release means the caller waited out its cinematic
+        // safety net, and a `close-observed` release means the client reported the
+        // skit closing, so a cutscene still marked active is a lost/misrouted close
+        // packet rather than a skit on screen. Both must be honoured even when the
+        // level does not require a post-objective cutscene, otherwise the run stays
+        // gated forever with no fallback.
+        const activeCutsceneOverridden =
+            state.cutsceneFallbackReleasedAt > 0 &&
+            state.cutsceneFallbackSequence > state.objectivesMetSequence &&
+            (
+                state.cutsceneFallbackReason === 'active-timeout' ||
+                state.cutsceneFallbackReason === 'close-observed'
+            );
+        let gateMet = !activeSharedCutscene || activeCutsceneOverridden;
         if (condition.cutscene?.requiredAfterObjectives) {
             const sharedCutsceneEnded = relevantCutscenes.some((cutscene) =>
                 cutscene.startedAt > 0 &&
@@ -416,7 +604,16 @@ export class DungeonCompletionSystem {
                     )
                 )
             );
-            gateMet = !activeSharedCutscene && sharedCutsceneEnded;
+            const fallbackReleased =
+                state.cutsceneFallbackReleasedAt > 0 &&
+                state.cutsceneFallbackSequence > state.objectivesMetSequence;
+            const fallbackOverridesActiveCutscene = fallbackReleased && (
+                state.cutsceneFallbackReason === 'active-timeout' ||
+                state.cutsceneFallbackReason === 'close-observed'
+            );
+            gateMet =
+                fallbackOverridesActiveCutscene ||
+                (!activeSharedCutscene && (sharedCutsceneEnded || fallbackReleased));
         }
         if (!gateMet) {
             if (!finalizationPhase) {
@@ -488,7 +685,13 @@ export class DungeonCompletionSystem {
         now: number
     ): void {
         const scopeEntities = [...(GlobalState.levelEntities.get(state.levelScope)?.values() ?? [])];
-        if (Math.max(0, Number(condition.simultaneousBossWindowMs ?? 0)) > 0) {
+        if (
+            state.roomBossClearSequence <= 0 &&
+            (
+                condition.requireBossesCurrentlyDefeated ||
+                Math.max(0, Number(condition.simultaneousBossWindowMs ?? 0)) > 0
+            )
+        ) {
             for (const entity of scopeEntities) {
                 const canonicalBoss = DungeonCompletionConditions.getCanonicalBossName(state.levelName, entity, state.levelScope);
                 if (canonicalBoss && !isDefeated(entity)) {
@@ -513,6 +716,12 @@ export class DungeonCompletionSystem {
             const objectiveRole = DungeonCompletionConditions.getObjectiveRole(state.levelName, entity);
             if (objectiveRole) {
                 state.destroyedObjectives.add(objectiveRole);
+                const entityId = getEntityId(entity);
+                const destroyedIds = state.destroyedObjectiveEntityIds.get(objectiveRole) ?? new Set<number>();
+                if (entityId > 0) {
+                    destroyedIds.add(entityId);
+                }
+                state.destroyedObjectiveEntityIds.set(objectiveRole, destroyedIds);
             }
             if (canonicalBoss || objectiveRole) {
                 const objectiveRoomId = getRoomBossAwareRoomId(entity);
@@ -542,6 +751,22 @@ export class DungeonCompletionSystem {
         if (condition.mode === 'client-signal') {
             return state.clientCompletionSignals.size > 0;
         }
+        if (condition.mode === 'objectives') {
+            const objectives = condition.entityObjectives ?? [];
+            const entities = [...(GlobalState.levelEntities.get(state.levelScope)?.values() ?? [])];
+            return objectives.length > 0 && objectives.every((objective) => {
+                const requiredCount = Math.max(1, Math.round(Number(objective.requiredCount ?? 1)));
+                const destroyedCount = state.destroyedObjectiveEntityIds?.get(objective.role)?.size ?? 0;
+                if (destroyedCount < requiredCount) {
+                    return false;
+                }
+                return entities
+                    .filter((entity) =>
+                        DungeonCompletionConditions.getObjectiveRole(state.levelName, entity) === objective.role
+                    )
+                    .every((entity) => isDefeated(entity));
+            });
+        }
         if (condition.mode === 'full-clear') {
             const totals = getSharedDungeonProgressTotals(state.levelScope);
 
@@ -554,54 +779,26 @@ export class DungeonCompletionSystem {
             );
             const livingHostiles = hostiles.filter((entity) => !isDefeated(entity));
 
-            console.log("========== FULL CLEAR DEBUG ==========");
-            console.log("Level:", state.levelName);
-            console.log("Scope:", state.levelScope);
-            console.log("Shared totals:", {
-                defeated: totals.defeated,
-                total: totals.total
-            });
-
-            console.log(
-                "All tracked hostiles:",
-                hostiles.map((entity: any) => ({
-                    id: getEntityId(entity),
-                    name:
-                        entity?.name ??
-                        entity?.EntName ??
-                        entity?.entName ??
-                        entity?.displayName ??
-                        "unknown",
-                    hp: entity?.hp,
-                    dead: entity?.dead,
-                    destroyed: entity?.destroyed,
-                    entState: entity?.entState,
-                    team: entity?.team,
-                    untargetable: entity?.untargetable,
-                    defeated: isDefeated(entity)
-                }))
-            );
-
-            console.log(
-                "Living hostiles blocking completion:",
-                livingHostiles.map((entity: any) => ({
-                    id: getEntityId(entity),
-                    name:
-                        entity?.name ??
-                        entity?.EntName ??
-                        entity?.entName ??
-                        entity?.displayName ??
-                        "unknown",
-                    hp: entity?.hp,
-                    dead: entity?.dead,
-                    destroyed: entity?.destroyed,
-                    entState: entity?.entState,
-                    team: entity?.team,
-                    untargetable: entity?.untargetable
-                }))
-            );
-
-            console.log("======================================");
+            if (String(process.env.DUNGEON_DIAG ?? '0').trim() === '1') {
+                console.log('[DUNGEON-DIAG] fullClearState', {
+                    level: state.levelName,
+                    scope: state.levelScope,
+                    sharedTotals: {
+                        defeated: totals.defeated,
+                        total: totals.total
+                    },
+                    hostiles: hostiles.map((entity: any) => ({
+                        id: getEntityId(entity),
+                        name: entity?.name ?? entity?.EntName ?? entity?.entName ?? entity?.displayName ?? 'unknown',
+                        hp: entity?.hp,
+                        dead: entity?.dead,
+                        destroyed: entity?.destroyed,
+                        entState: entity?.entState,
+                        defeated: isDefeated(entity)
+                    })),
+                    livingHostileIds: livingHostiles.map((entity) => getEntityId(entity))
+                });
+            }
 
             if (totals.total > 0) {
                 return totals.defeated >= totals.total;

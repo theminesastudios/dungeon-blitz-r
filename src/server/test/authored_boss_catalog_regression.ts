@@ -14,11 +14,48 @@ import { NpcLoader } from '../data/NpcLoader';
 
 type EnemyManifest = Record<string, { enemyTypes?: Array<{ enemyType?: string }> }>;
 
+// Bosses the level SWF spawns from script rather than authoring as a room enemy,
+// so they never appear in dungeon_enemy_elements.json.
+//
+// SD_Mission1 (Unearthing the Past) is a special case worth spelling out: its
+// rooms are a_Room_SDMission01..15, authored before the a_Room_SDMission<N>_<RR>
+// convention the other Shazari missions use. The enemy extractor expects that
+// convention, so it only matched room 01 and recorded a single RaptorHorned for
+// the whole dungeon. LevelsSD.swf puts am_Guardian in a_Room_SDMission12 —
+// mission 1's boss room — alongside Script_GuardianScene/Script_GuardianDefeated
+// and the ac_RageGuardian class. RageGuardian is EntRank Boss at level 23
+// (the mission's level) and is the only Shazari boss not already claimed by
+// SD_Mission2..6, which take ScarabScorpion, OutlanderWyrm, OasisVizier,
+// SandWormGreater and GolemLord respectively.
 const SCRIPTED_PACKET_IDENTITIES: Record<string, string[]> = {
-    AC_Mission6: ['NephitLargeEye'],
-    AC_Mission6Hard: ['NephitLargeEyeHard'],
+    AC_Mission6: ['NephitSpireMarker'],
+    // BT_Mission2 (Svagg's Last Stand): a_Room_BTM02ROldHeroesBoss authors
+    // am_Boss = ac_BanditBoss, but its PhaseFight calls Ambush("am_WaveFour")
+    // once Svagg hits 1% HP, and that ambush sprite carries am_Boss2 =
+    // ac_GriffonStar — the griffon "Wrath" Svagg summons with his dying line.
+    // The enemy extractor only walks the room's direct children, so the real
+    // second boss never made it into dungeon_enemy_elements.json.
+    BT_Mission2: ['GriffonStar'],
+    BT_Mission2Hard: ['GriffonStarHard'],
+    AC_Mission6Hard: ['NephitSpireMarkerHard'],
     GhostBossDungeon: ['GrayGhostLord', 'NRGhostBoss'],
-    GhostBossDungeonHard: ['GrayGhostLordHard', 'NRGhostBoss']
+    GhostBossDungeonHard: ['GrayGhostLordHard', 'NRGhostBoss'],
+    SD_Mission1: ['RageGuardian'],
+    SD_Mission1Hard: ['RageGuardianHard'],
+    // JC_Mission5 (Fable of the Lost Temple) is the starkest case: not one of the
+    // enemies the level actually spawns appears in its manifest. A live trace
+    // shows Ghoul2, AbyssalStinger, ShadeSummoner and PhantomKnight1 — none of
+    // which appear in ANY level's manifest — while the manifest claims the level
+    // holds Dream* wisps and NephitDragon. The SWF has no am_Boss in
+    // a_Room_JCMission5_*, only am_MiniBoss (rooms 06/12/16), and defines
+    // ac_PhantomKnight1..3 plus ac_PhantomKnightMarker. PhantomKnight1 is the
+    // boss room holds PhantomKnightMarker: a full trace showed four distinct
+    // entity ids at 269120 HP dying in order — PhantomKnight1, PhantomKnight3,
+    // PhantomKnight2, then PhantomKnightMarker, which the client re-reported ~20
+    // times while the server rejected it. The Marker is the final encounter; the
+    // numbered knights are separate fights and must not complete the run.
+    JC_Mission5: ['PhantomKnightMarker'],
+    JC_Mission5Hard: ['PhantomKnightMarkerHard']
 };
 
 function authoredIdentities(levelName: string): string[] {
@@ -59,7 +96,7 @@ function testEveryBossGroupHasAnAuthoredPacketIdentity(): void {
             );
         }
     }
-    assert.equal(bossLevelCount, 125, 'boss-mode catalog coverage changed without updating the authored audit');
+    assert.equal(bossLevelCount, 127, 'boss-mode catalog coverage changed without updating the authored audit');
 }
 
 function deadBoss(id: number, name: string): any {
@@ -171,8 +208,18 @@ function assertPacketOnlyBossCompletes(levelName: string, bossName: string, ordi
     const scope = getLevelScopeKey(levelName, `packet-only-boss-${ordinal}`);
     const boss = deadBoss(40_000 + ordinal * 10, bossName);
     DungeonCompletionSystem.noteEntityDefeated(scope, boss, 1000);
+    const condition = DungeonCompletionConditions.get(levelName);
+    if (condition?.cutscene?.requiredAfterObjectives) {
+        assert.equal(
+            DungeonCompletionSystem.evaluate(scope, 1001).reason,
+            'cutscene_gate_pending',
+            `${levelName}: packet-only boss defeat bypassed its authored ending skit`
+        );
+        DungeonCompletionSystem.noteCutsceneStart(scope, 99, 1002);
+        DungeonCompletionSystem.noteCutsceneEnd(scope, 99, 1003);
+    }
     assert.equal(
-        DungeonCompletionSystem.evaluate(scope, 1001).ready,
+        DungeonCompletionSystem.evaluate(scope, 1004).ready,
         true,
         `${levelName}: packet-only boss defeat did not complete without a scoped entity map`
     );
@@ -222,13 +269,21 @@ function testScriptedIdentityAndEarlyEndingGuardrails(): void {
     assertVerifiedClientBossBypassesMissingMarker('SD_Mission4Hard', 'OasisVizierHard', 10);
     assertVerifiedAliasStillNeedsMarker('SD_Mission4', 'OasisVizierGreen', 11);
     assertVerifiedAliasStillNeedsMarker('SD_Mission4Hard', 'OasisVizierGreenHard', 12);
-    assertPacketOnlyBossCompletes('SD_Mission1', 'RaptorHorned', 13);
-    assertPacketOnlyBossCompletes('SD_Mission1Hard', 'RaptorHornedHard', 14);
-    assertPacketOnlyBossCompletes('SD_Mission1', 'RaptorHorned2', 15);
-    assertPacketOnlyBossCompletes('SD_Mission1Hard', 'RaptorHorned2Hard', 16);
-    assertPacketOnlyBossCompletes('JC_Mission5', 'NephitDragonMarker', 17);
-    assertPacketOnlyBossCompletes('JC_Mission5Hard', 'NephitDragonMarkerHard', 18);
-    assertPacketOnlyBossCompletes('JC_Mission5Hard', 'NephitDragonMarker', 19);
+    // These four used to assert that killing a desert raptor completes Unearthing
+    // the Past — they encoded the bug that made the rank plate appear at 7% with
+    // the boss still alive. RaptorHorned and RaptorHorned2 are EntRank Minion;
+    // the dungeon's boss is RageGuardian ("Amenrahtep"). trash_mob_boss_alias_
+    // regression now asserts the raptors specifically do NOT complete it.
+    assertPacketOnlyBossCompletes('SD_Mission1', 'RageGuardian', 13);
+    assertPacketOnlyBossCompletes('SD_Mission1Hard', 'RageGuardianHard', 14);
+    assertPacketOnlyBossCompletes('SD_Mission1', 'Amenrahtep', 15);
+    assertPacketOnlyBossCompletes('SD_Mission1Hard', 'Amenrahtep', 16);
+    // Were NephitDragonMarker/NephitDragonPortal. Fable of the Lost Temple never
+    // spawns a NephitDragon — its boss is PhantomKnight1, and the stale config
+    // silently dropped every kill report, leaving the run on objectives_pending.
+    assertPacketOnlyBossCompletes('JC_Mission5', 'PhantomKnightMarker', 17);
+    assertPacketOnlyBossCompletes('JC_Mission5Hard', 'PhantomKnightMarkerHard', 18);
+    assertPacketOnlyBossCompletes('JC_Mission5Hard', 'PhantomKnightMarker', 19);
     assertPacketOnlyBossDoesNotComplete('JC_Mission5', 'NephitDragonPortal', 20);
     assertPacketOnlyBossDoesNotComplete('JC_Mission5Hard', 'NephitDragonPortalHard', 21);
 }
@@ -239,7 +294,7 @@ function main(): void {
     NpcLoader.load(dataDir);
     testEveryBossGroupHasAnAuthoredPacketIdentity();
     testScriptedIdentityAndEarlyEndingGuardrails();
-    console.log('Authored boss catalog regression passed (125 boss-mode dungeons).');
+    console.log('Authored boss catalog regression passed (127 boss-mode dungeons).');
 }
 
 main();
