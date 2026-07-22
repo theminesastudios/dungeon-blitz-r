@@ -3,63 +3,107 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09090b">
   <title>Dungeon Blitz — Command Deck</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
-  <main class="shell">
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">DUNGEON BLITZ / LIVE OPS</p>
-        <h1>Command Deck</h1>
+  <div class="page-glow" aria-hidden="true"></div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M13 2 4.5 13.2a1 1 0 0 0 .8 1.6h5.4L10 22l8.7-11.2a1 1 0 0 0-.8-1.6h-5.4L13 2Z"/></svg>
+        </div>
+        <div><strong>Dungeon Blitz</strong><span>Admin Console</span></div>
       </div>
-      <div class="connection"><span id="liveDot" class="dot"></span><span id="liveText">Bağlanıyor</span><small id="lastUpdate">—</small></div>
-    </header>
 
-    <section class="metrics" id="metrics"></section>
+      <nav class="nav" aria-label="Ana navigasyon">
+        <p class="nav-label">Workspace</p>
+        <a class="nav-item active" href="#overview"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Genel Bakış</span></a>
+        <a class="nav-item" href="#players-panel"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg><span>Oyuncular</span><span id="navPlayerCount" class="nav-badge">0</span></a>
+        <a class="nav-item" href="#rooms-panel"><svg viewBox="0 0 24 24"><path d="m3 6 9-4 9 4-9 4-9-4Z"/><path d="m3 12 9 4 9-4M3 18l9 4 9-4"/></svg><span>Canlı Odalar</span></a>
+        <a class="nav-item" href="#settings-panel"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg><span>Oyun Kuralları</span></a>
+      </nav>
 
-    <section class="layout">
-      <aside class="panel players-panel">
-        <div class="panel-head"><div><p class="kicker">AKTİF OTURUMLAR</p><h2>Oyuncular</h2></div><span id="playerCount" class="count">0</span></div>
-        <div id="players" class="player-list empty">Aktif oyuncu bekleniyor…</div>
-      </aside>
+      <div class="sidebar-footer">
+        <div class="status-orb"><span id="liveDot" class="dot"></span></div>
+        <div><strong id="liveText">Bağlanıyor</strong><span id="lastUpdate">Sunucu bekleniyor</span></div>
+      </div>
+    </aside>
 
-      <section class="stack">
-        <article class="panel target-panel">
-          <div class="panel-head"><div><p class="kicker">SEÇİLİ HEDEF</p><h2 id="targetName">Oyuncu seçin</h2></div><span id="targetLocation" class="tag">—</span></div>
+    <main class="main" id="overview">
+      <header class="topbar">
+        <div>
+          <div class="breadcrumb"><span>Command Deck</span><svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg><strong>Genel Bakış</strong></div>
+          <h1>Sunucu Kontrol Merkezi</h1>
+          <p>Canlı dünyayı izle, oyuncuları yönet ve oyun kurallarını anında değiştir.</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="live-pill"><span class="pulse"></span>CANLI</span>
+          <button id="refreshView" class="icon-button" type="button" aria-label="Görünümü yenile" title="Görünümü yenile"><svg viewBox="0 0 24 24"><path d="M20 11a8.1 8.1 0 1 0 2 5.3M20 4v7h-7"/></svg></button>
+        </div>
+      </header>
+
+      <section class="metrics" id="metrics" aria-label="Sunucu metrikleri"></section>
+
+      <section class="dashboard-grid">
+        <article class="card players-card" id="players-panel">
+          <div class="card-header">
+            <div><h2>Aktif Oyuncular</h2><p>Bağlı oturumlar ve anlık durumları</p></div>
+            <span id="playerCount" class="badge">0 çevrimiçi</span>
+          </div>
+          <div id="players" class="player-list empty-state">Aktif oyuncu bekleniyor…</div>
+        </article>
+
+        <article class="card target-card">
+          <div class="card-header">
+            <div><span class="section-label">SEÇİLİ HEDEF</span><h2 id="targetName">Oyuncu seçin</h2></div>
+            <span id="targetLocation" class="badge badge-outline">—</span>
+          </div>
+          <div class="target-placeholder" id="targetSummary">
+            <div class="target-avatar">?</div>
+            <div><strong>Oyuncu seçilmedi</strong><span>Kontrol etmek için listeden bir oyuncu seçin.</span></div>
+          </div>
           <div class="action-grid">
-            <button data-action="kill-room" class="danger"><span>☠</span>Odadaki düşmanları öldür</button>
-            <button data-action="heal-player"><span>✦</span>Canı doldur</button>
-            <button data-action="kick-player" class="ghost danger-text"><span>↯</span>Bağlantıyı kes</button>
-            <button data-action="heal-all" class="ghost"><span>✦</span>Herkesi iyileştir</button>
+            <button data-action="heal-player" class="button button-secondary"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.4-9.3-9A5.5 5.5 0 0 1 12 6.1 5.5 5.5 0 0 1 21.3 12C19 16.6 12 21 12 21Z"/></svg><span>Canı doldur</span></button>
+            <button data-action="kill-room" class="button button-destructive"><svg viewBox="0 0 24 24"><path d="M9 9h.01M15 9h.01M8 14h8M12 2a9 9 0 0 0-6 15.7V22l3-2h6l3 2v-4.3A9 9 0 0 0 12 2Z"/></svg><span>Odayı temizle</span></button>
+            <button data-action="heal-all" class="button button-secondary"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg><span>Herkesi iyileştir</span></button>
+            <button data-action="kick-player" class="button button-ghost danger-text"><svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5M15 12H3M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></svg><span>Bağlantıyı kes</span></button>
           </div>
         </article>
 
-        <article class="panel settings-panel">
-          <div class="panel-head"><div><p class="kicker">RUNTIME OVERRIDES</p><h2>Oyun Kuralları</h2></div><button id="resetSettings" class="text-button">Varsayılana dön</button></div>
+        <article class="card rules-card" id="settings-panel">
+          <div class="card-header">
+            <div><h2>Oyun Kuralları</h2><p>Yeniden başlatmada sıfırlanan runtime ayarları</p></div>
+            <button id="resetSettings" class="button button-ghost button-small"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>Sıfırla</button>
+          </div>
           <div class="toggle-grid">
-            <label class="toggle-card"><span><b>Tek vuruş</b><small>Oyuncu saldırıları ölümcül</small></span><input id="oneHitEnabled" type="checkbox"><i></i></label>
-            <label class="toggle-card"><span><b>Tanrı modu</b><small>Oyuncular hasar almaz</small></span><input id="godModeEnabled" type="checkbox"><i></i></label>
-            <label class="toggle-card"><span><b>AI dondur</b><small>Düşman karar döngüsünü durdur</small></span><input id="freezeEnemies" type="checkbox"><i></i></label>
+            <label class="toggle-card"><span class="toggle-icon"><svg viewBox="0 0 24 24"><path d="m13 2-9 12h8l-1 8 9-12h-8l1-8Z"/></svg></span><span class="toggle-copy"><b>Tek vuruş</b><small>Oyuncu saldırıları ölümcül</small></span><input id="oneHitEnabled" type="checkbox"><i class="switch"></i></label>
+            <label class="toggle-card"><span class="toggle-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></span><span class="toggle-copy"><b>Tanrı modu</b><small>Oyuncular hasar almaz</small></span><input id="godModeEnabled" type="checkbox"><i class="switch"></i></label>
+            <label class="toggle-card"><span class="toggle-icon"><svg viewBox="0 0 24 24"><path d="M8 2v20M16 2v20"/></svg></span><span class="toggle-copy"><b>AI dondur</b><small>Düşman karar döngüsünü durdur</small></span><input id="freezeEnemies" type="checkbox"><i class="switch"></i></label>
           </div>
           <div id="sliders" class="sliders"></div>
-          <button id="saveSettings" class="primary wide">Ayarları canlı sunucuya uygula</button>
+          <div class="settings-footer"><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2 2"/></svg>Değişiklikler geçicidir</span><button id="saveSettings" class="button button-primary">Değişiklikleri uygula<svg viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div>
         </article>
 
-        <article class="panel announce-panel">
-          <div><p class="kicker">SUNUCU YAYINI</p><h2>Duyuru gönder</h2></div>
-          <form id="announceForm"><input id="announcement" maxlength="240" placeholder="Tüm çevrimiçi oyunculara mesaj…"><button class="primary">Gönder</button></form>
+        <article class="card rooms-card" id="rooms-panel">
+          <div class="card-header">
+            <div><h2>Canlı Odalar</h2><p>Aktif harita örnekleri</p></div>
+            <span id="roomCount" class="badge">0 oda</span>
+          </div>
+          <div id="rooms" class="room-list empty-state">Aktif oda bekleniyor…</div>
+        </article>
+
+        <article class="card announce-card">
+          <div class="announce-icon"><svg viewBox="0 0 24 24"><path d="m3 11 18-5v12L3 13v-2ZM11.6 15.4 13 21H7l-1.7-7"/></svg></div>
+          <div class="announce-copy"><h2>Sunucu Duyurusu</h2><p>Tüm çevrimiçi oyunculara anlık mesaj gönder.</p></div>
+          <form id="announceForm"><input id="announcement" maxlength="240" placeholder="Duyuru mesajınızı yazın…" aria-label="Duyuru mesajı"><button class="button button-primary" type="submit">Gönder<svg viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4 20-7Z"/></svg></button></form>
         </article>
       </section>
-
-      <aside class="panel rooms-panel">
-        <div class="panel-head"><div><p class="kicker">CANLI HARİTA</p><h2>Odalar</h2></div><span id="roomCount" class="count">0</span></div>
-        <div id="rooms" class="room-list empty">Aktif oda bekleniyor…</div>
-      </aside>
-    </section>
-    <div id="toast" class="toast"></div>
-  </main>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="app.js"></script>
 </body>
 </html>
