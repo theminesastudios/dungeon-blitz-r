@@ -128,6 +128,7 @@ function createRunState(levelScope: string, levelName: string, now: number): Dun
         defeatedHostileIds: new Set<number>(),
         processedDeathEvents: new Set<string>(),
         clientCompletionSignals: new Map<string, number>(),
+        roomBossClearSequence: 0,
         eventSequence: 0,
         cutsceneRoomId: 0,
         cutsceneStartedAt: 0,
@@ -318,6 +319,51 @@ export class DungeonCompletionSystem {
         }
         DungeonCompletionSystem.evaluate(levelScope, now);
         return Boolean(canonicalBoss || objectiveRole || entityId > 0);
+    }
+
+    static noteRoomBossClear(levelScope: string, roomId: number, now: number = Date.now()): boolean {
+        const state = DungeonCompletionSystem.getOrCreateState(levelScope, now);
+        const condition = state ? DungeonCompletionConditions.get(state.levelName) : null;
+        if (
+            !state ||
+            !condition ||
+            condition.mode !== 'bosses' ||
+            !DungeonCompletionConditions.acceptsRoomBossClearSignal(state.levelName)
+        ) {
+            return false;
+        }
+
+        // BossFight sends this only after every boss slot in the room has
+        // reached zero HP. Some cue-owned bosses never publish full entities to
+        // the server, so this authored room signal is the only canonical proof
+        // that the whole double-boss encounter has ended.
+        state.eventSequence += 1;
+        state.roomBossClearSequence = state.eventSequence;
+        for (const group of condition.bossGroups ?? []) {
+            const canonicalBoss = group[0];
+            if (!canonicalBoss) {
+                continue;
+            }
+            state.defeatedBosses.add(canonicalBoss);
+            state.defeatedBossAt.set(canonicalBoss, now);
+        }
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId ?? 0)));
+        if (normalizedRoomId > 0) {
+            state.objectiveRoomIds.add(normalizedRoomId);
+        }
+        state.updatedAt = now;
+
+        const evaluation = DungeonCompletionSystem.evaluate(levelScope, now);
+        if (String(process.env.DUNGEON_DIAG ?? '1').trim() !== '0') {
+            console.log(`[DUNGEON-DIAG] roomBossClearAccepted ${JSON.stringify({
+                level: state.levelName,
+                roomId: normalizedRoomId,
+                defeatedBosses: [...state.defeatedBosses],
+                objectivesMet: evaluation.objectivesMet,
+                reason: evaluation.reason
+            })}`);
+        }
+        return evaluation.objectivesMet;
     }
 
     static noteClientCompletionSignal(
@@ -633,7 +679,13 @@ export class DungeonCompletionSystem {
         now: number
     ): void {
         const scopeEntities = [...(GlobalState.levelEntities.get(state.levelScope)?.values() ?? [])];
-        if (Math.max(0, Number(condition.simultaneousBossWindowMs ?? 0)) > 0) {
+        if (
+            state.roomBossClearSequence <= 0 &&
+            (
+                condition.requireBossesCurrentlyDefeated ||
+                Math.max(0, Number(condition.simultaneousBossWindowMs ?? 0)) > 0
+            )
+        ) {
             for (const entity of scopeEntities) {
                 const canonicalBoss = DungeonCompletionConditions.getCanonicalBossName(state.levelName, entity, state.levelScope);
                 if (canonicalBoss && !isDefeated(entity)) {

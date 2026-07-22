@@ -5044,6 +5044,12 @@ export class LevelHandler {
         const roomId = br.readMethod9();
         LevelHandler.cacheRoomId(client, roomId);
 
+        // Despite the historical handler name, the client emits 0xAD from
+        // BossFight when every boss slot is at zero HP and the boss UI closes.
+        // Cue-owned bosses can be entirely local, so forward that exact finale
+        // signal into the configured dungeon objective system.
+        DungeonCompletionSystem.noteRoomBossClear(getClientLevelScope(client), roomId);
+
         LevelHandler.relayToLevel(client, 0xAD, data);
     }
 

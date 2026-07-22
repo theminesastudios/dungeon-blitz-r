@@ -18,6 +18,8 @@ export type DungeonCompletionCondition = {
     entityObjectives?: DungeonCompletionEntityObjective[];
     cutscene?: DungeonCompletionCutsceneCondition;
     simultaneousBossWindowMs?: number;
+    requireBossesCurrentlyDefeated?: boolean;
+    acceptRoomBossClearSignal?: boolean;
     autoCompleteOnObjectives?: boolean;
     allowDefeatedBossProxyCopies?: boolean;
     requirePlayerDamageForClientBosses?: boolean;
@@ -56,6 +58,7 @@ export type DungeonCompletionRunState = {
     defeatedHostileIds: Set<number>;
     processedDeathEvents: Set<string>;
     clientCompletionSignals: Map<string, number>;
+    roomBossClearSequence: number;
     eventSequence: number;
     cutsceneRoomId: number;
     cutsceneStartedAt: number;

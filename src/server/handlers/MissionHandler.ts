@@ -1917,7 +1917,9 @@ export class MissionHandler {
             : null;
         const tutorialBossDefeated = TutorialDungeonMechanics.isTutorialDungeon(scope) &&
             Boolean(TutorialDungeonMechanics.getState(scope)?.bossDefeated);
+        const objectivesAlreadyMet = DungeonCompletionSystem.evaluate(scope).objectivesMet;
         const completionEligibleAtStart = Boolean(
+            objectivesAlreadyMet ||
             tutorialBossDefeated ||
             bossEntity &&
             (
@@ -1942,6 +1944,7 @@ export class MissionHandler {
             level: getScopeLevelName(scope),
             roomId: Math.max(0, Math.round(Number(roomId ?? 0))),
             bossId,
+            objectivesAlreadyMet,
             // False here means the gate will not accept this skit as the ending
             // one, so the run waits for a second cutscene that never comes.
             completionEligibleAtStart
