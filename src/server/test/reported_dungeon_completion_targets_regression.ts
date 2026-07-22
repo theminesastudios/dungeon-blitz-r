@@ -144,10 +144,12 @@ function verifyTerminalClientBossPacketCompletes(
 
 function main(): void {
     LevelConfig.load(path.resolve(__dirname, '../data'));
-    verifyTerminalClientBossPacketCompletes('SD_Mission1', 'RaptorHorned', 1, false);
-    verifyTerminalClientBossPacketCompletes('SD_Mission1Hard', 'RaptorHornedHard', 2, false);
-    verifyTerminalClientBossPacketCompletes('SD_Mission1', 'RaptorHorned2', 3, false);
-    verifyTerminalClientBossPacketCompletes('SD_Mission1Hard', 'RaptorHorned2Hard', 4, false);
+    // Was RaptorHorned/RaptorHorned2, i.e. ordinary desert raptors standing in for
+    // Unearthing the Past's boss. That is the bug that fired the rank plate at 7%.
+    verifyTerminalClientBossPacketCompletes('SD_Mission1', 'RageGuardian', 1, false);
+    verifyTerminalClientBossPacketCompletes('SD_Mission1Hard', 'RageGuardianHard', 2, false);
+    verifyTerminalClientBossPacketCompletes('SD_Mission1', 'Amenrahtep', 3, false);
+    verifyTerminalClientBossPacketCompletes('SD_Mission1Hard', 'Amenrahtep', 4, false);
     verifyTerminalClientBossPacketCompletes('SD_Mission4', 'OasisVizierGreen', 5, true);
     verifyTerminalClientBossPacketCompletes('SD_Mission4Hard', 'OasisVizierGreenHard', 6, true);
     verifyTerminalClientBossPacketCompletes('JC_Mission5', 'NephitDragonMarker', 7, false);

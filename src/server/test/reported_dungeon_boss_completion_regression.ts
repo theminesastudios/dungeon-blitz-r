@@ -70,8 +70,12 @@ const EXTRA_BOSS_NAMES: Record<string, string[]> = {
     JC_Mission5Hard: ['NephitDragon', 'NephitDragonMarker', 'NephitDragonMarkerHard'],
     JC_Mission10: ['DragonTempleMarker'],
     JC_Mission10Hard: ['DragonTemple', 'DragonTempleMarker', 'DragonTempleMarkerHard'],
-    SD_Mission1: ['RaptorHornedGreater'],
-    SD_Mission1Hard: ['RaptorHorned', 'RaptorHornedGreaterHard']
+    // Was ['RaptorHornedGreater'] / ['RaptorHorned', 'RaptorHornedGreaterHard'],
+    // which treated ordinary desert raptors (EntRank Minion/Lieutenant) as
+    // Unearthing the Past's boss and completed the run on the first trash kill.
+    // The boss is RageGuardian, which the client also reports as "Amenrahtep".
+    SD_Mission1: ['Amenrahtep'],
+    SD_Mission1Hard: ['RageGuardian', 'Amenrahtep']
 };
 
 function createBoss(id: number, name: string, roomId: number, defeated: boolean = true): any {
