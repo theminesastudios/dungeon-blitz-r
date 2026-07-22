@@ -1607,6 +1607,10 @@ export class CombatHandler {
         return Boolean(
             levelName &&
             (
+                (
+                    DungeonCompletionConditions.requiresBossDefeatSignal(levelName) &&
+                    DungeonCompletionConditions.isRequiredBoss(levelName, entity, levelScope)
+                ) ||
                 DungeonCompletionConditions.isClientAuthorityBoss(levelName, entity, levelScope) ||
                 (
                     Boolean(entity?.clientSpawned) &&
@@ -1764,9 +1768,7 @@ export class CombatHandler {
             return;
         }
 
-        const disengagedAfterCombat = !deathRegenArmed &&
-            CombatHandler.getEntityCombatActivityAt(entity) > 0;
-        if (!deathRegenArmed && !disengagedAfterCombat) {
+        if (!deathRegenArmed) {
             return;
         }
 
@@ -1782,8 +1784,8 @@ export class CombatHandler {
         }
 
         // A boss reset is a lifecycle boundary, not ordinary periodic healing.
-        // Restore the complete encounter once its target is dead or has fully
-        // disengaged so a stale partial bar cannot leak into the next attempt.
+        // Only a confirmed player death arms this reset; range or temporary
+        // disengagement must not refill a living boss during an attempt.
         const requestedHeal = healthState.maxHp - healthState.currentHp;
         if (requestedHeal <= 0) {
             return;
@@ -5691,6 +5693,25 @@ export class CombatHandler {
 
         const levelEntity = CombatHandler.resolveLevelEntity(levelScope, entityId);
         const targetEntity = levelEntity ?? entity;
+        const rejectLivingBossRegen = Boolean(
+            amount > 0 &&
+            DungeonCompletionConditions.requiresBossDefeatSignal(getScopeLevelName(levelScope)) &&
+            DungeonCompletionConditions.isRequiredBoss(getScopeLevelName(levelScope), targetEntity, levelScope) &&
+            (
+                CombatHandler.hasLivingPlayerInHostileRoom(levelScope, targetEntity) ||
+                !CombatHandler.isPlayerSessionDead(client)
+            )
+        );
+        if (rejectLivingBossRegen) {
+            // The client applies its local regen tick before reporting it. Undo
+            // that visible heal while keeping the canonical boss HP unchanged.
+            client.send(
+                CombatHandler.CLIENT_HEAL_PACKET_ID,
+                CombatHandler.buildHpDeltaPayload(rawEntityId, -amount)
+            );
+            return true;
+        }
+
         if (EntityHandler.usesServerAuthorityHostiles(getScopeLevelName(levelScope))) {
             if (CombatHandler.isServerAuthoritySyncNpc(levelScope, targetEntity)) {
                 const canonicalId = Math.max(0, Math.round(Number(targetEntity.id ?? entityId)));
@@ -5904,6 +5925,14 @@ export class CombatHandler {
             Math.min(healthState.maxHp, Math.round(healthState.currentHp + amount))
         );
         if (reportedNextHp > 0 && totalReportedDamage < healthState.maxHp) {
+            return false;
+        }
+
+        // Some authored bosses emit HP telemetry before their actual defeat
+        // transition. Keep the telemetry for validation, but let the later
+        // entity-destroy signal commit completion so the room cannot end while
+        // the boss is still visibly alive.
+        if (MissionHandler.shouldDeferBossHpCompletionUntilDefeatSignal(client)) {
             return false;
         }
 

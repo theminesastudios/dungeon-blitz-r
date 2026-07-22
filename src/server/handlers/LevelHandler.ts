@@ -4380,8 +4380,8 @@ export class LevelHandler {
         GlobalState.pendingExtended.set(token, sendExtended);
     }
 
-    private static shouldSendExtendedOnTransfer(targetLevel: string): boolean {
-        return targetLevel === 'CraftTown';
+    private static shouldSendExtendedOnTransfer(_targetLevel: string): boolean {
+        return false;
     }
 
     private static isDifferentCharacter(left: Character | null | undefined, right: Character | null | undefined): boolean {

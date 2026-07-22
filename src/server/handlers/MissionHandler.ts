@@ -2137,6 +2137,14 @@ export class MissionHandler {
         );
     }
 
+    static shouldDeferBossHpCompletionUntilDefeatSignal(client: Client): boolean {
+        const currentLevel =
+            LevelConfig.normalizeLevelName(client.currentLevel || String(client.character?.CurrentLevel?.name ?? '')) ||
+            client.currentLevel ||
+            String(client.character?.CurrentLevel?.name ?? '');
+        return DungeonCompletionConditions.requiresBossDefeatSignal(currentLevel);
+    }
+
     // A client HP report that would kill something but does not resolve to a
     // required boss is dropped silently. That silence is exactly how a boss
     // reported under an unexpected name vanishes: no bossDeathDetected line is

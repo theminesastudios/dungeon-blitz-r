@@ -23,6 +23,7 @@ export type DungeonCompletionCondition = {
     autoCompleteOnObjectives?: boolean;
     allowDefeatedBossProxyCopies?: boolean;
     requirePlayerDamageForClientBosses?: boolean;
+    requireBossDefeatSignal?: boolean;
     clientAuthorityBosses?: string[];
     requireRoomBossMarker?: boolean;
     allowVerifiedClientBossWithoutRoomBossMarker?: boolean;

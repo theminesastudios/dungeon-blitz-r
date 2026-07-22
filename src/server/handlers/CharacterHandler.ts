@@ -198,9 +198,9 @@ export class CharacterHandler {
     private static shouldSendExtendedPlayerData(
         firstLogin: boolean,
         pendingExtended: boolean,
-        entry: PendingTransfer
+        _entry: PendingTransfer
     ): boolean {
-        return firstLogin || pendingExtended || entry.targetLevel === 'CraftTown';
+        return firstLogin || pendingExtended;
     }
 
     private static repairUnsafeSavedDungeonLocation(character: Character): boolean {

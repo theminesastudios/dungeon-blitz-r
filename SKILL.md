@@ -147,6 +147,17 @@ Before finalizing any fix, verify:
 - Other dungeons are not affected.
 - Existing working systems are not rewritten unnecessarily.
 
+## Test File and Credit Efficiency
+
+Keep test inspection and execution proportional to the change.
+
+- Start with `rg --files` and targeted `rg -n` searches; do not dump an entire large test file into context.
+- Read only the relevant helper, regression case, and test entrypoint. Expand inspection only when a failure requires it.
+- Prefer one focused regression test plus the build for a narrow fix.
+- Run the full regression suite only when the user requests it or when the change crosses shared systems and focused coverage is insufficient.
+- When a full suite is necessary, cap tool output and capture only pass/fail summaries; do not spend context on repetitive logs.
+- Avoid adding broad duplicate fixtures when a parameterized focused test can cover the affected levels or states.
+
 ## Preferred Fix Style
 
 Use clear, minimal patches.

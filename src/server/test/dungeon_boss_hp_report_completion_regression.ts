@@ -23,6 +23,8 @@ type FakeClient = {
     activeDungeonCutsceneScope: string;
     activeDungeonCutsceneRoomId: number;
     lastDungeonCutsceneStartAt: number;
+    sentPackets: Array<{ packetId: number; data: Buffer }>;
+    send: (packetId: number, data: Buffer) => void;
 };
 
 function buildHpDeltaPayload(entityId: number, amount: number): Buffer {
@@ -40,7 +42,7 @@ function buildDestroyEntityPayload(entityId: number): Buffer {
 }
 
 function createClient(levelName: string, ordinal: number): FakeClient {
-    return {
+    const client = {
         currentLevel: levelName,
         levelInstanceId: `boss-hp-report-${ordinal}`,
         currentRoomId: 12,
@@ -57,8 +59,13 @@ function createClient(levelName: string, ordinal: number): FakeClient {
         entityIdAliases: new Map<number, number>(),
         activeDungeonCutsceneScope: '',
         activeDungeonCutsceneRoomId: 0,
-        lastDungeonCutsceneStartAt: 0
+        lastDungeonCutsceneStartAt: 0,
+        sentPackets: [] as Array<{ packetId: number; data: Buffer }>,
+        send(packetId: number, data: Buffer): void {
+            this.sentPackets.push({ packetId, data });
+        }
     };
+    return client;
 }
 
 function createBoss(id: number, name: string): any {
@@ -268,6 +275,57 @@ async function testContributedBossDestroyOverridesStaleCanonicalHp(): Promise<vo
     GlobalState.combatContributions.clear();
 }
 
+async function testEmbodimentWaitsForActualBossDefeatSignal(): Promise<void> {
+    const client = createClient('CH_Mission5', 5);
+    const boss = createBoss(10_205, 'DemonMaligner');
+    boss.clientSpawned = false;
+    boss.hybridCanonicalHostile = true;
+    const scope = seedBosses(client, [boss]);
+    const combatHandler = CombatHandler as any;
+    combatHandler.recordContribution(scope, boss.id, client, boss.maxHp);
+
+    CombatHandler.handleCharRegen(client as never, buildHpDeltaPayload(boss.id, 250));
+    assert.equal(boss.hp, boss.maxHp, 'Embodiment client regen mutated canonical HP while the player was alive');
+    assert.equal(client.sentPackets.length, 1, 'Embodiment client regen was not corrected');
+    assert.equal(client.sentPackets[0].packetId, 0x78, 'Embodiment regen correction used the wrong packet');
+    assert.equal(
+        client.sentPackets[0].data.equals(buildHpDeltaPayload(boss.id, -250)),
+        true,
+        'Embodiment regen correction did not reverse the visible client heal'
+    );
+
+    const hitResolution = combatHandler.updateNpcTargetAfterHit(scope, boss.id, boss.maxHp);
+    assert.equal(hitResolution.killed, false, 'Embodiment power hit committed death before its defeat signal');
+    assert.equal(boss.hp, 1, 'Embodiment power hit was not clamped above zero pending its defeat signal');
+    assert.equal(boss.dead, false, 'Embodiment power hit marked the promoted canonical boss dead');
+    assert.equal(boss.destroyed, false, 'Embodiment power hit destroyed the promoted canonical boss');
+    assert.equal(
+        DungeonCompletionSystem.evaluate(scope).objectivesMet,
+        false,
+        'Embodiment completed from a power hit while the client boss was still alive'
+    );
+
+    CombatHandler.handleCharRegen(client as never, buildHpDeltaPayload(boss.id, -boss.maxHp));
+    assert.equal(boss.hp, 1, 'Embodiment HP telemetry committed death before its defeat signal');
+    assert.equal(
+        DungeonCompletionSystem.evaluate(scope).objectivesMet,
+        false,
+        'Embodiment completed from HP telemetry while the boss was still alive'
+    );
+
+    await CombatHandler.handleEntityDestroy(client as never, buildDestroyEntityPayload(boss.id));
+    assert.equal(boss.hp, 0, 'Embodiment destroy signal did not commit boss death');
+    assert.equal(boss.dead, true, 'Embodiment destroy signal did not mark the boss dead');
+    assert.equal(
+        DungeonCompletionSystem.evaluate(scope).objectivesMet,
+        true,
+        'Embodiment did not complete after its actual boss defeat signal'
+    );
+
+    clearRun(client);
+    GlobalState.combatContributions.clear();
+}
+
 async function main(): Promise<void> {
     const dataDir = path.resolve(__dirname, '../data');
     LevelConfig.load(dataDir);
@@ -294,6 +352,7 @@ async function main(): Promise<void> {
         testBossHealResetsAccumulatedClientDamage();
         testPartyBossHpReportsAggregateAcrossParticipants();
         await testContributedBossDestroyOverridesStaleCanonicalHp();
+        await testEmbodimentWaitsForActualBossDefeatSignal();
     } finally {
         combatHandler.fireAndForgetMissionWork = originalMissionWork;
     }

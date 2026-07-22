@@ -114,6 +114,10 @@ export class DungeonCompletionConditions {
         return Boolean(DungeonCompletionConditions.get(levelName)?.requirePlayerDamageForClientBosses);
     }
 
+    static requiresBossDefeatSignal(levelName: string | null | undefined): boolean {
+        return Boolean(DungeonCompletionConditions.get(levelName)?.requireBossDefeatSignal);
+    }
+
     static getSimultaneousBossWindowMs(levelName: string | null | undefined): number {
         return Math.max(0, Math.round(Number(DungeonCompletionConditions.get(levelName)?.simultaneousBossWindowMs ?? 0)));
     }
@@ -272,6 +276,9 @@ export class DungeonCompletionConditions {
                 }
                 if (condition.requireRoomBossMarker !== undefined && typeof condition.requireRoomBossMarker !== 'boolean') {
                     errors.push(`${levelName}: requireRoomBossMarker must be boolean`);
+                }
+                if (condition.requireBossDefeatSignal !== undefined && typeof condition.requireBossDefeatSignal !== 'boolean') {
+                    errors.push(`${levelName}: requireBossDefeatSignal must be boolean`);
                 }
                 if (
                     condition.allowTerminalCanonicalBossWithoutRoomBossMarker !== undefined &&
