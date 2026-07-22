@@ -29,6 +29,14 @@ type EnemyManifest = Record<string, { enemyTypes?: Array<{ enemyType?: string }>
 // SandWormGreater and GolemLord respectively.
 const SCRIPTED_PACKET_IDENTITIES: Record<string, string[]> = {
     AC_Mission6: ['NephitSpireMarker'],
+    // BT_Mission2 (Svagg's Last Stand): a_Room_BTM02ROldHeroesBoss authors
+    // am_Boss = ac_BanditBoss, but its PhaseFight calls Ambush("am_WaveFour")
+    // once Svagg hits 1% HP, and that ambush sprite carries am_Boss2 =
+    // ac_GriffonStar — the griffon "Wrath" Svagg summons with his dying line.
+    // The enemy extractor only walks the room's direct children, so the real
+    // second boss never made it into dungeon_enemy_elements.json.
+    BT_Mission2: ['GriffonStar'],
+    BT_Mission2Hard: ['GriffonStarHard'],
     AC_Mission6Hard: ['NephitSpireMarkerHard'],
     GhostBossDungeon: ['GrayGhostLord', 'NRGhostBoss'],
     GhostBossDungeonHard: ['GrayGhostLordHard', 'NRGhostBoss'],
