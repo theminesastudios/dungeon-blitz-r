@@ -1091,5 +1091,23 @@
         "Description": "A bright dragon companion forged for Codex.",
         "UseVanityPower": true,
         "DisplayRarity": "L"
+    },
+    {
+        "PetName": "HoundGreen",
+        "PetID": 72,
+        "PetLevel": 30,
+        "IdolCost": 250,
+        "DisplayName": "Loot Hound",
+        "PetPower": "PetLootHound",
+        "Kingdom": "Any",
+        "ItemFind": true,
+        "GoldFind": true,
+        "LootMagnet": true,
+        "BonusInfo": "Collects dropped crafting materials for you",
+        "ClassType": "Lockbox01",
+        "Color": "Green",
+        "Description": "A keen-nosed companion that trots along at your heel and fetches every scrap of crafting material you leave behind.",
+        "UseVanityPower": true,
+        "DisplayRarity": "L"
     }
 ]

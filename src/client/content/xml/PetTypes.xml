@@ -1021,4 +1021,20 @@
 		<UseVanityPower>TRUE</UseVanityPower>
 		<DisplayRarity>L</DisplayRarity>
 	</PetType>
+	<PetType PetName="HoundGreen">
+		<PetID>72</PetID>
+		<PetLevel>30</PetLevel>
+		<IdolCost>250</IdolCost>
+		<DisplayName>Ganimet Tazisi</DisplayName>
+		<PetPower>PetLootHound</PetPower>
+		<Kingdom>Any</Kingdom>
+		<ItemFind>true</ItemFind>
+		<GoldFind>true</GoldFind>
+		<BonusInfo>Dusen uretim materyallerini senin yerine toplar</BonusInfo>
+		<ClassType>Lockbox01</ClassType>
+		<Color>Green</Color>
+		<Description>Kesin burunlu bir yoldas. Pesinde yurur ve arkanda biraktigin her uretim materyalini toplar.</Description>
+		<UseVanityPower>TRUE</UseVanityPower>
+		<DisplayRarity>L</DisplayRarity>
+	</PetType>
 </PetTypes>
