@@ -384,6 +384,21 @@ export class LevelConfig {
         return this.DOOR_MAP.get(key) || this.DOOR_FALLBACKS[key] || null;
     }
 
+    static getDungeonEntranceDoorId(
+        dungeonLevelName: string | null | undefined,
+        entryLevelName: string | null | undefined
+    ): number | null {
+        const dungeonLevel = this.normalizeLevelName(dungeonLevelName);
+        const entryLevel = this.normalizeLevelName(entryLevelName);
+        if (!dungeonLevel || !entryLevel || !this.isDungeonLevel(dungeonLevel)) {
+            return null;
+        }
+
+        const doorEntry = (this.DOOR_ENTRIES_BY_TARGET.get(dungeonLevel) ?? [])
+            .find((entry) => entry.sourceLevel === entryLevel);
+        return doorEntry ? Math.round(doorEntry.sourceDoorId) : null;
+    }
+
     private static getDoorTravelSpawn(
         currentLevel: string,
         targetLevel: string,
