@@ -59,17 +59,17 @@ const ART_COLORS = [
 
 const LOCALES = {
     en: {
-        displayName: 'Loot Hound',
+        displayName: "Neo's Minnos",
         bonusInfo: 'Collects dropped crafting materials for you',
         description: 'A keen-nosed companion that trots along at your heel and fetches every scrap of crafting material you leave behind.',
-        powerDisplayName: 'Summon Loot Hound',
+        powerDisplayName: "Summon Neo's Minnos",
         powerDescription: 'Summons a hound that follows you around and fetches dropped materials.'
     },
     tr: {
-        displayName: 'Ganimet Tazisi',
+        displayName: "Neo's Minnos",
         bonusInfo: 'Dusen uretim materyallerini senin yerine toplar',
         description: 'Kesin burunlu bir yoldas. Pesinde yurur ve arkanda biraktigin her uretim materyalini toplar.',
-        powerDisplayName: 'Ganimet Tazisi Cagir',
+        powerDisplayName: "Neo's Minnos Cagir",
         powerDescription: 'Pesinde gezen ve dusen materyalleri toplayan bir tazi cagirir.'
     }
 };

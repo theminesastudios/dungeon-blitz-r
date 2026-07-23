@@ -57,29 +57,33 @@ function spawnLoot(client: any, reward: Record<string, number>): void {
     (RewardHandler as any).spawnLoot(client, 100, 200, reward, 0, 0, { reason: 'chest', caller: 'regression' });
 }
 
-function magnetGoldPosition(client: any, fallback: { x: number; y: number }): { x: number; y: number } {
-    return (RewardHandler as any).resolveMagnetGoldDropPosition(client, fallback);
-}
-
-function testMagnetPetIsRecognizedOnlyWhenEquipped(): void {
+function testMagnetPetIsRecognizedOnlyWhenActive(): void {
     assert.ok(
         PetConfig.getPetDef(MAGNET_PET_ID)?.LootMagnet,
         `pet ${MAGNET_PET_ID} should be flagged as a loot magnet in pet_types.json`
     );
-    assert.equal(PetHandler.hasEquippedLootMagnetPet(createCharacter(MAGNET_PET_ID)), true);
-    assert.equal(PetHandler.hasEquippedLootMagnetPet(createCharacter(1)), false);
-    assert.equal(PetHandler.hasEquippedLootMagnetPet(createCharacter(0)), false);
+    assert.equal(PetHandler.hasActiveLootMagnetPet(createCharacter(MAGNET_PET_ID)), true);
+    assert.equal(PetHandler.hasActiveLootMagnetPet(createCharacter(1)), false);
+    assert.equal(PetHandler.hasActiveLootMagnetPet(createCharacter(0)), false);
 }
 
-function testMagnetPetInRestingSlotStillCollects(): void {
+function testMagnetPetInRestingSlotDoesNotCollect(): void {
     const character = createCharacter(1);
     character.pets.push({ typeID: MAGNET_PET_ID, special_id: 901, level: 5, xp: 0 });
     character.restingPets = [{ typeID: MAGNET_PET_ID, special_id: 901 }];
 
     assert.equal(
-        PetHandler.hasEquippedLootMagnetPet(character),
-        true,
-        'passive pet slots grant their bonus, so the magnet should work from a resting slot too'
+        PetHandler.hasActiveLootMagnetPet(character),
+        false,
+        'only the summoned companion fetches loot; a resting magnet pet leaves pickups to the player'
+    );
+}
+
+function testGoldIsNeverRelocatedToThePlayer(): void {
+    assert.equal(
+        typeof (RewardHandler as any).resolveMagnetGoldDropPosition,
+        'undefined',
+        'gold must always drop at the kill site so the pet is what fetches it'
     );
 }
 
@@ -116,42 +120,16 @@ function testGoldStillDropsOnTheGroundForTheVisiblePickup(): void {
     );
 }
 
-function testGoldDropsAtThePlayersFeetWhenTheMagnetPetIsEquipped(): void {
-    const killSite = { x: 4000, y: 900 };
-    const client = createFakeClient(createCharacter(MAGNET_PET_ID));
-    client.entities = new Map([[42, { id: 42, x: 1234, y: 567 }]]);
+function testMaterialsStayOnTheGroundWithoutAnActivePet(): void {
+    const character = createCharacter(1);
+    character.pets.push({ typeID: MAGNET_PET_ID, special_id: 901, level: 5, xp: 0 });
+    character.restingPets = [{ typeID: MAGNET_PET_ID, special_id: 901 }];
+    const client = createFakeClient(character);
 
-    assert.deepEqual(
-        magnetGoldPosition(client, killSite),
-        { x: 1234, y: 567 },
-        'gold should land on the player so the client picks it up immediately'
-    );
-}
+    spawnLoot(client, { material: 17 });
 
-function testGoldKeepsTheKillSiteWithoutTheMagnetPet(): void {
-    const killSite = { x: 4000, y: 900 };
-    const client = createFakeClient(createCharacter(1));
-    client.entities = new Map([[42, { id: 42, x: 1234, y: 567 }]]);
-
-    assert.deepEqual(magnetGoldPosition(client, killSite), killSite);
-}
-
-function testGoldFallsBackToTheKillSiteWhenPositionIsUnknown(): void {
-    const killSite = { x: 4000, y: 900 };
-
-    const noEntities = createFakeClient(createCharacter(MAGNET_PET_ID));
-    noEntities.entities = new Map();
-    assert.deepEqual(magnetGoldPosition(noEntities, killSite), killSite, 'missing entity must not drop loot at 0,0');
-
-    const unspawned = createFakeClient(createCharacter(MAGNET_PET_ID));
-    unspawned.entities = new Map([[42, { id: 42, x: 0, y: 0 }]]);
-    assert.deepEqual(unspawned.entities.size, 1);
-    assert.deepEqual(magnetGoldPosition(unspawned, killSite), killSite, 'an unpositioned entity must not drop loot at 0,0');
-
-    const noEntityId = createFakeClient(createCharacter(MAGNET_PET_ID));
-    noEntityId.clientEntID = 0;
-    noEntityId.entities = new Map([[42, { id: 42, x: 1234, y: 567 }]]);
-    assert.deepEqual(magnetGoldPosition(noEntityId, killSite), killSite);
+    assert.deepEqual(client.character.materials, [], 'the player collects their own materials with no pet out');
+    assert.equal(client.pendingLoot.size, 1);
 }
 
 function testRepeatedMaterialDropsStackOnTheSameEntry(): void {
@@ -198,13 +176,12 @@ function testWithoutTheMagnetPetLootStillDropsNormally(): void {
 
 function main(): void {
     ensureDataLoaded();
-    testMagnetPetIsRecognizedOnlyWhenEquipped();
-    testMagnetPetInRestingSlotStillCollects();
+    testMagnetPetIsRecognizedOnlyWhenActive();
+    testMagnetPetInRestingSlotDoesNotCollect();
+    testGoldIsNeverRelocatedToThePlayer();
     testMaterialsAreGrantedWithoutAGroundDrop();
+    testMaterialsStayOnTheGroundWithoutAnActivePet();
     testGoldStillDropsOnTheGroundForTheVisiblePickup();
-    testGoldDropsAtThePlayersFeetWhenTheMagnetPetIsEquipped();
-    testGoldKeepsTheKillSiteWithoutTheMagnetPet();
-    testGoldFallsBackToTheKillSiteWhenPositionIsUnknown();
     testRepeatedMaterialDropsStackOnTheSameEntry();
     testGearHealthAndDyeStillDropOnTheGround();
     testWithoutTheMagnetPetLootStillDropsNormally();

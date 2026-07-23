@@ -723,33 +723,6 @@ export class RewardHandler {
         return RewardHandler.grantMaterialLoot(client, Number(reward.material ?? 0));
     }
 
-    /**
-     * With a loot magnet pet equipped, drop gold at the player's feet instead of at the kill site.
-     * The client's own proximity check then fires straight away and plays the normal pickup
-     * animation and sound, which reads as the pet having fetched the coins back to you.
-     *
-     * Entity positions and lootdrop coordinates share the same method24 space — handleGrantReward
-     * already feeds `sourceEntity.x` in as `worldX` — so no conversion is needed.
-     */
-    private static resolveMagnetGoldDropPosition(
-        client: Client,
-        fallback: { x: number; y: number }
-    ): { x: number; y: number } {
-        if (!PetHandler.hasEquippedLootMagnetPet(client.character)) {
-            return fallback;
-        }
-
-        const playerEntityId = Math.max(0, Math.round(Number(client.clientEntID ?? 0)));
-        const playerEntity = playerEntityId > 0 ? client.entities?.get(playerEntityId) : null;
-        const x = Number(playerEntity?.x);
-        const y = Number(playerEntity?.y);
-        if (!Number.isFinite(x) || !Number.isFinite(y) || (x === 0 && y === 0)) {
-            return fallback;
-        }
-
-        return { x: Math.round(x), y: Math.round(y) };
-    }
-
     private static grantGoldLoot(client: Client, amount: number): boolean {
         if (!client.character || amount <= 0) {
             return false;
@@ -833,7 +806,7 @@ export class RewardHandler {
         }
         // The pet picks these up for the player, so skip the ground drop and the 0x38 round trip.
         // Nothing is registered in pendingLoot, so the client can never claim this drop a second time.
-        if (RewardHandler.isLootMagnetReward(reward) && PetHandler.hasEquippedLootMagnetPet(client.character)) {
+        if (RewardHandler.isLootMagnetReward(reward) && PetHandler.hasActiveLootMagnetPet(client.character)) {
             const collected = RewardHandler.grantMagnetCollectedLoot(client, reward);
             if (collected) {
                 RewardHandler.persistCharacter(client, 'pet loot magnet');
@@ -1220,8 +1193,9 @@ export class RewardHandler {
         noteDungeonRunChestOpened(client, reward.sourceId, sourceEntity);
 
         if (resolved.gold > 0) {
-            const goldPosition = RewardHandler.resolveMagnetGoldDropPosition(client, dropPosition);
-            RewardHandler.spawnLoot(client, goldPosition.x, goldPosition.y, { gold: resolved.gold }, 0, 0, context);
+            // Gold always lands where the kill happened. Fetching it back is the pet's job,
+            // not the drop position's — see PetHandler.hasActiveLootMagnetPet.
+            RewardHandler.spawnLoot(client, dropPosition.x, dropPosition.y, { gold: resolved.gold }, 0, 0, context);
         }
         if (resolved.hpGain > 0) {
             RewardHandler.spawnLoot(
