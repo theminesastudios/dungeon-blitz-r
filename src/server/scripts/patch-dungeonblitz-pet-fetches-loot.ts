@@ -12,6 +12,7 @@ import {
   parseAbc,
   parseSwf,
   PatchError,
+  readU30,
   writeSwf,
   writeU30,
 } from "./swfPatchUtils";
@@ -116,6 +117,40 @@ let MINIMAL_LOOT = false;
  * is the call/scope; if only the full build crashes the fault is the loop.
  */
 let PROBE_CALL = false;
+
+/**
+ * Constant-pool index of a MultinameL (kind 0x1b), used to emit `vector[0]` (index access with the
+ * name taken from the stack). Resolved dynamically per SWF in `patch()` because the pool is repacked
+ * across builds. For an integer index, AVM2 does index access regardless of the MultinameL's
+ * namespace set, so any MultinameL works. -1 until resolved.
+ */
+let MULTINAMEL_IDX = -1;
+
+/** Re-parses the ABC constant pool far enough to return the first MultinameL (kind 0x1b) index. */
+function findFirstMultinameL(ctx: ReturnType<typeof parseSwf>): number {
+  const data: Buffer = (ctx as any).body;
+  let pos: number = (ctx as any).abcStart + 4; // skip minor/major u16
+  const u30 = (): number => { const [v, p] = readU30(data, pos, "mnl"); pos = p; return v; };
+  let n = u30(); for (let i = 1; i < n; i++) u30();                 // ints
+  n = u30(); for (let i = 1; i < n; i++) u30();                     // uints
+  n = u30(); for (let i = 1; i < n; i++) pos += 8;                  // doubles
+  n = u30(); for (let i = 1; i < n; i++) { const l = u30(); pos += l; } // strings
+  n = u30(); for (let i = 1; i < n; i++) { pos += 1; u30(); }       // namespaces (kind byte + name)
+  n = u30(); for (let i = 1; i < n; i++) { const c = u30(); for (let j = 0; j < c; j++) u30(); } // ns sets
+  const mnCount = u30();
+  for (let i = 1; i < mnCount; i++) {
+    const kind = data[pos++];
+    if (kind === 0x07 || kind === 0x0d) { u30(); u30(); }
+    else if (kind === 0x0f || kind === 0x10) { u30(); }
+    else if (kind === 0x11 || kind === 0x12) { /* RTQNameL */ }
+    else if (kind === 0x09 || kind === 0x0e) { u30(); u30(); }
+    else if (kind === 0x1b) { u30(); return i; }
+    else if (kind === 0x1c) { u30(); }
+    else if (kind === 0x1d) { u30(); const pc = u30(); for (let j = 0; j < pc; j++) u30(); }
+    else throw new PatchError(`Unexpected multiname kind 0x${kind.toString(16)} while scanning for MultinameL.`);
+  }
+  throw new PatchError("No MultinameL (kind 0x1b) found in the constant pool.");
+}
 
 function parseArgs(argv: string[]): { swfPath: string; verify: boolean; only: Only } {
   let swfPath = DEFAULT_SWF;
@@ -320,27 +355,26 @@ function buildLootPrologue(abc: ReturnType<typeof parseAbc>): Buffer {
     { opcode: 0x60, operands: [multiname(abc, "PowerType")] }, getprop("var_315"),
     { opcode: 0x46, operands: [multiname(abc, "GetSummonedCreatures"), writeU30(2)] },
     ...(PROBE_CALL
-      // Probe build: make the call, discard its result, keep collector = clientEnt. Isolates the
-      // call + scope from the iteration loop.
+      // Probe build: make the call, discard its result, keep collector = clientEnt.
       ? [{ opcode: 0x29 } as Op, { opcode: 0x10, branchTo: "end" } as Op]
+      // Loop-free pet lookup: collector = summoned[0]. The earlier hasnext2/nextvalue `for each`
+      // loop verified cleanly in FFDec AND our disassembler, but real Flash rejected it at load with
+      // VerifyError #1021 ("branch target not on a valid instruction") — a control-flow-reachability
+      // disagreement on the loop's back-edge that neither linear disassembler models. Confirmed
+      // in-game 2026-07-23 via a debug Flash projector + flashlog. Direct [0] indexing uses only
+      // simple forward branches (no hasnext2, no back-edge). Every step is guarded so a wrong result
+      // just falls back to clientEnt with no crash: a null vector, an empty vector, or a null element
+      // each branch to "end" leaving collector = the player.
       : [
-        { opcode: 0x82 }, setlocal(L_VEC),
-        getlocal(L_VEC), { opcode: 0x12, branchTo: "end" },
-        { opcode: 0x24, operands: [s8(0)] }, setlocal(L_IDX),
-        { opcode: 0x10, branchTo: "loopCheck" },
-
-        { opcode: -1, label: "loopBody" },
-        getlocal(L_VEC), getlocal(L_IDX), { opcode: 0x23 },
-        { opcode: 0x80, operands: [multiname(abc, "Entity")] },
-        { opcode: 0x2a }, { opcode: 0x12, branchTo: "skip" },
-        setlocal(L_COLLECTOR),
-        { opcode: 0x10, branchTo: "end" },
-        { opcode: -1, label: "skip" },
-        { opcode: 0x29 },
-
-        { opcode: -1, label: "loopCheck" },
-        { opcode: 0x32, operands: [writeU30(L_VEC), writeU30(L_IDX)] },
-        { opcode: 0x11, branchTo: "loopBody" },
+        { opcode: 0x82 }, setlocal(L_VEC),                                       // coerce_a; L_VEC = result
+        getlocal(L_VEC), { opcode: 0x12, branchTo: "end" },                      // iffalse end (null vector)
+        getlocal(L_VEC), getprop("length"),
+        { opcode: 0x24, operands: [s8(0)] }, { opcode: 0x16, branchTo: "end" },   // getproperty length; ifle end (empty)
+        getlocal(L_VEC), { opcode: 0x24, operands: [s8(0)] },
+        { opcode: 0x66, operands: [writeU30(MULTINAMEL_IDX)] },                   // vector[0]
+        { opcode: 0x80, operands: [multiname(abc, "Entity")] }, setlocal(L_IDX),  // coerce Entity; L_IDX = pet
+        getlocal(L_IDX), { opcode: 0x12, branchTo: "end" },                       // iffalse end (null element)
+        getlocal(L_IDX), setlocal(L_COLLECTOR),                                   // collector = pet
       ]),
 
     // Precompute the pickup-box centre here rather than at the read sites. Reading the property at
@@ -406,6 +440,7 @@ function retargetSite(
 function patch(swfPath: string, verify: boolean, only: Only): void {
   const ctx = parseSwf(swfPath);
   const abc = parseAbc(ctx);
+  MULTINAMEL_IDX = findFirstMultinameL(ctx);
 
   const brainIdx = classIndexByName(abc, "Brain");
   const lootIdx = classIndexByName(abc, "Loot");
