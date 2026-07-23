@@ -350,6 +350,13 @@ function buildLootPrologue(abc: ReturnType<typeof parseAbc>): Buffer {
     { opcode: 0xd0 }, getprop("var_1"), getprop("clientEnt"), setlocal(L_COLLECTOR),
     getlocal(L_COLLECTOR), { opcode: 0x12, branchTo: "done" },
 
+    // Only GOLD loot is fetched by the pet. `this.var_79 > 0` is the gold discriminator (see
+    // pet-fetches-loot memory). For anything else — health orbs, gear, dye — jump straight to the
+    // read sites with collector still = clientEnt, so the PLAYER collects them at the player's own
+    // position exactly as in stock. This also keeps the no-pet case fully stock for every loot type:
+    // gold with no summoned pet falls through GetSummonedCreatures (empty) back to clientEnt anyway.
+    { opcode: 0xd0 }, getprop("var_79"), { opcode: 0x24, operands: [s8(0)] }, { opcode: 0x16, branchTo: "end" },
+
     { opcode: 0xd0 }, getprop("var_1"),
     getlocal(L_COLLECTOR), getprop("id"),
     { opcode: 0x60, operands: [multiname(abc, "PowerType")] }, getprop("var_315"),
