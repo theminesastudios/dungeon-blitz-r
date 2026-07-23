@@ -33,8 +33,8 @@ assert.equal(
 );
 assert.match(
   verification.stdout,
-  /Forge tutorial persistence patch verified\./,
-  "The served client did not prove both the completion save and restart restore paths",
+  /Forge tutorial persistence patch verified with lazy restore\./,
+  "The served client did not prove completion saving plus verifier-safe lazy restoration",
 );
 
 console.log("forge_tutorial_persistence_regression: ok");

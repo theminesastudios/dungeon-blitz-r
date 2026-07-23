@@ -15,6 +15,7 @@ import {
   methodIdxForTrait,
   parseAbc,
   parseSwf,
+  readU30,
   writeSwf,
   writeU30,
 } from "./swfPatchUtils";
@@ -35,6 +36,7 @@ const GAME_CLASS = "Game";
 const GAME_INITIALIZE_METHOD = "method_1435";
 const TUTORIAL_CLASS = "class_89";
 const TUTORIAL_COMPLETE_METHOD = "method_345";
+const TUTORIAL_CHECK_METHOD = "CheckCompletedTutorials";
 
 type ParsedMethod = {
   body: MethodBodyInfo;
@@ -239,14 +241,28 @@ function persistenceSequence(symbols: PatchSymbols): Buffer {
 
 function restoreSequence(symbols: PatchSymbols): Buffer {
   return Buffer.concat([
-    Buffer.from([0xd0]), // getlocal0 (Game)
-    Buffer.from([0xd0]), // getlocal0 (Game)
+    op(0x60, symbols.var1), // getlex var_1 (Game)
+    op(0x60, symbols.var1), // getlex var_1 (Game)
     op(0x66, symbols.tutorialsCompleted), // current in-memory mask
-    Buffer.from([0xd0]), // getlocal0 (Game)
+    op(0x60, symbols.var1), // getlex var_1 (Game)
     op(0x66, symbols.var304), // saved-game SharedObject
     op(0x66, symbols.data),
     op(0x66, symbols.tutorialsCompleted), // persisted mask (undefined => uint(0))
     Buffer.from([0xa9]), // bitor, retaining any already-completed bits
+    op(0x61, symbols.tutorialsCompleted),
+  ]);
+}
+
+function unsafeStartupRestoreSequence(symbols: PatchSymbols): Buffer {
+  return Buffer.concat([
+    Buffer.from([0xd0]), // getlocal0 (Game)
+    Buffer.from([0xd0]), // getlocal0 (Game)
+    op(0x66, symbols.tutorialsCompleted),
+    Buffer.from([0xd0]), // getlocal0 (Game)
+    op(0x66, symbols.var304),
+    op(0x66, symbols.data),
+    op(0x66, symbols.tutorialsCompleted),
+    Buffer.from([0xa9]), // bitor
     op(0x61, symbols.tutorialsCompleted),
   ]);
 }
@@ -349,17 +365,9 @@ function insertCode(code: Buffer, insertAt: number, inserted: Buffer, label: str
   return patched;
 }
 
-function findVar304Initialization(code: Buffer, symbols: PatchSymbols): number {
-  const instructions = disassemble(code, `${GAME_CLASS}.${GAME_INITIALIZE_METHOD}`);
-  const matches = instructions.filter((instruction) =>
-    instruction.opcode === 0x68 &&
-    instruction.operands[0]?.[0] === "u30" &&
-    instruction.operands[0][1] === symbols.var304
-  );
-  if (matches.length !== 1) {
-    throw new PatchError(`Expected one var_304 initialization, found ${matches.length}`);
-  }
-  return matches[0].offset + matches[0].size;
+function findMethodEntryInsertion(code: Buffer, label: string): number {
+  const scopeSetup = Buffer.from([0xd0, 0x30]); // getlocal0; pushscope
+  return requireUniqueSequence(code, scopeSetup, `${label} scope setup`) + scopeSetup.length;
 }
 
 function patchStatus(
@@ -367,14 +375,14 @@ function patchStatus(
   abc: AbcParseResult,
   symbols: PatchSymbols,
 ): {
-  game: ParsedMethod;
+  tutorialCheck: ParsedMethod;
   tutorial: ParsedMethod;
-  gameInsertAt: number;
+  restoreInsertAt: number;
   tutorialInsertAt: number;
   hasRestore: boolean;
   hasPersistence: boolean;
 } {
-  const game = getMethod(ctx, abc, GAME_CLASS, GAME_INITIALIZE_METHOD);
+  const tutorialCheck = getMethod(ctx, abc, TUTORIAL_CLASS, TUTORIAL_CHECK_METHOD);
   const tutorial = getMethod(ctx, abc, TUTORIAL_CLASS, TUTORIAL_COMPLETE_METHOD);
 
   const completion = tutorialCompletionSequence(symbols);
@@ -384,16 +392,21 @@ function patchStatus(
     "interactive tutorial completion",
   );
   const tutorialInsertAt = completionOffset + completion.length;
-  const gameInsertAt = findVar304Initialization(game.code, symbols);
+  const restoreInsertAt = findMethodEntryInsertion(
+    tutorialCheck.code,
+    `${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD}`,
+  );
   const persistence = persistenceSequence(symbols);
   const restore = restoreSequence(symbols);
 
   return {
-    game,
+    tutorialCheck,
     tutorial,
-    gameInsertAt,
+    restoreInsertAt,
     tutorialInsertAt,
-    hasRestore: game.code.subarray(gameInsertAt, gameInsertAt + restore.length).equals(restore),
+    hasRestore: tutorialCheck.code
+      .subarray(restoreInsertAt, restoreInsertAt + restore.length)
+      .equals(restore),
     hasPersistence: tutorial.code
       .subarray(tutorialInsertAt, tutorialInsertAt + persistence.length)
       .equals(persistence),
@@ -412,9 +425,30 @@ function verifySwf(swfPath: string): void {
     );
   }
 
-  verifyBranchTargets(status.game.code, `${GAME_CLASS}.${GAME_INITIALIZE_METHOD}`);
+  const gameInitialize = getMethod(ctx, abc, GAME_CLASS, GAME_INITIALIZE_METHOD);
+  if (findAll(gameInitialize.code, unsafeStartupRestoreSequence(symbols)).length !== 0) {
+    throw new PatchError(
+      "Forge tutorial restore still runs during early Game initialization",
+    );
+  }
+
+  const [tutorialCheckMaxStack] = readU30(
+    ctx.body,
+    status.tutorialCheck.body.maxStackPos,
+    `${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD}.max_stack`,
+  );
+  if (tutorialCheckMaxStack < 3) {
+    throw new PatchError(
+      `${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD} max_stack ${tutorialCheckMaxStack} is below 3`,
+    );
+  }
+
+  verifyBranchTargets(
+    status.tutorialCheck.code,
+    `${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD}`,
+  );
   verifyBranchTargets(status.tutorial.code, `${TUTORIAL_CLASS}.${TUTORIAL_COMPLETE_METHOD}`);
-  console.log("Forge tutorial persistence patch verified.");
+  console.log("Forge tutorial persistence patch verified with lazy restore.");
 }
 
 function patchSwf(swfPath: string): void {
@@ -434,11 +468,11 @@ function patchSwf(swfPath: string): void {
     );
   }
 
-  const patchedGame = insertCode(
-    status.game.code,
-    status.gameInsertAt,
+  const patchedTutorialCheck = insertCode(
+    status.tutorialCheck.code,
+    status.restoreInsertAt,
     restoreSequence(symbols),
-    `${GAME_CLASS}.${GAME_INITIALIZE_METHOD}`,
+    `${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD}`,
   );
   const patchedTutorial = insertCode(
     status.tutorial.code,
@@ -450,17 +484,17 @@ function patchSwf(swfPath: string): void {
   const patches: BytePatch[] = [
     {
       key: "forge-tutorial-load-code",
-      start: status.game.body.codeStart,
-      end: status.game.body.codeStart + status.game.body.codeLen,
-      data: patchedGame,
-      detail: "restore completed tutorials from dbSavedGameData",
+      start: status.tutorialCheck.body.codeStart,
+      end: status.tutorialCheck.body.codeStart + status.tutorialCheck.body.codeLen,
+      data: patchedTutorialCheck,
+      detail: "restore completed tutorials from dbSavedGameData when tutorials are checked",
     },
     {
       key: "forge-tutorial-load-code-length",
-      start: status.game.body.codeLenPos,
-      end: status.game.body.codeStart,
-      data: writeU30(patchedGame.length),
-      detail: "update Game initializer code length",
+      start: status.tutorialCheck.body.codeLenPos,
+      end: status.tutorialCheck.body.codeStart,
+      data: writeU30(patchedTutorialCheck.length),
+      detail: "update tutorial-check code length",
     },
     {
       key: "forge-tutorial-save-code",
