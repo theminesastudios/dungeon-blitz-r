@@ -249,7 +249,7 @@ async function testServedHostBootstrapsPendingDiscordLogin(): Promise<void> {
         );
         assert.match(
             html,
-            /DungeonBlitz\.swf\?fv=cbp&gv=cbp&clientrev=maintenance-command-1/,
+            /DungeonBlitz\.swf\?fv=cbp&gv=cbp&clientrev=swf-73136e20931e/,
             'the currently served SWF should use its cache-safe asset revision'
         );
     } finally {
