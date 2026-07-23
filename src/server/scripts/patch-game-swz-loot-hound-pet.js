@@ -59,17 +59,17 @@ const ART_COLORS = [
 
 const LOCALES = {
     en: {
-        displayName: 'Loot Hound',
+        displayName: "Neo's Minnos",
         bonusInfo: 'Collects dropped crafting materials for you',
         description: 'A keen-nosed companion that trots along at your heel and fetches every scrap of crafting material you leave behind.',
-        powerDisplayName: 'Summon Loot Hound',
+        powerDisplayName: "Summon Neo's Minnos",
         powerDescription: 'Summons a hound that follows you around and fetches dropped materials.'
     },
     tr: {
-        displayName: 'Ganimet Tazisi',
+        displayName: "Neo's Minnos",
         bonusInfo: 'Dusen uretim materyallerini senin yerine toplar',
         description: 'Kesin burunlu bir yoldas. Pesinde yurur ve arkanda biraktigin her uretim materyalini toplar.',
-        powerDisplayName: 'Ganimet Tazisi Cagir',
+        powerDisplayName: "Neo's Minnos Cagir",
         powerDescription: 'Pesinde gezen ve dusen materyalleri toplayan bir tazi cagirir.'
     }
 };
@@ -142,11 +142,23 @@ function buildEntType(eol) {
     return [
         '\t<EntType EntName="' + ENT_NAME + '" parent="DireBase">',
         '\t\t<DisplayName>Pet</DisplayName>',
+        // Realm/DevStatus MUST stay "Pet" (the cosmetic vanity realm). Switching to NatureGuard's
+        // "PlayerPet" realm did fix the run-after-knockback animation, but it also made the client
+        // treat the pet as a room-bound combat ally: it stopped following the player through doors
+        // into dungeon rooms (left behind outside), which makes a loot pet useless. Room-following is
+        // essential and non-negotiable, so we keep the vanity realm and accept the cosmetic
+        // hit-animation quirk. (A grounded, follow-everywhere, untargetable pet is not expressible in
+        // the EntType schema — there is no untargetable flag, and the untargetable brains all hover.)
         '\t\t<DevStatus>Pet</DevStatus>',
         '\t\t<MeleeDamage>1</MeleeDamage>',
         '\t\t<MagicDamage>1</MagicDamage>',
         '\t\t<ArmorClass>1</ArmorClass>',
-        '\t\t<HitPoints>1</HitPoints>',
+        // FollowPet is a grounded, *targetable* brain (only the hovering LittlePet/WanderingPet
+        // brains set bUntargetable), so enemies can hit this pet. With HitPoints=1 a single stray
+        // blow or AoE killed it and it vanished from the player's side mid-combat. There is no
+        // untargetable flag in the EntType schema, so make it effectively immortal instead: it can
+        // still be struck (and may flinch), but it will not die and disappear.
+        '\t\t<HitPoints>999999</HitPoints>',
         '\t\t<Realm>Pet</Realm>',
         '\t\t<EntRank>Pet</EntRank>',
         '\t\t<Speed>13</Speed>',

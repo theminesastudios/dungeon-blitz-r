@@ -51,7 +51,9 @@ export interface DiscordPartyJoinResult {
         | 'party-not-found'
         | 'party-leader-mismatch'
         | 'party-locked'
-        | 'party-full';
+        | 'party-full'
+        | 'requester-in-dungeon'
+        | 'party-in-dungeon';
     message: string;
     partyId: number | null;
 }
@@ -885,6 +887,26 @@ export class SocialHandler {
         return Boolean(party && SocialHandler.normalizeName(party.group.leader) === SocialHandler.normalizeName(name));
     }
 
+    /**
+     * A dungeon run is keyed off the party that started it — level scope, shared
+     * progress and the completion state all hang off that party id. Letting the
+     * roster change mid-run would strand that state, so membership is frozen while
+     * anyone involved is inside a dungeon. Walking back out is still allowed; only
+     * the party bond is locked.
+     */
+    private static isInsideDungeon(client: Client | null | undefined): boolean {
+        return Boolean(client) && LevelConfig.isDungeonLevel(client!.currentLevel);
+    }
+
+    private static isCharacterInsideDungeon(name: string): boolean {
+        return SocialHandler.isInsideDungeon(SocialHandler.getOnlineSession(name));
+    }
+
+    /** True when any online member of the party is currently inside a dungeon. */
+    private static isPartyInsideDungeon(group: PartyGroup): boolean {
+        return group.members.some((member) => SocialHandler.isCharacterInsideDungeon(member));
+    }
+
     private static createParty(leaderName: string): PartyGroup {
         let partyId = 0;
         do {
@@ -1169,6 +1191,15 @@ export class SocialHandler {
         }
 
         const requesterDisplayName = requester.character.name;
+        if (SocialHandler.isInsideDungeon(requester)) {
+            return {
+                ok: false,
+                reason: 'requester-in-dungeon',
+                message: `${requesterDisplayName} cannot join a party while inside a dungeon.`,
+                partyId: null
+            };
+        }
+
         const requesterParty = SocialHandler.getPartyForName(requesterDisplayName);
         if (requesterParty && requesterParty.partyId === targetPartyId) {
             return {
@@ -1222,6 +1253,15 @@ export class SocialHandler {
                 ok: false,
                 reason: 'party-full',
                 message: `${group.leader}'s party is already full.`,
+                partyId: targetPartyId
+            };
+        }
+
+        if (SocialHandler.isPartyInsideDungeon(group)) {
+            return {
+                ok: false,
+                reason: 'party-in-dungeon',
+                message: `${group.leader}'s party is in the middle of a dungeon run.`,
                 partyId: targetPartyId
             };
         }
@@ -1559,6 +1599,11 @@ export class SocialHandler {
             return;
         }
 
+        if (SocialHandler.isInsideDungeon(client)) {
+            SocialHandler.sendChatStatus(client, 'You cannot form a party while inside a dungeon. Leave the dungeon first.');
+            return;
+        }
+
         const invitee = SocialHandler.getOnlineSession(inviteeName);
         if (!invitee?.character) {
             SocialHandler.sendChatStatus(client, `Player ${inviteeName} not found`);
@@ -1572,6 +1617,11 @@ export class SocialHandler {
 
         if (SocialHandler.getPartyForName(invitee.character.name)) {
             SocialHandler.sendChatStatus(client, `${invitee.character.name} is already in a party.`);
+            return;
+        }
+
+        if (SocialHandler.isInsideDungeon(invitee)) {
+            SocialHandler.sendChatStatus(client, `${invitee.character.name} is inside a dungeon and cannot join a party.`);
             return;
         }
 
@@ -1623,6 +1673,18 @@ export class SocialHandler {
             return;
         }
 
+        if (SocialHandler.isInsideDungeon(client)) {
+            SocialHandler.sendChatStatus(client, 'You cannot join a party while inside a dungeon. Leave the dungeon first.');
+            SocialHandler.sendChatStatus(inviter, `${inviteeName} is inside a dungeon and cannot join a party.`);
+            return;
+        }
+
+        if (SocialHandler.isInsideDungeon(inviter)) {
+            SocialHandler.sendChatStatus(client, `${inviter.character.name} is inside a dungeon and cannot form a party.`);
+            SocialHandler.sendChatStatus(inviter, 'You cannot form a party while inside a dungeon. Leave the dungeon first.');
+            return;
+        }
+
         const inviterExistingParty = SocialHandler.getPartyForName(inviter.character.name);
         const group = inviterExistingParty?.group ?? SocialHandler.createParty(inviter.character.name);
         const partyId = inviterExistingParty?.partyId ?? group.id;
@@ -1661,6 +1723,11 @@ export class SocialHandler {
             return;
         }
 
+        if (SocialHandler.isInsideDungeon(client)) {
+            SocialHandler.sendChatStatus(client, 'You cannot join a party while inside a dungeon. Leave the dungeon first.');
+            return;
+        }
+
         const targetSession = SocialHandler.getOnlineSession(targetName);
         if (!targetSession?.character) {
             SocialHandler.sendChatStatus(client, `Player ${targetName} not found`);
@@ -1675,6 +1742,11 @@ export class SocialHandler {
 
         if (targetParty.group.locked) {
             SocialHandler.sendChatStatus(client, `${targetSession.character.name}'s party is locked.`);
+            return;
+        }
+
+        if (SocialHandler.isPartyInsideDungeon(targetParty.group)) {
+            SocialHandler.sendChatStatus(client, `${targetSession.character.name}'s party is in the middle of a dungeon run.`);
             return;
         }
 
@@ -1696,6 +1768,11 @@ export class SocialHandler {
         const party = SocialHandler.getPartyForName(client.character.name);
         if (!party) {
             SocialHandler.sendChatStatus(client, 'You are not in a party.');
+            return;
+        }
+
+        if (SocialHandler.isInsideDungeon(client)) {
+            SocialHandler.sendChatStatus(client, 'You cannot leave your party while inside a dungeon. You may leave the dungeon instead.');
             return;
         }
 
@@ -1766,6 +1843,16 @@ export class SocialHandler {
             return;
         }
 
+        if (SocialHandler.isInsideDungeon(client)) {
+            SocialHandler.sendChatStatus(client, 'You cannot remove party members while inside a dungeon.');
+            return;
+        }
+
+        if (SocialHandler.isCharacterInsideDungeon(targetMember)) {
+            SocialHandler.sendChatStatus(client, `${targetMember} is inside a dungeon and cannot be removed from the party.`);
+            return;
+        }
+
         const oldMembers = [...party.group.members];
         const targetSession = SocialHandler.getOnlineSession(targetMember);
         SocialHandler.removePartyMember(targetMember);
@@ -1828,6 +1915,11 @@ export class SocialHandler {
         );
         if (!targetMember) {
             SocialHandler.sendChatStatus(client, `${targetName} is not in your party.`);
+            return;
+        }
+
+        if (SocialHandler.isPartyInsideDungeon(party.group)) {
+            SocialHandler.sendChatStatus(client, 'The party leader cannot be changed during a dungeon run.');
             return;
         }
 

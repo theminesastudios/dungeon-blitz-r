@@ -314,18 +314,18 @@ export class PetHandler {
     }
 
     /**
-     * Loot magnet pets collect gold and materials for the player, so those drops are
-     * granted on the spot instead of being spawned on the ground for a walk-over pickup.
+     * A loot magnet pet only fetches while it is the summoned companion walking beside
+     * the player — an owned-but-unsummoned pet does nothing, and the player picks their
+     * own loot up as normal. Gated on the active pet rather than every equipped slot so
+     * the bonus reads as something the visible pet is doing.
      */
-    static hasEquippedLootMagnetPet(character: any): boolean {
-        for (const pet of PetHandler.getEquippedPetRecords(character)) {
-            const petDef = PetConfig.getPetDef(Number(pet.typeID ?? 0));
-            if (petDef?.LootMagnet) {
-                return true;
-            }
+    static hasActiveLootMagnetPet(character: any): boolean {
+        const activePet = PetHandler.getActivePetRecord(character);
+        if (!activePet) {
+            return false;
         }
 
-        return false;
+        return Boolean(PetConfig.getPetDef(Number(activePet.typeID ?? 0))?.LootMagnet);
     }
 
     static applyActivePetExperience(client: Client, xpAmount: number, bonusLevelUps: number = 0): boolean {
