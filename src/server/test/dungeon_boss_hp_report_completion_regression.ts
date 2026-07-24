@@ -326,6 +326,55 @@ async function testEmbodimentWaitsForActualBossDefeatSignal(): Promise<void> {
     GlobalState.combatContributions.clear();
 }
 
+// The server is never told a client-spawned hostile's real health pool, so it
+// derives one from EntTypes. Dread Goblin Camp showed what happens when that
+// derived pool is committed as a kill: the rank screen opened with Chief
+// Tourzahl still at a quarter health and the ending cutscene unplayed. A boss
+// whose pool is the server's own estimate must wait for the client's defeat
+// signal no matter how much reported damage accumulates.
+async function testDerivedHealthPoolNeverCommitsTheKill(): Promise<void> {
+    const client = createClient('GoblinRiverDungeonHard', 6);
+    const boss = createBoss(10_206, 'GoblinBoss2Hard');
+    const derivedMaxHp = (CombatHandler as any).estimateHostileMaxHp(boss, 'GoblinRiverDungeonHard');
+    assert.ok(derivedMaxHp > 0, 'the Dread boss health pool could not be derived');
+
+    // Exactly the shape the live server produces: maxHp is the server's estimate.
+    boss.hp = derivedMaxHp;
+    boss.maxHp = derivedMaxHp;
+    const scope = seedBosses(client, [boss]);
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    (CombatHandler as any).recordContribution(scope, boss.id, client, derivedMaxHp);
+
+    // Enough reported damage to drain the derived pool several times over, which
+    // is what this server's inflated damage numbers actually do.
+    for (let report = 0; report < 4; report++) {
+        CombatHandler.handleCharRegen(client as never, buildHpDeltaPayload(boss.id, -derivedMaxHp));
+    }
+
+    assert.equal(
+        boss.dead,
+        false,
+        'a derived health pool let client HP reports kill the boss'
+    );
+    assert.equal(
+        DungeonCompletionSystem.evaluate(scope).objectivesMet,
+        false,
+        'the rank screen opened from server-side damage accounting alone'
+    );
+
+    // The client's own defeat signal still completes the run, so the deferral
+    // cannot strand a dungeon.
+    await CombatHandler.handleEntityDestroy(client as never, buildDestroyEntityPayload(boss.id));
+    assert.equal(
+        DungeonCompletionSystem.evaluate(scope).objectivesMet,
+        true,
+        'the boss defeat signal no longer completes the dungeon'
+    );
+
+    clearRun(client);
+    GlobalState.combatContributions.clear();
+}
+
 async function main(): Promise<void> {
     const dataDir = path.resolve(__dirname, '../data');
     LevelConfig.load(dataDir);
@@ -353,6 +402,7 @@ async function main(): Promise<void> {
         testPartyBossHpReportsAggregateAcrossParticipants();
         await testContributedBossDestroyOverridesStaleCanonicalHp();
         await testEmbodimentWaitsForActualBossDefeatSignal();
+        await testDerivedHealthPoolNeverCommitsTheKill();
     } finally {
         combatHandler.fireAndForgetMissionWork = originalMissionWork;
     }

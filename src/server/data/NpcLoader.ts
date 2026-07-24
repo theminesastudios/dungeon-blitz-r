@@ -34,13 +34,28 @@ export class NpcLoader {
         'JC_Mini2'
     ]);
 
+    // A Hard level normally reuses its base level's NPC list because it is the
+    // same geometry at a higher difficulty. TutorialDungeonHard is not: Dread
+    // Goblin Hideout is built from a_Level_GoblinBeachHard, a completely
+    // different room set — which is also why it has no NPCAnna and no Chains03.
+    //
+    // Inheriting anyway planted TutorialDungeon's authored boss (GoblinBoss1,
+    // id 3923550, level position 22695,2959) into the Dread run. Those are the
+    // *normal* dungeon's coordinates, and in the Dread layout they land on top
+    // of room 09's treasure chest — the motionless second Tag Ugo standing by
+    // the chest, never driven, never damaged, never removed. It also counts as
+    // an undefeated required boss, so the run's objectives never complete.
+    private static readonly LEVELS_WITHOUT_BASE_NPC_FALLBACK = new Set<string>([
+        'TutorialDungeonHard'
+    ]);
+
     private static normalizeLevelName(levelName: string): string {
         return String(levelName ?? '').trim();
     }
 
     private static resolveFallbackLevelName(levelName: string): string | null {
         const normalizedLevel = this.normalizeLevelName(levelName);
-        if (!normalizedLevel.endsWith('Hard')) {
+        if (!normalizedLevel.endsWith('Hard') || this.LEVELS_WITHOUT_BASE_NPC_FALLBACK.has(normalizedLevel)) {
             return null;
         }
 

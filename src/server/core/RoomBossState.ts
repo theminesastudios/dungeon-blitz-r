@@ -39,6 +39,7 @@ function getMarker(levelScope: string, bossId: number): RoomBossMarker | null {
 
 export function clearRoomBossState(): void {
     roomBossMarkersByScope.clear();
+    openBossScenesByScope.clear();
 }
 
 export function getRoomBossAwareRoomId(entity: any, fallback: number = -1): number {
@@ -83,6 +84,48 @@ export function markRoomBossEntity(levelScope: string, bossId: number, roomId: n
 
         markEntity(session.entities?.get(normalizedBossId), normalizedRoomId, normalizedBossName);
     }
+}
+
+// BossFight announcing an encounter (0xAC) is the only moment the client tells
+// us which entity it actually drives. Recording that opens a window in which any
+// *further* boss cue a client produces is, by definition, a second copy: the
+// motionless Tag Ugo that Dread Goblin Hideout leaves standing through the whole
+// scene. The marker map alone could not express this, because the announced id
+// often does not resolve to a shared entity at all.
+type OpenBossScene = {
+    roomId: number;
+    bossId: number;
+    bossName: string;
+    openedAt: number;
+};
+
+const openBossScenesByScope = new Map<string, OpenBossScene>();
+
+export function noteBossSceneOpened(
+    levelScope: string,
+    roomId: number,
+    bossId: number,
+    bossName: string = ''
+): void {
+    const scopeKey = String(levelScope ?? '').trim();
+    if (!scopeKey) {
+        return;
+    }
+
+    openBossScenesByScope.set(scopeKey, {
+        roomId: Math.max(0, Math.round(Number(roomId ?? 0))),
+        bossId: Math.max(0, Math.round(Number(bossId ?? 0))),
+        bossName: String(bossName ?? '').trim(),
+        openedAt: Date.now()
+    });
+}
+
+export function getOpenBossScene(levelScope: string): OpenBossScene | null {
+    return openBossScenesByScope.get(String(levelScope ?? '').trim()) ?? null;
+}
+
+export function clearOpenBossScene(levelScope: string): void {
+    openBossScenesByScope.delete(String(levelScope ?? '').trim());
 }
 
 export function isRoomBossEntity(levelScope: string, entity: any): boolean {

@@ -15,7 +15,8 @@ import { noteDungeonRunBossCutscene, noteDungeonRunEntitySeen } from '../core/Du
 import { areClientsInSameParty, getPartyIdForClient, isClientPartyLeader, sharesRoomIds } from '../core/PartySync';
 import { areClientsInSameLevelScope, getClientLevelScope, getLevelScopeKey, getScopeLevelName } from '../core/LevelScope';
 import { getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
-import { markRoomBossEntity } from '../core/RoomBossState';
+import { clearOpenBossScene, getOpenBossScene, isRoomBossEntity, markRoomBossEntity } from '../core/RoomBossState';
+import { getBossIdentityKeys, looksLikeDungeonBoss } from '../core/BossCopyCensus';
 import { TutorialDungeonAuthorityEntity, TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { MovementAuthority } from '../core/MovementAuthority';
 
@@ -1384,6 +1385,9 @@ export class EntityHandler {
         GlobalState.levelEntities.delete(levelScope);
         GlobalState.levelQuestProgress.delete(levelScope);
         DungeonCompletionSystem.reset(levelScope);
+        // A fresh run must not inherit the previous run's open boss scene, or the
+        // first legitimate boss cue of the new run would be read as a copy.
+        clearOpenBossScene(levelScope);
         console.log(
             `[EntityHandler] Cleared finished dungeon run scope ${levelScope} ` +
             `(${levelMap.size} stale entities) for a fresh run`
@@ -2152,7 +2156,19 @@ export class EntityHandler {
         }
 
         const targetTeam = Number(entity?.team ?? 0);
-        if (partyId <= 0 || targetTeam !== 2 || !LevelConfig.isDungeonLevel(levelName)) {
+        if (targetTeam !== 2 || !LevelConfig.isDungeonLevel(levelName)) {
+            return null;
+        }
+
+        // A dungeon holds exactly one of each required boss, so a second cue
+        // carrying that boss name is always the same encounter even when its room
+        // id has not synced — Tag Ugo's cues arrive with room ids like 2362519204
+        // and 0. A solo run has no party id, which used to skip this fallback
+        // entirely and let the stray cue become a second canonical: a motionless
+        // Tag Ugo that kept every debuff ever applied to it. Ordinary hostiles
+        // still need the party guard, because a level legitimately places many
+        // enemies of one type and merging them across rooms would lose kills.
+        if (partyId <= 0 && !DungeonCompletionConditions.isRequiredBoss(levelName, entity)) {
             return null;
         }
 
@@ -2168,7 +2184,7 @@ export class EntityHandler {
         );
     }
 
-    private static estimateClientSpawnHostileMaxHp(entity: any): number {
+    private static estimateClientSpawnHostileMaxHp(entity: any, levelName: string | null | undefined = ''): number {
         const explicitMaxHp = Math.max(0, Math.round(Number(entity?.maxHp ?? 0)));
         if (explicitMaxHp > 0) {
             return explicitMaxHp;
@@ -2179,7 +2195,10 @@ export class EntityHandler {
         const rawLevel = Number(entity?.level ?? entType?.Level ?? entType?.baseLevel ?? entType?.ExpLevel ?? 1);
         const hitPointScale = Number(entity?.HitPoints ?? entity?.hitPoints ?? entType?.HitPoints ?? NaN);
         if (Number.isFinite(hitPointScale) && hitPointScale > 0) {
-            return Math.max(1, Math.round(EntityHandler.getHostileBaseHpForLevel(rawLevel) * hitPointScale));
+            const dreadLevelOffset = LevelConfig.getHardDungeonEnemyLevelOffset(levelName);
+            return Math.max(1, Math.round(
+                EntityHandler.getHostileBaseHpForLevel(rawLevel + dreadLevelOffset) * hitPointScale
+            ));
         }
 
         return explicitHp > 0 ? explicitHp : 1;
@@ -2191,7 +2210,7 @@ export class EntityHandler {
         levelMap: Map<number, any> | null,
         entity: any,
         rawEntityId: number
-    ): void {
+    ): boolean {
         if (
             !levelName ||
             !levelMap ||
@@ -2202,12 +2221,12 @@ export class EntityHandler {
             entity.isPlayer ||
             Number(entity.team ?? 0) !== EntityTeam.ENEMY
         ) {
-            return;
+            return false;
         }
 
         const localId = Math.max(0, Math.round(Number(rawEntityId || entity.id) || 0));
         if (localId <= 0) {
-            return;
+            return false;
         }
 
         const partyId = getPartyIdForClient(client);
@@ -2222,10 +2241,10 @@ export class EntityHandler {
             client.token
         );
         if (duplicate) {
-            return;
+            return false;
         }
 
-        const maxHp = EntityHandler.estimateClientSpawnHostileMaxHp(entity);
+        const maxHp = EntityHandler.estimateClientSpawnHostileMaxHp(entity, levelName);
         const rawHp = Number(entity.hp ?? NaN);
         const rawDelta = Number(entity.healthDelta ?? entity.health_delta ?? NaN);
         const dead = Boolean(entity.dead) || Number(entity.entState ?? EntityState.ACTIVE) === EntityState.DEAD;
@@ -2266,6 +2285,7 @@ export class EntityHandler {
             localId,
             'owner_spawn_canonical'
         );
+        return false;
     }
 
     static rememberEntityAlias(client: Client, localEntityId: number, canonicalEntityId: number): void {
@@ -2587,6 +2607,174 @@ export class EntityHandler {
         };
     }
 
+    // The boss-scene sweep only sees copies that already exist when BossFight
+    // announces the encounter; the Dread Goblin Hideout copy registers after that
+    // packet, which is why it survived until the boss died. Once the room boss is
+    // marked, that marker is the authoritative real boss, so any later cue for the
+    // same canonical boss is the copy — the one that never moves and keeps every
+    // debuff. Retire it on arrival so it is never drawn in the boss scene.
+    private static suppressLateDuplicateRoomBossSpawn(
+        client: Client,
+        levelName: string | null | undefined,
+        levelMap: Map<number, any> | null,
+        entity: any,
+        entityId: number
+    ): boolean {
+        if (
+            !levelName ||
+            !levelMap ||
+            !entity ||
+            entity.isPlayer ||
+            entityId <= 0 ||
+            Number(entity.team ?? 0) !== EntityTeam.ENEMY ||
+            !LevelConfig.isDungeonLevel(levelName)
+        ) {
+            return false;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        const canonicalBoss = DungeonCompletionConditions.getCanonicalBossName(levelName, entity, levelScope);
+        if (!canonicalBoss) {
+            return false;
+        }
+
+        // Every arrival of a required boss, with the two facts that decide whether
+        // the duplicate guards can act: whether this cue is the marked room boss,
+        // and which scope entities currently carry a room-boss marker. If a copy
+        // slips through, this line names it and shows why nothing anchored on it.
+        if (String(process.env.DUNGEON_DIAG ?? '1').trim() !== '0') {
+            console.log(`[DUNGEON-DIAG] requiredBossSpawn ${JSON.stringify({
+                level: levelName,
+                scope: levelScope,
+                canonicalBoss,
+                entityId,
+                name: String(entity?.name ?? ''),
+                roomId: entity?.roomId,
+                // The copy arrives at the boss's authored spawn point and never
+                // leaves it, so its position is what identifies it later.
+                x: Math.round(Number(entity?.x ?? 0)),
+                y: Math.round(Number(entity?.y ?? 0)),
+                clientSpawned: Boolean(entity?.clientSpawned),
+                ownerToken: entity?.ownerToken,
+                isMarkedRoomBoss: isRoomBossEntity(levelScope, entity),
+                openBossScene: getOpenBossScene(levelScope),
+                scopeBossEntities: [...levelMap.entries()]
+                    .filter(([, candidate]) => Boolean(
+                        DungeonCompletionConditions.getCanonicalBossName(levelName, candidate, levelScope)
+                    ))
+                    .map(([candidateId, candidate]) => ({
+                        id: candidateId,
+                        name: String(candidate?.name ?? ''),
+                        marked: isRoomBossEntity(levelScope, candidate),
+                        clientSpawned: Boolean(candidate?.clientSpawned),
+                        roomId: candidate?.roomId,
+                        hp: candidate?.hp
+                    }))
+            })}`);
+        }
+
+        if (isRoomBossEntity(levelScope, entity)) {
+            return false;
+        }
+
+        for (const [existingId, existing] of levelMap.entries()) {
+            if (
+                existingId === entityId ||
+                !isRoomBossEntity(levelScope, existing) ||
+                DungeonCompletionConditions.getCanonicalBossName(levelName, existing, levelScope) !== canonicalBoss
+            ) {
+                continue;
+            }
+
+            // The destroy clears the alias, so re-point the id afterwards: damage
+            // the client already sent under it must still reach the real boss.
+            EntityHandler.destroyClientLocalEntity(client, entityId, 'late_duplicate_room_boss', entity);
+            EntityHandler.rememberEntityAlias(client, entityId, existingId);
+            console.log('[EntityHandler] Suppressed late duplicate room boss', {
+                scope: levelScope,
+                canonicalBoss,
+                keptEntityId: existingId,
+                suppressedEntityId: entityId
+            });
+            return true;
+        }
+
+        return EntityHandler.suppressSecondLocalBossVisual(client, levelName, levelScope, entity, entityId);
+    }
+
+    // The marker sweep above can only act when the announced boss id resolves to a
+    // shared entity. In Dread Goblin Hideout it does not — BossFight names an id
+    // from the client's own space — so the copy walked straight past it and stood
+    // in the scene until the rank plate. The invariant that does hold everywhere:
+    // a client renders exactly one visual per dungeon boss. Once BossFight has
+    // opened the scene, a second boss cue from a client that already holds one is
+    // the stale copy, so retire it on arrival and alias its id onto the visual the
+    // player is actually fighting.
+    private static suppressSecondLocalBossVisual(
+        client: Client,
+        levelName: string,
+        levelScope: string,
+        entity: any,
+        entityId: number
+    ): boolean {
+        const openScene = getOpenBossScene(levelScope);
+        if (!openScene) {
+            return false;
+        }
+
+        const bossKeys = getBossIdentityKeys(levelName);
+        if (!looksLikeDungeonBoss(entity, bossKeys)) {
+            return false;
+        }
+
+        // Never suppress the entity BossFight itself announced.
+        if (entityId === openScene.bossId) {
+            return false;
+        }
+
+        const existingLocalIds: number[] = [];
+        for (const [localId, localEntity] of client.entities?.entries() ?? []) {
+            const normalizedLocalId = Math.max(0, Math.round(Number(localId) || 0));
+            if (
+                normalizedLocalId <= 0 ||
+                normalizedLocalId === entityId ||
+                localEntity === entity ||
+                !looksLikeDungeonBoss(localEntity, bossKeys)
+            ) {
+                continue;
+            }
+            existingLocalIds.push(normalizedLocalId);
+        }
+
+        if (existingLocalIds.length === 0) {
+            // This client has no boss visual yet, so this cue is the one they get.
+            return false;
+        }
+
+        const keeperId = existingLocalIds.includes(openScene.bossId)
+            ? openScene.bossId
+            : Math.min(...existingLocalIds);
+
+        EntityHandler.destroyClientLocalEntity(client, entityId, 'second_local_boss_visual', entity);
+        EntityHandler.rememberEntityAlias(client, entityId, keeperId);
+
+        if (String(process.env.DUNGEON_DIAG ?? '1').trim() !== '0') {
+            console.log(`[DUNGEON-DIAG] secondLocalBossVisualSuppressed ${JSON.stringify({
+                level: levelName,
+                scope: levelScope,
+                viewer: String(client.character?.name ?? ''),
+                openedBossId: openScene.bossId,
+                openedRoomId: openScene.roomId,
+                suppressedEntityId: entityId,
+                suppressedName: String(entity?.name ?? ''),
+                keptEntityId: keeperId,
+                otherLocalBossIds: existingLocalIds
+            })}`);
+        }
+
+        return true;
+    }
+
     private static suppressDuplicateSharedClientSpawn(
         client: Client,
         levelName: string | null | undefined,
@@ -2673,12 +2861,29 @@ export class EntityHandler {
             return true;
         }
 
+        // Retaining the stray spawn as a local visual is right for a party member,
+        // whose own copy is the only boss they can see. It is wrong for the owner
+        // of the canonical: they already render that one, so the extra copy just
+        // sits there. It receives no AI and no health updates, so it never moves
+        // and keeps every debuff ever applied to it — the second Tag Ugo in Dread
+        // Goblin Hideout. Drop it and let the canonical be the single visual.
+        if (
+            Number(canonical?.ownerToken ?? 0) === Number(client.token ?? 0) &&
+            DungeonCompletionConditions.isRequiredBoss(levelName, entity)
+        ) {
+            // destroyClientLocalEntity clears the alias, so re-point the stray id
+            // afterwards: damage the client already sent under it must still land.
+            EntityHandler.destroyClientLocalEntity(client, duplicateId, 'boss_cue_duplicate_destroy', entity);
+            EntityHandler.rememberEntityAlias(client, duplicateId, canonicalId);
+            return true;
+        }
+
         client.entities.set(duplicateId, {
             ...EntityHandler.syncDamagedSharedCanonicalToLocalSpawn(client, duplicateId, entity, canonical),
             canonicalEntityId: canonicalId,
             sharedCanonicalId: canonicalId
         });
-        
+
         return true;
     }
 
@@ -3675,13 +3880,19 @@ export class EntityHandler {
             return;
         }
 
-        EntityHandler.normalizeHybridClientSpawnHostileCanonical(client, levelName, levelMap, props, rawEntityId);
+        if (EntityHandler.normalizeHybridClientSpawnHostileCanonical(client, levelName, levelMap, props, rawEntityId)) {
+            return;
+        }
 
         if (EntityHandler.suppressFollowerLeaderAuthoritativeDungeonSpawn(client, levelName, levelMap, props)) {
             return;
         }
 
         if (EntityHandler.suppressDuplicateSharedClientSpawn(client, levelName, levelMap, props)) {
+            return;
+        }
+
+        if (EntityHandler.suppressLateDuplicateRoomBossSpawn(client, levelName, levelMap, props, entityId)) {
             return;
         }
 

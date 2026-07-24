@@ -57,7 +57,11 @@ export class StaticServer {
     private readonly selectedAssetVersion = 'cbp';
     private readonly flashVersion = this.selectedAssetVersion;
     private readonly gameVersion = this.selectedAssetVersion;
-    private readonly clientRevision = 'armory-unrolled-2';
+    // Every SWF request is redirected to this token, so it — not index.html's own
+    // literal — is what decides whether a browser reuses its cached client. Bump
+    // it whenever DungeonBlitz.swf changes on disk, or players keep running the
+    // previous build and a client patch looks like it did nothing.
+    private readonly clientRevision = 'destroy-brainless-entities-1';
 
     private static shouldLog(): boolean {
         return process.env.DEBUG_STATIC_SERVER === '1';

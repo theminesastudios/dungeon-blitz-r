@@ -22,6 +22,20 @@ const LINE_REPLACEMENTS = [
     target: "8 Boss <End>That was the last of our Monster Fleet!",
     detail: "Explicitly end boss run emote before final taunt",
   },
+  // Tag Ugo walks into the Goblin Kidnappers boss scene on <Goto Red 1> with no
+  // emote at all, so he slides in on his idle pose. Goblin Camp's boss already
+  // carries the looping Run emote for the same move; give Tag Ugo the same pair.
+  // Both Goblin Kidnappers and its Dread variant read this one cue line.
+  {
+    current: "4 Boss <Goto Red 1>So, the Kraken Slayer, eh?",
+    target: "4 Boss <Run Loop><Goto Red 1>So, the Kraken Slayer, eh?",
+    detail: "Force looping Run emote during Tag Ugo walk-in line",
+  },
+  {
+    current: "8 Boss Don't look like much to me.",
+    target: "8 Boss <End>Don't look like much to me.",
+    detail: "Explicitly end Tag Ugo run emote before his second taunt",
+  },
 ] as const;
 
 function resolveSwfPath(args: string[]): string {

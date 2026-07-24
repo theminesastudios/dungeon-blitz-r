@@ -74,6 +74,16 @@ function verifyIssueLevel(issue: number, levelName: string, ordinal: number): vo
             levelMap.set(nextId, makeHostile(nextId, group[0], Boolean(condition.requireRoomBossMarker)));
             nextId += 1;
         }
+        // A boss-mode level can also gate on authored objects (Anna's chains in
+        // the tutorial dungeons). Those have to be destroyed for the run to be
+        // ready, so the harness must place them alongside the bosses.
+        for (const objective of condition.entityObjectives ?? []) {
+            const requiredCount = Math.max(1, Math.round(Number(objective.requiredCount ?? 1)));
+            for (let copy = 0; copy < requiredCount; copy++) {
+                levelMap.set(nextId, makeHostile(nextId, objective.names[0]));
+                nextId += 1;
+            }
+        }
     } else if (condition.mode === 'full-clear') {
         levelMap.set(nextId, makeHostile(nextId, `${levelName}HostileA`));
         nextId += 1;

@@ -437,6 +437,23 @@ export class LevelConfig {
         return Boolean(this.LEVELS[normalized]?.isDungeon);
     }
 
+    // Dread runs reuse the normal dungeon's SWF and the normal `EntTypes`
+    // entries: `SwampKingHard` carries exactly the same `Level` and `HitPoints`
+    // as `SwampKing`. The extra difficulty comes from the level itself, whose
+    // `mapId` sits a fixed number of tiers above the normal level's `baseId`
+    // (+15, +25 or +35 depending on the region). Anything that sizes a hostile
+    // from its EntType level has to add this offset, or the server models a
+    // Dread enemy with its normal-mode health pool.
+    static getHardDungeonEnemyLevelOffset(levelName: string | null | undefined): number {
+        const normalized = this.normalizeLevelName(levelName);
+        const spec = normalized ? this.LEVELS[normalized] : null;
+        if (!spec?.isHard || !spec.isDungeon) {
+            return 0;
+        }
+
+        return Math.max(0, Math.round(spec.mapId - spec.baseId));
+    }
+
     static isPersistentDungeonLevel(levelName: string | null | undefined): boolean {
         const normalized = this.normalizeLevelName(levelName);
         if (!normalized || normalized === 'TutorialBoat') {

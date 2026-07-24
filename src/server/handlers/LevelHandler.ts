@@ -51,7 +51,8 @@ import {
     getScopeLevelName,
     normalizeLevelInstanceId
 } from '../core/LevelScope';
-import { markRoomBossEntity } from '../core/RoomBossState';
+import { markRoomBossEntity, noteBossSceneOpened } from '../core/RoomBossState';
+import { logBossCopyCensus } from '../core/BossCopyCensus';
 import { getCharacterRuntimeLevel, getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
 import { getCraftTownHomeInstanceId } from '../utils/HomeVisitGuard';
 import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
@@ -3369,22 +3370,48 @@ export class LevelHandler {
         }, LevelHandler.GOBLIN_RIVER_BOSS_INTRO_DEFAULT_MS);
     }
 
+    private static readonly ANNA_RETURN_TO_TOWN_LINE = "Let's head back to town.";
+
+    // The line arrives from the client, and a localized client sends the
+    // translated text ("Kasabaya geri donelim."), so matching only the English
+    // source silently disabled this trigger for every non-English player. That
+    // matters because this is the sole path that frees Anna's chains in the
+    // Dread dungeon — TutorialDungeonMechanics is wired to TutorialDungeon only —
+    // so the run could never satisfy its anna_freed objective and never finished.
+    private static isAnnaReturnToTownLine(normalizedText: string): boolean {
+        if (normalizedText === LevelHandler.ANNA_RETURN_TO_TOWN_LINE) {
+            return true;
+        }
+
+        for (const locale of ['tr']) {
+            const localized = DialogueTranslationLoader.translateText(
+                LevelHandler.ANNA_RETURN_TO_TOWN_LINE,
+                locale
+            );
+            if (localized && normalizedText === localized) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     static maybeFinishTutorialDungeonAfterAnnaCutscene(
         client: Client,
         text: string
     ): void {
-        const isTutorialDungeon =
-            client.currentLevel === 'TutorialDungeon' ||
-            client.currentLevel === 'TutorialDungeonHard';
-
-        if (!isTutorialDungeon) {
+        // Only the normal dungeon has the rescue. Its Dread variant is built from
+        // a different room set (a_Level_GoblinBeachHard) that contains no NPCAnna
+        // and no Chains03 at all, so there is nothing here to free and this
+        // trigger must never fabricate a boss defeat for it.
+        if (client.currentLevel !== 'TutorialDungeon') {
             return;
         }
 
         const normalizedText =
             LevelHandler.normalizeGoblinRiverDialogue(text);
 
-        if (normalizedText !== "Let's head back to town.") {
+        if (!LevelHandler.isAnnaReturnToTownLine(normalizedText)) {
             return;
         }
 
@@ -3404,10 +3431,7 @@ export class LevelHandler {
 
         const bossEntity = {
             id: TutorialDungeonMechanics.TAG_UGO_BOSS_ID,
-            name:
-                client.currentLevel === 'TutorialDungeonHard'
-                    ? 'GoblinBoss1Hard'
-                    : 'GoblinBoss1',
+            name: 'GoblinBoss1',
             displayName: 'Tag Ugo',
             roomBossName: 'Tag Ugo',
             roomId,
@@ -5103,6 +5127,12 @@ export class LevelHandler {
         }
         if (sharedCutsceneDecision === 'finished') {
             LevelHandler.sendSharedDungeonCutsceneEndToParticipants(client, roomId, data);
+            // The participant sweep only reaches clients registered against this
+            // room's shared cutscene. The client that sent 0xA6 is telling us its
+            // own cinematic just closed, which is the signal that releases the
+            // ending gate immediately — without it the run sits out a settle timer
+            // and the rank plate arrives seconds late.
+            MissionHandler.noteDungeonCutsceneEnd(client, roomId);
             for (const viewer of LevelHandler.forLevelRecipients(client, true)) {
                 EntityHandler.sendTutorialDungeonWorldSnapshot(viewer, 'cutscene_completed');
             }
@@ -5140,7 +5170,19 @@ export class LevelHandler {
         TutorialDungeonMechanics.noteBossIntroStarted(client, bossId, bossName);
         br.readMethod9();
         br.readMethod26();
-        if (LevelHandler.shouldSuppressSharedDungeonCutscenePacket(client, roomId)) {
+
+        const levelScope = getClientLevelScope(client);
+        const suppressCutscenePackets = LevelHandler.shouldSuppressSharedDungeonCutscenePacket(client, roomId);
+
+        // This is the only moment the client names the entity its own BossFight
+        // drives. Everything below is server bookkeeping — the room-boss marker,
+        // the open-scene record, the duplicate sweep — and none of it is a packet
+        // relay, so the shared-cutscene suppression above must not skip it. It
+        // used to: a suppressed relay left the boss unmarked and the scene never
+        // recorded, which is why nothing could act on the copy standing in it.
+        LevelHandler.noteBossSceneOpenedForScope(client, levelScope, roomId, bossId, bossName, suppressCutscenePackets);
+
+        if (suppressCutscenePackets) {
             return;
         }
         const sharedCutsceneDecision = LevelHandler.beginSharedDungeonCutscene(client, roomId);
@@ -5152,12 +5194,90 @@ export class LevelHandler {
         } else if (sharedCutsceneDecision !== 'completed_duplicate') {
             LevelHandler.sendSharedDungeonCutsceneStartToClient(client, roomId, cutsceneStart.toBuffer(), 0);
         }
-        LevelHandler.setServerAuthorityHostilesUntargetableForScope(getClientLevelScope(client), roomId, true);
-        const levelScope = getClientLevelScope(client);
-        markRoomBossEntity(levelScope, bossId, roomId, bossName);
-        noteDungeonRunBossCutscene(levelScope, roomId, bossId);
+        LevelHandler.setServerAuthorityHostilesUntargetableForScope(levelScope, roomId, true);
 
         LevelHandler.relayToLevel(client, 0xAC, data);
+    }
+
+    // Split out of handleRoomBossInfo so a suppressed cutscene relay still records
+    // the encounter. Runs for every 0xAC, including repeats from party members.
+    private static noteBossSceneOpenedForScope(
+        client: Client,
+        levelScope: string,
+        roomId: number,
+        bossId: number,
+        bossName: string,
+        cutscenePacketsSuppressed: boolean
+    ): void {
+        const scopeLevelName = getScopeLevelName(levelScope);
+        markRoomBossEntity(levelScope, bossId, roomId, bossName);
+        // Recording the open scene is what lets the arrival guard retire a copy
+        // that registers after this packet, which is the Dread Goblin Hideout case.
+        noteBossSceneOpened(levelScope, roomId, bossId, bossName);
+
+        // The boss-scene sweep and the late-duplicate guard both used to anchor on
+        // this packet's boss id resolving to a canonical boss in the shared state.
+        // If it does not, that anchor is unusable — so record exactly what the
+        // client named and what the scope holds.
+        if (String(process.env.DUNGEON_DIAG ?? '1').trim() !== '0') {
+            const scopeEntities = GlobalState.levelEntities.get(levelScope);
+            console.log(`[DUNGEON-DIAG] roomBossInfo ${JSON.stringify({
+                level: scopeLevelName,
+                scope: levelScope,
+                viewer: String(client.character?.name ?? ''),
+                roomId,
+                clientRoomId: client.currentRoomId,
+                reportedBossId: bossId,
+                reportedBossName: bossName,
+                // True here means the relay was skipped; the bookkeeping below
+                // still ran, which it did not before.
+                cutscenePacketsSuppressed,
+                resolvesInScope: Boolean(scopeEntities?.has(bossId)),
+                resolvedCanonicalBoss: DungeonCompletionConditions.getCanonicalBossName(
+                    scopeLevelName,
+                    scopeEntities?.get(bossId),
+                    levelScope
+                ),
+                scopeBossEntities: [...(scopeEntities?.entries() ?? [])]
+                    .filter(([, candidate]) => Boolean(
+                        DungeonCompletionConditions.getCanonicalBossName(scopeLevelName, candidate, levelScope)
+                    ))
+                    .map(([candidateId, candidate]) => ({
+                        id: candidateId,
+                        name: String(candidate?.name ?? ''),
+                        clientSpawned: Boolean(candidate?.clientSpawned),
+                        ownerToken: candidate?.ownerToken,
+                        roomId: candidate?.roomId,
+                        hp: candidate?.hp
+                    }))
+            })}`);
+        }
+
+        // BossFight has just named the entity it drives, so any other copy of that
+        // boss in the scope is the stale runtime duplicate. Clear it now, as the
+        // boss scene opens, rather than leaving it standing until the boss dies.
+        logBossCopyCensus('roomBossInfo:before', levelScope, scopeLevelName, {
+            roomId,
+            reportedBossId: bossId,
+            reportedBossName: bossName,
+            cutscenePacketsSuppressed
+        });
+        MissionHandler.removeDuplicateBossEntities(
+            levelScope,
+            scopeLevelName,
+            DungeonCompletionConditions.getCanonicalBossName(
+                scopeLevelName,
+                GlobalState.levelEntities.get(levelScope)?.get(bossId),
+                levelScope
+            ),
+            bossId
+        );
+        MissionHandler.sweepBossSceneDuplicates(levelScope, scopeLevelName, bossId, 'roomBossInfo');
+        logBossCopyCensus('roomBossInfo:after', levelScope, scopeLevelName, {
+            roomId,
+            reportedBossId: bossId
+        });
+        noteDungeonRunBossCutscene(levelScope, roomId, bossId);
     }
 
     static handleSetUntargetable(client: Client, data: Buffer): void {

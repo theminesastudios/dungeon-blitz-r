@@ -11,6 +11,9 @@ import { DungeonCompletionSystem } from '../core/DungeonCompletionSystem';
 import { MissionLoader } from '../data/MissionLoader';
 import { NpcLoader } from '../data/NpcLoader';
 import { MissionID } from '../data/runtime';
+import { clearOpenBossScene, markRoomBossEntity, noteBossSceneOpened } from '../core/RoomBossState';
+import { DungeonCompletionConditions } from '../core/DungeonCompletionConditions';
+import { DialogueTranslationLoader } from '../data/DialogueTranslationLoader';
 import { LevelHandler } from '../handlers/LevelHandler';
 import { CombatHandler } from '../handlers/CombatHandler';
 import { EntityHandler } from '../handlers/EntityHandler';
@@ -493,15 +496,26 @@ function testPartyLeaderSideEnemiesRemainClientPrivate(): void {
 }
 
 function testOnlyTagUgoIsServerSpawned(): void {
-    for (const levelName of ['TutorialDungeon', 'TutorialDungeonHard']) {
-        const serverNpcs = NpcLoader.getNpcsForLevel(levelName);
-        assert.equal(serverNpcs.length, 1, `${levelName} should retain exactly one server-spawned entity`);
-        assert.equal(serverNpcs[0].id, TutorialDungeonMechanics.TAG_UGO_BOSS_ID);
-        assert.equal(serverNpcs[0].name, 'GoblinBoss1');
-        assert.equal(serverNpcs[0].team, EntityTeam.ENEMY);
-        assert.equal(serverNpcs[0].boss, true);
-        assert.equal(serverNpcs[0].serverOnlyObjective, false);
-    }
+    const serverNpcs = NpcLoader.getNpcsForLevel('TutorialDungeon');
+    assert.equal(serverNpcs.length, 1, 'TutorialDungeon should retain exactly one server-spawned entity');
+    assert.equal(serverNpcs[0].id, TutorialDungeonMechanics.TAG_UGO_BOSS_ID);
+    assert.equal(serverNpcs[0].name, 'GoblinBoss1');
+    assert.equal(serverNpcs[0].team, EntityTeam.ENEMY);
+    assert.equal(serverNpcs[0].boss, true);
+    assert.equal(serverNpcs[0].serverOnlyObjective, false);
+
+    // This assertion used to cover TutorialDungeonHard too, which was wrong on
+    // both counts. Dread Goblin Hideout is not in SERVER_AUTHORITY_HOSTILE_LEVELS
+    // — its Tag Ugo is the client's own cue promoted to a hybrid canonical — and
+    // it is built from a different room set, so the inherited spawn carried the
+    // normal dungeon's name and coordinates. A live run put it on top of room
+    // 09's treasure chest as a second, motionless Tag Ugo that also held the run
+    // at objectives_pending forever. Dread must seed no server hostiles at all.
+    assert.equal(
+        NpcLoader.getNpcsForLevel('TutorialDungeonHard').length,
+        0,
+        'TutorialDungeonHard must not inherit the normal dungeon server spawns'
+    );
 }
 
 function testTagUgoUsesCanonicalServerStatsAndHpSync(): void {
@@ -1278,8 +1292,598 @@ async function testCompletionAndRankAreOncePerEligibleParticipant(): Promise<voi
     );
 }
 
+// Dread Goblin Hideout is not server-authoritative, so Tag Ugo's visual is the
+// client's own cue. When a second cue for the same encounter arrived, the server
+// aliased it to the canonical but kept it as an extra local visual. That copy
+// gets no AI and no health updates, so it stands still and holds every debuff
+// forever — the second Tag Ugo in the boss scene. The owner of the canonical
+// already renders it, so the stray must be destroyed on their client instead.
+function testDreadTagUgoStrayCueIsDestroyedForItsOwner(): void {
+    const client = createFakeClient('DreadTagUgoSolo', 61041);
+    client.currentLevel = 'TutorialDungeonHard';
+    client.character.CurrentLevel.name = 'TutorialDungeonHard';
+    client.levelInstanceId = 'dread-tag-ugo-duplicate';
+    client.currentRoomId = 11;
+    resetFor(client);
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    const scope = getClientLevelScope(client as never);
+    const canonicalId = 4_500_001;
+    const strayId = 4_500_002;
+    const canonical = {
+        id: canonicalId,
+        name: 'GoblinBoss1Hard',
+        team: EntityTeam.ENEMY,
+        isPlayer: false,
+        roomId: 11,
+        x: 1500,
+        y: 900,
+        hp: 1000,
+        maxHp: 1000,
+        dead: false,
+        entState: EntityState.ACTIVE,
+        clientSpawned: false,
+        hybridCanonicalHostile: true,
+        ownerToken: client.token,
+        ownerPartyId: 0,
+        spawnKey: 'GoblinBoss1Hard:11:15:9'
+    };
+    GlobalState.levelEntities.set(scope, new Map([[canonicalId, canonical]]));
+
+    client.sentPackets.length = 0;
+    const suppressed = (EntityHandler as any).suppressDuplicateSharedClientSpawn(
+        client,
+        'TutorialDungeonHard',
+        GlobalState.levelEntities.get(scope),
+        {
+            id: strayId,
+            name: 'GoblinBoss1Hard',
+            team: EntityTeam.ENEMY,
+            isPlayer: false,
+            roomId: 11,
+            x: 1500,
+            y: 900,
+            hp: 1000,
+            maxHp: 1000,
+            dead: false,
+            entState: EntityState.ACTIVE,
+            clientSpawned: true
+        }
+    );
+
+    assert.equal(suppressed, true, 'the stray Tag Ugo cue was not recognised as a duplicate');
+    assert.equal(
+        client.entities.has(strayId),
+        false,
+        'the motionless Tag Ugo visual was kept as a second local entity'
+    );
+    assert.equal(
+        packetCount(client, 0x0D),
+        1,
+        'the owner was never told to destroy the stray Tag Ugo visual'
+    );
+    assert.equal(
+        client.entityIdAliases.get(strayId),
+        canonicalId,
+        'damage sent under the stray Tag Ugo id would no longer reach the boss'
+    );
+
+    GlobalState.sessionsByToken.delete(client.token);
+    GlobalState.levelEntities.delete(scope);
+}
+
+// Anna's chains are freed by a dialogue trigger, and the line arrives from the
+// client. A Turkish client sends "Kasabaya geri donelim.", so matching only the
+// English source left the Dread run's anna_freed objective permanently unmet:
+// the boss died and the dungeon never finished.
+function testAnnaReturnLineIsAcceptedInEveryLocale(): void {
+    DialogueTranslationLoader.load(path.resolve(__dirname, '../data'));
+    const englishLine = "Let's head back to town.";
+    const turkishLine = DialogueTranslationLoader.translateText(englishLine, 'tr');
+    assert.notEqual(
+        turkishLine,
+        englishLine,
+        'the Turkish Anna return line is missing, so this regression cannot prove anything'
+    );
+
+    const isAnnaLine = (LevelHandler as any).isAnnaReturnToTownLine.bind(LevelHandler);
+    assert.equal(isAnnaLine(englishLine), true, 'the English Anna return line stopped matching');
+    assert.equal(isAnnaLine(turkishLine), true, 'a localized client could not finish Goblin Kidnappers');
+    assert.equal(isAnnaLine('Some other line entirely.'), false, 'an unrelated line triggered dungeon completion');
+}
+
+// Dread Goblin Hideout is built from a_Level_GoblinBeachHard, which contains no
+// NPCAnna and no Chains03 — there is no rescue and no tutorial in the Dread run.
+// Giving it an anna_freed objective made the dungeon permanently uncompletable:
+// the boss died and the rank screen never came.
+function testDreadGoblinHideoutHasNoRescueObjective(): void {
+    const condition = DungeonCompletionConditions.get('TutorialDungeonHard');
+    assert.ok(condition, 'TutorialDungeonHard lost its completion condition');
+    assert.deepEqual(
+        condition.bossGroups,
+        [['GoblinBoss1Hard']],
+        'Dread Goblin Hideout must complete on its boss alone'
+    );
+    assert.equal(
+        condition.entityObjectives ?? undefined,
+        undefined,
+        'Dread Goblin Hideout has no Anna and no chains, so it cannot gate on an entity objective'
+    );
+
+    // The normal dungeon does have the rescue and must keep gating on it.
+    assert.equal(
+        (DungeonCompletionConditions.get('TutorialDungeon')?.entityObjectives ?? []).some(
+            (objective: { role: string }) => objective.role === 'anna_freed'
+        ),
+        true,
+        'the normal Goblin Kidnappers rescue objective was lost'
+    );
+}
+
+// The real Tag Ugo dies and the rank plate opens, but a second Tag Ugo stays on
+// screen holding every debuff it was hit with — nothing drives or removes it.
+// A dungeon authors exactly one of each required boss, so once the real one is
+// down any same-named leftover is stale and must be taken off every screen.
+async function testStaleTagUgoDuplicateIsRemovedOnBossDeath(): Promise<void> {
+    const client = createFakeClient('DreadTagUgoLeftover', 61042);
+    client.currentLevel = 'TutorialDungeonHard';
+    client.character.CurrentLevel.name = 'TutorialDungeonHard';
+    client.levelInstanceId = 'dread-tag-ugo-leftover';
+    client.currentRoomId = 11;
+    resetFor(client);
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    const scope = getClientLevelScope(client as never);
+    const realBossId = 4_600_001;
+    const leftoverId = 4_600_002;
+    const makeBoss = (id: number, dead: boolean): any => ({
+        id,
+        name: 'GoblinBoss1Hard',
+        EntName: 'GoblinBoss1Hard',
+        team: EntityTeam.ENEMY,
+        isPlayer: false,
+        roomId: 11,
+        hp: dead ? 0 : 500,
+        maxHp: 1000,
+        dead,
+        destroyed: dead,
+        entState: dead ? EntityState.DEAD : EntityState.ACTIVE
+    });
+    const realBoss = makeBoss(realBossId, true);
+    const leftover = makeBoss(leftoverId, false);
+    GlobalState.levelEntities.set(scope, new Map([[realBossId, realBoss], [leftoverId, leftover]]));
+    client.entities.set(leftoverId, leftover);
+    client.knownEntityIds.add(leftoverId);
+    client.sentPackets.length = 0;
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, realBoss);
+
+    assert.equal(
+        GlobalState.levelEntities.get(scope)?.has(leftoverId),
+        false,
+        'the stale Tag Ugo duplicate stayed in the shared dungeon state'
+    );
+    assert.equal(
+        GlobalState.levelEntities.get(scope)?.has(realBossId),
+        true,
+        'the real Tag Ugo was removed instead of the duplicate'
+    );
+    assert.equal(
+        client.entities.has(leftoverId),
+        false,
+        'the duplicate Tag Ugo visual was left on the player screen'
+    );
+    assert.equal(
+        packetCount(client, 0x0D) > 0,
+        true,
+        'no destroy packet was sent for the leftover Tag Ugo'
+    );
+
+    GlobalState.sessionsByToken.delete(client.token);
+    GlobalState.levelEntities.delete(scope);
+}
+
+// Clearing the copy on boss death left it standing through the entire fight. The
+// client's boss-room packet names the entity its own BossFight drives, so that id
+// is the authoritative real boss and the sweep can run as the scene opens.
+function testDuplicateTagUgoIsClearedWhenTheBossSceneOpens(): void {
+    const client = createFakeClient('DreadTagUgoScene', 61044);
+    client.currentLevel = 'TutorialDungeonHard';
+    client.character.CurrentLevel.name = 'TutorialDungeonHard';
+    client.levelInstanceId = 'dread-tag-ugo-scene';
+    client.currentRoomId = 11;
+    resetFor(client);
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    const scope = getClientLevelScope(client as never);
+    const realBossId = 4_800_001;
+    const duplicateId = 4_800_002;
+    const makeBoss = (id: number): any => ({
+        id,
+        name: 'GoblinBoss1Hard',
+        EntName: 'GoblinBoss1Hard',
+        team: EntityTeam.ENEMY,
+        isPlayer: false,
+        roomId: 11,
+        hp: 1000,
+        maxHp: 1000,
+        dead: false,
+        destroyed: false,
+        entState: EntityState.ACTIVE
+    });
+    const duplicate = makeBoss(duplicateId);
+    GlobalState.levelEntities.set(scope, new Map([
+        [realBossId, makeBoss(realBossId)],
+        [duplicateId, duplicate]
+    ]));
+    client.entities.set(duplicateId, duplicate);
+    client.knownEntityIds.add(duplicateId);
+    client.sentPackets.length = 0;
+
+    MissionHandler.removeDuplicateBossEntities(scope, 'TutorialDungeonHard', 'GoblinBoss1Hard', realBossId);
+
+    assert.equal(
+        GlobalState.levelEntities.get(scope)?.has(duplicateId),
+        false,
+        'the duplicate Tag Ugo survived the boss-scene sweep'
+    );
+    assert.equal(
+        GlobalState.levelEntities.get(scope)?.has(realBossId),
+        true,
+        'the sweep removed the boss the client is actually fighting'
+    );
+    assert.equal(client.entities.has(duplicateId), false, 'the duplicate kept its local visual');
+    assert.equal(packetCount(client, 0x0D) > 0, true, 'no destroy packet was sent for the duplicate');
+
+    // An unknown marker id must never trigger deletions: without a trustworthy
+    // anchor the sweep would be free to remove the real boss.
+    const survivorScope = `${scope}-anchorless`;
+    const survivor = makeBoss(4_800_003);
+    GlobalState.levelEntities.set(survivorScope, new Map([[survivor.id, survivor]]));
+    MissionHandler.removeDuplicateBossEntities(survivorScope, 'TutorialDungeonHard', 'GoblinBoss1Hard', 999_999);
+    assert.equal(
+        GlobalState.levelEntities.get(survivorScope)?.size,
+        1,
+        'an unanchored sweep deleted a boss'
+    );
+
+    GlobalState.sessionsByToken.delete(client.token);
+    GlobalState.levelEntities.delete(scope);
+    GlobalState.levelEntities.delete(survivorScope);
+}
+
+// The copy registers after BossFight has already announced the encounter, so the
+// scene-open sweep never sees it and it stood in the boss scene until the boss
+// died. Once the room boss is marked, a later cue for that same boss must be
+// retired on arrival.
+function testLateDuplicateTagUgoIsRetiredOnArrival(): void {
+    const client = createFakeClient('DreadTagUgoLate', 61045);
+    client.currentLevel = 'TutorialDungeonHard';
+    client.character.CurrentLevel.name = 'TutorialDungeonHard';
+    client.levelInstanceId = 'dread-tag-ugo-late';
+    client.currentRoomId = 11;
+    resetFor(client);
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    const scope = getClientLevelScope(client as never);
+    const realBossId = 4_900_001;
+    const lateId = 4_900_002;
+    const makeBoss = (id: number): any => ({
+        id,
+        name: 'GoblinBoss1Hard',
+        EntName: 'GoblinBoss1Hard',
+        team: EntityTeam.ENEMY,
+        isPlayer: false,
+        roomId: 11,
+        hp: 1000,
+        maxHp: 1000,
+        dead: false,
+        entState: EntityState.ACTIVE
+    });
+    const levelMap = new Map<number, any>([[realBossId, makeBoss(realBossId)]]);
+    GlobalState.levelEntities.set(scope, levelMap);
+    // BossFight has already named the entity it drives.
+    markRoomBossEntity(scope, realBossId, 11, 'Tag Ugo');
+    client.sentPackets.length = 0;
+
+    const suppressed = (EntityHandler as any).suppressLateDuplicateRoomBossSpawn(
+        client,
+        'TutorialDungeonHard',
+        levelMap,
+        makeBoss(lateId),
+        lateId
+    );
+
+    assert.equal(suppressed, true, 'a late Tag Ugo cue was allowed into the boss scene');
+    assert.equal(client.entities.has(lateId), false, 'the late Tag Ugo kept a local visual');
+    assert.equal(packetCount(client, 0x0D) > 0, true, 'the late Tag Ugo was never destroyed on the client');
+    assert.equal(
+        client.entityIdAliases.get(lateId),
+        realBossId,
+        'damage sent under the late id would not reach the real boss'
+    );
+
+    // Without a marked room boss there is no authoritative anchor, so nothing may
+    // be retired — otherwise the first cue of a normal encounter would vanish.
+    const anchorlessScope = `${scope}-anchorless`;
+    const anchorlessMap = new Map<number, any>([[4_900_003, makeBoss(4_900_003)]]);
+    GlobalState.levelEntities.set(anchorlessScope, anchorlessMap);
+    const previousInstance = client.levelInstanceId;
+    client.levelInstanceId = `${previousInstance}-anchorless`;
+    assert.equal(
+        (EntityHandler as any).suppressLateDuplicateRoomBossSpawn(
+            client,
+            'TutorialDungeonHard',
+            anchorlessMap,
+            makeBoss(4_900_004),
+            4_900_004
+        ),
+        false,
+        'a cue was retired with no marked room boss to anchor on'
+    );
+    client.levelInstanceId = previousInstance;
+
+    GlobalState.sessionsByToken.delete(client.token);
+    GlobalState.levelEntities.delete(scope);
+    GlobalState.levelEntities.delete(anchorlessScope);
+}
+
+// The reported failure: in Dread Goblin Hideout the id BossFight announces does
+// not resolve to a shared entity at all, so every anchor-based sweep bailed out
+// silently and the motionless copy stood through the whole scene, disappearing
+// only when the rank plate tore the level down. One visual per viewer is the rule
+// that still holds without an anchor, so the sweep must enforce that on its own.
+function testBossSceneSweepLeavesOneVisualPerViewerWithoutASharedAnchor(): void {
+    const client = createFakeClient('DreadTagUgoUnanchored', 61046);
+    client.currentLevel = 'TutorialDungeonHard';
+    client.character.CurrentLevel.name = 'TutorialDungeonHard';
+    client.levelInstanceId = 'dread-tag-ugo-unanchored';
+    client.currentRoomId = 11;
+    resetFor(client);
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    const scope = getClientLevelScope(client as never);
+    const announcedBossId = 5_100_001;
+    const copyId = 5_100_002;
+    const makeBoss = (id: number): any => ({
+        id,
+        name: 'GoblinBoss1Hard',
+        EntName: 'GoblinBoss1Hard',
+        team: EntityTeam.ENEMY,
+        isPlayer: false,
+        roomId: 11,
+        hp: 1000,
+        maxHp: 1000,
+        dead: false,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true
+    });
+
+    // The client drives both cues locally; the shared map never saw either of
+    // them, which is exactly why the anchored sweeps could not act.
+    GlobalState.levelEntities.set(scope, new Map());
+    client.entities.set(announcedBossId, makeBoss(announcedBossId));
+    client.entities.set(copyId, makeBoss(copyId));
+    client.knownEntityIds.add(announcedBossId);
+    client.knownEntityIds.add(copyId);
+    client.sentPackets.length = 0;
+
+    MissionHandler.sweepBossSceneDuplicates(scope, 'TutorialDungeonHard', announcedBossId, 'test');
+
+    assert.equal(
+        client.entities.has(announcedBossId),
+        true,
+        'the sweep destroyed the Tag Ugo the client is actually fighting'
+    );
+    assert.equal(
+        client.entities.has(copyId),
+        false,
+        'the motionless Tag Ugo copy survived the scene-entry sweep'
+    );
+    assert.equal(packetCount(client, 0x0D) > 0, true, 'the copy was never destroyed on the client');
+    assert.equal(
+        client.entityIdAliases.get(copyId),
+        announcedBossId,
+        'damage sent under the copy id would no longer reach the boss'
+    );
+
+    // A viewer with a single visual must never be swept to zero: a party member's
+    // local copy is the only boss they can see.
+    const soloClient = createFakeClient('DreadTagUgoSoleVisual', 61047);
+    soloClient.currentLevel = 'TutorialDungeonHard';
+    soloClient.character.CurrentLevel.name = 'TutorialDungeonHard';
+    soloClient.levelInstanceId = 'dread-tag-ugo-sole-visual';
+    soloClient.currentRoomId = 11;
+    resetFor(soloClient);
+    GlobalState.sessionsByToken.set(soloClient.token, soloClient as never);
+    const soloScope = getClientLevelScope(soloClient as never);
+    const soloVisualId = 5_100_003;
+    GlobalState.levelEntities.set(soloScope, new Map());
+    soloClient.entities.set(soloVisualId, makeBoss(soloVisualId));
+    soloClient.sentPackets.length = 0;
+
+    MissionHandler.sweepBossSceneDuplicates(soloScope, 'TutorialDungeonHard', 9_999_999, 'test');
+    assert.equal(
+        soloClient.entities.has(soloVisualId),
+        true,
+        'the sweep left a party member with no boss to fight'
+    );
+
+    GlobalState.sessionsByToken.delete(client.token);
+    GlobalState.sessionsByToken.delete(soloClient.token);
+    GlobalState.levelEntities.delete(scope);
+    GlobalState.levelEntities.delete(soloScope);
+}
+
+// Same failure seen from the arrival side: the copy registers after BossFight has
+// opened the scene, and with no shared marker to anchor on it used to be accepted
+// as a second local visual. While a scene is open, a client that already holds a
+// boss visual must not be given another one.
+function testSecondLocalBossVisualIsRetiredWhileTheSceneIsOpen(): void {
+    const client = createFakeClient('DreadTagUgoSecondVisual', 61048);
+    client.currentLevel = 'TutorialDungeonHard';
+    client.character.CurrentLevel.name = 'TutorialDungeonHard';
+    client.levelInstanceId = 'dread-tag-ugo-second-visual';
+    client.currentRoomId = 11;
+    resetFor(client);
+    GlobalState.sessionsByToken.set(client.token, client as never);
+
+    const scope = getClientLevelScope(client as never);
+    const announcedBossId = 5_200_001;
+    const copyId = 5_200_002;
+    const makeBoss = (id: number): any => ({
+        id,
+        name: 'GoblinBoss1Hard',
+        EntName: 'GoblinBoss1Hard',
+        team: EntityTeam.ENEMY,
+        isPlayer: false,
+        roomId: 11,
+        hp: 1000,
+        maxHp: 1000,
+        dead: false,
+        entState: EntityState.ACTIVE,
+        clientSpawned: true
+    });
+    const levelMap = new Map<number, any>();
+    GlobalState.levelEntities.set(scope, levelMap);
+    client.entities.set(announcedBossId, makeBoss(announcedBossId));
+    client.sentPackets.length = 0;
+
+    // No shared entity is ever marked here — only the announcement is recorded.
+    noteBossSceneOpened(scope, 11, announcedBossId, 'Tag Ugo');
+
+    const suppressed = (EntityHandler as any).suppressLateDuplicateRoomBossSpawn(
+        client,
+        'TutorialDungeonHard',
+        levelMap,
+        makeBoss(copyId),
+        copyId
+    );
+
+    assert.equal(suppressed, true, 'a second Tag Ugo visual was accepted while the boss scene was open');
+    assert.equal(client.entities.has(copyId), false, 'the second Tag Ugo kept a local visual');
+    assert.equal(
+        client.entityIdAliases.get(copyId),
+        announcedBossId,
+        'damage sent under the second id would not reach the real boss'
+    );
+
+    // The very entity BossFight announced must always be allowed through.
+    assert.equal(
+        (EntityHandler as any).suppressLateDuplicateRoomBossSpawn(
+            client,
+            'TutorialDungeonHard',
+            levelMap,
+            makeBoss(announcedBossId),
+            announcedBossId
+        ),
+        false,
+        'the announced Tag Ugo was retired as if it were a copy'
+    );
+
+    // A client with no boss visual yet must receive the cue, or a party member
+    // joining the scene late would have nothing to fight.
+    const joiner = createFakeClient('DreadTagUgoJoiner', 61049);
+    joiner.currentLevel = 'TutorialDungeonHard';
+    joiner.character.CurrentLevel.name = 'TutorialDungeonHard';
+    joiner.levelInstanceId = 'dread-tag-ugo-second-visual';
+    joiner.currentRoomId = 11;
+    resetFor(joiner);
+    GlobalState.sessionsByToken.set(joiner.token, joiner as never);
+    assert.equal(
+        (EntityHandler as any).suppressLateDuplicateRoomBossSpawn(
+            joiner,
+            'TutorialDungeonHard',
+            levelMap,
+            makeBoss(5_200_003),
+            5_200_003
+        ),
+        false,
+        'a joiner was denied their only Tag Ugo visual'
+    );
+
+    clearOpenBossScene(scope);
+    GlobalState.sessionsByToken.delete(client.token);
+    GlobalState.sessionsByToken.delete(joiner.token);
+    GlobalState.levelEntities.delete(scope);
+}
+
+// The rank plate must follow the dialogue, not a timer. A run that is already
+// ready when its ending skit closes has no cutscene gate left to release, so
+// releaseEndingGateOnMismatchedRoomClose used to bail out on the very first
+// check and do nothing at all — the plate then waited out whatever settle window
+// the boss death had armed, which the player sees as several seconds of standing
+// in a finished dungeon. Dread clients book these closes against odd room ids
+// often enough that this is the common path.
+async function testReadyRunPlatesImmediatelyOnAMismatchedRoomClose(): Promise<void> {
+    const client = createFakeClient('ReadyRunMismatchedClose', 61050);
+    resetFor(client);
+    GlobalState.sessionsByToken.set(client.token, client as never);
+    const scope = getClientLevelScope(client as never);
+
+    await MissionHandler.handleForcedDungeonBossCompletion(client as never, bossEntity());
+    MissionHandler.noteDungeonCutsceneStart(client as never, 11);
+    await MissionHandler.handleForcedDungeonObjectiveCompletion(client as never, annaChainEntity());
+    DungeonCompletionSystem.noteClientCompletionSignal(
+        scope,
+        DungeonCompletionSystem.getParticipantKey(client as never),
+        100
+    );
+    MissionHandler.noteDungeonCutsceneEnd(client as never, 11);
+    await settleScheduledCompletion(client);
+    assert.equal(packetCount(client, 0x87), 1, 'the harness run should have produced a rank result');
+
+    // Second run: the ending skit closes against a different room than the one
+    // the client is booked into, on a run that is already ready.
+    const mismatched = createFakeClient('ReadyRunMismatchedCloseTwo', 61051);
+    resetFor(mismatched);
+    GlobalState.sessionsByToken.set(mismatched.token, mismatched as never);
+    const mismatchedScope = getClientLevelScope(mismatched as never);
+
+    await MissionHandler.handleForcedDungeonBossCompletion(mismatched as never, bossEntity());
+    MissionHandler.noteDungeonCutsceneStart(mismatched as never, 11);
+    await MissionHandler.handleForcedDungeonObjectiveCompletion(mismatched as never, annaChainEntity());
+    DungeonCompletionSystem.noteClientCompletionSignal(
+        mismatchedScope,
+        DungeonCompletionSystem.getParticipantKey(mismatched as never),
+        100
+    );
+    // The ending cutscene is what the run is waiting on, so it is not ready yet:
+    // the close is the event that makes it ready, which is exactly why the close
+    // must plate rather than hand the run to a settle timer.
+    const beforeClose = DungeonCompletionSystem.evaluate(mismatchedScope);
+    assert.equal(beforeClose.ready, false, 'the run should still be waiting on its ending cutscene');
+    assert.equal(beforeClose.objectivesMet, true, 'the objectives should already be met before the close');
+    assert.equal(beforeClose.reason, 'cutscene_gate_pending', `unexpected pre-close reason ${beforeClose.reason}`);
+    assert.equal(packetCount(mismatched, 0x87), 0, 'the plate must not have been sent before the close');
+
+    mismatched.activeDungeonCutsceneScope = mismatchedScope;
+    mismatched.activeDungeonCutsceneRoomId = 11;
+    MissionHandler.noteDungeonCutsceneEnd(mismatched as never, 97);
+
+    // No settleScheduledCompletion: the close itself has to plate. Only the
+    // inline dispatch's own microtask is awaited.
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(
+        packetCount(mismatched, 0x87),
+        1,
+        'a mismatched-room close on a ready run left the rank plate waiting on a timer'
+    );
+
+    GlobalState.sessionsByToken.delete(client.token);
+    GlobalState.sessionsByToken.delete(mismatched.token);
+}
+
 async function main(): Promise<void> {
     ensureDataLoaded();
+    await testReadyRunPlatesImmediatelyOnAMismatchedRoomClose();
+    testAnnaReturnLineIsAcceptedInEveryLocale();
+    testDreadGoblinHideoutHasNoRescueObjective();
+    testDuplicateTagUgoIsClearedWhenTheBossSceneOpens();
+    testLateDuplicateTagUgoIsRetiredOnArrival();
+    testBossSceneSweepLeavesOneVisualPerViewerWithoutASharedAnchor();
+    testSecondLocalBossVisualIsRetiredWhileTheSceneIsOpen();
+    await testStaleTagUgoDuplicateIsRemovedOnBossDeath();
     testOnlyTagUgoIsServerSpawned();
     testTagUgoUsesCanonicalServerStatsAndHpSync();
     testTagUgoUsesOneClientVisualBackedByCanonicalServerBoss();
@@ -1290,6 +1894,7 @@ async function main(): Promise<void> {
     testTagUgoDoesNotRegenAfterActiveSelfFullUpdateWithStaleDeadState();
     testTagUgoStillRegensAfterActualPlayerDeath();
     testPartyLeaderSideEnemiesRemainClientPrivate();
+    testDreadTagUgoStrayCueIsDestroyedForItsOwner();
     await testBossDefeatWaitsForDefeatCutscene();
     await testLateAnnaChainCannotDeadlockBossCompletion();
     testScriptedObjectiveStateIsIdempotent();

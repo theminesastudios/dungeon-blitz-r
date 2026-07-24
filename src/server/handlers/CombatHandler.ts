@@ -981,7 +981,7 @@ export class CombatHandler {
             : CombatHandler.BOSS_MELEE_AGGRO_RADIUS;
     }
 
-    private static estimateHostileMaxHp(entity: any): number {
+    private static estimateHostileMaxHp(entity: any, levelNameOrScope: string = ''): number {
         const entType = GameData.getEntType(String(entity?.name ?? '')) ?? {};
         const rawLevel = Number(entity?.level ?? entType?.Level ?? entType?.baseLevel ?? entType?.ExpLevel ?? 1);
         const hitPointScale = Number(entity?.HitPoints ?? entity?.hitPoints ?? entType?.HitPoints ?? NaN);
@@ -989,7 +989,53 @@ export class CombatHandler {
             return 0;
         }
 
-        return Math.max(1, Math.round(CombatHandler.getHostileBaseHpForLevel(rawLevel) * hitPointScale));
+        const dreadLevelOffset = LevelConfig.getHardDungeonEnemyLevelOffset(
+            getScopeLevelName(String(levelNameOrScope ?? ''))
+        );
+
+        return Math.max(1, Math.round(
+            CombatHandler.getHostileBaseHpForLevel(rawLevel + dreadLevelOffset) * hitPointScale
+        ));
+    }
+
+    // A client-spawned hostile never tells the server its real health pool — the
+    // patched client reports damage deltas only — so the server derives the pool
+    // from EntTypes. Counting reported damage against that derived number and
+    // calling the boss dead when the total reaches it is how the rank screen
+    // opened while a Dread boss was still standing: the derived pool is a
+    // fraction of what the boss actually has on screen. When the pool we are
+    // counting against is our own estimate, the arithmetic proves nothing and
+    // the client's defeat signal has to commit the kill instead.
+    private static hasDerivedHostileHealthPool(levelScope: string, entity: any, maxHp: number): boolean {
+        const estimatedMaxHp = CombatHandler.estimateHostileMaxHp(entity, levelScope);
+        return estimatedMaxHp > 0 && Math.round(Number(maxHp) || 0) === estimatedMaxHp;
+    }
+
+    // A boss that stalls here would never finish its dungeon, so make the
+    // deferral visible rather than silent.
+    private static logDeferredDerivedPoolBossKill(
+        levelScope: string,
+        entity: any,
+        healthState: { maxHp: number; currentHp: number },
+        totalReportedDamage: number
+    ): void {
+        const entityId = Math.max(0, Math.round(Number(entity?.id ?? 0)));
+        const lastLoggedAt = Math.max(0, Number(entity?.derivedPoolDeferralLoggedAt ?? 0));
+        const nowMs = Date.now();
+        if (nowMs - lastLoggedAt < CombatHandler.BOSS_REGEN_LOG_THROTTLE_MS) {
+            return;
+        }
+        if (entity && typeof entity === 'object') {
+            entity.derivedPoolDeferralLoggedAt = nowMs;
+        }
+
+        console.log('[CombatHandler] Deferred required boss kill: health pool is a server estimate', {
+            scope: levelScope,
+            entityId,
+            name: String(entity?.name ?? ''),
+            derivedMaxHp: healthState.maxHp,
+            totalReportedDamage
+        });
     }
 
     private static getNpcHealthDelta(entity: any): number {
@@ -1000,12 +1046,15 @@ export class CombatHandler {
         return deltas.length > 0 ? Math.min(...deltas) : 0;
     }
 
-    private static getNpcHealthState(entity: any): { maxHp: number; currentHp: number; authoritativeKill: boolean } | null {
+    private static getNpcHealthState(
+        entity: any,
+        levelNameOrScope: string = ''
+    ): { maxHp: number; currentHp: number; authoritativeKill: boolean } | null {
         if (!entity || entity.isPlayer) {
             return null;
         }
         if (EntityHandler.isHomeDummyEntity(entity)) {
-            const maxHp = Math.max(1, CombatHandler.estimateHostileMaxHp(entity));
+            const maxHp = Math.max(1, CombatHandler.estimateHostileMaxHp(entity, levelNameOrScope));
             return {
                 maxHp,
                 currentHp: maxHp,
@@ -1015,7 +1064,7 @@ export class CombatHandler {
 
         const explicitMaxHp = Math.max(0, Math.round(Number(entity.maxHp ?? 0)));
         const rawHp = Number(entity.hp ?? NaN);
-        const estimatedMaxHp = CombatHandler.estimateHostileMaxHp(entity);
+        const estimatedMaxHp = CombatHandler.estimateHostileMaxHp(entity, levelNameOrScope);
         const maxHp = explicitMaxHp > 0
             ? explicitMaxHp
             : estimatedMaxHp > 0
@@ -1445,10 +1494,10 @@ export class CombatHandler {
             entity,
             CombatHandler.isDungeonBossEntity(levelScope, entity)
         )
-            .map((copy) => CombatHandler.getNpcHealthState(copy))
+            .map((copy) => CombatHandler.getNpcHealthState(copy, levelScope))
             .filter((state): state is { maxHp: number; currentHp: number; authoritativeKill: boolean } => Boolean(state));
         if (states.length <= 0) {
-            return CombatHandler.getNpcHealthState(entity);
+            return CombatHandler.getNpcHealthState(entity, levelScope);
         }
 
         const maxHp = Math.max(...states.map((state) => state.maxHp), 1);
@@ -1631,6 +1680,27 @@ export class CombatHandler {
                 (
                     DungeonCompletionConditions.requiresBossDefeatSignal(levelName) &&
                     DungeonCompletionConditions.isRequiredBoss(levelName, entity, levelScope)
+                ) ||
+                // The same reasoning as the HP-report path: a required boss whose
+                // health pool is only the server's EntTypes estimate must not be
+                // killed by server-side damage arithmetic. One power hit already
+                // exceeds that estimate many times over, so the rank screen opened
+                // with the boss still on screen at a fraction of its real bar.
+                (
+                    // A server-authority level authors its own hostiles, so its
+                    // health pool is authoritative and killing one server-side is
+                    // correct. Everywhere else the pool is only an EntTypes
+                    // estimate of what the client actually shows.
+                    !EntityHandler.usesServerAuthorityHostiles(levelName) &&
+                    DungeonCompletionConditions.isRequiredBoss(levelName, entity, levelScope) &&
+                    CombatHandler.hasDerivedHostileHealthPool(
+                        levelScope,
+                        entity,
+                        // An unset pool is derived by definition: the health state
+                        // falls back to the estimate for it.
+                        Math.max(0, Math.round(Number(entity?.maxHp ?? 0))) ||
+                            CombatHandler.estimateHostileMaxHp(entity, levelScope)
+                    )
                 ) ||
                 DungeonCompletionConditions.isClientAuthorityBoss(levelName, entity, levelScope) ||
                 (
@@ -2835,7 +2905,7 @@ export class CombatHandler {
             return;
         }
 
-        const maxHp = Math.max(1, Math.round(Number(entity.maxHp ?? 0)) || CombatHandler.estimateHostileMaxHp(entity) || 1);
+        const maxHp = Math.max(1, Math.round(Number(entity.maxHp ?? 0)) || CombatHandler.estimateHostileMaxHp(entity, levelScope) || 1);
         const hpBefore = Math.max(0, Math.round(Number(entity.hp ?? 0)));
         const alreadyDestroyed = Boolean(entity.destroyed) || Math.max(0, Math.round(Number(entity.deathFinalizedAt ?? 0))) > 0;
         const finalizedAt = Date.now();
@@ -2976,7 +3046,7 @@ export class CombatHandler {
         }
 
         const canonicalHp = Math.max(0, Math.round(Number(entity?.hp ?? 0)));
-        const maxHp = Math.max(1, Math.round(Number(entity?.maxHp ?? 0)) || CombatHandler.estimateHostileMaxHp(entity) || 1);
+        const maxHp = Math.max(1, Math.round(Number(entity?.maxHp ?? 0)) || CombatHandler.estimateHostileMaxHp(entity, levelScope) || 1);
         const canonicalDead = Boolean(entity?.dead) ||
             Number(entity?.entState ?? EntityState.ACTIVE) === EntityState.DEAD ||
             canonicalHp <= 0;
@@ -4580,7 +4650,7 @@ export class CombatHandler {
 
         const healthState = CombatHandler.isDungeonBossEntity(levelName, entity)
             ? CombatHandler.resolveHostileHealthStateAcrossCopies(levelName, entity)
-            : CombatHandler.getNpcHealthState(entity);
+            : CombatHandler.getNpcHealthState(entity, levelName);
         if (!healthState) {
             return {
                 entity,
@@ -5498,7 +5568,7 @@ export class CombatHandler {
             destroyedEntity.health_delta = 0;
             destroyedEntity.hp = Math.max(
                 1,
-                Math.round(Number(destroyedEntity.maxHp ?? 0)) || CombatHandler.estimateHostileMaxHp(destroyedEntity)
+                Math.round(Number(destroyedEntity.maxHp ?? 0)) || CombatHandler.estimateHostileMaxHp(destroyedEntity, levelScope)
             );
             if (levelScope) {
                 const scopedEntity = GlobalState.levelEntities.get(levelScope)?.get(entityId);
@@ -5534,7 +5604,7 @@ export class CombatHandler {
 
         if (shouldMirrorClientSpawnEntity && destroyedEntity && !isSeedOutsideClientSpawnDestroy) {
             const healthState = CombatHandler.resolveHostileHealthStateAcrossCopies(levelScope, destroyedEntity) ??
-                CombatHandler.getNpcHealthState(destroyedEntity);
+                CombatHandler.getNpcHealthState(destroyedEntity, levelScope);
             const canonicalHp = Math.max(0, Math.round(Number(destroyedEntity.hp ?? healthState?.currentHp ?? 0)));
             const verifiedRequiredBossDestroy = Boolean(
                 contributionSnapshot?.contributors?.length &&
@@ -5868,7 +5938,7 @@ export class CombatHandler {
             }
 
             const healthState = CombatHandler.resolveHostileHealthStateAcrossCopies(levelScope, targetEntity) ??
-                CombatHandler.getNpcHealthState(targetEntity);
+                CombatHandler.getNpcHealthState(targetEntity, levelScope);
             if (!healthState || healthState.maxHp <= 0) {
                 return true;
             }
@@ -6025,6 +6095,11 @@ export class CombatHandler {
         // entity-destroy signal commit completion so the room cannot end while
         // the boss is still visibly alive.
         if (MissionHandler.shouldDeferBossHpCompletionUntilDefeatSignal(client)) {
+            return false;
+        }
+
+        if (CombatHandler.hasDerivedHostileHealthPool(levelScope, targetEntity, healthState.maxHp)) {
+            CombatHandler.logDeferredDerivedPoolBossKill(levelScope, targetEntity, healthState, totalReportedDamage);
             return false;
         }
 

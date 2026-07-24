@@ -553,6 +553,7 @@ export class DungeonCompletionSystem {
         const objectivesMet = DungeonCompletionSystem.areObjectivesMet(state, condition);
         if (!objectivesMet) {
             state.phase = 'running';
+            DungeonCompletionSystem.logPendingObjectives(state, condition, now);
             return { ready: false, phase: state.phase, reason: 'objectives_pending', objectivesMet: false, gateMet: false };
         }
         if (state.objectivesMetAt <= 0) {
@@ -628,6 +629,72 @@ export class DungeonCompletionSystem {
         }
         state.updatedAt = now;
         return { ready: true, phase: state.phase, reason: 'ready', objectivesMet: true, gateMet: true };
+    }
+
+    // "I killed the boss and nothing happened" is otherwise invisible: the run
+    // just sits on objectives_pending with no record of what it is still waiting
+    // for. Name the missing bosses and objectives, and dump every boss-named
+    // entity the scope holds with its life state, so a duplicate boss (two
+    // entities, only one of them dying) is obvious from one line. Throttled so a
+    // stuck run does not flood the log. Silence with DUNGEON_DIAG=0.
+    private static lastPendingObjectiveLogAt = new Map<string, number>();
+
+    private static logPendingObjectives(
+        state: DungeonCompletionRunState,
+        condition: DungeonCompletionCondition,
+        now: number
+    ): void {
+        if (String(process.env.DUNGEON_DIAG ?? '1').trim() === '0' || condition.mode !== 'bosses') {
+            return;
+        }
+        const lastLoggedAt = DungeonCompletionSystem.lastPendingObjectiveLogAt.get(state.levelScope) ?? 0;
+        if (now - lastLoggedAt < 5_000) {
+            return;
+        }
+        DungeonCompletionSystem.lastPendingObjectiveLogAt.set(state.levelScope, now);
+
+        const missingBossGroups = (condition.bossGroups ?? [])
+            .filter((group) => !group.some((bossName) => state.defeatedBosses.has(bossName)));
+        const missingObjectives = (condition.entityObjectives ?? [])
+            .filter((objective) => !state.destroyedObjectives.has(objective.role))
+            .map((objective) => objective.role);
+        if (!missingBossGroups.length && !missingObjectives.length) {
+            return;
+        }
+
+        const bossNamedEntities = [...(GlobalState.levelEntities.get(state.levelScope)?.values() ?? [])]
+            .filter((entity) => Boolean(
+                DungeonCompletionConditions.getCanonicalBossName(state.levelName, entity, state.levelScope)
+            ) || DungeonCompletionConditions.getObjectiveRole(state.levelName, entity))
+            .map((entity: any) => ({
+                id: getEntityId(entity),
+                name: String(entity?.name ?? entity?.EntName ?? ''),
+                canonical: DungeonCompletionConditions.getCanonicalBossName(state.levelName, entity, state.levelScope),
+                role: DungeonCompletionConditions.getObjectiveRole(state.levelName, entity),
+                hp: entity?.hp,
+                maxHp: entity?.maxHp,
+                dead: Boolean(entity?.dead),
+                destroyed: Boolean(entity?.destroyed),
+                entState: entity?.entState,
+                roomId: entity?.roomId,
+                clientSpawned: Boolean(entity?.clientSpawned),
+                ownerToken: entity?.ownerToken,
+                defeated: isDefeated(entity)
+            }));
+
+        try {
+            console.log(`[DUNGEON-DIAG] objectivesPending ${JSON.stringify({
+                level: state.levelName,
+                scope: state.levelScope,
+                missingBossGroups,
+                missingObjectives,
+                defeatedBosses: [...state.defeatedBosses],
+                destroyedObjectives: [...state.destroyedObjectives],
+                bossNamedEntities
+            })}`);
+        } catch {
+            console.log('[DUNGEON-DIAG] objectivesPending <unserializable>');
+        }
     }
 
     static tryReserveFinalization(levelScope: string, participantKey: string): boolean {
