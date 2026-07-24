@@ -46,6 +46,10 @@ export type DungeonCompletionCutsceneState = {
     startedSequence: number;
     endedSequence: number;
     completionEligibleAtStart: boolean;
+    // The skit opened over one of the run's bosses, so it is the boss scene
+    // rather than an intro cinematic — true even while that boss is still
+    // officially alive, which is the state it is in when the scene opens.
+    bossSceneAtStart: boolean;
 };
 
 export type DungeonCompletionRunState = {

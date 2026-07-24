@@ -61,7 +61,7 @@ export class StaticServer {
     // literal — is what decides whether a browser reuses its cached client. Bump
     // it whenever DungeonBlitz.swf changes on disk, or players keep running the
     // previous build and a client patch looks like it did nothing.
-    private readonly clientRevision = 'destroy-brainless-entities-1';
+    private readonly clientRevision = 'revert-destroy-brainless-1';
 
     private static shouldLog(): boolean {
         return process.env.DEBUG_STATIC_SERVER === '1';

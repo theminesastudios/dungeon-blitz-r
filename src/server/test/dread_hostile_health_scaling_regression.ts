@@ -62,10 +62,15 @@ function createClient(token: number, levelName: string): any {
 
 // A boss the client has spawned but whose max HP the server has not been told:
 // exactly the case where the server has to derive the pool itself.
-function bossWithoutExplicitMaxHp(id: number, name: string, hp: number): any {
+//
+// `runtimeLevel` mirrors what a live dungeon does to every hostile it owns:
+// EntityHandler stamps `entity.level` with the party's highest player level, so
+// by the time anything sizes the boss its EntType level is long gone.
+function bossWithoutExplicitMaxHp(id: number, name: string, hp: number, runtimeLevel: number = 0): any {
     return {
         id,
         name,
+        ...(runtimeLevel > 0 ? { level: runtimeLevel } : {}),
         entRank: 'Boss',
         isPlayer: false,
         team: EntityTeam.ENEMY,
@@ -81,10 +86,15 @@ function bossWithoutExplicitMaxHp(id: number, name: string, hp: number): any {
     };
 }
 
-function resolveServerMaxHp(levelName: string, bossName: string, token: number): number {
+function resolveServerMaxHp(
+    levelName: string,
+    bossName: string,
+    token: number,
+    runtimeLevel: number = 0
+): number {
     const client = createClient(token, levelName);
     const scope = getClientLevelScope(client);
-    const boss = bossWithoutExplicitMaxHp(token + 500, bossName, 1_000);
+    const boss = bossWithoutExplicitMaxHp(token + 500, bossName, 1_000, runtimeLevel);
 
     client.entities.set(client.clientEntID, {
         id: client.clientEntID,
@@ -156,6 +166,50 @@ function testDreadBossIsSizedAtItsDreadTier(): void {
     }
 }
 
+// The bug this guards: a Dread hostile is sized *after* the dungeon has stamped
+// it with the party's runtime level, so adding the Dread offset to that level
+// pushed the tier past the end of the health table and clamped it to 50. Dread
+// Goblin Camp then gave GoblinBoss2Hard 403,680 HP — the level-50 row — instead
+// of its tier-38 pool, and every mob around it landed on the same row: the log
+// showed GoblinDaggerHard at 26,912 and PsychophageBabyHard at 135, both of
+// which are just the level-50 base times their EntType HitPoints scale.
+function testDreadTierIgnoresTheStampedPartyLevel(): void {
+    const cases: Array<{ display: string; level: string; boss: string; token: number }> = [
+        { display: 'Dread Goblin Camp', level: 'GoblinRiverDungeonHard', boss: 'GoblinBoss2Hard', token: 81_201 },
+        { display: 'Dread Goblin Camp trash', level: 'GoblinRiverDungeonHard', boss: 'GoblinDaggerHard', token: 81_202 },
+        { display: 'Dread Mystery of the Yornak', level: 'SRN_Mission2Hard', boss: 'SwampKingHard', token: 81_203 }
+    ];
+
+    const maxTierHp = HOSTILE_BASE_HITPOINTS[HOSTILE_BASE_HITPOINTS.length - 1];
+    for (const testCase of cases) {
+        // 50 is the ceiling clampRuntimeLevel enforces, so this is the worst case.
+        const serverMaxHp = resolveServerMaxHp(testCase.level, testCase.boss, testCase.token, 50);
+        assert.equal(
+            serverMaxHp,
+            expectedMaxHp(testCase.boss, testCase.level),
+            `${testCase.display}: the stamped party level displaced the hostile's Dread tier`
+        );
+        assert.notEqual(
+            serverMaxHp,
+            Math.round(maxTierHp * Number(GameData.getEntType(testCase.boss)?.HitPoints)),
+            `${testCase.display}: the hostile is still clamped to the last row of the health table`
+        );
+    }
+}
+
+// The party-level scaling is the whole point outside a Dread run, so a normal
+// dungeon must keep sizing its hostiles from the level it was stamped with.
+function testNormalDungeonStillScalesToTheParty(): void {
+    const serverMaxHp = resolveServerMaxHp('SRN_Mission2', 'SwampKing', 81_301, 50);
+    assert.equal(
+        serverMaxHp,
+        Math.round(
+            HOSTILE_BASE_HITPOINTS[50] * Number(GameData.getEntType('SwampKing')?.HitPoints)
+        ),
+        'a normal dungeon must still size its hostiles from the party runtime level'
+    );
+}
+
 function testNormalBossKeepsItsAuthoredHealth(): void {
     const serverMaxHp = resolveServerMaxHp('SRN_Mission2', 'SwampKing', 81_101);
     assert.equal(
@@ -170,6 +224,8 @@ function main(): void {
     GameData.load(path.resolve(__dirname, '../data'));
     testDreadLevelsRaiseTheEnemyTier();
     testDreadBossIsSizedAtItsDreadTier();
+    testDreadTierIgnoresTheStampedPartyLevel();
+    testNormalDungeonStillScalesToTheParty();
     testNormalBossKeepsItsAuthoredHealth();
     console.log('dread_hostile_health_scaling_regression: ok');
 }

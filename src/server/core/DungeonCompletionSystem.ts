@@ -395,7 +395,8 @@ export class DungeonCompletionSystem {
         levelScope: string,
         roomId: number,
         now: number = Date.now(),
-        completionEligibleAtStart: boolean = false
+        completionEligibleAtStart: boolean = false,
+        bossSceneAtStart: boolean = false
     ): void {
         const state = DungeonCompletionSystem.getOrCreateState(levelScope, now);
         if (!state) {
@@ -413,7 +414,8 @@ export class DungeonCompletionSystem {
             endedAt: 0,
             startedSequence: state.cutsceneStartedSequence,
             endedSequence: 0,
-            completionEligibleAtStart
+            completionEligibleAtStart,
+            bossSceneAtStart
         });
         state.updatedAt = now;
         DungeonCompletionSystem.evaluate(levelScope, now);
@@ -436,7 +438,10 @@ export class DungeonCompletionSystem {
             endedAt: 0,
             startedSequence: state.eventSequence,
             endedSequence: 0,
-            completionEligibleAtStart: false
+            completionEligibleAtStart: false,
+            // A close with no start on record says nothing about what the skit
+            // was playing over, so it does not get the boss-scene exemption.
+            bossSceneAtStart: false
         };
         roomState.endedAt = now;
         roomState.endedSequence = state.eventSequence;
@@ -450,6 +455,37 @@ export class DungeonCompletionSystem {
         }
         state.updatedAt = now;
         return DungeonCompletionSystem.evaluate(levelScope, now).ready;
+    }
+
+    // True once a cutscene in this run has been seen to close: either the client
+    // reported the skit ending, or a close was recognised late as the fallback
+    // that released the gate. This is the "the dialogue is over" fact the rank
+    // plate is meant to follow.
+    //
+    // Deliberately false for a run that never played a cutscene at all — those
+    // still have closing chatter with nothing gating it, which is what the
+    // skit-settle window is for. So this only ever removes a wait the cutscene
+    // itself has already made unnecessary.
+    static hasObservedCutsceneEnd(levelScope: string): boolean {
+        const state = DungeonCompletionSystem.getState(levelScope);
+        if (!state) {
+            return false;
+        }
+        if (state.cutsceneFallbackReason === 'close-observed') {
+            return true;
+        }
+
+        for (const cutscene of state.cutscenesByRoom.values()) {
+            if (
+                cutscene.startedAt > 0 &&
+                cutscene.endedAt > 0 &&
+                cutscene.endedSequence >= cutscene.startedSequence
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     static canQueueCompletion(levelScope: string, now: number = Date.now()): boolean {
@@ -593,6 +629,20 @@ export class DungeonCompletionSystem {
             );
         let gateMet = !activeSharedCutscene || activeCutsceneOverridden;
         if (condition.cutscene?.requiredAfterObjectives) {
+            // The ending skit usually closes after the last objective is
+            // registered, and its sequence alone settles this. The reorder
+            // tolerance is for when it does not, because the boss reports its own
+            // death through the client and that packet can land after the close
+            // that played over it — the skit that ended the run is then sequenced
+            // before the run was complete.
+            //
+            // `completionEligibleAtStart` recognised that only when the run was
+            // already completable as the skit opened. A boss scene never is: the
+            // boss is officially alive when its own scene opens, which is why a
+            // Dread run's real ending skit went uncounted and the dungeon sat out
+            // the cutscene-start grace with its dialogue already over.
+            // `bossSceneAtStart` covers that without widening the rule to intro
+            // cinematics, which resolve no boss and stay excluded.
             const sharedCutsceneEnded = relevantCutscenes.some((cutscene) =>
                 cutscene.startedAt > 0 &&
                 cutscene.endedSequence >= cutscene.startedSequence &&
@@ -600,7 +650,7 @@ export class DungeonCompletionSystem {
                 (
                     cutscene.endedSequence > state.objectivesMetSequence ||
                     (
-                        cutscene.completionEligibleAtStart &&
+                        (cutscene.completionEligibleAtStart || cutscene.bossSceneAtStart) &&
                         cutscene.endedAt + CUTSCENE_OBJECTIVE_REORDER_TOLERANCE_MS >= state.objectivesMetAt
                     )
                 )

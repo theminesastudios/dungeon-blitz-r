@@ -2195,9 +2195,13 @@ export class EntityHandler {
         const rawLevel = Number(entity?.level ?? entType?.Level ?? entType?.baseLevel ?? entType?.ExpLevel ?? 1);
         const hitPointScale = Number(entity?.HitPoints ?? entity?.hitPoints ?? entType?.HitPoints ?? NaN);
         if (Number.isFinite(hitPointScale) && hitPointScale > 0) {
-            const dreadLevelOffset = LevelConfig.getHardDungeonEnemyLevelOffset(levelName);
+            const tier = LevelConfig.getHostileHpTier(
+                levelName,
+                rawLevel,
+                Number(entType?.Level ?? entType?.baseLevel ?? entType?.ExpLevel ?? 0)
+            );
             return Math.max(1, Math.round(
-                EntityHandler.getHostileBaseHpForLevel(rawLevel + dreadLevelOffset) * hitPointScale
+                EntityHandler.getHostileBaseHpForLevel(tier) * hitPointScale
             ));
         }
 

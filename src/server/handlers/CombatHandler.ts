@@ -989,12 +989,14 @@ export class CombatHandler {
             return 0;
         }
 
-        const dreadLevelOffset = LevelConfig.getHardDungeonEnemyLevelOffset(
-            getScopeLevelName(String(levelNameOrScope ?? ''))
+        const tier = LevelConfig.getHostileHpTier(
+            getScopeLevelName(String(levelNameOrScope ?? '')),
+            rawLevel,
+            Number(entType?.Level ?? entType?.baseLevel ?? entType?.ExpLevel ?? 0)
         );
 
         return Math.max(1, Math.round(
-            CombatHandler.getHostileBaseHpForLevel(rawLevel + dreadLevelOffset) * hitPointScale
+            CombatHandler.getHostileBaseHpForLevel(tier) * hitPointScale
         ));
     }
 

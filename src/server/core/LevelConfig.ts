@@ -454,6 +454,35 @@ export class LevelConfig {
         return Math.max(0, Math.round(spec.mapId - spec.baseId));
     }
 
+    // Which row of the hostile health table an enemy is sized from.
+    //
+    // Outside a Dread run this is the entity's own runtime level, which dungeons
+    // stamp with the party's highest player level so enemies keep up with the
+    // party. A Dread run cannot be expressed on that scale: the jump is authored
+    // on the level, and a party already at 50 has no room left above it, so
+    // adding the offset to the runtime level ran every hostile off the end of the
+    // table and clamped it back to tier 50. That is why Dread Goblin Camp handed
+    // its boss 403,680 HP — the same pool the normal-mode boss gets — while the
+    // trash around it was pinned to the level-50 row as well.
+    //
+    // So a Dread tier is absolute: the EntType's authored level plus the level's
+    // jump, exactly the pool the difficulty was designed around. Every non-Dread
+    // level has a zero offset and keeps sizing hostiles the way it always did.
+    static getHostileHpTier(
+        levelName: string | null | undefined,
+        runtimeLevel: number,
+        entTypeLevel: number
+    ): number {
+        const fallbackTier = Math.round(Number(runtimeLevel) || 1);
+        const dreadOffset = this.getHardDungeonEnemyLevelOffset(levelName);
+        if (dreadOffset <= 0) {
+            return fallbackTier;
+        }
+
+        const authoredTier = Math.round(Number(entTypeLevel) || 0);
+        return (authoredTier > 0 ? authoredTier : fallbackTier) + dreadOffset;
+    }
+
     static isPersistentDungeonLevel(levelName: string | null | undefined): boolean {
         const normalized = this.normalizeLevelName(levelName);
         if (!normalized || normalized === 'TutorialBoat') {

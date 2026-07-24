@@ -95,6 +95,16 @@ export class MissionHandler {
     private static readonly ATTACK_OF_OPPORTUNITY_HARD_SATELLITE_IDS = new Set([255, 256, 257]);
     static readonly DUNGEON_COMPLETION_SKIT_SETTLE_MS = 1500;
     static readonly DUNGEON_COMPLETION_MAX_DEFER_MS = 15000;
+    // The skit-settle window answers "has the chatter stopped?" and makes a poor
+    // re-check interval. Every deferring branch used to re-arm at a full settle
+    // window, so a gate that cleared on its own — with no event of its own to
+    // re-arm the timer — was not noticed for up to 1.5s. That is dead time the
+    // player watches after the dialogue is already over.
+    static readonly DUNGEON_COMPLETION_READY_POLL_MS = 100;
+    // ...but only while the plate is actually due. Once this window since the
+    // cinematic close has passed the run is stuck on something real, and the
+    // slower re-arm keeps both the timer and the deferral log readable.
+    static readonly DUNGEON_COMPLETION_PLATE_HOT_WINDOW_MS = 3000;
     // How long to wait for a post-objective cinematic that has not started yet.
     // Cutscenes are client-driven: the client sends its 0xA5 start as soon as it
     // plays one, so a start that has not arrived within this window means the
@@ -1270,6 +1280,11 @@ export class MissionHandler {
             if (clearedDungeon) {
                 DungeonCompletionSystem.noteClientCompletionSignal(levelScope, participantKey, 100);
             }
+            // The client sends this packet once its own view of the level is
+            // finished, scene included, even when it reports less than 100%. That
+            // makes it the authoritative "nothing more is coming" signal, so the
+            // plate no longer has to wait out the missing-cutscene grace guessing
+            // whether a cinematic might still start.
             const evaluation = DungeonCompletionSystem.evaluate(levelScope);
             if (!evaluation.ready) {
                 if (DungeonCompletionSystem.canQueueCompletion(levelScope)) {
@@ -1651,7 +1666,28 @@ export class MissionHandler {
             destroyedEntityId: Math.max(0, Math.round(Number(destroyedEntity?.id ?? 0)))
         });
 
-        const evaluation = DungeonCompletionSystem.evaluate(levelScope);
+        // The ending cutscene usually plays and closes *before* the boss's own
+        // death packet lands, so at close time the objectives were not met and the
+        // close could not release the gate. If this client has already observed
+        // that close, release it now that the boss is down — otherwise the run
+        // would fall through to the schedule below and sit out the missing-start
+        // grace with its dialogue already over. Keyed on the observed 0xA6 close,
+        // the same authoritative signal noteDungeonCutsceneEnd uses, so a level
+        // whose cutscene the server genuinely must still see is unaffected.
+        const closeObservedForScope =
+            String(client.lastDungeonCutsceneEndScope ?? '').trim() === levelScope &&
+            Math.max(0, Number(client.lastDungeonCutsceneEndAt ?? 0)) > 0;
+        let evaluation = DungeonCompletionSystem.evaluate(levelScope);
+        if (
+            closeObservedForScope &&
+            !evaluation.ready &&
+            evaluation.objectivesMet &&
+            evaluation.reason === 'cutscene_gate_pending' &&
+            !MissionHandler.isDungeonCinematicOpen(client, levelScope)
+        ) {
+            DungeonCompletionSystem.releaseCutsceneGateOnClose(levelScope);
+            evaluation = DungeonCompletionSystem.evaluate(levelScope);
+        }
 
         MissionHandler.logDungeonDiag('bossDeathDetected', {
             level: currentLevel,
@@ -1951,6 +1987,22 @@ export class MissionHandler {
             return;
         }
 
+        // The rank plate follows the cutscene. Once the run is ready and a
+        // cutscene in it has been seen to close, the dialogue is demonstrably
+        // over and there is nothing left for a settle window to wait out.
+        //
+        // Without this the plate only tracked the close when the close was the
+        // last thing to happen. The common order in a Dread run is the other way
+        // round: the boss's own destroy packet lands *after* the skit that plays
+        // over it, so at close time the objectives are not met yet and the close
+        // releases nothing. The run then became ready on the boss-death path
+        // below, which armed the full 1.5s settle — the dialogue was long over
+        // and the player sat watching a finished dungeon.
+        const plateFollowsCutsceneEnd = !options.immediate &&
+            DungeonCompletionSystem.evaluate(levelScope).ready &&
+            DungeonCompletionSystem.hasObservedCutsceneEnd(levelScope);
+        const immediate = Boolean(options.immediate) || plateFollowsCutsceneEnd;
+
         const payload = MissionHandler.buildSyntheticLevelCompletePacket(100);
         const completionState = DungeonCompletionSystem.getState(levelScope);
         for (const session of GlobalState.sessionsByToken.values()) {
@@ -1964,7 +2016,7 @@ export class MissionHandler {
             ) {
                 continue;
             }
-            MissionHandler.scheduleDungeonCompletion(session, payload, options.immediate
+            MissionHandler.scheduleDungeonCompletion(session, payload, immediate
                 ? { initialDelayMs: 0, settleDelayMs: 0, replaceExistingSchedule: true }
                 : {
                     initialDelayMs: MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS,
@@ -2102,7 +2154,16 @@ export class MissionHandler {
             client.pendingDungeonCompletionNotBeforeAt = existingNotBeforeAt > 0
                 ? Math.min(existingNotBeforeAt, nextNotBeforeAt)
                 : nextNotBeforeAt;
-            client.pendingDungeonCompletionSettleMs = Math.max(existingSettleMs, settleDelayMs);
+            // Merging two completion requests may only bring the plate forward,
+            // never push it back — which is why this takes the shorter settle the
+            // same way the deadline above takes the earlier one. Taking the longer
+            // one let the client's own SetLevelComplete undo the cutscene close:
+            // the close had armed an immediate schedule (settle 0), then the
+            // client's packet arrived reporting less than 100% — so it did not
+            // count as cleared, fell through to the lazy re-arm here, and raised
+            // the settle back to the full 1.5s skit window. Boss down, dialogue
+            // over, and the rank plate still a beat and a half away.
+            client.pendingDungeonCompletionSettleMs = Math.min(existingSettleMs, settleDelayMs);
             client.pendingDungeonCompletionPayload = Buffer.from(payload);
             MissionHandler.dispatchOrArmPendingDungeonCompletion(client);
             return;
@@ -2120,6 +2181,21 @@ export class MissionHandler {
     static noteDungeonSkitActivity(client: Client): void {
         const pendingScope = String(client.pendingDungeonCompletionScope ?? '').trim();
         if (!pendingScope || getClientLevelScope(client) !== pendingScope) {
+            return;
+        }
+
+        // Trailing chatter after the cutscene has closed must not push the plate
+        // back out. Once the run is ready and a cutscene in it has been seen to
+        // close, the dialogue is over: flush now instead of re-arming the settle
+        // window this packet would otherwise extend. Without this, a stream of
+        // post-cutscene skit/social packets kept resetting lastSkitAt and held the
+        // rank screen a full skit window behind the dialogue every time.
+        if (
+            DungeonCompletionSystem.hasObservedCutsceneEnd(pendingScope) &&
+            !MissionHandler.isDungeonCinematicOpen(client, pendingScope) &&
+            DungeonCompletionSystem.evaluate(pendingScope).ready
+        ) {
+            void MissionHandler.flushPendingDungeonCompletion(client);
             return;
         }
 
@@ -2189,7 +2265,8 @@ export class MissionHandler {
             scope,
             roomId,
             client.lastDungeonCutsceneStartAt,
-            completionEligibleAtStart
+            completionEligibleAtStart,
+            bossId > 0
         );
         TutorialDungeonMechanics.noteCutscenePhase(scope, roomId, 'active', client.token);
         MissionHandler.activateBossRunStatsForCutsceneRoom(client, scope, client.activeDungeonCutsceneRoomId);
@@ -2609,6 +2686,18 @@ export class MissionHandler {
             notBeforeAt + settleDelayMs
         );
 
+        // How long to wait before looking again. While the plate is due — the
+        // close has just been observed, or this schedule was armed immediate —
+        // re-check on the short poll so a gate that clears without an event of
+        // its own is picked up in a frame or two instead of a skit window.
+        const sinceCinematicEndMs = cinematicEndedAt > 0 ? now - cinematicEndedAt : -1;
+        const plateIsDue =
+            (sinceCinematicEndMs >= 0 && sinceCinematicEndMs <= MissionHandler.DUNGEON_COMPLETION_PLATE_HOT_WINDOW_MS) ||
+            (settleDelayMs === 0 && now - requestedAt <= MissionHandler.DUNGEON_COMPLETION_PLATE_HOT_WINDOW_MS);
+        const rearmDelayMs = plateIsDue
+            ? MissionHandler.DUNGEON_COMPLETION_READY_POLL_MS
+            : Math.max(settleDelayMs, MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS);
+
         // Every path below that arms a timer instead of plating is a visible
         // pause for the player between the dialogue ending and the rank screen,
         // so name the branch and its length rather than leaving "a few seconds"
@@ -2627,7 +2716,21 @@ export class MissionHandler {
             MissionHandler.armPendingDungeonCompletionTimer(client, delayMs);
         };
 
-        if (now < notBeforeAt) {
+        // Once a cutscene in this run has actually been seen to close and the run
+        // is ready, the rank plate must follow it with no further wait: the
+        // dialogue is demonstrably over, and the open-cinematic guard below still
+        // stops a plate landing under a skit that is genuinely still on screen.
+        // This is the single fact that skips both timed holds — the boss-death
+        // schedule's not-before delay and the trailing-chatter settle window —
+        // which is what otherwise sat the player in a finished dungeon after the
+        // cutscene ended. A dungeon that never played a cutscene has no observed
+        // close, so it keeps both waits untouched.
+        const plateFollowsClosedCutscene =
+            DungeonCompletionSystem.hasObservedCutsceneEnd(pendingScope) &&
+            !MissionHandler.isDungeonCinematicOpen(client, pendingScope) &&
+            DungeonCompletionSystem.evaluate(pendingScope).ready;
+
+        if (!plateFollowsClosedCutscene && now < notBeforeAt) {
             deferPlate('not_before', notBeforeAt - now);
             return;
         }
@@ -2637,15 +2740,19 @@ export class MissionHandler {
         if (now < cinematicWaitDeadline && MissionHandler.isDungeonCinematicOpen(client, pendingScope)) {
             deferPlate(
                 'cinematic_open',
-                Math.max(settleDelayMs, MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS),
+                rearmDelayMs,
                 { activeCutsceneRoomId: client.activeDungeonCutsceneRoomId }
             );
             return;
         }
 
+        // The quiet-settle window is the plate waiting for trailing skit chatter
+        // to stop in a dungeon that has no cutscene to key off. A ready run whose
+        // cutscene has already closed has nothing left to settle for.
         if (
             quietForMs < effectiveSettleMs &&
-            now < maxQuietWaitDeadline
+            now < maxQuietWaitDeadline &&
+            !plateFollowsClosedCutscene
         ) {
             deferPlate('quiet_settle', effectiveSettleMs - quietForMs);
             return;
@@ -2673,12 +2780,21 @@ export class MissionHandler {
             // armed instead of dropping the run's completion on the floor.
             if (evaluation.objectivesMet && evaluation.reason === 'cutscene_gate_pending') {
                 const cinematicOpen = MissionHandler.isDungeonCinematicOpen(client, pendingScope);
-                // The start grace exists for a run whose ending cutscene never
-                // announced itself. Once this client's own close has been observed
-                // there is nothing left to wait for — a cutscene demonstrably ran
-                // and finished — so releasing on the deadline instead of on the
-                // close is what left the rank plate a few seconds late.
-                if (!cinematicOpen && (cinematicEndedAt > 0 || now >= cutsceneStartDeadline)) {
+                // This client has already observed the cutscene close (0xA6) for
+                // this scope, so a cutscene demonstrably ran and ended. Release on
+                // that close directly — it overrides even a shared cutscene the
+                // start/close were booked against different rooms for, and it does
+                // not wait out the missing-start grace. The boss's own death packet
+                // routinely lands after the close it played over, so at close time
+                // the objectives were not met yet and the close could not release
+                // the gate then; picking it up here is what makes the plate follow
+                // the cutscene instead of the ~2.5s grace the player was watching.
+                if (!cinematicOpen && cinematicEndedAt > 0) {
+                    DungeonCompletionSystem.releaseCutsceneGateOnClose(pendingScope, now);
+                    evaluation = DungeonCompletionSystem.evaluate(pendingScope, now);
+                } else if (!cinematicOpen && now >= cutsceneStartDeadline) {
+                    // No close was ever observed: the ending cutscene never
+                    // announced itself, so fall back to the missing-start grace.
                     DungeonCompletionSystem.tryReleaseMissingCutsceneGate(
                         pendingScope,
                         MissionHandler.DUNGEON_COMPLETION_CUTSCENE_START_GRACE_MS,
@@ -2712,13 +2828,7 @@ export class MissionHandler {
                     : cutsceneStartDeadline;
                 deferPlate(
                     'gate_pending',
-                    Math.max(
-                        1,
-                        Math.min(
-                            Math.max(settleDelayMs, MissionHandler.DUNGEON_COMPLETION_SKIT_SETTLE_MS),
-                            Math.max(1, nextGateDeadline - now)
-                        )
-                    ),
+                    Math.max(1, Math.min(rearmDelayMs, Math.max(1, nextGateDeadline - now))),
                     { reason: evaluation.reason, msUntilGateDeadline: nextGateDeadline - now }
                 );
                 return;

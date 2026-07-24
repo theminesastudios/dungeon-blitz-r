@@ -247,10 +247,14 @@ async function testServedHostBootstrapsPendingDiscordLogin(): Promise<void> {
             /FlashVars:\s*oauthBootstrapValue/,
             'reload fallback should pass the OAuth marker as FlashVars'
         );
+        // Match the shape, not the value: `clientRevision` is bumped on every
+        // client patch (it is the only cache key a browser sees, since
+        // StaticServer 302-redirects each SWF request to it), so pinning the
+        // literal here made a routine bump look like an OAuth regression.
         assert.match(
             html,
-            /DungeonBlitz\.swf\?fv=cbp&gv=cbp&clientrev=maintenance-command-1/,
-            'the currently served SWF should use its cache-safe asset revision'
+            /DungeonBlitz\.swf\?fv=cbp&gv=cbp&clientrev=[A-Za-z0-9._-]+/,
+            'the currently served SWF should carry a cache-safe asset revision'
         );
     } finally {
         await staticServer.stop();
