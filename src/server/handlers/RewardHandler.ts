@@ -702,27 +702,6 @@ export class RewardHandler {
             .join(' ');
     }
 
-    /**
-     * Only crafting materials are magnet-eligible. Gold deliberately keeps its ground drop so the
-     * player still sees the pickup, and gear, health and dye were never in scope.
-     */
-    private static isLootMagnetReward(reward: LootReward): boolean {
-        if (Number(reward.material ?? 0) <= 0) {
-            return false;
-        }
-
-        return !(
-            Number(reward.gold ?? 0) > 0 ||
-            Number(reward.gear ?? 0) > 0 ||
-            Number(reward.health ?? 0) > 0 ||
-            Number(reward.dye ?? 0) > 0
-        );
-    }
-
-    private static grantMagnetCollectedLoot(client: Client, reward: LootReward): boolean {
-        return RewardHandler.grantMaterialLoot(client, Number(reward.material ?? 0));
-    }
-
     private static grantGoldLoot(client: Client, amount: number): boolean {
         if (!client.character || amount <= 0) {
             return false;
@@ -804,24 +783,10 @@ export class RewardHandler {
             }
             return;
         }
-        // The pet picks these up for the player, so skip the ground drop and the 0x38 round trip.
-        // Nothing is registered in pendingLoot, so the client can never claim this drop a second time.
-        if (RewardHandler.isLootMagnetReward(reward) && PetHandler.hasActiveLootMagnetPet(client.character)) {
-            const collected = RewardHandler.grantMagnetCollectedLoot(client, reward);
-            if (collected) {
-                RewardHandler.persistCharacter(client, 'pet loot magnet');
-            }
-            console.log(`[RewardHandler][PetLootMagnet] ${RewardHandler.formatLootSyncFields({
-                character: client.character?.name ?? '',
-                type,
-                amount: metadata.amount,
-                granted: collected,
-                gold: client.character?.gold ?? 0,
-                reason
-            })}`);
-            return;
-        }
-
+        // Every reward type — materials included — lands on the ground and is claimed by walking
+        // over it. Materials used to be credited straight into the bag here whenever a loot-magnet
+        // pet was out; that silent auto-add is gone, so a material is a visible pickup like gold,
+        // gear, health and dye.
         const pendingReward: LootReward = { ...reward, __lootDropMetadata: metadata };
         client.pendingLoot.set(lootId, pendingReward);
         const sourceEntity = RewardHandler.getCanonicalLootSource(metadata);
@@ -1193,8 +1158,8 @@ export class RewardHandler {
         noteDungeonRunChestOpened(client, reward.sourceId, sourceEntity);
 
         if (resolved.gold > 0) {
-            // Gold always lands where the kill happened. Fetching it back is the pet's job,
-            // not the drop position's — see PetHandler.hasActiveLootMagnetPet.
+            // Gold always lands where the kill happened. Whoever reaches it first — the follower
+            // pet or the player — collects it, which is decided client-side in Loot.method_1300.
             RewardHandler.spawnLoot(client, dropPosition.x, dropPosition.y, { gold: resolved.gold }, 0, 0, context);
         }
         if (resolved.hpGain > 0) {

@@ -60,17 +60,17 @@ const ART_COLORS = [
 const LOCALES = {
     en: {
         displayName: "Neo's Minnos",
-        bonusInfo: 'Collects dropped crafting materials for you',
-        description: 'A keen-nosed companion that trots along at your heel and fetches every scrap of crafting material you leave behind.',
+        bonusInfo: 'Picks up gold it walks over for you',
+        description: 'A keen-nosed companion that trots along at your heel and snaps up any dropped gold it passes. You can still collect gold yourself.',
         powerDisplayName: "Summon Neo's Minnos",
-        powerDescription: 'Summons a hound that follows you around and fetches dropped materials.'
+        powerDescription: 'Summons a hound that follows you around and picks up dropped gold.'
     },
     tr: {
         displayName: "Neo's Minnos",
-        bonusInfo: 'Dusen uretim materyallerini senin yerine toplar',
-        description: 'Kesin burunlu bir yoldas. Pesinde yurur ve arkanda biraktigin her uretim materyalini toplar.',
+        bonusInfo: 'Uzerinden gectigi altinlari senin yerine toplar',
+        description: 'Kesin burunlu bir yoldas. Pesinde yurur ve gectigi yerdeki dusen altinlari toplar. Altini kendin de toplayabilirsin.',
         powerDisplayName: "Neo's Minnos Cagir",
-        powerDescription: 'Pesinde gezen ve dusen materyalleri toplayan bir tazi cagirir.'
+        powerDescription: 'Pesinde gezen ve dusen altinlari toplayan bir tazi cagirir.'
     }
 };
 
@@ -167,7 +167,8 @@ function buildEntType(eol) {
         // LittlePet drives the hovering pet brain (BehaviorType.var_844 -> class_176), which
         // fights gravity on a grounded entity and makes the pet bounce. FollowPet is the
         // walking follower brain NatureGuard uses. Trade-off: FollowPet omits bUntargetable,
-        // so this pet can be targeted; the loot magnet is server-side and unaffected either way.
+        // so this pet can be targeted; gold pickup is decided in Loot.method_1300 and is
+        // unaffected either way.
         '\t\t<Behavior>FollowPet</Behavior>',
         '\t\t<EquippedGear/>',
         '\t\t<GfxType>',

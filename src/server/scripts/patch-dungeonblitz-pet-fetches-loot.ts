@@ -22,10 +22,13 @@ import {
  *
  *   Loot.method_1300   the pickup test. `local1` is Game.clientEnt and doubles as the centre of the
  *                      pickup box, the source of the box dimensions, and the HP gate for health
- *                      orbs. Only the box *centre* moves to the pet: dimensions stay on the player
- *                      (70x125 beats the pet's 50x50) and the HP gate stays on the player or health
- *                      orbs break. With no pet summoned the lookup falls back to clientEnt, so an
- *                      unequipped player collects loot exactly as before.
+ *                      orbs. Only the box *centre* moves, and only for gold, and only to whichever
+ *                      of {pet, player} is nearer that coin — so both can collect gold, but a coin
+ *                      is still tested against exactly one box and can only be claimed once.
+ *                      Dimensions stay on the player (70x125 beats the pet's 50x50) and the HP gate
+ *                      stays on the player or health orbs break. With no pet summoned the lookup
+ *                      falls back to clientEnt, so an unequipped player collects loot exactly as
+ *                      before.
  *
  *   Brain.Think        the pet's follow destination. `local4` holds the summoner Entity and its
  *                      physPos reads steer the pet; a prologue precomputes a goal point (nearest
@@ -96,7 +99,8 @@ const B_LOCAL_COUNT = 24, B_MAX_STACK = 12;
 
 // Loot.method_1300 scratch locals (original localCount is 16).
 const L_COLLECTOR = 16, L_VEC = 17, L_IDX = 18, L_POS_X = 19, L_POS_Y = 20;
-const L_LOCAL_COUNT = 21, L_MAX_STACK = 12;
+const L_LOOT_PT = 21, L_LOOT_X = 22, L_LOOT_Y = 23, L_PET_DIST = 24, L_PLAYER_DIST = 25;
+const L_LOCAL_COUNT = 26, L_MAX_STACK = 12;
 
 type Op = { opcode: number; operands?: Buffer[]; label?: string; branchTo?: string };
 type Only = "both" | "brain" | "loot";
@@ -350,11 +354,12 @@ function buildLootPrologue(abc: ReturnType<typeof parseAbc>): Buffer {
     { opcode: 0xd0 }, getprop("var_1"), getprop("clientEnt"), setlocal(L_COLLECTOR),
     getlocal(L_COLLECTOR), { opcode: 0x12, branchTo: "done" },
 
-    // Only GOLD loot is fetched by the pet. `this.var_79 > 0` is the gold discriminator (see
-    // pet-fetches-loot memory). For anything else — health orbs, gear, dye — jump straight to the
-    // read sites with collector still = clientEnt, so the PLAYER collects them at the player's own
-    // position exactly as in stock. This also keeps the no-pet case fully stock for every loot type:
-    // gold with no summoned pet falls through GetSummonedCreatures (empty) back to clientEnt anyway.
+    // Only GOLD is eligible for the pet at all. `this.var_79 > 0` is the gold discriminator (see
+    // pet-fetches-loot memory). For anything else — health orbs, gear, dye, crafting materials —
+    // jump straight to the read sites with collector still = clientEnt, so the PLAYER collects them
+    // at the player's own position exactly as in stock. This also keeps the no-pet case fully stock
+    // for every loot type: gold with no summoned pet falls through GetSummonedCreatures (empty)
+    // back to clientEnt anyway.
     { opcode: 0xd0 }, getprop("var_79"), { opcode: 0x24, operands: [s8(0)] }, { opcode: 0x16, branchTo: "end" },
 
     { opcode: 0xd0 }, getprop("var_1"),
@@ -381,6 +386,31 @@ function buildLootPrologue(abc: ReturnType<typeof parseAbc>): Buffer {
         { opcode: 0x66, operands: [writeU30(MULTINAMEL_IDX)] },                   // vector[0]
         { opcode: 0x80, operands: [multiname(abc, "Entity")] }, setlocal(L_IDX),  // coerce Entity; L_IDX = pet
         getlocal(L_IDX), { opcode: 0x12, branchTo: "end" },                       // iffalse end (null element)
+
+        // The pet is no longer unconditionally the collector: the pickup box is centred on
+        // whichever of {pet, player} is nearer THIS coin, so the player picks gold up by walking
+        // over it exactly as with no pet out, and the pet picks up what it passes on its own. One
+        // box, not two, so a coin can still only be claimed once. `this.var_11` is the coin's world
+        // Point (the same value that positions its sprite); ties go to the player, which keeps the
+        // no-pet path bit-identical in behaviour.
+        { opcode: 0xd0 }, getprop("var_11"), { opcode: 0x82 }, setlocal(L_LOOT_PT),
+        getlocal(L_LOOT_PT), { opcode: 0x12, branchTo: "end" },                   // iffalse end (no position)
+        getlocal(L_LOOT_PT), getprop("x"), { opcode: 0x75 }, setlocal(L_LOOT_X),
+        getlocal(L_LOOT_PT), getprop("y"), { opcode: 0x75 }, setlocal(L_LOOT_Y),
+
+        // Squared distances — no sqrt needed for a comparison. dup+multiply squares in place.
+        getlocal(L_IDX), getprop("appearPosX"), getlocal(L_LOOT_X), { opcode: 0xa1 }, { opcode: 0x2a }, { opcode: 0xa2 },
+        getlocal(L_IDX), getprop("appearPosY"), getlocal(L_LOOT_Y), { opcode: 0xa1 }, { opcode: 0x2a }, { opcode: 0xa2 },
+        { opcode: 0xa0 }, { opcode: 0x75 }, setlocal(L_PET_DIST),
+        getlocal(L_COLLECTOR), getprop("appearPosX"), getlocal(L_LOOT_X), { opcode: 0xa1 }, { opcode: 0x2a }, { opcode: 0xa2 },
+        getlocal(L_COLLECTOR), getprop("appearPosY"), getlocal(L_LOOT_Y), { opcode: 0xa1 }, { opcode: 0x2a }, { opcode: 0xa2 },
+        { opcode: 0xa0 }, { opcode: 0x75 }, setlocal(L_PLAYER_DIST),
+
+        // Phrased as "branch only when the pet strictly wins" so a NaN comparison (which makes
+        // every AVM2 compare false) falls through to the player rather than to the pet.
+        getlocal(L_PET_DIST), getlocal(L_PLAYER_DIST), { opcode: 0x15, branchTo: "petIsCloser" },
+        { opcode: 0x10, branchTo: "end" },
+        { opcode: -1, label: "petIsCloser" },
         getlocal(L_IDX), setlocal(L_COLLECTOR),                                   // collector = pet
       ]),
 
@@ -388,6 +418,48 @@ function buildLootPrologue(abc: ReturnType<typeof parseAbc>): Buffer {
     // the site would need 5 bytes, and the only spare byte there is a `convert_d` that turned out to
     // be the target of an iftrue — absorbing it is what produced VerifyError #1021. A plain
     // `getlocal` fits the natural 4-byte window with nop padding and touches no neighbour.
+    { opcode: -1, label: "end" },
+    getlocal(L_COLLECTOR), getprop("appearPosX"), { opcode: 0x75 }, setlocal(L_POS_X),
+    getlocal(L_COLLECTOR), getprop("appearPosY"), { opcode: 0x75 }, setlocal(L_POS_Y),
+    { opcode: -1, label: "done" },
+    { opcode: 0x1d },
+  ]);
+}
+
+/**
+ * The prologue shipped by the previous revision, where the summoned pet became the collector
+ * unconditionally and the player could no longer pick gold up at all.
+ *
+ * It exists only so an SWF that already carries that prologue can be upgraded in place: the two
+ * read-site edits are byte-identical between the revisions and are already applied, so the upgrade
+ * strips these bytes and prepends the current prologue instead. Without this, re-patching would
+ * demand a pristine SWF and lose every other patch committed since.
+ */
+function buildLegacyLootPrologueV1(abc: ReturnType<typeof parseAbc>): Buffer {
+  const getlocal = (n: number): Op => ({ opcode: 0x62, operands: [writeU30(n)] });
+  const setlocal = (n: number): Op => ({ opcode: 0x63, operands: [writeU30(n)] });
+  const getprop = (name: string): Op => ({ opcode: 0x66, operands: [multiname(abc, name)] });
+
+  return assemble([
+    { opcode: 0xd0 }, { opcode: 0x30 },
+    { opcode: 0x24, operands: [s8(0)] }, { opcode: 0x75 }, setlocal(L_POS_X),
+    { opcode: 0x24, operands: [s8(0)] }, { opcode: 0x75 }, setlocal(L_POS_Y),
+    { opcode: 0xd0 }, getprop("var_1"), getprop("clientEnt"), setlocal(L_COLLECTOR),
+    getlocal(L_COLLECTOR), { opcode: 0x12, branchTo: "done" },
+    { opcode: 0xd0 }, getprop("var_79"), { opcode: 0x24, operands: [s8(0)] }, { opcode: 0x16, branchTo: "end" },
+    { opcode: 0xd0 }, getprop("var_1"),
+    getlocal(L_COLLECTOR), getprop("id"),
+    { opcode: 0x60, operands: [multiname(abc, "PowerType")] }, getprop("var_315"),
+    { opcode: 0x46, operands: [multiname(abc, "GetSummonedCreatures"), writeU30(2)] },
+    { opcode: 0x82 }, setlocal(L_VEC),
+    getlocal(L_VEC), { opcode: 0x12, branchTo: "end" },
+    getlocal(L_VEC), getprop("length"),
+    { opcode: 0x24, operands: [s8(0)] }, { opcode: 0x16, branchTo: "end" },
+    getlocal(L_VEC), { opcode: 0x24, operands: [s8(0)] },
+    { opcode: 0x66, operands: [writeU30(MULTINAMEL_IDX)] },
+    { opcode: 0x80, operands: [multiname(abc, "Entity")] }, setlocal(L_IDX),
+    getlocal(L_IDX), { opcode: 0x12, branchTo: "end" },
+    getlocal(L_IDX), setlocal(L_COLLECTOR),
     { opcode: -1, label: "end" },
     getlocal(L_COLLECTOR), getprop("appearPosX"), { opcode: 0x75 }, setlocal(L_POS_X),
     getlocal(L_COLLECTOR), getprop("appearPosY"), { opcode: 0x75 }, setlocal(L_POS_Y),
@@ -462,6 +534,8 @@ function patch(swfPath: string, verify: boolean, only: Only): void {
   type Target = {
     label: string; methodIdx: number; localCount: number; maxStack: number;
     prologue: () => Buffer; edits: (i: Instruction[]) => Edit[];
+    /** Prologues from earlier revisions of this script, stripped before the current one is applied. */
+    legacyPrologues?: () => Buffer[];
   };
   const targets: Target[] = [
     {
@@ -479,6 +553,7 @@ function patch(swfPath: string, verify: boolean, only: Only): void {
         retargetSite(abc, insts, "appearPosX", 0xd1, null, L_POS_X, false, "none"),
         retargetSite(abc, insts, "appearPosY", 0xd1, null, L_POS_Y, false, "none"),
       ],
+      legacyPrologues: () => [buildLegacyLootPrologueV1(abc)],
     },
   ].filter((t) => only === "both" || (only === "brain" ? t.label.startsWith("Brain") : t.label.startsWith("Loot")));
 
@@ -490,20 +565,46 @@ function patch(swfPath: string, verify: boolean, only: Only): void {
     if (!body) throw new PatchError(`No body for ${target.label}.`);
     if (body.exceptionCount > 0) throw new PatchError(`${target.label} has an exception table.`);
 
-    const code = ctx.body.subarray(body.codeStart, body.codeStart + body.codeLen);
+    const onDisk = ctx.body.subarray(body.codeStart, body.codeStart + body.codeLen);
+    const prologue = target.prologue();
+    if (onDisk.subarray(0, prologue.length).equals(prologue)) { alreadyPatched += 1; continue; }
+
+    // An SWF carrying an older revision's prologue is upgraded rather than rejected: strip those
+    // bytes and treat what is left as the original body. The read-site edits inside it are identical
+    // across revisions and are already applied, so they must not be applied a second time.
+    let code = onDisk;
+    let sitesAlreadyRetargeted = false;
+    for (const legacy of target.legacyPrologues?.() ?? []) {
+      if (!onDisk.subarray(0, legacy.length).equals(legacy)) continue;
+      code = onDisk.subarray(legacy.length);
+      sitesAlreadyRetargeted = true;
+      console.log(`  ${target.label}: stripping a ${legacy.length}-byte prologue from an earlier revision.`);
+      break;
+    }
+
     const insts = disassemble(code, target.label);
     const last = insts[insts.length - 1];
-    if (last.offset + last.size !== body.codeLen) throw new PatchError(`${target.label} did not disassemble cleanly.`);
+    if (last.offset + last.size !== code.length) throw new PatchError(`${target.label} did not disassemble cleanly.`);
     if (insts.some((i) => i.opcode === 0x1b)) throw new PatchError(`${target.label} contains a lookupswitch.`);
-
-    const prologue = target.prologue();
-    if (code.subarray(0, prologue.length).equals(prologue)) { alreadyPatched += 1; continue; }
 
     // In-place, same-length overwrites only: no branch offset anywhere changes.
     const rewritten = Buffer.from(code);
-    for (const edit of target.edits(insts)) {
-      if (edit.data.length !== edit.end - edit.start) throw new PatchError(`${target.label}: ${edit.what} is not length preserving.`);
-      edit.data.copy(rewritten, edit.start);
+    if (sitesAlreadyRetargeted) {
+      // Prove the assumption that let us skip the edits, so a legacy prologue whose read sites are
+      // not what this revision expects fails loudly instead of silently patching nothing.
+      let stockSitesStillPresent = true;
+      try { target.edits(insts); } catch { stockSitesStillPresent = false; }
+      if (stockSitesStillPresent) throw new PatchError(`${target.label}: legacy prologue found but the read sites are still stock.`);
+      for (const local of [L_POS_X, L_POS_Y]) {
+        if (!insts.some((i) => i.opcode === 0x62 && i.operands[0]?.[1] === local)) {
+          throw new PatchError(`${target.label}: legacy prologue found but no read site reads local${local}.`);
+        }
+      }
+    } else {
+      for (const edit of target.edits(insts)) {
+        if (edit.data.length !== edit.end - edit.start) throw new PatchError(`${target.label}: ${edit.what} is not length preserving.`);
+        edit.data.copy(rewritten, edit.start);
+      }
     }
     const newCode = Buffer.concat([prologue, rewritten]);
     if (newCode.length !== prologue.length + code.length) throw new PatchError(`${target.label}: body length changed by something other than the prologue.`);

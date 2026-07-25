@@ -313,21 +313,6 @@ export class PetHandler {
         return PetHandler.getEquippedPetBonusRates(character);
     }
 
-    /**
-     * A loot magnet pet only fetches while it is the summoned companion walking beside
-     * the player — an owned-but-unsummoned pet does nothing, and the player picks their
-     * own loot up as normal. Gated on the active pet rather than every equipped slot so
-     * the bonus reads as something the visible pet is doing.
-     */
-    static hasActiveLootMagnetPet(character: any): boolean {
-        const activePet = PetHandler.getActivePetRecord(character);
-        if (!activePet) {
-            return false;
-        }
-
-        return Boolean(PetConfig.getPetDef(Number(activePet.typeID ?? 0))?.LootMagnet);
-    }
-
     static applyActivePetExperience(client: Client, xpAmount: number, bonusLevelUps: number = 0): boolean {
         if (!client.character || xpAmount <= 0) {
             return false;

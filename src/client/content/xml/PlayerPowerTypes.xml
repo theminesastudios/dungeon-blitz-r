@@ -30459,7 +30459,7 @@
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>10000</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>10,50</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
@@ -30516,7 +30516,7 @@
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>10000</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>10,50</ManaCost>
 		<ManaRequirement>50</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30548,7 +30548,7 @@
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>10000</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>10,50</ManaCost>
 		<ManaRequirement>50</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30580,7 +30580,7 @@
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>10000</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>10,50</ManaCost>
 		<ManaRequirement>45</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30612,7 +30612,7 @@
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>10000</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>10,50</ManaCost>
 		<ManaRequirement>45</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30644,7 +30644,7 @@
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>10000</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>10,50</ManaCost>
 		<ManaRequirement>45</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30676,7 +30676,7 @@
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>10000</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>10,50</ManaCost>
 		<ManaRequirement>45</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30708,7 +30708,7 @@
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>10000</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>10,50</ManaCost>
 		<ManaRequirement>40</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30740,7 +30740,7 @@
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>10000</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>10,50</ManaCost>
 		<ManaRequirement>40</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30772,7 +30772,7 @@
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>10000</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>10,50</ManaCost>
 		<ManaRequirement>40</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -30804,7 +30804,7 @@
 		<CastTime>250</CastTime>
 		<RecoverTime>300</RecoverTime>
 		<CoolDownTime>10000</CoolDownTime>
-		<ManaCost>0</ManaCost>
+		<ManaCost>10,50</ManaCost>
 		<ManaRequirement>40</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>

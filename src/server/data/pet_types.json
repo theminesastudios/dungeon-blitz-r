@@ -1102,11 +1102,10 @@
         "Kingdom": "Any",
         "ItemFind": true,
         "GoldFind": true,
-        "LootMagnet": true,
-        "BonusInfo": "Collects dropped crafting materials for you",
+        "BonusInfo": "Picks up gold it walks over for you",
         "ClassType": "Lockbox01",
         "Color": "Green",
-        "Description": "A keen-nosed companion that trots along at your heel and fetches every scrap of crafting material you leave behind.",
+        "Description": "A keen-nosed companion that trots along at your heel and snaps up any dropped gold it passes. You can still collect gold yourself.",
         "UseVanityPower": true,
         "DisplayRarity": "L"
     }
