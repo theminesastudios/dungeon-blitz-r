@@ -1,3 +1,5 @@
+import { MAX_GEAR_TIER } from '../core/GameData';
+
 type GearEntry = {
     gearID: number;
     tier: number;
@@ -10,10 +12,10 @@ function normalizeTier(value: unknown): number {
     if (!Number.isFinite(tier) || tier <= 0) {
         return 0;
     }
-    if (tier >= 2) {
-        return 2;
-    }
-    return 1;
+    // Tier travels in 2 bits: 0 Magic, 1 Rare, 2 Legendary, 3 Mystic. This used to clamp at 2,
+    // which silently demoted Mystic gear back to Legendary in every packet built from a
+    // normalized inventory.
+    return Math.min(MAX_GEAR_TIER, Math.round(tier));
 }
 
 function normalizeGearId(value: unknown): number {

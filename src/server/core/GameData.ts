@@ -8,6 +8,10 @@ import { LevelConfig } from './LevelConfig';
 
 type GearDropSource = 'boss' | 'realm';
 
+// Gear tier travels in 2 bits (GearType.const_176), so 3 is the ceiling the wire format allows:
+// 0 Magic, 1 Rare, 2 Legendary, 3 Mystic.
+export const MAX_GEAR_TIER = 3;
+
 interface GearDropRule {
     gearId: number;
     gearName: string;
@@ -307,7 +311,11 @@ export class GameData {
     }
 
     static buildGearTierKey(gearId: number, tier: number): string {
-        return `${Math.max(0, Math.round(Number(gearId) || 0))}:${Math.max(0, Math.min(2, Math.round(Number(tier) || 0)))}`;
+        return `${Math.max(0, Math.round(Number(gearId) || 0))}:${GameData.clampGearTier(tier)}`;
+    }
+
+    private static clampGearTier(tier: number): number {
+        return Math.max(0, Math.min(MAX_GEAR_TIER, Math.round(Number(tier) || 0)));
     }
 
     private static normalizeGearTier(tier: number | null | undefined): number | null {
@@ -318,7 +326,7 @@ export class GameData {
         if (!Number.isFinite(normalized)) {
             return null;
         }
-        return Math.max(0, Math.min(2, Math.round(normalized)));
+        return GameData.clampGearTier(normalized);
     }
 
     private static loadGearDropRules(dataDir: string): void {

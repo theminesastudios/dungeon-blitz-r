@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { Config } from '../core/config';
+import { MAX_GEAR_TIER } from '../core/GameData';
 
 const gearGoldFindByKey = new Map<string, number>();
 let loaded = false;
@@ -35,7 +36,7 @@ function normalizeTier(value: unknown): number {
     if (!Number.isFinite(tier) || tier <= 0) {
         return 0;
     }
-    return tier >= 2 ? 2 : 1;
+    return Math.min(MAX_GEAR_TIER, Math.round(tier));
 }
 
 function tierFromRarity(rarity: string): number {
@@ -44,6 +45,8 @@ function tierFromRarity(rarity: string): number {
             return 1;
         case 'L':
             return 2;
+        case 'Y':
+            return 3;
         default:
             return 0;
     }

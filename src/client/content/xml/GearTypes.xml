@@ -77049,6 +77049,28 @@
 			<ColorSwap6>0x600000=0x3B3799</ColorSwap6>
 		</GfxType>
 	</Gear>
+	<Gear GearName="UniqueRogueLockbox01GearSword30Y" GearID="1171" Type="Sword">
+		<DisplayName>Mistik Ozel Haydut Kilic Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Rogue</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticRogueSword</PowerRune>
+		<ProcRune>ProcMassive</ProcRune>
+		<ProcRune2>ProcHealTime</ProcRune2>
+		<StatRune>RogueSpread</StatRune>
+		<Rarity>Y</Rarity>
+		<MeleePower>SaberMelee</MeleePower>
+		<RangedPower>Energyball</RangedPower>
+		<GfxType>
+			<CustomArt>Gfx_Paladin_1.swf/SaberShadow</CustomArt>
+			<ColorSwap>0xD0F0F0=0x4848B0</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x282862</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x111630</ColorSwap3>
+			<ColorSwap4>0xFF9999=0xA29EF5</ColorSwap4>
+			<ColorSwap5>0xB00000=0x6864BF</ColorSwap5>
+			<ColorSwap6>0x600000=0x3B3799</ColorSwap6>
+		</GfxType>
+	</Gear>
 	<Gear GearName="UniqueRogueLockbox01GearShield30" GearID="1172" Type="Shield">
 		<DisplayName>Ozel Haydut Kalkan Seviye 30</DisplayName>
 		<GearSet>99</GearSet>
@@ -77096,6 +77118,26 @@
 		<ProcRune2>CritChance</ProcRune2>
 		<StatRune>RogueSpread</StatRune>
 		<Rarity>L</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Paladin_1.swf/OffhandShadow</CustomArt>
+			<ColorSwap>0xD0F0F0=0x4848B0</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x282862</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x111630</ColorSwap3>
+			<ColorSwap4>0xFF9999=0xA29EF5</ColorSwap4>
+			<ColorSwap5>0xB00000=0x6864BF</ColorSwap5>
+			<ColorSwap6>0x600000=0x3B3799</ColorSwap6>
+		</GfxType>
+	</Gear>
+	<Gear GearName="UniqueRogueLockbox01GearShield30Y" GearID="1172" Type="Shield">
+		<DisplayName>Mistik Ozel Haydut Kalkan Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Rogue</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticRogueOffhand</PowerRune>
+		<ProcRune>Haste</ProcRune>
+		<ProcRune2>CritChance</ProcRune2>
+		<StatRune>RogueSpread</StatRune>
+		<Rarity>Y</Rarity>
 		<GfxType>
 			<CustomArt>Gfx_Paladin_1.swf/OffhandShadow</CustomArt>
 			<ColorSwap>0xD0F0F0=0x4848B0</ColorSwap>
@@ -77169,6 +77211,28 @@
 			<ColorSwap6>0x600000=0x3B3799</ColorSwap6>
 		</GfxType>
 	</Gear>
+	<Gear GearName="UniqueRogueLockbox01GearHat30Y" GearID="1173" Type="Hat">
+		<DisplayName>Mistik Ozel Haydut Baslik Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Rogue</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticRogueHat</PowerRune>
+		<ProcRune>CritDamage</ProcRune>
+		<ProcRune2>HealthPercent</ProcRune2>
+		<StatRune>RogueSpread</StatRune>
+		<Rarity>Y</Rarity>
+		<GfxType>
+			<CustomArt>Animation_Rogue.swf/HatHair</CustomArt>
+			<CustomArt2>Gfx_Rogue_1.swf/MantleShadow</CustomArt2>
+			<CustomArt3>Gfx_Rogue_1.swf/HoodShadow</CustomArt3>
+			<ColorSwap>0xD0F0F0=0x4848B0</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x282862</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x111630</ColorSwap3>
+			<ColorSwap4>0xFF9999=0xA29EF5</ColorSwap4>
+			<ColorSwap5>0xB00000=0x6864BF</ColorSwap5>
+			<ColorSwap6>0x600000=0x3B3799</ColorSwap6>
+		</GfxType>
+	</Gear>
 	<Gear GearName="UniqueRogueLockbox01GearArmor30" GearID="1174" Type="Armor">
 		<DisplayName>Ozel Haydut Zirh Seviye 30</DisplayName>
 		<GearSet>99</GearSet>
@@ -77216,6 +77280,26 @@
 		<ProcRune2>RecoveryBoost</ProcRune2>
 		<StatRune>RogueSpread</StatRune>
 		<Rarity>L</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Rogue_1.swf/SashShadow</CustomArt>
+			<ColorSwap>0xD0F0F0=0x4848B0</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x282862</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x111630</ColorSwap3>
+			<ColorSwap4>0xFF9999=0xA29EF5</ColorSwap4>
+			<ColorSwap5>0xB00000=0x6864BF</ColorSwap5>
+			<ColorSwap6>0x600000=0x3B3799</ColorSwap6>
+		</GfxType>
+	</Gear>
+	<Gear GearName="UniqueRogueLockbox01GearArmor30Y" GearID="1174" Type="Armor">
+		<DisplayName>Mistik Ozel Haydut Zirh Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Rogue</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticRogueArmor</PowerRune>
+		<ProcRune>CritChance</ProcRune>
+		<ProcRune2>RecoveryBoost</ProcRune2>
+		<StatRune>RogueSpread</StatRune>
+		<Rarity>Y</Rarity>
 		<GfxType>
 			<CustomArt>Gfx_Rogue_1.swf/SashShadow</CustomArt>
 			<ColorSwap>0xD0F0F0=0x4848B0</ColorSwap>
@@ -77286,6 +77370,27 @@
 			<ColorSwap6>0x600000=0x3B3799</ColorSwap6>
 		</GfxType>
 	</Gear>
+	<Gear GearName="UniqueRogueLockbox01GearGloves30Y" GearID="1175" Type="Gloves">
+		<DisplayName>Mistik Ozel Haydut Eldiven Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Rogue</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticRogueGloves</PowerRune>
+		<ProcRune>Haste</ProcRune>
+		<ProcRune2>RecoveryBoost</ProcRune2>
+		<StatRune>RogueSpread</StatRune>
+		<Rarity>Y</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Rogue_1.swf/GloveNinja</CustomArt>
+			<CustomArt2>Gfx_Rogue_1.swf/GloveShadow</CustomArt2>
+			<ColorSwap>0xD0F0F0=0x4848B0</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x282862</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x111630</ColorSwap3>
+			<ColorSwap4>0xFF9999=0xA29EF5</ColorSwap4>
+			<ColorSwap5>0xB00000=0x6864BF</ColorSwap5>
+			<ColorSwap6>0x600000=0x3B3799</ColorSwap6>
+		</GfxType>
+	</Gear>
 	<Gear GearName="UniqueRogueLockbox01GearBoots30" GearID="1176" Type="Boots">
 		<DisplayName>Ozel Haydut Cizme Seviye 30</DisplayName>
 		<GearSet>99</GearSet>
@@ -77333,6 +77438,26 @@
 		<ProcRune2>HealthPercent</ProcRune2>
 		<StatRune>RogueSpread</StatRune>
 		<Rarity>L</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Rogue_1.swf/BootFootShadow</CustomArt>
+			<ColorSwap>0xD0F0F0=0x4848B0</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x282862</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x111630</ColorSwap3>
+			<ColorSwap4>0xFF9999=0xA29EF5</ColorSwap4>
+			<ColorSwap5>0xB00000=0x6864BF</ColorSwap5>
+			<ColorSwap6>0x600000=0x3B3799</ColorSwap6>
+		</GfxType>
+	</Gear>
+	<Gear GearName="UniqueRogueLockbox01GearBoots30Y" GearID="1176" Type="Boots">
+		<DisplayName>Mistik Ozel Haydut Cizme Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Rogue</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticRogueBoots</PowerRune>
+		<ProcRune>CritDamage</ProcRune>
+		<ProcRune2>HealthPercent</ProcRune2>
+		<StatRune>RogueSpread</StatRune>
+		<Rarity>Y</Rarity>
 		<GfxType>
 			<CustomArt>Gfx_Rogue_1.swf/BootFootShadow</CustomArt>
 			<ColorSwap>0xD0F0F0=0x4848B0</ColorSwap>
