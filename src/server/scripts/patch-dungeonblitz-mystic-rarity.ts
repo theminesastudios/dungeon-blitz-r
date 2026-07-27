@@ -330,6 +330,14 @@ const ONE_LINE_PX = 18;
 const POWER_ROW_SPAN_PX = 34;
 /** Air between the last proc line and the card's bottom edge. */
 const BOTTOM_PAD_PX = 12;
+/**
+ * Extra bottom room added ONLY to the comparison card ("Currently Equipped", left side). Its
+ * background is a 3-frame clip (am_Base.totalFrames > 1) whose height maps to fewer visible pixels
+ * than the hover card's single-frame background, so `proc2.bottom + BOTTOM_PAD` lands ~a line short
+ * and the last bonus overflows. This top-up covers it without touching the (already-correct) hover
+ * card. Tunable — raise if the last line still clips, lower if there is too much empty space.
+ */
+const CMP_EXTRA_PAD_PX = 26;
 
 /**
  * Runs on every exit from `class_101.ShowGearTooltip`. The method's last instruction is its real
@@ -460,6 +468,7 @@ type CardMultinames = {
   y: number;
   height: number;
   scaleY: number;
+  totalFrames: number;
   amRarityLegendary: number;
   amRarityMagic: number;
   visible: number;
@@ -650,6 +659,10 @@ function harvestCardMultinames(ctx: ReturnType<typeof parseSwf>, abc: Abc): Card
     return hit.operands[0][1];
   };
 
+  // totalFrames is a stock flash.display::MovieClip getter not read by class_101/ChatBubble, so
+  // harvest its multiname from any getproperty across the whole SWF (correct namespace guaranteed).
+  const totalFrames = harvestGlobalMultiname(ctx, abc, 0x66, "totalFrames");
+
   return {
     amBase: fromOwner([0x66], "am_Base"),
     transform: fromBubble([0x66], "transform"),
@@ -663,10 +676,32 @@ function harvestCardMultinames(ctx: ReturnType<typeof parseSwf>, abc: Abc): Card
     y: fromOwner([0x61, 0x66], "y"),
     height: fromBubble([0x66], "height"),
     scaleY: fromBubble([0x61, 0x66], "scaleY"),
+    totalFrames,
     amRarityLegendary: fromOwner([0x66], "am_RarityLegendary"),
     amRarityMagic: fromOwner([0x66], "am_RarityMagic"),
     visible: fromOwner([0x61], "visible"),
   };
+}
+
+/** First multiname operand of the given opcode with the given name, scanned across every method. */
+function harvestGlobalMultiname(ctx: ReturnType<typeof parseSwf>, abc: Abc, opcode: number, name: string): number {
+  for (let classIndex = 0; classIndex < abc.instances.length; classIndex += 1) {
+    const traits = [...abc.instances[classIndex].traits, ...(abc.classTraits[classIndex] ?? [])];
+    for (const trait of traits) {
+      if (trait.methodIdx === null) continue;
+      const body = abc.methodBodies.get(trait.methodIdx);
+      if (!body) continue;
+      let insts: Instruction[];
+      try {
+        insts = disassemble(ctx.body.subarray(body.codeStart, body.codeStart + body.codeLen), name);
+      } catch {
+        continue;
+      }
+      const hit = insts.find((inst) => inst.opcode === opcode && abc.multinameNames[inst.operands[0]?.[1]] === name);
+      if (hit) return hit.operands[0][1];
+    }
+  }
+  throw new PatchError(`Could not harvest a getproperty ${name} multiname anywhere in the SWF.`);
 }
 
 /** Every instruction of every method on a class, for harvesting operands. */
@@ -1163,19 +1198,16 @@ function findAfterPlayAnimation(abc: Abc, insts: Instruction[], label: string): 
  * background to end just below the last proc row. Stack-neutral, so the code after the splice is
  * unaffected; every child fetch is null-guarded.
  *
- * This is **absolute, not additive, and applied to every item** — the fix for two coupled bugs:
+ * Absolute (not additive) and self-adjusting: nothing in stock resets am_Base.height, and the stock
+ * fill re-anchors the proc row every hover, so recomputing from proc2 lands on the same value each
+ * time (no compounding) and reproduces a non-Mystic card's default height (no leak from the reused
+ * clip). Mystic items grow because method_1120 pushed their proc row down.
  *
- *  - *Compounding:* nothing in the stock code (not PlayAnimation, not the fill) ever resets
- *    `am_Base.height`, so the previous `+= delta` grew the card a little further on every hover.
- *    Recomputing an absolute target from the proc row (which the stock fill DOES re-anchor each
- *    hover) lands on the same value every time.
- *  - *Leak:* am_Base is a reused clip, so a card left tall by a Mystic hover would stay tall for the
- *    next (non-Mystic) item. Running for every item makes each hover recompute its own height: a
- *    non-Mystic card's procs sit at their natural, unshifted positions (method_1120 only shifts them
- *    for gearID 1171..1176), so this reproduces its default height and clears any leftover growth.
- *
- * No gearID gate here: the proc positions already encode "Mystic vs not" (shifted vs authored), and
- * gating would re-introduce the leak by leaving non-Mystic cards untouched.
+ * Both tooltip cards run this. The bottom-anchored comparison card ("Currently Equipped") uses a
+ * 3-frame am_Base whose height maps to fewer visible pixels than the hover card's single-frame
+ * am_Base, so the same target lands ~a line short and the last bonus clips. It is told apart
+ * reliably by `am_Base.totalFrames > 1` (hover = 1) and gets CMP_EXTRA_PAD added; the hover card is
+ * untouched.
  */
 function buildCardGrowthBlock(card: CardMultinames): Buffer {
   return assemble([
@@ -1193,7 +1225,22 @@ function buildCardGrowthBlock(card: CardMultinames): Buffer {
     { opcode: 0x66, operands: [writeU30(card.height)] }, // [base, y, p2h]
     { opcode: 0xa0 }, // add
     pushByte(BOTTOM_PAD_PX),
-    { opcode: 0xa0 }, // [base, bottom]
+    { opcode: 0xa0 }, // [base, target]
+    { opcode: 0x63, operands: [writeU30(SHOW_TOOLTIP_DELTA_LOCAL)] }, // stash target -> [base] (keeps peak at 3)
+
+    // Comparison card top-up: if am_Base.totalFrames > 1, add CMP_EXTRA_PAD to the stashed target.
+    { opcode: 0x62, operands: [writeU30(11)] },
+    { opcode: 0x66, operands: [writeU30(card.amBase)] },
+    { opcode: 0x66, operands: [writeU30(card.totalFrames)] }, // [base, totalFrames]
+    pushByte(1),
+    { opcode: OP_IFLE, branchTo: "afterExtra" }, // totalFrames <= 1 (hover) -> no top-up
+    { opcode: 0x62, operands: [writeU30(SHOW_TOOLTIP_DELTA_LOCAL)] },
+    pushByte(CMP_EXTRA_PAD_PX),
+    { opcode: 0xa0 }, // target + extra
+    { opcode: 0x63, operands: [writeU30(SHOW_TOOLTIP_DELTA_LOCAL)] }, // -> [base]
+    { opcode: -1, label: "afterExtra" },
+
+    { opcode: 0x62, operands: [writeU30(SHOW_TOOLTIP_DELTA_LOCAL)] }, // [base, target]
     { opcode: 0x61, operands: [writeU30(card.height)] }, // setproperty height
     { opcode: OP_JUMP, branchTo: "done" },
     { opcode: 0x29, label: "noP2" }, // pop p2 -> [base]
