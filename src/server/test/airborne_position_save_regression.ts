@@ -241,6 +241,45 @@ function testEveryRegionReachesAGroundedEntryPoint(): void {
     assert.deepEqual(uncovered, [], 'every region must reach a grounded dungeon entry point');
 }
 
+// Losing connection inside a dungeon must put the player back exactly where they last stood in
+// the region, not on a coordinate the server reconstructed for them. Dungeons never write
+// CurrentLevel, so that position is still on the character the whole time they are inside.
+function testDungeonReturnKeepsTheLastPositionStoodOnInTheRegion(): void {
+    const char: any = {
+        name: 'Faller',
+        CurrentLevel: { name: 'JadeCityHard', x: 8_400, y: 1_058 }
+    };
+
+    // An entry point that lost the floor -- the symptom being defended against.
+    const airborneEntry = { x: 8_400, y: -848, hasCoord: true };
+    const returned = LevelConfig.resolveDungeonSafeReturn('JC_Mini2Hard', 'JadeCityHard', char, airborneEntry);
+    assert.ok(returned, 'a persistent dungeon must resolve a safe return');
+    assert.equal(returned!.level, 'JadeCityHard');
+    assert.equal(returned!.x, 8_400);
+    assert.equal(returned!.y, 1_058, 'the position the player last stood on wins over the entry point');
+
+    // Home works the same way: the region record lives in PreviousLevel while CraftTown is
+    // current, and getSavedCoordinatesForLevel reads both.
+    const homeChar: any = {
+        name: 'Faller',
+        CurrentLevel: { name: 'CraftTown', x: 360, y: 1_460 },
+        PreviousLevel: { name: 'JadeCityHard', x: 9_100, y: 1_058 }
+    };
+    const homeReturn = LevelConfig.resolveDungeonSafeReturn('JC_Mini2Hard', 'JadeCityHard', homeChar, airborneEntry);
+    assert.equal(homeReturn!.x, 9_100, 'the region record is used even when it sits in PreviousLevel');
+    assert.equal(homeReturn!.y, 1_058);
+
+    // With no record for the region at all the entry point is still better than nothing.
+    const bare: any = { name: 'Faller' };
+    const fallback = LevelConfig.resolveDungeonSafeReturn('JC_Mini2Hard', 'JadeCityHard', bare, {
+        x: 7_200,
+        y: 1_058,
+        hasCoord: true
+    });
+    assert.equal(fallback!.x, 7_200, 'the entry point remains the fallback');
+    assert.equal(fallback!.y, 1_058);
+}
+
 function main(): void {
     const dataDir = path.resolve(__dirname, '../data');
     LevelConfig.load(dataDir);
@@ -255,6 +294,7 @@ function main(): void {
         testAirborneArrivalStillRecordsTheLevel();
         testDungeonEntryUsesTheRecordedGroundedPosition();
         testEveryRegionReachesAGroundedEntryPoint();
+        testDungeonReturnKeepsTheLastPositionStoodOnInTheRegion();
         console.log('airborne_position_save_regression: ok');
     } finally {
         GlobalState.levelEntities = levelEntities as any;

@@ -695,6 +695,17 @@ export class LevelConfig {
             { fallbackLevel: dungeonLevel === 'TutorialDungeon' ? 'NewbieRoad' : 'NewbieRoad' }
         );
 
+        // Dungeons never write CurrentLevel/PreviousLevel, so the character still carries the
+        // last position they stood on in the region they came from -- the place they expect to
+        // be put back on. Overwriting that with a derived entry point loses it for no gain: the
+        // entry point is a coordinate the server reconstructed, the saved record is one the
+        // player actually stood on. The saved region position wins, and the entry point stays
+        // as the fallback for a character that has none.
+        const savedCoordinates = this.getSavedCoordinatesForLevel(char, safeLevel);
+        if (savedCoordinates) {
+            return { level: safeLevel, ...savedCoordinates };
+        }
+
         const entryX = Number(entryCoords?.x);
         const entryY = Number(entryCoords?.y);
         if (entryCoords?.hasCoord && Number.isFinite(entryX) && Number.isFinite(entryY)) {
@@ -704,11 +715,6 @@ export class LevelConfig {
                 y: Math.round(entryY),
                 hasCoord: true
             };
-        }
-
-        const savedCoordinates = this.getSavedCoordinatesForLevel(char, safeLevel);
-        if (savedCoordinates) {
-            return { level: safeLevel, ...savedCoordinates };
         }
 
         const doorEntry = this.findDoorEntryToLevel(dungeonLevel, safeLevel);
