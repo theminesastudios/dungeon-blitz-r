@@ -188,6 +188,59 @@ function testDungeonEntryUsesTheRecordedGroundedPosition(): void {
     assert.equal(fallbackSyncState.syncEntryY, Math.round(spawn.y));
 }
 
+// The fall was reported in Valhaven first but nothing about it is regional, so every region a
+// dungeon can be entered from has to reach a grounded entry point without consulting the live
+// entity. Two of the 157 authored region->dungeon doors have no default spawn to fall back on
+// (SwampRoadConnection), and those are covered by updateSavedLevelsOnTransfer instead: arriving
+// in the region writes the door's authored spawn into CurrentLevel before its dungeon door is
+// reachable, so the record is always there by the time it is needed.
+function testEveryRegionReachesAGroundedEntryPoint(): void {
+    const doorEntriesByTarget: Map<string, Array<{ sourceLevel: string; sourceDoorId: number }>> =
+        (LevelConfig as any).DOOR_ENTRIES_BY_TARGET;
+    const uncovered: string[] = [];
+    let checked = 0;
+
+    for (const [dungeon, entries] of doorEntriesByTarget) {
+        if (!LevelConfig.isDungeonLevel(dungeon)) {
+            continue;
+        }
+        for (const entry of entries) {
+            const region = entry.sourceLevel;
+            if (!LevelConfig.isSaveAllowedLevel(region)) {
+                continue;
+            }
+            checked += 1;
+
+            // A character who has never been recorded in the region: the authored default spawn
+            // has to carry it.
+            const bare = LevelConfig.resolveDungeonEntryCoordinates(dungeon, region, { name: 'Faller' });
+            if (bare.hasCoord) {
+                continue;
+            }
+
+            // No default spawn. Walking into the region must still leave a record behind, or the
+            // entry point falls through to the live entity.
+            const arrival: any = { name: 'Faller' };
+            const doorSpawn = (LevelConfig as any).getDoorSpawn(region, entry.sourceDoorId) ??
+                (LevelConfig as any).getDoorSpawn(region, 1);
+            LevelConfig.updateSavedLevelsOnTransfer(
+                arrival,
+                'NewbieRoad',
+                region,
+                Math.round(Number(doorSpawn?.x ?? 0)),
+                Math.round(Number(doorSpawn?.y ?? 0))
+            );
+            const afterArrival = LevelConfig.resolveDungeonEntryCoordinates(dungeon, region, arrival);
+            if (!afterArrival.hasCoord || !doorSpawn) {
+                uncovered.push(`${region} -> ${dungeon}`);
+            }
+        }
+    }
+
+    assert.ok(checked > 100, `expected the authored door table to be loaded, saw ${checked} pairs`);
+    assert.deepEqual(uncovered, [], 'every region must reach a grounded dungeon entry point');
+}
+
 function main(): void {
     const dataDir = path.resolve(__dirname, '../data');
     LevelConfig.load(dataDir);
@@ -201,6 +254,7 @@ function main(): void {
         testDroppingThroughAPlatformIsNotSaved();
         testAirborneArrivalStillRecordsTheLevel();
         testDungeonEntryUsesTheRecordedGroundedPosition();
+        testEveryRegionReachesAGroundedEntryPoint();
         console.log('airborne_position_save_regression: ok');
     } finally {
         GlobalState.levelEntities = levelEntities as any;
