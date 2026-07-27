@@ -885,12 +885,18 @@ export class LevelHandler {
                 syncEntryLevel = sourceLevel;
                 const liveEntryX = Number(entryEntity?.x);
                 const liveEntryY = Number(entryEntity?.y);
+                // Walking into the dungeon door mid-jump would otherwise record an airborne
+                // entry point, and that is the exact position the player is put back on when
+                // they leave the dungeon or reconnect out of it -- they arrive with no floor
+                // under them and fall until the level catches them somewhere else entirely.
+                // The recorded entry is the last grounded position, so it wins while in flight.
+                const liveEntryGrounded = !(entryEntity as { airborne?: boolean } | null | undefined)?.airborne;
                 const recordedEntry = LevelConfig.resolveDungeonEntryCoordinates(
                     normalizedTargetLevel,
                     sourceLevel,
                     client.character
                 );
-                if (Number.isFinite(liveEntryX) && Number.isFinite(liveEntryY)) {
+                if (liveEntryGrounded && Number.isFinite(liveEntryX) && Number.isFinite(liveEntryY)) {
                     syncEntryX = Math.round(liveEntryX);
                     syncEntryY = Math.round(liveEntryY);
                     syncEntryHasCoord = true;
