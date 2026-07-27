@@ -338,6 +338,14 @@ const BOTTOM_PAD_PX = 12;
  * card. Tunable — raise if the last line still clips, lower if there is too much empty space.
  */
 const CMP_EXTRA_PAD_PX = 26;
+/**
+ * Extra space between the ability block and the proc rows below it, on top of the authored gap. The
+ * proc rows are shifted down by `am_PowerTypeName.height - POWER_ROW_SPAN`, which preserves the stock
+ * one-line gap; a taller ability block otherwise leaves the two proc lines crammed right under the
+ * last ability. This is folded into that shift, so the card background (sized from the proc row)
+ * grows to contain it — no overflow. Tunable.
+ */
+const PROC_ABILITY_GAP_PX = 12;
 
 /**
  * Runs on every exit from `class_101.ShowGearTooltip`. The method's last instruction is its real
@@ -1129,6 +1137,13 @@ function buildTooltipLayoutBlock(layout: LayoutMultinames, gearId: number): Buff
     { opcode: 0x62, operands: [writeU30(LAYOUT_DELTA_LOCAL)], label: "haveDelta" },
     pushByte(0),
     { opcode: OP_IFLE, branchTo: "done" },
+
+    // Push the proc rows an extra PROC_ABILITY_GAP below the abilities so they are not crammed under
+    // the last ability line. Folded into the shift delta; the proc-sized card background follows.
+    { opcode: 0x62, operands: [writeU30(LAYOUT_DELTA_LOCAL)] },
+    pushByte(PROC_ABILITY_GAP_PX),
+    { opcode: 0xa0 }, // add
+    { opcode: 0x63, operands: [writeU30(LAYOUT_DELTA_LOCAL)] },
 
     ...shiftChild(layout.amProcTypeName1, "procText1"),
     ...shiftChild(layout.amProcTypeName2, "procText2"),

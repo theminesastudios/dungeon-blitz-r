@@ -37,12 +37,15 @@ const FLAG2_HAS_FONT_CLASS = 0x80;
 const FLAG2_HAS_LAYOUT = 0x20;
 
 /**
- * Negative Leading (twips) tightens the space *between* lines. The six-ability Mystic cards run 7
- * lines past a fixed-height card; at -70 twips (3.5px) the pitch drops from 14px to ~10.5px so the
- * block fits, with the glyphs staying full size. Leading only affects multi-line text, so every
- * stock single-line PowerRune tooltip renders byte-for-byte as before.
+ * Leading (twips) is the extra space *between* lines. This was once -70 (a 3.5px squeeze) to cram the
+ * six-ability Mystic block into a fixed-height card, which left the ability lines visibly crammed
+ * versus a stock card's roomy rows. The card now grows to fit its content (see the am_Base sizing in
+ * patch-dungeonblitz-mystic-rarity.ts), so the squeeze is no longer needed: 0 restores the authored
+ * ~14px pitch and the block just makes the card a little taller. Leading only affects multi-line
+ * text, so every stock single-line PowerRune tooltip renders byte-for-byte as before. Tunable — a
+ * small positive value opens the rows up further to match the comparison card's spacing.
  */
-const TARGET_LEADING = -70;
+const TARGET_LEADING = 80;
 
 const UI_DIR = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbp");
 
