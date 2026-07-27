@@ -152,10 +152,12 @@ function testAirborneArrivalStillRecordsTheLevel(): void {
     assert.equal(client.character.CurrentLevel.y, Math.round(spawn.y));
 }
 
-// Entering a dungeon mid-jump must not record the airborne position as the point the player
-// is put back on. That entry point is what a disconnect inside the dungeon returns them to,
-// and an airborne one drops them through Valhaven into whatever room catches them.
-function testAirborneDungeonEntryUsesTheGroundedPosition(): void {
+// The dungeon entry point is what a disconnect inside the dungeon returns the player to, and
+// what walking back out puts them on. It must come from the grounded save, never from the live
+// entity: the server has no collision, so entity.y is only a sum of movement deltas and its
+// airborne flag is whatever the last packet carried. Trusting it dropped players through Dread
+// Valhaven after they refreshed inside Dread The East Wing.
+function testDungeonEntryUsesTheRecordedGroundedPosition(): void {
     const client = createPlayer(66_005);
     const entity = client.entities.get(client.clientEntID);
     entity.airborne = true;
@@ -164,15 +166,26 @@ function testAirborneDungeonEntryUsesTheGroundedPosition(): void {
     const syncState = (LevelHandler as any).buildTransferSyncState(client, 'JC_Mission1', null);
     assert.equal(syncState.syncEntryLevel, LEVEL);
     assert.equal(syncState.syncEntryHasCoord, true, 'the entry point still has to be recorded');
-    assert.equal(syncState.syncEntryY, GROUND_Y, 'an airborne entry must fall back to the grounded save');
+    assert.equal(syncState.syncEntryY, GROUND_Y, 'an airborne entry must not become the entry point');
     assert.equal(syncState.syncEntryX, 12_777);
 
+    // A live position the server merely believes in does not win over the recorded one either:
+    // an unflagged mid-air packet, a MovementAuthority correction the client ignored or a
+    // coalesced burst all leave entity.y off the floor with airborne unset.
     entity.airborne = false;
     entity.x = 12_900;
-    entity.y = GROUND_Y;
-    const groundedSyncState = (LevelHandler as any).buildTransferSyncState(client, 'JC_Mission1', null);
-    assert.equal(groundedSyncState.syncEntryX, 12_900, 'a grounded entry still uses the live position');
-    assert.equal(groundedSyncState.syncEntryY, GROUND_Y);
+    entity.y = GROUND_Y - 900;
+    const staleSyncState = (LevelHandler as any).buildTransferSyncState(client, 'JC_Mission1', null);
+    assert.equal(staleSyncState.syncEntryX, 12_777, 'the grounded save wins over the live entity');
+    assert.equal(staleSyncState.syncEntryY, GROUND_Y);
+
+    // No saved record for the source level either: the authored region spawn is still a place
+    // the level puts players on, and the live entity is still not.
+    client.character.CurrentLevel = { name: 'CraftTown', x: 360, y: 1460 };
+    const spawn = LevelConfig.getSpawn(LEVEL);
+    const fallbackSyncState = (LevelHandler as any).buildTransferSyncState(client, 'JC_Mission1', null);
+    assert.equal(fallbackSyncState.syncEntryX, Math.round(spawn.x), 'falls back to the authored spawn');
+    assert.equal(fallbackSyncState.syncEntryY, Math.round(spawn.y));
 }
 
 function main(): void {
@@ -187,7 +200,7 @@ function main(): void {
         testAirborneMovementIsNotSaved();
         testDroppingThroughAPlatformIsNotSaved();
         testAirborneArrivalStillRecordsTheLevel();
-        testAirborneDungeonEntryUsesTheGroundedPosition();
+        testDungeonEntryUsesTheRecordedGroundedPosition();
         console.log('airborne_position_save_regression: ok');
     } finally {
         GlobalState.levelEntities = levelEntities as any;

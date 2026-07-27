@@ -885,24 +885,34 @@ export class LevelHandler {
                 syncEntryLevel = sourceLevel;
                 const liveEntryX = Number(entryEntity?.x);
                 const liveEntryY = Number(entryEntity?.y);
-                // Walking into the dungeon door mid-jump would otherwise record an airborne
-                // entry point, and that is the exact position the player is put back on when
-                // they leave the dungeon or reconnect out of it -- they arrive with no floor
-                // under them and fall until the level catches them somewhere else entirely.
-                // The recorded entry is the last grounded position, so it wins while in flight.
+                // This is the point the player is put back on when they walk out of the dungeon
+                // (resolveDungeonExitSpawn) and when they reconnect out of it
+                // (repairDungeonLocationBeforeSave). Neither consumer can tell whether there is
+                // floor under it, so it has to come from a position the player is known to have
+                // stood on.
+                //
+                // The live entity is not that. The server has no collision -- entity.x/y is only
+                // a sum of movement deltas, thinned by MovementAuthority rejections and packet
+                // coalescing, and its `airborne` flag is whatever the last 0x07 happened to
+                // carry. Recording it here is what dropped players through Dread Valhaven after
+                // refreshing inside Dread The East Wing.
+                //
+                // CurrentLevel/PreviousLevel only ever accept grounded packets, so the recorded
+                // entry is the trustworthy one and wins. The live position is the fallback for
+                // the case it cannot cover: no saved record for the source level at all.
                 const liveEntryGrounded = !(entryEntity as { airborne?: boolean } | null | undefined)?.airborne;
                 const recordedEntry = LevelConfig.resolveDungeonEntryCoordinates(
                     normalizedTargetLevel,
                     sourceLevel,
                     client.character
                 );
-                if (liveEntryGrounded && Number.isFinite(liveEntryX) && Number.isFinite(liveEntryY)) {
-                    syncEntryX = Math.round(liveEntryX);
-                    syncEntryY = Math.round(liveEntryY);
-                    syncEntryHasCoord = true;
-                } else if (recordedEntry.hasCoord) {
+                if (recordedEntry.hasCoord) {
                     syncEntryX = Math.round(recordedEntry.x);
                     syncEntryY = Math.round(recordedEntry.y);
+                    syncEntryHasCoord = true;
+                } else if (liveEntryGrounded && Number.isFinite(liveEntryX) && Number.isFinite(liveEntryY)) {
+                    syncEntryX = Math.round(liveEntryX);
+                    syncEntryY = Math.round(liveEntryY);
                     syncEntryHasCoord = true;
                 } else {
                     syncEntryX = undefined;
