@@ -254,6 +254,13 @@ export class LevelHandler {
             return;
         }
 
+        // Taking a door mid-jump would otherwise record the airborne position as the return
+        // point for this level, which the client then drops the player from on the way back.
+        // The stored position is the last grounded one, so leaving it alone is correct.
+        if ((entity as { airborne?: boolean } | null | undefined)?.airborne) {
+            return;
+        }
+
         const liveX = Number(entity?.x);
         const liveY = Number(entity?.y);
         if (!Number.isFinite(liveX) || !Number.isFinite(liveY)) {
@@ -6108,7 +6115,17 @@ export class LevelHandler {
         
         // Update Saved Coords if it's us and safe level
         if (isSelf && client.character) {
-            if (LevelConfig.isSaveAllowedLevel(currentLevel)) {
+            // Only a position the player is actually standing on may be saved.
+            //
+            // Every movement packet used to overwrite the saved coordinates, including the
+            // ones sent mid-jump, mid-fall or while a knockback was carrying the player
+            // through the air. Whatever happened to be in flight when they left the level
+            // became the point they are returned to, and the client drops them there --
+            // a Jade City save at y=-848 has no floor within 1700px below it, so the return
+            // replayed that fall every time. Standing still on the ground now wins, and an
+            // airborne packet keeps the last grounded position.
+            const isGroundedPosition = !isAirborne && !flags.bJumping && !flags.bDropping;
+            if (LevelConfig.isSaveAllowedLevel(currentLevel) && isGroundedPosition) {
                 if (!client.character.CurrentLevel) {
                     client.character.CurrentLevel = { name: currentLevel, x: ent.x, y: ent.y };
                 } else {
@@ -6116,6 +6133,23 @@ export class LevelHandler {
                     client.character.CurrentLevel.x = ent.x;
                     client.character.CurrentLevel.y = ent.y;
                 }
+            } else if (
+                LevelConfig.isSaveAllowedLevel(currentLevel) &&
+                LevelConfig.normalizeLevelName(client.character.CurrentLevel?.name) !==
+                    LevelConfig.normalizeLevelName(currentLevel)
+            ) {
+                // Airborne on arrival in a new level: the level itself still has to be
+                // recorded, or a logout mid-fall would send the player back to the level
+                // they came from. Pair it with the authored spawn where the level has one --
+                // otherwise keep the reported position, which the next grounded packet
+                // replaces anyway.
+                const spawn = LevelConfig.getSpawn(currentLevel);
+                const hasAuthoredSpawn = Number(spawn?.x ?? 0) !== 0 || Number(spawn?.y ?? 0) !== 0;
+                client.character.CurrentLevel = {
+                    name: currentLevel,
+                    x: Math.round(Number(hasAuthoredSpawn ? spawn.x : ent.x) || 0),
+                    y: Math.round(Number(hasAuthoredSpawn ? spawn.y : ent.y) || 0)
+                };
             }
 
             if (currentLevel === 'CraftTownTutorial') {
