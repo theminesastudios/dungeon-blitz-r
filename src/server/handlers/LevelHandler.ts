@@ -814,8 +814,21 @@ export class LevelHandler {
         let x = Math.round(Number(teleportOverride?.x ?? 0));
         let y = Math.round(Number(teleportOverride?.y ?? 0));
         let hasCoord = Boolean(teleportOverride?.hasCoord);
+        // Walking through a door whose target is not mapped resolves to the level the player
+        // is already in (handleOpenDoor), so the client reloads the same dungeon. That reload
+        // runs the full transfer path, and clearTransferState wipes levelInstanceId -- so
+        // without this the player lands in a brand new instance of the dungeon they never
+        // left. Different scope means a different entity map: the party member stops being
+        // rendered, both sides spawn their own hostiles, and each one's hostiles keep hitting
+        // the other player's session for real. Re-entering from outside still gets a fresh
+        // instance, because that path has a different source level.
+        const isSameDungeonReentry = shouldSyncDungeonProgress &&
+            LevelConfig.normalizeLevelName(client.currentLevel) === normalizedTargetLevel;
         let levelInstanceId = shouldSyncDungeonProgress
-            ? normalizeLevelInstanceId(teleportOverride?.levelInstanceId)
+            ? (
+                normalizeLevelInstanceId(teleportOverride?.levelInstanceId) ||
+                (isSameDungeonReentry ? normalizeLevelInstanceId(client.levelInstanceId) : '')
+            )
             : '';
         let syncAnchorStartedAt = shouldSyncDungeonProgress
             ? LevelHandler.normalizeSyncAnchorStartedAt(client.syncAnchorStartedAt)
