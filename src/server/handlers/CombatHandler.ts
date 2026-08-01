@@ -423,6 +423,24 @@ export class CombatHandler {
         return CombatHandler.PLAYER_HITPOINTS[clampedLevel];
     }
 
+    // The client computes its own max HP (base for the level, times one plus the summed
+    // percentage bonuses from gear, charms and talents -- Entity.as) and reports it via
+    // 0xFC/0xBB. The server has no independent stat model, so it has to trust the number
+    // for legitimate play. What it does not have to do is trust it unbounded: a Cheat
+    // Engine user writing maxHP = 10,000,000 made every server heal, regen and death check
+    // treat them as effectively immortal. The real ceiling is the base times the largest
+    // bonus stack a real character can assemble; 4x (a +300% stack) is well clear of any
+    // legitimate build while turning the god-mode edit into a merely-high, bounded pool.
+    private static readonly MAX_HP_BONUS_MULTIPLE = 4;
+
+    static clampDeclaredMaxHp(client: Client, declaredMaxHp: number): number {
+        const level = Number(client.character?.level ?? 1);
+        const ceiling = CombatHandler.getBaseHpForLevel(level) * CombatHandler.MAX_HP_BONUS_MULTIPLE;
+        const declared = Math.max(1, Math.round(Number(declaredMaxHp) || 0));
+        return Math.min(declared, Math.round(ceiling));
+    }
+
+
     private static getRespawnHealAmount(client: Client): number {
         const entity = client.clientEntID > 0 ? client.entities.get(client.clientEntID) : null;
         const levelEntity = client.clientEntID > 0
