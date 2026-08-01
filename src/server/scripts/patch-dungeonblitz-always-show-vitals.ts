@@ -71,9 +71,10 @@ const TARGETS: Array<{ method: string; fields: string[] }> = [
 
 const EXPECTED_FLIPS = TARGETS.reduce((total, target) => total + target.fields.length, 0);
 
-function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
+function parseArgs(argv: string[]): { swfPath: string; verify: boolean; revert: boolean } {
   let swfPath = DEFAULT_SWF;
   let verify = false;
+  let revert = false;
 
   for (let index = 2; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -85,12 +86,18 @@ function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
       verify = true;
       continue;
     }
+    if (arg === "--revert") {
+      revert = true;
+      continue;
+    }
     if (arg === "--help" || arg === "-h") {
       console.log([
         "Usage:",
         "  ts-node src/server/scripts/patch-dungeonblitz-always-show-vitals.ts [--verify] [--swf <path>]",
         "",
         "Pins the HUD HP and Mana numbers on so they no longer need a mouse hover.",
+        "",
+        "  --revert   put the numbers back behind a mouse hover",
       ].join("\n"));
       process.exit(0);
     }
@@ -98,7 +105,7 @@ function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
     throw new Error(`Unknown argument: ${arg}`);
   }
 
-  return { swfPath, verify };
+  return { swfPath, verify, revert };
 }
 
 /**
@@ -116,6 +123,7 @@ function findVisibilityPushes(
   instructions: Instruction[],
   multinameNames: string[],
   fields: string[],
+  wanted: number,
 ): number[] {
   const offsets: number[] = [];
 
@@ -136,7 +144,7 @@ function findVisibilityPushes(
       continue;
     }
 
-    if (code[push.offset] === PUSH_FALSE) {
+    if (code[push.offset] === wanted) {
       offsets.push(push.offset);
     }
   }
@@ -144,7 +152,12 @@ function findVisibilityPushes(
   return offsets;
 }
 
-function collectPatches(swfPath: string): { ctx: ReturnType<typeof parseSwf>; patches: BytePatch[]; alreadyPinned: number } {
+function collectPatches(
+  swfPath: string,
+  revert: boolean,
+): { ctx: ReturnType<typeof parseSwf>; patches: BytePatch[]; alreadyDone: number } {
+  const from = revert ? PUSH_TRUE : PUSH_FALSE;
+  const to = revert ? PUSH_FALSE : PUSH_TRUE;
   const ctx = parseSwf(swfPath);
   const abc = parseAbc(ctx);
   const classIndex = classIndexByName(abc, HUD_CLASS);
@@ -153,7 +166,7 @@ function collectPatches(swfPath: string): { ctx: ReturnType<typeof parseSwf>; pa
   }
 
   const patches: BytePatch[] = [];
-  let alreadyPinned = 0;
+  let alreadyDone = 0;
 
   for (const target of TARGETS) {
     const methodIdx = methodIdxForTrait(abc.instances[classIndex].traits, abc, target.method);
@@ -168,49 +181,57 @@ function collectPatches(swfPath: string): { ctx: ReturnType<typeof parseSwf>; pa
 
     const code = ctx.body.subarray(methodBody.codeStart, methodBody.codeStart + methodBody.codeLen);
     const instructions = disassemble(code, `${HUD_CLASS}.${target.method}`);
-    const offsets = findVisibilityPushes(code, instructions, abc.multinameNames, target.fields);
+    const offsets = findVisibilityPushes(code, instructions, abc.multinameNames, target.fields, from);
 
     // Every field this method touches is either still hidden or already pinned. Anything
     // else means the HUD was rebuilt and the shape this relies on is gone.
-    const pinnedHere = target.fields.length - offsets.length;
-    if (pinnedHere < 0) {
+    const doneHere = target.fields.length - offsets.length;
+    if (doneHere < 0) {
       throw new PatchError(
         `${HUD_CLASS}.${target.method}: found ${offsets.length} visibility writes for ${target.fields.length} fields.`,
       );
     }
-    alreadyPinned += pinnedHere;
+    alreadyDone += doneHere;
 
     for (const offset of offsets) {
       patches.push({
         key: `${HUD_CLASS}.${target.method}@${offset}`,
         start: methodBody.codeStart + offset,
         end: methodBody.codeStart + offset + 1,
-        data: Buffer.from([PUSH_TRUE]),
-        detail: `pin ${target.fields.join("/")} visible in ${target.method}`,
+        data: Buffer.from([to]),
+        detail: `${revert ? "unpin" : "pin"} ${target.fields.join("/")} visible in ${target.method}`,
       });
     }
   }
 
-  return { ctx, patches, alreadyPinned };
+  return { ctx, patches, alreadyDone };
 }
 
-function patchSwf(swfPath: string, verify: boolean): void {
-  const { ctx, patches, alreadyPinned } = collectPatches(swfPath);
+function patchSwf(swfPath: string, verify: boolean, revert: boolean): void {
+  const { ctx, patches, alreadyDone } = collectPatches(swfPath, revert);
 
   if (patches.length === 0) {
-    if (alreadyPinned !== EXPECTED_FLIPS) {
+    if (alreadyDone !== EXPECTED_FLIPS) {
       throw new PatchError(
-        `${swfPath}: expected ${EXPECTED_FLIPS} pinned vitals writes, found ${alreadyPinned}.`,
+        `${swfPath}: expected ${EXPECTED_FLIPS} vitals visibility writes, found ${alreadyDone}.`,
       );
     }
-    console.log(`${swfPath}: already patched (HUD vitals numbers pinned on).`);
+    console.log(
+      `${swfPath}: already ${revert ? "reverted (HUD vitals numbers need a hover again)" : "patched (HUD vitals numbers pinned on)"}.`,
+    );
     return;
   }
 
-  if (verify) {
+  // --verify only ever asks the forward question: is the patch still applied? Reverting is
+  // a deliberate act, so it is never something the build should fail over.
+  if (verify && !revert) {
     throw new PatchError(
       `${swfPath}: verify failed; ${patches.length} HUD vitals visibility write(s) still hide the numbers.`,
     );
+  }
+  if (verify) {
+    console.log(`${swfPath}: ${patches.length} vitals write(s) would be reverted.`);
+    return;
   }
 
   ensureBackup(swfPath);
@@ -219,8 +240,10 @@ function patchSwf(swfPath: string, verify: boolean): void {
     throw new PatchError(`${swfPath}: single-byte flips changed the body length by ${delta}.`);
   }
   writeSwf(ctx, body, delta);
-  console.log(`${swfPath}: pinned ${patches.length} HUD vitals number(s) on.`);
+  console.log(
+    `${swfPath}: ${revert ? "reverted" : "pinned"} ${patches.length} HUD vitals number(s)${revert ? " back behind a hover" : " on"}.`,
+  );
 }
 
-const { swfPath, verify } = parseArgs(process.argv);
-patchSwf(swfPath, verify);
+const { swfPath, verify, revert } = parseArgs(process.argv);
+patchSwf(swfPath, verify, revert);
