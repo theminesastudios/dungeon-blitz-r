@@ -31957,7 +31957,12 @@
 		<CastAnimSource>Feet</CastAnimSource>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
 		<FireAnimSource>Center</FireAnimSource>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_CrimsonShotImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -31988,7 +31993,12 @@
 		<CastAnimSource>Feet</CastAnimSource>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
 		<FireAnimSource>Center</FireAnimSource>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_CrimsonShotImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -32019,7 +32029,12 @@
 		<CastAnimSource>Feet</CastAnimSource>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
 		<FireAnimSource>Center</FireAnimSource>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_CrimsonShotImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
