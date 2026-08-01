@@ -5,7 +5,7 @@ import { GameData } from '../core/GameData';
 import { GlobalState } from '../core/GlobalState';
 import { noteDungeonRunChestOpened, noteDungeonRunTreasure } from '../core/DungeonRunStats';
 import { CombatHandler } from './CombatHandler';
-import { getClientCharacterKey, getPartyIdForClient } from '../core/PartySync';
+import { areClientsInSameParty, getClientCharacterKey, getPartyIdForClient } from '../core/PartySync';
 import { areClientsInSameLevelScope, getClientLevelScope, getScopeLevelName } from '../core/LevelScope';
 import { LevelConfig } from '../core/LevelConfig';
 import { upsertInventoryGear } from '../utils/GearInventory';
@@ -1060,6 +1060,21 @@ export class RewardHandler {
         for (const contributorKey of snapshot.contributors) {
             const contributor = RewardHandler.findOnlineContributor(scopeKey, contributorKey);
             if (!contributor?.character) {
+                continue;
+            }
+
+            // A reward is shared with your party and with nobody else.
+            //
+            // Contributions are keyed `levelScope:entityId:nonce`, and an overworld scope is
+            // the bare level name -- no instance id, because everyone standing in NewbieRoad
+            // is in one scope. Overworld hostiles are private client spawns, so each player's
+            // own client invents their ids, and two players' local ids collide constantly.
+            // Both then show up as contributors to "the same" entity, and two strangers who
+            // never met were each granted the other's kill.
+            //
+            // Filtering here rather than at the key covers the honest case too: two unpartied
+            // players hitting one genuinely shared boss are still not splitting its reward.
+            if (contributor !== client && !areClientsInSameParty(client, contributor)) {
                 continue;
             }
 
