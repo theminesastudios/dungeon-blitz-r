@@ -225,7 +225,32 @@ function tutorialCompletionSequence(symbols: PatchSymbols): Buffer {
   ]);
 }
 
-function persistenceSequence(symbols: PatchSymbols): Buffer {
+/**
+ * Skip `body` entirely when the saved-game SharedObject is not there.
+ *
+ * Game.var_304 is declared null, is only assigned when the master-client dev flag is off,
+ * is set back to null on teardown, and SharedObject.getLocal itself throws when local
+ * storage is unavailable -- a standalone Flash player with storage denied is exactly that.
+ * Game's own code never touches it without checking first (`if(this.var_304)` before
+ * writing dbProfaneFilterOff), and neither sequence below did. The restore runs from
+ * CheckCompletedTutorials, which the client calls on world enter, so a null there took the
+ * whole session down: the player authenticated, entered CraftTown, and the client tore down
+ * its socket the moment it finished parsing.
+ *
+ * iffalse pops the reference and branches past the body, so the guard leaves the stack
+ * exactly as it found it and needs one slot, well under the three the body already claims.
+ */
+function guardedByStorage(symbols: PatchSymbols, body: Buffer): Buffer {
+  return Buffer.concat([
+    op(0x60, symbols.var1), // getlex var_1 (Game)
+    op(0x66, symbols.var304), // getproperty saved-game SharedObject
+    Buffer.concat([Buffer.from([0x12]), writeS24(body.length)]), // iffalse past the body
+    body,
+  ]);
+}
+
+/** The write half, without its guard. */
+function persistenceBody(symbols: PatchSymbols): Buffer {
   return Buffer.concat([
     op(0x60, symbols.var1), // getlex var_1
     op(0x66, symbols.var304), // getproperty saved-game SharedObject
@@ -239,7 +264,8 @@ function persistenceSequence(symbols: PatchSymbols): Buffer {
   ]);
 }
 
-function restoreSequence(symbols: PatchSymbols): Buffer {
+/** The read half, without its guard. */
+function restoreBody(symbols: PatchSymbols): Buffer {
   return Buffer.concat([
     op(0x60, symbols.var1), // getlex var_1 (Game)
     op(0x60, symbols.var1), // getlex var_1 (Game)
@@ -251,6 +277,14 @@ function restoreSequence(symbols: PatchSymbols): Buffer {
     Buffer.from([0xa9]), // bitor, retaining any already-completed bits
     op(0x61, symbols.tutorialsCompleted),
   ]);
+}
+
+function persistenceSequence(symbols: PatchSymbols): Buffer {
+  return guardedByStorage(symbols, persistenceBody(symbols));
+}
+
+function restoreSequence(symbols: PatchSymbols): Buffer {
+  return guardedByStorage(symbols, restoreBody(symbols));
 }
 
 function unsafeStartupRestoreSequence(symbols: PatchSymbols): Buffer {
@@ -381,6 +415,7 @@ function patchStatus(
   tutorialInsertAt: number;
   hasRestore: boolean;
   hasPersistence: boolean;
+  hasUnguarded: boolean;
 } {
   const tutorialCheck = getMethod(ctx, abc, TUTORIAL_CLASS, TUTORIAL_CHECK_METHOD);
   const tutorial = getMethod(ctx, abc, TUTORIAL_CLASS, TUTORIAL_COMPLETE_METHOD);
@@ -410,7 +445,26 @@ function patchStatus(
     hasPersistence: tutorial.code
       .subarray(tutorialInsertAt, tutorialInsertAt + persistence.length)
       .equals(persistence),
+    hasUnguarded: hasUnguardedSequences(tutorialCheck, tutorial, restoreInsertAt, tutorialInsertAt, symbols),
   };
+}
+
+/**
+ * True for a SWF carrying the shipped-and-crashing form: the same bodies with no storage
+ * guard. It has to be named, because the guarded bytes do not match it, so every check
+ * below would otherwise read "not patched" and happily insert a second copy on top.
+ */
+function hasUnguardedSequences(
+  tutorialCheck: ParsedMethod,
+  tutorial: ParsedMethod,
+  restoreInsertAt: number,
+  tutorialInsertAt: number,
+  symbols: PatchSymbols,
+): boolean {
+  const restore = restoreBody(symbols);
+  const persistence = persistenceBody(symbols);
+  return tutorialCheck.code.subarray(restoreInsertAt, restoreInsertAt + restore.length).equals(restore) ||
+    tutorial.code.subarray(tutorialInsertAt, tutorialInsertAt + persistence.length).equals(persistence);
 }
 
 function verifySwf(swfPath: string): void {
@@ -419,6 +473,12 @@ function verifySwf(swfPath: string): void {
   const symbols = getSymbols(ctx, abc);
   const status = patchStatus(ctx, abc, symbols);
 
+  if (status.hasUnguarded) {
+    throw new PatchError(
+      "Forge tutorial persistence is present WITHOUT its SharedObject guard -- this is the " +
+      "form that kills the client on world enter. Restore the SWF from git and re-run.",
+    );
+  }
   if (!status.hasRestore || !status.hasPersistence) {
     throw new PatchError(
       `Forge tutorial persistence is incomplete: restore=${status.hasRestore} persist=${status.hasPersistence}`,
@@ -451,12 +511,47 @@ function verifySwf(swfPath: string): void {
   console.log("Forge tutorial persistence patch verified with lazy restore.");
 }
 
+/**
+ * This patch kills the client at world enter and nobody knows why yet.
+ *
+ * Confirmed on 2026-07-30 by three loads of the same build, changing one thing each time:
+ * the SWF with neither patch enters the world fine, adding callforhelp-fixed-radius is
+ * still fine, and adding this one drops the connection the instant the client finishes
+ * parsing its first level -- authenticated, entered, then FIN, with 35 bytes sent where a
+ * live session sends thousands. It reproduced in CraftTown and in BridgeTownHard.
+ *
+ * Ruled out, so nobody re-treads them: the unguarded SharedObject dereference (guarding it
+ * changed nothing, and the guard decompiles correctly in both places); max_stack (7 and 5
+ * declared against the 2 and 3 the inserted code needs); and the multiname namespaces
+ * (Game.var_304 is internal in the root package, so class_89 can reach it, and every index
+ * the patch reuses is the one the surrounding code already uses).
+ *
+ * What is left needs an AVM2 error, which means a debug Flash player -- the client dies
+ * before it can send its own 0x7C crash report. Until then this refuses to run, because a
+ * SWF carrying it cannot enter the world at all. #644 is reopened as the cost.
+ */
+const CRASH_OVERRIDE_ENV = "DB_FORGE_TUTORIAL_PATCH_ANYWAY";
+
 function patchSwf(swfPath: string): void {
+  if (String(process.env[CRASH_OVERRIDE_ENV] ?? "").trim() !== "1") {
+    throw new PatchError(
+      "Refusing to apply: this patch makes the client drop its connection on world enter " +
+      "(see the comment above patchSwf). Set " + CRASH_OVERRIDE_ENV + "=1 to apply it anyway " +
+      "while debugging.",
+    );
+  }
+
   const ctx = parseSwf(swfPath);
   const abc = parseAbc(ctx);
   const symbols = getSymbols(ctx, abc);
   const status = patchStatus(ctx, abc, symbols);
 
+  if (status.hasUnguarded) {
+    throw new PatchError(
+      "Refusing to patch on top of the unguarded form, which would insert a second copy. " +
+      "Restore the SWF from git and re-run.",
+    );
+  }
   if (status.hasRestore || status.hasPersistence) {
     if (status.hasRestore && status.hasPersistence) {
       console.log("Forge tutorial persistence patch is already applied.");
