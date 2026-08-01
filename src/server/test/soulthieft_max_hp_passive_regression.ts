@@ -67,7 +67,43 @@ function testDerivesThePoolWhenTheEntityDoesNotCarryOne(): void {
     );
 }
 
+// Sentinel's basic melee swing carries a slice of the wearer's own health pool. Unlike the
+// weapon-data changes that ship with it, this one is genuinely Sentinel-only, because the
+// server knows MasterClass where the shared weapon powers cannot.
+const sentinelBonusOf = (session: any, powerId: number, damage: number): number =>
+    (CombatHandler as any).getSentinelMaxHpBonus(session, powerId, damage);
+
+function sentinel(maxHp: number): any {
+    return {
+        character: { name: 'MaxPally', MasterClass: MasterClassID.Sentinel },
+        authoritativeMaxHp: maxHp
+    };
+}
+
+const SWORD_MELEE = 3; // PlayerPowerTypes: SwordMelee
+const SHIELD_FLURRY = 295; // any non-basic power id
+
+function testSentinelBasicSwingCarriesHealthPool(): void {
+    assert.equal(sentinelBonusOf(sentinel(60_000), SWORD_MELEE, 2000), 60);
+    assert.equal(sentinelBonusOf(sentinel(120_000), SWORD_MELEE, 2000), 120);
+}
+
+function testSentinelBonusIsBasicMeleeOnly(): void {
+    assert.equal(sentinelBonusOf(sentinel(60_000), SHIELD_FLURRY, 2000), 0);
+}
+
+function testSentinelBonusIsSentinelOnly(): void {
+    const justicar = {
+        character: { name: 'MaxPally', MasterClass: MasterClassID.Justicar },
+        authoritativeMaxHp: 60_000
+    };
+    assert.equal(sentinelBonusOf(justicar, SWORD_MELEE, 2000), 0);
+}
+
 function run(): void {
+    testSentinelBasicSwingCarriesHealthPool();
+    testSentinelBonusIsBasicMeleeOnly();
+    testSentinelBonusIsSentinelOnly();
     testDerivesThePoolWhenTheEntityDoesNotCarryOne();
     testBonusScalesWithTargetHealthPool();
     testBonusNeverMoreThanDoublesTheHit();

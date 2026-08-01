@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { Client, clearKeepTutorialTimers } from '../core/Client';
 import { DungeonCompletionConditions } from '../core/DungeonCompletionConditions';
 import { BitReader } from '../network/protocol/bitReader';
@@ -12,6 +14,7 @@ import {
 import { LevelHandler } from './LevelHandler';
 import { EntityState, EntityTeam } from '../core/Entity';
 import { MasterClassID } from '../core/Enums';
+import { resolveClientXmlDir } from '../utils/ClientXmlDir';
 import { EntityHandler } from './EntityHandler';
 import { MissionHandler } from './MissionHandler';
 import { areClientsInSameParty, getClientCharacterKey, sharesRoomIds, shouldShareCombatView } from '../core/PartySync';
@@ -4687,6 +4690,88 @@ export class CombatHandler {
         return Math.min(damage, Math.round(maxHp * CombatHandler.SOULTHIEFT_MAX_HP_RATE));
     }
 
+    /**
+     * Sentinel: the discipline's basic melee swing carries a slice of the wearer's own
+     * health pool, which is the stat a Sentinel actually stacks.
+     *
+     * Server-side for the same reason as Soulthieft -- the client's damage formula scales
+     * the attacker's damage stats and has no term for their max HP -- but with a bonus this
+     * one gets for free: the server knows MasterClass, so unlike the weapon-data changes
+     * that ride alongside it, this really is Sentinel-only rather than every Paladin.
+     *
+     * Melee basics only. Those come from the equipped weapon and are shared across the
+     * whole class, so the power id has to be checked against the authored list rather than
+     * assumed from the hit.
+     */
+    private static readonly SENTINEL_MAX_HP_RATE = 0.001;
+    private static readonly PALADIN_MELEE_BASIC_POWER_NAMES = ['SwordMelee', 'MaceMelee', 'AxeMelee', 'ScepterMelee'];
+    private static paladinMeleeBasicPowerIds: Set<number> | null = null;
+
+    /**
+     * Resolved from the authored power data rather than hardcoded, because the ids are
+     * whatever PlayerPowerTypes says they are and a wrong constant here would silently
+     * attach the passive to some unrelated power.
+     */
+    private static getPaladinMeleeBasicPowerIds(): Set<number> {
+        if (CombatHandler.paladinMeleeBasicPowerIds) {
+            return CombatHandler.paladinMeleeBasicPowerIds;
+        }
+
+        const ids = new Set<number>();
+        CombatHandler.paladinMeleeBasicPowerIds = ids;
+
+        const xmlDir = resolveClientXmlDir(['PlayerPowerTypes.xml']);
+        if (!xmlDir) {
+            console.warn('[CombatHandler] PlayerPowerTypes.xml not found; the Sentinel basic-attack passive is inactive.');
+            return ids;
+        }
+
+        try {
+            const xml = fs.readFileSync(path.join(xmlDir, 'PlayerPowerTypes.xml'), 'utf8');
+            for (const block of xml.match(/<Power PowerName="[^"]*">[\s\S]*?<\/Power>/g) ?? []) {
+                const name = block.match(/<Power PowerName="([^"]*)">/)?.[1] ?? '';
+                if (!CombatHandler.PALADIN_MELEE_BASIC_POWER_NAMES.includes(name)) {
+                    continue;
+                }
+
+                const powerId = Math.round(Number(block.match(/<PowerID>([^<]*)<\/PowerID>/)?.[1] ?? 0));
+                if (Number.isFinite(powerId) && powerId > 0) {
+                    ids.add(powerId);
+                }
+            }
+            console.log(`[CombatHandler] Sentinel basic-attack passive covers ${ids.size} melee basic power(s).`);
+        } catch (err) {
+            console.warn('[CombatHandler] Could not read PlayerPowerTypes.xml; the Sentinel basic-attack passive is inactive.', err);
+        }
+
+        return ids;
+    }
+
+    private static getSentinelMaxHpBonus(
+        sourceSession: Client | null,
+        powerId: number,
+        baseDamage: number
+    ): number {
+        if (
+            !sourceSession?.character ||
+            Number(sourceSession.character.MasterClass ?? 0) !== MasterClassID.Sentinel
+        ) {
+            return 0;
+        }
+
+        if (!CombatHandler.getPaladinMeleeBasicPowerIds().has(Math.round(Number(powerId) || 0))) {
+            return 0;
+        }
+
+        const damage = Math.max(0, Math.round(Number(baseDamage) || 0));
+        const maxHp = Math.max(0, Math.round(Number(sourceSession.authoritativeMaxHp ?? 0) || 0));
+        if (damage <= 0 || maxHp <= 0) {
+            return 0;
+        }
+
+        return Math.round(maxHp * CombatHandler.SENTINEL_MAX_HP_RATE);
+    }
+
     private static updatePlayerTargetAfterHit(targetSession: Client, damage: number, preventDeath: boolean = false): PlayerHitResolution {
         if (damage <= 0 || !targetSession.character || targetSession.clientEntID <= 0) {
             return {
@@ -5341,6 +5426,7 @@ export class CombatHandler {
         if (isPlayerSource && targetEntity && !targetEntity.isPlayer) {
             damage = AdminRuntimeSettings.scaleDamage(damage);
             damage += CombatHandler.getSoulthieftMaxHpBonus(sourceSession, targetEntity, damage, levelScope);
+            damage += CombatHandler.getSentinelMaxHpBonus(sourceSession, info.powerId, damage);
         }
         if (
             (!targetEntity && !targetSession) ||

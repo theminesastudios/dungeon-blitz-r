@@ -214,20 +214,43 @@ const VIPERBLADE_BUFFS = new Map<string, string>([
   ["MistWalkClose9", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate60,ArmorBane,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate60,ArmorBane,ArmorBane'
   ["MistWalkClose10", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ArmorBane'
   // DaggerFlurry (RangedAoE) +PoisonStrike
-  ["DaggerFlurry", "DaggerPoison,PoisonStrike"], // was 'DaggerPoison'
-  ["DaggerFlurry1", "DaggerPoison,PoisonStrike"], // was 'DaggerPoison'
-  ["DaggerFlurry2", "DaggerPoison,PoisonStrike"], // was 'DaggerPoison'
-  ["DaggerFlurry3", "DaggerPoison,PoisonStrike"], // was 'DaggerPoison'
-  ["DaggerFlurry4", "DaggerPoison,PoisonStrike"], // was 'DaggerPoison'
-  ["DaggerFlurry5", "DaggerPoison,DaggerPoison,PoisonStrike"], // was 'DaggerPoison,DaggerPoison'
-  ["DaggerFlurry6", "DaggerPoison,DaggerPoison,PoisonStrike"], // was 'DaggerPoison,DaggerPoison'
-  ["DaggerFlurry7", "DaggerPoison,DaggerPoison,PoisonStrike"], // was 'DaggerPoison,DaggerPoison'
-  ["DaggerFlurry8", "DaggerPoison,DaggerPoison,PoisonStrike"], // was 'DaggerPoison,DaggerPoison'
-  ["DaggerFlurry9", "DaggerPoison,DaggerPoison,PoisonStrike"], // was 'DaggerPoison,DaggerPoison'
-  ["DaggerFlurry10", "DaggerPoison,DaggerPoison,ArmorBane,PoisonStrike"], // was 'DaggerPoison,DaggerPoison,ArmorBane'
+  ["DaggerFlurry", "DaggerPoison,DaggerPoison"], // was 'DaggerPoison'
+  ["DaggerFlurry1", "DaggerPoison,DaggerPoison"], // was 'DaggerPoison'
+  ["DaggerFlurry2", "DaggerPoison,DaggerPoison"], // was 'DaggerPoison'
+  ["DaggerFlurry3", "DaggerPoison,DaggerPoison"], // was 'DaggerPoison'
+  ["DaggerFlurry4", "DaggerPoison,DaggerPoison"], // was 'DaggerPoison'
+  ["DaggerFlurry5", "DaggerPoison,DaggerPoison,DaggerPoison"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry6", "DaggerPoison,DaggerPoison,DaggerPoison"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry7", "DaggerPoison,DaggerPoison,DaggerPoison"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry8", "DaggerPoison,DaggerPoison,DaggerPoison"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry9", "DaggerPoison,DaggerPoison,DaggerPoison"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry10", "DaggerPoison,DaggerPoison,ArmorBane,DaggerPoison"], // was 'DaggerPoison,DaggerPoison,ArmorBane'
   // PoisonDagger (ProjectilePlayer) +PoisonStrike
-  ["PoisonDagger", "PoisonStrike"], // was ''
-  ["PoisonDagger1", "PoisonStrike"], // was ''
+  ["PoisonDagger", "DaggerPoison"], // was ''
+  ["PoisonDagger1", "DaggerPoison"], // was ''
+]);
+
+
+// Basic attacks, which turned out to be the thing the reports were about. A player's
+// melee and ranged attack come from the equipped weapon (Gear.MeleePower/RangedPower),
+// not from any power the class tree grants, and weapons carry <UsedBy>Rogue</UsedBy> --
+// a class, never a mastery. So these are class-wide by construction; scoping them per
+// mastery would need per-mastery attack variants plus a permanent buff carrying
+// MeleeOverride/RangedOverride, and no hook exists to grant one.
+//
+// The Rogue melee basics authored no AddTargetBuff at all, which is exactly why close
+// attacks drew no blood.
+const BASIC_ATTACK_BUFFS = new Map<string, string>([
+  ["SaberMelee", "Bleeding"], //  was absent
+  ["RapierMelee", "Bleeding"], // was absent
+]);
+
+// Templar: the Paladin ranged basic gets a small splash. ProjectilePlayer already carries
+// an AoERadius on 32 authored powers (VerdictROR and friends), so the combination is one
+// the client already runs rather than one invented here.
+const BASIC_ATTACK_AOE = new Map<string, string>([
+  ["Lightningball", "90"], // was none
+  ["Energyball", "90"], //    was none
 ]);
 
 const DAMAGE_MULTS = new Map<string, string>([
@@ -381,7 +404,8 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
 
     // Viperblade is generated on top of the retune, so where both name a power its value
     // is the finished one and wins.
-    const targetBuff = VIPERBLADE_BUFFS.get(powerName) ?? TARGET_BUFFS.get(powerName);
+    const targetBuff =
+      BASIC_ATTACK_BUFFS.get(powerName) ?? VIPERBLADE_BUFFS.get(powerName) ?? TARGET_BUFFS.get(powerName);
     if (targetBuff) {
       touched = true;
       // ShadowBlade and PoisonDagger author no AddTargetBuff at all, and the template puts
@@ -420,6 +444,19 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
     // Some replacements append to the text they match ("Increased Damage" ->
     // "Deals 7 stacks of Bleed. Increased Damage"), so matching the old text is not enough
     // to know the edit is still pending -- the second prebuild would stack it again.
+    const aoeRadius = BASIC_ATTACK_AOE.get(powerName);
+    if (aoeRadius) {
+      touched = true;
+      if (/<AoERadius>[^<]*<\/AoERadius>/.test(next)) {
+        next = replaceTag(next, "AoERadius", aoeRadius, stats);
+      } else {
+        next = next.replace(/(<TargetMethod>[^<]*<\/TargetMethod>)/, (match) => {
+          stats.changes += 1;
+          return `${match}\r\n\t\t<AoERadius>${aoeRadius}</AoERadius>`;
+        });
+      }
+    }
+
     const upgrade = UPGRADE_TEXT.get(powerName);
     if (upgrade && next.includes(upgrade[0]) && !next.includes(upgrade[1])) {
       touched = true;

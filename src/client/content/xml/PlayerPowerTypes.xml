@@ -185,6 +185,7 @@
 	<Power PowerName="Lightningball">
 		<PowerID>5</PowerID>
 		<TargetMethod>ProjectilePlayer</TargetMethod>
+		<AoERadius>90</AoERadius>
 		<Range>0</Range>
 		<CastAnim>Shoot</CastAnim>
 		<CastTime>0</CastTime>
@@ -36929,6 +36930,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>RapierMelee</PowerGroup>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<DisplayName>Dagger Melee</DisplayName>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -36956,6 +36958,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SaberMelee</PowerGroup>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<DisplayName>Sword Melee</DisplayName>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -36973,6 +36976,7 @@
 	<Power PowerName="Energyball">
 		<PowerID>971</PowerID>
 		<TargetMethod>ProjectilePlayer</TargetMethod>
+		<AoERadius>90</AoERadius>
 		<CastAnim>Shoot</CastAnim>
 		<CastTime>0</CastTime>
 		<RecoverTime>500</RecoverTime>
@@ -40464,9 +40468,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Nature</DamageType>
 		<PowerGroup>PoisonDaggers</PowerGroup>
-		<AddTargetBuff>PoisonStrike</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison</AddTargetBuff>
 		<DisplayName>Bone Daggers</DisplayName>
-		<Description>Bone-shaped daggers favored by the Viperblade. [Stats: x0.8 damage, 2 damage/s, over 5s]</Description>
+		<Description>Bone-shaped daggers favored by the Viperblade. [Stats: x0.8 damage, 1 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_PoisonDagger</IconName>
 		<CastSound>snd_pwr_rogue_energyball</CastSound>
 		<CastGfx/>
@@ -40497,10 +40501,10 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Nature</DamageType>
 		<PowerGroup>PoisonDaggers</PowerGroup>
-		<AddTargetBuff>PoisonStrike</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison</AddTargetBuff>
 		<DisplayName>Bone Daggers</DisplayName>
 		<BasePowerName>PoisonDagger</BasePowerName>
-		<Description>Bone-shaped daggers favored by the Viperblade. [Stats: x0.8 damage, 2 damage/s, over 5s]</Description>
+		<Description>Bone-shaped daggers favored by the Viperblade. [Stats: x0.8 damage, 1 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_PoisonDagger</IconName>
 		<CastSound>snd_pwr_rogue_energyball</CastSound>
 		<CastGfx/>
@@ -40532,9 +40536,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,PoisonStrike</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
-		<Description>Throw three Poison Daggers. [Stats: x0.67 damage, 1 damage/s, over 5s, 2 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers. [Stats: x0.67 damage, 1 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_Executioner_FlurryOfDaggers_Throw</CastSound>
@@ -40567,10 +40571,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,PoisonStrike</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw three Poison Daggers. [Stats: x0.67 damage, 1 damage/s, over 5s, 2 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers. [Stats: x0.67 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Throw three Poison Daggers.</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40604,10 +40608,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,PoisonStrike</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw three Poison Daggers. [Stats: x0.7 damage, 1 damage/s, over 5s, 2 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers. [Stats: x0.7 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40641,10 +40645,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,PoisonStrike</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw three Poison Daggers. [Stats: x0.74 damage, 1 damage/s, over 5s, 2 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers. [Stats: x0.74 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40678,10 +40682,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,PoisonStrike</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw three Poison Daggers. [Stats: x0.77 damage, 1 damage/s, over 5s, 2 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers. [Stats: x0.77 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40715,10 +40719,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,DaggerPoison,PoisonStrike</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers. [Stats: x0.77 damage, 1 damage/s, over 5s, 2 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers. [Stats: x0.77 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Adds extra Poison per dagger.</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40752,10 +40756,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,DaggerPoison,PoisonStrike</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers. [Stats: x0.81 damage, 1 damage/s, over 5s, 2 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers. [Stats: x0.81 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40789,10 +40793,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,DaggerPoison,PoisonStrike</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers. [Stats: x0.85 damage, 1 damage/s, over 5s, 2 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers. [Stats: x0.85 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40826,10 +40830,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,DaggerPoison,PoisonStrike</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers. [Stats: x0.89 damage, 1 damage/s, over 5s, 2 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers. [Stats: x0.89 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40863,10 +40867,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,DaggerPoison,PoisonStrike</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers. [Stats: x0.97 damage, 1 damage/s, over 5s, 2 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers. [Stats: x0.97 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40900,10 +40904,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,DaggerPoison,ArmorBane,PoisonStrike</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison,ArmorBane,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers that reduce target Defense. [Stats: x0.97 damage, 1 damage/s, over 5s, -5% Defense, over 5s, 2 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers that reduce target Defense. [Stats: x0.97 damage, 1 damage/s, over 5s, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Each dagger adds Armor Bane</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
