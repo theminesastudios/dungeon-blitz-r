@@ -3903,7 +3903,7 @@
 	<BuffType BuffName="PetCrowBlind">
 		<BuffID>580</BuffID>
 		<Attack>true</Attack>
-		<Duration>7500</Duration>
+		<Duration>8000</Duration>
 		<MagicDamage>-0.3</MagicDamage>
 		<MeleeDamage>-0.3</MeleeDamage>
 		<DoTDamage>10.8</DoTDamage>
@@ -3976,7 +3976,7 @@
 	<BuffType BuffName="PetSpriteBurn">
 		<BuffID>585</BuffID>
 		<Attack>true</Attack>
-		<Duration>7500</Duration>
+		<Duration>8000</Duration>
 		<DoTDamage>3.2</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Tick</BuffLoc>

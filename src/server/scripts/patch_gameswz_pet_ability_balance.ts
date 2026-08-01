@@ -11,6 +11,11 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  *   buff/debuff strength +5pp    haste, defense, enfeeble
  *   duration             x1.5    every timed effect except the two instant ones
  *
+ * Durations on ticking buffs are rounded to whole ticks, not to the x1.5 arithmetic.
+ * BuffType.as throws "Buff TickLength must divide evenly into duration" while parsing, and
+ * because that abort takes the whole Game stage down with it, a 7500ms duration against a
+ * 1000ms tick is not a balance wart -- it is a client that will not load at all.
+ *
  * PetAngelDefense and PetPhoenixCleanse keep their 1000ms window on purpose. Those are not
  * durations -- they are one-tick effects whose DoTDamage field carries a heal, so stretching
  * the window would multiply the heal instead of extending a buff.
@@ -61,12 +66,12 @@ const PET_BUFFS = new Map<string, PetBuffTuning>([
   ["PetGhostRoot", { Duration: "14625" }], //                                    9750
   ["PetGhoulEnfeeble", { Duration: "15000", MeleeDamage: "-0.3", MagicDamage: "-0.3" }], // 10000, -0.24
   ["PetFairyBlind", { Duration: "14580" }], //                                   9720
-  ["PetCrowBlind", { Duration: "7500", DoTDamage: "10.8", MeleeDamage: "-0.3", MagicDamage: "-0.3" }], // 5000, 5.4, -0.25
+  ["PetCrowBlind", { Duration: "8000", DoTDamage: "10.8", MeleeDamage: "-0.3", MagicDamage: "-0.3" }], // 5000, 5.4, -0.25
   ["PetMonkeyHaste", { Duration: "15000", MeleeDamage: "0.15", MagicDamage: "0.15" }], // 10000, 0.1
   ["PetAngelDefense", { MeleeDefense: "0.35", MagicDefense: "0.35" }], //         0.3, duration held
   ["PetOwlDefense", { Duration: "18750", MeleeDefense: "0.3", MagicDefense: "0.3" }], // 12500, 0.25
   ["PetDragonBonePoison", { Duration: "12000", DoTDamage: "12" }], //             8000, 6
-  ["PetSpriteBurn", { Duration: "7500", DoTDamage: "3.2" }], //                   5000, 1.6
+  ["PetSpriteBurn", { Duration: "8000", DoTDamage: "3.2" }], //                   5000, 1.6
 ]);
 
 function cloneStats(): PatchStats {
