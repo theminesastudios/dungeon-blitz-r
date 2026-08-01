@@ -324,9 +324,11 @@ function testSharedDungeonRoomThoughtSurvivesCurrentRoomDrift(): void {
     );
 }
 
-function testJoinerRoomReplayDoesNotStartSharedCutscene(): void {
-    const mage = createFakeClient('Mage', 91001);
-    const rogue = createFakeClient('Rogue', 92002);
+function seedJoinerReplayParty(
+    mage: FakeClient,
+    rogue: FakeClient,
+    cutscene: { active: boolean; completed: boolean; dialogIndex: number }
+): string {
     const scope = getLevelScopeKey(mage.currentLevel, mage.levelInstanceId);
     mage.startedRoomEvents.add('JC_Mission3:2');
     mage.currentRoomId = 2;
@@ -345,21 +347,50 @@ function testJoinerRoomReplayDoesNotStartSharedCutscene(): void {
     GlobalState.dungeonCutscenes.set(`${scope}:2`, {
         roomId: 2,
         ownerToken: mage.token,
-        active: true,
-        completed: false,
+        active: cutscene.active,
+        completed: cutscene.completed,
         startedAt: Date.now(),
-        endedAt: 0,
-        dialogIndex: 1
+        endedAt: cutscene.completed ? Date.now() : 0,
+        dialogIndex: cutscene.dialogIndex
     });
+    return scope;
+}
+
+function testJoinerEntersRunningSharedCutsceneMidTimeline(): void {
+    const mage = createFakeClient('Mage', 91001);
+    const rogue = createFakeClient('Rogue', 92002);
+    const scope = seedJoinerReplayParty(mage, rogue, { active: true, completed: false, dialogIndex: 3 });
 
     (EntityHandler as any).replayStartedDungeonRoomEventsToJoiner(rogue);
 
-    assert.equal(packetCount(rogue, 0xA5), 0, 'joiner replay should not force active shared cutscene borders');
-    assert.equal(rogue.currentRoomId, 1, 'joiner room id should not be moved into the anchor cutscene room');
+    assert.equal(packetCount(rogue, 0xA5), 1, 'joiner should be placed inside the running shared cutscene');
+    assert.equal(rogue.currentRoomId, 2, 'joiner should be moved into the running cutscene room');
+    assert.equal(
+        rogue.activeDungeonCutsceneJoinedAtDialogIndex,
+        3,
+        'joiner should resume from the line the cutscene has already reached, not replay it'
+    );
+    assert.equal(
+        GlobalState.dungeonCutscenes.get(`${scope}:2`)?.dialogIndex,
+        3,
+        'joining a running cutscene should not rewind the shared dialog index'
+    );
+    assert.equal(packetCount(mage, 0xA5), 0, 'a joiner arriving must not restart the cutscene for the player already in it');
+}
+
+function testJoinerRoomReplaySkipsCompletedSharedCutscene(): void {
+    const mage = createFakeClient('Mage', 91001);
+    const rogue = createFakeClient('Rogue', 92002);
+    seedJoinerReplayParty(mage, rogue, { active: false, completed: true, dialogIndex: 4 });
+
+    (EntityHandler as any).replayStartedDungeonRoomEventsToJoiner(rogue);
+
+    assert.equal(packetCount(rogue, 0xA5), 0, 'joiner replay should not replay a finished shared cutscene');
+    assert.equal(rogue.currentRoomId, 1, 'joiner room id should not be moved into a finished cutscene room');
     assert.equal(
         rogue.startedRoomEvents.has('JC_Mission3:2'),
         false,
-        'joiner should not be marked as having entered the shared cutscene room'
+        'joiner should not be marked as having entered a finished shared cutscene room'
     );
 }
 
@@ -476,7 +507,14 @@ async function main(): Promise<void> {
         GlobalState.dungeonCutscenes.clear();
         GlobalState.dungeonCompletions.clear();
         GlobalState.levelEntities.clear();
-        testJoinerRoomReplayDoesNotStartSharedCutscene();
+        testJoinerEntersRunningSharedCutsceneMidTimeline();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.partyByMember.clear();
+        GlobalState.dungeonCutscenes.clear();
+        GlobalState.dungeonCompletions.clear();
+        GlobalState.levelEntities.clear();
+        testJoinerRoomReplaySkipsCompletedSharedCutscene();
         GlobalState.sessionsByToken.clear();
         GlobalState.partyGroups.clear();
         GlobalState.partyByMember.clear();

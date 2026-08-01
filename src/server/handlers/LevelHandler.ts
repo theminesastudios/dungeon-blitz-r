@@ -3909,6 +3909,49 @@ export class LevelHandler {
         LevelHandler.markSharedDungeonCutsceneParticipant(client, roomId, joinedAtDialogIndex);
     }
 
+    // A cinematic is a property of the room, not of whoever walked in first.
+    // Someone entering the dungeon while one is running used to be skipped
+    // entirely — they stood outside the borders watching the party freeze — so
+    // put them inside it, resumed at the line the room has already reached
+    // rather than replaying it from the top.
+    static joinActiveSharedDungeonCutscene(client: Client, roomId: number): boolean {
+        const levelScope = getClientLevelScope(client);
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
+        const state = LevelHandler.getSharedDungeonCutsceneState(levelScope, normalizedRoomId);
+        if (!state?.active || state.completed) {
+            return false;
+        }
+        if (LevelHandler.isSharedDungeonCutsceneParticipant(client, levelScope, normalizedRoomId)) {
+            return false;
+        }
+
+        // The cinematic plays inside its room, so the arrival has to be standing
+        // in it or every room-scoped relay that follows is filtered away again.
+        client.currentRoomId = normalizedRoomId;
+        GlobalState.refreshSessionIndexes(client);
+
+        const cutsceneStart = new BitBuffer(false);
+        cutsceneStart.writeMethod9(normalizedRoomId);
+        cutsceneStart.writeMethod15(true);
+        LevelHandler.sendSharedDungeonCutsceneStartToClient(
+            client,
+            normalizedRoomId,
+            cutsceneStart.toBuffer(),
+            LevelHandler.getSharedDungeonCutsceneDialogIndex(state),
+            true
+        );
+        LevelHandler.setServerAuthorityHostilesUntargetableForScope(levelScope, normalizedRoomId, true);
+        return true;
+    }
+
+    static hasActiveSharedDungeonCutscene(levelScope: string, roomId: number): boolean {
+        const state = LevelHandler.getSharedDungeonCutsceneState(
+            levelScope,
+            Math.max(0, Math.round(Number(roomId) || 0))
+        );
+        return Boolean(state?.active && !state.completed);
+    }
+
     private static getSharedDungeonCutsceneParticipants(
         sourceClient: Client,
         roomId: number,

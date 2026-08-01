@@ -27,6 +27,7 @@ import { CharacterSync } from '../utils/CharacterSync';
 import { sendConsumableUpdate } from '../utils/ConsumableState';
 import { LevelConfig } from '../core/LevelConfig';
 import { getRoomBossAwareRoomId, isRoomBossEntity } from '../core/RoomBossState';
+import { adoptBossAuthorityHealth, getBossAuthorityRecord, syncBossAuthorityCopies } from '../core/BossAuthority';
 import { RewardHandler } from './RewardHandler';
 import { MovementAuthority } from '../core/MovementAuthority';
 import { CastRateAuthority } from '../core/CastRateAuthority';
@@ -439,7 +440,6 @@ export class CombatHandler {
         const declared = Math.max(1, Math.round(Number(declaredMaxHp) || 0));
         return Math.min(declared, Math.round(ceiling));
     }
-
 
     private static getRespawnHealAmount(client: Client): number {
         const entity = client.clientEntID > 0 ? client.entities.get(client.clientEntID) : null;
@@ -1027,6 +1027,13 @@ export class CombatHandler {
         return entType?.RangedPower
             ? CombatHandler.BOSS_RANGED_AGGRO_RADIUS
             : CombatHandler.BOSS_MELEE_AGGRO_RADIUS;
+    }
+
+    // BossAuthority sizes a boss pool once, on first sight, and owns it from
+    // then on. It needs the same EntTypes arithmetic every other health path
+    // uses, but must not import the handler back — hence this seam.
+    static estimateHostileMaxHpForBossAuthority(entity: any, levelNameOrScope: string = ''): number {
+        return CombatHandler.estimateHostileMaxHp(entity, levelNameOrScope);
     }
 
     private static estimateHostileMaxHp(entity: any, levelNameOrScope: string = ''): number {
@@ -2057,6 +2064,7 @@ export class CombatHandler {
             for (const copy of CombatHandler.collectHostileHealthCopies(levelScope, sourceEntity, true)) {
                 apply(copy);
             }
+            CombatHandler.publishBossAuthorityHealth(levelScope, sourceEntity, normalizedCurrentHp, normalizedMaxHp);
             return;
         }
 
@@ -2065,6 +2073,23 @@ export class CombatHandler {
                 continue;
             }
             apply(session.entities.get(entityId));
+        }
+        CombatHandler.publishBossAuthorityHealth(levelScope, sourceEntity, normalizedCurrentHp, normalizedMaxHp);
+    }
+
+    // The copy sweep above matches siblings heuristically, by name and position.
+    // A boss is matched by identity instead, so a copy the heuristic misses —
+    // one spawned at a different position, or by a client that entered later —
+    // still learns the run's scaling and, once it happens, the death.
+    private static publishBossAuthorityHealth(
+        levelScope: string,
+        sourceEntity: any,
+        currentHp: number,
+        maxHp: number
+    ): void {
+        const record = adoptBossAuthorityHealth(levelScope, sourceEntity, currentHp, maxHp);
+        if (record) {
+            syncBossAuthorityCopies(levelScope, record);
         }
     }
 
@@ -6126,13 +6151,21 @@ export class CombatHandler {
         }
 
         const lifeNonce = Math.max(0, Math.round(Number(targetEntity?.lifeNonce ?? 0)));
+        const bossRecord = getBossAuthorityRecord(levelScope, targetEntity);
         if (Math.round(Number(targetEntity?.clientReportedDamageLifeNonce ?? -1)) !== lifeNonce) {
             targetEntity.clientReportedDamageLifeNonce = lifeNonce;
             targetEntity.clientReportedDamageByToken = new Map<number, number>();
+            bossRecord?.reportedDamageByToken.clear();
         }
-        const reportedDamageByToken = targetEntity.clientReportedDamageByToken instanceof Map
-            ? targetEntity.clientReportedDamageByToken as Map<number, number>
-            : new Map<number, number>();
+        // A boss the scope owns keeps one ledger for the whole run. The copy-local
+        // map it replaces reset itself every time a client re-registered its copy,
+        // which is how a party member walking back into the room handed the boss a
+        // fresh health bar that nobody else could see.
+        const reportedDamageByToken = bossRecord
+            ? bossRecord.reportedDamageByToken
+            : targetEntity.clientReportedDamageByToken instanceof Map
+                ? targetEntity.clientReportedDamageByToken as Map<number, number>
+                : new Map<number, number>();
         targetEntity.clientReportedDamageByToken = reportedDamageByToken;
         for (const copy of CombatHandler.collectHostileHealthCopies(levelScope, targetEntity, true)) {
             copy.clientReportedDamageLifeNonce = lifeNonce;
