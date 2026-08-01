@@ -236,6 +236,33 @@ async function main(): Promise<void> {
 
         await CombatHandler.handlePowerHit(client, buildPowerHitPayload(hostile.id, 99_999, 100));
         assert.equal(hostile.hp, 100, 'unknown combat source damaged a server-known entity');
+
+        // Reported live as "dash skills freeze the game". A dash is authored as an Open
+        // power that starts it and a Close power that lands it, and the Close half is the
+        // one that moves the player. The hand-maintained id ranges cover ShadowStep
+        // (1394-1405) but not ShadowStepClose1-10 (1406-1415), and miss MistWalkClose10
+        // and AssassinateClose10 in the gaps between ranges -- so at rank the landing half
+        // was scored as a teleport, and eight points of that quarantines movement for five
+        // seconds before sixteen destroys the socket.
+        for (const closePowerId of [1406, 1415, 1185, 1208]) {
+            assert.equal(
+                MovementAuthority.isMobilityPower(closePowerId),
+                true,
+                `dash close power ${closePowerId} gets no mobility grace, so landing it reads as a teleport`
+            );
+        }
+        assert.equal(MovementAuthority.isMobilityPower(1394), true, 'Shadow Step lost its mobility grace');
+        assert.equal(MovementAuthority.isMobilityPower(1323), true, 'Necrotic Surge lost its mobility grace');
+        // The window is only meant for powers that actually displace the caster.
+        assert.equal(MovementAuthority.isMobilityPower(5000), false, 'a non-mobility power was granted dash movement');
+
+        MovementAuthority.reset(client, 'spawn', 0, 0, Date.now());
+        ownEntity.x = 0;
+        ownEntity.y = 0;
+        await CombatHandler.handlePowerCast(client, buildPowerCastPayload(client.clientEntID, 1415));
+        const closeDash = MovementAuthority.validateIncrementalMovement(client, ownEntity, 1200, 0, Date.now() + 50);
+        assert.equal(closeDash.accepted, true, 'a rank 10 dash landing was rejected');
+        assert.equal(closeDash.reason, 'mobility_grace');
     } finally {
         GlobalState.levelEntities.delete(scope);
         GlobalState.sessionsByToken.delete(client.token);
