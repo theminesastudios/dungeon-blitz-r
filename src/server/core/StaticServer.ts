@@ -272,14 +272,6 @@ export class StaticServer {
         return true;
     }
 
-    private resolveGameSwzLocale(req: Request): 'en' | 'tr' {
-        return (
-            this.normalizeLocale(req.query.lang) ??
-            this.resolveSessionLocale(req) ??
-            'en'
-        );
-    }
-
     private resolveSwfLocale(req: Request): DungeonBlitzSwfLocale {
         return (
             this.normalizeLocale(req.query.lang) ??
@@ -288,21 +280,15 @@ export class StaticServer {
         );
     }
 
-    private getGameSwzPathForLocale(locale: 'en' | 'tr'): string {
-        const cbqDir = path.join(this.contentDir, 'p', 'cbq');
-        const variantPath = path.join(cbqDir, `Game.${locale}.swz`);
-        if (fs.existsSync(variantPath)) {
-            return variantPath;
-        }
-
-        if (locale === 'en') {
-            const backupPath = path.join(cbqDir, 'Game.swz.bak');
-            if (fs.existsSync(backupPath)) {
-                return backupPath;
-            }
-        }
-
-        return path.join(cbqDir, 'Game.swz');
+    // The game ships English only, so Game.swz is the one build there is.
+    //
+    // The per-locale variants this used to pick between are gone, and with them the
+    // `Game.swz.bak` fallback that sat behind the English branch. That fallback was a
+    // trap: .bak is whatever the first patch script happened to copy aside, so the moment
+    // Game.en.swz went missing every English client would have been served a months-old
+    // unpatched build instead of a 404 anyone would have noticed.
+    private getGameSwzPath(): string {
+        return path.join(this.contentDir, 'p', 'cbq', 'Game.swz');
     }
 
     private getFlashVersionAssetPath(assetPath: string): string {
@@ -752,19 +738,15 @@ try {
         });
 
         this.app.get('/p/cbq/Game.swz', (req, res) => {
-            const locale = this.resolveGameSwzLocale(req);
-            const swzPath = this.getGameSwzPathForLocale(locale);
             res.type('application/x-shockwave-flash');
-            res.setHeader('X-DungeonBlitz-Language', locale);
-            res.sendFile(swzPath);
+            res.setHeader('X-DungeonBlitz-Language', 'en');
+            res.sendFile(this.getGameSwzPath());
         });
 
         this.app.get('/p/:assetVersion/Game.swz', (req, res) => {
-            const locale = this.resolveGameSwzLocale(req);
-            const swzPath = this.getGameSwzPathForLocale(locale);
             res.type('application/x-shockwave-flash');
-            res.setHeader('X-DungeonBlitz-Language', locale);
-            res.sendFile(swzPath);
+            res.setHeader('X-DungeonBlitz-Language', 'en');
+            res.sendFile(this.getGameSwzPath());
         });
 
         this.app.get(/^\/p\/[^/]+\/masterFileList(?:_\d+)?\.xml$/, (req, res, next) => {

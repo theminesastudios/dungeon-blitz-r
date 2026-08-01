@@ -7,9 +7,11 @@ const OLD_DREAD_DISPLAY = 'dehset Bandit Camp';
 const NEW_DREAD_DISPLAY = 'Dread Bandit Camp';
 const OLD_DESCRIPTION = 'The townsfolk shun aoutsiders, who often turn to banditry. To win their trust, you decide to tackle their bandit problem.';
 const NEW_DESCRIPTION = 'The townsfolk shun outsiders, who often turn to banditry. To win their trust, you decide to tackle their bandit problem.';
-const GAME_SWZ_FILES = ['Game.swz', 'Game.en.swz', 'Game.tr.swz'].map((fileName) =>
-    path.join(ROOT, 'src', 'client', 'content', 'localhost', 'p', 'cbq', fileName)
-);
+// The game ships English only now; the per-locale archives are gone. Filter rather
+// than drop the names, so restoring a localized build re-enables its patch on its own.
+const GAME_SWZ_FILES = ['Game.swz', 'Game.en.swz', 'Game.tr.swz']
+    .map((fileName) => path.join(ROOT, 'src', 'client', 'content', 'localhost', 'p', 'cbq', fileName))
+    .filter((filePath) => fs.existsSync(filePath));
 const BANDIT_MISSIONS = new Set(['DefeatBanditCamp', 'DefeatBanditCampHard']);
 
 type PatchResult = {

@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 
+// The game ships English only now; the per-locale archives are gone. Existence is
+// checked at use, so restoring a localized build re-enables its patch on its own.
 const GAME_VARIANTS = ['Game.swz', 'Game.en.swz', 'Game.tr.swz'];
 
 function repoRoot() {
@@ -135,6 +137,9 @@ if (!verifyOnly && looseResult.changed > 0) {
 
 for (const name of GAME_VARIANTS) {
     const swzPath = path.join(root, 'src', 'client', 'content', 'localhost', 'p', 'cbq', name);
+    if (!fs.existsSync(swzPath)) {
+        continue;
+    }
     patchSwz(swzPath, verifyOnly);
 }
 
