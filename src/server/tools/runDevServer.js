@@ -1,3 +1,4 @@
+const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -61,7 +62,73 @@ function installCrashLogging(logDir = path.resolve(__dirname, '..', 'logs')) {
     return logPath;
 }
 
+/**
+ * Declared dependencies that this install cannot actually resolve.
+ *
+ * Pulling a commit that adds a dependency and running dev without installing it produces a
+ * TSError twelve lines deep -- "Cannot find module 'express-rate-limit'" under a ts-node
+ * stack -- which reads like the code is broken rather than like the tree is stale. That is
+ * what happened when the rate limiter landed.
+ */
+function findMissingDependencies(serverDir = path.resolve(__dirname, '..')) {
+    let manifest;
+    try {
+        manifest = JSON.parse(fs.readFileSync(path.join(serverDir, 'package.json'), 'utf8'));
+    } catch {
+        return [];
+    }
+
+    return Object.keys(manifest.dependencies || {}).filter((name) => {
+        try {
+            // Resolving the manifest rather than the entry point: a types-only or
+            // exports-restricted package has no main to require, but its package.json is
+            // always there when it is installed.
+            require.resolve(`${name}/package.json`, { paths: [serverDir] });
+            return false;
+        } catch {
+            try {
+                require.resolve(name, { paths: [serverDir] });
+                return false;
+            } catch {
+                return true;
+            }
+        }
+    });
+}
+
+function ensureDependencies(serverDir = path.resolve(__dirname, '..')) {
+    if (String(process.env.DB_SKIP_DEP_CHECK || '').trim() === '1') {
+        return true;
+    }
+
+    const missing = findMissingDependencies(serverDir);
+    if (missing.length === 0) {
+        return true;
+    }
+
+    console.error(`[dev] missing dependencies: ${missing.join(', ')}`);
+    console.error('[dev] installing them now (npm install)...');
+    const result = spawnSync('npm', ['install'], {
+        cwd: serverDir,
+        stdio: 'inherit',
+        shell: process.platform === 'win32'
+    });
+
+    if (result.status === 0 && findMissingDependencies(serverDir).length === 0) {
+        console.log('[dev] dependencies installed.');
+        return true;
+    }
+
+    console.error('[dev] npm install did not resolve them. Run it yourself in src/server:');
+    console.error('[dev]     npm install');
+    return false;
+}
+
 function startDevServer() {
+    if (!ensureDependencies()) {
+        process.exit(1);
+    }
+
     require('../scripts/cleanup-dev-instance');
     applyDevServerEnv();
     installCrashLogging();
@@ -76,6 +143,8 @@ if (require.main === module) {
 
 module.exports = {
     applyDevServerEnv,
+    ensureDependencies,
+    findMissingDependencies,
     installCrashLogging,
     startDevServer
 };
