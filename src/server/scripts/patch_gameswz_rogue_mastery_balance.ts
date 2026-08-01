@@ -240,6 +240,44 @@ const VIPERBLADE_BUFFS = new Map<string, string>([
 //
 //   Sentinel  ConcussionBolt   Justicar  AxeFlurry     Templar   DivineBolt
 //   Viper     PoisonDagger     Soulthief HeavyDagger   Shadow    CorrosiveDagger
+// What each discipline's signature power says it does. Only passives that actually work
+// are written here: Justicar's Ignited bonus and Shadowstalker's auto-shroud are not
+// implemented, so AxeFlurry and CorrosiveDagger keep their authored text rather than
+// promising something the game will not do.
+//
+// The authored sentence is replaced and any trailing "[Stats: ...]" is left alone --
+// patch_gameswz_power_stat_tooltips regenerates that block afterwards.
+const SIGNATURE_DESCRIPTIONS = new Map<string, [string, string]>([
+  [
+    "ConcussionBolt",
+    [
+      "The Sentinel's ranged energy attacks.",
+      "The Sentinel's ranged energy attacks. Sentinel passive: every bolt also strikes for 0.1% of your maximum Health.",
+    ],
+  ],
+  [
+    "DivineBolt",
+    [
+      "Bolts of divine punishment granted to the Templar",
+      "Bolts of divine punishment granted to the Templar. Templar passive: every bolt bursts in a small area.",
+    ],
+  ],
+  [
+    "PoisonDagger",
+    [
+      "Bone-shaped daggers favored by the Viperblade.",
+      "Bone-shaped daggers favored by the Viperblade. Viperblade passive: your close attacks draw Bleed and your ranged attacks leave Poison.",
+    ],
+  ],
+  [
+    "HeavyDagger",
+    [
+      "Forked blades carried by the Soulthief",
+      "Forked blades carried by the Soulthief. Soulthieft passive: your strikes carve away a share of the target's maximum Health.",
+    ],
+  ],
+]);
+
 const SIGNATURE_AOE = new Map<string, string>([
   ["DivineBolt", "90"], // Templar: the small splash, and only Templars get it
 ]);
@@ -474,6 +512,13 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
           return `${match}\r\n\t\t<AoERadius>${signatureAoe}</AoERadius>`;
         });
       }
+    }
+
+    const signatureText = SIGNATURE_DESCRIPTIONS.get(powerName.replace(/\d+$/, ""));
+    if (signatureText && next.includes(signatureText[0]) && !next.includes(signatureText[1])) {
+      touched = true;
+      stats.changes += 1;
+      next = next.split(signatureText[0]).join(signatureText[1]);
     }
 
     const upgrade = UPGRADE_TEXT.get(powerName);

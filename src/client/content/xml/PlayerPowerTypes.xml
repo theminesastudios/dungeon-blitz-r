@@ -3766,7 +3766,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DivineBolt</PowerGroup>
 		<DisplayName>Divine Bolt</DisplayName>
-		<Description>Bolts of divine punishment granted to the Templar [Stats: x0.8 damage]</Description>
+		<Description>Bolts of divine punishment granted to the Templar. Templar passive: every bolt bursts in a small area. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_DivineBolt2</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -3798,7 +3798,7 @@
 		<PowerGroup>DivineBolt</PowerGroup>
 		<DisplayName>Divine Bolt</DisplayName>
 		<BasePowerName>DivineBolt</BasePowerName>
-		<Description>Bolts of divine punishment granted to the Templar [Stats: x0.8 damage]</Description>
+		<Description>Bolts of divine punishment granted to the Templar. Templar passive: every bolt bursts in a small area. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_DivineBolt2</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -14257,7 +14257,7 @@
 		<DamageType>Holy</DamageType>
 		<PowerGroup>ConcussionBolt</PowerGroup>
 		<DisplayName>Concussion Bolt</DisplayName>
-		<Description>The Sentinel's ranged energy attacks. [Stats: x0.8 damage]</Description>
+		<Description>The Sentinel's ranged energy attacks. Sentinel passive: every bolt also strikes for 0.1% of your maximum Health. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -14290,7 +14290,7 @@
 		<PowerGroup>ConcussionBolt</PowerGroup>
 		<DisplayName>Concussion Bolt</DisplayName>
 		<BasePowerName>ConcussionBolt</BasePowerName>
-		<Description>The Sentinel's ranged energy attacks. [Stats: x0.8 damage]</Description>
+		<Description>The Sentinel's ranged energy attacks. Sentinel passive: every bolt also strikes for 0.1% of your maximum Health. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -40468,7 +40468,7 @@
 		<PowerGroup>PoisonDaggers</PowerGroup>
 		<AddTargetBuff>DaggerPoison</AddTargetBuff>
 		<DisplayName>Bone Daggers</DisplayName>
-		<Description>Bone-shaped daggers favored by the Viperblade. [Stats: x0.8 damage, 1 damage/s, over 5s]</Description>
+		<Description>Bone-shaped daggers favored by the Viperblade. Viperblade passive: your close attacks draw Bleed and your ranged attacks leave Poison. [Stats: x0.8 damage, 1 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_PoisonDagger</IconName>
 		<CastSound>snd_pwr_rogue_energyball</CastSound>
 		<CastGfx/>
@@ -40502,7 +40502,7 @@
 		<AddTargetBuff>DaggerPoison</AddTargetBuff>
 		<DisplayName>Bone Daggers</DisplayName>
 		<BasePowerName>PoisonDagger</BasePowerName>
-		<Description>Bone-shaped daggers favored by the Viperblade. [Stats: x0.8 damage, 1 damage/s, over 5s]</Description>
+		<Description>Bone-shaped daggers favored by the Viperblade. Viperblade passive: your close attacks draw Bleed and your ranged attacks leave Poison. [Stats: x0.8 damage, 1 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_PoisonDagger</IconName>
 		<CastSound>snd_pwr_rogue_energyball</CastSound>
 		<CastGfx/>
@@ -45631,7 +45631,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>HeavyDagger</PowerGroup>
 		<DisplayName>Heavy Daggers</DisplayName>
-		<Description>Forked blades carried by the Soulthief [Stats: x0.8 damage]</Description>
+		<Description>Forked blades carried by the Soulthief. Soulthieft passive: your strikes carve away a share of the target's maximum Health. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_SoulThiefDagger</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastGfx/>
@@ -50287,7 +50287,7 @@
 		<PowerGroup>HeavyDagger</PowerGroup>
 		<DisplayName>Heavy Daggers</DisplayName>
 		<BasePowerName>HeavyDagger</BasePowerName>
-		<Description>Forked blades carried by the Soulthief [Stats: x0.8 damage]</Description>
+		<Description>Forked blades carried by the Soulthief. Soulthieft passive: your strikes carve away a share of the target's maximum Health. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_SoulThiefDagger</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>snd_pwr_rogue_energyball</CastSound>
