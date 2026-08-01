@@ -10,7 +10,12 @@ import { MasterClassID } from '../core/Enums';
 // It has to be resolved server-side. The bonus reads the target's max HP at the moment of
 // the hit, and no buff property the client understands can express that -- BleedMultiplier,
 // BoundMultiplier, MeleeDamage and the rest all scale the attacker's own numbers.
-const bonusOf = (CombatHandler as any).getSoulthieftMaxHpBonus.bind(CombatHandler);
+const bonusOf = (
+    session: any,
+    entity: any,
+    damage: number,
+    scope: string = 'NewbieRoad'
+): number => (CombatHandler as any).getSoulthieftMaxHpBonus(session, entity, damage, scope);
 
 function soulthief(): any {
     return { character: { name: 'AlexMercer', MasterClass: MasterClassID.Soulthief } };
@@ -50,7 +55,20 @@ function testDegenerateInputsAddNothing(): void {
     assert.equal(bonusOf(soulthief(), { maxHp: 100_000 }, -50), 0);
 }
 
+// The bug this passive shipped with: it read entity.maxHp directly, and a client-spawned
+// hostile never reports its health pool, so the field is empty on almost everything a rogue
+// swings at and the passive quietly did nothing. The server's own resolver falls back to
+// the EntTypes-derived pool, which is what makes it fire at all.
+function testDerivesThePoolWhenTheEntityDoesNotCarryOne(): void {
+    const derived = bonusOf(soulthief(), { name: 'GoblinDagger', hp: 4200 }, 4000, 'NewbieRoad');
+    assert.ok(
+        derived > 0,
+        'a hostile without an explicit maxHp produced no Soulthieft bonus, which is the bug that shipped'
+    );
+}
+
 function run(): void {
+    testDerivesThePoolWhenTheEntityDoesNotCarryOne();
     testBonusScalesWithTargetHealthPool();
     testBonusNeverMoreThanDoublesTheHit();
     testOnlySoulthievesGetIt();

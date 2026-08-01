@@ -28,6 +28,13 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  * Rogue:
  *   Slapdash Decoy     armor bane removed from the explosion
  *
+ * Viperblade, the Executioner discipline passive, is data rather than code because the
+ * player's basic attacks turned out not to exist: the Rogue EntType authors no MeleePower
+ * or RangedPower, so Entity.GetMeleePower returns null and a rogue's "attacks" are simply
+ * the powers in their kit. That makes the passive expressible as an extra stack on every
+ * Executioner power -- Bleed on the close ones, Poison on the ranged two -- and scoped to
+ * the tree by construction, which a buff on a shared basic attack could never be.
+ *
  * Hemorrhage gets a small defense debuff on top of its damage, which needed checking
  * rather than assuming: PowerModType parses BuffProperty and BuffValue as parallel
  * comma lists (class_17 rejects the pair when the lengths disagree), and CombatState adds
@@ -104,6 +111,123 @@ const TARGET_BUFFS = new Map<string, string>([
   ["SoulShatter8", "First:Bound,Staggered"], // was First:Bound
   ["SoulShatter9", "First:Bound,Staggered"], // was First:Bound
   ["SoulShatter10", "First:Bound,Staggered"], // was First:Bound
+]);
+
+// Viperblade: the Executioner discipline passive. Close attacks carry one extra
+// stack of Bleed, ranged attacks one extra stack of Poison. Folded into the absolute
+// value rather than appended at runtime, so re-running cannot stack it again.
+const VIPERBLADE_BUFFS = new Map<string, string>([
+  // SeverStrike (Melee) +Bleeding
+  ["SeverStrike", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["SeverStrike1", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["SeverStrike2", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["SeverStrike3", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["SeverStrike4", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["SeverStrike5", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
+  ["SeverStrike6", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
+  ["SeverStrike7", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
+  ["SeverStrike8", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
+  ["SeverStrike9", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
+  ["SeverStrike10", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
+  // WitherStrike (Melee) +Bleeding
+  ["WitherStrike", "First:Weakened,Bleeding,Bleeding,Bleeding"], // was 'First:Weakened,Bleeding,Bleeding'
+  ["WitherStrike1", "First:Weakened,Bleeding,Bleeding,Bleeding"], // was 'First:Weakened,Bleeding,Bleeding'
+  ["WitherStrike2", "First:Weakened,Bleeding,Bleeding,Bleeding"], // was 'First:Weakened,Bleeding,Bleeding'
+  ["WitherStrike3", "First:PoisonStrike,Weakened,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Bleeding,Bleeding'
+  ["WitherStrike4", "First:PoisonStrike,Weakened,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Bleeding,Bleeding,Bleeding'
+  ["WitherStrike5", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding'
+  ["WitherStrike6", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding'
+  ["WitherStrike7", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["WitherStrike8", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["WitherStrike9", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["WitherStrike10", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding'
+  // AssassinateClose (Melee) +Bleeding
+  ["AssassinateClose", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["AssassinateClose1", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["AssassinateClose2", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["AssassinateClose3", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["AssassinateClose4", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["AssassinateClose5", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["AssassinateClose6", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["AssassinateClose7", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["AssassinateClose8", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["AssassinateClose9", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["AssassinateClose10", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
+  // ShadowBlade (Melee) +Bleeding
+  ["ShadowBlade", "Bleeding"], // was ''
+  ["ShadowBlade1", "Bleeding"], // was ''
+  ["ShadowBlade2", "Bleeding"], // was ''
+  ["ShadowBlade3", "Bleeding"], // was ''
+  ["ShadowBlade4", "Bleeding"], // was ''
+  ["ShadowBlade5", "Bleeding"], // was ''
+  ["ShadowBlade6", "Bleeding"], // was ''
+  ["ShadowBlade7", "Bleeding"], // was ''
+  ["ShadowBlade8", "Bleeding"], // was ''
+  ["ShadowBlade9", "Bleeding"], // was ''
+  ["ShadowBlade10", "Bleeding"], // was ''
+  // SeekingBladesAttack (Melee) +Bleeding
+  ["SeekingBladesAttack", "Bleeding"], // was ''
+  ["SeekingBladesAttack1", "Bleeding"], // was ''
+  ["SeekingBladesAttack2", "Bleeding"], // was ''
+  ["SeekingBladesAttack3", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["SeekingBladesAttack4", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["SeekingBladesAttack5", "Bleeding,Bleeding"], // was 'Bleeding'
+  ["SeekingBladesAttack6", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
+  ["SeekingBladesAttack7", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
+  ["SeekingBladesAttack8", "Bleeding,Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding,Bleeding'
+  ["SeekingBladesAttack9", "Bleeding,Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding,Bleeding'
+  ["SeekingBladesAttack10", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding'
+  // VitalStrike (Cleave) +Bleeding
+  ["VitalStrike", "Bleeding,Bleeding,Bleeding,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,ArmorBane'
+  ["VitalStrike1", "Bleeding,Bleeding,Bleeding,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,ArmorBane'
+  ["VitalStrike2", "Bleeding,Bleeding,Bleeding,ArmorBane,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,ArmorBane,Crippled'
+  ["VitalStrike3", "Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled'
+  ["VitalStrike4", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled'
+  ["VitalStrike5", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled'
+  ["VitalStrike6", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled'
+  ["VitalStrike7", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled'
+  ["VitalStrike8", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled'
+  ["VitalStrike9", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled'
+  ["VitalStrike10", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled'
+  // DeathBlowOld (Cleave) +Bleeding
+  ["DeathBlowOld", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld1", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld2", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld3", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld4", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld5", "PoisonStrike,PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld6", "PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld7", "PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld8", "PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld9", "PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld10", "PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding'
+  // MistWalkClose (PBAoE) +Bleeding
+  ["MistWalkClose", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane'
+  ["MistWalkClose1", "Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane'
+  ["MistWalkClose2", "Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane'
+  ["MistWalkClose3", "Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane'
+  ["MistWalkClose4", "Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane'
+  ["MistWalkClose5", "Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane'
+  ["MistWalkClose6", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane'
+  ["MistWalkClose7", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane'
+  ["MistWalkClose8", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane,ArmorBane'
+  ["MistWalkClose9", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate60,ArmorBane,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate60,ArmorBane,ArmorBane'
+  ["MistWalkClose10", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ArmorBane'
+  // DaggerFlurry (RangedAoE) +PoisonStrike
+  ["DaggerFlurry", "DaggerPoison,PoisonStrike"], // was 'DaggerPoison'
+  ["DaggerFlurry1", "DaggerPoison,PoisonStrike"], // was 'DaggerPoison'
+  ["DaggerFlurry2", "DaggerPoison,PoisonStrike"], // was 'DaggerPoison'
+  ["DaggerFlurry3", "DaggerPoison,PoisonStrike"], // was 'DaggerPoison'
+  ["DaggerFlurry4", "DaggerPoison,PoisonStrike"], // was 'DaggerPoison'
+  ["DaggerFlurry5", "DaggerPoison,DaggerPoison,PoisonStrike"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry6", "DaggerPoison,DaggerPoison,PoisonStrike"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry7", "DaggerPoison,DaggerPoison,PoisonStrike"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry8", "DaggerPoison,DaggerPoison,PoisonStrike"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry9", "DaggerPoison,DaggerPoison,PoisonStrike"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry10", "DaggerPoison,DaggerPoison,ArmorBane,PoisonStrike"], // was 'DaggerPoison,DaggerPoison,ArmorBane'
+  // PoisonDagger (ProjectilePlayer) +PoisonStrike
+  ["PoisonDagger", "PoisonStrike"], // was ''
+  ["PoisonDagger1", "PoisonStrike"], // was ''
 ]);
 
 const DAMAGE_MULTS = new Map<string, string>([
@@ -255,10 +379,21 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
     let next = block;
     let touched = false;
 
-    const targetBuff = TARGET_BUFFS.get(powerName);
+    // Viperblade is generated on top of the retune, so where both name a power its value
+    // is the finished one and wins.
+    const targetBuff = VIPERBLADE_BUFFS.get(powerName) ?? TARGET_BUFFS.get(powerName);
     if (targetBuff) {
       touched = true;
-      next = replaceTag(next, "AddTargetBuff", targetBuff, stats);
+      // ShadowBlade and PoisonDagger author no AddTargetBuff at all, and the template puts
+      // it after PowerGroup, so it is inserted rather than replaced.
+      if (/<AddTargetBuff>[^<]*<\/AddTargetBuff>/.test(next)) {
+        next = replaceTag(next, "AddTargetBuff", targetBuff, stats);
+      } else {
+        next = next.replace(/(<PowerGroup>[^<]*<\/PowerGroup>)/, (match) => {
+          stats.changes += 1;
+          return `${match}\r\n\t\t<AddTargetBuff>${targetBuff}</AddTargetBuff>`;
+        });
+      }
     }
 
     const damageMult = DAMAGE_MULTS.get(powerName);

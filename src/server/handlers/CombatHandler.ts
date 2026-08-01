@@ -4656,7 +4656,8 @@ export class CombatHandler {
     private static getSoulthieftMaxHpBonus(
         sourceSession: Client | null,
         targetEntity: any,
-        baseDamage: number
+        baseDamage: number,
+        levelScope: string
     ): number {
         if (
             !sourceSession?.character ||
@@ -4670,7 +4671,15 @@ export class CombatHandler {
             return 0;
         }
 
-        const maxHp = Math.max(0, Math.round(Number(targetEntity?.maxHp ?? 0) || 0));
+        // Not entity.maxHp. A client-spawned hostile never reports its health pool -- the
+        // patched client sends damage deltas only -- so that field is empty on most of what
+        // a rogue actually swings at, and reading it directly made this passive do nothing
+        // at all outside the handful of server-authority levels. getNpcHealthState is the
+        // server's own resolver: explicit maxHp when it has one, the EntTypes-derived pool
+        // otherwise.
+        const maxHp = Math.max(0, Math.round(Number(
+            CombatHandler.getNpcHealthState(targetEntity, levelScope)?.maxHp ?? 0
+        ) || 0));
         if (maxHp <= 0) {
             return 0;
         }
@@ -5331,7 +5340,7 @@ export class CombatHandler {
         const isPlayerSource = Boolean(sourceSession && !isHostileNpcSource);
         if (isPlayerSource && targetEntity && !targetEntity.isPlayer) {
             damage = AdminRuntimeSettings.scaleDamage(damage);
-            damage += CombatHandler.getSoulthieftMaxHpBonus(sourceSession, targetEntity, damage);
+            damage += CombatHandler.getSoulthieftMaxHpBonus(sourceSession, targetEntity, damage, levelScope);
         }
         if (
             (!targetEntity && !targetSession) ||
