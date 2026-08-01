@@ -4699,26 +4699,27 @@ export class CombatHandler {
      * one gets for free: the server knows MasterClass, so unlike the weapon-data changes
      * that ride alongside it, this really is Sentinel-only rather than every Paladin.
      *
-     * Melee basics only. Those come from the equipped weapon and are shared across the
-     * whole class, so the power id has to be checked against the authored list rather than
-     * assumed from the hit.
+     * It rides the Sentinel's signature power, ConcussionBolt -- the AbilityTypes
+     * HotbarLocation 0 slot, which is one power per discipline. The weapon-driven basic
+     * attacks it first hung off are shared by the whole class, so that version handed a
+     * Sentinel passive to every Justicar and Templar as well.
      */
     private static readonly SENTINEL_MAX_HP_RATE = 0.001;
-    private static readonly PALADIN_MELEE_BASIC_POWER_NAMES = ['SwordMelee', 'MaceMelee', 'AxeMelee', 'ScepterMelee'];
-    private static paladinMeleeBasicPowerIds: Set<number> | null = null;
+    private static readonly SENTINEL_SIGNATURE_POWER_NAMES = ['ConcussionBolt'];
+    private static sentinelSignaturePowerIds: Set<number> | null = null;
 
     /**
      * Resolved from the authored power data rather than hardcoded, because the ids are
      * whatever PlayerPowerTypes says they are and a wrong constant here would silently
      * attach the passive to some unrelated power.
      */
-    private static getPaladinMeleeBasicPowerIds(): Set<number> {
-        if (CombatHandler.paladinMeleeBasicPowerIds) {
-            return CombatHandler.paladinMeleeBasicPowerIds;
+    private static getSentinelSignaturePowerIds(): Set<number> {
+        if (CombatHandler.sentinelSignaturePowerIds) {
+            return CombatHandler.sentinelSignaturePowerIds;
         }
 
         const ids = new Set<number>();
-        CombatHandler.paladinMeleeBasicPowerIds = ids;
+        CombatHandler.sentinelSignaturePowerIds = ids;
 
         const xmlDir = resolveClientXmlDir(['PlayerPowerTypes.xml']);
         if (!xmlDir) {
@@ -4730,7 +4731,7 @@ export class CombatHandler {
             const xml = fs.readFileSync(path.join(xmlDir, 'PlayerPowerTypes.xml'), 'utf8');
             for (const block of xml.match(/<Power PowerName="[^"]*">[\s\S]*?<\/Power>/g) ?? []) {
                 const name = block.match(/<Power PowerName="([^"]*)">/)?.[1] ?? '';
-                if (!CombatHandler.PALADIN_MELEE_BASIC_POWER_NAMES.includes(name)) {
+                if (!CombatHandler.SENTINEL_SIGNATURE_POWER_NAMES.some((base) => name === base || new RegExp(`^${base}\\d+$`).test(name))) {
                     continue;
                 }
 
@@ -4739,7 +4740,7 @@ export class CombatHandler {
                     ids.add(powerId);
                 }
             }
-            console.log(`[CombatHandler] Sentinel basic-attack passive covers ${ids.size} melee basic power(s).`);
+            console.log(`[CombatHandler] Sentinel passive covers ${ids.size} ConcussionBolt rank(s).`);
         } catch (err) {
             console.warn('[CombatHandler] Could not read PlayerPowerTypes.xml; the Sentinel basic-attack passive is inactive.', err);
         }
@@ -4759,7 +4760,7 @@ export class CombatHandler {
             return 0;
         }
 
-        if (!CombatHandler.getPaladinMeleeBasicPowerIds().has(Math.round(Number(powerId) || 0))) {
+        if (!CombatHandler.getSentinelSignaturePowerIds().has(Math.round(Number(powerId) || 0))) {
             return 0;
         }
 

@@ -22,7 +22,7 @@
 		<PetID>1</PetID>
 		<PetLevel>15</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>buyuk Horned Owl</DisplayName>
+		<DisplayName>Great Horned Owl</DisplayName>
 		<PetPower>PetOwl</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -36,7 +36,7 @@
 		<PetID>2</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Kirmizi Melek</DisplayName>
+		<DisplayName>Questing Cherub</DisplayName>
 		<PetPower>PetAngel</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -50,7 +50,7 @@
 		<PetID>3</PetID>
 		<PetLevel>25</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Kirmizi Sahin</DisplayName>
+		<DisplayName>Hunting Falcon</DisplayName>
 		<PetPower>PetFalcon</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -64,7 +64,7 @@
 		<PetID>4</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Kirmizi Karga</DisplayName>
+		<DisplayName>Acquisitive Rook</DisplayName>
 		<PetPower>PetCrow</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -78,7 +78,7 @@
 		<PetID>5</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Kirmizi Cin</DisplayName>
+		<DisplayName>Ravening Djinn</DisplayName>
 		<PetPower>PetDjinn</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -92,7 +92,7 @@
 		<PetID>6</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Omnivorous kemik ejderha</DisplayName>
+		<DisplayName>Omnivorous Bone Dragon</DisplayName>
 		<PetPower>PetDragonBone</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -106,7 +106,7 @@
 		<PetID>7</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Kirmizi Ejderha 3</DisplayName>
+		<DisplayName>Zhulong</DisplayName>
 		<PetPower>PetDragonGold</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -120,7 +120,7 @@
 		<PetID>8</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Kirmizi Kucuk Ejder</DisplayName>
+		<DisplayName>Vigilent Whelpling</DisplayName>
 		<PetPower>PetDragonRed</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -134,7 +134,7 @@
 		<PetID>9</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Kirmizi Peri</DisplayName>
+		<DisplayName>Flame Fey</DisplayName>
 		<PetPower>PetFairy</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -148,7 +148,7 @@
 		<PetID>10</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Kirmizi Hayalet</DisplayName>
+		<DisplayName>Rapacious Specter</DisplayName>
 		<PetPower>PetGhost</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -162,7 +162,7 @@
 		<PetID>11</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Kirmizi Gulyabani</DisplayName>
+		<DisplayName>Wailing Phantom</DisplayName>
 		<PetPower>PetGhoul</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -176,7 +176,7 @@
 		<PetID>12</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Kirmizi Maymun</DisplayName>
+		<DisplayName>Soaring Howler</DisplayName>
 		<PetPower>PetMonkey</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -190,7 +190,7 @@
 		<PetID>13</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Kirmizi Anka</DisplayName>
+		<DisplayName>Serendipitous Garuda</DisplayName>
 		<PetPower>PetPhoenix</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -204,7 +204,7 @@
 		<PetID>14</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>alev damgasi element</DisplayName>
+		<DisplayName>Firebrand Elemental</DisplayName>
 		<PetPower>PetSprite</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -218,7 +218,7 @@
 		<PetID>15</PetID>
 		<PetLevel>15</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Sari Baykus</DisplayName>
+		<DisplayName>Burrowing Owl</DisplayName>
 		<PetPower>PetOwl</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -232,7 +232,7 @@
 		<PetID>16</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Sari Melek</DisplayName>
+		<DisplayName>Midas Angel</DisplayName>
 		<PetPower>PetAngel</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -246,7 +246,7 @@
 		<PetID>17</PetID>
 		<PetLevel>25</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>altin Kestrel</DisplayName>
+		<DisplayName>Golden Kestrel</DisplayName>
 		<PetPower>PetFalcon</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -260,7 +260,7 @@
 		<PetID>18</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Sari Karga</DisplayName>
+		<DisplayName>Piping Corvus</DisplayName>
 		<PetPower>PetCrow</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -274,7 +274,7 @@
 		<PetID>19</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Sari Cin</DisplayName>
+		<DisplayName>Extravagant Efrit</DisplayName>
 		<PetPower>PetDjinn</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -288,7 +288,7 @@
 		<PetID>20</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Ivory Ejderha Remnant</DisplayName>
+		<DisplayName>Ivory Draconic Remnant</DisplayName>
 		<PetPower>PetDragonBone</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -302,7 +302,7 @@
 		<PetID>21</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Sari Ejderha 3</DisplayName>
+		<DisplayName>Fucanglong</DisplayName>
 		<PetPower>PetDragonGold</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -316,7 +316,7 @@
 		<PetID>22</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Acik Sozlu Kucuk Ejder</DisplayName>
+		<DisplayName>Divulgent  Dragonnette</DisplayName>
 		<PetPower>PetDragonRed</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -330,7 +330,7 @@
 		<PetID>23</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>elmas-dust Pixie</DisplayName>
+		<DisplayName>Diamond-dust Pixie</DisplayName>
 		<PetPower>PetFairy</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -344,7 +344,7 @@
 		<PetID>24</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Sari Hayalet</DisplayName>
+		<DisplayName>Avaricious Phantom</DisplayName>
 		<PetPower>PetGhost</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -358,7 +358,7 @@
 		<PetID>25</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Sari Gulyabani</DisplayName>
+		<DisplayName>Sinful Specter</DisplayName>
 		<PetPower>PetGhoul</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -372,7 +372,7 @@
 		<PetID>26</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>altin Macaque</DisplayName>
+		<DisplayName>Golden Macaque</DisplayName>
 		<PetPower>PetMonkey</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -386,7 +386,7 @@
 		<PetID>27</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Sari Anka</DisplayName>
+		<DisplayName>Fortune-favored Firebird</DisplayName>
 		<PetPower>PetPhoenix</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -400,7 +400,7 @@
 		<PetID>28</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Incandescent ruh</DisplayName>
+		<DisplayName>Incandescent Spirit</DisplayName>
 		<PetPower>PetSprite</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -414,7 +414,7 @@
 		<PetID>29</PetID>
 		<PetLevel>15</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Mavi Baykus</DisplayName>
+		<DisplayName>Saw-Whet Owl</DisplayName>
 		<PetPower>PetOwl</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -428,7 +428,7 @@
 		<PetID>30</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Zeki Seraf</DisplayName>
+		<DisplayName>Ingenious  Seraph</DisplayName>
 		<PetPower>PetAngel</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -442,7 +442,7 @@
 		<PetID>31</PetID>
 		<PetLevel>25</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Binekain Caracara</DisplayName>
+		<DisplayName>Mountain Caracara</DisplayName>
 		<PetPower>PetFalcon</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -456,7 +456,7 @@
 		<PetID>32</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Mavi Karga</DisplayName>
+		<DisplayName>Nightfall Crow</DisplayName>
 		<PetPower>PetCrow</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -470,7 +470,7 @@
 		<PetID>33</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Mavi Cin</DisplayName>
+		<DisplayName>Brilliant Genie</DisplayName>
 		<PetPower>PetDjinn</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -484,7 +484,7 @@
 		<PetID>34</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Mavi Ejderha 2</DisplayName>
+		<DisplayName>Ingenious Skeletal Construct</DisplayName>
 		<PetPower>PetDragonBone</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -498,7 +498,7 @@
 		<PetID>35</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Mavi Ejderha 3</DisplayName>
+		<DisplayName>Shenlong</DisplayName>
 		<PetPower>PetDragonGold</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -512,7 +512,7 @@
 		<PetID>36</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Mavi Kucuk Ejder</DisplayName>
+		<DisplayName>Savvy Wyrmspawn</DisplayName>
 		<PetPower>PetDragonRed</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -526,7 +526,7 @@
 		<PetID>37</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Mavi Peri</DisplayName>
+		<DisplayName>Seafoam Nymph</DisplayName>
 		<PetPower>PetFairy</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -540,7 +540,7 @@
 		<PetID>38</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Mavi Hayalet</DisplayName>
+		<DisplayName>Patchwork Apparition</DisplayName>
 		<PetPower>PetGhost</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -554,7 +554,7 @@
 		<PetID>39</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Fearsome banshee</DisplayName>
+		<DisplayName>Fearsome Banshee</DisplayName>
 		<PetPower>PetGhoul</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -568,7 +568,7 @@
 		<PetID>40</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Mavi Maymun</DisplayName>
+		<DisplayName>Flying Mangabey</DisplayName>
 		<PetPower>PetMonkey</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -582,7 +582,7 @@
 		<PetID>41</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Mavi Anka</DisplayName>
+		<DisplayName>Masterful Benu</DisplayName>
 		<PetPower>PetPhoenix</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -596,7 +596,7 @@
 		<PetID>42</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Coalseared ruh</DisplayName>
+		<DisplayName>Coalseared Spirit</DisplayName>
 		<PetPower>PetSprite</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -610,7 +610,7 @@
 		<PetID>43</PetID>
 		<PetLevel>15</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Yesil Baykus</DisplayName>
+		<DisplayName>Spectacled Owl</DisplayName>
 		<PetPower>PetOwl</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -624,7 +624,7 @@
 		<PetID>44</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Yesil Melek</DisplayName>
+		<DisplayName>Battle Cherub</DisplayName>
 		<PetPower>PetAngel</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -638,7 +638,7 @@
 		<PetID>45</PetID>
 		<PetLevel>25</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Yesil Sahin</DisplayName>
+		<DisplayName>Cryptic Forest-falcon</DisplayName>
 		<PetPower>PetFalcon</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -652,7 +652,7 @@
 		<PetID>46</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>50</IdolCost>
-		<DisplayName>Orman Raven</DisplayName>
+		<DisplayName>Sylvan Raven</DisplayName>
 		<PetPower>PetCrow</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -666,7 +666,7 @@
 		<PetID>47</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Yesil Cin</DisplayName>
+		<DisplayName>Virtuoso Marid</DisplayName>
 		<PetPower>PetDjinn</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -680,7 +680,7 @@
 		<PetID>48</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Exemplary Ejderha Skeleton</DisplayName>
+		<DisplayName>Exemplary Draconic Skeleton</DisplayName>
 		<PetPower>PetDragonBone</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -694,7 +694,7 @@
 		<PetID>49</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Yesil Ejderha 3</DisplayName>
+		<DisplayName>Tianlong</DisplayName>
 		<PetPower>PetDragonGold</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -708,7 +708,7 @@
 		<PetID>50</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Yesil Kucuk Ejder</DisplayName>
+		<DisplayName>Sophic Whelp</DisplayName>
 		<PetPower>PetDragonRed</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -722,7 +722,7 @@
 		<PetID>51</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Bilge Peri</DisplayName>
+		<DisplayName>Sagacious  Sprite</DisplayName>
 		<PetPower>PetFairy</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -736,7 +736,7 @@
 		<PetID>52</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Yesil Hayalet</DisplayName>
+		<DisplayName>Avid Eidolon</DisplayName>
 		<PetPower>PetGhost</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -750,7 +750,7 @@
 		<PetID>53</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>Yesil Gulyabani</DisplayName>
+		<DisplayName>Scholarly Shade</DisplayName>
 		<PetPower>PetGhoul</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -764,7 +764,7 @@
 		<PetID>54</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Yesil Maymun</DisplayName>
+		<DisplayName>Winged Capuchin</DisplayName>
 		<PetPower>PetMonkey</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -778,7 +778,7 @@
 		<PetID>55</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>100</IdolCost>
-		<DisplayName>kutsal Phoenix</DisplayName>
+		<DisplayName>Sacred Phoenix</DisplayName>
 		<PetPower>PetPhoenix</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -792,7 +792,7 @@
 		<PetID>56</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Scintilating ruh</DisplayName>
+		<DisplayName>Scintilating Spirit</DisplayName>
 		<PetPower>PetSprite</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -806,7 +806,7 @@
 		<PetID>57</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Kirmizi Bal Kabagi</DisplayName>
+		<DisplayName>Bewildered Jack-O</DisplayName>
 		<PetPower>PetPumpkin</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -821,7 +821,7 @@
 		<PetID>58</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Sari Bal Kabagi</DisplayName>
+		<DisplayName>Menacing Jack-O</DisplayName>
 		<PetPower>PetPumpkin</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -836,7 +836,7 @@
 		<PetID>59</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Mavi Bal Kabagi</DisplayName>
+		<DisplayName>Cyclops Jack-O</DisplayName>
 		<PetPower>PetPumpkin</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -851,7 +851,7 @@
 		<PetID>60</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>Yesil Bal Kabagi</DisplayName>
+		<DisplayName>Jubilant Jack-O</DisplayName>
 		<PetPower>PetPumpkin</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -866,7 +866,7 @@
 		<PetID>61</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>kirmizi-Eyed Gargoyle</DisplayName>
+		<DisplayName>Red-Eyed Gargoyle</DisplayName>
 		<PetPower>PetGargoyle</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -881,7 +881,7 @@
 		<PetID>62</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>sari-Eyed Gargoyle</DisplayName>
+		<DisplayName>Yellow-Eyed Gargoyle</DisplayName>
 		<PetPower>PetGargoyle</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -896,7 +896,7 @@
 		<PetID>63</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>mavi-Eyed Gargoyle</DisplayName>
+		<DisplayName>Blue-Eyed Gargoyle</DisplayName>
 		<PetPower>PetGargoyle</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -911,7 +911,7 @@
 		<PetID>64</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>200</IdolCost>
-		<DisplayName>yesil-Eyed Gargoyle</DisplayName>
+		<DisplayName>Green-Eyed Gargoyle</DisplayName>
 		<PetPower>PetGargoyle</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -926,7 +926,7 @@
 		<PetID>65</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>500</IdolCost>
-		<DisplayName>Efsanevi Evcil Sandigi</DisplayName>
+		<DisplayName>Darkheart Apparition</DisplayName>
 		<PetPower>PetLockbox01L01</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -940,7 +940,7 @@
 		<PetID>66</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>500</IdolCost>
-		<DisplayName>Efsanevi Evcil Sandigi</DisplayName>
+		<DisplayName>Dreamscale Dragonette</DisplayName>
 		<PetPower>PetLockbox01L02</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -954,7 +954,7 @@
 		<PetID>67</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>500</IdolCost>
-		<DisplayName>Kirmizi Nadir Evcil Sandigi</DisplayName>
+		<DisplayName>Accursed Counselor</DisplayName>
 		<PetPower>PetLockbox01R01</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ItemFind>true</ItemFind>
@@ -968,7 +968,7 @@
 		<PetID>68</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>500</IdolCost>
-		<DisplayName>Sari Nadir Evcil Sandigi</DisplayName>
+		<DisplayName>Ruined Counselor</DisplayName>
 		<PetPower>PetLockbox01R01</PetPower>
 		<Kingdom>Any</Kingdom>
 		<GoldFind>true</GoldFind>
@@ -982,7 +982,7 @@
 		<PetID>69</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>500</IdolCost>
-		<DisplayName>Mavi Nadir Evcil Sandigi</DisplayName>
+		<DisplayName>Hexed Counselor</DisplayName>
 		<PetPower>PetLockbox01R01</PetPower>
 		<Kingdom>Any</Kingdom>
 		<CraftFind>true</CraftFind>
@@ -996,7 +996,7 @@
 		<PetID>70</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>500</IdolCost>
-		<DisplayName>Yesil Nadir Evcil Sandigi</DisplayName>
+		<DisplayName>Doomed Counselor</DisplayName>
 		<PetPower>PetLockbox01R01</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>
@@ -1010,7 +1010,7 @@
 		<PetID>71</PetID>
 		<PetLevel>30</PetLevel>
 		<IdolCost>500</IdolCost>
-		<DisplayName>Codex ejderha</DisplayName>
+		<DisplayName>Codex Dragon</DisplayName>
 		<PetPower>PetDragonGold</PetPower>
 		<Kingdom>Any</Kingdom>
 		<ExpBonus>true</ExpBonus>

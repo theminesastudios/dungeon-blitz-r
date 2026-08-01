@@ -80,15 +80,15 @@ function sentinel(maxHp: number): any {
     };
 }
 
-const SWORD_MELEE = 3; // PlayerPowerTypes: SwordMelee
+const CONCUSSION_BOLT = 316; // PlayerPowerTypes: ConcussionBolt, the Sentinel signature power
 const SHIELD_FLURRY = 295; // any non-basic power id
 
-function testSentinelBasicSwingCarriesHealthPool(): void {
-    assert.equal(sentinelBonusOf(sentinel(60_000), SWORD_MELEE, 2000), 60);
-    assert.equal(sentinelBonusOf(sentinel(120_000), SWORD_MELEE, 2000), 120);
+function testSentinelSignatureCarriesHealthPool(): void {
+    assert.equal(sentinelBonusOf(sentinel(60_000), CONCUSSION_BOLT, 2000), 60);
+    assert.equal(sentinelBonusOf(sentinel(120_000), CONCUSSION_BOLT, 2000), 120);
 }
 
-function testSentinelBonusIsBasicMeleeOnly(): void {
+function testSentinelBonusIsSignatureOnly(): void {
     assert.equal(sentinelBonusOf(sentinel(60_000), SHIELD_FLURRY, 2000), 0);
 }
 
@@ -97,12 +97,12 @@ function testSentinelBonusIsSentinelOnly(): void {
         character: { name: 'MaxPally', MasterClass: MasterClassID.Justicar },
         authoritativeMaxHp: 60_000
     };
-    assert.equal(sentinelBonusOf(justicar, SWORD_MELEE, 2000), 0);
+    assert.equal(sentinelBonusOf(justicar, CONCUSSION_BOLT, 2000), 0);
 }
 
 function run(): void {
-    testSentinelBasicSwingCarriesHealthPool();
-    testSentinelBonusIsBasicMeleeOnly();
+    testSentinelSignatureCarriesHealthPool();
+    testSentinelBonusIsSignatureOnly();
     testSentinelBonusIsSentinelOnly();
     testDerivesThePoolWhenTheEntityDoesNotCarryOne();
     testBonusScalesWithTargetHealthPool();

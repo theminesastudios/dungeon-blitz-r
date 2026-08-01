@@ -233,6 +233,17 @@ const VIPERBLADE_BUFFS = new Map<string, string>([
 
 
 
+// The discipline signature powers -- AbilityTypes HotbarLocation 0, one per discipline.
+// This is the slot that is actually per-discipline, which the weapon-driven basic attacks
+// never were: PoisonDagger's own description calls it "favored by the Viperblade". Passives
+// belong here because putting them here scopes them by construction.
+//
+//   Sentinel  ConcussionBolt   Justicar  AxeFlurry     Templar   DivineBolt
+//   Viper     PoisonDagger     Soulthief HeavyDagger   Shadow    CorrosiveDagger
+const SIGNATURE_AOE = new Map<string, string>([
+  ["DivineBolt", "90"], // Templar: the small splash, and only Templars get it
+]);
+
 const DAMAGE_MULTS = new Map<string, string>([
   // Butcher's Boon, x1.25
   ["PainBender", "3.12"], // 2.5
@@ -449,6 +460,19 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
         touched = true;
         stats.changes += 1;
         next = next.replace(pattern, "");
+      }
+    }
+
+    const signatureAoe = SIGNATURE_AOE.get(powerName.replace(/\d+$/, ""));
+    if (signatureAoe) {
+      touched = true;
+      if (/<AoERadius>[^<]*<\/AoERadius>/.test(next)) {
+        next = replaceTag(next, "AoERadius", signatureAoe, stats);
+      } else {
+        next = next.replace(/(<TargetMethod>[^<]*<\/TargetMethod>)/, (match) => {
+          stats.changes += 1;
+          return `${match}\r\n\t\t<AoERadius>${signatureAoe}</AoERadius>`;
+        });
       }
     }
 

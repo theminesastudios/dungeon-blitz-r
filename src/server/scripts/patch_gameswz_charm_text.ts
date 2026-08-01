@@ -20,6 +20,10 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  * own stat fields, which keeps the correction by construction and cannot drift from the
  * data again. Only charms with no stats at all -- the Respec Stone and the Charm Remover --
  * carry authored English prose.
+ *
+ * Pets have the same origin and a simpler fix: their descriptions survived in English and
+ * only DisplayName came through Turkish ("Kirmizi Melek" for Questing Cherub), and no pet
+ * name is derived from a stat, so the names are restored from the English archive as-is.
  */
 
 type PatchStats = {
@@ -32,6 +36,82 @@ const EMPTY_STATS: PatchStats = { charmBlocks: 0, changes: 0 };
 const XML_DIR = path.resolve(__dirname, "..", "..", "client", "content", "xml");
 const CBQ_DIR = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbq");
 const CHARM_XML = path.join(XML_DIR, "CharmTypes.xml");
+const PET_XML = path.join(XML_DIR, "PetTypes.xml");
+
+// Pet display names as the English archive authored them.
+const PET_NAMES = new Map<string, string>([
+  ["OwlRed", "Great Horned Owl"],
+  ["AngelRed", "Questing Cherub"],
+  ["FalconRed", "Hunting Falcon"],
+  ["CrowRed", "Acquisitive Rook"],
+  ["DjinnRed", "Ravening Djinn"],
+  ["Dragon2Red", "Omnivorous Bone Dragon"],
+  ["Dragon3Red", "Zhulong"],
+  ["DragonetteRed", "Vigilent Whelpling"],
+  ["FairyRed", "Flame Fey"],
+  ["GhostRed", "Rapacious Specter"],
+  ["GhoulRed", "Wailing Phantom"],
+  ["MonkeyRed", "Soaring Howler"],
+  ["PhoenixRed", "Serendipitous Garuda"],
+  ["SpriteRed", "Firebrand Elemental"],
+  ["OwlYellow", "Burrowing Owl"],
+  ["AngelYellow", "Midas Angel"],
+  ["FalconYellow", "Golden Kestrel"],
+  ["CrowYellow", "Piping Corvus"],
+  ["DjinnYellow", "Extravagant Efrit"],
+  ["Dragon2Yellow", "Ivory Draconic Remnant"],
+  ["Dragon3Yellow", "Fucanglong"],
+  ["DragonetteYellow", "Divulgent  Dragonnette"],
+  ["FairyYellow", "Diamond-dust Pixie"],
+  ["GhostYellow", "Avaricious Phantom"],
+  ["GhoulYellow", "Sinful Specter"],
+  ["MonkeyYellow", "Golden Macaque"],
+  ["PhoenixYellow", "Fortune-favored Firebird"],
+  ["SpriteYellow", "Incandescent Spirit"],
+  ["OwlBlue", "Saw-Whet Owl"],
+  ["AngelBlue", "Ingenious  Seraph"],
+  ["FalconBlue", "Mountain Caracara"],
+  ["CrowBlue", "Nightfall Crow"],
+  ["DjinnBlue", "Brilliant Genie"],
+  ["Dragon2Blue", "Ingenious Skeletal Construct"],
+  ["Dragon3Blue", "Shenlong"],
+  ["DragonetteBlue", "Savvy Wyrmspawn"],
+  ["FairyBlue", "Seafoam Nymph"],
+  ["GhostBlue", "Patchwork Apparition"],
+  ["GhoulBlue", "Fearsome Banshee"],
+  ["MonkeyBlue", "Flying Mangabey"],
+  ["PhoenixBlue", "Masterful Benu"],
+  ["SpriteBlue", "Coalseared Spirit"],
+  ["OwlGreen", "Spectacled Owl"],
+  ["AngelGreen", "Battle Cherub"],
+  ["FalconGreen", "Cryptic Forest-falcon"],
+  ["CrowGreen", "Sylvan Raven"],
+  ["DjinnGreen", "Virtuoso Marid"],
+  ["Dragon2Green", "Exemplary Draconic Skeleton"],
+  ["Dragon3Green", "Tianlong"],
+  ["DragonetteGreen", "Sophic Whelp"],
+  ["FairyGreen", "Sagacious  Sprite"],
+  ["GhostGreen", "Avid Eidolon"],
+  ["GhoulGreen", "Scholarly Shade"],
+  ["MonkeyGreen", "Winged Capuchin"],
+  ["PhoenixGreen", "Sacred Phoenix"],
+  ["SpriteGreen", "Scintilating Spirit"],
+  ["PumpkinRed", "Bewildered Jack-O"],
+  ["PumpkinYellow", "Menacing Jack-O"],
+  ["PumpkinBlue", "Cyclops Jack-O"],
+  ["PumpkinGreen", "Jubilant Jack-O"],
+  ["GargoyleRed", "Red-Eyed Gargoyle"],
+  ["GargoyleYellow", "Yellow-Eyed Gargoyle"],
+  ["GargoyleBlue", "Blue-Eyed Gargoyle"],
+  ["GargoyleGreen", "Green-Eyed Gargoyle"],
+  ["Lockbox01L01", "Darkheart Apparition"],
+  ["Lockbox01L02", "Dreamscale Dragonette"],
+  ["Lockbox01RRed", "Accursed Counselor"],
+  ["Lockbox01RYellow", "Ruined Counselor"],
+  ["Lockbox01RBlue", "Hexed Counselor"],
+  ["Lockbox01RGreen", "Doomed Counselor"],
+  ["CodexDragon", "Codex Dragon"],
+]);
 
 /**
  * Crit chance from every source is multiplied by 0.15 before it applies, so a charm's raw
@@ -222,9 +302,28 @@ export function patchCharmTypes(xml: string): { xml: string; stats: PatchStats }
   return { xml: patched, stats };
 }
 
-function patchFile(filePath: string, verifyOnly: boolean): PatchStats {
+export function patchPetTypes(xml: string): { xml: string; stats: PatchStats } {
+  const stats = cloneStats();
+  const patched = xml.replace(/<PetType PetName="([^"]+)">[\s\S]*?<\/PetType>/g, (block: string, petName: string) => {
+    const name = PET_NAMES.get(petName);
+    if (!name) {
+      return block;
+    }
+
+    stats.charmBlocks += 1;
+    return replaceTag(block, "DisplayName", name, stats);
+  });
+
+  return { xml: patched, stats };
+}
+
+function patchFile(
+  filePath: string,
+  patcher: (xml: string) => { xml: string; stats: PatchStats },
+  verifyOnly: boolean,
+): PatchStats {
   const original = fs.readFileSync(filePath, "utf8");
-  const patched = patchCharmTypes(original);
+  const patched = patcher(original);
   if (!verifyOnly && patched.xml !== original) {
     fs.writeFileSync(filePath, patched.xml, "utf8");
   }
@@ -233,19 +332,41 @@ function patchFile(filePath: string, verifyOnly: boolean): PatchStats {
 
 function patchSwz(swzPath: string, verifyOnly: boolean): PatchStats {
   const ctx = parseSwz(swzPath);
-  const chunk = ctx.chunks.find((entry) => entry.xml.includes("<CharmTypes"));
-  if (!chunk) {
-    return cloneStats();
+  const resources: Array<{ marker: string; patcher: (xml: string) => { xml: string; stats: PatchStats } }> = [
+    { marker: "<CharmTypes", patcher: patchCharmTypes },
+    { marker: "<PetTypes", patcher: patchPetTypes },
+  ];
+
+  const collected: PatchStats[] = [];
+  let changed = false;
+  for (const resource of resources) {
+    const chunk = ctx.chunks.find((entry) => entry.xml.includes(resource.marker));
+    if (!chunk) {
+      continue;
+    }
+
+    const patched = resource.patcher(chunk.xml);
+    collected.push(patched.stats);
+    if (patched.xml !== chunk.xml) {
+      changed = true;
+      if (!verifyOnly) {
+        chunk.xml = patched.xml;
+      }
+    }
   }
 
-  const patched = patchCharmTypes(chunk.xml);
-  if (!verifyOnly && patched.xml !== chunk.xml) {
-    chunk.xml = patched.xml;
+  if (!verifyOnly && changed) {
     ensureBackup(swzPath);
     writeSwz(ctx);
   }
 
-  return patched.stats;
+  return collected.reduce(
+    (merged, item) => ({
+      charmBlocks: merged.charmBlocks + item.charmBlocks,
+      changes: merged.changes + item.changes,
+    }),
+    cloneStats(),
+  );
 }
 
 export function patchConfiguredCharmText(verifyOnly: boolean): PatchStats {
@@ -253,7 +374,11 @@ export function patchConfiguredCharmText(verifyOnly: boolean): PatchStats {
     .map((fileName) => path.join(CBQ_DIR, fileName))
     .filter(fs.existsSync);
 
-  return [patchFile(CHARM_XML, verifyOnly), ...swzPaths.map((swzPath) => patchSwz(swzPath, verifyOnly))].reduce(
+  return [
+    patchFile(CHARM_XML, patchCharmTypes, verifyOnly),
+    patchFile(PET_XML, patchPetTypes, verifyOnly),
+    ...swzPaths.map((swzPath) => patchSwz(swzPath, verifyOnly)),
+  ].reduce(
     (merged, item) => ({
       charmBlocks: merged.charmBlocks + item.charmBlocks,
       changes: merged.changes + item.changes,
