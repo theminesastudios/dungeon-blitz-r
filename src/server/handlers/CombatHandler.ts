@@ -11,6 +11,7 @@ import {
 } from '../core/DungeonRunStats';
 import { LevelHandler } from './LevelHandler';
 import { EntityState, EntityTeam } from '../core/Entity';
+import { MasterClassID } from '../core/Enums';
 import { EntityHandler } from './EntityHandler';
 import { MissionHandler } from './MissionHandler';
 import { areClientsInSameParty, getClientCharacterKey, sharesRoomIds, shouldShareCombatView } from '../core/PartySync';
@@ -4631,6 +4632,52 @@ export class CombatHandler {
         }
     }
 
+    /**
+     * Soulthieft: a Soulthief's hits carry a share of whatever the target's health pool is,
+     * so the bigger the enemy, the more each strike takes off it.
+     *
+     * This lives on the server because it cannot live anywhere else. The bonus has to read
+     * the target's max HP at the moment of the hit, and the client's damage formula has no
+     * term for that -- every buff property it understands (BleedMultiplier, BoundMultiplier,
+     * MeleeDamage and the rest) multiplies the attacker's own numbers. The server already
+     * rewrites incoming damage here for AdminRuntimeSettings.scaleDamage, so this rides the
+     * same path.
+     *
+     * The cost of that is cosmetic and worth stating: the floating combat number is computed
+     * by the attacker's client and will show the unboosted hit. The health bar is server
+     * authoritative and will drop by the real amount.
+     *
+     * Capped at the base hit, so it doubles a strike at most. Without a cap this scales with
+     * the target's health pool, which is exactly backwards for the bosses that have the
+     * largest pools -- a 1% bite out of a 500k boss would dwarf everything else a rogue does.
+     */
+    private static readonly SOULTHIEFT_MAX_HP_RATE = 0.01;
+
+    private static getSoulthieftMaxHpBonus(
+        sourceSession: Client | null,
+        targetEntity: any,
+        baseDamage: number
+    ): number {
+        if (
+            !sourceSession?.character ||
+            Number(sourceSession.character.MasterClass ?? 0) !== MasterClassID.Soulthief
+        ) {
+            return 0;
+        }
+
+        const damage = Math.max(0, Math.round(Number(baseDamage) || 0));
+        if (damage <= 0) {
+            return 0;
+        }
+
+        const maxHp = Math.max(0, Math.round(Number(targetEntity?.maxHp ?? 0) || 0));
+        if (maxHp <= 0) {
+            return 0;
+        }
+
+        return Math.min(damage, Math.round(maxHp * CombatHandler.SOULTHIEFT_MAX_HP_RATE));
+    }
+
     private static updatePlayerTargetAfterHit(targetSession: Client, damage: number, preventDeath: boolean = false): PlayerHitResolution {
         if (damage <= 0 || !targetSession.character || targetSession.clientEntID <= 0) {
             return {
@@ -5284,6 +5331,7 @@ export class CombatHandler {
         const isPlayerSource = Boolean(sourceSession && !isHostileNpcSource);
         if (isPlayerSource && targetEntity && !targetEntity.isPlayer) {
             damage = AdminRuntimeSettings.scaleDamage(damage);
+            damage += CombatHandler.getSoulthieftMaxHpBonus(sourceSession, targetEntity, damage);
         }
         if (
             (!targetEntity && !targetSession) ||
