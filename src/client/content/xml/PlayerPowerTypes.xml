@@ -185,7 +185,6 @@
 	<Power PowerName="Lightningball">
 		<PowerID>5</PowerID>
 		<TargetMethod>ProjectilePlayer</TargetMethod>
-		<AoERadius>90</AoERadius>
 		<Range>0</Range>
 		<CastAnim>Shoot</CastAnim>
 		<CastTime>0</CastTime>
@@ -36930,7 +36929,6 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>RapierMelee</PowerGroup>
-		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<DisplayName>Dagger Melee</DisplayName>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -36958,7 +36956,6 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SaberMelee</PowerGroup>
-		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<DisplayName>Sword Melee</DisplayName>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -36976,7 +36973,6 @@
 	<Power PowerName="Energyball">
 		<PowerID>971</PowerID>
 		<TargetMethod>ProjectilePlayer</TargetMethod>
-		<AoERadius>90</AoERadius>
 		<CastAnim>Shoot</CastAnim>
 		<CastTime>0</CastTime>
 		<RecoverTime>500</RecoverTime>

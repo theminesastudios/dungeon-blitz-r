@@ -231,27 +231,7 @@ const VIPERBLADE_BUFFS = new Map<string, string>([
 ]);
 
 
-// Basic attacks, which turned out to be the thing the reports were about. A player's
-// melee and ranged attack come from the equipped weapon (Gear.MeleePower/RangedPower),
-// not from any power the class tree grants, and weapons carry <UsedBy>Rogue</UsedBy> --
-// a class, never a mastery. So these are class-wide by construction; scoping them per
-// mastery would need per-mastery attack variants plus a permanent buff carrying
-// MeleeOverride/RangedOverride, and no hook exists to grant one.
-//
-// The Rogue melee basics authored no AddTargetBuff at all, which is exactly why close
-// attacks drew no blood.
-const BASIC_ATTACK_BUFFS = new Map<string, string>([
-  ["SaberMelee", "Bleeding"], //  was absent
-  ["RapierMelee", "Bleeding"], // was absent
-]);
 
-// Templar: the Paladin ranged basic gets a small splash. ProjectilePlayer already carries
-// an AoERadius on 32 authored powers (VerdictROR and friends), so the combination is one
-// the client already runs rather than one invented here.
-const BASIC_ATTACK_AOE = new Map<string, string>([
-  ["Lightningball", "90"], // was none
-  ["Energyball", "90"], //    was none
-]);
 
 const DAMAGE_MULTS = new Map<string, string>([
   // Butcher's Boon, x1.25
@@ -396,6 +376,23 @@ function replaceTag(block: string, tag: string, value: string, stats: PatchStats
   });
 }
 
+/**
+ * Basic attacks come from the equipped weapon, and weapons are per class -- so putting the
+ * Viperblade bleed on SaberMelee gave it to every rogue, Soulthief and Shadowwalker
+ * included, and the Templar splash went to every paladin. A mastery passive that fires for
+ * the other two masteries is not the passive.
+ *
+ * These strip what that attempt wrote, so the source XML and the served archive converge
+ * back to the authored shape whichever one a build starts from. Viperblade keeps working
+ * where it is correctly scoped: on the Executioner tree's own powers.
+ */
+const REMOVE_TAGS: Array<{ power: string; tag: string }> = [
+  { power: "SaberMelee", tag: "AddTargetBuff" },
+  { power: "RapierMelee", tag: "AddTargetBuff" },
+  { power: "Lightningball", tag: "AoERadius" },
+  { power: "Energyball", tag: "AoERadius" },
+];
+
 export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats } {
   const stats = cloneStats();
   const patched = xml.replace(/<Power PowerName="([^"]+)">[\s\S]*?<\/Power>/g, (block: string, powerName: string) => {
@@ -404,8 +401,7 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
 
     // Viperblade is generated on top of the retune, so where both name a power its value
     // is the finished one and wins.
-    const targetBuff =
-      BASIC_ATTACK_BUFFS.get(powerName) ?? VIPERBLADE_BUFFS.get(powerName) ?? TARGET_BUFFS.get(powerName);
+    const targetBuff = VIPERBLADE_BUFFS.get(powerName) ?? TARGET_BUFFS.get(powerName);
     if (targetBuff) {
       touched = true;
       // ShadowBlade and PoisonDagger author no AddTargetBuff at all, and the template puts
@@ -444,16 +440,15 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
     // Some replacements append to the text they match ("Increased Damage" ->
     // "Deals 7 stacks of Bleed. Increased Damage"), so matching the old text is not enough
     // to know the edit is still pending -- the second prebuild would stack it again.
-    const aoeRadius = BASIC_ATTACK_AOE.get(powerName);
-    if (aoeRadius) {
-      touched = true;
-      if (/<AoERadius>[^<]*<\/AoERadius>/.test(next)) {
-        next = replaceTag(next, "AoERadius", aoeRadius, stats);
-      } else {
-        next = next.replace(/(<TargetMethod>[^<]*<\/TargetMethod>)/, (match) => {
-          stats.changes += 1;
-          return `${match}\r\n\t\t<AoERadius>${aoeRadius}</AoERadius>`;
-        });
+    for (const removal of REMOVE_TAGS) {
+      if (removal.power !== powerName) {
+        continue;
+      }
+      const pattern = new RegExp(`\\r?\\n\\t*<${removal.tag}>[^<]*</${removal.tag}>`);
+      if (pattern.test(next)) {
+        touched = true;
+        stats.changes += 1;
+        next = next.replace(pattern, "");
       }
     }
 
