@@ -54467,14 +54467,14 @@
 		<CastAnim>CallPet</CastAnim>
 		<CastTime>800</CastTime>
 		<RecoverTime>0</RecoverTime>
-		<CoolDownTime>180000</CoolDownTime>
+		<CoolDownTime>90000</CoolDownTime>
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<SpawnedMonsters>PetDjinnRed</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
-		<SpawnDuration>180000</SpawnDuration>
+		<SpawnDuration>600000</SpawnDuration>
 		<DisplayName>Summon Pet</DisplayName>
 		<Description>Summons your pet.</Description>
 		<IconName>a_PetIcon_Owl</IconName>

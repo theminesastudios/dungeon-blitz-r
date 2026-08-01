@@ -18,10 +18,16 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  * Values are absolute, not multipliers applied to what is in the file. This runs on every
  * prebuild, and a multiplier would scale an already-scaled number on the second pass.
  *
- * Not covered here: pet ability *cooldown* does not exist in the power data at all --
- * every Pet* power in PlayerPowerTypes.xml has <CoolDownTime>0</CoolDownTime>, so the
- * several-minute wait between activations is paced by the pet brain inside the client SWF.
- * Making it scale with pet level needs that code, not this file.
+ * The summon itself is retuned too. SummonPet (PowerID 1674) authored a 180000ms cooldown
+ * against a 180000ms SpawnDuration, so the pet expired at the exact moment it could be
+ * re-summoned -- the whole three minutes read as downtime, and a pet that died mid-fight
+ * stayed dead for the rest of it. Uptime goes up and the wait after a death comes down.
+ *
+ * What this cannot do is make that cooldown scale with pet level. The cast path reads one
+ * number off the PowerType and adds a PowerMod looked up by power name (CombatState:1843),
+ * and PowerMods come from talents, not from the equipped pet -- there is no data path from
+ * pet level to cooldown. Scaling needs a trampoline into that shared cast path, which is
+ * the code every power in the game runs through, so it belongs in its own change.
  */
 
 type PatchStats = {
@@ -34,6 +40,12 @@ const EMPTY_STATS: PatchStats = { buffBlocks: 0, changes: 0 };
 const XML_DIR = path.resolve(__dirname, "..", "..", "client", "content", "xml");
 const CBQ_DIR = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbq");
 const BUFF_XML = path.join(XML_DIR, "PlayerBuffTypes.xml");
+const POWER_XML = path.join(XML_DIR, "PlayerPowerTypes.xml");
+
+// The summon power itself, not a buff. Comments are the authored value.
+const SUMMON_PET_TUNING = new Map<string, Record<string, string>>([
+  ["SummonPet", { CoolDownTime: "90000", SpawnDuration: "600000" }], // 180000, 180000
+]);
 
 type PetBuffTuning = {
   Duration?: string;
@@ -89,6 +101,25 @@ function replaceTag(block: string, tag: string, value: string, stats: PatchStats
   });
 }
 
+export function patchSummonPower(xml: string): { xml: string; stats: PatchStats } {
+  const stats = cloneStats();
+  const patched = xml.replace(/<Power PowerName="([^"]+)">[\s\S]*?<\/Power>/g, (block: string, powerName: string) => {
+    const tuning = SUMMON_PET_TUNING.get(powerName);
+    if (!tuning) {
+      return block;
+    }
+
+    stats.buffBlocks += 1;
+    let next = block;
+    for (const [tag, value] of Object.entries(tuning)) {
+      next = replaceTag(next, tag, value, stats);
+    }
+    return next;
+  });
+
+  return { xml: patched, stats };
+}
+
 export function patchPetBuffs(xml: string): { xml: string; stats: PatchStats } {
   const stats = cloneStats();
   const patched = xml.replace(/<BuffType BuffName="([^"]+)">[\s\S]*?<\/BuffType>/g, (block: string, buffName: string) => {
@@ -108,9 +139,13 @@ export function patchPetBuffs(xml: string): { xml: string; stats: PatchStats } {
   return { xml: patched, stats };
 }
 
-function patchFile(filePath: string, verifyOnly: boolean): PatchStats {
+function patchFile(
+  filePath: string,
+  patcher: (xml: string) => { xml: string; stats: PatchStats },
+  verifyOnly: boolean,
+): PatchStats {
   const original = fs.readFileSync(filePath, "utf8");
-  const patched = patchPetBuffs(original);
+  const patched = patcher(original);
   if (!verifyOnly && patched.xml !== original) {
     fs.writeFileSync(filePath, patched.xml, "utf8");
   }
@@ -119,19 +154,35 @@ function patchFile(filePath: string, verifyOnly: boolean): PatchStats {
 
 function patchSwz(swzPath: string, verifyOnly: boolean): PatchStats {
   const ctx = parseSwz(swzPath);
-  const chunk = ctx.chunks.find((entry) => entry.xml.includes("<PlayerBuffTypes"));
-  if (!chunk) {
-    return cloneStats();
+  const resources: Array<{ marker: string; patcher: (xml: string) => { xml: string; stats: PatchStats } }> = [
+    { marker: "<PlayerBuffTypes", patcher: patchPetBuffs },
+    { marker: "<PlayerPowerTypes", patcher: patchSummonPower },
+  ];
+
+  const collected: PatchStats[] = [];
+  let changed = false;
+  for (const resource of resources) {
+    const chunk = ctx.chunks.find((entry) => entry.xml.includes(resource.marker));
+    if (!chunk) {
+      continue;
+    }
+
+    const patched = resource.patcher(chunk.xml);
+    collected.push(patched.stats);
+    if (patched.xml !== chunk.xml) {
+      changed = true;
+      if (!verifyOnly) {
+        chunk.xml = patched.xml;
+      }
+    }
   }
 
-  const patched = patchPetBuffs(chunk.xml);
-  if (!verifyOnly && patched.xml !== chunk.xml) {
-    chunk.xml = patched.xml;
+  if (!verifyOnly && changed) {
     ensureBackup(swzPath);
     writeSwz(ctx);
   }
 
-  return patched.stats;
+  return mergeStats(...collected);
 }
 
 export function patchConfiguredPetAbilityBalance(verifyOnly: boolean): PatchStats {
@@ -140,7 +191,8 @@ export function patchConfiguredPetAbilityBalance(verifyOnly: boolean): PatchStat
     .filter(fs.existsSync);
 
   return mergeStats(
-    patchFile(BUFF_XML, verifyOnly),
+    patchFile(BUFF_XML, patchPetBuffs, verifyOnly),
+    patchFile(POWER_XML, patchSummonPower, verifyOnly),
     ...swzPaths.map((swzPath) => patchSwz(swzPath, verifyOnly)),
   );
 }
