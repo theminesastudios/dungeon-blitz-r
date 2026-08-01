@@ -742,7 +742,32 @@ export class LevelHandler {
             return null;
         }
 
-        return LevelHandler.collectPartyTransferSyncAnchorCandidates(client, targetLevel)[0] ?? null;
+        const candidates = LevelHandler.collectPartyTransferSyncAnchorCandidates(client, targetLevel);
+        const anchor = candidates[0] ?? null;
+        if (!anchor || anchor.state.hasCoord) {
+            return anchor;
+        }
+
+        // The ordering above picks who owns the run -- instance id, started rooms, quest
+        // progress -- and that must not change just because they happen to be mid-jump.
+        // But an anchor with no grounded sample yet carries no position either, and a
+        // dungeon join with no position falls through to the level's authored start: the
+        // joiner is dumped back at the dungeon entrance while the party is three rooms in.
+        // Any party member already standing on floor in there is a better place to arrive.
+        const positioned = candidates.find((candidate) => candidate.state.hasCoord);
+        if (!positioned) {
+            return anchor;
+        }
+
+        return {
+            ...anchor,
+            state: {
+                ...anchor.state,
+                x: positioned.state.x,
+                y: positioned.state.y,
+                hasCoord: true
+            }
+        };
     }
 
     private static applyStoredRoomProgressState(
@@ -884,7 +909,12 @@ export class LevelHandler {
                     Number.isFinite(Number(anchorState.x)) &&
                     Number.isFinite(Number(anchorState.y))
                 ) {
-                    x = Math.round(Number(anchorState.x) + 100);
+                    // Land on the anchor's own grounded sample, not beside it. The server
+                    // has no collision, so a sideways offset is a guess about floor it
+                    // cannot check -- and next to a ledge, a pit or a doorway that guess
+                    // dropped the joiner through the map. Two bodies in one spot is what
+                    // the client already does for every stacked player; falling is not.
+                    x = Math.round(Number(anchorState.x));
                     y = Math.round(Number(anchorState.y));
                     hasCoord = true;
                     console.log(

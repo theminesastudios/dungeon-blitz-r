@@ -1031,14 +1031,18 @@ export class CharacterHandler {
 
                      // Found a party member in the same dungeon — reuse their level scope
                      levelInstanceId = normalizeLevelInstanceId(other.levelInstanceId) || createDungeonInstanceId(token);
-                     // Only ever beside a standing anchor. Their live entity mid-jump is a
+                     // Only ever onto a standing anchor. Their live entity mid-jump is a
                      // point in open air, and spawning onto it drops the joiner; when the
                      // anchor has no grounded sample yet the level's own spawn marker wins.
+                     //
+                     // Onto, not beside: the server has no collision, so an offset is a
+                     // guess about floor it cannot check, and next to a ledge or a pit that
+                     // guess drops the joiner through the map.
                      const otherEntity = other.clientEntID > 0 ? other.entities?.get(other.clientEntID) : null;
                      const anchorGround = LevelHandler.resolveGroundedAnchorPosition(otherEntity);
                      if (anchorGround) {
                          spawn = {
-                             x: anchorGround.x + 100,
+                             x: anchorGround.x,
                              y: anchorGround.y,
                              hasCoord: true
                          };
