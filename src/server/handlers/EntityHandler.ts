@@ -14,7 +14,8 @@ import { MissionHandler } from './MissionHandler';
 import { noteDungeonRunBossCutscene, noteDungeonRunEntitySeen } from '../core/DungeonRunStats';
 import { areClientsInSameParty, getPartyIdForClient, isClientPartyLeader, sharesRoomIds } from '../core/PartySync';
 import { areClientsInSameLevelScope, getClientLevelScope, getLevelScopeKey, getScopeLevelName } from '../core/LevelScope';
-import { getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
+import { getPartyRuntimeLevelForClient, getScopeRuntimeLevel } from '../core/RuntimeLevel';
+import { clearBossAuthority, noteBossEntity } from '../core/BossAuthority';
 import { clearOpenBossScene, getOpenBossScene, isRoomBossEntity, markRoomBossEntity } from '../core/RoomBossState';
 import { getBossIdentityKey, getBossIdentityKeys } from '../core/BossCopyCensus';
 import { TutorialDungeonAuthorityEntity, TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
@@ -1388,6 +1389,9 @@ export class EntityHandler {
         // A fresh run must not inherit the previous run's open boss scene, or the
         // first legitimate boss cue of the new run would be read as a copy.
         clearOpenBossScene(levelScope);
+        // Same reasoning for the boss pool: a new run gets full health bars and a
+        // fresh damage ledger, not the corpse the last run left behind.
+        clearBossAuthority(levelScope);
         console.log(
             `[EntityHandler] Cleared finished dungeon run scope ${levelScope} ` +
             `(${levelMap.size} stale entities) for a fresh run`
@@ -1777,7 +1781,10 @@ export class EntityHandler {
             return Math.max(1, Math.min(50, Math.round(Number(fallbackLevel) || 1)));
         }
 
-        return getPartyRuntimeLevelForClient(client, client.character, fallbackLevel);
+        // Scope, not party: two players in the same dungeon instance must scale
+        // its enemies identically even when they are not grouped, or their health
+        // bars disagree from the first hit.
+        return getScopeRuntimeLevel(getClientLevelScope(client), client, fallbackLevel);
     }
 
     private static applyRuntimeDungeonEntityLevel(client: Client, levelName: string | null | undefined, entity: any): void {
@@ -1795,6 +1802,20 @@ export class EntityHandler {
         }
 
         entity.level = EntityHandler.resolveRuntimeDungeonEntityLevel(client, levelName, entity.level);
+        EntityHandler.adoptBossAuthority(getClientLevelScope(client), entity);
+    }
+
+    // Every path that registers a hostile funnels through here, so a boss copy
+    // can never enter the run without landing on the scope's existing pool.
+    static adoptBossAuthority(levelScope: string | null | undefined, entity: any): void {
+        if (Number(entity?.team ?? 0) !== EntityTeam.ENEMY) {
+            return;
+        }
+
+        const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+        noteBossEntity(levelScope, entity, (candidate, scope) =>
+            CombatHandler.estimateHostileMaxHpForBossAuthority(candidate, scope)
+        );
     }
 
     static rescaleDungeonEntitiesForParty(client: Client): number {
@@ -3112,6 +3133,19 @@ export class EntityHandler {
 
         const anchorRoomId = Number(anchor.currentRoomId ?? -1);
         const levelScope = getClientLevelScope(joiner);
+
+        // A cinematic already running in the anchor's room takes the arrival with
+        // it, resumed mid-timeline. Only a finished one is still skipped — that
+        // one would replay dialogue the room is done with.
+        const { LevelHandler } = require('./LevelHandler') as typeof import('./LevelHandler');
+        if (
+            Number.isFinite(anchorRoomId) &&
+            anchorRoomId >= 0 &&
+            LevelHandler.joinActiveSharedDungeonCutscene(joiner, anchorRoomId)
+        ) {
+            return;
+        }
+
         if (
             Number.isFinite(anchorRoomId) &&
             anchorRoomId >= 0 &&

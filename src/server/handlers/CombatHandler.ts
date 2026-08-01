@@ -27,6 +27,7 @@ import { CharacterSync } from '../utils/CharacterSync';
 import { sendConsumableUpdate } from '../utils/ConsumableState';
 import { LevelConfig } from '../core/LevelConfig';
 import { getRoomBossAwareRoomId, isRoomBossEntity } from '../core/RoomBossState';
+import { adoptBossAuthorityHealth, getBossAuthorityRecord, syncBossAuthorityCopies } from '../core/BossAuthority';
 import { RewardHandler } from './RewardHandler';
 import { MovementAuthority } from '../core/MovementAuthority';
 import { CastRateAuthority } from '../core/CastRateAuthority';
@@ -421,6 +422,23 @@ export class CombatHandler {
         const maxIndex = CombatHandler.PLAYER_HITPOINTS.length - 1;
         const clampedLevel = Math.max(1, Math.min(maxIndex, Math.floor(Number(level) || 1)));
         return CombatHandler.PLAYER_HITPOINTS[clampedLevel];
+    }
+
+    // The client computes its own max HP (base for the level, times one plus the summed
+    // percentage bonuses from gear, charms and talents -- Entity.as) and reports it via
+    // 0xFC/0xBB. The server has no independent stat model, so it has to trust the number
+    // for legitimate play. What it does not have to do is trust it unbounded: a Cheat
+    // Engine user writing maxHP = 10,000,000 made every server heal, regen and death check
+    // treat them as effectively immortal. The real ceiling is the base times the largest
+    // bonus stack a real character can assemble; 4x (a +300% stack) is well clear of any
+    // legitimate build while turning the god-mode edit into a merely-high, bounded pool.
+    private static readonly MAX_HP_BONUS_MULTIPLE = 4;
+
+    static clampDeclaredMaxHp(client: Client, declaredMaxHp: number): number {
+        const level = Number(client.character?.level ?? 1);
+        const ceiling = CombatHandler.getBaseHpForLevel(level) * CombatHandler.MAX_HP_BONUS_MULTIPLE;
+        const declared = Math.max(1, Math.round(Number(declaredMaxHp) || 0));
+        return Math.min(declared, Math.round(ceiling));
     }
 
     private static getRespawnHealAmount(client: Client): number {
@@ -1009,6 +1027,13 @@ export class CombatHandler {
         return entType?.RangedPower
             ? CombatHandler.BOSS_RANGED_AGGRO_RADIUS
             : CombatHandler.BOSS_MELEE_AGGRO_RADIUS;
+    }
+
+    // BossAuthority sizes a boss pool once, on first sight, and owns it from
+    // then on. It needs the same EntTypes arithmetic every other health path
+    // uses, but must not import the handler back — hence this seam.
+    static estimateHostileMaxHpForBossAuthority(entity: any, levelNameOrScope: string = ''): number {
+        return CombatHandler.estimateHostileMaxHp(entity, levelNameOrScope);
     }
 
     private static estimateHostileMaxHp(entity: any, levelNameOrScope: string = ''): number {
@@ -2039,6 +2064,7 @@ export class CombatHandler {
             for (const copy of CombatHandler.collectHostileHealthCopies(levelScope, sourceEntity, true)) {
                 apply(copy);
             }
+            CombatHandler.publishBossAuthorityHealth(levelScope, sourceEntity, normalizedCurrentHp, normalizedMaxHp);
             return;
         }
 
@@ -2047,6 +2073,23 @@ export class CombatHandler {
                 continue;
             }
             apply(session.entities.get(entityId));
+        }
+        CombatHandler.publishBossAuthorityHealth(levelScope, sourceEntity, normalizedCurrentHp, normalizedMaxHp);
+    }
+
+    // The copy sweep above matches siblings heuristically, by name and position.
+    // A boss is matched by identity instead, so a copy the heuristic misses —
+    // one spawned at a different position, or by a client that entered later —
+    // still learns the run's scaling and, once it happens, the death.
+    private static publishBossAuthorityHealth(
+        levelScope: string,
+        sourceEntity: any,
+        currentHp: number,
+        maxHp: number
+    ): void {
+        const record = adoptBossAuthorityHealth(levelScope, sourceEntity, currentHp, maxHp);
+        if (record) {
+            syncBossAuthorityCopies(levelScope, record);
         }
     }
 
@@ -6108,13 +6151,21 @@ export class CombatHandler {
         }
 
         const lifeNonce = Math.max(0, Math.round(Number(targetEntity?.lifeNonce ?? 0)));
+        const bossRecord = getBossAuthorityRecord(levelScope, targetEntity);
         if (Math.round(Number(targetEntity?.clientReportedDamageLifeNonce ?? -1)) !== lifeNonce) {
             targetEntity.clientReportedDamageLifeNonce = lifeNonce;
             targetEntity.clientReportedDamageByToken = new Map<number, number>();
+            bossRecord?.reportedDamageByToken.clear();
         }
-        const reportedDamageByToken = targetEntity.clientReportedDamageByToken instanceof Map
-            ? targetEntity.clientReportedDamageByToken as Map<number, number>
-            : new Map<number, number>();
+        // A boss the scope owns keeps one ledger for the whole run. The copy-local
+        // map it replaces reset itself every time a client re-registered its copy,
+        // which is how a party member walking back into the room handed the boss a
+        // fresh health bar that nobody else could see.
+        const reportedDamageByToken = bossRecord
+            ? bossRecord.reportedDamageByToken
+            : targetEntity.clientReportedDamageByToken instanceof Map
+                ? targetEntity.clientReportedDamageByToken as Map<number, number>
+                : new Map<number, number>();
         targetEntity.clientReportedDamageByToken = reportedDamageByToken;
         for (const copy of CombatHandler.collectHostileHealthCopies(levelScope, targetEntity, true)) {
             copy.clientReportedDamageLifeNonce = lifeNonce;
