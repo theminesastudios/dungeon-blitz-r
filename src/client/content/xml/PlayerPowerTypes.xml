@@ -36931,6 +36931,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>RapierMelee</PowerGroup>
+		<AddTargetBuff>Sequence:,,Bleeding</AddTargetBuff>
 		<DisplayName>Dagger Melee</DisplayName>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -36958,6 +36959,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SaberMelee</PowerGroup>
+		<AddTargetBuff>Sequence:,,Bleeding</AddTargetBuff>
 		<DisplayName>Sword Melee</DisplayName>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>

@@ -247,6 +247,25 @@ const VIPERBLADE_BUFFS = new Map<string, string>([
 //
 // The authored sentence is replaced and any trailing "[Stats: ...]" is left alone --
 // patch_gameswz_power_stat_tooltips regenerates that block afterwards.
+// The rogue basic melee combo, bleeding on its third swing.
+//
+// MeleeCombo authors var_1075 = 2 and CombatState counts currMeleeCombo 0 -> 1 -> 2 before
+// resetting, so the combo is three hits and the third is already its finisher -- that hit
+// alone doubles its damage (CombatState:2023). Landing the Bleed there puts it on the swing
+// the combo was already built around.
+//
+// "Sequence:" is what expresses it: CombatState slices the buff list by the combo index, so
+// entry three applies on hit three and the two empty entries before it resolve to no buff.
+// "Last:" would not work -- it keys off the CastTime step list, which is a single value on
+// these powers, so it would fire on the first swing instead.
+//
+// Class-wide, unavoidably: these are weapon powers, and weapons carry <UsedBy>Rogue</UsedBy>.
+// Every rogue gets this, not only Viperblade.
+const BASIC_COMBO_BUFFS = new Map<string, string>([
+  ["SaberMelee", "Sequence:,,Bleeding"], //  was absent
+  ["RapierMelee", "Sequence:,,Bleeding"], // was absent
+]);
+
 const SIGNATURE_DESCRIPTIONS = new Map<string, [string, string]>([
   [
     "ConcussionBolt",
@@ -436,8 +455,6 @@ function replaceTag(block: string, tag: string, value: string, stats: PatchStats
  * where it is correctly scoped: on the Executioner tree's own powers.
  */
 const REMOVE_TAGS: Array<{ power: string; tag: string }> = [
-  { power: "SaberMelee", tag: "AddTargetBuff" },
-  { power: "RapierMelee", tag: "AddTargetBuff" },
   { power: "Lightningball", tag: "AoERadius" },
   { power: "Energyball", tag: "AoERadius" },
 ];
@@ -450,7 +467,8 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
 
     // Viperblade is generated on top of the retune, so where both name a power its value
     // is the finished one and wins.
-    const targetBuff = VIPERBLADE_BUFFS.get(powerName) ?? TARGET_BUFFS.get(powerName);
+    const targetBuff =
+      BASIC_COMBO_BUFFS.get(powerName) ?? VIPERBLADE_BUFFS.get(powerName) ?? TARGET_BUFFS.get(powerName);
     if (targetBuff) {
       touched = true;
       // ShadowBlade and PoisonDagger author no AddTargetBuff at all, and the template puts
