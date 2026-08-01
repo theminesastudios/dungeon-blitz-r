@@ -18452,7 +18452,7 @@
 		<DisplayName>Sentinel Form</DisplayName>
 		<BasePowerName>SentinelForm</BasePowerName>
 		<Description>Tranform into a powerful Battle Avatar.</Description>
-		<UpgradeDescription>70% Defense Boost, 5% Attack Boost, and increased Hate while transformed.</UpgradeDescription>
+		<UpgradeDescription>75% Defense Boost, 5% Attack Boost, and increased Hate while transformed.</UpgradeDescription>
 		<IconName>a_PowerIcon_SentinelForm01</IconName>
 		<CastSound>[415]CHR_Sentinel_SentinelFormStart</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -18548,7 +18548,7 @@
 		<DisplayName>Sentinel Form</DisplayName>
 		<BasePowerName>SentinelForm</BasePowerName>
 		<Description>Tranform into a powerful Battle Avatar.</Description>
-		<UpgradeDescription>75% Defense Boost, 10% Attack Boost, and increased Hate while transformed.</UpgradeDescription>
+		<UpgradeDescription>80% Defense Boost, 10% Attack Boost, and increased Hate while transformed.</UpgradeDescription>
 		<IconName>a_PowerIcon_SentinelForm01</IconName>
 		<CastSound>[415]CHR_Sentinel_SentinelFormStart</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -18669,9 +18669,9 @@
 		<RecoverTime>330</RecoverTime>
 		<ShakeTime>331</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>11</ManaCost>
+		<ManaCost>7</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>2.13</BaseDamageMult>
+		<BaseDamageMult>1.6</BaseDamageMult>
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -18700,9 +18700,9 @@
 		<RecoverTime>330</RecoverTime>
 		<ShakeTime>331</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>11</ManaCost>
+		<ManaCost>7</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>2.27</BaseDamageMult>
+		<BaseDamageMult>1.7</BaseDamageMult>
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -18731,9 +18731,9 @@
 		<RecoverTime>330</RecoverTime>
 		<ShakeTime>331</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>8</ManaCost>
+		<ManaCost>5</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>2.27</BaseDamageMult>
+		<BaseDamageMult>1.7</BaseDamageMult>
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -18762,9 +18762,9 @@
 		<RecoverTime>330</RecoverTime>
 		<ShakeTime>331</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>8</ManaCost>
+		<ManaCost>5</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>2.5</BaseDamageMult>
+		<BaseDamageMult>1.88</BaseDamageMult>
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -18793,9 +18793,9 @@
 		<RecoverTime>330</RecoverTime>
 		<ShakeTime>331</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>6</ManaCost>
+		<ManaCost>4</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>2.5</BaseDamageMult>
+		<BaseDamageMult>1.88</BaseDamageMult>
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -18824,9 +18824,9 @@
 		<RecoverTime>330</RecoverTime>
 		<ShakeTime>331</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>6</ManaCost>
+		<ManaCost>4</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>2.77</BaseDamageMult>
+		<BaseDamageMult>2.08</BaseDamageMult>
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -18855,9 +18855,9 @@
 		<RecoverTime>330</RecoverTime>
 		<ShakeTime>331</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>6</ManaCost>
+		<ManaCost>4</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>2.9</BaseDamageMult>
+		<BaseDamageMult>2.17</BaseDamageMult>
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -18886,9 +18886,9 @@
 		<RecoverTime>540</RecoverTime>
 		<ShakeTime>83</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>11</ManaCost>
+		<ManaCost>7</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>1.2</BaseDamageMult>
+		<BaseDamageMult>0.9</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -18917,9 +18917,9 @@
 		<RecoverTime>540</RecoverTime>
 		<ShakeTime>83</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>11</ManaCost>
+		<ManaCost>7</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>1.26</BaseDamageMult>
+		<BaseDamageMult>0.95</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -18948,9 +18948,9 @@
 		<RecoverTime>540</RecoverTime>
 		<ShakeTime>83</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>8</ManaCost>
+		<ManaCost>5</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>1.26</BaseDamageMult>
+		<BaseDamageMult>0.95</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -18979,9 +18979,9 @@
 		<RecoverTime>540</RecoverTime>
 		<ShakeTime>83</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>8</ManaCost>
+		<ManaCost>5</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>1.38</BaseDamageMult>
+		<BaseDamageMult>1.03</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -19010,9 +19010,9 @@
 		<RecoverTime>540</RecoverTime>
 		<ShakeTime>83</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>6</ManaCost>
+		<ManaCost>4</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>1.38</BaseDamageMult>
+		<BaseDamageMult>1.03</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -19041,9 +19041,9 @@
 		<RecoverTime>540</RecoverTime>
 		<ShakeTime>83</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>6</ManaCost>
+		<ManaCost>4</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>1.5</BaseDamageMult>
+		<BaseDamageMult>1.12</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -19072,9 +19072,9 @@
 		<RecoverTime>540</RecoverTime>
 		<ShakeTime>83</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>6</ManaCost>
+		<ManaCost>4</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>1.55</BaseDamageMult>
+		<BaseDamageMult>1.16</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -19101,9 +19101,9 @@
 		<RecoverTime>291</RecoverTime>
 		<ShakeTime>291</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>11</ManaCost>
+		<ManaCost>7</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>1.4</BaseDamageMult>
+		<BaseDamageMult>1.05</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -19144,9 +19144,9 @@
 		<RecoverTime>291</RecoverTime>
 		<ShakeTime>291</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>11</ManaCost>
+		<ManaCost>7</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>1.47</BaseDamageMult>
+		<BaseDamageMult>1.1</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -19187,9 +19187,9 @@
 		<RecoverTime>291</RecoverTime>
 		<ShakeTime>291</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>8</ManaCost>
+		<ManaCost>5</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>1.47</BaseDamageMult>
+		<BaseDamageMult>1.1</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -19230,9 +19230,9 @@
 		<RecoverTime>291</RecoverTime>
 		<ShakeTime>291</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>8</ManaCost>
+		<ManaCost>5</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>1.79</BaseDamageMult>
+		<BaseDamageMult>1.34</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -19273,9 +19273,9 @@
 		<RecoverTime>291</RecoverTime>
 		<ShakeTime>291</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>6</ManaCost>
+		<ManaCost>4</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>1.92</BaseDamageMult>
+		<BaseDamageMult>1.44</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -19316,9 +19316,9 @@
 		<RecoverTime>291</RecoverTime>
 		<ShakeTime>291</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>6</ManaCost>
+		<ManaCost>4</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>2.04</BaseDamageMult>
+		<BaseDamageMult>1.53</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -19359,9 +19359,9 @@
 		<RecoverTime>291</RecoverTime>
 		<ShakeTime>291</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>6</ManaCost>
+		<ManaCost>4</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
-		<BaseDamageMult>2.17</BaseDamageMult>
+		<BaseDamageMult>1.63</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ThunderGolem</PowerGroup>
@@ -45012,7 +45012,7 @@
 		<TargetMethod>Self</TargetMethod>
 		<CastTime>0</CastTime>
 		<RecoverTime>0</RecoverTime>
-		<ManaCost>20</ManaCost>
+		<ManaCost>12</ManaCost>
 		<ManaRequirement>40</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -45037,7 +45037,7 @@
 		<CastTime>330,250</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.82</BaseDamageMult>
+		<BaseDamageMult>1.36</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
@@ -45059,7 +45059,7 @@
 		<TargetMethod>Self</TargetMethod>
 		<CastTime>0</CastTime>
 		<RecoverTime>0</RecoverTime>
-		<ManaCost>20</ManaCost>
+		<ManaCost>12</ManaCost>
 		<ManaRequirement>70</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -45086,7 +45086,7 @@
 		<CastTime>330,250</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
+		<BaseDamageMult>0.75</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
@@ -45109,7 +45109,7 @@
 		<TargetMethod>Self</TargetMethod>
 		<CastTime>0</CastTime>
 		<RecoverTime>0</RecoverTime>
-		<ManaCost>15</ManaCost>
+		<ManaCost>9</ManaCost>
 		<ManaRequirement>65</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -45136,7 +45136,7 @@
 		<CastTime>330,250</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.1</BaseDamageMult>
+		<BaseDamageMult>0.83</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
@@ -45159,7 +45159,7 @@
 		<TargetMethod>Self</TargetMethod>
 		<CastTime>0</CastTime>
 		<RecoverTime>0</RecoverTime>
-		<ManaCost>15</ManaCost>
+		<ManaCost>9</ManaCost>
 		<ManaRequirement>60</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -45186,7 +45186,7 @@
 		<CastTime>330,250</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.21</BaseDamageMult>
+		<BaseDamageMult>0.91</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
@@ -45210,7 +45210,7 @@
 		<TargetMethod>Self</TargetMethod>
 		<CastTime>0</CastTime>
 		<RecoverTime>0</RecoverTime>
-		<ManaCost>15</ManaCost>
+		<ManaCost>9</ManaCost>
 		<ManaRequirement>55</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -45237,7 +45237,7 @@
 		<CastTime>330,250</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.33</BaseDamageMult>
+		<BaseDamageMult>1</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
@@ -45261,7 +45261,7 @@
 		<TargetMethod>Self</TargetMethod>
 		<CastTime>0</CastTime>
 		<RecoverTime>0</RecoverTime>
-		<ManaCost>15</ManaCost>
+		<ManaCost>9</ManaCost>
 		<ManaRequirement>55</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -45288,7 +45288,7 @@
 		<CastTime>330,250</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.46</BaseDamageMult>
+		<BaseDamageMult>1.09</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
@@ -45312,7 +45312,7 @@
 		<TargetMethod>Self</TargetMethod>
 		<CastTime>0</CastTime>
 		<RecoverTime>0</RecoverTime>
-		<ManaCost>10</ManaCost>
+		<ManaCost>6</ManaCost>
 		<ManaRequirement>50</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -45339,7 +45339,7 @@
 		<CastTime>330,250</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.68</BaseDamageMult>
+		<BaseDamageMult>1.26</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
@@ -45363,7 +45363,7 @@
 		<TargetMethod>Self</TargetMethod>
 		<CastTime>0</CastTime>
 		<RecoverTime>0</RecoverTime>
-		<ManaCost>10</ManaCost>
+		<ManaCost>6</ManaCost>
 		<ManaRequirement>50</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -45390,7 +45390,7 @@
 		<CastTime>330,250</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1.93</BaseDamageMult>
+		<BaseDamageMult>1.45</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
@@ -45414,7 +45414,7 @@
 		<TargetMethod>Self</TargetMethod>
 		<CastTime>0</CastTime>
 		<RecoverTime>0</RecoverTime>
-		<ManaCost>10</ManaCost>
+		<ManaCost>6</ManaCost>
 		<ManaRequirement>45</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -45441,7 +45441,7 @@
 		<CastTime>330,250</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>2.23</BaseDamageMult>
+		<BaseDamageMult>1.67</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
@@ -45465,7 +45465,7 @@
 		<TargetMethod>Self</TargetMethod>
 		<CastTime>0</CastTime>
 		<RecoverTime>0</RecoverTime>
-		<ManaCost>10</ManaCost>
+		<ManaCost>6</ManaCost>
 		<ManaRequirement>45</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -45492,7 +45492,7 @@
 		<CastTime>330,250</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>2.44</BaseDamageMult>
+		<BaseDamageMult>1.83</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
@@ -45516,7 +45516,7 @@
 		<TargetMethod>Self</TargetMethod>
 		<CastTime>0</CastTime>
 		<RecoverTime>0</RecoverTime>
-		<ManaCost>10</ManaCost>
+		<ManaCost>6</ManaCost>
 		<ManaRequirement>40</ManaRequirement>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -45543,7 +45543,7 @@
 		<CastTime>330,250</CastTime>
 		<RecoverTime>400</RecoverTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>2.44</BaseDamageMult>
+		<BaseDamageMult>1.83</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>

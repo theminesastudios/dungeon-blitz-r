@@ -3637,8 +3637,8 @@
 		<BuffID>551</BuffID>
 		<Attack>false</Attack>
 		<Duration>0</Duration>
-		<MagicDefense>0.6</MagicDefense>
-		<MeleeDefense>0.6</MeleeDefense>
+		<MagicDefense>0.65</MagicDefense>
+		<MeleeDefense>0.65</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
 		<AggroChange>1</AggroChange>
 		<RangedOverride>SFRanged1</RangedOverride>
@@ -3649,8 +3649,8 @@
 		<BuffID>552</BuffID>
 		<Attack>false</Attack>
 		<Duration>0</Duration>
-		<MagicDefense>0.6</MagicDefense>
-		<MeleeDefense>0.6</MeleeDefense>
+		<MagicDefense>0.65</MagicDefense>
+		<MeleeDefense>0.65</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
 		<AggroChange>1</AggroChange>
 		<RangedOverride>SFRanged2</RangedOverride>
@@ -3661,8 +3661,8 @@
 		<BuffID>553</BuffID>
 		<Attack>false</Attack>
 		<Duration>0</Duration>
-		<MagicDefense>0.6</MagicDefense>
-		<MeleeDefense>0.6</MeleeDefense>
+		<MagicDefense>0.65</MagicDefense>
+		<MeleeDefense>0.65</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
 		<AggroChange>1</AggroChange>
 		<RangedOverride>SFRanged3</RangedOverride>
@@ -3674,8 +3674,8 @@
 		<Attack>false</Attack>
 		<Duration>0</Duration>
 		<MeleeDamage>0.05</MeleeDamage>
-		<MagicDefense>0.7</MagicDefense>
-		<MeleeDefense>0.7</MeleeDefense>
+		<MagicDefense>0.75</MagicDefense>
+		<MeleeDefense>0.75</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
 		<AggroChange>1.5</AggroChange>
 		<RangedOverride>SFRanged3</RangedOverride>
@@ -3687,8 +3687,8 @@
 		<Attack>false</Attack>
 		<Duration>0</Duration>
 		<MeleeDamage>0.05</MeleeDamage>
-		<MagicDefense>0.7</MagicDefense>
-		<MeleeDefense>0.7</MeleeDefense>
+		<MagicDefense>0.75</MagicDefense>
+		<MeleeDefense>0.75</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
 		<AggroChange>1.5</AggroChange>
 		<RangedOverride>SFRanged3</RangedOverride>
@@ -3700,8 +3700,8 @@
 		<Attack>false</Attack>
 		<Duration>0</Duration>
 		<MeleeDamage>0.05</MeleeDamage>
-		<MagicDefense>0.7</MagicDefense>
-		<MeleeDefense>0.7</MeleeDefense>
+		<MagicDefense>0.75</MagicDefense>
+		<MeleeDefense>0.75</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
 		<AggroChange>1.5</AggroChange>
 		<RangedOverride>SFRanged6</RangedOverride>
@@ -3713,8 +3713,8 @@
 		<Attack>false</Attack>
 		<Duration>0</Duration>
 		<MeleeDamage>0.1</MeleeDamage>
-		<MagicDefense>0.75</MagicDefense>
-		<MeleeDefense>0.75</MeleeDefense>
+		<MagicDefense>0.8</MagicDefense>
+		<MeleeDefense>0.8</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
 		<AggroChange>2</AggroChange>
 		<RangedOverride>SFRanged6</RangedOverride>
@@ -3726,8 +3726,8 @@
 		<Attack>false</Attack>
 		<Duration>0</Duration>
 		<MeleeDamage>0.1</MeleeDamage>
-		<MagicDefense>0.75</MagicDefense>
-		<MeleeDefense>0.75</MeleeDefense>
+		<MagicDefense>0.8</MagicDefense>
+		<MeleeDefense>0.8</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
 		<AggroChange>2</AggroChange>
 		<RangedOverride>SFRanged8</RangedOverride>
@@ -3739,8 +3739,8 @@
 		<Attack>false</Attack>
 		<Duration>0</Duration>
 		<MeleeDamage>0.1</MeleeDamage>
-		<MagicDefense>0.75</MagicDefense>
-		<MeleeDefense>0.75</MeleeDefense>
+		<MagicDefense>0.8</MagicDefense>
+		<MeleeDefense>0.8</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
 		<AggroChange>2</AggroChange>
 		<RangedOverride>SFRanged9</RangedOverride>
@@ -3752,8 +3752,8 @@
 		<Attack>false</Attack>
 		<Duration>0</Duration>
 		<MeleeDamage>0.1</MeleeDamage>
-		<MagicDefense>0.75</MagicDefense>
-		<MeleeDefense>0.75</MeleeDefense>
+		<MagicDefense>0.8</MagicDefense>
+		<MeleeDefense>0.8</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
 		<AggroChange>2</AggroChange>
 		<RangedOverride>SFRanged10</RangedOverride>
