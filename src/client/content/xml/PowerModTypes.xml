@@ -514,11 +514,11 @@
 		<ModName>Hemorrhage1</ModName>
 		<ModID>51</ModID>
 		<DisplayName>Hemorrhage</DisplayName>
-		<Description>Increases Hemorrhage Critical Effect@Hemorrhage Damage:, +1%, +3%, +6%, 10%, 15%</Description>
+		<Description>Increases Hemorrhage Critical Effect and weakens the target's defense@Hemorrhage Damage:, +1%, +3%, +6%, 10%, 15%@Defense Debuff:, 0.5%, 0.75%, 1%, 1.5%, 2%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>ProcMassiveTimeBuff</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.01</BuffValue>
+		<BuffProperty>DoTDamage,MeleeDefense,MagicDefense</BuffProperty>
+		<BuffValue>.01,-.005,-.005</BuffValue>
 		<IconName>a_Signet_Critical02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -527,8 +527,8 @@
 		<DisplayName>Hemorrhage</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>ProcMassiveTimeBuff</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.03</BuffValue>
+		<BuffProperty>DoTDamage,MeleeDefense,MagicDefense</BuffProperty>
+		<BuffValue>.03,-.0075,-.0075</BuffValue>
 		<IconName>a_Signet_Critical02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -537,8 +537,8 @@
 		<DisplayName>Hemorrhage</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>ProcMassiveTimeBuff</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.06</BuffValue>
+		<BuffProperty>DoTDamage,MeleeDefense,MagicDefense</BuffProperty>
+		<BuffValue>.06,-.01,-.01</BuffValue>
 		<IconName>a_Signet_Critical02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -547,8 +547,8 @@
 		<DisplayName>Hemorrhage</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>ProcMassiveTimeBuff</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.1</BuffValue>
+		<BuffProperty>DoTDamage,MeleeDefense,MagicDefense</BuffProperty>
+		<BuffValue>.1,-.015,-.015</BuffValue>
 		<IconName>a_Signet_Critical02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -557,8 +557,8 @@
 		<DisplayName>Hemorrhage</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>ProcMassiveTimeBuff</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.15</BuffValue>
+		<BuffProperty>DoTDamage,MeleeDefense,MagicDefense</BuffProperty>
+		<BuffValue>.15,-.02,-.02</BuffValue>
 		<IconName>a_Signet_Critical02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2639,7 +2639,7 @@
 		<ModName>InsidiousPoison1</ModName>
 		<ModID>276</ModID>
 		<DisplayName>Insidious Poison</DisplayName>
-		<Description>Increases Poison Damage vs. Bound targets@Poison vs Bound:, +2%, +6%, +13%, +23%, +35%</Description>
+		<Description>Increases Poison Damage vs. Bound targets@Poison vs Bound:, +2%, +5%, +11%, +19%, +28%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
@@ -2653,7 +2653,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
-		<BuffValue>.06</BuffValue>
+		<BuffValue>.05</BuffValue>
 		<IconName>a_Signet_InsidiousPoison</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2663,7 +2663,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
-		<BuffValue>.13</BuffValue>
+		<BuffValue>.11</BuffValue>
 		<IconName>a_Signet_InsidiousPoison</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2673,7 +2673,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
-		<BuffValue>.23</BuffValue>
+		<BuffValue>.19</BuffValue>
 		<IconName>a_Signet_InsidiousPoison</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2683,7 +2683,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
-		<BuffValue>.35</BuffValue>
+		<BuffValue>.28</BuffValue>
 		<IconName>a_Signet_InsidiousPoison</IconName>
 	</PowerModType>
 	<PowerModType>

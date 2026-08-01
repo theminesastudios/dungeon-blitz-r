@@ -40445,7 +40445,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Decoy</PowerGroup>
-		<AddTargetBuff>PoisonStrike,Crippled,Crippled,Bleeding,Bleeding,Bleeding,Blinded,Weakened,ArmorBane</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,Crippled,Crippled,Bleeding,Bleeding,Bleeding,Blinded,Weakened</AddTargetBuff>
 		<BasePowerName>DecoyExplode</BasePowerName>
 		<CastGfx/>
 		<FireGfx/>
@@ -42324,12 +42324,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:ArmorBane,Weakened,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
 		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x0.94 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s]</Description>
-		<UpgradeDescription>Adds a stack of Armor Bane.</UpgradeDescription>
+		<UpgradeDescription>Adds a stack of Poison.</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherStrike</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
 		<CastSound>CHR_Executioner_WitheringImpact</CastSound>
@@ -42360,7 +42360,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:ArmorBane,Weakened,Bleeding,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
@@ -42396,7 +42396,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:ArmorBane,Weakened,Weakened,Bleeding,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
@@ -42432,7 +42432,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:ArmorBane,Weakened,Weakened,Bleeding,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
@@ -42468,7 +42468,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:ArmorBane,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
@@ -42504,7 +42504,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:ArmorBane,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
@@ -42540,7 +42540,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:ArmorBane,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
@@ -42576,12 +42576,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:ArmorBane,ArmorBane,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
 		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.39 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s]</Description>
-		<UpgradeDescription>Deals 2 stacks of Armor Bane.</UpgradeDescription>
+		<UpgradeDescription>Deals 6 stacks of Bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherStrike</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
 		<CastSound>CHR_Executioner_WitheringImpact</CastSound>
@@ -42599,8 +42599,9 @@
 	</Power>
 	<Power PowerName="DeathBlowOld">
 		<PowerID>1153</PowerID>
-		<TargetMethod>Melee</TargetMethod>
+		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
+		<AoERadius>150</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42638,8 +42639,9 @@
 	</Power>
 	<Power PowerName="DeathBlowOld1">
 		<PowerID>1154</PowerID>
-		<TargetMethod>Melee</TargetMethod>
+		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
+		<AoERadius>150</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42679,8 +42681,9 @@
 	</Power>
 	<Power PowerName="DeathBlowOld2">
 		<PowerID>1155</PowerID>
-		<TargetMethod>Melee</TargetMethod>
+		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
+		<AoERadius>150</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42720,8 +42723,9 @@
 	</Power>
 	<Power PowerName="DeathBlowOld3">
 		<PowerID>1156</PowerID>
-		<TargetMethod>Melee</TargetMethod>
+		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
+		<AoERadius>150</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42761,8 +42765,9 @@
 	</Power>
 	<Power PowerName="DeathBlowOld4">
 		<PowerID>1157</PowerID>
-		<TargetMethod>Melee</TargetMethod>
+		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
+		<AoERadius>150</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42802,8 +42807,9 @@
 	</Power>
 	<Power PowerName="DeathBlowOld5">
 		<PowerID>1158</PowerID>
-		<TargetMethod>Melee</TargetMethod>
+		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
+		<AoERadius>150</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42843,8 +42849,9 @@
 	</Power>
 	<Power PowerName="DeathBlowOld6">
 		<PowerID>1159</PowerID>
-		<TargetMethod>Melee</TargetMethod>
+		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
+		<AoERadius>150</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42884,8 +42891,9 @@
 	</Power>
 	<Power PowerName="DeathBlowOld7">
 		<PowerID>1160</PowerID>
-		<TargetMethod>Melee</TargetMethod>
+		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
+		<AoERadius>150</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42925,8 +42933,9 @@
 	</Power>
 	<Power PowerName="DeathBlowOld8">
 		<PowerID>1161</PowerID>
-		<TargetMethod>Melee</TargetMethod>
+		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
+		<AoERadius>150</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42966,8 +42975,9 @@
 	</Power>
 	<Power PowerName="DeathBlowOld9">
 		<PowerID>1162</PowerID>
-		<TargetMethod>Melee</TargetMethod>
+		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
+		<AoERadius>150</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -43007,8 +43017,9 @@
 	</Power>
 	<Power PowerName="DeathBlowOld10">
 		<PowerID>1163</PowerID>
-		<TargetMethod>Melee</TargetMethod>
+		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
+		<AoERadius>150</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -43093,7 +43104,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane</AddTargetBuff>
 		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -75% Melee Damage, over 3.5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -43135,7 +43146,7 @@
 		<DisplayName>Mist Walk</DisplayName>
 		<BasePowerName>MistWalk</BasePowerName>
 		<Description>Dash to enemies and deal a powerful AoE Attack Debuff with Bleed. Gain increased Defense during the dash.</Description>
-		<UpgradeDescription>Dash and apply an AoE 45% Strength Debuff with 3 stacks of Bleed. Grants 50% Dash Armor.</UpgradeDescription>
+		<UpgradeDescription>Dash and apply an AoE 45% Strength Debuff with 3 stacks of Bleed and a stack of Armor Bane. Grants 50% Dash Armor.</UpgradeDescription>
 		<IconName>a_PowerIcon_MistWalk</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
 		<CastSound>CHR_Executioner_MistWalk_Start</CastSound>
@@ -43163,7 +43174,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Intimidate45</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
 		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -45% Melee Damage, over 3.5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
@@ -43234,7 +43245,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
 		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -45% Melee Damage, over 3.5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
@@ -43305,7 +43316,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
 		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -45% Melee Damage, over 3.5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
@@ -43376,7 +43387,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
 		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -50% Melee Damage, over 3.5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
@@ -43447,7 +43458,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
 		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -50% Melee Damage, over 3.5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
@@ -43518,7 +43529,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
 		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -50% Melee Damage, over 3.5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
@@ -43589,7 +43600,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
 		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -55% Melee Damage, over 3.5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
@@ -43660,7 +43671,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
 		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -55% Melee Damage, over 3.5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
@@ -43731,7 +43742,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate60</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate60,ArmorBane,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
 		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -60% Melee Damage, over 3.5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
@@ -43802,7 +43813,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
 		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -75% Melee Damage, over 3.5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
@@ -44607,7 +44618,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,ArmorBane</AddTargetBuff>
 		<AddSelfBuff>SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
@@ -44643,13 +44654,13 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,ArmorBane</AddTargetBuff>
 		<AddSelfBuff>SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
 		<Description>Dash forward, damaging and applying Bleed to every enemy in your path. [Stats: x1.09 damage, 0.2 damage/s, over 5s]</Description>
-		<UpgradeDescription>Dash forward, damaging and applying 2 stacks of Bleed to every enemy in your path.</UpgradeDescription>
+		<UpgradeDescription>Dash forward, damaging and applying 3 stacks of Bleed and a stack of Armor Bane to every enemy in your path.</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_Executioner_ShadowRend</CastSound>
@@ -44681,7 +44692,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Crippled</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,ArmorBane,Crippled</AddTargetBuff>
 		<AddSelfBuff>SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
@@ -44719,7 +44730,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Crippled</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor25,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
@@ -44757,13 +44768,13 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Crippled</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor25,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
 		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.32 damage, +25% Defense, over 10s, 0.2 damage/s, over 5s, -10% Speed, over 5s]</Description>
-		<UpgradeDescription>Deals 4 stacks of Bleed.</UpgradeDescription>
+		<UpgradeDescription>Deals 5 stacks of Bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_Executioner_ShadowRend</CastSound>
@@ -44795,13 +44806,13 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Crippled</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor45,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
 		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.52 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -10% Speed, over 5s]</Description>
-		<UpgradeDescription>Grants 45% Dash Armor. Increased Damage #olddmg#</UpgradeDescription>
+		<UpgradeDescription>Grants 45% Dash Armor. Deals 2 stacks of Armor Bane. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_Executioner_ShadowRend</CastSound>
@@ -44833,7 +44844,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor45,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
@@ -44871,13 +44882,13 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor45,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
 		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.52 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -10% Speed, over 5s]</Description>
-		<UpgradeDescription>-1 Mana Cost. Deals 5 stacks of Bleed.</UpgradeDescription>
+		<UpgradeDescription>-1 Mana Cost. Deals 6 stacks of Bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_Executioner_ShadowRend</CastSound>
@@ -44909,13 +44920,13 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor45,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
 		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.67 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -10% Speed, over 5s]</Description>
-		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<UpgradeDescription>Deals 7 stacks of Bleed. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_Executioner_ShadowRend</CastSound>
@@ -44947,13 +44958,13 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor45,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
 		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.67 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -10% Speed, over 5s]</Description>
-		<UpgradeDescription>-2 Mana Cost.</UpgradeDescription>
+		<UpgradeDescription>-2 Mana Cost. Deals 3 stacks of Armor Bane.</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_Executioner_ShadowRend</CastSound>
@@ -44985,13 +44996,13 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor60,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
 		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.78 damage, +60% Defense, over 10s, 0.2 damage/s, over 5s, -10% Speed, over 5s]</Description>
-		<UpgradeDescription>Deals 5 stacks of Bleed. Grants 60% Dash Armor. Increased Damage #olddmg#</UpgradeDescription>
+		<UpgradeDescription>Deals 8 stacks of Bleed. Grants 60% Dash Armor. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_Executioner_ShadowRend</CastSound>
@@ -46757,7 +46768,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>2.5</BaseDamageMult>
+		<BaseDamageMult>3.12</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PainBender</PowerGroup>
@@ -46788,7 +46799,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>2.5</BaseDamageMult>
+		<BaseDamageMult>3.12</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PainBender</PowerGroup>
@@ -46821,7 +46832,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>2.6</BaseDamageMult>
+		<BaseDamageMult>3.25</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PainBender</PowerGroup>
@@ -46854,7 +46865,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>2.7</BaseDamageMult>
+		<BaseDamageMult>3.38</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PainBender</PowerGroup>
@@ -46887,7 +46898,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>2.7</BaseDamageMult>
+		<BaseDamageMult>3.38</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PainBender</PowerGroup>
@@ -46920,7 +46931,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>28</ManaCost>
-		<BaseDamageMult>2.85</BaseDamageMult>
+		<BaseDamageMult>3.56</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PainBender</PowerGroup>
@@ -46953,7 +46964,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>28</ManaCost>
-		<BaseDamageMult>3</BaseDamageMult>
+		<BaseDamageMult>3.75</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PainBender</PowerGroup>
@@ -46986,7 +46997,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>27</ManaCost>
-		<BaseDamageMult>3</BaseDamageMult>
+		<BaseDamageMult>3.75</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PainBender</PowerGroup>
@@ -47019,7 +47030,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>27</ManaCost>
-		<BaseDamageMult>3.2</BaseDamageMult>
+		<BaseDamageMult>4.0</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PainBender</PowerGroup>
@@ -47052,7 +47063,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>26</ManaCost>
-		<BaseDamageMult>3.48</BaseDamageMult>
+		<BaseDamageMult>4.35</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PainBender</PowerGroup>
@@ -47085,7 +47096,7 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>25</ManaCost>
-		<BaseDamageMult>3.48</BaseDamageMult>
+		<BaseDamageMult>4.35</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PainBender</PowerGroup>
@@ -47117,7 +47128,7 @@
 		<RecoverTime>330</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>1.3</BaseDamageMult>
+		<BaseDamageMult>1.62</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
@@ -47153,7 +47164,7 @@
 		<RecoverTime>330</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>1.3</BaseDamageMult>
+		<BaseDamageMult>1.62</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
@@ -47190,7 +47201,7 @@
 		<RecoverTime>330</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>1.4</BaseDamageMult>
+		<BaseDamageMult>1.75</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
@@ -47228,7 +47239,7 @@
 		<RecoverTime>330</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>1.55</BaseDamageMult>
+		<BaseDamageMult>1.94</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
@@ -47266,7 +47277,7 @@
 		<RecoverTime>330</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>1.7</BaseDamageMult>
+		<BaseDamageMult>2.12</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
@@ -47304,7 +47315,7 @@
 		<RecoverTime>330</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>1.7</BaseDamageMult>
+		<BaseDamageMult>2.12</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
@@ -47342,7 +47353,7 @@
 		<RecoverTime>330</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>38</ManaCost>
-		<BaseDamageMult>1.85</BaseDamageMult>
+		<BaseDamageMult>2.31</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
@@ -47380,7 +47391,7 @@
 		<RecoverTime>330</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>38</ManaCost>
-		<BaseDamageMult>1.85</BaseDamageMult>
+		<BaseDamageMult>2.31</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
@@ -47418,7 +47429,7 @@
 		<RecoverTime>330</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>37</ManaCost>
-		<BaseDamageMult>2</BaseDamageMult>
+		<BaseDamageMult>2.5</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
@@ -47456,7 +47467,7 @@
 		<RecoverTime>330</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>36</ManaCost>
-		<BaseDamageMult>2</BaseDamageMult>
+		<BaseDamageMult>2.5</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
@@ -47494,7 +47505,7 @@
 		<RecoverTime>330</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>35</ManaCost>
-		<BaseDamageMult>2</BaseDamageMult>
+		<BaseDamageMult>2.5</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
@@ -48658,7 +48669,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SoulShatter</PowerGroup>
-		<AddTargetBuff>First:Bound</AddTargetBuff>
+		<AddTargetBuff>First:Bound,Staggered</AddTargetBuff>
 		<DisplayName>Carnifex</DisplayName>
 		<Description>Deliver a devastating double strike that Binds a single enemy [Stats: x1.43 damage]</Description>
 		<IconName>a_PowerIcon_AgonizingBond</IconName>
@@ -48694,7 +48705,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SoulShatter</PowerGroup>
-		<AddTargetBuff>First:Bound</AddTargetBuff>
+		<AddTargetBuff>First:Bound,Staggered</AddTargetBuff>
 		<DisplayName>Carnifex</DisplayName>
 		<BasePowerName>SoulShatter</BasePowerName>
 		<Description>Deliver a devastating double strike that Binds a single enemy [Stats: x1.43 damage]</Description>
@@ -48732,7 +48743,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SoulShatter</PowerGroup>
-		<AddTargetBuff>First:Bound</AddTargetBuff>
+		<AddTargetBuff>First:Bound,Staggered</AddTargetBuff>
 		<DisplayName>Carnifex</DisplayName>
 		<BasePowerName>SoulShatter</BasePowerName>
 		<Description>Deliver a devastating double strike that Binds a single enemy [Stats: x1.58 damage]</Description>
@@ -48770,7 +48781,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SoulShatter</PowerGroup>
-		<AddTargetBuff>First:Bound</AddTargetBuff>
+		<AddTargetBuff>First:Bound,Staggered</AddTargetBuff>
 		<DisplayName>Carnifex</DisplayName>
 		<BasePowerName>SoulShatter</BasePowerName>
 		<Description>Deliver a devastating double strike that Binds a single enemy [Stats: x1.75 damage]</Description>
@@ -48808,7 +48819,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SoulShatter</PowerGroup>
-		<AddTargetBuff>First:Bound</AddTargetBuff>
+		<AddTargetBuff>First:Bound,Staggered</AddTargetBuff>
 		<DisplayName>Carnifex</DisplayName>
 		<BasePowerName>SoulShatter</BasePowerName>
 		<Description>Deliver a devastating double strike that Binds a single enemy [Stats: x1.75 damage]</Description>
@@ -48846,7 +48857,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SoulShatter</PowerGroup>
-		<AddTargetBuff>First:Bound</AddTargetBuff>
+		<AddTargetBuff>First:Bound,Staggered</AddTargetBuff>
 		<DisplayName>Carnifex</DisplayName>
 		<BasePowerName>SoulShatter</BasePowerName>
 		<Description>Deliver a devastating double strike that Binds a single enemy [Stats: x1.9 damage]</Description>
@@ -48884,7 +48895,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SoulShatter</PowerGroup>
-		<AddTargetBuff>First:Bound</AddTargetBuff>
+		<AddTargetBuff>First:Bound,Staggered</AddTargetBuff>
 		<DisplayName>Carnifex</DisplayName>
 		<BasePowerName>SoulShatter</BasePowerName>
 		<Description>Deliver a devastating double strike that Binds a single enemy [Stats: x1.9 damage]</Description>
@@ -48922,7 +48933,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SoulShatter</PowerGroup>
-		<AddTargetBuff>First:Bound</AddTargetBuff>
+		<AddTargetBuff>First:Bound,Staggered</AddTargetBuff>
 		<DisplayName>Carnifex</DisplayName>
 		<BasePowerName>SoulShatter</BasePowerName>
 		<Description>Deliver a devastating double strike that Binds a single enemy [Stats: x2.3 damage]</Description>
@@ -48960,7 +48971,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SoulShatter</PowerGroup>
-		<AddTargetBuff>First:Bound</AddTargetBuff>
+		<AddTargetBuff>First:Bound,Staggered</AddTargetBuff>
 		<DisplayName>Carnifex</DisplayName>
 		<BasePowerName>SoulShatter</BasePowerName>
 		<Description>Deliver a devastating double strike that Binds a single enemy [Stats: x2.3 damage]</Description>
@@ -48998,7 +49009,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SoulShatter</PowerGroup>
-		<AddTargetBuff>First:Bound</AddTargetBuff>
+		<AddTargetBuff>First:Bound,Staggered</AddTargetBuff>
 		<DisplayName>Carnifex</DisplayName>
 		<BasePowerName>SoulShatter</BasePowerName>
 		<Description>Deliver a devastating double strike that Binds a single enemy [Stats: x2.3 damage]</Description>
@@ -49036,7 +49047,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SoulShatter</PowerGroup>
-		<AddTargetBuff>First:Bound</AddTargetBuff>
+		<AddTargetBuff>First:Bound,Staggered</AddTargetBuff>
 		<DisplayName>Carnifex</DisplayName>
 		<BasePowerName>SoulShatter</BasePowerName>
 		<Description>Deliver a devastating double strike that Binds a single enemy [Stats: x2.39 damage]</Description>

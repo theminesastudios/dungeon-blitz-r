@@ -4015,7 +4015,7 @@
 		<BuffID>594</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
-		<DoTDamage>-5.194</DoTDamage>
+		<DoTDamage>-2.597</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4043,7 +4043,7 @@
 		<BuffID>596</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
-		<DoTDamage>-5.194</DoTDamage>
+		<DoTDamage>-2.597</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4071,7 +4071,7 @@
 		<BuffID>598</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
-		<DoTDamage>-6.233</DoTDamage>
+		<DoTDamage>-3.117</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4099,7 +4099,7 @@
 		<BuffID>600</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
-		<DoTDamage>-6.233</DoTDamage>
+		<DoTDamage>-3.117</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4127,7 +4127,7 @@
 		<BuffID>602</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
-		<DoTDamage>-7.112</DoTDamage>
+		<DoTDamage>-3.556</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4155,7 +4155,7 @@
 		<BuffID>604</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
-		<DoTDamage>-7.112</DoTDamage>
+		<DoTDamage>-3.556</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4183,7 +4183,7 @@
 		<BuffID>606</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
-		<DoTDamage>-8.95</DoTDamage>
+		<DoTDamage>-4.475</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4211,7 +4211,7 @@
 		<BuffID>608</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
-		<DoTDamage>-8.95</DoTDamage>
+		<DoTDamage>-4.475</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4239,7 +4239,7 @@
 		<BuffID>610</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
-		<DoTDamage>-9.749</DoTDamage>
+		<DoTDamage>-4.875</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4267,7 +4267,7 @@
 		<BuffID>612</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
-		<DoTDamage>-10.484</DoTDamage>
+		<DoTDamage>-5.242</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<GfxType>
 			<AnimScale>1.9</AnimScale>
