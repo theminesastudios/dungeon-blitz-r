@@ -1237,7 +1237,7 @@
 	<BuffType BuffName="Verdict9">
 		<BuffID>322</BuffID>
 		<Attack>false</Attack>
-		<Duration>5500</Duration>
+		<Duration>7000</Duration>
 		<RangedOverride>VerdictROR9</RangedOverride>
 		<MeleeOverride>VerdictMelee9</MeleeOverride>
 		<GfxType>
@@ -1249,7 +1249,7 @@
 	<BuffType BuffName="Verdict10">
 		<BuffID>323</BuffID>
 		<Attack>false</Attack>
-		<Duration>5500</Duration>
+		<Duration>7000</Duration>
 		<RangedOverride>VerdictROR10</RangedOverride>
 		<MeleeOverride>VerdictMelee10</MeleeOverride>
 		<GfxType>
@@ -3637,6 +3637,8 @@
 		<BuffID>551</BuffID>
 		<Attack>false</Attack>
 		<Duration>0</Duration>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
 		<MagicDefense>0.65</MagicDefense>
 		<MeleeDefense>0.65</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
@@ -3649,6 +3651,8 @@
 		<BuffID>552</BuffID>
 		<Attack>false</Attack>
 		<Duration>0</Duration>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
 		<MagicDefense>0.65</MagicDefense>
 		<MeleeDefense>0.65</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
@@ -3661,6 +3665,8 @@
 		<BuffID>553</BuffID>
 		<Attack>false</Attack>
 		<Duration>0</Duration>
+		<MeleeDamage>0.1</MeleeDamage>
+		<MagicDamage>0.1</MagicDamage>
 		<MagicDefense>0.65</MagicDefense>
 		<MeleeDefense>0.65</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
@@ -3673,7 +3679,8 @@
 		<BuffID>554</BuffID>
 		<Attack>false</Attack>
 		<Duration>0</Duration>
-		<MeleeDamage>0.05</MeleeDamage>
+		<MeleeDamage>0.15</MeleeDamage>
+		<MagicDamage>0.15</MagicDamage>
 		<MagicDefense>0.75</MagicDefense>
 		<MeleeDefense>0.75</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
@@ -3686,7 +3693,8 @@
 		<BuffID>555</BuffID>
 		<Attack>false</Attack>
 		<Duration>0</Duration>
-		<MeleeDamage>0.05</MeleeDamage>
+		<MeleeDamage>0.15</MeleeDamage>
+		<MagicDamage>0.15</MagicDamage>
 		<MagicDefense>0.75</MagicDefense>
 		<MeleeDefense>0.75</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
@@ -3699,7 +3707,8 @@
 		<BuffID>556</BuffID>
 		<Attack>false</Attack>
 		<Duration>0</Duration>
-		<MeleeDamage>0.05</MeleeDamage>
+		<MeleeDamage>0.15</MeleeDamage>
+		<MagicDamage>0.15</MagicDamage>
 		<MagicDefense>0.75</MagicDefense>
 		<MeleeDefense>0.75</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
@@ -3712,7 +3721,8 @@
 		<BuffID>557</BuffID>
 		<Attack>false</Attack>
 		<Duration>0</Duration>
-		<MeleeDamage>0.1</MeleeDamage>
+		<MeleeDamage>0.2</MeleeDamage>
+		<MagicDamage>0.2</MagicDamage>
 		<MagicDefense>0.8</MagicDefense>
 		<MeleeDefense>0.8</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
@@ -3725,7 +3735,8 @@
 		<BuffID>558</BuffID>
 		<Attack>false</Attack>
 		<Duration>0</Duration>
-		<MeleeDamage>0.1</MeleeDamage>
+		<MeleeDamage>0.2</MeleeDamage>
+		<MagicDamage>0.2</MagicDamage>
 		<MagicDefense>0.8</MagicDefense>
 		<MeleeDefense>0.8</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
@@ -3738,7 +3749,8 @@
 		<BuffID>559</BuffID>
 		<Attack>false</Attack>
 		<Duration>0</Duration>
-		<MeleeDamage>0.1</MeleeDamage>
+		<MeleeDamage>0.2</MeleeDamage>
+		<MagicDamage>0.2</MagicDamage>
 		<MagicDefense>0.8</MagicDefense>
 		<MeleeDefense>0.8</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
@@ -3751,7 +3763,8 @@
 		<BuffID>560</BuffID>
 		<Attack>false</Attack>
 		<Duration>0</Duration>
-		<MeleeDamage>0.1</MeleeDamage>
+		<MeleeDamage>0.2</MeleeDamage>
+		<MagicDamage>0.2</MagicDamage>
 		<MagicDefense>0.8</MagicDefense>
 		<MeleeDefense>0.8</MeleeDefense>
 		<SpeedChange>-0.5</SpeedChange>
@@ -4279,6 +4292,7 @@
 		<BuffID>613</BuffID>
 		<Attack>false</Attack>
 		<Duration>4000</Duration>
+		<MagicDamage>0.2</MagicDamage>
 		<MeleeDamage>0.2</MeleeDamage>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4291,6 +4305,7 @@
 		<BuffID>614</BuffID>
 		<Attack>false</Attack>
 		<Duration>4000</Duration>
+		<MagicDamage>0.25</MagicDamage>
 		<MeleeDamage>0.25</MeleeDamage>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4303,6 +4318,7 @@
 		<BuffID>615</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
+		<MagicDamage>0.25</MagicDamage>
 		<MeleeDamage>0.25</MeleeDamage>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4315,6 +4331,7 @@
 		<BuffID>616</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
+		<MagicDamage>0.3</MagicDamage>
 		<MeleeDamage>0.3</MeleeDamage>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4327,6 +4344,7 @@
 		<BuffID>617</BuffID>
 		<Attack>false</Attack>
 		<Duration>6000</Duration>
+		<MagicDamage>0.3</MagicDamage>
 		<MeleeDamage>0.3</MeleeDamage>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4339,6 +4357,7 @@
 		<BuffID>618</BuffID>
 		<Attack>false</Attack>
 		<Duration>6000</Duration>
+		<MagicDamage>0.35</MagicDamage>
 		<MeleeDamage>0.35</MeleeDamage>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4799,7 +4818,7 @@
 	<BuffType BuffName="LeoneanAura1">
 		<BuffID>653</BuffID>
 		<Attack>false</Attack>
-		<Duration>750</Duration>
+		<Duration>2000</Duration>
 		<MagicDamage>0.15</MagicDamage>
 		<MeleeDamage>0.15</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4812,7 +4831,7 @@
 	<BuffType BuffName="LeoneanAura2">
 		<BuffID>654</BuffID>
 		<Attack>false</Attack>
-		<Duration>750</Duration>
+		<Duration>2000</Duration>
 		<MagicDamage>0.16</MagicDamage>
 		<MeleeDamage>0.16</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4825,7 +4844,7 @@
 	<BuffType BuffName="LeoneanAura3">
 		<BuffID>655</BuffID>
 		<Attack>false</Attack>
-		<Duration>750</Duration>
+		<Duration>2000</Duration>
 		<MagicDamage>0.18</MagicDamage>
 		<MeleeDamage>0.18</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4838,7 +4857,7 @@
 	<BuffType BuffName="LeoneanAura4">
 		<BuffID>656</BuffID>
 		<Attack>false</Attack>
-		<Duration>750</Duration>
+		<Duration>3000</Duration>
 		<MagicDamage>0.19</MagicDamage>
 		<MeleeDamage>0.19</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4851,7 +4870,7 @@
 	<BuffType BuffName="LeoneanAura5">
 		<BuffID>657</BuffID>
 		<Attack>false</Attack>
-		<Duration>750</Duration>
+		<Duration>3000</Duration>
 		<MagicDamage>0.2</MagicDamage>
 		<MeleeDamage>0.2</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4864,7 +4883,7 @@
 	<BuffType BuffName="LeoneanAura6">
 		<BuffID>658</BuffID>
 		<Attack>false</Attack>
-		<Duration>750</Duration>
+		<Duration>3000</Duration>
 		<MagicDamage>0.25</MagicDamage>
 		<MeleeDamage>0.25</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4877,7 +4896,7 @@
 	<BuffType BuffName="LeoneanAura7">
 		<BuffID>659</BuffID>
 		<Attack>false</Attack>
-		<Duration>750</Duration>
+		<Duration>5000</Duration>
 		<MagicDamage>0.26</MagicDamage>
 		<MeleeDamage>0.26</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4890,7 +4909,7 @@
 	<BuffType BuffName="LeoneanAura8">
 		<BuffID>660</BuffID>
 		<Attack>false</Attack>
-		<Duration>750</Duration>
+		<Duration>5000</Duration>
 		<MagicDamage>0.28</MagicDamage>
 		<MeleeDamage>0.28</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4903,7 +4922,7 @@
 	<BuffType BuffName="LeoneanAura9">
 		<BuffID>661</BuffID>
 		<Attack>false</Attack>
-		<Duration>750</Duration>
+		<Duration>5000</Duration>
 		<MagicDamage>0.3</MagicDamage>
 		<MeleeDamage>0.3</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4916,7 +4935,7 @@
 	<BuffType BuffName="LeoneanAura10">
 		<BuffID>662</BuffID>
 		<Attack>false</Attack>
-		<Duration>750</Duration>
+		<Duration>8000</Duration>
 		<MagicDamage>0.33</MagicDamage>
 		<MeleeDamage>0.33</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -5734,4 +5753,25 @@
 			<AnimClass>a_Debuff_Poison</AnimClass>
 		</GfxType>
 	</BuffType>
+	<BuffType BuffName="ViperbladeBleed">
+			<BuffID>740</BuffID>
+			<Attack>true</Attack>
+			<Duration>5000</Duration>
+			<DoTDamage>1</DoTDamage>
+			<DoTTickLength>1000</DoTTickLength>
+			<StackCount>1</StackCount>
+			<BuffLoc>ChestBack</BuffLoc>
+			<BuffIcon>a_StatusIcon_Bleeding</BuffIcon>
+		</BuffType>
+	<BuffType BuffName="ViperbladePoison">
+			<BuffID>741</BuffID>
+			<Attack>true</Attack>
+			<Duration>5000</Duration>
+			<DoTDamage>1.5</DoTDamage>
+			<DoTTickLength>1000</DoTTickLength>
+			<Effect>Poisoned</Effect>
+			<StackCount>1</StackCount>
+			<BuffLoc>Head</BuffLoc>
+			<BuffIcon>a_StatusIcon_Poisoned</BuffIcon>
+		</BuffType>
 </PlayerBuffTypes>

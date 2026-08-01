@@ -2,7 +2,7 @@
 <CharmTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<CharmType CharmName="---Template---">
 		<CharmID>0</CharmID>
-		<DisplayName>Sablon</DisplayName>
+		<DisplayName>Template</DisplayName>
 		<CharmLevel>0</CharmLevel>
 		<UpgradeCharm>NextCharm</UpgradeCharm>
 		<PrimaryType>Realm</PrimaryType>
@@ -18,7 +18,7 @@
 		<MagicBonus>0</MagicBonus>
 		<ArmorBonus>0</ArmorBonus>
 		<IconName>a_CharmIcon_Blank</IconName>
-		<Description>What I Do</Description>
+		<Description>WhatIDo</Description>
 		<DisallowCrafting>False</DisallowCrafting>
 	</CharmType>
 	<CharmType CharmName="Trog01">

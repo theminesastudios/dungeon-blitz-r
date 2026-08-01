@@ -1633,47 +1633,52 @@
 		<ModName>RapidRecovery1</ModName>
 		<ModID>171</ModID>
 		<DisplayName>Rapid Recovery</DisplayName>
-		<Description>Increases Tenacity@Tenacity:, +1%, +2%, +4%, +7%, 10%</Description>
-		<ModType>Stat</ModType>
+		<Description>Increases Holy Fire Damage@Holy Fire Damage:, +5%, +10%, +15%, +20%, +25%</Description>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.05</BuffValue>
 		<IconName>a_Signet_RapidRecover</IconName>
-		<StatProperty>CCReduction</StatProperty>
-		<StatValue>.01</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RapidRecovery2</ModName>
 		<ModID>172</ModID>
 		<DisplayName>Rapid Recovery</DisplayName>
-		<ModType>Stat</ModType>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.1</BuffValue>
 		<IconName>a_Signet_RapidRecover</IconName>
-		<StatProperty>CCReduction</StatProperty>
-		<StatValue>.02</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RapidRecovery3</ModName>
 		<ModID>173</ModID>
 		<DisplayName>Rapid Recovery</DisplayName>
-		<ModType>Stat</ModType>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.15</BuffValue>
 		<IconName>a_Signet_RapidRecover</IconName>
-		<StatProperty>CCReduction</StatProperty>
-		<StatValue>.04</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RapidRecovery4</ModName>
 		<ModID>174</ModID>
 		<DisplayName>Rapid Recovery</DisplayName>
-		<ModType>Stat</ModType>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.2</BuffValue>
 		<IconName>a_Signet_RapidRecover</IconName>
-		<StatProperty>CCReduction</StatProperty>
-		<StatValue>.07</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RapidRecovery5</ModName>
 		<ModID>175</ModID>
 		<DisplayName>Rapid Recovery</DisplayName>
-		<ModType>Stat</ModType>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.25</BuffValue>
 		<IconName>a_Signet_RapidRecover</IconName>
-		<StatProperty>CCReduction</StatProperty>
-		<StatValue>.1</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Resilience1</ModName>
@@ -3051,7 +3056,7 @@
 		<ModName>BlindTime1</ModName>
 		<ModID>321</ModID>
 		<DisplayName>Daybreak</DisplayName>
-		<Description>Increases Blinded Duration@Duration (seconds):, +.1, +.2, +.3, +.5, +.75</Description>
+		<Description>Increases Blinded Duration@Duration (seconds):, +.1, +.25, +.5, +.75, +1</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>Duration</BuffProperty>
@@ -3065,7 +3070,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>200</BuffValue>
+		<BuffValue>250</BuffValue>
 		<IconName>a_Signet_BlindTime</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3075,7 +3080,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>300</BuffValue>
+		<BuffValue>500</BuffValue>
 		<IconName>a_Signet_BlindTime</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3085,7 +3090,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>500</BuffValue>
+		<BuffValue>750</BuffValue>
 		<IconName>a_Signet_BlindTime</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3095,18 +3100,18 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>750</BuffValue>
+		<BuffValue>1000</BuffValue>
 		<IconName>a_Signet_BlindTime</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Fortify1</ModName>
 		<ModID>326</ModID>
 		<DisplayName>Fortify</DisplayName>
-		<Description>Heal targets gain Defense Bonus for 1 sec@Defense Bonus:, .5%, 1%, 2%, 3%, 6%</Description>
+		<Description>Increases Holy Fire Damage@Holy Fire Damage:, +5%, +10%, +15%, +20%, +25%</Description>
 		<ModType>Buff</ModType>
-		<BuffName>Fortify</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.005,.005</BuffValue>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.05</BuffValue>
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3114,9 +3119,9 @@
 		<ModID>327</ModID>
 		<DisplayName>Fortify</DisplayName>
 		<ModType>Buff</ModType>
-		<BuffName>Fortify</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.01,.01</BuffValue>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.1</BuffValue>
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3124,9 +3129,9 @@
 		<ModID>328</ModID>
 		<DisplayName>Fortify</DisplayName>
 		<ModType>Buff</ModType>
-		<BuffName>Fortify</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.02,.02</BuffValue>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.15</BuffValue>
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3134,9 +3139,9 @@
 		<ModID>329</ModID>
 		<DisplayName>Fortify</DisplayName>
 		<ModType>Buff</ModType>
-		<BuffName>Fortify</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.03,.03</BuffValue>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.2</BuffValue>
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3144,79 +3149,71 @@
 		<ModID>330</ModID>
 		<DisplayName>Fortify</DisplayName>
 		<ModType>Buff</ModType>
-		<BuffName>Fortify</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.06,.06</BuffValue>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.25</BuffValue>
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ComboFortify</ModName>
 		<ModID>893</ModID>
-		<ModType>Power</ModType>
-		<PowerName>TouchHeal,GroupHoT,SecondWind,FountainOfLife,VerdictHeal,Sanctum,CleansingLight</PowerName>
-		<PowerProperty>AddTargetBuff</PowerProperty>
-		<PowerValue>Append:Fortify</PowerValue>
+		<ModType>Other</ModType>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Sanctify1</ModName>
 		<ModID>331</ModID>
 		<DisplayName>Sanctify</DisplayName>
-		<Description>Sacred gives Defense Bonus@Defense Bonus:, .5%, 1%, 1.75%, 2.5%, 4%</Description>
-		<ModType>Buff</ModType>
-		<BuffName>Sacred</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.005,.005</BuffValue>
+		<Description>Add a percent of your Expertise to your Defense@Defense (% Expertise):, +1%, +2%, +3%, +4%, +5%</Description>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_Sanctify</IconName>
+		<StatProperty>ArmorFromWis</StatProperty>
+		<StatValue>.01</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Sanctify2</ModName>
 		<ModID>332</ModID>
 		<DisplayName>Sanctify</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>Sacred</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.01,.01</BuffValue>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_Sanctify</IconName>
+		<StatProperty>ArmorFromWis</StatProperty>
+		<StatValue>.02</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Sanctify3</ModName>
 		<ModID>333</ModID>
 		<DisplayName>Sanctify</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>Sacred</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.0175,.0175</BuffValue>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_Sanctify</IconName>
+		<StatProperty>ArmorFromWis</StatProperty>
+		<StatValue>.03</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Sanctify4</ModName>
 		<ModID>334</ModID>
 		<DisplayName>Sanctify</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>Sacred</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.025,.025</BuffValue>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_Sanctify</IconName>
+		<StatProperty>ArmorFromWis</StatProperty>
+		<StatValue>.04</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Sanctify5</ModName>
 		<ModID>335</ModID>
 		<DisplayName>Sanctify</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>Sacred</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.04,.04</BuffValue>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_Sanctify</IconName>
+		<StatProperty>ArmorFromWis</StatProperty>
+		<StatValue>.05</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>BlindPct1</ModName>
 		<ModID>336</ModID>
 		<DisplayName>Blinding Light</DisplayName>
-		<Description>Increases Blinded Miss Chance@Miss Chance:, +1%, +2%, +3%, +4%, +5%</Description>
+		<Description>Increases Blinded Miss Chance@Miss Chance:, +2%, +4%, +6%, +8%, +10%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>TargetDodgeChance</BuffProperty>
-		<BuffValue>.01</BuffValue>
+		<BuffValue>.02</BuffValue>
 		<IconName>a_Signet_BlindPct</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3226,7 +3223,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>TargetDodgeChance</BuffProperty>
-		<BuffValue>.02</BuffValue>
+		<BuffValue>.04</BuffValue>
 		<IconName>a_Signet_BlindPct</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3236,7 +3233,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>TargetDodgeChance</BuffProperty>
-		<BuffValue>.03</BuffValue>
+		<BuffValue>.06</BuffValue>
 		<IconName>a_Signet_BlindPct</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3246,7 +3243,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>TargetDodgeChance</BuffProperty>
-		<BuffValue>.04</BuffValue>
+		<BuffValue>.08</BuffValue>
 		<IconName>a_Signet_BlindPct</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3256,16 +3253,16 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>TargetDodgeChance</BuffProperty>
-		<BuffValue>.05</BuffValue>
+		<BuffValue>.1</BuffValue>
 		<IconName>a_Signet_BlindPct</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ClutchHeal1</ModName>
 		<ModID>341</ModID>
 		<DisplayName>Clutch Heal</DisplayName>
-		<Description>Increased Healing on targets with less than 20% Health@Healing Boost:, 1%, 2%, 3%, 4%, 5%</Description>
+		<Description>Increased Healing on targets with less than 30% Health@Healing Boost:, 2%, 4%, 6%, 8%, 10%</Description>
 		<ModType>WTF</ModType>
-		<SelfValue>.01</SelfValue>
+		<SelfValue>.02</SelfValue>
 		<IconName>a_Signet_ClutchHeal</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3273,7 +3270,7 @@
 		<ModID>342</ModID>
 		<DisplayName>Clutch Heal</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.02</SelfValue>
+		<SelfValue>.04</SelfValue>
 		<IconName>a_Signet_ClutchHeal</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3281,7 +3278,7 @@
 		<ModID>343</ModID>
 		<DisplayName>Clutch Heal</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.03</SelfValue>
+		<SelfValue>.06</SelfValue>
 		<IconName>a_Signet_ClutchHeal</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3289,7 +3286,7 @@
 		<ModID>344</ModID>
 		<DisplayName>Clutch Heal</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.04</SelfValue>
+		<SelfValue>.08</SelfValue>
 		<IconName>a_Signet_ClutchHeal</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3297,7 +3294,7 @@
 		<ModID>345</ModID>
 		<DisplayName>Clutch Heal</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.05</SelfValue>
+		<SelfValue>.1</SelfValue>
 		<IconName>a_Signet_ClutchHeal</IconName>
 	</PowerModType>
 	<PowerModType>

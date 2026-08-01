@@ -99,6 +99,15 @@ const TARGET_BUFFS = new Map<string, string>([
   ["MistWalkClose10", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ArmorBane"], // was Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate
   // Slapdash Decoy
   ["DecoyExplode10", "PoisonStrike,Crippled,Crippled,Bleeding,Bleeding,Bleeding,Blinded,Weakened"], // was PoisonStrike,Crippled,Crippled,Bleeding,Bleeding,Bleeding,Blinded,Weakened,ArmorBane
+  // Chaos Wave -- the poison comes off. ChaosArmor is Chaos Wave on screen; rank 4 was the
+  // rank that added it and every rank above inherited it.
+  ["ChaosArmor4", "Bound,ChaosWeaken"], // was Bound,ChaosWeaken,ChaosPoison
+  ["ChaosArmor5", "Bound,ChaosWeaken"], // was Bound,ChaosWeaken,ChaosPoison
+  ["ChaosArmor6", "Bound,ChaosWeaken"], // was Bound,ChaosWeaken,ChaosPoison
+  ["ChaosArmor7", "Bound,ChaosWeaken"], // was Bound,ChaosWeaken,ChaosPoison
+  ["ChaosArmor8", "Bound,ChaosWeaken"], // was Bound,ChaosWeaken,ChaosPoison
+  ["ChaosArmor9", "Bound,ChaosWeaken"], // was Bound,ChaosWeaken,ChaosPoison
+  ["ChaosArmor10", "Bound,ChaosWeaken"], // was Bound,ChaosWeaken,ChaosPoison
   // Carnifex
   ["SoulShatter", "First:Bound,Staggered"], // was First:Bound
   ["SoulShatter1", "First:Bound,Staggered"], // was First:Bound
@@ -118,116 +127,116 @@ const TARGET_BUFFS = new Map<string, string>([
 // value rather than appended at runtime, so re-running cannot stack it again.
 const VIPERBLADE_BUFFS = new Map<string, string>([
   // SeverStrike (Melee) +Bleeding
-  ["SeverStrike", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["SeverStrike1", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["SeverStrike2", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["SeverStrike3", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["SeverStrike4", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["SeverStrike5", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
-  ["SeverStrike6", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
-  ["SeverStrike7", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
-  ["SeverStrike8", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
-  ["SeverStrike9", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
-  ["SeverStrike10", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
+  ["SeverStrike", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["SeverStrike1", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["SeverStrike2", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["SeverStrike3", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["SeverStrike4", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["SeverStrike5", "Bleeding,Bleeding,ViperbladeBleed"], // was 'Bleeding,Bleeding'
+  ["SeverStrike6", "Bleeding,Bleeding,ViperbladeBleed"], // was 'Bleeding,Bleeding'
+  ["SeverStrike7", "Bleeding,Bleeding,ViperbladeBleed"], // was 'Bleeding,Bleeding'
+  ["SeverStrike8", "Bleeding,Bleeding,ViperbladeBleed"], // was 'Bleeding,Bleeding'
+  ["SeverStrike9", "Bleeding,Bleeding,ViperbladeBleed"], // was 'Bleeding,Bleeding'
+  ["SeverStrike10", "Bleeding,Bleeding,ViperbladeBleed"], // was 'Bleeding,Bleeding'
   // WitherStrike (Melee) +Bleeding
-  ["WitherStrike", "First:Weakened,Bleeding,Bleeding,Bleeding"], // was 'First:Weakened,Bleeding,Bleeding'
-  ["WitherStrike1", "First:Weakened,Bleeding,Bleeding,Bleeding"], // was 'First:Weakened,Bleeding,Bleeding'
-  ["WitherStrike2", "First:Weakened,Bleeding,Bleeding,Bleeding"], // was 'First:Weakened,Bleeding,Bleeding'
-  ["WitherStrike3", "First:PoisonStrike,Weakened,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Bleeding,Bleeding'
-  ["WitherStrike4", "First:PoisonStrike,Weakened,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Bleeding,Bleeding,Bleeding'
-  ["WitherStrike5", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding'
-  ["WitherStrike6", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding'
-  ["WitherStrike7", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding'
-  ["WitherStrike8", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding'
-  ["WitherStrike9", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding'
-  ["WitherStrike10", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["WitherStrike", "First:Weakened,Bleeding,Bleeding,ViperbladeBleed"], // was 'First:Weakened,Bleeding,Bleeding'
+  ["WitherStrike1", "First:Weakened,Bleeding,Bleeding,ViperbladeBleed"], // was 'First:Weakened,Bleeding,Bleeding'
+  ["WitherStrike2", "First:Weakened,Bleeding,Bleeding,ViperbladeBleed"], // was 'First:Weakened,Bleeding,Bleeding'
+  ["WitherStrike3", "First:PoisonStrike,Weakened,Bleeding,Bleeding,ViperbladeBleed"], // was 'First:PoisonStrike,Weakened,Bleeding,Bleeding'
+  ["WitherStrike4", "First:PoisonStrike,Weakened,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'First:PoisonStrike,Weakened,Bleeding,Bleeding,Bleeding'
+  ["WitherStrike5", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding'
+  ["WitherStrike6", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding'
+  ["WitherStrike7", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["WitherStrike8", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["WitherStrike9", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["WitherStrike10", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding'
   // AssassinateClose (Melee) +Bleeding
-  ["AssassinateClose", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["AssassinateClose1", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["AssassinateClose2", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["AssassinateClose3", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["AssassinateClose4", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["AssassinateClose5", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["AssassinateClose6", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["AssassinateClose7", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["AssassinateClose8", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["AssassinateClose9", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["AssassinateClose10", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
+  ["AssassinateClose", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["AssassinateClose1", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["AssassinateClose2", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["AssassinateClose3", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["AssassinateClose4", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["AssassinateClose5", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["AssassinateClose6", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["AssassinateClose7", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["AssassinateClose8", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["AssassinateClose9", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["AssassinateClose10", "Bleeding,Bleeding,ViperbladeBleed"], // was 'Bleeding,Bleeding'
   // ShadowBlade (Melee) +Bleeding
-  ["ShadowBlade", "Bleeding"], // was ''
-  ["ShadowBlade1", "Bleeding"], // was ''
-  ["ShadowBlade2", "Bleeding"], // was ''
-  ["ShadowBlade3", "Bleeding"], // was ''
-  ["ShadowBlade4", "Bleeding"], // was ''
-  ["ShadowBlade5", "Bleeding"], // was ''
-  ["ShadowBlade6", "Bleeding"], // was ''
-  ["ShadowBlade7", "Bleeding"], // was ''
-  ["ShadowBlade8", "Bleeding"], // was ''
-  ["ShadowBlade9", "Bleeding"], // was ''
-  ["ShadowBlade10", "Bleeding"], // was ''
+  ["ShadowBlade", "ViperbladeBleed"], // was ''
+  ["ShadowBlade1", "ViperbladeBleed"], // was ''
+  ["ShadowBlade2", "ViperbladeBleed"], // was ''
+  ["ShadowBlade3", "ViperbladeBleed"], // was ''
+  ["ShadowBlade4", "ViperbladeBleed"], // was ''
+  ["ShadowBlade5", "ViperbladeBleed"], // was ''
+  ["ShadowBlade6", "ViperbladeBleed"], // was ''
+  ["ShadowBlade7", "ViperbladeBleed"], // was ''
+  ["ShadowBlade8", "ViperbladeBleed"], // was ''
+  ["ShadowBlade9", "ViperbladeBleed"], // was ''
+  ["ShadowBlade10", "ViperbladeBleed"], // was ''
   // SeekingBladesAttack (Melee) +Bleeding
-  ["SeekingBladesAttack", "Bleeding"], // was ''
-  ["SeekingBladesAttack1", "Bleeding"], // was ''
-  ["SeekingBladesAttack2", "Bleeding"], // was ''
-  ["SeekingBladesAttack3", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["SeekingBladesAttack4", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["SeekingBladesAttack5", "Bleeding,Bleeding"], // was 'Bleeding'
-  ["SeekingBladesAttack6", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
-  ["SeekingBladesAttack7", "Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding'
-  ["SeekingBladesAttack8", "Bleeding,Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding,Bleeding'
-  ["SeekingBladesAttack9", "Bleeding,Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding,Bleeding'
-  ["SeekingBladesAttack10", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding'
+  ["SeekingBladesAttack", "ViperbladeBleed"], // was ''
+  ["SeekingBladesAttack1", "ViperbladeBleed"], // was ''
+  ["SeekingBladesAttack2", "ViperbladeBleed"], // was ''
+  ["SeekingBladesAttack3", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["SeekingBladesAttack4", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["SeekingBladesAttack5", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
+  ["SeekingBladesAttack6", "Bleeding,Bleeding,ViperbladeBleed"], // was 'Bleeding,Bleeding'
+  ["SeekingBladesAttack7", "Bleeding,Bleeding,ViperbladeBleed"], // was 'Bleeding,Bleeding'
+  ["SeekingBladesAttack8", "Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding'
+  ["SeekingBladesAttack9", "Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding'
+  ["SeekingBladesAttack10", "Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding'
   // VitalStrike (Cleave) +Bleeding
-  ["VitalStrike", "Bleeding,Bleeding,Bleeding,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,ArmorBane'
-  ["VitalStrike1", "Bleeding,Bleeding,Bleeding,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,ArmorBane'
-  ["VitalStrike2", "Bleeding,Bleeding,Bleeding,ArmorBane,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,ArmorBane,Crippled'
-  ["VitalStrike3", "Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled'
-  ["VitalStrike4", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled'
-  ["VitalStrike5", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled'
-  ["VitalStrike6", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled'
-  ["VitalStrike7", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled'
-  ["VitalStrike8", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled'
-  ["VitalStrike9", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled'
-  ["VitalStrike10", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled'
+  ["VitalStrike", "Bleeding,Bleeding,Bleeding,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,ArmorBane'
+  ["VitalStrike1", "Bleeding,Bleeding,Bleeding,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,ArmorBane'
+  ["VitalStrike2", "Bleeding,Bleeding,Bleeding,ArmorBane,Crippled,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,ArmorBane,Crippled'
+  ["VitalStrike3", "Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled'
+  ["VitalStrike4", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled'
+  ["VitalStrike5", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled'
+  ["VitalStrike6", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled'
+  ["VitalStrike7", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled'
+  ["VitalStrike8", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled'
+  ["VitalStrike9", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled'
+  ["VitalStrike10", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled'
   // DeathBlowOld (Cleave) +Bleeding
-  ["DeathBlowOld", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld1", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld2", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld3", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld4", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld5", "PoisonStrike,PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld6", "PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld7", "PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld8", "PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld9", "PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld10", "PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was 'PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld1", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld2", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld3", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld4", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld5", "PoisonStrike,PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld6", "PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld7", "PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld8", "PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld9", "PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld10", "PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding'
   // MistWalkClose (PBAoE) +Bleeding
-  ["MistWalkClose", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane'
-  ["MistWalkClose1", "Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane'
-  ["MistWalkClose2", "Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane'
-  ["MistWalkClose3", "Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane'
-  ["MistWalkClose4", "Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane'
-  ["MistWalkClose5", "Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane'
-  ["MistWalkClose6", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane'
-  ["MistWalkClose7", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane'
-  ["MistWalkClose8", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane,ArmorBane'
-  ["MistWalkClose9", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate60,ArmorBane,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate60,ArmorBane,ArmorBane'
-  ["MistWalkClose10", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ArmorBane,Bleeding"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ArmorBane'
+  ["MistWalkClose", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane'
+  ["MistWalkClose1", "Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane'
+  ["MistWalkClose2", "Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane'
+  ["MistWalkClose3", "Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane'
+  ["MistWalkClose4", "Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane'
+  ["MistWalkClose5", "Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane'
+  ["MistWalkClose6", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane'
+  ["MistWalkClose7", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane'
+  ["MistWalkClose8", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane,ArmorBane'
+  ["MistWalkClose9", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate60,ArmorBane,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate60,ArmorBane,ArmorBane'
+  ["MistWalkClose10", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ArmorBane'
   // DaggerFlurry (RangedAoE) +PoisonStrike
-  ["DaggerFlurry", "DaggerPoison,DaggerPoison"], // was 'DaggerPoison'
-  ["DaggerFlurry1", "DaggerPoison,DaggerPoison"], // was 'DaggerPoison'
-  ["DaggerFlurry2", "DaggerPoison,DaggerPoison"], // was 'DaggerPoison'
-  ["DaggerFlurry3", "DaggerPoison,DaggerPoison"], // was 'DaggerPoison'
-  ["DaggerFlurry4", "DaggerPoison,DaggerPoison"], // was 'DaggerPoison'
-  ["DaggerFlurry5", "DaggerPoison,DaggerPoison,DaggerPoison"], // was 'DaggerPoison,DaggerPoison'
-  ["DaggerFlurry6", "DaggerPoison,DaggerPoison,DaggerPoison"], // was 'DaggerPoison,DaggerPoison'
-  ["DaggerFlurry7", "DaggerPoison,DaggerPoison,DaggerPoison"], // was 'DaggerPoison,DaggerPoison'
-  ["DaggerFlurry8", "DaggerPoison,DaggerPoison,DaggerPoison"], // was 'DaggerPoison,DaggerPoison'
-  ["DaggerFlurry9", "DaggerPoison,DaggerPoison,DaggerPoison"], // was 'DaggerPoison,DaggerPoison'
-  ["DaggerFlurry10", "DaggerPoison,DaggerPoison,ArmorBane,DaggerPoison"], // was 'DaggerPoison,DaggerPoison,ArmorBane'
+  ["DaggerFlurry", "DaggerPoison,ViperbladePoison"], // was 'DaggerPoison'
+  ["DaggerFlurry1", "DaggerPoison,ViperbladePoison"], // was 'DaggerPoison'
+  ["DaggerFlurry2", "DaggerPoison,ViperbladePoison"], // was 'DaggerPoison'
+  ["DaggerFlurry3", "DaggerPoison,ViperbladePoison"], // was 'DaggerPoison'
+  ["DaggerFlurry4", "DaggerPoison,ViperbladePoison"], // was 'DaggerPoison'
+  ["DaggerFlurry5", "DaggerPoison,DaggerPoison,ViperbladePoison"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry6", "DaggerPoison,DaggerPoison,ViperbladePoison"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry7", "DaggerPoison,DaggerPoison,ViperbladePoison"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry8", "DaggerPoison,DaggerPoison,ViperbladePoison"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry9", "DaggerPoison,DaggerPoison,ViperbladePoison"], // was 'DaggerPoison,DaggerPoison'
+  ["DaggerFlurry10", "DaggerPoison,DaggerPoison,ArmorBane,ViperbladePoison"], // was 'DaggerPoison,DaggerPoison,ArmorBane'
   // PoisonDagger (ProjectilePlayer) +PoisonStrike
-  ["PoisonDagger", "DaggerPoison"], // was ''
-  ["PoisonDagger1", "DaggerPoison"], // was ''
+  ["PoisonDagger", "ViperbladePoison"], // was ''
+  ["PoisonDagger1", "ViperbladePoison"], // was ''
 ]);
 
 
@@ -247,24 +256,25 @@ const VIPERBLADE_BUFFS = new Map<string, string>([
 //
 // The authored sentence is replaced and any trailing "[Stats: ...]" is left alone --
 // patch_gameswz_power_stat_tooltips regenerates that block afterwards.
-// The rogue basic melee combo, bleeding on its third swing.
+// The Bleed that used to sit on SaberMelee/RapierMelee is gone, and the strip below puts
+// those two powers back to authoring no AddTargetBuff at all.
 //
-// MeleeCombo authors var_1075 = 2 and CombatState counts currMeleeCombo 0 -> 1 -> 2 before
-// resetting, so the combo is three hits and the third is already its finisher -- that hit
-// alone doubles its damage (CombatState:2023). Landing the Bleed there puts it on the swing
-// the combo was already built around.
+// It was there to give Viperblade a basic-attack passive, and it could never be that. These
+// are weapon powers and weapons carry <UsedBy>Rogue</UsedBy>, a class and never a mastery,
+// so a Soulthief or a Shadowstalker bled targets exactly as hard as an Executioner did --
+// which is what switching discipline away from Viperblade and still applying Bleed looks
+// like from inside the game.
 //
-// "Sequence:" is what expresses it: CombatState slices the buff list by the combo index, so
-// entry three applies on hit three and the two empty entries before it resolve to no buff.
-// "Last:" would not work -- it keys off the CastTime step list, which is a single value on
-// these powers, so it would fire on the first swing instead.
+// Gating it to the combo finisher would not have helped either, and the reason is worth
+// keeping so it is not tried a third time. "Sequence:" and "Last:" index the buff list by
+// ActivePower.var_54, the power's own CastTime step, not the melee combo counter; SaberMelee
+// authors one CastTime value, so var_54 is always 0. The real combo index exists --
+// ActivePower.meleeCombo, counted 0/1/2 by CombatState -- but it drives the swing animation
+// and the finisher's cooldown and never reaches the buff path. Per-swing scoping needs
+// meleeCombo threaded into method_1192, which is bytecode, and it would still be class-wide.
 //
-// Class-wide, unavoidably: these are weapon powers, and weapons carry <UsedBy>Rogue</UsedBy>.
-// Every rogue gets this, not only Viperblade.
-const BASIC_COMBO_BUFFS = new Map<string, string>([
-  ["SaberMelee", "Sequence:,,Bleeding"], //  was absent
-  ["RapierMelee", "Sequence:,,Bleeding"], // was absent
-]);
+// Viperblade keeps working where the scoping is real: on the Executioner tree's own powers,
+// below.
 
 const SIGNATURE_DESCRIPTIONS = new Map<string, [string, string]>([
   [
@@ -278,7 +288,7 @@ const SIGNATURE_DESCRIPTIONS = new Map<string, [string, string]>([
     "DivineBolt",
     [
       "Bolts of divine punishment granted to the Templar",
-      "Bolts of divine punishment granted to the Templar. Templar passive: every bolt bursts in a small area.",
+      "Bolts of divine punishment granted to the Templar. Templar passive: your ranged attacks bounce to 2 more enemies.",
     ],
   ],
   [
@@ -302,6 +312,30 @@ const SIGNATURE_AOE = new Map<string, string>([
 ]);
 
 const DAMAGE_MULTS = new Map<string, string>([
+  /**
+   * Chaos Wave hits for something now. Every rank authored BaseDamageMult 0 -- all of its
+   * output was the Bound and Poison ticks, so taking the poison off left a 30-mana melee AoE
+   * that dealt no damage at all.
+   *
+   * Sized against the Soulthief's own melee powers rather than picked from nothing:
+   * Fatiguing Strike runs 0.75 to 1.71 single-target for 20 mana and Carnifex 1.43 to 2.39.
+   * Chaos Wave lands between them, which is where a power that also Binds, Weakens and buffs
+   * its own Expertise belongs.
+   *
+   * Rank 4 takes the biggest single step. It is the rank the poison used to occupy, so it
+   * had nothing left to give.
+   */
+  ["ChaosArmor", "0.9"], // 0
+  ["ChaosArmor1", "0.9"], // 0
+  ["ChaosArmor2", "1"], // 0
+  ["ChaosArmor3", "1"], // 0
+  ["ChaosArmor4", "1.35"], // 0 -- the rank the poison vacated
+  ["ChaosArmor5", "1.35"], // 0
+  ["ChaosArmor6", "1.5"], // 0
+  ["ChaosArmor7", "1.6"], // 0
+  ["ChaosArmor8", "1.75"], // 0
+  ["ChaosArmor9", "1.9"], // 0
+  ["ChaosArmor10", "2.1"], // 0
   // Butcher's Boon, x1.25
   ["PainBender", "3.12"], // 2.5
   ["PainBender1", "3.12"], // 2.5
@@ -350,8 +384,91 @@ const SOUL_REAVER_SELF_HEAL = new Map<string, string>([
 ]);
 
 // Rank upgrade text has to move with the effect or it starts lying.
+/**
+ * Description prose, which patch_gameswz_power_stat_tooltips leaves alone -- it regenerates
+ * only the trailing "[Stats: ...]" block. A Chaos Wave that still advertises Poison is a
+ * Chaos Wave players will keep expecting Poison from.
+ */
+const DESCRIPTIONS = new Map<string, [string, string]>();
+
+for (let rank = 4; rank <= 10; rank += 1) {
+  DESCRIPTIONS.set(`ChaosArmor${rank}`, [
+    "Release Chaotic energy, Binding, Poisoning and reducing the Attack of nearby foes.",
+    "Release Chaotic energy, Binding and reducing the Attack of nearby foes.",
+  ]);
+}
+for (const rank of ["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]) {
+  DESCRIPTIONS.set(`GhostBlade${rank}`, [
+    "Steal your foe's strength while it lives.",
+    "Steal your foe's Attack, gaining Attack and Expertise while it lives.",
+  ]);
+}
+
+/**
+ * Text that has to move a second time, after an earlier version of this script already
+ * rewrote it. A single from/to pair cannot express that: once the first rewrite has run the
+ * original string is gone, so a mapping keyed on it silently stops matching and the edit
+ * looks applied when it never ran. That is exactly how Chaos Wave ended up with the right
+ * damage and a tooltip still claiming the rank did nothing.
+ *
+ * Each entry is guarded on both ends, so a clean checkout walks the whole chain and an
+ * already-patched tree picks up only the step it is missing. Both converge on the same text.
+ */
+const TEXT_MIGRATIONS: Array<{ power: RegExp; from: string; to: string }> = [
+  {
+    power: /^ChaosArmor\d*$/,
+    // No trailing period: ranks 0 and 1 end the sentence at "foes" where the rest continue
+    // with ". Grants an Expertise buff", and one string has to cover both shapes.
+    from: "Release Chaotic energy, Binding and reducing the Attack of nearby foes",
+    to: "Release Chaotic energy, damaging, Binding and reducing the Attack of nearby foes",
+  },
+  // Rank 4 lost the poison, then gained the damage step; either wording can be sitting there.
+  { power: /^ChaosArmor4$/, from: "No additional effect.", to: "Increased Damage #olddmg#" },
+  // The Templar passive was described as a splash on DivineBolt, which was never the power a
+  // Templar actually fires -- weapons name Lightningball/Energyball as the ranged attack. The
+  // real passive now lives in class_130 (patch-dungeonblitz-templar-bolt-bounce.js) and the
+  // text has to follow it.
+  {
+    power: /^DivineBolt\d*$/,
+    from: "Templar passive: every bolt bursts in a small area.",
+    to: "Templar passive: your ranged attacks bounce to 2 more enemies.",
+  },
+  {
+    power: /^DivineBolt\d*$/,
+    from: "Templar passive: your ranged attacks bounce to 2 more enemies.. Templar passive: your ranged attacks bounce to 2 more enemies.",
+    to: "Templar passive: your ranged attacks bounce to 2 more enemies.",
+  },
+];
+
+for (const migration of TEXT_MIGRATIONS) {
+  if (migration.to.includes(migration.from)) {
+    throw new Error(`TEXT_MIGRATIONS entry for ${migration.power} would re-apply forever: "to" contains "from".`);
+  }
+}
+
 const UPGRADE_TEXT = new Map<string, [string, string]>([
   ["WitherStrike3", ["Adds a stack of Armor Bane.", "Adds a stack of Poison."]],
+  // Chaos Wave rank 4's only upgrade was the poison, so with it gone the rank grants
+  // nothing. Saying so is better than leaving text that promises an effect the power no
+  // longer has -- it wants a replacement upgrade, which is a balance call, not a text fix.
+  ["ChaosArmor4", ["Adds Chaos Poison", "Increased Damage #olddmg#"]],
+  // Ghost Blade's steal now covers Expertise as well as Attack.
+  [
+    "GhostBlade1",
+    ["-35% target Attack, +20% Attack for 4 seconds", "-35% target Attack, +20% Attack and Expertise for 4 seconds"],
+  ],
+  [
+    "GhostBlade4",
+    ["-40% target Attack, +25% Attack for 4 seconds", "-40% target Attack, +25% Attack and Expertise for 4 seconds"],
+  ],
+  [
+    "GhostBlade7",
+    ["-45% target Attack, +30% Attack for 5 seconds", "-45% target Attack, +30% Attack and Expertise for 5 seconds"],
+  ],
+  [
+    "GhostBlade10",
+    ["-50% target Attack, +35% Attack for 6 seconds", "-50% target Attack, +35% Attack and Expertise for 6 seconds"],
+  ],
   // Shadow Rend's stack counts moved, so the ranks that quote them have to move too.
   [
     "VitalStrike1",
@@ -412,6 +529,78 @@ const MOD_DESCRIPTIONS = new Map<string, [string, string]>([
   ],
 ]);
 
+/**
+ * Viperblade's passive gets its own two buffs instead of tacking an extra stack of the
+ * power's own Bleed or Poison onto every Executioner skill.
+ *
+ * StackCount 1 is the whole of "the passive must not stack", and it needs no code: Buff's
+ * method_351 clamps the live stack count to the BuffType's own stackCount, and that clamped
+ * number is exactly what multiplies the tick damage. Worth saying because there is a nearby
+ * flag that looks right and is not -- BuffType.var_2424 also pins the count to 1, but it
+ * *accumulates* potency across reapplications instead of capping it, which is the opposite
+ * of what was asked. It is also set by hardcoded buff name and not readable from XML.
+ *
+ * These still scale off Expertise like every other DoT, because the stat a buff scales from
+ * is the caster's magicDamage passed into CombatState.AddBuff and nothing in the data
+ * reaches it. Moving just these two onto attack damage is the bytecode half and is keyed on
+ * BuffID rather than name on purpose -- a numeric compare needs no new entry in the SWF
+ * string pool.
+ *
+ * IDs continue past the authored maximum of 739 rather than filling the gaps at 1/14/15, so
+ * nothing collides with an ID some save still refers to.
+ */
+/**
+ * Ghost Blade steals the target's Attack and hands the Soulthief the same amount back -- but
+ * only as Attack, so the half of a Soulthief's sheet that Chaos Wave buffs went untouched.
+ * Mirroring MeleeDamage into MagicDamage makes the steal cover Expertise too, which is the
+ * shape Chaos Wave's own buff already uses (ChaosArmor5/10/15/30 are MagicDamage-only).
+ *
+ * The values match the Attack bonus rank for rank rather than inventing a second curve, so
+ * the upgrade text that already quotes them stays true with one word added.
+ */
+const GHOST_BLADE_EXPERTISE = new Map<string, string>([
+  ["GhostBlade1", "0.2"], // MeleeDamage 0.2, no MagicDamage
+  ["GhostBlade4", "0.25"], // MeleeDamage 0.25, no MagicDamage
+  ["GhostBlade6", "0.25"], // MeleeDamage 0.25, no MagicDamage
+  ["GhostBlade7", "0.3"], // MeleeDamage 0.3, no MagicDamage
+  ["GhostBlade9", "0.3"], // MeleeDamage 0.3, no MagicDamage
+  ["GhostBlade10", "0.35"], // MeleeDamage 0.35, no MagicDamage
+]);
+
+const NEW_BUFFS: Array<{ name: string; xml: string }> = [
+  {
+    name: "ViperbladeBleed",
+    xml: [
+      '<BuffType BuffName="ViperbladeBleed">',
+      "\t\t<BuffID>740</BuffID>",
+      "\t\t<Attack>true</Attack>",
+      "\t\t<Duration>5000</Duration>",
+      "\t\t<DoTDamage>1</DoTDamage>",
+      "\t\t<DoTTickLength>1000</DoTTickLength>",
+      "\t\t<StackCount>1</StackCount>",
+      "\t\t<BuffLoc>ChestBack</BuffLoc>",
+      "\t\t<BuffIcon>a_StatusIcon_Bleeding</BuffIcon>",
+      "\t</BuffType>",
+    ].join("\r\n\t"),
+  },
+  {
+    name: "ViperbladePoison",
+    xml: [
+      '<BuffType BuffName="ViperbladePoison">',
+      "\t\t<BuffID>741</BuffID>",
+      "\t\t<Attack>true</Attack>",
+      "\t\t<Duration>5000</Duration>",
+      "\t\t<DoTDamage>1.5</DoTDamage>",
+      "\t\t<DoTTickLength>1000</DoTTickLength>",
+      "\t\t<Effect>Poisoned</Effect>",
+      "\t\t<StackCount>1</StackCount>",
+      "\t\t<BuffLoc>Head</BuffLoc>",
+      "\t\t<BuffIcon>a_StatusIcon_Poisoned</BuffIcon>",
+      "\t</BuffType>",
+    ].join("\r\n\t"),
+  },
+];
+
 function cloneStats(): PatchStats {
   return { ...EMPTY_STATS };
 }
@@ -457,6 +646,8 @@ function replaceTag(block: string, tag: string, value: string, stats: PatchStats
 const REMOVE_TAGS: Array<{ power: string; tag: string }> = [
   { power: "Lightningball", tag: "AoERadius" },
   { power: "Energyball", tag: "AoERadius" },
+  { power: "SaberMelee", tag: "AddTargetBuff" },
+  { power: "RapierMelee", tag: "AddTargetBuff" },
 ];
 
 export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats } {
@@ -467,8 +658,7 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
 
     // Viperblade is generated on top of the retune, so where both name a power its value
     // is the finished one and wins.
-    const targetBuff =
-      BASIC_COMBO_BUFFS.get(powerName) ?? VIPERBLADE_BUFFS.get(powerName) ?? TARGET_BUFFS.get(powerName);
+    const targetBuff = VIPERBLADE_BUFFS.get(powerName) ?? TARGET_BUFFS.get(powerName);
     if (targetBuff) {
       touched = true;
       // ShadowBlade and PoisonDagger author no AddTargetBuff at all, and the template puts
@@ -532,11 +722,29 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
       }
     }
 
+    for (const migration of TEXT_MIGRATIONS) {
+      if (!migration.power.test(powerName)) continue;
+      // Guarded on `from` alone, not on `to`. A repair entry rewrites text that *contains*
+      // its own replacement, so an "already has the target string" guard would refuse to run
+      // it. Idempotence comes from `to` never containing `from`, asserted at load.
+      if (!next.includes(migration.from)) continue;
+      touched = true;
+      stats.changes += 1;
+      next = next.split(migration.from).join(migration.to);
+    }
+
     const signatureText = SIGNATURE_DESCRIPTIONS.get(powerName.replace(/\d+$/, ""));
     if (signatureText && next.includes(signatureText[0]) && !next.includes(signatureText[1])) {
       touched = true;
       stats.changes += 1;
       next = next.split(signatureText[0]).join(signatureText[1]);
+    }
+
+    const description = DESCRIPTIONS.get(powerName);
+    if (description && next.includes(description[0]) && !next.includes(description[1])) {
+      touched = true;
+      stats.changes += 1;
+      next = next.split(description[0]).join(description[1]);
     }
 
     const upgrade = UPGRADE_TEXT.get(powerName);
@@ -558,16 +766,53 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
 export function patchPlayerBuffs(xml: string): { xml: string; stats: PatchStats } {
   const stats = cloneStats();
   const patched = xml.replace(/<BuffType BuffName="([^"]+)">[\s\S]*?<\/BuffType>/g, (block: string, buffName: string) => {
+    let next = block;
+    let touched = false;
+
     const heal = SOUL_REAVER_SELF_HEAL.get(buffName);
-    if (!heal) {
-      return block;
+    if (heal) {
+      touched = true;
+      next = replaceTag(next, "DoTDamage", heal, stats);
     }
 
-    stats.buffBlocks += 1;
-    return replaceTag(block, "DoTDamage", heal, stats);
+    const expertise = GHOST_BLADE_EXPERTISE.get(buffName);
+    if (expertise) {
+      touched = true;
+      // These buffs author MeleeDamage and no MagicDamage, and the template orders the pair
+      // MagicDamage-then-MeleeDamage, so it is inserted ahead of the tag that is there.
+      if (/<MagicDamage>[^<]*<\/MagicDamage>/.test(next)) {
+        next = replaceTag(next, "MagicDamage", expertise, stats);
+      } else {
+        next = next.replace(/<MeleeDamage>[^<]*<\/MeleeDamage>/, (match) => {
+          stats.changes += 1;
+          return `<MagicDamage>${expertise}</MagicDamage>\r\n\t\t${match}`;
+        });
+      }
+    }
+
+    if (touched) {
+      stats.buffBlocks += 1;
+    }
+    return next;
   });
 
-  return { xml: patched, stats };
+  // Appended at the end of the list rather than inserted next to Bleeding, so the file keeps
+  // its authored order and a re-run has an unambiguous "already there" test.
+  let withAdditions = patched;
+  for (const buff of NEW_BUFFS) {
+    if (withAdditions.includes(`<BuffType BuffName="${buff.name}">`)) {
+      continue;
+    }
+    const closing = withAdditions.lastIndexOf("</PlayerBuffTypes>");
+    if (closing < 0) {
+      continue;
+    }
+    stats.buffBlocks += 1;
+    stats.changes += 1;
+    withAdditions = `${withAdditions.slice(0, closing)}\t${buff.xml}\r\n${withAdditions.slice(closing)}`;
+  }
+
+  return { xml: withAdditions, stats };
 }
 
 export function patchPowerMods(xml: string): { xml: string; stats: PatchStats } {

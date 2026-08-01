@@ -2,177 +2,177 @@
 <RoyalStoreTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<RoyalStoreType RoyalStoreName="---Template---">
 		<RoyalStoreID>0</RoyalStoreID>
-		<DisplayName>Sablon</DisplayName>
+		<DisplayName>Template</DisplayName>
 		<IconName>text</IconName>
 		<Quantity>10</Quantity>
 		<SigilCost>10</SigilCost>
 		<GoldCost>10</GoldCost>
-		<Description>What I Do</Description>
+		<Description>WhatIDo</Description>
 		<Category>Potions</Category>
 		<Type>Template</Type>
 		<DisallowDupes>False</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="MountLockbox01L02">
 		<RoyalStoreID>1</RoyalStoreID>
-		<DisplayName>Efsanevi Binek Sandigi</DisplayName>
+		<DisplayName>Hatebreed Charger</DisplayName>
 		<IconName>a_royalsigil_item1_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>3200</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Special</Category>
 		<Type>Mount</Type>
 		<DisallowDupes>True</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="MountLockbox01R01">
 		<RoyalStoreID>2</RoyalStoreID>
-		<DisplayName>Nadir Binek Sandigi</DisplayName>
+		<DisplayName>Stormhoof Stallion</DisplayName>
 		<IconName>a_royalsigil_item2_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>640</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Special</Category>
 		<Type>Mount</Type>
 		<DisallowDupes>True</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="Lockbox01L02">
 		<RoyalStoreID>3</RoyalStoreID>
-		<DisplayName>Efsanevi Evcil Sandigi</DisplayName>
+		<DisplayName>Darkheart Apparition</DisplayName>
 		<IconName>a_royalsigil_item3_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>2400</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Special</Category>
 		<Type>Pet</Type>
 		<DisallowDupes>True</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="Lockbox01RRed">
 		<RoyalStoreID>4</RoyalStoreID>
-		<DisplayName>Kirmizi Nadir Evcil Sandigi</DisplayName>
+		<DisplayName>Accursed Counselor</DisplayName>
 		<IconName>a_royalsigil_item4_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>320</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Special</Category>
 		<Type>Pet</Type>
 		<DisallowDupes>True</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="Lockbox01RYellow">
 		<RoyalStoreID>5</RoyalStoreID>
-		<DisplayName>Sari Nadir Evcil Sandigi</DisplayName>
+		<DisplayName>Ruined Counselor</DisplayName>
 		<IconName>a_royalsigil_item5_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>320</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Special</Category>
 		<Type>Pet</Type>
 		<DisallowDupes>True</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="Lockbox01RBlue">
 		<RoyalStoreID>6</RoyalStoreID>
-		<DisplayName>Mavi Nadir Evcil Sandigi</DisplayName>
+		<DisplayName>Hexed Counselor</DisplayName>
 		<IconName>a_royalsigil_item6_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>320</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Special</Category>
 		<Type>Pet</Type>
 		<DisallowDupes>True</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="Lockbox01RGreen">
 		<RoyalStoreID>7</RoyalStoreID>
-		<DisplayName>Yesil Nadir Evcil Sandigi</DisplayName>
+		<DisplayName>Doomed Counselor</DisplayName>
 		<IconName>a_royalsigil_item6_icon</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>320</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Special</Category>
 		<Type>Pet</Type>
 		<DisallowDupes>True</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="RespecStone">
 		<RoyalStoreID>8</RoyalStoreID>
-		<DisplayName>Yetenek Sifirlama Tasi</DisplayName>
+		<DisplayName>Respec Stone</DisplayName>
 		<IconName>a_Icon_RespecStone</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>320</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Potions</Category>
 		<Type>RespecStone</Type>
 		<DisallowDupes>False</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="XPFindRegular">
 		<RoyalStoreID>9</RoyalStoreID>
-		<DisplayName>XP Artis Iksiri X3</DisplayName>
+		<DisplayName>Potion of XP Boost x3</DisplayName>
 		<IconName>a_Icon_PotionXP</IconName>
 		<Quantity>15000</Quantity>
 		<SigilCost>16</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Potions</Category>
 		<Type>Consumable</Type>
 		<DisallowDupes>False</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="MaterialFindRegular">
 		<RoyalStoreID>10</RoyalStoreID>
-		<DisplayName>Malzeme Bulma Iksiri X3</DisplayName>
+		<DisplayName>Potion of Material Find x3</DisplayName>
 		<IconName>a_Icon_PotionMaterial</IconName>
 		<Quantity>15000</Quantity>
 		<SigilCost>16</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Potions</Category>
 		<Type>Consumable</Type>
 		<DisallowDupes>False</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="GoldFindRegular">
 		<RoyalStoreID>11</RoyalStoreID>
-		<DisplayName>Altin Bulma Iksiri X3</DisplayName>
+		<DisplayName>Potion of Gold Find x3</DisplayName>
 		<IconName>a_Icon_PotionGoldFind</IconName>
 		<Quantity>15000</Quantity>
 		<SigilCost>16</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Potions</Category>
 		<Type>Consumable</Type>
 		<DisallowDupes>False</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="GearFindRegular">
 		<RoyalStoreID>12</RoyalStoreID>
-		<DisplayName>Ekipman Bulma Iksiri X3</DisplayName>
+		<DisplayName>Potion of Gear Find x3</DisplayName>
 		<IconName>a_Icon_PotionGearFind</IconName>
 		<Quantity>15000</Quantity>
 		<SigilCost>16</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Potions</Category>
 		<Type>Consumable</Type>
 		<DisallowDupes>false</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="Resurrection">
 		<RoyalStoreID>13</RoyalStoreID>
-		<DisplayName>Dirilis Iksiri</DisplayName>
+		<DisplayName>Vengeance Potion x5</DisplayName>
 		<IconName>a_Icon_PotionVeng</IconName>
 		<Quantity>5</Quantity>
 		<SigilCost>32</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Potions</Category>
 		<Type>Consumable</Type>
 		<DisallowDupes>False</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="ForgeXP">
 		<RoyalStoreID>14</RoyalStoreID>
-		<DisplayName>Tinkerer's Ruh</DisplayName>
+		<DisplayName>Tinkerer's Soul</DisplayName>
 		<IconName>a_Icon_Anvil</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>112</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Potions</Category>
 		<Type>Consumable</Type>
 		<DisallowDupes>false</DisallowDupes>
 	</RoyalStoreType>
 	<RoyalStoreType RoyalStoreName="CharmRemover">
 		<RoyalStoreID>15</RoyalStoreID>
-		<DisplayName>Tilsim Sokucu</DisplayName>
+		<DisplayName>Charm Remover</DisplayName>
 		<IconName>a_Icon_CharmRemover</IconName>
 		<Quantity>1</Quantity>
 		<SigilCost>80</SigilCost>
-		<Description>Gecici aciklama.</Description>
+		<Description>Temp</Description>
 		<Category>Potions</Category>
 		<Type>CharmRemover</Type>
 		<DisallowDupes>false</DisallowDupes>
