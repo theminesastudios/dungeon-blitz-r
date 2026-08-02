@@ -42,6 +42,7 @@ import {
     normalizeLevelInstanceId
 } from '../core/LevelScope';
 import { getCharacterRuntimeLevel, getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
+import { RegionPositionPersistence } from '../core/RegionPositionPersistence';
 
 const db = new JsonAdapter();
 
@@ -982,6 +983,14 @@ export class CharacterHandler {
     private static sendEnterWorld(client: Client, char: Character): void {
         CharacterHandler.repairUnsafeSavedDungeonLocation(char);
         const storedDungeonSnapshot = getStoredDungeonSnapshot(char);
+
+        // Put the character back where they last stood in the open world. This runs after the
+        // dungeon repair and only when there is no dungeon snapshot to honour, so a player who
+        // logged out mid-dungeon still resumes by the dungeon's own rules; it only covers the
+        // ordinary case, which is the one that was dropping people at a stale coordinate.
+        if (!storedDungeonSnapshot) {
+            RegionPositionPersistence.restore(char);
+        }
 
         // Determine Level
         const currentLevelName = storedDungeonSnapshot?.levelName || char.CurrentLevel?.name || "NewbieRoad";

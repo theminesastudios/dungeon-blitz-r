@@ -3766,7 +3766,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DivineBolt</PowerGroup>
 		<DisplayName>Divine Bolt</DisplayName>
-		<Description>Bolts of divine punishment granted to the Templar. Templar passive: your ranged attacks bounce to 2 more enemies. [Stats: x0.8 damage]</Description>
+		<Description>Bolts of divine punishment granted to the Templar. Templar passive: your ranged attacks arc to up to 3 more enemies. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_DivineBolt2</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -3798,7 +3798,7 @@
 		<PowerGroup>DivineBolt</PowerGroup>
 		<DisplayName>Divine Bolt</DisplayName>
 		<BasePowerName>DivineBolt</BasePowerName>
-		<Description>Bolts of divine punishment granted to the Templar. Templar passive: your ranged attacks bounce to 2 more enemies. [Stats: x0.8 damage]</Description>
+		<Description>Bolts of divine punishment granted to the Templar. Templar passive: your ranged attacks arc to up to 3 more enemies. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_DivineBolt2</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -3964,8 +3964,8 @@
 		<ComboName>DivineWordCombo1</ComboName>
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
-		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and set them alight with Holy Fire [Stats: x1.1 damage, -10% Melee Damage, over 5s, 1 damage/s, over 5s]</Description>
-		<UpgradeDescription>Adds a stack of Holy Fire. Increased Damage #olddmg#</UpgradeDescription>
+		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and bathe them in Holy Fire [Stats: x1.1 damage, -10% Melee Damage, over 5s, 1 damage/s, over 5s]</Description>
+		<UpgradeDescription>Adds a stack of Holy Fire.</UpgradeDescription>
 		<IconName>a_PowerIcon_DivineWord</IconName>
 		<CastSound>[200]CHR_Templar_DivineWord_Cast</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -4008,7 +4008,7 @@
 		<ComboName>DivineWordCombo4</ComboName>
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
-		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and set them alight with Holy Fire [Stats: x1.1 damage, -10% Melee Damage, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and bathe them in Holy Fire [Stats: x1.1 damage, -10% Melee Damage, over 5s, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>100% Heal over 3 sec</UpgradeDescription>
 		<IconName>a_PowerIcon_DivineWord</IconName>
 		<CastSound>[200]CHR_Templar_DivineWord_Cast</CastSound>
@@ -4052,7 +4052,7 @@
 		<ComboName>DivineWordCombo4</ComboName>
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
-		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and set them alight with Holy Fire [Stats: x1.2 damage, -10% Melee Damage, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and bathe them in Holy Fire [Stats: x1.2 damage, -10% Melee Damage, over 5s, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DivineWord</IconName>
 		<CastSound>[200]CHR_Templar_DivineWord_Cast</CastSound>
@@ -4096,7 +4096,7 @@
 		<ComboName>DivineWordCombo4</ComboName>
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
-		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and set them alight with Holy Fire [Stats: x1.2 damage, -10% Melee Damage, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and bathe them in Holy Fire [Stats: x1.2 damage, -10% Melee Damage, over 5s, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>-2 Mana Cost.</UpgradeDescription>
 		<IconName>a_PowerIcon_DivineWord</IconName>
 		<CastSound>[200]CHR_Templar_DivineWord_Cast</CastSound>
@@ -4140,7 +4140,7 @@
 		<ComboName>DivineWordCombo4</ComboName>
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
-		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and set them alight with Holy Fire [Stats: x1.3 damage, -10% Melee Damage, over 5s, 1.3 damage/s, over 5s]</Description>
+		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and bathe them in Holy Fire [Stats: x1.3 damage, -10% Melee Damage, over 5s, 1.3 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DivineWord</IconName>
 		<CastSound>[200]CHR_Templar_DivineWord_Cast</CastSound>
@@ -4184,7 +4184,7 @@
 		<ComboName>DivineWordCombo4</ComboName>
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
-		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and set them alight with Holy Fire [Stats: x1.3 damage, -10% Melee Damage, over 5s, 1.3 damage/s, over 5s]</Description>
+		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and bathe them in Holy Fire [Stats: x1.3 damage, -10% Melee Damage, over 5s, 1.3 damage/s, over 5s]</Description>
 		<UpgradeDescription>-1 Mana Cost. +1 Weaken</UpgradeDescription>
 		<IconName>a_PowerIcon_DivineWord</IconName>
 		<CastSound>[200]CHR_Templar_DivineWord_Cast</CastSound>
@@ -4228,7 +4228,7 @@
 		<ComboName>DivineWordCombo4</ComboName>
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
-		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and set them alight with Holy Fire [Stats: x1.4 damage, -10% Melee Damage, over 5s, 1.3 damage/s, over 5s]</Description>
+		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and bathe them in Holy Fire [Stats: x1.4 damage, -10% Melee Damage, over 5s, 1.3 damage/s, over 5s]</Description>
 		<UpgradeDescription>-1 Mana Cost. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DivineWord</IconName>
 		<CastSound>[200]CHR_Templar_DivineWord_Cast</CastSound>
@@ -4272,7 +4272,7 @@
 		<ComboName>DivineWordCombo10</ComboName>
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
-		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and set them alight with Holy Fire [Stats: x1.52 damage, -10% Melee Damage, over 5s, 1.6 damage/s, over 5s]</Description>
+		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and bathe them in Holy Fire [Stats: x1.52 damage, -10% Melee Damage, over 5s, 1.6 damage/s, over 5s]</Description>
 		<UpgradeDescription>-1 Mana Cost, 125% Heal over 3 sec</UpgradeDescription>
 		<IconName>a_PowerIcon_DivineWord</IconName>
 		<CastSound>[200]CHR_Templar_DivineWord_Cast</CastSound>
@@ -4617,7 +4617,7 @@
 		<AddTargetBuff>Crippled,Blinded,ArmorBane</AddTargetBuff>
 		<DisplayName>Subjugate</DisplayName>
 		<BasePowerName>Subjugate</BasePowerName>
-		<Description>Deals damage, Cripples, Blinds and shreds the Armor of enemies in AoE [Stats: x1.67 damage, -10% Speed, over 5s, -5% Defense, over 5s]</Description>
+		<Description>Deals damage, Cripples, Blinds and applies Armor Bane to enemies in AoE [Stats: x1.67 damage, -10% Speed, over 5s, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Adds a stack of Armor Bane.</UpgradeDescription>
 		<IconName>a_PowerIcon_Subjugate</IconName>
 		<CastSound>CHR_Templar_Subjugate_Cast</CastSound>
@@ -4653,7 +4653,7 @@
 		<AddTargetBuff>Crippled,Blinded,ArmorBane</AddTargetBuff>
 		<DisplayName>Subjugate</DisplayName>
 		<BasePowerName>Subjugate</BasePowerName>
-		<Description>Deals damage, Cripples, Blinds and shreds the Armor of enemies in AoE [Stats: x1.77 damage, -10% Speed, over 5s, -5% Defense, over 5s]</Description>
+		<Description>Deals damage, Cripples, Blinds and applies Armor Bane to enemies in AoE [Stats: x1.77 damage, -10% Speed, over 5s, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Subjugate</IconName>
 		<CastSound>CHR_Templar_Subjugate_Cast</CastSound>
@@ -4689,7 +4689,7 @@
 		<AddTargetBuff>Crippled,Blinded,ArmorBane</AddTargetBuff>
 		<DisplayName>Subjugate</DisplayName>
 		<BasePowerName>Subjugate</BasePowerName>
-		<Description>Deals damage, Cripples, Blinds and shreds the Armor of enemies in AoE [Stats: x1.85 damage, -10% Speed, over 5s, -5% Defense, over 5s]</Description>
+		<Description>Deals damage, Cripples, Blinds and applies Armor Bane to enemies in AoE [Stats: x1.85 damage, -10% Speed, over 5s, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Subjugate</IconName>
 		<CastSound>CHR_Templar_Subjugate_Cast</CastSound>
@@ -4725,7 +4725,7 @@
 		<AddTargetBuff>Crippled,Crippled,Blinded,ArmorBane</AddTargetBuff>
 		<DisplayName>Subjugate</DisplayName>
 		<BasePowerName>Subjugate</BasePowerName>
-		<Description>Deals damage, Cripples, Blinds and shreds the Armor of enemies in AoE [Stats: x1.85 damage, -10% Speed, over 5s, -5% Defense, over 5s]</Description>
+		<Description>Deals damage, Cripples, Blinds and applies Armor Bane to enemies in AoE [Stats: x1.85 damage, -10% Speed, over 5s, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Adds a stack of Cripple.</UpgradeDescription>
 		<IconName>a_PowerIcon_Subjugate</IconName>
 		<CastSound>CHR_Templar_Subjugate_Cast</CastSound>
@@ -6000,7 +6000,7 @@
 		<AddSelfBuff>Verdict1</AddSelfBuff>
 		<DisplayName>Verdict</DisplayName>
 		<BasePowerName>Verdict</BasePowerName>
-		<Description>Your basic attacks channel divine energy, healing allies and harming foes</Description>
+		<Description>Your basic attacks channel divine energy, healing allies and harming and Blinding foes</Description>
 		<UpgradeDescription>Shots damage and heal in AoE #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Verdict</IconName>
 		<CastSound>CHR_Justicar_FuriousAssault_Swing_01[410]CHR_Templar_Verdict_Cast</CastSound>
@@ -6028,7 +6028,7 @@
 		<AddSelfBuff>Verdict2</AddSelfBuff>
 		<DisplayName>Verdict</DisplayName>
 		<BasePowerName>Verdict</BasePowerName>
-		<Description>Your basic attacks channel divine energy, healing allies and harming foes</Description>
+		<Description>Your basic attacks channel divine energy, healing allies and harming and Blinding foes</Description>
 		<UpgradeDescription>+30% Healing per shot</UpgradeDescription>
 		<IconName>a_PowerIcon_Verdict</IconName>
 		<CastSound>CHR_Justicar_FuriousAssault_Swing_01[410]CHR_Templar_Verdict_Cast</CastSound>
@@ -6056,7 +6056,7 @@
 		<AddSelfBuff>Verdict3</AddSelfBuff>
 		<DisplayName>Verdict</DisplayName>
 		<BasePowerName>Verdict</BasePowerName>
-		<Description>Your basic attacks channel divine energy, healing allies and harming foes</Description>
+		<Description>Your basic attacks channel divine energy, healing allies and harming and Blinding foes</Description>
 		<UpgradeDescription>+1 Second Duration</UpgradeDescription>
 		<IconName>a_PowerIcon_Verdict</IconName>
 		<CastSound>CHR_Justicar_FuriousAssault_Swing_01[410]CHR_Templar_Verdict_Cast</CastSound>
@@ -6084,7 +6084,7 @@
 		<AddSelfBuff>Verdict4</AddSelfBuff>
 		<DisplayName>Verdict</DisplayName>
 		<BasePowerName>Verdict</BasePowerName>
-		<Description>Your basic attacks channel divine energy, healing allies and harming foes</Description>
+		<Description>Your basic attacks channel divine energy, healing allies and harming and Blinding foes</Description>
 		<UpgradeDescription>Increased Damage per shot #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Verdict</IconName>
 		<CastSound>CHR_Justicar_FuriousAssault_Swing_01[410]CHR_Templar_Verdict_Cast</CastSound>
@@ -6112,7 +6112,7 @@
 		<AddSelfBuff>Verdict5</AddSelfBuff>
 		<DisplayName>Verdict</DisplayName>
 		<BasePowerName>Verdict</BasePowerName>
-		<Description>Your basic attacks channel divine energy, healing allies and harming foes</Description>
+		<Description>Your basic attacks channel divine energy, healing allies and harming and Blinding foes</Description>
 		<UpgradeDescription>+50% Healing per shot</UpgradeDescription>
 		<IconName>a_PowerIcon_Verdict</IconName>
 		<CastSound>CHR_Justicar_FuriousAssault_Swing_01[410]CHR_Templar_Verdict_Cast</CastSound>
@@ -6140,7 +6140,7 @@
 		<AddSelfBuff>Verdict6</AddSelfBuff>
 		<DisplayName>Verdict</DisplayName>
 		<BasePowerName>Verdict</BasePowerName>
-		<Description>Your basic attacks channel divine energy, healing allies and harming foes</Description>
+		<Description>Your basic attacks channel divine energy, healing allies and harming and Blinding foes</Description>
 		<UpgradeDescription>Increased Damage per shot #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Verdict</IconName>
 		<CastSound>CHR_Justicar_FuriousAssault_Swing_01[410]CHR_Templar_Verdict_Cast</CastSound>
@@ -6168,7 +6168,7 @@
 		<AddSelfBuff>Verdict7</AddSelfBuff>
 		<DisplayName>Verdict</DisplayName>
 		<BasePowerName>Verdict</BasePowerName>
-		<Description>Your basic attacks channel divine energy, healing allies and harming foes</Description>
+		<Description>Your basic attacks channel divine energy, healing allies and harming and Blinding foes</Description>
 		<UpgradeDescription>+40% Healing per shot</UpgradeDescription>
 		<IconName>a_PowerIcon_Verdict</IconName>
 		<CastSound>CHR_Justicar_FuriousAssault_Swing_01[410]CHR_Templar_Verdict_Cast</CastSound>
@@ -6196,7 +6196,7 @@
 		<AddSelfBuff>Verdict8</AddSelfBuff>
 		<DisplayName>Verdict</DisplayName>
 		<BasePowerName>Verdict</BasePowerName>
-		<Description>Your basic attacks channel divine energy, healing allies and harming foes</Description>
+		<Description>Your basic attacks channel divine energy, healing allies and harming and Blinding foes</Description>
 		<UpgradeDescription>+.5 Second Duration</UpgradeDescription>
 		<IconName>a_PowerIcon_Verdict</IconName>
 		<CastSound>CHR_Justicar_FuriousAssault_Swing_01[410]CHR_Templar_Verdict_Cast</CastSound>
@@ -6224,8 +6224,8 @@
 		<AddSelfBuff>Verdict9</AddSelfBuff>
 		<DisplayName>Verdict</DisplayName>
 		<BasePowerName>Verdict</BasePowerName>
-		<Description>Your basic attacks channel divine energy, healing allies and harming foes</Description>
-		<UpgradeDescription>Each shot returns 2 Mana.</UpgradeDescription>
+		<Description>Your basic attacks channel divine energy, healing allies and harming and Blinding foes</Description>
+		<UpgradeDescription>+30% Healing per shot. Each shot returns 2 Mana.</UpgradeDescription>
 		<IconName>a_PowerIcon_Verdict</IconName>
 		<CastSound>CHR_Justicar_FuriousAssault_Swing_01[410]CHR_Templar_Verdict_Cast</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -6252,7 +6252,7 @@
 		<AddSelfBuff>Verdict10</AddSelfBuff>
 		<DisplayName>Verdict</DisplayName>
 		<BasePowerName>Verdict</BasePowerName>
-		<Description>Your basic attacks channel divine energy, healing allies and harming foes</Description>
+		<Description>Your basic attacks channel divine energy, healing allies and harming and Blinding foes</Description>
 		<UpgradeDescription>+50% Healing per shot. +1.5 Second Duration.</UpgradeDescription>
 		<IconName>a_PowerIcon_Verdict</IconName>
 		<CastSound>CHR_Justicar_FuriousAssault_Swing_01[410]CHR_Templar_Verdict_Cast</CastSound>
@@ -7356,7 +7356,7 @@
 		<AddTargetBuff>LeoneanAura1</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>For 5 seconds, create an aura that grants nearby Allies a 15% Attack and Expertise boost that lingers for 2 seconds. [Stats: +15% Damage, over 2s]</Description>
+		<Description>For 5 seconds, create an aura that grants nearby Allies a 15% Attack and Expertise boost. The boost lasts 2 seconds. [Stats: +15% Damage, over 2s]</Description>
 		<UpgradeDescription>Grants a 15% Attack and Expertise Boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7389,7 +7389,7 @@
 		<AddTargetBuff>LeoneanAura2</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>For 5 seconds, create an aura that grants nearby Allies a 16% Attack and Expertise boost that lingers for 2 seconds. [Stats: +16% Damage, over 2s]</Description>
+		<Description>For 5 seconds, create an aura that grants nearby Allies a 16% Attack and Expertise boost. The boost lasts 2 seconds. [Stats: +16% Damage, over 2s]</Description>
 		<UpgradeDescription>Grants a 16% Attack and Expertise Boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7422,7 +7422,7 @@
 		<AddTargetBuff>LeoneanAura3</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>For 5 seconds, create an aura that grants nearby Allies an 18% Attack and Expertise boost that lingers for 2 seconds. [Stats: +18% Damage, over 2s]</Description>
+		<Description>For 5 seconds, create an aura that grants nearby Allies an 18% Attack and Expertise boost. The boost lasts 2 seconds. [Stats: +18% Damage, over 2s]</Description>
 		<UpgradeDescription>Grants an 18% Attack and Expertise Boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7455,7 +7455,7 @@
 		<AddTargetBuff>LeoneanAura4</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>For 5 seconds, create an aura that grants nearby Allies a 19% Attack and Expertise boost that lingers for 3 seconds. [Stats: +19% Damage, over 3s]</Description>
+		<Description>For 5 seconds, create an aura that grants nearby Allies a 19% Attack and Expertise boost. The boost lasts 3 seconds. [Stats: +19% Damage, over 3s]</Description>
 		<UpgradeDescription>Grants a 19% Attack and Expertise Boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7488,7 +7488,7 @@
 		<AddTargetBuff>LeoneanAura5</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>For 5 seconds, create an aura that grants nearby Allies a 20% Attack and Expertise boost that lingers for 3 seconds. [Stats: +20% Damage, over 3s]</Description>
+		<Description>For 5 seconds, create an aura that grants nearby Allies a 20% Attack and Expertise boost. The boost lasts 3 seconds. [Stats: +20% Damage, over 3s]</Description>
 		<UpgradeDescription>Grants a 20% Attack and Expertise Boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7521,7 +7521,7 @@
 		<AddTargetBuff>LeoneanAura6</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>For 5 seconds, create an aura that grants nearby Allies a 25% Attack and Expertise boost that lingers for 3 seconds. [Stats: +25% Damage, over 3s]</Description>
+		<Description>For 5 seconds, create an aura that grants nearby Allies a 25% Attack and Expertise boost. The boost lasts 3 seconds. [Stats: +25% Damage, over 3s]</Description>
 		<UpgradeDescription>Grants a 25% Attack and Expertise boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7554,7 +7554,7 @@
 		<AddTargetBuff>LeoneanAura7</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>For 5 seconds, create an aura that grants nearby Allies a 26% Attack and Expertise boost that lingers for 5 seconds. [Stats: +26% Damage, over 5s]</Description>
+		<Description>For 5 seconds, create an aura that grants nearby Allies a 26% Attack and Expertise boost. The boost lasts 5 seconds. [Stats: +26% Damage, over 5s]</Description>
 		<UpgradeDescription>Grantsa 26% Attack and Expertise boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7587,7 +7587,7 @@
 		<AddTargetBuff>LeoneanAura8</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>For 5 seconds, create an aura that grants nearby Allies a 28% Attack and Expertise boost that lingers for 5 seconds. [Stats: +28% Damage, over 5s]</Description>
+		<Description>For 5 seconds, create an aura that grants nearby Allies a 28% Attack and Expertise boost. The boost lasts 5 seconds. [Stats: +28% Damage, over 5s]</Description>
 		<UpgradeDescription>Grants a 28% Attack and Expertise boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7620,7 +7620,7 @@
 		<AddTargetBuff>LeoneanAura9</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>For 5 seconds, create an aura that grants nearby Allies a 30% Attack and Expertise boost that lingers for 5 seconds. [Stats: +30% Damage, over 5s]</Description>
+		<Description>For 5 seconds, create an aura that grants nearby Allies a 30% Attack and Expertise boost. The boost lasts 5 seconds. [Stats: +30% Damage, over 5s]</Description>
 		<UpgradeDescription>Grants a 30% Attack and Expertise boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7653,8 +7653,8 @@
 		<AddTargetBuff>LeoneanAura10</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>For 5 seconds, create an aura that grants nearby Allies a 33% Attack and Expertise boost that lingers for 8 seconds. [Stats: +33% Damage, over 8s]</Description>
-		<UpgradeDescription>Grants a 33% Attack and Expertise boost for 8 seconds</UpgradeDescription>
+		<Description>For 5 seconds, create an aura that grants nearby Allies a 33% Attack and Expertise boost. The boost lasts 8 seconds. [Stats: +33% Damage, over 8s]</Description>
+		<UpgradeDescription>Grants a 33% Attack and Expertise boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -7729,7 +7729,7 @@
 		<ComboName>SanctumCombo</ComboName>
 		<DisplayName>Sanctum</DisplayName>
 		<BasePowerName>Sanctum</BasePowerName>
-		<Description>Heals allies in an area, Blinds foes and sets them alight with Holy Fire</Description>
+		<Description>Heals allies in an area, Blinds foes and bathes them in Holy Fire</Description>
 		<UpgradeDescription>190% Heal</UpgradeDescription>
 		<IconName>a_PowerIcon_Sanctum</IconName>
 		<CastSound>CHR_Templar_Sanctum_A[415]CHR_Templar_Sanctum_B</CastSound>
@@ -7774,7 +7774,7 @@
 		<ComboName>SanctumCombo</ComboName>
 		<DisplayName>Sanctum</DisplayName>
 		<BasePowerName>Sanctum</BasePowerName>
-		<Description>Heals allies in an area, Blinds foes and sets them alight with Holy Fire</Description>
+		<Description>Heals allies in an area, Blinds foes and bathes them in Holy Fire</Description>
 		<UpgradeDescription>210% Heal</UpgradeDescription>
 		<IconName>a_PowerIcon_Sanctum</IconName>
 		<CastSound>CHR_Templar_Sanctum_A[415]CHR_Templar_Sanctum_B</CastSound>
@@ -7819,7 +7819,7 @@
 		<ComboName>SanctumCombo</ComboName>
 		<DisplayName>Sanctum</DisplayName>
 		<BasePowerName>Sanctum</BasePowerName>
-		<Description>Heals allies in an area, Blinds foes and sets them alight with Holy Fire</Description>
+		<Description>Heals allies in an area, Blinds foes and bathes them in Holy Fire</Description>
 		<UpgradeDescription>-1 second Cooldown</UpgradeDescription>
 		<IconName>a_PowerIcon_Sanctum</IconName>
 		<CastSound>CHR_Templar_Sanctum_A[415]CHR_Templar_Sanctum_B</CastSound>
@@ -7864,7 +7864,7 @@
 		<ComboName>SanctumCombo</ComboName>
 		<DisplayName>Sanctum</DisplayName>
 		<BasePowerName>Sanctum</BasePowerName>
-		<Description>Heals allies in an area, Blinds foes and sets them alight with Holy Fire</Description>
+		<Description>Heals allies in an area, Blinds foes and bathes them in Holy Fire</Description>
 		<UpgradeDescription>240% Heal</UpgradeDescription>
 		<IconName>a_PowerIcon_Sanctum</IconName>
 		<CastSound>CHR_Templar_Sanctum_A[415]CHR_Templar_Sanctum_B</CastSound>
@@ -7909,7 +7909,7 @@
 		<ComboName>SanctumCombo</ComboName>
 		<DisplayName>Sanctum</DisplayName>
 		<BasePowerName>Sanctum</BasePowerName>
-		<Description>Heals allies in an area, Blinds foes and sets them alight with Holy Fire</Description>
+		<Description>Heals allies in an area, Blinds foes and bathes them in Holy Fire</Description>
 		<UpgradeDescription>-2 second Cooldown</UpgradeDescription>
 		<IconName>a_PowerIcon_Sanctum</IconName>
 		<CastSound>CHR_Templar_Sanctum_A[415]CHR_Templar_Sanctum_B</CastSound>
@@ -7954,7 +7954,7 @@
 		<ComboName>SanctumCombo</ComboName>
 		<DisplayName>Sanctum</DisplayName>
 		<BasePowerName>Sanctum</BasePowerName>
-		<Description>Heals allies in an area, Blinds foes and sets them alight with Holy Fire</Description>
+		<Description>Heals allies in an area, Blinds foes and bathes them in Holy Fire</Description>
 		<UpgradeDescription>290% Heal</UpgradeDescription>
 		<IconName>a_PowerIcon_Sanctum</IconName>
 		<CastSound>CHR_Templar_Sanctum_A[415]CHR_Templar_Sanctum_B</CastSound>
@@ -7999,7 +7999,7 @@
 		<ComboName>SanctumCombo</ComboName>
 		<DisplayName>Sanctum</DisplayName>
 		<BasePowerName>Sanctum</BasePowerName>
-		<Description>Heals allies in an area, Blinds foes and sets them alight with Holy Fire</Description>
+		<Description>Heals allies in an area, Blinds foes and bathes them in Holy Fire</Description>
 		<UpgradeDescription>-1 second Cooldown</UpgradeDescription>
 		<IconName>a_PowerIcon_Sanctum</IconName>
 		<CastSound>CHR_Templar_Sanctum_A[415]CHR_Templar_Sanctum_B</CastSound>
@@ -8044,7 +8044,7 @@
 		<ComboName>SanctumCombo</ComboName>
 		<DisplayName>Sanctum</DisplayName>
 		<BasePowerName>Sanctum</BasePowerName>
-		<Description>Heals allies in an area, Blinds foes and sets them alight with Holy Fire</Description>
+		<Description>Heals allies in an area, Blinds foes and bathes them in Holy Fire</Description>
 		<UpgradeDescription>320% Heal</UpgradeDescription>
 		<IconName>a_PowerIcon_Sanctum</IconName>
 		<CastSound>CHR_Templar_Sanctum_A[415]CHR_Templar_Sanctum_B</CastSound>
@@ -8089,7 +8089,7 @@
 		<ComboName>SanctumCombo</ComboName>
 		<DisplayName>Sanctum</DisplayName>
 		<BasePowerName>Sanctum</BasePowerName>
-		<Description>Heals allies in an area, Blinds foes and sets them alight with Holy Fire</Description>
+		<Description>Heals allies in an area, Blinds foes and bathes them in Holy Fire</Description>
 		<UpgradeDescription>-1 second Cooldown</UpgradeDescription>
 		<IconName>a_PowerIcon_Sanctum</IconName>
 		<CastSound>CHR_Templar_Sanctum_A[415]CHR_Templar_Sanctum_B</CastSound>
@@ -8134,7 +8134,7 @@
 		<ComboName>SanctumCombo</ComboName>
 		<DisplayName>Sanctum</DisplayName>
 		<BasePowerName>Sanctum</BasePowerName>
-		<Description>Heals allies in an area, Blinds foes and sets them alight with Holy Fire</Description>
+		<Description>Heals allies in an area, Blinds foes and bathes them in Holy Fire</Description>
 		<UpgradeDescription>380% Heal</UpgradeDescription>
 		<IconName>a_PowerIcon_Sanctum</IconName>
 		<CastSound>CHR_Templar_Sanctum_A[415]CHR_Templar_Sanctum_B</CastSound>
@@ -8408,7 +8408,7 @@
 		<ComboName>CelestialLanceCombo3</ComboName>
 		<DisplayName>Celestial Lance</DisplayName>
 		<BasePowerName>CelestialLance</BasePowerName>
-		<Description>Strike every foe around your target with an explosive lance, Staggering them and bathing the area in Holy Fire [Stats: x2.75 damage]</Description>
+		<Description>Strike every foe around your target with an explosive lance, Staggering and bathing them in Holy Fire [Stats: x2.75 damage]</Description>
 		<UpgradeDescription>The Lance now strikes every enemy around its target.</UpgradeDescription>
 		<IconName>a_PowerIcon_CelestialLance</IconName>
 		<CastSound>snd_pwr_paladin_touchHeal[400]CHR_Templar_CelestialLance_B</CastSound>
@@ -8440,7 +8440,7 @@
 		<ComboName>CelestialLanceCombo3</ComboName>
 		<DisplayName>Celestial Lance</DisplayName>
 		<BasePowerName>CelestialLance</BasePowerName>
-		<Description>Strike every foe around your target with an explosive lance, Staggering them and bathing the area in Holy Fire [Stats: x3 damage]</Description>
+		<Description>Strike every foe around your target with an explosive lance, Staggering and bathing them in Holy Fire [Stats: x3 damage]</Description>
 		<UpgradeDescription>Increased Lance Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CelestialLance</IconName>
 		<CastSound>snd_pwr_paladin_touchHeal[400]CHR_Templar_CelestialLance_B</CastSound>
@@ -8472,7 +8472,7 @@
 		<ComboName>CelestialLanceCombo4</ComboName>
 		<DisplayName>Celestial Lance</DisplayName>
 		<BasePowerName>CelestialLance</BasePowerName>
-		<Description>Strike every foe around your target with an explosive lance, Staggering them and bathing the area in Holy Fire [Stats: x3 damage]</Description>
+		<Description>Strike every foe around your target with an explosive lance, Staggering and bathing them in Holy Fire [Stats: x3 damage]</Description>
 		<UpgradeDescription>Increased Holy Fire Damage</UpgradeDescription>
 		<IconName>a_PowerIcon_CelestialLance</IconName>
 		<CastSound>snd_pwr_paladin_touchHeal[400]CHR_Templar_CelestialLance_B</CastSound>
@@ -8504,7 +8504,7 @@
 		<ComboName>CelestialLanceCombo4</ComboName>
 		<DisplayName>Celestial Lance</DisplayName>
 		<BasePowerName>CelestialLance</BasePowerName>
-		<Description>Strike every foe around your target with an explosive lance, Staggering them and bathing the area in Holy Fire [Stats: x3.25 damage]</Description>
+		<Description>Strike every foe around your target with an explosive lance, Staggering and bathing them in Holy Fire [Stats: x3.25 damage]</Description>
 		<UpgradeDescription>Increased Lance Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CelestialLance</IconName>
 		<CastSound>snd_pwr_paladin_touchHeal[400]CHR_Templar_CelestialLance_B</CastSound>
@@ -8537,7 +8537,7 @@
 		<ComboName>CelestialLanceCombo5</ComboName>
 		<DisplayName>Celestial Lance</DisplayName>
 		<BasePowerName>CelestialLance</BasePowerName>
-		<Description>Stun a foe and strike everything around them with an explosive lance, Staggering and bathing the area in Holy Fire [Stats: x3.75 damage]</Description>
+		<Description>Stun your target and strike every foe around it with an explosive lance, Staggering and bathing them in Holy Fire [Stats: x3.75 damage]</Description>
 		<UpgradeDescription>Stuns Lance target. Increased Holy Fire Damage. Increased Lance Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CelestialLance</IconName>
 		<CastSound>snd_pwr_paladin_touchHeal[400]CHR_Templar_CelestialLance_B</CastSound>
@@ -10166,8 +10166,8 @@
 		<AddSelfBuff>MeleeAoE2</AddSelfBuff>
 		<DisplayName>Cleaving Blows</DisplayName>
 		<BasePowerName>CleavingBlows</BasePowerName>
-		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return 3 Mana a swing.</Description>
-		<UpgradeDescription>Your swings return 3 Mana each. Increased Damage #olddmg#</UpgradeDescription>
+		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return Mana.</Description>
+		<UpgradeDescription>Your swings return 5 Mana each. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CleavingBlows</IconName>
 		<CastSound>snd_pwr_paladin_warcry_jumpland,snd_pwr_paladin_warcry_vox_01$[410]snd_pwr_paladin_warcry_woosh,snd_pwr_paladin_warcry_vox_02$</CastSound>
 		<CastGfx/>
@@ -10195,7 +10195,7 @@
 		<AddSelfBuff>MeleeAoE3</AddSelfBuff>
 		<DisplayName>Cleaving Blows</DisplayName>
 		<BasePowerName>CleavingBlows</BasePowerName>
-		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return 3 Mana a swing.</Description>
+		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return Mana.</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CleavingBlows</IconName>
 		<CastSound>snd_pwr_paladin_warcry_jumpland,snd_pwr_paladin_warcry_vox_01$[410]snd_pwr_paladin_warcry_woosh,snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -10224,7 +10224,7 @@
 		<AddSelfBuff>MeleeAoE4</AddSelfBuff>
 		<DisplayName>Cleaving Blows</DisplayName>
 		<BasePowerName>CleavingBlows</BasePowerName>
-		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return 3 Mana a swing.</Description>
+		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return Mana.</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CleavingBlows</IconName>
 		<CastSound>snd_pwr_paladin_warcry_jumpland,snd_pwr_paladin_warcry_vox_01$[410]snd_pwr_paladin_warcry_woosh,snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -10253,7 +10253,7 @@
 		<AddSelfBuff>MeleeAoE5</AddSelfBuff>
 		<DisplayName>Cleaving Blows</DisplayName>
 		<BasePowerName>CleavingBlows</BasePowerName>
-		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return 3 Mana a swing.</Description>
+		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return Mana.</Description>
 		<UpgradeDescription>Ignites on both hits of attack.</UpgradeDescription>
 		<IconName>a_PowerIcon_CleavingBlows</IconName>
 		<CastSound>snd_pwr_paladin_warcry_jumpland,snd_pwr_paladin_warcry_vox_01$[410]snd_pwr_paladin_warcry_woosh,snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -10282,7 +10282,7 @@
 		<AddSelfBuff>MeleeAoE6</AddSelfBuff>
 		<DisplayName>Cleaving Blows</DisplayName>
 		<BasePowerName>CleavingBlows</BasePowerName>
-		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return 3 Mana a swing.</Description>
+		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return Mana.</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CleavingBlows</IconName>
 		<CastSound>snd_pwr_paladin_warcry_jumpland,snd_pwr_paladin_warcry_vox_01$[410]snd_pwr_paladin_warcry_woosh,snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -10311,7 +10311,7 @@
 		<AddSelfBuff>MeleeAoE7</AddSelfBuff>
 		<DisplayName>Cleaving Blows</DisplayName>
 		<BasePowerName>CleavingBlows</BasePowerName>
-		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return 3 Mana a swing.</Description>
+		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return Mana.</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CleavingBlows</IconName>
 		<CastSound>snd_pwr_paladin_warcry_jumpland,snd_pwr_paladin_warcry_vox_01$[410]snd_pwr_paladin_warcry_woosh,snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -10340,7 +10340,7 @@
 		<AddSelfBuff>MeleeAoE8</AddSelfBuff>
 		<DisplayName>Cleaving Blows</DisplayName>
 		<BasePowerName>CleavingBlows</BasePowerName>
-		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return 3 Mana a swing.</Description>
+		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return Mana.</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CleavingBlows</IconName>
 		<CastSound>snd_pwr_paladin_warcry_jumpland,snd_pwr_paladin_warcry_vox_01$[410]snd_pwr_paladin_warcry_woosh,snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -10369,7 +10369,7 @@
 		<AddSelfBuff>MeleeAoE9</AddSelfBuff>
 		<DisplayName>Cleaving Blows</DisplayName>
 		<BasePowerName>CleavingBlows</BasePowerName>
-		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return 3 Mana a swing.</Description>
+		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return Mana.</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CleavingBlows</IconName>
 		<CastSound>snd_pwr_paladin_warcry_jumpland,snd_pwr_paladin_warcry_vox_01$[410]snd_pwr_paladin_warcry_woosh,snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -10398,7 +10398,7 @@
 		<AddSelfBuff>MeleeAoE10</AddSelfBuff>
 		<DisplayName>Cleaving Blows</DisplayName>
 		<BasePowerName>CleavingBlows</BasePowerName>
-		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return 3 Mana a swing.</Description>
+		<Description>For 5 seconds your basic melee attacks deal AoE damage, Ignite targets and return Mana.</Description>
 		<UpgradeDescription>Increased duration.</UpgradeDescription>
 		<IconName>a_PowerIcon_CleavingBlows</IconName>
 		<CastSound>snd_pwr_paladin_warcry_jumpland,snd_pwr_paladin_warcry_vox_01$[410]snd_pwr_paladin_warcry_woosh,snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -11386,8 +11386,8 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe for heavy damage and 2 stacks of Armor Bane, turning them into a Lightning Bomb that explodes when killed. Bomb effect spreads to one affected target. [Stats: x3.68 damage, -5% Defense, over 5s]</Description>
-		<UpgradeDescription>Stab a foe for heavy damage and 2 stacks of Armor Bane, turning them into a Lightning Bomb that explodes when killed. Bomb effect spreads to one affected target.</UpgradeDescription>
+		<Description>Turns a foe into a Lightning Bomb causing them to explode when killed. Bomb effect spreads to one affected target. [Stats: x3.68 damage, -5% Defense, over 5s]</Description>
+		<UpgradeDescription>Turns a foe into a Lightning Bomb causing them to explode when killed. Bomb effect spreads to one affected target.</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -11426,7 +11426,7 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe for heavy damage and 2 stacks of Armor Bane, turning them into a Lightning Bomb that explodes when killed. Bomb effect spreads to one affected target. [Stats: x3.9 damage, -5% Defense, over 5s]</Description>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect spreads to one affected target. [Stats: x3.9 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage to initial attack. #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -11466,7 +11466,7 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe for heavy damage and 2 stacks of Armor Bane, turning them into a Lightning Bomb that explodes when killed. Bomb effect spreads to one affected target. [Stats: x3.9 damage, -5% Defense, over 5s]</Description>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect spreads to one affected target. [Stats: x3.9 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>-5 Second Cooldown.</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -11506,7 +11506,7 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe for heavy damage and 2 stacks of Armor Bane, turning them into a Lightning Bomb that explodes when killed. Bomb effect spreads to one affected target. [Stats: x4 damage, -5% Defense, over 5s]</Description>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect spreads to one affected target. [Stats: x4 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage to final bomb.</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -11546,7 +11546,7 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe for heavy damage and 2 stacks of Armor Bane, turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4 damage, -5% Defense, over 5s]</Description>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Bomb affliction spreads one additional time.</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -11586,7 +11586,7 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe for heavy damage and 2 stacks of Armor Bane, turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4.36 damage, -5% Defense, over 5s]</Description>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4.36 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>-5 Second Cooldown. Increased Damage to initial attack. #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -11626,7 +11626,7 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe for heavy damage and 2 stacks of Armor Bane, turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4.77 damage, -5% Defense, over 5s]</Description>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4.77 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage to final bomb and Increased Damage to intial attack  #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -11666,7 +11666,7 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe for heavy damage and 2 stacks of Armor Bane, turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4.87 damage, -5% Defense, over 5s]</Description>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4.87 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>-5 Second Cooldown. Increased Damage to final bomb.</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -11706,7 +11706,7 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe for heavy damage and 2 stacks of Armor Bane, turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4.97 damage, -5% Defense, over 5s]</Description>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4.97 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage to final bomb.</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -11746,7 +11746,7 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe for heavy damage and 2 stacks of Armor Bane, turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread three times [Stats: x4.97 damage, -5% Defense, over 5s]</Description>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread three times [Stats: x4.97 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Bomb affliction spreads one additional time.</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -46439,7 +46439,7 @@
 		<AddTargetBuff>Bound,ChaosWeaken</AddTargetBuff>
 		<AddSelfBuff>ChaosArmor</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
-		<Description>Release Chaotic energy, damaging, Binding and reducing the Attack of nearby foes [Stats: x0.9 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy, Binding and reducing the Attack of nearby foes [Stats: x0.9 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_ChaosWave_A[280]CHR_SoulThief_ChaosWave_B</CastSound>
@@ -46472,7 +46472,7 @@
 		<AddSelfBuff>ChaosArmor</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy, damaging, Binding and reducing the Attack of nearby foes [Stats: x0.9 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy, Binding and reducing the Attack of nearby foes [Stats: x0.9 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_ChaosWave_A[280]CHR_SoulThief_ChaosWave_B</CastSound>
@@ -46505,7 +46505,7 @@
 		<AddSelfBuff>ChaosArmor5</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy, damaging, Binding and reducing the Attack of nearby foes. Grants an Expertise buff [Stats: x1 damage, +5% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1 damage, +5% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Gain 5% Expertise bonus for duration</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -46539,7 +46539,7 @@
 		<AddSelfBuff>ChaosArmor5</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy, damaging, Binding and reducing the Attack of nearby foes. Grants an Expertise buff [Stats: x1 damage, +5% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1 damage, +5% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>-1 Mana</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -46573,7 +46573,7 @@
 		<AddSelfBuff>ChaosArmor5</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy, damaging, Binding and reducing the Attack of nearby foes. Grants an Expertise buff [Stats: x1.35 damage, +5% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1.35 damage, +5% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -46607,7 +46607,7 @@
 		<AddSelfBuff>ChaosArmor5</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy, damaging, Binding and reducing the Attack of nearby foes. Grants an Expertise buff [Stats: x1.35 damage, +5% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1.35 damage, +5% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>-1 Mana</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -46641,7 +46641,7 @@
 		<AddSelfBuff>ChaosArmor10</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy, damaging, Binding and reducing the Attack of nearby foes. Grants an Expertise buff [Stats: x1.5 damage, +10% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1.5 damage, +10% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Gain 10% Expertise bonus for duration</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -46675,7 +46675,7 @@
 		<AddSelfBuff>ChaosArmor10</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy, damaging, Binding and reducing the Attack of nearby foes. Grants an Expertise buff [Stats: x1.6 damage, +10% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1.6 damage, +10% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>-1 Mana</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -46709,7 +46709,7 @@
 		<AddSelfBuff>ChaosArmor15</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy, damaging, Binding and reducing the Attack of nearby foes. Grants an Expertise buff [Stats: x1.75 damage, +15% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1.75 damage, +15% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Gain 15% Expertise bonus for duration</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -46743,7 +46743,7 @@
 		<AddSelfBuff>ChaosArmor15</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy, damaging, Binding and reducing the Attack of nearby foes. Grants an Expertise buff [Stats: x1.9 damage, +15% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1.9 damage, +15% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>-2 Mana</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -46777,7 +46777,7 @@
 		<AddSelfBuff>ChaosArmor30</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy, damaging, Binding and reducing the Attack of nearby foes. Grants an Expertise buff [Stats: x2.1 damage, +30% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x2.1 damage, +30% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Gain 30% Expertise bonus for duration</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -47976,7 +47976,7 @@
 		<AddTargetBuff>GhostBladeTarget1</AddTargetBuff>
 		<AddSelfBuff>OnDamage:GhostBlade1</AddSelfBuff>
 		<DisplayName>Ghost Blade</DisplayName>
-		<Description>Steal your foe's Attack, gaining Attack and Expertise while it lives. 4 sec duration. [Stats: x1.44 damage, -35% Melee Damage, over 4s]</Description>
+		<Description>Steal your foe's Attack and Expertise while it lives. 4 sec duration. [Stats: x1.44 damage, -35% Melee Damage, over 4s]</Description>
 		<IconName>a_PowerIcon_GhostBlade</IconName>
 		<CastSound>CHR_SoulThief_GhostBlade_A[300]CHR_SoulThief_GhostBlade_B</CastSound>
 		<CastGfx/>
@@ -48003,7 +48003,7 @@
 		<AddSelfBuff>OnDamage:GhostBlade1</AddSelfBuff>
 		<DisplayName>Ghost Blade</DisplayName>
 		<BasePowerName>GhostBlade</BasePowerName>
-		<Description>Steal your foe's Attack, gaining Attack and Expertise while it lives. 4 sec duration. [Stats: x1.44 damage, -35% Melee Damage, over 4s]</Description>
+		<Description>Steal your foe's Attack and Expertise while it lives. 4 sec duration. [Stats: x1.44 damage, -35% Melee Damage, over 4s]</Description>
 		<UpgradeDescription>-35% target Attack, +20% Attack and Expertise for 4 seconds</UpgradeDescription>
 		<IconName>a_PowerIcon_GhostBlade</IconName>
 		<CastSound>CHR_SoulThief_GhostBlade_A[300]CHR_SoulThief_GhostBlade_B</CastSound>
@@ -48031,7 +48031,7 @@
 		<AddSelfBuff>OnDamage:GhostBlade1</AddSelfBuff>
 		<DisplayName>Ghost Blade</DisplayName>
 		<BasePowerName>GhostBlade</BasePowerName>
-		<Description>Steal your foe's Attack, gaining Attack and Expertise while it lives. 4 sec duration. [Stats: x1.73 damage, -35% Melee Damage, over 4s]</Description>
+		<Description>Steal your foe's Attack and Expertise while it lives. 4 sec duration. [Stats: x1.73 damage, -35% Melee Damage, over 4s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_GhostBlade</IconName>
 		<CastSound>CHR_SoulThief_GhostBlade_A[300]CHR_SoulThief_GhostBlade_B</CastSound>
@@ -48059,7 +48059,7 @@
 		<AddSelfBuff>OnDamage:GhostBlade1</AddSelfBuff>
 		<DisplayName>Ghost Blade</DisplayName>
 		<BasePowerName>GhostBlade</BasePowerName>
-		<Description>Steal your foe's Attack, gaining Attack and Expertise while it lives. 4 sec duration. [Stats: x2.08 damage, -35% Melee Damage, over 4s]</Description>
+		<Description>Steal your foe's Attack and Expertise while it lives. 4 sec duration. [Stats: x2.08 damage, -35% Melee Damage, over 4s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_GhostBlade</IconName>
 		<CastSound>CHR_SoulThief_GhostBlade_A[300]CHR_SoulThief_GhostBlade_B</CastSound>
@@ -48087,7 +48087,7 @@
 		<AddSelfBuff>OnDamage:GhostBlade4</AddSelfBuff>
 		<DisplayName>Ghost Blade</DisplayName>
 		<BasePowerName>GhostBlade</BasePowerName>
-		<Description>Steal your foe's Attack, gaining Attack and Expertise while it lives. 4 sec duration. [Stats: x2.08 damage, -40% Melee Damage, over 4s]</Description>
+		<Description>Steal your foe's Attack and Expertise while it lives. 4 sec duration. [Stats: x2.08 damage, -40% Melee Damage, over 4s]</Description>
 		<UpgradeDescription>-40% target Attack, +25% Attack and Expertise for 4 seconds</UpgradeDescription>
 		<IconName>a_PowerIcon_GhostBlade</IconName>
 		<CastSound>CHR_SoulThief_GhostBlade_A[300]CHR_SoulThief_GhostBlade_B</CastSound>
@@ -48115,7 +48115,7 @@
 		<AddSelfBuff>OnDamage:GhostBlade4</AddSelfBuff>
 		<DisplayName>Ghost Blade</DisplayName>
 		<BasePowerName>GhostBlade</BasePowerName>
-		<Description>Steal your foe's Attack, gaining Attack and Expertise while it lives. 4 sec duration. [Stats: x2.39 damage, -40% Melee Damage, over 4s]</Description>
+		<Description>Steal your foe's Attack and Expertise while it lives. 4 sec duration. [Stats: x2.39 damage, -40% Melee Damage, over 4s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_GhostBlade</IconName>
 		<CastSound>CHR_SoulThief_GhostBlade_A[300]CHR_SoulThief_GhostBlade_B</CastSound>
@@ -48143,7 +48143,7 @@
 		<AddSelfBuff>OnDamage:GhostBlade6</AddSelfBuff>
 		<DisplayName>Ghost Blade</DisplayName>
 		<BasePowerName>GhostBlade</BasePowerName>
-		<Description>Steal your foe's Attack, gaining Attack and Expertise while it lives. 4 sec duration. [Stats: x2.39 damage, -40% Melee Damage, over 5s]</Description>
+		<Description>Steal your foe's Attack and Expertise while it lives. 4 sec duration. [Stats: x2.39 damage, -40% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>+1 second duration.</UpgradeDescription>
 		<IconName>a_PowerIcon_GhostBlade</IconName>
 		<CastSound>CHR_SoulThief_GhostBlade_A[300]CHR_SoulThief_GhostBlade_B</CastSound>
@@ -48171,7 +48171,7 @@
 		<AddSelfBuff>OnDamage:GhostBlade7</AddSelfBuff>
 		<DisplayName>Ghost Blade</DisplayName>
 		<BasePowerName>GhostBlade</BasePowerName>
-		<Description>Steal your foe's Attack, gaining Attack and Expertise while it lives. 5 sec duration. [Stats: x2.39 damage, -45% Melee Damage, over 5s]</Description>
+		<Description>Steal your foe's Attack and Expertise while it lives. 5 sec duration. [Stats: x2.39 damage, -45% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>-45% target Attack, +30% Attack and Expertise for 5 seconds</UpgradeDescription>
 		<IconName>a_PowerIcon_GhostBlade</IconName>
 		<CastSound>CHR_SoulThief_GhostBlade_A[300]CHR_SoulThief_GhostBlade_B</CastSound>
@@ -48199,7 +48199,7 @@
 		<AddSelfBuff>OnDamage:GhostBlade7</AddSelfBuff>
 		<DisplayName>Ghost Blade</DisplayName>
 		<BasePowerName>GhostBlade</BasePowerName>
-		<Description>Steal your foe's Attack, gaining Attack and Expertise while it lives. 5 sec duration. [Stats: x2.63 damage, -45% Melee Damage, over 5s]</Description>
+		<Description>Steal your foe's Attack and Expertise while it lives. 5 sec duration. [Stats: x2.63 damage, -45% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>+1 second duration. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_GhostBlade</IconName>
 		<CastSound>CHR_SoulThief_GhostBlade_A[300]CHR_SoulThief_GhostBlade_B</CastSound>
@@ -48227,7 +48227,7 @@
 		<AddSelfBuff>OnDamage:GhostBlade9</AddSelfBuff>
 		<DisplayName>Ghost Blade</DisplayName>
 		<BasePowerName>GhostBlade</BasePowerName>
-		<Description>Steal your foe's Attack, gaining Attack and Expertise while it lives. 5 sec duration. [Stats: x2.99 damage, -45% Melee Damage, over 6s]</Description>
+		<Description>Steal your foe's Attack and Expertise while it lives. 5 sec duration. [Stats: x2.99 damage, -45% Melee Damage, over 6s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_GhostBlade</IconName>
 		<CastSound>CHR_SoulThief_GhostBlade_A[300]CHR_SoulThief_GhostBlade_B</CastSound>
@@ -48255,7 +48255,7 @@
 		<AddSelfBuff>OnDamage:GhostBlade10</AddSelfBuff>
 		<DisplayName>Ghost Blade</DisplayName>
 		<BasePowerName>GhostBlade</BasePowerName>
-		<Description>Steal your foe's Attack, gaining Attack and Expertise while it lives. 6 sec duration. [Stats: x2.99 damage, -50% Melee Damage, over 6s]</Description>
+		<Description>Steal your foe's Attack and Expertise while it lives. 6 sec duration. [Stats: x2.99 damage, -50% Melee Damage, over 6s]</Description>
 		<UpgradeDescription>-50% target Attack, +35% Attack and Expertise for 6 seconds</UpgradeDescription>
 		<IconName>a_PowerIcon_GhostBlade</IconName>
 		<CastSound>CHR_SoulThief_GhostBlade_A[300]CHR_SoulThief_GhostBlade_B</CastSound>
@@ -49291,7 +49291,7 @@
 		<CastTime>330,410</CastTime>
 		<RecoverTime>540</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>0,3</ManaCost>
+		<ManaCost>0,5</ManaCost>
 		<BaseDamageMult>1.01</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
@@ -49329,7 +49329,7 @@
 		<CastTime>330,410</CastTime>
 		<RecoverTime>540</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>0,3</ManaCost>
+		<ManaCost>0,5</ManaCost>
 		<BaseDamageMult>1.1</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
@@ -49367,7 +49367,7 @@
 		<CastTime>330,410</CastTime>
 		<RecoverTime>540</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>0,3</ManaCost>
+		<ManaCost>0,5</ManaCost>
 		<BaseDamageMult>1.18</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
@@ -49405,7 +49405,7 @@
 		<CastTime>330,410</CastTime>
 		<RecoverTime>540</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>0,3</ManaCost>
+		<ManaCost>0,5</ManaCost>
 		<BaseDamageMult>1.18</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
@@ -49443,7 +49443,7 @@
 		<CastTime>330,410</CastTime>
 		<RecoverTime>540</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>0,3</ManaCost>
+		<ManaCost>0,5</ManaCost>
 		<BaseDamageMult>1.22</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
@@ -49481,7 +49481,7 @@
 		<CastTime>330,410</CastTime>
 		<RecoverTime>540</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>0,3</ManaCost>
+		<ManaCost>0,5</ManaCost>
 		<BaseDamageMult>1.26</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
@@ -49519,7 +49519,7 @@
 		<CastTime>330,410</CastTime>
 		<RecoverTime>540</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>0,3</ManaCost>
+		<ManaCost>0,5</ManaCost>
 		<BaseDamageMult>1.31</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
@@ -49557,7 +49557,7 @@
 		<CastTime>330,410</CastTime>
 		<RecoverTime>540</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>0,3</ManaCost>
+		<ManaCost>0,5</ManaCost>
 		<BaseDamageMult>1.38</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>
@@ -49595,7 +49595,7 @@
 		<CastTime>330,410</CastTime>
 		<RecoverTime>540</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>0,3</ManaCost>
+		<ManaCost>0,5</ManaCost>
 		<BaseDamageMult>1.38</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Fire</DamageType>

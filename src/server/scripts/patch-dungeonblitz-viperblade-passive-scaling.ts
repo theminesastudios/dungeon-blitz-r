@@ -138,17 +138,29 @@ function main(): number {
     if (buffIdMultiname < 0) throw new PatchError("buffID multiname not found");
 
     const guard = buildGuard(buffIdMultiname, meleeDamageMultiname);
-    const existing = ctx.body.subarray(body.codeStart, body.codeStart + guard.length);
-    if (existing.equals(guard)) {
+
+    /**
+     * Presence is detected by shape, not by bytes at offset 0. A byte-exact check was the
+     * original design and it is a trap: recompiling CombatState through FFDec (which the
+     * Shadowstalker passive and any future source-level patch must do) re-encodes the whole
+     * method, so the guard's *behaviour* survives while its bytes move. A byte check then
+     * reports "not applied" and a re-run inserts a second guard.
+     *
+     * Reading the buffID compare instead survives re-encoding, because it is the thing the
+     * patch is actually for.
+     */
+    const code = ctx.body.subarray(body.codeStart, body.codeStart + body.codeLen);
+    const instructions = disassemble(code, "CombatState.AddBuff");
+    const alreadyPatched = instructions.some((inst, i) => {
+      if (inst.opcode !== OP_GETPROPERTY || inst.operands[0][1] !== buffIdMultiname) return false;
+      const next = instructions[i + 1];
+      return Boolean(next) && next.opcode === OP_PUSHSHORT && next.operands[0][1] === PASSIVE_BUFF_ID_FLOOR;
+    });
+
+    if (alreadyPatched) {
       console.log(JSON.stringify({ verify, swf: swfPath, alreadyPatched: true }, null, 2));
       console.log("No changes needed.");
       return 0;
-    }
-
-    // Sanity: refuse to run twice with a differently-sized guard sitting there.
-    const head = disassemble(ctx.body.subarray(body.codeStart, body.codeStart + 16), "AddBuff.head");
-    if (head[0]?.opcode === OP_GETLOCAL_1 && head[1]?.opcode === OP_GETPROPERTY) {
-      throw new PatchError("AddBuff already begins with a guard-shaped sequence that does not match this one.");
     }
 
     const [oldCodeLen] = readU30(ctx.body, body.codeLenPos, "AddBuff.code_length");

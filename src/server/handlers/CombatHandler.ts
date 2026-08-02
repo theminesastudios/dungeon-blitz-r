@@ -118,6 +118,36 @@ type HostileViewerHealthSnapshot = {
 };
 
 export class CombatHandler {
+
+    /**
+     * 0xCB -- the client reporting its own mana.
+     *
+     * ActivePower sends this on every cast of a power that authors FromMasterMana with a
+     * non-zero ManaCost: 247 powers do, and the Sentinel Form attacks (SFMelee, SFMeleeCombo,
+     * SFRanged) are the ones a player triggers constantly, so an unhandled 0xCB warned once
+     * per swing. The payload is a single 7-bit value -- PowerType.const_423 -- which is why
+     * the router reported it as 1 byte, and why mana never exceeds 127 in this protocol.
+     *
+     * The server has no mana simulation to reconcile this against, so this records the last
+     * reported value and nothing else. That is deliberately all it does: treating a
+     * client-sent number as authoritative is how a trusted-client exploit gets written, and
+     * the value is only useful for diagnostics until the server actually tracks mana.
+     */
+    static handleClientManaReport(client: Client, data: Buffer): void {
+        if (!client.character) {
+            return;
+        }
+
+        const br = new BitReader(data);
+        if (br.remainingBits() < CombatHandler.CLIENT_MANA_BITS) {
+            return;
+        }
+
+        const reported = Math.max(0, Math.round(Number(br.readMethod20(CombatHandler.CLIENT_MANA_BITS)) || 0));
+        client.lastReportedMana = reported;
+    }
+
+    private static readonly CLIENT_MANA_BITS = 7;
     private static readonly MAX_RELAY_POWER_HIT_DAMAGE = 4_000_000;
     private static readonly FIREBRAND_THIRD_SHOT_POWER_ID = 6144;
     private static readonly FIREBRAND_PIERCING_SHOT_POWER_ID = 6146;

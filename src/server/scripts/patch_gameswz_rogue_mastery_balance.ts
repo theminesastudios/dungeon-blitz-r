@@ -288,7 +288,7 @@ const SIGNATURE_DESCRIPTIONS = new Map<string, [string, string]>([
     "DivineBolt",
     [
       "Bolts of divine punishment granted to the Templar",
-      "Bolts of divine punishment granted to the Templar. Templar passive: your ranged attacks bounce to 2 more enemies.",
+      "Bolts of divine punishment granted to the Templar. Templar passive: your ranged attacks arc to up to 3 more enemies.",
     ],
   ],
   [
@@ -389,56 +389,45 @@ const SOUL_REAVER_SELF_HEAL = new Map<string, string>([
  * only the trailing "[Stats: ...]" block. A Chaos Wave that still advertises Poison is a
  * Chaos Wave players will keep expecting Poison from.
  */
+/**
+ * Description prose. Only where an effect actually moved -- Chaos Wave lost its poison and
+ * gained damage, Ghost Blade's steal now covers Expertise.
+ */
 const DESCRIPTIONS = new Map<string, [string, string]>();
 
 for (let rank = 4; rank <= 10; rank += 1) {
   DESCRIPTIONS.set(`ChaosArmor${rank}`, [
     "Release Chaotic energy, Binding, Poisoning and reducing the Attack of nearby foes.",
+    "Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes.",
+  ]);
+}
+for (const rank of ["", "1", "2", "3"]) {
+  DESCRIPTIONS.set(`ChaosArmor${rank}`, [
     "Release Chaotic energy, Binding and reducing the Attack of nearby foes.",
+    "Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes.",
   ]);
 }
 for (const rank of ["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]) {
   DESCRIPTIONS.set(`GhostBlade${rank}`, [
     "Steal your foe's strength while it lives.",
-    "Steal your foe's Attack, gaining Attack and Expertise while it lives.",
+    "Steal your foe's Attack and Expertise while it lives.",
   ]);
 }
 
 /**
- * Text that has to move a second time, after an earlier version of this script already
- * rewrote it. A single from/to pair cannot express that: once the first rewrite has run the
- * original string is gone, so a mapping keyed on it silently stops matching and the edit
- * looks applied when it never ran. That is exactly how Chaos Wave ended up with the right
- * damage and a tooltip still claiming the rank did nothing.
- *
- * Each entry is guarded on both ends, so a clean checkout walks the whole chain and an
- * already-patched tree picks up only the step it is missing. Both converge on the same text.
+ * Text that has to move a second time, after an earlier run already rewrote it. Runs before
+ * the signature rewrite below, because SIGNATURE_DESCRIPTIONS keys off a prefix of the same
+ * sentence -- with stale text still present the prefix matches, the "already done" guard
+ * misses, and the new sentence gets spliced in alongside the old one.
  */
 const TEXT_MIGRATIONS: Array<{ power: RegExp; from: string; to: string }> = [
   {
-    power: /^ChaosArmor\d*$/,
-    // No trailing period: ranks 0 and 1 end the sentence at "foes" where the rest continue
-    // with ". Grants an Expertise buff", and one string has to cover both shapes.
-    from: "Release Chaotic energy, Binding and reducing the Attack of nearby foes",
-    to: "Release Chaotic energy, damaging, Binding and reducing the Attack of nearby foes",
-  },
-  // Rank 4 lost the poison, then gained the damage step; either wording can be sitting there.
-  { power: /^ChaosArmor4$/, from: "No additional effect.", to: "Increased Damage #olddmg#" },
-  // The Templar passive was described as a splash on DivineBolt, which was never the power a
-  // Templar actually fires -- weapons name Lightningball/Energyball as the ranged attack. The
-  // real passive now lives in class_130 (patch-dungeonblitz-templar-bolt-bounce.js) and the
-  // text has to follow it.
-  {
     power: /^DivineBolt\d*$/,
     from: "Templar passive: every bolt bursts in a small area.",
-    to: "Templar passive: your ranged attacks bounce to 2 more enemies.",
-  },
-  {
-    power: /^DivineBolt\d*$/,
-    from: "Templar passive: your ranged attacks bounce to 2 more enemies.. Templar passive: your ranged attacks bounce to 2 more enemies.",
-    to: "Templar passive: your ranged attacks bounce to 2 more enemies.",
+    to: "Templar passive: your ranged attacks arc to up to 3 more enemies.",
   },
 ];
+
 
 for (const migration of TEXT_MIGRATIONS) {
   if (migration.to.includes(migration.from)) {
@@ -447,28 +436,16 @@ for (const migration of TEXT_MIGRATIONS) {
 }
 
 const UPGRADE_TEXT = new Map<string, [string, string]>([
+  ["ChaosArmor4", ["Adds Chaos Poison", "Increased Damage #olddmg#"]],
+  ["GhostBlade1", ["-35% target Attack, +20% Attack for 4 seconds", "-35% target Attack, +20% Attack and Expertise for 4 seconds"]],
+  ["GhostBlade4", ["-40% target Attack, +25% Attack for 4 seconds", "-40% target Attack, +25% Attack and Expertise for 4 seconds"]],
+  ["GhostBlade7", ["-45% target Attack, +30% Attack for 5 seconds", "-45% target Attack, +30% Attack and Expertise for 5 seconds"]],
+  ["GhostBlade10", ["-50% target Attack, +35% Attack for 6 seconds", "-50% target Attack, +35% Attack and Expertise for 6 seconds"]],
   ["WitherStrike3", ["Adds a stack of Armor Bane.", "Adds a stack of Poison."]],
   // Chaos Wave rank 4's only upgrade was the poison, so with it gone the rank grants
   // nothing. Saying so is better than leaving text that promises an effect the power no
   // longer has -- it wants a replacement upgrade, which is a balance call, not a text fix.
-  ["ChaosArmor4", ["Adds Chaos Poison", "Increased Damage #olddmg#"]],
   // Ghost Blade's steal now covers Expertise as well as Attack.
-  [
-    "GhostBlade1",
-    ["-35% target Attack, +20% Attack for 4 seconds", "-35% target Attack, +20% Attack and Expertise for 4 seconds"],
-  ],
-  [
-    "GhostBlade4",
-    ["-40% target Attack, +25% Attack for 4 seconds", "-40% target Attack, +25% Attack and Expertise for 4 seconds"],
-  ],
-  [
-    "GhostBlade7",
-    ["-45% target Attack, +30% Attack for 5 seconds", "-45% target Attack, +30% Attack and Expertise for 5 seconds"],
-  ],
-  [
-    "GhostBlade10",
-    ["-50% target Attack, +35% Attack for 6 seconds", "-50% target Attack, +35% Attack and Expertise for 6 seconds"],
-  ],
   // Shadow Rend's stack counts moved, so the ranks that quote them have to move too.
   [
     "VitalStrike1",

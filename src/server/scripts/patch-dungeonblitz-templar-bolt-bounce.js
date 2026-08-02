@@ -20,17 +20,21 @@ const { execFileSync } = require('child_process');
  * the missile holds its owner in var_19, and Entity.mMasterClass is the lowercase discipline
  * name ("templar", "justicar", "sentinel"). That is the check.
  *
- * How the bounce works. class_130's collision loop already has two shapes: the normal one
- * stops the missile on the first entity it crosses, and the FireBrand one damages everything
- * it passes through without ever stopping. A bounce is a third: damage the target, then aim
- * at the nearest enemy not yet hit and keep flying.
+ * How the chain works. The bolt is not turned around -- it stops and explodes on the enemy
+ * it hit, exactly as authored, and a *new* projectile is spawned at that enemy aimed at the
+ * next one. That is what a chain looks like on screen, and it means the impact effect, the
+ * damage and the network packet for the first hit are all the authored path untouched.
  *
- *   - templarBounceTargets remembers who has already been hit, so a bounce cannot land back
- *     on the enemy it just came from, and the missile cannot sit inside one target chewing
- *     it every tick.
- *   - The range budget is restarted at each bounce. var_1858 is the distance the missile was
- *     launched with and var_502 is where it started; without resetting both, a bolt that
- *     bounced sideways would hit its original range limit and vanish mid-flight.
+ * Turning the original missile instead was the first attempt and it read badly: the bolt
+ * visibly slid through the target and changed heading, with no impact at the bounce point.
+ * Drawing one by calling method_106 is not an option either -- that method is the missile's
+ * death, destroying the gfx and stamping var_1718 so the next tick bails.
+ *
+ *   - templarBounceTargets is shared by every bolt in one chain, so a link cannot double back
+ *     on an enemy already struck, and a freshly spawned bolt does not immediately re-hit the
+ *     enemy it was spawned on top of.
+ *   - Each link carries one fewer bounce than the bolt that spawned it, so the chain is
+ *     bounded by where it started rather than by any single missile.
  *   - Three bounces, so four enemies at most. With nothing else in range the bolt just
  *     hits its one target and stops, which is the authored behaviour untouched.
  *
@@ -77,10 +81,8 @@ const COLLISION_ANCHOR =
     '                           if(this.power.powerName != "FlameAxeFireBrandShot8")\n';
 
 const BOUNCE_BLOCK = [
-    // An enemy this bolt has already bounced off is invisible to it from then on. Without
-    // this the missile would still be overlapping the target it just left, fail the "not yet
-    // hit" test, and fall straight into the authored stop-and-explode branch -- so the bolt
-    // would die on the enemy it had just bounced away from and never reach the second one.
+    // An enemy this chain has already hit is invisible to every bolt in it, so a link cannot
+    // double back on the enemy it just came from. The set is shared with each new projectile.
     '                           if(Boolean(this.templarBounceTargets) && Boolean(this.templarBounceTargets[_loc13_.id]))',
     '                           {',
     '                              continue;',
@@ -88,13 +90,11 @@ const BOUNCE_BLOCK = [
     '                           if(Boolean(this.templarBounceTargets))',
     '                           {',
     '                              this.templarBounceTargets[_loc13_.id] = true;',
-    '                              this.var_19.combatState.FireThisPower(this.power,this.var_11,new Array(_loc13_),this.var_743,0,this.var_1448,0,null,0,this.var_249);',
     '                              var _templarNext:Entity = null;',
     '                              var _templarBest:Number = 0;',
     '                              var _templarDist:Number = 0;',
     '                              var _templarCand:Entity = null;',
-    '                              var _templarBurst:GfxType = null;',
-    '                              var _templarAnim:SuperAnimInstance = null;',
+    '                              var _templarChain:class_130 = null;',
     '                              if(this.templarBouncesLeft > 0)',
     '                              {',
     '                                 for each(_templarCand in _loc11_)',
@@ -112,33 +112,17 @@ const BOUNCE_BLOCK = [
     '                              }',
     '                              if(_templarNext != null)',
     '                              {',
-    '                                 this.templarBouncesLeft = this.templarBouncesLeft - 1;',
-    '                                 this.velocity.x = _templarNext.appearPosX - this.var_11.x;',
-    '                                 this.velocity.y = _templarNext.appearPosY - this.var_11.y;',
-    '                                 this.var_502.x = this.var_11.x;',
-    '                                 this.var_502.y = this.var_11.y;',
-    '                                 this.var_1858 = this.velocity.length + const_883;',
-    // The impact burst is drawn inline rather than by calling method_106. That method is the
-    // missile's death: it destroys the gfx and stamps var_1718, which makes the next
-    // TickMissile bail out -- calling it here would kill the bolt at its first bounce.
-    '                                 if(this.power.var_352)',
-    '                                 {',
-    '                                    _templarBurst = this.power.var_352[uint(Math.random() * this.power.var_352.length)];',
-    '                                    _templarAnim = new SuperAnimInstance(this.var_1,_templarBurst,this.var_19.var_24 != null);',
-    '                                    _templarAnim.m_TheDO.x = this.var_11.x;',
-    '                                    _templarAnim.m_TheDO.y = this.var_11.y;',
-    '                                    _templarAnim.m_TheDO.rotation = MathUtil.method_222(this.var_559,_loc4_,360);',
-    '                                    this.var_1.playerEntLayer.addChild(_templarAnim.m_TheDO);',
-    '                                 }',
-    // Re-aim this tick's step at the new heading. Rotation and the floor check downstream are
-    // both derived from _loc4_/_loc5_, which were computed from the pre-bounce velocity -- so
-    // without this the bolt turns invisibly and keeps drifting the old way for a frame.
-    '                                 _loc4_.x = this.velocity.x;',
-    '                                 _loc4_.y = this.velocity.y;',
-    '                                 _loc4_.normalize(this.var_1.TIMESTEP * this.var_2712);',
-    '                                 _loc5_.x = this.var_11.x + _loc4_.x;',
-    '                                 _loc5_.y = this.var_11.y + _loc4_.y;',
-    '                                 break;',
+    // A fresh missile launched from the struck enemy, not the old one turned around. It is
+    // spawned and registered exactly the way ActivePower spawns one, so it draws, ticks and
+    // collides like any other projectile.
+    //
+    // Missile id 0 on purpose: the constructor files it under localMissileID, and the explode
+    // path only writes a network packet when that id is non-zero. The links are drawn and
+    // resolved locally rather than announced as separately fired shots.
+    '                                 _templarChain = new class_130(_loc13_.appearPosX,_loc13_.appearPosY,_templarNext.appearPosX,_templarNext.appearPosY,this.var_19,this.power,0,this.var_1448,this.var_249,this.var_743);',
+    '                                 _templarChain.templarBounceTargets = this.templarBounceTargets;',
+    '                                 _templarChain.templarBouncesLeft = this.templarBouncesLeft - 1;',
+    '                                 this.var_1.var_371.push(_templarChain);',
     '                              }',
     '                           }',
     '',
@@ -245,10 +229,8 @@ function verifySource(source, swfPath) {
         'internal var templarBouncesLeft:int = 0;',
         `param5.mMasterClass == "${MASTER_CLASS}" && (param6.powerName == "Lightningball" || param6.powerName == "Energyball")`,
         'this.templarBounceTargets[_loc13_.id] = true;',
-        'this.templarBouncesLeft -= 1;',
-        'this.var_1858 = this.velocity.length + const_883;',
-        'this.var_1.playerEntLayer.addChild(_templarAnim.m_TheDO);',
-        '_loc5_.y = this.var_11.y + _loc4_.y;'
+        'this.var_1.var_371.push(_templarChain);',
+        '_templarChain.templarBouncesLeft = this.templarBouncesLeft - 1;'
     ];
     for (const snippet of required) {
         if (!source.includes(snippet)) {
