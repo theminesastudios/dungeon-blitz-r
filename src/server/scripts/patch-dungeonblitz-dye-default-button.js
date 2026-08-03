@@ -496,6 +496,60 @@ function injectOnApplyDyes(body) {
     return body.slice(0, at) + staging + body.slice(at + anchor.length);
 }
 
+const LU_ML = 'MultinameL([PackageNamespace(""),Namespace("http://adobe.com/AS3/2006/builtin"),'
+    + 'PackageInternalNs(""),PrivateNamespace("LinkUpdater"),ProtectedNamespace("LinkUpdater"),'
+    + 'StaticProtectedNs("LinkUpdater"),PrivateNamespace("LinkUpdater.as$121")])';
+
+/**
+ * LinkUpdater.method_1470 applies an equipment update to `entType.equippedGear` and leaves
+ * `Entity.mEquipGear` alone. Nothing else writes mEquipGear either, outside the login
+ * packet - so the gear *id* list the client keeps is frozen at whatever the player logged in
+ * with. Two things break off that: the dye screen builds its rows from it, and
+ * `LinkUpdater.WriteUpdateEquipment` diffs against it to decide which slots to tell the
+ * server about, so after one set swap the diff is computed against the login set and a swap
+ * back reports nothing changed at all.
+ *
+ * Keep mEquipGear in step here: per updated slot write the gear id back, or 0 when the slot
+ * was cleared. Guarded on mEquipGear being non-null, since Entity nulls it on teardown.
+ */
+function injectEquipGearSync(body) {
+    const anchor = `setproperty ${LU_ML}`;
+    const patched = replaceOnce(body, `\n${anchor}\n`, '\n' + [
+        anchor,
+        'getlocal3',
+        'getproperty QName(PackageInternalNs(""),"mEquipGear")',
+        'pushnull',
+        'ifeq dbEquipGearDone',
+        'getlocal3',
+        'getproperty QName(PackageInternalNs(""),"mEquipGear")',
+        'getlocal 5',
+        'pushbyte 0',
+        `setproperty ${LU_ML}`,
+        'getlocal 8',
+        'pushnull',
+        'ifeq dbEquipGearDone',
+        'getlex QName(PackageNamespace(""),"class_14")',
+        'getproperty QName(PackageNamespace(""),"gearTypesDict")',
+        'getlocal 8',
+        'getproperty QName(PackageInternalNs(""),"gearName")',
+        `getproperty ${LU_ML}`,
+        'setlocal 9',
+        'getlocal 9',
+        'pushnull',
+        'ifeq dbEquipGearDone',
+        'getlocal3',
+        'getproperty QName(PackageInternalNs(""),"mEquipGear")',
+        'getlocal 5',
+        'getlocal 9',
+        'getproperty QName(PackageInternalNs(""),"gearID")',
+        'convert_u',
+        `setproperty ${LU_ML}`,
+        'dbEquipGearDone:'
+    ].join('\n') + '\n', 'method_1470 equippedGear write');
+
+    return replaceOnce(patched, '\nlocalcount 9\n', '\nlocalcount 10\n', 'method_1470 localcount');
+}
+
 /**
  * LinkUpdater.method_1974 reads the server's dye-sync packet and, for both the gear type's
  * colours and the owned gear's dye objects, writes each one only `if (dyeId)`. The stock
@@ -523,6 +577,58 @@ function injectDyeSync(body) {
         lines[guard - 1] = 'pushtrue';
     }
     return lines.join('\n');
+}
+
+/**
+ * method_1869 fills the dye screen's six rows - gear icon, enabled state and the pending
+ * dye pair - from `clientEnt.mEquipGear[slot]`. That vector is written in exactly one place
+ * in the whole client, LinkUpdater.method_1379, which is the login packet: equipping gear
+ * updates `entType.equippedGear` (LinkUpdater.method_1470) and never touches mEquipGear, and
+ * the server does not even send that update back to the player who equipped. So the dye
+ * screen kept showing whatever set the player logged in with.
+ *
+ * Fix: derive the gear id from `entType.equippedGear[slot].gearName` through
+ * class_14.gearTypesDict, which is what LinkUpdater.method_1974 already does, and fall back
+ * to mEquipGear when the lookup comes up empty.
+ */
+function injectEquippedGearLookup(body) {
+    const anchor = [
+        'getlocal1',
+        'getproperty QName(PackageInternalNs(""),"mEquipGear")',
+        'getlocal2',
+        `getproperty ${ML}`,
+        'convert_u'
+    ].join('\n');
+    const patched = replaceOnce(body, anchor, [
+        anchor,
+        'setlocal 13',                     // fallback: the login-time gear id
+        'getlocal1',
+        'getproperty QName(PackageInternalNs(""),"entType")',
+        'getproperty QName(PackageInternalNs(""),"equippedGear")',
+        'getlocal2',
+        `getproperty ${ML}`,
+        'setlocal 14',
+        'getlocal 14',
+        'pushnull',
+        'ifeq dbEquippedGearDone',
+        'getlex QName(PackageNamespace(""),"class_14")',
+        'getproperty QName(PackageNamespace(""),"gearTypesDict")',
+        'getlocal 14',
+        'getproperty QName(PackageInternalNs(""),"gearName")',
+        `getproperty ${ML}`,
+        'setlocal 14',
+        'getlocal 14',
+        'pushnull',
+        'ifeq dbEquippedGearDone',
+        'getlocal 14',
+        'getproperty QName(PackageInternalNs(""),"gearID")',
+        'convert_u',
+        'setlocal 13',
+        'dbEquippedGearDone:',
+        'getlocal 13'
+    ].join('\n'), 'method_1869 mEquipGear read');
+
+    return replaceOnce(patched, '\nlocalcount 13\n', '\nlocalcount 15\n', 'method_1869 localcount');
 }
 
 // A staged reset is a class_21 with dye id 0. Left alone, method_536 would skin the slot's
@@ -572,11 +678,11 @@ function assertNoInjectedBackEdge(src, method) {
     const lines = src.split('\n').map((l) => l.trim());
     const labelAt = new Map();
     lines.forEach((line, i) => {
-        const m = /^(dbDefaultDyes\w*):$/.exec(line);
+        const m = /^(db\w+):$/.exec(line);
         if (m) labelAt.set(m[1], i);
     });
     lines.forEach((line, i) => {
-        const m = /^(?:jump|if\w+)\s+(dbDefaultDyes\w*)$/.exec(line);
+        const m = /^(?:jump|if\w+)\s+(db\w+)$/.exec(line);
         if (!m) return;
         if (!labelAt.has(m[1])) throw new Error(`${method}: branch to undefined label ${m[1]}`);
         if (labelAt.get(m[1]) < i) throw new Error(`${method}: back edge to ${m[1]} will fail AVM2 verification`);
@@ -589,8 +695,10 @@ function assertNoInjectedBackEdge(src, method) {
 const EDITS = [
     ['class_121', 'OnCreateScreen', injectOnCreateScreen, 2175],
     ['class_121', 'method_536', injectMethod536, 2183],
+    ['class_121', 'method_1869', injectEquippedGearLookup, 2184],
     ['class_121', 'OnApplyDyes', injectOnApplyDyes, 2186],
-    ['LinkUpdater', 'method_1974', injectDyeSync, 3558]
+    ['LinkUpdater', 'method_1974', injectDyeSync, 3558],
+    ['LinkUpdater', 'method_1470', injectEquipGearSync, 3624]
 ];
 
 function patchGameSwf(ffdecPath, swfPath, workRoot) {
@@ -626,7 +734,17 @@ function verifyGameSwf(ffdecPath, swfPath, workRoot) {
     const ocs = methodTrait(pcode, 'OnCreateScreen');
     const oad = methodTrait(pcode, 'OnApplyDyes');
     const icon = methodTrait(pcode, 'method_536');
-    const sync = methodTrait(exportPcode(ffdecPath, swfPath, verifyRoot, 'LinkUpdater'), 'method_1974');
+    const luPcode = exportPcode(ffdecPath, swfPath, verifyRoot, 'LinkUpdater');
+    const sync = methodTrait(luPcode, 'method_1974');
+    const equip = methodTrait(luPcode, 'method_1470');
+    const count = (haystack, needle) => haystack.split(needle).length - 1;
+
+    if (count(equip, 'getproperty QName(PackageInternalNs(""),"mEquipGear")') !== 3) {
+        throw new Error('LinkUpdater.method_1470 does not keep mEquipGear in step');
+    }
+    if (!equip.includes('localcount 10')) {
+        throw new Error('LinkUpdater.method_1470 was not given a register for the gear type');
+    }
 
     // All four dye-sync writes must be unconditional, or a cleared dye is thrown away.
     for (const prop of ['var_644', 'var_705', 'var_295', 'var_307']) {
@@ -639,7 +757,6 @@ function verifyGameSwf(ffdecPath, swfPath, workRoot) {
         }
     }
 
-    const count = (haystack, needle) => haystack.split(needle).length - 1;
     // The signature must survive: class_33 always calls the handler with the event.
     for (const needle of [
         'flag HAS_OPTIONAL',
@@ -669,6 +786,13 @@ function verifyGameSwf(ffdecPath, swfPath, workRoot) {
     }
     if (count(icon, 'getproperty QName(PackageInternalNs(""),"var_57")') !== 1) {
         throw new Error('class_121.method_536 does not test the dye id');
+    }
+    const rows = methodTrait(pcode, 'method_1869');
+    if (count(rows, 'getproperty QName(PackageNamespace(""),"gearTypesDict")') !== 1) {
+        throw new Error('class_121.method_1869 still reads the equipped set from mEquipGear alone');
+    }
+    if (!rows.includes('localcount 15')) {
+        throw new Error('class_121.method_1869 was not given registers for the gear lookup');
     }
     // Every branch target must still resolve; FFDec prints unresolved ones as raw offsets.
     for (const src of [ocs, oad, icon]) {

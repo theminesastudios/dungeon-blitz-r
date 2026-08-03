@@ -463,6 +463,11 @@ export class EquipmentHandler {
 
         EquipmentHandler.upsertCharacterSnapshot(client);
         EquipmentHandler.broadcastEquipmentUpdate(client, entityId, changedSlots);
+        // broadcastEquipmentUpdate deliberately skips the player who equipped, so without
+        // this they never hear their own new set back. The armory only applies the change
+        // to its preview doll, so the real entity's equippedGear stayed at whatever the
+        // login packet set - which is why the dye screen kept showing the previous set.
+        EquipmentHandler.sendGearToSelf(client);
         EntityHandler.refreshPlayerSnapshot(client);
         client.combatStatsDirty = true;
         client.allowDirtyCombatStatsRegen = true;
