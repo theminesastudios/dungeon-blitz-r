@@ -56,7 +56,7 @@ const NEW_BUTTON_ID = 2803;
 const NEW_DEPTH = 3245;
 const BUTTON_LABEL = 'Default Dyes';
 const INSTANCE_NAME = 'am_Default';
-const Y_OFFSET_TWIPS = -480;   // the button is 0.8-scaled, so this clears it by ~3 px
+const Y_OFFSET_TWIPS = -620;   // the button is 0.8-scaled (~21 px tall), so this leaves a ~10 px gap
 
 // --- DungeonBlitz.swf -------------------------------------------------------
 // class_121's method bodies are numbered in trait order, so one known anchor gives all of
@@ -323,6 +323,55 @@ function patchUiSwf(swf) {
         body.slice(0, tButton.end),
         newTextTag, newInnerTag, newButtonTag,
         body.slice(tButton.end, tWindow.start),
+        newWindowTag,
+        body.slice(tWindow.end)
+    ]);
+}
+
+/**
+ * Rewrites the existing am_Default placement from am_Apply's matrix plus Y_OFFSET_TWIPS,
+ * so the gap between the two buttons can be retuned by editing that one constant and
+ * re-running. Without this the UI step is skip-if-present and the only way to move the
+ * button is to restore UI_1.swf from a commit that predates it.
+ */
+function repositionDefaultButton(swf) {
+    const body = swf.body;
+    const tags = parseTags(body, rectByteLen(body, 0) + 4, body.length);
+    const tWindow = tags.find((t) => t.code === 39 && body.readUInt16LE(t.dataStart) === DYE_WINDOW_ID);
+    if (!tWindow) throw new Error('UI_1.swf: a_DyeWindow not found');
+
+    let applyMatrixOffset = null;
+    let placement = null;
+    for (const sub of parseTags(body, tWindow.dataStart + 4, tWindow.end)) {
+        if (sub.code !== 26) continue;
+        let p = sub.dataStart;
+        const flags1 = body[p]; p += 1;
+        const depth = body.readUInt16LE(p); p += 2;
+        if (!(flags1 & 2)) continue;
+        const charId = body.readUInt16LE(p);
+        if (charId === SRC_BUTTON_ID) applyMatrixOffset = p + 2;
+        if (charId === NEW_BUTTON_ID) placement = { sub, depth };
+    }
+    if (applyMatrixOffset === null) throw new Error('UI_1.swf: am_Apply placement not found');
+    if (!placement) throw new Error('UI_1.swf: am_Default placement not found');
+
+    const matrix = decodeMatrix(body, applyMatrixOffset);
+    matrix.ty += Y_OFFSET_TWIPS;
+    const placeHead = Buffer.alloc(5);
+    placeHead[0] = 0x26; // HasName | HasMatrix | HasCharacter
+    placeHead.writeUInt16LE(placement.depth, 1);
+    placeHead.writeUInt16LE(NEW_BUTTON_ID, 3);
+    const newPlaceTag = makeTag(26, Buffer.concat([
+        placeHead, encodeMatrix(matrix), Buffer.from(INSTANCE_NAME, 'utf8'), Buffer.from([0])
+    ]));
+
+    const newWindowTag = makeTag(39, Buffer.concat([
+        body.slice(tWindow.dataStart, placement.sub.start),
+        newPlaceTag,
+        body.slice(placement.sub.end, tWindow.end)
+    ]));
+    return Buffer.concat([
+        body.slice(0, tWindow.start),
         newWindowTag,
         body.slice(tWindow.end)
     ]);
@@ -661,7 +710,8 @@ function main() {
     if (!args.verify) {
         const uiSwf = loadSwf(uiSwfPath);
         if (uiHasDefaultButton(uiSwf)) {
-            console.log('UI_1.swf already carries am_Default, leaving it alone.');
+            saveSwf(uiSwfPath, uiSwf, repositionDefaultButton(uiSwf));
+            console.log(`UI_1.swf already carries am_Default; re-placed it ${-Y_OFFSET_TWIPS / 20} px above am_Apply.`);
         } else {
             saveSwf(uiSwfPath, uiSwf, patchUiSwf(uiSwf));
         }
