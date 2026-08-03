@@ -704,10 +704,13 @@ export class CharacterHandler {
             const currentPrimary = Number(colors[0] ?? 0);
             const currentSecondary = Number(colors[1] ?? 0);
 
-            if (nextPrimary > 0 && nextPrimary !== currentPrimary) {
+            // A dye id of 0 is "back to undyed", which the Default Dyes button stages and
+            // charges for like any other change. Counting only `next > 0` would let the
+            // client show a price the server never collects, and the two golds would drift.
+            if (nextPrimary !== currentPrimary) {
                 changedUnits += 1;
             }
-            if (nextSecondary > 0 && nextSecondary !== currentSecondary) {
+            if (nextSecondary !== currentSecondary) {
                 changedUnits += 1;
             }
         }
