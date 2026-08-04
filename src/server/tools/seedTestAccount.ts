@@ -69,10 +69,11 @@ const MAX_TALENT_POINTS = 50;
 const MAX_CRAFT_TALENT_POINTS = [10, 10, 10, 10, 10];
 // GearInventory.normalizeTier snaps anything at or above 2 down to 2.
 const MAX_GEAR_TIER = 2;
-// WorldEnter writes gearSets.length with 3 bits. At 8 it writes 0 and the client reads no
+// WorldEnter writes gearSets.length with 4 bits. At 16 it writes 0 and the client reads no
 // sets while the server keeps emitting them -- every later field misaligns and the client
-// dies. GearSetHandler.MAX_GEAR_SETS agrees.
-const MAX_GEAR_SETS = 7;
+// dies. The patched client only draws 10 rows, so that is the real ceiling and
+// GearSetHandler.MAX_GEAR_SETS agrees.
+const MAX_GEAR_SETS = 10;
 
 // The master classes each base class can become, so a maxed character learns their
 // abilities too. AbilityTypes.json tags each ability with the specialisation that owns it.

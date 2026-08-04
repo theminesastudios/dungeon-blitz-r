@@ -10,8 +10,10 @@ type GearSetEntry = {
 };
 
 export class GearSetHandler {
-    private static readonly MAX_GEAR_SETS = 7;
-    private static readonly GEAR_SET_INDEX_BITS = 3;
+    // Mirrors the patched client: Game.const_1057 gear sets, addressed with
+    // GearType.const_348 bits.
+    private static readonly MAX_GEAR_SETS = 10;
+    private static readonly GEAR_SET_INDEX_BITS = 4;
     private static readonly EQUIPMENT_SLOT_COUNT = 6;
     private static readonly MAX_NAME_LENGTH = 16;
 
