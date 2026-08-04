@@ -27,10 +27,18 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  *
  * Justicar:
  *   Lightning Bomb     the bomb you never reach is folded into the opening stab, and the
- *                      stab lands two stacks of Armor Bane
+ *                      stab lands two stacks of Armor Bane. The spread chain is gone -- one
+ *                      bomb, and its blast Ignites twice and shreds Armor
  *
  * Sentinel:
  *   Sentinel Form      more damage at every rank, and ranks 1-3 get a damage bonus at all
+ *
+ * Templar base attacks:
+ *   Cleave             rank 10 hits for what Skewer rank 10 totals
+ *   Smash              rank 10 hits for what Skewer rank 10 totals, split over its two
+ *                      blows; the second blow shreds Armor at every rank; faster from rank 7
+ *   Warcry             30 mana -> 25
+ *   Shockwave          +20% damage at every rank
  *
  * Talentstones:
  *   Daybreak           blind duration    .1/.2/.3/.5/.75  -> .1/.25/.5/.75/1
@@ -39,6 +47,14 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  *   Fortify            repurposed: Holy Fire damage 5/10/15/20/25%
  *   Rapid Recovery     repurposed: Holy Fire damage 5/10/15/20/25%
  *   Sanctify           repurposed: a percent of Expertise becomes Defense, 1-5%
+ *   Heavy Blows        crit damage       1/2/4/7/10%      -> 2/5/8/11/15%
+ *   Immolation         Ignite damage     1/2/3/5/8%       -> 2/4/6/10/16%
+ *   Taunt -> Taunter   keeps its Hate, and gains 1-5% attack speed (the attack speed half is
+ *                      bytecode -- patch-dungeonblitz-templar-talent-effects)
+ *   Dominate           repurposed: damage against Demoralized/Staggered/Stunned targets,
+ *                      10-50%, doubled to at most +100% on Staggered or Stunned (bytecode)
+ *   Pain Eater         the 5-second proc now grants Defense as well, on the same
+ *                      1/2/4/6/10% curve its attack speed already uses
  *
  * Why several asked-for items are not here, so they are not looked for and assumed broken:
  *
@@ -149,6 +165,42 @@ const TARGET_BUFFS = new Map<string, string>([
   ["LightningBomb8", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
   ["LightningBomb9", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
   ["LightningBomb10", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
+  /**
+   * The bomb itself. Dropping the LightningBomb buff from the explosion is what ends the
+   * spread chain -- that buff *is* the bomb, and handing it to the first enemy caught in the
+   * blast is how the affliction hopped from corpse to corpse. One bomb now, which is the
+   * half of the ask that is expressible here; what the blast leaves behind is the other half.
+   *
+   * "FirstTarget:" went with it. The prefix is a whole-list flag, so keeping it would have
+   * limited the Ignite and Armor Bane to one enemy in the blast rather than all of them.
+   */
+  ["LightningBombExplode", "Ignite,Ignite,ArmorBane"], // was LightningBomb
+  ["LightningBombExplode1", "Ignite,Ignite,ArmorBane"], // was FirstTarget:LightningBomb
+  ["LightningBombExplode2", "Ignite,Ignite,ArmorBane"], // was FirstTarget:LightningBomb
+  ["LightningBombExplode3", "Ignite,Ignite,ArmorBane"], // was FirstTarget:LightningBomb
+  ["LightningBombExplode4", "Ignite,Ignite,ArmorBane"], // was FirstTarget:LightningBomb
+  ["LightningBombExplode5", "Ignite,Ignite,ArmorBane"], // was FirstTarget:LightningBomb
+  ["LightningBombExplode6", "Ignite,Ignite,ArmorBane"], // was FirstTarget:LightningBomb
+  ["LightningBombExplode7", "Ignite,Ignite,ArmorBane"], // was FirstTarget:LightningBomb
+  ["LightningBombExplode8", "Ignite,Ignite,ArmorBane"], // was FirstTarget:LightningBomb
+  ["LightningBombExplode9", "Ignite,Ignite,ArmorBane"], // was FirstTarget:LightningBomb
+  ["LightningBombExplode10", "Ignite,Ignite,ArmorBane"], // was FirstTarget:LightningBomb
+  /**
+   * Smash's second blow shreds Armor. "Last:" keys off the CastTime step index, and Smash
+   * authors two steps at every rank, so this is the second swing and nothing else -- the
+   * prefix applies to the whole list, which is why the list is only ever the Armor Bane.
+   */
+  ["Smash", "Last:ArmorBane"], // was absent
+  ["Smash1", "Last:ArmorBane"], // was absent
+  ["Smash2", "Last:ArmorBane"], // was absent
+  ["Smash3", "Last:ArmorBane"], // was absent
+  ["Smash4", "Last:ArmorBane"], // was absent
+  ["Smash5", "Last:ArmorBane"], // was absent
+  ["Smash6", "Last:ArmorBane"], // was absent
+  ["Smash7", "Last:ArmorBane"], // was absent
+  ["Smash8", "Last:ArmorBane"], // was absent
+  ["Smash9", "Last:ArmorBane"], // was absent
+  ["Smash10", "Last:ArmorBane"], // was absent
 ]);
 
 /**
@@ -172,6 +224,38 @@ const DAMAGE_MULTS = new Map<string, string>([
   ["LightningBomb8", "4.87"], // 2.97 + 1.9
   ["LightningBomb9", "4.97"], // 2.97 + 2
   ["LightningBomb10", "4.97"], // 2.97 + 2
+  /**
+   * Cleave and Smash brought up to Skewer at rank 10.
+   *
+   * "Same damage" is per cast, not per authored number, and the three powers count hits
+   * differently -- so the numbers below are not equal to each other and that is the point.
+   * BaseDamageMult is a per-step list: CombatState reads var_630[step] and falls back to
+   * var_630[0], so a single value on a multi-step power is charged once per step.
+   *
+   *   Skewer 10   1.42,1.92,2.42 over three steps  -> 5.76 a cast
+   *   Cleave 10   one value, and Cleave is one of the target methods that carries a
+   *               hit-once dictionary, so an enemy takes it exactly once -> 5.76
+   *   Smash 10    one value over two steps, Melee, no dictionary, so both blows land
+   *               -> split as 2.88,2.88 for 5.76
+   *
+   * Smash's split is also what makes its own tooltip honest: a two-entry list is what the
+   * second blow's Armor Bane is keyed against, and x2 damage printed against a power that
+   * swung twice was already understating it.
+   */
+  ["Cleave10", "5.76"], // 2.42
+  ["Smash10", "2.88,2.88"], // 2
+  // Shockwave, +20% at every rank. Absolute, so a second prebuild does not compound it.
+  ["Shockwave", "0.8"], //   0.67
+  ["Shockwave1", "0.9"], //  0.75
+  ["Shockwave2", "1.02"], // 0.85
+  ["Shockwave3", "1.02"], // 0.85
+  ["Shockwave4", "1.2"], //  1
+  ["Shockwave5", "1.2"], //  1
+  ["Shockwave6", "1.32"], // 1.1
+  ["Shockwave7", "1.32"], // 1.1
+  ["Shockwave8", "1.32"], // 1.1
+  ["Shockwave9", "1.38"], // 1.15
+  ["Shockwave10", "1.45"], // 1.21
 ]);
 
 /**
@@ -198,6 +282,12 @@ const CAST_TIMES = new Map<string, string>([
   ["FountainOfLifeCombo8", "505,1000,1000,1000"], // 795,1000,1000,1000
   ["FountainOfLifeCombo9", "505,1000,1000,1000"], // 795,1000,1000,1000
   ["FountainOfLifeCombo10", "505,1000,1000,1000"], // 795,1000,1000,1000
+  // Smash swings faster from rank 7. Both steps move, because both are windup for a blow --
+  // unlike Hallowed Reckoning there is no heal tick hiding in the list to protect.
+  ["Smash7", "400,350"], // 550,450
+  ["Smash8", "400,350"], // 550,450
+  ["Smash9", "400,350"], // 550,450
+  ["Smash10", "400,350"], // 550,450
 ]);
 
 /**
@@ -276,6 +366,18 @@ const MANA_COSTS = new Map<string, string>([
   ["MeleeAoE8", "0,5"], // 0
   ["MeleeAoE9", "0,5"], // 0
   ["MeleeAoE10", "0,5"], // 0
+  // Warcry, every rank. The unranked block is the pre-talent version and moves with them.
+  ["Warcry", "25"], // 30
+  ["Warcry1", "25"], // 30
+  ["Warcry2", "25"], // 30
+  ["Warcry3", "25"], // 30
+  ["Warcry4", "25"], // 30
+  ["Warcry5", "25"], // 30
+  ["Warcry6", "25"], // 30
+  ["Warcry7", "25"], // 30
+  ["Warcry8", "25"], // 30
+  ["Warcry9", "25"], // 30
+  ["Warcry10", "25"], // 30
 ]);
 
 // Rank upgrade text has to move with the effect or it starts lying.
@@ -286,6 +388,24 @@ const MANA_COSTS = new Map<string, string>([
  */
 const POWER_TEXT_MIGRATIONS: Array<{ power: RegExp; from: string; to: string }> = [
   { power: /^CleavingBlows\d*$/, from: "Your swings return 3 Mana each.", to: "Your swings return 5 Mana each." },
+  /**
+   * The four sentences the spread chain left behind -- each Lightning Bomb rank band authored
+   * its own wording for it. They live here rather than in DESCRIPTIONS because that map is
+   * keyed by power name and holds one pair per power, so four replacements against the same
+   * rank would overwrite each other and only the last would ever land.
+   */
+  ...(
+    [
+      "Spreads a similar effect to damaged enemies.",
+      "Bomb effect spreads to one affected target.",
+      "Bomb effect can spread three times",
+      "Bomb effect can spread twice",
+    ].map((from) => ({
+      power: /^LightningBomb\d*$/,
+      from,
+      to: "The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it.",
+    }))
+  ),
 ];
 
 for (const migration of POWER_TEXT_MIGRATIONS) {
@@ -307,6 +427,21 @@ const UPGRADE_TEXT = new Map<string, [string, string]>([
   ["Verdict9", ["+30% Healing per shot", "+30% Healing per shot. Each shot returns 2 Mana."]],
   ["Verdict10", ["+50% Healing per shot", "+50% Healing per shot. +1.5 Second Duration."]],
   ["CleavingBlows2", ["Increased Damage #olddmg#", "Your swings return 5 Mana each. Increased Damage #olddmg#"]],
+  ["Smash7", ["Increased Damage #olddmg#", "Faster cast animation. Increased Damage #olddmg#"]],
+  /**
+   * Lightning Bomb's rank-up text still sold the spread chain that is gone now. Ranks 4 and
+   * 7-10 were selling the second bomb's damage as well, which the earlier fold already moved
+   * into the stab -- so what every one of them buys now really is just damage.
+   */
+  ["LightningBomb4", ["Increased Damage to final bomb.", "Increased Damage #olddmg#"]],
+  ["LightningBomb5", ["Bomb affliction spreads one additional time.", "Increased Damage #olddmg#"]],
+  [
+    "LightningBomb7",
+    ["Increased Damage to final bomb and Increased Damage to intial attack  #olddmg#", "Increased Damage #olddmg#"],
+  ],
+  ["LightningBomb8", ["-5 Second Cooldown. Increased Damage to final bomb.", "-5 Second Cooldown."]],
+  ["LightningBomb9", ["Increased Damage to final bomb.", "Increased Damage #olddmg#"]],
+  ["LightningBomb10", ["Bomb affliction spreads one additional time.", "Increased Damage #olddmg#"]],
 ]);
 
 /**
@@ -368,6 +503,16 @@ describeRanks("LightningBomb", 2, 10,
   "Turns a foe into a Lightning Bomb causing them to explode when killed.",
   "Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed.");
 
+// Smash's second blow. The unranked block words the same attack differently, so it gets its
+// own sentence rather than being folded into the ranked one.
+describeRanks("Smash", 1, 10,
+  "Deliver a multi-hit melee combo that damages nearby foes",
+  "Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor");
+DESCRIPTIONS.set("Smash", [
+  "Deliver two bonecrushing blows that total #dmg# damage to every foe within reach of your swing.",
+  "Deliver two bonecrushing blows that total #dmg# damage to every foe within reach of your swing, the second shredding their Armor.",
+]);
+
 
 /**
  * Empyrean Aura is a channel that reapplies its buff every 500ms with a 750ms lifetime, so
@@ -420,6 +565,31 @@ const SENTINEL_FORM_DAMAGE = new Map<string, string>([
   ["SentinelForm10", "0.2"], // 0.1
 ]);
 
+/**
+ * Pain Eater grants Defense as well as attack speed.
+ *
+ * The talentstone itself is a "WTF" mod -- its SelfValue is a rank, not a magnitude, and
+ * CombatState turns it into a cast of the ranked PainEater power when the Sentinel drops
+ * below 20% health. That power's only payload is the PainEaterRank buff, and *that* is data,
+ * so the extra effect belongs here rather than in bytecode.
+ *
+ * The numbers are the attack speed the buff already grants, which is not the curve the
+ * tooltip advertises: BuffType hardcodes .01/.02/.04/.06/.1 against PainEaterRank1..5 while
+ * the stone's description has always claimed 1/2/4/7/10%. Matching the code rather than the
+ * description is what "same scaling as the attack speed" means, and the two halves stay in
+ * step if that hardcoded curve is ever retuned to match its own text.
+ *
+ * MeleeDefense and MagicDefense move together so the boost covers both damage schools, which
+ * is how every other defensive buff in the file is authored.
+ */
+const PAIN_EATER_DEFENSE = new Map<string, string>([
+  ["PainEaterRank1", "0.01"], // absent
+  ["PainEaterRank2", "0.02"], // absent
+  ["PainEaterRank3", "0.04"], // absent
+  ["PainEaterRank4", "0.06"], // absent
+  ["PainEaterRank5", "0.1"], // absent
+]);
+
 // Talentstone values that only needed renumbering.
 const MOD_BUFF_VALUES = new Map<string, string>([
   ["BlindTime1", "100"], // 100
@@ -432,6 +602,14 @@ const MOD_BUFF_VALUES = new Map<string, string>([
   ["BlindPct3", ".06"], // .03
   ["BlindPct4", ".08"], // .04
   ["BlindPct5", ".1"], // .05
+  // Immolation. The stone's own description doubles what it authors, because Ignite is
+  // applied in stacks -- so .02 reads as "+4%" on the tooltip, and the rewritten description
+  // below is written in those doubled terms to stay consistent with the authored one.
+  ["IgniteDmg1", "0.02"], // 0.01
+  ["IgniteDmg2", "0.04"], // 0.02
+  ["IgniteDmg3", "0.06"], // 0.03
+  ["IgniteDmg4", "0.1"], // 0.05
+  ["IgniteDmg5", "0.16"], // 0.08
 ]);
 
 const MOD_SELF_VALUES = new Map<string, string>([
@@ -440,6 +618,46 @@ const MOD_SELF_VALUES = new Map<string, string>([
   ["ClutchHeal3", ".06"], // .03
   ["ClutchHeal4", ".08"], // .04
   ["ClutchHeal5", ".1"], // .05
+  /**
+   * Dominate stops being a crit stone and becomes a damage stone. The magnitudes are the ask
+   * -- 10 to 50% -- and the doubling against Staggered and Stunned targets that takes it to
+   * +100% is in patch-dungeonblitz-templar-talent-effects, because what the number means is
+   * bytecode: CombatState reads this value straight into a crit-chance term today.
+   *
+   * The stone stays ModType WTF and keeps its ModID. Both matter: WTF is the file's own word
+   * for "the client hardcodes this", which is still true, and the ModID is the save-data key
+   * for every Sentinel who already owns the stone.
+   */
+  ["Dominate1", ".1"], // .01
+  ["Dominate2", ".2"], // .02
+  ["Dominate3", ".3"], // .03
+  ["Dominate4", ".4"], // .05
+  ["Dominate5", ".5"], // .08
+]);
+
+/**
+ * Heavy Blows. A "Power" mod, so the magnitude is PowerValue rather than SelfValue -- it is
+ * added to ProcMassive's BaseDamageMult, which is the critical-hit proc every class shares.
+ */
+const MOD_POWER_VALUES = new Map<string, string>([
+  ["HeavyBlow1", ".02"], // .01
+  ["HeavyBlow2", ".05"], // .02
+  ["HeavyBlow3", ".08"], // .04
+  ["HeavyBlow4", ".11"], // .07
+  ["HeavyBlow5", ".15"], // .1
+]);
+
+/**
+ * Taunt becomes Taunter. Every rank carries its own DisplayName, so all five are renamed --
+ * the screen reads the rank the player owns, not rank 1. The attack speed the new name is
+ * paying for is bytecode; see patch-dungeonblitz-templar-talent-effects.
+ */
+const MOD_DISPLAY_NAMES = new Map<string, string>([
+  ["Taunt1", "Taunter"],
+  ["Taunt2", "Taunter"],
+  ["Taunt3", "Taunter"],
+  ["Taunt4", "Taunter"],
+  ["Taunt5", "Taunter"],
 ]);
 
 /**
@@ -549,6 +767,41 @@ const MOD_DESCRIPTIONS = new Map<string, [string, string]>([
     [
       "Increased Healing on targets with less than 20% Health@Healing Boost:, 1%, 2%, 3%, 4%, 5%",
       "Increased Healing on targets with less than 30% Health@Healing Boost:, 2%, 4%, 6%, 8%, 10%",
+    ],
+  ],
+  [
+    "HeavyBlow1",
+    [
+      "Increases Heavy Blow Critical Effect@Heavy Blow Damage:, +1%, +2%, +4%, +7%, +10%",
+      "Increases Heavy Blow Critical Effect@Heavy Blow Damage:, +2%, +5%, +8%, +11%, +15%",
+    ],
+  ],
+  [
+    "IgniteDmg1",
+    [
+      "Increases Ignite Damage@Ignite Damage:, +2%, +4%, +6%, +10%, +16%",
+      "Increases Ignite Damage@Ignite Damage:, +4%, +8%, +12%, +20%, +32%",
+    ],
+  ],
+  [
+    "Taunt1",
+    [
+      "Increases Hate Generation@Hate:, +10%, +20%, +35%, +50%, +75%",
+      "Increases Hate Generation and Attack Speed@Hate:, +10%, +20%, +35%, +50%, +75%@Attack Speed:, +1%, +2%, +3%, +4%, +5%",
+    ],
+  ],
+  [
+    "Dominate1",
+    [
+      "Gain a Critical Chance bonus vs. Staggered and Stunned targets@Critical Chance Bonus:, 0.15%, 0.3%, 0.45%, 0.75%, 1.2%",
+      "Deal more damage to Demoralized targets, and twice as much to Staggered or Stunned ones@Damage Bonus:, 10%, 20%, 30%, 40%, 50%",
+    ],
+  ],
+  [
+    "PainEater1",
+    [
+      "Gain an Attack Speed bonus for 5 seconds when you fall below 20% HP. 15 second cooldown.@Attack Speed Bonus:, 1%, 2%, 4%, 7%, 10%",
+      "Gain an Attack Speed and Defense bonus for 5 seconds when you fall below 20% HP. 15 second cooldown.@Attack Speed Bonus:, 1%, 2%, 4%, 6%, 10%@Defense Bonus:, 1%, 2%, 4%, 6%, 10%",
     ],
   ],
 ]);
@@ -720,6 +973,16 @@ export function patchPlayerBuffs(xml: string): { xml: string; stats: PatchStats 
       next = setOrInsertTag(next, "MagicDamage", formDamage, ["MeleeDamage"], stats);
     }
 
+    const painEaterDefense = PAIN_EATER_DEFENSE.get(buffName);
+    if (painEaterDefense) {
+      touched = true;
+      // The PainEaterRank blocks author neither field, and neither of the tags the template
+      // orders after them (StackCount, BuffLoc) exists there either -- Duration is the last
+      // tag they do have that the template puts ahead of both.
+      next = setOrInsertTag(next, "MagicDefense", painEaterDefense, ["Duration"], stats);
+      next = setOrInsertTag(next, "MeleeDefense", painEaterDefense, ["MagicDefense"], stats);
+    }
+
     if (touched) {
       stats.buffBlocks += 1;
     }
@@ -768,6 +1031,18 @@ export function patchPowerMods(xml: string): { xml: string; stats: PatchStats } 
     if (selfValue) {
       touched = true;
       next = replaceTag(next, "SelfValue", selfValue, stats);
+    }
+
+    const powerValue = MOD_POWER_VALUES.get(modName);
+    if (powerValue) {
+      touched = true;
+      next = replaceTag(next, "PowerValue", powerValue, stats);
+    }
+
+    const displayName = MOD_DISPLAY_NAMES.get(modName);
+    if (displayName) {
+      touched = true;
+      next = replaceTag(next, "DisplayName", displayName, stats);
     }
 
     for (const migration of MOD_TEXT_MIGRATIONS) {

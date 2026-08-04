@@ -616,11 +616,11 @@
 		<ModName>HeavyBlow1</ModName>
 		<ModID>61</ModID>
 		<DisplayName>Heavy Blows</DisplayName>
-		<Description>Increases Heavy Blow Critical Effect@Heavy Blow Damage:, +1%, +2%, +4%, +7%, +10%</Description>
+		<Description>Increases Heavy Blow Critical Effect@Heavy Blow Damage:, +2%, +5%, +8%, +11%, +15%</Description>
 		<ModType>Power</ModType>
 		<PowerName>ProcMassive</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>.01</PowerValue>
+		<PowerValue>.02</PowerValue>
 		<IconName>a_Signet_Critical04</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -630,7 +630,7 @@
 		<ModType>Power</ModType>
 		<PowerName>ProcMassive</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>.02</PowerValue>
+		<PowerValue>.05</PowerValue>
 		<IconName>a_Signet_Critical04</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -640,7 +640,7 @@
 		<ModType>Power</ModType>
 		<PowerName>ProcMassive</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>.04</PowerValue>
+		<PowerValue>.08</PowerValue>
 		<IconName>a_Signet_Critical04</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -650,7 +650,7 @@
 		<ModType>Power</ModType>
 		<PowerName>ProcMassive</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>.07</PowerValue>
+		<PowerValue>.11</PowerValue>
 		<IconName>a_Signet_Critical04</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -660,7 +660,7 @@
 		<ModType>Power</ModType>
 		<PowerName>ProcMassive</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>.1</PowerValue>
+		<PowerValue>.15</PowerValue>
 		<IconName>a_Signet_Critical04</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1055,11 +1055,11 @@
 		<ModName>IgniteDmg1</ModName>
 		<ModID>106</ModID>
 		<DisplayName>Immolation</DisplayName>
-		<Description>Increases Ignite Damage@Ignite Damage:, +2%, +4%, +6%, +10%, +16%</Description>
+		<Description>Increases Ignite Damage@Ignite Damage:, +4%, +8%, +12%, +20%, +32%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Ignite</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>0.01</BuffValue>
+		<BuffValue>0.02</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1069,7 +1069,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Ignite</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>0.02</BuffValue>
+		<BuffValue>0.04</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1079,7 +1079,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Ignite</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>0.03</BuffValue>
+		<BuffValue>0.06</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1089,7 +1089,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Ignite</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>0.05</BuffValue>
+		<BuffValue>0.1</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1099,7 +1099,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Ignite</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>0.08</BuffValue>
+		<BuffValue>0.16</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1203,7 +1203,7 @@
 		<ModName>PainEater1</ModName>
 		<ModID>121</ModID>
 		<DisplayName>Pain Eater</DisplayName>
-		<Description>Gain an Attack Speed bonus for 5 seconds when you fall below 20% HP. 15 second cooldown.@Attack Speed Bonus:, 1%, 2%, 4%, 7%, 10%</Description>
+		<Description>Gain an Attack Speed and Defense bonus for 5 seconds when you fall below 20% HP. 15 second cooldown.@Attack Speed Bonus:, 1%, 2%, 4%, 6%, 10%@Defense Bonus:, 1%, 2%, 4%, 6%, 10%</Description>
 		<ModType>WTF</ModType>
 		<SelfValue>1</SelfValue>
 		<IconName>a_Signet_PainEater</IconName>
@@ -1366,8 +1366,8 @@
 	<PowerModType>
 		<ModName>Taunt1</ModName>
 		<ModID>141</ModID>
-		<DisplayName>Taunt</DisplayName>
-		<Description>Increases Hate Generation@Hate:, +10%, +20%, +35%, +50%, +75%</Description>
+		<DisplayName>Taunter</DisplayName>
+		<Description>Increases Hate Generation and Attack Speed@Hate:, +10%, +20%, +35%, +50%, +75%@Attack Speed:, +1%, +2%, +3%, +4%, +5%</Description>
 		<ModType>WTF</ModType>
 		<SelfValue>.1</SelfValue>
 		<IconName>a_Signet_Taunt</IconName>
@@ -1375,7 +1375,7 @@
 	<PowerModType>
 		<ModName>Taunt2</ModName>
 		<ModID>142</ModID>
-		<DisplayName>Taunt</DisplayName>
+		<DisplayName>Taunter</DisplayName>
 		<ModType>WTF</ModType>
 		<SelfValue>.2</SelfValue>
 		<IconName>a_Signet_Taunt</IconName>
@@ -1383,7 +1383,7 @@
 	<PowerModType>
 		<ModName>Taunt3</ModName>
 		<ModID>143</ModID>
-		<DisplayName>Taunt</DisplayName>
+		<DisplayName>Taunter</DisplayName>
 		<ModType>WTF</ModType>
 		<SelfValue>.35</SelfValue>
 		<IconName>a_Signet_Taunt</IconName>
@@ -1391,7 +1391,7 @@
 	<PowerModType>
 		<ModName>Taunt4</ModName>
 		<ModID>144</ModID>
-		<DisplayName>Taunt</DisplayName>
+		<DisplayName>Taunter</DisplayName>
 		<ModType>WTF</ModType>
 		<SelfValue>.50</SelfValue>
 		<IconName>a_Signet_Taunt</IconName>
@@ -1399,7 +1399,7 @@
 	<PowerModType>
 		<ModName>Taunt5</ModName>
 		<ModID>145</ModID>
-		<DisplayName>Taunt</DisplayName>
+		<DisplayName>Taunter</DisplayName>
 		<ModType>WTF</ModType>
 		<SelfValue>.75</SelfValue>
 		<IconName>a_Signet_Taunt</IconName>
@@ -1592,9 +1592,9 @@
 		<ModName>Dominate1</ModName>
 		<ModID>166</ModID>
 		<DisplayName>Dominate</DisplayName>
-		<Description>Gain a Critical Chance bonus vs. Staggered and Stunned targets@Critical Chance Bonus:, 0.15%, 0.3%, 0.45%, 0.75%, 1.2%</Description>
+		<Description>Deal more damage to Demoralized targets, and twice as much to Staggered or Stunned ones@Damage Bonus:, 10%, 20%, 30%, 40%, 50%</Description>
 		<ModType>WTF</ModType>
-		<SelfValue>.01</SelfValue>
+		<SelfValue>.1</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1602,7 +1602,7 @@
 		<ModID>167</ModID>
 		<DisplayName>Dominate</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.02</SelfValue>
+		<SelfValue>.2</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1610,7 +1610,7 @@
 		<ModID>168</ModID>
 		<DisplayName>Dominate</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.03</SelfValue>
+		<SelfValue>.3</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1618,7 +1618,7 @@
 		<ModID>169</ModID>
 		<DisplayName>Dominate</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.05</SelfValue>
+		<SelfValue>.4</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1626,7 +1626,7 @@
 		<ModID>170</ModID>
 		<DisplayName>Dominate</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.08</SelfValue>
+		<SelfValue>.5</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>

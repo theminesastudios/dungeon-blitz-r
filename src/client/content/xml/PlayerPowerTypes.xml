@@ -228,8 +228,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
+		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
-		<Description>Deliver two bonecrushing blows that total #dmg# damage to every foe within reach of your swing. [Stats: x1.42 damage]</Description>
+		<Description>Deliver two bonecrushing blows that total #dmg# damage to every foe within reach of your swing, the second shredding their Armor. [Stats: x1.42 damage, -5% Defense, over 5s]</Description>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_paladin_smash_back[450]snd_pwr_paladin_smash_swing_01,snd_pwr_paladin_smash_vox_01$[550]snd_pwr_paladin_smash_swing_02,snd_pwr_paladin_smash_vox_02$</CastSound>
@@ -260,10 +261,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
+		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes [Stats: x1.12 damage]</Description>
-		<UpgradeDescription>Deliver a multi-hit melee combo that damages nearby foes</UpgradeDescription>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.12 damage, -5% Defense, over 5s]</Description>
+		<UpgradeDescription>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_paladin_smash_back[450]snd_pwr_paladin_smash_swing_01,snd_pwr_paladin_smash_vox_01$[550]snd_pwr_paladin_smash_swing_02,snd_pwr_paladin_smash_vox_02$</CastSound>
@@ -294,9 +296,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
+		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes [Stats: x1.21 damage]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.21 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -328,9 +331,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
+		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes [Stats: x1.31 damage]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.31 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -362,9 +366,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
+		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes [Stats: x1.41 damage]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.41 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -396,9 +401,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
+		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes [Stats: x1.41 damage]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.41 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased AoE.</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -430,9 +436,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
+		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes [Stats: x1.55 damage]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.55 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -456,7 +463,7 @@
 		<AoERadius>50</AoERadius>
 		<CenterOffset>20</CenterOffset>
 		<CastAnim>MaceSlam</CastAnim>
-		<CastTime>550,450</CastTime>
+		<CastTime>400,350</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
@@ -464,10 +471,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
+		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes [Stats: x1.71 damage]</Description>
-		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.71 damage, -5% Defense, over 5s]</Description>
+		<UpgradeDescription>Faster cast animation. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_paladin_smash_back[450]snd_pwr_paladin_smash_swing_01,snd_pwr_paladin_smash_vox_01$[550]snd_pwr_paladin_smash_swing_02,snd_pwr_paladin_smash_vox_02$</CastSound>
@@ -490,7 +498,7 @@
 		<AoERadius>60</AoERadius>
 		<CenterOffset>20</CenterOffset>
 		<CastAnim>MaceSlam</CastAnim>
-		<CastTime>550,450</CastTime>
+		<CastTime>400,350</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
@@ -498,9 +506,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
+		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes [Stats: x1.8 damage]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.8 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased AoE and Damage  #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -524,7 +533,7 @@
 		<AoERadius>60</AoERadius>
 		<CenterOffset>20</CenterOffset>
 		<CastAnim>MaceSlam</CastAnim>
-		<CastTime>550,450</CastTime>
+		<CastTime>400,350</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
@@ -532,9 +541,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
+		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes [Stats: x1.89 damage]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.89 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -558,17 +568,18 @@
 		<AoERadius>70</AoERadius>
 		<CenterOffset>20</CenterOffset>
 		<CastAnim>MaceSlam</CastAnim>
-		<CastTime>550,450</CastTime>
+		<CastTime>400,350</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>2</BaseDamageMult>
+		<BaseDamageMult>2.88,2.88</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
+		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes [Stats: x2 damage]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased AoE and Damage  #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -1335,7 +1346,7 @@
 		<ShakeTime>500</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>2.42</BaseDamageMult>
+		<BaseDamageMult>5.76</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Cleave</PowerGroup>
@@ -1343,7 +1354,7 @@
 		<AddSelfBuff>Phalanx</AddSelfBuff>
 		<DisplayName>Cleave</DisplayName>
 		<BasePowerName>Cleave</BasePowerName>
-		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x2.42 damage, +50% Defense, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x5.76 damage, +50% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>50% Defense Boost during cast and Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_AxeCleave</IconName>
 		<RuneIcon>a_RuneIcon_03</RuneIcon>
@@ -1783,7 +1794,7 @@
 		<CastTime>480,380</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>30</ManaCost>
+		<ManaCost>25</ManaCost>
 		<BaseDamageMult>1.71,0.57</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
@@ -1822,7 +1833,7 @@
 		<CastTime>480,380</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>30</ManaCost>
+		<ManaCost>25</ManaCost>
 		<BaseDamageMult>1.04,.5</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
@@ -1863,7 +1874,7 @@
 		<CastTime>480,380</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>30</ManaCost>
+		<ManaCost>25</ManaCost>
 		<BaseDamageMult>1.16,.5</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
@@ -1904,7 +1915,7 @@
 		<CastTime>480,380</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>30</ManaCost>
+		<ManaCost>25</ManaCost>
 		<BaseDamageMult>1.2,.6</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
@@ -1945,7 +1956,7 @@
 		<CastTime>480,380</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>30</ManaCost>
+		<ManaCost>25</ManaCost>
 		<BaseDamageMult>1.3,.64</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
@@ -1986,7 +1997,7 @@
 		<CastTime>480,380</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>30</ManaCost>
+		<ManaCost>25</ManaCost>
 		<BaseDamageMult>1.5,.64</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
@@ -2027,7 +2038,7 @@
 		<CastTime>480,380</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>30</ManaCost>
+		<ManaCost>25</ManaCost>
 		<BaseDamageMult>1.6,.72</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
@@ -2068,7 +2079,7 @@
 		<CastTime>480,380</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>30</ManaCost>
+		<ManaCost>25</ManaCost>
 		<BaseDamageMult>1.7,.74</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
@@ -2109,7 +2120,7 @@
 		<CastTime>480,380</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>30</ManaCost>
+		<ManaCost>25</ManaCost>
 		<BaseDamageMult>1.8,.76</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
@@ -2150,7 +2161,7 @@
 		<CastTime>480,380</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>30</ManaCost>
+		<ManaCost>25</ManaCost>
 		<BaseDamageMult>1.9,.84</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
@@ -2191,7 +2202,7 @@
 		<CastTime>480,380</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
-		<ManaCost>30</ManaCost>
+		<ManaCost>25</ManaCost>
 		<BaseDamageMult>1.9,.84</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
@@ -11290,7 +11301,7 @@
 		<PowerGroup>LightningBomb</PowerGroup>
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
-		<Description>Turns a foe into a Lightning Bomb causing them to explode when killed. Spreads a similar effect to damaged enemies. [Stats: x2.03 damage, -5% Defense, over 5s]</Description>
+		<Description>Turns a foe into a Lightning Bomb causing them to explode when killed. The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it. [Stats: x2.03 damage, -5% Defense, over 5s]</Description>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -11323,7 +11334,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>LightningBomb</PowerGroup>
-		<AddTargetBuff>LightningBomb</AddTargetBuff>
+		<AddTargetBuff>Ignite,Ignite,ArmorBane</AddTargetBuff>
 		<CastAnimSource>TargetPos</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_2.swf</AnimFile>
@@ -11386,8 +11397,8 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Turns a foe into a Lightning Bomb causing them to explode when killed. Bomb effect spreads to one affected target. [Stats: x3.68 damage, -5% Defense, over 5s]</Description>
-		<UpgradeDescription>Turns a foe into a Lightning Bomb causing them to explode when killed. Bomb effect spreads to one affected target.</UpgradeDescription>
+		<Description>Turns a foe into a Lightning Bomb causing them to explode when killed. The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it. [Stats: x3.68 damage, -5% Defense, over 5s]</Description>
+		<UpgradeDescription>Turns a foe into a Lightning Bomb causing them to explode when killed. The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it.</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -11426,7 +11437,7 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect spreads to one affected target. [Stats: x3.9 damage, -5% Defense, over 5s]</Description>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it. [Stats: x3.9 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage to initial attack. #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -11466,7 +11477,7 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect spreads to one affected target. [Stats: x3.9 damage, -5% Defense, over 5s]</Description>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it. [Stats: x3.9 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>-5 Second Cooldown.</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -11506,8 +11517,8 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect spreads to one affected target. [Stats: x4 damage, -5% Defense, over 5s]</Description>
-		<UpgradeDescription>Increased Damage to final bomb.</UpgradeDescription>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it. [Stats: x4 damage, -5% Defense, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -11546,8 +11557,8 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4 damage, -5% Defense, over 5s]</Description>
-		<UpgradeDescription>Bomb affliction spreads one additional time.</UpgradeDescription>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it. [Stats: x4 damage, -5% Defense, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -11586,7 +11597,7 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4.36 damage, -5% Defense, over 5s]</Description>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it. [Stats: x4.36 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>-5 Second Cooldown. Increased Damage to initial attack. #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -11626,8 +11637,8 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4.77 damage, -5% Defense, over 5s]</Description>
-		<UpgradeDescription>Increased Damage to final bomb and Increased Damage to intial attack  #olddmg#</UpgradeDescription>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it. [Stats: x4.77 damage, -5% Defense, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -11666,7 +11677,7 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4.87 damage, -5% Defense, over 5s]</Description>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it. [Stats: x4.87 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>-5 Second Cooldown. Increased Damage to final bomb.</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
@@ -11706,8 +11717,8 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread twice [Stats: x4.97 damage, -5% Defense, over 5s]</Description>
-		<UpgradeDescription>Increased Damage to final bomb.</UpgradeDescription>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it. [Stats: x4.97 damage, -5% Defense, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -11746,8 +11757,8 @@
 		<AddTargetBuff>LightningBomb,ArmorBane,ArmorBane</AddTargetBuff>
 		<DisplayName>Lightning Bomb</DisplayName>
 		<BasePowerName>LightningBomb</BasePowerName>
-		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. Bomb effect can spread three times [Stats: x4.97 damage, -5% Defense, over 5s]</Description>
-		<UpgradeDescription>Bomb affliction spreads one additional time.</UpgradeDescription>
+		<Description>Stab a foe, applying 2 stacks of Armor Bane and turning them into a Lightning Bomb that explodes when killed. The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it. [Stats: x4.97 damage, -5% Defense, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<CastSound>[290]snd_pwr_paladin_warcry_vox_02$</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -11780,7 +11791,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>LightningBomb</PowerGroup>
-		<AddTargetBuff>FirstTarget:LightningBomb</AddTargetBuff>
+		<AddTargetBuff>Ignite,Ignite,ArmorBane</AddTargetBuff>
 		<BasePowerName>LightningBombExplode</BasePowerName>
 		<CastAnimSource>TargetPos</CastAnimSource>
 		<CastGfx>
@@ -11810,7 +11821,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>LightningBomb</PowerGroup>
-		<AddTargetBuff>FirstTarget:LightningBomb</AddTargetBuff>
+		<AddTargetBuff>Ignite,Ignite,ArmorBane</AddTargetBuff>
 		<BasePowerName>LightningBombExplode</BasePowerName>
 		<CastAnimSource>TargetPos</CastAnimSource>
 		<CastGfx>
@@ -11840,7 +11851,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>LightningBomb</PowerGroup>
-		<AddTargetBuff>FirstTarget:LightningBomb</AddTargetBuff>
+		<AddTargetBuff>Ignite,Ignite,ArmorBane</AddTargetBuff>
 		<BasePowerName>LightningBombExplode</BasePowerName>
 		<CastAnimSource>TargetPos</CastAnimSource>
 		<CastGfx>
@@ -11870,7 +11881,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>LightningBomb</PowerGroup>
-		<AddTargetBuff>FirstTarget:LightningBomb</AddTargetBuff>
+		<AddTargetBuff>Ignite,Ignite,ArmorBane</AddTargetBuff>
 		<BasePowerName>LightningBombExplode</BasePowerName>
 		<CastAnimSource>TargetPos</CastAnimSource>
 		<CastGfx>
@@ -11900,7 +11911,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>LightningBomb</PowerGroup>
-		<AddTargetBuff>FirstTarget:LightningBomb</AddTargetBuff>
+		<AddTargetBuff>Ignite,Ignite,ArmorBane</AddTargetBuff>
 		<BasePowerName>LightningBombExplode</BasePowerName>
 		<CastAnimSource>TargetPos</CastAnimSource>
 		<CastGfx>
@@ -11930,7 +11941,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>LightningBomb</PowerGroup>
-		<AddTargetBuff>FirstTarget:LightningBomb</AddTargetBuff>
+		<AddTargetBuff>Ignite,Ignite,ArmorBane</AddTargetBuff>
 		<BasePowerName>LightningBombExplode</BasePowerName>
 		<CastAnimSource>TargetPos</CastAnimSource>
 		<CastGfx>
@@ -11960,7 +11971,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>LightningBomb</PowerGroup>
-		<AddTargetBuff>FirstTarget:LightningBomb</AddTargetBuff>
+		<AddTargetBuff>Ignite,Ignite,ArmorBane</AddTargetBuff>
 		<BasePowerName>LightningBombExplode</BasePowerName>
 		<CastAnimSource>TargetPos</CastAnimSource>
 		<CastGfx>
@@ -11990,7 +12001,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>LightningBomb</PowerGroup>
-		<AddTargetBuff>FirstTarget:LightningBomb</AddTargetBuff>
+		<AddTargetBuff>Ignite,Ignite,ArmorBane</AddTargetBuff>
 		<BasePowerName>LightningBombExplode</BasePowerName>
 		<CastAnimSource>TargetPos</CastAnimSource>
 		<CastGfx>
@@ -12020,7 +12031,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>LightningBomb</PowerGroup>
-		<AddTargetBuff>FirstTarget:LightningBomb</AddTargetBuff>
+		<AddTargetBuff>Ignite,Ignite,ArmorBane</AddTargetBuff>
 		<BasePowerName>LightningBombExplode</BasePowerName>
 		<CastAnimSource>TargetPos</CastAnimSource>
 		<CastGfx>
@@ -12050,7 +12061,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>LightningBomb</PowerGroup>
-		<AddTargetBuff>FirstTarget:LightningBomb</AddTargetBuff>
+		<AddTargetBuff>Ignite,Ignite,ArmorBane</AddTargetBuff>
 		<BasePowerName>LightningBombExplode</BasePowerName>
 		<CastAnimSource>TargetPos</CastAnimSource>
 		<CastGfx>
@@ -15771,14 +15782,14 @@
 		<RecoverTime>0</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>0.67</BaseDamageMult>
+		<BaseDamageMult>0.8</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>Shockwave</PowerGroup>
 		<AggroBonus>1</AggroBonus>
 		<AddTargetBuff>Blinded</AddTargetBuff>
 		<DisplayName>Shockwave</DisplayName>
-		<Description>Emit Shockwaves that damage and Blind nearby enemies. Gain increased Hate for the duration. [Stats: x0.67 damage]</Description>
+		<Description>Emit Shockwaves that damage and Blind nearby enemies. Gain increased Hate for the duration. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_Shockwave</IconName>
 		<CastSound>CHR_Sentinel_Shockwave</CastSound>
 		<CastGfx/>
@@ -15806,7 +15817,7 @@
 		<RecoverTime>0</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>0.75</BaseDamageMult>
+		<BaseDamageMult>0.9</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>Shockwave</PowerGroup>
@@ -15814,7 +15825,7 @@
 		<AddTargetBuff>Blinded</AddTargetBuff>
 		<DisplayName>Shockwave</DisplayName>
 		<BasePowerName>Shockwave</BasePowerName>
-		<Description>Emit Shockwaves that damage and Blind nearby enemies. Gain increased Hate for the duration. [Stats: x0.75 damage]</Description>
+		<Description>Emit Shockwaves that damage and Blind nearby enemies. Gain increased Hate for the duration. [Stats: x0.9 damage]</Description>
 		<UpgradeDescription>Emit Shockwaves that damage and Blind nearby enemies. Gain increased Hate for the duration.</UpgradeDescription>
 		<IconName>a_PowerIcon_Shockwave</IconName>
 		<CastSound>CHR_Sentinel_Shockwave</CastSound>
@@ -15843,7 +15854,7 @@
 		<RecoverTime>0</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>0.85</BaseDamageMult>
+		<BaseDamageMult>1.02</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>Shockwave</PowerGroup>
@@ -15851,7 +15862,7 @@
 		<AddTargetBuff>Blinded</AddTargetBuff>
 		<DisplayName>Shockwave</DisplayName>
 		<BasePowerName>Shockwave</BasePowerName>
-		<Description>Emit Shockwaves that damage and Blind nearby enemies. Gain increased Hate for the duration. [Stats: x0.85 damage]</Description>
+		<Description>Emit Shockwaves that damage and Blind nearby enemies. Gain increased Hate for the duration. [Stats: x1.02 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Shockwave</IconName>
 		<CastSound>CHR_Sentinel_Shockwave</CastSound>
@@ -15880,7 +15891,7 @@
 		<RecoverTime>0</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>0.85</BaseDamageMult>
+		<BaseDamageMult>1.02</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>Shockwave</PowerGroup>
@@ -15888,7 +15899,7 @@
 		<AddTargetBuff>Blinded</AddTargetBuff>
 		<DisplayName>Shockwave</DisplayName>
 		<BasePowerName>Shockwave</BasePowerName>
-		<Description>Emit Shockwaves that damage and Blind nearby enemies. Gain increased Hate for the duration. [Stats: x0.85 damage]</Description>
+		<Description>Emit Shockwaves that damage and Blind nearby enemies. Gain increased Hate for the duration. [Stats: x1.02 damage]</Description>
 		<UpgradeDescription>Increased AoE</UpgradeDescription>
 		<IconName>a_PowerIcon_Shockwave</IconName>
 		<CastSound>CHR_Sentinel_Shockwave</CastSound>
@@ -15917,7 +15928,7 @@
 		<RecoverTime>0</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
+		<BaseDamageMult>1.2</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>Shockwave</PowerGroup>
@@ -15925,7 +15936,7 @@
 		<AddTargetBuff>Blinded</AddTargetBuff>
 		<DisplayName>Shockwave</DisplayName>
 		<BasePowerName>Shockwave</BasePowerName>
-		<Description>Emit Shockwaves that damage and Blind nearby enemies. Gain increased Hate for the duration. [Stats: x1 damage]</Description>
+		<Description>Emit Shockwaves that damage and Blind nearby enemies. Gain increased Hate for the duration. [Stats: x1.2 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Shockwave</IconName>
 		<CastSound>CHR_Sentinel_Shockwave</CastSound>
@@ -15954,7 +15965,7 @@
 		<RecoverTime>0</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
+		<BaseDamageMult>1.2</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>Shockwave</PowerGroup>
@@ -15962,7 +15973,7 @@
 		<AddTargetBuff>Blinded,Staggered</AddTargetBuff>
 		<DisplayName>Shockwave</DisplayName>
 		<BasePowerName>Shockwave</BasePowerName>
-		<Description>Emit Shockwaves that damage, Blind and Stagger nearby enemies. Gain increased Hate for the duration. [Stats: x1 damage, -100% Speed, over 1s]</Description>
+		<Description>Emit Shockwaves that damage, Blind and Stagger nearby enemies. Gain increased Hate for the duration. [Stats: x1.2 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Adds Stagger.</UpgradeDescription>
 		<IconName>a_PowerIcon_Shockwave</IconName>
 		<CastSound>CHR_Sentinel_Shockwave</CastSound>
@@ -15991,7 +16002,7 @@
 		<RecoverTime>0</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>1.1</BaseDamageMult>
+		<BaseDamageMult>1.32</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>Shockwave</PowerGroup>
@@ -15999,7 +16010,7 @@
 		<AddTargetBuff>Blinded,Staggered</AddTargetBuff>
 		<DisplayName>Shockwave</DisplayName>
 		<BasePowerName>Shockwave</BasePowerName>
-		<Description>Emit Shockwaves that damage, Blind and Stagger nearby enemies. Gain increased Hate for the duration. [Stats: x1.1 damage, -100% Speed, over 1s]</Description>
+		<Description>Emit Shockwaves that damage, Blind and Stagger nearby enemies. Gain increased Hate for the duration. [Stats: x1.32 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Shockwave</IconName>
 		<CastSound>CHR_Sentinel_Shockwave</CastSound>
@@ -16028,7 +16039,7 @@
 		<RecoverTime>0</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>40</ManaCost>
-		<BaseDamageMult>1.1</BaseDamageMult>
+		<BaseDamageMult>1.32</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>Shockwave</PowerGroup>
@@ -16036,7 +16047,7 @@
 		<AddTargetBuff>Blinded,Staggered</AddTargetBuff>
 		<DisplayName>Shockwave</DisplayName>
 		<BasePowerName>Shockwave</BasePowerName>
-		<Description>Emit Shockwaves that damage, Blind and Stagger nearby enemies. Gain increased Hate for the duration. [Stats: x1.1 damage, -100% Speed, over 1s]</Description>
+		<Description>Emit Shockwaves that damage, Blind and Stagger nearby enemies. Gain increased Hate for the duration. [Stats: x1.32 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>+20% Hate.</UpgradeDescription>
 		<IconName>a_PowerIcon_Shockwave</IconName>
 		<CastSound>CHR_Sentinel_Shockwave</CastSound>
@@ -16065,7 +16076,7 @@
 		<RecoverTime>0</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>35</ManaCost>
-		<BaseDamageMult>1.1</BaseDamageMult>
+		<BaseDamageMult>1.32</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>Shockwave</PowerGroup>
@@ -16073,7 +16084,7 @@
 		<AddTargetBuff>Blinded,Staggered</AddTargetBuff>
 		<DisplayName>Shockwave</DisplayName>
 		<BasePowerName>Shockwave</BasePowerName>
-		<Description>Emit Shockwaves that damage, Blind and Stagger nearby enemies. Gain increased Hate for the duration. [Stats: x1.1 damage, -100% Speed, over 1s]</Description>
+		<Description>Emit Shockwaves that damage, Blind and Stagger nearby enemies. Gain increased Hate for the duration. [Stats: x1.32 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>-5 Mana Cost.</UpgradeDescription>
 		<IconName>a_PowerIcon_Shockwave</IconName>
 		<CastSound>CHR_Sentinel_Shockwave</CastSound>
@@ -16102,7 +16113,7 @@
 		<RecoverTime>0</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>35</ManaCost>
-		<BaseDamageMult>1.15</BaseDamageMult>
+		<BaseDamageMult>1.38</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>Shockwave</PowerGroup>
@@ -16110,7 +16121,7 @@
 		<AddTargetBuff>Blinded,Staggered</AddTargetBuff>
 		<DisplayName>Shockwave</DisplayName>
 		<BasePowerName>Shockwave</BasePowerName>
-		<Description>Emit Shockwaves that damage, Blind and Stagger nearby enemies. Gain increased Hate for the duration. [Stats: x1.15 damage, -100% Speed, over 1s]</Description>
+		<Description>Emit Shockwaves that damage, Blind and Stagger nearby enemies. Gain increased Hate for the duration. [Stats: x1.38 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Shockwave</IconName>
 		<CastSound>CHR_Sentinel_Shockwave</CastSound>
@@ -16139,7 +16150,7 @@
 		<RecoverTime>0</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>1.21</BaseDamageMult>
+		<BaseDamageMult>1.45</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>Shockwave</PowerGroup>
@@ -16147,7 +16158,7 @@
 		<AddTargetBuff>Blinded,Staggered</AddTargetBuff>
 		<DisplayName>Shockwave</DisplayName>
 		<BasePowerName>Shockwave</BasePowerName>
-		<Description>Emit Shockwaves that damage, Blind and Stagger nearby enemies. Gain increased Hate for the duration. [Stats: x1.21 damage, -100% Speed, over 1s]</Description>
+		<Description>Emit Shockwaves that damage, Blind and Stagger nearby enemies. Gain increased Hate for the duration. [Stats: x1.45 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>-5 Mana Cost and Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Shockwave</IconName>
 		<CastSound>CHR_Sentinel_Shockwave</CastSound>

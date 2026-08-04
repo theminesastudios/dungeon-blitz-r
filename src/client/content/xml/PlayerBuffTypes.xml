@@ -3812,30 +3812,40 @@
 		<BuffID>566</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
+		<MagicDefense>0.01</MagicDefense>
+		<MeleeDefense>0.01</MeleeDefense>
 		<GfxType/>
 	</BuffType>
 	<BuffType BuffName="PainEaterRank2">
 		<BuffID>567</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
+		<MagicDefense>0.02</MagicDefense>
+		<MeleeDefense>0.02</MeleeDefense>
 		<GfxType/>
 	</BuffType>
 	<BuffType BuffName="PainEaterRank3">
 		<BuffID>568</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
+		<MagicDefense>0.04</MagicDefense>
+		<MeleeDefense>0.04</MeleeDefense>
 		<GfxType/>
 	</BuffType>
 	<BuffType BuffName="PainEaterRank4">
 		<BuffID>569</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
+		<MagicDefense>0.06</MagicDefense>
+		<MeleeDefense>0.06</MeleeDefense>
 		<GfxType/>
 	</BuffType>
 	<BuffType BuffName="PainEaterRank5">
 		<BuffID>570</BuffID>
 		<Attack>false</Attack>
 		<Duration>5000</Duration>
+		<MagicDefense>0.1</MagicDefense>
+		<MeleeDefense>0.1</MeleeDefense>
 		<GfxType/>
 	</BuffType>
 	<BuffType BuffName="HeroismRank1">
