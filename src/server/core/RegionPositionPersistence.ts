@@ -1,4 +1,5 @@
 import { LevelConfig } from './LevelConfig';
+import { resolveGroundedPosition } from './GroundedPosition';
 
 /**
  * Where a character was standing when they last left a normal region, so logging back in puts
@@ -61,8 +62,20 @@ export class RegionPositionPersistence {
     static record(client: any, entity: any, reason: RegionPositionReason, options?: RecordOptions): boolean {
         const character = client?.character;
         const levelName = LevelConfig.normalizeLevelName(client?.currentLevel || character?.CurrentLevel?.name);
-        const x = Number(entity?.x ?? character?.CurrentLevel?.x);
-        const y = Number(entity?.y ?? character?.CurrentLevel?.y);
+        // This record is replayed verbatim as a spawn point on the next login, so it may only
+        // ever hold a point the player was standing on. Reading entity.x/y directly meant a
+        // disconnect mid-jump, mid-fall or mid-knockback saved a spot in open air, and the
+        // next login dropped the player out of the sky onto it -- or under the map, when the
+        // sample came from a fall that had already passed the floor. An entity with no floor
+        // sample yet falls back to the last saved coordinates rather than its live position.
+        const grounded = entity ? resolveGroundedPosition(entity) : null;
+        // The saved record is only a usable fallback while it belongs to the level being
+        // recorded; borrowing another level's coordinates would file a point from the wrong map.
+        const savedRecord = LevelConfig.normalizeLevelName(character?.CurrentLevel?.name) === levelName
+            ? character?.CurrentLevel
+            : null;
+        const x = Number(grounded?.x ?? savedRecord?.x);
+        const y = Number(grounded?.y ?? savedRecord?.y);
         if (!character || !isNormalRegion(levelName) || !isValidCoordinate(x) || !isValidCoordinate(y)) {
             return false;
         }

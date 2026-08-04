@@ -20,6 +20,7 @@ import { clearOpenBossScene, getOpenBossScene, isRoomBossEntity, markRoomBossEnt
 import { getBossIdentityKey, getBossIdentityKeys } from '../core/BossCopyCensus';
 import { TutorialDungeonAuthorityEntity, TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { MovementAuthority } from '../core/MovementAuthority';
+import { inheritGroundedSample, noteGroundedSample } from '../core/GroundedPosition';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
@@ -3573,6 +3574,62 @@ export class EntityHandler {
         }
     }
 
+    /**
+     * How far a spawn coordinate may sit above the real floor and still be placed cleanly.
+     *
+     * The client resolves an explicit spawn with
+     *   getFloorCollision(0, x, y - 59, new Point(0, 160), ...)
+     * -- a ray from 59px above the coordinate, running 160px down. Floor inside that band and
+     * the body is snapped onto it with no visible movement; floor outside it and the client
+     * leaves the body at the raw coordinate, which is the glide down to the ground players see
+     * on entering a level. 59 is therefore the exact budget for error above the floor.
+     */
+    private static readonly SPAWN_SNAP_WINDOW_PX = 59;
+
+    /**
+     * Throw away a floor sample that the server's dead reckoning has drifted away from.
+     *
+     * entity.x/y is a running sum of movement deltas -- thinned by MovementAuthority
+     * rejections and packet coalescing -- so it slowly parts company with where the player
+     * actually is. The floor samples taken from it inherit that error, and once the error
+     * exceeds the client's snap window the saved point stops being a place with floor under
+     * it: a Jade City record reached y=-2526 with the ground at about 1050, which is a 3500px
+     * fall on every login.
+     *
+     * A full update is the only packet carrying the client's absolute position, so it is the
+     * one chance to notice. Beyond the snap window the inherited sample is a lie and the
+     * absolute position replaces it -- for a standing packet through noteGroundedSample right
+     * after this, and for an airborne one by leaving no sample at all rather than a wrong one.
+     */
+    private static discardDriftedGroundedSample(
+        client: Client,
+        props: any,
+        previousEntity: any,
+        absoluteX: number,
+        absoluteY: number
+    ): void {
+        const reckonedX = Number(previousEntity?.x);
+        const reckonedY = Number(previousEntity?.y);
+        if (!Number.isFinite(reckonedX) || !Number.isFinite(reckonedY)) {
+            return;
+        }
+
+        const driftX = Math.abs(reckonedX - Number(absoluteX));
+        const driftY = Math.abs(reckonedY - Number(absoluteY));
+        if (driftX <= EntityHandler.SPAWN_SNAP_WINDOW_PX && driftY <= EntityHandler.SPAWN_SNAP_WINDOW_PX) {
+            return;
+        }
+
+        delete props.groundedX;
+        delete props.groundedY;
+        console.log(
+            `[SpawnDrift] character=${String(client.character?.name ?? 'unknown')} ` +
+            `level=${String(client.currentLevel ?? '')} reckoned=${Math.round(reckonedX)},${Math.round(reckonedY)} ` +
+            `actual=${Math.round(Number(absoluteX))},${Math.round(Number(absoluteY))} ` +
+            `drift=${Math.round(driftX)},${Math.round(driftY)} action=dropped_grounded_sample`
+        );
+    }
+
     private static buildPlayerSnapshot(client: Client): EntityProps | null {
         if (!client.character || !client.currentLevel) {
             return null;
@@ -3925,6 +3982,24 @@ export class EntityHandler {
             };
 
         EntityHandler.applyRuntimeDungeonEntityLevel(client, levelName, props);
+
+        // A full update replaces the entity object wholesale, which used to throw away the
+        // floor sample the incremental packets had built up. Everything that places a body
+        // (level entry, the login restore, the transfer save, party anchor spawns) reads that
+        // sample, so losing it here left those paths falling back to a live position that can
+        // be in open air -- and this packet's own flags were never consulted, so a full update
+        // sent mid-jump looked perfectly grounded.
+        if (isPlayer) {
+            const previousEntity = client.entities.get(entityId)
+                ?? client.entities.get(rawEntityId)
+                ?? existingLevelMap?.get(entityId);
+            inheritGroundedSample(props, previousEntity);
+            EntityHandler.discardDriftedGroundedSample(client, props, previousEntity, posX, posY);
+            // The client sends its true absolute position here, so a standing full update is
+            // the most trustworthy floor sample there is -- including the one that arrives on
+            // spawn, which is what gives a player who leaves immediately a point to return to.
+            noteGroundedSample(props, posX, posY, bJumping || bDropping);
+        }
 
         if (!isPlayer) {
             client.clientSpawnConfirmed = true;
