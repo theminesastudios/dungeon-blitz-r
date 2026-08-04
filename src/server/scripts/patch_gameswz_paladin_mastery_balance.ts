@@ -3,6 +3,34 @@ import * as path from "path";
 import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
 
 /**
+ * Second Paladin pass (2026-08-04). Everything below the first pass's header still applies;
+ * these are the items that moved a second time, and the ones that are new.
+ *
+ * Templar:
+ *   Subjugate          adds 60% of Expertise as damage against a burning target, and
+ *   Penance            45% -- both bytecode, see patch-dungeonblitz-templar-talent-effects
+ *   Divine Word        healing halved
+ *   Hallowed Reckoning healing down 35%
+ *   Sacred Light       stops healing twice per cast
+ *   Celestial Lance    no rank raises Holy Fire damage any more. Rank 4 only Staggers, rank 8
+ *                      lands a second stack of Holy Fire and takes 3 Mana off, rank 10 takes
+ *                      another 2 off and keeps the stun and the damage
+ *   Empyrean Aura      4 second base boost, extended by Expertise (bytecode), 50s cooldown
+ *
+ * Talentstones:
+ *   Fortify -> Smiting Flames    Holy Fire damage 3/5/10/13/15%, down from 5-25%
+ *   Rapid Recovery (Templar)     becomes its own stone, Crusading Flames: +1/2/3/5/8 to the
+ *                                maximum number of Holy Fire stacks
+ *   Rapid Recovery (Sentinel)    back to the Tenacity stone it always was, 1/3/5/7/10%
+ *
+ * The two Rapid Recoveries were one stone. NodeTypes node 22 (Templar) and node 25 (Sentinel)
+ * both pointed at the RapidRecovery family, so the first pass's repurposing took the
+ * Sentinel's Tenacity with it. The fix is a new CrusadingFlames family plus a NodeTypes edit
+ * that moves the Templar's node onto it -- which is why this script now patches a fourth
+ * resource, and why NodeTypes has no loose-XML counterpart to keep in step.
+ */
+
+/**
  * Paladin mastery retune -- Templar mostly, with the Justicar and Sentinel items that
  * turned out to be expressible in data.
  *
@@ -142,6 +170,21 @@ const TARGET_BUFFS = new Map<string, string>([
   // that hits enemies. It has no ranks, so this is not rank-gated the way rank 4 was asked
   // for -- there is no rank to gate it on.
   ["SanctumCombo", "Blinded,HolyFire3"], // was Blinded
+  /**
+   * Celestial Lance stops climbing the Holy Fire ladder. Every rank band now hands out the
+   * same HolyFire1, so the only thing a rank buys is what its own upgrade text says it buys:
+   * rank 4 the Stagger, rank 6 the splash, rank 8 a *second* stack, rank 10 the stun.
+   *
+   * Two stacks is exactly HolyFire1's authored cap, which is the point -- the Crusading Flames
+   * stone is what raises the cap, and a rank-8 Lance is the thing that fills it.
+   *
+   * The rank bands are the combos, not the ranks: Combo2 is ranks 4-5, Combo3 6-7, Combo4 8-9,
+   * Combo5 10. Combo and Combo1 already author a bare HolyFire1 and stay as they are.
+   */
+  ["CelestialLanceCombo2", "HolyFire1,Staggered"], // was HolyFire2,Staggered
+  ["CelestialLanceCombo3", "HolyFire1,Staggered"], // was HolyFire3,Staggered
+  ["CelestialLanceCombo4", "HolyFire1,HolyFire1,Staggered"], // was HolyFire4,Staggered
+  ["CelestialLanceCombo5", "HolyFire1,HolyFire1,Staggered"], // was HolyFire5,Staggered
   // Verdict -- every shot blinds.
   ["VerdictROR1", "Blinded"], // was absent
   ["VerdictROR2", "Blinded"], // was absent
@@ -256,7 +299,59 @@ const DAMAGE_MULTS = new Map<string, string>([
   ["Shockwave8", "1.32"], // 1.1
   ["Shockwave9", "1.38"], // 1.15
   ["Shockwave10", "1.45"], // 1.21
+  /**
+   * Hallowed Reckoning heals 35% less. The heal is the negative half of the AuraFriend blocks
+   * -- a BaseDamageMult below zero is healing, charged per cast step against Expertise -- so
+   * every entry of every rank's list is scaled by .65 and rounded to the two decimals the file
+   * is authored in. The FountainOfLifeCombo blocks are the enemy-facing half and keep their
+   * damage.
+   *
+   * The unranked block moves with them; it is the pre-talent version of the same power.
+   */
+  ["FountainOfLife", "-.33,-.33,-.33,-.33,-.33,-.33"], // -.5 x6
+  ["FountainOfLife1", "-.38,-.38,-.37,-.37"], // -.58,-.58,-.57,-.57
+  ["FountainOfLife2", "-.42,-.42,-.42,-.42"], // -.65 x4
+  ["FountainOfLife3", "-.47,-.47,-.47,-.47"], // -.73,-.73,-.72,-.72
+  ["FountainOfLife4", "-.54,-.54,-.53,-.53"], // -.83,-.83,-.82,-.82
+  ["FountainOfLife5", "-.6,-.6,-.6,-.6"], // -.93,-.93,-.92,-.92
+  ["FountainOfLife6", "-.67,-.67,-.66,-.66"], // -1.03,-1.03,-1.02,-1.02
+  ["FountainOfLife7", "-.75,-.75,-.75,-.72"], // -1.15,-1.15,-1.15,-1.10
+  ["FountainOfLife8", "-.79,-.79,-.79,-.79"], // -1.22,-1.21,-1.21,-1.21
+  ["FountainOfLife9", "-.85,-.85,-.85,-.81"], // -1.30,-1.30,-1.30,-1.25
+  ["FountainOfLife10", "-.98,-.98,-.98,-.98"], // -1.5 x4
+  /**
+   * Sacred Light healed twice per cast, and the trailing zero is the whole fix.
+   *
+   * CastTime is the step list and BaseDamageMult is read against it: CombatState takes
+   * var_630[step] and falls back to var_630[0] when the list is shorter. CleansingLight
+   * authors "830,0" -- two steps -- against a single multiplier, so the second step fell back
+   * to the first and healed the party a second time. Its own upgrade text has always quoted
+   * the single value ("90% Heal" against -0.85), so the tooltip was right and the power was
+   * wrong.
+   *
+   * Zeroing the second step rather than dropping it from CastTime keeps the cast timing and
+   * the animation exactly as they are -- the step still happens, it just heals nothing.
+   */
+  ["CleansingLight", "-0.85,0"], // -0.85
+  ["CleansingLight1", "-0.85,0"], // -0.85
+  ["CleansingLight2", "-1.28,0"], // -1.28
+  ["CleansingLight3", "-1.28,0"], // -1.28
+  ["CleansingLight4", "-1.71,0"], // -1.71
+  ["CleansingLight5", "-1.71,0"], // -1.71
+  ["CleansingLight6", "-2.39,0"], // -2.39
+  ["CleansingLight7", "-2.39,0"], // -2.39
+  ["CleansingLight8", "-2.82,0"], // -2.82
+  ["CleansingLight9", "-2.82,0"], // -2.82
+  ["CleansingLight10", "-3.21,0"], // -3.21
 ]);
+
+/**
+ * Empyrean Aura's cooldown. Every rank carries its own, and the unranked block is the
+ * pre-talent version, so all eleven move together.
+ */
+const COOLDOWNS = new Map<string, string>(
+  ["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"].map((rank) => [`LeoneanAura${rank}`, "50000"]),
+);
 
 /**
  * Celestial Lance already authors an AoERadius on a RangedStrike, so the splash is real and
@@ -315,6 +410,11 @@ const CAST_TIMES = new Map<string, string>([
  */
 const MANA_COSTS = new Map<string, string>([
   ["FountainOfLife10", "25"], // 30
+  // Celestial Lance gets cheaper where it used to get hotter: ranks 8-9 pay for what the
+  // second Holy Fire stack replaced, rank 10 for the Holy Fire rank it no longer buys.
+  ["CelestialLance8", "37"], // 40
+  ["CelestialLance9", "37"], // 40
+  ["CelestialLance10", "35"], // 40
   ["VerdictROR9", "0,2"], // 0
   ["VerdictROR10", "0,2"], // 0
   ["VerdictMelee9", "0,2"], // 0
@@ -406,6 +506,73 @@ const POWER_TEXT_MIGRATIONS: Array<{ power: RegExp; from: string; to: string }> 
       to: "The blast leaves 2 stacks of Ignite and Armor Bane on everything caught in it.",
     }))
   ),
+  /**
+   * Hallowed Reckoning's quoted heal, down 35% with the values it quotes. These are
+   * migrations rather than UPGRADE_TEXT rows because every rank carries a percentage and
+   * UPGRADE_TEXT holds one pair per power -- and because ranks 4, 7 and 10 have already had
+   * their sentence rewritten once, so the percentage is the only part still worth matching.
+   */
+  ...(
+    [
+      [370, 240], [380, 245], [430, 280], [460, 300], [500, 325],
+      [510, 330], [530, 345], [550, 355], [560, 365], [600, 390],
+    ].map(([before, after]) => ({
+      power: /^FountainOfLife\d+$/,
+      from: `${before}% Heal over 4 sec.`,
+      to: `${after}% Heal over 4 sec.`,
+    }))
+  ),
+  // Divine Word's, halved.
+  ...(
+    [
+      [75, 38], [100, 50], [125, 63],
+    ].map(([before, after]) => ({
+      power: /^DivineWord\d+$/,
+      from: `${before}% Heal over 3 sec`,
+      to: `${after}% Heal over 3 sec`,
+    }))
+  ),
+  /**
+   * Empyrean Aura's boost now says #dur#, which PowerType resolves at read time from the buff
+   * the power hands out -- plus the Expertise extension, once
+   * patch-dungeonblitz-templar-talent-effects has taught it to. A written number could not
+   * say "and however much your Expertise adds"; the token can.
+   *
+   * One entry per rank band, because the sentence the first pass wrote quotes that band's own
+   * length. Every band is rewritten to the same token.
+   */
+  ...(
+    ["2", "3", "5", "8"].map((seconds) => ({
+      power: /^LeoneanAura\d*$/,
+      from: `The boost lasts ${seconds} seconds.`,
+      to: "The boost lasts #dur# seconds.",
+    }))
+  ),
+  /**
+   * The same sentence again, in the wording Game.swz carries. The packed copy and the loose
+   * XML under src/client/content/xml disagree here -- the swz says "a boost that lingers for
+   * N seconds", the loose file says "The boost lasts N seconds." -- and the swz is the one the
+   * client reads, so both have to be rewritten or the tooltip keeps quoting a number the aura
+   * no longer holds for.
+   */
+  ...(
+    ["2", "3", "5", "8"].map((seconds) => ({
+      power: /^LeoneanAura\d*$/,
+      from: `lingers for ${seconds} seconds`,
+      to: "lingers for #dur# seconds",
+    }))
+  ),
+  /**
+   * Celestial Lance rank 4 keeps the Stagger and loses the Holy Fire claim. This is a
+   * migration and not an UPGRADE_TEXT row for a mechanical reason: the replacement is a
+   * prefix of the text it replaces, and UPGRADE_TEXT skips any row whose "after" is already
+   * present -- which it always would be.
+   */
+  {
+    power: /^CelestialLance4$/,
+    from: "Staggers. Increased Holy Fire damage",
+    to: "Staggers.",
+  },
 ];
 
 for (const migration of POWER_TEXT_MIGRATIONS) {
@@ -420,10 +587,21 @@ const UPGRADE_TEXT = new Map<string, [string, string]>([
   ["Subjugate10", ["Adds Blind", "Adds a stack of Cripple."]],
   ["DivineWord3", ["Increased Damage #olddmg#", "Adds a stack of Holy Fire."]],
   ["Penance4", ["Increased Damage #olddmg#", "Adds Blind. Increased Damage #olddmg#"]],
-  ["FountainOfLife4", ["Increased Damage #olddmg#. 460% Heal over 4 sec.", "Adds a stack of Holy Fire. 460% Heal over 4 sec."]],
-  ["FountainOfLife7", ["Increased Damage #olddmg#. 530% Heal over 4 sec.", "Faster cast animation. 530% Heal over 4 sec."]],
-  ["FountainOfLife10", ["Increased Damage #olddmg#. 600% Heal over 4 sec.", "-5 Mana Cost. 600% Heal over 4 sec."]],
+  // The percentages here are the ones POWER_TEXT_MIGRATIONS has already written by the time
+  // these run -- a clean checkout walks the migration first, so matching the authored 460 here
+  // would never fire.
+  ["FountainOfLife4", ["Increased Damage #olddmg#. 300% Heal over 4 sec.", "Adds a stack of Holy Fire. 300% Heal over 4 sec."]],
+  ["FountainOfLife7", ["Increased Damage #olddmg#. 345% Heal over 4 sec.", "Faster cast animation. 345% Heal over 4 sec."]],
+  ["FountainOfLife10", ["Increased Damage #olddmg#. 390% Heal over 4 sec.", "-5 Mana Cost. 390% Heal over 4 sec."]],
   ["CelestialLance6", ["Increased Holy Fire Damage", "The Lance now strikes every enemy around its target."]],
+  ["CelestialLance8", ["Increased Holy Fire Damage", "Adds a stack of Holy Fire. -3 Mana Cost."]],
+  [
+    "CelestialLance10",
+    [
+      "Stuns Lance target. Increased Holy Fire Damage. Increased Lance Damage #olddmg#",
+      "Stuns Lance target. -2 Mana Cost. Increased Lance Damage #olddmg#",
+    ],
+  ],
   ["Verdict9", ["+30% Healing per shot", "+30% Healing per shot. Each shot returns 2 Mana."]],
   ["Verdict10", ["+50% Healing per shot", "+50% Healing per shot. +1.5 Second Duration."]],
   ["CleavingBlows2", ["Increased Damage #olddmg#", "Your swings return 5 Mana each. Increased Damage #olddmg#"]],
@@ -522,30 +700,52 @@ DESCRIPTIONS.set("Smash", [
  *
  * Verdict's stance duration rides its own self-buff, which is why rank 10 is here as well.
  */
+/**
+ * The second pass halves the whole curve: what a rank-10 Templar held for 8 seconds is a
+ * 4-second base now, and Expertise buys the rest of it back
+ * (patch-dungeonblitz-templar-talent-effects). Halving rather than flattening every rank to 4
+ * keeps the rank progression the first pass authored -- a rank-1 aura was never meant to hold
+ * as long as a rank-10 one.
+ */
 const BUFF_DURATIONS = new Map<string, string>([
-  ["LeoneanAura1", "2000"], // 750
-  ["LeoneanAura2", "2000"], // 750
-  ["LeoneanAura3", "2000"], // 750
-  ["LeoneanAura4", "3000"], // 750
-  ["LeoneanAura5", "3000"], // 750
-  ["LeoneanAura6", "3000"], // 750
-  ["LeoneanAura7", "5000"], // 750
-  ["LeoneanAura8", "5000"], // 750
-  ["LeoneanAura9", "5000"], // 750
-  ["LeoneanAura10", "8000"], // 750
+  ["LeoneanAura1", "1000"], // 2000
+  ["LeoneanAura2", "1000"], // 2000
+  ["LeoneanAura3", "1000"], // 2000
+  ["LeoneanAura4", "1500"], // 3000
+  ["LeoneanAura5", "1500"], // 3000
+  ["LeoneanAura6", "1500"], // 3000
+  ["LeoneanAura7", "2500"], // 5000
+  ["LeoneanAura8", "2500"], // 5000
+  ["LeoneanAura9", "2500"], // 5000
+  ["LeoneanAura10", "4000"], // 8000
   ["Verdict9", "7000"], // 5500
   ["Verdict10", "7000"], // 5500
 ]);
 
-// Empyrean Aura's number comes from BUFF_DURATIONS rather than being written twice, so the
-// sentence cannot drift away from the value it quotes.
+/**
+ * Empyrean Aura's sentence quotes #dur# rather than a number. PowerType resolves the token
+ * from the first buff the power hands out, which is the rank's own LeoneanAura block above --
+ * so the sentence tracks BUFF_DURATIONS without either being written twice, and it picks up
+ * the Expertise extension the client adds on top.
+ */
 for (let rank = 1; rank <= 10; rank += 1) {
-  const seconds = Number(BUFF_DURATIONS.get(`LeoneanAura${rank}`)) / 1000;
   DESCRIPTIONS.set(`LeoneanAura${rank}`, [
     "Attack and Expertise boost.",
-    `Attack and Expertise boost. The boost lasts ${seconds} seconds.`,
+    "Attack and Expertise boost. The boost lasts #dur# seconds.",
   ]);
 }
+
+/**
+ * Divine Word heals half as much. The heal is not on the power at all -- DivineWordCombo is a
+ * RangedAoEFriend cast with no damage of its own whose only payload is one of these three
+ * buffs, and the buff's negative DoTDamage is the healing tick. Rank bands: Buff10 is ranks
+ * 1-3, Buff15 is 4-9, Buff20 is 10.
+ */
+const BUFF_DOT_DAMAGE = new Map<string, string>([
+  ["DivineWordBuff10", "-0.375"], // -0.75
+  ["DivineWordBuff15", "-0.5"], // -1
+  ["DivineWordBuff20", "-0.625"], // -1.25
+]);
 
 /**
  * Sentinel Form's damage bonus. Ranks 1-3 authored none at all, which is why a fresh
@@ -673,38 +873,53 @@ const MOD_DISPLAY_NAMES = new Map<string, string>([
  * lists, and Celestial Lance hands out a different rank at each of its own ranks.
  */
 const HOLY_FIRE_BUFFS = "HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5";
-const HOLY_FIRE_STEPS = [".05", ".1", ".15", ".2", ".25"];
+// Fortify becomes Smiting Flames, and the damage it adds comes down from the first pass's
+// 5-25%. Every HolyFire rank is named because a Buff mod applies only to the buffs it lists.
+const SMITING_FLAMES_STEPS = [".03", ".05", ".1", ".13", ".15"];
 
 type ModRewrite = { display?: string; description?: string; body: string[] };
 
-function holyFireMod(modName: string, icon: string, rank: number, display: string): ModRewrite {
-  return {
-    display,
-    description:
-      rank === 1
-        ? "Increases Holy Fire Damage@Holy Fire Damage:, +5%, +10%, +15%, +20%, +25%"
-        : undefined,
-    body: [
-      "<ModType>Buff</ModType>",
-      `<BuffName>${HOLY_FIRE_BUFFS}</BuffName>`,
-      "<BuffProperty>DoTDamage</BuffProperty>",
-      `<BuffValue>${HOLY_FIRE_STEPS[rank - 1]}</BuffValue>`,
-      `<IconName>${icon}</IconName>`,
-    ],
-  };
-}
-
 const SANCTIFY_STEPS = [".01", ".02", ".03", ".04", ".05"];
+// Rapid Recovery, back to the stone it was before the first pass took it: Tenacity, which the
+// file calls CCReduction. The Sentinel's node 25 points here and always did.
+const TENACITY_STEPS = [".01", ".03", ".05", ".07", ".1"];
 
 const MOD_REWRITES = new Map<string, ModRewrite>([
   ...([1, 2, 3, 4, 5].map(
-    (rank) => [`Fortify${rank}`, holyFireMod(`Fortify${rank}`, "a_Signet_Fortify", rank, "Fortify")] as const,
+    (rank) =>
+      [
+        `Fortify${rank}`,
+        {
+          display: "Smiting Flames",
+          description:
+            rank === 1
+              ? "Increases Holy Fire Damage@Holy Fire Damage:, +3%, +5%, +10%, +13%, +15%"
+              : undefined,
+          body: [
+            "<ModType>Buff</ModType>",
+            `<BuffName>${HOLY_FIRE_BUFFS}</BuffName>`,
+            "<BuffProperty>DoTDamage</BuffProperty>",
+            `<BuffValue>${SMITING_FLAMES_STEPS[rank - 1]}</BuffValue>`,
+            "<IconName>a_Signet_Fortify</IconName>",
+          ],
+        },
+      ] as const,
   ) as Array<[string, ModRewrite]>),
   ...([1, 2, 3, 4, 5].map(
     (rank) =>
       [
         `RapidRecovery${rank}`,
-        holyFireMod(`RapidRecovery${rank}`, "a_Signet_RapidRecover", rank, "Rapid Recovery"),
+        {
+          display: "Rapid Recovery",
+          description:
+            rank === 1 ? "Increases Tenacity@Tenacity:, +1%, +3%, +5%, +7%, +10%" : undefined,
+          body: [
+            "<ModType>Stat</ModType>",
+            "<IconName>a_Signet_RapidRecover</IconName>",
+            "<StatProperty>CCReduction</StatProperty>",
+            `<StatValue>${TENACITY_STEPS[rank - 1]}</StatValue>`,
+          ],
+        },
       ] as const,
   ) as Array<[string, ModRewrite]>),
   ...([1, 2, 3, 4, 5].map(
@@ -746,6 +961,87 @@ const MOD_REWRITES = new Map<string, ModRewrite>([
     },
   ],
 ]);
+
+/**
+ * Crusading Flames: a brand new talentstone family, and it has to be new.
+ *
+ * The Templar and the Sentinel were sharing one stone. NodeTypes node 22 gives the Templar
+ * "RapidRecovery" and node 25 gives the Sentinel the same family, so the first pass's
+ * repurposing of RapidRecovery into a Holy Fire stone silently took the Sentinel's Tenacity
+ * with it. Restoring Tenacity above and moving the Templar's node onto CrusadingFlames is the
+ * only shape that gives each class the stone it is supposed to have.
+ *
+ * ModIDs 895-899 are the first free ones -- the file authors 0 through 894 with no gaps -- and
+ * they are what a Templar's save will key against, so they must not be renumbered later.
+ *
+ * It raises the *cap*, not the damage: HolyFire1..5 all author StackCount 2, which is exactly
+ * what a rank-8 Celestial Lance fills on its own. Deep Cuts and Napalm are the same mod shape
+ * against Bleeding and Burned.
+ *
+ * The icon stays a_Signet_RapidRecover. It is the icon the Templar's node has always shown,
+ * and reusing it means the node keeps its face while the Sentinel's stone keeps its own.
+ */
+const CRUSADING_FLAMES_STEPS = ["1", "2", "3", "5", "8"];
+const CRUSADING_FLAMES_FIRST_MOD_ID = 895;
+
+const MOD_INSERTS = new Map<string, string[]>(
+  [1, 2, 3, 4, 5].map((rank) => [
+    `CrusadingFlames${rank}`,
+    [
+      `<ModName>CrusadingFlames${rank}</ModName>`,
+      `<ModID>${CRUSADING_FLAMES_FIRST_MOD_ID + rank - 1}</ModID>`,
+      "<DisplayName>Crusading Flames</DisplayName>",
+      ...(rank === 1
+        ? [
+            "<Description>Increases maximum number of Holy Fire Stacks@Holy Fire Stacks:, +1, +2, +3, +5, +8</Description>",
+          ]
+        : []),
+      "<ModType>Buff</ModType>",
+      `<BuffName>${HOLY_FIRE_BUFFS}</BuffName>`,
+      "<BuffProperty>StackCount</BuffProperty>",
+      `<BuffValue>${CRUSADING_FLAMES_STEPS[rank - 1]}</BuffValue>`,
+      "<IconName>a_Signet_RapidRecover</IconName>",
+    ],
+  ]),
+);
+
+/**
+ * Empyrean Aura's Expertise extension needs somewhere to live, and a PowerModType is the only
+ * shape that reaches a buff's duration.
+ *
+ * Buff computes its lifetime as the authored Duration plus whatever the mods vector adds, and
+ * Buff itself is control-flow obfuscated past recompiling -- so CombatState fabricates a
+ * class_140 against this entry at cast time with the milliseconds in place of a magnitude
+ * (patch-dungeonblitz-templar-talent-effects). Nothing in NodeTypes offers it, so it is never
+ * a stone a player can own, and the authored BuffValue below is never the number that lands.
+ *
+ * ModID 900 is what the bytecode hardcodes. Renumbering it here silently switches the
+ * extension off.
+ */
+const EMPYREAN_CARRIER_MOD_ID = 900;
+
+MOD_INSERTS.set("EmpyreanExpertise", [
+  "<ModName>EmpyreanExpertise</ModName>",
+  `<ModID>${EMPYREAN_CARRIER_MOD_ID}</ModID>`,
+  "<DisplayName>Empyrean Aura</DisplayName>",
+  "<ModType>Buff</ModType>",
+  "<BuffName>LeoneanAura1,LeoneanAura2,LeoneanAura3,LeoneanAura4,LeoneanAura5,LeoneanAura6,LeoneanAura7,LeoneanAura8,LeoneanAura9,LeoneanAura10</BuffName>",
+  "<BuffProperty>Duration</BuffProperty>",
+  "<BuffValue>0</BuffValue>",
+  "<IconName>a_Signet_Fortify</IconName>",
+]);
+
+/**
+ * The talent tree itself. NodeTypes is the map from a tree node to the stone family each
+ * master class gets there, and it lives only inside Game.swz -- there is no loose copy under
+ * src/client/content/xml, because nothing on the server reads it.
+ *
+ * Only the Templar's half of node 22 moves. The Sentinel's node 25 still says RapidRecovery
+ * and now gets the Tenacity stone that name has always meant.
+ */
+const NODE_REWIRES: Array<{ nodeId: number; masterClass: string; from: string; to: string }> = [
+  { nodeId: 22, masterClass: "Templar", from: "RapidRecovery", to: "CrusadingFlames" },
+];
 
 const MOD_DESCRIPTIONS = new Map<string, [string, string]>([
   [
@@ -919,6 +1215,12 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
       next = replaceTag(next, "ManaCost", manaCost, stats);
     }
 
+    const coolDown = COOLDOWNS.get(powerName);
+    if (coolDown) {
+      touched = true;
+      next = replaceTag(next, "CoolDownTime", coolDown, stats);
+    }
+
     // Some replacements append to the text they match, so matching the old text is not
     // enough to know the edit is still pending -- the second prebuild would stack it again.
     for (const migration of POWER_TEXT_MIGRATIONS) {
@@ -962,6 +1264,12 @@ export function patchPlayerBuffs(xml: string): { xml: string; stats: PatchStats 
     if (duration) {
       touched = true;
       next = replaceTag(next, "Duration", duration, stats);
+    }
+
+    const dotDamage = BUFF_DOT_DAMAGE.get(buffName);
+    if (dotDamage) {
+      touched = true;
+      next = replaceTag(next, "DoTDamage", dotDamage, stats);
     }
 
     const formDamage = SENTINEL_FORM_DAMAGE.get(buffName);
@@ -1066,6 +1374,62 @@ export function patchPowerMods(xml: string): { xml: string; stats: PatchStats } 
     return next;
   });
 
+  return { xml: appendNewMods(patched, stats), stats };
+}
+
+/**
+ * New talentstone families are appended rather than woven in beside their neighbours: the
+ * parser walks the list in document order and keys everything by ModName and ModID, so
+ * position carries no meaning. Presence is checked by name so a second prebuild is a no-op.
+ */
+function appendNewMods(xml: string, stats: PatchStats): string {
+  const missing = [...MOD_INSERTS.entries()].filter(
+    ([modName]) => !xml.includes(`<ModName>${modName}</ModName>`),
+  );
+  if (!missing.length) {
+    return xml;
+  }
+
+  const blocks = missing
+    .map(([, lines]) => `\t<PowerModType>\r\n\t\t${lines.join("\r\n\t\t")}\r\n\t</PowerModType>\r\n`)
+    .join("");
+
+  const closing = xml.lastIndexOf("</PowerModTypes>");
+  if (closing < 0) {
+    return xml;
+  }
+
+  stats.modBlocks += missing.length;
+  stats.changes += missing.length;
+  return `${xml.slice(0, closing)}${blocks}${xml.slice(closing)}`;
+}
+
+/**
+ * NodeTypes: which stone family each master class is offered at a given tree node. Matched as
+ * a whole element so a rewire cannot land on another class's line, and re-running is a no-op
+ * once the new family is in place.
+ */
+export function patchNodeTypes(xml: string): { xml: string; stats: PatchStats } {
+  const stats = cloneStats();
+  const patched = xml.replace(/<NodeType NodeID="(\d+)">[\s\S]*?<\/NodeType>/g, (block: string, nodeId: string) => {
+    let next = block;
+    let touched = false;
+
+    for (const rewire of NODE_REWIRES) {
+      if (Number(nodeId) !== rewire.nodeId) continue;
+      const authored = `<${rewire.masterClass}>${rewire.from}</${rewire.masterClass}>`;
+      if (!next.includes(authored)) continue;
+      touched = true;
+      stats.changes += 1;
+      next = next.replace(authored, `<${rewire.masterClass}>${rewire.to}</${rewire.masterClass}>`);
+    }
+
+    if (touched) {
+      stats.modBlocks += 1;
+    }
+    return next;
+  });
+
   return { xml: patched, stats };
 }
 
@@ -1088,6 +1452,8 @@ function patchSwz(swzPath: string, verifyOnly: boolean): PatchStats {
     { marker: "<PlayerPowerTypes", patcher: patchPlayerPowers },
     { marker: "<PlayerBuffTypes", patcher: patchPlayerBuffs },
     { marker: "<PowerModTypes", patcher: patchPowerMods },
+    // Only ever in the swz -- there is no src/client/content/xml/NodeTypes.xml to keep in step.
+    { marker: "<NodeTypes", patcher: patchNodeTypes },
   ];
 
   const collected: PatchStats[] = [];

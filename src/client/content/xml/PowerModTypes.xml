@@ -1633,52 +1633,47 @@
 		<ModName>RapidRecovery1</ModName>
 		<ModID>171</ModID>
 		<DisplayName>Rapid Recovery</DisplayName>
-		<Description>Increases Holy Fire Damage@Holy Fire Damage:, +5%, +10%, +15%, +20%, +25%</Description>
-		<ModType>Buff</ModType>
-		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.05</BuffValue>
+		<Description>Increases Tenacity@Tenacity:, +1%, +3%, +5%, +7%, +10%</Description>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_RapidRecover</IconName>
+		<StatProperty>CCReduction</StatProperty>
+		<StatValue>.01</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RapidRecovery2</ModName>
 		<ModID>172</ModID>
 		<DisplayName>Rapid Recovery</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.1</BuffValue>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_RapidRecover</IconName>
+		<StatProperty>CCReduction</StatProperty>
+		<StatValue>.03</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RapidRecovery3</ModName>
 		<ModID>173</ModID>
 		<DisplayName>Rapid Recovery</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.15</BuffValue>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_RapidRecover</IconName>
+		<StatProperty>CCReduction</StatProperty>
+		<StatValue>.05</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RapidRecovery4</ModName>
 		<ModID>174</ModID>
 		<DisplayName>Rapid Recovery</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.2</BuffValue>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_RapidRecover</IconName>
+		<StatProperty>CCReduction</StatProperty>
+		<StatValue>.07</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RapidRecovery5</ModName>
 		<ModID>175</ModID>
 		<DisplayName>Rapid Recovery</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.25</BuffValue>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_RapidRecover</IconName>
+		<StatProperty>CCReduction</StatProperty>
+		<StatValue>.1</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Resilience1</ModName>
@@ -3106,8 +3101,18 @@
 	<PowerModType>
 		<ModName>Fortify1</ModName>
 		<ModID>326</ModID>
-		<DisplayName>Fortify</DisplayName>
-		<Description>Increases Holy Fire Damage@Holy Fire Damage:, +5%, +10%, +15%, +20%, +25%</Description>
+		<DisplayName>Smiting Flames</DisplayName>
+		<Description>Increases Holy Fire Damage@Holy Fire Damage:, +3%, +5%, +10%, +13%, +15%</Description>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.03</BuffValue>
+		<IconName>a_Signet_Fortify</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>Fortify2</ModName>
+		<ModID>327</ModID>
+		<DisplayName>Smiting Flames</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
@@ -3115,9 +3120,9 @@
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
-		<ModName>Fortify2</ModName>
-		<ModID>327</ModID>
-		<DisplayName>Fortify</DisplayName>
+		<ModName>Fortify3</ModName>
+		<ModID>328</ModID>
+		<DisplayName>Smiting Flames</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
@@ -3125,33 +3130,23 @@
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
-		<ModName>Fortify3</ModName>
-		<ModID>328</ModID>
-		<DisplayName>Fortify</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.15</BuffValue>
-		<IconName>a_Signet_Fortify</IconName>
-	</PowerModType>
-	<PowerModType>
 		<ModName>Fortify4</ModName>
 		<ModID>329</ModID>
-		<DisplayName>Fortify</DisplayName>
+		<DisplayName>Smiting Flames</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.2</BuffValue>
+		<BuffValue>.13</BuffValue>
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Fortify5</ModName>
 		<ModID>330</ModID>
-		<DisplayName>Fortify</DisplayName>
+		<DisplayName>Smiting Flames</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.25</BuffValue>
+		<BuffValue>.15</BuffValue>
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -8419,5 +8414,66 @@
 		<IconName>a_Signet_Expertise03</IconName>
 		<StatProperty>Magic</StatProperty>
 		<StatValue>315</StatValue>
+	</PowerModType>
+	<PowerModType>
+		<ModName>CrusadingFlames1</ModName>
+		<ModID>895</ModID>
+		<DisplayName>Crusading Flames</DisplayName>
+		<Description>Increases maximum number of Holy Fire Stacks@Holy Fire Stacks:, +1, +2, +3, +5, +8</Description>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>StackCount</BuffProperty>
+		<BuffValue>1</BuffValue>
+		<IconName>a_Signet_RapidRecover</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>CrusadingFlames2</ModName>
+		<ModID>896</ModID>
+		<DisplayName>Crusading Flames</DisplayName>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>StackCount</BuffProperty>
+		<BuffValue>2</BuffValue>
+		<IconName>a_Signet_RapidRecover</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>CrusadingFlames3</ModName>
+		<ModID>897</ModID>
+		<DisplayName>Crusading Flames</DisplayName>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>StackCount</BuffProperty>
+		<BuffValue>3</BuffValue>
+		<IconName>a_Signet_RapidRecover</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>CrusadingFlames4</ModName>
+		<ModID>898</ModID>
+		<DisplayName>Crusading Flames</DisplayName>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>StackCount</BuffProperty>
+		<BuffValue>5</BuffValue>
+		<IconName>a_Signet_RapidRecover</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>CrusadingFlames5</ModName>
+		<ModID>899</ModID>
+		<DisplayName>Crusading Flames</DisplayName>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>StackCount</BuffProperty>
+		<BuffValue>8</BuffValue>
+		<IconName>a_Signet_RapidRecover</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>EmpyreanExpertise</ModName>
+		<ModID>900</ModID>
+		<DisplayName>Empyrean Aura</DisplayName>
+		<ModType>Buff</ModType>
+		<BuffName>LeoneanAura1,LeoneanAura2,LeoneanAura3,LeoneanAura4,LeoneanAura5,LeoneanAura6,LeoneanAura7,LeoneanAura8,LeoneanAura9,LeoneanAura10</BuffName>
+		<BuffProperty>Duration</BuffProperty>
+		<BuffValue>0</BuffValue>
+		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 </PowerModTypes>

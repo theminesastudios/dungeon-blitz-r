@@ -4734,7 +4734,7 @@
 		<BuffID>646</BuffID>
 		<Attack>false</Attack>
 		<Duration>3000</Duration>
-		<DoTDamage>-0.75</DoTDamage>
+		<DoTDamage>-0.375</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4747,7 +4747,7 @@
 		<BuffID>647</BuffID>
 		<Attack>false</Attack>
 		<Duration>3000</Duration>
-		<DoTDamage>-1</DoTDamage>
+		<DoTDamage>-0.5</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4760,7 +4760,7 @@
 		<BuffID>648</BuffID>
 		<Attack>false</Attack>
 		<Duration>3000</Duration>
-		<DoTDamage>-1.25</DoTDamage>
+		<DoTDamage>-0.625</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4828,7 +4828,7 @@
 	<BuffType BuffName="LeoneanAura1">
 		<BuffID>653</BuffID>
 		<Attack>false</Attack>
-		<Duration>2000</Duration>
+		<Duration>1000</Duration>
 		<MagicDamage>0.15</MagicDamage>
 		<MeleeDamage>0.15</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4841,7 +4841,7 @@
 	<BuffType BuffName="LeoneanAura2">
 		<BuffID>654</BuffID>
 		<Attack>false</Attack>
-		<Duration>2000</Duration>
+		<Duration>1000</Duration>
 		<MagicDamage>0.16</MagicDamage>
 		<MeleeDamage>0.16</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4854,7 +4854,7 @@
 	<BuffType BuffName="LeoneanAura3">
 		<BuffID>655</BuffID>
 		<Attack>false</Attack>
-		<Duration>2000</Duration>
+		<Duration>1000</Duration>
 		<MagicDamage>0.18</MagicDamage>
 		<MeleeDamage>0.18</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4867,7 +4867,7 @@
 	<BuffType BuffName="LeoneanAura4">
 		<BuffID>656</BuffID>
 		<Attack>false</Attack>
-		<Duration>3000</Duration>
+		<Duration>1500</Duration>
 		<MagicDamage>0.19</MagicDamage>
 		<MeleeDamage>0.19</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4880,7 +4880,7 @@
 	<BuffType BuffName="LeoneanAura5">
 		<BuffID>657</BuffID>
 		<Attack>false</Attack>
-		<Duration>3000</Duration>
+		<Duration>1500</Duration>
 		<MagicDamage>0.2</MagicDamage>
 		<MeleeDamage>0.2</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4893,7 +4893,7 @@
 	<BuffType BuffName="LeoneanAura6">
 		<BuffID>658</BuffID>
 		<Attack>false</Attack>
-		<Duration>3000</Duration>
+		<Duration>1500</Duration>
 		<MagicDamage>0.25</MagicDamage>
 		<MeleeDamage>0.25</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4906,7 +4906,7 @@
 	<BuffType BuffName="LeoneanAura7">
 		<BuffID>659</BuffID>
 		<Attack>false</Attack>
-		<Duration>5000</Duration>
+		<Duration>2500</Duration>
 		<MagicDamage>0.26</MagicDamage>
 		<MeleeDamage>0.26</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4919,7 +4919,7 @@
 	<BuffType BuffName="LeoneanAura8">
 		<BuffID>660</BuffID>
 		<Attack>false</Attack>
-		<Duration>5000</Duration>
+		<Duration>2500</Duration>
 		<MagicDamage>0.28</MagicDamage>
 		<MeleeDamage>0.28</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4932,7 +4932,7 @@
 	<BuffType BuffName="LeoneanAura9">
 		<BuffID>661</BuffID>
 		<Attack>false</Attack>
-		<Duration>5000</Duration>
+		<Duration>2500</Duration>
 		<MagicDamage>0.3</MagicDamage>
 		<MeleeDamage>0.3</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
@@ -4945,7 +4945,7 @@
 	<BuffType BuffName="LeoneanAura10">
 		<BuffID>662</BuffID>
 		<Attack>false</Attack>
-		<Duration>8000</Duration>
+		<Duration>4000</Duration>
 		<MagicDamage>0.33</MagicDamage>
 		<MeleeDamage>0.33</MeleeDamage>
 		<BuffLoc>FeetBack</BuffLoc>
