@@ -18305,7 +18305,7 @@
 		<CastTime>415</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<ShakeTime>400</ShakeTime>
-		<CoolDownTime>60000</CoolDownTime>
+		<CoolDownTime>30000</CoolDownTime>
 		<ManaCost>0</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -18364,7 +18364,7 @@
 		<CastTime>415</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<ShakeTime>400</ShakeTime>
-		<CoolDownTime>60000</CoolDownTime>
+		<CoolDownTime>30000</CoolDownTime>
 		<ManaCost>0</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -18396,7 +18396,7 @@
 		<CastTime>415</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<ShakeTime>400</ShakeTime>
-		<CoolDownTime>60000</CoolDownTime>
+		<CoolDownTime>30000</CoolDownTime>
 		<ManaCost>0</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -18428,7 +18428,7 @@
 		<CastTime>415</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<ShakeTime>400</ShakeTime>
-		<CoolDownTime>60000</CoolDownTime>
+		<CoolDownTime>30000</CoolDownTime>
 		<ManaCost>0</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -18460,7 +18460,7 @@
 		<CastTime>415</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<ShakeTime>400</ShakeTime>
-		<CoolDownTime>60000</CoolDownTime>
+		<CoolDownTime>30000</CoolDownTime>
 		<ManaCost>0</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -18492,7 +18492,7 @@
 		<CastTime>415</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<ShakeTime>400</ShakeTime>
-		<CoolDownTime>40000</CoolDownTime>
+		<CoolDownTime>30000</CoolDownTime>
 		<ManaCost>0</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -18503,7 +18503,7 @@
 		<DisplayName>Sentinel Form</DisplayName>
 		<BasePowerName>SentinelForm</BasePowerName>
 		<Description>Tranform into a powerful Battle Avatar. [Stats: +15% Damage, +75% Defense, -50% Speed]</Description>
-		<UpgradeDescription>Cooldown decreased to 40 seconds.</UpgradeDescription>
+		<UpgradeDescription>30 second Cooldown, starting when you leave the form.</UpgradeDescription>
 		<IconName>a_PowerIcon_SentinelForm01</IconName>
 		<CastSound>[415]CHR_Sentinel_SentinelFormStart</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -18524,7 +18524,7 @@
 		<CastTime>415</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<ShakeTime>400</ShakeTime>
-		<CoolDownTime>40000</CoolDownTime>
+		<CoolDownTime>30000</CoolDownTime>
 		<ManaCost>0</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -18556,7 +18556,7 @@
 		<CastTime>415</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<ShakeTime>400</ShakeTime>
-		<CoolDownTime>40000</CoolDownTime>
+		<CoolDownTime>30000</CoolDownTime>
 		<ManaCost>0</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -18588,7 +18588,7 @@
 		<CastTime>415</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<ShakeTime>400</ShakeTime>
-		<CoolDownTime>40000</CoolDownTime>
+		<CoolDownTime>30000</CoolDownTime>
 		<ManaCost>0</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -18620,7 +18620,7 @@
 		<CastTime>415</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<ShakeTime>400</ShakeTime>
-		<CoolDownTime>40000</CoolDownTime>
+		<CoolDownTime>30000</CoolDownTime>
 		<ManaCost>0</ManaCost>
 		<FromMasterMana>TRUE</FromMasterMana>
 		<BaseDamageMult>0</BaseDamageMult>
@@ -18663,7 +18663,7 @@
 		<DisplayName>Sentinel Form</DisplayName>
 		<BasePowerName>SentinelForm</BasePowerName>
 		<Description>Tranform into a powerful Battle Avatar. [Stats: +20% Damage, +80% Defense, -50% Speed]</Description>
-		<UpgradeDescription>Reduced Cooldown to 30 seconds. +5% Sentinel attack Damage.</UpgradeDescription>
+		<UpgradeDescription>30 second Cooldown, starting when you leave the form. +5% Sentinel attack Damage.</UpgradeDescription>
 		<IconName>a_PowerIcon_SentinelForm01</IconName>
 		<CastSound>[415]CHR_Sentinel_SentinelFormStart</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
