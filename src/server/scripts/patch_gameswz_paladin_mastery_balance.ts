@@ -125,8 +125,26 @@ const BUFF_XML = path.join(XML_DIR, "PlayerBuffTypes.xml");
 const MOD_XML = path.join(XML_DIR, "PowerModTypes.xml");
 
 /**
- * AddTargetBuff, absolute. Holy Fire is ranked (HolyFire1..5, 1.0 to 2.5 damage a tick) so
- * the rank a power hands out climbs with the power's own rank rather than being flat.
+ * AddTargetBuff, absolute.
+ *
+ * HOLY_FIRE_IS_ONE_POOL. Holy Fire is authored as five BuffTypes (HolyFire1..5, 1.0 to 2.5
+ * damage a tick) and the earlier passes handed out a different rank per power rank. That is
+ * what "Celestial Lance's Holy Fire does not stack with Divine Word / Hallowed Reckoning /
+ * Sanctum" was: a target's buff list is keyed by BuffType -- CombatState.method_135 walks it
+ * comparing `param1 == _loc2_.type` -- so two ranks of Holy Fire are two independent buffs
+ * with two independent stack pools. A Lance filling HolyFire1 while Divine Word filled
+ * HolyFire3 read on screen as two competing timers rather than one growing stack, and neither
+ * source could ever add to the other's.
+ *
+ * Every Holy Fire source now hands out HolyFire1 and nothing else, so all four feed one pool
+ * and genuinely stack with each other. Rank progression moves to the *number* of stacks a cast
+ * applies -- each name in this list is one AddBuff call of one stack (CombatState passes a
+ * literal 1 per entry) -- and the cap those stacks fill is what the Crusading Flames stone
+ * raises. Tick damage is no longer a rank question at all: it is HolyFire1's authored 1.0,
+ * scaled by the Smiting Flames stone.
+ *
+ * HolyFire2..5 are left in PlayerBuffTypes with nothing pointing at them. BuffIDs are
+ * save-data keys, and a target mid-fight when the client updates can still be carrying one.
  */
 const TARGET_BUFFS = new Map<string, string>([
   // Subjugate -- rank 4 trades its second Cripple for a Blind, rank 7 adds Armor Bane,
@@ -138,15 +156,21 @@ const TARGET_BUFFS = new Map<string, string>([
   ["Subjugate8", "Crippled,Blinded,ArmorBane"], // was Crippled,Crippled,Crippled
   ["Subjugate9", "Crippled,Blinded,ArmorBane"], // was Crippled,Crippled,Crippled
   ["Subjugate10", "Crippled,Crippled,Blinded,ArmorBane"], // was Crippled,Crippled,Crippled,Blinded
-  // Divine Word -- Holy Fire from rank 3.
+  /**
+   * Divine Word -- Holy Fire from rank 3, and every rank hands out HolyFire1.
+   *
+   * See HOLY_FIRE_IS_ONE_POOL below: a rank buys another *stack*, never a hotter rank of the
+   * buff, because two ranks of Holy Fire are two BuffTypes and two BuffTypes never share a
+   * stack pool.
+   */
   ["DivineWord3", "Weakened,HolyFire1"], // was Weakened
   ["DivineWord4", "Weakened,HolyFire1"], // was Weakened
   ["DivineWord5", "Weakened,HolyFire1"], // was Weakened
   ["DivineWord6", "Weakened,HolyFire1"], // was Weakened
-  ["DivineWord7", "Weakened,HolyFire2"], // was Weakened
-  ["DivineWord8", "Weakened,Weakened,HolyFire2"], // was Weakened,Weakened
-  ["DivineWord9", "Weakened,Weakened,HolyFire2"], // was Weakened,Weakened
-  ["DivineWord10", "Weakened,Weakened,HolyFire3"], // was Weakened,Weakened
+  ["DivineWord7", "Weakened,HolyFire1,HolyFire1"], // was Weakened,HolyFire2
+  ["DivineWord8", "Weakened,Weakened,HolyFire1,HolyFire1"], // was Weakened,Weakened,HolyFire2
+  ["DivineWord9", "Weakened,Weakened,HolyFire1,HolyFire1"], // was Weakened,Weakened,HolyFire2
+  ["DivineWord10", "Weakened,Weakened,HolyFire1,HolyFire1,HolyFire1"], // was Weakened,Weakened,HolyFire3
   // Penance -- blinds from rank 4.
   ["Penance4", "Penance6,Staggered,Blinded"], // was Penance6,Staggered
   ["Penance5", "Penance9,Staggered,Blinded"], // was Penance9,Staggered
@@ -162,18 +186,19 @@ const TARGET_BUFFS = new Map<string, string>([
   ["FountainOfLifeCombo4", "HolyFire1"], // was absent
   ["FountainOfLifeCombo5", "HolyFire1"], // was absent
   ["FountainOfLifeCombo6", "HolyFire1"], // was absent
-  ["FountainOfLifeCombo7", "HolyFire2"], // was absent
-  ["FountainOfLifeCombo8", "HolyFire2"], // was absent
-  ["FountainOfLifeCombo9", "HolyFire2"], // was absent
-  ["FountainOfLifeCombo10", "HolyFire3"], // was absent
+  ["FountainOfLifeCombo7", "HolyFire1,HolyFire1"], // was HolyFire2
+  ["FountainOfLifeCombo8", "HolyFire1,HolyFire1"], // was HolyFire2
+  ["FountainOfLifeCombo9", "HolyFire1,HolyFire1"], // was HolyFire2
+  ["FountainOfLifeCombo10", "HolyFire1,HolyFire1,HolyFire1"], // was HolyFire3
   // Sanctum. Same split: Sanctum1..10 are RangedAoEFriend heals, SanctumCombo is the pulse
   // that hits enemies. It has no ranks, so this is not rank-gated the way rank 4 was asked
   // for -- there is no rank to gate it on.
-  ["SanctumCombo", "Blinded,HolyFire3"], // was Blinded
+  ["SanctumCombo", "Blinded,HolyFire1,HolyFire1"], // was Blinded,HolyFire3
   /**
-   * Celestial Lance stops climbing the Holy Fire ladder. Every rank band now hands out the
-   * same HolyFire1, so the only thing a rank buys is what its own upgrade text says it buys:
-   * rank 4 the Stagger, rank 6 the splash, rank 8 a *second* stack, rank 10 the stun.
+   * Celestial Lance. Every rank band hands out the same HolyFire1 -- it was the first power
+   * moved onto the shared pool and is why the others followed -- so the only thing a rank buys
+   * is what its own upgrade text says it buys: rank 4 the Stagger, rank 6 the splash, rank 8 a
+   * *second* stack, rank 10 the stun.
    *
    * Two stacks is exactly HolyFire1's authored cap, which is the point -- the Crusading Flames
    * stone is what raises the cap, and a rank-8 Lance is the thing that fills it.
@@ -196,18 +221,19 @@ const TARGET_BUFFS = new Map<string, string>([
   ["VerdictROR8", "Blinded"], // was absent
   ["VerdictROR9", "Blinded"], // was absent
   ["VerdictROR10", "Blinded"], // was absent
-  // Lightning Bomb -- the opening stab carries the Armor Bane.
-  ["LightningBomb", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
-  ["LightningBomb1", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
-  ["LightningBomb2", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
-  ["LightningBomb3", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
-  ["LightningBomb4", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
-  ["LightningBomb5", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
-  ["LightningBomb6", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
-  ["LightningBomb7", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
-  ["LightningBomb8", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
-  ["LightningBomb9", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
-  ["LightningBomb10", "LightningBomb,ArmorBane,ArmorBane"], // was LightningBomb
+  // Lightning Bomb -- the opening stab carries one stack of Armor Bane. Each name in the list
+  // is one stack, so the second ArmorBane the first pass authored is simply dropped.
+  ["LightningBomb", "LightningBomb,ArmorBane"], // was LightningBomb,ArmorBane,ArmorBane
+  ["LightningBomb1", "LightningBomb,ArmorBane"], // was LightningBomb,ArmorBane,ArmorBane
+  ["LightningBomb2", "LightningBomb,ArmorBane"], // was LightningBomb,ArmorBane,ArmorBane
+  ["LightningBomb3", "LightningBomb,ArmorBane"], // was LightningBomb,ArmorBane,ArmorBane
+  ["LightningBomb4", "LightningBomb,ArmorBane"], // was LightningBomb,ArmorBane,ArmorBane
+  ["LightningBomb5", "LightningBomb,ArmorBane"], // was LightningBomb,ArmorBane,ArmorBane
+  ["LightningBomb6", "LightningBomb,ArmorBane"], // was LightningBomb,ArmorBane,ArmorBane
+  ["LightningBomb7", "LightningBomb,ArmorBane"], // was LightningBomb,ArmorBane,ArmorBane
+  ["LightningBomb8", "LightningBomb,ArmorBane"], // was LightningBomb,ArmorBane,ArmorBane
+  ["LightningBomb9", "LightningBomb,ArmorBane"], // was LightningBomb,ArmorBane,ArmorBane
+  ["LightningBomb10", "LightningBomb,ArmorBane"], // was LightningBomb,ArmorBane,ArmorBane
   /**
    * The bomb itself. Dropping the LightningBomb buff from the explosion is what ends the
    * spread chain -- that buff *is* the bomb, and handing it to the first enemy caught in the
@@ -466,18 +492,26 @@ const MANA_COSTS = new Map<string, string>([
   ["MeleeAoE8", "0,5"], // 0
   ["MeleeAoE9", "0,5"], // 0
   ["MeleeAoE10", "0,5"], // 0
-  // Warcry, every rank. The unranked block is the pre-talent version and moves with them.
-  ["Warcry", "25"], // 30
-  ["Warcry1", "25"], // 30
-  ["Warcry2", "25"], // 30
-  ["Warcry3", "25"], // 30
-  ["Warcry4", "25"], // 30
-  ["Warcry5", "25"], // 30
-  ["Warcry6", "25"], // 30
-  ["Warcry7", "25"], // 30
-  ["Warcry8", "25"], // 30
-  ["Warcry9", "25"], // 30
-  ["Warcry10", "25"], // 30
+  /**
+   * Warcry. The discount is a rank-7 upgrade now rather than something every Templar has from
+   * the first point: ranks 1-6 pay the authored 30, ranks 7-10 pay 25. The unranked block is
+   * the pre-talent version and sits with the low band.
+   *
+   * These are absolute, so the rows below are what a rank costs, not what is taken off it --
+   * the low band is written out even though 30 is also what the file authored, because an
+   * earlier pass moved all eleven to 25 and only an absolute value puts them back.
+   */
+  ["Warcry", "30"], // 25
+  ["Warcry1", "30"], // 25
+  ["Warcry2", "30"], // 25
+  ["Warcry3", "30"], // 25
+  ["Warcry4", "30"], // 25
+  ["Warcry5", "30"], // 25
+  ["Warcry6", "30"], // 25
+  ["Warcry7", "25"], // 25
+  ["Warcry8", "25"], // 25
+  ["Warcry9", "25"], // 25
+  ["Warcry10", "25"], // 25
 ]);
 
 // Rank upgrade text has to move with the effect or it starts lying.
@@ -620,7 +654,62 @@ const UPGRADE_TEXT = new Map<string, [string, string]>([
   ["LightningBomb8", ["-5 Second Cooldown. Increased Damage to final bomb.", "-5 Second Cooldown."]],
   ["LightningBomb9", ["Increased Damage to final bomb.", "Increased Damage #olddmg#"]],
   ["LightningBomb10", ["Bomb affliction spreads one additional time.", "Increased Damage #olddmg#"]],
+  // Warcry's discount is a rank-7 upgrade, so rank 7 is the rank that has to advertise it.
+  ["Warcry7", ["Increased Damage #olddmg#", "-5 Mana Cost. Increased Damage #olddmg#"]],
 ]);
+
+/**
+ * Descriptions written outright instead of by substring.
+ *
+ * The substring maps above cannot express a sentence that has already been rewritten twice
+ * and is worded differently in the two copies of the file -- Empyrean Aura is exactly that:
+ * Game.swz says "a boost that lingers for N seconds" where the loose XML says "The boost
+ * lasts N seconds.", and both have been through the #dur# migration. Writing the whole tag
+ * settles both copies in one step and is idempotent by construction, because replaceTag
+ * no-ops when the value already matches.
+ *
+ * The trailing "[Stats: ...]" block is carried across rather than written here.
+ * patch_gameswz_power_stat_tooltips owns that fence and regenerates it from the power's own
+ * fields; dropping it would make every prebuild report a change forever.
+ */
+const POWER_DESCRIPTIONS = new Map<string, string>();
+
+/**
+ * Empyrean Aura, in the wording that was asked for. The percentage is the rank's own
+ * MeleeDamage/MagicDamage, and "4 seconds" is now literally true at every rank rather than a
+ * rank-band number -- see BUFF_DURATIONS, which flattens all ten to the 4-second base the
+ * Expertise extension is measured against.
+ *
+ * The #dur# token is deliberately gone. It resolved to base + Expertise, which is a different
+ * claim from the one being made here: the sentence names the base and says Expertise extends
+ * it, which is what the effect actually does.
+ */
+const EMPYREAN_AURA_BOOST = [15, 16, 18, 19, 20, 25, 26, 28, 30, 33];
+
+for (let rank = 0; rank <= 10; rank += 1) {
+  const boost = EMPYREAN_AURA_BOOST[Math.max(rank, 1) - 1];
+  POWER_DESCRIPTIONS.set(
+    rank === 0 ? "LeoneanAura" : `LeoneanAura${rank}`,
+    `Create an aura that grants nearby allies a ${boost}% attack and expertise boost that lingers for 4 seconds, duration is increased by expertise.`,
+  );
+}
+
+/**
+ * Lightning Bomb. The stab lands one stack of Armor Bane rather than two, and the blast's
+ * one stack is now said out loud instead of being left as a bare "and Armor Bane".
+ *
+ * Written outright for the same reason as Empyrean Aura: ranks 0-1 still carry the original
+ * "Turns a foe into a Lightning Bomb" opening while ranks 2-10 carry the stab wording, and
+ * every one of them has already been through the spread-chain migration.
+ */
+for (let rank = 0; rank <= 10; rank += 1) {
+  POWER_DESCRIPTIONS.set(
+    rank === 0 ? "LightningBomb" : `LightningBomb${rank}`,
+    "Stab a foe, applying 1 stack of Armor Bane and turning them into a Lightning Bomb that " +
+      "explodes when killed. The blast leaves 2 stacks of Ignite and 1 stack of Armor Bane on " +
+      "everything caught in it.",
+  );
+}
 
 /**
  * The prose half of a Description, which patch_gameswz_power_stat_tooltips does not touch --
@@ -707,33 +796,29 @@ DESCRIPTIONS.set("Smash", [
  * keeps the rank progression the first pass authored -- a rank-1 aura was never meant to hold
  * as long as a rank-10 one.
  */
+/**
+ * Third pass: the rank bands are gone and every rank holds the same 4-second base, because
+ * that is what Empyrean Aura's sentence now promises at every rank. What a rank buys is the
+ * size of the boost (MeleeDamage/MagicDamage, 15% to 33%) and what Expertise buys is the time
+ * on top -- the extension in patch-dungeonblitz-templar-talent-effects is capped at the
+ * authored duration, so flattening the base flattens the cap with it.
+ */
 const BUFF_DURATIONS = new Map<string, string>([
-  ["LeoneanAura1", "1000"], // 2000
-  ["LeoneanAura2", "1000"], // 2000
-  ["LeoneanAura3", "1000"], // 2000
-  ["LeoneanAura4", "1500"], // 3000
-  ["LeoneanAura5", "1500"], // 3000
-  ["LeoneanAura6", "1500"], // 3000
-  ["LeoneanAura7", "2500"], // 5000
-  ["LeoneanAura8", "2500"], // 5000
-  ["LeoneanAura9", "2500"], // 5000
-  ["LeoneanAura10", "4000"], // 8000
+  ["LeoneanAura1", "4000"], // 1000
+  ["LeoneanAura2", "4000"], // 1000
+  ["LeoneanAura3", "4000"], // 1000
+  ["LeoneanAura4", "4000"], // 1500
+  ["LeoneanAura5", "4000"], // 1500
+  ["LeoneanAura6", "4000"], // 1500
+  ["LeoneanAura7", "4000"], // 2500
+  ["LeoneanAura8", "4000"], // 2500
+  ["LeoneanAura9", "4000"], // 2500
+  ["LeoneanAura10", "4000"], // 4000
   ["Verdict9", "7000"], // 5500
   ["Verdict10", "7000"], // 5500
 ]);
 
-/**
- * Empyrean Aura's sentence quotes #dur# rather than a number. PowerType resolves the token
- * from the first buff the power hands out, which is the rank's own LeoneanAura block above --
- * so the sentence tracks BUFF_DURATIONS without either being written twice, and it picks up
- * the Expertise extension the client adds on top.
- */
-for (let rank = 1; rank <= 10; rank += 1) {
-  DESCRIPTIONS.set(`LeoneanAura${rank}`, [
-    "Attack and Expertise boost.",
-    "Attack and Expertise boost. The boost lasts #dur# seconds.",
-  ]);
-}
+// Empyrean Aura's sentence is written outright now -- see POWER_DESCRIPTIONS.
 
 /**
  * Divine Word heals half as much. The heal is not on the power at all -- DivineWordCombo is a
@@ -790,6 +875,15 @@ const PAIN_EATER_DEFENSE = new Map<string, string>([
   ["PainEaterRank5", "0.1"], // absent
 ]);
 
+/**
+ * Crusading Flames' curve. Declared up here rather than beside the family's MOD_INSERTS block
+ * because MOD_BUFF_VALUES reads it at module load and a `const` below would still be in its
+ * temporal dead zone.
+ */
+const CRUSADING_FLAMES_STEPS = ["1", "2", "3", "4", "5"];
+// Volatile's, for the same reason -- MOD_SELF_VALUES and MOD_REWRITES both read it.
+const VOLATILE_STEPS = [".02", ".04", ".06", ".08", ".1"];
+
 // Talentstone values that only needed renumbering.
 const MOD_BUFF_VALUES = new Map<string, string>([
   ["BlindTime1", "100"], // 100
@@ -810,6 +904,16 @@ const MOD_BUFF_VALUES = new Map<string, string>([
   ["IgniteDmg3", "0.06"], // 0.03
   ["IgniteDmg4", "0.1"], // 0.05
   ["IgniteDmg5", "0.16"], // 0.08
+  /**
+   * Crusading Flames, down from +1/2/3/5/8 to +1/2/3/4/5. The top of the old curve put a
+   * Templar ten stacks deep on a buff whose authored cap is two.
+   *
+   * These are here as well as in MOD_INSERTS because the family only gets inserted on a tree
+   * that does not have it yet -- an already-patched PowerModTypes is edited through this map.
+   */
+  ...CRUSADING_FLAMES_STEPS.map(
+    (value, index) => [`CrusadingFlames${index + 1}`, value] as [string, string],
+  ),
 ]);
 
 const MOD_SELF_VALUES = new Map<string, string>([
@@ -828,11 +932,24 @@ const MOD_SELF_VALUES = new Map<string, string>([
    * for "the client hardcodes this", which is still true, and the ModID is the save-data key
    * for every Sentinel who already owns the stone.
    */
-  ["Dominate1", ".1"], // .01
-  ["Dominate2", ".2"], // .02
-  ["Dominate3", ".3"], // .03
-  ["Dominate4", ".4"], // .05
-  ["Dominate5", ".5"], // .08
+  ["Dominate1", ".05"], // .1
+  ["Dominate2", ".1"], // .2
+  ["Dominate3", ".15"], // .3
+  ["Dominate4", ".2"], // .4
+  ["Dominate5", ".25"], // .5
+  /**
+   * Volatile. The stone's magnitudes were already the 2-10% that was asked for and its
+   * bytecode already does the asked-for thing -- CombatState sums every mod whose name starts
+   * with "IgniteCrit" into var_1557 and adds it to the critical chance of a hit against a
+   * target carrying Ignite (var_1234). Only the authored shape lied about it, describing a
+   * Poison bonus against Cursed targets; MOD_REWRITES below drops the Cursed buff tags the
+   * client never reads and MOD_DESCRIPTIONS rewrites the sentence.
+   *
+   * Listed here so a clean checkout still writes the magnitudes even though they are
+   * unchanged, because MOD_REWRITES rebuilds the block from scratch and takes its SelfValue
+   * from this file rather than from the file being patched.
+   */
+  ...VOLATILE_STEPS.map((value, index) => [`IgniteCrit${index + 1}`, value] as [string, string]),
 ]);
 
 /**
@@ -942,6 +1059,40 @@ const MOD_REWRITES = new Map<string, ModRewrite>([
       ] as const,
   ) as Array<[string, ModRewrite]>),
   /**
+   * Volatile stops claiming to be a Poison stone.
+   *
+   * Nothing about the effect moves: CombatState already sums every mod named IgniteCrit* into
+   * var_1557 and adds it to the proc chance of a hit whose target carries Ignite -- which is
+   * what this game calls Critical Chance, the same number ScreenArmory's Critical Chance page
+   * reports. The 2-10% curve was already right too.
+   *
+   * What moves is the authored shape. The block declared BuffName Cursed with BuffProperty
+   * PoisonMultiplier under ModType "WTF", and WTF is the file's own word for "the client
+   * hardcodes this" -- so those two tags described an effect no code path reads while the
+   * description they justified described an effect the stone does not have. Both go, leaving
+   * the shape every other WTF stone has: a SelfValue and nothing else.
+   *
+   * ModID is preserved from the file, as everywhere else here: it is the save-data key.
+   */
+  ...([1, 2, 3, 4, 5].map(
+    (rank) =>
+      [
+        `IgniteCrit${rank}`,
+        {
+          display: "Volatile",
+          description:
+            rank === 1
+              ? "Gain a Critical Chance bonus vs. Ignited targets@Critical Chance Bonus:, 2%, 4%, 6%, 8%, 10%"
+              : undefined,
+          body: [
+            "<ModType>WTF</ModType>",
+            `<SelfValue>${VOLATILE_STEPS[rank - 1]}</SelfValue>`,
+            "<IconName>a_Signet_Critical03</IconName>",
+          ],
+        },
+      ] as const,
+  ) as Array<[string, ModRewrite]>),
+  /**
    * ComboFortify was what carried the Fortify buff onto the heal powers so the Fortify stone
    * could put defense on it. The stone boosts Holy Fire now, so all this did was hang a
    * property-less buff on every heal in the game.
@@ -981,7 +1132,6 @@ const MOD_REWRITES = new Map<string, ModRewrite>([
  * The icon stays a_Signet_RapidRecover. It is the icon the Templar's node has always shown,
  * and reusing it means the node keeps its face while the Sentinel's stone keeps its own.
  */
-const CRUSADING_FLAMES_STEPS = ["1", "2", "3", "5", "8"];
 const CRUSADING_FLAMES_FIRST_MOD_ID = 895;
 
 const MOD_INSERTS = new Map<string, string[]>(
@@ -993,7 +1143,7 @@ const MOD_INSERTS = new Map<string, string[]>(
       "<DisplayName>Crusading Flames</DisplayName>",
       ...(rank === 1
         ? [
-            "<Description>Increases maximum number of Holy Fire Stacks@Holy Fire Stacks:, +1, +2, +3, +5, +8</Description>",
+            `<Description>Increases maximum number of Holy Fire Stacks@Holy Fire Stacks:, ${CRUSADING_FLAMES_STEPS.map((step) => `+${step}`).join(", ")}</Description>`,
           ]
         : []),
       "<ModType>Buff</ModType>",
@@ -1090,7 +1240,21 @@ const MOD_DESCRIPTIONS = new Map<string, [string, string]>([
     "Dominate1",
     [
       "Gain a Critical Chance bonus vs. Staggered and Stunned targets@Critical Chance Bonus:, 0.15%, 0.3%, 0.45%, 0.75%, 1.2%",
-      "Deal more damage to Demoralized targets, and twice as much to Staggered or Stunned ones@Damage Bonus:, 10%, 20%, 30%, 40%, 50%",
+      "Deal more damage to Demoralized targets, and twice as much to Staggered or Stunned ones@Damage Bonus:, 5%, 10%, 15%, 20%, 25%",
+    ],
+  ],
+  [
+    "IgniteCrit1",
+    [
+      "Gain a Poison Damage bonus against Cursed targets.@Poison Damage Bonus:, 2%, 4%, 6%, 8%, 10%",
+      "Gain a Critical Chance bonus vs. Ignited targets@Critical Chance Bonus:, 2%, 4%, 6%, 8%, 10%",
+    ],
+  ],
+  [
+    "CrusadingFlames1",
+    [
+      "Increases maximum number of Holy Fire Stacks@Holy Fire Stacks:, +1, +2, +3, +5, +8",
+      "Increases maximum number of Holy Fire Stacks@Holy Fire Stacks:, +1, +2, +3, +4, +5",
     ],
   ],
   [
@@ -1116,6 +1280,18 @@ const MOD_TEXT_MIGRATIONS: Array<{ mod: string; from: string; to: string }> = [
     mod: "ClutchHeal1",
     from: "Increased Healing on targets with less than 20% Health@Healing Boost:, 2%, 4%, 6%, 8%, 10%",
     to: "Increased Healing on targets with less than 30% Health@Healing Boost:, 2%, 4%, 6%, 8%, 10%",
+  },
+  // Dominate's magnitudes, halved after the pass that made it a damage stone.
+  {
+    mod: "Dominate1",
+    from: "Deal more damage to Demoralized targets, and twice as much to Staggered or Stunned ones@Damage Bonus:, 10%, 20%, 30%, 40%, 50%",
+    to: "Deal more damage to Demoralized targets, and twice as much to Staggered or Stunned ones@Damage Bonus:, 5%, 10%, 15%, 20%, 25%",
+  },
+  // Crusading Flames' top two ranks, brought down to a curve that steps by one.
+  {
+    mod: "CrusadingFlames1",
+    from: "Increases maximum number of Holy Fire Stacks@Holy Fire Stacks:, +1, +2, +3, +5, +8",
+    to: "Increases maximum number of Holy Fire Stacks@Holy Fire Stacks:, +1, +2, +3, +4, +5",
   },
 ];
 
@@ -1177,6 +1353,23 @@ function setOrInsertTag(
   }
 
   return block;
+}
+
+/**
+ * Writes a whole Description, keeping whatever "[Stats: ...]" fence was already on it.
+ *
+ * The fence belongs to patch_gameswz_power_stat_tooltips, which strips and regenerates it from
+ * the power's own fields on every prebuild. Carrying it across rather than dropping it is what
+ * keeps this idempotent: drop it and the two scripts would each report a change forever.
+ */
+function setDescription(block: string, value: string, stats: PatchStats): string {
+  const current = block.match(/<Description>([^<]*)<\/Description>/)?.[1];
+  if (current === undefined) {
+    return block;
+  }
+
+  const fence = current.match(/\s*\[Stats:[^\]]*\]\s*$/)?.[0] ?? "";
+  return replaceTag(block, "Description", `${value}${fence}`, stats);
 }
 
 export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats } {
@@ -1243,6 +1436,14 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
       touched = true;
       stats.changes += 1;
       next = next.split(upgrade[0]).join(upgrade[1]);
+    }
+
+    // Last, so a written-out sentence always wins over the substring maps above whatever
+    // state the file was in when this run started.
+    const written = POWER_DESCRIPTIONS.get(powerName);
+    if (written) {
+      touched = true;
+      next = setDescription(next, written, stats);
     }
 
     if (touched) {

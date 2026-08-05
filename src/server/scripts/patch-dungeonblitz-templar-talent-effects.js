@@ -70,6 +70,12 @@ const { execFileSync } = require('child_process');
  *   Empyrean Aura     the boost outlives its 4-second base by Expertise x 4 milliseconds,
  *                     up to a second 4 seconds -- and PowerType's #dur# says so
  *
+ * ---------------------------------------------------------------------------------------
+ * Third pass (2026-08-05). One item, and it is a repair rather than a retune.
+ *
+ *   Heavy Blows       the stone's damage now reaches the Heavy Blow proc it names. See the
+ *                     edit itself for why it never did.
+ *
  * "Expertise damage" is read the way the rest of this file already reads it: Holy Smash draws
  * "300% of Defense" as `_loc7_ += 3 * armorClass`, so 60% of Expertise is
  * `_loc7_ += 0.6 * magicDamage`. _loc7_ is method_1393's flat-damage accumulator, folded in
@@ -166,6 +172,54 @@ const COMBAT_STATE_EDITS = [
             ''
         ].join('\n'),
         replacement: ''
+    },
+    {
+        /**
+         * Heavy Blows, which has never done anything.
+         *
+         * The stone is a "Power" mod that adds .02-.15 to ProcMassive's BaseDamageMult, and
+         * ProcMassive is the crit proc the screen calls Heavy Blow. But method_72 -- the one
+         * path a proc's damage takes -- never reads the power's BaseDamageMult. It carries the
+         * damage in as `param4` and scales it by `_loc6_`, and for ProcMassive `_loc6_` is
+         * assigned the hardcoded const_1248 (0.2) outright. Whatever the mod added to the
+         * power's own multiplier was overwritten before it could be read, at every rank.
+         *
+         * So the mod is read here instead, off the same class_44 the rest of the file reads
+         * its Power mods from -- method_102(owner, powerName, property) is exactly the lookup
+         * ActivePower does at line 2008 for a normal cast, and it returns 0 for an owner who
+         * has no such stone. basePowerName rather than powerName because that is the key the
+         * mod table is built against; PowerType falls it back to powerName for a block like
+         * ProcMassive that authors no BasePowerName, so the two agree here.
+         *
+         * The truthiness guard is not decoration: method_102 is control-flow obfuscated and
+         * has a path that falls off its end, and `_loc6_ += undefined` would turn the whole
+         * multiplier into NaN and silently zero every Heavy Blow. `if(0)` and `if(NaN)` are
+         * both false, so the guard covers "no stone" and "no answer" in one test.
+         */
+        name: 'Heavy Blows reaches the Heavy Blow proc',
+        marker: '_hbBonus',
+        anchor: [
+            '         if(param1.powerName == "ProcMassive")',
+            '         {',
+            '            _loc6_ = const_1248;',
+            '         }',
+            ''
+        ].join('\n'),
+        replacement: [
+            '         if(param1.powerName == "ProcMassive")',
+            '         {',
+            '            _loc6_ = const_1248;',
+            '            if(this.var_3.var_18)',
+            '            {',
+            '               var _hbBonus:Number = this.var_3.var_18.method_102(this.var_3,param1.basePowerName,"BaseDamageMult");',
+            '               if(_hbBonus)',
+            '               {',
+            '                  _loc6_ += _hbBonus;',
+            '               }',
+            '            }',
+            '         }',
+            ''
+        ].join('\n')
     },
     {
         name: 'Retribution reflects triple Expertise plus 150% Defence',
@@ -405,6 +459,7 @@ const REQUIRED = {
         'param3 = uint(param2.meleeDamage);',
         'param2.maxHP * 0.3',
         'if(param2.basePowerName == "Subjugate" || param2.basePowerName == "Penance")',
+        'var _hbBonus:Number = this.var_3.var_18.method_102(this.var_3,param1.basePowerName,"BaseDamageMult");',
         `_eaMods.push(new class_140(${EMPYREAN_MOD_ID},_eaValue));`
     ],
     PowerType: [

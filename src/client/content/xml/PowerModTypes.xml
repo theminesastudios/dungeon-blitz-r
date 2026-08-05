@@ -1106,10 +1106,8 @@
 		<ModName>IgniteCrit1</ModName>
 		<ModID>111</ModID>
 		<DisplayName>Volatile</DisplayName>
-		<Description>Gain a Poison Damage bonus against Cursed targets.@Poison Damage Bonus:, 2%, 4%, 6%, 8%, 10%</Description>
+		<Description>Gain a Critical Chance bonus vs. Ignited targets@Critical Chance Bonus:, 2%, 4%, 6%, 8%, 10%</Description>
 		<ModType>WTF</ModType>
-		<BuffName>Cursed</BuffName>
-		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.02</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1118,8 +1116,6 @@
 		<ModID>112</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
-		<BuffName>Cursed</BuffName>
-		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.04</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1128,8 +1124,6 @@
 		<ModID>113</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
-		<BuffName>Cursed</BuffName>
-		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.06</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1138,8 +1132,6 @@
 		<ModID>114</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
-		<BuffName>Cursed</BuffName>
-		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.08</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1148,8 +1140,6 @@
 		<ModID>115</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
-		<BuffName>Cursed</BuffName>
-		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.1</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1592,9 +1582,9 @@
 		<ModName>Dominate1</ModName>
 		<ModID>166</ModID>
 		<DisplayName>Dominate</DisplayName>
-		<Description>Deal more damage to Demoralized targets, and twice as much to Staggered or Stunned ones@Damage Bonus:, 10%, 20%, 30%, 40%, 50%</Description>
+		<Description>Deal more damage to Demoralized targets, and twice as much to Staggered or Stunned ones@Damage Bonus:, 5%, 10%, 15%, 20%, 25%</Description>
 		<ModType>WTF</ModType>
-		<SelfValue>.1</SelfValue>
+		<SelfValue>.05</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1602,7 +1592,7 @@
 		<ModID>167</ModID>
 		<DisplayName>Dominate</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.2</SelfValue>
+		<SelfValue>.1</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1610,7 +1600,7 @@
 		<ModID>168</ModID>
 		<DisplayName>Dominate</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.3</SelfValue>
+		<SelfValue>.15</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1618,7 +1608,7 @@
 		<ModID>169</ModID>
 		<DisplayName>Dominate</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.4</SelfValue>
+		<SelfValue>.2</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1626,7 +1616,7 @@
 		<ModID>170</ModID>
 		<DisplayName>Dominate</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.5</SelfValue>
+		<SelfValue>.25</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -8419,7 +8409,7 @@
 		<ModName>CrusadingFlames1</ModName>
 		<ModID>895</ModID>
 		<DisplayName>Crusading Flames</DisplayName>
-		<Description>Increases maximum number of Holy Fire Stacks@Holy Fire Stacks:, +1, +2, +3, +5, +8</Description>
+		<Description>Increases maximum number of Holy Fire Stacks@Holy Fire Stacks:, +1, +2, +3, +4, +5</Description>
 		<ModType>Buff</ModType>
 		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
 		<BuffProperty>StackCount</BuffProperty>
@@ -8453,7 +8443,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
 		<BuffProperty>StackCount</BuffProperty>
-		<BuffValue>5</BuffValue>
+		<BuffValue>4</BuffValue>
 		<IconName>a_Signet_RapidRecover</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -8463,7 +8453,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
 		<BuffProperty>StackCount</BuffProperty>
-		<BuffValue>8</BuffValue>
+		<BuffValue>5</BuffValue>
 		<IconName>a_Signet_RapidRecover</IconName>
 	</PowerModType>
 	<PowerModType>
