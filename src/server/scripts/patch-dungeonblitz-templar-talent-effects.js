@@ -18,8 +18,8 @@ const { execFileSync } = require('child_process');
  *   Defiance          damage from 0.02% of max HP
  *   Unstable Barrier  damage from 0.06% of max HP                      (DetShieldDetonate)
  *   Retribution       reflects three times the Expertise it did, plus 150% of Defense
- *   Dominate          stops being a crit stone: 10-50% damage against a Demoralized target,
- *                     doubled against a Staggered or Stunned one
+ *   Dominate          stops being a crit stone: damage against a Demoralized, Staggered or
+ *                     Stunned target (the doubling it briefly had is gone -- third pass)
  *   Taunt -> Taunter  keeps its Hate and adds 1-5% attack speed
  *   Flame Axe         each cast from rank 1 takes a second off Meteor Smash and Lightning
  *                     Bomb
@@ -159,6 +159,52 @@ const COMBAT_STATE_EDITS = [
             '            }',
             '         }',
             '         _loc6_ += _loc7_ / param1;',
+            ''
+        ].join('\n')
+    },
+    {
+        /**
+         * Dominate stops doubling itself.
+         *
+         * The first pass gave the stone its magnitude against a Demoralized target and twice
+         * that against a Staggered or Stunned one, which at rank 5 was +50% turning into
+         * +100% -- the largest single damage number any Templar stone hands out, on the two
+         * states the class produces most reliably. It is one bonus now, on all three states.
+         *
+         * Written as its own edit rather than by changing the clause above, because that one
+         * has already landed on every tree this has ever run on: its marker is present, so it
+         * is skipped, and the only thing that can move the code now is an edit anchored on
+         * what it wrote. The marker here is the flattened test, which cannot appear in the
+         * three-branch form.
+         *
+         * `var_495 < 0` is still how "Demoralized" is read -- the target's melee-damage debuff
+         * total being negative -- because Warcry authors its debuff under three different buff
+         * names across its ranks and testing the effect covers all of them.
+         */
+        name: 'Dominate does not double on Stagger or Stun',
+        marker: 'if(_loc5_.var_683 || _loc5_.var_2291 || _loc5_.var_495 < 0)',
+        anchor: [
+            '         if(this.var_1644)',
+            '         {',
+            '            if(_loc5_.var_683 || _loc5_.var_2291)',
+            '            {',
+            '               _loc6_ += 2 * this.var_1644;',
+            '            }',
+            '            else if(_loc5_.var_495 < 0)',
+            '            {',
+            '               _loc6_ += this.var_1644;',
+            '            }',
+            '         }',
+            ''
+        ].join('\n'),
+        replacement: [
+            '         if(this.var_1644)',
+            '         {',
+            '            if(_loc5_.var_683 || _loc5_.var_2291 || _loc5_.var_495 < 0)',
+            '            {',
+            '               _loc6_ += this.var_1644;',
+            '            }',
+            '         }',
             ''
         ].join('\n')
     },
@@ -460,6 +506,7 @@ const REQUIRED = {
         'param2.maxHP * 0.3',
         'if(param2.basePowerName == "Subjugate" || param2.basePowerName == "Penance")',
         'var _hbBonus:Number = this.var_3.var_18.method_102(this.var_3,param1.basePowerName,"BaseDamageMult");',
+        'if(_loc5_.var_683 || _loc5_.var_2291 || _loc5_.var_495 < 0)',
         `_eaMods.push(new class_140(${EMPYREAN_MOD_ID},_eaValue));`
     ],
     PowerType: [
@@ -470,9 +517,17 @@ const REQUIRED = {
     ]
 };
 
-// The crit clause Dominate used to have. Its absence is as much a part of the patch as
-// anything in REQUIRED, because the stone's magnitudes moved with it.
-const FORBIDDEN = { CombatState: ['_loc59_ += this.var_1644;'], PowerType: [] };
+/**
+ * Two shapes Dominate has had and must not have again. Their absence is as much a part of the
+ * patch as anything in REQUIRED, because the stone's magnitudes moved with them:
+ *   - the crit-chance clause it started as, deleted when it became a damage stone
+ *   - the doubled bonus on Staggered and Stunned targets, which made a rank-5 stone worth
+ *     +100% on the two states a Templar produces most reliably
+ */
+const FORBIDDEN = {
+    CombatState: ['_loc59_ += this.var_1644;', '_loc6_ += 2 * this.var_1644;'],
+    PowerType: []
+};
 
 function parseArgs(argv) {
     const args = { ffdec: '', swf: TARGET_SWF, verify: false };

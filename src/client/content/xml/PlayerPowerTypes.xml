@@ -7335,7 +7335,7 @@
 		<PowerGroup>LeoneanAura</PowerGroup>
 		<AddTargetBuff>LeoneanAura1</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
-		<Description>Create an aura that grants nearby allies a 15% attack and expertise boost that lingers for 4 seconds, duration is increased by expertise. [Stats: +15% Damage, over 4s]</Description>
+		<Description>Create an aura that grants nearby allies a 15% attack and expertise boost, duration is increased by expertise. [Stats: +15% Damage, over 4s]</Description>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -7367,7 +7367,7 @@
 		<AddTargetBuff>LeoneanAura1</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>Create an aura that grants nearby allies a 15% attack and expertise boost that lingers for 4 seconds, duration is increased by expertise. [Stats: +15% Damage, over 4s]</Description>
+		<Description>Create an aura that grants nearby allies a 15% attack and expertise boost, duration is increased by expertise. [Stats: +15% Damage, over 4s]</Description>
 		<UpgradeDescription>Grants a 15% Attack and Expertise Boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7400,7 +7400,7 @@
 		<AddTargetBuff>LeoneanAura2</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>Create an aura that grants nearby allies a 16% attack and expertise boost that lingers for 4 seconds, duration is increased by expertise. [Stats: +16% Damage, over 4s]</Description>
+		<Description>Create an aura that grants nearby allies a 16% attack and expertise boost, duration is increased by expertise. [Stats: +16% Damage, over 4s]</Description>
 		<UpgradeDescription>Grants a 16% Attack and Expertise Boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7433,7 +7433,7 @@
 		<AddTargetBuff>LeoneanAura3</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>Create an aura that grants nearby allies a 18% attack and expertise boost that lingers for 4 seconds, duration is increased by expertise. [Stats: +18% Damage, over 4s]</Description>
+		<Description>Create an aura that grants nearby allies a 18% attack and expertise boost, duration is increased by expertise. [Stats: +18% Damage, over 4s]</Description>
 		<UpgradeDescription>Grants an 18% Attack and Expertise Boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7466,7 +7466,7 @@
 		<AddTargetBuff>LeoneanAura4</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>Create an aura that grants nearby allies a 19% attack and expertise boost that lingers for 4 seconds, duration is increased by expertise. [Stats: +19% Damage, over 4s]</Description>
+		<Description>Create an aura that grants nearby allies a 19% attack and expertise boost, duration is increased by expertise. [Stats: +19% Damage, over 4s]</Description>
 		<UpgradeDescription>Grants a 19% Attack and Expertise Boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7499,7 +7499,7 @@
 		<AddTargetBuff>LeoneanAura5</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>Create an aura that grants nearby allies a 20% attack and expertise boost that lingers for 4 seconds, duration is increased by expertise. [Stats: +20% Damage, over 4s]</Description>
+		<Description>Create an aura that grants nearby allies a 20% attack and expertise boost, duration is increased by expertise. [Stats: +20% Damage, over 4s]</Description>
 		<UpgradeDescription>Grants a 20% Attack and Expertise Boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7532,7 +7532,7 @@
 		<AddTargetBuff>LeoneanAura6</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>Create an aura that grants nearby allies a 25% attack and expertise boost that lingers for 4 seconds, duration is increased by expertise. [Stats: +25% Damage, over 4s]</Description>
+		<Description>Create an aura that grants nearby allies a 25% attack and expertise boost, duration is increased by expertise. [Stats: +25% Damage, over 4s]</Description>
 		<UpgradeDescription>Grants a 25% Attack and Expertise boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7565,7 +7565,7 @@
 		<AddTargetBuff>LeoneanAura7</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>Create an aura that grants nearby allies a 26% attack and expertise boost that lingers for 4 seconds, duration is increased by expertise. [Stats: +26% Damage, over 4s]</Description>
+		<Description>Create an aura that grants nearby allies a 26% attack and expertise boost, duration is increased by expertise. [Stats: +26% Damage, over 4s]</Description>
 		<UpgradeDescription>Grantsa 26% Attack and Expertise boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7598,7 +7598,7 @@
 		<AddTargetBuff>LeoneanAura8</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>Create an aura that grants nearby allies a 28% attack and expertise boost that lingers for 4 seconds, duration is increased by expertise. [Stats: +28% Damage, over 4s]</Description>
+		<Description>Create an aura that grants nearby allies a 28% attack and expertise boost, duration is increased by expertise. [Stats: +28% Damage, over 4s]</Description>
 		<UpgradeDescription>Grants a 28% Attack and Expertise boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7631,7 +7631,7 @@
 		<AddTargetBuff>LeoneanAura9</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>Create an aura that grants nearby allies a 30% attack and expertise boost that lingers for 4 seconds, duration is increased by expertise. [Stats: +30% Damage, over 4s]</Description>
+		<Description>Create an aura that grants nearby allies a 30% attack and expertise boost, duration is increased by expertise. [Stats: +30% Damage, over 4s]</Description>
 		<UpgradeDescription>Grants a 30% Attack and Expertise boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>
@@ -7664,7 +7664,7 @@
 		<AddTargetBuff>LeoneanAura10</AddTargetBuff>
 		<DisplayName>Empyrean Aura</DisplayName>
 		<BasePowerName>LeoneanAura</BasePowerName>
-		<Description>Create an aura that grants nearby allies a 33% attack and expertise boost that lingers for 4 seconds, duration is increased by expertise. [Stats: +33% Damage, over 4s]</Description>
+		<Description>Create an aura that grants nearby allies a 33% attack and expertise boost, duration is increased by expertise. [Stats: +33% Damage, over 4s]</Description>
 		<UpgradeDescription>Grants a 33% Attack and Expertise boost</UpgradeDescription>
 		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<CastSound>CHR_Templar_LeoneanAura_A[830]CHR_Templar_LeoneanAura_B</CastSound>

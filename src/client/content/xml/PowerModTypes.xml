@@ -1582,7 +1582,7 @@
 		<ModName>Dominate1</ModName>
 		<ModID>166</ModID>
 		<DisplayName>Dominate</DisplayName>
-		<Description>Deal more damage to Demoralized targets, and twice as much to Staggered or Stunned ones@Damage Bonus:, 5%, 10%, 15%, 20%, 25%</Description>
+		<Description>Deal more damage to Demoralized, Staggered, and Stunned targets@Damage Bonus:, 5%, 10%, 15%, 20%, 25%</Description>
 		<ModType>WTF</ModType>
 		<SelfValue>.05</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>

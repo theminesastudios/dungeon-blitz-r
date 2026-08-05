@@ -80,7 +80,7 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  *   Taunt -> Taunter   keeps its Hate, and gains 1-5% attack speed (the attack speed half is
  *                      bytecode -- patch-dungeonblitz-templar-talent-effects)
  *   Dominate           repurposed: damage against Demoralized/Staggered/Stunned targets,
- *                      10-50%, doubled to at most +100% on Staggered or Stunned (bytecode)
+ *                      one bonus on all three, 5-25% (the effect itself is bytecode)
  *   Pain Eater         the 5-second proc now grants Defense as well, on the same
  *                      1/2/4/6/10% curve its attack speed already uses
  *
@@ -690,7 +690,7 @@ for (let rank = 0; rank <= 10; rank += 1) {
   const boost = EMPYREAN_AURA_BOOST[Math.max(rank, 1) - 1];
   POWER_DESCRIPTIONS.set(
     rank === 0 ? "LeoneanAura" : `LeoneanAura${rank}`,
-    `Create an aura that grants nearby allies a ${boost}% attack and expertise boost that lingers for 4 seconds, duration is increased by expertise.`,
+    `Create an aura that grants nearby allies a ${boost}% attack and expertise boost, duration is increased by expertise.`,
   );
 }
 
@@ -923,10 +923,11 @@ const MOD_SELF_VALUES = new Map<string, string>([
   ["ClutchHeal4", ".08"], // .04
   ["ClutchHeal5", ".1"], // .05
   /**
-   * Dominate stops being a crit stone and becomes a damage stone. The magnitudes are the ask
-   * -- 10 to 50% -- and the doubling against Staggered and Stunned targets that takes it to
-   * +100% is in patch-dungeonblitz-templar-talent-effects, because what the number means is
-   * bytecode: CombatState reads this value straight into a crit-chance term today.
+   * Dominate stops being a crit stone and becomes a damage stone: one bonus, applied against
+   * a Demoralized, Staggered or Stunned target. Which states count, and the fact that none of
+   * them stack the bonus, is bytecode -- patch-dungeonblitz-templar-talent-effects -- because
+   * what this number *means* is hardcoded; CombatState originally read it straight into a
+   * crit-chance term.
    *
    * The stone stays ModType WTF and keeps its ModID. Both matter: WTF is the file's own word
    * for "the client hardcodes this", which is still true, and the ModID is the save-data key
@@ -1240,7 +1241,7 @@ const MOD_DESCRIPTIONS = new Map<string, [string, string]>([
     "Dominate1",
     [
       "Gain a Critical Chance bonus vs. Staggered and Stunned targets@Critical Chance Bonus:, 0.15%, 0.3%, 0.45%, 0.75%, 1.2%",
-      "Deal more damage to Demoralized targets, and twice as much to Staggered or Stunned ones@Damage Bonus:, 5%, 10%, 15%, 20%, 25%",
+      "Deal more damage to Demoralized, Staggered, and Stunned targets@Damage Bonus:, 5%, 10%, 15%, 20%, 25%",
     ],
   ],
   [
@@ -1285,7 +1286,13 @@ const MOD_TEXT_MIGRATIONS: Array<{ mod: string; from: string; to: string }> = [
   {
     mod: "Dominate1",
     from: "Deal more damage to Demoralized targets, and twice as much to Staggered or Stunned ones@Damage Bonus:, 10%, 20%, 30%, 40%, 50%",
-    to: "Deal more damage to Demoralized targets, and twice as much to Staggered or Stunned ones@Damage Bonus:, 5%, 10%, 15%, 20%, 25%",
+    to: "Deal more damage to Demoralized, Staggered, and Stunned targets@Damage Bonus:, 5%, 10%, 15%, 20%, 25%",
+  },
+  // ...and the third pass dropped the doubling itself, so the sentence stops claiming it.
+  {
+    mod: "Dominate1",
+    from: "Deal more damage to Demoralized targets, and twice as much to Staggered or Stunned ones@Damage Bonus:, 5%, 10%, 15%, 20%, 25%",
+    to: "Deal more damage to Demoralized, Staggered, and Stunned targets@Damage Bonus:, 5%, 10%, 15%, 20%, 25%",
   },
   // Crusading Flames' top two ranks, brought down to a curve that steps by one.
   {
