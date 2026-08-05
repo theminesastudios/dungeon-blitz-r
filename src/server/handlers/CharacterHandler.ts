@@ -1050,10 +1050,6 @@ export class CharacterHandler {
                      // Onto, not beside: the server has no collision, so an offset is a
                      // guess about floor it cannot check, and next to a ledge or a pit that
                      // guess drops the joiner through the map.
-                     //
-                     // The anchor is in normalizedTarget -- the continue above proved it -- so
-                     // a sample tagged with any other level is one they carried in from the
-                     // level they came from, and is not floor here.
                      const otherEntity = other.clientEntID > 0 ? other.entities?.get(other.clientEntID) : null;
                      const anchorGround = LevelHandler.resolveGroundedAnchorPosition(otherEntity, normalizedTarget);
                      if (anchorGround) {

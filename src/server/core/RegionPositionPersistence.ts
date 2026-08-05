@@ -70,9 +70,13 @@ export class RegionPositionPersistence {
         // sample yet falls back to the last saved coordinates rather than its live position.
         //
         // The level is passed so a sample taken on the map the player just left cannot be
-        // filed under the one they are on now. The entity object outlives the level change --
+        // filed under the one they are on now: the entity object outlives the level change --
         // `client.currentLevel` flips first -- and a save landing in that window is how a live
         // log ended up with `level=NewbieRoad x=360 y=1460`, which is CraftTown's spawn.
+        //
+        // This record is not what a spawn reads any more; LevelConfig.getConfirmedSpawnForLevel
+        // is. It still decides *which level* a player belongs in on the next login, which is
+        // why it is still written from whatever position is available.
         const grounded = entity ? resolveGroundedPosition(entity, levelName) : null;
         // The saved record is only a usable fallback while it belongs to the level being
         // recorded; borrowing another level's coordinates would file a point from the wrong map.

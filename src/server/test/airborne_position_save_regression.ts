@@ -57,6 +57,13 @@ function createPlayer(token: number): any {
             entState: EntityState.ACTIVE,
             roomId: 1
         }),
+        // The floor sample a real client produces on arrival: its own absolute position, sent
+        // in a standing full update, tagged with the level it was measured on. Only a sample
+        // of that provenance may be replayed as a place to stand -- see core/GroundedPosition.
+        groundedX: 12_777,
+        groundedY: GROUND_Y,
+        groundedLevel: LEVEL,
+        groundedAbsolute: true,
         ownerToken: token,
         ownerUserId: token,
         hp: 5000,
@@ -179,8 +186,12 @@ function testDungeonEntryUsesTheRecordedGroundedPosition(): void {
     assert.equal(staleSyncState.syncEntryX, 12_777, 'the grounded save wins over the live entity');
     assert.equal(staleSyncState.syncEntryY, GROUND_Y);
 
-    // No saved record for the source level either: the authored region spawn is still a place
-    // the level puts players on, and the live entity is still not.
+    // No confirmed sample and no saved record for the source level either: the authored region
+    // spawn is still a place the level puts players on, and the live entity is still not.
+    delete entity.groundedX;
+    delete entity.groundedY;
+    delete entity.groundedLevel;
+    delete entity.groundedAbsolute;
     client.character.CurrentLevel = { name: 'CraftTown', x: 360, y: 1460 };
     const spawn = LevelConfig.getSpawn(LEVEL);
     const fallbackSyncState = (LevelHandler as any).buildTransferSyncState(client, 'JC_Mission1', null);
@@ -245,9 +256,12 @@ function testEveryRegionReachesAGroundedEntryPoint(): void {
 // the region, not on a coordinate the server reconstructed for them. Dungeons never write
 // CurrentLevel, so that position is still on the character the whole time they are inside.
 function testDungeonReturnKeepsTheLastPositionStoodOnInTheRegion(): void {
+    // The region record is a confirmed floor point now: one the player's own client reported
+    // standing on. CurrentLevel/PreviousLevel are dead-reckoned and no longer replayed.
     const char: any = {
         name: 'Faller',
-        CurrentLevel: { name: 'JadeCityHard', x: 8_400, y: 1_058 }
+        CurrentLevel: { name: 'JadeCityHard', x: 8_400, y: 1_058 },
+        GroundedSpawns: { jadecityhard: { x: 8_400, y: 1_058, at: Date.now() } }
     };
 
     // An entry point that lost the floor -- the symptom being defended against.
@@ -258,12 +272,16 @@ function testDungeonReturnKeepsTheLastPositionStoodOnInTheRegion(): void {
     assert.equal(returned!.x, 8_400);
     assert.equal(returned!.y, 1_058, 'the position the player last stood on wins over the entry point');
 
-    // Home works the same way: the region record lives in PreviousLevel while CraftTown is
-    // current, and getSavedCoordinatesForLevel reads both.
+    // Home works the same way: the confirmed point is kept per level, so being in CraftTown
+    // does not lose the one earned in the region the dungeon was entered from.
     const homeChar: any = {
         name: 'Faller',
         CurrentLevel: { name: 'CraftTown', x: 360, y: 1_460 },
-        PreviousLevel: { name: 'JadeCityHard', x: 9_100, y: 1_058 }
+        PreviousLevel: { name: 'JadeCityHard', x: 9_100, y: 1_058 },
+        GroundedSpawns: {
+            crafttown: { x: 360, y: 1_460, at: Date.now() },
+            jadecityhard: { x: 9_100, y: 1_058, at: Date.now() }
+        }
     };
     const homeReturn = LevelConfig.resolveDungeonSafeReturn('JC_Mini2Hard', 'JadeCityHard', homeChar, airborneEntry);
     assert.equal(homeReturn!.x, 9_100, 'the region record is used even when it sits in PreviousLevel');

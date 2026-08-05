@@ -15,17 +15,24 @@
  * Both spellings are treated as authoritative here so a full update can never launder
  * an airborne position into a grounded one.
  *
- * A sample also carries the level it was taken in, and that is not decoration. A floor
- * point is only meaningful on the map it was measured on, and the entity object outlives
- * the level change -- `client.currentLevel` flips to the new map while the entity still
- * holds the old map's sample, so a save taken in that window files one level's coordinates
- * under another level's name. That is not hypothetical: a live log has
+ * A sample carries two things beyond its coordinates, and neither is decoration.
  *
- *   [PositionRestore] character=Zeus level=NewbieRoad x=360 y=1460
+ * `groundedLevel` -- the map it was measured on. A floor point means nothing anywhere else,
+ * and the entity object outlives the level change: `client.currentLevel` flips to the new map
+ * while the entity still holds the old map's sample, so a save taken in that window files one
+ * level's coordinates under another level's name. A live log caught it doing exactly that --
+ * `[PositionRestore] character=Zeus level=NewbieRoad x=360 y=1460`, and {360, 1460} is
+ * CraftTown's authored spawn.
  *
- * and {360, 1460} is CraftTown's authored spawn, restored into NewbieRoad, where it is
- * nowhere near the floor. Every consumer that knows which level it is placing a body in
- * passes that level, and a sample from anywhere else is refused.
+ * `groundedAbsolute` -- whether the coordinate came from the client or from the server's own
+ * arithmetic. This is the important one for spawning. A 0x07 sample is `entity.x/y`, a sum of
+ * deltas on top of whatever the server *believed* the last spawn point was; when the client
+ * disagreed with that belief -- snapping the body up to 160px onto floor, or letting it fall
+ * because there was no floor in its snap window -- it corrected itself with no delta to say
+ * so, and every later sample inherits the offset. A full update is the only packet carrying a
+ * position the server did not compute for itself, so it is the only coordinate the client has
+ * actually declared it is standing on. Only those may be replayed as a spawn point; see
+ * `LevelConfig.getSpawnCoordinates`.
  */
 
 export interface GroundedPoint {
@@ -56,9 +63,9 @@ export function isEntityAirborne(entity: any): boolean {
 }
 
 /**
- * True when the entity carries a floor sample that was taken somewhere other than
- * `expectedLevel`. An untagged sample is not foreign -- it predates the tag and is treated
- * as belonging wherever it is read, which is how the sample behaved before.
+ * True when the entity carries a floor sample taken somewhere other than `expectedLevel`. An
+ * untagged sample is not foreign -- it predates the tag and is treated as belonging wherever
+ * it is read, which is how the sample behaved before.
  */
 function isForeignSample(entity: any, expectedLevel?: string | null): boolean {
     if (!expectedLevel) {
@@ -113,15 +120,39 @@ export function resolveGroundedPosition(entity: any, expectedLevel?: string | nu
 }
 
 /**
+ * The same point, but only when the client itself reported standing there.
+ *
+ * This is the one a spawn may use. See the note at the top of the file: a dead-reckoned sample
+ * can be arbitrarily far from real floor and has no way to know it.
+ */
+export function resolveConfirmedGroundedPosition(
+    entity: any,
+    expectedLevel?: string | null,
+): GroundedPoint | null {
+    if (!entity || typeof entity !== 'object' || !entity.groundedAbsolute) {
+        return null;
+    }
+    if (isForeignSample(entity, expectedLevel)) {
+        return null;
+    }
+
+    const groundedX = Number(entity.groundedX);
+    const groundedY = Number(entity.groundedY);
+    if (!Number.isFinite(groundedX) || !Number.isFinite(groundedY)) {
+        return null;
+    }
+    return { x: Math.round(groundedX), y: Math.round(groundedY) };
+}
+
+/**
  * Record x/y as the entity's floor sample when the packet says it is standing.
  *
- * An airborne packet leaves the previous sample alone -- that is the whole point of
- * keeping one -- and never clears it.
+ * An airborne packet leaves the previous sample alone -- that is the whole point of keeping
+ * one -- and never clears it.
  *
- * `level` is the map the coordinates were measured on. Omitting it leaves whatever tag the
- * sample already had, which would be a lie about a new coordinate, so the tag is cleared
- * instead: an untagged sample is treated as belonging wherever it is read, and that is the
- * behaviour these coordinates had before the tag existed.
+ * `level` is the map the coordinates were measured on and `absolute` says whether the client
+ * sent them. Omitting either clears the corresponding tag rather than leaving a stale one on a
+ * new coordinate, so an untagged sample is never mistaken for a confirmed one.
  */
 export function noteGroundedSample(
     entity: any,
@@ -129,6 +160,7 @@ export function noteGroundedSample(
     y: number,
     airborne: boolean,
     level?: string | null,
+    absolute: boolean = false,
 ): void {
     if (!entity || typeof entity !== 'object' || airborne) {
         return;
@@ -147,17 +179,21 @@ export function noteGroundedSample(
     } else {
         delete entity.groundedLevel;
     }
+    if (absolute) {
+        entity.groundedAbsolute = true;
+    } else {
+        delete entity.groundedAbsolute;
+    }
 }
 
 /**
  * Carry a floor sample from the entity a packet replaces onto the object that replaces it.
  *
  * A self full update rebuilds the player's entity from scratch, so without this the sample
- * every other path depends on is silently discarded on arrival in a level and again on
- * every gear or state refresh.
- *
- * The level tag rides along, because a sample that arrives in the new object untagged would
- * be indistinguishable from one measured here.
+ * every other path depends on is silently discarded on arrival in a level and again on every
+ * gear or state refresh. Both tags ride along -- a sample that arrived untagged would be
+ * indistinguishable from one measured here, and one that lost its provenance would look
+ * dead-reckoned.
  */
 export function inheritGroundedSample(target: any, previous: any): void {
     if (!target || typeof target !== 'object' || !previous || typeof previous !== 'object') {
@@ -172,14 +208,17 @@ export function inheritGroundedSample(target: any, previous: any): void {
         if (previous.groundedLevel) {
             target.groundedLevel = String(previous.groundedLevel);
         }
+        if (previous.groundedAbsolute) {
+            target.groundedAbsolute = true;
+        }
     }
 }
 
 /**
  * Drop a floor sample that was taken on a different map.
  *
- * Called when a body arrives somewhere: whatever it was standing on before is not floor
- * here, and keeping it would let the old map's coordinates be saved under this map's name.
+ * Called when a body arrives somewhere: whatever it was standing on before is not floor here,
+ * and keeping it would let the old map's coordinates be saved under this map's name.
  */
 export function discardForeignGroundedSample(entity: any, currentLevel: string | null | undefined): boolean {
     if (!entity || typeof entity !== 'object' || !isForeignSample(entity, currentLevel)) {
@@ -189,5 +228,6 @@ export function discardForeignGroundedSample(entity: any, currentLevel: string |
     delete entity.groundedX;
     delete entity.groundedY;
     delete entity.groundedLevel;
+    delete entity.groundedAbsolute;
     return true;
 }

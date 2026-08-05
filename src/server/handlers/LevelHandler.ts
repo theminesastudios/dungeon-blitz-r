@@ -60,7 +60,7 @@ import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { DungeonCompletionSystem } from '../core/DungeonCompletionSystem';
 import { DungeonCompletionConditions } from '../core/DungeonCompletionConditions';
 import { MovementAuthority } from '../core/MovementAuthority';
-import { noteGroundedSample, resolveGroundedPosition } from '../core/GroundedPosition';
+import { noteGroundedSample, resolveConfirmedGroundedPosition, resolveGroundedPosition } from '../core/GroundedPosition';
 
 const db = new JsonAdapter();
 
@@ -264,10 +264,7 @@ export class LevelHandler {
         // Checking `airborne` alone was not enough: the flag only rides the 0x07 incremental
         // packet, so a player who took the door on the frame after a full update -- which
         // spells the same state `jumping`/`dropping` -- still wrote a mid-air point.
-        // ...and the sample has to have been taken on this level. The entity outlives the
-        // level change, so without the tag a door taken out of CraftTown could file CraftTown's
-        // floor point as the return point for the level being entered.
-        const grounded = resolveGroundedPosition(entity, normalizedSourceLevel);
+        const grounded = resolveConfirmedGroundedPosition(entity, normalizedSourceLevel);
         if (!grounded) {
             return;
         }
@@ -471,12 +468,19 @@ export class LevelHandler {
      * hovering and drops them. Only a position the anchor was last standing on counts,
      * and when there is none the caller must fall back to the level's own spawn marker
      * rather than guess.
+     *
+     * "Last standing on" now means a position the anchor's own client reported, not one the
+     * server dead-reckoned for it. Every caller here is placing a body, and a dead-reckoned
+     * point can be arbitrarily far from real floor with no way to know it -- see the note at
+     * the top of core/GroundedPosition.ts. Falling back to the level's spawn marker is the
+     * correct answer whenever there is no confirmed point, because that marker is floor by
+     * construction and a guess is not.
      */
     static resolveGroundedAnchorPosition(
         entity: any,
         expectedLevel?: string | null
     ): { x: number; y: number } | null {
-        return resolveGroundedPosition(entity, expectedLevel);
+        return resolveConfirmedGroundedPosition(entity, expectedLevel);
     }
 
     private static buildActiveTransferSyncAnchorCandidate(
@@ -496,8 +500,6 @@ export class LevelHandler {
         let y = 0;
         let hasCoord = false;
         const entity = session.entities.get(session.clientEntID);
-        // targetLevel is where the anchor is standing -- the guard above already proved the
-        // session is in it -- so a sample from anywhere else is another map's floor.
         const grounded = LevelHandler.resolveGroundedAnchorPosition(entity, targetLevel);
         if (grounded) {
             x = grounded.x;
@@ -950,7 +952,7 @@ export class LevelHandler {
                 // the individual player. Never replace this player's entrance with the party
                 // anchor's region or coordinates.
                 syncEntryLevel = sourceLevel;
-                const liveEntry = resolveGroundedPosition(entryEntity);
+                const liveEntry = resolveConfirmedGroundedPosition(entryEntity, sourceLevel);
                 // This is the point the player is put back on when they walk out of the dungeon
                 // (resolveDungeonExitSpawn) and when they reconnect out of it
                 // (repairDungeonLocationBeforeSave). Neither consumer can tell whether there is
@@ -963,21 +965,22 @@ export class LevelHandler {
                 // carry. Recording it here is what dropped players through Dread Valhaven after
                 // refreshing inside Dread The East Wing.
                 //
-                // CurrentLevel/PreviousLevel only ever accept grounded packets, so the recorded
-                // entry is the trustworthy one and wins. The live position is the fallback for
-                // the case it cannot cover: no saved record for the source level at all.
-                const recordedEntry = LevelConfig.resolveDungeonEntryCoordinates(
-                    normalizedTargetLevel,
-                    sourceLevel,
-                    client.character
-                );
+                // The live sample goes first now, and only because it is confirmed: it is this
+                // player's own client saying "I am standing here", measured in this level,
+                // seconds ago. The recorded entry behind it resolves to the level's authored
+                // spawn when there is no confirmed record, which is floor but is not where the
+                // player was -- so letting it win would send everyone to the town gate instead
+                // of the dungeon door they walked in from.
+                const recordedEntry = liveEntry
+                    ? { x: liveEntry.x, y: liveEntry.y, hasCoord: true }
+                    : LevelConfig.resolveDungeonEntryCoordinates(
+                        normalizedTargetLevel,
+                        sourceLevel,
+                        client.character
+                    );
                 if (recordedEntry.hasCoord) {
                     syncEntryX = Math.round(recordedEntry.x);
                     syncEntryY = Math.round(recordedEntry.y);
-                    syncEntryHasCoord = true;
-                } else if (liveEntry) {
-                    syncEntryX = liveEntry.x;
-                    syncEntryY = liveEntry.y;
                     syncEntryHasCoord = true;
                 } else {
                     syncEntryX = undefined;
@@ -5625,8 +5628,6 @@ export class LevelHandler {
         // same treatment as CurrentLevel: the floor sample, never the live position. Leaving
         // a level mid-jump used to file the airborne point here and the next visit dropped
         // the player from it.
-        // ...and it has to be a sample taken in the level being left, not one the entity is
-        // still carrying from the level before that.
         const oldGrounded = LevelHandler.resolveGroundedAnchorPosition(ent, oldLevel);
         if (oldGrounded) {
             oldX = oldGrounded.x;

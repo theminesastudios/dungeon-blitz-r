@@ -124,7 +124,14 @@ function testDungeonJoinerEnterWorldUsesOwnTransferToken(): void {
         id: rogue.clientEntID,
         isPlayer: true,
         x: 3400,
-        y: 1200
+        y: 1200,
+        // The floor sample a real client produces: its own absolute position, reported while
+        // standing, tagged with the level it was measured on. Only a sample of that
+        // provenance may be used to place another body -- see core/GroundedPosition.
+        groundedX: 3400,
+        groundedY: 1200,
+        groundedLevel: 'JC_Mission3',
+        groundedAbsolute: true
     });
 
     GlobalState.sessionsByToken.set(rogue.token, rogue as never);
@@ -169,7 +176,14 @@ function testPartyDungeonTransferKeepsAnchorSpawnCoordinates(): void {
         id: rogue.clientEntID,
         isPlayer: true,
         x: 3400,
-        y: 1200
+        y: 1200,
+        // The floor sample a real client produces: its own absolute position, reported while
+        // standing, tagged with the level it was measured on. Only a sample of that
+        // provenance may be used to place another body -- see core/GroundedPosition.
+        groundedX: 3400,
+        groundedY: 1200,
+        groundedLevel: 'AC_Mission1',
+        groundedAbsolute: true
     });
     mage.currentLevel = 'CemeteryHillHard';
     mage.character.CurrentLevel = { name: 'CemeteryHillHard', x: 1800, y: 950 };
@@ -177,7 +191,13 @@ function testPartyDungeonTransferKeepsAnchorSpawnCoordinates(): void {
         id: mage.clientEntID,
         isPlayer: true,
         x: 1800,
-        y: 950
+        y: 950,
+        // The joiner's own confirmed floor point in the region they are leaving -- what their
+        // dungeon entry has to be recorded as, so walking back out returns them to it.
+        groundedX: 1800,
+        groundedY: 950,
+        groundedLevel: 'CemeteryHillHard',
+        groundedAbsolute: true
     });
 
     GlobalState.sessionsByToken.set(rogue.token, rogue as never);
@@ -444,7 +464,13 @@ function testClosedPartySessionsDoNotProvideDungeonAnchorCoordinates(): void {
         id: live.clientEntID,
         isPlayer: true,
         x: 400,
-        y: 500
+        y: 500,
+        // Only a confirmed sample places another body, so the live anchor needs one for its
+        // coordinates to be the ones that win over the closed session's.
+        groundedX: 400,
+        groundedY: 500,
+        groundedLevel: 'AC_Mission1',
+        groundedAbsolute: true
     });
 
     GlobalState.sessionsByToken.set(closed.token, closed as never);
@@ -496,7 +522,9 @@ function testAirborneRunOwnerBorrowsAGroundedPartyMemberPosition(): void {
         x: 400,
         y: 500,
         groundedX: 400,
-        groundedY: 500
+        groundedY: 500,
+        groundedLevel: 'AC_Mission1',
+        groundedAbsolute: true
     });
 
     GlobalState.sessionsByToken.set(jumpingOwner.token, jumpingOwner as never);
@@ -535,7 +563,16 @@ function testCastleHockeHomeReturnPreservesLiveSourcePosition(): void {
     (LevelHandler as any).syncTransferSourcePositionFromLiveEntity(
         character,
         'Castle',
-        { x: -920, y: -1880 }
+        // A confirmed Castle floor point: the client reported standing here, in this level.
+        // Nothing weaker is written as a return position any more.
+        {
+            x: -920,
+            y: -1880,
+            groundedX: -920,
+            groundedY: -1880,
+            groundedLevel: 'Castle',
+            groundedAbsolute: true
+        }
     );
     assert.deepEqual(
         character.CurrentLevel,
