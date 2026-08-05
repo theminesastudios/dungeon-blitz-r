@@ -264,7 +264,10 @@ export class LevelHandler {
         // Checking `airborne` alone was not enough: the flag only rides the 0x07 incremental
         // packet, so a player who took the door on the frame after a full update -- which
         // spells the same state `jumping`/`dropping` -- still wrote a mid-air point.
-        const grounded = resolveGroundedPosition(entity);
+        // ...and the sample has to have been taken on this level. The entity outlives the
+        // level change, so without the tag a door taken out of CraftTown could file CraftTown's
+        // floor point as the return point for the level being entered.
+        const grounded = resolveGroundedPosition(entity, normalizedSourceLevel);
         if (!grounded) {
             return;
         }
@@ -469,8 +472,11 @@ export class LevelHandler {
      * and when there is none the caller must fall back to the level's own spawn marker
      * rather than guess.
      */
-    static resolveGroundedAnchorPosition(entity: any): { x: number; y: number } | null {
-        return resolveGroundedPosition(entity);
+    static resolveGroundedAnchorPosition(
+        entity: any,
+        expectedLevel?: string | null
+    ): { x: number; y: number } | null {
+        return resolveGroundedPosition(entity, expectedLevel);
     }
 
     private static buildActiveTransferSyncAnchorCandidate(
@@ -490,7 +496,9 @@ export class LevelHandler {
         let y = 0;
         let hasCoord = false;
         const entity = session.entities.get(session.clientEntID);
-        const grounded = LevelHandler.resolveGroundedAnchorPosition(entity);
+        // targetLevel is where the anchor is standing -- the guard above already proved the
+        // session is in it -- so a sample from anywhere else is another map's floor.
+        const grounded = LevelHandler.resolveGroundedAnchorPosition(entity, targetLevel);
         if (grounded) {
             x = grounded.x;
             y = grounded.y;
@@ -5617,7 +5625,9 @@ export class LevelHandler {
         // same treatment as CurrentLevel: the floor sample, never the live position. Leaving
         // a level mid-jump used to file the airborne point here and the next visit dropped
         // the player from it.
-        const oldGrounded = LevelHandler.resolveGroundedAnchorPosition(ent);
+        // ...and it has to be a sample taken in the level being left, not one the entity is
+        // still carrying from the level before that.
+        const oldGrounded = LevelHandler.resolveGroundedAnchorPosition(ent, oldLevel);
         if (oldGrounded) {
             oldX = oldGrounded.x;
             oldY = oldGrounded.y;
@@ -6253,7 +6263,7 @@ export class LevelHandler {
         // most recent 0x07 carried, so anything that has to place a body on solid floor
         // (party anchor spawns, dungeon return points) reads this instead.
         const isGroundedMovementPacket = !isAirborne && !flags.bJumping && !flags.bDropping;
-        noteGroundedSample(ent, ent.x, ent.y, !isGroundedMovementPacket);
+        noteGroundedSample(ent, ent.x, ent.y, !isGroundedMovementPacket, currentLevel);
 
         // Neo's "King of the World" ledger entry: the only place the server sees
         // where a player actually climbed to.
@@ -6279,7 +6289,7 @@ export class LevelHandler {
             levelEntity.airborne = isAirborne;
             levelEntity.jumping = flags.bJumping;
             levelEntity.dropping = flags.bDropping;
-            noteGroundedSample(levelEntity, ent.x, ent.y, !isGroundedMovementPacket);
+            noteGroundedSample(levelEntity, ent.x, ent.y, !isGroundedMovementPacket, currentLevel);
         }
 
         if (isActiveSelfState) {

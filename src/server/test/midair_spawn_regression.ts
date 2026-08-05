@@ -8,7 +8,12 @@ import { LevelConfig } from '../core/LevelConfig';
 import { LevelHandler } from '../handlers/LevelHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { getLevelScopeKey } from '../core/LevelScope';
-import { inheritGroundedSample, isEntityAirborne, noteGroundedSample } from '../core/GroundedPosition';
+import {
+    discardForeignGroundedSample,
+    inheritGroundedSample,
+    isEntityAirborne,
+    noteGroundedSample,
+} from '../core/GroundedPosition';
 import { RegionPositionPersistence } from '../core/RegionPositionPersistence';
 
 /*
@@ -235,6 +240,92 @@ function testFullUpdateKeepsTheFloorSample(): void {
     );
 }
 
+/**
+ * A floor point only means anything on the map it was measured on.
+ *
+ * The entity object outlives the level change -- `client.currentLevel` flips to the new map
+ * while the entity still carries the old map's sample -- so a save taken in that window filed
+ * one level's coordinates under another level's name. A live log caught it:
+ *
+ *   [PositionRestore] character=Zeus level=NewbieRoad x=360 y=1460
+ *
+ * {360, 1460} is CraftTown's authored spawn, restored into NewbieRoad, nowhere near its floor.
+ */
+function testASampleFromAnotherLevelIsRefused(): void {
+    const carriedFromCraftTown: any = { x: 360, y: 1_460 };
+    noteGroundedSample(carriedFromCraftTown, 360, 1_460, false, 'CraftTown');
+
+    assert.deepEqual(
+        LevelHandler.resolveGroundedAnchorPosition(carriedFromCraftTown, 'CraftTown'),
+        { x: 360, y: 1_460 },
+        'the sample is still good on the level it was measured on',
+    );
+    assert.equal(
+        LevelHandler.resolveGroundedAnchorPosition(carriedFromCraftTown, 'NewbieRoad'),
+        null,
+        'CraftTown floor must not be offered as a place to stand in NewbieRoad',
+    );
+    assert.deepEqual(
+        LevelHandler.resolveGroundedAnchorPosition(carriedFromCraftTown),
+        { x: 360, y: 1_460 },
+        'a caller that does not name a level keeps the old behaviour',
+    );
+
+    // The live position is in the same coordinate space as the sample, so it is no safer:
+    // a foreign sample must yield nothing at all rather than fall through to entity.x/y.
+    const standingElsewhere: any = { x: 4_000, y: 600 };
+    noteGroundedSample(standingElsewhere, 4_000, 600, false, 'CraftTown');
+    assert.equal(
+        LevelHandler.resolveGroundedAnchorPosition(standingElsewhere, 'NewbieRoad'),
+        null,
+        'a foreign sample must not fall through to the live position',
+    );
+
+    // An untagged sample predates the tag and is trusted wherever it is read.
+    const untagged: any = { x: 100, y: 200, groundedX: 100, groundedY: 200 };
+    assert.deepEqual(
+        LevelHandler.resolveGroundedAnchorPosition(untagged, 'NewbieRoad'),
+        { x: 100, y: 200 },
+        'an untagged sample keeps the behaviour it had before the tag existed',
+    );
+
+    // Arriving somewhere drops what the body was standing on before.
+    const arriving: any = {};
+    inheritGroundedSample(arriving, carriedFromCraftTown);
+    assert.equal(arriving.groundedLevel, 'CraftTown', 'the tag has to survive the rebuild too');
+    assert.equal(discardForeignGroundedSample(arriving, 'NewbieRoad'), true);
+    assert.equal(arriving.groundedX, undefined);
+    assert.equal(arriving.groundedLevel, undefined);
+    assert.equal(
+        discardForeignGroundedSample({ groundedX: 1, groundedY: 2, groundedLevel: 'NewbieRoad' }, 'NewbieRoad'),
+        false,
+        'a sample measured here is kept',
+    );
+}
+
+/** The saved record must not pick up a coordinate the player earned on another map. */
+function testRegionSaveRefusesAnotherLevelsSample(): void {
+    const client: any = {
+        userId: 11,
+        currentLevel: 'NewbieRoad',
+        character: { name: 'Zeus', CurrentLevel: { name: 'CraftTown', x: 360, y: 1_460 } },
+        scheduleCharacterSave() {},
+    };
+    const carried: any = { x: 360, y: 1_460 };
+    noteGroundedSample(carried, 360, 1_460, false, 'CraftTown');
+
+    assert.equal(
+        RegionPositionPersistence.record(client, carried, 'disconnect', { persist: false }),
+        false,
+        'CraftTown coordinates must never be filed as a NewbieRoad position',
+    );
+    assert.equal(
+        client.character.LastRegionPosition,
+        undefined,
+        'and nothing may be written when there is no usable coordinate',
+    );
+}
+
 // Leaving a level mid-jump must not file the airborne point as the way back in.
 function testTransferSourcePositionRefusesOpenAir(): void {
     const character: any = { CurrentLevel: { name: LEVEL, x: 10_470, y: GROUND_Y } };
@@ -315,6 +406,8 @@ function main(): void {
         testUnauthoredSpawnYieldsNoCoordinate();
         testBothPacketSpellingsCountAsAirborne();
         testFullUpdateKeepsTheFloorSample();
+        testASampleFromAnotherLevelIsRefused();
+        testRegionSaveRefusesAnotherLevelsSample();
         testTransferSourcePositionRefusesOpenAir();
         testDisconnectSaveRefusesOpenAir();
         console.log('midair_spawn_regression: ok');

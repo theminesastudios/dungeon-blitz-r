@@ -20,7 +20,7 @@ import { clearOpenBossScene, getOpenBossScene, isRoomBossEntity, markRoomBossEnt
 import { getBossIdentityKey, getBossIdentityKeys } from '../core/BossCopyCensus';
 import { TutorialDungeonAuthorityEntity, TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { MovementAuthority } from '../core/MovementAuthority';
-import { inheritGroundedSample, noteGroundedSample } from '../core/GroundedPosition';
+import { discardForeignGroundedSample, inheritGroundedSample, noteGroundedSample } from '../core/GroundedPosition';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
@@ -3601,6 +3601,47 @@ export class EntityHandler {
      * absolute position replaces it -- for a standing packet through noteGroundedSample right
      * after this, and for an airborne one by leaving no sample at all rather than a wrong one.
      */
+    /**
+     * File the client's own absolute position as the saved coordinate for this level.
+     *
+     * Only ever called with a standing full update, which is the one packet that carries a
+     * position the server did not compute for itself. Both records move together for the same
+     * reason RegionPositionPersistence keeps them in step: CurrentLevel is what the spawn path
+     * reads, LastRegionPosition is what the login restore reads, and a disagreement between
+     * them is a coordinate from the wrong visit.
+     */
+    private static recordAbsoluteGroundedPosition(
+        client: Client,
+        levelName: string,
+        absoluteX: number,
+        absoluteY: number
+    ): void {
+        const character = client.character;
+        if (!character) {
+            return;
+        }
+
+        const x = Math.round(Number(absoluteX));
+        const y = Math.round(Number(absoluteY));
+        if (!Number.isFinite(x) || !Number.isFinite(y)) {
+            return;
+        }
+
+        character.CurrentLevel = { name: levelName, x, y };
+        if (!LevelConfig.isDungeonLevel(levelName)) {
+            // Dungeons are excluded here exactly as they are in RegionPositionPersistence:
+            // recording one would overwrite the town coordinate the player has to return to.
+            character.LastRegionPosition = {
+                levelName,
+                x,
+                y,
+                timestamp: Date.now(),
+                characterId: Number(character.id ?? character.characterId ?? 0) || 0,
+                userId: Number(client.userId ?? character.userId ?? 0) || 0
+            };
+        }
+    }
+
     private static discardDriftedGroundedSample(
         client: Client,
         props: any,
@@ -3994,11 +4035,34 @@ export class EntityHandler {
                 ?? client.entities.get(rawEntityId)
                 ?? existingLevelMap?.get(entityId);
             inheritGroundedSample(props, previousEntity);
+            // A sample the entity carried in from the level it just left is not floor here.
+            // The inherit above is what makes it survive the level change at all, so this is
+            // the one place that can tell the difference.
+            discardForeignGroundedSample(props, levelName);
             EntityHandler.discardDriftedGroundedSample(client, props, previousEntity, posX, posY);
             // The client sends its true absolute position here, so a standing full update is
             // the most trustworthy floor sample there is -- including the one that arrives on
             // spawn, which is what gives a player who leaves immediately a point to return to.
-            noteGroundedSample(props, posX, posY, bJumping || bDropping);
+            const standing = !bJumping && !bDropping;
+            noteGroundedSample(props, posX, posY, !standing, levelName);
+
+            // ...and it is the only packet that can correct a saved coordinate without the
+            // player having to move first.
+            //
+            // The saved position is otherwise written only from 0x07, whose deltas are summed
+            // onto whatever the server believed the spawn point was. When the client rejected
+            // that belief -- snapping the body up to 160px onto floor, or letting it fall
+            // because there was no floor within the snap window -- it corrects itself
+            // silently, with no delta to tell the server. Every later sample then inherits
+            // that offset, gets saved, and is replayed as the next spawn point, which is how a
+            // CraftTown record reached y=15 with the floor at 1460.
+            //
+            // Writing the absolute position here closes that loop: however the client resolved
+            // the spawn, the first standing full update afterwards files where the body
+            // actually ended up, so the error cannot compound across entries.
+            if (ownsThisPlayerPacket && standing && client.character && LevelConfig.isSaveAllowedLevel(levelName)) {
+                EntityHandler.recordAbsoluteGroundedPosition(client, levelName, posX, posY);
+            }
         }
 
         if (!isPlayer) {

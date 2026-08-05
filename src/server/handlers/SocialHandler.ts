@@ -1104,7 +1104,9 @@ export class SocialHandler {
         // Where the target was last standing, never where they are this instant: arriving on
         // a friend who is mid-jump would drop the traveller in from that height.
         const entity = target.entities.get(target.clientEntID);
-        const grounded = LevelHandler.resolveGroundedAnchorPosition(entity);
+        // ...and never a point they were standing on in a level they have since left, which is
+        // what the entity is still carrying for the moment after a transfer.
+        const grounded = LevelHandler.resolveGroundedAnchorPosition(entity, targetLevel);
         if (grounded) {
             x = grounded.x;
             y = grounded.y;

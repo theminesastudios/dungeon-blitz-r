@@ -14,6 +14,18 @@
  *   full update             -> jumping  / dropping  (no airborne bit at all)
  * Both spellings are treated as authoritative here so a full update can never launder
  * an airborne position into a grounded one.
+ *
+ * A sample also carries the level it was taken in, and that is not decoration. A floor
+ * point is only meaningful on the map it was measured on, and the entity object outlives
+ * the level change -- `client.currentLevel` flips to the new map while the entity still
+ * holds the old map's sample, so a save taken in that window files one level's coordinates
+ * under another level's name. That is not hypothetical: a live log has
+ *
+ *   [PositionRestore] character=Zeus level=NewbieRoad x=360 y=1460
+ *
+ * and {360, 1460} is CraftTown's authored spawn, restored into NewbieRoad, where it is
+ * nowhere near the floor. Every consumer that knows which level it is placing a body in
+ * passes that level, and a sample from anywhere else is refused.
  */
 
 export interface GroundedPoint {
@@ -29,6 +41,11 @@ interface AirborneFlags {
     dropping?: boolean;
 }
 
+/** Levels compare case-insensitively and ignoring surrounding space, as they do everywhere else. */
+function normalizeLevel(level: unknown): string {
+    return String(level ?? '').trim().toLowerCase();
+}
+
 export function isEntityAirborne(entity: any): boolean {
     if (!entity || typeof entity !== 'object') {
         return false;
@@ -39,14 +56,40 @@ export function isEntityAirborne(entity: any): boolean {
 }
 
 /**
+ * True when the entity carries a floor sample that was taken somewhere other than
+ * `expectedLevel`. An untagged sample is not foreign -- it predates the tag and is treated
+ * as belonging wherever it is read, which is how the sample behaved before.
+ */
+function isForeignSample(entity: any, expectedLevel?: string | null): boolean {
+    if (!expectedLevel) {
+        return false;
+    }
+    const sampleLevel = normalizeLevel(entity.groundedLevel);
+    if (!sampleLevel) {
+        return false;
+    }
+    return sampleLevel !== normalizeLevel(expectedLevel);
+}
+
+/**
  * The last position the entity was known to be standing on, or null when there is none.
  *
  * The stored sample always wins over the live position: the live one is only usable as a
  * fallback for an entity that has not moved since it arrived, and only while it is not
  * airborne.
+ *
+ * `expectedLevel` is the level the caller is about to place the body in. Passing it is what
+ * stops another map's floor point being replayed here; a caller that genuinely does not know
+ * the level omits it and gets the old behaviour.
  */
-export function resolveGroundedPosition(entity: any): GroundedPoint | null {
+export function resolveGroundedPosition(entity: any, expectedLevel?: string | null): GroundedPoint | null {
     if (!entity || typeof entity !== 'object') {
+        return null;
+    }
+
+    if (isForeignSample(entity, expectedLevel)) {
+        // The live position is no better -- it is the same coordinate space as the sample --
+        // so there is nothing to fall back to and the caller has to use an authored spawn.
         return null;
     }
 
@@ -74,8 +117,19 @@ export function resolveGroundedPosition(entity: any): GroundedPoint | null {
  *
  * An airborne packet leaves the previous sample alone -- that is the whole point of
  * keeping one -- and never clears it.
+ *
+ * `level` is the map the coordinates were measured on. Omitting it leaves whatever tag the
+ * sample already had, which would be a lie about a new coordinate, so the tag is cleared
+ * instead: an untagged sample is treated as belonging wherever it is read, and that is the
+ * behaviour these coordinates had before the tag existed.
  */
-export function noteGroundedSample(entity: any, x: number, y: number, airborne: boolean): void {
+export function noteGroundedSample(
+    entity: any,
+    x: number,
+    y: number,
+    airborne: boolean,
+    level?: string | null,
+): void {
     if (!entity || typeof entity !== 'object' || airborne) {
         return;
     }
@@ -88,6 +142,11 @@ export function noteGroundedSample(entity: any, x: number, y: number, airborne: 
 
     entity.groundedX = numericX;
     entity.groundedY = numericY;
+    if (level) {
+        entity.groundedLevel = String(level);
+    } else {
+        delete entity.groundedLevel;
+    }
 }
 
 /**
@@ -96,6 +155,9 @@ export function noteGroundedSample(entity: any, x: number, y: number, airborne: 
  * A self full update rebuilds the player's entity from scratch, so without this the sample
  * every other path depends on is silently discarded on arrival in a level and again on
  * every gear or state refresh.
+ *
+ * The level tag rides along, because a sample that arrives in the new object untagged would
+ * be indistinguishable from one measured here.
  */
 export function inheritGroundedSample(target: any, previous: any): void {
     if (!target || typeof target !== 'object' || !previous || typeof previous !== 'object') {
@@ -107,5 +169,25 @@ export function inheritGroundedSample(target: any, previous: any): void {
     if (Number.isFinite(groundedX) && Number.isFinite(groundedY)) {
         target.groundedX = groundedX;
         target.groundedY = groundedY;
+        if (previous.groundedLevel) {
+            target.groundedLevel = String(previous.groundedLevel);
+        }
     }
+}
+
+/**
+ * Drop a floor sample that was taken on a different map.
+ *
+ * Called when a body arrives somewhere: whatever it was standing on before is not floor
+ * here, and keeping it would let the old map's coordinates be saved under this map's name.
+ */
+export function discardForeignGroundedSample(entity: any, currentLevel: string | null | undefined): boolean {
+    if (!entity || typeof entity !== 'object' || !isForeignSample(entity, currentLevel)) {
+        return false;
+    }
+
+    delete entity.groundedX;
+    delete entity.groundedY;
+    delete entity.groundedLevel;
+    return true;
 }
