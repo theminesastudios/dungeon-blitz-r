@@ -14,6 +14,7 @@ import { BitReader } from '../network/protocol/bitReader';
 import { getClientLevelScope } from '../core/LevelScope';
 import { RewardHandler } from './RewardHandler';
 import { MissionHandler } from './MissionHandler';
+import { HomeStatueHandler } from './HomeStatueHandler';
 
 type MissionEntry = Record<string, any>;
 type ResolvedNpc = Record<string, any>;
@@ -87,6 +88,12 @@ export class NpcHandler {
 
         const br = new BitReader(data);
         const npcId = br.readMethod9();
+
+        // Keep garden statues ride the same interact packet but have no dialogue of their own.
+        if (HomeStatueHandler.handleStatueInteract(client, npcId)) {
+            return;
+        }
+
         const levelName = String(client.currentLevel || client.character.CurrentLevel?.name || '');
         const npc = NpcHandler.findNpc(client, levelName, npcId);
 
