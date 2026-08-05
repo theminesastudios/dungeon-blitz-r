@@ -1101,10 +1101,13 @@ export class SocialHandler {
         let y = 0;
         let hasCoord = false;
 
+        // Where the target was last standing, never where they are this instant: arriving on
+        // a friend who is mid-jump would drop the traveller in from that height.
         const entity = target.entities.get(target.clientEntID);
-        if (entity && Number.isFinite(entity.x) && Number.isFinite(entity.y)) {
-            x = Math.round(Number(entity.x));
-            y = Math.round(Number(entity.y));
+        const grounded = LevelHandler.resolveGroundedAnchorPosition(entity);
+        if (grounded) {
+            x = grounded.x;
+            y = grounded.y;
             hasCoord = true;
         } else {
             const savedLevel = target.character?.CurrentLevel;

@@ -2,7 +2,7 @@
 <EggTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<EggType EggName="---Template---">
 		<EggID>0</EggID>
-		<DisplayName>Yumurta Ad</DisplayName>
+		<DisplayName>EggName</DisplayName>
 		<ClassType>ClassType</ClassType>
 		<Color>Color</Color>
 		<Description>Awesome Egg Lore</Description>
@@ -11,7 +11,7 @@
 	</EggType>
 	<EggType EggName="GenericBrown">
 		<EggID>1</EggID>
-		<DisplayName>Speckled Beyaz Yumurta</DisplayName>
+		<DisplayName>Speckled White Egg</DisplayName>
 		<ClassType>Generic</ClassType>
 		<Color>Brown</Color>
 		<Description>I found this one in my aunt's chicken farm.</Description>
@@ -20,7 +20,7 @@
 	</EggType>
 	<EggType EggName="CommonBrown">
 		<EggID>2</EggID>
-		<DisplayName>Elaborate Beyaz Yumurta</DisplayName>
+		<DisplayName>Elaborate White Egg</DisplayName>
 		<ClassType>Common</ClassType>
 		<Color>Brown</Color>
 		<Description>Found this one in some old goblin caves.</Description>
@@ -29,7 +29,7 @@
 	</EggType>
 	<EggType EggName="OrdinaryBrown">
 		<EggID>3</EggID>
-		<DisplayName>Striped Beyaz Yumurta</DisplayName>
+		<DisplayName>Striped White Egg</DisplayName>
 		<ClassType>Ordinary</ClassType>
 		<Color>Brown</Color>
 		<Description>This was stuck up in the trees when I came aross it.</Description>
@@ -38,7 +38,7 @@
 	</EggType>
 	<EggType EggName="PlainBrown">
 		<EggID>4</EggID>
-		<DisplayName>Shiny Beyaz Yumurta</DisplayName>
+		<DisplayName>Shiny White Egg</DisplayName>
 		<ClassType>Plain</ClassType>
 		<Color>Brown</Color>
 		<Description>Picked this egg up while walking the beaches, looking for driftwood.</Description>
@@ -47,7 +47,7 @@
 	</EggType>
 	<EggType EggName="GenericRed">
 		<EggID>5</EggID>
-		<DisplayName>Speckled Kirmizi Yumurta</DisplayName>
+		<DisplayName>Speckled Red Egg</DisplayName>
 		<ClassType>Generic</ClassType>
 		<Color>Red</Color>
 		<Description>Found a whole nest of these in an abandoned forge in the mountains.</Description>
@@ -56,7 +56,7 @@
 	</EggType>
 	<EggType EggName="GenericYellow">
 		<EggID>6</EggID>
-		<DisplayName>Speckled Sari Yumurta</DisplayName>
+		<DisplayName>Speckled Yellow Egg</DisplayName>
 		<ClassType>Generic</ClassType>
 		<Color>Yellow</Color>
 		<Description>Found this one with the divining rod my uncle left me.</Description>
@@ -65,7 +65,7 @@
 	</EggType>
 	<EggType EggName="GenericBlue">
 		<EggID>7</EggID>
-		<DisplayName>Speckled Mavi Yumurta</DisplayName>
+		<DisplayName>Speckled Blue Egg</DisplayName>
 		<ClassType>Generic</ClassType>
 		<Color>Blue</Color>
 		<Description>I have to line the nest with hemlock to hatch this one.</Description>
@@ -74,7 +74,7 @@
 	</EggType>
 	<EggType EggName="GenericGreen">
 		<EggID>8</EggID>
-		<DisplayName>Speckled Yesil Yumurta</DisplayName>
+		<DisplayName>Speckled Green Egg</DisplayName>
 		<ClassType>Generic</ClassType>
 		<Color>Green</Color>
 		<Description>You want to give it a good sniff every day to make sure it hasn't gone rotten.</Description>
@@ -83,7 +83,7 @@
 	</EggType>
 	<EggType EggName="CommonRed">
 		<EggID>9</EggID>
-		<DisplayName>Elaborate Kirmizi Yumurta</DisplayName>
+		<DisplayName>Elaborate Red Egg</DisplayName>
 		<ClassType>Common</ClassType>
 		<Color>Red</Color>
 		<Description>A blacksmith from back West traded these to me for some candied dates.</Description>
@@ -92,7 +92,7 @@
 	</EggType>
 	<EggType EggName="CommonYellow">
 		<EggID>10</EggID>
-		<DisplayName>Elaborate Sari Yumurta</DisplayName>
+		<DisplayName>Elaborate Yellow Egg</DisplayName>
 		<ClassType>Common</ClassType>
 		<Color>Yellow</Color>
 		<Description>This was buried deep with some pirate booty.</Description>
@@ -101,7 +101,7 @@
 	</EggType>
 	<EggType EggName="CommonBlue">
 		<EggID>11</EggID>
-		<DisplayName>Elaborate Mavi Yumurta</DisplayName>
+		<DisplayName>Elaborate Blue Egg</DisplayName>
 		<ClassType>Common</ClassType>
 		<Color>Blue</Color>
 		<Description>My cousin ate one of these once. Broke all his front teeth.</Description>
@@ -110,7 +110,7 @@
 	</EggType>
 	<EggType EggName="CommonGreen">
 		<EggID>12</EggID>
-		<DisplayName>Elaborate Yesil Yumurta</DisplayName>
+		<DisplayName>Elaborate Green Egg</DisplayName>
 		<ClassType>Common</ClassType>
 		<Color>Green</Color>
 		<Description>This one needs to be rotated every time the wind blows from the East.</Description>
@@ -119,7 +119,7 @@
 	</EggType>
 	<EggType EggName="OrdinaryRed">
 		<EggID>13</EggID>
-		<DisplayName>Striped Kirmizi Yumurta</DisplayName>
+		<DisplayName>Striped Red Egg</DisplayName>
 		<ClassType>Ordinary</ClassType>
 		<Color>Red</Color>
 		<Description>Keep these in a nice warm place. But not TOO hot or it will cook.</Description>
@@ -128,7 +128,7 @@
 	</EggType>
 	<EggType EggName="OrdinaryYellow">
 		<EggID>14</EggID>
-		<DisplayName>Striped Sari Yumurta</DisplayName>
+		<DisplayName>Striped Yellow Egg</DisplayName>
 		<ClassType>Ordinary</ClassType>
 		<Color>Yellow</Color>
 		<Description>No telling exactly how valuable the beastie in here will be.</Description>
@@ -137,7 +137,7 @@
 	</EggType>
 	<EggType EggName="OrdinaryBlue">
 		<EggID>15</EggID>
-		<DisplayName>Striped Mavi Yumurta</DisplayName>
+		<DisplayName>Striped Blue Egg</DisplayName>
 		<ClassType>Ordinary</ClassType>
 		<Color>Blue</Color>
 		<Description>Did you know you can stand this egg upright during the equinox?</Description>
@@ -146,7 +146,7 @@
 	</EggType>
 	<EggType EggName="OrdinaryGreen">
 		<EggID>16</EggID>
-		<DisplayName>Striped Yesil Yumurta</DisplayName>
+		<DisplayName>Striped Green Egg</DisplayName>
 		<ClassType>Ordinary</ClassType>
 		<Color>Green</Color>
 		<Description>These need an hour of sunlight every day or they come out depressed.</Description>
@@ -155,7 +155,7 @@
 	</EggType>
 	<EggType EggName="PlainRed">
 		<EggID>17</EggID>
-		<DisplayName>Shiny Kirmizi Yumurta</DisplayName>
+		<DisplayName>Shiny Red Egg</DisplayName>
 		<ClassType>Plain</ClassType>
 		<Color>Red</Color>
 		<Description>These have very hard shells, so you might need a hammer to hatch it.</Description>
@@ -164,7 +164,7 @@
 	</EggType>
 	<EggType EggName="PlainYellow">
 		<EggID>18</EggID>
-		<DisplayName>Shiny Sari Yumurta</DisplayName>
+		<DisplayName>Shiny Yellow Egg</DisplayName>
 		<ClassType>Plain</ClassType>
 		<Color>Yellow</Color>
 		<Description>Handle it with special care, or you'll make it temperamental.</Description>
@@ -173,7 +173,7 @@
 	</EggType>
 	<EggType EggName="PlainBlue">
 		<EggID>19</EggID>
-		<DisplayName>Shiny Mavi Yumurta</DisplayName>
+		<DisplayName>Shiny Blue Egg</DisplayName>
 		<ClassType>Plain</ClassType>
 		<Color>Blue</Color>
 		<Description>These need to be polished with fine grain sandpaper or they come out sullen.</Description>
@@ -182,7 +182,7 @@
 	</EggType>
 	<EggType EggName="PlainGreen">
 		<EggID>20</EggID>
-		<DisplayName>Shiny Yesil Yumurta</DisplayName>
+		<DisplayName>Shiny Green Egg</DisplayName>
 		<ClassType>Plain</ClassType>
 		<Color>Green</Color>
 		<Description>These like it if you sing a sweet song at sunset while they're waiting to hatch.</Description>
@@ -191,7 +191,7 @@
 	</EggType>
 	<EggType EggName="DragonRed">
 		<EggID>21</EggID>
-		<DisplayName>Yakut Ejderha Yumurta</DisplayName>
+		<DisplayName>Ruby Draconic Egg</DisplayName>
 		<ClassType>Dragon</ClassType>
 		<Color>Red</Color>
 		<Description>Draconic eggs like this are almost impossible to find outside the Sleeping Lands.</Description>
@@ -200,7 +200,7 @@
 	</EggType>
 	<EggType EggName="DragonYellow">
 		<EggID>22</EggID>
-		<DisplayName>Amber Ejderha Yumurta</DisplayName>
+		<DisplayName>Amber Draconic Egg</DisplayName>
 		<ClassType>Dragon</ClassType>
 		<Color>Yellow</Color>
 		<Description>This beauty comes all the way from the top of Stormshard Mountains.</Description>
@@ -209,7 +209,7 @@
 	</EggType>
 	<EggType EggName="DragonBlue">
 		<EggID>23</EggID>
-		<DisplayName>Saphire Ejderha Yumurta</DisplayName>
+		<DisplayName>Saphire Draconic Egg</DisplayName>
 		<ClassType>Dragon</ClassType>
 		<Color>Blue</Color>
 		<Description>Almost lost my left leg snatching this prize draconic egg from its hidey-hole.</Description>
@@ -218,7 +218,7 @@
 	</EggType>
 	<EggType EggName="DragonGreen">
 		<EggID>24</EggID>
-		<DisplayName>Zumrut Ejderha Yumurta</DisplayName>
+		<DisplayName>Emerald Draconic Egg</DisplayName>
 		<ClassType>Dragon</ClassType>
 		<Color>Green</Color>
 		<Description>This one was sunk deep in Black Rose Mire, where the dragons thought I couldn't find it.</Description>
@@ -227,7 +227,7 @@
 	</EggType>
 	<EggType EggName="BirdRed">
 		<EggID>25</EggID>
-		<DisplayName>Ruddy Avian Yumurta</DisplayName>
+		<DisplayName>Ruddy Avian Egg</DisplayName>
 		<ClassType>Bird</ClassType>
 		<Color>Red</Color>
 		<Description>This avian beauty come from a species everyone else thought was extinct.</Description>
@@ -236,7 +236,7 @@
 	</EggType>
 	<EggType EggName="BirdYellow">
 		<EggID>26</EggID>
-		<DisplayName>Saffron Avian Yumurta</DisplayName>
+		<DisplayName>Saffron Avian Egg</DisplayName>
 		<ClassType>Bird</ClassType>
 		<Color>Yellow</Color>
 		<Description>Can you believe that In Valhaven, they cooked these rare birds for the Emperor?</Description>
@@ -245,7 +245,7 @@
 	</EggType>
 	<EggType EggName="BirdBlue">
 		<EggID>27</EggID>
-		<DisplayName>Kraliyet Avian Yumurta</DisplayName>
+		<DisplayName>Royal Avian Egg</DisplayName>
 		<ClassType>Bird</ClassType>
 		<Color>Blue</Color>
 		<Description>The feathers of these birds used to crown the ancient queens of Ellyria.</Description>
@@ -254,7 +254,7 @@
 	</EggType>
 	<EggType EggName="BirdGreen">
 		<EggID>28</EggID>
-		<DisplayName>Verdant Avian Yumurta</DisplayName>
+		<DisplayName>Verdant Avian Egg</DisplayName>
 		<ClassType>Bird</ClassType>
 		<Color>Green</Color>
 		<Description>Finding one of these beautiful eggs is said to augur a lucky new year.</Description>
@@ -263,7 +263,7 @@
 	</EggType>
 	<EggType EggName="AncientRed">
 		<EggID>29</EggID>
-		<DisplayName>Bloodshot Antediluvian Yumurta</DisplayName>
+		<DisplayName>Bloodshot Antediluvian Egg</DisplayName>
 		<ClassType>Ancient</ClassType>
 		<Color>Red</Color>
 		<Description>You need to keep this rare egg as hot as possible, or it will go cold and perish.</Description>
@@ -272,7 +272,7 @@
 	</EggType>
 	<EggType EggName="AncientYellow">
 		<EggID>30</EggID>
-		<DisplayName>Xanthous Antediluvian Yumurta</DisplayName>
+		<DisplayName>Xanthous Antediluvian Egg</DisplayName>
 		<ClassType>Ancient</ClassType>
 		<Color>Yellow</Color>
 		<Description>This egg dates back to the First Empire, over a thousand years ago.</Description>
@@ -281,7 +281,7 @@
 	</EggType>
 	<EggType EggName="AncientBlue">
 		<EggID>31</EggID>
-		<DisplayName>Azure Antediluvian Yumurta</DisplayName>
+		<DisplayName>Azure Antediluvian Egg</DisplayName>
 		<ClassType>Ancient</ClassType>
 		<Color>Blue</Color>
 		<Description>Even I didn't believe these blue beauties were anything more than folk legends.</Description>
@@ -290,7 +290,7 @@
 	</EggType>
 	<EggType EggName="AncientGreen">
 		<EggID>32</EggID>
-		<DisplayName>Verdigris Antediluvian Yumurta</DisplayName>
+		<DisplayName>Verdigris Antediluvian Egg</DisplayName>
 		<ClassType>Ancient</ClassType>
 		<Color>Green</Color>
 		<Description>The rest of the world thinks these don't exist. I won't tell you where I got it.</Description>
@@ -299,7 +299,7 @@
 	</EggType>
 	<EggType EggName="GhostRed">
 		<EggID>33</EggID>
-		<DisplayName>Sanguine Netherworld Yumurta</DisplayName>
+		<DisplayName>Sanguine Netherworld Egg</DisplayName>
 		<ClassType>Ghost</ClassType>
 		<Color>Red</Color>
 		<Description>Of course eggs have ghosts! Well, these eggs do anyway. Angry, angry ghosts...</Description>
@@ -308,7 +308,7 @@
 	</EggType>
 	<EggType EggName="GhostYellow">
 		<EggID>34</EggID>
-		<DisplayName>Tawny Netherworld Yumurta</DisplayName>
+		<DisplayName>Tawny Netherworld Egg</DisplayName>
 		<ClassType>Ghost</ClassType>
 		<Color>Yellow</Color>
 		<Description>You can only get these beauties during a Harvest Moon in accursed graveyards</Description>
@@ -317,7 +317,7 @@
 	</EggType>
 	<EggType EggName="GhostBlue">
 		<EggID>35</EggID>
-		<DisplayName>Cerulean Netherworld Yumurta</DisplayName>
+		<DisplayName>Cerulean Netherworld Egg</DisplayName>
 		<ClassType>Ghost</ClassType>
 		<Color>Blue</Color>
 		<Description>These were buried with warlocks to serve them in the afterlife.</Description>
@@ -326,7 +326,7 @@
 	</EggType>
 	<EggType EggName="GhostGreen">
 		<EggID>36</EggID>
-		<DisplayName>Sage Netherworld Yumurta</DisplayName>
+		<DisplayName>Sage Netherworld Egg</DisplayName>
 		<ClassType>Ghost</ClassType>
 		<Color>Green</Color>
 		<Description>When a dying god has a final wish, it's stored in one of these eggs.</Description>

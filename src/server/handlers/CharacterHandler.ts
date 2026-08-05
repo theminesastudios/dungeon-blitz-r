@@ -42,6 +42,7 @@ import {
     normalizeLevelInstanceId
 } from '../core/LevelScope';
 import { getCharacterRuntimeLevel, getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
+import { RegionPositionPersistence } from '../core/RegionPositionPersistence';
 
 const db = new JsonAdapter();
 
@@ -703,10 +704,13 @@ export class CharacterHandler {
             const currentPrimary = Number(colors[0] ?? 0);
             const currentSecondary = Number(colors[1] ?? 0);
 
-            if (nextPrimary > 0 && nextPrimary !== currentPrimary) {
+            // A dye id of 0 is "back to undyed", which the Default Dyes button stages and
+            // charges for like any other change. Counting only `next > 0` would let the
+            // client show a price the server never collects, and the two golds would drift.
+            if (nextPrimary !== currentPrimary) {
                 changedUnits += 1;
             }
-            if (nextSecondary > 0 && nextSecondary !== currentSecondary) {
+            if (nextSecondary !== currentSecondary) {
                 changedUnits += 1;
             }
         }
@@ -983,6 +987,14 @@ export class CharacterHandler {
         CharacterHandler.repairUnsafeSavedDungeonLocation(char);
         const storedDungeonSnapshot = getStoredDungeonSnapshot(char);
 
+        // Put the character back where they last stood in the open world. This runs after the
+        // dungeon repair and only when there is no dungeon snapshot to honour, so a player who
+        // logged out mid-dungeon still resumes by the dungeon's own rules; it only covers the
+        // ordinary case, which is the one that was dropping people at a stale coordinate.
+        if (!storedDungeonSnapshot) {
+            RegionPositionPersistence.restore(char);
+        }
+
         // Determine Level
         const currentLevelName = storedDungeonSnapshot?.levelName || char.CurrentLevel?.name || "NewbieRoad";
         const previousLevelName =
@@ -1031,14 +1043,18 @@ export class CharacterHandler {
 
                      // Found a party member in the same dungeon — reuse their level scope
                      levelInstanceId = normalizeLevelInstanceId(other.levelInstanceId) || createDungeonInstanceId(token);
-                     // Only ever beside a standing anchor. Their live entity mid-jump is a
+                     // Only ever onto a standing anchor. Their live entity mid-jump is a
                      // point in open air, and spawning onto it drops the joiner; when the
                      // anchor has no grounded sample yet the level's own spawn marker wins.
+                     //
+                     // Onto, not beside: the server has no collision, so an offset is a
+                     // guess about floor it cannot check, and next to a ledge or a pit that
+                     // guess drops the joiner through the map.
                      const otherEntity = other.clientEntID > 0 ? other.entities?.get(other.clientEntID) : null;
                      const anchorGround = LevelHandler.resolveGroundedAnchorPosition(otherEntity);
                      if (anchorGround) {
                          spawn = {
-                             x: anchorGround.x + 100,
+                             x: anchorGround.x,
                              y: anchorGround.y,
                              hasCoord: true
                          };

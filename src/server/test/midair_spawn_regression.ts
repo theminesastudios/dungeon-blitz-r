@@ -8,6 +8,8 @@ import { LevelConfig } from '../core/LevelConfig';
 import { LevelHandler } from '../handlers/LevelHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { getLevelScopeKey } from '../core/LevelScope';
+import { inheritGroundedSample, isEntityAirborne, noteGroundedSample } from '../core/GroundedPosition';
+import { RegionPositionPersistence } from '../core/RegionPositionPersistence';
 
 /*
  * A player must never be placed on a point that has no floor under it.
@@ -193,6 +195,112 @@ function testUnauthoredSpawnYieldsNoCoordinate(): void {
     assert.deepEqual({ x: kept.x, y: kept.y, hasCoord: kept.hasCoord }, { x: 12_777, y: 880, hasCoord: true });
 }
 
+// The full-update packet spells the airborne state `jumping`/`dropping`, so a check that
+// only knew the 0x07 spelling read a mid-jump body as standing.
+function testBothPacketSpellingsCountAsAirborne(): void {
+    assert.equal(isEntityAirborne({ airborne: true }), true);
+    assert.equal(isEntityAirborne({ bJumping: true }), true);
+    assert.equal(isEntityAirborne({ bDropping: true }), true);
+    assert.equal(isEntityAirborne({ jumping: true }), true, 'the full-update spelling counts');
+    assert.equal(isEntityAirborne({ dropping: true }), true, 'the full-update spelling counts');
+    assert.equal(isEntityAirborne({ x: 10, y: 20 }), false);
+
+    assert.equal(
+        LevelHandler.resolveGroundedAnchorPosition({ x: 100, y: -848, jumping: true }),
+        null,
+        'a mid-jump full update is not a place to put a body'
+    );
+}
+
+// A full update rebuilds the player entity from scratch; the floor sample has to survive it.
+function testFullUpdateKeepsTheFloorSample(): void {
+    const previous = { x: 900, y: -200, groundedX: 640, groundedY: 880 };
+
+    const rebuiltMidJump: any = { x: 900, y: -200, jumping: true };
+    inheritGroundedSample(rebuiltMidJump, previous);
+    noteGroundedSample(rebuiltMidJump, 900, -200, true);
+    assert.deepEqual(
+        LevelHandler.resolveGroundedAnchorPosition(rebuiltMidJump),
+        { x: 640, y: 880 },
+        'the inherited sample must survive a full update sent in mid-air'
+    );
+
+    const rebuiltStanding: any = { x: 1_200, y: 880 };
+    inheritGroundedSample(rebuiltStanding, previous);
+    noteGroundedSample(rebuiltStanding, 1_200, 880, false);
+    assert.deepEqual(
+        LevelHandler.resolveGroundedAnchorPosition(rebuiltStanding),
+        { x: 1_200, y: 880 },
+        'a standing full update carries the client’s own absolute position and replaces the sample'
+    );
+}
+
+// Leaving a level mid-jump must not file the airborne point as the way back in.
+function testTransferSourcePositionRefusesOpenAir(): void {
+    const character: any = { CurrentLevel: { name: LEVEL, x: 10_470, y: GROUND_Y } };
+    const syncSourcePosition = (LevelHandler as any).syncTransferSourcePositionFromLiveEntity.bind(LevelHandler);
+
+    syncSourcePosition(character, LEVEL, { x: 11_000, y: -848, jumping: true });
+    assert.deepEqual(
+        character.CurrentLevel,
+        { name: LEVEL, x: 10_470, y: GROUND_Y },
+        'taking a door mid-jump keeps the last grounded return point'
+    );
+
+    syncSourcePosition(character, LEVEL, { x: 11_000, y: -848, airborne: true, groundedX: 11_000, groundedY: GROUND_Y });
+    assert.deepEqual(
+        character.CurrentLevel,
+        { name: LEVEL, x: 11_000, y: GROUND_Y },
+        'the floor sample under a falling body is a valid return point'
+    );
+
+    syncSourcePosition(character, LEVEL, { x: 12_000, y: GROUND_Y });
+    assert.deepEqual(character.CurrentLevel, { name: LEVEL, x: 12_000, y: GROUND_Y });
+}
+
+// The record replayed on the next login is the other way a player arrives in mid-air.
+function testDisconnectSaveRefusesOpenAir(): void {
+    const client: any = {
+        userId: 77_003,
+        currentLevel: LEVEL,
+        character: {
+            name: 'Faller',
+            id: 77_003,
+            CurrentLevel: { name: LEVEL, x: 10_430, y: GROUND_Y }
+        }
+    };
+
+    RegionPositionPersistence.forget(client);
+    assert.equal(
+        RegionPositionPersistence.record(client, { x: 9_000, y: -2_129, airborne: true }, 'disconnect'),
+        true,
+        'the level still has to be recorded'
+    );
+    assert.deepEqual(
+        { x: client.character.LastRegionPosition.x, y: client.character.LastRegionPosition.y },
+        { x: 10_430, y: GROUND_Y },
+        'a disconnect in mid-air saves the last standing point, not the fall'
+    );
+
+    RegionPositionPersistence.forget(client);
+    RegionPositionPersistence.record(client, { x: 9_000, y: -2_129, airborne: true, groundedX: 9_000, groundedY: 700 }, 'disconnect');
+    assert.deepEqual(
+        { x: client.character.LastRegionPosition.x, y: client.character.LastRegionPosition.y },
+        { x: 9_000, y: 700 },
+        'the floor sample wins over both the live position and the older save'
+    );
+
+    // A saved record belonging to a different level is not a usable fallback.
+    RegionPositionPersistence.forget(client);
+    client.character.CurrentLevel = { name: 'BridgeTown', x: 3_944, y: 838 };
+    delete client.character.LastRegionPosition;
+    assert.equal(
+        RegionPositionPersistence.record(client, { x: 9_000, y: -2_129, airborne: true }, 'disconnect'),
+        false,
+        'another level’s coordinates must never be filed under this one'
+    );
+}
+
 function main(): void {
     const dataDir = path.resolve(__dirname, '../data');
     LevelConfig.load(dataDir);
@@ -205,6 +313,10 @@ function main(): void {
         testAnchorPositionRefusesOpenAir();
         testAirborneArrivalNeverSavesOpenAir();
         testUnauthoredSpawnYieldsNoCoordinate();
+        testBothPacketSpellingsCountAsAirborne();
+        testFullUpdateKeepsTheFloorSample();
+        testTransferSourcePositionRefusesOpenAir();
+        testDisconnectSaveRefusesOpenAir();
         console.log('midair_spawn_regression: ok');
     } finally {
         GlobalState.levelEntities.clear();

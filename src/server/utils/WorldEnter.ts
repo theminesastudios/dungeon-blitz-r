@@ -642,7 +642,8 @@ export class WorldEnter {
             }
 
             const gearSets = WorldEnter.asArray(character.gearSets);
-            bb.writeMethod6(gearSets.length, 3);
+            // GearType.const_348 in the patched client: 4 bits, so up to 10 gear sets.
+            bb.writeMethod6(gearSets.length, 4);
             for (const rawGearSet of gearSets) {
                 const gearSet = WorldEnter.asRecord(rawGearSet);
                 const slots = WorldEnter.asArray(gearSet.slots).slice(0, 7);

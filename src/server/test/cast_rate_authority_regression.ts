@@ -26,6 +26,9 @@ const CLEAVE = 28;
 const FURY = 284;
 const PAIN_EATER = 289;
 const SHIELD_FLURRY = 329;
+const END_SENTINEL_FORM = 448;
+const SENTINEL_FORM_1 = 455;
+const SENTINEL_FORM_10 = 464;
 
 function createClient(): any {
     return {
@@ -181,6 +184,59 @@ function testRefusedCastAlsoDropsItsHits(): void {
     );
 }
 
+/*
+ * Sentinel Form is the exception to "the cooldown starts at the cast": the form has no
+ * Duration and outlives its own 30s cooldown, so the lockout is re-stamped when the form ends.
+ * A client that skips its half of that gets a tank stance with no downtime at all, which is
+ * why the server keeps its own copy.
+ *
+ *   447 SentinelForm    448 EndSentinelForm    455-464 SentinelForm1..10
+ */
+function testLeavingSentinelFormRestartsItsCooldown(): void {
+    const client = createClient();
+    const now = 1_000_000;
+
+    assert.ok(CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, now), 'entering the form must be allowed');
+
+    // A form long enough to outlast its own cast-time cooldown -- the case that broke.
+    const exitedAt = now + 120_000;
+    assert.ok(CastRateAuthority.chargeCast(client, END_SENTINEL_FORM, exitedAt), 'cancelling must always be allowed');
+
+    assert.equal(
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 1_000),
+        false,
+        're-entering the form one second after leaving it must be refused'
+    );
+    // The lockout covers every rank, because the server does not track which one is owned.
+    assert.equal(
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_1, exitedAt + 1_000),
+        false,
+        'claiming a different rank must not dodge the lockout'
+    );
+    assert.ok(
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 31_000),
+        'the form must come back once the lockout has run'
+    );
+}
+
+/*
+ * The other half: cancelling early is already inside the cast-time cooldown, and the exit
+ * stamp must not shorten it.
+ */
+function testCancellingEarlyKeepsTheLongerLockout(): void {
+    const client = createClient();
+    const now = 1_000_000;
+
+    CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, now);
+    CastRateAuthority.chargeCast(client, END_SENTINEL_FORM, now + 2_000);
+
+    assert.equal(
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, now + 3_000),
+        false,
+        'a form cancelled after two seconds must still be on cooldown'
+    );
+}
+
 function main(): void {
     assertLoaded();
     testHonestMeleeComboNeverRefused();
@@ -189,6 +245,8 @@ function main(): void {
     testSpeedhackedMeleeIsRefused();
     testSpeedhackedCooldownIsRefused();
     testRefusedCastAlsoDropsItsHits();
+    testLeavingSentinelFormRestartsItsCooldown();
+    testCancellingEarlyKeepsTheLongerLockout();
     console.log('cast_rate_authority_regression: ok');
 }
 

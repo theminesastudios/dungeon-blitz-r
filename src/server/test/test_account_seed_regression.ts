@@ -16,14 +16,14 @@ import { buildFreshCharacter, buildMaxedCharacter } from '../tools/seedTestAccou
  *
  * Almost every field in the player-data packet is self-describing (writeMethod4) or
  * 0-bit terminated, so it tolerates any size. Three length fields are not: gearSets is
- * written with 3 bits, inventoryGears with 11, learnedAbilities with 7. Overflow one and
+ * written with 4 bits, inventoryGears with 11, learnedAbilities with 7. Overflow one and
  * the count silently wraps -- the server keeps emitting entries the client never reads,
  * every later field misaligns, and the client dies somewhere unrelated. Building the real
  * packet is the only check that catches it.
  */
 
 const CLASSES = ['Mage', 'Paladin', 'Rogue'];
-const MAX_GEAR_SETS = 7;
+const MAX_GEAR_SETS = 10;
 const MAX_INVENTORY_GEARS = 2047;
 const MAX_LEARNED_ABILITIES = 127;
 
@@ -45,7 +45,7 @@ function testMaxedCharactersSerialize(): void {
         // The ceilings that corrupt the packet rather than merely being wrong.
         assert.ok(
             (character.gearSets ?? []).length <= MAX_GEAR_SETS,
-            `${className}: gearSets length is written with 3 bits`
+            `${className}: gearSets length is written with 4 bits`
         );
         assert.ok(
             character.inventoryGears.length <= MAX_INVENTORY_GEARS,

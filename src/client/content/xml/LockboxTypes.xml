@@ -2,16 +2,16 @@
 <LockboxTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<LockboxType LockboxName="---Template---">
 		<LockboxID>0</LockboxID>
-		<DisplayName>Sablon</DisplayName>
+		<DisplayName>Template</DisplayName>
 		<CustomArt>text</CustomArt>
 		<IconName>text</IconName>
 		<Droppable>false</Droppable>
 		<DroppableWeight>0</DroppableWeight>
-		<Description>What I Do</Description>
+		<Description>WhatIDo</Description>
 	</LockboxType>
 	<LockboxType LockboxName="Lockbox01">
 		<LockboxID>1</LockboxID>
-		<DisplayName>Sandik 01</DisplayName>
+		<DisplayName>Treasure Trove</DisplayName>
 		<CustomArt>a_Lockbox01art</CustomArt>
 		<IconName>a_Lockbox01icon</IconName>
 		<Droppable>true</Droppable>

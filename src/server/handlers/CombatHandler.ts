@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { Client, clearKeepTutorialTimers } from '../core/Client';
 import { DungeonCompletionConditions } from '../core/DungeonCompletionConditions';
 import { BitReader } from '../network/protocol/bitReader';
@@ -11,6 +13,8 @@ import {
 } from '../core/DungeonRunStats';
 import { LevelHandler } from './LevelHandler';
 import { EntityState, EntityTeam } from '../core/Entity';
+import { MasterClassID } from '../core/Enums';
+import { resolveClientXmlDir } from '../utils/ClientXmlDir';
 import { EntityHandler } from './EntityHandler';
 import { MissionHandler } from './MissionHandler';
 import { areClientsInSameParty, getClientCharacterKey, sharesRoomIds, shouldShareCombatView } from '../core/PartySync';
@@ -114,6 +118,36 @@ type HostileViewerHealthSnapshot = {
 };
 
 export class CombatHandler {
+
+    /**
+     * 0xCB -- the client reporting its own mana.
+     *
+     * ActivePower sends this on every cast of a power that authors FromMasterMana with a
+     * non-zero ManaCost: 247 powers do, and the Sentinel Form attacks (SFMelee, SFMeleeCombo,
+     * SFRanged) are the ones a player triggers constantly, so an unhandled 0xCB warned once
+     * per swing. The payload is a single 7-bit value -- PowerType.const_423 -- which is why
+     * the router reported it as 1 byte, and why mana never exceeds 127 in this protocol.
+     *
+     * The server has no mana simulation to reconcile this against, so this records the last
+     * reported value and nothing else. That is deliberately all it does: treating a
+     * client-sent number as authoritative is how a trusted-client exploit gets written, and
+     * the value is only useful for diagnostics until the server actually tracks mana.
+     */
+    static handleClientManaReport(client: Client, data: Buffer): void {
+        if (!client.character) {
+            return;
+        }
+
+        const br = new BitReader(data);
+        if (br.remainingBits() < CombatHandler.CLIENT_MANA_BITS) {
+            return;
+        }
+
+        const reported = Math.max(0, Math.round(Number(br.readMethod20(CombatHandler.CLIENT_MANA_BITS)) || 0));
+        client.lastReportedMana = reported;
+    }
+
+    private static readonly CLIENT_MANA_BITS = 7;
     private static readonly MAX_RELAY_POWER_HIT_DAMAGE = 4_000_000;
     private static readonly FIREBRAND_THIRD_SHOT_POWER_ID = 6144;
     private static readonly FIREBRAND_PIERCING_SHOT_POWER_ID = 6146;
@@ -4631,6 +4665,144 @@ export class CombatHandler {
         }
     }
 
+    /**
+     * Soulthieft: a Soulthief's hits carry a share of whatever the target's health pool is,
+     * so the bigger the enemy, the more each strike takes off it.
+     *
+     * This lives on the server because it cannot live anywhere else. The bonus has to read
+     * the target's max HP at the moment of the hit, and the client's damage formula has no
+     * term for that -- every buff property it understands (BleedMultiplier, BoundMultiplier,
+     * MeleeDamage and the rest) multiplies the attacker's own numbers. The server already
+     * rewrites incoming damage here for AdminRuntimeSettings.scaleDamage, so this rides the
+     * same path.
+     *
+     * The cost of that is cosmetic and worth stating: the floating combat number is computed
+     * by the attacker's client and will show the unboosted hit. The health bar is server
+     * authoritative and will drop by the real amount.
+     *
+     * Capped at the base hit, so it doubles a strike at most. Without a cap this scales with
+     * the target's health pool, which is exactly backwards for the bosses that have the
+     * largest pools -- a 1% bite out of a 500k boss would dwarf everything else a rogue does.
+     */
+    private static readonly SOULTHIEFT_MAX_HP_RATE = 0.01;
+
+    private static getSoulthieftMaxHpBonus(
+        sourceSession: Client | null,
+        targetEntity: any,
+        baseDamage: number,
+        levelScope: string
+    ): number {
+        if (
+            !sourceSession?.character ||
+            Number(sourceSession.character.MasterClass ?? 0) !== MasterClassID.Soulthief
+        ) {
+            return 0;
+        }
+
+        const damage = Math.max(0, Math.round(Number(baseDamage) || 0));
+        if (damage <= 0) {
+            return 0;
+        }
+
+        // Not entity.maxHp. A client-spawned hostile never reports its health pool -- the
+        // patched client sends damage deltas only -- so that field is empty on most of what
+        // a rogue actually swings at, and reading it directly made this passive do nothing
+        // at all outside the handful of server-authority levels. getNpcHealthState is the
+        // server's own resolver: explicit maxHp when it has one, the EntTypes-derived pool
+        // otherwise.
+        const maxHp = Math.max(0, Math.round(Number(
+            CombatHandler.getNpcHealthState(targetEntity, levelScope)?.maxHp ?? 0
+        ) || 0));
+        if (maxHp <= 0) {
+            return 0;
+        }
+
+        return Math.min(damage, Math.round(maxHp * CombatHandler.SOULTHIEFT_MAX_HP_RATE));
+    }
+
+    /**
+     * Sentinel: the discipline's basic melee swing carries a slice of the wearer's own
+     * health pool, which is the stat a Sentinel actually stacks.
+     *
+     * Server-side for the same reason as Soulthieft -- the client's damage formula scales
+     * the attacker's damage stats and has no term for their max HP -- but with a bonus this
+     * one gets for free: the server knows MasterClass, so unlike the weapon-data changes
+     * that ride alongside it, this really is Sentinel-only rather than every Paladin.
+     *
+     * It rides the Sentinel's signature power, ConcussionBolt -- the AbilityTypes
+     * HotbarLocation 0 slot, which is one power per discipline. The weapon-driven basic
+     * attacks it first hung off are shared by the whole class, so that version handed a
+     * Sentinel passive to every Justicar and Templar as well.
+     */
+    private static readonly SENTINEL_MAX_HP_RATE = 0.001;
+    private static readonly SENTINEL_SIGNATURE_POWER_NAMES = ['ConcussionBolt'];
+    private static sentinelSignaturePowerIds: Set<number> | null = null;
+
+    /**
+     * Resolved from the authored power data rather than hardcoded, because the ids are
+     * whatever PlayerPowerTypes says they are and a wrong constant here would silently
+     * attach the passive to some unrelated power.
+     */
+    private static getSentinelSignaturePowerIds(): Set<number> {
+        if (CombatHandler.sentinelSignaturePowerIds) {
+            return CombatHandler.sentinelSignaturePowerIds;
+        }
+
+        const ids = new Set<number>();
+        CombatHandler.sentinelSignaturePowerIds = ids;
+
+        const xmlDir = resolveClientXmlDir(['PlayerPowerTypes.xml']);
+        if (!xmlDir) {
+            console.warn('[CombatHandler] PlayerPowerTypes.xml not found; the Sentinel basic-attack passive is inactive.');
+            return ids;
+        }
+
+        try {
+            const xml = fs.readFileSync(path.join(xmlDir, 'PlayerPowerTypes.xml'), 'utf8');
+            for (const block of xml.match(/<Power PowerName="[^"]*">[\s\S]*?<\/Power>/g) ?? []) {
+                const name = block.match(/<Power PowerName="([^"]*)">/)?.[1] ?? '';
+                if (!CombatHandler.SENTINEL_SIGNATURE_POWER_NAMES.some((base) => name === base || new RegExp(`^${base}\\d+$`).test(name))) {
+                    continue;
+                }
+
+                const powerId = Math.round(Number(block.match(/<PowerID>([^<]*)<\/PowerID>/)?.[1] ?? 0));
+                if (Number.isFinite(powerId) && powerId > 0) {
+                    ids.add(powerId);
+                }
+            }
+            console.log(`[CombatHandler] Sentinel passive covers ${ids.size} ConcussionBolt rank(s).`);
+        } catch (err) {
+            console.warn('[CombatHandler] Could not read PlayerPowerTypes.xml; the Sentinel basic-attack passive is inactive.', err);
+        }
+
+        return ids;
+    }
+
+    private static getSentinelMaxHpBonus(
+        sourceSession: Client | null,
+        powerId: number,
+        baseDamage: number
+    ): number {
+        if (
+            !sourceSession?.character ||
+            Number(sourceSession.character.MasterClass ?? 0) !== MasterClassID.Sentinel
+        ) {
+            return 0;
+        }
+
+        if (!CombatHandler.getSentinelSignaturePowerIds().has(Math.round(Number(powerId) || 0))) {
+            return 0;
+        }
+
+        const damage = Math.max(0, Math.round(Number(baseDamage) || 0));
+        const maxHp = Math.max(0, Math.round(Number(sourceSession.authoritativeMaxHp ?? 0) || 0));
+        if (damage <= 0 || maxHp <= 0) {
+            return 0;
+        }
+
+        return Math.round(maxHp * CombatHandler.SENTINEL_MAX_HP_RATE);
+    }
+
     private static updatePlayerTargetAfterHit(targetSession: Client, damage: number, preventDeath: boolean = false): PlayerHitResolution {
         if (damage <= 0 || !targetSession.character || targetSession.clientEntID <= 0) {
             return {
@@ -5284,6 +5456,8 @@ export class CombatHandler {
         const isPlayerSource = Boolean(sourceSession && !isHostileNpcSource);
         if (isPlayerSource && targetEntity && !targetEntity.isPlayer) {
             damage = AdminRuntimeSettings.scaleDamage(damage);
+            damage += CombatHandler.getSoulthieftMaxHpBonus(sourceSession, targetEntity, damage, levelScope);
+            damage += CombatHandler.getSentinelMaxHpBonus(sourceSession, info.powerId, damage);
         }
         if (
             (!targetEntity && !targetSession) ||

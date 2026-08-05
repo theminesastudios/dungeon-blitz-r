@@ -1,5 +1,8 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { performance } from 'perf_hooks';
 import { LevelConfig } from './LevelConfig';
+import { resolveClientXmlDir } from '../utils/ClientXmlDir';
 
 export interface MovementAuthorityState {
     lastAcceptedX: number;
@@ -90,9 +93,80 @@ export class MovementAuthority {
         };
     }
 
+    private static xmlMobilityPowerIds: Set<number> | null = null;
+
+    /**
+     * Every dash in this game is authored as a pair: an "Open" power that starts the move
+     * and a "Close" power that lands it, and the Close half is the one that carries the
+     * player. The ranges above cover ShadowStep (1394-1405) but its Close variants are
+     * 1406-1415; MistWalkClose10 is 1185 and AssassinateClose10 is 1208, both sitting in
+     * gaps between ranges. So at high rank -- which is what a levelled character actually
+     * casts -- the landing half of the dash got no mobility grace at all. The displacement
+     * then scores as speed_delta or teleport_delta, eight points of that is a five second
+     * movement quarantine, and sixteen destroys the socket.
+     *
+     * Hand-maintained id ranges cannot track a data file they are not read from, so the
+     * power data is now consulted directly: anything it says displaces the caster counts.
+     *
+     * Union with the ranges, never a replacement. The ranges cover authored powers this
+     * rule does not recognise, and the two failure directions are not symmetric -- an
+     * unrecognised dash freezes and then disconnects an honest player, while an
+     * over-granted one only widens a window the cheater still has to arm with a real cast
+     * that CastRateAuthority has already metered.
+     */
+    private static loadXmlMobilityPowerIds(): Set<number> {
+        if (MovementAuthority.xmlMobilityPowerIds) {
+            return MovementAuthority.xmlMobilityPowerIds;
+        }
+
+        const powerIds = new Set<number>();
+        MovementAuthority.xmlMobilityPowerIds = powerIds;
+
+        const xmlDir = resolveClientXmlDir(['PlayerPowerTypes.xml']);
+        if (!xmlDir) {
+            console.warn('[MovementAuthority] PlayerPowerTypes.xml not found; mobility grace falls back to the authored id ranges.');
+            return powerIds;
+        }
+
+        try {
+            const xml = fs.readFileSync(path.join(xmlDir, 'PlayerPowerTypes.xml'), 'utf8');
+            for (const block of xml.match(/<Power PowerName="[^"]*">[\s\S]*?<\/Power>/g) ?? []) {
+                const powerId = Math.round(Number(block.match(/<PowerID>([^<]*)<\/PowerID>/)?.[1] ?? 0));
+                if (!Number.isFinite(powerId) || powerId <= 0) {
+                    continue;
+                }
+
+                const powerName = block.match(/<Power PowerName="([^"]*)">/)?.[1] ?? '';
+                const castAnim = block.match(/<CastAnim>([^<]*)<\/CastAnim>/)?.[1] ?? '';
+                const targetMethod = block.match(/<TargetMethod>([^<]*)<\/TargetMethod>/)?.[1] ?? '';
+                // Charge closes distance to a target. `L:` prefixed anims and LungeStrike are
+                // the authored lunges -- the ranges above already grant those, so keeping the
+                // rule aligned with them stops the two sources disagreeing. Dash open/close
+                // and the `*Close`/`*Close10` naming are the halves that were being missed.
+                if (
+                    targetMethod === 'Charge' ||
+                    /dash|lunge/i.test(castAnim) ||
+                    castAnim.startsWith('L:') ||
+                    /Close\d*$/.test(powerName)
+                ) {
+                    powerIds.add(powerId);
+                }
+            }
+            console.log(`[MovementAuthority] Loaded ${powerIds.size} mobility powers from the power data.`);
+        } catch (err) {
+            console.warn('[MovementAuthority] Could not read PlayerPowerTypes.xml; mobility grace falls back to the authored id ranges.', err);
+        }
+
+        return powerIds;
+    }
+
     static isMobilityPower(powerId: number): boolean {
         const normalized = Math.max(0, Math.round(Number(powerId ?? 0)));
-        return MovementAuthority.MOBILITY_POWER_RANGES.some(([min, max]) => normalized >= min && normalized <= max);
+        if (MovementAuthority.MOBILITY_POWER_RANGES.some(([min, max]) => normalized >= min && normalized <= max)) {
+            return true;
+        }
+
+        return MovementAuthority.loadXmlMobilityPowerIds().has(normalized);
     }
 
     static nowMs(): number {

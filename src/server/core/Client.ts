@@ -10,6 +10,7 @@ import { MovementAuthority, MovementAuthorityState } from './MovementAuthority';
 import { CastRateAuthority, CastRateState } from './CastRateAuthority';
 import { performance } from 'perf_hooks';
 import { getActiveMovementPacketKey, mergeActiveMovementPackets } from '../network/movementPacket';
+import { RegionPositionPersistence } from './RegionPositionPersistence';
 
 const db = new JsonAdapter();
 const SOCKET_POLICY_REQUEST = '<policy-file-request/>';
@@ -214,6 +215,8 @@ export class Client {
     public dungeonRun: DungeonRunStats | null = null;
     public pendingMissionTurnIns: Set<number> = new Set();
     public authoritativeMaxHp: number = 100;
+    /** Last mana the client reported over packet 0xCB. Diagnostic only -- never trusted. */
+    public lastReportedMana: number = 0;
     public authoritativeCurrentHp: number = 100;
     public combatStatsDirty: boolean = false;
     public allowDirtyCombatStatsRegen: boolean = false;
@@ -889,6 +892,13 @@ export class Client {
                 clearTimeout(this.deferredCharacterSaveTimer);
                 this.deferredCharacterSaveTimer = null;
             }
+            RegionPositionPersistence.record(
+                this,
+                this.clientEntID > 0 ? this.entities.get(this.clientEntID) : null,
+                'disconnect',
+                { force: true, persist: false }
+            );
+            RegionPositionPersistence.forget(this);
             this.repairDungeonLocationBeforeSave();
             await db.saveCharacterSnapshot(snapshot.userId, this.character).catch((err) => {
                 console.error(`[Client] Failed to persist character before ${reason}:`, err);
@@ -920,6 +930,17 @@ export class Client {
                 clearTimeout(this.deferredCharacterSaveTimer);
                 this.deferredCharacterSaveTimer = null;
             }
+            // Record where they actually were before the snapshot goes out. Without this the
+            // only writers of CurrentLevel are the dungeon-return and transfer paths, so an
+            // ordinary disconnect persisted a stale coordinate and the next login dropped the
+            // player in mid-air. persist:false because the save on the next line covers it.
+            RegionPositionPersistence.record(
+                this,
+                this.clientEntID > 0 ? this.entities.get(this.clientEntID) : null,
+                'disconnect',
+                { force: true, persist: false }
+            );
+            RegionPositionPersistence.forget(this);
             this.repairDungeonLocationBeforeSave();
             void db.saveCharacterSnapshot(snapshot.userId, this.character).catch((err) => {
                 console.error('[Client] Failed to persist character on disconnect:', err);

@@ -146,6 +146,7 @@ router.register(0x91, SocialHandler.handleUnfriend);
 router.register(0x43, SocialHandler.handleToggleIgnore);
 router.register(0x9E, SocialHandler.handleRequestIgnoreList);
 router.register(0xC9, SocialHandler.handleRequestFriendList);
+router.register(0xCB, CombatHandler.handleClientManaReport);
 router.register(0x4D, GuildHandler.handleCreateGuild);
 router.register(0x4E, GuildHandler.handleDisbandGuild);
 router.register(0x4F, GuildHandler.handleInviteGuildMember);

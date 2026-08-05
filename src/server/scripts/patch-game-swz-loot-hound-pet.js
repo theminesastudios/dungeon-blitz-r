@@ -310,9 +310,15 @@ function main() {
     }, verifyOnly, stats);
 
     // 2. The pet and its vanity power, per locale archive.
+    // The game ships English only now; the per-locale archives are gone. Existence is
+    // checked here, so restoring a localized build re-enables its patch on its own.
     for (const file of ['Game.swz', 'Game.en.swz', 'Game.tr.swz']) {
+        const archivePath = path.join(root, CBQ, file);
+        if (!fs.existsSync(archivePath)) {
+            continue;
+        }
         const locale = file === 'Game.tr.swz' ? LOCALES.tr : LOCALES.en;
-        patchArchive(path.join(root, CBQ, file), (entries) => {
+        patchArchive(archivePath, (entries) => {
             const notes = [];
 
             const pets = entries.find((e) => e.rootName === 'PetTypes');
