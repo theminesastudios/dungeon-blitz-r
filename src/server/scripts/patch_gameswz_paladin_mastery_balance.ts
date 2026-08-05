@@ -193,23 +193,26 @@ const TARGET_BUFFS = new Map<string, string>([
   // Sanctum. Same split: Sanctum1..10 are RangedAoEFriend heals, SanctumCombo is the pulse
   // that hits enemies. It has no ranks, so this is not rank-gated the way rank 4 was asked
   // for -- there is no rank to gate it on.
-  ["SanctumCombo", "Blinded,HolyFire1,HolyFire1"], // was Blinded,HolyFire3
+  ["SanctumCombo", "Blinded,HolyFire1"], // was Blinded,HolyFire1,HolyFire1
   /**
    * Celestial Lance. Every rank band hands out the same HolyFire1 -- it was the first power
    * moved onto the shared pool and is why the others followed -- so the only thing a rank buys
-   * is what its own upgrade text says it buys: rank 4 the Stagger, rank 6 the splash, rank 8 a
-   * *second* stack, rank 10 the stun.
+   * is what its own upgrade text says it buys: rank 4 the Stagger, rank 6 the splash, rank 8
+   * the mana discount, rank 10 the stun.
    *
-   * Two stacks is exactly HolyFire1's authored cap, which is the point -- the Crusading Flames
-   * stone is what raises the cap, and a rank-8 Lance is the thing that fills it.
+   * One stack at every rank. Rank 8 briefly landed a second one, which put the Lance alone at
+   * HolyFire1's authored cap of two before any of the other three sources had contributed
+   * anything -- the opposite of the point of putting them all in one pool. Divine Word and
+   * Hallowed Reckoning are the ones that climb, 1 to 3 across their ranks; the Lance and
+   * Sanctum each add one.
    *
    * The rank bands are the combos, not the ranks: Combo2 is ranks 4-5, Combo3 6-7, Combo4 8-9,
    * Combo5 10. Combo and Combo1 already author a bare HolyFire1 and stay as they are.
    */
   ["CelestialLanceCombo2", "HolyFire1,Staggered"], // was HolyFire2,Staggered
   ["CelestialLanceCombo3", "HolyFire1,Staggered"], // was HolyFire3,Staggered
-  ["CelestialLanceCombo4", "HolyFire1,HolyFire1,Staggered"], // was HolyFire4,Staggered
-  ["CelestialLanceCombo5", "HolyFire1,HolyFire1,Staggered"], // was HolyFire5,Staggered
+  ["CelestialLanceCombo4", "HolyFire1,Staggered"], // was HolyFire1,HolyFire1,Staggered
+  ["CelestialLanceCombo5", "HolyFire1,Staggered"], // was HolyFire1,HolyFire1,Staggered
   // Verdict -- every shot blinds.
   ["VerdictROR1", "Blinded"], // was absent
   ["VerdictROR2", "Blinded"], // was absent
@@ -294,25 +297,52 @@ const DAMAGE_MULTS = new Map<string, string>([
   ["LightningBomb9", "4.97"], // 2.97 + 2
   ["LightningBomb10", "4.97"], // 2.97 + 2
   /**
-   * Cleave and Smash brought up to Skewer at rank 10.
+   * Cleave and Smash, every rank down 25%.
    *
-   * "Same damage" is per cast, not per authored number, and the three powers count hits
-   * differently -- so the numbers below are not equal to each other and that is the point.
-   * BaseDamageMult is a per-step list: CombatState reads var_630[step] and falls back to
-   * var_630[0], so a single value on a multi-step power is charged once per step.
+   * Absolute, like everything else in this map, so a second prebuild cannot compound the cut.
+   * Each comment is the value being replaced, which for ranks 1-9 is the authored one and for
+   * rank 10 is the number the earlier "bring both up to Skewer" pass wrote.
    *
-   *   Skewer 10   1.42,1.92,2.42 over three steps  -> 5.76 a cast
-   *   Cleave 10   one value, and Cleave is one of the target methods that carries a
-   *               hit-once dictionary, so an enemy takes it exactly once -> 5.76
-   *   Smash 10    one value over two steps, Melee, no dictionary, so both blows land
-   *               -> split as 2.88,2.88 for 5.76
+   * Rank 10 stays worth a whole Skewer cast relative to the other two, because all three moved
+   * by the same fraction. The shapes behind those numbers still matter and are worth not
+   * rediscovering: BaseDamageMult is a per-step list, CombatState reads var_630[step] and falls
+   * back to var_630[0], so a single value on a multi-step power is charged once per step.
    *
-   * Smash's split is also what makes its own tooltip honest: a two-entry list is what the
-   * second blow's Armor Bane is keyed against, and x2 damage printed against a power that
-   * swung twice was already understating it.
+   *   Skewer 10   1.42,1.92,2.42 over three steps -> 5.76 a cast, untouched here
+   *   Cleave 10   one value, and Cleave is one of the target methods that carries a hit-once
+   *               dictionary, so an enemy takes it exactly once
+   *   Smash 10    one value over two steps, Melee, no dictionary, so both blows land and the
+   *               single value is charged twice -> 4.32 a cast
+   *
+   * Smash 10 is a single value again, where an earlier pass wrote the two-entry list
+   * "2.88,2.88". Per-cast damage is identical either way, and the list cost the tooltip its
+   * damage line outright: patch_gameswz_power_stat_tooltips reads BaseDamageMult with Number(),
+   * a comma makes that NaN, and the "[Stats: ...]" fence simply omitted the figure. The second
+   * blow's Armor Bane does not depend on it -- "Last:" keys off the CastTime step index, and
+   * Smash authors two steps at every rank.
    */
-  ["Cleave10", "5.76"], // 2.42
-  ["Smash10", "2.88,2.88"], // 2
+  ["Cleave", "1.43"], //   1.9
+  ["Cleave1", "1.07"], //  1.42
+  ["Cleave2", "1.17"], //  1.56
+  ["Cleave3", "1.29"], //  1.72
+  ["Cleave4", "1.29"], //  1.72
+  ["Cleave5", "1.36"], //  1.81
+  ["Cleave6", "1.49"], //  1.99
+  ["Cleave7", "1.49"], //  1.99
+  ["Cleave8", "1.64"], //  2.19
+  ["Cleave9", "1.64"], //  2.19
+  ["Cleave10", "4.32"], // 5.76
+  ["Smash", "1.07"], //       1.42
+  ["Smash1", "0.84"], //      1.12
+  ["Smash2", "0.91"], //      1.21
+  ["Smash3", "0.98"], //      1.31
+  ["Smash4", "1.06"], //      1.41
+  ["Smash5", "1.06"], //      1.41
+  ["Smash6", "1.16"], //      1.55
+  ["Smash7", "1.28"], //      1.71
+  ["Smash8", "1.35"], //      1.8
+  ["Smash9", "1.42"], //      1.89
+  ["Smash10", "2.16"], //     2.88,2.88
   // Shockwave, +20% at every rank. Absolute, so a second prebuild does not compound it.
   ["Shockwave", "0.8"], //   0.67
   ["Shockwave1", "0.9"], //  0.75
@@ -403,12 +433,14 @@ const CAST_TIMES = new Map<string, string>([
   ["FountainOfLifeCombo8", "505,1000,1000,1000"], // 795,1000,1000,1000
   ["FountainOfLifeCombo9", "505,1000,1000,1000"], // 795,1000,1000,1000
   ["FountainOfLifeCombo10", "505,1000,1000,1000"], // 795,1000,1000,1000
-  // Smash swings faster from rank 7. Both steps move, because both are windup for a blow --
-  // unlike Hallowed Reckoning there is no heal tick hiding in the list to protect.
-  ["Smash7", "400,350"], // 550,450
-  ["Smash8", "400,350"], // 550,450
-  ["Smash9", "400,350"], // 550,450
-  ["Smash10", "400,350"], // 550,450
+  // Smash keeps its authored swing at every rank. Ranks 7-10 briefly got a faster windup on
+  // top of the rank-10 damage raise; the cast speed is gone again and the damage is down 25%
+  // with the rest of the power (DAMAGE_MULTS). These rows are written rather than deleted
+  // because an earlier prebuild already wrote 400,350 and only an absolute value puts it back.
+  ["Smash7", "550,450"], // 400,350
+  ["Smash8", "550,450"], // 400,350
+  ["Smash9", "550,450"], // 400,350
+  ["Smash10", "550,450"], // 400,350
 ]);
 
 /**
@@ -607,6 +639,24 @@ const POWER_TEXT_MIGRATIONS: Array<{ power: RegExp; from: string; to: string }> 
     from: "Staggers. Increased Holy Fire damage",
     to: "Staggers.",
   },
+  /**
+   * Two rank-up promises that stopped being true, and both have already been written once by
+   * an earlier prebuild -- so their UPGRADE_TEXT anchors are gone and only a migration off the
+   * text that landed can move them.
+   *
+   * Rank 8 of the Lance no longer lands a second stack of Holy Fire; the mana discount is the
+   * whole of what that rank buys now. Rank 7 of Smash no longer swings faster.
+   */
+  {
+    power: /^CelestialLance8$/,
+    from: "Adds a stack of Holy Fire. -3 Mana Cost.",
+    to: "-3 Mana Cost.",
+  },
+  {
+    power: /^Smash7$/,
+    from: "Faster cast animation. Increased Damage #olddmg#",
+    to: "Increased Damage #olddmg#",
+  },
 ];
 
 for (const migration of POWER_TEXT_MIGRATIONS) {
@@ -628,7 +678,7 @@ const UPGRADE_TEXT = new Map<string, [string, string]>([
   ["FountainOfLife7", ["Increased Damage #olddmg#. 345% Heal over 4 sec.", "Faster cast animation. 345% Heal over 4 sec."]],
   ["FountainOfLife10", ["Increased Damage #olddmg#. 390% Heal over 4 sec.", "-5 Mana Cost. 390% Heal over 4 sec."]],
   ["CelestialLance6", ["Increased Holy Fire Damage", "The Lance now strikes every enemy around its target."]],
-  ["CelestialLance8", ["Increased Holy Fire Damage", "Adds a stack of Holy Fire. -3 Mana Cost."]],
+  ["CelestialLance8", ["Increased Holy Fire Damage", "-3 Mana Cost."]],
   [
     "CelestialLance10",
     [
@@ -639,7 +689,6 @@ const UPGRADE_TEXT = new Map<string, [string, string]>([
   ["Verdict9", ["+30% Healing per shot", "+30% Healing per shot. Each shot returns 2 Mana."]],
   ["Verdict10", ["+50% Healing per shot", "+50% Healing per shot. +1.5 Second Duration."]],
   ["CleavingBlows2", ["Increased Damage #olddmg#", "Your swings return 5 Mana each. Increased Damage #olddmg#"]],
-  ["Smash7", ["Increased Damage #olddmg#", "Faster cast animation. Increased Damage #olddmg#"]],
   /**
    * Lightning Bomb's rank-up text still sold the spread chain that is gone now. Ranks 4 and
    * 7-10 were selling the second bomb's damage as well, which the earlier fold already moved

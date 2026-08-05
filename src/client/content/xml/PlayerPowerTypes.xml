@@ -224,13 +224,13 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.42</BaseDamageMult>
+		<BaseDamageMult>1.07</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
 		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
-		<Description>Deliver two bonecrushing blows that total #dmg# damage to every foe within reach of your swing, the second shredding their Armor. [Stats: x1.42 damage, -5% Defense, over 5s]</Description>
+		<Description>Deliver two bonecrushing blows that total #dmg# damage to every foe within reach of your swing, the second shredding their Armor. [Stats: x1.07 damage, -5% Defense, over 5s]</Description>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_paladin_smash_back[450]snd_pwr_paladin_smash_swing_01,snd_pwr_paladin_smash_vox_01$[550]snd_pwr_paladin_smash_swing_02,snd_pwr_paladin_smash_vox_02$</CastSound>
@@ -257,14 +257,14 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.12</BaseDamageMult>
+		<BaseDamageMult>0.84</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
 		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.12 damage, -5% Defense, over 5s]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x0.84 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -292,14 +292,14 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.21</BaseDamageMult>
+		<BaseDamageMult>0.91</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
 		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.21 damage, -5% Defense, over 5s]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x0.91 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -327,14 +327,14 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.31</BaseDamageMult>
+		<BaseDamageMult>0.98</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
 		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.31 damage, -5% Defense, over 5s]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x0.98 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -362,14 +362,14 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.41</BaseDamageMult>
+		<BaseDamageMult>1.06</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
 		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.41 damage, -5% Defense, over 5s]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.06 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -397,14 +397,14 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.41</BaseDamageMult>
+		<BaseDamageMult>1.06</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
 		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.41 damage, -5% Defense, over 5s]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.06 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased AoE.</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -432,14 +432,14 @@
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.55</BaseDamageMult>
+		<BaseDamageMult>1.16</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
 		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.55 damage, -5% Defense, over 5s]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.16 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -463,19 +463,19 @@
 		<AoERadius>50</AoERadius>
 		<CenterOffset>20</CenterOffset>
 		<CastAnim>MaceSlam</CastAnim>
-		<CastTime>400,350</CastTime>
+		<CastTime>550,450</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.71</BaseDamageMult>
+		<BaseDamageMult>1.28</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
 		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.71 damage, -5% Defense, over 5s]</Description>
-		<UpgradeDescription>Faster cast animation. Increased Damage #olddmg#</UpgradeDescription>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.28 damage, -5% Defense, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_paladin_smash_back[450]snd_pwr_paladin_smash_swing_01,snd_pwr_paladin_smash_vox_01$[550]snd_pwr_paladin_smash_swing_02,snd_pwr_paladin_smash_vox_02$</CastSound>
@@ -498,18 +498,18 @@
 		<AoERadius>60</AoERadius>
 		<CenterOffset>20</CenterOffset>
 		<CastAnim>MaceSlam</CastAnim>
-		<CastTime>400,350</CastTime>
+		<CastTime>550,450</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.8</BaseDamageMult>
+		<BaseDamageMult>1.35</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
 		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.8 damage, -5% Defense, over 5s]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.35 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased AoE and Damage  #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -533,18 +533,18 @@
 		<AoERadius>60</AoERadius>
 		<CenterOffset>20</CenterOffset>
 		<CastAnim>MaceSlam</CastAnim>
-		<CastTime>400,350</CastTime>
+		<CastTime>550,450</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.89</BaseDamageMult>
+		<BaseDamageMult>1.42</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
 		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.89 damage, -5% Defense, over 5s]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x1.42 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -568,18 +568,18 @@
 		<AoERadius>70</AoERadius>
 		<CenterOffset>20</CenterOffset>
 		<CastAnim>MaceSlam</CastAnim>
-		<CastTime>400,350</CastTime>
+		<CastTime>550,450</CastTime>
 		<RecoverTime>500</RecoverTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>2.88,2.88</BaseDamageMult>
+		<BaseDamageMult>2.16</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Smash</PowerGroup>
 		<AddTargetBuff>Last:ArmorBane</AddTargetBuff>
 		<DisplayName>Smash</DisplayName>
 		<BasePowerName>Smash</BasePowerName>
-		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: -5% Defense, over 5s]</Description>
+		<Description>Deliver a multi-hit melee combo that damages nearby foes, the second blow shredding their Armor [Stats: x2.16 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Increased AoE and Damage  #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
@@ -987,12 +987,12 @@
 		<ShakeTime>500</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.9</BaseDamageMult>
+		<BaseDamageMult>1.43</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Cleave</PowerGroup>
 		<DisplayName>Cleave</DisplayName>
-		<Description>Cleave an arc of destruction that deals #dmg# damage to every foe in its wake. [Stats: x1.9 damage]</Description>
+		<Description>Cleave an arc of destruction that deals #dmg# damage to every foe in its wake. [Stats: x1.43 damage]</Description>
 		<IconName>a_PowerIcon_AxeCleave</IconName>
 		<RuneIcon>a_RuneIcon_03</RuneIcon>
 		<CastSound>[200]snd_pwr_paladin_cleave</CastSound>
@@ -1020,13 +1020,13 @@
 		<ShakeTime>500</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.42</BaseDamageMult>
+		<BaseDamageMult>1.07</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Cleave</PowerGroup>
 		<DisplayName>Cleave</DisplayName>
 		<BasePowerName>Cleave</BasePowerName>
-		<Description>Unleash a single, heavy melee attack that damages nearby foes [Stats: x1.42 damage]</Description>
+		<Description>Unleash a single, heavy melee attack that damages nearby foes [Stats: x1.07 damage]</Description>
 		<UpgradeDescription>Unleash a single, heavy melee attack that damages nearby foes</UpgradeDescription>
 		<IconName>a_PowerIcon_AxeCleave</IconName>
 		<RuneIcon>a_RuneIcon_03</RuneIcon>
@@ -1055,13 +1055,13 @@
 		<ShakeTime>500</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.56</BaseDamageMult>
+		<BaseDamageMult>1.17</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Cleave</PowerGroup>
 		<DisplayName>Cleave</DisplayName>
 		<BasePowerName>Cleave</BasePowerName>
-		<Description>Unleash a single, heavy melee attack that damages nearby foes [Stats: x1.56 damage]</Description>
+		<Description>Unleash a single, heavy melee attack that damages nearby foes [Stats: x1.17 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_AxeCleave</IconName>
 		<RuneIcon>a_RuneIcon_03</RuneIcon>
@@ -1090,13 +1090,13 @@
 		<ShakeTime>500</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.72</BaseDamageMult>
+		<BaseDamageMult>1.29</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Cleave</PowerGroup>
 		<DisplayName>Cleave</DisplayName>
 		<BasePowerName>Cleave</BasePowerName>
-		<Description>Unleash a single, heavy melee attack that damages nearby foes [Stats: x1.72 damage]</Description>
+		<Description>Unleash a single, heavy melee attack that damages nearby foes [Stats: x1.29 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_AxeCleave</IconName>
 		<RuneIcon>a_RuneIcon_03</RuneIcon>
@@ -1125,14 +1125,14 @@
 		<ShakeTime>500</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.72</BaseDamageMult>
+		<BaseDamageMult>1.29</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Cleave</PowerGroup>
 		<AddTargetBuff>Crippled</AddTargetBuff>
 		<DisplayName>Cleave</DisplayName>
 		<BasePowerName>Cleave</BasePowerName>
-		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x1.72 damage, -10% Speed, over 5s]</Description>
+		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x1.29 damage, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Adds Cripple.</UpgradeDescription>
 		<IconName>a_PowerIcon_AxeCleave</IconName>
 		<RuneIcon>a_RuneIcon_03</RuneIcon>
@@ -1161,7 +1161,7 @@
 		<ShakeTime>500</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.81</BaseDamageMult>
+		<BaseDamageMult>1.36</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Cleave</PowerGroup>
@@ -1169,7 +1169,7 @@
 		<AddSelfBuff>Phalanx25</AddSelfBuff>
 		<DisplayName>Cleave</DisplayName>
 		<BasePowerName>Cleave</BasePowerName>
-		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x1.81 damage, +25% Defense, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x1.36 damage, +25% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>25% Defense Boost during cast and Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_AxeCleave</IconName>
 		<RuneIcon>a_RuneIcon_03</RuneIcon>
@@ -1198,7 +1198,7 @@
 		<ShakeTime>500</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.99</BaseDamageMult>
+		<BaseDamageMult>1.49</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Cleave</PowerGroup>
@@ -1206,7 +1206,7 @@
 		<AddSelfBuff>Phalanx25</AddSelfBuff>
 		<DisplayName>Cleave</DisplayName>
 		<BasePowerName>Cleave</BasePowerName>
-		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x1.99 damage, +25% Defense, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x1.49 damage, +25% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_AxeCleave</IconName>
 		<RuneIcon>a_RuneIcon_03</RuneIcon>
@@ -1235,7 +1235,7 @@
 		<ShakeTime>500</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>1.99</BaseDamageMult>
+		<BaseDamageMult>1.49</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Cleave</PowerGroup>
@@ -1243,7 +1243,7 @@
 		<AddSelfBuff>Phalanx25</AddSelfBuff>
 		<DisplayName>Cleave</DisplayName>
 		<BasePowerName>Cleave</BasePowerName>
-		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x1.99 damage, +25% Defense, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x1.49 damage, +25% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Adds a stack of Cripple.</UpgradeDescription>
 		<IconName>a_PowerIcon_AxeCleave</IconName>
 		<RuneIcon>a_RuneIcon_03</RuneIcon>
@@ -1272,7 +1272,7 @@
 		<ShakeTime>500</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>2.19</BaseDamageMult>
+		<BaseDamageMult>1.64</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Cleave</PowerGroup>
@@ -1280,7 +1280,7 @@
 		<AddSelfBuff>Phalanx25</AddSelfBuff>
 		<DisplayName>Cleave</DisplayName>
 		<BasePowerName>Cleave</BasePowerName>
-		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x2.19 damage, +25% Defense, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x1.64 damage, +25% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_AxeCleave</IconName>
 		<RuneIcon>a_RuneIcon_03</RuneIcon>
@@ -1309,7 +1309,7 @@
 		<ShakeTime>500</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>2.19</BaseDamageMult>
+		<BaseDamageMult>1.64</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Cleave</PowerGroup>
@@ -1317,7 +1317,7 @@
 		<AddSelfBuff>Phalanx35</AddSelfBuff>
 		<DisplayName>Cleave</DisplayName>
 		<BasePowerName>Cleave</BasePowerName>
-		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x2.19 damage, +35% Defense, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x1.64 damage, +35% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>35% Defense Boost during cast.</UpgradeDescription>
 		<IconName>a_PowerIcon_AxeCleave</IconName>
 		<RuneIcon>a_RuneIcon_03</RuneIcon>
@@ -1346,7 +1346,7 @@
 		<ShakeTime>500</ShakeTime>
 		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>20</ManaCost>
-		<BaseDamageMult>5.76</BaseDamageMult>
+		<BaseDamageMult>4.32</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Cleave</PowerGroup>
@@ -1354,7 +1354,7 @@
 		<AddSelfBuff>Phalanx</AddSelfBuff>
 		<DisplayName>Cleave</DisplayName>
 		<BasePowerName>Cleave</BasePowerName>
-		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x5.76 damage, +50% Defense, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Unleash a single, heavy melee attack that damages and Cripples nearby foes [Stats: x4.32 damage, +50% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>50% Defense Boost during cast and Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_AxeCleave</IconName>
 		<RuneIcon>a_RuneIcon_03</RuneIcon>
@@ -8184,7 +8184,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>Sanctum</PowerGroup>
-		<AddTargetBuff>Blinded,HolyFire1,HolyFire1</AddTargetBuff>
+		<AddTargetBuff>Blinded,HolyFire1</AddTargetBuff>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -8484,7 +8484,7 @@
 		<DisplayName>Celestial Lance</DisplayName>
 		<BasePowerName>CelestialLance</BasePowerName>
 		<Description>Strike every foe around your target with an explosive lance, Staggering and bathing them in Holy Fire [Stats: x3 damage]</Description>
-		<UpgradeDescription>Adds a stack of Holy Fire. -3 Mana Cost.</UpgradeDescription>
+		<UpgradeDescription>-3 Mana Cost.</UpgradeDescription>
 		<IconName>a_PowerIcon_CelestialLance</IconName>
 		<CastSound>snd_pwr_paladin_touchHeal[400]CHR_Templar_CelestialLance_B</CastSound>
 		<CastGfx/>
@@ -8651,7 +8651,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>CelestialLance</PowerGroup>
-		<AddTargetBuff>HolyFire1,HolyFire1,Staggered</AddTargetBuff>
+		<AddTargetBuff>HolyFire1,Staggered</AddTargetBuff>
 		<BasePowerName>CelestialLanceCombo</BasePowerName>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -8676,7 +8676,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>CelestialLance</PowerGroup>
-		<AddTargetBuff>HolyFire1,HolyFire1,Staggered</AddTargetBuff>
+		<AddTargetBuff>HolyFire1,Staggered</AddTargetBuff>
 		<BasePowerName>CelestialLanceCombo</BasePowerName>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
