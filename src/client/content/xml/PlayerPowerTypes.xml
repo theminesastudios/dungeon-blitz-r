@@ -4147,7 +4147,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DivineWord</PowerGroup>
-		<AddTargetBuff>Weakened,HolyFire1,HolyFire1</AddTargetBuff>
+		<AddTargetBuff>Weakened,HolyFire1</AddTargetBuff>
 		<ComboName>DivineWordCombo4</ComboName>
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
@@ -4191,7 +4191,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DivineWord</PowerGroup>
-		<AddTargetBuff>Weakened,Weakened,HolyFire1,HolyFire1</AddTargetBuff>
+		<AddTargetBuff>Weakened,Weakened,HolyFire1</AddTargetBuff>
 		<ComboName>DivineWordCombo4</ComboName>
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
@@ -4235,7 +4235,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DivineWord</PowerGroup>
-		<AddTargetBuff>Weakened,Weakened,HolyFire1,HolyFire1</AddTargetBuff>
+		<AddTargetBuff>Weakened,Weakened,HolyFire1</AddTargetBuff>
 		<ComboName>DivineWordCombo4</ComboName>
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
@@ -4279,7 +4279,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DivineWord</PowerGroup>
-		<AddTargetBuff>Weakened,Weakened,HolyFire1,HolyFire1,HolyFire1</AddTargetBuff>
+		<AddTargetBuff>Weakened,Weakened,HolyFire1</AddTargetBuff>
 		<ComboName>DivineWordCombo10</ComboName>
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
@@ -5359,7 +5359,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
-		<AddTargetBuff>HolyFire1,HolyFire1</AddTargetBuff>
+		<AddTargetBuff>HolyFire1</AddTargetBuff>
 		<BasePowerName>FountainOfLifeCombo</BasePowerName>
 		<CastGfx/>
 		<FireGfx/>
@@ -5386,7 +5386,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
-		<AddTargetBuff>HolyFire1,HolyFire1</AddTargetBuff>
+		<AddTargetBuff>HolyFire1</AddTargetBuff>
 		<BasePowerName>FountainOfLifeCombo</BasePowerName>
 		<CastGfx/>
 		<FireGfx/>
@@ -5413,7 +5413,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
-		<AddTargetBuff>HolyFire1,HolyFire1</AddTargetBuff>
+		<AddTargetBuff>HolyFire1</AddTargetBuff>
 		<BasePowerName>FountainOfLifeCombo</BasePowerName>
 		<CastGfx/>
 		<FireGfx/>
@@ -5440,7 +5440,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
-		<AddTargetBuff>HolyFire1,HolyFire1,HolyFire1</AddTargetBuff>
+		<AddTargetBuff>HolyFire1</AddTargetBuff>
 		<BasePowerName>FountainOfLifeCombo</BasePowerName>
 		<CastGfx/>
 		<FireGfx/>
@@ -8484,7 +8484,7 @@
 		<DisplayName>Celestial Lance</DisplayName>
 		<BasePowerName>CelestialLance</BasePowerName>
 		<Description>Strike every foe around your target with an explosive lance, Staggering and bathing them in Holy Fire [Stats: x3 damage]</Description>
-		<UpgradeDescription>-3 Mana Cost.</UpgradeDescription>
+		<UpgradeDescription>Adds a stack of Holy Fire. -3 Mana Cost.</UpgradeDescription>
 		<IconName>a_PowerIcon_CelestialLance</IconName>
 		<CastSound>snd_pwr_paladin_touchHeal[400]CHR_Templar_CelestialLance_B</CastSound>
 		<CastGfx/>
@@ -8651,7 +8651,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>CelestialLance</PowerGroup>
-		<AddTargetBuff>HolyFire1,Staggered</AddTargetBuff>
+		<AddTargetBuff>HolyFire1,HolyFire1,Staggered</AddTargetBuff>
 		<BasePowerName>CelestialLanceCombo</BasePowerName>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -8676,7 +8676,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>CelestialLance</PowerGroup>
-		<AddTargetBuff>HolyFire1,Staggered</AddTargetBuff>
+		<AddTargetBuff>HolyFire1,HolyFire1,Staggered</AddTargetBuff>
 		<BasePowerName>CelestialLanceCombo</BasePowerName>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>

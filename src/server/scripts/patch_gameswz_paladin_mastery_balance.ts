@@ -157,20 +157,20 @@ const TARGET_BUFFS = new Map<string, string>([
   ["Subjugate9", "Crippled,Blinded,ArmorBane"], // was Crippled,Crippled,Crippled
   ["Subjugate10", "Crippled,Crippled,Blinded,ArmorBane"], // was Crippled,Crippled,Crippled,Blinded
   /**
-   * Divine Word -- Holy Fire from rank 3, and every rank hands out HolyFire1.
+   * Divine Word -- Holy Fire from rank 3, one stack, at every rank.
    *
-   * See HOLY_FIRE_IS_ONE_POOL below: a rank buys another *stack*, never a hotter rank of the
-   * buff, because two ranks of Holy Fire are two BuffTypes and two BuffTypes never share a
-   * stack pool.
+   * See HOLY_FIRE_IS_ONE_POOL below for why it is always HolyFire1 and never a hotter rank of
+   * the buff: two ranks of Holy Fire are two BuffTypes and two BuffTypes never share a stack
+   * pool. What a rank buys is its Weakened count, which is authored and untouched here.
    */
   ["DivineWord3", "Weakened,HolyFire1"], // was Weakened
   ["DivineWord4", "Weakened,HolyFire1"], // was Weakened
   ["DivineWord5", "Weakened,HolyFire1"], // was Weakened
   ["DivineWord6", "Weakened,HolyFire1"], // was Weakened
-  ["DivineWord7", "Weakened,HolyFire1,HolyFire1"], // was Weakened,HolyFire2
-  ["DivineWord8", "Weakened,Weakened,HolyFire1,HolyFire1"], // was Weakened,Weakened,HolyFire2
-  ["DivineWord9", "Weakened,Weakened,HolyFire1,HolyFire1"], // was Weakened,Weakened,HolyFire2
-  ["DivineWord10", "Weakened,Weakened,HolyFire1,HolyFire1,HolyFire1"], // was Weakened,Weakened,HolyFire3
+  ["DivineWord7", "Weakened,HolyFire1"], // was Weakened,HolyFire1,HolyFire1
+  ["DivineWord8", "Weakened,Weakened,HolyFire1"], // was Weakened,Weakened,HolyFire1,HolyFire1
+  ["DivineWord9", "Weakened,Weakened,HolyFire1"], // was Weakened,Weakened,HolyFire1,HolyFire1
+  ["DivineWord10", "Weakened,Weakened,HolyFire1"], // was Weakened,Weakened,HolyFire1 x3
   // Penance -- blinds from rank 4.
   ["Penance4", "Penance6,Staggered,Blinded"], // was Penance6,Staggered
   ["Penance5", "Penance9,Staggered,Blinded"], // was Penance9,Staggered
@@ -186,10 +186,10 @@ const TARGET_BUFFS = new Map<string, string>([
   ["FountainOfLifeCombo4", "HolyFire1"], // was absent
   ["FountainOfLifeCombo5", "HolyFire1"], // was absent
   ["FountainOfLifeCombo6", "HolyFire1"], // was absent
-  ["FountainOfLifeCombo7", "HolyFire1,HolyFire1"], // was HolyFire2
-  ["FountainOfLifeCombo8", "HolyFire1,HolyFire1"], // was HolyFire2
-  ["FountainOfLifeCombo9", "HolyFire1,HolyFire1"], // was HolyFire2
-  ["FountainOfLifeCombo10", "HolyFire1,HolyFire1,HolyFire1"], // was HolyFire3
+  ["FountainOfLifeCombo7", "HolyFire1"], // was HolyFire1,HolyFire1
+  ["FountainOfLifeCombo8", "HolyFire1"], // was HolyFire1,HolyFire1
+  ["FountainOfLifeCombo9", "HolyFire1"], // was HolyFire1,HolyFire1
+  ["FountainOfLifeCombo10", "HolyFire1"], // was HolyFire1 x3
   // Sanctum. Same split: Sanctum1..10 are RangedAoEFriend heals, SanctumCombo is the pulse
   // that hits enemies. It has no ranks, so this is not rank-gated the way rank 4 was asked
   // for -- there is no rank to gate it on.
@@ -197,22 +197,21 @@ const TARGET_BUFFS = new Map<string, string>([
   /**
    * Celestial Lance. Every rank band hands out the same HolyFire1 -- it was the first power
    * moved onto the shared pool and is why the others followed -- so the only thing a rank buys
-   * is what its own upgrade text says it buys: rank 4 the Stagger, rank 6 the splash, rank 8
-   * the mana discount, rank 10 the stun.
+   * is what its own upgrade text says it buys: rank 4 the Stagger, rank 6 the splash, rank 8 a
+   * *second* stack plus the mana discount, rank 10 the stun.
    *
-   * One stack at every rank. Rank 8 briefly landed a second one, which put the Lance alone at
-   * HolyFire1's authored cap of two before any of the other three sources had contributed
-   * anything -- the opposite of the point of putting them all in one pool. Divine Word and
-   * Hallowed Reckoning are the ones that climb, 1 to 3 across their ranks; the Lance and
-   * Sanctum each add one.
+   * The Lance is the only source that stacks at all. Divine Word, Hallowed Reckoning and
+   * Sanctum each land exactly one at every rank; ranks 1-7 of the Lance land one and 8-10 land
+   * two, which is what fills HolyFire1's authored cap of two and gives the Crusading Flames
+   * stone something to raise.
    *
    * The rank bands are the combos, not the ranks: Combo2 is ranks 4-5, Combo3 6-7, Combo4 8-9,
    * Combo5 10. Combo and Combo1 already author a bare HolyFire1 and stay as they are.
    */
   ["CelestialLanceCombo2", "HolyFire1,Staggered"], // was HolyFire2,Staggered
   ["CelestialLanceCombo3", "HolyFire1,Staggered"], // was HolyFire3,Staggered
-  ["CelestialLanceCombo4", "HolyFire1,Staggered"], // was HolyFire1,HolyFire1,Staggered
-  ["CelestialLanceCombo5", "HolyFire1,Staggered"], // was HolyFire1,HolyFire1,Staggered
+  ["CelestialLanceCombo4", "HolyFire1,HolyFire1,Staggered"], // was HolyFire1,Staggered
+  ["CelestialLanceCombo5", "HolyFire1,HolyFire1,Staggered"], // was HolyFire1,Staggered
   // Verdict -- every shot blinds.
   ["VerdictROR1", "Blinded"], // was absent
   ["VerdictROR2", "Blinded"], // was absent
@@ -640,22 +639,25 @@ const POWER_TEXT_MIGRATIONS: Array<{ power: RegExp; from: string; to: string }> 
     to: "Staggers.",
   },
   /**
-   * Two rank-up promises that stopped being true, and both have already been written once by
-   * an earlier prebuild -- so their UPGRADE_TEXT anchors are gone and only a migration off the
-   * text that landed can move them.
-   *
-   * Rank 8 of the Lance no longer lands a second stack of Holy Fire; the mana discount is the
-   * whole of what that rank buys now. Rank 7 of Smash no longer swings faster.
+   * Rank 7 of Smash no longer swings faster, and the promise has already been written once by
+   * an earlier prebuild -- so its UPGRADE_TEXT anchor is gone and only a migration off the text
+   * that landed can move it.
    */
-  {
-    power: /^CelestialLance8$/,
-    from: "Adds a stack of Holy Fire. -3 Mana Cost.",
-    to: "-3 Mana Cost.",
-  },
   {
     power: /^Smash7$/,
     from: "Faster cast animation. Increased Damage #olddmg#",
     to: "Increased Damage #olddmg#",
+  },
+  /**
+   * Rank 8 of the Lance is the one rank that stacks Holy Fire, so its rank-up says so. This is
+   * the clean-checkout half of that sentence, off the authored text; the tree that has already
+   * been through a pass where rank 8 bought nothing but mana is handled by UPGRADE_TEXT, whose
+   * "already present" check makes the two safe to run back to back.
+   */
+  {
+    power: /^CelestialLance8$/,
+    from: "Increased Holy Fire Damage",
+    to: "Adds a stack of Holy Fire. -3 Mana Cost.",
   },
 ];
 
@@ -678,7 +680,9 @@ const UPGRADE_TEXT = new Map<string, [string, string]>([
   ["FountainOfLife7", ["Increased Damage #olddmg#. 345% Heal over 4 sec.", "Faster cast animation. 345% Heal over 4 sec."]],
   ["FountainOfLife10", ["Increased Damage #olddmg#. 390% Heal over 4 sec.", "-5 Mana Cost. 390% Heal over 4 sec."]],
   ["CelestialLance6", ["Increased Holy Fire Damage", "The Lance now strikes every enemy around its target."]],
-  ["CelestialLance8", ["Increased Holy Fire Damage", "-3 Mana Cost."]],
+  // Anchored on what the previous pass left behind, not on the authored text -- the migration
+  // above covers the clean checkout, and this covers a tree where rank 8 had lost its stack.
+  ["CelestialLance8", ["-3 Mana Cost.", "Adds a stack of Holy Fire. -3 Mana Cost."]],
   [
     "CelestialLance10",
     [
