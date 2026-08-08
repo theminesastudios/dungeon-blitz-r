@@ -5784,4 +5784,13 @@
 			<BuffLoc>Head</BuffLoc>
 			<BuffIcon>a_StatusIcon_Poisoned</BuffIcon>
 		</BuffType>
+	<BuffType BuffName="SentinelFury">
+			<BuffID>742</BuffID>
+			<Attack>false</Attack>
+			<Duration>0</Duration>
+			<MagicDamage>0.6</MagicDamage>
+			<MeleeDamage>0.6</MeleeDamage>
+			<EntTint>0xFF3030</EntTint>
+			<GfxType/>
+		</BuffType>
 </PlayerBuffTypes>

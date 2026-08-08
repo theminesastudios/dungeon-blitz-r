@@ -12,9 +12,26 @@
  *   2. adds a stage-level KEY_DOWN hook so the numpad up key (NUMPAD_8, keyCode 104) recalls the
  *      previously sent message from anywhere, opening the chat entry if it is closed.
  *
- * The recall is applied on the next screen tick rather than inside the key handler, because Flash
- * still inserts the "8" character into the focused TextField after KEY_DOWN; overwriting the whole
- * entry a frame later is what keeps the recalled text clean.
+ * The recall is applied one frame later rather than inside the key handler, because Flash still
+ * inserts the "8" character into the focused TextField after KEY_DOWN; overwriting the whole entry
+ * on the following frame is what keeps the recalled text clean. That deferral rides an
+ * ENTER_FRAME listener registered only while a recall is pending, not the chat screen's own tick,
+ * so it still fires while a full-screen UI such as the inventory is up -- which is exactly when a
+ * message built from a shared item link gets recalled.
+ *
+ * Shared item links survive the round trip because history stores the raw form: method_731 runs
+ * method_1478 first, turning the entry's "[Sword]" display text back into its "{gear:...}" token
+ * before pushing to var_1055. Recall runs method_566 over that token, which re-resolves the
+ * display text and re-registers the pair through AddItemInfoToChatEntry, so pressing enter on a
+ * recalled message links the item again rather than sending literal text.
+ *
+ * method_566 is lossy, though, and that is what made recall look dead for messages that start
+ * with "{": it drops any {...} it cannot resolve, because the resolve branch has no else. A
+ * token the client cannot parse -- a malformed one such as the doubled-brace
+ * "{{IqzYlypNBN:MaceImp29L:...}" the chat renders raw, or a gear type that is gone -- therefore
+ * expands to the empty string, and BeginChat("") is a no-op, so nothing comes back. When nothing
+ * resolved, this falls back to the raw history entry so the message is always recoverable and
+ * the player can edit or resend it.
  */
 
 const fs = require('fs');
@@ -177,6 +194,11 @@ const RECALL_HELPERS = [
     '            return;',
     '         }',
     '         this.var_9101.removeEventListener(KeyboardEvent.KEY_DOWN,this.method_9112,false);',
+    '         if(this.var_9103)',
+    '         {',
+    '            this.var_9101.removeEventListener(Event.ENTER_FRAME,this.method_9114,false);',
+    '            this.var_9103 = false;',
+    '         }',
     '         this.var_9101 = null;',
     '      }',
     '      ',
@@ -191,18 +213,28 @@ const RECALL_HELPERS = [
     '            return;',
     '         }',
     '         this.var_9102 = this.var_9102 + 1;',
+    '         if(Boolean(this.var_9101) && !this.var_9103)',
+    '         {',
+    '            this.var_9101.addEventListener(Event.ENTER_FRAME,this.method_9114,false,0,false);',
+    '            this.var_9103 = true;',
+    '         }',
     '      }',
     '      ',
-    '      private function method_9114() : void',
+    '      private function method_9114(param1:Event) : void',
     '      {',
-    '         var _loc1_:int = 0;',
+    '         var _loc2_:int = 0;',
+    '         if(this.var_9103 && Boolean(this.var_9101))',
+    '         {',
+    '            this.var_9101.removeEventListener(Event.ENTER_FRAME,this.method_9114,false);',
+    '         }',
+    '         this.var_9103 = false;',
     '         if(this.var_9102 <= 0)',
     '         {',
     '            return;',
     '         }',
-    '         _loc1_ = this.var_9102;',
+    '         _loc2_ = this.var_9102;',
     '         this.var_9102 = 0;',
-    '         this.method_9113(-_loc1_);',
+    '         this.method_9113(-_loc2_);',
     '      }',
     '      ',
     '      private function method_9113(param1:int) : void',
@@ -234,6 +266,17 @@ const RECALL_HELPERS = [
     '         this.var_506 = new Array();',
     '         var_2.am_ChatEntry.text = "";',
     '         _loc4_ = this.method_566(_loc3_);',
+    '         if(!this.var_506.length && _loc3_.indexOf("{") > -1)',
+    '         {',
+    '            var_2.am_ChatEntry.removeEventListener(TextEvent.TEXT_INPUT,this.method_381);',
+    '            this.var_232 = new Array();',
+    '            this.var_506 = new Array();',
+    '            _loc4_ = _loc3_;',
+    '         }',
+    '         if(!_loc4_)',
+    '         {',
+    '            _loc4_ = _loc3_;',
+    '         }',
     '         this.BeginChat(_loc4_);',
     '      }',
     '      ',
@@ -254,7 +297,6 @@ const PATCHED_TICK = [
     'override public function OnTickScreen() : void',
     '      {',
     '         this.method_9110();',
-    '         this.method_9114();',
     '         this.method_844();',
     '      }'
 ].join('\n');
@@ -310,15 +352,47 @@ function patchFields(source, swfPath) {
             '      ',
             '      internal var var_9101:Stage = null;',
             '      ',
-            '      internal var var_9102:int = 0;'
+            '      internal var var_9102:int = 0;',
+            '      ',
+            '      internal var var_9103:Boolean = false;'
         ].join('\n')
     );
 }
 
-function patchHelpers(source, swfPath) {
-    if (source.includes('private function method_9113(param1:int) : void')) {
+function patchFieldsUpgrade(source) {
+    if (source.includes('internal var var_9103:Boolean')) {
         return source;
     }
+
+    const anchor = '      internal var var_9102:int = 0;';
+    if (!source.includes(anchor)) {
+        return source;
+    }
+
+    return source.replace(anchor, `${anchor}\n      \n      internal var var_9103:Boolean = false;`);
+}
+
+/**
+ * The helper block is always re-injected from scratch, so an SWF carrying an older revision of
+ * this patch upgrades cleanly. Everything between method_9110 and the method_731 anchor is ours
+ * by construction, which makes the region safe to cut.
+ */
+function stripPreviousHelpers(source, swfPath) {
+    const start = source.indexOf('      private function method_9110() : void');
+    if (start === -1) {
+        return source;
+    }
+
+    const anchor = source.indexOf('      public function method_731() : void', start);
+    if (anchor === -1) {
+        throw new Error(`${path.basename(swfPath)} has a recall helper block with no method_731 anchor after it.`);
+    }
+
+    return source.slice(0, start) + source.slice(anchor);
+}
+
+function patchHelpers(source, swfPath) {
+    source = stripPreviousHelpers(source, swfPath);
 
     const anchor = '      public function method_731() : void';
     if (!source.includes(anchor)) {
@@ -344,9 +418,9 @@ function patchScrollCases(source, swfPath) {
 }
 
 function patchTick(source, swfPath) {
-    if (source.includes('this.method_9114();')) {
-        return source;
-    }
+    // Drop any calls a previous revision injected so the original block matches again.
+    source = source.replace(/^ *this\.method_9114\(\);\r?\n/m, '');
+    source = source.replace(/^ *this\.method_9110\(\);\r?\n/m, '');
 
     const pattern = /override public function OnTickScreen\(\) : void\r?\n      \{\r?\n         this\.method_844\(\);\r?\n      \}/;
     if (!pattern.test(source)) {
@@ -376,6 +450,7 @@ function patchDestroy(source, swfPath) {
 function patchClass127Source(source, swfPath) {
     source = patchImports(source, swfPath);
     source = patchFields(source, swfPath);
+    source = patchFieldsUpgrade(source);
     source = patchHelpers(source, swfPath);
     source = patchScrollCases(source, swfPath);
     source = patchTick(source, swfPath);
@@ -390,15 +465,18 @@ function verifyPatchedClass127(source, swfPath) {
         ['import flash.display.Stage;', 'the Stage import'],
         ['internal var var_9101:Stage = null;', 'the recall listener field'],
         ['internal var var_9102:int = 0;', 'the pending recall counter'],
+        ['internal var var_9103:Boolean = false;', 'the pending-frame flag'],
+        ['private function method_9114(param1:Event) : void', 'the frame-deferred recall apply'],
+        ['this.var_9101.addEventListener(Event.ENTER_FRAME,this.method_9114,false,0,false);', 'the deferred apply scheduling'],
         ['param1.keyCode != Keyboard.NUMPAD_8', 'the numpad up key check'],
         ['_loc1_.addEventListener(KeyboardEvent.KEY_DOWN,this.method_9112,false,0,false);', 'the stage key listener'],
         ['this.var_9101.removeEventListener(KeyboardEvent.KEY_DOWN,this.method_9112,false);', 'the stage key listener teardown'],
         ['private function method_9113(param1:int) : void', 'the chat history recall helper'],
         ['_loc4_ = this.method_566(_loc3_);', 'the recalled-message item-link expansion'],
+        ['if(!this.var_506.length && _loc3_.indexOf("{") > -1)', 'the unresolved-token fallback guard'],
         ['this.BeginChat(_loc4_);', 'the recalled-message chat entry refill'],
         ['this.method_9113(-1);', 'the scroll-up recall wiring'],
         ['this.method_9110();', 'the tick-time listener attach'],
-        ['this.method_9114();', 'the tick-time recall apply'],
         ['this.method_9111();', 'the destroy-time listener detach']
     ];
 
