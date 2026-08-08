@@ -9,8 +9,13 @@
  * back into the chat entry. This patch:
  *
  *   1. restores those two handlers so they refill the chat entry from the sent-message history,
- *   2. adds a stage-level KEY_DOWN hook so the numpad up key (NUMPAD_8, keyCode 104) recalls the
- *      previously sent message from anywhere, opening the chat entry if it is closed.
+ *   2. adds a stage-level KEY_DOWN hook so the numpad keys walk that history from anywhere,
+ *      opening the chat entry if it is closed: NUMPAD_8 (up, keyCode 104) steps toward the newer
+ *      end, NUMPAD_2 (down, keyCode 98) toward the older one.
+ *
+ * var_883 rests one past the end after a send, and method_9113 clamps into [0, length-1], so the
+ * first press of either key lands on the most recently sent message. From there down keeps
+ * walking back through older messages and up returns toward the newest.
  *
  * The recall is applied one frame later rather than inside the key handler, because Flash still
  * inserts the "8" character into the focused TextField after KEY_DOWN; overwriting the whole entry
@@ -84,8 +89,9 @@ function printHelp() {
             '',
             'Defaults:',
             '  patches class_127 in the served DungeonBlitz SWF so the numpad up key (NUMPAD_8)',
-            '  recalls the previously sent chat message, and so the existing chat scroll-up /',
-            '  scroll-down commands actually refill the chat entry.'
+            '  steps to the next sent chat message and the numpad down key (NUMPAD_2) to the',
+            '  previous one, and so the existing chat scroll-up / scroll-down commands actually',
+            '  refill the chat entry.'
         ].join('\n')
     );
 }
@@ -204,7 +210,20 @@ const RECALL_HELPERS = [
     '      ',
     '      private function method_9112(param1:KeyboardEvent) : void',
     '      {',
-    '         if(!param1 || param1.keyCode != Keyboard.NUMPAD_8)',
+    '         var _loc2_:int = 0;',
+    '         if(!param1)',
+    '         {',
+    '            return;',
+    '         }',
+    '         if(param1.keyCode == Keyboard.NUMPAD_8)',
+    '         {',
+    '            _loc2_ = 1;',
+    '         }',
+    '         else if(param1.keyCode == Keyboard.NUMPAD_2)',
+    '         {',
+    '            _loc2_ = -1;',
+    '         }',
+    '         else',
     '         {',
     '            return;',
     '         }',
@@ -212,7 +231,7 @@ const RECALL_HELPERS = [
     '         {',
     '            return;',
     '         }',
-    '         this.var_9102 = this.var_9102 + 1;',
+    '         this.var_9102 = this.var_9102 + _loc2_;',
     '         if(Boolean(this.var_9101) && !this.var_9103)',
     '         {',
     '            this.var_9101.addEventListener(Event.ENTER_FRAME,this.method_9114,false,0,false);',
@@ -228,13 +247,13 @@ const RECALL_HELPERS = [
     '            this.var_9101.removeEventListener(Event.ENTER_FRAME,this.method_9114,false);',
     '         }',
     '         this.var_9103 = false;',
-    '         if(this.var_9102 <= 0)',
+    '         if(this.var_9102 == 0)',
     '         {',
     '            return;',
     '         }',
     '         _loc2_ = this.var_9102;',
     '         this.var_9102 = 0;',
-    '         this.method_9113(-_loc2_);',
+    '         this.method_9113(_loc2_);',
     '      }',
     '      ',
     '      private function method_9113(param1:int) : void',
@@ -283,13 +302,14 @@ const RECALL_HELPERS = [
     '      '
 ].join('\n');
 
-// Only the up direction recalls. Scroll-down still returns true so the key stays swallowed by
-// the chat context instead of falling through to a gameplay binding.
+// Same mapping as the numpad: up walks toward the newer end of the history, down toward the
+// older end.
 const PATCHED_SCROLL_CASES = [
     '               case Game.COMMAND2_SCROLLUP:',
-    '                  this.method_9113(-1);',
+    '                  this.method_9113(1);',
     '                  return true;',
     '               case Game.COMMAND2_SCROLLDOWN:',
+    '                  this.method_9113(-1);',
     '                  return true;'
 ].join('\n');
 
@@ -468,14 +488,20 @@ function verifyPatchedClass127(source, swfPath) {
         ['internal var var_9103:Boolean = false;', 'the pending-frame flag'],
         ['private function method_9114(param1:Event) : void', 'the frame-deferred recall apply'],
         ['this.var_9101.addEventListener(Event.ENTER_FRAME,this.method_9114,false,0,false);', 'the deferred apply scheduling'],
-        ['param1.keyCode != Keyboard.NUMPAD_8', 'the numpad up key check'],
+        // The decompiler is free to flip an else-if into a negated early return, so these only
+        // assert that both keys are read and that each direction is still assigned.
+        ['Keyboard.NUMPAD_8', 'the numpad up key check'],
+        ['Keyboard.NUMPAD_2', 'the numpad down key check'],
+        ['_loc2_ = 1;', 'the newer-direction step'],
+        ['_loc2_ = -1;', 'the older-direction step'],
         ['_loc1_.addEventListener(KeyboardEvent.KEY_DOWN,this.method_9112,false,0,false);', 'the stage key listener'],
         ['this.var_9101.removeEventListener(KeyboardEvent.KEY_DOWN,this.method_9112,false);', 'the stage key listener teardown'],
         ['private function method_9113(param1:int) : void', 'the chat history recall helper'],
         ['_loc4_ = this.method_566(_loc3_);', 'the recalled-message item-link expansion'],
         ['if(!this.var_506.length && _loc3_.indexOf("{") > -1)', 'the unresolved-token fallback guard'],
         ['this.BeginChat(_loc4_);', 'the recalled-message chat entry refill'],
-        ['this.method_9113(-1);', 'the scroll-up recall wiring'],
+        ['this.method_9113(1);', 'the scroll-up recall wiring'],
+        ['this.method_9113(-1);', 'the scroll-down recall wiring'],
         ['this.method_9110();', 'the tick-time listener attach'],
         ['this.method_9111();', 'the destroy-time listener detach']
     ];
@@ -494,8 +520,8 @@ function verifyPatchedClass127(source, swfPath) {
         throw new Error(`${path.basename(swfPath)} has an unexpected chat scroll command block.`);
     }
 
-    if (/case Game\.COMMAND2_SCROLLDOWN:\r?\n\s*this\.method_9113\(1\);/.test(source)) {
-        throw new Error(`${path.basename(swfPath)} still recalls chat history on the down key.`);
+    if (!/case Game\.COMMAND2_SCROLLDOWN:\r?\n\s*this\.method_9113\(-1\);/.test(source)) {
+        throw new Error(`${path.basename(swfPath)} does not walk to the previous message on the down key.`);
     }
 }
 
