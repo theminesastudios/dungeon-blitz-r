@@ -18363,6 +18363,7 @@
 			<AnimClass>a_SentinelFormEnd</AnimClass>
 			<AnimScale>1</AnimScale>
 			<FireAndForget>true</FireAndForget>
+			<Tint>0xFF3030</Tint>
 		</CastGfx>
 		<FireGfx/>
 		<HitGfx/>
