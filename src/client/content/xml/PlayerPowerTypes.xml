@@ -3888,7 +3888,7 @@
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
 		<Description>Grant your allies a small healing surge and Weaken your enemies in an AoE [Stats: x0.91 damage, -10% Melee Damage, over 5s]</Description>
-		<UpgradeDescription>38% Heal over 3 sec. 1 Weaken</UpgradeDescription>
+		<UpgradeDescription>94% Heal over 3 sec. 1 Weaken</UpgradeDescription>
 		<IconName>a_PowerIcon_DivineWord</IconName>
 		<CastSound>[200]CHR_Templar_DivineWord_Cast</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -4020,7 +4020,7 @@
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
 		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and bathe them in Holy Fire [Stats: x1.1 damage, -10% Melee Damage, over 5s, 1 damage/s, over 5s]</Description>
-		<UpgradeDescription>50% Heal over 3 sec</UpgradeDescription>
+		<UpgradeDescription>125% Heal over 3 sec</UpgradeDescription>
 		<IconName>a_PowerIcon_DivineWord</IconName>
 		<CastSound>[200]CHR_Templar_DivineWord_Cast</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -4284,7 +4284,7 @@
 		<DisplayName>Divine Word</DisplayName>
 		<BasePowerName>DivineWord</BasePowerName>
 		<Description>Grant your allies a small healing surge, Weaken your enemies in an AoE and bathe them in Holy Fire [Stats: x1.52 damage, -10% Melee Damage, over 5s, 1 damage/s, over 5s]</Description>
-		<UpgradeDescription>-1 Mana Cost, 63% Heal over 3 sec</UpgradeDescription>
+		<UpgradeDescription>-1 Mana Cost, 156% Heal over 3 sec</UpgradeDescription>
 		<IconName>a_PowerIcon_DivineWord</IconName>
 		<CastSound>[200]CHR_Templar_DivineWord_Cast</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -4766,7 +4766,7 @@
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>5</ReleaseTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>-.33,-.33,-.33,-.33,-.33,-.33</BaseDamageMult>
+		<BaseDamageMult>-.25,-.25,-.25,-.25,-.25,-.25</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
@@ -4800,7 +4800,7 @@
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>5</ReleaseTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>-.38,-.38,-.37,-.37</BaseDamageMult>
+		<BaseDamageMult>-.29,-.29,-.29,-.29</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
@@ -4808,7 +4808,7 @@
 		<DisplayName>Hallowed Reckoning</DisplayName>
 		<BasePowerName>FountainOfLife</BasePowerName>
 		<Description>Enchant an ally with an aura that heals nearby friends and damages foes over time.</Description>
-		<UpgradeDescription>Increased Damage #olddmg#. 240% Heal over 4 sec.</UpgradeDescription>
+		<UpgradeDescription>Increased Damage #olddmg#. 185% Heal over 4 sec.</UpgradeDescription>
 		<IconName>a_PowerIcon_HallowedReckoning</IconName>
 		<CastSound>CHR_Templar_HallowedReckoning_01[790]CHR_Templar_HallowedReckoning_02[1000]CHR_Templar_HallowedReckoning_03[1000]CHR_Templar_HallowedReckoning_04[1000]CHR_Templar_HallowedReckoning_05</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -4837,7 +4837,7 @@
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>5</ReleaseTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>-.42,-.42,-.42,-.42</BaseDamageMult>
+		<BaseDamageMult>-.33,-.33,-.33,-.33</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
@@ -4845,7 +4845,7 @@
 		<DisplayName>Hallowed Reckoning</DisplayName>
 		<BasePowerName>FountainOfLife</BasePowerName>
 		<Description>Enchant an ally with an aura that heals nearby friends and damages foes over time.</Description>
-		<UpgradeDescription>Increased Damage #olddmg#. 245% Heal over 4 sec.</UpgradeDescription>
+		<UpgradeDescription>Increased Damage #olddmg#. 190% Heal over 4 sec.</UpgradeDescription>
 		<IconName>a_PowerIcon_HallowedReckoning</IconName>
 		<CastSound>CHR_Templar_HallowedReckoning_01[790]CHR_Templar_HallowedReckoning_02[1000]CHR_Templar_HallowedReckoning_03[1000]CHR_Templar_HallowedReckoning_04[1000]CHR_Templar_HallowedReckoning_05</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -4874,7 +4874,7 @@
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>5</ReleaseTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>-.47,-.47,-.47,-.47</BaseDamageMult>
+		<BaseDamageMult>-.37,-.37,-.36,-.36</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
@@ -4882,7 +4882,7 @@
 		<DisplayName>Hallowed Reckoning</DisplayName>
 		<BasePowerName>FountainOfLife</BasePowerName>
 		<Description>Enchant an ally with an aura that heals nearby friends and damages foes over time.</Description>
-		<UpgradeDescription>Increased Damage #olddmg#. 280% Heal over 4 sec.</UpgradeDescription>
+		<UpgradeDescription>Increased Damage #olddmg#. 215% Heal over 4 sec.</UpgradeDescription>
 		<IconName>a_PowerIcon_HallowedReckoning</IconName>
 		<CastSound>CHR_Templar_HallowedReckoning_01[790]CHR_Templar_HallowedReckoning_02[1000]CHR_Templar_HallowedReckoning_03[1000]CHR_Templar_HallowedReckoning_04[1000]CHR_Templar_HallowedReckoning_05</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -4911,7 +4911,7 @@
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>5</ReleaseTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>-.54,-.54,-.53,-.53</BaseDamageMult>
+		<BaseDamageMult>-.42,-.42,-.41,-.41</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
@@ -4919,7 +4919,7 @@
 		<DisplayName>Hallowed Reckoning</DisplayName>
 		<BasePowerName>FountainOfLife</BasePowerName>
 		<Description>Enchant an ally with an aura that heals nearby friends and damages foes over time.</Description>
-		<UpgradeDescription>Adds a stack of Holy Fire. 300% Heal over 4 sec.</UpgradeDescription>
+		<UpgradeDescription>Adds a stack of Holy Fire. 230% Heal over 4 sec.</UpgradeDescription>
 		<IconName>a_PowerIcon_HallowedReckoning</IconName>
 		<CastSound>CHR_Templar_HallowedReckoning_01[790]CHR_Templar_HallowedReckoning_02[1000]CHR_Templar_HallowedReckoning_03[1000]CHR_Templar_HallowedReckoning_04[1000]CHR_Templar_HallowedReckoning_05</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -4948,7 +4948,7 @@
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>5</ReleaseTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>-.6,-.6,-.6,-.6</BaseDamageMult>
+		<BaseDamageMult>-.47,-.47,-.46,-.46</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
@@ -4956,7 +4956,7 @@
 		<DisplayName>Hallowed Reckoning</DisplayName>
 		<BasePowerName>FountainOfLife</BasePowerName>
 		<Description>Enchant an ally with an aura that heals nearby friends and damages foes over time.</Description>
-		<UpgradeDescription>Increased Damage #olddmg#. 325% Heal over 4 sec.</UpgradeDescription>
+		<UpgradeDescription>Increased Damage #olddmg#. 250% Heal over 4 sec.</UpgradeDescription>
 		<IconName>a_PowerIcon_HallowedReckoning</IconName>
 		<CastSound>CHR_Templar_HallowedReckoning_01[790]CHR_Templar_HallowedReckoning_02[1000]CHR_Templar_HallowedReckoning_03[1000]CHR_Templar_HallowedReckoning_04[1000]CHR_Templar_HallowedReckoning_05</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -4985,7 +4985,7 @@
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>5</ReleaseTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>-.67,-.67,-.66,-.66</BaseDamageMult>
+		<BaseDamageMult>-.52,-.52,-.51,-.51</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
@@ -4993,7 +4993,7 @@
 		<DisplayName>Hallowed Reckoning</DisplayName>
 		<BasePowerName>FountainOfLife</BasePowerName>
 		<Description>Enchant an ally with an aura that heals nearby friends and damages foes over time.</Description>
-		<UpgradeDescription>Increased Damage #olddmg#. 330% Heal over 4 sec.</UpgradeDescription>
+		<UpgradeDescription>Increased Damage #olddmg#. 255% Heal over 4 sec.</UpgradeDescription>
 		<IconName>a_PowerIcon_HallowedReckoning</IconName>
 		<CastSound>CHR_Templar_HallowedReckoning_01[790]CHR_Templar_HallowedReckoning_02[1000]CHR_Templar_HallowedReckoning_03[1000]CHR_Templar_HallowedReckoning_04[1000]CHR_Templar_HallowedReckoning_05</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -5022,7 +5022,7 @@
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>5</ReleaseTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>-.75,-.75,-.75,-.72</BaseDamageMult>
+		<BaseDamageMult>-.58,-.58,-.58,-.55</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
@@ -5030,7 +5030,7 @@
 		<DisplayName>Hallowed Reckoning</DisplayName>
 		<BasePowerName>FountainOfLife</BasePowerName>
 		<Description>Enchant an ally with an aura that heals nearby friends and damages foes over time.</Description>
-		<UpgradeDescription>Faster cast animation. 345% Heal over 4 sec.</UpgradeDescription>
+		<UpgradeDescription>Faster cast animation. 265% Heal over 4 sec.</UpgradeDescription>
 		<IconName>a_PowerIcon_HallowedReckoning</IconName>
 		<CastSound>CHR_Templar_HallowedReckoning_01[790]CHR_Templar_HallowedReckoning_02[1000]CHR_Templar_HallowedReckoning_03[1000]CHR_Templar_HallowedReckoning_04[1000]CHR_Templar_HallowedReckoning_05</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -5059,7 +5059,7 @@
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>5</ReleaseTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>-.79,-.79,-.79,-.79</BaseDamageMult>
+		<BaseDamageMult>-.61,-.61,-.61,-.61</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
@@ -5067,7 +5067,7 @@
 		<DisplayName>Hallowed Reckoning</DisplayName>
 		<BasePowerName>FountainOfLife</BasePowerName>
 		<Description>Enchant an ally with an aura that heals nearby friends and damages foes over time.</Description>
-		<UpgradeDescription>Increased Damage #olddmg#. 355% Heal over 4 sec.</UpgradeDescription>
+		<UpgradeDescription>Increased Damage #olddmg#. 275% Heal over 4 sec.</UpgradeDescription>
 		<IconName>a_PowerIcon_HallowedReckoning</IconName>
 		<CastSound>CHR_Templar_HallowedReckoning_01[790]CHR_Templar_HallowedReckoning_02[1000]CHR_Templar_HallowedReckoning_03[1000]CHR_Templar_HallowedReckoning_04[1000]CHR_Templar_HallowedReckoning_05</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -5096,7 +5096,7 @@
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>5</ReleaseTime>
 		<ManaCost>30</ManaCost>
-		<BaseDamageMult>-.85,-.85,-.85,-.81</BaseDamageMult>
+		<BaseDamageMult>-.65,-.65,-.65,-.63</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
@@ -5104,7 +5104,7 @@
 		<DisplayName>Hallowed Reckoning</DisplayName>
 		<BasePowerName>FountainOfLife</BasePowerName>
 		<Description>Enchant an ally with an aura that heals nearby friends and damages foes over time.</Description>
-		<UpgradeDescription>Increased Damage #olddmg#. 365% Heal over 4 sec.</UpgradeDescription>
+		<UpgradeDescription>Increased Damage #olddmg#. 280% Heal over 4 sec.</UpgradeDescription>
 		<IconName>a_PowerIcon_HallowedReckoning</IconName>
 		<CastSound>CHR_Templar_HallowedReckoning_01[790]CHR_Templar_HallowedReckoning_02[1000]CHR_Templar_HallowedReckoning_03[1000]CHR_Templar_HallowedReckoning_04[1000]CHR_Templar_HallowedReckoning_05</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -5133,7 +5133,7 @@
 		<RecoverTime>300</RecoverTime>
 		<ReleaseTime>5</ReleaseTime>
 		<ManaCost>25</ManaCost>
-		<BaseDamageMult>-.98,-.98,-.98,-.98</BaseDamageMult>
+		<BaseDamageMult>-.75,-.75,-.75,-.75</BaseDamageMult>
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Holy</DamageType>
 		<PowerGroup>FountainOfLife</PowerGroup>
@@ -5141,7 +5141,7 @@
 		<DisplayName>Hallowed Reckoning</DisplayName>
 		<BasePowerName>FountainOfLife</BasePowerName>
 		<Description>Enchant an ally with an aura that heals nearby friends and damages foes over time.</Description>
-		<UpgradeDescription>-5 Mana Cost. 390% Heal over 4 sec.</UpgradeDescription>
+		<UpgradeDescription>-5 Mana Cost. 300% Heal over 4 sec.</UpgradeDescription>
 		<IconName>a_PowerIcon_HallowedReckoning</IconName>
 		<CastSound>CHR_Templar_HallowedReckoning_01[790]CHR_Templar_HallowedReckoning_02[1000]CHR_Templar_HallowedReckoning_03[1000]CHR_Templar_HallowedReckoning_04[1000]CHR_Templar_HallowedReckoning_05</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>

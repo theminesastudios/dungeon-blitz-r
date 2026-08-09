@@ -46,8 +46,8 @@ function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
         "Usage:",
         "  npm exec tsx src/server/scripts/patch-dungeonblitz-game-superanim-tick-guard.ts [--verify] [--swf <path>]",
         "",
-        "Patches Game.method_1325 so a bad SuperAnimInstance BitmapData allocation",
-        "is destroyed and removed instead of crashing the Flash render tick.",
+        "Patches Game.method_1325 so a transient SuperAnimInstance BitmapData error",
+        "releases the render lock and retries on the next tick without deleting the animation.",
       ].join("\n"));
       process.exit(0);
     }
@@ -58,16 +58,8 @@ function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
   return { swfPath, verify };
 }
 
-function writeS8(value: number): Buffer {
-  return Buffer.from([value & 0xff]);
-}
-
 function instruction(opcode: number, operands: Buffer[] = []): Buffer {
   return Buffer.concat([Buffer.from([opcode]), ...operands]);
-}
-
-function pushByte(value: number): Buffer {
-  return instruction(0x24, [writeS8(value)]);
 }
 
 function getLocal(localIndex: number): Buffer {
@@ -147,9 +139,6 @@ function findMethod105TryRange(instructions: Instruction[], abc: ReturnType<type
 }
 
 function buildCatchHandler(abc: ReturnType<typeof parseAbc>, catchIndex: number): Buffer {
-  const destroyName = getRequiredMultiname(abc, "DestroySuperAnimInstance");
-  const var961Name = getRequiredMultiname(abc, "var_961");
-  const spliceName = getRequiredMultiname(abc, "splice");
   const superAnimDataName = getRequiredMultiname(abc, "SuperAnimData");
   const var1220Name = getRequiredMultiname(abc, "var_1220");
 
@@ -165,13 +154,9 @@ function buildCatchHandler(abc: ReturnType<typeof parseAbc>, catchIndex: number)
     instruction(0x6d, [writeU30(1)]),
     instruction(0x1d),
     instruction(0x08, [writeU30(5)]),
-    getLocal(2),
-    instruction(0x4f, [writeU30(destroyName), writeU30(0)]),
-    getLocal(0),
-    instruction(0x66, [writeU30(var961Name)]),
-    getLocal(1),
-    pushByte(1),
-    instruction(0x4f, [writeU30(spliceName), writeU30(2)]),
+    // A Home reload can invalidate a cached bitmap for one frame. Keep the
+    // SuperAnimInstance registered so the next render tick can rebuild it;
+    // destroying it here permanently freezes nested discipline-tower loops.
     instruction(0x60, [writeU30(superAnimDataName)]),
     instruction(0x27),
     instruction(0x61, [writeU30(var1220Name)]),
@@ -196,18 +181,51 @@ function buildExceptionEntry(
   ]);
 }
 
-function method1325AlreadyPatched(
+function matchingExceptionIndex(
   methodBody: ReturnType<typeof getGameMethod1325>["methodBody"],
   range: { from: number; to: number },
-): boolean {
-  return methodBody.exceptions.some((exception) => exception.from === range.from && exception.to === range.to);
+): number {
+  return methodBody.exceptions.findIndex((exception) => exception.from === range.from && exception.to === range.to);
 }
 
 function patchSwf(swfPath: string, verify: boolean): void {
   const { ctx, abc, methodBody, code, instructions } = getGameMethod1325(swfPath);
   const range = findMethod105TryRange(instructions, abc);
-  if (method1325AlreadyPatched(methodBody, range)) {
-    console.log(`${swfPath}: already patched (Game.method_1325 SuperAnim tick guard present).`);
+  const existingExceptionIndex = matchingExceptionIndex(methodBody, range);
+  if (existingExceptionIndex >= 0) {
+    const exception = methodBody.exceptions[existingExceptionIndex];
+    const catchHandler = buildCatchHandler(abc, existingExceptionIndex);
+    const existingHandler = code.subarray(exception.target);
+    if (existingHandler.equals(catchHandler)) {
+      console.log(`${swfPath}: already patched (retry-safe Game.method_1325 SuperAnim tick guard present).`);
+      return;
+    }
+    if (verify) {
+      throw new PatchError(`${swfPath}: verify failed; Game.method_1325 still destroys failed SuperAnim instances.`);
+    }
+
+    const patchedCode = Buffer.concat([code.subarray(0, exception.target), catchHandler]);
+    const patches: BytePatch[] = [
+      {
+        key: "Game.method_1325.code",
+        start: methodBody.codeStart,
+        end: methodBody.codeStart + methodBody.codeLen,
+        data: patchedCode,
+        detail: "replace destructive SuperAnim catch handler with retry-safe handler",
+      },
+      {
+        key: "Game.method_1325.codeLen",
+        start: methodBody.codeLenPos,
+        end: methodBody.codeStart,
+        data: writeU30(patchedCode.length),
+        detail: "update Game.method_1325 code length",
+      },
+    ];
+
+    ensureBackup(swfPath);
+    const { body, delta } = applyPatchesToBody(ctx.body, patches);
+    writeSwf(ctx, body, delta);
+    console.log(`${swfPath}: replaced destructive Game.method_1325 SuperAnim tick guard.`);
     return;
   }
 

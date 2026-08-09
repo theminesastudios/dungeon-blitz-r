@@ -9,8 +9,8 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  * Templar:
  *   Subjugate          adds 60% of Expertise as damage against a burning target, and
  *   Penance            45% -- both bytecode, see patch-dungeonblitz-templar-talent-effects
- *   Divine Word        healing halved
- *   Hallowed Reckoning healing down 35%
+ *   Divine Word        healing up 25%
+ *   Hallowed Reckoning healing halved
  *   Sacred Light       stops healing twice per cast
  *   Celestial Lance    no rank raises Holy Fire damage any more. Rank 4 only Staggers, rank 8
  *                      lands a second stack of Holy Fire and takes 3 Mana off, rank 10 takes
@@ -202,8 +202,8 @@ const TARGET_BUFFS = new Map<string, string>([
    *
    * The Lance is the only source that stacks at all. Divine Word, Hallowed Reckoning and
    * Sanctum each land exactly one at every rank; ranks 1-7 of the Lance land one and 8-10 land
-   * two, which is what fills HolyFire1's authored cap of two and gives the Crusading Flames
-   * stone something to raise.
+   * two, which moves HolyFire1 toward its base cap of three and gives the Crusading Flames
+   * stone something to raise further.
    *
    * The rank bands are the combos, not the ranks: Combo2 is ranks 4-5, Combo3 6-7, Combo4 8-9,
    * Combo5 10. Combo and Combo1 already author a bare HolyFire1 and stay as they are.
@@ -355,25 +355,25 @@ const DAMAGE_MULTS = new Map<string, string>([
   ["Shockwave9", "1.38"], // 1.15
   ["Shockwave10", "1.45"], // 1.21
   /**
-   * Hallowed Reckoning heals 35% less. The heal is the negative half of the AuraFriend blocks
+   * Hallowed Reckoning heals 50% less. The heal is the negative half of the AuraFriend blocks
    * -- a BaseDamageMult below zero is healing, charged per cast step against Expertise -- so
-   * every entry of every rank's list is scaled by .65 and rounded to the two decimals the file
+   * every entry of every rank's list is scaled by .5 and rounded to the two decimals the file
    * is authored in. The FountainOfLifeCombo blocks are the enemy-facing half and keep their
    * damage.
    *
    * The unranked block moves with them; it is the pre-talent version of the same power.
    */
-  ["FountainOfLife", "-.33,-.33,-.33,-.33,-.33,-.33"], // -.5 x6
-  ["FountainOfLife1", "-.38,-.38,-.37,-.37"], // -.58,-.58,-.57,-.57
-  ["FountainOfLife2", "-.42,-.42,-.42,-.42"], // -.65 x4
-  ["FountainOfLife3", "-.47,-.47,-.47,-.47"], // -.73,-.73,-.72,-.72
-  ["FountainOfLife4", "-.54,-.54,-.53,-.53"], // -.83,-.83,-.82,-.82
-  ["FountainOfLife5", "-.6,-.6,-.6,-.6"], // -.93,-.93,-.92,-.92
-  ["FountainOfLife6", "-.67,-.67,-.66,-.66"], // -1.03,-1.03,-1.02,-1.02
-  ["FountainOfLife7", "-.75,-.75,-.75,-.72"], // -1.15,-1.15,-1.15,-1.10
-  ["FountainOfLife8", "-.79,-.79,-.79,-.79"], // -1.22,-1.21,-1.21,-1.21
-  ["FountainOfLife9", "-.85,-.85,-.85,-.81"], // -1.30,-1.30,-1.30,-1.25
-  ["FountainOfLife10", "-.98,-.98,-.98,-.98"], // -1.5 x4
+  ["FountainOfLife", "-.25,-.25,-.25,-.25,-.25,-.25"], // -.5 x6
+  ["FountainOfLife1", "-.29,-.29,-.29,-.29"], // -.58,-.58,-.57,-.57
+  ["FountainOfLife2", "-.33,-.33,-.33,-.33"], // -.65 x4
+  ["FountainOfLife3", "-.37,-.37,-.36,-.36"], // -.73,-.73,-.72,-.72
+  ["FountainOfLife4", "-.42,-.42,-.41,-.41"], // -.83,-.83,-.82,-.82
+  ["FountainOfLife5", "-.47,-.47,-.46,-.46"], // -.93,-.93,-.92,-.92
+  ["FountainOfLife6", "-.52,-.52,-.51,-.51"], // -1.03,-1.03,-1.02,-1.02
+  ["FountainOfLife7", "-.58,-.58,-.58,-.55"], // -1.15,-1.15,-1.15,-1.10
+  ["FountainOfLife8", "-.61,-.61,-.61,-.61"], // -1.22,-1.21,-1.21,-1.21
+  ["FountainOfLife9", "-.65,-.65,-.65,-.63"], // -1.30,-1.30,-1.30,-1.25
+  ["FountainOfLife10", "-.75,-.75,-.75,-.75"], // -1.5 x4
   /**
    * Sacred Light healed twice per cast, and the trailing zero is the whole fix.
    *
@@ -572,30 +572,34 @@ const POWER_TEXT_MIGRATIONS: Array<{ power: RegExp; from: string; to: string }> 
     }))
   ),
   /**
-   * Hallowed Reckoning's quoted heal, down 35% with the values it quotes. These are
+   * Hallowed Reckoning's quoted heal, down 50% with the values it quotes. These are
    * migrations rather than UPGRADE_TEXT rows because every rank carries a percentage and
    * UPGRADE_TEXT holds one pair per power -- and because ranks 4, 7 and 10 have already had
    * their sentence rewritten once, so the percentage is the only part still worth matching.
    */
   ...(
-    [
-      [370, 240], [380, 245], [430, 280], [460, 300], [500, 325],
-      [510, 330], [530, 345], [550, 355], [560, 365], [600, 390],
-    ].map(([before, after]) => ({
-      power: /^FountainOfLife\d+$/,
-      from: `${before}% Heal over 4 sec.`,
-      to: `${after}% Heal over 4 sec.`,
-    }))
+    ([
+      [1, [370, 240, 260], 185], [2, [380, 245, 265], 190], [3, [430, 280, 300], 215],
+      [4, [460, 300, 320], 230], [5, [500, 325, 350], 250], [6, [510, 330, 355], 255],
+      [7, [530, 345, 370], 265], [8, [550, 355, 385], 275], [9, [560, 365, 390], 280],
+      [10, [600, 390, 420], 300],
+    ] as Array<[number, number[], number]>).flatMap(([rank, sources, after]) => sources
+      .filter((before) => before !== after)
+      .map((before) => ({
+        power: new RegExp(`^FountainOfLife${rank}$`),
+        from: `${before}% Heal over 4 sec.`,
+        to: `${after}% Heal over 4 sec.`,
+      })))
   ),
-  // Divine Word's, halved.
+  // Divine Word's, increased by 25%.
   ...(
-    [
-      [75, 38], [100, 50], [125, 63],
-    ].map(([before, after]) => ({
-      power: /^DivineWord\d+$/,
+    ([
+      [1, [113, 75, 38], 94], [4, [1125, 150, 100, 50], 125], [10, [188, 125, 63], 156],
+    ] as Array<[number, number[], number]>).flatMap(([rank, sources, after]) => sources.map((before) => ({
+      power: new RegExp(`^DivineWord${rank}$`),
       from: `${before}% Heal over 3 sec`,
       to: `${after}% Heal over 3 sec`,
-    }))
+    })))
   ),
   /**
    * Empyrean Aura's boost now says #dur#, which PowerType resolves at read time from the buff
@@ -676,9 +680,9 @@ const UPGRADE_TEXT = new Map<string, [string, string]>([
   // The percentages here are the ones POWER_TEXT_MIGRATIONS has already written by the time
   // these run -- a clean checkout walks the migration first, so matching the authored 460 here
   // would never fire.
-  ["FountainOfLife4", ["Increased Damage #olddmg#. 300% Heal over 4 sec.", "Adds a stack of Holy Fire. 300% Heal over 4 sec."]],
-  ["FountainOfLife7", ["Increased Damage #olddmg#. 345% Heal over 4 sec.", "Faster cast animation. 345% Heal over 4 sec."]],
-  ["FountainOfLife10", ["Increased Damage #olddmg#. 390% Heal over 4 sec.", "-5 Mana Cost. 390% Heal over 4 sec."]],
+  ["FountainOfLife4", ["Increased Damage #olddmg#. 230% Heal over 4 sec.", "Adds a stack of Holy Fire. 230% Heal over 4 sec."]],
+  ["FountainOfLife7", ["Increased Damage #olddmg#. 265% Heal over 4 sec.", "Faster cast animation. 265% Heal over 4 sec."]],
+  ["FountainOfLife10", ["Increased Damage #olddmg#. 300% Heal over 4 sec.", "-5 Mana Cost. 300% Heal over 4 sec."]],
   ["CelestialLance6", ["Increased Holy Fire Damage", "The Lance now strikes every enemy around its target."]],
   // Anchored on what the previous pass left behind, not on the authored text -- the migration
   // above covers the clean checkout, and this covers a tree where rank 8 had lost its stack.
@@ -874,16 +878,21 @@ const BUFF_DURATIONS = new Map<string, string>([
 // Empyrean Aura's sentence is written outright now -- see POWER_DESCRIPTIONS.
 
 /**
- * Divine Word heals half as much. The heal is not on the power at all -- DivineWordCombo is a
+ * Divine Word heals 25% more. The heal is not on the power at all -- DivineWordCombo is a
  * RangedAoEFriend cast with no damage of its own whose only payload is one of these three
  * buffs, and the buff's negative DoTDamage is the healing tick. Rank bands: Buff10 is ranks
  * 1-3, Buff15 is 4-9, Buff20 is 10.
  */
 const BUFF_DOT_DAMAGE = new Map<string, string>([
-  ["DivineWordBuff10", "-0.375"], // -0.75
-  ["DivineWordBuff15", "-0.5"], // -1
-  ["DivineWordBuff20", "-0.625"], // -1.25
+  ["DivineWordBuff10", "-0.9375"], // -0.75
+  ["DivineWordBuff15", "-1.25"], // -1
+  ["DivineWordBuff20", "-1.5625"], // -1.25
 ]);
+
+/** Holy Fire starts at three stacks; Crusading Flames adds up to five more for a cap of eight. */
+const HOLY_FIRE_STACK_COUNTS = new Map<string, string>(
+  [1, 2, 3, 4, 5].map((rank) => [`HolyFire${rank}`, "3"]),
+);
 
 /**
  * Sentinel Form's damage bonus. Ranks 1-3 authored none at all, which is why a fresh
@@ -958,8 +967,8 @@ const MOD_BUFF_VALUES = new Map<string, string>([
   ["IgniteDmg4", "0.1"], // 0.05
   ["IgniteDmg5", "0.16"], // 0.08
   /**
-   * Crusading Flames, down from +1/2/3/5/8 to +1/2/3/4/5. The top of the old curve put a
-   * Templar ten stacks deep on a buff whose authored cap is two.
+   * Crusading Flames, down from +1/2/3/5/8 to +1/2/3/4/5. With the new base cap of three,
+   * the old curve would have reached eleven stacks instead of the intended maximum of eight.
    *
    * These are here as well as in MOD_INSERTS because the family only gets inserted on a tree
    * that does not have it yet -- an already-patched PowerModTypes is edited through this map.
@@ -1179,9 +1188,9 @@ const MOD_REWRITES = new Map<string, ModRewrite>([
  * ModIDs 895-899 are the first free ones -- the file authors 0 through 894 with no gaps -- and
  * they are what a Templar's save will key against, so they must not be renumbered later.
  *
- * It raises the *cap*, not the damage: HolyFire1..5 all author StackCount 2, which is exactly
- * what a rank-8 Celestial Lance fills on its own. Deep Cuts and Napalm are the same mod shape
- * against Bleeding and Burned.
+ * It raises the *cap*, not the damage: HolyFire1..5 all have a patched StackCount of 3, and
+ * the +5 final rank reaches the intended maximum of 8. Deep Cuts and Napalm are the same mod
+ * shape against Bleeding and Burned.
  *
  * The icon stays a_Signet_RapidRecover. It is the icon the Templar's node has always shown,
  * and reusing it means the node keeps its face while the Sentinel's stone keeps its own.
@@ -1531,6 +1540,12 @@ export function patchPlayerBuffs(xml: string): { xml: string; stats: PatchStats 
     if (dotDamage) {
       touched = true;
       next = replaceTag(next, "DoTDamage", dotDamage, stats);
+    }
+
+    const stackCount = HOLY_FIRE_STACK_COUNTS.get(buffName);
+    if (stackCount) {
+      touched = true;
+      next = replaceTag(next, "StackCount", stackCount, stats);
     }
 
     const formDamage = SENTINEL_FORM_DAMAGE.get(buffName);

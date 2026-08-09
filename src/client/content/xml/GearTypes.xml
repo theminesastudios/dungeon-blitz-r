@@ -76510,7 +76510,7 @@
 		<MagicRune>ItemDrop+GoldDrop</MagicRune>
 		<PowerRune>LeoneanAura</PowerRune>
 		<ProcRune>HealthPercent</ProcRune>
-		<ProcRune2>DeathSlay</ProcRune2>
+		<ProcRune2>Haste</ProcRune2>
 		<StatRune>PaladinBalanced</StatRune>
 		<Rarity>L</Rarity>
 		<GfxType>
@@ -76574,7 +76574,7 @@
 		<MagicRune>ItemDrop+GoldDrop</MagicRune>
 		<PowerRune>GhostBlade</PowerRune>
 		<ProcRune>HealthPercent</ProcRune>
-		<ProcRune2>DeathSlay</ProcRune2>
+		<ProcRune2>Haste</ProcRune2>
 		<StatRune>RogueBalanced</StatRune>
 		<Rarity>L</Rarity>
 		<GfxType>
@@ -76634,7 +76634,7 @@
 		<MagicRune>ItemDrop+GoldDrop</MagicRune>
 		<PowerRune>PlagueBattalion</PowerRune>
 		<ProcRune>HealthPercent</ProcRune>
-		<ProcRune2>DeathSlay</ProcRune2>
+		<ProcRune2>Haste</ProcRune2>
 		<StatRune>MageBalanced</StatRune>
 		<Rarity>L</Rarity>
 		<GfxType>
