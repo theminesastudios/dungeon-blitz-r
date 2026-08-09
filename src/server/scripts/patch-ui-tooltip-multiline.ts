@@ -6,7 +6,7 @@ import * as zlib from "zlib";
  * Makes the gear tooltip's PowerRune line (`am_PowerTypeName`) able to render multiple lines.
  *
  * The field ships `multiline=false autoSize=false`, so the multi-line Descriptions that
- * `patch-mystic-rogue-power-mods.ts` writes for the Mystic items would collapse to one line. This
+ * `patch-mystic-power-mods.ts` writes for the Mystic items would collapse to one line. This
  * flips two bits in the DefineEditText tags that define the field:
  *
  *  - Multiline: embedded "\n" characters start new lines.

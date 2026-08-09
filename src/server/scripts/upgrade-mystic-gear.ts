@@ -2,17 +2,18 @@ import * as fs from "fs";
 import * as path from "path";
 
 /**
- * Promotes owned copies of the six Rogue lockbox items from Legendary (tier 2) to Mystic (tier 3).
+ * Promotes owned copies of the eighteen class lockbox items from Legendary (tier 2) to Mystic (tier 3).
  *
  * There is deliberately no drop or forge path for Mystic yet, so this is how a character gets one.
  * Gear tier already travels in 2 bits, so tier 3 needs no protocol change; the client resolves it
- * through `Game.method_110` to the `"<gearID>Y"` entry added by `patch-mystic-rogue-gear-data.ts`.
+ * through `Game.method_110` to the `"<gearID>Y"` entry added by `patch-mystic-gear-data.ts`.
  * Run those patches first — without them the client falls back to the Magic entry for tier 3.
  *
  * Only tier 2 is promoted: a Magic or Rare copy is a genuinely lesser item and silently jumping it
  * two grades would be a different change than the one this script advertises.
  */
-const MYSTIC_GEAR_IDS = [1171, 1172, 1173, 1174, 1175, 1176];
+/** Mage 1165-1170, Rogue 1171-1176, Paladin 1177-1182 — every lockbox unique with a Mystic row. */
+const MYSTIC_GEAR_IDS = Array.from({ length: 18 }, (_, index) => 1165 + index);
 const LEGENDARY_TIER = 2;
 const MYSTIC_TIER = 3;
 
@@ -69,7 +70,7 @@ function parseArgs(argv: string[]): { character: string | null; userId: number |
     if (arg === "--help" || arg === "-h") {
       console.log([
         "Usage:",
-        "  npx ts-node src/server/scripts/upgrade-mystic-rogue-gear.ts [--character <name>] [--verify] [--downgrade]",
+        "  npx ts-node src/server/scripts/upgrade-mystic-gear.ts [--character <name>] [--verify] [--downgrade]",
         "",
         "Promotes owned Legendary copies of the six Rogue lockbox items (GearID 1171-1176) to Mystic.",
         "",

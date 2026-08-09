@@ -76707,6 +76707,27 @@
 			<ColorSwap5>0xB00000=0x16B465</ColorSwap5>
 		</GfxType>
 	</Gear>
+	<Gear GearName="UniqueMageLockbox01GearSword30Y" GearID="1165" Type="Sword">
+		<DisplayName>Mistik Ozel Buyucu Kilic Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Mage</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticMageSword</PowerRune>
+		<ProcRune>ProcMassive</ProcRune>
+		<ProcRune2>ProcHealTime</ProcRune2>
+		<StatRune>MageSpread</StatRune>
+		<Rarity>Y</Rarity>
+		<MeleePower>StaffMelee</MeleePower>
+		<RangedPower>Poisonball</RangedPower>
+		<GfxType>
+			<CustomArt>Gfx_Mage_1.swf/StaffEvil</CustomArt>
+			<ColorSwap>0xD0F0F0=0x78964B</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x4A8912</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x345227</ColorSwap3>
+			<ColorSwap4>0xFF9999=0x1AFF8C</ColorSwap4>
+			<ColorSwap5>0xB00000=0x16B465</ColorSwap5>
+		</GfxType>
+	</Gear>
 	<Gear GearName="UniqueMageLockbox01GearShield30" GearID="1166" Type="Shield">
 		<DisplayName>Ozel Buyucu Kalkan Seviye 30</DisplayName>
 		<GearSet>99</GearSet>
@@ -76752,6 +76773,25 @@
 		<ProcRune2>CritChance</ProcRune2>
 		<StatRune>MageSpread</StatRune>
 		<Rarity>L</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Mage_1.swf/FocusEvil</CustomArt>
+			<ColorSwap>0xD0F0F0=0x78964B</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x4A8912</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x345227</ColorSwap3>
+			<ColorSwap4>0xFF9999=0x1AFF8C</ColorSwap4>
+			<ColorSwap5>0xB00000=0x16B465</ColorSwap5>
+		</GfxType>
+	</Gear>
+	<Gear GearName="UniqueMageLockbox01GearShield30Y" GearID="1166" Type="Shield">
+		<DisplayName>Mistik Ozel Buyucu Kalkan Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Mage</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticMageOffhand</PowerRune>
+		<ProcRune>Haste</ProcRune>
+		<ProcRune2>CritChance</ProcRune2>
+		<StatRune>MageSpread</StatRune>
+		<Rarity>Y</Rarity>
 		<GfxType>
 			<CustomArt>Gfx_Mage_1.swf/FocusEvil</CustomArt>
 			<ColorSwap>0xD0F0F0=0x78964B</ColorSwap>
@@ -76808,6 +76848,26 @@
 		<ProcRune2>HealthPercent</ProcRune2>
 		<StatRune>MageSpread</StatRune>
 		<Rarity>L</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Mage_1.swf/ChokerNecromancer</CustomArt>
+			<CustomArt2>Gfx_Mage_1.swf/JewelryEvil</CustomArt2>
+			<ColorSwap>0xD0F0F0=0x78964B</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x4A8912</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x345227</ColorSwap3>
+			<ColorSwap4>0xFF9999=0x1AFF8C</ColorSwap4>
+			<ColorSwap5>0xB00000=0x16B465</ColorSwap5>
+		</GfxType>
+	</Gear>
+	<Gear GearName="UniqueMageLockbox01GearHat30Y" GearID="1167" Type="Hat">
+		<DisplayName>Mistik Ozel Buyucu Baslik Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Mage</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticMageHat</PowerRune>
+		<ProcRune>CritDamage</ProcRune>
+		<ProcRune2>HealthPercent</ProcRune2>
+		<StatRune>MageSpread</StatRune>
+		<Rarity>Y</Rarity>
 		<GfxType>
 			<CustomArt>Gfx_Mage_1.swf/ChokerNecromancer</CustomArt>
 			<CustomArt2>Gfx_Mage_1.swf/JewelryEvil</CustomArt2>
@@ -76875,6 +76935,26 @@
 			<ColorSwap5>0xB00000=0x16B465</ColorSwap5>
 		</GfxType>
 	</Gear>
+	<Gear GearName="UniqueMageLockbox01GearArmor30Y" GearID="1168" Type="Armor">
+		<DisplayName>Mistik Ozel Buyucu Zirh Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Mage</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticMageArmor</PowerRune>
+		<ProcRune>CritChance</ProcRune>
+		<ProcRune2>RecoveryBoost</ProcRune2>
+		<StatRune>MageSpread</StatRune>
+		<Rarity>Y</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Mage_1.swf/DressEvil</CustomArt>
+			<CustomArt2>Gfx_Mage_1.swf/ShoulderEvil</CustomArt2>
+			<ColorSwap>0xD0F0F0=0x78964B</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x4A8912</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x345227</ColorSwap3>
+			<ColorSwap4>0xFF9999=0x1AFF8C</ColorSwap4>
+			<ColorSwap5>0xB00000=0x16B465</ColorSwap5>
+		</GfxType>
+	</Gear>
 	<Gear GearName="UniqueMageLockbox01GearGloves30" GearID="1169" Type="Gloves">
 		<DisplayName>Ozel Buyucu Eldiven Seviye 30</DisplayName>
 		<GearSet>99</GearSet>
@@ -76932,6 +77012,26 @@
 			<ColorSwap5>0xB00000=0x16B465</ColorSwap5>
 		</GfxType>
 	</Gear>
+	<Gear GearName="UniqueMageLockbox01GearGloves30Y" GearID="1169" Type="Gloves">
+		<DisplayName>Mistik Ozel Buyucu Eldiven Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Mage</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticMageGloves</PowerRune>
+		<ProcRune>Haste</ProcRune>
+		<ProcRune2>RecoveryBoost</ProcRune2>
+		<StatRune>MageSpread</StatRune>
+		<Rarity>Y</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Mage_1.swf/HandDark</CustomArt>
+			<CustomArt2>Gfx_Mage_1.swf/GlovesEvil</CustomArt2>
+			<ColorSwap>0xD0F0F0=0x78964B</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x4A8912</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x345227</ColorSwap3>
+			<ColorSwap4>0xFF9999=0x1AFF8C</ColorSwap4>
+			<ColorSwap5>0xB00000=0x16B465</ColorSwap5>
+		</GfxType>
+	</Gear>
 	<Gear GearName="UniqueMageLockbox01GearBoots30" GearID="1170" Type="Boots">
 		<DisplayName>Ozel Buyucu Cizme Seviye 30</DisplayName>
 		<GearSet>99</GearSet>
@@ -76977,6 +77077,25 @@
 		<ProcRune2>HealthPercent</ProcRune2>
 		<StatRune>MageSpread</StatRune>
 		<Rarity>L</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Mage_1.swf/BootsEvil</CustomArt>
+			<ColorSwap>0xD0F0F0=0x78964B</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x4A8912</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x345227</ColorSwap3>
+			<ColorSwap4>0xFF9999=0x1AFF8C</ColorSwap4>
+			<ColorSwap5>0xB00000=0x16B465</ColorSwap5>
+		</GfxType>
+	</Gear>
+	<Gear GearName="UniqueMageLockbox01GearBoots30Y" GearID="1170" Type="Boots">
+		<DisplayName>Mistik Ozel Buyucu Cizme Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Mage</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticMageBoots</PowerRune>
+		<ProcRune>CritDamage</ProcRune>
+		<ProcRune2>HealthPercent</ProcRune2>
+		<StatRune>MageSpread</StatRune>
+		<Rarity>Y</Rarity>
 		<GfxType>
 			<CustomArt>Gfx_Mage_1.swf/BootsEvil</CustomArt>
 			<ColorSwap>0xD0F0F0=0x78964B</ColorSwap>
@@ -77531,6 +77650,28 @@
 			<ColorSwap6>0x600000=0xFAB941</ColorSwap6>
 		</GfxType>
 	</Gear>
+	<Gear GearName="UniquePaladinLockbox01GearSword30Y" GearID="1177" Type="Sword">
+		<DisplayName>Mistik Ozel Sovalyeci Kilic Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Paladin</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticPaladinSword</PowerRune>
+		<ProcRune>ProcMassive</ProcRune>
+		<ProcRune2>ProcHealTime</ProcRune2>
+		<StatRune>PaladinSpread</StatRune>
+		<Rarity>Y</Rarity>
+		<MeleePower>SwordMelee</MeleePower>
+		<RangedPower>Lightningball</RangedPower>
+		<GfxType>
+			<CustomArt>Gfx_Paladin_1.swf/SwordHoly</CustomArt>
+			<ColorSwap>0xD0F0F0=0xFFFFFF</ColorSwap>
+			<ColorSwap2>0x80C0F0=0xD1EDF1</ColorSwap2>
+			<ColorSwap3>0x0070E0=0xA3CFDC</ColorSwap3>
+			<ColorSwap4>0xFF9999=0xFFFD9B</ColorSwap4>
+			<ColorSwap5>0xB00000=0xFFE4AE</ColorSwap5>
+			<ColorSwap6>0x600000=0xFAB941</ColorSwap6>
+		</GfxType>
+	</Gear>
 	<Gear GearName="UniquePaladinLockbox01GearShield30" GearID="1178" Type="Shield">
 		<DisplayName>Ozel Sovalyeci Kalkan Seviye 30</DisplayName>
 		<GearSet>99</GearSet>
@@ -77578,6 +77719,26 @@
 		<ProcRune2>CritChance</ProcRune2>
 		<StatRune>PaladinSpread</StatRune>
 		<Rarity>L</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Paladin_1.swf/ShieldHoly</CustomArt>
+			<ColorSwap>0xD0F0F0=0xFFFFFF</ColorSwap>
+			<ColorSwap2>0x80C0F0=0xD1EDF1</ColorSwap2>
+			<ColorSwap3>0x0070E0=0xA3CFDC</ColorSwap3>
+			<ColorSwap4>0xFF9999=0xFFFD9B</ColorSwap4>
+			<ColorSwap5>0xB00000=0xFFE4AE</ColorSwap5>
+			<ColorSwap6>0x600000=0xFAB941</ColorSwap6>
+		</GfxType>
+	</Gear>
+	<Gear GearName="UniquePaladinLockbox01GearShield30Y" GearID="1178" Type="Shield">
+		<DisplayName>Mistik Ozel Sovalyeci Kalkan Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Paladin</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticPaladinOffhand</PowerRune>
+		<ProcRune>Haste</ProcRune>
+		<ProcRune2>CritChance</ProcRune2>
+		<StatRune>PaladinSpread</StatRune>
+		<Rarity>Y</Rarity>
 		<GfxType>
 			<CustomArt>Gfx_Paladin_1.swf/ShieldHoly</CustomArt>
 			<ColorSwap>0xD0F0F0=0xFFFFFF</ColorSwap>
@@ -77648,6 +77809,27 @@
 			<ColorSwap6>0x600000=0xFAB941</ColorSwap6>
 		</GfxType>
 	</Gear>
+	<Gear GearName="UniquePaladinLockbox01GearHat30Y" GearID="1179" Type="Hat">
+		<DisplayName>Mistik Ozel Sovalyeci Baslik Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Paladin</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticPaladinHat</PowerRune>
+		<ProcRune>CritDamage</ProcRune>
+		<ProcRune2>HealthPercent</ProcRune2>
+		<StatRune>PaladinSpread</StatRune>
+		<Rarity>Y</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Paladin_1.swf/HatHairHidden</CustomArt>
+			<CustomArt2>Gfx_Paladin_1.swf/HatHoly</CustomArt2>
+			<ColorSwap>0xD0F0F0=0xFFFFFF</ColorSwap>
+			<ColorSwap2>0x80C0F0=0xD1EDF1</ColorSwap2>
+			<ColorSwap3>0x0070E0=0xA3CFDC</ColorSwap3>
+			<ColorSwap4>0xFF9999=0xFFFD9B</ColorSwap4>
+			<ColorSwap5>0xB00000=0xFFE4AE</ColorSwap5>
+			<ColorSwap6>0x600000=0xFAB941</ColorSwap6>
+		</GfxType>
+	</Gear>
 	<Gear GearName="UniquePaladinLockbox01GearArmor30" GearID="1180" Type="Armor">
 		<DisplayName>Ozel Sovalyeci Zirh Seviye 30</DisplayName>
 		<GearSet>99</GearSet>
@@ -77695,6 +77877,26 @@
 		<ProcRune2>RecoveryBoost</ProcRune2>
 		<StatRune>PaladinSpread</StatRune>
 		<Rarity>L</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Paladin_1.swf/ArmorHoly</CustomArt>
+			<ColorSwap>0xD0F0F0=0xFFFFFF</ColorSwap>
+			<ColorSwap2>0x80C0F0=0xD1EDF1</ColorSwap2>
+			<ColorSwap3>0x0070E0=0xA3CFDC</ColorSwap3>
+			<ColorSwap4>0xFF9999=0xFFFD9B</ColorSwap4>
+			<ColorSwap5>0xB00000=0xFFE4AE</ColorSwap5>
+			<ColorSwap6>0x600000=0xFAB941</ColorSwap6>
+		</GfxType>
+	</Gear>
+	<Gear GearName="UniquePaladinLockbox01GearArmor30Y" GearID="1180" Type="Armor">
+		<DisplayName>Mistik Ozel Sovalyeci Zirh Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Paladin</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticPaladinArmor</PowerRune>
+		<ProcRune>CritChance</ProcRune>
+		<ProcRune2>RecoveryBoost</ProcRune2>
+		<StatRune>PaladinSpread</StatRune>
+		<Rarity>Y</Rarity>
 		<GfxType>
 			<CustomArt>Gfx_Paladin_1.swf/ArmorHoly</CustomArt>
 			<ColorSwap>0xD0F0F0=0xFFFFFF</ColorSwap>
@@ -77765,6 +77967,27 @@
 			<ColorSwap6>0x600000=0xFAB941</ColorSwap6>
 		</GfxType>
 	</Gear>
+	<Gear GearName="UniquePaladinLockbox01GearGloves30Y" GearID="1181" Type="Gloves">
+		<DisplayName>Mistik Ozel Sovalyeci Eldiven Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Paladin</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticPaladinGloves</PowerRune>
+		<ProcRune>Haste</ProcRune>
+		<ProcRune2>RecoveryBoost</ProcRune2>
+		<StatRune>PaladinSpread</StatRune>
+		<Rarity>Y</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Paladin_1.swf/GloveHoly</CustomArt>
+			<CustomArt2>Gfx_Paladin_1.swf/HandMail</CustomArt2>
+			<ColorSwap>0xD0F0F0=0xFFFFFF</ColorSwap>
+			<ColorSwap2>0x80C0F0=0xD1EDF1</ColorSwap2>
+			<ColorSwap3>0x0070E0=0xA3CFDC</ColorSwap3>
+			<ColorSwap4>0xFF9999=0xFFFD9B</ColorSwap4>
+			<ColorSwap5>0xB00000=0xFFE4AE</ColorSwap5>
+			<ColorSwap6>0x600000=0xFAB941</ColorSwap6>
+		</GfxType>
+	</Gear>
 	<Gear GearName="UniquePaladinLockbox01GearBoots30" GearID="1182" Type="Boots">
 		<DisplayName>Ozel Sovalyeci Cizme Seviye 30</DisplayName>
 		<GearSet>99</GearSet>
@@ -77814,6 +78037,27 @@
 		<ProcRune2>HealthPercent</ProcRune2>
 		<StatRune>PaladinSpread</StatRune>
 		<Rarity>L</Rarity>
+		<GfxType>
+			<CustomArt>Gfx_Paladin_1.swf/FootBaseHoly</CustomArt>
+			<CustomArt2>Gfx_Paladin_1.swf/BootHoly</CustomArt2>
+			<ColorSwap>0xD0F0F0=0xFFFFFF</ColorSwap>
+			<ColorSwap2>0x80C0F0=0xD1EDF1</ColorSwap2>
+			<ColorSwap3>0x0070E0=0xA3CFDC</ColorSwap3>
+			<ColorSwap4>0xFF9999=0xFFFD9B</ColorSwap4>
+			<ColorSwap5>0xB00000=0xFFE4AE</ColorSwap5>
+			<ColorSwap6>0x600000=0xFAB941</ColorSwap6>
+		</GfxType>
+	</Gear>
+	<Gear GearName="UniquePaladinLockbox01GearBoots30Y" GearID="1182" Type="Boots">
+		<DisplayName>Mistik Ozel Sovalyeci Cizme Seviye 30</DisplayName>
+		<GearSet>99</GearSet>
+		<UsedBy>Paladin</UsedBy>
+		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<PowerRune>MysticPaladinBoots</PowerRune>
+		<ProcRune>CritDamage</ProcRune>
+		<ProcRune2>HealthPercent</ProcRune2>
+		<StatRune>PaladinSpread</StatRune>
+		<Rarity>Y</Rarity>
 		<GfxType>
 			<CustomArt>Gfx_Paladin_1.swf/FootBaseHoly</CustomArt>
 			<CustomArt2>Gfx_Paladin_1.swf/BootHoly</CustomArt2>

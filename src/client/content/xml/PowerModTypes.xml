@@ -8813,4 +8813,778 @@
 		<BuffValue>.533</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageSword</ModName>
+		<ModID>1033</ModID>
+		<DisplayName>Basic Attack</DisplayName>
+		<Description>+15% Arctic Blast damage&#10;+15% Frozen Ward damage&#10;+15% Inferno damage&#10;+15% Iridescent Burst damage&#10;+15% Lifethirst damage&#10;+15% Desecrate damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.025</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageSword1</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageSword1</ModName>
+		<ModID>1034</ModID>
+		<DisplayName>Arctic Blast</DisplayName>
+		<Description>+15% Arctic Blast damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>FrostBlast,FrostBlast1,FrostBlast2,FrostBlast3,FrostBlast4,FrostBlast5,FrostBlast6,FrostBlast7,FrostBlast8,FrostBlast9,FrostBlast10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.3225</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageSword2</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageSword2</ModName>
+		<ModID>1035</ModID>
+		<DisplayName>Frozen Ward</DisplayName>
+		<Description>+15% Frozen Ward damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>FrozenWard,FrozenWard1,FrozenWard2,FrozenWard3,FrozenWard4,FrozenWard5,FrozenWard6,FrozenWard7,FrozenWard8,FrozenWard9,FrozenWard10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.1095</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageSword3</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageSword3</ModName>
+		<ModID>1036</ModID>
+		<DisplayName>Inferno</DisplayName>
+		<Description>+15% Inferno damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>FlameSpout,FlameSpout1,FlameSpout2,FlameSpout3,FlameSpout4,FlameSpout5,FlameSpout6,FlameSpout7,FlameSpout8,FlameSpout9,FlameSpout10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.1665</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageSword4</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageSword4</ModName>
+		<ModID>1037</ModID>
+		<DisplayName>Iridescent Burst</DisplayName>
+		<Description>+15% Iridescent Burst damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>IridescentBurst,IridescentBurst1,IridescentBurst2,IridescentBurst3,IridescentBurst4,IridescentBurst5,IridescentBurst6,IridescentBurst7,IridescentBurst8,IridescentBurst9,IridescentBurst10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.1695</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageSword5</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageSword5</ModName>
+		<ModID>1038</ModID>
+		<DisplayName>Lifethirst</DisplayName>
+		<Description>+15% Lifethirst damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>Lifethirst,Lifethirst1,Lifethirst2,Lifethirst3,Lifethirst4,Lifethirst5,Lifethirst6,Lifethirst7,Lifethirst8,Lifethirst9,Lifethirst10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.354</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageSword6</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageSword6</ModName>
+		<ModID>1039</ModID>
+		<DisplayName>Desecrate</DisplayName>
+		<Description>+15% Desecrate damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>Desecrate,Desecrate1,Desecrate2,Desecrate3,Desecrate4,Desecrate5,Desecrate6,Desecrate7,Desecrate8,Desecrate9,Desecrate10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.4815</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageOffhand</ModName>
+		<ModID>1040</ModID>
+		<DisplayName>Basic Attack</DisplayName>
+		<Description>+15% Frigid Comet damage&#10;+15% Bitter Blade damage&#10;+15% Molten Rain damage&#10;+15% Conflagration damage&#10;+15% Infestation damage&#10;+15% Spectral Grasp damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.025</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageOffhand1</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageOffhand1</ModName>
+		<ModID>1041</ModID>
+		<DisplayName>Frigid Comet</DisplayName>
+		<Description>+15% Frigid Comet damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>FrigidComet,FrigidComet1,FrigidComet2,FrigidComet3,FrigidComet4,FrigidComet5,FrigidComet6,FrigidComet7,FrigidComet8,FrigidComet9,FrigidComet10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.819</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageOffhand2</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageOffhand2</ModName>
+		<ModID>1042</ModID>
+		<DisplayName>Bitter Blade</DisplayName>
+		<Description>+15% Bitter Blade damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>BitterBlade,BitterBlade1,BitterBlade2,BitterBlade3,BitterBlade4,BitterBlade5,BitterBlade6,BitterBlade7,BitterBlade8,BitterBlade9,BitterBlade10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.87</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageOffhand3</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageOffhand3</ModName>
+		<ModID>1043</ModID>
+		<DisplayName>Molten Rain</DisplayName>
+		<Description>+15% Molten Rain damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>FireStorm,FireStorm1,FireStorm2,FireStorm3,FireStorm4,FireStorm5,FireStorm6,FireStorm7,FireStorm8,FireStorm9,FireStorm10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.09</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageOffhand4</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageOffhand4</ModName>
+		<ModID>1044</ModID>
+		<DisplayName>Conflagration</DisplayName>
+		<Description>+15% Conflagration damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>FlameStrike,FlameStrike1,FlameStrike2,FlameStrike3,FlameStrike4,FlameStrike5,FlameStrike6,FlameStrike7,FlameStrike8,FlameStrike9,FlameStrike10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.165</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageOffhand5</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageOffhand5</ModName>
+		<ModID>1045</ModID>
+		<DisplayName>Infestation</DisplayName>
+		<Description>+15% Infestation damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>Infestation,Infestation1,Infestation2,Infestation3,Infestation4,Infestation5,Infestation6,Infestation7,Infestation8,Infestation9,Infestation10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.219</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageOffhand6</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageOffhand6</ModName>
+		<ModID>1046</ModID>
+		<DisplayName>Spectral Grasp</DisplayName>
+		<Description>+15% Spectral Grasp damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>SpectralGrasp,SpectralGrasp1,SpectralGrasp2,SpectralGrasp3,SpectralGrasp4,SpectralGrasp5,SpectralGrasp6,SpectralGrasp7,SpectralGrasp8,SpectralGrasp9,SpectralGrasp10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.375</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageArmor</ModName>
+		<ModID>1047</ModID>
+		<DisplayName>Basic Attack</DisplayName>
+		<Description>+10% Frost Spire damage&#10;+10% Glacial Spear damage&#10;+10% Molten Fist damage&#10;+10% Firebrand damage&#10;+10% Wail of the Banshee damage&#10;Death Mark weakens 5% more</Description>
+		<ModType>Power</ModType>
+		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.025</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageArmor1</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageArmor1</ModName>
+		<ModID>1048</ModID>
+		<DisplayName>Frost Spire</DisplayName>
+		<Description>+10% Frost Spire damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>Avalanche,Avalanche1,Avalanche2,Avalanche3,Avalanche4,Avalanche5,Avalanche6,Avalanche7,Avalanche8,Avalanche9,Avalanche10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.106</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageArmor2</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageArmor2</ModName>
+		<ModID>1049</ModID>
+		<DisplayName>Glacial Spear</DisplayName>
+		<Description>+10% Glacial Spear damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>GlacialSpear,GlacialSpear1,GlacialSpear2,GlacialSpear3,GlacialSpear4,GlacialSpear5,GlacialSpear6,GlacialSpear7,GlacialSpear8,GlacialSpear9,GlacialSpear10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.438</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageArmor3</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageArmor3</ModName>
+		<ModID>1050</ModID>
+		<DisplayName>Molten Fist</DisplayName>
+		<Description>+10% Molten Fist damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>MoltenFistExplode</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.137</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageArmor4</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageArmor4</ModName>
+		<ModID>1051</ModID>
+		<DisplayName>Firebrand</DisplayName>
+		<Description>+10% Firebrand damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>FireBrandShot1,FireBrandShot3,FireBrandShot6</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.1</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageArmor5</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageArmor5</ModName>
+		<ModID>1052</ModID>
+		<DisplayName>Wail of the Banshee</DisplayName>
+		<Description>+10% Wail of the Banshee damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>BansheeWail,BansheeWail1,BansheeWail2,BansheeWail3,BansheeWail4,BansheeWail5,BansheeWail6,BansheeWail7,BansheeWail8,BansheeWail9,BansheeWail10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.3818</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageArmor6</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageArmor6</ModName>
+		<ModID>1053</ModID>
+		<DisplayName>Death Mark weakens 5% more</DisplayName>
+		<Description>Death Mark weakens 5% more</Description>
+		<ModType>Buff</ModType>
+		<BuffName>DeathMarkStrength1,DeathMarkStrength2,DeathMarkStrength3,DeathMarkStrength4,DeathMarkStrength5,DeathMarkStrength6</BuffName>
+		<BuffProperty>MeleeDamage,MeleeDamage,MeleeDamage,MeleeDamage,MeleeDamage,MeleeDamage</BuffProperty>
+		<BuffValue>-0.05,-0.05,-0.05,-0.05,-0.05,-0.05</BuffValue>
+		<IconName>a_Signet_Empty</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageGloves</ModName>
+		<ModID>1054</ModID>
+		<DisplayName>Basic Attack</DisplayName>
+		<Description>+2.5% Basic Attack damage&#10;Permafrost Clone dash Chills&#10;+10% Wildfire damage&#10;+10% Call the Horde ghoul damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.025</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageGloves1</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageGloves1</ModName>
+		<ModID>1055</ModID>
+		<DisplayName>Permafrost Clone</DisplayName>
+		<Description>Permafrost Clone dash Chills</Description>
+		<ModType>Power</ModType>
+		<PowerName>PermafrostClone</PowerName>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Chilled42</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageGloves2</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageGloves2</ModName>
+		<ModID>1056</ModID>
+		<DisplayName>WildFire</DisplayName>
+		<Description>+10% Wildfire damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>WildFire</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>.17</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageGloves3</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageGloves3</ModName>
+		<ModID>1057</ModID>
+		<DisplayName>Call the Horde</DisplayName>
+		<Description>+10% Call the Horde ghoul damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>GhoulMelee</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>.1</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageBoots</ModName>
+		<ModID>1058</ModID>
+		<DisplayName>Basic Attack</DisplayName>
+		<Description>+2.5% Basic Attack damage&#10;+1 second Tundra Wyrm duration&#10;+5%  Pyromania damage&#10;Bolster ghoul ranged attacks inflict Poison</Description>
+		<ModType>Power</ModType>
+		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.025</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageBoots1</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageBoots1</ModName>
+		<ModID>1059</ModID>
+		<DisplayName>Tundra Wyrm</DisplayName>
+		<Description>+1 second Tundra Wyrm duration</Description>
+		<ModType>Power</ModType>
+		<PowerName>PolarSentry</PowerName>
+		<PowerProperty>SpawnDuration</PowerProperty>
+		<PowerValue>1000</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageBoots2</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageBoots2</ModName>
+		<ModID>1060</ModID>
+		<DisplayName>Pyromania</DisplayName>
+		<Description>+5%  Pyromania damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>FlamethrowerROR</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>.05</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageBoots3</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageBoots3</ModName>
+		<ModID>1061</ModID>
+		<DisplayName>Bolster the Horde</DisplayName>
+		<Description>Bolster ghoul ranged attacks inflict Poison</Description>
+		<ModType>Power</ModType>
+		<PowerName>Ghoul2Fireball</PowerName>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:PoisonCloud</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageHat</ModName>
+		<ModID>1062</ModID>
+		<DisplayName>Basic Attack</DisplayName>
+		<Description>+2.5% Basic Attack damage&#10;+5% Hailstone Embrace damage&#10;+.7 second Dragon Soul duration&#10;+6% Plague Battalion damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.025</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageHat1</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageHat1</ModName>
+		<ModID>1063</ModID>
+		<DisplayName>Hailstone Embrace</DisplayName>
+		<Description>+5% Hailstone Embrace damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>FrostArmorIce,FrostArmorIceWall</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>.05</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageHat2</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageHat2</ModName>
+		<ModID>1064</ModID>
+		<DisplayName>Dragon Soul</DisplayName>
+		<Description>+.7 second Dragon Soul duration</Description>
+		<ModType>Power</ModType>
+		<PowerName>SummonDragonSoul</PowerName>
+		<PowerProperty>SpawnDuration</PowerProperty>
+		<PowerValue>700</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticMageHat3</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticMageHat3</ModName>
+		<ModID>1065</ModID>
+		<DisplayName>Plague Battalion</DisplayName>
+		<Description>+6% Plague Battalion damage</Description>
+		<ModType>Buff</ModType>
+		<BuffName>Plagued1,Plagued2,Plagued3,Plagued4,Plagued5,Plagued6,Plagued7,Plagued8,Plagued9,Plagued10</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.2</BuffValue>
+		<IconName>a_Signet_Empty</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinSword</ModName>
+		<ModID>1066</ModID>
+		<DisplayName>Basic Attack</DisplayName>
+		<Description>+15% Holy Smash damage&#10;+15% Shield Flurry damage&#10;+15% Flame Axe damage&#10;+15% Furious Assault damage&#10;+15% Divine Word damage&#10;+15% Subjugate damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.025</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinSword1</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinSword1</ModName>
+		<ModID>1067</ModID>
+		<DisplayName>Holy Smash</DisplayName>
+		<Description>+15% Holy Smash damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>RollingSmash,RollingSmash1,RollingSmash2,RollingSmash3,RollingSmash4,RollingSmash5,RollingSmash6,RollingSmash7,RollingSmash8,RollingSmash9,RollingSmash10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.3</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinSword2</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinSword2</ModName>
+		<ModID>1068</ModID>
+		<DisplayName>Shield Flurry</DisplayName>
+		<Description>+15% Shield Flurry damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>ShieldFlurryStrike,ShieldFlurryStrike1,ShieldFlurryStrike2,ShieldFlurryStrike3,ShieldFlurryStrike4,ShieldFlurryStrike5,ShieldFlurryStrike6,ShieldFlurryStrike7,ShieldFlurryStrike8,ShieldFlurryStrike9,ShieldFlurryStrike10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.2055</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinSword3</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinSword3</ModName>
+		<ModID>1069</ModID>
+		<DisplayName>Flame Axe</DisplayName>
+		<Description>+15% Flame Axe damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>FlameAxe,FlameAxe1,FlameAxe2,FlameAxe3,FlameAxe4,FlameAxe5,FlameAxe6,FlameAxe7,FlameAxe8,FlameAxe9,FlameAxe10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.195</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinSword4</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinSword4</ModName>
+		<ModID>1070</ModID>
+		<DisplayName>Furious Assault</DisplayName>
+		<Description>+15% Furious Assault damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>FuriousAssault,FuriousAssault1,FuriousAssault2,FuriousAssault3,FuriousAssault4,FuriousAssault5,FuriousAssault6,FuriousAssault7,FuriousAssault8,FuriousAssault9,FuriousAssault10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.273</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinSword5</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinSword5</ModName>
+		<ModID>1071</ModID>
+		<DisplayName>Divine Word</DisplayName>
+		<Description>+15% Divine Word damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>DivineWord,DivineWord1,DivineWord2,DivineWord3,DivineWord4,DivineWord5,DivineWord6,DivineWord7,DivineWord8,DivineWord9,DivineWord10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.228</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinSword6</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinSword6</ModName>
+		<ModID>1072</ModID>
+		<DisplayName>Subjugate</DisplayName>
+		<Description>+15% Subjugate damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>Subjugate,Subjugate1,Subjugate2,Subjugate3,Subjugate4,Subjugate5,Subjugate6,Subjugate7,Subjugate8,Subjugate9,Subjugate10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.2775</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinOffhand</ModName>
+		<ModID>1073</ModID>
+		<DisplayName>Basic Attack</DisplayName>
+		<Description>+15% Juggernaut damage&#10;Second Wind heals more&#10;+15% Harm damage&#10;+15% Justice Fist damage&#10;+15% Hallowed Reckoning healing&#10;+15% Penance damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.025</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinOffhand1</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinOffhand1</ModName>
+		<ModID>1074</ModID>
+		<DisplayName>Juggernaut</DisplayName>
+		<Description>+15% Juggernaut damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>JuggernautCharge,JuggernautCharge1,JuggernautCharge2,JuggernautCharge3,JuggernautCharge4,JuggernautCharge5,JuggernautCharge6,JuggernautCharge7,JuggernautCharge8,JuggernautCharge9,JuggernautCharge10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.27</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinOffhand2</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinOffhand2</ModName>
+		<ModID>1075</ModID>
+		<DisplayName>Second Wind heals more</DisplayName>
+		<Description>Second Wind heals more</Description>
+		<ModType>Buff</ModType>
+		<BuffName>SecondWind,SecondWind1,SecondWind2,SecondWind3,SecondWind4,SecondWind6,SecondWind7,SecondWind8,SecondWind9</BuffName>
+		<BuffProperty>DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage</BuffProperty>
+		<BuffValue>-1.5,-1.5,-1.5,-1.5,-1.5,-1.5,-1.5,-1.5,-1.5</BuffValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinOffhand3</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinOffhand3</ModName>
+		<ModID>1076</ModID>
+		<DisplayName>Harm</DisplayName>
+		<Description>+15% Harm damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>Harm,Harm1,Harm2,Harm3,Harm4,Harm5,Harm6,Harm7,Harm8,Harm9,Harm10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.1785</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinOffhand4</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinOffhand4</ModName>
+		<ModID>1077</ModID>
+		<DisplayName>Justice Fist</DisplayName>
+		<Description>+15% Justice Fist damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>JusticeFist,JusticeFist1,JusticeFist2,JusticeFist3,JusticeFist4,JusticeFist5,JusticeFist6,JusticeFist7,JusticeFist8,JusticeFist9,JusticeFist10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.225</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinOffhand5</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinOffhand5</ModName>
+		<ModID>1078</ModID>
+		<DisplayName>Hallowed Reckoning healing</DisplayName>
+		<Description>+15% Hallowed Reckoning healing</Description>
+		<ModType>Power</ModType>
+		<PowerName>FountainOfLife,FountainOfLife1,FountainOfLife2,FountainOfLife3,FountainOfLife4,FountainOfLife5,FountainOfLife6,FountainOfLife7,FountainOfLife8,FountainOfLife9,FountainOfLife10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>-0.9</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinOffhand6</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinOffhand6</ModName>
+		<ModID>1079</ModID>
+		<DisplayName>Penance</DisplayName>
+		<Description>+15% Penance damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>Penance,Penance1,Penance2,Penance3,Penance4,Penance5,Penance6,Penance7,Penance8,Penance9,Penance10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.336</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinArmor</ModName>
+		<ModID>1080</ModID>
+		<DisplayName>Basic Attack</DisplayName>
+		<Description>+10% Shockwave damage&#10;+10% Retribution damage&#10;+10% Lightning Storm damage&#10;+2s Cleaving Blows duration&#10;+10% Celestial Lance damage&#10;+10% Verdict damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.025</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinArmor1</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinArmor1</ModName>
+		<ModID>1081</ModID>
+		<DisplayName>Shockwave</DisplayName>
+		<Description>+10% Shockwave damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>Shockwave,Shockwave1,Shockwave2,Shockwave3,Shockwave4,Shockwave5,Shockwave6,Shockwave7,Shockwave8,Shockwave9,Shockwave10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.121</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinArmor2</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinArmor2</ModName>
+		<ModID>1082</ModID>
+		<DisplayName>Retribution</DisplayName>
+		<Description>+10% Retribution damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>Retribution,Retribution1,Retribution2,Retribution3,Retribution4,Retribution5,Retribution6,Retribution7,Retribution8,Retribution9,Retribution10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.1</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinArmor3</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinArmor3</ModName>
+		<ModID>1083</ModID>
+		<DisplayName>Lightning Storm</DisplayName>
+		<Description>+10% Lightning Storm damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>LightningStorm,LightningStorm1,LightningStorm2,LightningStorm3,LightningStorm4,LightningStorm5,LightningStorm6,LightningStorm7,LightningStorm8,LightningStorm9,LightningStorm10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.152</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinArmor4</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinArmor4</ModName>
+		<ModID>1084</ModID>
+		<DisplayName>+2s Cleaving Blows</DisplayName>
+		<Description>+2s Cleaving Blows duration</Description>
+		<ModType>Buff</ModType>
+		<BuffName>HeavyBlows</BuffName>
+		<BuffProperty>Duration</BuffProperty>
+		<BuffValue>2000</BuffValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinArmor5</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinArmor5</ModName>
+		<ModID>1085</ModID>
+		<DisplayName>Celestial Lance</DisplayName>
+		<Description>+10% Celestial Lance damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>CelestialLance,CelestialLance1,CelestialLance2,CelestialLance3,CelestialLance4,CelestialLance5,CelestialLance6,CelestialLance7,CelestialLance8,CelestialLance9,CelestialLance10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.524</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinArmor6</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinArmor6</ModName>
+		<ModID>1086</ModID>
+		<DisplayName>Verdict</DisplayName>
+		<Description>+10% Verdict damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>VerdictROR,VerdictROR1,VerdictROR2,VerdictROR3,VerdictROR4,VerdictROR5,VerdictROR6,VerdictROR7,VerdictROR8,VerdictROR9,VerdictROR10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.15</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinGloves</ModName>
+		<ModID>1087</ModID>
+		<DisplayName>Basic Attack</DisplayName>
+		<Description>+2.5% Basic Attack damage&#10;+10% Defiance damage&#10;Bonus damage per stack of Ignite&#10;+7% Sanctum healing</Description>
+		<ModType>Power</ModType>
+		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.025</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinGloves1</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinGloves1</ModName>
+		<ModID>1088</ModID>
+		<DisplayName>Defiance</DisplayName>
+		<Description>+10% Defiance damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>Defiance</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>.12</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinGloves2</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinGloves2</ModName>
+		<ModID>1089</ModID>
+		<DisplayName>Meteor Smash</DisplayName>
+		<Description>Bonus damage per stack of Ignite</Description>
+		<ModType>WTF</ModType>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinGloves3</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinGloves3</ModName>
+		<ModID>1090</ModID>
+		<DisplayName>Sanctum</DisplayName>
+		<Description>+7% Sanctum healing</Description>
+		<ModType>Power</ModType>
+		<PowerName>Sanctum</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>-.16</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinBoots</ModName>
+		<ModID>1091</ModID>
+		<DisplayName>Basic Attack</DisplayName>
+		<Description>+2.5% Basic Attack damage&#10;+20% Unstable Barrier durability&#10;+25% Lightning Bomb damage&#10;+10% Sacred Light duration</Description>
+		<ModType>Power</ModType>
+		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.025</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinBoots1</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinBoots1</ModName>
+		<ModID>1092</ModID>
+		<DisplayName>Unstable Barrier</DisplayName>
+		<Description>+20% Unstable Barrier durability</Description>
+		<ModType>WTF</ModType>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinBoots2</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinBoots2</ModName>
+		<ModID>1093</ModID>
+		<DisplayName>Lightning Bomb</DisplayName>
+		<Description>+25% Lightning Bomb damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>LightningBombExplodeTwo</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>.5</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinBoots3</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinBoots3</ModName>
+		<ModID>1094</ModID>
+		<DisplayName>Cleansing Light</DisplayName>
+		<Description>+10% Sacred Light duration</Description>
+		<ModType>Buff</ModType>
+		<BuffName>Sacred</BuffName>
+		<BuffProperty>Duration</BuffProperty>
+		<BuffValue>500</BuffValue>
+		<IconName>a_Signet_Empty</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinHat</ModName>
+		<ModID>1095</ModID>
+		<DisplayName>Basic Attack</DisplayName>
+		<Description>+2.5% Basic Attack damage&#10;+5% Sentinel Form melee damage&#10;+15% Berserker health regen&#10;5% Empyrean Aura Defense boost</Description>
+		<ModType>Power</ModType>
+		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.025</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinHat1</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinHat1</ModName>
+		<ModID>1096</ModID>
+		<DisplayName>Sentinel Form</DisplayName>
+		<Description>+5% Sentinel Form melee damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>SFMelee,SFMeleeCombo</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>.07</PowerValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinHat2</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinHat2</ModName>
+		<ModID>1097</ModID>
+		<DisplayName>Berserker</DisplayName>
+		<Description>+15% Berserker health regen</Description>
+		<ModType>Buff</ModType>
+		<BuffName>Berserker1,Berserker2,Berserker3,Berserker4,Berserker5,Berserker6,Berserker7,Berserker8,Berserker9,Berserker10</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>-2.25</BuffValue>
+		<IconName>a_Signet_Empty</IconName>
+		<ComboMod>RuneMysticPaladinHat3</ComboMod>
+	</PowerModType>
+	<PowerModType>
+		<ModName>RuneMysticPaladinHat3</ModName>
+		<ModID>1098</ModID>
+		<DisplayName>Empyrean Aura</DisplayName>
+		<Description>5% Empyrean Aura Defense boost</Description>
+		<ModType>Buff</ModType>
+		<BuffName>LeoneanAura1,LeoneanAura2,LeoneanAura3,LeoneanAura4,LeoneanAura5,LeoneanAura6,LeoneanAura7,LeoneanAura8,LeoneanAura9,LeoneanAura10</BuffName>
+		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
+		<BuffValue>.05,.05</BuffValue>
+		<IconName>a_Signet_Empty</IconName>
+	</PowerModType>
 </PowerModTypes>

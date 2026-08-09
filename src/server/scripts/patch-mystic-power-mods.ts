@@ -3,7 +3,7 @@ import * as path from "path";
 import { ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils";
 
 /**
- * Gives the six Mystic Rogue items their ability bonuses.
+ * Gives the eighteen Mystic lockbox items their ability bonuses.
  *
  * Gear carries a single `<PowerRune>X</PowerRune>`, which the client resolves to the PowerModType
  * named `RuneX` (`class_44`: `"Rune" + gearType.var_1062` -> `class_14.var_274[...]`). One rune is
@@ -26,13 +26,22 @@ import { ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils
  * percentage is correct for a fully ranked ability. Retuning means changing `pct` here and re-running.
  */
 
+/**
+ * `en`/`tr` are optional: with neither, the description is generated from the ability's own
+ * DisplayName *in the file being written*, so the Turkish swz gets the Turkish ability name for
+ * free. Spell them out only when the generated "+N% X damage" phrasing is wrong for the effect —
+ * a heal, a debuff, a duration.
+ *
+ * `named` is the power to take that DisplayName from, for abilities whose damage lives in a
+ * differently named power (Verdict casts VerdictROR, and only "Verdict" carries a DisplayName).
+ */
 type Ability =
   /** +pct damage on every rank of `base`, sized against the ability's max-rank BaseDamageMult. */
-  | { kind: "damage"; base: string; pct: number; en: string; tr: string }
+  | { kind: "damage"; base: string; pct: number; named?: string; en?: string; tr?: string }
   /** Copy an existing mod verbatim under a new name, so the stock one keeps no ComboMod. */
   | { kind: "clone"; from: string }
   /** Add to a numeric buff property, on the ranks that already declare it. */
-  | { kind: "buff"; buffPrefix: string; property: string; value: number; en: string; tr: string };
+  | { kind: "buff"; buffPrefix: string; property: string; value: number; named?: string; en: string; tr: string };
 
 interface Item {
   gearId: number;
@@ -107,6 +116,178 @@ const ITEMS: Item[] = [
       { kind: "clone", from: "RuneSoulReaver" },
     ],
   },
+
+  // Mage and Paladin follow the layout the Rogue set established: one slot per hotbar row of the
+  // three advanced classes, so a full set covers every ability the character can train. Sword = row
+  // 1, Shield = row 2, Armor = row 3, Gloves = row 4, Boots = row 5, Hat = row 6 (the ultimates).
+  //
+  // They are appended rather than sorted into gearID order on purpose: ModIDs are handed out in list
+  // order, and the Rogue mods are already written into the shipped XML with the IDs this order
+  // produces. Re-sorting would renumber them.
+  {
+    gearId: 1165,
+    rune: "MysticMageSword",
+    abilities: [
+      { kind: "damage", base: "FrostBlast", pct: 0.15 },
+      { kind: "damage", base: "FrozenWard", pct: 0.15 },
+      { kind: "damage", base: "FlameSpout", pct: 0.15 },
+      { kind: "damage", base: "IridescentBurst", pct: 0.15 },
+      { kind: "damage", base: "Lifethirst", pct: 0.15 },
+      { kind: "damage", base: "Desecrate", pct: 0.15 },
+    ],
+  },
+  {
+    gearId: 1166,
+    rune: "MysticMageOffhand",
+    abilities: [
+      { kind: "damage", base: "FrigidComet", pct: 0.15 },
+      { kind: "damage", base: "BitterBlade", pct: 0.15 },
+      { kind: "damage", base: "FireStorm", pct: 0.15 },
+      { kind: "damage", base: "FlameStrike", pct: 0.15 },
+      { kind: "damage", base: "Infestation", pct: 0.15 },
+      { kind: "damage", base: "SpectralGrasp", pct: 0.15 },
+    ],
+  },
+  {
+    gearId: 1168,
+    rune: "MysticMageArmor",
+    abilities: [
+      { kind: "damage", base: "Avalanche", pct: 0.1 },
+      { kind: "damage", base: "GlacialSpear", pct: 0.1 },
+      { kind: "damage", base: "MoltenFistExplode", named: "MoltenFist", pct: 0.1 },
+      { kind: "damage", base: "FireBrandShot", named: "FireBrand", pct: 0.1 },
+      { kind: "damage", base: "BansheeWail", pct: 0.1 },
+      // Death Mark deals no damage of its own; it stacks an attack-down debuff, so the mod deepens
+      // that instead. MeleeDamage is negative on every rank, hence a negative addend.
+      {
+        kind: "buff",
+        buffPrefix: "DeathMarkStrength",
+        property: "MeleeDamage",
+        value: -0.05,
+        named: "DeathMark",
+        en: "Death Mark weakens 5% more",
+        tr: "Olum Isareti %5 daha cok zayiflatir.",
+      },
+    ],
+  },
+  {
+    gearId: 1169,
+    rune: "MysticMageGloves",
+    abilities: [
+      { kind: "clone", from: "RunePermafrostClone" },
+      { kind: "clone", from: "RuneWildFire" },
+      { kind: "clone", from: "RuneSummonGhoul" },
+    ],
+  },
+  {
+    gearId: 1170,
+    rune: "MysticMageBoots",
+    abilities: [
+      { kind: "clone", from: "RunePolarSentry" },
+      { kind: "clone", from: "RunePyromania" },
+      { kind: "clone", from: "RuneSummonRangedGhoul" },
+    ],
+  },
+  {
+    gearId: 1167,
+    rune: "MysticMageHat",
+    abilities: [
+      { kind: "clone", from: "RuneHailstoneEmbrace" },
+      { kind: "clone", from: "RuneSummonDragonSoul" },
+      { kind: "clone", from: "RunePlagueBattalion" },
+    ],
+  },
+  {
+    gearId: 1177,
+    rune: "MysticPaladinSword",
+    abilities: [
+      { kind: "damage", base: "RollingSmash", pct: 0.15 },
+      { kind: "damage", base: "ShieldFlurryStrike", named: "ShieldFlurry", pct: 0.15 },
+      { kind: "damage", base: "FlameAxe", pct: 0.15 },
+      { kind: "damage", base: "FuriousAssault", pct: 0.15 },
+      { kind: "damage", base: "DivineWord", pct: 0.15 },
+      { kind: "damage", base: "Subjugate", pct: 0.15 },
+    ],
+  },
+  {
+    gearId: 1178,
+    rune: "MysticPaladinOffhand",
+    abilities: [
+      { kind: "damage", base: "JuggernautCharge", named: "Juggernaut", pct: 0.15 },
+      // Second Wind heals over time through a self buff; DoTDamage is negative there, so a negative
+      // addend heals harder.
+      {
+        kind: "buff",
+        buffPrefix: "SecondWind",
+        property: "DoTDamage",
+        value: -1.5,
+        named: "SecondWind",
+        en: "Second Wind heals more",
+        tr: "Ikinci Nefes daha cok iyilestirir.",
+      },
+      { kind: "damage", base: "Harm", pct: 0.15 },
+      { kind: "damage", base: "JusticeFist", pct: 0.15 },
+      // Hallowed Reckoning's BaseDamageMult is negative (a heal), so the same +15% scaling lands as
+      // 15% more healing — only the wording has to change.
+      {
+        kind: "damage",
+        base: "FountainOfLife",
+        pct: 0.15,
+        en: "+15% Hallowed Reckoning healing",
+        tr: "Kutsal Hesaplasma iyilestirmesi %15 artar.",
+      },
+      { kind: "damage", base: "Penance", pct: 0.15 },
+    ],
+  },
+  {
+    gearId: 1180,
+    rune: "MysticPaladinArmor",
+    abilities: [
+      { kind: "damage", base: "Shockwave", pct: 0.1 },
+      { kind: "damage", base: "Retribution", pct: 0.1 },
+      { kind: "damage", base: "LightningStorm", pct: 0.1 },
+      // Cleaving Blows just turns the basic attack into a cleave for a while; there is nothing to
+      // scale but the window it lasts.
+      {
+        kind: "buff",
+        buffPrefix: "HeavyBlows",
+        property: "Duration",
+        value: 2000,
+        named: "CleavingBlows",
+        en: "+2s Cleaving Blows duration",
+        tr: "Yaran Darbeler suresi 2sn artar.",
+      },
+      { kind: "damage", base: "CelestialLance", pct: 0.1 },
+      { kind: "damage", base: "VerdictROR", named: "Verdict", pct: 0.1 },
+    ],
+  },
+  {
+    gearId: 1181,
+    rune: "MysticPaladinGloves",
+    abilities: [
+      { kind: "clone", from: "RuneDefiance" },
+      { kind: "clone", from: "RuneLeapStrike" },
+      { kind: "clone", from: "RuneSanctum" },
+    ],
+  },
+  {
+    gearId: 1182,
+    rune: "MysticPaladinBoots",
+    abilities: [
+      { kind: "clone", from: "RuneBarrier" },
+      { kind: "clone", from: "RuneLightningBomb" },
+      { kind: "clone", from: "RuneCleansingLight" },
+    ],
+  },
+  {
+    gearId: 1179,
+    rune: "MysticPaladinHat",
+    abilities: [
+      { kind: "clone", from: "RuneSentinelForm" },
+      { kind: "clone", from: "RuneBerserker" },
+      { kind: "clone", from: "RuneLeoneanAura" },
+    ],
+  },
 ];
 
 /** The head mod is a clone of this, so the item keeps its stock basic-attack line. */
@@ -133,9 +314,9 @@ function parseArgs(argv: string[]): { verify: boolean } {
     if (arg === "--help" || arg === "-h") {
       console.log([
         "Usage:",
-        "  npx ts-node src/server/scripts/patch-mystic-rogue-power-mods.ts [--verify]",
+        "  npx ts-node src/server/scripts/patch-mystic-power-mods.ts [--verify]",
         "",
-        "Creates the PowerModType chains behind the six Mystic Rogue items and points each item's",
+        "Creates the PowerModType chains behind the eighteen Mystic items and points each item's",
         "PowerRune at its chain. Writes Game.swz / Game.en.swz / Game.tr.swz, the loose",
         "PowerModTypes.xml, Login.swz and the loose GearTypes.xml.",
       ].join("\n"));
@@ -179,15 +360,35 @@ function powerRanks(powerXml: string, base: string): string[] {
   return names;
 }
 
+/**
+ * The strongest rank's total damage multiplier, keeping its sign.
+ *
+ * BaseDamageMult is a comma list on multi-hit powers ("2.44,2.44") and the client sums it into one
+ * `damageMultFull`, which is also what a mod's flat PowerValue is added to — so the rank's weight is
+ * the sum, not any single hit. Healing powers carry a negative multiplier; returning it signed means
+ * `pct * value` scales a heal by the same percentage it would scale damage.
+ */
 function maxRankDamage(powerXml: string, names: string[]): number {
-  let max = 0;
+  let best = 0;
   for (const name of names) {
     const block = powerXml.match(new RegExp(`<Power PowerName="${name}">([\\s\\S]*?)</Power>`))?.[1] ?? "";
-    const mult = Number(tag(block, "BaseDamageMult") ?? 0);
-    if (Number.isFinite(mult)) max = Math.max(max, mult);
+    const total = (tag(block, "BaseDamageMult") ?? "")
+      .split(",")
+      .reduce((sum, part) => sum + (Number.isFinite(Number(part)) ? Number(part) : 0), 0);
+    if (Math.abs(total) > Math.abs(best)) best = total;
   }
-  if (max <= 0) throw new SwzPatchError(`${names[0]} has no positive BaseDamageMult to scale against.`);
-  return max;
+  if (best === 0) throw new SwzPatchError(`${names[0]} has no BaseDamageMult to scale against.`);
+  return best;
+}
+
+/** An ability's own DisplayName in the file being written, so generated text follows its language. */
+function powerDisplayName(powerXml: string, name: string): string {
+  for (const candidate of [name, `${name}1`]) {
+    const block = powerXml.match(new RegExp(`<Power PowerName="${candidate}">([\\s\\S]*?)</Power>`))?.[1];
+    const display = block ? tag(block, "DisplayName") : null;
+    if (display) return display;
+  }
+  throw new SwzPatchError(`No DisplayName to describe ${name} with; give the ability an explicit en/tr.`);
 }
 
 /** Buff ranks of a family that already declare `property`; adding it to ones that lack it is unsafe. */
@@ -249,9 +450,10 @@ const MAX_CARD_LINES = 6;
  */
 const ABILITY_ROWS_ABOVE_PROCS = 6;
 
-/** Builds every new PowerModType block for one file, in chain order. */
-function buildMods(corpus: Corpus): { blocks: string[]; runeByGearId: Map<number, string> } {
+/** Builds every new PowerModType block for one file, in chain order, grouped per item. */
+function buildMods(corpus: Corpus): { chains: string[][]; runeByGearId: Map<number, string> } {
   const blocks: string[] = [];
+  const chains: string[][] = [];
   const runeByGearId = new Map<number, string>();
   let modId = FIRST_MOD_ID;
 
@@ -272,9 +474,20 @@ function buildMods(corpus: Corpus): { blocks: string[]; runeByGearId: Map<number
         return;
       }
 
-      const description = corpus.turkish ? ability.tr : ability.en;
-      // Always name the mod after the English ability, so the Turkish file stays diff-comparable.
-      const displayName = displayFromDescription(ability.en);
+      // An ability with no spelled-out text describes itself: "+15% <its DisplayName> damage", read
+      // out of the file being written, so the Turkish swz says it in Turkish without a second table
+      // here to keep in step.
+      // Lazy: an ability that spells its text out never needs a DisplayName to exist for the power
+      // it targets, and several of them (SeekingBladesAttack, VerdictROR) genuinely have none.
+      const localName = (): string =>
+        powerDisplayName(corpus.powers, ability.named ?? (ability.kind === "damage" ? ability.base : ability.buffPrefix));
+      const percent = ability.kind === "damage" ? Math.round(ability.pct * 100) : 0;
+      const description =
+        (corpus.turkish ? ability.tr : ability.en) ??
+        (corpus.turkish ? `${localName()} hasari %${percent} artar.` : `+${percent}% ${localName()} damage`);
+      // Spelled-out entries keep naming the mod after their English text; generated ones take the
+      // ability's own name in the file's language, exactly as a cloned mod's DisplayName does.
+      const displayName = ability.en ? displayFromDescription(ability.en) : localName();
 
       if (ability.kind === "damage") {
         const names = powerRanks(corpus.powers, ability.base);
@@ -337,9 +550,10 @@ function buildMods(corpus: Corpus): { blocks: string[]; runeByGearId: Map<number
       /<Description>[\s\S]*?<\/Description>/,
       `<Description>${shown.join(LINE_SEPARATOR)}</Description>`,
     );
+    chains.push(blocks.slice(itemStart));
   }
 
-  return { blocks, runeByGearId };
+  return { chains, runeByGearId };
 }
 
 /**
@@ -382,15 +596,26 @@ function addPseudoPowers(powersXml: string, turkish: boolean): { xml: string; ad
   return { xml: `${powersXml.slice(0, close)}${additions.join(eol)}${eol}${powersXml.slice(close)}`, added: additions.length };
 }
 
-function insertMods(powerModsXml: string, blocks: string[]): { xml: string; added: number } {
-  const missing = blocks.filter((block) => {
-    const name = tag(block, "ModName");
-    return name !== null && !powerModsXml.includes(`<ModName>${name}</ModName>`);
-  });
-  if (missing.length === 0) return { xml: powerModsXml, added: 0 };
-  if (missing.length !== blocks.length) {
-    throw new SwzPatchError(`PowerModTypes is partially patched (${blocks.length - missing.length} of ${blocks.length} present); revert and re-run.`);
+/**
+ * Adds whole chains only. An item whose chain is already in the file is skipped, so a run that adds
+ * a new class does not touch the classes already shipped; a chain that is *half* present is a
+ * genuinely broken file and still refuses to be patched over.
+ */
+function insertMods(powerModsXml: string, chains: string[][]): { xml: string; added: number } {
+  const missing: string[] = [];
+  for (const chain of chains) {
+    const absent = chain.filter((block) => {
+      const name = tag(block, "ModName");
+      return name !== null && !powerModsXml.includes(`<ModName>${name}</ModName>`);
+    });
+    if (absent.length === 0) continue;
+    if (absent.length !== chain.length) {
+      const head = tag(chain[0], "ModName");
+      throw new SwzPatchError(`PowerModTypes has a partial ${head} chain (${chain.length - absent.length} of ${chain.length} present); revert and re-run.`);
+    }
+    missing.push(...absent);
   }
+  if (missing.length === 0) return { xml: powerModsXml, added: 0 };
 
   const close = powerModsXml.lastIndexOf("</PowerModTypes>");
   if (close === -1) throw new SwzPatchError("No </PowerModTypes> close tag.");
@@ -431,13 +656,13 @@ function patch(verify: boolean): void {
     const buffs = swz.chunks.find((chunk) => chunk.xml.includes("<PlayerBuffTypes"));
     if (!mods || !powers || !buffs) throw new SwzPatchError(`${path.basename(swzPath)} is missing PowerModTypes/PlayerPowerTypes/PlayerBuffTypes.`);
 
-    const { blocks } = buildMods({
+    const { chains } = buildMods({
       powerMods: mods.xml,
       powers: powers.xml,
       buffs: buffs.xml,
       turkish: swzPath.endsWith("Game.tr.swz"),
     });
-    const result = insertMods(mods.xml, blocks);
+    const result = insertMods(mods.xml, chains);
     const powerResult = addPseudoPowers(powers.xml, swzPath.endsWith("Game.tr.swz"));
     summary.push(`${path.basename(swzPath)}: +${result.added} mods, +${powerResult.added} pseudo-powers`);
     changes += result.added + powerResult.added;
@@ -457,13 +682,13 @@ function patch(verify: boolean): void {
   const referenceBuffs = referenceSwz.chunks.find((chunk) => chunk.xml.includes("<PlayerBuffTypes"))!.xml;
 
   const loosePowerMods = fs.readFileSync(LOOSE_POWER_MODS, "utf8");
-  const { blocks, runeByGearId } = buildMods({
+  const { chains, runeByGearId } = buildMods({
     powerMods: loosePowerMods,
     powers: referencePowers,
     buffs: referenceBuffs,
     turkish: false,
   });
-  const looseResult = insertMods(loosePowerMods, blocks);
+  const looseResult = insertMods(loosePowerMods, chains);
   summary.push(`PowerModTypes.xml: +${looseResult.added} mods`);
   changes += looseResult.added;
   if (looseResult.added > 0 && !verify) {

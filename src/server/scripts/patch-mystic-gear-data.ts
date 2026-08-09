@@ -3,7 +3,7 @@ import * as path from "path";
 import { defaultLoginSwzPath, ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils";
 
 /**
- * Adds the Mystic (rarity "Y", gear tier 3) variant of the six Rogue lockbox items.
+ * Adds the Mystic (rarity "Y", gear tier 3) variant of the eighteen class lockbox items.
  *
  * Each Mystic entry is a copy of that item's Legendary entry with the rarity letter swapped, so it
  * inherits the same art, runes and stat rune and differs only by tier. The client needs no new
@@ -18,14 +18,22 @@ import { defaultLoginSwzPath, ensureBackup, parseSwz, SwzPatchError, writeSwz } 
  */
 const MYSTIC_LETTER = "Y";
 
+/**
+ * The three classes' lockbox sets, in gearID order: Mage 1165-1170, Rogue 1171-1176, Paladin
+ * 1177-1182. Slot order is identical in each set, which is what lets the ability chains in
+ * `patch-mystic-power-mods.ts` be laid out slot-by-slot.
+ */
+const SLOTS = ["Sword", "Shield", "Hat", "Armor", "Gloves", "Boots"];
 const ITEMS = [
-  { gearId: 1171, base: "UniqueRogueLockbox01GearSword30", english: "Blade of Sighs" },
-  { gearId: 1172, base: "UniqueRogueLockbox01GearShield30", english: "Sinsoaked Stiletto" },
-  { gearId: 1173, base: "UniqueRogueLockbox01GearHat30", english: "Mask of Deathly Insights" },
-  { gearId: 1174, base: "UniqueRogueLockbox01GearArmor30", english: "Mantle of the Saint of Shadow" },
-  { gearId: 1175, base: "UniqueRogueLockbox01GearGloves30", english: "Clutches of the Ebonhearted" },
-  { gearId: 1176, base: "UniqueRogueLockbox01GearBoots30", english: "Boots of Abyssal Escape" },
-];
+  { className: "Mage", firstGearId: 1165 },
+  { className: "Rogue", firstGearId: 1171 },
+  { className: "Paladin", firstGearId: 1177 },
+].flatMap(({ className, firstGearId }) =>
+  SLOTS.map((slot, index) => ({
+    gearId: firstGearId + index,
+    base: `Unique${className}Lockbox01Gear${slot}30`,
+  })),
+);
 
 const LOOSE_XML = path.resolve(__dirname, "..", "..", "client", "content", "xml", "GearTypes.xml");
 
@@ -51,9 +59,9 @@ function parseArgs(argv: string[]): { swzPath: string; xmlPath: string; verify: 
     if (arg === "--help" || arg === "-h") {
       console.log([
         "Usage:",
-        "  npx ts-node src/server/scripts/patch-mystic-rogue-gear-data.ts [--verify] [--swz-path <path>] [--xml-path <path>]",
+        "  npx ts-node src/server/scripts/patch-mystic-gear-data.ts [--verify] [--swz-path <path>] [--xml-path <path>]",
         "",
-        "Adds the Mystic (rarity Y) variant of the six Rogue lockbox items to Login.swz and to the",
+        "Adds the Mystic (rarity Y) variant of the 18 class lockbox items to Login.swz and to the",
         "server-side GearTypes.xml copy.",
       ].join("\n"));
       process.exit(0);
