@@ -1,12 +1,29 @@
 {
   "name": "server",
-  "version": "1.11.1",
+  "version": "1.15.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch main.ts --watch auth --watch core --watch database --watch handlers --watch integrations --watch network --watch utils --watch tools/runDevServer.js --ext ts,js --ignore dist --ignore test --ignore data/saves --exec \"node tools/runDevServer.js\"",
+    "dev:built": "node tools/runBuiltDevServer.js",
+    "dev:discord-bridge:built": "node dist/tools/discordLocalBridge.js discord-bridge.dev.config.json",
+    "multiplayer:pm2": "node tools/deployMultiplayer.js",
+    "verify:client-patches": "node tools/verifyClientPatches.js",
+    "patch:legendary-gear-runes": "ts-node scripts/patch_gameswz_legendary_gear_runes.ts",
     "patch:power-mana-costs": "ts-node scripts/patch_gameswz_power_mana_costs.ts",
-    "prebuild": "npm run patch:power-mana-costs",
+    "patch:english-text": "ts-node scripts/patch_gameswz_english_text.ts",
+    "patch:bandit-camp-text": "ts-node scripts/patch_bandit_camp_text.ts",
+    "patch:mage-skill-balance": "ts-node scripts/patch_gameswz_mage_skill_balance.ts",
+    "patch:form-stance-balance": "ts-node scripts/patch_gameswz_form_stance_balance.ts",
+    "patch:pet-ability-balance": "ts-node scripts/patch_gameswz_pet_ability_balance.ts",
+    "patch:power-stat-tooltips": "ts-node scripts/patch_gameswz_power_stat_tooltips.ts",
+    "patch:charm-text": "ts-node scripts/patch_gameswz_charm_text.ts",
+    "patch:rogue-mastery-balance": "ts-node scripts/patch_gameswz_rogue_mastery_balance.ts",
+    "patch:paladin-mastery-balance": "ts-node scripts/patch_gameswz_paladin_mastery_balance.ts",
+    "patch:sentinel-form-cooldown": "ts-node scripts/patch_gameswz_sentinel_form_cooldown.ts",
+    "patch:sentinel-fury-buff": "ts-node scripts/patch_gameswz_sentinel_fury_buff.ts",
+    "patch:home-dummy-bosses": "ts-node scripts/patch_gameswz_home_dummy_bosses.ts",
+    "prebuild": "npm run patch:home-dummy-bosses && npm run patch:legendary-gear-runes && npm run patch:power-mana-costs && npm run patch:form-stance-balance && npm run patch:pet-ability-balance && npm run patch:english-text && npm run patch:bandit-camp-text && npm run patch:mage-skill-balance && npm run patch:rogue-mastery-balance && npm run patch:paladin-mastery-balance && npm run patch:sentinel-form-cooldown && npm run patch:sentinel-fury-buff && npm run patch:charm-text && npm run patch:power-stat-tooltips",
     "build": "tsc",
     "premultiplayer": "npm run build",
     "multiplayer": "node dist/main.js",
@@ -21,6 +38,7 @@
     "start:discord-bridge": "node tools/startDiscordBridge.js",
     "start:discord-bridge:multiplayer": "node tools/startDiscordBridge.js",
     "reset-password": "ts-node scripts/set_account_password.ts",
+    "seed:test-account": "ts-node tools/seedTestAccount.ts",
     "migrate:game-data-to-mongo": "node --env-file-if-exists=.env -r ts-node/register scripts/migrate_game_data_to_mongo.ts",
     "admin": "node --env-file-if-exists=.env tools/adminPanelServer.js"
   },
@@ -39,6 +57,7 @@
     "@types/express": "^5.0.6",
     "discord-rpc": "^4.0.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.6.1",
     "mongodb": "^7.4.0"
   }
 }

@@ -7,7 +7,7 @@
   <File  Version="cbp" Stage="Init"  Size="559"	 Name="Animation_Mage.swf" />
   <File  Version="cbp" Stage="Init"  Size="642"	 Name="Animation_Rogue.swf" />
   
-  <File  Version="cbp" Stage="Login" Size="312"	 Name="Login.swz" />
+  <File  Version="cbq" Stage="Login" Size="334"	 Name="Login.swz" />
   <File  Version="cbp" Stage="Login" Size="2189" Name="Gfx_Paladin_1.swf" />
   <File  Version="cbp" Stage="Login" Size="669"	 Name="Gfx_Rogue_1.swf" />
   <File  Version="cbp" Stage="Login" Size="1747" Name="Gfx_Mage_1.swf" />
@@ -47,7 +47,7 @@
   <File  Version="caa" Stage="Game"  Size="27"	 Name="Animation_Larva.swf" />
   <File  Version="caa" Stage="Game"  Size="30"	 Name="Animation_Mimic.swf" />
   <File  Version="caa" Stage="Game"  Size="429"	 Name="Animation_Nephit.swf" />
-  <File  Version="caf" Stage="Game"  Size="812"	 Name="Animation_NPC.swf" />
+  <File  Version="cag" Stage="Game"  Size="823"	 Name="Animation_NPC.swf" />
   <File  Version="cbp" Stage="Game"  Size="285"	 Name="Animation_Pets.swf" />
   <File  Version="caa" Stage="Game"  Size="57"	 Name="Animation_Psychophage.swf" />
   <File  Version="caa" Stage="Game"  Size="89"	 Name="Animation_Puck.swf" />

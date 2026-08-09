@@ -214,7 +214,7 @@ if not defined FLASH_BROWSER_URL set "FLASH_BROWSER_URL=http://localhost:%STATIC
 set "FLASH_PLAYER_URL=!FLASH_BROWSER_URL!!FLASH_SWF_PATH!?fv=!FLASH_FILE_VERSION!^&gv=!FLASH_GAME_VERSION!"
 
 :: SERVER BASLAT
-echo Starting server with Discord RPC ^(npm run dev:discord^)^...
+echo Starting server with Discord RPC ^(npm run dev^)^...
 echo Discord channel bridge enabled: %DISCORD_SOCIAL_BRIDGE_ENABLED%
 echo Discord Social SDK native bridge enabled: %DISCORD_SOCIAL_NATIVE_BRIDGE_ENABLED%
 echo Discord chat relay mode: %DISCORD_SOCIAL_CHAT_RELAY_MODE%

@@ -172,20 +172,21 @@ export class JsonAdapter implements IDatabase {
             userId,
             Array.isArray(characters) ? characters : []
         );
-        const existing = JsonAdapter.mongoGameData
-            ? { user_id: userId, characters: await JsonAdapter.mongoGameData.loadCharacters(userId) }
-            : await this.readSaveFile(userId);
+        // The read-back below only exists to guard against clobbering a populated save with
+        // an empty list, so only pay for it when the list actually is empty. Every level
+        // transfer runs this path twice; on Mongo each skipped read is a network round trip
+        // that was blocking the client's packet queue.
+        if (normalizedCharacters.length === 0) {
+            const existing = JsonAdapter.mongoGameData
+                ? { user_id: userId, characters: await JsonAdapter.mongoGameData.loadCharacters(userId) }
+                : await this.readSaveFile(userId);
 
-        if (
-            normalizedCharacters.length === 0 &&
-            existing &&
-            Array.isArray(existing.characters) &&
-            existing.characters.length > 0
-        ) {
-            console.warn(
-                `[JsonAdapter] Refusing to overwrite non-empty save ${savePath} with an empty character list`
-            );
-            return;
+            if (existing && Array.isArray(existing.characters) && existing.characters.length > 0) {
+                console.warn(
+                    `[JsonAdapter] Refusing to overwrite non-empty save ${savePath} with an empty character list`
+                );
+                return;
+            }
         }
 
         if (JsonAdapter.mongoGameData) {
@@ -628,6 +629,33 @@ export class JsonAdapter implements IDatabase {
         }
 
         return records;
+    }
+
+    public async loadCharacterRecordsByGuild(guildName: string): Promise<UserSaveData[]> {
+        const cleanName = String(guildName ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
+        if (!cleanName) {
+            return [];
+        }
+
+        if (JsonAdapter.mongoGameData) {
+            return JsonAdapter.mongoGameData.loadCharacterRecordsByGuild(guildName);
+        }
+
+        // JSON authority is the local/dev backend with a handful of saves, so the scan stays
+        // here; it just no longer returns records the caller would immediately discard.
+        const records = await this.loadAllCharacterRecords();
+        return records.filter((save) =>
+            (Array.isArray(save.characters) ? save.characters : []).some((character) => {
+                const guild = character?.guild;
+                if (!guild || typeof guild !== 'object') {
+                    return false;
+                }
+                return String((guild as Record<string, unknown>).name ?? '')
+                    .trim()
+                    .replace(/\s+/g, ' ')
+                    .toLowerCase() === cleanName;
+            })
+        );
     }
 
     public async saveCharacters(userId: number, characters: Character[]): Promise<void> {

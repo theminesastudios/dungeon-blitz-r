@@ -8,6 +8,7 @@ import { GlobalState } from '../core/GlobalState';
 import { EntityHandler } from './EntityHandler';
 import { areClientsInSameLevelScope, getClientLevelScope } from '../core/LevelScope';
 import { ConsumableID } from '../data/runtime/Consumables';
+import { SpeedupPricing } from '../core/SpeedupPricing';
 
 const db = new JsonAdapter();
 
@@ -935,22 +936,39 @@ export class PetHandler {
     static async handlePetSpeedUp(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
         const idolCost = br.readMethod9();
-        
+
         if (!client.character) return;
-        if ((client.character.mammothIdols || 0) < idolCost) return;
-        
-        client.character.mammothIdols = (client.character.mammothIdols || 0) - idolCost;
-        PetHandler.sendMammothIdolUpdate(client);
-        
+
+        // Nothing training used to still take the idols, because they were spent before
+        // this was checked.
         const tpList = client.character.trainingPet || [];
-        if (tpList.length > 0) {
-            tpList[0].trainingTime = 0;
-            const petType = tpList[0].typeID;
-            
-            await PetHandler.saveCharacter(client);
-            
-            PetHandler.sendPetTrainingComplete(client, petType);
+        if (tpList.length === 0) {
+            SpeedupPricing.refreshScreens(client);
+            return;
         }
+
+        const authoritativeCost = SpeedupPricing.reconcile(tpList[0].trainingTime, idolCost);
+        const idols = Number(client.character.mammothIdols || 0);
+        if (idols < authoritativeCost) {
+            console.warn(
+                `[Pet] Refused a training Speed Up for ${client.character.name}: ` +
+                `has ${idols} idols, needs ${authoritativeCost} (client claimed ${idolCost}).`
+            );
+            SpeedupPricing.refreshScreens(client);
+            return;
+        }
+
+        if (authoritativeCost > 0) {
+            client.character.mammothIdols = idols - authoritativeCost;
+            PetHandler.sendMammothIdolUpdate(client);
+        }
+
+        tpList[0].trainingTime = 0;
+        const petType = tpList[0].typeID;
+
+        await PetHandler.saveCharacter(client);
+
+        PetHandler.sendPetTrainingComplete(client, petType);
     }
 
     static async handleEggHatch(client: Client, data: Buffer): Promise<void> {
@@ -1014,25 +1032,38 @@ export class PetHandler {
     static async handleEggSpeedUp(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
         const idolCost = br.readMethod9();
-        
+
         if (!client.character) return;
-        if ((client.character.mammothIdols || 0) < idolCost) {
-            return;
-        }
-        
-        client.character.mammothIdols = (client.character.mammothIdols || 0) - idolCost;
-        PetHandler.sendMammothIdolUpdate(client);
-        
+
+        // Same order-of-operations bug as pet training: an empty hatchery took the idols.
         const eggData = PetHandler.getNormalizedEggHatchery(client.character);
-        if (eggData && eggData.EggID > 0) {
-            PetHandler.clearEggReadyTimer(client);
-            eggData.ReadyTime = 0;
-            client.character.EggHachery = eggData;
-            await PetHandler.saveCharacter(client);
-            
-            PetHandler.sendEggReadyPacket(client, eggData.EggID);
+        if (!eggData || eggData.EggID <= 0) {
+            SpeedupPricing.refreshScreens(client);
             return;
         }
+
+        const authoritativeCost = SpeedupPricing.reconcile(eggData.ReadyTime, idolCost);
+        const idols = Number(client.character.mammothIdols || 0);
+        if (idols < authoritativeCost) {
+            console.warn(
+                `[Pet] Refused an egg Speed Up for ${client.character.name}: ` +
+                `has ${idols} idols, needs ${authoritativeCost} (client claimed ${idolCost}).`
+            );
+            SpeedupPricing.refreshScreens(client);
+            return;
+        }
+
+        if (authoritativeCost > 0) {
+            client.character.mammothIdols = idols - authoritativeCost;
+            PetHandler.sendMammothIdolUpdate(client);
+        }
+
+        PetHandler.clearEggReadyTimer(client);
+        eggData.ReadyTime = 0;
+        client.character.EggHachery = eggData;
+        await PetHandler.saveCharacter(client);
+
+        PetHandler.sendEggReadyPacket(client, eggData.EggID);
     }
 
     static async handleCollectHatchedEgg(client: Client, data: Buffer): Promise<void> {

@@ -2,7 +2,7 @@
 <BuildingTypes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<Building BuildingName="---Template---">
 		<BuildingID>0</BuildingID>
-		<DisplayName>Sablon</DisplayName>
+		<DisplayName>Template</DisplayName>
 		<Type>Template</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -12,11 +12,11 @@
 		<Art>a_Art</Art>
 		<BackgroundArt>a_bgart</BackgroundArt>
 		<UpgradeIcon>a_upgradeicon</UpgradeIcon>
-		<UpgradeDescription>Sablon</UpgradeDescription>
+		<UpgradeDescription>template</UpgradeDescription>
 	</Building>
 	<Building BuildingName="Tome">
 		<BuildingID>1</BuildingID>
-		<DisplayName>Guc Kitabi</DisplayName>
+		<DisplayName>Tome of Power</DisplayName>
 		<Type>Tome</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -26,7 +26,7 @@
 		<Art>a_Upgrade_Tome_0</Art>
 		<BackgroundArt>a_Upgrade_Tome_1</BackgroundArt>
 		<UpgradeIcon>a_TomeUpgradeIcon</UpgradeIcon>
-		<UpgradeDescription>Hicbir sey.</UpgradeDescription>
+		<UpgradeDescription>Nothing</UpgradeDescription>
 	</Building>
 	<Building>
 		<DisplayName>Guc Kitabi Seviye 1</DisplayName>
@@ -129,7 +129,7 @@
 	</Building>
 	<Building BuildingName="Forge">
 		<BuildingID>2</BuildingID>
-		<DisplayName>Buyu Ocagi</DisplayName>
+		<DisplayName>Magic Forge</DisplayName>
 		<Type>Forge</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -241,7 +241,7 @@
 	</Building>
 	<Building BuildingName="JusticarTower">
 		<BuildingID>3</BuildingID>
-		<DisplayName>Alev Ofkesi Kursusu</DisplayName>
+		<DisplayName>Flamefury Dais</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -357,7 +357,7 @@
 	</Building>
 	<Building BuildingName="SentinelTower">
 		<BuildingID>4</BuildingID>
-		<DisplayName>Firtina Gozeri Siginagi</DisplayName>
+		<DisplayName>Stormgaze Refuge</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -467,7 +467,7 @@
 	</Building>
 	<Building BuildingName="TemplarTower">
 		<BuildingID>5</BuildingID>
-		<DisplayName>Tapinakci Hisari</DisplayName>
+		<DisplayName>Templar Citadel</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -579,7 +579,7 @@
 	</Building>
 	<Building BuildingName="FrostwardenTower">
 		<BuildingID>6</BuildingID>
-		<DisplayName>Ayaz Kanali</DisplayName>
+		<DisplayName>Coldsnap Conduit</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -691,7 +691,7 @@
 	</Building>
 	<Building BuildingName="FlameseerTower">
 		<BuildingID>7</BuildingID>
-		<DisplayName>Magma Yuregi Firini</DisplayName>
+		<DisplayName>Magmaheart Furnace</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -803,7 +803,7 @@
 	</Building>
 	<Building BuildingName="NecromancerTower">
 		<BuildingID>8</BuildingID>
-		<DisplayName>Olucagiran Kulesi</DisplayName>
+		<DisplayName>Necromancer Tower</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -915,7 +915,7 @@
 	</Building>
 	<Building BuildingName="ExecutionerTower">
 		<BuildingID>9</BuildingID>
-		<DisplayName>Elysian Ruh Tuzagi</DisplayName>
+		<DisplayName>Elysian Soultrap</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -1027,7 +1027,7 @@
 	</Building>
 	<Building BuildingName="ShadowwalkerTower">
 		<BuildingID>10</BuildingID>
-		<DisplayName>Carpik Nether Totemi</DisplayName>
+		<DisplayName>Twisted Nethertotem</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -1139,7 +1139,7 @@
 	</Building>
 	<Building BuildingName="SoulthiefTower">
 		<BuildingID>11</BuildingID>
-		<DisplayName>Ruh Hirsizi Ini</DisplayName>
+		<DisplayName>Soulthief Lair</DisplayName>
 		<Type>Tower</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -1251,7 +1251,7 @@
 	</Building>
 	<Building BuildingName="Keep">
 		<BuildingID>12</BuildingID>
-		<DisplayName>Kahramanin Hisari</DisplayName>
+		<DisplayName>Hero's Keep</DisplayName>
 		<Type>Keep</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>
@@ -1264,7 +1264,7 @@
 	</Building>
 	<Building BuildingName="Barn">
 		<BuildingID>13</BuildingID>
-		<DisplayName>Kuluckahane</DisplayName>
+		<DisplayName>Hatchery</DisplayName>
 		<Type>Barn</Type>
 		<Rank>0</Rank>
 		<PlayerLevel>0</PlayerLevel>

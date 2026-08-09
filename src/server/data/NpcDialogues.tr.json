@@ -3158,6 +3158,32 @@
           "Niobe'yi tamir etmeye calisacagim."
         ]
       }
+    },
+    "CraftTown": {
+      "npchomemailbox": {
+        "displayName": "Posta Kutusu",
+        "defaultLines": [
+          "Posta kutusu bos.",
+          "Bugun mektup yok.",
+          "Posta kutusunun icini bir orumcek sahiplenmis."
+        ]
+      },
+      "npchomexpbonus": {
+        "displayName": "Tecrube Kitabi",
+        "defaultLines": [
+          "Kitap ugulduyor. Ogrendiklerin artik biraz daha kalici.",
+          "Verdigin her savasin sayfalari burada.",
+          "Uzerinde calismak bir sonraki dovusu kolaylastiriyor."
+        ]
+      },
+      "npchomefindingbonus": {
+        "displayName": "Bulus Kitabi",
+        "defaultLines": [
+          "Kitap eski para kokuyor.",
+          "Iyi ganimetin nerede sakli oldugunu gosteriyor.",
+          "Yaninda tut, hazine bulmaya devam edersin."
+        ]
+      }
     }
   }
 }

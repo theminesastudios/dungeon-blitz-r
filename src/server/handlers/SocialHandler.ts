@@ -1101,20 +1101,22 @@ export class SocialHandler {
         let y = 0;
         let hasCoord = false;
 
+        // Where the target was last standing, never where they are this instant: arriving on
+        // a friend who is mid-jump would drop the traveller in from that height.
         const entity = target.entities.get(target.clientEntID);
-        if (entity && Number.isFinite(entity.x) && Number.isFinite(entity.y)) {
-            x = Math.round(Number(entity.x));
-            y = Math.round(Number(entity.y));
+        const grounded = LevelHandler.resolveGroundedAnchorPosition(entity, targetLevel);
+        if (grounded) {
+            x = grounded.x;
+            y = grounded.y;
             hasCoord = true;
         } else {
-            const savedLevel = target.character?.CurrentLevel;
-            if (
-                LevelConfig.normalizeLevelName(savedLevel?.name) === targetLevel &&
-                Number.isFinite(savedLevel?.x) &&
-                Number.isFinite(savedLevel?.y)
-            ) {
-                x = Math.round(Number(savedLevel.x));
-                y = Math.round(Number(savedLevel.y));
+            // The saved record used to be read here. It is dead-reckoned, so it can be
+            // anywhere relative to real floor -- see core/GroundedPosition.ts -- and arriving
+            // on a friend is exactly the moment a bad coordinate is most visible.
+            const confirmed = LevelConfig.getConfirmedSpawnForLevel(target.character, targetLevel);
+            if (confirmed) {
+                x = confirmed.x;
+                y = confirmed.y;
                 hasCoord = true;
             } else {
                 const spawn = LevelConfig.getSpawnCoordinates(target.character, targetLevel, targetLevel);

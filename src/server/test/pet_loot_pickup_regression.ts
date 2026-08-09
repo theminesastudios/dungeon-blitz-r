@@ -5,6 +5,7 @@ import { PetConfig } from '../core/PetConfig';
 import { PetHandler } from '../handlers/PetHandler';
 import { RewardHandler } from '../handlers/RewardHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
+import { parseSwz } from '../scripts/swzPatchUtils';
 
 /**
  * Every reward type is a walk-over pickup. The loot pet fetches gold by physically running over it
@@ -153,8 +154,24 @@ function testRepeatedMaterialDropsEachGetTheirOwnPickup(): void {
     assert.equal(client.pendingLoot.size, 3);
 }
 
+/**
+ * masterFileList.xml serves Login.swz out of p/cbq. The loot pet's follower entity was
+ * being patched into p/cbp/Login.swz, a copy no client downloads, so the pet shipped
+ * with no art and crashed the client the moment it was summoned.
+ */
+function testLootPetEntityShipsInTheServedLoginSwz(): void {
+    const ctx = parseSwz(path.resolve(__dirname, '../../client/content/localhost/p/cbq/Login.swz'));
+    const entTypes = ctx.chunks.find((entry: any) => entry.xml.includes('<EntTypes'));
+
+    assert.ok(entTypes, 'Login.swz should include EntTypes data');
+    const pet = entTypes!.xml.match(/<EntType EntName="PetHoundGreen"[\s\S]*?<\/EntType>/);
+    assert.ok(pet, 'the served Login.swz must define PetHoundGreen, the loot pet follower entity');
+    assert.equal(pet![0].includes('<CustomArt>Animation_DireMount.swf/'), true, 'loot pet needs its art');
+}
+
 function main(): void {
     ensureDataLoaded();
+    testLootPetEntityShipsInTheServedLoginSwz();
     testNoServerSideAutoCollectionSurvives();
     testMaterialsDropOnTheGroundWithTheLootPetOut();
     testMaterialsDropOnTheGroundWithNoPetOut();

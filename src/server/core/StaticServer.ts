@@ -1,4 +1,6 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import type { Server as HttpServer } from 'http';
 import * as path from 'path';
@@ -45,6 +47,36 @@ function escapeHtml(value: string | null | undefined): string {
         .replace(/'/g, '&#39;');
 }
 
+// Keyed on the socket address, not X-Forwarded-For: resolveRequesterAddress trusts
+// that header for logging, but a spoofable key would let one caller evade the limit
+// (and hand out other players' buckets) on the auth routes.
+// ponytail: in-process counters, per-instance. Move to a shared store if the game
+// server is ever run as more than one process behind a balancer.
+function ipRateLimit(windowMs: number, limit: number, message: string) {
+    return rateLimit({
+        windowMs,
+        limit,
+        standardHeaders: 'draft-7',
+        legacyHeaders: false,
+        validate: { xForwardedForHeader: false },
+        message
+    });
+}
+
+// Password reset, Discord OAuth, and account linking: slow enough to make guessing
+// state/code values and reset spam impractical, loose enough for a real retry.
+const authRateLimit = () => ipRateLimit(15 * 60 * 1000, 30, 'Too many attempts. Wait a few minutes and try again.');
+
+// Asset and status reads. A cold client load pulls dozens of SWF/XML files, and a
+// whole household can share one NAT address, so the ceiling is high on purpose --
+// it exists to bound a flood, not to shape normal play.
+const assetRateLimit = () => ipRateLimit(60 * 1000, 1000, 'Too many requests. Slow down and try again.');
+
+// The login page polls /api/auth/discord/pending once a second for up to two
+// minutes while it waits for the OAuth window, so this one cannot use the auth
+// budget -- a real login would exhaust it.
+const pollRateLimit = () => ipRateLimit(60 * 1000, 90, 'Too many requests. Slow down and try again.');
+
 export class StaticServer {
     private app: express.Application;
     private server: HttpServer | null;
@@ -57,11 +89,35 @@ export class StaticServer {
     private readonly selectedAssetVersion = 'cbp';
     private readonly flashVersion = this.selectedAssetVersion;
     private readonly gameVersion = this.selectedAssetVersion;
-    // Every SWF request is redirected to this token, so it — not index.html's own
-    // literal — is what decides whether a browser reuses its cached client. Bump
-    // it whenever DungeonBlitz.swf changes on disk, or players keep running the
-    // previous build and a client patch looks like it did nothing.
-    private readonly clientRevision = 'revert-destroy-brainless-1';
+    private clientRevisionCache: { key: string; value: string } | null = null;
+
+    // Every SWF request is redirected to this token, so it — not index.html's own literal — is
+    // what decides whether a browser reuses its cached client. It used to be a hand-maintained
+    // constant, which meant every client build collapsed onto one cache key and index.html's
+    // cache buster did nothing (see the warning in
+    // scripts/patch-dungeonblitz-hide-duplicate-boss-visual.ts). That was harmless while SWFs
+    // were served `no-store`, but once they became cacheable it left players on a stale client
+    // — #648 shipped a new DungeonBlitz.swf and nobody bumped this.
+    //
+    // Derive it from the SWF's content hash instead, using the same `swf-<sha1[0:12]>` scheme
+    // syncClientRev writes into index.html, so the two stay in lockstep with no manual step.
+    private get clientRevision(): string {
+        const swfPath = this.getSelectedSwfPath();
+        try {
+            const stats = fs.statSync(swfPath);
+            const cacheKey = `${stats.mtimeMs}:${stats.size}`;
+            if (this.clientRevisionCache?.key === cacheKey) {
+                return this.clientRevisionCache.value;
+            }
+
+            const digest = crypto.createHash('sha1').update(fs.readFileSync(swfPath)).digest('hex').slice(0, 12);
+            const value = `swf-${digest}`;
+            this.clientRevisionCache = { key: cacheKey, value };
+            return value;
+        } catch {
+            return 'swf-unknown';
+        }
+    }
 
     private static shouldLog(): boolean {
         return process.env.DEBUG_STATIC_SERVER === '1';
@@ -216,14 +272,6 @@ export class StaticServer {
         return true;
     }
 
-    private resolveGameSwzLocale(req: Request): 'en' | 'tr' {
-        return (
-            this.normalizeLocale(req.query.lang) ??
-            this.resolveSessionLocale(req) ??
-            'en'
-        );
-    }
-
     private resolveSwfLocale(req: Request): DungeonBlitzSwfLocale {
         return (
             this.normalizeLocale(req.query.lang) ??
@@ -232,21 +280,15 @@ export class StaticServer {
         );
     }
 
-    private getGameSwzPathForLocale(locale: 'en' | 'tr'): string {
-        const cbqDir = path.join(this.contentDir, 'p', 'cbq');
-        const variantPath = path.join(cbqDir, `Game.${locale}.swz`);
-        if (fs.existsSync(variantPath)) {
-            return variantPath;
-        }
-
-        if (locale === 'en') {
-            const backupPath = path.join(cbqDir, 'Game.swz.bak');
-            if (fs.existsSync(backupPath)) {
-                return backupPath;
-            }
-        }
-
-        return path.join(cbqDir, 'Game.swz');
+    // The game ships English only, so Game.swz is the one build there is.
+    //
+    // The per-locale variants this used to pick between are gone, and with them the
+    // `Game.swz.bak` fallback that sat behind the English branch. That fallback was a
+    // trap: .bak is whatever the first patch script happened to copy aside, so the moment
+    // Game.en.swz went missing every English client would have been served a months-old
+    // unpatched build instead of a 404 anyone would have noticed.
+    private getGameSwzPath(): string {
+        return path.join(this.contentDir, 'p', 'cbq', 'Game.swz');
     }
 
     private getFlashVersionAssetPath(assetPath: string): string {
@@ -425,14 +467,29 @@ try {
                 req.path.endsWith('.swz') ||
                 req.path.endsWith('.xml')
             ) {
-                res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-                res.setHeader('Pragma', 'no-cache');
-                res.setHeader('Expires', '0');
+                // Revalidate-always, but let the client keep the bytes. `no-store` used to be
+                // set here, which defeated the clientRevision cache-busting token above and
+                // forced Flash to re-download every level SWF (3-6 MB each) on every load and
+                // every region change. `no-cache` keeps content just as fresh -- the browser
+                // still asks on each request, and send()'s mtime/size ETag picks up a patched
+                // SWF immediately -- but an unchanged asset answers 304 instead of the body.
+                res.setHeader('Cache-Control', 'no-cache, must-revalidate, proxy-revalidate');
                 res.setHeader('Surrogate-Control', 'no-store');
-                res.setHeader('Connection', 'close');
             }
             next();
         });
+
+        // Registered ahead of every route below so each one inherits a limit.
+        this.app.use(assetRateLimit());
+        this.app.use('/api/auth/discord/pending', pollRateLimit());
+        this.app.use([
+            '/lostpw',
+            '/auth/discord',
+            '/callback',
+            '/discord/link',
+            '/api/discord/link',
+            '/api/discord-linked-roles'
+        ], authRateLimit());
 
         this.app.get('/', (_req, res) => {
             res.sendFile(path.join(this.contentDir, 'index.html'));
@@ -681,19 +738,26 @@ try {
         });
 
         this.app.get('/p/cbq/Game.swz', (req, res) => {
-            const locale = this.resolveGameSwzLocale(req);
-            const swzPath = this.getGameSwzPathForLocale(locale);
             res.type('application/x-shockwave-flash');
-            res.setHeader('X-DungeonBlitz-Language', locale);
-            res.sendFile(swzPath);
+            res.setHeader('X-DungeonBlitz-Language', 'en');
+            res.sendFile(this.getGameSwzPath());
         });
 
         this.app.get('/p/:assetVersion/Game.swz', (req, res) => {
-            const locale = this.resolveGameSwzLocale(req);
-            const swzPath = this.getGameSwzPathForLocale(locale);
             res.type('application/x-shockwave-flash');
-            res.setHeader('X-DungeonBlitz-Language', locale);
-            res.sendFile(swzPath);
+            res.setHeader('X-DungeonBlitz-Language', 'en');
+            res.sendFile(this.getGameSwzPath());
+        });
+
+        this.app.get(/^\/p\/[^/]+\/masterFileList(?:_\d+)?\.xml$/, (req, res, next) => {
+            const assetPath = this.getFlashVersionAssetPath(`/${path.basename(req.path)}`);
+            if (!fs.existsSync(assetPath) || !fs.statSync(assetPath).isFile()) {
+                next();
+                return;
+            }
+
+            res.type('application/xml');
+            res.sendFile(assetPath);
         });
 
         this.app.get('/DungeonBlitzRemote.swf', (req, res) => {
@@ -710,7 +774,15 @@ try {
 
         this.app.use(`/p/${this.flashVersion}`, (req, res, next) => {
             const assetPath = this.getFlashVersionAssetPath(req.path);
-            if (!fs.existsSync(assetPath) || !fs.statSync(assetPath).isFile()) {
+            // One stat instead of existsSync + statSync; this runs for every level SWF fetch.
+            let stats: fs.Stats;
+            try {
+                stats = fs.statSync(assetPath);
+            } catch {
+                next();
+                return;
+            }
+            if (!stats.isFile()) {
                 next();
                 return;
             }
@@ -924,6 +996,12 @@ try {
                 console.log(`[StaticServer] Flash URL: ${baseUrl}${this.getSelectedSwfUrl()}`);
             }
         });
+
+        // Flash pulls ~100 assets per session. Node's 5s default keep-alive expires during
+        // level loads and forces a fresh TCP handshake per asset, costing a full round trip
+        // each on a remote host. headersTimeout must stay above keepAliveTimeout.
+        this.server.keepAliveTimeout = 65_000;
+        this.server.headersTimeout = 70_000;
 
         this.server.on('error', (error) => {
             const socketError = error as NodeJS.ErrnoException;

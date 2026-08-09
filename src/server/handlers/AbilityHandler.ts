@@ -7,6 +7,7 @@ import { BitReader } from '../network/protocol/bitReader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { EntityHandler } from './EntityHandler';
 import { isVisitingAnotherPlayersCraftTown } from '../utils/HomeVisitGuard';
+import { SpeedupPricing } from '../core/SpeedupPricing';
 
 type AbilityDef = {
     AbilityID: string;
@@ -231,8 +232,14 @@ export class AbilityHandler {
             return;
         }
 
+        const authoritativeCost = SpeedupPricing.reconcile(skillResearch.ReadyTime, idolCost);
         const idols = Number(client.character.mammothIdols ?? 0);
-        if (idols < idolCost) {
+        if (idols < authoritativeCost) {
+            console.warn(
+                `[Ability] Refused a Speed Up for ${client.character.name}: ` +
+                `has ${idols} idols, needs ${authoritativeCost} (client claimed ${idolCost}).`
+            );
+            SpeedupPricing.refreshScreens(client);
             return;
         }
 
@@ -246,10 +253,10 @@ export class AbilityHandler {
             return;
         }
 
-        client.character.mammothIdols = idols - idolCost;
+        client.character.mammothIdols = idols - authoritativeCost;
 
         await AbilityHandler.saveCharacter(client);
-        AbilityHandler.sendPremiumPurchase(client, 'AbilitySpeedup', idolCost);
+        AbilityHandler.sendPremiumPurchase(client, 'AbilitySpeedup', authoritativeCost);
         AbilityHandler.sendAbilityResearchDone(client, abilityId);
         AbilityHandler.refreshPlayerSnapshot(client);
     }

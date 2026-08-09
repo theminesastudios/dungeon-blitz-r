@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { Client, clearKeepTutorialTimers } from '../core/Client';
 import { DungeonCompletionConditions } from '../core/DungeonCompletionConditions';
 import { BitReader } from '../network/protocol/bitReader';
@@ -11,6 +13,8 @@ import {
 } from '../core/DungeonRunStats';
 import { LevelHandler } from './LevelHandler';
 import { EntityState, EntityTeam } from '../core/Entity';
+import { MasterClassID } from '../core/Enums';
+import { resolveClientXmlDir } from '../utils/ClientXmlDir';
 import { EntityHandler } from './EntityHandler';
 import { MissionHandler } from './MissionHandler';
 import { areClientsInSameParty, getClientCharacterKey, sharesRoomIds, shouldShareCombatView } from '../core/PartySync';
@@ -27,8 +31,10 @@ import { CharacterSync } from '../utils/CharacterSync';
 import { sendConsumableUpdate } from '../utils/ConsumableState';
 import { LevelConfig } from '../core/LevelConfig';
 import { getRoomBossAwareRoomId, isRoomBossEntity } from '../core/RoomBossState';
+import { adoptBossAuthorityHealth, getBossAuthorityRecord, syncBossAuthorityCopies } from '../core/BossAuthority';
 import { RewardHandler } from './RewardHandler';
 import { MovementAuthority } from '../core/MovementAuthority';
+import { CastRateAuthority } from '../core/CastRateAuthority';
 import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { AdminRuntimeSettings } from '../core/AdminRuntimeSettings';
 
@@ -112,6 +118,36 @@ type HostileViewerHealthSnapshot = {
 };
 
 export class CombatHandler {
+
+    /**
+     * 0xCB -- the client reporting its own mana.
+     *
+     * ActivePower sends this on every cast of a power that authors FromMasterMana with a
+     * non-zero ManaCost: 247 powers do, and the Sentinel Form attacks (SFMelee, SFMeleeCombo,
+     * SFRanged) are the ones a player triggers constantly, so an unhandled 0xCB warned once
+     * per swing. The payload is a single 7-bit value -- PowerType.const_423 -- which is why
+     * the router reported it as 1 byte, and why mana never exceeds 127 in this protocol.
+     *
+     * The server has no mana simulation to reconcile this against, so this records the last
+     * reported value and nothing else. That is deliberately all it does: treating a
+     * client-sent number as authoritative is how a trusted-client exploit gets written, and
+     * the value is only useful for diagnostics until the server actually tracks mana.
+     */
+    static handleClientManaReport(client: Client, data: Buffer): void {
+        if (!client.character) {
+            return;
+        }
+
+        const br = new BitReader(data);
+        if (br.remainingBits() < CombatHandler.CLIENT_MANA_BITS) {
+            return;
+        }
+
+        const reported = Math.max(0, Math.round(Number(br.readMethod20(CombatHandler.CLIENT_MANA_BITS)) || 0));
+        client.lastReportedMana = reported;
+    }
+
+    private static readonly CLIENT_MANA_BITS = 7;
     private static readonly MAX_RELAY_POWER_HIT_DAMAGE = 4_000_000;
     private static readonly FIREBRAND_THIRD_SHOT_POWER_ID = 6144;
     private static readonly FIREBRAND_PIERCING_SHOT_POWER_ID = 6146;
@@ -422,6 +458,23 @@ export class CombatHandler {
         return CombatHandler.PLAYER_HITPOINTS[clampedLevel];
     }
 
+    // The client computes its own max HP (base for the level, times one plus the summed
+    // percentage bonuses from gear, charms and talents -- Entity.as) and reports it via
+    // 0xFC/0xBB. The server has no independent stat model, so it has to trust the number
+    // for legitimate play. What it does not have to do is trust it unbounded: a Cheat
+    // Engine user writing maxHP = 10,000,000 made every server heal, regen and death check
+    // treat them as effectively immortal. The real ceiling is the base times the largest
+    // bonus stack a real character can assemble; 4x (a +300% stack) is well clear of any
+    // legitimate build while turning the god-mode edit into a merely-high, bounded pool.
+    private static readonly MAX_HP_BONUS_MULTIPLE = 4;
+
+    static clampDeclaredMaxHp(client: Client, declaredMaxHp: number): number {
+        const level = Number(client.character?.level ?? 1);
+        const ceiling = CombatHandler.getBaseHpForLevel(level) * CombatHandler.MAX_HP_BONUS_MULTIPLE;
+        const declared = Math.max(1, Math.round(Number(declaredMaxHp) || 0));
+        return Math.min(declared, Math.round(ceiling));
+    }
+
     private static getRespawnHealAmount(client: Client): number {
         const entity = client.clientEntID > 0 ? client.entities.get(client.clientEntID) : null;
         const levelEntity = client.clientEntID > 0
@@ -444,11 +497,36 @@ export class CombatHandler {
         client.sendBitBuffer(0x80, bb);
     }
 
+    // A death almost never has stats synced within the last second, so the deferred
+    // path below is the normal path for every revive -- not an edge case. Waiting on
+    // the client's 0xFC without a deadline is what leaves a player permanently dead
+    // when that reply never lands (dropped under a deep packet queue, a client busy
+    // loading a level, or an unpatched client that stays quiet while dead).
+    private static readonly RESPAWN_COMBAT_STATS_TIMEOUT_MS = 2_500;
+
     private static deferRespawnResponseForCombatStats(client: Client, usePotion: boolean, nowMs: number): void {
         client.pendingRespawnRequest = { usePotion, requestedAt: nowMs };
         client.combatStatsDirty = true;
         client.allowDirtyCombatStatsRegen = false;
         client.lastCombatStatsRefreshRequestAt = nowMs;
+
+        if (client.pendingRespawnTimer) {
+            clearTimeout(client.pendingRespawnTimer);
+        }
+        client.pendingRespawnTimer = setTimeout(() => {
+            client.pendingRespawnTimer = null;
+            if (!client.pendingRespawnRequest) {
+                return;
+            }
+            // resolvePlayerMaxHp falls back to the character level's base HP, so an
+            // answer built from stale stats still revives the player at a sane pool.
+            console.warn(
+                `[Combat] Combat stats never arrived for respawn; reviving ${client.character?.name ?? 'unknown'} on the timeout path.`
+            );
+            CombatHandler.completePendingRespawnAfterCombatStats(client);
+        }, CombatHandler.RESPAWN_COMBAT_STATS_TIMEOUT_MS);
+        client.pendingRespawnTimer.unref?.();
+
         CharacterSync.requestCombatStatsRefresh(client);
     }
 
@@ -459,6 +537,10 @@ export class CombatHandler {
         }
 
         client.pendingRespawnRequest = null;
+        if (client.pendingRespawnTimer) {
+            clearTimeout(client.pendingRespawnTimer);
+            client.pendingRespawnTimer = null;
+        }
         CombatHandler.sendRespawnResponse(client, pending.usePotion);
     }
 
@@ -979,6 +1061,13 @@ export class CombatHandler {
         return entType?.RangedPower
             ? CombatHandler.BOSS_RANGED_AGGRO_RADIUS
             : CombatHandler.BOSS_MELEE_AGGRO_RADIUS;
+    }
+
+    // BossAuthority sizes a boss pool once, on first sight, and owns it from
+    // then on. It needs the same EntTypes arithmetic every other health path
+    // uses, but must not import the handler back — hence this seam.
+    static estimateHostileMaxHpForBossAuthority(entity: any, levelNameOrScope: string = ''): number {
+        return CombatHandler.estimateHostileMaxHp(entity, levelNameOrScope);
     }
 
     private static estimateHostileMaxHp(entity: any, levelNameOrScope: string = ''): number {
@@ -2009,6 +2098,7 @@ export class CombatHandler {
             for (const copy of CombatHandler.collectHostileHealthCopies(levelScope, sourceEntity, true)) {
                 apply(copy);
             }
+            CombatHandler.publishBossAuthorityHealth(levelScope, sourceEntity, normalizedCurrentHp, normalizedMaxHp);
             return;
         }
 
@@ -2017,6 +2107,23 @@ export class CombatHandler {
                 continue;
             }
             apply(session.entities.get(entityId));
+        }
+        CombatHandler.publishBossAuthorityHealth(levelScope, sourceEntity, normalizedCurrentHp, normalizedMaxHp);
+    }
+
+    // The copy sweep above matches siblings heuristically, by name and position.
+    // A boss is matched by identity instead, so a copy the heuristic misses —
+    // one spawned at a different position, or by a client that entered later —
+    // still learns the run's scaling and, once it happens, the death.
+    private static publishBossAuthorityHealth(
+        levelScope: string,
+        sourceEntity: any,
+        currentHp: number,
+        maxHp: number
+    ): void {
+        const record = adoptBossAuthorityHealth(levelScope, sourceEntity, currentHp, maxHp);
+        if (record) {
+            syncBossAuthorityCopies(levelScope, record);
         }
     }
 
@@ -4558,6 +4665,144 @@ export class CombatHandler {
         }
     }
 
+    /**
+     * Soulthieft: a Soulthief's hits carry a share of whatever the target's health pool is,
+     * so the bigger the enemy, the more each strike takes off it.
+     *
+     * This lives on the server because it cannot live anywhere else. The bonus has to read
+     * the target's max HP at the moment of the hit, and the client's damage formula has no
+     * term for that -- every buff property it understands (BleedMultiplier, BoundMultiplier,
+     * MeleeDamage and the rest) multiplies the attacker's own numbers. The server already
+     * rewrites incoming damage here for AdminRuntimeSettings.scaleDamage, so this rides the
+     * same path.
+     *
+     * The cost of that is cosmetic and worth stating: the floating combat number is computed
+     * by the attacker's client and will show the unboosted hit. The health bar is server
+     * authoritative and will drop by the real amount.
+     *
+     * Capped at the base hit, so it doubles a strike at most. Without a cap this scales with
+     * the target's health pool, which is exactly backwards for the bosses that have the
+     * largest pools -- a 1% bite out of a 500k boss would dwarf everything else a rogue does.
+     */
+    private static readonly SOULTHIEFT_MAX_HP_RATE = 0.01;
+
+    private static getSoulthieftMaxHpBonus(
+        sourceSession: Client | null,
+        targetEntity: any,
+        baseDamage: number,
+        levelScope: string
+    ): number {
+        if (
+            !sourceSession?.character ||
+            Number(sourceSession.character.MasterClass ?? 0) !== MasterClassID.Soulthief
+        ) {
+            return 0;
+        }
+
+        const damage = Math.max(0, Math.round(Number(baseDamage) || 0));
+        if (damage <= 0) {
+            return 0;
+        }
+
+        // Not entity.maxHp. A client-spawned hostile never reports its health pool -- the
+        // patched client sends damage deltas only -- so that field is empty on most of what
+        // a rogue actually swings at, and reading it directly made this passive do nothing
+        // at all outside the handful of server-authority levels. getNpcHealthState is the
+        // server's own resolver: explicit maxHp when it has one, the EntTypes-derived pool
+        // otherwise.
+        const maxHp = Math.max(0, Math.round(Number(
+            CombatHandler.getNpcHealthState(targetEntity, levelScope)?.maxHp ?? 0
+        ) || 0));
+        if (maxHp <= 0) {
+            return 0;
+        }
+
+        return Math.min(damage, Math.round(maxHp * CombatHandler.SOULTHIEFT_MAX_HP_RATE));
+    }
+
+    /**
+     * Sentinel: the discipline's basic melee swing carries a slice of the wearer's own
+     * health pool, which is the stat a Sentinel actually stacks.
+     *
+     * Server-side for the same reason as Soulthieft -- the client's damage formula scales
+     * the attacker's damage stats and has no term for their max HP -- but with a bonus this
+     * one gets for free: the server knows MasterClass, so unlike the weapon-data changes
+     * that ride alongside it, this really is Sentinel-only rather than every Paladin.
+     *
+     * It rides the Sentinel's signature power, ConcussionBolt -- the AbilityTypes
+     * HotbarLocation 0 slot, which is one power per discipline. The weapon-driven basic
+     * attacks it first hung off are shared by the whole class, so that version handed a
+     * Sentinel passive to every Justicar and Templar as well.
+     */
+    private static readonly SENTINEL_MAX_HP_RATE = 0.001;
+    private static readonly SENTINEL_SIGNATURE_POWER_NAMES = ['ConcussionBolt'];
+    private static sentinelSignaturePowerIds: Set<number> | null = null;
+
+    /**
+     * Resolved from the authored power data rather than hardcoded, because the ids are
+     * whatever PlayerPowerTypes says they are and a wrong constant here would silently
+     * attach the passive to some unrelated power.
+     */
+    private static getSentinelSignaturePowerIds(): Set<number> {
+        if (CombatHandler.sentinelSignaturePowerIds) {
+            return CombatHandler.sentinelSignaturePowerIds;
+        }
+
+        const ids = new Set<number>();
+        CombatHandler.sentinelSignaturePowerIds = ids;
+
+        const xmlDir = resolveClientXmlDir(['PlayerPowerTypes.xml']);
+        if (!xmlDir) {
+            console.warn('[CombatHandler] PlayerPowerTypes.xml not found; the Sentinel basic-attack passive is inactive.');
+            return ids;
+        }
+
+        try {
+            const xml = fs.readFileSync(path.join(xmlDir, 'PlayerPowerTypes.xml'), 'utf8');
+            for (const block of xml.match(/<Power PowerName="[^"]*">[\s\S]*?<\/Power>/g) ?? []) {
+                const name = block.match(/<Power PowerName="([^"]*)">/)?.[1] ?? '';
+                if (!CombatHandler.SENTINEL_SIGNATURE_POWER_NAMES.some((base) => name === base || new RegExp(`^${base}\\d+$`).test(name))) {
+                    continue;
+                }
+
+                const powerId = Math.round(Number(block.match(/<PowerID>([^<]*)<\/PowerID>/)?.[1] ?? 0));
+                if (Number.isFinite(powerId) && powerId > 0) {
+                    ids.add(powerId);
+                }
+            }
+            console.log(`[CombatHandler] Sentinel passive covers ${ids.size} ConcussionBolt rank(s).`);
+        } catch (err) {
+            console.warn('[CombatHandler] Could not read PlayerPowerTypes.xml; the Sentinel basic-attack passive is inactive.', err);
+        }
+
+        return ids;
+    }
+
+    private static getSentinelMaxHpBonus(
+        sourceSession: Client | null,
+        powerId: number,
+        baseDamage: number
+    ): number {
+        if (
+            !sourceSession?.character ||
+            Number(sourceSession.character.MasterClass ?? 0) !== MasterClassID.Sentinel
+        ) {
+            return 0;
+        }
+
+        if (!CombatHandler.getSentinelSignaturePowerIds().has(Math.round(Number(powerId) || 0))) {
+            return 0;
+        }
+
+        const damage = Math.max(0, Math.round(Number(baseDamage) || 0));
+        const maxHp = Math.max(0, Math.round(Number(sourceSession.authoritativeMaxHp ?? 0) || 0));
+        if (damage <= 0 || maxHp <= 0) {
+            return 0;
+        }
+
+        return Math.round(maxHp * CombatHandler.SENTINEL_MAX_HP_RATE);
+    }
+
     private static updatePlayerTargetAfterHit(targetSession: Client, damage: number, preventDeath: boolean = false): PlayerHitResolution {
         if (damage <= 0 || !targetSession.character || targetSession.clientEntID <= 0) {
             return {
@@ -5107,6 +5352,16 @@ export class CombatHandler {
                 comboData: info.comboData
             });
         }
+        // Only the player's own casts are metered. A client also relays the hostiles it
+        // owns, and a room full of them is not the player casting fast. Charged before the
+        // mobility grace below, so a refused cast does not buy a blink's worth of movement.
+        if (
+            EntityHandler.isClientOwnPlayerEntity(client, levelScope, info.sourceId, sourceEntity) &&
+            !CastRateAuthority.chargeCast(client, info.powerId)
+        ) {
+            return;
+        }
+
         if (sourceSession === client) {
             MovementAuthority.noteMobilityCast(client, info.powerId);
         }
@@ -5187,11 +5442,22 @@ export class CombatHandler {
             return;
         }
 
+        // The damage number rides on this packet, so a refused cast has to take its hits
+        // with it or the rate limit costs the cheater nothing.
+        if (
+            EntityHandler.isClientOwnPlayerEntity(client, levelScope, sourceId, sourceEntity) &&
+            CastRateAuthority.isHitBlocked(client, info.powerId)
+        ) {
+            return;
+        }
+
         const sourceSession = CombatHandler.resolveCombatSourceSession(levelScope, sourceId, client);
         const targetSession = CombatHandler.findPlayerSessionByEntityId(levelScope, targetId);
         const isPlayerSource = Boolean(sourceSession && !isHostileNpcSource);
         if (isPlayerSource && targetEntity && !targetEntity.isPlayer) {
             damage = AdminRuntimeSettings.scaleDamage(damage);
+            damage += CombatHandler.getSoulthieftMaxHpBonus(sourceSession, targetEntity, damage, levelScope);
+            damage += CombatHandler.getSentinelMaxHpBonus(sourceSession, info.powerId, damage);
         }
         if (
             (!targetEntity && !targetSession) ||
@@ -5753,6 +6019,11 @@ export class CombatHandler {
         const hadPendingRespawn = Boolean(client.pendingRespawnRequest);
         if (usePotion) {
             usePotion = CombatHandler.tryConsumeRespawnPotion(client);
+            // 0x77 and the 0x82 that follows it are two halves of one revive, and the
+            // gap between them is the combat-stats handshake -- unbounded, and routinely
+            // longer than the 1.5s dedup window inside tryConsumeRespawnPotion. Mark the
+            // charge so the broadcast half cannot bill a second potion for it.
+            client.respawnPotionCharged = client.respawnPotionCharged || usePotion;
         }
 
         if (!usePotion && !hadPendingRespawn) {
@@ -5774,9 +6045,10 @@ export class CombatHandler {
         const entId = EntityHandler.resolveEntityAlias(client, rawEntId);
         const clientHealAmount = Math.max(0, Math.round(br.readMethod24()));
         const usedPotion = br.readMethod15();
-        if (usedPotion) {
+        if (usedPotion && !client.respawnPotionCharged) {
             CombatHandler.tryConsumeRespawnPotion(client);
         }
+        client.respawnPotionCharged = false;
 
         const isSelfRespawn = entId === client.clientEntID;
         const levelScope = getClientLevelScope(client);
@@ -6053,13 +6325,21 @@ export class CombatHandler {
         }
 
         const lifeNonce = Math.max(0, Math.round(Number(targetEntity?.lifeNonce ?? 0)));
+        const bossRecord = getBossAuthorityRecord(levelScope, targetEntity);
         if (Math.round(Number(targetEntity?.clientReportedDamageLifeNonce ?? -1)) !== lifeNonce) {
             targetEntity.clientReportedDamageLifeNonce = lifeNonce;
             targetEntity.clientReportedDamageByToken = new Map<number, number>();
+            bossRecord?.reportedDamageByToken.clear();
         }
-        const reportedDamageByToken = targetEntity.clientReportedDamageByToken instanceof Map
-            ? targetEntity.clientReportedDamageByToken as Map<number, number>
-            : new Map<number, number>();
+        // A boss the scope owns keeps one ledger for the whole run. The copy-local
+        // map it replaces reset itself every time a client re-registered its copy,
+        // which is how a party member walking back into the room handed the boss a
+        // fresh health bar that nobody else could see.
+        const reportedDamageByToken = bossRecord
+            ? bossRecord.reportedDamageByToken
+            : targetEntity.clientReportedDamageByToken instanceof Map
+                ? targetEntity.clientReportedDamageByToken as Map<number, number>
+                : new Map<number, number>();
         targetEntity.clientReportedDamageByToken = reportedDamageByToken;
         for (const copy of CombatHandler.collectHostileHealthCopies(levelScope, targetEntity, true)) {
             copy.clientReportedDamageLifeNonce = lifeNonce;

@@ -122,8 +122,8 @@ function watchStream(stream, output) {
     });
 }
 
-const command = process.platform === 'win32' ? 'call npm run dev:discord' : 'npm';
-const args = process.platform === 'win32' ? [] : ['run', 'dev:discord'];
+const command = process.platform === 'win32' ? 'call npm run dev' : 'npm';
+const args = process.platform === 'win32' ? [] : ['run', 'dev'];
 let child;
 
 try {
@@ -134,7 +134,7 @@ try {
         stdio: ['inherit', 'pipe', 'pipe']
     });
 } catch (error) {
-    console.error('[dev-windows] Failed to start npm run dev:discord:', error);
+    console.error('[dev-windows] Failed to start npm run dev:', error);
     process.exit(1);
 }
 
@@ -142,7 +142,7 @@ watchStream(child.stdout, process.stdout);
 watchStream(child.stderr, process.stderr);
 
 child.on('error', (error) => {
-    console.error('[dev-windows] Failed to start npm run dev:discord:', error);
+    console.error('[dev-windows] Failed to start npm run dev:', error);
     process.exit(1);
 });
 

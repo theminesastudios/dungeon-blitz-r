@@ -14,11 +14,22 @@ import { MissionHandler } from './MissionHandler';
 import { noteDungeonRunBossCutscene, noteDungeonRunEntitySeen } from '../core/DungeonRunStats';
 import { areClientsInSameParty, getPartyIdForClient, isClientPartyLeader, sharesRoomIds } from '../core/PartySync';
 import { areClientsInSameLevelScope, getClientLevelScope, getLevelScopeKey, getScopeLevelName } from '../core/LevelScope';
-import { getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
+import { getPartyRuntimeLevelForClient, getScopeRuntimeLevel } from '../core/RuntimeLevel';
+import { clearBossAuthority, noteBossEntity } from '../core/BossAuthority';
 import { clearOpenBossScene, getOpenBossScene, isRoomBossEntity, markRoomBossEntity } from '../core/RoomBossState';
-import { getBossIdentityKeys, looksLikeDungeonBoss } from '../core/BossCopyCensus';
+import { getBossIdentityKey, getBossIdentityKeys } from '../core/BossCopyCensus';
 import { TutorialDungeonAuthorityEntity, TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { MovementAuthority } from '../core/MovementAuthority';
+import { discardForeignGroundedSample, inheritGroundedSample, noteGroundedSample } from '../core/GroundedPosition';
+import {
+    buildHomeStatueEntity,
+    HOME_STATUE_LEVEL,
+    HOME_STATUE_SLOTS,
+    isHomeStatueEntityId,
+    readHomeStatues
+} from '../core/HomeStatues';
+import { getCraftTownHomeOwnerCharacter } from '../utils/HomeVisitGuard';
+import { HomeStatueHandler } from './HomeStatueHandler';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
@@ -1388,6 +1399,9 @@ export class EntityHandler {
         // A fresh run must not inherit the previous run's open boss scene, or the
         // first legitimate boss cue of the new run would be read as a copy.
         clearOpenBossScene(levelScope);
+        // Same reasoning for the boss pool: a new run gets full health bars and a
+        // fresh damage ledger, not the corpse the last run left behind.
+        clearBossAuthority(levelScope);
         console.log(
             `[EntityHandler] Cleared finished dungeon run scope ${levelScope} ` +
             `(${levelMap.size} stale entities) for a fresh run`
@@ -1777,7 +1791,10 @@ export class EntityHandler {
             return Math.max(1, Math.min(50, Math.round(Number(fallbackLevel) || 1)));
         }
 
-        return getPartyRuntimeLevelForClient(client, client.character, fallbackLevel);
+        // Scope, not party: two players in the same dungeon instance must scale
+        // its enemies identically even when they are not grouped, or their health
+        // bars disagree from the first hit.
+        return getScopeRuntimeLevel(getClientLevelScope(client), client, fallbackLevel);
     }
 
     private static applyRuntimeDungeonEntityLevel(client: Client, levelName: string | null | undefined, entity: any): void {
@@ -1795,6 +1812,20 @@ export class EntityHandler {
         }
 
         entity.level = EntityHandler.resolveRuntimeDungeonEntityLevel(client, levelName, entity.level);
+        EntityHandler.adoptBossAuthority(getClientLevelScope(client), entity);
+    }
+
+    // Every path that registers a hostile funnels through here, so a boss copy
+    // can never enter the run without landing on the scope's existing pool.
+    static adoptBossAuthority(levelScope: string | null | undefined, entity: any): void {
+        if (Number(entity?.team ?? 0) !== EntityTeam.ENEMY) {
+            return;
+        }
+
+        const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+        noteBossEntity(levelScope, entity, (candidate, scope) =>
+            CombatHandler.estimateHostileMaxHpForBossAuthority(candidate, scope)
+        );
     }
 
     static rescaleDungeonEntitiesForParty(client: Client): number {
@@ -2727,7 +2758,12 @@ export class EntityHandler {
         }
 
         const bossKeys = getBossIdentityKeys(levelName);
-        if (!looksLikeDungeonBoss(entity, bossKeys)) {
+        // Only a second cue for the *same* boss is a stale copy. A room that
+        // authors two bosses (Svagg and the griffon he summons, the bandit twins)
+        // sends a cue for each, and suppressing the second one left that boss
+        // unkillable and its dungeon unable to finish.
+        const bossIdentity = getBossIdentityKey(entity, bossKeys);
+        if (!bossIdentity) {
             return false;
         }
 
@@ -2743,7 +2779,7 @@ export class EntityHandler {
                 normalizedLocalId <= 0 ||
                 normalizedLocalId === entityId ||
                 localEntity === entity ||
-                !looksLikeDungeonBoss(localEntity, bossKeys)
+                getBossIdentityKey(localEntity, bossKeys) !== bossIdentity
             ) {
                 continue;
             }
@@ -3107,6 +3143,19 @@ export class EntityHandler {
 
         const anchorRoomId = Number(anchor.currentRoomId ?? -1);
         const levelScope = getClientLevelScope(joiner);
+
+        // A cinematic already running in the anchor's room takes the arrival with
+        // it, resumed mid-timeline. Only a finished one is still skipped — that
+        // one would replay dialogue the room is done with.
+        const { LevelHandler } = require('./LevelHandler') as typeof import('./LevelHandler');
+        if (
+            Number.isFinite(anchorRoomId) &&
+            anchorRoomId >= 0 &&
+            LevelHandler.joinActiveSharedDungeonCutscene(joiner, anchorRoomId)
+        ) {
+            return;
+        }
+
         if (
             Number.isFinite(anchorRoomId) &&
             anchorRoomId >= 0 &&
@@ -3534,6 +3583,62 @@ export class EntityHandler {
         }
     }
 
+    /**
+     * How far a spawn coordinate may sit above the real floor and still be placed cleanly.
+     *
+     * The client resolves an explicit spawn with
+     *   getFloorCollision(0, x, y - 59, new Point(0, 160), ...)
+     * -- a ray from 59px above the coordinate, running 160px down. Floor inside that band and
+     * the body is snapped onto it with no visible movement; floor outside it and the client
+     * leaves the body at the raw coordinate, which is the glide down to the ground players see
+     * on entering a level. 59 is therefore the exact budget for error above the floor.
+     */
+    private static readonly SPAWN_SNAP_WINDOW_PX = 59;
+
+    /**
+     * Throw away a floor sample that the server's dead reckoning has drifted away from.
+     *
+     * entity.x/y is a running sum of movement deltas -- thinned by MovementAuthority
+     * rejections and packet coalescing -- so it slowly parts company with where the player
+     * actually is. The floor samples taken from it inherit that error, and once the error
+     * exceeds the client's snap window the saved point stops being a place with floor under
+     * it: a Jade City record reached y=-2526 with the ground at about 1050, which is a 3500px
+     * fall on every login.
+     *
+     * A full update is the only packet carrying the client's absolute position, so it is the
+     * one chance to notice. Beyond the snap window the inherited sample is a lie and the
+     * absolute position replaces it -- for a standing packet through noteGroundedSample right
+     * after this, and for an airborne one by leaving no sample at all rather than a wrong one.
+     */
+    private static discardDriftedGroundedSample(
+        client: Client,
+        props: any,
+        previousEntity: any,
+        absoluteX: number,
+        absoluteY: number
+    ): void {
+        const reckonedX = Number(previousEntity?.x);
+        const reckonedY = Number(previousEntity?.y);
+        if (!Number.isFinite(reckonedX) || !Number.isFinite(reckonedY)) {
+            return;
+        }
+
+        const driftX = Math.abs(reckonedX - Number(absoluteX));
+        const driftY = Math.abs(reckonedY - Number(absoluteY));
+        if (driftX <= EntityHandler.SPAWN_SNAP_WINDOW_PX && driftY <= EntityHandler.SPAWN_SNAP_WINDOW_PX) {
+            return;
+        }
+
+        delete props.groundedX;
+        delete props.groundedY;
+        console.log(
+            `[SpawnDrift] character=${String(client.character?.name ?? 'unknown')} ` +
+            `level=${String(client.currentLevel ?? '')} reckoned=${Math.round(reckonedX)},${Math.round(reckonedY)} ` +
+            `actual=${Math.round(Number(absoluteX))},${Math.round(Number(absoluteY))} ` +
+            `drift=${Math.round(driftX)},${Math.round(driftY)} action=dropped_grounded_sample`
+        );
+    }
+
     private static buildPlayerSnapshot(client: Client): EntityProps | null {
         if (!client.character || !client.currentLevel) {
             return null;
@@ -3697,11 +3802,86 @@ export class EntityHandler {
         this.sendEntity(client, npc);
     }
 
+    static sendCraftTownAuthoredNpcs(client: Client): void {
+        if (client.currentLevel !== 'CraftTown' || !client.playerSpawned) {
+            return;
+        }
+
+        const levelMap = EntityHandler.getLevelMapForClient(client, true);
+        if (!levelMap) {
+            return;
+        }
+
+        const npcs = NpcLoader.getNpcsForLevel('CraftTown').filter((npc) => String(npc.name ?? '') === 'NPCHomeNeo');
+        for (const npc of npcs) {
+            const entityId = Math.max(0, Math.round(Number(npc.id) || 0));
+            if (entityId <= 0 || client.knownEntityIds.has(entityId)) {
+                continue;
+            }
+
+            let entityProps = levelMap.get(entityId);
+            if (!entityProps) {
+                entityProps = {
+                    ...Entity.fromNpc(npc),
+                    clientSpawned: false
+                };
+                levelMap.set(entityId, entityProps);
+            }
+
+            if (entityProps.isPlayer || entityProps.clientSpawned) {
+                continue;
+            }
+
+            client.entities.set(entityId, { ...entityProps });
+            EntityHandler.sendEntity(client, entityProps);
+        }
+    }
+
+    /**
+     * Spawns the keep garden statues for whoever just walked into a CraftTown instance.
+     *
+     * The line-up is always the one belonging to *this session's* keep owner - itself when you are
+     * home, the host when you are visiting - and it is delivered **only to this session**.
+     *
+     * Statues are deliberately kept out of `GlobalState.levelEntities`. They carry fixed entity ids,
+     * so two accounts' statues would occupy the same three ids; the moment anything put them in a
+     * shared level map, an account could be shown another account's characters (which is exactly
+     * what happens if two keeps ever resolve to the same level scope). Living only in
+     * `client.entities` means no generic broadcast, joiner sync or map sweep can reach them, so a
+     * session can never receive a set that is not its own. Props are rebuilt from the stored snapshot
+     * on every send, so a statue re-dressed while nobody was watching still comes up correct.
+     */
+    static sendHomeStatues(client: Client): void {
+        if (client.currentLevel !== HOME_STATUE_LEVEL || !client.playerSpawned) {
+            return;
+        }
+
+        const owner = getCraftTownHomeOwnerCharacter(client.character, client.craftTownHostCharacter);
+        const book = readHomeStatues(owner);
+
+        for (const slot of HOME_STATUE_SLOTS) {
+            const snapshot = book[slot.characterClass];
+            if (!snapshot || client.knownEntityIds.has(slot.entityId)) {
+                continue;
+            }
+
+            const entityProps = buildHomeStatueEntity(slot, snapshot);
+            client.entities.set(slot.entityId, { ...entityProps });
+            EntityHandler.sendEntity(client, entityProps);
+        }
+    }
+
     // 0x8
     static handleEntityFullUpdate(client: Client, data: Buffer): void {
         const br = new BitReader(data);
 
         const rawEntityId = br.readMethod9();
+        // Keep garden statues are server-owned and per-session. Accepting a client update for one
+        // would file it into the shared level map, which is the one way another account could end up
+        // being shown someone else's statues.
+        if (isHomeStatueEntityId(rawEntityId)) {
+            return;
+        }
         let entityId = rawEntityId;
         const posX = br.readMethod24();
         const posY = br.readMethod24();
@@ -3852,6 +4032,52 @@ export class EntityHandler {
 
         EntityHandler.applyRuntimeDungeonEntityLevel(client, levelName, props);
 
+        // A full update replaces the entity object wholesale, which used to throw away the
+        // floor sample the incremental packets had built up. Everything that places a body
+        // (level entry, the login restore, the transfer save, party anchor spawns) reads that
+        // sample, so losing it here left those paths falling back to a live position that can
+        // be in open air -- and this packet's own flags were never consulted, so a full update
+        // sent mid-jump looked perfectly grounded.
+        if (isPlayer) {
+            const previousEntity = client.entities.get(entityId)
+                ?? client.entities.get(rawEntityId)
+                ?? existingLevelMap?.get(entityId);
+            inheritGroundedSample(props, previousEntity);
+            // A sample the entity carried in from the level it just left is not floor here.
+            // The inherit above is what makes it survive the level change at all, so this is
+            // the one place that can tell the difference.
+            discardForeignGroundedSample(props, levelName);
+            EntityHandler.discardDriftedGroundedSample(client, props, previousEntity, posX, posY);
+            // The client sends its true absolute position here, so a standing full update is
+            // the most trustworthy floor sample there is -- including the one that arrives on
+            // spawn, which is what gives a player who leaves immediately a point to return to.
+            const standing = !bJumping && !bDropping;
+            noteGroundedSample(props, posX, posY, !standing, levelName, true);
+
+            /**
+             * ...and it is the only coordinate that may ever be replayed as a spawn point.
+             *
+             * Every other position the server holds is `entity.x/y`: a sum of movement deltas
+             * on top of whatever the server *believed* the last spawn point was. When the
+             * client disagreed with that belief -- snapping the body up to 160px onto floor,
+             * or letting it fall because there was no floor inside its snap window -- it
+             * corrected itself with no delta to say so, and the offset was inherited by every
+             * later sample, saved, and handed back as the next spawn. That is the loop that
+             * put players in the air on entry, and it compounds: each visit falls from the
+             * error the last one left behind, which is how a live CraftTown record reached
+             * y=-349 with the floor at 1460.
+             *
+             * This packet is the client telling the server where it actually is, while telling
+             * it that it is standing. Recording it here, and reading nothing else at spawn
+             * time (LevelConfig.getConfirmedSpawnForLevel), closes the loop: the worst case
+             * becomes "no confirmed point yet, use the level's authored spawn", which is floor
+             * by construction.
+             */
+            if (ownsThisPlayerPacket && standing && client.character) {
+                LevelConfig.rememberConfirmedSpawn(client.character, levelName, posX, posY);
+            }
+        }
+
         if (!isPlayer) {
             client.clientSpawnConfirmed = true;
             clearClientSpawnFallbackTimer(client);
@@ -3940,6 +4166,8 @@ export class EntityHandler {
              EntityHandler.broadcastPlayerSpawn(client, props);
              EntityHandler.broadcastPlayerMountState(client, props.id, equippedMountId);
              BuildingHandler.refreshCraftTownBuildingsOnSpawn(client);
+             EntityHandler.sendCraftTownAuthoredNpcs(client);
+             HomeStatueHandler.onCraftTownSpawn(client);
         }
     }
 

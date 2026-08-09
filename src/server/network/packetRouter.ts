@@ -15,6 +15,7 @@ export type PacketHandlerMetrics = {
 export class PacketRouter {
     private handlers: Map<number, PacketHandler> = new Map();
     private metrics: Map<number, PacketHandlerMetrics> = new Map();
+    private unhandledPacketIds: Set<number> = new Set();
 
     public register(packetId: number, handler: PacketHandler): void {
         this.handlers.set(packetId, handler);
@@ -56,6 +57,12 @@ export class PacketRouter {
                 metric.maxHandlerDurationMs = Math.max(metric.maxHandlerDurationMs, handlerDurationMs);
                 this.metrics.set(packetId, metric);
             }
+        } else if (!this.unhandledPacketIds.has(packetId)) {
+            // Silently dropping these is why "I click it and nothing happens, and
+            // nothing is logged" was impossible to chase. Once per id, so a chatty
+            // client cannot flood the log.
+            this.unhandledPacketIds.add(packetId);
+            console.warn(`[Router] No handler registered for packet 0x${packetId.toString(16)} (${data.length} bytes)`);
         }
     }
 }

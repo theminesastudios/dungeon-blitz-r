@@ -3305,6 +3305,32 @@
           "I'll try to repair the Niobe."
         ]
       }
+    },
+    "CraftTown": {
+      "npchomemailbox": {
+        "displayName": "Mailbox",
+        "defaultLines": [
+          "The mailbox is empty.",
+          "No letters today.",
+          "A spider has claimed the inside of the mailbox."
+        ]
+      },
+      "npchomexpbonus": {
+        "displayName": "Tome of Experience",
+        "defaultLines": [
+          "The tome hums. Its lessons stay with you a little longer now.",
+          "Pages of every battle you have fought.",
+          "Studying it makes the next fight come easier."
+        ]
+      },
+      "npchomefindingbonus": {
+        "displayName": "Tome of Finding",
+        "defaultLines": [
+          "The tome smells of old coin.",
+          "It maps out where the good loot hides.",
+          "Keep it close and treasure keeps turning up."
+        ]
+      }
     }
   }
 }

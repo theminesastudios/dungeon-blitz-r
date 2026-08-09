@@ -326,16 +326,8 @@ function patchRoomSource(source) {
     'this.Script_OpeningScene = ["0 Parrot Lets go!"];'
   );
   patched = patched.replace(
-    'this.Script_OpenDoor = ["0 Parrot <Goto Red 21>","2 Goblin Now what was that PASSWORD?","8 Goblin Oh yeah! You have to CHEER in front of the door.","6 Goblin <Cheer>","4 End"];',
-    'this.Script_OpenDoor = ["0 Parrot <Goto Red 21>","2 Goblin Now what was that PASSWORD?","8 Goblin Oh yeah! You have to CHEER in front of the door.","6 Goblin <Cheer>","4 End"];'
-  );
-  patched = patched.replace(
     'this.Script_OpenDoor = ["0 Parrot <Panic>","2 Goblin Now what was that PASSWORD?","8 Goblin Oh yeah! You have to CHEER in front of the door.","6 Goblin <Cheer>","4 End"];',
     'this.Script_OpenDoor = ["0 Parrot <Goto Red 21>","2 Goblin Now what was that PASSWORD?","8 Goblin Oh yeah! You have to CHEER in front of the door.","6 Goblin <Cheer>","4 End"];'
-  );
-  patched = patched.replace(
-    'this.Script_GoodJobEmote = ["4 Parrot <Panic>Woo hoo!","6 Player She can\\\'t be much further.","2 Parrot <Goto Red 23>","9 RemoveCue Parrot"];',
-    'this.Script_GoodJobEmote = ["4 Parrot <Panic>Woo hoo!","6 Player She can\\\'t be much further.","2 Parrot <Goto Red 23>","9 RemoveCue Parrot"];'
   );
   patched = patched.replace(
     'this.Script_GoodJobEmote = ["4 Parrot <Panic>Woo hoo!","6 Player She can\\\'t be much further.","9 RemoveCue Parrot"];',

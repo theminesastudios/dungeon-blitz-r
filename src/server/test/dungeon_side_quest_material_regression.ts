@@ -156,7 +156,8 @@ async function testDungeonDefeatAwardsEveryEligibleQuestHolder(): Promise<void> 
             'a player in another dungeon instance received quest progress'
         );
         assert.equal(questHolder.sentPackets.filter((packet) => packet.id === 0x83).length, 1);
-        assert.deepEqual(questHolder.saveReasons, ['enemy kill mission progress']);
+        // The goblin also ticks Neo's achievement ledger, which saves on its own.
+        assert.deepEqual(questHolder.saveReasons, ['achievement kill progress', 'enemy kill mission progress']);
         assert.deepEqual(otherInstanceQuestHolder.saveReasons, []);
     } finally {
         GlobalState.levelEntities.delete(levelScope);

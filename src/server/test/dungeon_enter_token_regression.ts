@@ -124,7 +124,14 @@ function testDungeonJoinerEnterWorldUsesOwnTransferToken(): void {
         id: rogue.clientEntID,
         isPlayer: true,
         x: 3400,
-        y: 1200
+        y: 1200,
+        // The floor sample a real client produces: its own absolute position, reported while
+        // standing, tagged with the level it was measured on. Only a sample of that
+        // provenance may be used to place another body -- see core/GroundedPosition.
+        groundedX: 3400,
+        groundedY: 1200,
+        groundedLevel: 'JC_Mission3',
+        groundedAbsolute: true
     });
 
     GlobalState.sessionsByToken.set(rogue.token, rogue as never);
@@ -149,7 +156,7 @@ function testDungeonJoinerEnterWorldUsesOwnTransferToken(): void {
     assert.ok(pendingEntry, 'joiner pending token should resolve to pending world entry');
     assert.equal(pendingEntry.syncAnchorToken, rogue.token, 'pending state should still remember the rogue sync anchor');
     assert.equal(pendingEntry.levelInstanceId, rogue.levelInstanceId, 'joiner should still share the rogue dungeon instance');
-    assert.equal(pendingEntry.newX, 3500, 'joiner should spawn 100px beside the party anchor instead of dungeon start');
+    assert.equal(pendingEntry.newX, 3400, 'joiner should spawn on the party anchor position instead of dungeon start');
     assert.equal(pendingEntry.newY, 1200, 'joiner should spawn at the party anchor vertical position');
     assert.equal(pendingEntry.newHasCoord, true, 'joiner party-anchor spawn should use explicit coordinates');
     assert.equal(parseEnterWorldTransferToken(enterWorldPacket.payload), joinerToken, '0x21 must carry the joiner token, not the sync anchor token');
@@ -169,7 +176,14 @@ function testPartyDungeonTransferKeepsAnchorSpawnCoordinates(): void {
         id: rogue.clientEntID,
         isPlayer: true,
         x: 3400,
-        y: 1200
+        y: 1200,
+        // The floor sample a real client produces: its own absolute position, reported while
+        // standing, tagged with the level it was measured on. Only a sample of that
+        // provenance may be used to place another body -- see core/GroundedPosition.
+        groundedX: 3400,
+        groundedY: 1200,
+        groundedLevel: 'AC_Mission1',
+        groundedAbsolute: true
     });
     mage.currentLevel = 'CemeteryHillHard';
     mage.character.CurrentLevel = { name: 'CemeteryHillHard', x: 1800, y: 950 };
@@ -177,7 +191,13 @@ function testPartyDungeonTransferKeepsAnchorSpawnCoordinates(): void {
         id: mage.clientEntID,
         isPlayer: true,
         x: 1800,
-        y: 950
+        y: 950,
+        // The joiner's own confirmed floor point in the region they are leaving -- what their
+        // dungeon entry has to be recorded as, so walking back out returns them to it.
+        groundedX: 1800,
+        groundedY: 950,
+        groundedLevel: 'CemeteryHillHard',
+        groundedAbsolute: true
     });
 
     GlobalState.sessionsByToken.set(rogue.token, rogue as never);
@@ -195,7 +215,7 @@ function testPartyDungeonTransferKeepsAnchorSpawnCoordinates(): void {
     assert.equal(syncState.levelInstanceId, rogue.levelInstanceId, 'joiner transfer should reuse the party anchor dungeon instance');
     assert.equal(syncState.syncAnchorToken, rogue.token, 'joiner transfer should remember the party anchor token');
     assert.equal(syncState.hasCoord, true, 'joiner transfer should preserve explicit party-anchor spawn coordinates');
-    assert.equal(syncState.x, 3500, 'joiner transfer should spawn 100px beside the party anchor');
+    assert.equal(syncState.x, 3400, 'joiner transfer should spawn on the party anchor position');
     assert.equal(syncState.y, 1200, 'joiner transfer should spawn at the party anchor vertical position');
     assert.equal(syncState.syncEntryLevel, 'CemeteryHillHard', 'joiner should keep their own dungeon entry region');
     assert.equal(syncState.syncEntryX, 1800, 'joiner should keep their own dungeon entry x coordinate');
@@ -405,14 +425,14 @@ function testReturningDungeonRootLogsPhysicalPartyAnchor(): void {
         assert.equal(syncState.levelInstanceId, neodevils.levelInstanceId, 'returning root should keep the shared dungeon instance');
         assert.equal(syncState.syncAnchorToken, 37629, 'returning root should preserve the original dungeon sync anchor');
         assert.equal(syncState.syncAnchorCharacterName, 'AlexMercer', 'sync anchor identity should still describe the dungeon root');
-        assert.equal(syncState.x, -1484, 'returning root should spawn beside the live party member');
+        assert.equal(syncState.x, -1584, 'returning root should spawn on the live party member position');
         assert.equal(syncState.y, -1875, 'returning root should use the live party member vertical position');
     } finally {
         console.log = originalLog;
     }
 
     assert.ok(
-        logs.some((line) => line.includes('Party dungeon anchor spawn AlexMercer -> AC_Mission1 beside Neodevils at -1484,-1875')),
+        logs.some((line) => line.includes('Party dungeon anchor spawn AlexMercer -> AC_Mission1 beside Neodevils at -1584,-1875')),
         'party anchor log should name the physical party member, not the inherited sync root'
     );
     assert.ok(
@@ -444,7 +464,13 @@ function testClosedPartySessionsDoNotProvideDungeonAnchorCoordinates(): void {
         id: live.clientEntID,
         isPlayer: true,
         x: 400,
-        y: 500
+        y: 500,
+        // Only a confirmed sample places another body, so the live anchor needs one for its
+        // coordinates to be the ones that win over the closed session's.
+        groundedX: 400,
+        groundedY: 500,
+        groundedLevel: 'AC_Mission1',
+        groundedAbsolute: true
     });
 
     GlobalState.sessionsByToken.set(closed.token, closed as never);
@@ -461,8 +487,70 @@ function testClosedPartySessionsDoNotProvideDungeonAnchorCoordinates(): void {
 
     const syncState = (LevelHandler as any).buildTransferSyncState(alex, 'AC_Mission1', null);
     assert.ok(syncState, 'returning player should find the live party anchor');
-    assert.equal(syncState.x, 500, 'closed party sessions must not supply stale anchor coordinates');
+    assert.equal(syncState.x, 400, 'closed party sessions must not supply stale anchor coordinates');
     assert.equal(syncState.y, 500, 'closed party sessions must not supply stale anchor coordinates');
+}
+
+// Reported live: joining a party mid-run sometimes lands you next to them and
+// sometimes dumps you back at the dungeon entrance. The anchor that owns the run
+// is picked by who started it, and if that player happens to be mid-jump when the
+// joiner arrives they carry no grounded sample -- so the join produced no
+// coordinates at all and fell through to the level's authored start. Anyone else
+// in there standing on floor is a usable arrival point.
+function testAirborneRunOwnerBorrowsAGroundedPartyMemberPosition(): void {
+    const joiner = createFakeClient('AlexMercer', 21927, 21950, 'rogue');
+    const jumpingOwner = createFakeClient('ClosedFriend', 4444, 33485, 'mage');
+    const standing = createFakeClient('Neodevils', 8084, 99881, 'mage');
+    joiner.currentLevel = 'Castle';
+    joiner.levelInstanceId = '';
+    jumpingOwner.currentLevel = 'AC_Mission1';
+    jumpingOwner.levelInstanceId = '37629';
+    jumpingOwner.syncAnchorStartedAt = 1;
+    jumpingOwner.entities.set(jumpingOwner.clientEntID, {
+        id: jumpingOwner.clientEntID,
+        isPlayer: true,
+        x: 100,
+        y: 200,
+        airborne: true
+    });
+    standing.currentLevel = 'AC_Mission1';
+    standing.levelInstanceId = '37629';
+    standing.syncAnchorStartedAt = 2;
+    standing.entities.set(standing.clientEntID, {
+        id: standing.clientEntID,
+        isPlayer: true,
+        x: 400,
+        y: 500,
+        groundedX: 400,
+        groundedY: 500,
+        groundedLevel: 'AC_Mission1',
+        groundedAbsolute: true
+    });
+
+    GlobalState.sessionsByToken.set(jumpingOwner.token, jumpingOwner as never);
+    GlobalState.sessionsByToken.set(standing.token, standing as never);
+    GlobalState.partyGroups.set(8101, {
+        id: 8101,
+        leader: joiner.character.name,
+        members: [joiner.character.name, jumpingOwner.character.name, standing.character.name],
+        locked: false
+    });
+    GlobalState.partyByMember.set('alexmercer', 8101);
+    GlobalState.partyByMember.set('closedfriend', 8101);
+    GlobalState.partyByMember.set('neodevils', 8101);
+
+    const syncState = (LevelHandler as any).buildTransferSyncState(joiner, 'AC_Mission1', null);
+    assert.ok(syncState, 'joining a live party dungeon produced no sync state');
+    assert.equal(syncState.hasCoord, true, 'an airborne run owner sent the joiner back to the dungeon entrance');
+    assert.equal(syncState.x, 400, 'joiner should arrive on the grounded party member');
+    assert.equal(syncState.y, 500, 'joiner should arrive on the grounded party member');
+    // Position is borrowed; ownership of the run is not.
+    assert.equal(syncState.levelInstanceId, '37629', 'borrowing a position must not change the shared instance');
+    assert.equal(
+        syncState.syncAnchorCharacterName,
+        jumpingOwner.character.name,
+        'borrowing a position must not reassign the run anchor'
+    );
 }
 
 function testCastleHockeHomeReturnPreservesLiveSourcePosition(): void {
@@ -475,7 +563,16 @@ function testCastleHockeHomeReturnPreservesLiveSourcePosition(): void {
     (LevelHandler as any).syncTransferSourcePositionFromLiveEntity(
         character,
         'Castle',
-        { x: -920, y: -1880 }
+        // A confirmed Castle floor point: the client reported standing here, in this level.
+        // Nothing weaker is written as a return position any more.
+        {
+            x: -920,
+            y: -1880,
+            groundedX: -920,
+            groundedY: -1880,
+            groundedLevel: 'Castle',
+            groundedAbsolute: true
+        }
     );
     assert.deepEqual(
         character.CurrentLevel,
@@ -590,6 +687,10 @@ function main(): void {
         GlobalState.tokenChar.clear();
         GlobalState.usedTransferTokens.clear();
         testClosedPartySessionsDoNotProvideDungeonAnchorCoordinates();
+        GlobalState.sessionsByToken.clear();
+        GlobalState.partyGroups.clear();
+        GlobalState.partyByMember.clear();
+        testAirborneRunOwnerBorrowsAGroundedPartyMemberPosition();
         testCastleHockeHomeReturnPreservesLiveSourcePosition();
         testHomeReturnSpawnGetsGroundingMarginWithoutChangingHorizontalPosition();
         console.log('dungeon_enter_token_regression: ok');

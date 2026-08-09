@@ -86,10 +86,11 @@ function normalizeDiscordId(value: string | null | undefined): string {
 const PW_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
 
 function generatePassword(length = 12): string {
-    const bytes = crypto.randomBytes(length);
+    // randomInt rejection-samples; `randomBytes[i] % PW_CHARS.length` biased the
+    // first 256 % 56 = 32 characters of the alphabet.
     let pw = '';
     for (let i = 0; i < length; i++) {
-        pw += PW_CHARS[bytes[i] % PW_CHARS.length];
+        pw += PW_CHARS[crypto.randomInt(PW_CHARS.length)];
     }
     return pw;
 }

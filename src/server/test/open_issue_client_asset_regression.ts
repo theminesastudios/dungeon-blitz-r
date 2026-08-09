@@ -29,6 +29,7 @@ function verifyTypescriptPatch(script: string, label: string): void {
 }
 
 verifyTypescriptPatch('patch-dungeonblitz-forge-charm-durations.ts', 'issue #585 charm duration');
+verifyTypescriptPatch('patch-dungeonblitz-gear-tooltip-drop-source.ts', 'gear tooltip drop source always visible');
 
 verifyScript([
     path.join(serverRoot, 'scripts', 'patch-game-swz-statue-dialogue.js'),

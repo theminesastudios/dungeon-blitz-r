@@ -1680,7 +1680,6 @@ function localizePowerParagraph(source) {
     }
 
     const normalized = value
-        .replace(/\bAoE\b/g, 'AoE')
         .replace(/(%|#\w+#)and\s+(?=(?:Increased|Improved|Adds?|Grants?|Gain|Applies|Inflicts|Deals?|Staggers?|Stuns?))/gi, '$1 and ')
         .replace(/\s+/g, ' ')
         .trim();

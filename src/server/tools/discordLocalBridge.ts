@@ -58,8 +58,6 @@ interface PresencePayload {
     disciplineKey?: string;
     activityKind?: string;
     playerStatus?: string;
-    presenceUrl?: string;
-    joinUrl?: string;
 }
 
 const DEFAULT_PORT = 47631;
@@ -166,8 +164,6 @@ class LocalDiscordBridge {
     private lastActivityHash = '';
     private pollTimer: NodeJS.Timeout | null = null;
     private currentPresence: PresencePayload | null = null;
-    private runtimePresenceUrl = '';
-    private runtimeJoinUrl = '';
     private runtimeCharacterName = '';
     private targetPid: number | null = null;
     private connectAttempt = 0;
@@ -331,17 +327,7 @@ class LocalDiscordBridge {
 
         this.app.post('/configure', async (req, res) => {
             const body = req.body && typeof req.body === 'object' ? (req.body as Record<string, unknown>) : {};
-            const nextPresenceUrl = this.normalizeUrl(body.presenceUrl);
-            const nextJoinUrl = this.normalizeUrl(body.joinUrl);
             const nextCharacterName = String(body.characterName ?? '').trim();
-
-            if (nextPresenceUrl) {
-                this.runtimePresenceUrl = nextPresenceUrl;
-            }
-
-            if (nextJoinUrl) {
-                this.runtimeJoinUrl = nextJoinUrl;
-            }
 
             if (nextCharacterName) {
                 this.runtimeCharacterName = nextCharacterName;
@@ -362,14 +348,6 @@ class LocalDiscordBridge {
                 await this.clearActivity();
                 res.status(202).json({ ok: true, cleared: true });
                 return;
-            }
-
-            if (payload.presenceUrl) {
-                this.runtimePresenceUrl = payload.presenceUrl;
-            }
-
-            if (payload.joinUrl) {
-                this.runtimeJoinUrl = payload.joinUrl;
             }
 
             if (this.config.logPayloads) {
@@ -404,8 +382,6 @@ class LocalDiscordBridge {
         const joinSecret = String(body.joinSecret ?? '').trim();
         const levelKey = String(body.levelKey ?? '').trim();
         const activityKind = String(body.activityKind ?? '').trim();
-        const presenceUrl = this.normalizeUrl(body.presenceUrl);
-        const joinUrl = this.normalizeUrl(body.joinUrl);
         const areaKey = String(body.areaKey ?? '').trim();
         const disciplineKey = String(body.disciplineKey ?? '').trim();
         const playerStatus = String(body.playerStatus ?? '').trim();
@@ -432,9 +408,7 @@ class LocalDiscordBridge {
             areaKey,
             disciplineKey,
             activityKind,
-            playerStatus,
-            presenceUrl,
-            joinUrl
+            playerStatus
         };
     }
 
@@ -529,8 +503,11 @@ class LocalDiscordBridge {
         }
     }
 
+    // The fetch target is fixed by the on-disk bridge config and never by an HTTP
+    // request body: /configure and /presence used to accept presenceUrl/joinUrl
+    // overrides, which let any local caller aim the bridge's fetches anywhere.
     private getActivePresenceUrl(): string {
-        return String(this.runtimePresenceUrl || this.config.presenceUrl || '').trim();
+        return String(this.config.presenceUrl || '').trim();
     }
 
     private getActiveCharacterName(): string {
@@ -548,10 +525,6 @@ class LocalDiscordBridge {
         url.search = '';
         url.hash = '';
         return url.toString();
-    }
-
-    private normalizeUrl(value: unknown): string {
-        return normalizeHttpUrl(value, { loopbackOnly: true });
     }
 
     private async subscribeToDiscordEvents(): Promise<void> {

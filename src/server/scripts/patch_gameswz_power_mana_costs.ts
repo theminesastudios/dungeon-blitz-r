@@ -10,16 +10,20 @@ type PatchResult = {
 const XML_DIR = path.resolve(__dirname, "..", "..", "client", "content", "xml");
 const CBQ_DIR = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbq");
 
-const PYROMANIA_MANA_COST = "10,50";
-const PYROMANIA_POWER_NAMES = [
-  "Pyromania",
-  ...Array.from({ length: 10 }, (_, index) => `Pyromania${index + 1}`),
-];
+// Pyromania's authored per-rank mastery-mana cost, indexed by rank (0 = the unranked entry).
+// It was flattened to "10,50" as a way to force a 50 mastery-mana requirement, but the second
+// ManaCost field is the mana a *hit restores*, not a requirement -- the flamethrower was handing
+// the caster 50 mana per burn tick. patch-dungeonblitz-mana-requirement.ts makes the client honour
+// <ManaRequirement> again, so the costs go back to what the data authors wrote.
+const PYROMANIA_MANA_COST_BY_RANK = ["40", "20", "20", "15", "15", "15", "15", "10", "10", "10", "10"];
 
 const POWER_MANA_COSTS = new Map<string, string>([
   ["IceSpike10", "25"],
   ["PainBender10", "25"],
-  ...PYROMANIA_POWER_NAMES.map((powerName): [string, string] => [powerName, PYROMANIA_MANA_COST]),
+  ...PYROMANIA_MANA_COST_BY_RANK.map((manaCost, rank): [string, string] => [
+    rank === 0 ? "Pyromania" : `Pyromania${rank}`,
+    manaCost,
+  ]),
 ]);
 
 export function patchPowerManaCosts(xml: string): PatchResult {

@@ -24,8 +24,10 @@ function rotateKey(key: number, shift: number): number {
   return ((key << (32 - shift)) | (key >>> shift)) >>> 0;
 }
 
+// masterFileList.xml serves Login.swz from p/cbq; p/cbp still holds an older copy
+// that no client ever downloads.
 export function defaultLoginSwzPath(): string {
-  return path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbp", "Login.swz");
+  return path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbq", "Login.swz");
 }
 
 export function ensureBackup(filePath: string): string {

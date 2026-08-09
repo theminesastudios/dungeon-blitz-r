@@ -120,6 +120,12 @@ function abilityResearchPacket(abilityId: number, rank: number): Buffer {
     return bb.toBuffer();
 }
 
+function speedUpPacket(idolCost: number): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod9(idolCost);
+    return bb.toBuffer();
+}
+
 function forgeConsumablePacket(consumableId: number): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod20(5, consumableId);
@@ -224,6 +230,9 @@ async function testForgePreflightIsAtomicAndUsesOwnRank(): Promise<void> {
     });
 }
 
+// Speed Up and Collect are deliberately absent here -- see
+// testVisitedHomeSpeedUpFinishesTheVisitorsOwnForge. They act on the visitor's own
+// character record, never on the home they are standing in.
 async function testVisitedHomeForgeAndTomeMutationsAreInert(): Promise<void> {
     const client = createClient();
     client.craftTownHostCharacter = createCharacter('Host', 5, 3);
@@ -231,8 +240,6 @@ async function testVisitedHomeForgeAndTomeMutationsAreInert(): Promise<void> {
 
     await withCapturedSaves(async (saves) => {
         await ForgeHandler.handleStartForge(client as never, startForgePacket(CharmID.Trog02));
-        await ForgeHandler.handleForgeSpeedUpPacket(client as never, Buffer.alloc(0));
-        await ForgeHandler.handleCollectForgeCharm(client as never, Buffer.alloc(0));
         await ForgeHandler.handleCancelForge(client as never, Buffer.alloc(0));
         await ForgeHandler.handleUseForgeConsumable(client as never, forgeConsumablePacket(ConsumableID.ForgeXP));
         await ForgeHandler.handleAllocateMagicForgeArtisanSkillPoints(client as never, Buffer.alloc(0));
@@ -289,11 +296,55 @@ async function testCompletedForgeClaimPersistsExactlyOnce(): Promise<void> {
     });
 }
 
+/*
+ * Issue #645: a paid rank-10 Speed Up in another player's Home was dropped on the floor.
+ * The forge belongs to the visitor, not to the home, so the visited-home guard had no
+ * business refusing it -- and because the handler just returned, no idols moved, no
+ * result packet came back, and the forge kept running.
+ */
+async function testVisitedHomeSpeedUpFinishesTheVisitorsOwnForge(): Promise<void> {
+    const client = createClient();
+    client.character.mammothIdols = 500;
+    client.character.magicForge = {
+        ...client.character.magicForge,
+        stats_by_building: { ...(client.character.magicForge?.stats_by_building ?? {}) },
+        primary: CharmID.Trog02,
+        secondary: 0,
+        secondary_tier: 0,
+        // Two hours out: a real paid Speed Up, nowhere near the Free window.
+        ReadyTime: Math.floor(Date.now() / 1000) + 7_200
+    };
+    client.craftTownHostCharacter = createCharacter('Host', 5, 3);
+    const hostBaseline = clone(client.craftTownHostCharacter);
+
+    await withCapturedSaves(async (saves) => {
+        await ForgeHandler.handleForgeSpeedUpPacket(client as never, speedUpPacket(6));
+
+        assert.equal(Number(client.character.mammothIdols ?? 0), 494, 'the displayed price must be charged');
+        assert.equal(Number(client.character.magicForge?.ReadyTime ?? 0), 0, 'the forge must actually complete');
+        assert.ok(saves.length > 0, 'a paid Speed Up has to persist');
+        assert.ok(
+            client.sentPackets.some((packet) => packet.id === 0xCD),
+            'the client must get a forge result back, not silence'
+        );
+        assert.deepEqual(client.craftTownHostCharacter, hostBaseline, 'the visited home must be untouched');
+
+        // ...and the charm it paid for must be collectable without walking home first.
+        await ForgeHandler.handleCollectForgeCharm(client as never, Buffer.alloc(0));
+        assert.equal(
+            Number(client.character.charms?.find((entry: any) => Number(entry.charmID) === CharmID.Trog02)?.count ?? 0),
+            1,
+            'the paid-for charm must be claimable while still visiting'
+        );
+    });
+}
+
 async function main(): Promise<void> {
     testPlayerDataAlwaysUsesVisitorAuthority();
     testHouseHostIsExplicitAndStaleStateIsCleared();
     await testForgePreflightIsAtomicAndUsesOwnRank();
     await testVisitedHomeForgeAndTomeMutationsAreInert();
+    await testVisitedHomeSpeedUpFinishesTheVisitorsOwnForge();
     await testTomeRankIsAuthoritative();
     await testCompletedForgeClaimPersistsExactlyOnce();
     console.log('Home, Forge, and Tome authority regression checks passed.');

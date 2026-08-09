@@ -126,7 +126,9 @@ export class CommandHandler {
         const br = new BitReader(data);
         const maxHpDelta = Math.round(br.readMethod24());
         const currentMaxHp = Math.max(1, Number(client.authoritativeMaxHp ?? 100));
-        const newMaxHp = Math.max(1, currentMaxHp + maxHpDelta);
+        // Same ceiling as 0xFC: this notice adds to the running max, so an unbounded delta
+        // reaches the same god-mode pool one increment at a time.
+        const newMaxHp = CombatHandler.clampDeclaredMaxHp(client, Math.max(1, currentMaxHp + maxHpDelta));
 
         client.authoritativeMaxHp = newMaxHp;
         client.authoritativeCurrentHp = Math.min(Math.max(0, Number(client.authoritativeCurrentHp ?? newMaxHp)), newMaxHp);
@@ -152,7 +154,7 @@ export class CommandHandler {
         const br = new BitReader(data);
         const meleeDamage = br.readMethod9();
         const magicDamage = br.readMethod9();
-        const maxHp = Math.max(1, br.readMethod9());
+        const maxHp = CombatHandler.clampDeclaredMaxHp(client, br.readMethod9());
         br.readMethod20(4);
         br.readMethod9();
 

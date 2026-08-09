@@ -17,6 +17,7 @@ export interface GameDataPersistenceAdapter extends IDatabase {
     connect(): Promise<void>;
     close(): Promise<void>;
     loadAllCharacterRecords(): Promise<UserSaveData[]>;
+    loadCharacterRecordsByGuild(guildName: string): Promise<UserSaveData[]>;
     getAccountIdByCharName(charName: string): Promise<number | null>;
 }
 
@@ -108,7 +109,10 @@ export class MongoGameDataAdapter implements GameDataPersistenceAdapter {
                     { unique: true, sparse: true, name: 'account_discord_id_unique' }
                 ),
                 saves.createIndex({ user_id: 1 }, { unique: true, name: 'save_user_id_unique' }),
-                saves.createIndex({ 'characters.name': 1 }, { name: 'save_character_name' })
+                saves.createIndex({ 'characters.name': 1 }, { name: 'save_character_name' }),
+                // Backs loadCharacterRecordsByGuild, which runs on every region change and
+                // every guild chat message for guilded players.
+                saves.createIndex({ 'characters.guild.name': 1 }, { name: 'save_character_guild_name' })
             ]);
 
             this.client = client;
@@ -402,6 +406,23 @@ export class MongoGameDataAdapter implements GameDataPersistenceAdapter {
     public async loadAllCharacterRecords(): Promise<UserSaveData[]> {
         const { saves } = await this.getCollections();
         const records = await saves.find({}).toArray();
+        return records.map(decodeSave).filter((entry): entry is UserSaveData => Boolean(entry));
+    }
+
+    // Guild lookups used to pull the entire saves collection and filter in Node, which put a
+    // full-collection scan and decode on the region-change and guild-chat paths. Match on the
+    // stored guild name instead; guild names are whitespace-normalized before they are saved,
+    // so a case-insensitive exact match is equivalent to the in-process comparison.
+    public async loadCharacterRecordsByGuild(guildName: string): Promise<UserSaveData[]> {
+        const cleanName = String(guildName ?? '').trim().replace(/\s+/g, ' ');
+        if (!cleanName) {
+            return [];
+        }
+        const escaped = cleanName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const { saves } = await this.getCollections();
+        const records = await saves
+            .find({ 'characters.guild.name': { $regex: `^${escaped}$`, $options: 'i' } } as Filter<MongoSaveDocument>)
+            .toArray();
         return records.map(decodeSave).filter((entry): entry is UserSaveData => Boolean(entry));
     }
 

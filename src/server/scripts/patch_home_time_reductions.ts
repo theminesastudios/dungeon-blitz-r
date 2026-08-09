@@ -72,9 +72,11 @@ const DATA_FILES = [
         prettyJson: false
     }
 ];
-const GAME_SWZ_FILES = ['Game.swz', 'Game.en.swz', 'Game.tr.swz'].map((fileName) =>
-    path.join(ROOT, 'src', 'client', 'content', 'localhost', 'p', 'cbq', fileName)
-);
+// The game ships English only now; the per-locale archives are gone. Filter rather
+// than drop the names, so restoring a localized build re-enables its patch on its own.
+const GAME_SWZ_FILES = ['Game.swz', 'Game.en.swz', 'Game.tr.swz']
+    .map((fileName) => path.join(ROOT, 'src', 'client', 'content', 'localhost', 'p', 'cbq', fileName))
+    .filter((filePath) => fs.existsSync(filePath));
 
 function getRankUpgradeTime(kind: string, rank: unknown, typeId: unknown): string | null {
     const normalizedRank = Math.max(0, Math.round(Number(rank ?? 0)));

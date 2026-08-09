@@ -19,7 +19,7 @@ function defaultServerJsonPath(): string {
 }
 
 function defaultGameSwzPaths(): string[] {
-  const loginSwzPath = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbp", "Login.swz");
+  const loginSwzPath = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbq", "Login.swz");
   const cbqDir = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbq");
   return [loginSwzPath, ...["Game.swz", "Game.en.swz", "Game.tr.swz"]
     .map((name) => path.join(cbqDir, name))

@@ -3829,7 +3829,7 @@
 		<Realm>Pet</Realm>
 		<Speed>12</Speed>
 		<Width>50</Width>
-		<Height>50</Height>
+		<Height>160</Height>
 		<Flying>True</Flying>
 		<Behavior>SingleTargetPet</Behavior>
 		<EquippedGear/>
@@ -4196,7 +4196,7 @@
 		<Realm>Pet</Realm>
 		<Speed>12</Speed>
 		<Width>50</Width>
-		<Height>50</Height>
+		<Height>160</Height>
 		<Flying>True</Flying>
 		<Behavior>SingleTargetPet</Behavior>
 		<EquippedGear/>
@@ -4567,7 +4567,7 @@
 		<Realm>Pet</Realm>
 		<Speed>12</Speed>
 		<Width>50</Width>
-		<Height>50</Height>
+		<Height>160</Height>
 		<Flying>True</Flying>
 		<Behavior>SingleTargetPet</Behavior>
 		<EquippedGear/>
@@ -4927,7 +4927,7 @@
 		<Realm>Pet</Realm>
 		<Speed>12</Speed>
 		<Width>50</Width>
-		<Height>50</Height>
+		<Height>160</Height>
 		<Flying>True</Flying>
 		<Behavior>SingleTargetPet</Behavior>
 		<EquippedGear/>
@@ -5995,6 +5995,28 @@
 			<ColorSwap9>0xB00000=0x4D0000</ColorSwap9>
 			<ColorSwap10>0x600000=0x3D2359</ColorSwap10>
 			<ColorSwap11>0xF0F0A0=0x403816</ColorSwap11>
+		</GfxType>
+	</EntType>
+	<EntType EntName="NPCHomeNeo" parent="Base">
+		<DisplayName>Archivist Neo</DisplayName>
+		<DevStatus>New House</DevStatus>
+		<Level>0</Level>
+		<ArmorClass>1</ArmorClass>
+		<HitPoints>0</HitPoints>
+		<Realm>Villager</Realm>
+		<Speed>5</Speed>
+		<Width>80</Width>
+		<Height>130</Height>
+		<Behavior>NPC</Behavior>
+		<EquippedGear/>
+		<GfxType>
+			<AnimFile>Animation_NPC.swf</AnimFile>
+			<FlipAnim>TRUE</FlipAnim>
+			<Shadow>SFX_1.swf/a_ShadowNPC</Shadow>
+			<BaseAnim>ReadyLongCoat</BaseAnim>
+			<AnimScale>0.88</AnimScale>
+			<MoveAnimSpeed>0.75</MoveAnimSpeed>
+			<CustomArt>Animation_NPC.swf/Rival</CustomArt>
 		</GfxType>
 	</EntType>
 	<EntType EntName="NPCTreasureTrove" parent="Base">
@@ -56422,8 +56444,8 @@
 			<CustomArt2>Animation_NPC.swf/Savant05</CustomArt2>
 		</GfxType>
 	</EntType>
-	<EntType EntName="HomeDummy1" parent="Base">
-		<DisplayName>Ev Dummy 1</DisplayName>
+	<EntType EntName="HomeDummy1" parent="PaladinBase">
+		<DisplayName>Dread Lotte, The 1st Daughter</DisplayName>
 		<DevStatus>New House</DevStatus>
 		<Level>1</Level>
 		<GroupLevel>1</GroupLevel>
@@ -56435,20 +56457,42 @@
 		<RewardClass>NoLoot</RewardClass>
 		<Realm>Object</Realm>
 		<Speed>0</Speed>
-		<Width>60</Width>
-		<Height>200</Height>
+		<Width>130</Width>
+		<Height>185</Height>
+		<GenderFix>Female</GenderFix>
+		<SoundDeathRattle>snd_hurt_mage_03</SoundDeathRattle>
+		<SoundHitGrunt>snd_hurt_mage_01|snd_hurt_mage_02|snd_hurt_mage_03|snd_silence|snd_silence|snd_silence</SoundHitGrunt>
+		<SoundBloodied>snd_hurt_mage_02</SoundBloodied>
 		<Behavior>HomeDummy</Behavior>
 		<EquippedGear/>
 		<GfxType>
-			<AnimClass>a__TrainingDummyAnimation</AnimClass>
-			<AnimFile>Animation_Environmentals.swf</AnimFile>
-			<FlipAnim>TRUE</FlipAnim>
-			<AnimScale>0.8</AnimScale>
-			<MoveAnimSpeed>1</MoveAnimSpeed>
+			<AnimScale>1.25</AnimScale>
+			<MoveAnimSpeed>.7</MoveAnimSpeed>
+			<CustomArt>Gfx_Paladin_1.swf/Null</CustomArt>
+			<CustomArt2>Gfx_Paladin_1.swf/Female</CustomArt2>
+			<CustomArt3>Gfx_Paladin_1.swf/TowerGuard</CustomArt3>
+			<CustomArt4>Gfx_Paladin_1.swf/ArmorRegal</CustomArt4>
+			<CustomArt5>Gfx_Paladin_1.swf/ArmorRegalFemale</CustomArt5>
+			<CustomArt6>Gfx_Paladin_1.swf/FlapBig</CustomArt6>
+			<CustomArt7>Gfx_Paladin_1.swf/BootHunter</CustomArt7>
+			<CustomArt8>Gfx_Paladin_1.swf/GloveHunter</CustomArt8>
+			<CustomArt9>Gfx_Paladin_1.swf/ShieldShaziri</CustomArt9>
+			<CustomArt10>Gfx_Paladin_1.swf/SwordJester</CustomArt10>
+			<CustomArt11>Gfx_Paladin_1.swf/FootBaseHeavy</CustomArt11>
+			<ColorSwap>0xD0F0F0=0x6C8AFF</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x33FF</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x1F36A7</ColorSwap3>
+			<ColorSwap4>0xFF9999=0x5C5C4E</ColorSwap4>
+			<ColorSwap5>0xB00000=0x2C2C25</ColorSwap5>
+			<ColorSwap6>0x600000=0x1A1A15</ColorSwap6>
+			<ColorSwap7>0x86501A=0x3E484A</ColorSwap7>
+			<ColorSwap8>0x8B6936=0x305759</ColorSwap8>
+			<ColorSwap9>0x590000=0x2C2C25</ColorSwap9>
+			<ColorSwap10>0x3C0000=0x1A1A15</ColorSwap10>
 		</GfxType>
 	</EntType>
-	<EntType EntName="HomeDummy2" parent="Base">
-		<DisplayName>Ev Dummy 2</DisplayName>
+	<EntType EntName="HomeDummy2" parent="MageBase">
+		<DisplayName>Dread Prince Friedrich Hocke</DisplayName>
 		<DevStatus>New House</DevStatus>
 		<Level>1</Level>
 		<GroupLevel>1</GroupLevel>
@@ -56460,21 +56504,36 @@
 		<RewardClass>NoLoot</RewardClass>
 		<Realm>Object</Realm>
 		<Speed>0</Speed>
-		<Width>60</Width>
-		<Height>200</Height>
+		<Width>80</Width>
+		<Height>160</Height>
+		<GenderFix>Male</GenderFix>
+		<SoundHitGrunt>snd_hurt_paladin_01|snd_hurt_paladin_02|snd_hurt_paladin_03|snd_silence|snd_silence|snd_silence</SoundHitGrunt>
+		<SoundBloodied>snd_hurt_paladin_01|snd_hurt_paladin_02|snd_hurt_paladin_03|snd_silence|snd_silence|snd_silence</SoundBloodied>
 		<Behavior>HomeDummy</Behavior>
 		<EquippedGear/>
 		<GfxType>
-			<AnimClass>a__TrainingDummyAnimation</AnimClass>
-			<AnimFile>Animation_Environmentals.swf</AnimFile>
-			<FlipAnim>TRUE</FlipAnim>
-			<AnimScale>0.8</AnimScale>
-			<MoveAnimSpeed>1</MoveAnimSpeed>
-			<CustomArt>Animation_Environmentals.swf/Alt1</CustomArt>
+			<AnimScale>1.2</AnimScale>
+			<CustomArt>Gfx_Mage_1.swf/Null</CustomArt>
+			<CustomArt2>Gfx_Mage_1.swf/Male</CustomArt2>
+			<CustomArt3>Gfx_Mage_1.swf/SlyDread</CustomArt3>
+			<CustomArt4>Gfx_Mage_1.swf/DressJester</CustomArt4>
+			<CustomArt5>Gfx_Mage_1.swf/DressJesterMale</CustomArt5>
+			<CustomArt6>Gfx_Mage_1.swf/GlovesImperial</CustomArt6>
+			<CustomArt7>Gfx_Mage_1.swf/ShoulderJester</CustomArt7>
+			<CustomArt8>Gfx_Mage_1.swf/BootsImperial</CustomArt8>
+			<CustomArt9>Gfx_Mage_1.swf/FocusJester</CustomArt9>
+			<CustomArt10>Gfx_Mage_1.swf/StaffJester3</CustomArt10>
+			<CustomArt11>Gfx_Mage_1.swf/HandInsect</CustomArt11>
+			<ColorSwap>0xD0F0F0=0xD5F0E4</ColorSwap>
+			<ColorSwap2>0x80C0F0=0xA4D3BF</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x7EA998</ColorSwap3>
+			<ColorSwap4>0xFF9999=0x28404D</ColorSwap4>
+			<ColorSwap5>0xB00000=0xF181D</ColorSwap5>
+			<ColorSwap6>0x600000=0x50A0C</ColorSwap6>
 		</GfxType>
 	</EntType>
-	<EntType EntName="HomeDummy3" parent="Base">
-		<DisplayName>Ev Dummy 3</DisplayName>
+	<EntType EntName="HomeDummy3" parent="RogueBase">
+		<DisplayName>Dread Tanja, The 2nd Daughter</DisplayName>
 		<DevStatus>New House</DevStatus>
 		<Level>1</Level>
 		<GroupLevel>1</GroupLevel>
@@ -56486,17 +56545,31 @@
 		<RewardClass>NoLoot</RewardClass>
 		<Realm>Object</Realm>
 		<Speed>0</Speed>
-		<Width>60</Width>
-		<Height>200</Height>
+		<Width>90</Width>
+		<Height>140</Height>
+		<SoundDeathRattle>snd_hurt_mage_03</SoundDeathRattle>
+		<SoundHitGrunt>snd_hurt_mage_01|snd_hurt_mage_02|snd_hurt_mage_03|snd_silence|snd_silence|snd_silence</SoundHitGrunt>
+		<SoundBloodied>snd_hurt_mage_02</SoundBloodied>
 		<Behavior>HomeDummy</Behavior>
 		<EquippedGear/>
 		<GfxType>
-			<AnimClass>a__TrainingDummyAnimation</AnimClass>
-			<AnimFile>Animation_Environmentals.swf</AnimFile>
-			<FlipAnim>TRUE</FlipAnim>
-			<AnimScale>0.8</AnimScale>
-			<MoveAnimSpeed>1</MoveAnimSpeed>
-			<CustomArt>Animation_Environmentals.swf/Alt2</CustomArt>
+			<AnimScale>1.25</AnimScale>
+			<MoveAnimSpeed>.8</MoveAnimSpeed>
+			<CustomArt>Gfx_Rogue_1.swf/Null</CustomArt>
+			<CustomArt2>Animation_Rogue.swf/Female</CustomArt2>
+			<CustomArt3>Gfx_Rogue_1.swf/TowerGuardHorn</CustomArt3>
+			<CustomArt4>Gfx_Rogue_1.swf/SashRegal</CustomArt4>
+			<CustomArt5>Gfx_Rogue_1.swf/GloveHunter</CustomArt5>
+			<CustomArt6>Gfx_Rogue_1.swf/BootFootOni</CustomArt6>
+			<CustomArt7>Gfx_Rogue_1.swf/GloveStudded</CustomArt7>
+			<CustomArt8>Gfx_Paladin_1.swf/RapierOni</CustomArt8>
+			<CustomArt9>Gfx_Paladin_1.swf/OffhandOni</CustomArt9>
+			<ColorSwap>0xD0F0F0=0x6FBAFF</ColorSwap>
+			<ColorSwap2>0x80C0F0=0x84FF</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x1463A3</ColorSwap3>
+			<ColorSwap4>0xFF9999=0x8A7C79</ColorSwap4>
+			<ColorSwap5>0xB00000=0x594F4D</ColorSwap5>
+			<ColorSwap6>0x600000=0x393331</ColorSwap6>
 		</GfxType>
 	</EntType>
 	<EntType EntName="PrisonerMage" parent="MageBase">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <MissionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<MissionGroup GroupName="Slaying">
-		<DisplayName>Sablon</DisplayName>
+		<DisplayName>Combat Achievements</DisplayName>
 		<ProgressReward>GeneralReward</ProgressReward>
 		<Mission1>AvoidDamage100000,AvoidDamage10000000,AvoidDamage100000000</Mission1>
 		<Mission2>ProcKillTrog1000,ProcKillTrog5000,ProcKillTrog10000</Mission2>
@@ -72,7 +72,7 @@
 		<Mission11>MasterType</Mission11>
 	</MissionGroup>
 	<MissionGroup GroupName="Exploration">
-		<DisplayName>Sablon</DisplayName>
+		<DisplayName>Exploration Achievements</DisplayName>
 		<ProgressReward>GeneralReward</ProgressReward>
 		<Mission1>OhThePlacesYouWillGo</Mission1>
 		<Mission2>CompleteQuestWolfsEnd</Mission2>
@@ -119,7 +119,7 @@
 		<Mission7>MountThroughWolfsEnd</Mission7>
 	</MissionGroup>
 	<MissionGroup GroupName="Dungeon">
-		<DisplayName>Zindan Achievements</DisplayName>
+		<DisplayName>Dungeon Achievements</DisplayName>
 		<ProgressReward>GeneralReward</ProgressReward>
 		<Mission1>dunreward1</Mission1>
 		<Mission2>CompleteDungeonStormshardMountain</Mission2>
@@ -190,7 +190,7 @@
 		<Mission11>SecretOfTheWispsKill60MonstersWithWispBuffsActiveHard</Mission11>
 	</MissionGroup>
 	<MissionGroup GroupName="Crafting">
-		<DisplayName>uret ve Collection Achievements</DisplayName>
+		<DisplayName>Craft and Collection Achievements</DisplayName>
 		<ProgressReward>GeneralReward</ProgressReward>
 		<Mission1>MasterCrafter</Mission1>
 		<Mission2>MineDragonoreA,MineDragonoreB,MineDragonoreC</Mission2>
@@ -252,7 +252,7 @@
 		<Mission9>EnhanceTotalItems25</Mission9>
 	</MissionGroup>
 	<MissionGroup GroupName="Blitzing">
-		<DisplayName>Sablon</DisplayName>
+		<DisplayName>Blitzing Achievements</DisplayName>
 		<ProgressReward>GeneralReward</ProgressReward>
 		<Mission2>FallInToAPit</Mission2>
 		<Mission3>CompletePvP</Mission3>
@@ -293,7 +293,7 @@
 		<Mission6>PappysBoneGetHitBy3StairVigilsInARow</Mission6>
 	</MissionGroup>
 	<MissionGroup GroupName="PvP">
-		<DisplayName>Oyuncu vs. Oyuncu Achievements</DisplayName>
+		<DisplayName>Player vs. Player Achievements</DisplayName>
 		<ProgressReward>GeneralReward</ProgressReward>
 	</MissionGroup>
 	<MissionGroup GroupName="PvP">
@@ -309,7 +309,7 @@
 		<ProgressReward>GeneralReward</ProgressReward>
 	</MissionGroup>
 	<MissionGroup GroupName="Rogue">
-		<DisplayName>Haydut Achievements</DisplayName>
+		<DisplayName>Rogue Achievements</DisplayName>
 		<ProgressReward>GeneralReward</ProgressReward>
 		<Mission1>UseClassPower400,UseClassPower1200,UseClassPower3200</Mission1>
 		<Mission2>KillWithHawkStrike1000,KillWithHawkStrike3000,KillWithHawkStrikeHard5000</Mission2>
@@ -352,7 +352,7 @@
 		<Mission5>Respec20Times</Mission5>
 	</MissionGroup>
 	<MissionGroup GroupName="Mage">
-		<DisplayName>Buyucu Achievements</DisplayName>
+		<DisplayName>Mage Achievements</DisplayName>
 		<ProgressReward>GeneralReward</ProgressReward>
 		<Mission1>KillWithMageFire3000,KillWithMageFire8000,KillWithMageFireHard12000</Mission1>
 		<Mission2>KillWithHailStorm3000,KillWithHailStorm7000,KillWithHailStormHard15000</Mission2>
@@ -395,7 +395,7 @@
 		<Mission5>ReachLevel50</Mission5>
 	</MissionGroup>
 	<MissionGroup GroupName="Paladin">
-		<DisplayName>Sovalyeci Achievements</DisplayName>
+		<DisplayName>Paladin Achievements</DisplayName>
 		<ProgressReward>GeneralReward</ProgressReward>
 		<Mission1>KillWithCleave3000,KillWithCleave8000,KillWithCleaveHard12000</Mission1>
 		<Mission2>HealWithHealingTouch100000,HealWithHealingTouch1000000,HealWithHealingTouch100000000</Mission2>
@@ -438,7 +438,7 @@
 		<Mission5>Respec20Times</Mission5>
 	</MissionGroup>
 	<MissionGroup GroupName="Social">
-		<DisplayName>Sosyal Achievements</DisplayName>
+		<DisplayName>Social Achievements</DisplayName>
 		<ProgressReward>GeneralReward</ProgressReward>
 		<Mission1>PartyWithPlayersA,PartyWithPlayersB,PartyWithPlayersC</Mission1>
 		<Mission2>JoinAGuild</Mission2>

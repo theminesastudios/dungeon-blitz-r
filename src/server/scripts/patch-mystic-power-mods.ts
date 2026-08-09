@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils";
+import { defaultLoginSwzPath, ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils";
 
 /**
  * Gives the eighteen Mystic lockbox items their ability bonuses.
@@ -296,12 +296,17 @@ const HEAD_TEMPLATE = "RuneSwordMelee";
 const FIRST_MOD_ID = 1000;
 
 const CLIENT = path.resolve(__dirname, "..", "..", "client", "content");
-const GAME_SWZ = ["Game.swz", "Game.en.swz", "Game.tr.swz"].map((name) =>
-  path.join(CLIENT, "localhost", "p", "cbq", name),
-);
+/**
+ * One archive, not three: release/v1.13.0 made the game English-only and deleted Game.en.swz and
+ * Game.tr.swz, and StaticServer now serves p/cbq/Game.swz to every client. The `tr` strings on the
+ * ability table stay — they cost nothing and are the translation to reuse if localisation returns —
+ * but nothing writes a Turkish archive any more.
+ */
+const GAME_SWZ = [path.join(CLIENT, "localhost", "p", "cbq", "Game.swz")];
 const LOOSE_POWER_MODS = path.join(CLIENT, "xml", "PowerModTypes.xml");
 const LOOSE_GEAR = path.join(CLIENT, "xml", "GearTypes.xml");
-const LOGIN_SWZ = path.join(CLIENT, "localhost", "p", "cbp", "Login.swz");
+/** cbq, not cbp: masterFileList.xml pins Login.swz there, so the cbp copy is one no client loads. */
+const LOGIN_SWZ = defaultLoginSwzPath();
 
 function parseArgs(argv: string[]): { verify: boolean } {
   let verify = false;
@@ -677,7 +682,7 @@ function patch(verify: boolean): void {
   }
 
   // The loose copies are what GameData and GearGoldBonuses read server-side.
-  const referenceSwz = parseSwz(GAME_SWZ[1]);
+  const referenceSwz = parseSwz(GAME_SWZ[0]);
   const referencePowers = referenceSwz.chunks.find((chunk) => chunk.xml.includes("<PlayerPowerTypes"))!.xml;
   const referenceBuffs = referenceSwz.chunks.find((chunk) => chunk.xml.includes("<PlayerBuffTypes"))!.xml;
 

@@ -4,7 +4,7 @@ import { ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils
 
 const ROOT = path.resolve(__dirname, "..", "..");
 const ENT_XML = path.join(ROOT, "client", "content", "xml", "EntTypes.xml");
-const LOGIN_SWZ = path.join(ROOT, "client", "content", "localhost", "p", "cbp", "Login.swz");
+const LOGIN_SWZ = path.join(ROOT, "client", "content", "localhost", "p", "cbq", "Login.swz");
 
 const EXPECTED_RANGED_POWER = new Map<string, string>([
   ["DemonReaper", "BruteShot"],

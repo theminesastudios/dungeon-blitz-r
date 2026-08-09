@@ -1,0 +1,27 @@
+{
+    "_comment": "Client patches that already fail --verify as of 2026-07-25. The gate only fails on regressions outside this list; entries that start passing must be removed. Triage and shrink this list -- some are deliberate reverts, others are genuinely dropped patches. 2026-07-25: transfer-pet-mount-sync recovered when the forge tutorial patch rewrote (and recompressed) DungeonBlitz.swf.",
+    "recordedAt": "2026-07-25",
+    "knownFailing": [
+        "patch-dungeonblitz-banshee-wail-cap.ts",
+        "patch-dungeonblitz-chatbubble-method901-null-guard.ts",
+        "patch-dungeonblitz-class23-bitmapdata-guard.ts",
+        "patch-dungeonblitz-class72-floattext-bitmapdata-guard.ts",
+        "patch-dungeonblitz-class82-bitmapdata-guard.ts",
+        "patch-dungeonblitz-destroy-entity-without-brain.ts",
+        "patch-dungeonblitz-dye-ui-owned-color.ts",
+        "patch-dungeonblitz-game-method1947-screen-bitmapdata.ts",
+        "patch-dungeonblitz-game-method527-clamp-floaters.ts",
+        "patch-dungeonblitz-hide-duplicate-boss-visual.ts",
+        "patch-dungeonblitz-pet-fetches-loot.ts",
+        "patch-dungeonblitz-quest-ui.js",
+        "patch-dungeonblitz-room-cue-dead-player-guard.ts",
+        "patch-dungeonblitz-story-zone-locks.js",
+        "patch-dungeonblitz-superanim-method806-fullscreen-bitmapdata.ts",
+        "patch_gameswz_frozen_ward_cast_anim.ts",
+        "patch_levelsnr_room4_advance_drop_on_jump.ts",
+        "patch_levelsnr_room4_drop_complete_once.ts",
+        "patch_levelsnr_room4_exit_drop_phase_on_fall.ts",
+        "patch_levelsnr_room4_require_jump_before_drop.ts",
+        "patch_levelsnr_room4_suppress_drop_repeat_dialog.ts"
+    ]
+}

@@ -1,3 +1,4 @@
+import { Achievements } from '../core/Achievements';
 import { Client } from '../core/Client';
 import {
     buildDefaultDungeonScoreProfile,
@@ -8,9 +9,9 @@ import {
 import { DungeonCompletionConditions } from '../core/DungeonCompletionConditions';
 import { DungeonCompletionSystem } from '../core/DungeonCompletionSystem';
 import {
+    getBossIdentityKey,
     getBossIdentityKeys,
-    logBossCopyCensus,
-    looksLikeDungeonBoss
+    logBossCopyCensus
 } from '../core/BossCopyCensus';
 import { isRoomBossEntity, noteBossSceneOpened } from '../core/RoomBossState';
 import { GameData } from '../core/GameData';
@@ -1174,6 +1175,12 @@ export class MissionHandler {
             return;
         }
 
+        // Every kill any player is credited for routes through here, so this is
+        // the one place Neo's ledger has to listen to.
+        if (Achievements.noteEnemyDefeat(client.character, defeatedNames)) {
+            MissionHandler.saveCharacter(client, 'achievement kill progress');
+        }
+
         const currentLevel =
             LevelConfig.normalizeLevelName(client.currentLevel || String(client.character.CurrentLevel?.name ?? '')) ||
             client.currentLevel ||
@@ -1850,128 +1857,138 @@ export class MissionHandler {
 
         const normalizedAnnouncedId = Math.max(0, Math.round(Number(announcedBossId ?? 0)));
         const levelMap = GlobalState.levelEntities.get(scopeKey);
-        const sharedBossIds: number[] = [];
-        for (const [entityId, entity] of levelMap?.entries() ?? []) {
-            const normalizedId = Math.max(0, Math.round(Number(entityId) || 0));
-            if (normalizedId > 0 && looksLikeDungeonBoss(entity, bossKeys)) {
-                sharedBossIds.push(normalizedId);
-            }
-        }
-
-        // Anchor preference: the announced entity, else the marked room boss, else
-        // the only shared boss there is. Without one of those, the shared map has
-        // no trustworthy "real" boss and only the per-viewer pass may act.
-        const markedSharedIds = sharedBossIds.filter(
-            (entityId) => isRoomBossEntity(scopeKey, levelMap?.get(entityId))
-        );
-        const anchorId = sharedBossIds.includes(normalizedAnnouncedId)
-            ? normalizedAnnouncedId
-            : markedSharedIds.length === 1
-                ? markedSharedIds[0]
-                : sharedBossIds.length === 1
-                    ? sharedBossIds[0]
-                    : 0;
-
-        const { EntityHandler } = require('./EntityHandler') as typeof import('./EntityHandler');
-        const removedShared: number[] = [];
-        if (anchorId > 0) {
-            for (const entityId of sharedBossIds) {
-                if (entityId === anchorId) {
+        // Copies are only ever copies of the *same* boss. A room that authors two
+        // different bosses — Svagg and the griffon he summons, the bandit twins —
+        // used to lose the second one to this sweep, so it could never die and the
+        // run never met its objectives. Sweep one boss identity at a time.
+        const collectByIdentity = (entries: Iterable<[number, any]> | undefined): Map<string, number[]> => {
+            const byIdentity = new Map<string, number[]>();
+            for (const [rawId, entity] of entries ?? []) {
+                const entityId = Math.max(0, Math.round(Number(rawId) || 0));
+                const identity = entityId > 0 ? getBossIdentityKey(entity, bossKeys) : '';
+                if (!identity) {
                     continue;
                 }
-                levelMap?.delete(entityId);
-                removedShared.push(entityId);
-                for (const viewer of GlobalState.getSessionsInLevelScope(scopeKey)) {
-                    if (getClientLevelScope(viewer) !== scopeKey) {
+                byIdentity.set(identity, [...(byIdentity.get(identity) ?? []), entityId]);
+            }
+            return byIdentity;
+        };
+
+        const sharedByIdentity = collectByIdentity(levelMap?.entries());
+        const viewers = [...GlobalState.getSessionsInLevelScope(scopeKey)]
+            .filter((viewer) => getClientLevelScope(viewer) === scopeKey)
+            .map((viewer) => ({ viewer, localByIdentity: collectByIdentity(viewer.entities?.entries()) }));
+        const identities = new Set<string>([
+            ...sharedByIdentity.keys(),
+            ...viewers.flatMap(({ localByIdentity }) => [...localByIdentity.keys()])
+        ]);
+
+        const { EntityHandler } = require('./EntityHandler') as typeof import('./EntityHandler');
+        for (const identity of identities) {
+            const sharedBossIds = sharedByIdentity.get(identity) ?? [];
+
+            // Anchor preference: the announced entity, else the marked room boss, else
+            // the only shared boss there is. Without one of those, the shared map has
+            // no trustworthy "real" boss and only the per-viewer pass may act.
+            const markedSharedIds = sharedBossIds.filter(
+                (entityId) => isRoomBossEntity(scopeKey, levelMap?.get(entityId))
+            );
+            const anchorId = sharedBossIds.includes(normalizedAnnouncedId)
+                ? normalizedAnnouncedId
+                : markedSharedIds.length === 1
+                    ? markedSharedIds[0]
+                    : sharedBossIds.length === 1
+                        ? sharedBossIds[0]
+                        : 0;
+
+            const removedShared: number[] = [];
+            if (anchorId > 0) {
+                for (const entityId of sharedBossIds) {
+                    if (entityId === anchorId) {
                         continue;
                     }
-                    EntityHandler.destroyClientLocalEntity(viewer, entityId, 'boss_scene_shared_duplicate', null);
-                }
-            }
-        }
-
-        const viewerResults: Array<Record<string, unknown>> = [];
-        for (const viewer of GlobalState.getSessionsInLevelScope(scopeKey)) {
-            if (getClientLevelScope(viewer) !== scopeKey) {
-                continue;
-            }
-
-            const localBossIds: number[] = [];
-            for (const [localId, localEntity] of viewer.entities?.entries() ?? []) {
-                const normalizedLocalId = Math.max(0, Math.round(Number(localId) || 0));
-                if (normalizedLocalId > 0 && looksLikeDungeonBoss(localEntity, bossKeys)) {
-                    localBossIds.push(normalizedLocalId);
+                    levelMap?.delete(entityId);
+                    removedShared.push(entityId);
+                    for (const { viewer } of viewers) {
+                        EntityHandler.destroyClientLocalEntity(viewer, entityId, 'boss_scene_shared_duplicate', null);
+                    }
                 }
             }
 
-            // A viewer with one visual is already correct, and a viewer with none
-            // must never be swept: a party member's local copy is the only boss
-            // they can see, so leaving them at zero would break the fight for them.
-            if (localBossIds.length <= 1) {
+            const viewerResults: Array<Record<string, unknown>> = [];
+            for (const { viewer, localByIdentity } of viewers) {
+                const localBossIds = localByIdentity.get(identity) ?? [];
+
+                // A viewer with one visual is already correct, and a viewer with none
+                // must never be swept: a party member's local copy is the only boss
+                // they can see, so leaving them at zero would break the fight for them.
+                if (localBossIds.length <= 1) {
+                    viewerResults.push({
+                        viewer: String(viewer.character?.name ?? ''),
+                        localBossIds,
+                        keptEntityId: localBossIds[0] ?? 0,
+                        removedEntityIds: []
+                    });
+                    continue;
+                }
+
+                const aliasedToAnchor = anchorId > 0
+                    ? localBossIds.filter((localId) => Math.max(0, Math.round(
+                        Number(viewer.entityIdAliases?.get(localId) ?? 0)
+                    )) === anchorId)
+                    : [];
+                const markedLocalIds = localBossIds.filter(
+                    (localId) => isRoomBossEntity(scopeKey, viewer.entities?.get(localId))
+                );
+                const keeperId = localBossIds.includes(normalizedAnnouncedId)
+                    ? normalizedAnnouncedId
+                    : localBossIds.includes(anchorId)
+                        ? anchorId
+                        : aliasedToAnchor.length === 1
+                            ? aliasedToAnchor[0]
+                            : markedLocalIds.length === 1
+                                ? markedLocalIds[0]
+                                : Math.min(...localBossIds);
+
+                const removedEntityIds: number[] = [];
+                for (const localId of localBossIds) {
+                    if (localId === keeperId) {
+                        continue;
+                    }
+                    // The destroy clears the alias, so re-point the id afterwards:
+                    // damage already sent under it must still reach the real boss.
+                    EntityHandler.destroyClientLocalEntity(
+                        viewer,
+                        localId,
+                        'boss_scene_local_duplicate',
+                        viewer.entities?.get(localId) ?? null
+                    );
+                    EntityHandler.rememberEntityAlias(viewer, localId, keeperId);
+                    removedEntityIds.push(localId);
+                }
+
                 viewerResults.push({
                     viewer: String(viewer.character?.name ?? ''),
                     localBossIds,
-                    keptEntityId: localBossIds[0] ?? 0,
-                    removedEntityIds: []
+                    keptEntityId: keeperId,
+                    removedEntityIds
                 });
-                continue;
             }
 
-            const aliasedToAnchor = anchorId > 0
-                ? localBossIds.filter((localId) => Math.max(0, Math.round(
-                    Number(viewer.entityIdAliases?.get(localId) ?? 0)
-                )) === anchorId)
-                : [];
-            const markedLocalIds = localBossIds.filter(
-                (localId) => isRoomBossEntity(scopeKey, viewer.entities?.get(localId))
-            );
-            const keeperId = localBossIds.includes(normalizedAnnouncedId)
-                ? normalizedAnnouncedId
-                : localBossIds.includes(anchorId)
-                    ? anchorId
-                    : aliasedToAnchor.length === 1
-                        ? aliasedToAnchor[0]
-                        : markedLocalIds.length === 1
-                            ? markedLocalIds[0]
-                            : Math.min(...localBossIds);
-
-            const removedEntityIds: number[] = [];
-            for (const localId of localBossIds) {
-                if (localId === keeperId) {
-                    continue;
-                }
-                // The destroy clears the alias, so re-point the id afterwards:
-                // damage already sent under it must still reach the real boss.
-                EntityHandler.destroyClientLocalEntity(
-                    viewer,
-                    localId,
-                    'boss_scene_local_duplicate',
-                    viewer.entities?.get(localId) ?? null
-                );
-                EntityHandler.rememberEntityAlias(viewer, localId, keeperId);
-                removedEntityIds.push(localId);
-            }
-
-            viewerResults.push({
-                viewer: String(viewer.character?.name ?? ''),
-                localBossIds,
-                keptEntityId: keeperId,
-                removedEntityIds
+            MissionHandler.logDungeonDiag('bossSceneSweep', {
+                phase,
+                level: resolvedLevel,
+                scope: scopeKey,
+                bossIdentity: identity,
+                announcedBossId: normalizedAnnouncedId,
+                announcedIdResolvedInScope: sharedBossIds.includes(normalizedAnnouncedId),
+                anchorId,
+                sharedBossIds,
+                markedSharedIds,
+                removedShared,
+                viewers: viewerResults
             });
         }
-
-        MissionHandler.logDungeonDiag('bossSceneSweep', {
-            phase,
-            level: resolvedLevel,
-            scope: scopeKey,
-            announcedBossId: normalizedAnnouncedId,
-            announcedIdResolvedInScope: sharedBossIds.includes(normalizedAnnouncedId),
-            anchorId,
-            sharedBossIds,
-            markedSharedIds,
-            removedShared,
-            viewers: viewerResults
-        });
     }
 
     static async handleForcedDungeonObjectiveCompletion(client: Client, destroyedEntity: any): Promise<void> {

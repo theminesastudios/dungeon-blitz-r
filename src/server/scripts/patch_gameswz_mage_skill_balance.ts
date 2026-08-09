@@ -232,9 +232,8 @@ function buildFireBrandShotPower(def: FireBrandShotDef): string {
     "\t\t<CastAnimSource>Feet</CastAnimSource>",
     "\t\t<FireSound>snd_pwr_range_fireball_imp_01</FireSound>",
     "\t\t<FireAnimSource>Center</FireAnimSource>",
-    isPiercingBasicShot
-      ? "\t\t<FireGfx>\r\n\t\t\t<AnimFile>SFX_1.swf</AnimFile>\r\n\t\t\t<AnimClass>a_CrimsonShotImpact</AnimClass>\r\n\t\t\t<AnimScale>1</AnimScale>\r\n\t\t\t<FireAndForget>true</FireAndForget>\r\n\t\t</FireGfx>"
-      : "\t\t<FireGfx/>",
+    // Impact fx, same as CrimsonShot: every rank needs it or hits look like misses.
+    "\t\t<FireGfx>\r\n\t\t\t<AnimFile>SFX_1.swf</AnimFile>\r\n\t\t\t<AnimClass>a_CrimsonShotImpact</AnimClass>\r\n\t\t\t<AnimScale>1</AnimScale>\r\n\t\t\t<FireAndForget>true</FireAndForget>\r\n\t\t</FireGfx>",
     "\t\t<HitGfx/>",
     "\t\t<ProjGfx>",
     "\t\t\t<AnimFile>SFX_1.swf</AnimFile>",
@@ -443,7 +442,7 @@ function patchPowerBlock(powerName: string, block: string, stats: PatchStats): s
     next = apply(next, stats, addTargetBuff(next, "Crippled", "Dazed"));
   } else if (/^Pyromania(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;
-    next = apply(next, stats, replaceTag(next, "ManaCost", "0"));
+    // ManaCost is owned by patch_gameswz_power_mana_costs (per-rank mastery mana); don't zero it here.
     next = apply(next, stats, replaceTag(next, "CoolDownTime", "10000"));
   } else if (/^FireBrand(?:\d+)?$/.test(powerName)) {
     stats.powerBlocks += 1;

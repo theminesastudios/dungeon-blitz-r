@@ -12,6 +12,7 @@ import { BuildingID } from '../core/Enums';
 import { PetHandler } from './PetHandler';
 import { sendConsumableUpdate } from '../utils/ConsumableState';
 import { normalizeMaterialEntries } from '../utils/MaterialInventory';
+import { SpeedupPricing } from '../core/SpeedupPricing';
 import { isVisitingAnotherPlayersCraftTown } from '../utils/HomeVisitGuard';
 
 const db = new JsonAdapter();
@@ -45,9 +46,8 @@ export class ForgeHandler {
     private static readonly RESPEC_STONE_DURATION_SECONDS = 180;
     private static readonly EXTENDED_RESPEC_STONE_DURATION_SECONDS = 86400;
     private static readonly CHARM_REMOVER_DURATION_SECONDS = 43200;
-    private static readonly SPEEDUP_SECONDS_PER_IDOL = 1200;
-    private static readonly FREE_SPEEDUP_THRESHOLD_SECONDS = 180;
-    private static readonly FREE_SPEEDUP_CLOCK_GRACE_SECONDS = 10;
+    private static readonly FREE_SPEEDUP_THRESHOLD_SECONDS = SpeedupPricing.FREE_THRESHOLD_SECONDS;
+    private static readonly FREE_SPEEDUP_CLOCK_GRACE_SECONDS = SpeedupPricing.CLOCK_GRACE_SECONDS;
     private static readonly FREE_SPEEDUP_REASON_TUTORIAL_CHARM: FreeSpeedupReason = 'tutorial_charm';
     private static readonly FORGE_XP_CAP = 159_948;
     private static readonly DEFAULT_FORGE_XP_GAIN = 4000;
@@ -487,20 +487,6 @@ export class ForgeHandler {
             && remainingSeconds <= ForgeHandler.FREE_SPEEDUP_THRESHOLD_SECONDS + ForgeHandler.FREE_SPEEDUP_CLOCK_GRACE_SECONDS;
     }
 
-    private static getAuthoritativeSpeedupCost(forgeState: ForgeState): number {
-        const readyTime = Number(forgeState.ReadyTime ?? 0);
-        if (readyTime <= 0) {
-            return 0;
-        }
-
-        const remainingSeconds = readyTime - ForgeHandler.getNowSeconds();
-        if (remainingSeconds <= ForgeHandler.FREE_SPEEDUP_THRESHOLD_SECONDS) {
-            return 0;
-        }
-
-        return Math.ceil(remainingSeconds / ForgeHandler.SPEEDUP_SECONDS_PER_IDOL);
-    }
-
     private static completeActiveForgeNow(forgeState: ForgeState): void {
         forgeState.ReadyTime = 0;
         forgeState.forge_roll_a = ForgeHandler.randomRollSeed();
@@ -631,6 +617,12 @@ export class ForgeHandler {
         client.sendBitBuffer(0xB5, bb);
     }
 
+    // SpeedupPricing.refreshScreens under a forge-shaped name. The result packet cannot
+    // stand in for it: that one means "your charm is ready" and hides the whole screen.
+    private static sendForgeScreenRefresh(client: Client): void {
+        SpeedupPricing.refreshScreens(client);
+    }
+
     private static sendForgeResultPacket(client: Client, forgeState: ForgeState): void {
         const bb = new BitBuffer(false);
         bb.writeMethod6(Math.max(0, Number(forgeState.primary ?? 0)), 7);
@@ -755,12 +747,27 @@ export class ForgeHandler {
     }
 
     static async handleForgeSpeedUpPacket(client: Client, data: Buffer): Promise<void> {
-        if (!client.character || ForgeHandler.rejectsVisitedHomeMutation(client)) {
+        // Deliberately not gated on rejectsVisitedHomeMutation. An active forge lives on
+        // the visitor's own character record, not on the home they are standing in, so
+        // finishing it changes nothing about the host. The guard blocked the request
+        // anyway, which is why a paid Speed Up in someone else's Home took no idols,
+        // returned no result packet, and left the forge running.
+        if (!client.character) {
             return;
         }
 
-        const br = new BitReader(data);
-        const idolCost = br.readMethod9();
+        // A short payload used to throw out of the handler and get swallowed by the
+        // router's catch, which looks exactly like the silent failure this method is
+        // being fixed for. Name it instead.
+        let idolCost = 0;
+        try {
+            idolCost = new BitReader(data).readMethod9();
+        } catch {
+            console.warn('[Forge] Ignoring malformed Speed Up packet with no idol cost.');
+            ForgeHandler.sendForgeScreenRefresh(client);
+            return;
+        }
+
         const forgeState = ForgeHandler.ensureForgeState(client.character);
         const didForceRespecDuration = ForgeHandler.enforceActiveRespecStoneDuration(client, forgeState);
         const didForceCharmRemoverDuration = ForgeHandler.enforceActiveCharmRemoverDuration(forgeState);
@@ -769,6 +776,7 @@ export class ForgeHandler {
         }
 
         if (Number(forgeState.primary ?? 0) <= 0) {
+            ForgeHandler.sendForgeScreenRefresh(client);
             return;
         }
 
@@ -782,13 +790,16 @@ export class ForgeHandler {
 
         const primary = Number(forgeState.primary ?? 0);
         const isRespecStone = primary === CharmID.RespecStone;
-        const authoritativeCost = isRespecStone
-            ? ForgeHandler.getAuthoritativeSpeedupCost(forgeState)
-            : idolCost;
+        const authoritativeCost = SpeedupPricing.reconcile(forgeState.ReadyTime, idolCost, ForgeHandler.getNowSeconds());
 
         if (authoritativeCost <= 0) {
             const freeSpeedupReason = ForgeHandler.getSpecialFreeSpeedupReason(client, forgeState);
             if (!isRespecStone && !freeSpeedupReason && !ForgeHandler.canUseFreeSpeedupWindow(forgeState)) {
+                console.warn(
+                    `[Forge] Refused a Free Speed Up for ${client.character.name}: ` +
+                    `${Math.max(0, Number(forgeState.ReadyTime ?? 0) - Math.floor(Date.now() / 1000))}s left.`
+                );
+                ForgeHandler.sendForgeScreenRefresh(client);
                 return;
             }
 
@@ -805,6 +816,11 @@ export class ForgeHandler {
         }
 
         if (Number(client.character.mammothIdols ?? 0) < authoritativeCost) {
+            console.warn(
+                `[Forge] Refused a paid Speed Up for ${client.character.name}: ` +
+                `has ${Number(client.character.mammothIdols ?? 0)} idols, needs ${authoritativeCost}.`
+            );
+            ForgeHandler.sendForgeScreenRefresh(client);
             return;
         }
 
@@ -820,7 +836,10 @@ export class ForgeHandler {
     }
 
     static async handleCollectForgeCharm(client: Client, data: Buffer): Promise<void> {
-        if (!client.character || ForgeHandler.rejectsVisitedHomeMutation(client)) {
+        // Ungated for the same reason as Speed Up, and it has to move with it: a player
+        // who pays to finish a charm while visiting must be able to take the charm, or
+        // the idols buy them nothing until they walk home.
+        if (!client.character) {
             return;
         }
 

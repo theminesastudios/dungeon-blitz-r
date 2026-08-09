@@ -5,6 +5,7 @@ import {
     createKeepTutorialState,
     KeepTutorialState
 } from '../core/Client';
+import { Achievements } from '../core/Achievements';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { LevelConfig } from '../core/LevelConfig';
@@ -59,6 +60,7 @@ import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { DungeonCompletionSystem } from '../core/DungeonCompletionSystem';
 import { DungeonCompletionConditions } from '../core/DungeonCompletionConditions';
 import { MovementAuthority } from '../core/MovementAuthority';
+import { noteGroundedSample, resolveConfirmedGroundedPosition, resolveGroundedPosition } from '../core/GroundedPosition';
 
 const db = new JsonAdapter();
 
@@ -113,6 +115,8 @@ export class LevelHandler {
     private static readonly pendingSharedProgressRefreshes = new Map<string, NodeJS.Timeout>();
     private static readonly sharedProgressRefreshMetrics = new Map<string, { requested: number; deduplicated: number; executed: number }>();
     private static readonly SHARED_PROGRESS_REFRESH_DEDUPE_MS = 25;
+    // Matches the mount travel protection window room changes have always armed.
+    private static readonly ROOM_TRANSITION_GRACE_MS = 4000;
 
     private static deferMissionWork(client: Client, label: string, work: DeferredMissionWork): void {
         const executeWork = (): void => {
@@ -252,16 +256,23 @@ export class LevelHandler {
             return;
         }
 
-        const liveX = Number(entity?.x);
-        const liveY = Number(entity?.y);
-        if (!Number.isFinite(liveX) || !Number.isFinite(liveY)) {
+        // Taking a door mid-jump would otherwise record the airborne position as the return
+        // point for this level, which the client then drops the player from on the way back.
+        // Only the floor sample counts; when there is none the stored position is already the
+        // last grounded one, so leaving it alone is correct.
+        //
+        // Checking `airborne` alone was not enough: the flag only rides the 0x07 incremental
+        // packet, so a player who took the door on the frame after a full update -- which
+        // spells the same state `jumping`/`dropping` -- still wrote a mid-air point.
+        const grounded = resolveConfirmedGroundedPosition(entity, normalizedSourceLevel);
+        if (!grounded) {
             return;
         }
 
         character.CurrentLevel = {
             name: normalizedSourceLevel,
-            x: Math.round(liveX),
-            y: Math.round(liveY)
+            x: grounded.x,
+            y: grounded.y
         };
     }
 
@@ -449,6 +460,29 @@ export class LevelHandler {
         return Math.round(numericValue);
     }
 
+    /**
+     * The position of a party member that another player may safely be dropped onto.
+     *
+     * Never the raw live entity: the server has no collision, so entity.x/y mid-jump or
+     * mid-fall is a point in open air. Placing a joiner there is what spawns them
+     * hovering and drops them. Only a position the anchor was last standing on counts,
+     * and when there is none the caller must fall back to the level's own spawn marker
+     * rather than guess.
+     *
+     * "Last standing on" now means a position the anchor's own client reported, not one the
+     * server dead-reckoned for it. Every caller here is placing a body, and a dead-reckoned
+     * point can be arbitrarily far from real floor with no way to know it -- see the note at
+     * the top of core/GroundedPosition.ts. Falling back to the level's spawn marker is the
+     * correct answer whenever there is no confirmed point, because that marker is floor by
+     * construction and a guess is not.
+     */
+    static resolveGroundedAnchorPosition(
+        entity: any,
+        expectedLevel?: string | null
+    ): { x: number; y: number } | null {
+        return resolveConfirmedGroundedPosition(entity, expectedLevel);
+    }
+
     private static buildActiveTransferSyncAnchorCandidate(
         session: Client,
         targetLevel: string
@@ -466,9 +500,10 @@ export class LevelHandler {
         let y = 0;
         let hasCoord = false;
         const entity = session.entities.get(session.clientEntID);
-        if (entity && Number.isFinite(entity.x) && Number.isFinite(entity.y)) {
-            x = Math.round(Number(entity.x));
-            y = Math.round(Number(entity.y));
+        const grounded = LevelHandler.resolveGroundedAnchorPosition(entity, targetLevel);
+        if (grounded) {
+            x = grounded.x;
+            y = grounded.y;
             hasCoord = true;
         } else {
             const savedLevel = session.character.CurrentLevel;
@@ -696,7 +731,32 @@ export class LevelHandler {
             return null;
         }
 
-        return LevelHandler.collectPartyTransferSyncAnchorCandidates(client, targetLevel)[0] ?? null;
+        const candidates = LevelHandler.collectPartyTransferSyncAnchorCandidates(client, targetLevel);
+        const anchor = candidates[0] ?? null;
+        if (!anchor || anchor.state.hasCoord) {
+            return anchor;
+        }
+
+        // The ordering above picks who owns the run -- instance id, started rooms, quest
+        // progress -- and that must not change just because they happen to be mid-jump.
+        // But an anchor with no grounded sample yet carries no position either, and a
+        // dungeon join with no position falls through to the level's authored start: the
+        // joiner is dumped back at the dungeon entrance while the party is three rooms in.
+        // Any party member already standing on floor in there is a better place to arrive.
+        const positioned = candidates.find((candidate) => candidate.state.hasCoord);
+        if (!positioned) {
+            return anchor;
+        }
+
+        return {
+            ...anchor,
+            state: {
+                ...anchor.state,
+                x: positioned.state.x,
+                y: positioned.state.y,
+                hasCoord: true
+            }
+        };
     }
 
     private static applyStoredRoomProgressState(
@@ -768,8 +828,21 @@ export class LevelHandler {
         let x = Math.round(Number(teleportOverride?.x ?? 0));
         let y = Math.round(Number(teleportOverride?.y ?? 0));
         let hasCoord = Boolean(teleportOverride?.hasCoord);
+        // Walking through a door whose target is not mapped resolves to the level the player
+        // is already in (handleOpenDoor), so the client reloads the same dungeon. That reload
+        // runs the full transfer path, and clearTransferState wipes levelInstanceId -- so
+        // without this the player lands in a brand new instance of the dungeon they never
+        // left. Different scope means a different entity map: the party member stops being
+        // rendered, both sides spawn their own hostiles, and each one's hostiles keep hitting
+        // the other player's session for real. Re-entering from outside still gets a fresh
+        // instance, because that path has a different source level.
+        const isSameDungeonReentry = shouldSyncDungeonProgress &&
+            LevelConfig.normalizeLevelName(client.currentLevel) === normalizedTargetLevel;
         let levelInstanceId = shouldSyncDungeonProgress
-            ? normalizeLevelInstanceId(teleportOverride?.levelInstanceId)
+            ? (
+                normalizeLevelInstanceId(teleportOverride?.levelInstanceId) ||
+                (isSameDungeonReentry ? normalizeLevelInstanceId(client.levelInstanceId) : '')
+            )
             : '';
         let syncAnchorStartedAt = shouldSyncDungeonProgress
             ? LevelHandler.normalizeSyncAnchorStartedAt(client.syncAnchorStartedAt)
@@ -825,7 +898,12 @@ export class LevelHandler {
                     Number.isFinite(Number(anchorState.x)) &&
                     Number.isFinite(Number(anchorState.y))
                 ) {
-                    x = Math.round(Number(anchorState.x) + 100);
+                    // Land on the anchor's own grounded sample, not beside it. The server
+                    // has no collision, so a sideways offset is a guess about floor it
+                    // cannot check -- and next to a ledge, a pit or a doorway that guess
+                    // dropped the joiner through the map. Two bodies in one spot is what
+                    // the client already does for every stacked player; falling is not.
+                    x = Math.round(Number(anchorState.x));
                     y = Math.round(Number(anchorState.y));
                     hasCoord = true;
                     console.log(
@@ -874,18 +952,33 @@ export class LevelHandler {
                 // the individual player. Never replace this player's entrance with the party
                 // anchor's region or coordinates.
                 syncEntryLevel = sourceLevel;
-                const liveEntryX = Number(entryEntity?.x);
-                const liveEntryY = Number(entryEntity?.y);
-                const recordedEntry = LevelConfig.resolveDungeonEntryCoordinates(
-                    normalizedTargetLevel,
-                    sourceLevel,
-                    client.character
-                );
-                if (Number.isFinite(liveEntryX) && Number.isFinite(liveEntryY)) {
-                    syncEntryX = Math.round(liveEntryX);
-                    syncEntryY = Math.round(liveEntryY);
-                    syncEntryHasCoord = true;
-                } else if (recordedEntry.hasCoord) {
+                const liveEntry = resolveConfirmedGroundedPosition(entryEntity, sourceLevel);
+                // This is the point the player is put back on when they walk out of the dungeon
+                // (resolveDungeonExitSpawn) and when they reconnect out of it
+                // (repairDungeonLocationBeforeSave). Neither consumer can tell whether there is
+                // floor under it, so it has to come from a position the player is known to have
+                // stood on.
+                //
+                // The live entity is not that. The server has no collision -- entity.x/y is only
+                // a sum of movement deltas, thinned by MovementAuthority rejections and packet
+                // coalescing, and its `airborne` flag is whatever the last 0x07 happened to
+                // carry. Recording it here is what dropped players through Dread Valhaven after
+                // refreshing inside Dread The East Wing.
+                //
+                // The live sample goes first now, and only because it is confirmed: it is this
+                // player's own client saying "I am standing here", measured in this level,
+                // seconds ago. The recorded entry behind it resolves to the level's authored
+                // spawn when there is no confirmed record, which is floor but is not where the
+                // player was -- so letting it win would send everyone to the town gate instead
+                // of the dungeon door they walked in from.
+                const recordedEntry = liveEntry
+                    ? { x: liveEntry.x, y: liveEntry.y, hasCoord: true }
+                    : LevelConfig.resolveDungeonEntryCoordinates(
+                        normalizedTargetLevel,
+                        sourceLevel,
+                        client.character
+                    );
+                if (recordedEntry.hasCoord) {
                     syncEntryX = Math.round(recordedEntry.x);
                     syncEntryY = Math.round(recordedEntry.y);
                     syncEntryHasCoord = true;
@@ -2806,27 +2899,6 @@ export class LevelHandler {
         }
     }
 
-    private static async refreshCurrentCharacterFromSave(client: Client): Promise<void> {
-        if (!client.userId || !client.character) {
-            return;
-        }
-
-        const latestCharacters = await db.loadCharacters(client.userId);
-        client.characters = latestCharacters;
-
-        const currentName = String(client.character.name ?? '').trim().toLowerCase();
-        const latestCharacter = latestCharacters.find((entry) =>
-            String(entry?.name ?? '').trim().toLowerCase() === currentName
-        );
-
-        if (latestCharacter) {
-            client.character = latestCharacter;
-        } else {
-            latestCharacters.push(client.character);
-            client.characters = latestCharacters;
-        }
-    }
-
     private static async saveCurrentCharacterSnapshot(client: Client): Promise<void> {
         if (!client.userId || !client.character) {
             return;
@@ -2847,6 +2919,31 @@ export class LevelHandler {
             client.characters.push(client.character);
         }
         client.scheduleCharacterSave(reason);
+    }
+
+
+    /**
+     * Home NPC chat is played client-side from the level's cue text and never
+     * reaches the server (Game.method_668 branches on a_Level_Home), so walking
+     * up to Neo is the interaction signal we do get.
+     */
+    private static greetArchivistNeo(client: Client, levelName: string, x: number, y: number): void {
+        if (levelName !== 'CraftTown') {
+            return;
+        }
+
+        const neo = NpcLoader.getNpcsForLevel('CraftTown').find((npc) => String(npc.name ?? '') === 'NPCHomeNeo');
+        if (!neo) {
+            return;
+        }
+
+        const distance = Math.hypot(x - Number(neo.x ?? 0), y - Number(neo.y ?? 0));
+        if (!Achievements.shouldGreet(client, distance)) {
+            return;
+        }
+
+        const { NpcHandler } = require('./NpcHandler') as typeof import('./NpcHandler');
+        NpcHandler.speakAchievementLedger(client, Math.max(0, Math.round(Number(neo.id ?? 0))));
     }
 
     private static getLevelMap(
@@ -2973,6 +3070,14 @@ export class LevelHandler {
             client.currentRoomId = roomId;
             GlobalState.refreshSessionIndexes(client);
             if (previousRoomId >= 0 && previousRoomId !== roomId) {
+                // Same window the mount path already granted, but for every player: the door
+                // reposition arrives as one large delta and must not be scored as a teleport.
+                // Without this an on-foot player is clamped back into the room they just left,
+                // which is the position everyone else keeps rendering.
+                client.roomTransitionGraceUntil = Math.max(
+                    client.roomTransitionGraceUntil,
+                    Date.now() + LevelHandler.ROOM_TRANSITION_GRACE_MS
+                );
                 PetHandler.armMountTravelProtection(client, 4000, true);
             }
             LevelHandler.maybeStartTutorialDungeonTraversalTutorial(client, roomId);
@@ -3270,10 +3375,16 @@ export class LevelHandler {
     }
 
     private static normalizeGoblinRiverDialogue(text: string): string {
-        return String(text ?? '')
-            .replace(/<[^>]+>/g, '')
-            .replace(/^\^t/, '')
-            .trim();
+        // Strip until stable: a single pass turns "<a<b>c>" into "<ac>", leaving a
+        // tag behind that the caller would then treat as literal dialogue text.
+        let stripped = String(text ?? '');
+        let previous = '';
+        while (stripped !== previous) {
+            previous = stripped;
+            stripped = stripped.replace(/<[^<>]*>/g, '');
+        }
+
+        return stripped.replace(/^\^t/, '').trim();
     }
 
     static maybeStartGoblinRiverBossIntroLock(
@@ -3827,6 +3938,49 @@ export class LevelHandler {
             client.send(0xA5, payload);
         }
         LevelHandler.markSharedDungeonCutsceneParticipant(client, roomId, joinedAtDialogIndex);
+    }
+
+    // A cinematic is a property of the room, not of whoever walked in first.
+    // Someone entering the dungeon while one is running used to be skipped
+    // entirely — they stood outside the borders watching the party freeze — so
+    // put them inside it, resumed at the line the room has already reached
+    // rather than replaying it from the top.
+    static joinActiveSharedDungeonCutscene(client: Client, roomId: number): boolean {
+        const levelScope = getClientLevelScope(client);
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
+        const state = LevelHandler.getSharedDungeonCutsceneState(levelScope, normalizedRoomId);
+        if (!state?.active || state.completed) {
+            return false;
+        }
+        if (LevelHandler.isSharedDungeonCutsceneParticipant(client, levelScope, normalizedRoomId)) {
+            return false;
+        }
+
+        // The cinematic plays inside its room, so the arrival has to be standing
+        // in it or every room-scoped relay that follows is filtered away again.
+        client.currentRoomId = normalizedRoomId;
+        GlobalState.refreshSessionIndexes(client);
+
+        const cutsceneStart = new BitBuffer(false);
+        cutsceneStart.writeMethod9(normalizedRoomId);
+        cutsceneStart.writeMethod15(true);
+        LevelHandler.sendSharedDungeonCutsceneStartToClient(
+            client,
+            normalizedRoomId,
+            cutsceneStart.toBuffer(),
+            LevelHandler.getSharedDungeonCutsceneDialogIndex(state),
+            true
+        );
+        LevelHandler.setServerAuthorityHostilesUntargetableForScope(levelScope, normalizedRoomId, true);
+        return true;
+    }
+
+    static hasActiveSharedDungeonCutscene(levelScope: string, roomId: number): boolean {
+        const state = LevelHandler.getSharedDungeonCutsceneState(
+            levelScope,
+            Math.max(0, Math.round(Number(roomId) || 0))
+        );
+        return Boolean(state?.active && !state.completed);
     }
 
     private static getSharedDungeonCutsceneParticipants(
@@ -5454,8 +5608,11 @@ export class LevelHandler {
 
         const doorContext = LevelHandler.getActiveDoorTravelContext(client, targetLevel);
         const syncState = LevelHandler.buildTransferSyncState(client, targetLevel, teleportOverride ?? null);
+        // saveCurrentCharacterSnapshot writes the live character and leaves client.characters
+        // holding the persisted list, so the read-back that used to follow it only re-fetched
+        // what we had just written. Dropping it removes a blocking storage round trip from
+        // every region change.
         await LevelHandler.saveCurrentCharacterSnapshot(client);
-        await LevelHandler.refreshCurrentCharacterFromSave(client);
 
         const activeCharacter = client.character;
         if (!activeCharacter) {
@@ -5467,10 +5624,15 @@ export class LevelHandler {
         let oldX = 0, oldY = 0;
         let hasOldCoord = false;
 
-        if (ent) {
-            oldX = ent.x;
-            oldY = ent.y;
-            hasOldCoord = Number.isFinite(oldX) && Number.isFinite(oldY);
+        // PreviousLevel is replayed as a spawn point by getSpawnCoordinates, so it gets the
+        // same treatment as CurrentLevel: the floor sample, never the live position. Leaving
+        // a level mid-jump used to file the airborne point here and the next visit dropped
+        // the player from it.
+        const oldGrounded = LevelHandler.resolveGroundedAnchorPosition(ent, oldLevel);
+        if (oldGrounded) {
+            oldX = oldGrounded.x;
+            oldY = oldGrounded.y;
+            hasOldCoord = true;
         }
 
         LevelHandler.syncTransferSourcePositionFromLiveEntity(activeCharacter, oldLevel, ent);
@@ -6093,6 +6255,25 @@ export class LevelHandler {
         ent.bBackpedal = flags.bBackpedal;
         ent.velocityY = velocityY;
         ent.airborne = isAirborne;
+        // The full-update shape spells these `jumping`/`dropping`. Keeping both spellings in
+        // step stops a stale full-update flag from outliving the jump that set it.
+        ent.jumping = flags.bJumping;
+        ent.dropping = flags.bDropping;
+        // The last position the player was known to be standing on. entity.x/y alone is
+        // only a running sum of movement deltas and its `airborne` flag is whatever the
+        // most recent 0x07 carried, so anything that has to place a body on solid floor
+        // (party anchor spawns, dungeon return points) reads this instead.
+        const isGroundedMovementPacket = !isAirborne && !flags.bJumping && !flags.bDropping;
+        noteGroundedSample(ent, ent.x, ent.y, !isGroundedMovementPacket, currentLevel);
+
+        // Neo's "King of the World" ledger entry: the only place the server sees
+        // where a player actually climbed to.
+        if (isSelf && client.character && Achievements.notePlayerPosition(client.character, currentLevel, ent.y)) {
+            LevelHandler.scheduleCurrentCharacterSnapshot(client, 'achievement boat climb');
+        }
+        if (isSelf && client.character) {
+            LevelHandler.greetArchivistNeo(client, currentLevel, Number(ent.x ?? 0), Number(ent.y ?? 0));
+        }
 
         if (levelEntity && levelEntity !== ent) {
             levelEntity.x = ent.x;
@@ -6107,6 +6288,9 @@ export class LevelHandler {
             levelEntity.bBackpedal = flags.bBackpedal;
             levelEntity.velocityY = velocityY;
             levelEntity.airborne = isAirborne;
+            levelEntity.jumping = flags.bJumping;
+            levelEntity.dropping = flags.bDropping;
+            noteGroundedSample(levelEntity, ent.x, ent.y, !isGroundedMovementPacket, currentLevel);
         }
 
         if (isActiveSelfState) {
@@ -6116,7 +6300,17 @@ export class LevelHandler {
         
         // Update Saved Coords if it's us and safe level
         if (isSelf && client.character) {
-            if (LevelConfig.isSaveAllowedLevel(currentLevel)) {
+            // Only a position the player is actually standing on may be saved.
+            //
+            // Every movement packet used to overwrite the saved coordinates, including the
+            // ones sent mid-jump, mid-fall or while a knockback was carrying the player
+            // through the air. Whatever happened to be in flight when they left the level
+            // became the point they are returned to, and the client drops them there --
+            // a Jade City save at y=-848 has no floor within 1700px below it, so the return
+            // replayed that fall every time. Standing still on the ground now wins, and an
+            // airborne packet keeps the last grounded position.
+            const isGroundedPosition = isGroundedMovementPacket;
+            if (LevelConfig.isSaveAllowedLevel(currentLevel) && isGroundedPosition) {
                 if (!client.character.CurrentLevel) {
                     client.character.CurrentLevel = { name: currentLevel, x: ent.x, y: ent.y };
                 } else {
@@ -6124,6 +6318,30 @@ export class LevelHandler {
                     client.character.CurrentLevel.x = ent.x;
                     client.character.CurrentLevel.y = ent.y;
                 }
+            } else if (
+                LevelConfig.isSaveAllowedLevel(currentLevel) &&
+                LevelConfig.normalizeLevelName(client.character.CurrentLevel?.name) !==
+                    LevelConfig.normalizeLevelName(currentLevel)
+            ) {
+                // Airborne on arrival in a new level: the level itself still has to be
+                // recorded, or a logout mid-fall would send the player back to the level
+                // they came from.
+                //
+                // The coordinates must not be the airborne ones. This used to fall back to
+                // ent.x/ent.y whenever the level had no authored spawn -- true for
+                // SwampRoadConnection and for any level missing from level_config.json --
+                // on the assumption that the next grounded packet would replace it. A
+                // player who disconnects before landing never sends that packet, so the
+                // mid-air point became their save, and the next login dropped them from it.
+                // Recording the level with no coordinates is the safe answer: getSpawn
+                // returns {0,0}, hasCoord stays false, and the client uses its own spawn
+                // marker for the level.
+                const spawn = LevelConfig.getSpawn(currentLevel);
+                client.character.CurrentLevel = {
+                    name: currentLevel,
+                    x: Math.round(Number(spawn?.x ?? 0) || 0),
+                    y: Math.round(Number(spawn?.y ?? 0) || 0)
+                };
             }
 
             if (currentLevel === 'CraftTownTutorial') {

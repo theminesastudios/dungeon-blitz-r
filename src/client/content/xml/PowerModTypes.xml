@@ -514,11 +514,11 @@
 		<ModName>Hemorrhage1</ModName>
 		<ModID>51</ModID>
 		<DisplayName>Hemorrhage</DisplayName>
-		<Description>Increases Hemorrhage Critical Effect@Hemorrhage Damage:, +1%, +3%, +6%, 10%, 15%</Description>
+		<Description>Increases Hemorrhage Critical Effect and weakens the target's defense@Hemorrhage Damage:, +1%, +3%, +6%, 10%, 15%@Defense Debuff:, 0.5%, 0.75%, 1%, 1.5%, 2%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>ProcMassiveTimeBuff</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.01</BuffValue>
+		<BuffProperty>DoTDamage,MeleeDefense,MagicDefense</BuffProperty>
+		<BuffValue>.01,-.005,-.005</BuffValue>
 		<IconName>a_Signet_Critical02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -527,8 +527,8 @@
 		<DisplayName>Hemorrhage</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>ProcMassiveTimeBuff</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.03</BuffValue>
+		<BuffProperty>DoTDamage,MeleeDefense,MagicDefense</BuffProperty>
+		<BuffValue>.03,-.0075,-.0075</BuffValue>
 		<IconName>a_Signet_Critical02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -537,8 +537,8 @@
 		<DisplayName>Hemorrhage</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>ProcMassiveTimeBuff</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.06</BuffValue>
+		<BuffProperty>DoTDamage,MeleeDefense,MagicDefense</BuffProperty>
+		<BuffValue>.06,-.01,-.01</BuffValue>
 		<IconName>a_Signet_Critical02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -547,8 +547,8 @@
 		<DisplayName>Hemorrhage</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>ProcMassiveTimeBuff</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.1</BuffValue>
+		<BuffProperty>DoTDamage,MeleeDefense,MagicDefense</BuffProperty>
+		<BuffValue>.1,-.015,-.015</BuffValue>
 		<IconName>a_Signet_Critical02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -557,8 +557,8 @@
 		<DisplayName>Hemorrhage</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>ProcMassiveTimeBuff</BuffName>
-		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>.15</BuffValue>
+		<BuffProperty>DoTDamage,MeleeDefense,MagicDefense</BuffProperty>
+		<BuffValue>.15,-.02,-.02</BuffValue>
 		<IconName>a_Signet_Critical02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -616,11 +616,11 @@
 		<ModName>HeavyBlow1</ModName>
 		<ModID>61</ModID>
 		<DisplayName>Heavy Blows</DisplayName>
-		<Description>Increases Heavy Blow Critical Effect@Heavy Blow Damage:, +1%, +2%, +4%, +7%, +10%</Description>
+		<Description>Increases Heavy Blow Critical Effect@Heavy Blow Damage:, +2%, +5%, +8%, +11%, +15%</Description>
 		<ModType>Power</ModType>
 		<PowerName>ProcMassive</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>.01</PowerValue>
+		<PowerValue>.02</PowerValue>
 		<IconName>a_Signet_Critical04</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -630,7 +630,7 @@
 		<ModType>Power</ModType>
 		<PowerName>ProcMassive</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>.02</PowerValue>
+		<PowerValue>.05</PowerValue>
 		<IconName>a_Signet_Critical04</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -640,7 +640,7 @@
 		<ModType>Power</ModType>
 		<PowerName>ProcMassive</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>.04</PowerValue>
+		<PowerValue>.08</PowerValue>
 		<IconName>a_Signet_Critical04</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -650,7 +650,7 @@
 		<ModType>Power</ModType>
 		<PowerName>ProcMassive</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>.07</PowerValue>
+		<PowerValue>.11</PowerValue>
 		<IconName>a_Signet_Critical04</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -660,7 +660,7 @@
 		<ModType>Power</ModType>
 		<PowerName>ProcMassive</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>.1</PowerValue>
+		<PowerValue>.15</PowerValue>
 		<IconName>a_Signet_Critical04</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1055,11 +1055,11 @@
 		<ModName>IgniteDmg1</ModName>
 		<ModID>106</ModID>
 		<DisplayName>Immolation</DisplayName>
-		<Description>Increases Ignite Damage@Ignite Damage:, +2%, +4%, +6%, +10%, +16%</Description>
+		<Description>Increases Ignite Damage@Ignite Damage:, +4%, +8%, +12%, +20%, +32%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Ignite</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>0.01</BuffValue>
+		<BuffValue>0.02</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1069,7 +1069,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Ignite</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>0.02</BuffValue>
+		<BuffValue>0.04</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1079,7 +1079,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Ignite</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>0.03</BuffValue>
+		<BuffValue>0.06</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1089,7 +1089,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Ignite</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>0.05</BuffValue>
+		<BuffValue>0.1</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1099,17 +1099,15 @@
 		<ModType>Buff</ModType>
 		<BuffName>Ignite</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
-		<BuffValue>0.08</BuffValue>
+		<BuffValue>0.16</BuffValue>
 		<IconName>a_Signet_Ignite01</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>IgniteCrit1</ModName>
 		<ModID>111</ModID>
 		<DisplayName>Volatile</DisplayName>
-		<Description>Gain a Poison Damage bonus against Cursed targets.@Poison Damage Bonus:, 2%, 4%, 6%, 8%, 10%</Description>
+		<Description>Gain a Critical Chance bonus vs. Ignited targets@Critical Chance Bonus:, 2%, 4%, 6%, 8%, 10%</Description>
 		<ModType>WTF</ModType>
-		<BuffName>Cursed</BuffName>
-		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.02</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1118,8 +1116,6 @@
 		<ModID>112</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
-		<BuffName>Cursed</BuffName>
-		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.04</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1128,8 +1124,6 @@
 		<ModID>113</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
-		<BuffName>Cursed</BuffName>
-		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.06</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1138,8 +1132,6 @@
 		<ModID>114</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
-		<BuffName>Cursed</BuffName>
-		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.08</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1148,8 +1140,6 @@
 		<ModID>115</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
-		<BuffName>Cursed</BuffName>
-		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.1</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1203,7 +1193,7 @@
 		<ModName>PainEater1</ModName>
 		<ModID>121</ModID>
 		<DisplayName>Pain Eater</DisplayName>
-		<Description>Gain an Attack Speed bonus for 5 seconds when you fall below 20% HP. 15 second cooldown.@Attack Speed Bonus:, 1%, 2%, 4%, 7%, 10%</Description>
+		<Description>Gain an Attack Speed and Defense bonus for 5 seconds when you fall below 20% HP. 15 second cooldown.@Attack Speed Bonus:, 1%, 2%, 4%, 6%, 10%@Defense Bonus:, 1%, 2%, 4%, 6%, 10%</Description>
 		<ModType>WTF</ModType>
 		<SelfValue>1</SelfValue>
 		<IconName>a_Signet_PainEater</IconName>
@@ -1366,8 +1356,8 @@
 	<PowerModType>
 		<ModName>Taunt1</ModName>
 		<ModID>141</ModID>
-		<DisplayName>Taunt</DisplayName>
-		<Description>Increases Hate Generation@Hate:, +10%, +20%, +35%, +50%, +75%</Description>
+		<DisplayName>Taunter</DisplayName>
+		<Description>Increases Hate Generation and Attack Speed@Hate:, +10%, +20%, +35%, +50%, +75%@Attack Speed:, +1%, +2%, +3%, +4%, +5%</Description>
 		<ModType>WTF</ModType>
 		<SelfValue>.1</SelfValue>
 		<IconName>a_Signet_Taunt</IconName>
@@ -1375,7 +1365,7 @@
 	<PowerModType>
 		<ModName>Taunt2</ModName>
 		<ModID>142</ModID>
-		<DisplayName>Taunt</DisplayName>
+		<DisplayName>Taunter</DisplayName>
 		<ModType>WTF</ModType>
 		<SelfValue>.2</SelfValue>
 		<IconName>a_Signet_Taunt</IconName>
@@ -1383,7 +1373,7 @@
 	<PowerModType>
 		<ModName>Taunt3</ModName>
 		<ModID>143</ModID>
-		<DisplayName>Taunt</DisplayName>
+		<DisplayName>Taunter</DisplayName>
 		<ModType>WTF</ModType>
 		<SelfValue>.35</SelfValue>
 		<IconName>a_Signet_Taunt</IconName>
@@ -1391,7 +1381,7 @@
 	<PowerModType>
 		<ModName>Taunt4</ModName>
 		<ModID>144</ModID>
-		<DisplayName>Taunt</DisplayName>
+		<DisplayName>Taunter</DisplayName>
 		<ModType>WTF</ModType>
 		<SelfValue>.50</SelfValue>
 		<IconName>a_Signet_Taunt</IconName>
@@ -1399,7 +1389,7 @@
 	<PowerModType>
 		<ModName>Taunt5</ModName>
 		<ModID>145</ModID>
-		<DisplayName>Taunt</DisplayName>
+		<DisplayName>Taunter</DisplayName>
 		<ModType>WTF</ModType>
 		<SelfValue>.75</SelfValue>
 		<IconName>a_Signet_Taunt</IconName>
@@ -1592,9 +1582,9 @@
 		<ModName>Dominate1</ModName>
 		<ModID>166</ModID>
 		<DisplayName>Dominate</DisplayName>
-		<Description>Gain a Critical Chance bonus vs. Staggered and Stunned targets@Critical Chance Bonus:, 0.15%, 0.3%, 0.45%, 0.75%, 1.2%</Description>
+		<Description>Deal more damage to Demoralized, Staggered, and Stunned targets@Damage Bonus:, 5%, 10%, 15%, 20%, 25%</Description>
 		<ModType>WTF</ModType>
-		<SelfValue>.01</SelfValue>
+		<SelfValue>.05</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1602,7 +1592,7 @@
 		<ModID>167</ModID>
 		<DisplayName>Dominate</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.02</SelfValue>
+		<SelfValue>.1</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1610,7 +1600,7 @@
 		<ModID>168</ModID>
 		<DisplayName>Dominate</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.03</SelfValue>
+		<SelfValue>.15</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1618,7 +1608,7 @@
 		<ModID>169</ModID>
 		<DisplayName>Dominate</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.05</SelfValue>
+		<SelfValue>.2</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -1626,14 +1616,14 @@
 		<ModID>170</ModID>
 		<DisplayName>Dominate</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.08</SelfValue>
+		<SelfValue>.25</SelfValue>
 		<IconName>a_Signet_Critical05</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RapidRecovery1</ModName>
 		<ModID>171</ModID>
 		<DisplayName>Rapid Recovery</DisplayName>
-		<Description>Increases Tenacity@Tenacity:, +1%, +2%, +4%, +7%, 10%</Description>
+		<Description>Increases Tenacity@Tenacity:, +1%, +3%, +5%, +7%, +10%</Description>
 		<ModType>Stat</ModType>
 		<IconName>a_Signet_RapidRecover</IconName>
 		<StatProperty>CCReduction</StatProperty>
@@ -1646,7 +1636,7 @@
 		<ModType>Stat</ModType>
 		<IconName>a_Signet_RapidRecover</IconName>
 		<StatProperty>CCReduction</StatProperty>
-		<StatValue>.02</StatValue>
+		<StatValue>.03</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RapidRecovery3</ModName>
@@ -1655,7 +1645,7 @@
 		<ModType>Stat</ModType>
 		<IconName>a_Signet_RapidRecover</IconName>
 		<StatProperty>CCReduction</StatProperty>
-		<StatValue>.04</StatValue>
+		<StatValue>.05</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RapidRecovery4</ModName>
@@ -2639,7 +2629,7 @@
 		<ModName>InsidiousPoison1</ModName>
 		<ModID>276</ModID>
 		<DisplayName>Insidious Poison</DisplayName>
-		<Description>Increases Poison Damage vs. Bound targets@Poison vs Bound:, +2%, +6%, +13%, +23%, +35%</Description>
+		<Description>Increases Poison Damage vs. Bound targets@Poison vs Bound:, +2%, +5%, +11%, +19%, +28%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
@@ -2653,7 +2643,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
-		<BuffValue>.06</BuffValue>
+		<BuffValue>.05</BuffValue>
 		<IconName>a_Signet_InsidiousPoison</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2663,7 +2653,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
-		<BuffValue>.13</BuffValue>
+		<BuffValue>.11</BuffValue>
 		<IconName>a_Signet_InsidiousPoison</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2673,7 +2663,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
-		<BuffValue>.23</BuffValue>
+		<BuffValue>.19</BuffValue>
 		<IconName>a_Signet_InsidiousPoison</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2683,7 +2673,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
-		<BuffValue>.35</BuffValue>
+		<BuffValue>.28</BuffValue>
 		<IconName>a_Signet_InsidiousPoison</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3051,7 +3041,7 @@
 		<ModName>BlindTime1</ModName>
 		<ModID>321</ModID>
 		<DisplayName>Daybreak</DisplayName>
-		<Description>Increases Blinded Duration@Duration (seconds):, +.1, +.2, +.3, +.5, +.75</Description>
+		<Description>Increases Blinded Duration@Duration (seconds):, +.1, +.25, +.5, +.75, +1</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>Duration</BuffProperty>
@@ -3065,7 +3055,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>200</BuffValue>
+		<BuffValue>250</BuffValue>
 		<IconName>a_Signet_BlindTime</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3075,7 +3065,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>300</BuffValue>
+		<BuffValue>500</BuffValue>
 		<IconName>a_Signet_BlindTime</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3085,7 +3075,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>500</BuffValue>
+		<BuffValue>750</BuffValue>
 		<IconName>a_Signet_BlindTime</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3095,128 +3085,120 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>750</BuffValue>
+		<BuffValue>1000</BuffValue>
 		<IconName>a_Signet_BlindTime</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Fortify1</ModName>
 		<ModID>326</ModID>
-		<DisplayName>Fortify</DisplayName>
-		<Description>Heal targets gain Defense Bonus for 1 sec@Defense Bonus:, .5%, 1%, 2%, 3%, 6%</Description>
+		<DisplayName>Smiting Flames</DisplayName>
+		<Description>Increases Holy Fire Damage@Holy Fire Damage:, +3%, +5%, +10%, +13%, +15%</Description>
 		<ModType>Buff</ModType>
-		<BuffName>Fortify</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.005,.005</BuffValue>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.03</BuffValue>
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Fortify2</ModName>
 		<ModID>327</ModID>
-		<DisplayName>Fortify</DisplayName>
+		<DisplayName>Smiting Flames</DisplayName>
 		<ModType>Buff</ModType>
-		<BuffName>Fortify</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.01,.01</BuffValue>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.05</BuffValue>
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Fortify3</ModName>
 		<ModID>328</ModID>
-		<DisplayName>Fortify</DisplayName>
+		<DisplayName>Smiting Flames</DisplayName>
 		<ModType>Buff</ModType>
-		<BuffName>Fortify</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.02,.02</BuffValue>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.1</BuffValue>
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Fortify4</ModName>
 		<ModID>329</ModID>
-		<DisplayName>Fortify</DisplayName>
+		<DisplayName>Smiting Flames</DisplayName>
 		<ModType>Buff</ModType>
-		<BuffName>Fortify</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.03,.03</BuffValue>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.13</BuffValue>
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Fortify5</ModName>
 		<ModID>330</ModID>
-		<DisplayName>Fortify</DisplayName>
+		<DisplayName>Smiting Flames</DisplayName>
 		<ModType>Buff</ModType>
-		<BuffName>Fortify</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.06,.06</BuffValue>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>DoTDamage</BuffProperty>
+		<BuffValue>.15</BuffValue>
 		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ComboFortify</ModName>
 		<ModID>893</ModID>
-		<ModType>Power</ModType>
-		<PowerName>TouchHeal,GroupHoT,SecondWind,FountainOfLife,VerdictHeal,Sanctum,CleansingLight</PowerName>
-		<PowerProperty>AddTargetBuff</PowerProperty>
-		<PowerValue>Append:Fortify</PowerValue>
+		<ModType>Other</ModType>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Sanctify1</ModName>
 		<ModID>331</ModID>
 		<DisplayName>Sanctify</DisplayName>
-		<Description>Sacred gives Defense Bonus@Defense Bonus:, .5%, 1%, 1.75%, 2.5%, 4%</Description>
-		<ModType>Buff</ModType>
-		<BuffName>Sacred</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.005,.005</BuffValue>
+		<Description>Add a percent of your Expertise to your Defense@Defense (% Expertise):, +1%, +2%, +3%, +4%, +5%</Description>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_Sanctify</IconName>
+		<StatProperty>ArmorFromWis</StatProperty>
+		<StatValue>.01</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Sanctify2</ModName>
 		<ModID>332</ModID>
 		<DisplayName>Sanctify</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>Sacred</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.01,.01</BuffValue>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_Sanctify</IconName>
+		<StatProperty>ArmorFromWis</StatProperty>
+		<StatValue>.02</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Sanctify3</ModName>
 		<ModID>333</ModID>
 		<DisplayName>Sanctify</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>Sacred</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.0175,.0175</BuffValue>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_Sanctify</IconName>
+		<StatProperty>ArmorFromWis</StatProperty>
+		<StatValue>.03</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Sanctify4</ModName>
 		<ModID>334</ModID>
 		<DisplayName>Sanctify</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>Sacred</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.025,.025</BuffValue>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_Sanctify</IconName>
+		<StatProperty>ArmorFromWis</StatProperty>
+		<StatValue>.04</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>Sanctify5</ModName>
 		<ModID>335</ModID>
 		<DisplayName>Sanctify</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>Sacred</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.04,.04</BuffValue>
+		<ModType>Stat</ModType>
 		<IconName>a_Signet_Sanctify</IconName>
+		<StatProperty>ArmorFromWis</StatProperty>
+		<StatValue>.05</StatValue>
 	</PowerModType>
 	<PowerModType>
 		<ModName>BlindPct1</ModName>
 		<ModID>336</ModID>
 		<DisplayName>Blinding Light</DisplayName>
-		<Description>Increases Blinded Miss Chance@Miss Chance:, +1%, +2%, +3%, +4%, +5%</Description>
+		<Description>Increases Blinded Miss Chance@Miss Chance:, +2%, +4%, +6%, +8%, +10%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>TargetDodgeChance</BuffProperty>
-		<BuffValue>.01</BuffValue>
+		<BuffValue>.02</BuffValue>
 		<IconName>a_Signet_BlindPct</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3226,7 +3208,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>TargetDodgeChance</BuffProperty>
-		<BuffValue>.02</BuffValue>
+		<BuffValue>.04</BuffValue>
 		<IconName>a_Signet_BlindPct</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3236,7 +3218,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>TargetDodgeChance</BuffProperty>
-		<BuffValue>.03</BuffValue>
+		<BuffValue>.06</BuffValue>
 		<IconName>a_Signet_BlindPct</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3246,7 +3228,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>TargetDodgeChance</BuffProperty>
-		<BuffValue>.04</BuffValue>
+		<BuffValue>.08</BuffValue>
 		<IconName>a_Signet_BlindPct</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3256,16 +3238,16 @@
 		<ModType>Buff</ModType>
 		<BuffName>Blinded</BuffName>
 		<BuffProperty>TargetDodgeChance</BuffProperty>
-		<BuffValue>.05</BuffValue>
+		<BuffValue>.1</BuffValue>
 		<IconName>a_Signet_BlindPct</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ClutchHeal1</ModName>
 		<ModID>341</ModID>
 		<DisplayName>Clutch Heal</DisplayName>
-		<Description>Increased Healing on targets with less than 20% Health@Healing Boost:, 1%, 2%, 3%, 4%, 5%</Description>
+		<Description>Increased Healing on targets with less than 30% Health@Healing Boost:, 2%, 4%, 6%, 8%, 10%</Description>
 		<ModType>WTF</ModType>
-		<SelfValue>.01</SelfValue>
+		<SelfValue>.02</SelfValue>
 		<IconName>a_Signet_ClutchHeal</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3273,7 +3255,7 @@
 		<ModID>342</ModID>
 		<DisplayName>Clutch Heal</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.02</SelfValue>
+		<SelfValue>.04</SelfValue>
 		<IconName>a_Signet_ClutchHeal</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3281,7 +3263,7 @@
 		<ModID>343</ModID>
 		<DisplayName>Clutch Heal</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.03</SelfValue>
+		<SelfValue>.06</SelfValue>
 		<IconName>a_Signet_ClutchHeal</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3289,7 +3271,7 @@
 		<ModID>344</ModID>
 		<DisplayName>Clutch Heal</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.04</SelfValue>
+		<SelfValue>.08</SelfValue>
 		<IconName>a_Signet_ClutchHeal</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -3297,7 +3279,7 @@
 		<ModID>345</ModID>
 		<DisplayName>Clutch Heal</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.05</SelfValue>
+		<SelfValue>.1</SelfValue>
 		<IconName>a_Signet_ClutchHeal</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -8422,6 +8404,67 @@
 		<IconName>a_Signet_Expertise03</IconName>
 		<StatProperty>Magic</StatProperty>
 		<StatValue>315</StatValue>
+	</PowerModType>
+	<PowerModType>
+		<ModName>CrusadingFlames1</ModName>
+		<ModID>895</ModID>
+		<DisplayName>Crusading Flames</DisplayName>
+		<Description>Increases maximum number of Holy Fire Stacks@Holy Fire Stacks:, +1, +2, +3, +4, +5</Description>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>StackCount</BuffProperty>
+		<BuffValue>1</BuffValue>
+		<IconName>a_Signet_RapidRecover</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>CrusadingFlames2</ModName>
+		<ModID>896</ModID>
+		<DisplayName>Crusading Flames</DisplayName>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>StackCount</BuffProperty>
+		<BuffValue>2</BuffValue>
+		<IconName>a_Signet_RapidRecover</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>CrusadingFlames3</ModName>
+		<ModID>897</ModID>
+		<DisplayName>Crusading Flames</DisplayName>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>StackCount</BuffProperty>
+		<BuffValue>3</BuffValue>
+		<IconName>a_Signet_RapidRecover</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>CrusadingFlames4</ModName>
+		<ModID>898</ModID>
+		<DisplayName>Crusading Flames</DisplayName>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>StackCount</BuffProperty>
+		<BuffValue>4</BuffValue>
+		<IconName>a_Signet_RapidRecover</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>CrusadingFlames5</ModName>
+		<ModID>899</ModID>
+		<DisplayName>Crusading Flames</DisplayName>
+		<ModType>Buff</ModType>
+		<BuffName>HolyFire1,HolyFire2,HolyFire3,HolyFire4,HolyFire5</BuffName>
+		<BuffProperty>StackCount</BuffProperty>
+		<BuffValue>5</BuffValue>
+		<IconName>a_Signet_RapidRecover</IconName>
+	</PowerModType>
+	<PowerModType>
+		<ModName>EmpyreanExpertise</ModName>
+		<ModID>900</ModID>
+		<DisplayName>Empyrean Aura</DisplayName>
+		<ModType>Buff</ModType>
+		<BuffName>LeoneanAura1,LeoneanAura2,LeoneanAura3,LeoneanAura4,LeoneanAura5,LeoneanAura6,LeoneanAura7,LeoneanAura8,LeoneanAura9,LeoneanAura10</BuffName>
+		<BuffProperty>Duration</BuffProperty>
+		<BuffValue>0</BuffValue>
+		<IconName>a_Signet_Fortify</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneMysticRogueSword</ModName>

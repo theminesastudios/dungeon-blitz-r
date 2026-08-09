@@ -7,6 +7,11 @@ const tests = fs.readdirSync(testDir)
     .filter((name) => /_regression\.(ts|js)$/.test(name))
     .sort();
 
+// Run every test even after one fails. Bailing on the first failure meant a single known
+// red test hid everything sorting after it -- the suite still exits non-zero, it just says
+// what else broke first.
+const failed = [];
+
 for (const test of tests) {
     const testPath = path.join(testDir, test);
     const args = test.endsWith('.ts')
@@ -22,8 +27,16 @@ for (const test of tests) {
         stdio: 'inherit'
     });
     if (result.status !== 0) {
-        process.exit(result.status || 1);
+        failed.push(test);
     }
+}
+
+if (failed.length > 0) {
+    console.error(`[regression] ${failed.length}/${tests.length} FAILED:`);
+    for (const test of failed) {
+        console.error(`[regression]   ${test}`);
+    }
+    process.exit(1);
 }
 
 console.log(`[regression] ${tests.length} tests passed`);

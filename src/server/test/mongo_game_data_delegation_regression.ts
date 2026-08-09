@@ -41,6 +41,16 @@ class MemoryGameDataAdapter implements GameDataPersistenceAdapter {
     async loadAllCharacterRecords(): Promise<UserSaveData[]> {
         return Array.from(this.saves, ([user_id, characters]) => ({ user_id, characters }));
     }
+    async loadCharacterRecordsByGuild(guildName: string): Promise<UserSaveData[]> {
+        const wanted = guildName.trim().replace(/\s+/g, ' ').toLowerCase();
+        const records = await this.loadAllCharacterRecords();
+        return records.filter((save) => save.characters.some((character) =>
+            String((character.guild as Record<string, unknown> | undefined)?.name ?? '')
+                .trim()
+                .replace(/\s+/g, ' ')
+                .toLowerCase() === wanted
+        ));
+    }
     async saveCharacters(userId: number, characters: Character[]): Promise<void> {
         this.saves.set(userId, structuredClone(characters));
     }

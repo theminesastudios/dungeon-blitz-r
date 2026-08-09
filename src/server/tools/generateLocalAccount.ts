@@ -1,8 +1,11 @@
+import * as fs from 'fs/promises';
+import * as path from 'path';
 import { hashPlaintextPasswordForClient } from '../auth/PasswordAuth';
 
 async function main(): Promise<void> {
     const email = process.argv[2]?.trim().toLowerCase();
     const password = process.argv[3];
+    const outPath = path.resolve(process.argv[4]?.trim() || 'local-account.json');
 
     if (!email || !email.includes('@')) {
         throw new Error('Provide a valid email address.');
@@ -20,7 +23,10 @@ async function main(): Promise<void> {
         ...passwordRecord
     };
 
-    console.log(JSON.stringify(account, null, 2));
+    // Written to a file rather than stdout: the record carries the scrypt salt and
+    // hash, and stdout ends up in terminal scrollback and CI logs.
+    await fs.writeFile(outPath, JSON.stringify(account, null, 2), { mode: 0o600 });
+    console.log(`Account record for ${email} written to ${outPath}`);
 }
 
 main().catch((error: unknown) => {

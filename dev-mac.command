@@ -259,7 +259,7 @@ fi
 export DISCORD_SOCIAL_APP_ID="1447954255452311695"
 export DISCORD_SOCIAL_DEVICE_FLOW="false"
 
-echo "Starting server + Discord RPC (npm run dev:with-discord)..."
+echo "Starting server + Discord RPC (npm run dev)..."
 echo "Discord channel bridge enabled: $DISCORD_SOCIAL_BRIDGE_ENABLED"
 echo "Discord Social SDK native bridge enabled: $DISCORD_SOCIAL_NATIVE_BRIDGE_ENABLED"
 echo "Discord chat relay mode: $DISCORD_SOCIAL_CHAT_RELAY_MODE"
@@ -271,7 +271,7 @@ echo
 open_flashbrowser_when_ready "$DEV_URL" "$FLASH_BROWSER_APP_NAME" "$FLASH_BROWSER_OPEN_ATTEMPTS" "$FLASH_BROWSER_OPEN_DELAY_SECONDS" &
 FLASH_BROWSER_WATCHER_PID=$!
 set +e
-npm run dev:with-discord
+npm run dev
 EXIT_CODE=$?
 set -e
 

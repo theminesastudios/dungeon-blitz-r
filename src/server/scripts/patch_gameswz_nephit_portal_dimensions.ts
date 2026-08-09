@@ -5,7 +5,7 @@ import { ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils
 const ROOT = path.resolve(__dirname, "..", "..");
 const ENT_XML = path.join(ROOT, "client", "content", "xml", "EntTypes.xml");
 const ENT_JSON = path.join(ROOT, "server", "data", "EntTypes.json");
-const LOGIN_SWZ = path.join(ROOT, "client", "content", "localhost", "p", "cbp", "Login.swz");
+const LOGIN_SWZ = path.join(ROOT, "client", "content", "localhost", "p", "cbq", "Login.swz");
 
 const TARGET_PORTALS = ["NephitPortal", "NephitPortalHard"];
 const EXPECTED_WIDTH = "200";

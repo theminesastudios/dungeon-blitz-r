@@ -81,7 +81,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>-0.5</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***CanavarTetik***</DisplayName>
+		<DisplayName>***MonsterProc***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetFeet</HitAnimSource>
@@ -102,7 +102,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>-0.5</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***CanavarTetik***</DisplayName>
+		<DisplayName>***MonsterProc***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -119,7 +119,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -144,7 +144,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -172,7 +172,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.62</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -199,7 +199,7 @@
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>GoblinMeleeS3</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[350]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -224,7 +224,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.6</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[350]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -249,7 +249,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -274,7 +274,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.73</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -299,7 +299,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -329,7 +329,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>-0.75</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetFeet</HitAnimSource>
@@ -372,7 +372,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>GoblinRushClose</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>snd_pwr_aoe_magic_07</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -396,7 +396,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>a_Sound_Cleave</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -423,7 +423,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>a_Sound_Cleave</FireSound>
 		<FireGfx/>
@@ -448,7 +448,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[1300]snd_pwr_aoe_magic_07</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -473,7 +473,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[1800]NPC_Boss_Kraken_Smash</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -492,7 +492,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.5</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[1800]NPC_Boss_Kraken_Smash</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -517,7 +517,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Grunt_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_melee_npclarge_01|snd_pwr_melee_npclarge_02|snd_pwr_melee_npclarge_03</FireSound>
@@ -543,7 +543,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Grunt_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_melee_npclarge_01|snd_pwr_melee_npclarge_02|snd_pwr_melee_npclarge_03</FireSound>
@@ -569,7 +569,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Grunt_02</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_melee_npclarge_01|snd_pwr_melee_npclarge_02|snd_pwr_melee_npclarge_03</FireSound>
@@ -595,7 +595,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Grunt_02</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_melee_npclarge_01|snd_pwr_melee_npclarge_02|snd_pwr_melee_npclarge_03</FireSound>
@@ -622,7 +622,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Activate_01|SND_NPC_Ghosts_Activate_02|SND_NPC_Ghosts_Activate_03[900]snd_pwr_aoe_magic_07</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -648,7 +648,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Activate_01|SND_NPC_Ghosts_Activate_02|SND_NPC_Ghosts_Activate_03[900]snd_pwr_aoe_magic_07</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -674,7 +674,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Activate_01|SND_NPC_Ghosts_Activate_02|SND_NPC_Ghosts_Activate_03[900]snd_pwr_aoe_magic_07</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -700,7 +700,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Activate_01|SND_NPC_Ghosts_Activate_02|SND_NPC_Ghosts_Activate_03[900]snd_pwr_aoe_magic_07</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -726,7 +726,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Activate_01|SND_NPC_Ghosts_Activate_02|SND_NPC_Ghosts_Activate_03[900]snd_pwr_aoe_magic_07</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -753,7 +753,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Ice</DamageType>
 		<AddTargetBuff>IceCasket</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Activate_01|SND_NPC_Ghosts_Activate_02|SND_NPC_Ghosts_Activate_03[900]snd_pwr_aoe_magic_07</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -777,7 +777,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Activate_01|SND_NPC_Ghosts_Activate_02|SND_NPC_Ghosts_Activate_03[900]snd_pwr_aoe_magic_07</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -802,7 +802,7 @@
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<ProcName>ProcAlwaysHeal</ProcName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Grunt_02</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_melee_npclarge_01|snd_pwr_melee_npclarge_02|snd_pwr_melee_npclarge_03</FireSound>
@@ -828,7 +828,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.5</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Activate_01|SND_NPC_Ghosts_Activate_02|SND_NPC_Ghosts_Activate_03[900]snd_pwr_aoe_magic_07</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -858,7 +858,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.5</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_Ghosts_Activate_01|SND_NPC_Ghosts_Activate_02|SND_NPC_Ghosts_Activate_03[900]snd_pwr_aoe_magic_07</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -891,7 +891,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>GhostChargeClose</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>snd_pwr_aoe_magic_07</FireSound>
 		<FireGfx/>
@@ -910,7 +910,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>DeathNova</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -930,7 +930,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>GhostQuickChargeClose</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>snd_pwr_aoe_magic_07</FireSound>
 		<FireGfx/>
@@ -948,7 +948,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -965,7 +965,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>4</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitSound>SND_NPC_GeneralMonster_Melee_Impact_01|SND_NPC_GeneralMonster_Melee_Impact_02|SND_NPC_GeneralMonster_Melee_Impact_03</HitSound>
@@ -989,7 +989,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Lightning</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
 			<AnimFile>Animation_Nephit.swf</AnimFile>
@@ -1018,7 +1018,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1043,7 +1043,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1069,7 +1069,7 @@
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>SkeletonFinisher</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1094,7 +1094,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1119,7 +1119,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1145,7 +1145,7 @@
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>SkeletonFinisherR</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1170,7 +1170,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1197,7 +1197,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_Activate_01|SND_NPC_SkeletonBig_Activate_02|SND_NPC_SkeletonBig_Activate_03[200]snd_pwr_paladin_cleave</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1222,7 +1222,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_Activate_01|SND_NPC_SkeletonBig_Activate_02|SND_NPC_SkeletonBig_Activate_03,snd_pwr_paladin_smash_back[450]snd_pwr_paladin_smash_swing_01[550]snd_pwr_paladin_smash_swing_02</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1249,7 +1249,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.49,0.65,0.81</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_Activate_01|SND_NPC_SkeletonBig_Activate_02|SND_NPC_SkeletonBig_Activate_03[250]snd_pwr_paladin_skewer_sword_01[300]snd_pwr_paladin_skewer_sword_02[450]snd_pwr_paladin_skewer_sword_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1274,7 +1274,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.6,1.0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_Activate_01|SND_NPC_SkeletonBig_Activate_02|SND_NPC_SkeletonBig_Activate_03,snd_pwr_paladin_downwardstrike</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1299,7 +1299,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_Activate_01|SND_NPC_SkeletonBig_Activate_02|SND_NPC_SkeletonBig_Activate_03,snd_pwr_rogue_openStun_swordUp[480]snd_pwr_rogue_openStun_swordDown</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1325,7 +1325,7 @@
 		<BaseDamageMult>1.6</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>HeavyStagger</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_shieldstun,SND_NPC_SkeletonBig_Activate_02</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1350,7 +1350,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_Activate_01|SND_NPC_SkeletonBig_Activate_02|SND_NPC_SkeletonBig_Activate_03,snd_pwr_rogue_openDot_attack_01[230]snd_pwr_rogue_openDot_attack_02[330]snd_pwr_rogue_openDot_attack_03[260]snd_pwr_rogue_openDot_attack_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1375,7 +1375,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.65</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_Activate_01|SND_NPC_SkeletonBig_Activate_02|SND_NPC_SkeletonBig_Activate_03[100]snd_pwr_rogue_openDamage_sword_01[270]snd_pwr_rogue_openDamage_sword_02[300]snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1401,7 +1401,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>CritterStealth</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -1428,7 +1428,7 @@
 		<BaseDamageMult>0.95</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>RootStrikeMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_rootstrike,snd_pwr_rogue_rootstrike_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -1455,7 +1455,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.57</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_rogue_steelCyclone_sword_01[300]snd_pwr_rogue_steelCyclone_sword_02[300]snd_pwr_rogue_steelCyclone_sword_03[280]snd_pwr_rogue_steelCyclone_sword_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1481,7 +1481,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>MobPoisonStrike</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_openDot_attack_01[230]snd_pwr_rogue_openDot_attack_02[330]snd_pwr_rogue_openDot_attack_03[260]snd_pwr_rogue_openDot_attack_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1507,7 +1507,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>EnfeebleMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_enfeeble_start[550]snd_pwr_rogue_enfeeble_end</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1535,7 +1535,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>CHR_Executioner_ShadowRend</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1560,7 +1560,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1584,7 +1584,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Ice</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_iceball_imp_01</FireSound>
@@ -1615,7 +1615,7 @@
 		<BaseDamageMult>0.95</BaseDamageMult>
 		<DamageType>Ice</DamageType>
 		<AddTargetBuff>NovaMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_mage_iceNova</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -1638,7 +1638,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -1668,7 +1668,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_Activate_01|SND_NPC_SkeletonBig_Activate_02|SND_NPC_SkeletonBig_Activate_03,snd_pwr_aoe_fire</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -1691,7 +1691,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Nature</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -1722,7 +1722,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Nature</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_mage_poisoncloud_staffraise,SND_NPC_SkeletonBig_Activate_01|SND_NPC_SkeletonBig_Activate_02|SND_NPC_SkeletonBig_Activate_03[520]snd_pwr_mage_poisoncloud_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -1749,7 +1749,7 @@
 		<SpawnedMonsters>GrayGhostSummon</SpawnedMonsters>
 		<SpawnLimit>3</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[1300]snd_pwr_aoe_magic_07</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -1774,7 +1774,7 @@
 		<SpawnedMonsters>RedGhostSummon</SpawnedMonsters>
 		<SpawnLimit>2</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[1300]snd_pwr_aoe_magic_07</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -1799,7 +1799,7 @@
 		<SpawnedMonsters>RedGhostKnightSummon</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[1300]snd_pwr_aoe_magic_07</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -1824,7 +1824,7 @@
 		<SpawnedMonsters>Wraith</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[1300]snd_pwr_aoe_magic_07</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -1849,7 +1849,7 @@
 		<SpawnedMonsters>FireBomb</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>15000</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Socket</CastAnimSource>
 		<CastGfx/>
@@ -1869,7 +1869,7 @@
 		<BaseDamageMult>-0.5</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>MobTankBuff</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_defenceBuff_start[270]SND_NPC_SkeletonBig_Activate_01</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -1893,7 +1893,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>-0.75</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_touchHeal</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -1923,7 +1923,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1948,7 +1948,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1974,7 +1974,7 @@
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>LizardFinisher</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -1999,7 +1999,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -2026,7 +2026,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_Activate_01|SND_NPC_LizardBig_Activate_02|SND_NPC_LizardBig_Activate_03[200]snd_pwr_paladin_cleave</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -2050,7 +2050,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.6,1.0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_Activate_01|SND_NPC_LizardBig_Activate_02|SND_NPC_LizardBig_Activate_03,snd_pwr_paladin_downwardstrike</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -2076,7 +2076,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_Activate_01|SND_NPC_LizardBig_Activate_02|SND_NPC_LizardBig_Activate_03,snd_pwr_paladin_smash</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -2103,7 +2103,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.49,0.65,0.81</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_Activate_01|SND_NPC_LizardBig_Activate_02|SND_NPC_LizardBig_Activate_03[250]snd_pwr_paladin_skewer_sword_01[300]snd_pwr_paladin_skewer_sword_02[450]snd_pwr_paladin_skewer_sword_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -2128,7 +2128,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>LizardFlagBerserk</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -2145,7 +2145,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>LizardFlagSpeed</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -2162,7 +2162,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>LizardFlagArmor</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -2180,7 +2180,7 @@
 		<BaseDamageMult>1.6</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>HeavyStagger</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_shieldstun,SND_NPC_LizardBig_Activate_02</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -2205,7 +2205,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>-0.75</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_touchHeal</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -2236,7 +2236,7 @@
 		<BaseDamageMult>-0.5</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>MobTankBuff</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_defenceBuff_start[270]SND_NPC_LizardBig_Activate_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -2260,7 +2260,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_DevourerSmall_Grunt_01|SND_NPC_DevourerSmall_Grunt_02|SND_NPC_DevourerSmall_Grunt_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -2285,7 +2285,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_DevourerBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -2318,7 +2318,7 @@
 		<BaseDamageMult>0.95</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>RootStrikeMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_DevourerBig_Activate_01|SND_NPC_DevourerBig_Activate_02|SND_NPC_DevourerBig_Activate_03[1800]snd_pwr_rogue_rootstrike,snd_pwr_rogue_rootstrike_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -2342,7 +2342,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Nature</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_DevourerBig_Activate_01|SND_NPC_DevourerBig_Activate_02|SND_NPC_DevourerBig_Activate_03[520]snd_pwr_mage_poisoncloud_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -2368,7 +2368,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>Toxin</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_DevourerSmall_Grunt_01|SND_NPC_DevourerSmall_Grunt_02|SND_NPC_DevourerSmall_Grunt_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -2394,7 +2394,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>Toxin</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_DevourerBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -2427,7 +2427,7 @@
 		<BaseDamageMult>0.95</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>StrangleRoot</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_DevourerBig_Activate_01|SND_NPC_DevourerBig_Activate_02|SND_NPC_DevourerBig_Activate_03[1800]snd_pwr_rogue_rootstrike,snd_pwr_rogue_rootstrike_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -2452,7 +2452,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>Toxin</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_DevourerBig_Activate_01|SND_NPC_DevourerBig_Activate_02|SND_NPC_DevourerBig_Activate_03[520]snd_pwr_mage_poisoncloud_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -2478,7 +2478,7 @@
 		<DamageType>Nature</DamageType>
 		<SpawnedMonsters>DevourerHeavy</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -2496,7 +2496,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>DevourerRoot</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_DevourerBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -2526,7 +2526,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Energy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_PsychophageSmall_EyeBolt</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>
@@ -2555,7 +2555,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Energy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_PsychophageSmall_EyeBolt</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>
@@ -2585,7 +2585,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Energy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_PsychophageSmall_EyeBolt</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>
@@ -2615,7 +2615,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Energy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_PsychophageSmall_EyeBolt</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>
@@ -2645,7 +2645,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Energy</DamageType>
 		<AddTargetBuff>StaggerMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_PsychophageSmall_EyeBolt</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>
@@ -2677,7 +2677,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ProcName>ProcAlwaysHealNoFX</ProcName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>
 		<FireGfx>
@@ -2707,7 +2707,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Energy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_PsychophageSmall_EyeBolt</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>
@@ -2736,7 +2736,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Energy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_PsychophageSmall_EyeBolt</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>
@@ -2765,7 +2765,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Energy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_PsychophageSmall_EyeBolt</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>
@@ -2794,7 +2794,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Energy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_PsychophageSmall_EyeBolt</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>
@@ -2823,7 +2823,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -2847,7 +2847,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_RockHulk_Grunt_01|NPC_Boss_RockHulk_Grunt_02|NPC_Boss_RockHulk_Grunt_03</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp,NPC_Minion_RockHulk_Grunt_01</FireSound>
@@ -2877,7 +2877,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.65</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_RockHulk_Activate_01|NPC_Boss_RockHulk_Activate_02|NPC_Boss_RockHulk_Activate_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -2902,7 +2902,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[350]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -2927,7 +2927,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -2957,7 +2957,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -2983,7 +2983,7 @@
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>HumanFinisherR</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3008,7 +3008,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3033,7 +3033,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3059,7 +3059,7 @@
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>HumanFinisher</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3084,7 +3084,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3109,7 +3109,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3133,7 +3133,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -3160,7 +3160,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -3188,7 +3188,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Poison</DamageType>
 		<AddTargetBuff>WeakenToxin</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -3216,7 +3216,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Ice</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_iceball_imp_01</FireSound>
@@ -3244,7 +3244,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Nature</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -3275,7 +3275,7 @@
 		<BaseDamageMult>1.15</BaseDamageMult>
 		<DamageType>Fire</DamageType>
 		<AddTargetBuff>BurnedMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -3306,7 +3306,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.49,0.65,0.81</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_paladin_skewer_sword_01,snd_pwr_paladin_skewer_vox_01[300]snd_pwr_paladin_skewer_sword_02,snd_pwr_paladin_skewer_vox_02[450]snd_pwr_paladin_skewer_sword_03,snd_pwr_paladin_skewer_vox_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3333,7 +3333,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[200]snd_pwr_paladin_cleave</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3357,7 +3357,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_smash</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3382,7 +3382,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.6,1.0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_downwardstrike</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3407,7 +3407,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>-0.75</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_touchHeal</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -3438,7 +3438,7 @@
 		<BaseDamageMult>-0.5</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>MobTankBuff</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_defenceBuff_start[270]snd_pwr_paladin_defenceBuff_liony_vox$</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -3463,7 +3463,7 @@
 		<BaseDamageMult>1.6</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>HeavyStagger</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_shieldstun,snd_pwr_paladin_shieldstun_vox$</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3488,7 +3488,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_openStun_swordUp[480]snd_pwr_rogue_openStun_swordDown</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3513,7 +3513,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_openDot_attack_01[230]snd_pwr_rogue_openDot_attack_02[330]snd_pwr_rogue_openDot_attack_03[260]snd_pwr_rogue_openDot_attack_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3538,7 +3538,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.65</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[100]snd_pwr_rogue_openDamage_sword_01[270]snd_pwr_rogue_openDamage_sword_02[300]snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3564,7 +3564,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>CritterStealth</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -3589,7 +3589,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>MobPoisonStrike</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_openDot_attack_01[230]snd_pwr_rogue_openDot_attack_02[330]snd_pwr_rogue_openDot_attack_03[260]snd_pwr_rogue_openDot_attack_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3615,7 +3615,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>EnfeebleMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_enfeeble_start[550]snd_pwr_rogue_enfeeble_end</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3641,7 +3641,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_hawkAttack_new_jump[600]snd_pwr_rogue_hawkAttack_new_attack</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3666,7 +3666,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_enfeeble_start[550]snd_pwr_rogue_enfeeble_end</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3694,7 +3694,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.57</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_rogue_steelCyclone_sword_01[300]snd_pwr_rogue_steelCyclone_sword_02[300]snd_pwr_rogue_steelCyclone_sword_03[280]snd_pwr_rogue_steelCyclone_sword_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3722,7 +3722,7 @@
 		<BaseDamageMult>0.95</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>RootStrikeMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_rootstrike,snd_pwr_rogue_rootstrike_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -3748,7 +3748,7 @@
 		<BaseDamageMult>0.95</BaseDamageMult>
 		<DamageType>Ice</DamageType>
 		<AddTargetBuff>NovaMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_mage_iceNova</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -3773,7 +3773,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -3799,7 +3799,7 @@
 		<BaseDamageMult>0.95</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>RootStrikeMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[660]snd_pwr_rogue_rootstrike,snd_pwr_rogue_rootstrike_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -3823,7 +3823,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Nature</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_mage_poisoncloud_staffraise,snd_pwr_mage_poisoncloud_vox[520]snd_pwr_mage_poisoncloud_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -3848,7 +3848,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>snd_pwr_aoe_magic_07</FireSound>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -3874,7 +3874,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -3899,7 +3899,7 @@
 		<BaseDamageMult>-0.75</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>CritterGroupHoT</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_grouphot</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3917,7 +3917,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[600]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3942,7 +3942,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[600]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3967,7 +3967,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[600]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -3993,7 +3993,7 @@
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>AbomWave</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Abom_Activate_01|NPC_Boss_Abom_Activate_02|NPC_Boss_Abom_Activate_03[300]snd_pwr_melee_paladin_01|snd_pwr_melee_paladin_02|snd_pwr_melee_paladin_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4017,7 +4017,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Nature</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_mage_poisoncloud_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -4042,7 +4042,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Abom_Activate_01|NPC_Boss_Abom_Activate_02|NPC_Boss_Abom_Activate_03[300]snd_pwr_melee_paladin_01|snd_pwr_melee_paladin_02|snd_pwr_melee_paladin_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4067,7 +4067,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4092,7 +4092,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[500]SND_NPC_SpiderBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -4125,7 +4125,7 @@
 		<SpawnedMonsters>AbominationMini,AbominationMini2</SpawnedMonsters>
 		<SpawnLimit>3</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -4151,7 +4151,7 @@
 		<SpawnedMonsters>Abomination</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -4175,7 +4175,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[600]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4200,7 +4200,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[600]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4226,7 +4226,7 @@
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>MummyWave</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Mummy_Activate_01|NPC_Boss_Mummy_Activate_02|NPC_Boss_Mummy_Activate_03[300]snd_pwr_melee_paladin_01|snd_pwr_melee_paladin_02|snd_pwr_melee_paladin_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4250,7 +4250,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Nature</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_mage_poisoncloud_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -4275,7 +4275,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Mummy_Activate_01|NPC_Boss_Mummy_Activate_02|NPC_Boss_Mummy_Activate_03[300]snd_pwr_melee_paladin_01|snd_pwr_melee_paladin_02|snd_pwr_melee_paladin_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4300,7 +4300,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SpiderBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -4330,7 +4330,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[600]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4355,7 +4355,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[600]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4381,7 +4381,7 @@
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>TreantWave</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Mummy_Activate_01|NPC_Boss_Mummy_Activate_02|NPC_Boss_Mummy_Activate_03[300]snd_pwr_melee_paladin_01|snd_pwr_melee_paladin_02|snd_pwr_melee_paladin_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4405,7 +4405,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Nature</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_mage_poisoncloud_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -4430,7 +4430,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Mummy_Activate_01|NPC_Boss_Mummy_Activate_02|NPC_Boss_Mummy_Activate_03[300]snd_pwr_melee_paladin_01|snd_pwr_melee_paladin_02|snd_pwr_melee_paladin_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4455,7 +4455,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4480,7 +4480,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4505,7 +4505,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4532,7 +4532,7 @@
 		<BaseDamageMult>.7</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>SpiderPoison</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4558,7 +4558,7 @@
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ProcName>ProcAlwaysHealNoFX</ProcName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4585,7 +4585,7 @@
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ProcName>ProcAlwaysHealNoFX</ProcName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4611,7 +4611,7 @@
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>SpiderPoison</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[650]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4637,7 +4637,7 @@
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>SpiderPoison</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[650]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4662,7 +4662,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Nature</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
 		<FireGfx>
@@ -4690,7 +4690,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -4707,7 +4707,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>npc_dragon_strike_01|npc_dragon_strike_02</FireSound>
 		<FireGfx/>
@@ -4732,7 +4732,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>npc_dragon_strike_01|npc_dragon_strike_02</FireSound>
 		<FireGfx/>
@@ -4758,7 +4758,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.5</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>npc_dragon_strike_01|npc_dragon_strike_02</FireSound>
 		<FireGfx/>
@@ -4784,7 +4784,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>npc_dragon_fire_01</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4803,7 +4803,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>npc_dragon_fire_01</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -4822,7 +4822,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>npc_dragon_strike_01|npc_dragon_strike_02</FireSound>
 		<FireGfx/>
@@ -4846,7 +4846,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[1160]snd_pwr_mage_fireball_01|snd_pwr_mage_fireball_02|snd_pwr_mage_fireball_03[800]snd_pwr_mage_fireball_01|snd_pwr_mage_fireball_02|snd_pwr_mage_fireball_03[600]snd_pwr_mage_fireball_01|snd_pwr_mage_fireball_02|snd_pwr_mage_fireball_03</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -4876,7 +4876,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
 		<AddTargetBuff>DragonScorched</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[1160]snd_pwr_mage_fireball_01|snd_pwr_mage_fireball_02|snd_pwr_mage_fireball_03[800]snd_pwr_mage_fireball_01|snd_pwr_mage_fireball_02|snd_pwr_mage_fireball_03[600]snd_pwr_mage_fireball_01|snd_pwr_mage_fireball_02|snd_pwr_mage_fireball_03</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -4906,7 +4906,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
 		<AddTargetBuff>DragonScorched</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[1160]snd_pwr_mage_meteor_shoot[800]snd_pwr_mage_meteor_shoot[600]snd_pwr_mage_meteor_shoot</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -4936,7 +4936,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>DragonScorched</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>npc_dragon_strike_01|npc_dragon_strike_02</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_mage_poisoncloud_attack</FireSound>
@@ -4963,7 +4963,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
 		<AddTargetBuff>DragonScorched</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>npc_dragon_strike_01|npc_dragon_strike_02</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_aoe_magic_07</FireSound>
@@ -4990,7 +4990,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Ice</DamageType>
 		<AddTargetBuff>NovaMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>npc_dragon_strike_01|npc_dragon_strike_02</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_mage_iceNova</FireSound>
@@ -5018,7 +5018,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Ice</DamageType>
 		<AddTargetBuff>NovaMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>npc_dragon_strike_01|npc_dragon_strike_02</CastSound>
 		<CastGfx/>
 		<FireSound>npc_dragon_strike_01|npc_dragon_strike_02</FireSound>
@@ -5043,7 +5043,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Ice</DamageType>
 		<AddTargetBuff>DragonCold</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[1160]snd_pwr_mage_meteor_shoot[800]snd_pwr_mage_meteor_shoot[600]snd_pwr_mage_meteor_shoot</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_iceball_imp_01</FireSound>
@@ -5072,7 +5072,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_Boss_Wyrm_Grunt_01|NPC_Boss_Wyrm_Grunt_02|NPC_Boss_Wyrm_Grunt_03</FireSound>
 		<FireGfx/>
@@ -5098,7 +5098,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_Boss_Griffon_Activate_01|NPC_Boss_Griffon_Activate_02|NPC_Boss_Griffon_Activate_03</FireSound>
 		<FireGfx/>
@@ -5124,7 +5124,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_Boss_Griffon_Activate_01|NPC_Boss_Griffon_Activate_02|NPC_Boss_Griffon_Activate_03</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -5157,7 +5157,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>WarcryMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_Boss_Griffon_Activate_01|NPC_Boss_Griffon_Activate_02|NPC_Boss_Griffon_Activate_03</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -5190,7 +5190,7 @@
 		<BaseDamageMult>0.5</BaseDamageMult>
 		<DamageType>Lightning</DamageType>
 		<AddSelfBuff>GriffonQuicken</AddSelfBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_Boss_Griffon_Activate_01|NPC_Boss_Griffon_Activate_02|NPC_Boss_Griffon_Activate_03</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -5221,7 +5221,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_Boss_Lion_Activate_01|NPC_Boss_Lion_Death_02</FireSound>
 		<FireGfx/>
@@ -5246,7 +5246,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_Boss_Lion_Activate_01|NPC_Boss_Lion_Death_02</FireSound>
 		<FireGfx/>
@@ -5271,7 +5271,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>npc_dragon_strike_01|npc_dragon_strike_02</FireSound>
 		<FireGfx/>
@@ -5297,7 +5297,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>npc_dragon_strike_01|npc_dragon_strike_02</FireSound>
 		<FireGfx/>
@@ -5323,7 +5323,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_Minion_Wyrm_Activate_01|NPC_Minion_Wyrm_Activate_02|NPC_Minion_Wyrm_Activate_03</FireSound>
 		<FireGfx/>
@@ -5349,7 +5349,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_Boss_Wyrm_Activate_01|NPC_Boss_Wyrm_Activate_02|NPC_Boss_Wyrm_Activate_03</FireSound>
 		<FireGfx/>
@@ -5376,7 +5376,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_Boss_Wyrm_Activate_01|NPC_Boss_Wyrm_Activate_02|NPC_Boss_Wyrm_Activate_03</FireSound>
 		<FireGfx/>
@@ -5402,7 +5402,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_Boss_Wyrm_Activate_01|NPC_Boss_Wyrm_Activate_02|NPC_Boss_Wyrm_Activate_03</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -5433,7 +5433,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5458,7 +5458,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5484,7 +5484,7 @@
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>DogFinisher</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5509,7 +5509,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5535,7 +5535,7 @@
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>DogFinisherR</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5559,7 +5559,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -5587,7 +5587,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5612,7 +5612,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5639,7 +5639,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Wolf_Activate_01|NPC_Boss_Wolf_Activate_02|NPC_Boss_Wolf_Activate_03[200]snd_pwr_paladin_cleave</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5664,7 +5664,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.6,1.0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Wolf_Activate_01|NPC_Boss_Wolf_Activate_02|NPC_Boss_Wolf_Activate_03,snd_pwr_paladin_downwardstrike</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5690,7 +5690,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Wolf_Activate_01|NPC_Boss_Wolf_Activate_02|NPC_Boss_Wolf_Activate_03,snd_pwr_paladin_smash</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5717,7 +5717,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.49,0.65,0.81</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Wolf_Activate_01|NPC_Boss_Wolf_Activate_02|NPC_Boss_Wolf_Activate_03[250]snd_pwr_paladin_skewer_sword_01[300]snd_pwr_paladin_skewer_sword_02[450]snd_pwr_paladin_skewer_sword_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5743,7 +5743,7 @@
 		<BaseDamageMult>1.6</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>HeavyStagger</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_shieldstun</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5768,7 +5768,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_openStun_swordUp[480]snd_pwr_rogue_openStun_swordDown</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5793,7 +5793,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.65</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[100]snd_pwr_rogue_openDamage_sword_01[270]snd_pwr_rogue_openDamage_sword_02[300]snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5819,7 +5819,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>EnfeebleMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_enfeeble_start[550]snd_pwr_rogue_enfeeble_end</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5845,7 +5845,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>MobPoisonStrike</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_openDot_attack_01[230]snd_pwr_rogue_openDot_attack_02[330]snd_pwr_rogue_openDot_attack_03[260]snd_pwr_rogue_openDot_attack_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5870,7 +5870,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_enfeeble_start[550]snd_pwr_rogue_enfeeble_end</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5898,7 +5898,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.57</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_rogue_steelCyclone_sword_01[300]snd_pwr_rogue_steelCyclone_sword_02[300]snd_pwr_rogue_steelCyclone_sword_03[280]snd_pwr_rogue_steelCyclone_sword_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5924,7 +5924,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_hawkAttack_new_jump[600]snd_pwr_rogue_hawkAttack_new_attack</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -5952,7 +5952,7 @@
 		<BaseDamageMult>0.95</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>RootStrikeMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_rootstrike,snd_pwr_rogue_rootstrike_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -5977,7 +5977,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>CritterStealth</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -6001,7 +6001,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6026,7 +6026,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6052,7 +6052,7 @@
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>LionFinisher</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6076,7 +6076,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -6104,7 +6104,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6131,7 +6131,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Lion_Activate_01|NPC_Boss_Lion_Activate_02|NPC_Boss_Lion_Activate_03[200]snd_pwr_paladin_cleave</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6155,7 +6155,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.6,1.0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Lion_Activate_01|NPC_Boss_Lion_Activate_02|NPC_Boss_Lion_Activate_03,snd_pwr_paladin_downwardstrike</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6180,7 +6180,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Lion_Activate_01|NPC_Boss_Lion_Activate_02|NPC_Boss_Lion_Activate_03,snd_pwr_paladin_smash</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6207,7 +6207,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.49,0.65,0.81</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Lion_Activate_01|NPC_Boss_Lion_Activate_02|NPC_Boss_Lion_Activate_03[250]snd_pwr_paladin_skewer_sword_01[300]snd_pwr_paladin_skewer_sword_02[450]snd_pwr_paladin_skewer_sword_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6233,7 +6233,7 @@
 		<BaseDamageMult>1.6</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>HeavyStagger</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_shieldstun,NPC_Boss_Lion_Activate_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6258,7 +6258,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>-0.75</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_touchHeal</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -6289,7 +6289,7 @@
 		<BaseDamageMult>-0.5</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>MobTankBuff</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_defenceBuff_start[270]NPC_Boss_Lion_Activate_01</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -6313,7 +6313,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[300]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6338,7 +6338,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[300]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6364,7 +6364,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[300]snd_pwr_paladin_jumpslam_swing_02</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6390,7 +6390,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Lightning</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]NPC_Minion_Wisp_Fire_Death_03</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -6416,7 +6416,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0,1.5</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[300]snd_pwr_paladin_jumpslam_swing_02</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6441,7 +6441,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[300]snd_pwr_rogue_openDot_attack_01|snd_pwr_rogue_openDot_attack_02|snd_pwr_rogue_openDot_attack_03|snd_pwr_rogue_openDot_attack_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6466,7 +6466,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[300]snd_pwr_rogue_openDot_attack_01|snd_pwr_rogue_openDot_attack_02|snd_pwr_rogue_openDot_attack_03|snd_pwr_rogue_openDot_attack_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6491,7 +6491,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[450]snd_pwr_paladin_jumpslam_swing_02[1090]snd_pwr_paladin_jumpslam_swing_02</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6517,7 +6517,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Lightning</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Cyclops_Activiate_01|NPC_Boss_Cyclops_Activiate_02|NPC_Boss_Cyclops_Activiate_03[450]snd_pwr_paladin_jumpslam_swing_01[500]snd_pwr_paladin_jumpslam_swing_02,NPC_Minion_Wisp_Fire_Death_03</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -6542,7 +6542,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[400]snd_pwr_paladin_jumpslam_swing_01[450]snd_pwr_paladin_jumpslam_swing_02,snd_pwr_aoe_fire</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -6567,7 +6567,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Lightning</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[400]snd_pwr_paladin_jumpslam_swing_01[450]snd_pwr_paladin_jumpslam_swing_02,NPC_Minion_Wisp_Fire_Death_03</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -6595,7 +6595,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>KnightMeleeCombo</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[380]CHR_Sentinel_SentinelForm_Melee</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6621,7 +6621,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[83]CHR_Sentinel_SentinelForm_Melee</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6645,7 +6645,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>CHR_FlameSeer_Inferno</FireSound>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -6669,7 +6669,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[450]snd_pwr_melee_paladin_01|snd_pwr_melee_paladin_02|snd_pwr_melee_paladin_03[1090]snd_pwr_paladin_jumpslam_swing_02</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6695,7 +6695,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_aoe_fire</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -6719,7 +6719,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6743,7 +6743,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -6770,7 +6770,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Nature</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -6801,7 +6801,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Nature</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_mage_poisoncloud_staffraise,snd_pwr_mage_poisoncloud_vox[520]snd_pwr_mage_poisoncloud_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -6828,7 +6828,7 @@
 		<BaseDamageMult>0.95</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>RootStrikeMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[660]snd_pwr_rogue_rootstrike,snd_pwr_rogue_rootstrike_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -6854,7 +6854,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -6879,7 +6879,7 @@
 		<BaseDamageMult>-0.5</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>CritterGroupHoT</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_grouphot</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6898,7 +6898,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -6922,7 +6922,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>snd_pwr_aoe_magic_07</FireSound>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -6946,7 +6946,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -6974,7 +6974,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>DryadRushClose</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>snd_pwr_aoe_magic_07</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -6998,7 +6998,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>a_Sound_Cleave</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -7025,7 +7025,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>a_Sound_Cleave</FireSound>
 		<FireGfx/>
@@ -7051,7 +7051,7 @@
 		<SpawnedMonsters>BlackGoblinMace</SpawnedMonsters>
 		<SpawnLimit>3</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -7070,7 +7070,7 @@
 		<SpawnedMonsters>AbominationGhostServant</SpawnedMonsters>
 		<SpawnLimit>6</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_mage_summontornado</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -7102,7 +7102,7 @@
 		<SpawnedMonsters>AbominationGhostServant</SpawnedMonsters>
 		<SpawnLimit>3</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_mage_summontornado</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -7132,7 +7132,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -7160,7 +7160,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_mage_meteor_shoot</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -7191,7 +7191,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Lightning</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Socket</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -7215,7 +7215,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Socket</CastAnimSource>
 		<CastGfx>
@@ -7240,7 +7240,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Socket</CastAnimSource>
 		<CastGfx>
@@ -7265,7 +7265,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Socket</CastAnimSource>
 		<CastGfx>
@@ -7288,7 +7288,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -7315,7 +7315,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -7343,7 +7343,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_openDot_attack_01|snd_pwr_rogue_openDot_attack_02|snd_pwr_rogue_openDot_attack_03|snd_pwr_rogue_openDot_attack_04[435]snd_pwr_rogue_openDot_attack_01|snd_pwr_rogue_openDot_attack_02|snd_pwr_rogue_openDot_attack_03|snd_pwr_rogue_openDot_attack_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -7369,7 +7369,7 @@
 		<BaseDamageMult>0.67</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>DemonFinisher</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_openDot_attack_01|snd_pwr_rogue_openDot_attack_02|snd_pwr_rogue_openDot_attack_03|snd_pwr_rogue_openDot_attack_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -7394,7 +7394,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.8</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_openDot_attack_01|snd_pwr_rogue_openDot_attack_02|snd_pwr_rogue_openDot_attack_03|snd_pwr_rogue_openDot_attack_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -7422,7 +7422,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.57</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_rogue_steelCyclone_sword_01[300]snd_pwr_rogue_steelCyclone_sword_02[300]snd_pwr_rogue_steelCyclone_sword_03[280]snd_pwr_rogue_steelCyclone_sword_04</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -7448,7 +7448,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_hawkAttack_new_jump[600]snd_pwr_rogue_hawkAttack_new_attack</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -7472,7 +7472,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -7500,7 +7500,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.65</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[100]snd_pwr_rogue_openDamage_sword_01[270]snd_pwr_rogue_openDamage_sword_02[300]snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -7527,7 +7527,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>DragonFlight</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -7545,7 +7545,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -7561,7 +7561,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>-1</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetFeet</HitAnimSource>
@@ -7584,7 +7584,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>WispArmor</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -7601,7 +7601,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>WispDamage</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -7618,7 +7618,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>WispSpeed</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -7636,7 +7636,7 @@
 		<SpawnedMonsters>Ember,Ember,Ember</SpawnedMonsters>
 		<SpawnLimit>3</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -7654,7 +7654,7 @@
 		<SpawnedMonsters>Ember</SpawnedMonsters>
 		<SpawnLimit>3</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_EmberSpawn</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -7672,7 +7672,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_EmberFireWave</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -7696,7 +7696,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_EmberFireWave</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Center</FireAnimSource>
@@ -7720,7 +7720,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>9</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_EmberExplosion</CastSound>
 		<CastAnimSource>Center</CastAnimSource>
 		<CastGfx>
@@ -7750,7 +7750,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Earth</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[890]snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -7782,7 +7782,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -7806,7 +7806,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[390]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -7831,7 +7831,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[390]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -7856,7 +7856,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[390]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -7881,7 +7881,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Raptor_Activate_01|NPC_Boss_Raptor_Activate_02|NPC_Boss_Raptor_Activate_03[900]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -7907,7 +7907,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>NPC_Boss_Raptor_Activate_01|NPC_Boss_Raptor_Activate_02|NPC_Boss_Raptor_Activate_03[1200]snd_pwr_aoe_fire</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -7931,7 +7931,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_magic_07</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -7955,7 +7955,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -7972,7 +7972,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2.5</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_EmberExplosion</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -7997,7 +7997,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2.5</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_EmberExplosion</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -8024,7 +8024,7 @@
 		<SpawnedMonsters>EggPod</SpawnedMonsters>
 		<SpawnLimit>10</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_rootstrike,snd_pwr_rogue_rootstrike_attack</CastSound>
 		<CastGfx/>
 		<FireSound>NPC_EmberExplosion</FireSound>
@@ -8053,7 +8053,7 @@
 		<DamageType>Poison</DamageType>
 		<AddTargetBuff>Toxin2</AddTargetBuff>
 		<ComboName>EggPodSummon</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>NPC_EmberExplosion</FireSound>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -8080,7 +8080,7 @@
 		<SpawnedMonsters>Devourer,Devourer,Devourer2,DevourerHeavy|Devourer2,Devourer2,Devourer,DevourerShooting|Devourer2,Devourer2,Devourer2,DevourerHeavy|Devourer,Devourer,Devourer,DevourerShooting</SpawnedMonsters>
 		<SpawnLimit>4</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -8100,7 +8100,7 @@
 		<SpawnedMonsters>GoblinCannonball</SpawnedMonsters>
 		<SpawnLimit>2</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -8120,7 +8120,7 @@
 		<SpawnedMonsters>ImperialBomb</SpawnedMonsters>
 		<SpawnLimit>8</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -8138,7 +8138,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>TrapRoot</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -8157,7 +8157,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Energy</DamageType>
 		<AddTargetBuff>NephitSnare</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
 		<FireGfx>
@@ -8192,7 +8192,7 @@
 		<SpawnedMonsters>SpiritBlackGoblinMace|SpiritSwampSkeletonClub|SpiritPyrFiendMini2|SpiritAbominationMini|SpiritDogPackmate|SpiritDeepLizardWarrior</SpawnedMonsters>
 		<SpawnLimit>2</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -8210,7 +8210,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Lightning</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Ground</CastAnimSource>
 		<CastGfx>
 			<AnimFile>Animation_Nephit.swf</AnimFile>
@@ -8240,7 +8240,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>NephitArmor</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -8258,7 +8258,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>NephitDamage</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -8274,7 +8274,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>-0.25</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetFeet</HitAnimSource>
@@ -8297,7 +8297,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>3</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
 			<AnimFile>Animation_Nephit.swf</AnimFile>
@@ -8326,7 +8326,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -8351,7 +8351,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -8381,7 +8381,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.78</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_PsychophageSmall_EyeBolt</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>
@@ -8410,7 +8410,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.56</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -8436,7 +8436,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>PuckHop</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -8463,7 +8463,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>PuckShot</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -8481,7 +8481,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.75</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_rogue_fireball_imp_01|snd_pwr_rogue_fireball_imp_02|snd_pwr_rogue_fireball_imp_03</FireSound>
@@ -8516,7 +8516,7 @@
 		<SpawnedMonsters>PuckShadow</SpawnedMonsters>
 		<SpawnLimit>3</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -8542,7 +8542,7 @@
 		<SpawnedMonsters>PuckShadow,PuckShadow2</SpawnedMonsters>
 		<SpawnLimit>3</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -8568,7 +8568,7 @@
 		<SpawnedMonsters>DemonHarrier|DemonHarrier2</SpawnedMonsters>
 		<SpawnLimit>3</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -8594,7 +8594,7 @@
 		<BaseDamageMult>0.65</BaseDamageMult>
 		<DamageType>Poison</DamageType>
 		<AddTargetBuff>PoisonCloudMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[520]snd_pwr_mage_poisoncloud_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -8620,7 +8620,7 @@
 		<SpawnedMonsters>LarvaPoisonCloud</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>6000</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -8644,7 +8644,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.5</BaseDamageMult>
 		<DamageType>Poison</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[520]snd_pwr_mage_poisoncloud_attack</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -8668,7 +8668,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -8694,7 +8694,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -8720,7 +8720,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Poison</DamageType>
 		<AddTargetBuff>WispSpeed</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -8750,7 +8750,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<ComboName>Emerge</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -8768,7 +8768,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -8785,7 +8785,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -8811,7 +8811,7 @@
 		<BaseDamageMult>1.1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>HeavyClose</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -8837,7 +8837,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -8863,7 +8863,7 @@
 		<BaseDamageMult>0.9</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<ComboName>BruteMelee3</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -8888,7 +8888,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.2</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -8938,7 +8938,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -8966,7 +8966,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<ComboName>BruteShot3</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -8993,7 +8993,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -9052,7 +9052,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.85</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitSound>SND_NPC_GeneralMonster_Melee_Impact_01|SND_NPC_GeneralMonster_Melee_Impact_02|SND_NPC_GeneralMonster_Melee_Impact_03</HitSound>
@@ -9078,7 +9078,7 @@
 		<BaseDamageMult>0.5</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>EnfeebleMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitSound>SND_NPC_GeneralMonster_Melee_Impact_01|SND_NPC_GeneralMonster_Melee_Impact_02|SND_NPC_GeneralMonster_Melee_Impact_03</HitSound>
@@ -9103,7 +9103,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.85</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitSound>SND_NPC_GeneralMonster_Melee_Impact_01|SND_NPC_GeneralMonster_Melee_Impact_02|SND_NPC_GeneralMonster_Melee_Impact_03</HitSound>
@@ -9129,7 +9129,7 @@
 		<BaseDamageMult>0.5</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>EnfeebleMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitSound>SND_NPC_GeneralMonster_Melee_Impact_01|SND_NPC_GeneralMonster_Melee_Impact_02|SND_NPC_GeneralMonster_Melee_Impact_03</HitSound>
@@ -9153,7 +9153,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>LizardFlagArmor</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -9171,7 +9171,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.85</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -9201,7 +9201,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -9234,7 +9234,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -9263,7 +9263,7 @@
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>EnfeebleMonster</AddTargetBuff>
 		<ComboName>StatueShot2</ComboName>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -9290,7 +9290,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>EnfeebleMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -9317,7 +9317,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>-0.75</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetFeet</HitAnimSource>
@@ -9340,7 +9340,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
 		<FireGfx>
@@ -9362,7 +9362,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetFeet</HitAnimSource>
@@ -9384,7 +9384,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetFeet</HitAnimSource>
@@ -9409,7 +9409,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Lightning</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Ground</CastAnimSource>
 		<CastGfx>
 			<AnimFile>Animation_Nephit.swf</AnimFile>
@@ -9438,7 +9438,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -9463,7 +9463,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.5</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -9489,7 +9489,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Poison</DamageType>
 		<AddTargetBuff>ScorpionPoison1</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -9514,7 +9514,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -9539,7 +9539,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.5</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -9565,7 +9565,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Poison</DamageType>
 		<AddTargetBuff>ScorpionPoison2</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -9590,7 +9590,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.5</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -9616,7 +9616,7 @@
 		<SpawnedMonsters>ScarabLarvaSpawn</SpawnedMonsters>
 		<SpawnLimit>2</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -9641,7 +9641,7 @@
 		<SpawnedMonsters>ScarabLarvaSpawnBasic</SpawnedMonsters>
 		<SpawnLimit>2</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -9666,7 +9666,7 @@
 		<SpawnedMonsters>ScarabLarvaSpawnSmall</SpawnedMonsters>
 		<SpawnLimit>2</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -9690,7 +9690,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[450]snd_pwr_melee_paladin_01|snd_pwr_melee_paladin_02|snd_pwr_melee_paladin_03[1090]snd_pwr_paladin_jumpslam_swing_02</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -9717,7 +9717,7 @@
 		<BaseDamageMult>1.25</BaseDamageMult>
 		<DamageType>Poison</DamageType>
 		<AddTargetBuff>WispSpeed</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_aoe_fire</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -9740,7 +9740,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.5</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -9756,7 +9756,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -9774,7 +9774,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Lightning</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Ground</CastAnimSource>
 		<CastGfx>
 			<AnimFile>Animation_Nephit.swf</AnimFile>
@@ -9804,7 +9804,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Lightning</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Ground</CastAnimSource>
 		<CastGfx>
 			<AnimFile>Animation_Nephit.swf</AnimFile>
@@ -9833,7 +9833,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -9866,7 +9866,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -9897,7 +9897,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -9919,7 +9919,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -9940,7 +9940,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -9963,7 +9963,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Lightning</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -9981,7 +9981,7 @@
 		<BaseDamageMult>1.29</BaseDamageMult>
 		<DamageType>Ice</DamageType>
 		<AddTargetBuff>NovaMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_mage_iceNova</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -10039,7 +10039,7 @@
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Ice</DamageType>
 		<AddTargetBuff>Chilled42Monster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Ground</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -10070,7 +10070,7 @@
 		<DamageType>Poison</DamageType>
 		<AddTargetBuff>MushroomMiasma</AddTargetBuff>
 		<AddSelfBuff>MiasmaCloud</AddSelfBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -10088,7 +10088,7 @@
 		<SpawnedMonsters>DreamMeylourHulk|DreamAbominationMini2|DreamAbominationMini|DreamLizardWarrior3|DreamLizardWarrior2|DreamInfusedSkeletonClub|DreamInfusedSkeletonSword|DreamWispEmerald|DreamWispRuby|DreamWispSapphire|DreamPyrFiendMini|DreamPyrFiendMini2</SpawnedMonsters>
 		<SpawnLimit>2</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -10105,7 +10105,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
 			<AnimFile>Animation_Nephit.swf</AnimFile>
@@ -10138,7 +10138,7 @@
 		<SpawnedMonsters>ShadowPuppet,ShadowPuppet</SpawnedMonsters>
 		<SpawnLimit>2</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -10179,7 +10179,7 @@
 		<SpawnedMonsters>FireBomb</SpawnedMonsters>
 		<SpawnLimit>2</SpawnLimit>
 		<SpawnDuration>15000</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -10204,7 +10204,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Lightning</DamageType>
 		<AddTargetBuff>WispSpeed</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_lightning_imp</FireSound>
@@ -10233,7 +10233,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_paladin_01|snd_pwr_melee_paladin_02|snd_pwr_melee_paladin_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -10258,7 +10258,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -10283,7 +10283,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_paladin_01|snd_pwr_melee_paladin_02|snd_pwr_melee_paladin_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -10310,7 +10310,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.34,1.78,2.22</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_paladin_skewer_sword_01,snd_pwr_paladin_skewer_vox_01$[300]snd_pwr_paladin_skewer_sword_02,snd_pwr_paladin_skewer_vox_02$[450]snd_pwr_paladin_skewer_sword_03,snd_pwr_paladin_skewer_vox_03$</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -10338,7 +10338,7 @@
 		<BaseDamageMult>1.71,0.57</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>WarcryMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_warcry_jumpland,snd_pwr_paladin_warcry_vox_01$[300]snd_pwr_paladin_warcry_woosh[400]snd_pwr_paladin_warcry_vox_02$</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Feet</FireAnimSource>
@@ -10370,7 +10370,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.42</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_smash_back[450]snd_pwr_paladin_smash_swing_01,snd_pwr_paladin_smash_vox_01$[550]snd_pwr_paladin_smash_swing_02,snd_pwr_paladin_smash_vox_02$</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -10396,7 +10396,7 @@
 		<BaseDamageMult>1.18</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddSelfBuff>PhantomTankBuff</AddSelfBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_defenceBuff_start[270]snd_pwr_paladin_defenceBuff_liony_vox$</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -10420,7 +10420,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>-3</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_grouphot</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -10447,7 +10447,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1.9</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[200]snd_pwr_paladin_cleave</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -10473,7 +10473,7 @@
 		<SpawnedMonsters>PhantomBomb</SpawnedMonsters>
 		<SpawnLimit>2</SpawnLimit>
 		<SpawnDuration>15000</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -10500,7 +10500,7 @@
 		<BaseDamageMult>1.18</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>RootStrikeMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_rootstrike,snd_pwr_rogue_rootstrike_attack</CastSound>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
@@ -10525,7 +10525,7 @@
 		<BaseDamageMult>1.13</BaseDamageMult>
 		<DamageType>Nature</DamageType>
 		<AddTargetBuff>VineLanceMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_mage_vineLance</CastSound>
 		<CastAnimSource>Ground</CastAnimSource>
 		<CastGfx>
@@ -10555,7 +10555,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitSound>SND_NPC_GeneralMonster_Melee_Impact_01|SND_NPC_GeneralMonster_Melee_Impact_02|SND_NPC_GeneralMonster_Melee_Impact_03</HitSound>
@@ -10579,7 +10579,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_paladin_grouphot</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -10604,7 +10604,7 @@
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<AddTargetBuff>WispSpeed</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Ground</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -10635,7 +10635,7 @@
 		<SpawnedMonsters>DragonTempleFlare</SpawnedMonsters>
 		<SpawnLimit>4</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -10657,7 +10657,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -10681,7 +10681,7 @@
 		<SpawnedMonsters>DreamWispRuby</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -10699,7 +10699,7 @@
 		<SpawnedMonsters>RatlingSword|RatlingMace|RatlingArmor|RatlingShaman</SpawnedMonsters>
 		<SpawnLimit>3</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -10717,7 +10717,7 @@
 		<SpawnedMonsters>DemonHarrier|DemonHarrier2|ShadeWarrior</SpawnedMonsters>
 		<SpawnLimit>3</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -10735,7 +10735,7 @@
 		<SpawnedMonsters>RatlingSword|RatlingMace|RatlingArmor|RatlingShaman</SpawnedMonsters>
 		<SpawnLimit>6</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -10752,7 +10752,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Holy</DamageType>
 		<AddTargetBuff>WaspFrenzy</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
@@ -10798,7 +10798,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -10823,7 +10823,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -10850,7 +10850,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Ice</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -10879,7 +10879,7 @@
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Ice</DamageType>
 		<AddTargetBuff>Chilled42Monster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>snd_pwr_mage_iceNova</FireSound>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -10912,7 +10912,7 @@
 		<BaseDamageMult>0.89</BaseDamageMult>
 		<DamageType>Fire</DamageType>
 		<AddTargetBuff>BurnedMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>snd_pwr_aoe_fire</FireSound>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -10944,7 +10944,7 @@
 		<SpawnedMonsters>OasisPuck</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -10969,7 +10969,7 @@
 		<SpawnedMonsters>PuckShadowServant</SpawnedMonsters>
 		<SpawnLimit>2</SpawnLimit>
 		<SpawnDuration>0</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -10992,7 +10992,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -11015,7 +11015,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -11040,7 +11040,7 @@
 		<SpawnedMonsters>SandWasp</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>40000</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -11061,7 +11061,7 @@
 		<SpawnedMonsters>SandWasp2</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>40000</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -11081,7 +11081,7 @@
 		<SpawnedMonsters>SandWasp3</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>40000</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -11101,7 +11101,7 @@
 		<SpawnedMonsters>FireBomb</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>15000</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Socket</CastAnimSource>
 		<CastGfx/>
@@ -11122,7 +11122,7 @@
 		<SpawnedMonsters>FireBomb</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>15000</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Socket</CastAnimSource>
 		<CastGfx/>
@@ -11143,7 +11143,7 @@
 		<SpawnedMonsters>FireBomb2</SpawnedMonsters>
 		<SpawnLimit>1</SpawnLimit>
 		<SpawnDuration>15000</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Socket</CastAnimSource>
 		<CastGfx/>
@@ -11164,7 +11164,7 @@
 		<SpawnedMonsters>FireBomb2</SpawnedMonsters>
 		<SpawnLimit>3</SpawnLimit>
 		<SpawnDuration>15000</SpawnDuration>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Socket</CastAnimSource>
 		<CastGfx/>
@@ -11183,7 +11183,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>3</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
 		<FireAnimSource>Center</FireAnimSource>
@@ -11208,7 +11208,7 @@
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Fire</DamageType>
 		<AddTargetBuff>BurnedMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
 		<FireAnimSource>Center</FireAnimSource>
@@ -11233,7 +11233,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>[250]snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -11258,7 +11258,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -11288,7 +11288,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>2</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastAnimSource>Ground</CastAnimSource>
 		<CastGfx>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -11318,7 +11318,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_melee_npcsmall_01|snd_pwr_melee_npcsmall_02|snd_pwr_melee_npcsmall_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -11345,7 +11345,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Fire</DamageType>
 		<AddTargetBuff>BurnedMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastGfx/>
 		<FireSound>snd_pwr_aoe_fire</FireSound>
 		<FireAnimSource>Socket</FireAnimSource>
@@ -11368,7 +11368,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -11391,7 +11391,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -11414,7 +11414,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -11437,7 +11437,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -11462,7 +11462,7 @@
 		<BaseDamageMult>0.5</BaseDamageMult>
 		<DamageType>Ice</DamageType>
 		<AddTargetBuff>Chilled42Monster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -11492,7 +11492,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>.5</BaseDamageMult>
 		<DamageType>Fire</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -11519,7 +11519,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>.75</BaseDamageMult>
 		<DamageType>Nature</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_SkeletonBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireGfx>
@@ -11549,7 +11549,7 @@
 		<BaseDamageMult>.75</BaseDamageMult>
 		<DamageType>Fire</DamageType>
 		<AddTargetBuff>BurnedMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -11583,7 +11583,7 @@
 		<BaseDamageMult>.75</BaseDamageMult>
 		<DamageType>Fire</DamageType>
 		<AddTargetBuff>BurnedMonster</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -11617,7 +11617,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Ice</DamageType>
 		<AddTargetBuff>StackingChill</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -11651,7 +11651,7 @@
 		<BaseDamageMult>1</BaseDamageMult>
 		<DamageType>Ice</DamageType>
 		<AddTargetBuff>StackingChill</AddTargetBuff>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>SND_NPC_LizardBig_RangePower</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_fireball_imp_01</FireSound>
@@ -11682,7 +11682,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -11705,7 +11705,7 @@
 		<ManaCost>0</ManaCost>
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
-		<DisplayName>***Canavar***</DisplayName>
+		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_aoe_fire</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>

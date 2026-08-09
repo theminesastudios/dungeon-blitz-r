@@ -5,6 +5,7 @@ import { JsonAdapter } from '../database/JsonAdapter';
 import { TalentConfig } from '../core/TalentConfig';
 import { EntityHandler } from './EntityHandler';
 import { WorldEnter } from '../utils/WorldEnter';
+import { SpeedupPricing } from '../core/SpeedupPricing';
 
 type TalentResearchRecord = {
     classIndex?: number | null;
@@ -225,19 +226,25 @@ export class TalentHandler {
             return;
         }
 
-        if (idolCost > 0) {
+        const authoritativeCost = SpeedupPricing.reconcile(research.ReadyTime, idolCost);
+        if (authoritativeCost > 0) {
             const idols = Number(client.character.mammothIdols ?? 0);
-            if (idols < idolCost) {
+            if (idols < authoritativeCost) {
+                console.warn(
+                    `[Talent] Refused a Speed Up for ${client.character.name}: ` +
+                    `has ${idols} idols, needs ${authoritativeCost} (client claimed ${idolCost}).`
+                );
+                SpeedupPricing.refreshScreens(client);
                 return;
             }
 
-            client.character.mammothIdols = idols - idolCost;
+            client.character.mammothIdols = idols - authoritativeCost;
         }
 
         TalentHandler.setPendingCompletedResearch(client.character, classIndex, 0);
         await TalentHandler.completeTalentResearch(client, classIndex, false);
         TalentHandler.syncResearchTimer(client);
-        TalentHandler.sendPremiumPurchase(client, 'TalentSpeedup', idolCost);
+        TalentHandler.sendPremiumPurchase(client, 'TalentSpeedup', authoritativeCost);
         TalentHandler.sendTalentResearchComplete(client, classIndex);
     }
 

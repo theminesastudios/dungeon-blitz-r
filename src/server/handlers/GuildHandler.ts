@@ -198,7 +198,7 @@ export class GuildHandler {
             return [];
         }
 
-        const saves = await db.loadAllCharacterRecords();
+        const saves = await db.loadCharacterRecordsByGuild(guildName);
         const membersByName: Map<string, LoadedCharacterRecord> = new Map();
 
         for (const save of saves) {
@@ -405,7 +405,7 @@ export class GuildHandler {
             return false;
         }
 
-        const records = await db.loadAllCharacterRecords();
+        const records = await db.loadCharacterRecordsByGuild(guildName);
         for (const save of records) {
             for (const character of save.characters ?? []) {
                 if (GuildHandler.normalizeGuildName(GuildHandler.getGuildName(character)) === guildKey) {

@@ -34,8 +34,10 @@ const POWER_NAME = 'PetLootHound';
 const POWER_ID = 6150;
 const BACKUP_SUFFIX = '.bak-loothound';
 
+// masterFileList.xml serves Login.swz and Game*.swz out of p/cbq; p/cbp holds a
+// stale copy of Login.swz that the client never downloads, so patching it there
+// silently did nothing.
 const CBQ = path.join('src', 'client', 'content', 'localhost', 'p', 'cbq');
-const CBP = path.join('src', 'client', 'content', 'localhost', 'p', 'cbp');
 
 /**
  * Look of the pet. The DireMount skeleton is a layered dress-up rig: CustomArt picks the body
@@ -293,7 +295,7 @@ function main() {
     const stats = [];
 
     // 1. The follower entity.
-    patchArchive(path.join(root, CBP, 'Login.swz'), (entries) => {
+    patchArchive(path.join(root, CBQ, 'Login.swz'), (entries) => {
         const entry = entries.find((e) => e.rootName === 'EntTypes');
         if (!entry) throw new Error('EntTypes entry not found in Login.swz');
         const eol = detectEol(entry.xml);
@@ -308,9 +310,15 @@ function main() {
     }, verifyOnly, stats);
 
     // 2. The pet and its vanity power, per locale archive.
+    // The game ships English only now; the per-locale archives are gone. Existence is
+    // checked here, so restoring a localized build re-enables its patch on its own.
     for (const file of ['Game.swz', 'Game.en.swz', 'Game.tr.swz']) {
+        const archivePath = path.join(root, CBQ, file);
+        if (!fs.existsSync(archivePath)) {
+            continue;
+        }
         const locale = file === 'Game.tr.swz' ? LOCALES.tr : LOCALES.en;
-        patchArchive(path.join(root, CBQ, file), (entries) => {
+        patchArchive(archivePath, (entries) => {
             const notes = [];
 
             const pets = entries.find((e) => e.rootName === 'PetTypes');

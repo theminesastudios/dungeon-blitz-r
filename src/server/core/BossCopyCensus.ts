@@ -107,35 +107,40 @@ function normalizeIdentity(value: unknown): string {
     return String(value ?? '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
-// Every name that identifies this dungeon's boss, canonical names and aliases
-// alike. Built once per census so the scan does not re-clone the condition for
-// each of the level's entities.
-export function getBossIdentityKeys(levelName: string): ReadonlySet<string> {
-    const keys = new Set<string>();
+// Every name that identifies one of this dungeon's bosses, mapped onto the boss
+// it names — canonical names and aliases alike. Built once per census so the
+// scan does not re-clone the condition for each of the level's entities.
+export function getBossIdentityKeys(levelName: string): ReadonlyMap<string, string> {
+    const keys = new Map<string, string>();
     const condition = DungeonCompletionConditions.get(levelName);
     if (!condition || condition.mode !== 'bosses') {
         return keys;
     }
 
     for (const group of condition.bossGroups ?? []) {
+        // A group is one boss under several names, so every name in it resolves
+        // to the same identity.
+        const identity = normalizeIdentity(group[0]);
         for (const bossName of group) {
-            keys.add(normalizeIdentity(bossName));
+            keys.set(normalizeIdentity(bossName), identity);
         }
     }
-    for (const alias of Object.keys(condition.bossAliases ?? {})) {
-        keys.add(normalizeIdentity(alias));
+    for (const [alias, canonical] of Object.entries(condition.bossAliases ?? {})) {
+        keys.set(normalizeIdentity(alias), normalizeIdentity(canonical));
     }
     keys.delete('');
     return keys;
 }
 
-// Any entity a name-matcher would call this dungeon's boss, whether or not the
-// completion rules would currently accept it. getCanonicalBossName can reject a
-// copy for missing a room-boss marker, and that rejection is exactly the case
-// that hides the stale Tag Ugo — so match on the raw boss names as well.
-export function looksLikeDungeonBoss(entity: any, bossKeys: ReadonlySet<string>): boolean {
+// Which boss this entity is a copy of, or '' if it is not one of the level's
+// bosses. A dungeon can author two different bosses in the same room — Svagg and
+// the griffon he summons, the bandit twins — and the duplicate sweeps must only
+// ever compare an entity against copies of the *same* boss. Collapsing them onto
+// one identity deleted the second boss outright, so it could never die and the
+// run could never meet its objectives.
+export function getBossIdentityKey(entity: any, bossKeys: ReadonlyMap<string, string>): string {
     if (!entity || typeof entity !== 'object' || entity.isPlayer || bossKeys.size === 0) {
-        return false;
+        return '';
     }
 
     for (const candidate of [
@@ -148,12 +153,21 @@ export function looksLikeDungeonBoss(entity: any, bossKeys: ReadonlySet<string>)
         entity?.DisplayName,
         entity?.roomBossName
     ]) {
-        if (bossKeys.has(normalizeIdentity(candidate))) {
-            return true;
+        const identity = bossKeys.get(normalizeIdentity(candidate));
+        if (identity) {
+            return identity;
         }
     }
 
-    return false;
+    return '';
+}
+
+// Any entity a name-matcher would call one of this dungeon's bosses, whether or
+// not the completion rules would currently accept it. getCanonicalBossName can
+// reject a copy for missing a room-boss marker, and that rejection is exactly
+// the case that hides the stale Tag Ugo — so match on the raw boss names as well.
+export function looksLikeDungeonBoss(entity: any, bossKeys: ReadonlyMap<string, string>): boolean {
+    return getBossIdentityKey(entity, bossKeys) !== '';
 }
 
 export function collectBossCopies(levelScope: string, levelName: string = ''): BossCopySnapshot[] {
