@@ -10,6 +10,7 @@ import { buildDungeonBlitzSwfVariantBuffer, type DungeonBlitzSwfLocale } from '.
 import { PresenceService } from './PresenceService';
 import { SocialHandler } from '../handlers/SocialHandler';
 import { GlobalState } from './GlobalState';
+import { normalizeCharacterKey } from './SocialState';
 import { DiscordAccountLinkService } from '../integrations/DiscordAccountLinkService';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { UserAccount } from '../database/Database';
@@ -36,6 +37,56 @@ function resolveContentDir(relativeContentPath: string): string {
     }
 
     return candidates[0];
+}
+
+const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+
+function portraitsDir(): string {
+    return path.join(Config.DATA_DIR, 'portraits');
+}
+
+function normalizeRequesterAddress(value: string): string {
+    const address = String(value ?? '').trim().toLowerCase();
+    return address.startsWith('::ffff:') ? address.slice(7) : address;
+}
+
+export type PortraitUploadResult =
+    | { ok: true; file: string }
+    | { ok: false; reason: 'bad-name' | 'not-online' | 'not-png' };
+
+/**
+ * The uploader names the character it is uploading for, so accept it only from
+ * that character's own live game connection (same address, still logged in).
+ */
+export function storeCharacterPortrait(
+    requestedName: string,
+    body: Buffer,
+    requesterAddress: string
+): PortraitUploadResult {
+    const session = GlobalState.sessionsByCharacterName.get(normalizeCharacterKey(requestedName));
+    const characterName = String(session?.character?.name ?? '').trim();
+    const fileKey = normalizeCharacterKey(characterName);
+
+    if (!characterName || !/^[a-z0-9_-]+$/.test(fileKey)) {
+        return { ok: false, reason: 'bad-name' };
+    }
+
+    if (
+        !GlobalState.isClientConnectionOpen(session) ||
+        normalizeRequesterAddress(session.socket?.remoteAddress ?? '') !==
+            normalizeRequesterAddress(requesterAddress)
+    ) {
+        return { ok: false, reason: 'not-online' };
+    }
+
+    if (body.length < PNG_MAGIC.length || !body.subarray(0, PNG_MAGIC.length).equals(PNG_MAGIC)) {
+        return { ok: false, reason: 'not-png' };
+    }
+
+    const file = path.join(portraitsDir(), `${fileKey}.png`);
+    fs.mkdirSync(portraitsDir(), { recursive: true });
+    fs.writeFileSync(file, body);
+    return { ok: true, file };
 }
 
 function escapeHtml(value: string | null | undefined): string {
@@ -961,6 +1012,29 @@ try {
                 partyId: result.partyId
             });
         });
+
+        // Character portraits captured by the client's /portrait chat command.
+        this.app.post('/api/portrait', express.raw({ type: () => true, limit: '512kb' }), (req, res) => {
+            const result = storeCharacterPortrait(
+                String(req.query.name ?? ''),
+                Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0),
+                this.resolveRequesterAddress(req)
+            );
+
+            res.setHeader('Cache-Control', 'no-store');
+            if (!result.ok) {
+                console.log(`[StaticServer] portrait upload rejected (${result.reason})`);
+                res.status(result.reason === 'not-online' ? 403 : 400).type('text/plain').send(result.reason);
+                return;
+            }
+
+            res.type('text/plain').send('ok');
+        });
+
+        this.app.use(
+            '/portraits',
+            express.static(portraitsDir(), { index: false, maxAge: '5m', fallthrough: false })
+        );
 
         // Serve static files
         this.app.use(express.static(this.contentDir, { index: false }));

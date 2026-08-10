@@ -1,5 +1,7 @@
 import { Client } from './Client';
 import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 import { MasterClassID } from './Enums';
 import { LevelConfig } from './LevelConfig';
 import { GlobalState } from './GlobalState';
@@ -13,6 +15,7 @@ export interface PresenceSnapshot {
     levelKey: string;
     levelName: string;
     areaKey: string;
+    portraitUrl: string | null;
     disciplineKey: string;
     activityKind: 'zone' | 'dungeon';
     playerStatus: string;
@@ -309,6 +312,7 @@ export class PresenceService {
             levelKey,
             levelName,
             areaKey,
+            portraitUrl: PresenceService.resolvePortraitUrl(characterName),
             disciplineKey,
             activityKind,
             playerStatus,
@@ -327,6 +331,42 @@ export class PresenceService {
             startedAt: new Date(startedAtMs).toISOString(),
             startedAtMs
         };
+    }
+
+    /**
+     * Discord fetches Rich Presence image URLs from its own servers, so this only resolves to
+     * something usable when PUBLIC_BASE_URL is publicly reachable. It also has to change when the
+     * portrait does, otherwise Discord's proxy keeps serving the cached copy after a gear change --
+     * hence the mtime cache buster.
+     */
+    static resolvePortraitUrl(characterName: string): string | null {
+        const base = String(Config.PUBLIC_BASE_URL ?? '').trim().replace(/\/+$/, '');
+        const key = normalizeCharacterKey(characterName);
+        if (!base || !/^[a-z0-9_-]+$/.test(key)) {
+            return null;
+        }
+
+        // A loopback base URL is unreachable from Discord's image proxy, so leave the area art in
+        // place during local development instead of pointing at a URL that renders as nothing.
+        try {
+            const parsed = new URL(base);
+            const host = parsed.hostname.toLowerCase();
+            if (
+                (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') ||
+                host === 'localhost' || host === '127.0.0.1' || host === '::1' || host === '[::1]'
+            ) {
+                return null;
+            }
+        } catch {
+            return null;
+        }
+
+        try {
+            const stats = fs.statSync(path.join(Config.DATA_DIR, 'portraits', `${key}.png`));
+            return `${base}/portraits/${key}.png?v=${Math.floor(stats.mtimeMs / 1000)}`;
+        } catch {
+            return null;
+        }
     }
 
     private static getPartySnapshot(characterName: string): PartySnapshot {
