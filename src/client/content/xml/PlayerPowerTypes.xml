@@ -18515,7 +18515,7 @@
 		<DisplayName>Sentinel Form</DisplayName>
 		<BasePowerName>SentinelForm</BasePowerName>
 		<Description>Tranform into a powerful Battle Avatar. [Stats: +15% Damage, +75% Defense, -50% Speed]</Description>
-		<UpgradeDescription>30 second Cooldown, starting when you leave the form.</UpgradeDescription>
+		<UpgradeDescription>If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown.</UpgradeDescription>
 		<IconName>a_PowerIcon_SentinelForm01</IconName>
 		<CastSound>[415]CHR_Sentinel_SentinelFormStart</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
@@ -18675,7 +18675,7 @@
 		<DisplayName>Sentinel Form</DisplayName>
 		<BasePowerName>SentinelForm</BasePowerName>
 		<Description>Tranform into a powerful Battle Avatar. [Stats: +20% Damage, +80% Defense, -50% Speed]</Description>
-		<UpgradeDescription>30 second Cooldown, starting when you leave the form. +5% Sentinel attack Damage.</UpgradeDescription>
+		<UpgradeDescription>If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown. +5% Sentinel attack Damage.</UpgradeDescription>
 		<IconName>a_PowerIcon_SentinelForm01</IconName>
 		<CastSound>[415]CHR_Sentinel_SentinelFormStart</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>

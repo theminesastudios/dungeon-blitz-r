@@ -6,7 +6,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 /**
- * Sentinel Form is locked out for 30 seconds from the moment the Sentinel leaves it.
+ * Sentinel Form's cooldown after leaving scales with the time spent in the form.
  *
  * The form already had a cooldown and it already started at the cast: CombatState.method_51
  * stamps `var_114[powerID] = now + coolDownTime` when the power goes off, method_414 refuses a
@@ -22,8 +22,11 @@ const { execFileSync } = require('child_process');
  * the time the Sentinel drops out of it the stamp has long expired and they can transform again
  * on the same frame. From the player's seat that reads as no cooldown at all.
  *
- * So the cast-time stamp is not enough on its own, and this re-stamps the form power when the
- * form ENDS. Both exits run through EndSentinelForm and both are here:
+ * So the cast-time stamp is used as the start-time marker. When the form ends without any attack,
+ * the unused part is refunded: 6 seconds in form produces 6 seconds of cooldown after leaving.
+ * Making even one form attack, or staying transformed for 30 seconds, produces the full 30-second
+ * cooldown. Both exits remove the SentinelForm buff, so the single
+ * RemoveBuff hook covers manual cancellation, running out of mana, death and forced cleanup.
  *
  *   manual cancel    the hotbar slot holds EndSentinelForm while the buff is up (BuffType sets
  *                    var_611/var_1251), so pressing it casts through method_51.
@@ -39,30 +42,36 @@ const { execFileSync } = require('child_process');
  * SentinelForm1 while a rank 10 Sentinel re-transforms freely -- the exact bug this patch exists
  * to fix, silently reintroduced.
  *
- * A player only ever holds one rank, so stamping all ten costs nothing and depends on nothing.
+ * A player only ever holds one rank. Its still-future cast stamp reveals elapsed time; all ranks
+ * are then stamped together so changing the reported rank cannot bypass the result.
  *
- * CombatState has to be decompiled and recompiled for this: it needs a new method plus two new
- * statements, which no in-place byte splice can express.
+ * CombatState has to be decompiled and recompiled for this: it needs a helper plus a buff-removal
+ * hook, which no small in-place byte splice can express safely.
  */
 
 const TARGET_SWF = path.join('src', 'client', 'content', 'localhost', 'p', 'cbp', 'DungeonBlitz.swf');
 const LOCKOUT_MS = 30000;
 
-// method_51: every player cast, including the hotbar press that cancels the form.
-const CAST_ANCHOR = '         this.var_114[param1.powerID] = _loc5_ + param1.coolDownTime + _loc11_;\n';
-// method_46: the engine-driven cast that ends the form when mana runs out or the Sentinel dies.
-const AUTO_ANCHOR = '         this.var_114[param1.powerID] = this.var_1.mTimeThisTick + param1.coolDownTime + _loc6_;\n';
 const HELPER_ANCHOR = '      public function method_749(param1:PowerType) : void\n';
+const FIELD_ANCHOR = '      private var var_2361:uint;\n';
+const ATTACK_FIELD = '      private var sentinelFormAttackUsed:Boolean = false;\n';
+const CAST_STAMP_ANCHOR = '         this.var_114[param1.powerID] = _loc5_ + param1.coolDownTime + _loc11_;\n';
+const CAST_TRACKER = [
+    '         if(param1.basePowerName == "SentinelForm")',
+    '         {',
+    '            this.sentinelFormAttackUsed = false;',
+    '         }',
+    '         else if(param1.basePowerName == "SFMelee" || param1.basePowerName == "SFMeleeCombo" || param1.basePowerName == "SFRanged")',
+    '         {',
+    '            this.sentinelFormAttackUsed = true;',
+    '         }',
+    ''
+].join('\n');
 
 /**
- * The buff going away is what "returning to normal form" actually means, so the lockout hangs off
- * that too, not only off the cancel cast.
- *
- * The two cast hooks below cover the ways out that go through EndSentinelForm, which is every way
- * a Sentinel normally leaves the form. This covers the rest by construction -- a dispel, a zone
- * change dropping buffs, anything that reaches RemoveBuff -- without needing each one enumerated
- * and proven. Stamping is idempotent (the helper never shortens an existing lockout), so the
- * overlap with the cast hooks costs nothing.
+ * The buff going away is what "returning to normal form" actually means. One hook here covers a
+ * manual cancel, mana exhaustion, death, a dispel and zone cleanup without double-applying the
+ * proportional calculation.
  *
  * "SigilSentinelArmor" is removed on the same power and deliberately does not match: the prefix
  * test is anchored at 0 and that name starts with "Sigil".
@@ -80,34 +89,6 @@ const REMOVE_BUFF_ANCHOR = [
     ''
 ].join('\n');
 
-/**
- * The reason the form never had a working cooldown, and why hooks alone could not give it one.
- *
- * Entity.method_247's form-off branch already stamps the lockout the way this whole change wants:
- *
- *     var_114[SentinelForm<rank>.powerID] = mTimeThisTick + coolDownTime;
- *     method_390(SentinelForm<rank>, 0.75 * (var_31 / const_156));   // 0.75 x mana fraction
- *
- * and then method_390 throws it away. It writes `0 + (1 - param2) * coolDownTime` -- an absolute
- * timestamp, where every other write to var_114 in the codebase is `mTimeThisTick + ...`. Against
- * getTimer(), which is hundreds of thousands of milliseconds into a session, a value that can never
- * exceed coolDownTime is always in the past, so method_414's `now < var_114[id]` test never holds
- * and the form is instantly recastable. That is an authored bug, not something the rebalance
- * introduced, and it fires at any mana level -- the mana fraction only decides how far into the
- * past the stamp lands.
- *
- * It also runs after every hook this patch installs: method_247 resolves when the EndSentinelForm
- * ActivePower completes, which is after the cast started, after the auto-end cast, and after
- * RemoveBuff. So the three stamps below were all being overwritten a few hundred ms later.
- *
- * Excluding the form from method_390 leaves method_247's own `mTimeThisTick + coolDownTime` stamp
- * standing, which is exactly the requested rule: 30 seconds from returning to normal form.
- *
- * Scoped to Sentinel Form rather than fixing the `0 +`. The only other caller is the Blademaster
- * path (var_1586, hudPowers 4-6), where the same bug currently turns "reduce this cooldown" into
- * "clear it outright". Repairing that is a real balance change to another class and belongs in its
- * own decision, not smuggled in here.
- */
 const REDUCE_ANCHOR = [
     '      public function method_390(param1:PowerType, param2:Number) : void',
     '      {',
@@ -115,9 +96,12 @@ const REDUCE_ANCHOR = [
     ''
 ].join('\n');
 
+// The form-off flow calls method_390 after RemoveBuff. Re-entering the helper here preserves the
+// proportional absolute timestamp instead of letting the authored broken reduction clear it.
 const REDUCE_GUARD = [
     '         if(param1.basePowerName == "SentinelForm")',
     '         {',
+    '            this.sentinelFormExitCooldown();',
     '            return;',
     '         }',
     ''
@@ -139,39 +123,59 @@ const GUARD = [
     ''
 ].join('\n');
 
-// The first cut of this helper, kept so an already-patched SWF upgrades in place instead of
-// being skipped as "already done". Drop it once no working copy carries it.
-const LEGACY_HELPER = [
-    '      public function sentinelFormExitCooldown() : void',
-    '      {',
-    '         var _sfRank:int = this.var_498 > 0 ? this.var_498 : 1;',
-    '         var _sfPower:PowerType = class_14.powerTypesDict["SentinelForm" + _sfRank];',
-    '         if(Boolean(_sfPower))',
-    '         {',
-    '            this.var_114[_sfPower.powerID] = this.var_1.mTimeThisTick + ' + LOCKOUT_MS + ';',
-    '         }',
-    '      }'
-].join('\n');
-
 /**
- * uint() around the read, not a bare `<`: var_114 holds nothing at all for a rank that has never
- * been cast, and in AS3 `undefined < 30000` is false, so a bare comparison would skip exactly the
- * ranks that most need stamping. method_390 already reads the dictionary through uint() for the
- * same reason.
- *
- * Never shortens an existing stamp -- a form cancelled two seconds in is still inside the
- * cast-time cooldown, and that one runs longer.
+ * The active rank's cast stamp is `enteredAt + 30000`. While it remains in the future, subtracting
+ * its remaining portion from 30000 yields time already spent in form. Once it is in the past, the
+ * form has run at least 30 seconds and receives the full cooldown.
  */
 const HELPER_BODY = [
     '      public function sentinelFormExitCooldown() : void',
     '      {',
     '         var _sfRank:int = 0;',
     '         var _sfPower:PowerType = null;',
-    '         var _sfReadyAt:uint = this.var_1.mTimeThisTick + ' + LOCKOUT_MS + ';',
+    '         var _sfNow:uint = this.var_1.mTimeThisTick;',
+    '         var _sfUsedMs:uint = ' + LOCKOUT_MS + ';',
+    '         var _sfCurrentReadyAt:uint = 0;',
+    '         var _sfReadyAt:uint = 0;',
+    '         var _sfEarliestReadyAt:uint = 0;',
+    '         var _sfFutureCount:uint = 0;',
     '         for(_sfRank = 0; _sfRank <= 10; _sfRank++)',
     '         {',
     '            _sfPower = class_14.powerTypesDict[_sfRank > 0 ? "SentinelForm" + _sfRank : "SentinelForm"];',
-    '            if(Boolean(_sfPower) && uint(this.var_114[_sfPower.powerID]) < _sfReadyAt)',
+    '            if(Boolean(_sfPower))',
+    '            {',
+    '               _sfCurrentReadyAt = uint(this.var_114[_sfPower.powerID]);',
+    '               if(_sfCurrentReadyAt > _sfNow && _sfCurrentReadyAt - _sfNow <= ' + LOCKOUT_MS + ')',
+    '               {',
+    '                  _sfFutureCount++;',
+    '                  if(_sfEarliestReadyAt == 0 || _sfCurrentReadyAt < _sfEarliestReadyAt)',
+    '                  {',
+    '                     _sfEarliestReadyAt = _sfCurrentReadyAt;',
+    '                  }',
+    '               }',
+    '            }',
+    '         }',
+    '         if(_sfFutureCount == 1)',
+    '         {',
+    '            _sfUsedMs = ' + LOCKOUT_MS + ' - (_sfEarliestReadyAt - _sfNow);',
+    '            _sfReadyAt = _sfNow + _sfUsedMs;',
+    '         }',
+    '         else if(_sfFutureCount > 1)',
+    '         {',
+    '            _sfReadyAt = _sfEarliestReadyAt;',
+    '         }',
+    '         else',
+    '         {',
+    '            _sfReadyAt = _sfNow + ' + LOCKOUT_MS + ';',
+    '         }',
+    '         if(this.sentinelFormAttackUsed)',
+    '         {',
+    '            _sfReadyAt = _sfNow + ' + LOCKOUT_MS + ';',
+    '         }',
+    '         for(_sfRank = 0; _sfRank <= 10; _sfRank++)',
+    '         {',
+    '            _sfPower = class_14.powerTypesDict[_sfRank > 0 ? "SentinelForm" + _sfRank : "SentinelForm"];',
+    '            if(Boolean(_sfPower))',
     '            {',
     '               this.var_114[_sfPower.powerID] = _sfReadyAt;',
     '            }',
@@ -198,7 +202,7 @@ function parseArgs(argv) {
                 '              after every script that writes DungeonBlitz.swf, or players keep',
                 '              loading the cached copy.',
                 '',
-                `Locks Sentinel Form for ${LOCKOUT_MS / 1000}s from the moment the form ends, however it ends.`
+                `Refunds Sentinel Form cooldown after an attack-free early exit.`
             ].join('\n'));
             process.exit(0);
         }
@@ -286,8 +290,29 @@ function patchSource(source, swfPath) {
     let next = source.replace(/\r\n/g, '\n');
     const name = path.basename(swfPath);
 
-    // Upgrade an SWF that carries some earlier cut of this patch: add whichever pieces it lacks.
-    if (next.includes('_sfReadyAt')) {
+    if (!next.includes(ATTACK_FIELD.trim())) {
+        if (!next.includes(FIELD_ANCHOR)) {
+            throw new Error(`${name}: CombatState fields do not open the way this patch expects.`);
+        }
+        next = next.replace(FIELD_ANCHOR, FIELD_ANCHOR + '      \n' + ATTACK_FIELD);
+    }
+    if (!next.includes(CAST_TRACKER.trimEnd())) {
+        if (!next.includes(CAST_STAMP_ANCHOR)) {
+            throw new Error(`${name}: CombatState.method_51 cooldown stamp was not found.`);
+        }
+        next = next.replace(CAST_STAMP_ANCHOR, CAST_STAMP_ANCHOR + CAST_TRACKER);
+    }
+
+    // Upgrade an SWF that carries an earlier full-lockout cut of this patch.
+    if (next.includes('sentinelFormExitCooldown')) {
+        const helperPattern = /      public function sentinelFormExitCooldown\(\) : void[\s\S]*?\n      }\n      \n(?=      public function method_749)/;
+        if (!helperPattern.test(next)) {
+            throw new Error(`${name}: could not isolate the existing sentinelFormExitCooldown helper.`);
+        }
+        next = next.replace(helperPattern, HELPER);
+        next = next.split(GUARD).join('');
+        const obsoleteReduceGuard = REDUCE_GUARD.replace('            this.sentinelFormExitCooldown();\n', '');
+        next = next.split(obsoleteReduceGuard).join('');
         if (!next.includes(REMOVE_BUFF_GUARD)) {
             if (!next.includes(REMOVE_BUFF_ANCHOR)) {
                 throw new Error(`${name}: CombatState.RemoveBuff does not open the way this patch expects.`);
@@ -302,22 +327,12 @@ function patchSource(source, swfPath) {
         }
         return next;
     }
-    // An SWF carrying the rank-reading first cut keeps its two call sites; only the helper
-    // they call is swapped.
-    if (next.includes(LEGACY_HELPER)) {
-        return next.replace(LEGACY_HELPER, HELPER_BODY);
-    }
-    if (next.includes('sentinelFormExitCooldown')) {
-        throw new Error(`${name}: an unrecognised sentinelFormExitCooldown is already present; patch by hand.`);
-    }
-    for (const [anchor, where] of [[CAST_ANCHOR, 'method_51'], [AUTO_ANCHOR, 'method_46'], [HELPER_ANCHOR, 'method_749']]) {
+    for (const [anchor, where] of [[HELPER_ANCHOR, 'method_749']]) {
         if (!next.includes(anchor)) {
             throw new Error(`${name}: CombatState.${where} does not open the way this patch expects.`);
         }
     }
 
-    next = next.replace(CAST_ANCHOR, CAST_ANCHOR + GUARD);
-    next = next.replace(AUTO_ANCHOR, AUTO_ANCHOR + GUARD);
     if (!next.includes(REMOVE_BUFF_ANCHOR)) {
         throw new Error(`${name}: CombatState.RemoveBuff does not open the way this patch expects.`);
     }
@@ -333,10 +348,16 @@ function verifySource(source, swfPath) {
     source = source.replace(/\r\n/g, '\n');
     const required = [
         'public function sentinelFormExitCooldown() : void',
-        `var _sfReadyAt:uint = this.var_1.mTimeThisTick + ${LOCKOUT_MS};`,
+        `var _sfUsedMs:uint = ${LOCKOUT_MS};`,
+        '_sfFutureCount++;',
+        `_sfUsedMs = ${LOCKOUT_MS} - (_sfEarliestReadyAt - _sfNow);`,
+        '_sfReadyAt = _sfEarliestReadyAt;',
+        'private var sentinelFormAttackUsed:Boolean = false;',
+        'this.sentinelFormAttackUsed = false;',
+        'this.sentinelFormAttackUsed = true;',
+        'if(this.sentinelFormAttackUsed)',
         // Matches both the source form and the `while` FFDec turns it back into on re-export.
         '_sfRank <= 10',
-        'uint(this.var_114[_sfPower.powerID]) < _sfReadyAt',
         'this.var_114[_sfPower.powerID] = _sfReadyAt;'
     ];
     // The rank-reading first cut must not survive: it stamps SentinelForm1 whenever var_498 is
@@ -349,24 +370,20 @@ function verifySource(source, swfPath) {
             throw new Error(`${path.basename(swfPath)} is missing the Sentinel Form exit cooldown: ${snippet}`);
         }
     }
-    // One guard is the manual cancel, the other is the mana-ran-out cast. Losing either one
-    // leaves an exit that dodges the lockout, which is the whole bug this fixes.
+    // RemoveBuff is the one authoritative exit. Multiple cast hooks would run the proportional
+    // calculation repeatedly and turn a six-second use into a 24-second cooldown.
     const guards = source.split('this.sentinelFormExitCooldown();').length - 1;
-    if (guards !== 3) {
+    if (guards !== 2) {
         throw new Error(
-            `${path.basename(swfPath)} has ${guards} Sentinel Form exit hooks, expected 3 ` +
-            '(method_51, method_46 and RemoveBuff).'
+            `${path.basename(swfPath)} has ${guards} Sentinel Form exit hooks, expected RemoveBuff and method_390.`
         );
     }
     if (!source.includes('if(param1.buffName.indexOf("SentinelForm") == 0)')) {
         throw new Error(`${path.basename(swfPath)} is missing the buff-removal Sentinel Form hook.`);
     }
-    // Without this the lockout is wiped a few hundred ms after it is set, which is the state the
-    // form shipped in. It is the one piece that actually makes the cooldown appear in game.
-    if (!source.includes('if(param1.basePowerName == "SentinelForm")')) {
+    if (!source.includes(REDUCE_GUARD.trimEnd())) {
         throw new Error(
-            `${path.basename(swfPath)} is missing the method_390 exclusion, so Entity.method_247 ` +
-            'still wipes the Sentinel Form cooldown on exit.'
+            `${path.basename(swfPath)} is missing the idempotent method_390 Sentinel Form finalizer.`
         );
     }
     // The other patches that share CombatState must have survived the recompile.

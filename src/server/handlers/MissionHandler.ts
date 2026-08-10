@@ -1029,9 +1029,9 @@ export class MissionHandler {
             MissionHandler.getMissionStateMap(client.character)[String(MissionID.ClearTheBandits)]
         );
         const clearTheBanditsState = Number(clearTheBandits.state ?? 0);
-        if (clearTheBanditsState >= MissionHandler.MISSION_CLAIMED) {
-            MissionHandler.sendMissionClaimed(client, MissionID.ClearTheBandits);
-        } else if (
+        // Packet 0x84 is a presentation event: replaying it for a claimed mission opens the
+        // reward screen again. Claimed state remains authoritative in the persisted character.
+        if (
             clearTheBanditsState === MissionHandler.MISSION_IN_PROGRESS ||
             clearTheBanditsState === MissionHandler.MISSION_READY_TO_TURN_IN
         ) {
@@ -3588,13 +3588,6 @@ export class MissionHandler {
         const bb = new BitBuffer(false);
         bb.writeMethod4(missionId);
         client.sendBitBuffer(0x86, bb);
-    }
-
-    private static sendMissionClaimed(client: Client, missionId: number): void {
-        const bb = new BitBuffer(false);
-        bb.writeMethod4(missionId);
-        bb.writeMethod11(0, 1);
-        client.sendBitBuffer(0x84, bb);
     }
 
     private static sendMissionCompleteUi(

@@ -29,6 +29,9 @@ const SHIELD_FLURRY = 329;
 const END_SENTINEL_FORM = 448;
 const SENTINEL_FORM_1 = 455;
 const SENTINEL_FORM_10 = 464;
+const SENTINEL_FORM_MELEE_1 = 465;
+const SENTINEL_FORM_MELEE_COMBO_1 = 472;
+const SENTINEL_FORM_RANGED_1 = 479;
 
 function createClient(): any {
     return {
@@ -192,7 +195,7 @@ function testRefusedCastAlsoDropsItsHits(): void {
  *
  *   447 SentinelForm    448 EndSentinelForm    455-464 SentinelForm1..10
  */
-function testLeavingSentinelFormRestartsItsCooldown(): void {
+function testLongSentinelFormUseGetsFullCooldown(): void {
     const client = createClient();
     const now = 1_000_000;
 
@@ -215,26 +218,73 @@ function testLeavingSentinelFormRestartsItsCooldown(): void {
     );
     assert.ok(
         CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 31_000),
-        'the form must come back once the lockout has run'
+        'the form must come back once the full lockout has run'
     );
 }
 
 /*
- * The other half: cancelling early is already inside the cast-time cooldown, and the exit
- * stamp must not shorten it.
+ * Cancelling early refunds the unused part of the 30-second budget. The authority applies its
+ * standard 50% tolerance, so six seconds of use is enforced as three seconds here; the client
+ * presents the exact six-second cooldown.
  */
-function testCancellingEarlyKeepsTheLongerLockout(): void {
+function testCancellingEarlyRefundsCooldownProportionally(): void {
     const client = createClient();
     const now = 1_000_000;
 
     CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, now);
-    CastRateAuthority.chargeCast(client, END_SENTINEL_FORM, now + 2_000);
+    const exitedAt = now + 6_000;
+    CastRateAuthority.chargeCast(client, END_SENTINEL_FORM, exitedAt);
 
     assert.equal(
-        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, now + 3_000),
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 2_900),
         false,
-        'a form cancelled after two seconds must still be on cooldown'
+        'six seconds of form use must not be ready before its proportional lockout'
     );
+    assert.ok(
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 3_100),
+        'an early-cancelled form must return after its proportional lockout'
+    );
+}
+
+function testLaterCancelProducesLongerCooldown(): void {
+    const client = createClient();
+    const now = 1_000_000;
+
+    CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, now);
+    const exitedAt = now + 24_000;
+    CastRateAuthority.chargeCast(client, END_SENTINEL_FORM, exitedAt);
+
+    assert.equal(
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 11_900),
+        false,
+        'using more of Sentinel Form must produce a proportionally longer cooldown'
+    );
+    assert.ok(
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 12_100),
+        'the longer proportional cooldown must still end at the expected time'
+    );
+}
+
+function testAnySentinelFormAttackForfeitsRefund(): void {
+    for (const attack of [SENTINEL_FORM_MELEE_1, SENTINEL_FORM_MELEE_COMBO_1, SENTINEL_FORM_RANGED_1]) {
+        const client = createClient();
+        const now = 1_000_000;
+
+        assert.ok(CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, now));
+        assert.ok(CastRateAuthority.chargeCast(client, attack, now + 1_000));
+        const exitedAt = now + 6_000;
+        assert.ok(CastRateAuthority.chargeCast(client, END_SENTINEL_FORM, exitedAt));
+
+        assert.equal(
+            CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 14_900),
+            false,
+            `Sentinel Form attack ${attack} must forfeit the proportional refund`
+        );
+        assert.ok(
+            CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 15_100),
+            `full cooldown after Sentinel Form attack ${attack} must eventually expire`
+        );
+    }
 }
 
 function main(): void {
@@ -245,8 +295,10 @@ function main(): void {
     testSpeedhackedMeleeIsRefused();
     testSpeedhackedCooldownIsRefused();
     testRefusedCastAlsoDropsItsHits();
-    testLeavingSentinelFormRestartsItsCooldown();
-    testCancellingEarlyKeepsTheLongerLockout();
+    testLongSentinelFormUseGetsFullCooldown();
+    testCancellingEarlyRefundsCooldownProportionally();
+    testLaterCancelProducesLongerCooldown();
+    testAnySentinelFormAttackForfeitsRefund();
     console.log('cast_rate_authority_regression: ok');
 }
 

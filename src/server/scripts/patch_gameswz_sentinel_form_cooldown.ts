@@ -73,8 +73,12 @@ const SENTINEL_TOOLTIPS = new Map<string, Array<[string, string]>>([
   [
     "SentinelForm5",
     [
-      ["Cooldown decreased to 40 seconds.", "30 second Cooldown, starting when you leave the form."],
-      ["Bekleme decreased 40 saniye.", "Formdan cikinca baslayan 30 saniyelik bekleme."],
+      ["Cooldown decreased to 40 seconds.", "If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown."],
+      ["30 second Cooldown, starting when you leave the form.", "If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown."],
+      ["Cooldown after leaving equals time spent in form, up to 30 seconds.", "If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown."],
+      ["Bekleme decreased 40 saniye.", "Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular."],
+      ["Formdan cikinca baslayan 30 saniyelik bekleme.", "Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular."],
+      ["Formdan sonraki bekleme, formda gecirilen sure kadardir; en fazla 30 saniye.", "Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular."],
     ],
   ],
   [
@@ -82,11 +86,27 @@ const SENTINEL_TOOLTIPS = new Map<string, Array<[string, string]>>([
     [
       [
         "Reduced Cooldown to 30 seconds. +5% Sentinel attack Damage.",
+        "If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown. +5% Sentinel attack Damage.",
+      ],
+      [
         "30 second Cooldown, starting when you leave the form. +5% Sentinel attack Damage.",
+        "If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown. +5% Sentinel attack Damage.",
+      ],
+      [
+        "Cooldown after leaving equals time spent in form, up to 30 seconds. +5% Sentinel attack Damage.",
+        "If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown. +5% Sentinel attack Damage.",
       ],
       [
         "Reduced bekleme 30 saniye. +5% nobetci saldiri hasar.",
+        "Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular. +5% nobetci saldiri hasar.",
+      ],
+      [
         "Formdan cikinca baslayan 30 saniyelik bekleme. +5% nobetci saldiri hasar.",
+        "Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular. +5% nobetci saldiri hasar.",
+      ],
+      [
+        "Formdan sonraki bekleme, formda gecirilen sure kadardir; en fazla 30 saniye. +5% nobetci saldiri hasar.",
+        "Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular. +5% nobetci saldiri hasar.",
       ],
     ],
   ],

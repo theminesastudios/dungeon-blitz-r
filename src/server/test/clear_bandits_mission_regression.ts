@@ -440,7 +440,7 @@ async function testTwentiethKillCompletesMission(): Promise<void> {
     assert.deepEqual(client.saveReasons, ['enemy kill mission progress']);
 }
 
-function testTrackerStateResyncsWithoutUsingPlayerDataSlot(): void {
+function testTrackerStateResyncDoesNotReplayClaimedReward(): void {
     const client = createClient();
     client.character.missions[String(MissionID.ClearTheBandits)].currCount = 8;
     MissionHandler.syncMissionStateToClient(client as never);
@@ -456,11 +456,11 @@ function testTrackerStateResyncsWithoutUsingPlayerDataSlot(): void {
     const claimedClient = createClient();
     claimedClient.character.missions[String(MissionID.ClearTheBandits)] = { state: MISSION_CLAIMED, currCount: 20 };
     MissionHandler.syncMissionStateToClient(claimedClient as never);
-    const claimed = claimedClient.sentPackets.find((packet) => packet.id === 0x84);
-    assert.ok(claimed, 'claimed quest state was not restored to suppress the offer marker');
-    const claimedReader = new BitReader(claimed.payload);
-    assert.equal(claimedReader.readMethod4(), MissionID.ClearTheBandits);
-    assert.equal(claimedReader.readBit(), 0);
+    assert.equal(
+        claimedClient.sentPackets.some((packet) => packet.id === 0x84),
+        false,
+        'claimed Mission 11 replayed its reward screen during map-entry synchronization'
+    );
 }
 
 Promise.resolve()
@@ -473,7 +473,7 @@ Promise.resolve()
     .then(testDungeonBanditProgressPersistsBeforeImmediateExit)
     .then(testCanonicalDungeonBanditDeathCountsBeforeExit)
     .then(testTwentiethKillCompletesMission)
-    .then(testTrackerStateResyncsWithoutUsingPlayerDataSlot)
+    .then(testTrackerStateResyncDoesNotReplayClaimedReward)
     .then(() => {
         console.log('Clear the Bandits mission regression tests passed.');
     })
