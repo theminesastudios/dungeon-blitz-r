@@ -492,6 +492,21 @@ export class Client {
         this.deferredCharacterSaveTimer.unref?.();
     }
 
+    public async flushCharacterSave(reason: string): Promise<void> {
+        if (!this.userId || !this.character) {
+            return;
+        }
+
+        this.deferredCharacterSaveGeneration += 1;
+        this.deferredCharacterSaveReason = reason;
+        if (this.deferredCharacterSaveTimer) {
+            clearTimeout(this.deferredCharacterSaveTimer);
+            this.deferredCharacterSaveTimer = null;
+        }
+
+        await this.flushDeferredCharacterSave(reason);
+    }
+
     private async flushDeferredCharacterSave(reason: string): Promise<void> {
         if (this.deferredCharacterSaveInFlight) {
             await this.deferredCharacterSaveInFlight.catch(() => undefined);

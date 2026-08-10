@@ -7,6 +7,7 @@ import { CharacterTemplates } from '../core/CharacterTemplates';
 import { GameData } from '../core/GameData';
 import { LevelConfig } from '../core/LevelConfig';
 import { BuildingID } from '../core/Enums';
+import { MissionID } from '../data/runtime';
 import { WorldEnter } from '../utils/WorldEnter';
 import { buildFreshCharacter, buildMaxedCharacter } from '../tools/seedTestAccount';
 
@@ -38,7 +39,11 @@ function testMaxedCharactersSerialize(): void {
 
         assert.equal(character.level, 50, `${className}: level cap`);
         assert.equal(character.xp, GameData.PLAYER_XP_THRESHOLDS[50], `${className}: xp must sit on the cap`);
-        assert.equal(Object.keys(character.missions).length, 293, `${className}: every mission claimed`);
+        assert.equal(
+            Object.keys(character.missions).length,
+            MissionID.ACTales6Embassy,
+            `${className}: every mission claimed`
+        );
         assert.equal(character.learnedAbilities.length, 39, `${className}: 9 base + 30 masterclass abilities`);
         assert.equal(character.activeAbilities.length, 3, `${className}: exactly three active slots`);
 

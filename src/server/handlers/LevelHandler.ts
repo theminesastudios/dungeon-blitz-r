@@ -118,11 +118,15 @@ export class LevelHandler {
     // Matches the mount travel protection window room changes have always armed.
     private static readonly ROOM_TRANSITION_GRACE_MS = 4000;
 
+    private static executeMissionWork(label: string, work: DeferredMissionWork): void {
+        void work().catch((error) => {
+            console.error(`[LevelHandler] Error processing ${label}:`, error);
+        });
+    }
+
     private static deferMissionWork(client: Client, label: string, work: DeferredMissionWork): void {
         const executeWork = (): void => {
-            void work().catch((error) => {
-                console.error(`[LevelHandler] Error processing ${label}:`, error);
-            });
+            LevelHandler.executeMissionWork(label, work);
         };
 
         const hasLiveSocket = Boolean(
@@ -5966,6 +5970,20 @@ export class LevelHandler {
             }
         }
         if (canonicalTerminal) {
+            if (
+                isDefeatEntState &&
+                !Boolean(ent.questDefeatProcessed) &&
+                !Boolean(canonicalEntity.questDefeatProcessed) &&
+                MissionHandler.shouldWaitForEnemyKillStateMissionProgress(client, canonicalEntity)
+            ) {
+                const levelScope = getClientLevelScope(client);
+                LevelHandler.markEnemyDefeatProcessed(client, entityId, ent);
+                LevelHandler.executeMissionWork(
+                    'terminal enemy defeat mission progress',
+                    () => MissionHandler.handleEnemyDefeatMissionProgressForScope(client, levelScope, canonicalEntity)
+                );
+            }
+
             const previousLocalHpValue = Number(ent?.hp ?? NaN);
             const previousLocalHp = Number.isFinite(previousLocalHpValue)
                 ? Math.max(0, Math.round(previousLocalHpValue))
@@ -6393,8 +6411,9 @@ export class LevelHandler {
             if (shouldProcessMissionProgress || shouldProcessDungeonCompletion) {
                 LevelHandler.markEnemyDefeatProcessed(client, entityId, ent);
                 if (shouldProcessMissionProgress) {
-                    LevelHandler.deferMissionWork(
-                        client,
+                    // Apply the mission mutation before a following level-transfer or disconnect
+                    // packet can snapshot the character and clear this dungeon session.
+                    LevelHandler.executeMissionWork(
                         'enemy defeat mission progress',
                         () => MissionHandler.handleEnemyDefeatMissionProgressForScope(client, levelScope, ent)
                     );
