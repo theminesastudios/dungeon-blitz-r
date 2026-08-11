@@ -2,20 +2,27 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { execFileSync } = require('child_process');
 
 /**
- * Adds Shadowstalker behavior that power XML cannot express: Expertise damage against
- * Bound targets and owner-rank skill inheritance for Shadow Legion clones.
+ * Adds Rogue behavior that power XML cannot express: conditional Black Miasma and Bleed
+ * damage, retuned Expertise damage against Bound targets, and owner-rank skill inheritance
+ * for Shadow Legion clones.
  * CombatState.method_1393 already owns conditional flat-stat damage. _loc5_.var_1033 is
  * the target's cached Bound stack count, _loc7_ is flat damage, and magicDamage is the
  * caster's Expertise-derived stat.
  */
 
 const TARGET_SWF = path.join('src', 'client', 'content', 'localhost', 'p', 'cbp', 'DungeonBlitz.swf');
+const INDEX_HTML = path.join('src', 'client', 'content', 'localhost', 'index.html');
 const OLD_MARKER = 'if(this.var_414 && (param2.basePowerName == "CrippleStrike" || param2.basePowerName == "WhitheringMist"))';
 const LEGACY_BOUND_MARKER = 'param2.basePowerName == "CrippleStrike" ? 0.6 : 0.4';
-const MARKER = 'param2.basePowerName == "CrippleStrike" ? 0.7 : 0.3';
+const PREVIOUS_BLACK_MIASMA_MARKER = 'param2.basePowerName == "BlackStorm" ? 0.8 : 0.4';
+const MARKER = 'param2.basePowerName == "BlackStorm" ? 1.6 : 0.8';
+const EXPERTISE_MARKER = '_loc28_ = 2.25;';
+const BLACK_MIASMA_FIELD = 'internal var _blackMiasma:Boolean = false;';
+const BLEED_STACKS_FIELD = 'internal var _bleedStacks:int = 0;';
 const CLONE_RANK_MARKER = '"FalseSaberMelee","FalseSaberMelee","FalseSaberMelee"';
 const CLONE_ROTATION_MARKER = 'var _shadowLegionCompletedPower:PowerType = this.var_3.hudPowers.shift()';
 const OLD_CLONE_GATE_CHECK = '(param1.powerName.indexOf("FalseChi") == 0 || param1.powerName.indexOf("FalseTendrilDash") == 0 || param1.powerName.indexOf("FalseScorpionSting") == 0)';
@@ -65,7 +72,7 @@ const LEGACY_BOUND_DECOMPILED_REPLACEMENT = LEGACY_BOUND_REPLACEMENT.replace(
     'if(_loc5_.var_1033 && ((param2.basePowerName == "CrippleStrike" && param2.var_7 >= 2) || (param2.basePowerName == "WhitheringMist" && param2.var_7 >= 3)))',
     'if(_loc5_.var_1033 && (param2.basePowerName == "CrippleStrike" && param2.var_7 >= 2 || param2.basePowerName == "WhitheringMist" && param2.var_7 >= 3))'
 );
-const REPLACEMENT = [
+const PREVIOUS_REPLACEMENT = [
     '         if(this.var_1644)',
     '         {',
     '            if(_loc5_.var_683 || _loc5_.var_2291 || _loc5_.var_495 < 0)',
@@ -79,6 +86,111 @@ const REPLACEMENT = [
     '         }',
     '         _loc6_ += _loc7_ / param1;'
 ].join('\n');
+const REPLACEMENT = PREVIOUS_REPLACEMENT.replace(
+    '         _loc6_ += _loc7_ / param1;',
+    [
+        '         if(_loc5_._blackMiasma && (param2.basePowerName == "HeartSeeker" || param2.basePowerName == "BlackStorm"))',
+        '         {',
+        '            _loc6_ += param2.basePowerName == "BlackStorm" ? 1.6 : 0.8;',
+        '         }',
+        '         if(param2.basePowerName == "AssassinateClose" && param2.var_7 >= 3 && _loc5_._bleedStacks > 0)',
+        '         {',
+        '            _loc6_ += (param2.var_7 >= 7 ? 0.015 : 0.01) * _loc5_._bleedStacks;',
+        '         }',
+        '         _loc6_ += _loc7_ / param1;'
+    ].join('\n')
+);
+const PREVIOUS_DECOMPILED_REPLACEMENT = PREVIOUS_REPLACEMENT.replace(
+    'if(_loc5_.var_1033 && ((param2.basePowerName == "CrippleStrike" && param2.var_7 >= 2) || (param2.basePowerName == "WhitheringMist" && param2.var_7 >= 3)))',
+    'if(_loc5_.var_1033 && (param2.basePowerName == "CrippleStrike" && param2.var_7 >= 2 || param2.basePowerName == "WhitheringMist" && param2.var_7 >= 3))'
+);
+
+const STATE_FIELDS_ANCHOR = '      internal var var_1033:int = 0;';
+const STATE_FIELDS_REPLACEMENT = [STATE_FIELDS_ANCHOR, `      ${BLACK_MIASMA_FIELD}`, `      ${BLEED_STACKS_FIELD}`].join('\n      \n');
+const STATE_RESET_ANCHOR = '         this.var_1033 = 0;';
+const STATE_RESET_REPLACEMENT = [STATE_RESET_ANCHOR, '         this._blackMiasma = false;', '         this._bleedStacks = 0;'].join('\n');
+const BUFF_SWITCH_ANCHOR = [
+    '                  case "Bound":',
+    '                     this.var_1033 = _loc31_;',
+    '                     break;'
+].join('\n');
+const BUFF_SWITCH_REPLACEMENT = [
+    BUFF_SWITCH_ANCHOR,
+    '                  case "Bleeding":',
+    '                     this._bleedStacks = _loc31_;',
+    '                     break;',
+    '                  case "ShadowTendrilDamage":',
+    '                  case "ShadowTendrilRank1":',
+    '                  case "ShadowTendrilRank4":',
+    '                  case "ShadowTendrilRank6":',
+    '                  case "ShadowTendrilRank8":',
+    '                  case "ShadowTendrilRank10":',
+    '                     this._blackMiasma = true;',
+    '                     break;'
+].join('\n');
+const OLD_SOULTHIEF_EXPERTISE = [
+    '         if(param2.basePowerName == "Reaper" && Boolean(_loc5_.var_1033))',
+    '         {',
+    '            _loc27_ = 0;',
+    '            if(param2.var_7 >= 10)',
+    '            {',
+    '               _loc27_ = 0.2;',
+    '            }',
+    '            else if(param2.var_7 >= 9)',
+    '            {',
+    '               _loc27_ = 0.15;',
+    '            }',
+    '            else if(param2.var_7 >= 7)',
+    '            {',
+    '               _loc27_ = 0.1;',
+    '            }',
+    '            else if(param2.var_7 >= 5)',
+    '            {',
+    '               _loc27_ = 0.05;',
+    '            }',
+    '            else',
+    '            {',
+    '               _loc27_ = 0.02;',
+    '            }',
+    '            _loc6_ += _loc27_;',
+    '         }',
+    '         if(param2.basePowerName == "PainBender" && Boolean(_loc5_.var_1033))',
+    '         {',
+    '            _loc28_ = 0;',
+    '            if(param2.var_7 >= 10)',
+    '            {',
+    '               _loc28_ = 0.75;',
+    '            }',
+    '            else if(param2.var_7 >= 9)',
+    '            {',
+    '               _loc28_ = 0.6;',
+    '            }',
+    '            else if(param2.var_7 >= 7)',
+    '            {',
+    '               _loc28_ = 0.45;',
+    '            }',
+    '            else if(param2.var_7 >= 4)',
+    '            {',
+    '               _loc28_ = 0.3;',
+    '            }',
+    '            else',
+    '            {',
+    '               _loc28_ = 0.15;',
+    '            }',
+    '            _loc6_ += _loc28_;',
+    '         }'
+].join('\n');
+const SOULTHIEF_EXPERTISE = OLD_SOULTHIEF_EXPERTISE
+    .replaceAll('_loc27_ = 0.2;', '_loc27_ = 1.2;')
+    .replaceAll('_loc27_ = 0.15;', '_loc27_ = 0.9;')
+    .replaceAll('_loc27_ = 0.1;', '_loc27_ = 0.6;')
+    .replaceAll('_loc27_ = 0.05;', '_loc27_ = 0.3;')
+    .replaceAll('_loc27_ = 0.02;', '_loc27_ = 0.12;')
+    .replaceAll('_loc28_ = 0.75;', '_loc28_ = 2.25;')
+    .replaceAll('_loc28_ = 0.6;', '_loc28_ = 1.8;')
+    .replaceAll('_loc28_ = 0.45;', '_loc28_ = 1.35;')
+    .replaceAll('_loc28_ = 0.3;', '_loc28_ = 0.9;')
+    .replaceAll('_loc28_ = 0.15;', '_loc28_ = 0.45;');
 const CLONE_LOCALS_ANCHOR = '         var _loc53_:BuffType = null;';
 const CLONE_LOCALS_REPLACEMENT = [
     '         var _loc53_:BuffType = null;',
@@ -252,6 +364,21 @@ function runFfdec(base, ffdec, args) {
     }
 }
 
+function syncClientRevision(base, swf, verifyOnly) {
+    if (verifyOnly) return;
+    const servedSwf = absolute(base, TARGET_SWF);
+    if (path.resolve(swf) !== path.resolve(servedSwf)) return;
+    const indexPath = path.join(base, INDEX_HTML);
+    const digest = crypto.createHash('sha256').update(fs.readFileSync(swf)).digest('hex').slice(0, 12);
+    const expected = `clientrev=swf-${digest}`;
+    const html = fs.readFileSync(indexPath, 'utf8');
+    if (html.includes(expected)) return;
+    const updated = html.replace(/clientrev=[^&`"'$]+/, expected);
+    if (updated === html) throw new Error('index.html clientrev token not found.');
+    fs.writeFileSync(indexPath, updated, 'utf8');
+    console.log(`  index.html clientrev -> swf-${digest} (cache buster)`);
+}
+
 function main() {
     const base = root();
     const args = parseArgs(process.argv);
@@ -268,21 +395,49 @@ function main() {
     const sourcePath = path.join(work, 'scripts', 'CombatState.as');
     let source = fs.readFileSync(sourcePath, 'utf8').replace(/\r\n/g, '\n');
     if (args.verify) {
-        if (!source.includes(MARKER)) throw new Error('DungeonBlitz.swf is missing the Shadowstalker Bound-target Expertise bonus.');
+        if (!source.includes(MARKER)) throw new Error('DungeonBlitz.swf is missing the Black Miasma conditional damage bonuses.');
+        if (!source.includes(EXPERTISE_MARKER)) throw new Error('DungeonBlitz.swf is missing the Soulthief Expertise multiplier increases.');
+        if (!source.includes(BLACK_MIASMA_FIELD) || !source.includes(BLEED_STACKS_FIELD)) throw new Error('DungeonBlitz.swf is missing Rogue target-state tracking.');
         if (source.includes(OLD_MARKER)) throw new Error('DungeonBlitz.swf still contains the old stealth-only Expertise bonus.');
         if (source.includes(LEGACY_BOUND_MARKER)) throw new Error('DungeonBlitz.swf still contains the old Bound-target Expertise values.');
         if (!source.includes(CLONE_RANK_MARKER)) throw new Error('DungeonBlitz.swf is missing Shadow Legion owner-rank skill inheritance.');
         if (!source.includes(CLONE_ROTATION_MARKER)) throw new Error('DungeonBlitz.swf is missing deterministic Shadow Legion skill rotation.');
+        syncClientRevision(base, swf, true);
         console.log(`Verified Shadowstalker runtime balance changes in ${swf}`);
         return;
     }
 
     let changed = false;
 
+    if (!source.includes(BLACK_MIASMA_FIELD)) {
+        const fieldCount = source.split(STATE_FIELDS_ANCHOR).length - 1;
+        const resetCount = source.split(STATE_RESET_ANCHOR).length - 1;
+        const switchCount = source.split(BUFF_SWITCH_ANCHOR).length - 1;
+        if (fieldCount !== 1) throw new Error(`CombatState state-field anchor matched ${fieldCount} times, expected 1.`);
+        if (resetCount !== 1) throw new Error(`CombatState state-reset anchor matched ${resetCount} times, expected 1.`);
+        if (switchCount !== 1) throw new Error(`CombatState buff-switch anchor matched ${switchCount} times, expected 1.`);
+        source = source.replace(STATE_FIELDS_ANCHOR, STATE_FIELDS_REPLACEMENT);
+        source = source.replace(STATE_RESET_ANCHOR, STATE_RESET_REPLACEMENT);
+        source = source.replace(BUFF_SWITCH_ANCHOR, BUFF_SWITCH_REPLACEMENT);
+        changed = true;
+    }
+
+    if (!source.includes(EXPERTISE_MARKER)) {
+        const expertiseCount = source.split(OLD_SOULTHIEF_EXPERTISE).length - 1;
+        if (expertiseCount !== 1) throw new Error(`CombatState Soulthief Expertise anchor matched ${expertiseCount} times, expected 1.`);
+        source = source.replace(OLD_SOULTHIEF_EXPERTISE, SOULTHIEF_EXPERTISE);
+        changed = true;
+    }
+
     if (source.includes(UNSAFE_DARK_CHI_RANK_CHECK) || source.includes(UNSAFE_TENDRIL_RANK_CHECK)) {
         source = source
             .replace(UNSAFE_DARK_CHI_RANK_CHECK, SAFE_DARK_CHI_RANK_CHECK)
             .replace(UNSAFE_TENDRIL_RANK_CHECK, 'else if(_loc54_ && _loc54_.basePowerName == "ShadowTendrilDash")');
+        changed = true;
+    }
+
+    if (source.includes(PREVIOUS_BLACK_MIASMA_MARKER)) {
+        source = source.replace(PREVIOUS_BLACK_MIASMA_MARKER, MARKER);
         changed = true;
     }
 
@@ -315,7 +470,13 @@ function main() {
         changed = true;
     }
 
-    if (source.includes(LEGACY_BOUND_DECOMPILED_REPLACEMENT)) {
+    if (source.includes(PREVIOUS_DECOMPILED_REPLACEMENT)) {
+        source = source.replace(PREVIOUS_DECOMPILED_REPLACEMENT, REPLACEMENT);
+        changed = true;
+    } else if (source.includes(PREVIOUS_REPLACEMENT)) {
+        source = source.replace(PREVIOUS_REPLACEMENT, REPLACEMENT);
+        changed = true;
+    } else if (source.includes(LEGACY_BOUND_DECOMPILED_REPLACEMENT)) {
         source = source.replace(LEGACY_BOUND_DECOMPILED_REPLACEMENT, REPLACEMENT);
         changed = true;
     } else if (source.includes(LEGACY_BOUND_REPLACEMENT)) {
@@ -340,6 +501,7 @@ function main() {
         changed = true;
     }
     if (!changed) {
+        syncClientRevision(base, swf, false);
         console.log(`Shadowstalker runtime balance changes already present in ${swf}`);
         return;
     }
@@ -348,6 +510,7 @@ function main() {
     runFfdec(base, ffdec, ['-importScript', swf, output, path.join(work, 'scripts')]);
     if (!fs.existsSync(`${swf}.bak`)) fs.copyFileSync(swf, `${swf}.bak`);
     fs.copyFileSync(output, swf);
+    syncClientRevision(base, swf, false);
     console.log(`Patched Shadowstalker runtime balance changes in ${swf}`);
     console.log('NOTE: CombatState was recompiled; re-run the forge charm duration byte patch.');
 }

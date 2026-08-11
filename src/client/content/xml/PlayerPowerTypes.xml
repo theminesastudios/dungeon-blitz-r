@@ -44104,8 +44104,8 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Vicious Assault</DisplayName>
 		<BasePowerName>Assassinate</BasePowerName>
-		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow.</Description>
-		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals 1% more damage per Bleed stack on the target.</Description>
+		<UpgradeDescription>Gains 1% damage per Bleed stack. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Assassinate</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
 		<CastSound>CHR_Executioner_VisiousAssault_Start</CastSound>
@@ -44136,7 +44136,7 @@
 		<PowerGroup>Assassinate</PowerGroup>
 		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. [Stats: x0.96 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1% more damage per Bleed stack on the target. [Stats: x0.96 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44174,7 +44174,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Vicious Assault</DisplayName>
 		<BasePowerName>Assassinate</BasePowerName>
-		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. [Stats: +25% Defense, over 10s]</Description>
+		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals 1% more damage per Bleed stack on the target. [Stats: +25% Defense, over 10s]</Description>
 		<UpgradeDescription>Grants 25% Dash Armor. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Assassinate</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -44206,7 +44206,7 @@
 		<PowerGroup>Assassinate</PowerGroup>
 		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. [Stats: x1.06 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1% more damage per Bleed stack on the target. [Stats: x1.06 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44244,7 +44244,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Vicious Assault</DisplayName>
 		<BasePowerName>Assassinate</BasePowerName>
-		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. [Stats: +25% Defense, over 10s]</Description>
+		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals 1% more damage per Bleed stack on the target. [Stats: +25% Defense, over 10s]</Description>
 		<UpgradeDescription>-5 Mana Cost. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Assassinate</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -44276,7 +44276,7 @@
 		<PowerGroup>Assassinate</PowerGroup>
 		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. [Stats: x1.17 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1% more damage per Bleed stack on the target. [Stats: x1.17 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44314,7 +44314,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Vicious Assault</DisplayName>
 		<BasePowerName>Assassinate</BasePowerName>
-		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. [Stats: +25% Defense, over 10s]</Description>
+		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals 1% more damage per Bleed stack on the target. [Stats: +25% Defense, over 10s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Assassinate</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -44346,7 +44346,7 @@
 		<PowerGroup>Assassinate</PowerGroup>
 		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. [Stats: x1.29 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1% more damage per Bleed stack on the target. [Stats: x1.29 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44384,8 +44384,8 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Vicious Assault</DisplayName>
 		<BasePowerName>Assassinate</BasePowerName>
-		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. [Stats: +45% Defense, over 10s]</Description>
-		<UpgradeDescription>Grants 45% Dash Armor.</UpgradeDescription>
+		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals 1.5% more damage per Bleed stack on the target. [Stats: +45% Defense, over 10s]</Description>
+		<UpgradeDescription>Gains 1.5% damage per Bleed stack. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Assassinate</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
 		<CastSound>CHR_Executioner_VisiousAssault_Start</CastSound>
@@ -44416,7 +44416,7 @@
 		<PowerGroup>Assassinate</PowerGroup>
 		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. [Stats: x1.29 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1.5% more damage per Bleed stack on the target. [Stats: x1.29 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44454,7 +44454,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Vicious Assault</DisplayName>
 		<BasePowerName>Assassinate</BasePowerName>
-		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. [Stats: +45% Defense, over 10s]</Description>
+		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals 1.5% more damage per Bleed stack on the target. [Stats: +45% Defense, over 10s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Assassinate</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -44486,7 +44486,7 @@
 		<PowerGroup>Assassinate</PowerGroup>
 		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. [Stats: x1.35 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1.5% more damage per Bleed stack on the target. [Stats: x1.35 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44524,7 +44524,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Vicious Assault</DisplayName>
 		<BasePowerName>Assassinate</BasePowerName>
-		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. [Stats: +45% Defense, over 10s]</Description>
+		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals 1.5% more damage per Bleed stack on the target. [Stats: +45% Defense, over 10s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_Assassinate</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -44556,7 +44556,7 @@
 		<PowerGroup>Assassinate</PowerGroup>
 		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. [Stats: x1.43 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1.5% more damage per Bleed stack on the target. [Stats: x1.43 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44594,7 +44594,7 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Vicious Assault</DisplayName>
 		<BasePowerName>Assassinate</BasePowerName>
-		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. [Stats: +60% Defense, over 10s]</Description>
+		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals 1.5% more damage per Bleed stack on the target. [Stats: +60% Defense, over 10s]</Description>
 		<UpgradeDescription>Each hit deals 2 stacks of Bleed. Grants 60% Dash Armor.</UpgradeDescription>
 		<IconName>a_PowerIcon_Assassinate</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -44626,7 +44626,7 @@
 		<PowerGroup>Assassinate</PowerGroup>
 		<AddTargetBuff>Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. [Stats: x1.43 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1.5% more damage per Bleed stack on the target. [Stats: x1.43 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -46820,7 +46820,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>PainBender</PowerGroup>
 		<DisplayName>Butcher's Boon</DisplayName>
-		<Description>Strike your opponent with a powerful blow, dealing increased damage to Bound targets [Stats: x3.12 damage]</Description>
+		<Description>Strike your opponent with a powerful blow, gaining 45% of Expertise as bonus damage against Bound targets. [Stats: x3.12 damage]</Description>
 		<IconName>a_PowerIcon_ButchersBoon</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_SoulThief_PainBenderSwing</CastSound>
@@ -46852,8 +46852,8 @@
 		<PowerGroup>PainBender</PowerGroup>
 		<DisplayName>Butcher's Boon</DisplayName>
 		<BasePowerName>PainBender</BasePowerName>
-		<Description>Strike your opponent with a powerful blow, dealing increased damage to Bound targets [Stats: x3.12 damage]</Description>
-		<UpgradeDescription>15% Expertise damage bonus vs Bound</UpgradeDescription>
+		<Description>Strike your opponent with a powerful blow, gaining 45% of Expertise as bonus damage against Bound targets. [Stats: x3.12 damage]</Description>
+		<UpgradeDescription>45% Expertise bonus damage vs Bound</UpgradeDescription>
 		<IconName>a_PowerIcon_ButchersBoon</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_SoulThief_PainBenderSwing</CastSound>
@@ -46885,7 +46885,7 @@
 		<PowerGroup>PainBender</PowerGroup>
 		<DisplayName>Butcher's Boon</DisplayName>
 		<BasePowerName>PainBender</BasePowerName>
-		<Description>Strike your opponent with a powerful blow, dealing increased damage to Bound targets [Stats: x3.25 damage]</Description>
+		<Description>Strike your opponent with a powerful blow, gaining 45% of Expertise as bonus damage against Bound targets. [Stats: x3.25 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ButchersBoon</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -46918,7 +46918,7 @@
 		<PowerGroup>PainBender</PowerGroup>
 		<DisplayName>Butcher's Boon</DisplayName>
 		<BasePowerName>PainBender</BasePowerName>
-		<Description>Strike your opponent with a powerful blow, dealing increased damage to Bound targets [Stats: x3.38 damage]</Description>
+		<Description>Strike your opponent with a powerful blow, gaining 45% of Expertise as bonus damage against Bound targets. [Stats: x3.38 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ButchersBoon</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -46951,8 +46951,8 @@
 		<PowerGroup>PainBender</PowerGroup>
 		<DisplayName>Butcher's Boon</DisplayName>
 		<BasePowerName>PainBender</BasePowerName>
-		<Description>Strike your opponent with a powerful blow, dealing increased damage to Bound targets [Stats: x3.38 damage]</Description>
-		<UpgradeDescription>30% Expertise damage bonus vs Bound</UpgradeDescription>
+		<Description>Strike your opponent with a powerful blow, gaining 90% of Expertise as bonus damage against Bound targets. [Stats: x3.38 damage]</Description>
+		<UpgradeDescription>90% Expertise bonus damage vs Bound</UpgradeDescription>
 		<IconName>a_PowerIcon_ButchersBoon</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_SoulThief_PainBenderSwing</CastSound>
@@ -46984,7 +46984,7 @@
 		<PowerGroup>PainBender</PowerGroup>
 		<DisplayName>Butcher's Boon</DisplayName>
 		<BasePowerName>PainBender</BasePowerName>
-		<Description>Strike your opponent with a powerful blow, dealing increased damage to Bound targets [Stats: x3.56 damage]</Description>
+		<Description>Strike your opponent with a powerful blow, gaining 90% of Expertise as bonus damage against Bound targets. [Stats: x3.56 damage]</Description>
 		<UpgradeDescription>-2 Mana. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ButchersBoon</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -47017,7 +47017,7 @@
 		<PowerGroup>PainBender</PowerGroup>
 		<DisplayName>Butcher's Boon</DisplayName>
 		<BasePowerName>PainBender</BasePowerName>
-		<Description>Strike your opponent with a powerful blow, dealing increased damage to Bound targets [Stats: x3.75 damage]</Description>
+		<Description>Strike your opponent with a powerful blow, gaining 90% of Expertise as bonus damage against Bound targets. [Stats: x3.75 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ButchersBoon</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -47050,8 +47050,8 @@
 		<PowerGroup>PainBender</PowerGroup>
 		<DisplayName>Butcher's Boon</DisplayName>
 		<BasePowerName>PainBender</BasePowerName>
-		<Description>Strike your opponent with a powerful blow, dealing increased damage to Bound targets [Stats: x3.75 damage]</Description>
-		<UpgradeDescription>-1 Mana, 45% Expertise bonus damage vs Bound</UpgradeDescription>
+		<Description>Strike your opponent with a powerful blow, gaining 135% of Expertise as bonus damage against Bound targets. [Stats: x3.75 damage]</Description>
+		<UpgradeDescription>-1 Mana, 135% Expertise bonus damage vs Bound</UpgradeDescription>
 		<IconName>a_PowerIcon_ButchersBoon</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_SoulThief_PainBenderSwing</CastSound>
@@ -47083,7 +47083,7 @@
 		<PowerGroup>PainBender</PowerGroup>
 		<DisplayName>Butcher's Boon</DisplayName>
 		<BasePowerName>PainBender</BasePowerName>
-		<Description>Strike your opponent with a powerful blow, dealing increased damage to Bound targets [Stats: x4 damage]</Description>
+		<Description>Strike your opponent with a powerful blow, gaining 135% of Expertise as bonus damage against Bound targets. [Stats: x4 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ButchersBoon</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -47116,8 +47116,8 @@
 		<PowerGroup>PainBender</PowerGroup>
 		<DisplayName>Butcher's Boon</DisplayName>
 		<BasePowerName>PainBender</BasePowerName>
-		<Description>Strike your opponent with a powerful blow, dealing increased damage to Bound targets [Stats: x4.35 damage]</Description>
-		<UpgradeDescription>-1 Mana, 60% Expertise bonus damage vs Bound, Increased Damage #olddmg#</UpgradeDescription>
+		<Description>Strike your opponent with a powerful blow, gaining 180% of Expertise as bonus damage against Bound targets. [Stats: x4.35 damage]</Description>
+		<UpgradeDescription>-1 Mana, 180% Expertise bonus damage vs Bound, Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ButchersBoon</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_SoulThief_PainBenderSwing</CastSound>
@@ -47149,8 +47149,8 @@
 		<PowerGroup>PainBender</PowerGroup>
 		<DisplayName>Butcher's Boon</DisplayName>
 		<BasePowerName>PainBender</BasePowerName>
-		<Description>Strike your opponent with a powerful blow, dealing increased damage to Bound targets [Stats: x4.35 damage]</Description>
-		<UpgradeDescription>-1 Mana, 75% Expertise bonus damage vs Bound</UpgradeDescription>
+		<Description>Strike your opponent with a powerful blow, gaining 225% of Expertise as bonus damage against Bound targets. [Stats: x4.35 damage]</Description>
+		<UpgradeDescription>-1 Mana, 225% Expertise bonus damage vs Bound</UpgradeDescription>
 		<IconName>a_PowerIcon_ButchersBoon</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_SoulThief_PainBenderSwing</CastSound>
@@ -47180,7 +47180,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
 		<DisplayName>Shadow Scythe</DisplayName>
-		<Description>Vampiric AoE attack. [Stats: x1.62 damage]</Description>
+		<Description>Vampiric AoE attack that gains 12% of Expertise as bonus damage against Bound targets. [Stats: x1.62 damage]</Description>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_Reaper_A[100]CHR_SoulThief_Reaper_B</CastSound>
@@ -47217,7 +47217,7 @@
 		<PowerGroup>Reaper</PowerGroup>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that deals increased damage to Bound targets [Stats: x1.62 damage]</Description>
+		<Description>Vampiric AoE attack that gains 12% of Expertise as bonus damage against Bound targets. [Stats: x1.62 damage]</Description>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_Reaper_A[100]CHR_SoulThief_Reaper_B</CastSound>
@@ -47254,7 +47254,7 @@
 		<PowerGroup>Reaper</PowerGroup>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that deals increased damage to Bound targets [Stats: x1.75 damage]</Description>
+		<Description>Vampiric AoE attack that gains 12% of Expertise as bonus damage against Bound targets. [Stats: x1.75 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -47292,7 +47292,7 @@
 		<PowerGroup>Reaper</PowerGroup>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that deals increased damage to Bound targets [Stats: x1.94 damage]</Description>
+		<Description>Vampiric AoE attack that gains 12% of Expertise as bonus damage against Bound targets. [Stats: x1.94 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -47328,10 +47328,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
+		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that deals increased damage to Bound targets [Stats: x2.12 damage]</Description>
-		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<Description>Vampiric AoE attack that gains 12% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.12 damage]</Description>
+		<UpgradeDescription>Inflicts Armor Bane. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_Reaper_A[100]CHR_SoulThief_Reaper_B</CastSound>
@@ -47366,10 +47367,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
+		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that deals increased damage to Bound targets [Stats: x2.12 damage]</Description>
-		<UpgradeDescription>Deals 5% Expertise damage bonus vs Bound targets.</UpgradeDescription>
+		<Description>Vampiric AoE attack that gains 30% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.12 damage]</Description>
+		<UpgradeDescription>Deals 30% Expertise damage bonus vs Bound targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_Reaper_A[100]CHR_SoulThief_Reaper_B</CastSound>
@@ -47404,9 +47406,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
+		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that deals increased damage to Bound targets [Stats: x2.31 damage]</Description>
+		<Description>Vampiric AoE attack that gains 30% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.31 damage]</Description>
 		<UpgradeDescription>-2 Mana. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -47442,10 +47445,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
+		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that deals increased damage to Bound targets [Stats: x2.31 damage]</Description>
-		<UpgradeDescription>Deals 10% Expertise damage bonus vs Bound targets</UpgradeDescription>
+		<Description>Vampiric AoE attack that gains 60% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.31 damage]</Description>
+		<UpgradeDescription>Deals 60% Expertise damage bonus vs Bound targets</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_Reaper_A[100]CHR_SoulThief_Reaper_B</CastSound>
@@ -47480,9 +47484,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
+		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that deals increased damage to Bound targets [Stats: x2.5 damage]</Description>
+		<Description>Vampiric AoE attack that gains 60% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.5 damage]</Description>
 		<UpgradeDescription>-1 Mana. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -47518,10 +47523,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
+		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that deals increased damage to Bound targets [Stats: x2.5 damage]</Description>
-		<UpgradeDescription>-1 Mana. Deals 15% Expertise damage bonus vs Bound targets.</UpgradeDescription>
+		<Description>Vampiric AoE attack that gains 90% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.5 damage]</Description>
+		<UpgradeDescription>-1 Mana. Deals 90% Expertise damage bonus vs Bound targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_Reaper_A[100]CHR_SoulThief_Reaper_B</CastSound>
@@ -47556,10 +47562,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Reaper</PowerGroup>
+		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that deals increased damage to Bound targets [Stats: x2.5 damage]</Description>
-		<UpgradeDescription>-1 Mana. Deals 20% Expertise damage bonus vs Bound targets.</UpgradeDescription>
+		<Description>Vampiric AoE attack that gains 120% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.5 damage]</Description>
+		<UpgradeDescription>-1 Mana. Deals 120% Expertise damage bonus vs Bound targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_Reaper_A[100]CHR_SoulThief_Reaper_B</CastSound>
@@ -50447,7 +50454,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>HeartSeeker</PowerGroup>
 		<DisplayName>Heart Seeker</DisplayName>
-		<Description>Deliver a single, penetrating strike. [Stats: x3.56 damage]</Description>
+		<Description>Deliver a single, penetrating strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.56 damage]</Description>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_ShadowWalker_HeartSeeker_A[450]CHR_ShadowWalker_HeartSeeker_B</CastSound>
@@ -50479,7 +50486,7 @@
 		<PowerGroup>HeartSeeker</PowerGroup>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating strike. [Stats: x2.59 damage]</Description>
+		<Description>Deliver a single, penetrating strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x2.59 damage]</Description>
 		<UpgradeDescription>Deliver a single, penetrating strike.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50512,7 +50519,7 @@
 		<PowerGroup>HeartSeeker</PowerGroup>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating strike. [Stats: x2.85 damage]</Description>
+		<Description>Deliver a single, penetrating strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x2.85 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50545,7 +50552,7 @@
 		<PowerGroup>HeartSeeker</PowerGroup>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating strike. [Stats: x3.14 damage]</Description>
+		<Description>Deliver a single, penetrating strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.14 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50578,7 +50585,7 @@
 		<PowerGroup>HeartSeeker</PowerGroup>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating strike. [Stats: x3.45 damage]</Description>
+		<Description>Deliver a single, penetrating strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.45 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50612,7 +50619,7 @@
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating, Staggering strike [Stats: x3.62 damage, -100% Speed, over 1s]</Description>
+		<Description>Deliver a single, penetrating, Staggering strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.62 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Staggers the target. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50646,7 +50653,7 @@
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating, Staggering strike [Stats: x3.62 damage, -100% Speed, over 1s]</Description>
+		<Description>Deliver a single, penetrating, Staggering strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.62 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>-2 Mana Cost.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50680,7 +50687,7 @@
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating, Staggering strike [Stats: x3.8 damage, -100% Speed, over 1s]</Description>
+		<Description>Deliver a single, penetrating, Staggering strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.8 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50714,7 +50721,7 @@
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating, Staggering strike. Dazes if cast out of Stealth [Stats: x3.8 damage, -100% Speed, over 1s]</Description>
+		<Description>Deliver a single, penetrating, Staggering strike. Dazes if cast out of Stealth. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.8 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>If Stealthed, Dazes the target.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50748,7 +50755,7 @@
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating, Staggering strike. Dazes if cast out of Stealth [Stats: x3.99 damage, -100% Speed, over 1s]</Description>
+		<Description>Deliver a single, penetrating, Staggering strike. Dazes if cast out of Stealth. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.99 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>-1 Mana. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50782,7 +50789,7 @@
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating, Staggering strike. Dazes if cast out of Stealth [Stats: x4.24 damage, -100% Speed, over 1s]</Description>
+		<Description>Deliver a single, penetrating, Staggering strike. Dazes if cast out of Stealth. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x4.24 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -53087,7 +53094,7 @@
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>ShadowTendrilDash</BasePowerName>
 		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x0.9 damage]</Description>
-		<UpgradeDescription>Dash forward, leaving behind a debilitating cloud that slows and lowers enemy defenses.</UpgradeDescription>
+		<UpgradeDescription>Tendril Defense reduction is 6%.</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
@@ -53352,7 +53359,7 @@
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>ShadowTendrilDash</BasePowerName>
 		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.5 damage]</Description>
-		<UpgradeDescription>Tendril Defense reduction is 40%.</UpgradeDescription>
+		<UpgradeDescription>Tendril Defense reduction is 8%.</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
@@ -53564,7 +53571,7 @@
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>ShadowTendrilDash</BasePowerName>
 		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x2.06 damage]</Description>
-		<UpgradeDescription>Tendril Defense reduction is 50%.Increased Damage #olddmg#</UpgradeDescription>
+		<UpgradeDescription>Tendril Defense reduction is 10%.</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
@@ -54312,7 +54319,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>BlackStorm</PowerGroup>
 		<DisplayName>Black Storm</DisplayName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it [Stats: x1.62 damage]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.62 damage]</Description>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
 		<CastAnimSource>Ground</CastAnimSource>
@@ -54348,7 +54355,7 @@
 		<PowerGroup>BlackStorm</PowerGroup>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it [Stats: x1.16 damage]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.16 damage]</Description>
 		<UpgradeDescription>Create a Shadow Clone that launches an attack on foes around it</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54386,7 +54393,7 @@
 		<AddSelfBuff>MisdirectionArmor20</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. [Stats: x1.16 damage, +20% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.16 damage, +20% Defense, over 3s]</Description>
 		<UpgradeDescription>20% Defense Boost for 3 seconds.</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54424,7 +54431,7 @@
 		<AddSelfBuff>MisdirectionArmor20</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. [Stats: x1.28 damage, +20% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.28 damage, +20% Defense, over 3s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54462,7 +54469,7 @@
 		<AddSelfBuff>MisdirectionArmor20</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. [Stats: x1.41 damage, +20% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.41 damage, +20% Defense, over 3s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54500,7 +54507,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. [Stats: x1.41 damage, +40% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.41 damage, +40% Defense, over 3s]</Description>
 		<UpgradeDescription>40% Defense Boost.</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54538,7 +54545,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. [Stats: x1.55 damage, +40% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.55 damage, +40% Defense, over 3s]</Description>
 		<UpgradeDescription>Increased AoE. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54577,7 +54584,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. [Stats: x1.55 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
+		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.55 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Add Stagger</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54616,7 +54623,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. [Stats: x1.71 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
+		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.71 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54655,7 +54662,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. [Stats: x1.83 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
+		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.83 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Increased AoE. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54694,7 +54701,7 @@
 		<AddSelfBuff>MisdirectionArmor50</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. [Stats: x1.95 damage, +50% Defense, over 3s, -100% Speed, over 1s]</Description>
+		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.95 damage, +50% Defense, over 3s, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>50% Defense Boost. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>

@@ -871,7 +871,7 @@
 		<ModName>Pounce1</ModName>
 		<ModID>86</ModID>
 		<DisplayName>Pounce</DisplayName>
-		<Description>Deal extra damage to slowed and immobilized enemies@Bonus Damage:, 1%, 3%, 5%, 7%, 10%</Description>
+		<Description>Deal extra damage to slowed and immobilized enemies@Bonus Damage:, 1%, 2%, 3%, 5%, 7%</Description>
 		<ModType>WTF</ModType>
 		<SelfValue>.01</SelfValue>
 		<IconName>a_Signet_Pounce</IconName>
@@ -881,7 +881,7 @@
 		<ModID>87</ModID>
 		<DisplayName>Pounce</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.03</SelfValue>
+		<SelfValue>.02</SelfValue>
 		<IconName>a_Signet_Pounce</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -889,7 +889,7 @@
 		<ModID>88</ModID>
 		<DisplayName>Pounce</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.05</SelfValue>
+		<SelfValue>.03</SelfValue>
 		<IconName>a_Signet_Pounce</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -897,7 +897,7 @@
 		<ModID>89</ModID>
 		<DisplayName>Pounce</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.07</SelfValue>
+		<SelfValue>.05</SelfValue>
 		<IconName>a_Signet_Pounce</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -905,7 +905,7 @@
 		<ModID>90</ModID>
 		<DisplayName>Pounce</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.10</SelfValue>
+		<SelfValue>.07</SelfValue>
 		<IconName>a_Signet_Pounce</IconName>
 	</PowerModType>
 	<PowerModType>

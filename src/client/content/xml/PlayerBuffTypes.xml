@@ -1052,8 +1052,8 @@
 		<BuffID>302</BuffID>
 		<Attack>true</Attack>
 		<Duration>500</Duration>
-		<MagicDefense>-0.3</MagicDefense>
-		<MeleeDefense>-0.3</MeleeDefense>
+		<MagicDefense>-0.06</MagicDefense>
+		<MeleeDefense>-0.06</MeleeDefense>
 		<DoTTickLength>500</DoTTickLength>
 		<BuffIcon>a_StatusIcon_DefenseDown</BuffIcon>
 		<GfxType/>
@@ -2407,8 +2407,8 @@
 		<BuffID>441</BuffID>
 		<Attack>true</Attack>
 		<Duration>600</Duration>
-		<MagicDefense>-0.3</MagicDefense>
-		<MeleeDefense>-0.3</MeleeDefense>
+		<MagicDefense>-0.06</MagicDefense>
+		<MeleeDefense>-0.06</MeleeDefense>
 		<DoTTickLength>600</DoTTickLength>
 		<BuffIcon>a_StatusIcon_DefenseDown,a_StatusIcon_SpeedDown</BuffIcon>
 		<GfxType/>
@@ -2417,8 +2417,8 @@
 		<BuffID>442</BuffID>
 		<Attack>true</Attack>
 		<Duration>600</Duration>
-		<MagicDefense>-0.3</MagicDefense>
-		<MeleeDefense>-0.3</MeleeDefense>
+		<MagicDefense>-0.06</MagicDefense>
+		<MeleeDefense>-0.06</MeleeDefense>
 		<DoTTickLength>600</DoTTickLength>
 		<SpeedChange>-0.3</SpeedChange>
 		<BuffIcon>a_StatusIcon_DefenseDown,a_StatusIcon_SpeedDown</BuffIcon>
@@ -2428,8 +2428,8 @@
 		<BuffID>443</BuffID>
 		<Attack>true</Attack>
 		<Duration>600</Duration>
-		<MagicDefense>-0.4</MagicDefense>
-		<MeleeDefense>-0.4</MeleeDefense>
+		<MagicDefense>-0.08</MagicDefense>
+		<MeleeDefense>-0.08</MeleeDefense>
 		<DoTTickLength>600</DoTTickLength>
 		<SpeedChange>-0.3</SpeedChange>
 		<BuffIcon>a_StatusIcon_DefenseDown,a_StatusIcon_SpeedDown</BuffIcon>
@@ -2439,8 +2439,8 @@
 		<BuffID>444</BuffID>
 		<Attack>true</Attack>
 		<Duration>600</Duration>
-		<MagicDefense>-0.4</MagicDefense>
-		<MeleeDefense>-0.4</MeleeDefense>
+		<MagicDefense>-0.08</MagicDefense>
+		<MeleeDefense>-0.08</MeleeDefense>
 		<DoTTickLength>600</DoTTickLength>
 		<SpeedChange>-0.4</SpeedChange>
 		<BuffIcon>a_StatusIcon_DefenseDown,a_StatusIcon_SpeedDown</BuffIcon>
@@ -2450,8 +2450,8 @@
 		<BuffID>445</BuffID>
 		<Attack>true</Attack>
 		<Duration>600</Duration>
-		<MagicDefense>-0.5</MagicDefense>
-		<MeleeDefense>-0.5</MeleeDefense>
+		<MagicDefense>-0.1</MagicDefense>
+		<MeleeDefense>-0.1</MeleeDefense>
 		<DoTTickLength>600</DoTTickLength>
 		<SpeedChange>-0.4</SpeedChange>
 		<BuffIcon>a_StatusIcon_DefenseDown,a_StatusIcon_SpeedDown</BuffIcon>

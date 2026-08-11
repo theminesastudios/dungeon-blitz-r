@@ -20,8 +20,9 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  *
  * Soulthief:
  *   Soul Reaver        self-heal halved
- *   Butcher's Boon     damage x1.25
- *   Shadow Scythe      damage x1.25
+ *   Butcher's Boon     damage x1.25, Bound-target Expertise bonus x3
+ *   Shadow Scythe      damage x1.25, Bound-target Expertise bonus x6,
+ *                      Armor Bane from rank 4
  *   Carnifex           adds Stagger
  *   Insidious Poison   trimmed at the top ranks
  *
@@ -120,6 +121,14 @@ const TARGET_BUFFS = new Map<string, string>([
   ["SoulShatter8", "First:Bound,Staggered"], // was First:Bound
   ["SoulShatter9", "First:Bound,Staggered"], // was First:Bound
   ["SoulShatter10", "First:Bound,Staggered"], // was First:Bound
+  // Shadow Scythe gains Armor Bane at rank 4 and retains it at later ranks.
+  ["Reaper4", "ArmorBane"],
+  ["Reaper5", "ArmorBane"],
+  ["Reaper6", "ArmorBane"],
+  ["Reaper7", "ArmorBane"],
+  ["Reaper8", "ArmorBane"],
+  ["Reaper9", "ArmorBane"],
+  ["Reaper10", "ArmorBane"],
 ]);
 
 // Viperblade: the Executioner discipline passive. Close attacks carry one extra
@@ -378,6 +387,18 @@ const DAMAGE_MULTS = new Map<string, string>([
   ["Reaper10", "2.5"], // 2.0
 ]);
 
+const BLACK_MIASMA_DEFENSE = new Map<string, string>([
+  ["ShadowTendrilDamage", "-0.06"],
+  ["ShadowTendrilRank1", "-0.06"],
+  ["ShadowTendrilRank4", "-0.06"],
+  ["ShadowTendrilRank6", "-0.08"],
+  ["ShadowTendrilRank8", "-0.08"],
+  ["ShadowTendrilRank10", "-0.1"],
+]);
+
+const REAPER_EXPERTISE_BY_RANK = [0.12, 0.12, 0.12, 0.12, 0.12, 0.3, 0.3, 0.6, 0.6, 0.9, 1.2] as const;
+const PAIN_BENDER_EXPERTISE_BY_RANK = [0.45, 0.45, 0.45, 0.45, 0.9, 0.9, 0.9, 1.35, 1.35, 1.8, 2.25] as const;
+
 
 // Assassinate becomes an AoE. Cleave is what Shadow Rend already uses, and the radius is
 // sized to its own 140 reach rather than invented.
@@ -525,7 +546,7 @@ const TALENTSTONE_VALUES = {
   ArmorDmgTime: ["200", "500", "1000", "1500", "2000"],
   StrengthDmgTime: ["500", "1000", "1500", "2000", "3000"],
   StrengthDmg: ["-.003,-.003", "-.005,-.005", "-.01,-.01", "-.015,-.015", "-.02,-.02"],
-  Pounce: [".01", ".03", ".05", ".07", ".10"],
+  Pounce: [".01", ".02", ".03", ".05", ".07"],
 } as const;
 
 const ETHEREAL_EXPERTISE_VALUES = [".01", ".03", ".05", ".07", ".10"] as const;
@@ -535,7 +556,7 @@ const TALENTSTONE_DESCRIPTIONS = new Map<string, string>([
   ["ArmorDmgTime1", "Increases Armor Bane and Armor Break durations@Duration (seconds):, +.2, +.5, +1, +1.5, +2"],
   ["StrengthDmgTime1", "Increases Enfeeble and Weaken durations@Duration (seconds):, +.5, +1, +1.5, +2, +3"],
   ["StrengthDmg1", "Increases Enfeeble and Weaken effectiveness@Effect:, +3%, +5%, +10%, +15%, +20%"],
-  ["Pounce1", "Deal extra damage to slowed and immobilized enemies@Bonus Damage:, 1%, 3%, 5%, 7%, 10%"],
+  ["Pounce1", "Deal extra damage to slowed and immobilized enemies@Bonus Damage:, 1%, 2%, 3%, 5%, 7%"],
   ["Ethereal1", "Gain an Expertise bonus while in Stealth@Expertise Bonus:, 1%, 3%, 5%, 7%, 10%"],
   ["ShadowRefuge1", "Heal for a percent of your Expertise when entering Stealth@Healing (% Expertise):, 5%, 10%, 20%, 35%, 60%"],
 ]);
@@ -661,6 +682,17 @@ function replaceTag(block: string, tag: string, value: string, stats: PatchStats
   });
 }
 
+function formatPercent(value: number): string {
+  return Number.isInteger(value * 100) ? String(value * 100) : String(Math.round(value * 1000) / 10);
+}
+
+function replaceDescriptionProse(block: string, prose: string, stats: PatchStats): string {
+  const match = block.match(/<Description>([\s\S]*?)<\/Description>/);
+  if (!match) return block;
+  const statsSuffix = match[1].match(/\s*\[Stats:[\s\S]*$/)?.[0] ?? "";
+  return replaceTag(block, "Description", `${prose}${statsSuffix}`, stats);
+}
+
 /**
  * Basic attacks come from the equipped weapon, and weapons are per class -- so putting the
  * Viperblade bleed on SaberMelee gave it to every rogue, Soulthief and Shadowwalker
@@ -782,6 +814,61 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
       next = next.split(upgrade[0]).join(upgrade[1]);
     }
 
+    const rankedName = powerName.match(/^(HeartSeeker|BlackStorm|Assassinate|AssassinateClose|PainBender|Reaper)(\d*)$/);
+    if (rankedName) {
+      const family = rankedName[1];
+      const rank = Number(rankedName[2] || 0);
+      let prose = "";
+      if (family === "HeartSeeker") {
+        const effect = rank >= 8
+          ? "Deliver a single, penetrating, Staggering strike. Dazes if cast out of Stealth."
+          : rank >= 5
+            ? "Deliver a single, penetrating, Staggering strike."
+            : "Deliver a single, penetrating strike.";
+        prose = `${effect} Deals 80% bonus damage to enemies affected by Black Miasma.`;
+      } else if (family === "BlackStorm") {
+        const attack = rank >= 7 ? "launches a Staggering attack" : "launches an attack";
+        prose = `Create a Shadow Clone that ${attack} on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma.`;
+      } else if (family === "Assassinate" && rank >= 3) {
+        prose = `Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals ${rank >= 7 ? "1.5" : "1"}% more damage per Bleed stack on the target.`;
+      } else if (family === "AssassinateClose" && rank >= 3) {
+        prose = `Vicious Assault combo. Deals ${rank >= 7 ? "1.5" : "1"}% more damage per Bleed stack on the target.`;
+      } else if (family === "PainBender") {
+        prose = `Strike your opponent with a powerful blow, gaining ${formatPercent(PAIN_BENDER_EXPERTISE_BY_RANK[rank])}% of Expertise as bonus damage against Bound targets.`;
+      } else if (family === "Reaper") {
+        const armorBane = rank >= 4 ? " Inflicts Armor Bane." : "";
+        prose = `Vampiric AoE attack that gains ${formatPercent(REAPER_EXPERTISE_BY_RANK[rank])}% of Expertise as bonus damage against Bound targets.${armorBane}`;
+      }
+      if (prose) {
+        const before = next;
+        next = replaceDescriptionProse(next, prose, stats);
+        touched = touched || next !== before;
+      }
+    }
+
+    const absoluteUpgrade = new Map<string, string>([
+      ["Assassinate3", "Gains 1% damage per Bleed stack. Increased Damage #olddmg#"],
+      ["Assassinate7", "Gains 1.5% damage per Bleed stack. Increased Damage #olddmg#"],
+      ["PainBender1", "45% Expertise bonus damage vs Bound"],
+      ["PainBender4", "90% Expertise bonus damage vs Bound"],
+      ["PainBender7", "-1 Mana, 135% Expertise bonus damage vs Bound"],
+      ["PainBender9", "-1 Mana, 180% Expertise bonus damage vs Bound, Increased Damage #olddmg#"],
+      ["PainBender10", "-1 Mana, 225% Expertise bonus damage vs Bound"],
+      ["Reaper4", "Inflicts Armor Bane. Increased Damage #olddmg#"],
+      ["Reaper5", "Deals 30% Expertise damage bonus vs Bound targets."],
+      ["Reaper7", "Deals 60% Expertise damage bonus vs Bound targets"],
+      ["Reaper9", "-1 Mana. Deals 90% Expertise damage bonus vs Bound targets."],
+      ["Reaper10", "-1 Mana. Deals 120% Expertise damage bonus vs Bound targets."],
+      ["ShadowTendrilDash1", "Tendril Defense reduction is 6%."],
+      ["ShadowTendrilDash6", "Tendril Defense reduction is 8%."],
+      ["ShadowTendrilDash10", "Tendril Defense reduction is 10%."],
+    ]).get(powerName);
+    if (absoluteUpgrade) {
+      const before = next;
+      next = replaceTag(next, "UpgradeDescription", absoluteUpgrade, stats);
+      touched = touched || next !== before;
+    }
+
     if (touched) {
       stats.powerBlocks += 1;
     }
@@ -801,6 +888,13 @@ export function patchPlayerBuffs(xml: string): { xml: string; stats: PatchStats 
     if (heal) {
       touched = true;
       next = replaceTag(next, "DoTDamage", heal, stats);
+    }
+
+    const miasmaDefense = BLACK_MIASMA_DEFENSE.get(buffName);
+    if (miasmaDefense) {
+      touched = true;
+      next = replaceTag(next, "MagicDefense", miasmaDefense, stats);
+      next = replaceTag(next, "MeleeDefense", miasmaDefense, stats);
     }
 
     const expertise = GHOST_BLADE_EXPERTISE.get(buffName);
