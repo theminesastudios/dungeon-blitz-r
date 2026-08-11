@@ -41352,9 +41352,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>CripplingStrike</PowerGroup>
-		<AddTargetBuff>ArmorBane,Weakened,Crippled</AddTargetBuff>
+		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
-		<Description>Strike a foe and apply Weaken, Cripple and Armor Bane. [Stats: x1.86 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. [Stats: x1.86 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
@@ -41384,11 +41384,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>CripplingStrike</PowerGroup>
-		<AddTargetBuff>ArmorBane,Weakened,Crippled</AddTargetBuff>
+		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Weaken, Cripple and Armor Bane. [Stats: x0.67 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
-		<UpgradeDescription>Strike your foes and apply Weaken, Cripple and Armor Bane.</UpgradeDescription>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. [Stats: x0.67 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<UpgradeDescription>Strike your foes and apply Bind, Weaken, Cripple and Armor Bane.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
@@ -41418,11 +41418,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>CripplingStrike</PowerGroup>
-		<AddTargetBuff>ArmorBane,Weakened,Crippled</AddTargetBuff>
+		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Weaken, Cripple and Armor Bane. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
-		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<UpgradeDescription>Deals 70% of Expertise as bonus damage against Bound targets. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
@@ -41452,10 +41452,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>CripplingStrike</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Crippled</AddTargetBuff>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Weaken, Cripple and Armor Bane. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of Armor Bane</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41486,10 +41486,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>CripplingStrike</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Weaken, Cripple and Armor Bane. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of Crippled</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41520,10 +41520,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>CripplingStrike</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Weaken, Cripple and Armor Bane. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of Weaken.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41554,10 +41554,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>CripplingStrike</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Weaken, Cripple and Armor Bane. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41588,10 +41588,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>CripplingStrike</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Weaken, Cripple and Armor Bane. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Deals 3 stacks of Crippled.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41622,10 +41622,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>CripplingStrike</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Weaken, Cripple and Armor Bane. [Stats: x0.85 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.85 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41656,10 +41656,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>CripplingStrike</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Weaken, Cripple and Armor Bane. [Stats: x0.89 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.89 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41690,10 +41690,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>CripplingStrike</PowerGroup>
-		<AddTargetBuff>PoisonStrike,ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Deliver a venomous strike that applies Weaken, Cripple and Armor Bane. [Stats: x0.89 damage, 2 damage/s, over 5s, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Deliver a venomous strike that applies Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.89 damage, 2 damage/s, over 5s, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Poisons the target.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50803,6 +50803,7 @@
 		<PowerID>1434</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>800</Range>
+		<AoERadius>50</AoERadius>
 		<CastAnim>TwistSlash</CastAnim>
 		<CastTime>330</CastTime>
 		<RecoverTime>370</RecoverTime>
@@ -50844,6 +50845,7 @@
 		<PowerID>1435</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>800</Range>
+		<AoERadius>50</AoERadius>
 		<CastAnim>TwistSlash</CastAnim>
 		<CastTime>330</CastTime>
 		<RecoverTime>370</RecoverTime>
@@ -50887,6 +50889,7 @@
 		<PowerID>1436</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>800</Range>
+		<AoERadius>50</AoERadius>
 		<CastAnim>TwistSlash</CastAnim>
 		<CastTime>330</CastTime>
 		<RecoverTime>370</RecoverTime>
@@ -50930,6 +50933,7 @@
 		<PowerID>1437</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>800</Range>
+		<AoERadius>50</AoERadius>
 		<CastAnim>TwistSlash</CastAnim>
 		<CastTime>330</CastTime>
 		<RecoverTime>370</RecoverTime>
@@ -50973,6 +50977,7 @@
 		<PowerID>1438</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>800</Range>
+		<AoERadius>50</AoERadius>
 		<CastAnim>TwistSlash</CastAnim>
 		<CastTime>330</CastTime>
 		<RecoverTime>370</RecoverTime>
@@ -51016,6 +51021,7 @@
 		<PowerID>1439</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>800</Range>
+		<AoERadius>50</AoERadius>
 		<CastAnim>TwistSlash</CastAnim>
 		<CastTime>330</CastTime>
 		<RecoverTime>370</RecoverTime>
@@ -51059,6 +51065,7 @@
 		<PowerID>1440</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>800</Range>
+		<AoERadius>50</AoERadius>
 		<CastAnim>TwistSlash</CastAnim>
 		<CastTime>330</CastTime>
 		<RecoverTime>370</RecoverTime>
@@ -51102,6 +51109,7 @@
 		<PowerID>1441</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>800</Range>
+		<AoERadius>50</AoERadius>
 		<CastAnim>TwistSlash</CastAnim>
 		<CastTime>330</CastTime>
 		<RecoverTime>370</RecoverTime>
@@ -51145,6 +51153,7 @@
 		<PowerID>1442</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>800</Range>
+		<AoERadius>50</AoERadius>
 		<CastAnim>TwistSlash</CastAnim>
 		<CastTime>330</CastTime>
 		<RecoverTime>370</RecoverTime>
@@ -51188,6 +51197,7 @@
 		<PowerID>1443</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>800</Range>
+		<AoERadius>50</AoERadius>
 		<CastAnim>TwistSlash</CastAnim>
 		<CastTime>330</CastTime>
 		<RecoverTime>370</RecoverTime>
@@ -51231,6 +51241,7 @@
 		<PowerID>1444</PowerID>
 		<TargetMethod>RangedAoE</TargetMethod>
 		<Range>800</Range>
+		<AoERadius>50</AoERadius>
 		<CastAnim>TwistSlash</CastAnim>
 		<CastTime>330</CastTime>
 		<RecoverTime>370</RecoverTime>
@@ -51272,37 +51283,490 @@
 	</Power>
 	<Power PowerName="FalseChi">
 		<PowerID>1445</PowerID>
-		<TargetMethod>ProjectilePlayer</TargetMethod>
-		<Range>0</Range>
-		<CastImpulse>-15</CastImpulse>
-		<CastAnim>QuickThrow</CastAnim>
-		<CastTime>200</CastTime>
-		<RecoverTime>500</RecoverTime>
-		<CoolDownTime>3000</CoolDownTime>
+		<TargetMethod>RangedAoE</TargetMethod>
+		<Range>800</Range>
+		<AoERadius>50</AoERadius>
+		<CastAnim>TwistSlash</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>370</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>0</ProcModifier>
+		<BaseDamageMult>3.25</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AggroBonus>1</AggroBonus>
+		<AddTargetBuff>ArmorBane,Bound,Crippled,Crippled</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
 		<SwooshChange>Shadow</SwooshChange>
-		<DisplayName>False Chi</DisplayName>
-		<Description>Ranged attack for Shadow Clones [Stats: x1 damage]</Description>
+		<DisplayName>Dark Chi</DisplayName>
+		<Description>Fires projectile that applies Cripple, Bind and Armor Bane. [Stats: x3.25 damage, -5% Defense, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Speed, over 5s]</Description>
+		<IconName>a_PowerIcon_DarkChi</IconName>
 		<CastGfx/>
-		<FireSound>snd_pwr_melee_rogue_01</FireSound>
+		<FireSound>CHR_ShadowWalker_DarkChi_Hit_01|CHR_ShadowWalker_DarkChi_Hit_02|CHR_ShadowWalker_DarkChi_Hit_03</FireSound>
 		<FireGfx>
 			<AnimFile>SFX_2.swf</AnimFile>
 			<AnimClass>a_DarkChiImpact</AnimClass>
 			<AnimScale>1</AnimScale>
 			<FireAndForget>true</FireAndForget>
 		</FireGfx>
-		<HitSound>CHR_ShadowWalker_DarkChi_Hit_01|CHR_ShadowWalker_DarkChi_Hit_02|CHR_ShadowWalker_DarkChi_Hit_03</HitSound>
+		<HitSound>snd_pwr_melee_rogue_01</HitSound>
 		<HitGfx>
 			<AnimFile>SFX_2.swf</AnimFile>
 			<AnimClass>a_DarkChiImpact</AnimClass>
 			<AnimScale>1</AnimScale>
 			<FireAndForget>true</FireAndForget>
 		</HitGfx>
+		<ProjSound>CHR_ShadowWalker_DarkChi_Fire</ProjSound>
+		<ProjGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiShot</AnimClass>
+			<AnimScale>.75</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="FalseChi1">
+		<PowerID>7100</PowerID>
+		<TargetMethod>RangedAoE</TargetMethod>
+		<Range>800</Range>
+		<AoERadius>50</AoERadius>
+		<CastAnim>TwistSlash</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>370</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1.2</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,Bound,Crippled,Crippled</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<SwooshChange>Shadow</SwooshChange>
+		<DisplayName>Dark Chi</DisplayName>
+		<BasePowerName>FalseChi</BasePowerName>
+		<Description>Fires a projectile that applies Cripple, Bind and Armor Bane. [Stats: x1.2 damage, -5% Defense, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Speed, over 5s]</Description>
+		<UpgradeDescription>Fires a projectile that applies Bind, Armor Bane and 2 Stacks of Cripple.</UpgradeDescription>
+		<IconName>a_PowerIcon_DarkChi</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_DarkChi_Hit_01|CHR_ShadowWalker_DarkChi_Hit_02|CHR_ShadowWalker_DarkChi_Hit_03</FireSound>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
+		<HitSound>snd_pwr_melee_rogue_01</HitSound>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</HitGfx>
+		<ProjSound>CHR_ShadowWalker_DarkChi_Fire</ProjSound>
+		<ProjGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiShot</AnimClass>
+			<AnimScale>.75</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="FalseChi2">
+		<PowerID>7101</PowerID>
+		<TargetMethod>RangedAoE</TargetMethod>
+		<Range>800</Range>
+		<AoERadius>50</AoERadius>
+		<CastAnim>TwistSlash</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>370</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1.2</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,Bound,Crippled,Crippled,Weakened</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<SwooshChange>Shadow</SwooshChange>
+		<DisplayName>Dark Chi</DisplayName>
+		<BasePowerName>FalseChi</BasePowerName>
+		<Description>Fires a projectile that applies Cripple, Bind, Weaken and Armor Bane. [Stats: x1.2 damage, -5% Defense, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Speed, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Adds Weaken</UpgradeDescription>
+		<IconName>a_PowerIcon_DarkChi</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_DarkChi_Hit_01|CHR_ShadowWalker_DarkChi_Hit_02|CHR_ShadowWalker_DarkChi_Hit_03</FireSound>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
+		<HitSound>snd_pwr_melee_rogue_01</HitSound>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</HitGfx>
+		<ProjSound>CHR_ShadowWalker_DarkChi_Fire</ProjSound>
+		<ProjGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiShot</AnimClass>
+			<AnimScale>.75</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="FalseChi3">
+		<PowerID>7102</PowerID>
+		<TargetMethod>RangedAoE</TargetMethod>
+		<Range>800</Range>
+		<AoERadius>50</AoERadius>
+		<CastAnim>TwistSlash</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>370</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1.5</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,Bound,Crippled,Crippled,Weakened</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<SwooshChange>Shadow</SwooshChange>
+		<DisplayName>Dark Chi</DisplayName>
+		<BasePowerName>FalseChi</BasePowerName>
+		<Description>Fires a projectile that applies Cripple, Bind, Weaken and Armor Bane. [Stats: x1.5 damage, -5% Defense, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Speed, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_DarkChi</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_DarkChi_Hit_01|CHR_ShadowWalker_DarkChi_Hit_02|CHR_ShadowWalker_DarkChi_Hit_03</FireSound>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
+		<HitSound>snd_pwr_melee_rogue_01</HitSound>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</HitGfx>
+		<ProjSound>CHR_ShadowWalker_DarkChi_Fire</ProjSound>
+		<ProjGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiShot</AnimClass>
+			<AnimScale>.75</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="FalseChi4">
+		<PowerID>7103</PowerID>
+		<TargetMethod>RangedAoE</TargetMethod>
+		<Range>800</Range>
+		<AoERadius>50</AoERadius>
+		<CastAnim>TwistSlash</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>370</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1.9</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,Bound,Crippled,Crippled,Weakened</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<SwooshChange>Shadow</SwooshChange>
+		<DisplayName>Dark Chi</DisplayName>
+		<BasePowerName>FalseChi</BasePowerName>
+		<Description>Fires a projectile that applies Cripple, Bind, Weaken and Armor Bane. [Stats: x1.9 damage, -5% Defense, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Speed, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_DarkChi</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_DarkChi_Hit_01|CHR_ShadowWalker_DarkChi_Hit_02|CHR_ShadowWalker_DarkChi_Hit_03</FireSound>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
+		<HitSound>snd_pwr_melee_rogue_01</HitSound>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</HitGfx>
+		<ProjSound>CHR_ShadowWalker_DarkChi_Fire</ProjSound>
+		<ProjGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiShot</AnimClass>
+			<AnimScale>.75</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="FalseChi5">
+		<PowerID>7104</PowerID>
+		<TargetMethod>RangedAoE</TargetMethod>
+		<Range>800</Range>
+		<AoERadius>50</AoERadius>
+		<CastAnim>TwistSlash</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>370</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>2.1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,ArmorBane,Bound,Crippled,Crippled,Weakened</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<SwooshChange>Shadow</SwooshChange>
+		<DisplayName>Dark Chi</DisplayName>
+		<BasePowerName>FalseChi</BasePowerName>
+		<Description>Fires a projectile that applies Cripple, Bind, Weaken and Armor Bane. [Stats: x2.1 damage, -5% Defense, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Speed, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Adds Armor Bane. Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_DarkChi</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_DarkChi_Hit_01|CHR_ShadowWalker_DarkChi_Hit_02|CHR_ShadowWalker_DarkChi_Hit_03</FireSound>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
+		<HitSound>snd_pwr_melee_rogue_01</HitSound>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</HitGfx>
+		<ProjSound>CHR_ShadowWalker_DarkChi_Fire</ProjSound>
+		<ProjGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiShot</AnimClass>
+			<AnimScale>.75</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="FalseChi6">
+		<PowerID>7105</PowerID>
+		<TargetMethod>RangedAoE</TargetMethod>
+		<Range>800</Range>
+		<AoERadius>50</AoERadius>
+		<CastAnim>TwistSlash</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>370</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>2.1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,ArmorBane,Bound,Bound,Crippled,Crippled,Crippled,Weakened</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<SwooshChange>Shadow</SwooshChange>
+		<DisplayName>Dark Chi</DisplayName>
+		<BasePowerName>FalseChi</BasePowerName>
+		<Description>Fires a projectile that applies Cripple, Bind, Weaken and Armor Bane. [Stats: x2.1 damage, -5% Defense, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Speed, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Adds extra stack of Cripple and Bound.</UpgradeDescription>
+		<IconName>a_PowerIcon_DarkChi</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_DarkChi_Hit_01|CHR_ShadowWalker_DarkChi_Hit_02|CHR_ShadowWalker_DarkChi_Hit_03</FireSound>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
+		<HitSound>snd_pwr_melee_rogue_01</HitSound>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</HitGfx>
+		<ProjSound>CHR_ShadowWalker_DarkChi_Fire</ProjSound>
+		<ProjGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiShot</AnimClass>
+			<AnimScale>.75</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="FalseChi7">
+		<PowerID>7106</PowerID>
+		<TargetMethod>RangedAoE</TargetMethod>
+		<Range>800</Range>
+		<AoERadius>50</AoERadius>
+		<CastAnim>TwistSlash</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>370</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>2.2</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,ArmorBane,Bound,Bound,Crippled,Crippled,Crippled,Weakened</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<SwooshChange>Shadow</SwooshChange>
+		<DisplayName>Dark Chi</DisplayName>
+		<BasePowerName>FalseChi</BasePowerName>
+		<Description>Fires a projectile that applies Cripple, Bind, Weaken and Armor Bane. [Stats: x2.2 damage, -5% Defense, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Speed, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_DarkChi</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_DarkChi_Hit_01|CHR_ShadowWalker_DarkChi_Hit_02|CHR_ShadowWalker_DarkChi_Hit_03</FireSound>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
+		<HitSound>snd_pwr_melee_rogue_01</HitSound>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</HitGfx>
+		<ProjSound>CHR_ShadowWalker_DarkChi_Fire</ProjSound>
+		<ProjGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiShot</AnimClass>
+			<AnimScale>.75</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="FalseChi8">
+		<PowerID>7107</PowerID>
+		<TargetMethod>RangedAoE</TargetMethod>
+		<Range>800</Range>
+		<AoERadius>50</AoERadius>
+		<CastAnim>TwistSlash</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>370</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>2.2</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,ArmorBane,Bound,Bound,Crippled,Crippled,Crippled,Weakened,Weakened</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<SwooshChange>Shadow</SwooshChange>
+		<DisplayName>Dark Chi</DisplayName>
+		<BasePowerName>FalseChi</BasePowerName>
+		<Description>Fires a projectile that applies Cripple, Bind, Weaken and Armor Bane. [Stats: x2.2 damage, -5% Defense, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Speed, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Adds a stack of Weaken.</UpgradeDescription>
+		<IconName>a_PowerIcon_DarkChi</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_DarkChi_Hit_01|CHR_ShadowWalker_DarkChi_Hit_02|CHR_ShadowWalker_DarkChi_Hit_03</FireSound>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
+		<HitSound>snd_pwr_melee_rogue_01</HitSound>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</HitGfx>
+		<ProjSound>CHR_ShadowWalker_DarkChi_Fire</ProjSound>
+		<ProjGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiShot</AnimClass>
+			<AnimScale>.75</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="FalseChi9">
+		<PowerID>7108</PowerID>
+		<TargetMethod>RangedAoE</TargetMethod>
+		<Range>800</Range>
+		<AoERadius>50</AoERadius>
+		<CastAnim>TwistSlash</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>370</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>2.3</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,ArmorBane,Bound,Bound,Crippled,Crippled,Crippled,Weakened,Weakened</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<SwooshChange>Shadow</SwooshChange>
+		<DisplayName>Dark Chi</DisplayName>
+		<BasePowerName>FalseChi</BasePowerName>
+		<Description>Fires a projectile that applies Cripple, Bind, Weaken and Armor Bane. [Stats: x2.3 damage, -5% Defense, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Speed, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_DarkChi</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_DarkChi_Hit_01|CHR_ShadowWalker_DarkChi_Hit_02|CHR_ShadowWalker_DarkChi_Hit_03</FireSound>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
+		<HitSound>snd_pwr_melee_rogue_01</HitSound>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</HitGfx>
+		<ProjSound>CHR_ShadowWalker_DarkChi_Fire</ProjSound>
+		<ProjGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiShot</AnimClass>
+			<AnimScale>.75</AnimScale>
+			<FireAndForget>FALSE</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="FalseChi10">
+		<PowerID>7109</PowerID>
+		<TargetMethod>RangedAoE</TargetMethod>
+		<Range>800</Range>
+		<AoERadius>50</AoERadius>
+		<CastAnim>TwistSlash</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>370</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>2.5</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,ArmorBane,Bound,Bound,Crippled,Crippled,Crippled,Weakened,Weakened</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<SwooshChange>Shadow</SwooshChange>
+		<DisplayName>Dark Chi</DisplayName>
+		<BasePowerName>FalseChi</BasePowerName>
+		<Description>Fires a projectile that applies Cripple, Bind, Weaken and Armor Bane. Dazes if cast out of Stealth [Stats: x2.5 damage, -5% Defense, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Speed, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>If Stealthed, Dazes target. Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_DarkChi</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_DarkChi_Hit_01|CHR_ShadowWalker_DarkChi_Hit_02|CHR_ShadowWalker_DarkChi_Hit_03</FireSound>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
+		<HitSound>snd_pwr_melee_rogue_01</HitSound>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_DarkChiImpact</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</HitGfx>
+		<ProjSound>CHR_ShadowWalker_DarkChi_Fire</ProjSound>
 		<ProjGfx>
 			<AnimFile>SFX_2.swf</AnimFile>
 			<AnimClass>a_DarkChiShot</AnimClass>
@@ -51397,11 +51861,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<SpawnedMonsters>ShadowLegionClone1,ShadowLegionCloneTwo1</SpawnedMonsters>
-		<SpawnLimit>2</SpawnLimit>
-		<SpawnDuration>10000</SpawnDuration>
+		<SpawnedMonsters>ShadowLegionClone1,ShadowLegionCloneTwo1,ShadowLegionCloneThree1</SpawnedMonsters>
+		<SpawnLimit>3</SpawnLimit>
+		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
-		<Description>Summon two Shadow Clones to fight alongside you.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowLegion</FireSound>
@@ -51428,12 +51892,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<SpawnedMonsters>ShadowLegionClone1,ShadowLegionCloneTwo1</SpawnedMonsters>
-		<SpawnLimit>2</SpawnLimit>
-		<SpawnDuration>10000</SpawnDuration>
+		<SpawnedMonsters>ShadowLegionClone1,ShadowLegionCloneTwo1,ShadowLegionCloneThree1</SpawnedMonsters>
+		<SpawnLimit>3</SpawnLimit>
+		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon two Shadow Clones to fight alongside you.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
 		<UpgradeDescription>Summon two Shadow Clones to fight alongside you.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -51461,12 +51925,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<SpawnedMonsters>ShadowLegionClone2,ShadowLegionCloneTwo2</SpawnedMonsters>
-		<SpawnLimit>2</SpawnLimit>
-		<SpawnDuration>10000</SpawnDuration>
+		<SpawnedMonsters>ShadowLegionClone2,ShadowLegionCloneTwo2,ShadowLegionCloneThree2</SpawnedMonsters>
+		<SpawnLimit>3</SpawnLimit>
+		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon two Shadow Clones to fight alongside you.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
 		<UpgradeDescription>-2 Mana Cost. Clones have +15% HP and increased Hate.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -51494,12 +51958,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<SpawnedMonsters>ShadowLegionClone3,ShadowLegionCloneTwo3</SpawnedMonsters>
-		<SpawnLimit>2</SpawnLimit>
-		<SpawnDuration>10000</SpawnDuration>
+		<SpawnedMonsters>ShadowLegionClone3,ShadowLegionCloneTwo3,ShadowLegionCloneThree3</SpawnedMonsters>
+		<SpawnLimit>3</SpawnLimit>
+		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon two Shadow Clones to fight alongside you.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
 		<UpgradeDescription>-2 Mana Cost. Clones have +15% Defense and increased Hate.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -51527,12 +51991,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<SpawnedMonsters>ShadowLegionClone4,ShadowLegionCloneTwo4</SpawnedMonsters>
-		<SpawnLimit>2</SpawnLimit>
-		<SpawnDuration>10000</SpawnDuration>
+		<SpawnedMonsters>ShadowLegionClone4,ShadowLegionCloneTwo4,ShadowLegionCloneThree4</SpawnedMonsters>
+		<SpawnLimit>3</SpawnLimit>
+		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon two Shadow Clones to fight alongside you.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
 		<UpgradeDescription>-2 Mana Cost. Clones explode on death, Weakening targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -51560,12 +52024,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<SpawnedMonsters>ShadowLegionClone5,ShadowLegionCloneTwo5</SpawnedMonsters>
-		<SpawnLimit>2</SpawnLimit>
-		<SpawnDuration>10000</SpawnDuration>
+		<SpawnedMonsters>ShadowLegionClone5,ShadowLegionCloneTwo5,ShadowLegionCloneThree5</SpawnedMonsters>
+		<SpawnLimit>3</SpawnLimit>
+		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon two Shadow Clones to fight alongside you.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
 		<UpgradeDescription>-2 Mana Cost. Clones have +15% HP and increased Hate.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -51593,12 +52057,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<SpawnedMonsters>ShadowLegionClone6,ShadowLegionCloneTwo6</SpawnedMonsters>
-		<SpawnLimit>2</SpawnLimit>
-		<SpawnDuration>10000</SpawnDuration>
+		<SpawnedMonsters>ShadowLegionClone6,ShadowLegionCloneTwo6,ShadowLegionCloneThree6</SpawnedMonsters>
+		<SpawnLimit>3</SpawnLimit>
+		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon two Shadow Clones to fight alongside you.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
 		<UpgradeDescription>-2 Mana Cost. Clones have +15% Defense and increased Hate.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -51626,12 +52090,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<SpawnedMonsters>ShadowLegionClone7,ShadowLegionCloneTwo7</SpawnedMonsters>
-		<SpawnLimit>2</SpawnLimit>
-		<SpawnDuration>10000</SpawnDuration>
+		<SpawnedMonsters>ShadowLegionClone7,ShadowLegionCloneTwo7,ShadowLegionCloneThree7</SpawnedMonsters>
+		<SpawnLimit>3</SpawnLimit>
+		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon two Shadow Clones to fight alongside you.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
 		<UpgradeDescription>-3 Mana Cost. Clone explosion deals +5% Damage and Binds targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -51659,12 +52123,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<SpawnedMonsters>ShadowLegionClone8,ShadowLegionCloneTwo8</SpawnedMonsters>
-		<SpawnLimit>2</SpawnLimit>
-		<SpawnDuration>10000</SpawnDuration>
+		<SpawnedMonsters>ShadowLegionClone8,ShadowLegionCloneTwo8,ShadowLegionCloneThree8</SpawnedMonsters>
+		<SpawnLimit>3</SpawnLimit>
+		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon two Shadow Clones to fight alongside you.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
 		<UpgradeDescription>-3 Mana Cost. Clones have +15% HP and increased Hate.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -51692,12 +52156,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<SpawnedMonsters>ShadowLegionClone9,ShadowLegionCloneTwo9</SpawnedMonsters>
-		<SpawnLimit>2</SpawnLimit>
-		<SpawnDuration>10000</SpawnDuration>
+		<SpawnedMonsters>ShadowLegionClone9,ShadowLegionCloneTwo9,ShadowLegionCloneThree9</SpawnedMonsters>
+		<SpawnLimit>3</SpawnLimit>
+		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon two Shadow Clones to fight alongside you.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
 		<UpgradeDescription>-4 Mana Cost. Clones have +15% Defense and increased Hate.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -51725,12 +52189,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<SpawnedMonsters>ShadowLegionClone10,ShadowLegionCloneTwo10</SpawnedMonsters>
-		<SpawnLimit>2</SpawnLimit>
-		<SpawnDuration>10000</SpawnDuration>
+		<SpawnedMonsters>ShadowLegionClone10,ShadowLegionCloneTwo10,ShadowLegionCloneThree10</SpawnedMonsters>
+		<SpawnLimit>3</SpawnLimit>
+		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon two Shadow Clones to fight alongside you.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
 		<UpgradeDescription>Clone explosion deals +10% Damage and Blinds targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -51827,7 +52291,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SaberMelee</PowerGroup>
-		<AggroBonus>1</AggroBonus>
+		<AddTargetBuff>Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Sword Melee</DisplayName>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -52185,9 +52650,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>WhitheringMist</PowerGroup>
-		<AddTargetBuff>Weakened</AddTargetBuff>
+		<AddTargetBuff>Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
-		<Description>Release a debilitating cloud that Weakens and Blinds your foes. [Stats: x1.35 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. [Stats: x1.35 damage, -10% Melee Damage, over 5s]</Description>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
 		<CastSound>CHR_ShadowWalker_WitheringMist_A</CastSound>
@@ -52218,11 +52683,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>WhitheringMist</PowerGroup>
-		<AddTargetBuff>Weakened</AddTargetBuff>
+		<AddTargetBuff>Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens your foes. [Stats: x0.95 damage, -10% Melee Damage, over 5s]</Description>
-		<UpgradeDescription>Release a debilitating cloud that Weakens your foes.</UpgradeDescription>
+		<Description>Release a debilitating cloud that Weakens and Binds your foes. [Stats: x0.95 damage, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Release a debilitating cloud that Weakens and Binds your foes.</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
 		<CastSound>CHR_ShadowWalker_WitheringMist_A</CastSound>
@@ -52253,10 +52718,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>WhitheringMist</PowerGroup>
-		<AddTargetBuff>Weakened</AddTargetBuff>
+		<AddTargetBuff>Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens your foes. [Stats: x1.09 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens and Binds your foes. [Stats: x1.09 damage, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52288,11 +52753,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>WhitheringMist</PowerGroup>
-		<AddTargetBuff>Weakened</AddTargetBuff>
+		<AddTargetBuff>Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens your foes. [Stats: x1.25 damage, -10% Melee Damage, over 5s]</Description>
-		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<Description>Release a debilitating cloud that Weakens and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.25 damage, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Deals 30% of Expertise as bonus damage against Bound targets. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
 		<CastSound>CHR_ShadowWalker_WitheringMist_A</CastSound>
@@ -52323,10 +52788,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>WhitheringMist</PowerGroup>
-		<AddTargetBuff>Weakened,Weakened</AddTargetBuff>
+		<AddTargetBuff>Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens your foes. [Stats: x1.25 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.25 damage, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of Weaken. Increased Range and AoE.</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52358,10 +52823,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>WhitheringMist</PowerGroup>
-		<AddTargetBuff>Weakened,Weakened</AddTargetBuff>
+		<AddTargetBuff>Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens and Blinds your foes. [Stats: x1.44 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.44 damage, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52393,10 +52858,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>WhitheringMist</PowerGroup>
-		<AddTargetBuff>Blinded,Weakened,Weakened</AddTargetBuff>
+		<AddTargetBuff>Blinded,Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens and Blinds your foes. [Stats: x1.44 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.44 damage, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Adds Blind</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52428,10 +52893,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>WhitheringMist</PowerGroup>
-		<AddTargetBuff>Blinded,Weakened,Weakened</AddTargetBuff>
+		<AddTargetBuff>Blinded,Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens and Blinds your foes. [Stats: x1.58 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.58 damage, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52463,10 +52928,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>WhitheringMist</PowerGroup>
-		<AddTargetBuff>Blinded,Weakened,Weakened</AddTargetBuff>
+		<AddTargetBuff>Blinded,Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens and Blinds your foes. [Stats: x1.74 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.74 damage, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52498,10 +52963,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>WhitheringMist</PowerGroup>
-		<AddTargetBuff>Blinded,Weakened,Weakened</AddTargetBuff>
+		<AddTargetBuff>Blinded,Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens and Blinds your foes. [Stats: x1.92 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.92 damage, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Increased Range and AoE. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52533,10 +52998,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>WhitheringMist</PowerGroup>
-		<AddTargetBuff>Blinded,Weakened,Weakened,Weakened</AddTargetBuff>
+		<AddTargetBuff>Blinded,Weakened,Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens and Blinds your foes. [Stats: x1.92 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.92 damage, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Adds 1 stack of Weaken</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -53139,19 +53604,696 @@
 		<Range>120</Range>
 		<AoERadius>20</AoERadius>
 		<CenterOffset>90</CenterOffset>
-		<FireImpulse>40,35,35,35,10</FireImpulse>
+		<FireImpulse>40,40,35,35,10</FireImpulse>
 		<CastAnim>LungeStrike</CastAnim>
 		<CastTime>200,100,100,100,100</CastTime>
-		<RecoverTime>330</RecoverTime>
-		<CoolDownTime>4000</CoolDownTime>
+		<RecoverTime>550</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
 		<ManaCost>0</ManaCost>
-		<BaseDamageMult>0.5</BaseDamageMult>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AggroBonus>1</AggroBonus>
-		<Description>Dash used by Shadow Clones [Stats: x0.5 damage]</Description>
+		<AddTargetBuff>Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Black Miasma</DisplayName>
+		<Description>Dash forward, leaving behind a debilitating cloud that slows and lowers enemy defenses. [Stats: x1 damage]</Description>
+		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
-		<FireSound>snd_pwr_aoe_magic_07</FireSound>
+		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseScorpionSting">
+		<PowerID>7120</PowerID>
+		<TargetMethod>Melee</TargetMethod>
+		<Range>140</Range>
+		<CenterOffset>70</CenterOffset>
+		<CastAnim>LowBlow</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>330</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1.86</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Scorpion's Sting</DisplayName>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. [Stats: x1.86 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<IconName>a_PowerIcon_CripplingStrike</IconName>
+		<RuneIcon>a_RuneIcon_22</RuneIcon>
+		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
+		<CastGfx/>
+		<FireGfx/>
+		<HitSound>snd_pwr_melee_impact_01|snd_pwr_melee_impact_02</HitSound>
+		<HitAnimSource>TargetHit</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ImpactBreak</AnimClass>
+			<AnimScale>0.4</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseScorpionSting1">
+		<PowerID>7121</PowerID>
+		<TargetMethod>Melee</TargetMethod>
+		<Range>140</Range>
+		<CenterOffset>70</CenterOffset>
+		<CastAnim>LowBlow</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>330</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>0.67</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Scorpion's Sting</DisplayName>
+		<BasePowerName>FalseScorpionSting</BasePowerName>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. [Stats: x0.67 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<UpgradeDescription>Strike your foes and apply Bind, Weaken, Cripple and Armor Bane.</UpgradeDescription>
+		<IconName>a_PowerIcon_CripplingStrike</IconName>
+		<RuneIcon>a_RuneIcon_22</RuneIcon>
+		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
+		<CastGfx/>
+		<FireGfx/>
+		<HitSound>snd_pwr_melee_impact_01|snd_pwr_melee_impact_02</HitSound>
+		<HitAnimSource>TargetHit</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ImpactBreak</AnimClass>
+			<AnimScale>0.4</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseScorpionSting2">
+		<PowerID>7122</PowerID>
+		<TargetMethod>Melee</TargetMethod>
+		<Range>140</Range>
+		<CenterOffset>70</CenterOffset>
+		<CastAnim>LowBlow</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>330</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>0.74</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Scorpion's Sting</DisplayName>
+		<BasePowerName>FalseScorpionSting</BasePowerName>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<UpgradeDescription>Deals 70% of Expertise as bonus damage against Bound targets. Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_CripplingStrike</IconName>
+		<RuneIcon>a_RuneIcon_22</RuneIcon>
+		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
+		<CastGfx/>
+		<FireGfx/>
+		<HitSound>snd_pwr_melee_impact_01|snd_pwr_melee_impact_02</HitSound>
+		<HitAnimSource>TargetHit</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ImpactBreak</AnimClass>
+			<AnimScale>0.4</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseScorpionSting3">
+		<PowerID>7123</PowerID>
+		<TargetMethod>Melee</TargetMethod>
+		<Range>140</Range>
+		<CenterOffset>70</CenterOffset>
+		<CastAnim>LowBlow</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>330</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>0.74</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Scorpion's Sting</DisplayName>
+		<BasePowerName>FalseScorpionSting</BasePowerName>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<UpgradeDescription>Deals 2 stacks of Armor Bane</UpgradeDescription>
+		<IconName>a_PowerIcon_CripplingStrike</IconName>
+		<RuneIcon>a_RuneIcon_22</RuneIcon>
+		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
+		<CastGfx/>
+		<FireGfx/>
+		<HitSound>snd_pwr_melee_impact_01|snd_pwr_melee_impact_02</HitSound>
+		<HitAnimSource>TargetHit</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ImpactBreak</AnimClass>
+			<AnimScale>0.4</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseScorpionSting4">
+		<PowerID>7124</PowerID>
+		<TargetMethod>Melee</TargetMethod>
+		<Range>140</Range>
+		<CenterOffset>70</CenterOffset>
+		<CastAnim>LowBlow</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>330</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>0.74</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Crippled,Crippled,Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Scorpion's Sting</DisplayName>
+		<BasePowerName>FalseScorpionSting</BasePowerName>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<UpgradeDescription>Deals 2 stacks of Crippled</UpgradeDescription>
+		<IconName>a_PowerIcon_CripplingStrike</IconName>
+		<RuneIcon>a_RuneIcon_22</RuneIcon>
+		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
+		<CastGfx/>
+		<FireGfx/>
+		<HitSound>snd_pwr_melee_impact_01|snd_pwr_melee_impact_02</HitSound>
+		<HitAnimSource>TargetHit</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ImpactBreak</AnimClass>
+			<AnimScale>0.4</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseScorpionSting5">
+		<PowerID>7125</PowerID>
+		<TargetMethod>Melee</TargetMethod>
+		<Range>140</Range>
+		<CenterOffset>70</CenterOffset>
+		<CastAnim>LowBlow</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>330</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>0.74</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Scorpion's Sting</DisplayName>
+		<BasePowerName>FalseScorpionSting</BasePowerName>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<UpgradeDescription>Deals 2 stacks of Weaken.</UpgradeDescription>
+		<IconName>a_PowerIcon_CripplingStrike</IconName>
+		<RuneIcon>a_RuneIcon_22</RuneIcon>
+		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
+		<CastGfx/>
+		<FireGfx/>
+		<HitSound>snd_pwr_melee_impact_01|snd_pwr_melee_impact_02</HitSound>
+		<HitAnimSource>TargetHit</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ImpactBreak</AnimClass>
+			<AnimScale>0.4</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseScorpionSting6">
+		<PowerID>7126</PowerID>
+		<TargetMethod>Melee</TargetMethod>
+		<Range>140</Range>
+		<CenterOffset>70</CenterOffset>
+		<CastAnim>LowBlow</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>330</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>0.81</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Scorpion's Sting</DisplayName>
+		<BasePowerName>FalseScorpionSting</BasePowerName>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_CripplingStrike</IconName>
+		<RuneIcon>a_RuneIcon_22</RuneIcon>
+		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
+		<CastGfx/>
+		<FireGfx/>
+		<HitSound>snd_pwr_melee_impact_01|snd_pwr_melee_impact_02</HitSound>
+		<HitAnimSource>TargetHit</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ImpactBreak</AnimClass>
+			<AnimScale>0.4</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseScorpionSting7">
+		<PowerID>7127</PowerID>
+		<TargetMethod>Melee</TargetMethod>
+		<Range>140</Range>
+		<CenterOffset>70</CenterOffset>
+		<CastAnim>LowBlow</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>330</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>0.81</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Scorpion's Sting</DisplayName>
+		<BasePowerName>FalseScorpionSting</BasePowerName>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<UpgradeDescription>Deals 3 stacks of Crippled.</UpgradeDescription>
+		<IconName>a_PowerIcon_CripplingStrike</IconName>
+		<RuneIcon>a_RuneIcon_22</RuneIcon>
+		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
+		<CastGfx/>
+		<FireGfx/>
+		<HitSound>snd_pwr_melee_impact_01|snd_pwr_melee_impact_02</HitSound>
+		<HitAnimSource>TargetHit</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ImpactBreak</AnimClass>
+			<AnimScale>0.4</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseScorpionSting8">
+		<PowerID>7128</PowerID>
+		<TargetMethod>Melee</TargetMethod>
+		<Range>140</Range>
+		<CenterOffset>70</CenterOffset>
+		<CastAnim>LowBlow</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>330</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>0.85</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Scorpion's Sting</DisplayName>
+		<BasePowerName>FalseScorpionSting</BasePowerName>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.85 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_CripplingStrike</IconName>
+		<RuneIcon>a_RuneIcon_22</RuneIcon>
+		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
+		<CastGfx/>
+		<FireGfx/>
+		<HitSound>snd_pwr_melee_impact_01|snd_pwr_melee_impact_02</HitSound>
+		<HitAnimSource>TargetHit</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ImpactBreak</AnimClass>
+			<AnimScale>0.4</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseScorpionSting9">
+		<PowerID>7129</PowerID>
+		<TargetMethod>Melee</TargetMethod>
+		<Range>140</Range>
+		<CenterOffset>70</CenterOffset>
+		<CastAnim>LowBlow</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>330</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>0.89</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Scorpion's Sting</DisplayName>
+		<BasePowerName>FalseScorpionSting</BasePowerName>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.89 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_CripplingStrike</IconName>
+		<RuneIcon>a_RuneIcon_22</RuneIcon>
+		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
+		<CastGfx/>
+		<FireGfx/>
+		<HitSound>snd_pwr_melee_impact_01|snd_pwr_melee_impact_02</HitSound>
+		<HitAnimSource>TargetHit</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ImpactBreak</AnimClass>
+			<AnimScale>0.4</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseScorpionSting10">
+		<PowerID>7130</PowerID>
+		<TargetMethod>Melee</TargetMethod>
+		<Range>140</Range>
+		<CenterOffset>70</CenterOffset>
+		<CastAnim>LowBlow</CastAnim>
+		<CastTime>330</CastTime>
+		<RecoverTime>330</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>0.89</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>PoisonStrike,ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Scorpion's Sting</DisplayName>
+		<BasePowerName>FalseScorpionSting</BasePowerName>
+		<Description>Deliver a venomous strike that applies Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.89 damage, 2 damage/s, over 5s, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<UpgradeDescription>Poisons the target.</UpgradeDescription>
+		<IconName>a_PowerIcon_CripplingStrike</IconName>
+		<RuneIcon>a_RuneIcon_22</RuneIcon>
+		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
+		<CastGfx/>
+		<FireGfx/>
+		<HitSound>snd_pwr_melee_impact_01|snd_pwr_melee_impact_02</HitSound>
+		<HitAnimSource>TargetHit</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ImpactBreak</AnimClass>
+			<AnimScale>0.4</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseTendrilDash1">
+		<PowerID>7110</PowerID>
+		<TargetMethod>Cleave</TargetMethod>
+		<Range>120</Range>
+		<AoERadius>20</AoERadius>
+		<CenterOffset>90</CenterOffset>
+		<FireImpulse>40,40,35,35,10</FireImpulse>
+		<CastAnim>LungeStrike</CastAnim>
+		<CastTime>200,100,100,100,100</CastTime>
+		<RecoverTime>550</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>0.9</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Black Miasma</DisplayName>
+		<BasePowerName>FalseTendrilDash</BasePowerName>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x0.9 damage]</Description>
+		<UpgradeDescription>Dash forward, leaving behind a debilitating cloud that slows and lowers enemy defenses.</UpgradeDescription>
+		<IconName>a_PowerIcon_BlackMiasma</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseTendrilDash2">
+		<PowerID>7111</PowerID>
+		<TargetMethod>Cleave</TargetMethod>
+		<Range>120</Range>
+		<AoERadius>20</AoERadius>
+		<CenterOffset>90</CenterOffset>
+		<FireImpulse>40,40,35,35,10</FireImpulse>
+		<CastAnim>LungeStrike</CastAnim>
+		<CastTime>200,100,100,100,100</CastTime>
+		<RecoverTime>550</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1.04</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Black Miasma</DisplayName>
+		<BasePowerName>FalseTendrilDash</BasePowerName>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.04 damage]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_BlackMiasma</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseTendrilDash3">
+		<PowerID>7112</PowerID>
+		<TargetMethod>Cleave</TargetMethod>
+		<Range>120</Range>
+		<AoERadius>20</AoERadius>
+		<CenterOffset>90</CenterOffset>
+		<FireImpulse>40,40,35,35,10</FireImpulse>
+		<CastAnim>LungeStrike</CastAnim>
+		<CastTime>200,100,100,100,100</CastTime>
+		<RecoverTime>550</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1.2</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Black Miasma</DisplayName>
+		<BasePowerName>FalseTendrilDash</BasePowerName>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.2 damage]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_BlackMiasma</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseTendrilDash4">
+		<PowerID>7113</PowerID>
+		<TargetMethod>Cleave</TargetMethod>
+		<Range>120</Range>
+		<AoERadius>20</AoERadius>
+		<CenterOffset>90</CenterOffset>
+		<FireImpulse>40,40,35,35,10</FireImpulse>
+		<CastAnim>LungeStrike</CastAnim>
+		<CastTime>200,100,100,100,100</CastTime>
+		<RecoverTime>550</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1.2</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Black Miasma</DisplayName>
+		<BasePowerName>FalseTendrilDash</BasePowerName>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.2 damage]</Description>
+		<UpgradeDescription>Tendril speed reduction is 30%</UpgradeDescription>
+		<IconName>a_PowerIcon_BlackMiasma</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseTendrilDash5">
+		<PowerID>7114</PowerID>
+		<TargetMethod>Cleave</TargetMethod>
+		<Range>120</Range>
+		<AoERadius>20</AoERadius>
+		<CenterOffset>90</CenterOffset>
+		<FireImpulse>40,40,35,35,10</FireImpulse>
+		<CastAnim>LungeStrike</CastAnim>
+		<CastTime>200,100,100,100,100</CastTime>
+		<RecoverTime>550</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1.5</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Black Miasma</DisplayName>
+		<BasePowerName>FalseTendrilDash</BasePowerName>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.5 damage]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_BlackMiasma</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseTendrilDash6">
+		<PowerID>7115</PowerID>
+		<TargetMethod>Cleave</TargetMethod>
+		<Range>120</Range>
+		<AoERadius>20</AoERadius>
+		<CenterOffset>90</CenterOffset>
+		<FireImpulse>40,40,35,35,10</FireImpulse>
+		<CastAnim>LungeStrike</CastAnim>
+		<CastTime>200,100,100,100,100</CastTime>
+		<RecoverTime>550</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1.5</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Black Miasma</DisplayName>
+		<BasePowerName>FalseTendrilDash</BasePowerName>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.5 damage]</Description>
+		<UpgradeDescription>Tendril Defense reduction is 40%.</UpgradeDescription>
+		<IconName>a_PowerIcon_BlackMiasma</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseTendrilDash7">
+		<PowerID>7116</PowerID>
+		<TargetMethod>Cleave</TargetMethod>
+		<Range>120</Range>
+		<AoERadius>20</AoERadius>
+		<CenterOffset>90</CenterOffset>
+		<FireImpulse>40,40,35,35,10</FireImpulse>
+		<CastAnim>LungeStrike</CastAnim>
+		<CastTime>200,100,100,100,100</CastTime>
+		<RecoverTime>550</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1.73</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Black Miasma</DisplayName>
+		<BasePowerName>FalseTendrilDash</BasePowerName>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.73 damage]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_BlackMiasma</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseTendrilDash8">
+		<PowerID>7117</PowerID>
+		<TargetMethod>Cleave</TargetMethod>
+		<Range>120</Range>
+		<AoERadius>20</AoERadius>
+		<CenterOffset>90</CenterOffset>
+		<FireImpulse>40,40,35,35,10</FireImpulse>
+		<CastAnim>LungeStrike</CastAnim>
+		<CastTime>200,100,100,100,100</CastTime>
+		<RecoverTime>550</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1.73</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Black Miasma</DisplayName>
+		<BasePowerName>FalseTendrilDash</BasePowerName>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.73 damage]</Description>
+		<UpgradeDescription>Tendril speed reduction is 40%</UpgradeDescription>
+		<IconName>a_PowerIcon_BlackMiasma</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseTendrilDash9">
+		<PowerID>7118</PowerID>
+		<TargetMethod>Cleave</TargetMethod>
+		<Range>120</Range>
+		<AoERadius>20</AoERadius>
+		<CenterOffset>90</CenterOffset>
+		<FireImpulse>40,40,35,35,10</FireImpulse>
+		<CastAnim>LungeStrike</CastAnim>
+		<CastTime>200,100,100,100,100</CastTime>
+		<RecoverTime>550</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1.9</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Black Miasma</DisplayName>
+		<BasePowerName>FalseTendrilDash</BasePowerName>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.9 damage]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_BlackMiasma</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="FalseTendrilDash10">
+		<PowerID>7119</PowerID>
+		<TargetMethod>Cleave</TargetMethod>
+		<Range>120</Range>
+		<AoERadius>20</AoERadius>
+		<CenterOffset>90</CenterOffset>
+		<FireImpulse>40,40,35,35,10</FireImpulse>
+		<CastAnim>LungeStrike</CastAnim>
+		<CastTime>200,100,100,100,100</CastTime>
+		<RecoverTime>550</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>2.06</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Physical</DamageType>
+		<PowerGroup>ShadowLegion</PowerGroup>
+		<AddTargetBuff>Bound</AddTargetBuff>
+		<AggroBonus>1.5</AggroBonus>
+		<DisplayName>Black Miasma</DisplayName>
+		<BasePowerName>FalseTendrilDash</BasePowerName>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x2.06 damage]</Description>
+		<UpgradeDescription>Tendril Defense reduction is 50%.Increased Damage #olddmg#</UpgradeDescription>
+		<IconName>a_PowerIcon_BlackMiasma</IconName>
+		<CastGfx/>
+		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
 		<FireGfx/>
 		<HitGfx/>
 		<ProjGfx/>

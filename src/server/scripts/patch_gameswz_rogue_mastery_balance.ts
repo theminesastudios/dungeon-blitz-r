@@ -521,6 +521,25 @@ const INSIDIOUS_POISON = new Map<string, string>([
   ["InsidiousPoison5", ".28"], // .35
 ]);
 
+const TALENTSTONE_VALUES = {
+  ArmorDmgTime: ["200", "500", "1000", "1500", "2000"],
+  StrengthDmgTime: ["500", "1000", "1500", "2000", "3000"],
+  StrengthDmg: ["-.003,-.003", "-.005,-.005", "-.01,-.01", "-.015,-.015", "-.02,-.02"],
+  Pounce: [".01", ".03", ".05", ".07", ".10"],
+} as const;
+
+const ETHEREAL_EXPERTISE_VALUES = [".01", ".03", ".05", ".07", ".10"] as const;
+const ORIGINAL_SHADOW_REFUGE_VALUES = [".05", ".10", ".2", ".35", ".6"] as const;
+
+const TALENTSTONE_DESCRIPTIONS = new Map<string, string>([
+  ["ArmorDmgTime1", "Increases Armor Bane and Armor Break durations@Duration (seconds):, +.2, +.5, +1, +1.5, +2"],
+  ["StrengthDmgTime1", "Increases Enfeeble and Weaken durations@Duration (seconds):, +.5, +1, +1.5, +2, +3"],
+  ["StrengthDmg1", "Increases Enfeeble and Weaken effectiveness@Effect:, +3%, +5%, +10%, +15%, +20%"],
+  ["Pounce1", "Deal extra damage to slowed and immobilized enemies@Bonus Damage:, 1%, 3%, 5%, 7%, 10%"],
+  ["Ethereal1", "Gain an Expertise bonus while in Stealth@Expertise Bonus:, 1%, 3%, 5%, 7%, 10%"],
+  ["ShadowRefuge1", "Heal for a percent of your Expertise when entering Stealth@Healing (% Expertise):, 5%, 10%, 20%, 35%, 60%"],
+]);
+
 const MOD_DESCRIPTIONS = new Map<string, [string, string]>([
   [
     "Hemorrhage1",
@@ -846,6 +865,40 @@ export function patchPowerMods(xml: string): { xml: string; stats: PatchStats } 
     if (insidious) {
       touched = true;
       next = replaceTag(next, "BuffValue", insidious, stats);
+    }
+
+    const talentMatch = modName.match(/^(ArmorDmgTime|StrengthDmgTime|StrengthDmg|Pounce)([1-5])$/);
+    if (talentMatch) {
+      const family = talentMatch[1] as keyof typeof TALENTSTONE_VALUES;
+      const rank = Number(talentMatch[2]);
+      const value = TALENTSTONE_VALUES[family][rank - 1];
+      touched = true;
+      if (family === "ArmorDmgTime" || family === "StrengthDmgTime" || family === "StrengthDmg") {
+        next = replaceTag(next, "BuffValue", value, stats);
+      } else if (family === "Pounce") {
+        next = replaceTag(next, "SelfValue", value, stats);
+      }
+      const talentDescription = TALENTSTONE_DESCRIPTIONS.get(modName);
+      if (talentDescription) next = replaceTag(next, "Description", talentDescription, stats);
+    }
+
+    const etherealMatch = modName.match(/^Ethereal([1-5])$/);
+    if (etherealMatch) {
+      const rank = Number(etherealMatch[1]);
+      touched = true;
+      next = replaceTag(next, "BuffProperty", "MagicDamage", stats);
+      next = replaceTag(next, "BuffValue", ETHEREAL_EXPERTISE_VALUES[rank - 1], stats);
+      const talentDescription = TALENTSTONE_DESCRIPTIONS.get(modName);
+      if (talentDescription) next = replaceTag(next, "Description", talentDescription, stats);
+    }
+
+    const refugeMatch = modName.match(/^ShadowRefuge([1-5])$/);
+    if (refugeMatch) {
+      const rank = Number(refugeMatch[1]);
+      touched = true;
+      next = replaceTag(next, "SelfValue", ORIGINAL_SHADOW_REFUGE_VALUES[rank - 1], stats);
+      const talentDescription = TALENTSTONE_DESCRIPTIONS.get(modName);
+      if (talentDescription) next = replaceTag(next, "Description", talentDescription, stats);
     }
 
     const description = MOD_DESCRIPTIONS.get(modName);
