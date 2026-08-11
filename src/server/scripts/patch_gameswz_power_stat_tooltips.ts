@@ -190,7 +190,9 @@ export function patchPowerDescriptions(powerXml: string, buffs: Map<string, Buff
     }
 
     stats.changes += 1;
-    return block.replace(descriptionMatch[0], next);
+    return block.includes(`${descriptionMatch[0]}\r\n`)
+      ? block.replace(`${descriptionMatch[0]}\r\n`, `${next}\n`)
+      : block.replace(descriptionMatch[0], next);
   });
 
   return { xml: patched, stats };

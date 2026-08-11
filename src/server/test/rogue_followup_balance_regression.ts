@@ -27,12 +27,30 @@ const powers = fs.readFileSync(path.join(XML_DIR, "PlayerPowerTypes.xml"), "utf8
 const buffs = fs.readFileSync(path.join(XML_DIR, "PlayerBuffTypes.xml"), "utf8");
 const mods = fs.readFileSync(path.join(XML_DIR, "PowerModTypes.xml"), "utf8");
 const runtimePatch = fs.readFileSync(path.join(ROOT, "server", "scripts", "patch-dungeonblitz-shadowstalker-expertise.js"), "utf8");
+const talentstoneRuntimePatch = fs.readFileSync(
+  path.join(ROOT, "server", "scripts", "patch-dungeonblitz-talentstone-rework.js"),
+  "utf8",
+);
 
 assert.deepEqual(
   [1, 2, 3, 4, 5].map((rank) => tag(powerMod(mods, `Pounce${rank}`), "SelfValue")),
   [".01", ".02", ".03", ".05", ".07"]
 );
 assert.match(powerMod(mods, "Pounce1"), /1%, 2%, 3%, 5%, 7%/);
+
+for (const [family, expected, description] of [
+  ["ContactPoison", [".10", ".20", ".30", ".40", ".60"], /\+5%, \+10%, \+15%, \+20%, \+30%/],
+  ["WindCloak", [".01", ".03", ".05", ".07", ".10"], /Defense vs Bound Enemies/],
+  ["CurseSword", [".01", ".03", ".05", ".07", ".10"], /Minions gain Bonus Damage vs Cursed Enemies/],
+  ["CurseArmor", [".03", ".05", ".10", ".15", ".20"], /Minions gain Bonus Defense and Expertise vs Cursed Enemies/],
+] as const) {
+  const valueTag = family === "ContactPoison" ? "BuffValue" : "SelfValue";
+  assert.deepEqual(
+    [1, 2, 3, 4, 5].map((rank) => tag(powerMod(mods, `${family}${rank}`), valueTag)),
+    expected,
+  );
+  assert.match(tag(powerMod(mods, `${family}1`), "Description"), description);
+}
 
 for (const [name, expected] of [
   ["ShadowTendrilDamage", "-0.06"],
@@ -54,8 +72,8 @@ for (const [rank, expected] of [[1, "6"], [6, "8"], [10, "10"]] as const) {
   );
 }
 
-assert.match(tag(block(powers, "Power", "PowerName", "HeartSeeker10"), "Description"), /80% bonus damage.*Black Miasma/);
-assert.match(tag(block(powers, "Power", "PowerName", "BlackStorm10"), "Description"), /160% bonus damage.*Black Miasma/);
+assert.match(tag(block(powers, "Power", "PowerName", "HeartSeeker10"), "Description"), /40% bonus damage.*Black Miasma/);
+assert.match(tag(block(powers, "Power", "PowerName", "BlackStorm10"), "Description"), /80% bonus damage.*Black Miasma/);
 assert.match(tag(block(powers, "Power", "PowerName", "Assassinate3"), "Description"), /1% more damage per Bleed stack/);
 assert.match(tag(block(powers, "Power", "PowerName", "Assassinate7"), "Description"), /1\.5% more damage per Bleed stack/);
 
@@ -65,9 +83,54 @@ assert.match(tag(reaper4, "UpgradeDescription"), /Inflicts Armor Bane/);
 assert.match(tag(block(powers, "Power", "PowerName", "Reaper10"), "Description"), /120% of Expertise/);
 assert.match(tag(block(powers, "Power", "PowerName", "PainBender10"), "Description"), /225% of Expertise/);
 
-assert.match(runtimePatch, /BlackStorm" \? 1\.6 : 0\.8/);
+assert.equal(tag(block(powers, "Power", "PowerName", "FalseTendrilDash10"), "BasePowerName"), "FalseTendrilDash");
+assert.equal(tag(block(powers, "Power", "PowerName", "FalseChi10"), "BasePowerName"), "FalseChi");
+const cloneScorpion = block(powers, "Power", "PowerName", "FalseScorpionSting10");
+assert.equal(tag(cloneScorpion, "BasePowerName"), "FalseScorpionSting");
+assert.match(tag(cloneScorpion, "AddTargetBuff"), /(?:^|,)ShadowLegionPoisonStrike(?:,|$)/);
+assert.doesNotMatch(tag(cloneScorpion, "AddTargetBuff"), /(?:^|,)PoisonStrike(?:,|$)/);
+const cloneMiasma = block(powers, "Power", "PowerName", "FalseTendrilDash10");
+assert.match(cloneMiasma, /<AnimClass>a_ShadowCloud_Random_1_3<\/AnimClass>/);
+const clonePoison = block(buffs, "BuffType", "BuffName", "ShadowLegionPoisonStrike");
+assert.equal(tag(clonePoison, "BuffID"), "743");
+assert.equal(tag(clonePoison, "DoTDamage"), "2");
+assert.equal(tag(clonePoison, "DoTTickLength"), "1000");
+const cloneBasicAttack = block(powers, "Power", "PowerName", "FalseSaberMelee");
+assert.doesNotMatch(tag(cloneBasicAttack, "AddTargetBuff"), /(?:^|,)Bound(?:,|$)/);
+assert.match(tag(block(powers, "Power", "PowerName", "ShadowLegion10"), "Description"), /Bind with their special attacks/);
+
+for (const name of ["PoisonDagger", "PoisonDagger1"]) {
+  const basicRanged = block(powers, "Power", "PowerName", name);
+  assert.equal(tag(basicRanged, "AddTargetBuff"), "ViperbladePoison", `${name} must retain its basic-attack Poison`);
+  assert.match(tag(basicRanged, "Description"), /Ranged basic attacks leave Poison/);
+}
+assert.equal(
+  tag(block(powers, "Power", "PowerName", "DaggerFlurry10"), "AddTargetBuff"),
+  "DaggerPoison,DaggerPoison,ArmorBane",
+  "ranged skills must not gain Viperblade Poison",
+);
+assert.equal(
+  tag(block(powers, "Power", "PowerName", "SeverStrike10"), "AddTargetBuff"),
+  "Bleeding,Bleeding",
+  "melee skills must not gain Viperblade Bleed",
+);
+for (const power of powers.match(/<Power PowerName="[^"]+">[\s\S]*?<\/Power>/g) ?? []) {
+  const name = power.match(/<Power PowerName="([^"]+)">/)?.[1] ?? "";
+  const targetBuff = tag(power, "AddTargetBuff");
+  assert.doesNotMatch(targetBuff, /(?:^|,)ViperbladeBleed(?:,|$)/, `${name} must not apply Viperblade Bleed`);
+  if (name !== "PoisonDagger" && name !== "PoisonDagger1") {
+    assert.doesNotMatch(targetBuff, /(?:^|,)ViperbladePoison(?:,|$)/, `${name} must not apply Viperblade Poison`);
+  }
+}
+assert.doesNotMatch(buffs, /<BuffType BuffName="ViperbladeBleed">/);
+assert.match(buffs, /<BuffType BuffName="ViperbladePoison">/);
+
+assert.match(runtimePatch, /BlackStorm" \? 0\.8 : 0\.4/);
 assert.match(runtimePatch, /0\.015 : 0\.01/);
 assert.match(runtimePatch, /_loc27_ = 1\.2/);
 assert.match(runtimePatch, /_loc28_ = 2\.25/);
+assert.match(talentstoneRuntimePatch, /param1\.var_1033/);
+assert.match(talentstoneRuntimePatch, /var_971 \+ _loc37_\.combatState\.var_923/);
+assert.match(talentstoneRuntimePatch, /_loc6_ -= this\.var_963 \?/);
 
 console.log("Rogue follow-up balance regression tests passed.");

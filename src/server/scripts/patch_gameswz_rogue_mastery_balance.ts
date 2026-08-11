@@ -29,12 +29,9 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  * Rogue:
  *   Slapdash Decoy     armor bane removed from the explosion
  *
- * Viperblade, the Executioner discipline passive, is data rather than code because the
- * player's basic attacks turned out not to exist: the Rogue EntType authors no MeleePower
- * or RangedPower, so Entity.GetMeleePower returns null and a rogue's "attacks" are simply
- * the powers in their kit. That makes the passive expressible as an extra stack on every
- * Executioner power -- Bleed on the close ones, Poison on the ranged two -- and scoped to
- * the tree by construction, which a buff on a shared basic attack could never be.
+ * Viperblade's Bone Daggers keep their Poison DoT as the discipline's ranged basic attack.
+ * The former blanket passive is removed from actual skills: melee skills gain no extra
+ * Bleed and ranged skills gain no extra Poison.
  *
  * Hemorrhage gets a small defense debuff on top of its damage, which needed checking
  * rather than assuming: PowerModType parses BuffProperty and BuffValue as parallel
@@ -131,9 +128,8 @@ const TARGET_BUFFS = new Map<string, string>([
   ["Reaper10", "ArmorBane"],
 ]);
 
-// Viperblade: the Executioner discipline passive. Close attacks carry one extra
-// stack of Bleed, ranged attacks one extra stack of Poison. Folded into the absolute
-// value rather than appended at runtime, so re-running cannot stack it again.
+// Legacy Viperblade payloads. Bone Daggers retain ViperbladePoison; every other entry is
+// migration input used to restore each skill's normal authored/retuned buff list.
 const VIPERBLADE_BUFFS = new Map<string, string>([
   // SeverStrike (Melee) +Bleeding
   ["SeverStrike", "Bleeding,ViperbladeBleed"], // was 'Bleeding'
@@ -319,8 +315,8 @@ const SIGNATURE_DESCRIPTIONS = new Map<string, [string, string]>([
   [
     "PoisonDagger",
     [
-      "Bone-shaped daggers favored by the Viperblade.",
       "Bone-shaped daggers favored by the Viperblade. Viperblade passive: your close attacks draw Bleed and your ranged attacks leave Poison.",
+      "Bone-shaped daggers favored by the Viperblade. Ranged basic attacks leave Poison.",
     ],
   ],
   [
@@ -547,6 +543,10 @@ const TALENTSTONE_VALUES = {
   StrengthDmgTime: ["500", "1000", "1500", "2000", "3000"],
   StrengthDmg: ["-.003,-.003", "-.005,-.005", "-.01,-.01", "-.015,-.015", "-.02,-.02"],
   Pounce: [".01", ".02", ".03", ".05", ".07"],
+  ContactPoison: [".10", ".20", ".30", ".40", ".60"],
+  WindCloak: [".01", ".03", ".05", ".07", ".10"],
+  CurseSword: [".01", ".03", ".05", ".07", ".10"],
+  CurseArmor: [".03", ".05", ".10", ".15", ".20"],
 } as const;
 
 const ETHEREAL_EXPERTISE_VALUES = [".01", ".03", ".05", ".07", ".10"] as const;
@@ -557,6 +557,10 @@ const TALENTSTONE_DESCRIPTIONS = new Map<string, string>([
   ["StrengthDmgTime1", "Increases Enfeeble and Weaken durations@Duration (seconds):, +.5, +1, +1.5, +2, +3"],
   ["StrengthDmg1", "Increases Enfeeble and Weaken effectiveness@Effect:, +3%, +5%, +10%, +15%, +20%"],
   ["Pounce1", "Deal extra damage to slowed and immobilized enemies@Bonus Damage:, 1%, 2%, 3%, 5%, 7%"],
+  ["ContactPoison1", "Increases Poison Damage vs. Bleeding targets@Poison vs Bleeding:, +5%, +10%, +15%, +20%, +30%"],
+  ["WindCloak1", "Gain Bonus Defense vs Bound Enemies@Defense:, +1%, +3%, +5%, +7%, +10%"],
+  ["CurseSword1", "Minions gain Bonus Damage vs Cursed Enemies@Damage:, +1%, +3%, +5%, +7%, +10%"],
+  ["CurseArmor1", "Minions gain Bonus Defense and Expertise vs Cursed Enemies@Defense and Expertise:, +3%, +5%, +10%, +15%, +20%"],
   ["Ethereal1", "Gain an Expertise bonus while in Stealth@Expertise Bonus:, 1%, 3%, 5%, 7%, 10%"],
   ["ShadowRefuge1", "Heal for a percent of your Expertise when entering Stealth@Healing (% Expertise):, 5%, 10%, 20%, 35%, 60%"],
 ]);
@@ -579,26 +583,6 @@ const MOD_DESCRIPTIONS = new Map<string, [string, string]>([
 ]);
 
 /**
- * Viperblade's passive gets its own two buffs instead of tacking an extra stack of the
- * power's own Bleed or Poison onto every Executioner skill.
- *
- * StackCount 1 is the whole of "the passive must not stack", and it needs no code: Buff's
- * method_351 clamps the live stack count to the BuffType's own stackCount, and that clamped
- * number is exactly what multiplies the tick damage. Worth saying because there is a nearby
- * flag that looks right and is not -- BuffType.var_2424 also pins the count to 1, but it
- * *accumulates* potency across reapplications instead of capping it, which is the opposite
- * of what was asked. It is also set by hardcoded buff name and not readable from XML.
- *
- * These still scale off Expertise like every other DoT, because the stat a buff scales from
- * is the caster's magicDamage passed into CombatState.AddBuff and nothing in the data
- * reaches it. Moving just these two onto attack damage is the bytecode half and is keyed on
- * BuffID rather than name on purpose -- a numeric compare needs no new entry in the SWF
- * string pool.
- *
- * IDs continue past the authored maximum of 739 rather than filling the gaps at 1/14/15, so
- * nothing collides with an ID some save still refers to.
- */
-/**
  * Ghost Blade steals the target's Attack and hands the Soulthief the same amount back -- but
  * only as Attack, so the half of a Soulthief's sheet that Chaos Wave buffs went untouched.
  * Mirroring MeleeDamage into MagicDamage makes the steal cover Expertise too, which is the
@@ -616,39 +600,23 @@ const GHOST_BLADE_EXPERTISE = new Map<string, string>([
   ["GhostBlade10", "0.35"], // MeleeDamage 0.35, no MagicDamage
 ]);
 
-const NEW_BUFFS: Array<{ name: string; xml: string }> = [
-  {
-    name: "ViperbladeBleed",
-    xml: [
-      '<BuffType BuffName="ViperbladeBleed">',
-      "\t\t<BuffID>740</BuffID>",
-      "\t\t<Attack>true</Attack>",
-      "\t\t<Duration>5000</Duration>",
-      "\t\t<DoTDamage>1</DoTDamage>",
-      "\t\t<DoTTickLength>1000</DoTTickLength>",
-      "\t\t<StackCount>1</StackCount>",
-      "\t\t<BuffLoc>ChestBack</BuffLoc>",
-      "\t\t<BuffIcon>a_StatusIcon_Bleeding</BuffIcon>",
-      "\t</BuffType>",
-    ].join("\r\n\t"),
-  },
-  {
-    name: "ViperbladePoison",
-    xml: [
-      '<BuffType BuffName="ViperbladePoison">',
-      "\t\t<BuffID>741</BuffID>",
-      "\t\t<Attack>true</Attack>",
-      "\t\t<Duration>5000</Duration>",
-      "\t\t<DoTDamage>1.5</DoTDamage>",
-      "\t\t<DoTTickLength>1000</DoTTickLength>",
-      "\t\t<Effect>Poisoned</Effect>",
-      "\t\t<StackCount>1</StackCount>",
-      "\t\t<BuffLoc>Head</BuffLoc>",
-      "\t\t<BuffIcon>a_StatusIcon_Poisoned</BuffIcon>",
-      "\t</BuffType>",
-    ].join("\r\n\t"),
-  },
-];
+const VIPERBLADE_BASIC_RANGED = new Set(["PoisonDagger", "PoisonDagger1"]);
+const VIPERBLADE_POISON_BUFF = {
+  name: "ViperbladePoison",
+  xml: [
+    '<BuffType BuffName="ViperbladePoison">',
+    "\t\t<BuffID>741</BuffID>",
+    "\t\t<Attack>true</Attack>",
+    "\t\t<Duration>5000</Duration>",
+    "\t\t<DoTDamage>1.5</DoTDamage>",
+    "\t\t<DoTTickLength>1000</DoTTickLength>",
+    "\t\t<Effect>Poisoned</Effect>",
+    "\t\t<StackCount>1</StackCount>",
+    "\t\t<BuffLoc>Head</BuffLoc>",
+    "\t\t<BuffIcon>a_StatusIcon_Poisoned</BuffIcon>",
+    "\t</BuffType>",
+  ].join("\r\n\t"),
+};
 
 function cloneStats(): PatchStats {
   return { ...EMPTY_STATS };
@@ -716,9 +684,9 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
     let next = block;
     let touched = false;
 
-    // Viperblade is generated on top of the retune, so where both name a power its value
-    // is the finished one and wins.
-    const targetBuff = VIPERBLADE_BUFFS.get(powerName) ?? TARGET_BUFFS.get(powerName);
+    const targetBuff = VIPERBLADE_BASIC_RANGED.has(powerName)
+      ? VIPERBLADE_BUFFS.get(powerName)
+      : TARGET_BUFFS.get(powerName);
     if (targetBuff) {
       touched = true;
       // ShadowBlade and PoisonDagger author no AddTargetBuff at all, and the template puts
@@ -814,6 +782,31 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
       next = next.split(upgrade[0]).join(upgrade[1]);
     }
 
+    if (VIPERBLADE_BUFFS.has(powerName) || next.includes("ViperbladeBleed") || next.includes("ViperbladePoison")) {
+      const match = next.match(/<AddTargetBuff>([^<]*)<\/AddTargetBuff>/);
+      if (match) {
+        const filtered = match[1]
+          .split(",")
+          .filter((entry) => {
+            if (entry === "ViperbladeBleed") return false;
+            if (entry === "ViperbladePoison" && !VIPERBLADE_BASIC_RANGED.has(powerName)) return false;
+            return true;
+          })
+          .join(",");
+        if (filtered !== match[1]) {
+          touched = true;
+          stats.changes += 1;
+          next = filtered
+            ? next.replace(match[0], `<AddTargetBuff>${filtered}</AddTargetBuff>`)
+            : next.replace(/\r?\n\t*<AddTargetBuff>[^<]*<\/AddTargetBuff>/, "");
+        }
+      }
+      next = next.replace(
+        /(<AddTargetBuff>[^\r\n]*<\/AddTargetBuff>)\r\n/g,
+        "$1\n",
+      );
+    }
+
     const rankedName = powerName.match(/^(HeartSeeker|BlackStorm|Assassinate|AssassinateClose|PainBender|Reaper)(\d*)$/);
     if (rankedName) {
       const family = rankedName[1];
@@ -825,10 +818,10 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
           : rank >= 5
             ? "Deliver a single, penetrating, Staggering strike."
             : "Deliver a single, penetrating strike.";
-        prose = `${effect} Deals 80% bonus damage to enemies affected by Black Miasma.`;
+        prose = `${effect} Deals 40% bonus damage to enemies affected by Black Miasma.`;
       } else if (family === "BlackStorm") {
         const attack = rank >= 7 ? "launches a Staggering attack" : "launches an attack";
-        prose = `Create a Shadow Clone that ${attack} on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma.`;
+        prose = `Create a Shadow Clone that ${attack} on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma.`;
       } else if (family === "Assassinate" && rank >= 3) {
         prose = `Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals ${rank >= 7 ? "1.5" : "1"}% more damage per Bleed stack on the target.`;
       } else if (family === "AssassinateClose" && rank >= 3) {
@@ -842,6 +835,14 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
       if (prose) {
         const before = next;
         next = replaceDescriptionProse(next, prose, stats);
+        touched = touched || next !== before;
+      }
+      if (family === "HeartSeeker" || family === "BlackStorm") {
+        const before = next;
+        next = next.replace(
+          /(<Description>[^\r\n]*Black Miasma\.[^\r\n]*<\/Description>)\r\n/g,
+          "$1\n",
+        );
         touched = touched || next !== before;
       }
     }
@@ -918,23 +919,27 @@ export function patchPlayerBuffs(xml: string): { xml: string; stats: PatchStats 
     return next;
   });
 
-  // Appended at the end of the list rather than inserted next to Bleeding, so the file keeps
-  // its authored order and a re-run has an unambiguous "already there" test.
-  let withAdditions = patched;
-  for (const buff of NEW_BUFFS) {
-    if (withAdditions.includes(`<BuffType BuffName="${buff.name}">`)) {
-      continue;
+  let withoutViperbladePassive = patched.replace(
+    /\r?\n\t*<BuffType BuffName="ViperbladeBleed">[\s\S]*?<\/BuffType>/g,
+    () => {
+      stats.buffBlocks += 1;
+      stats.changes += 1;
+      return "";
+    },
+  );
+
+  if (!withoutViperbladePassive.includes(`<BuffType BuffName="${VIPERBLADE_POISON_BUFF.name}">`)) {
+    const closing = withoutViperbladePassive.lastIndexOf("</PlayerBuffTypes>");
+    if (closing >= 0) {
+      stats.buffBlocks += 1;
+      stats.changes += 1;
+      withoutViperbladePassive =
+        `${withoutViperbladePassive.slice(0, closing)}\t${VIPERBLADE_POISON_BUFF.xml}\r\n` +
+        withoutViperbladePassive.slice(closing);
     }
-    const closing = withAdditions.lastIndexOf("</PlayerBuffTypes>");
-    if (closing < 0) {
-      continue;
-    }
-    stats.buffBlocks += 1;
-    stats.changes += 1;
-    withAdditions = `${withAdditions.slice(0, closing)}\t${buff.xml}\r\n${withAdditions.slice(closing)}`;
   }
 
-  return { xml: withAdditions, stats };
+  return { xml: withoutViperbladePassive, stats };
 }
 
 export function patchPowerMods(xml: string): { xml: string; stats: PatchStats } {
@@ -961,19 +966,37 @@ export function patchPowerMods(xml: string): { xml: string; stats: PatchStats } 
       next = replaceTag(next, "BuffValue", insidious, stats);
     }
 
-    const talentMatch = modName.match(/^(ArmorDmgTime|StrengthDmgTime|StrengthDmg|Pounce)([1-5])$/);
+    const talentMatch = modName.match(/^(ArmorDmgTime|StrengthDmgTime|StrengthDmg|Pounce|ContactPoison|WindCloak|CurseSword|CurseArmor)([1-5])$/);
     if (talentMatch) {
       const family = talentMatch[1] as keyof typeof TALENTSTONE_VALUES;
       const rank = Number(talentMatch[2]);
       const value = TALENTSTONE_VALUES[family][rank - 1];
       touched = true;
-      if (family === "ArmorDmgTime" || family === "StrengthDmgTime" || family === "StrengthDmg") {
+      if (
+        family === "ArmorDmgTime" ||
+        family === "StrengthDmgTime" ||
+        family === "StrengthDmg" ||
+        family === "ContactPoison"
+      ) {
         next = replaceTag(next, "BuffValue", value, stats);
-      } else if (family === "Pounce") {
+      } else {
         next = replaceTag(next, "SelfValue", value, stats);
       }
       const talentDescription = TALENTSTONE_DESCRIPTIONS.get(modName);
       if (talentDescription) next = replaceTag(next, "Description", talentDescription, stats);
+      if (
+        family === "ContactPoison" ||
+        family === "WindCloak" ||
+        family === "CurseSword" ||
+        family === "CurseArmor"
+      ) {
+        const before = next;
+        next = next.replace(
+          /(<(?:Description|BuffValue|SelfValue)>[^\r\n]*<\/(?:Description|BuffValue|SelfValue)>)\r\n/g,
+          "$1\n",
+        );
+        touched = touched || next !== before;
+      }
     }
 
     const etherealMatch = modName.match(/^Ethereal([1-5])$/);

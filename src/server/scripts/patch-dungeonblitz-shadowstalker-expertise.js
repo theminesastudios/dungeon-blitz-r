@@ -18,8 +18,8 @@ const TARGET_SWF = path.join('src', 'client', 'content', 'localhost', 'p', 'cbp'
 const INDEX_HTML = path.join('src', 'client', 'content', 'localhost', 'index.html');
 const OLD_MARKER = 'if(this.var_414 && (param2.basePowerName == "CrippleStrike" || param2.basePowerName == "WhitheringMist"))';
 const LEGACY_BOUND_MARKER = 'param2.basePowerName == "CrippleStrike" ? 0.6 : 0.4';
-const PREVIOUS_BLACK_MIASMA_MARKER = 'param2.basePowerName == "BlackStorm" ? 0.8 : 0.4';
-const MARKER = 'param2.basePowerName == "BlackStorm" ? 1.6 : 0.8';
+const PREVIOUS_BLACK_MIASMA_MARKER = 'param2.basePowerName == "BlackStorm" ? 1.6 : 0.8';
+const MARKER = 'param2.basePowerName == "BlackStorm" ? 0.8 : 0.4';
 const EXPERTISE_MARKER = '_loc28_ = 2.25;';
 const BLACK_MIASMA_FIELD = 'internal var _blackMiasma:Boolean = false;';
 const BLEED_STACKS_FIELD = 'internal var _bleedStacks:int = 0;';
@@ -91,7 +91,7 @@ const REPLACEMENT = PREVIOUS_REPLACEMENT.replace(
     [
         '         if(_loc5_._blackMiasma && (param2.basePowerName == "HeartSeeker" || param2.basePowerName == "BlackStorm"))',
         '         {',
-        '            _loc6_ += param2.basePowerName == "BlackStorm" ? 1.6 : 0.8;',
+        '            _loc6_ += param2.basePowerName == "BlackStorm" ? 0.8 : 0.4;',
         '         }',
         '         if(param2.basePowerName == "AssassinateClose" && param2.var_7 >= 3 && _loc5_._bleedStacks > 0)',
         '         {',

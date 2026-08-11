@@ -217,6 +217,22 @@
 			<AnimClass>a_PoisonDot4</AnimClass>
 		</GfxType>
 	</BuffType>
+	<BuffType BuffName="ShadowLegionPoisonStrike">
+		<BuffID>743</BuffID>
+		<Attack>true</Attack>
+		<Duration>5000</Duration>
+		<DoTDamage>2</DoTDamage>
+		<DoTTickLength>1000</DoTTickLength>
+		<Effect>Poisoned</Effect>
+		<StackCount>3</StackCount>
+		<BuffLoc>Head</BuffLoc>
+		<BuffIcon>a_StatusIcon_Poisoned</BuffIcon>
+		<GfxType>
+			<AnimScale>0.8</AnimScale>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_PoisonDot4</AnimClass>
+		</GfxType>
+	</BuffType>
 	<BuffType BuffName="ReduceArmor">
 		<BuffID>19</BuffID>
 		<Attack>true</Attack>
@@ -5763,16 +5779,6 @@
 			<AnimClass>a_Debuff_Poison</AnimClass>
 		</GfxType>
 	</BuffType>
-	<BuffType BuffName="ViperbladeBleed">
-			<BuffID>740</BuffID>
-			<Attack>true</Attack>
-			<Duration>5000</Duration>
-			<DoTDamage>1</DoTDamage>
-			<DoTTickLength>1000</DoTTickLength>
-			<StackCount>1</StackCount>
-			<BuffLoc>ChestBack</BuffLoc>
-			<BuffIcon>a_StatusIcon_Bleeding</BuffIcon>
-		</BuffType>
 	<BuffType BuffName="ViperbladePoison">
 			<BuffID>741</BuffID>
 			<Attack>true</Attack>

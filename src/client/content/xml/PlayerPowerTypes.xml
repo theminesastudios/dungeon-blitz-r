@@ -40497,7 +40497,7 @@
 		<PowerGroup>PoisonDaggers</PowerGroup>
 		<AddTargetBuff>ViperbladePoison</AddTargetBuff>
 		<DisplayName>Bone Daggers</DisplayName>
-		<Description>Bone-shaped daggers favored by the Viperblade. Viperblade passive: your close attacks draw Bleed and your ranged attacks leave Poison. [Stats: x0.8 damage, 1.5 damage/s, over 5s]</Description>
+		<Description>Bone-shaped daggers favored by the Viperblade. Ranged basic attacks leave Poison. [Stats: x0.8 damage, 1.5 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_PoisonDagger</IconName>
 		<CastSound>snd_pwr_rogue_energyball</CastSound>
 		<CastGfx/>
@@ -40531,7 +40531,7 @@
 		<AddTargetBuff>ViperbladePoison</AddTargetBuff>
 		<DisplayName>Bone Daggers</DisplayName>
 		<BasePowerName>PoisonDagger</BasePowerName>
-		<Description>Bone-shaped daggers favored by the Viperblade. Viperblade passive: your close attacks draw Bleed and your ranged attacks leave Poison. [Stats: x0.8 damage, 1.5 damage/s, over 5s]</Description>
+		<Description>Bone-shaped daggers favored by the Viperblade. Ranged basic attacks leave Poison. [Stats: x0.8 damage, 1.5 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_PoisonDagger</IconName>
 		<CastSound>snd_pwr_rogue_energyball</CastSound>
 		<CastGfx/>
@@ -40563,9 +40563,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,ViperbladePoison</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
-		<Description>Throw three Poison Daggers. [Stats: x0.67 damage, 1 damage/s, over 5s, 1.5 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers. [Stats: x0.67 damage, 1 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_Executioner_FlurryOfDaggers_Throw</CastSound>
@@ -40598,10 +40598,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,ViperbladePoison</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw three Poison Daggers. [Stats: x0.67 damage, 1 damage/s, over 5s, 1.5 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers. [Stats: x0.67 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Throw three Poison Daggers.</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40635,10 +40635,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,ViperbladePoison</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw three Poison Daggers. [Stats: x0.7 damage, 1 damage/s, over 5s, 1.5 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers. [Stats: x0.7 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40672,10 +40672,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,ViperbladePoison</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw three Poison Daggers. [Stats: x0.74 damage, 1 damage/s, over 5s, 1.5 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers. [Stats: x0.74 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40709,10 +40709,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,ViperbladePoison</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw three Poison Daggers. [Stats: x0.77 damage, 1 damage/s, over 5s, 1.5 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers. [Stats: x0.77 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40746,10 +40746,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,DaggerPoison,ViperbladePoison</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers. [Stats: x0.77 damage, 1 damage/s, over 5s, 1.5 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers. [Stats: x0.77 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Adds extra Poison per dagger.</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40783,10 +40783,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,DaggerPoison,ViperbladePoison</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers. [Stats: x0.81 damage, 1 damage/s, over 5s, 1.5 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers. [Stats: x0.81 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40820,10 +40820,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,DaggerPoison,ViperbladePoison</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers. [Stats: x0.85 damage, 1 damage/s, over 5s, 1.5 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers. [Stats: x0.85 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40857,10 +40857,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,DaggerPoison,ViperbladePoison</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers. [Stats: x0.89 damage, 1 damage/s, over 5s, 1.5 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers. [Stats: x0.89 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40894,10 +40894,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,DaggerPoison,ViperbladePoison</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers. [Stats: x0.97 damage, 1 damage/s, over 5s, 1.5 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers. [Stats: x0.97 damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40931,10 +40931,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DaggerFlurry</PowerGroup>
-		<AddTargetBuff>DaggerPoison,DaggerPoison,ArmorBane,ViperbladePoison</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison,DaggerPoison,ArmorBane</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers that reduce target Defense. [Stats: x0.97 damage, 1 damage/s, over 5s, -5% Defense, over 5s, 1.5 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers that reduce target Defense. [Stats: x0.97 damage, 1 damage/s, over 5s, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Each dagger adds Armor Bane</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40969,10 +40969,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeveringStrikes</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Severing Strike</DisplayName>
-		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. [Stats: x0.99 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. [Stats: x0.99 damage, 0.2 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
 		<CastSound>CHR_Executioner_SeveringStrike_01[160]CHR_Executioner_SeveringStrike_02[160]CHR_Executioner_SeveringStrike_01[160]CHR_Executioner_SeveringStrike_02</CastSound>
@@ -41002,11 +41002,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeveringStrikes</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Severing Strike</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. [Stats: x0.77 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. [Stats: x0.77 damage, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Unleash a multi-hit melee combo that applies Bleed with every blow.</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41037,11 +41037,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeveringStrikes</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Severing Strike</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. [Stats: x0.85 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. [Stats: x0.85 damage, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41072,11 +41072,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeveringStrikes</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Severing Strike</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x0.85 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x0.85 damage, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>10% Damage Bonus to Poisoned targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41107,11 +41107,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeveringStrikes</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Severing Strike</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x0.98 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x0.98 damage, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41142,11 +41142,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeveringStrikes</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Severing Strike</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x0.98 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x0.98 damage, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>-2 Mana Cost. Adds an extra stack of Bleed per hit.</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41177,11 +41177,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeveringStrikes</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Severing Strike</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x0.98 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x0.98 damage, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>-1 Mana Cost. 15% Damage Bonus vs poisoned targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41212,11 +41212,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeveringStrikes</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Severing Strike</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x0.98 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x0.98 damage, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>-1 Mana Cost.</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41247,11 +41247,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeveringStrikes</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Severing Strike</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x1.05 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x1.05 damage, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41282,11 +41282,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeveringStrikes</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Severing Strike</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x1.05 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x1.05 damage, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>-1 Mana Cost.</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41317,11 +41317,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeveringStrikes</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Severing Strike</DisplayName>
 		<BasePowerName>SeverStrike</BasePowerName>
-		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x1.14 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Unleash a multi-hit melee combo that applies Bleed with every blow. Deals extra damage to poisoned targets [Stats: x1.14 damage, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
@@ -41354,7 +41354,7 @@
 		<PowerGroup>CripplingStrike</PowerGroup>
 		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. [Stats: x1.86 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. [Stats: x1.86 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
@@ -41387,7 +41387,7 @@
 		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. [Stats: x0.67 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. [Stats: x0.67 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Strike your foes and apply Bind, Weaken, Cripple and Armor Bane.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41421,7 +41421,7 @@
 		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 70% of Expertise as bonus damage against Bound targets. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41455,7 +41455,7 @@
 		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of Armor Bane</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41489,7 +41489,7 @@
 		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of Crippled</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41523,7 +41523,7 @@
 		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of Weaken.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41557,7 +41557,7 @@
 		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41591,7 +41591,7 @@
 		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 3 stacks of Crippled.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41625,7 +41625,7 @@
 		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.85 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.85 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41659,7 +41659,7 @@
 		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.89 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.89 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41693,7 +41693,7 @@
 		<AddTargetBuff>PoisonStrike,ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>CrippleStrike</BasePowerName>
-		<Description>Deliver a venomous strike that applies Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.89 damage, 2 damage/s, over 5s, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Deliver a venomous strike that applies Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.89 damage, 2 damage/s, over 5s, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Poisons the target.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -41727,9 +41727,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowsBlade</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
 		<DisplayName>Crimson Butterfly</DisplayName>
-		<Description>Slash nearby enemies and remove up to 5 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2 damage, 1 damage/s, over 5s]</Description>
+		<Description>Slash nearby enemies and remove up to 5 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2 damage]</Description>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
 		<CastSound>CHR_Executioner_CrimsonButterfly</CastSound>
@@ -41774,10 +41773,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowsBlade</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
 		<DisplayName>Crimson Butterfly</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2 damage, 1 damage/s, over 5s]</Description>
+		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2 damage]</Description>
 		<UpgradeDescription>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -41823,10 +41821,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowsBlade</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
 		<DisplayName>Crimson Butterfly</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.1 damage, 1 damage/s, over 5s]</Description>
+		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.1 damage]</Description>
 		<UpgradeDescription>-2 Mana Cost. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -41872,10 +41869,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowsBlade</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
 		<DisplayName>Crimson Butterfly</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage, 1 damage/s, over 5s]</Description>
+		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage]</Description>
 		<UpgradeDescription>-2 Mana Cost. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -41921,10 +41917,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowsBlade</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
 		<DisplayName>Crimson Butterfly</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage, 1 damage/s, over 5s]</Description>
+		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage]</Description>
 		<UpgradeDescription>-2 Mana Cost. Damage Bonus caps at 4 stacks of bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -41970,10 +41965,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowsBlade</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
 		<DisplayName>Crimson Butterfly</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage, 1 damage/s, over 5s]</Description>
+		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage]</Description>
 		<UpgradeDescription>-2 Mana Cost. Damage Bonus caps at 5 stacks of Bleed. Improved AoE.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -42019,10 +42013,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowsBlade</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
 		<DisplayName>Crimson Butterfly</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage, 1 damage/s, over 5s]</Description>
+		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage]</Description>
 		<UpgradeDescription>-2 Mana Cost. Damage Bonus caps at 6 stacks of Bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -42068,10 +42061,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowsBlade</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
 		<DisplayName>Crimson Butterfly</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage, 1 damage/s, over 5s]</Description>
+		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage]</Description>
 		<UpgradeDescription>-5 Mana Cost. Damage Bonus caps at 7 stacks of Bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -42117,10 +42109,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowsBlade</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
 		<DisplayName>Crimson Butterfly</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage, 1 damage/s, over 5s]</Description>
+		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage]</Description>
 		<UpgradeDescription>Damage Bonus caps at 8 stacks of Bleed. Improved AoE.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -42166,10 +42157,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowsBlade</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
 		<DisplayName>Crimson Butterfly</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage, 1 damage/s, over 5s]</Description>
+		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage]</Description>
 		<UpgradeDescription>-5 Mana Cost.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -42215,10 +42205,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowsBlade</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
 		<DisplayName>Crimson Butterfly</DisplayName>
 		<BasePowerName>ShadowBlade</BasePowerName>
-		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage, 1 damage/s, over 5s]</Description>
+		<Description>Slash nearby enemies and remove up to 3 stacks of Bleed per target. Removed Bleed deals extra damage to that target. [Stats: x2.22 damage]</Description>
 		<UpgradeDescription>Damage Bonus caps at 10 stacks of Bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_CrimsonSlash</IconName>
 		<RuneIcon>a_RuneIcon_11</RuneIcon>
@@ -42262,10 +42251,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:Weakened,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>First:Weakened,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
-		<Description>Launch multi-hit attack that applies Weaken and Bleed. [Stats: x1.32 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Launch multi-hit attack that applies Weaken and Bleed. [Stats: x1.32 damage, 0.2 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_WitherStrike</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
 		<CastSound>CHR_Executioner_WitheringImpact</CastSound>
@@ -42296,11 +42285,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:Weakened,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>First:Weakened,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
-		<Description>Launch multi-hit attack that applies Weaken and Bleed. [Stats: x0.87 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Launch multi-hit attack that applies Weaken and Bleed. [Stats: x0.87 damage, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Launch multi-hit attack that applies Weaken and 2 stacks of Bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherStrike</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
@@ -42332,11 +42321,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:Weakened,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>First:Weakened,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
-		<Description>Launch multi-hit attack that applies Weaken and Bleed. [Stats: x0.94 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Launch multi-hit attack that applies Weaken and Bleed. [Stats: x0.94 damage, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherStrike</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
@@ -42368,11 +42357,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:PoisonStrike,Weakened,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
-		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x0.94 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x0.94 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Adds a stack of Poison.</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherStrike</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
@@ -42404,11 +42393,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:PoisonStrike,Weakened,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
-		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.04 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.04 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 3 stacks of Bleed. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherStrike</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
@@ -42440,11 +42429,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
-		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.04 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.04 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of Weaken.</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherStrike</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
@@ -42476,11 +42465,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
-		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.15 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.15 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherStrike</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
@@ -42512,11 +42501,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
-		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.15 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.15 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 4 stacks of Bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherStrike</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
@@ -42548,11 +42537,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
-		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.27 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.27 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherStrike</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
@@ -42584,11 +42573,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
-		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.39 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.39 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherStrike</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
@@ -42620,11 +42609,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>WitheringStrike</PowerGroup>
-		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Withering Impact</DisplayName>
 		<BasePowerName>WitherStrike</BasePowerName>
-		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.39 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Launch multi-hit attack that applies Weaken, Bleed and Armor Bane. [Stats: x1.39 damage, -10% Melee Damage, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 6 stacks of Bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherStrike</IconName>
 		<RuneIcon>a_RuneIcon_19</RuneIcon>
@@ -42656,10 +42645,10 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
-		<Description>Applies Poison, Armor Bane, and 3 stacks of Bleed. Deals bonus damage to target based on missing health. [Stats: x1.74 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Applies Poison, Armor Bane, and 3 stacks of Bleed. Deals bonus damage to target based on missing health. [Stats: x1.74 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
 		<CastSound>[150]CHR_Executioner_Assassinate</CastSound>
@@ -42696,11 +42685,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.59 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.59 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Applies Poison, Armor Bane, and 3 stacks of Bleed. Deals bonus damage to target based on missing health.</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
@@ -42738,11 +42727,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.68 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.68 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
@@ -42780,11 +42769,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.78 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.78 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
@@ -42822,11 +42811,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.9 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.9 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
@@ -42864,11 +42853,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.9 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.9 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of Poison</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
@@ -42906,11 +42895,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.9 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.9 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of ArmorBane and 4 stacks of Bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
@@ -42948,11 +42937,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.13 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.13 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
@@ -42990,11 +42979,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.13 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.13 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 3 stacks of Poison</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
@@ -43032,11 +43021,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.3 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.3 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
@@ -43074,11 +43063,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.46 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.46 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 6 Stacks of Bleed, Increased bonus damage. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
@@ -43148,8 +43137,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ViperbladeBleed</AddTargetBuff>
-		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -75% Melee Damage, over 3.5s, -5% Defense, over 5s, 1 damage/s, over 5s]</Description>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane</AddTargetBuff>
+		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -75% Melee Damage, over 3.5s, -5% Defense, over 5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -43218,9 +43207,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
-		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -45% Melee Damage, over 3.5s, -5% Defense, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -45% Melee Damage, over 3.5s, -5% Defense, over 5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -43289,9 +43278,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
-		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -45% Melee Damage, over 3.5s, -5% Defense, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -45% Melee Damage, over 3.5s, -5% Defense, over 5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -43360,9 +43349,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
-		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -45% Melee Damage, over 3.5s, -5% Defense, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -45% Melee Damage, over 3.5s, -5% Defense, over 5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -43431,9 +43420,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
-		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -50% Melee Damage, over 3.5s, -5% Defense, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -50% Melee Damage, over 3.5s, -5% Defense, over 5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -43502,9 +43491,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
-		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -50% Melee Damage, over 3.5s, -5% Defense, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -50% Melee Damage, over 3.5s, -5% Defense, over 5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -43573,9 +43562,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate50,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
-		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -50% Melee Damage, over 3.5s, -5% Defense, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -50% Melee Damage, over 3.5s, -5% Defense, over 5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -43644,9 +43633,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
-		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -55% Melee Damage, over 3.5s, -5% Defense, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -55% Melee Damage, over 3.5s, -5% Defense, over 5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -43715,9 +43704,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane,ArmorBane,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate55,ArmorBane,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
-		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -55% Melee Damage, over 3.5s, -5% Defense, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -55% Melee Damage, over 3.5s, -5% Defense, over 5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -43786,9 +43775,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate60,ArmorBane,ArmorBane,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate60,ArmorBane,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
-		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -60% Melee Damage, over 3.5s, -5% Defense, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -60% Melee Damage, over 3.5s, -5% Defense, over 5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -43857,9 +43846,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>MistWalk</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ArmorBane,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ArmorBane</AddTargetBuff>
 		<BasePowerName>MistWalkClose</BasePowerName>
-		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -75% Melee Damage, over 3.5s, -5% Defense, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Mistwalk combo. [Stats: 0.2 damage/s, over 5s, -75% Melee Damage, over 3.5s, -5% Defense, over 5s]</Description>
 		<CastSound>CHR_Executioner_MistWalk_End</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -43925,8 +43914,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Assassinate</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
-		<Description>Vicious Assault combo. [Stats: x1.03 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
+		<Description>Vicious Assault combo. [Stats: x1.03 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -43994,9 +43983,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Assassinate</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. [Stats: x0.79 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. [Stats: x0.79 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44064,9 +44053,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Assassinate</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. [Stats: x0.87 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. [Stats: x0.87 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44134,9 +44123,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Assassinate</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. Deals 1% more damage per Bleed stack on the target. [Stats: x0.96 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1% more damage per Bleed stack on the target. [Stats: x0.96 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44204,9 +44193,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Assassinate</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. Deals 1% more damage per Bleed stack on the target. [Stats: x1.06 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1% more damage per Bleed stack on the target. [Stats: x1.06 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44274,9 +44263,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Assassinate</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. Deals 1% more damage per Bleed stack on the target. [Stats: x1.17 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1% more damage per Bleed stack on the target. [Stats: x1.17 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44344,9 +44333,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Assassinate</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. Deals 1% more damage per Bleed stack on the target. [Stats: x1.29 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1% more damage per Bleed stack on the target. [Stats: x1.29 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44414,9 +44403,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Assassinate</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. Deals 1.5% more damage per Bleed stack on the target. [Stats: x1.29 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1.5% more damage per Bleed stack on the target. [Stats: x1.29 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44484,9 +44473,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Assassinate</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. Deals 1.5% more damage per Bleed stack on the target. [Stats: x1.35 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1.5% more damage per Bleed stack on the target. [Stats: x1.35 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44554,9 +44543,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Assassinate</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. Deals 1.5% more damage per Bleed stack on the target. [Stats: x1.43 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1.5% more damage per Bleed stack on the target. [Stats: x1.43 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44624,9 +44613,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>Assassinate</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. Deals 1.5% more damage per Bleed stack on the target. [Stats: x1.43 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 1.5% more damage per Bleed stack on the target. [Stats: x1.43 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -44662,11 +44651,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,ArmorBane,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,ArmorBane</AddTargetBuff>
 		<AddSelfBuff>SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
-		<Description>Dash forward, damaging and applying Bleed to every enemy in your path. [Stats: x1.63 damage, 0.2 damage/s, over 5s, -5% Defense, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Dash forward, damaging and applying Bleed to every enemy in your path. [Stats: x1.63 damage, 0.2 damage/s, over 5s, -5% Defense, over 5s]</Description>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_Executioner_ShadowRend</CastSound>
@@ -44698,12 +44687,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,ArmorBane,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,ArmorBane</AddTargetBuff>
 		<AddSelfBuff>SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
-		<Description>Dash forward, damaging and applying Bleed to every enemy in your path. [Stats: x1.09 damage, 0.2 damage/s, over 5s, -5% Defense, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Dash forward, damaging and applying Bleed to every enemy in your path. [Stats: x1.09 damage, 0.2 damage/s, over 5s, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Dash forward, damaging and applying 3 stacks of Bleed and a stack of Armor Bane to every enemy in your path.</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -44736,12 +44725,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,ArmorBane,Crippled,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,ArmorBane,Crippled</AddTargetBuff>
 		<AddSelfBuff>SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
-		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.2 damage, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.2 damage, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Adds a stack of Crippled. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -44774,12 +44763,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor25,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
-		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.32 damage, +25% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.32 damage, +25% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Grants 25% Dash Armor. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -44812,12 +44801,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor25,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
-		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.32 damage, +25% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.32 damage, +25% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Deals 5 stacks of Bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -44850,12 +44839,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor45,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
-		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.52 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.52 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Grants 45% Dash Armor. Deals 2 stacks of Armor Bane. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -44888,12 +44877,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor45,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
-		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.52 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.52 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>-2 Mana Cost. Deals 2 stacks of Crippled.</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -44926,12 +44915,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor45,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
-		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.52 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.52 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>-1 Mana Cost. Deals 6 stacks of Bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -44964,12 +44953,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,Crippled,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor45,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
-		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.67 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.67 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Deals 7 stacks of Bleed. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -45002,12 +44991,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor45,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
-		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.67 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.67 damage, +45% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>-2 Mana Cost. Deals 3 stacks of Armor Bane.</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -45040,12 +45029,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>VitalStrike</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ArmorBane,ArmorBane,ArmorBane,Crippled,Crippled</AddTargetBuff>
 		<AddSelfBuff>DashArmor60,SigilWindWalk</AddSelfBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Shadow Rend</DisplayName>
 		<BasePowerName>VitalStrike</BasePowerName>
-		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.78 damage, +60% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Dash forward, damaging, Crippling and applying Bleed to every enemy in your path. [Stats: x1.78 damage, +60% Defense, over 10s, 0.2 damage/s, over 5s, -5% Defense, over 5s, -10% Speed, over 5s]</Description>
 		<UpgradeDescription>Deals 8 stacks of Bleed. Grants 60% Dash Armor. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_VitalStrike</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -45096,8 +45085,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
-		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.36 damage, 1 damage/s, over 5s]</Description>
+		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.36 damage]</Description>
 		<CastSound>CHR_Executioner_CharonsBlades_Start</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -45146,9 +45134,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
 		<BasePowerName>SeekingBladesAttack</BasePowerName>
-		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x0.75 damage, 1 damage/s, over 5s]</Description>
+		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x0.75 damage]</Description>
 		<CastSound>CHR_Executioner_CharonsBlades_Start</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -45197,9 +45184,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
-		<AddTargetBuff>ViperbladeBleed</AddTargetBuff>
 		<BasePowerName>SeekingBladesAttack</BasePowerName>
-		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x0.83 damage, 1 damage/s, over 5s]</Description>
+		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x0.83 damage]</Description>
 		<CastSound>CHR_Executioner_CharonsBlades_Start</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -45248,9 +45234,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<BasePowerName>SeekingBladesAttack</BasePowerName>
-		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x0.91 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x0.91 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>CHR_Executioner_CharonsBlades_Start</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -45299,9 +45285,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<BasePowerName>SeekingBladesAttack</BasePowerName>
-		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>CHR_Executioner_CharonsBlades_Start</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -45350,9 +45336,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
-		<AddTargetBuff>Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding</AddTargetBuff>
 		<BasePowerName>SeekingBladesAttack</BasePowerName>
-		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.09 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.09 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>CHR_Executioner_CharonsBlades_Start</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -45401,9 +45387,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding</AddTargetBuff>
 		<BasePowerName>SeekingBladesAttack</BasePowerName>
-		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.26 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.26 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>CHR_Executioner_CharonsBlades_Start</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -45452,9 +45438,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding</AddTargetBuff>
 		<BasePowerName>SeekingBladesAttack</BasePowerName>
-		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.45 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.45 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>CHR_Executioner_CharonsBlades_Start</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -45503,9 +45489,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<BasePowerName>SeekingBladesAttack</BasePowerName>
-		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.67 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.67 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>CHR_Executioner_CharonsBlades_Start</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -45554,9 +45540,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<BasePowerName>SeekingBladesAttack</BasePowerName>
-		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.83 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.83 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>CHR_Executioner_CharonsBlades_Start</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -45605,9 +45591,9 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SeekingBlades</PowerGroup>
-		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed</AddTargetBuff>
+		<AddTargetBuff>Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<BasePowerName>SeekingBladesAttack</BasePowerName>
-		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.83 damage, 0.2 damage/s, over 5s, 1 damage/s, over 5s]</Description>
+		<Description>Gain a bonus to Crit chance and Crit damage [Stats: x1.83 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>CHR_Executioner_CharonsBlades_Start</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -47331,7 +47317,7 @@
 		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that gains 12% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.12 damage]</Description>
+		<Description>Vampiric AoE attack that gains 12% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.12 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Inflicts Armor Bane. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -47370,7 +47356,7 @@
 		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that gains 30% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.12 damage]</Description>
+		<Description>Vampiric AoE attack that gains 30% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.12 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Deals 30% Expertise damage bonus vs Bound targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -47409,7 +47395,7 @@
 		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that gains 30% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.31 damage]</Description>
+		<Description>Vampiric AoE attack that gains 30% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.31 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>-2 Mana. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -47448,7 +47434,7 @@
 		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that gains 60% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.31 damage]</Description>
+		<Description>Vampiric AoE attack that gains 60% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.31 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Deals 60% Expertise damage bonus vs Bound targets</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -47487,7 +47473,7 @@
 		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that gains 60% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.5 damage]</Description>
+		<Description>Vampiric AoE attack that gains 60% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.5 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>-1 Mana. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -47526,7 +47512,7 @@
 		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that gains 90% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.5 damage]</Description>
+		<Description>Vampiric AoE attack that gains 90% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.5 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>-1 Mana. Deals 90% Expertise damage bonus vs Bound targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -47565,7 +47551,7 @@
 		<AddTargetBuff>ArmorBane</AddTargetBuff>
 		<DisplayName>Shadow Scythe</DisplayName>
 		<BasePowerName>Reaper</BasePowerName>
-		<Description>Vampiric AoE attack that gains 120% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.5 damage]</Description>
+		<Description>Vampiric AoE attack that gains 120% of Expertise as bonus damage against Bound targets. Inflicts Armor Bane. [Stats: x2.5 damage, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>-1 Mana. Deals 120% Expertise damage bonus vs Bound targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowScythe</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -50454,7 +50440,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>HeartSeeker</PowerGroup>
 		<DisplayName>Heart Seeker</DisplayName>
-		<Description>Deliver a single, penetrating strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.56 damage]</Description>
+		<Description>Deliver a single, penetrating strike. Deals 40% bonus damage to enemies affected by Black Miasma. [Stats: x3.56 damage]</Description>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_ShadowWalker_HeartSeeker_A[450]CHR_ShadowWalker_HeartSeeker_B</CastSound>
@@ -50486,7 +50472,7 @@
 		<PowerGroup>HeartSeeker</PowerGroup>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x2.59 damage]</Description>
+		<Description>Deliver a single, penetrating strike. Deals 40% bonus damage to enemies affected by Black Miasma. [Stats: x2.59 damage]</Description>
 		<UpgradeDescription>Deliver a single, penetrating strike.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50519,7 +50505,7 @@
 		<PowerGroup>HeartSeeker</PowerGroup>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x2.85 damage]</Description>
+		<Description>Deliver a single, penetrating strike. Deals 40% bonus damage to enemies affected by Black Miasma. [Stats: x2.85 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50552,7 +50538,7 @@
 		<PowerGroup>HeartSeeker</PowerGroup>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.14 damage]</Description>
+		<Description>Deliver a single, penetrating strike. Deals 40% bonus damage to enemies affected by Black Miasma. [Stats: x3.14 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50585,7 +50571,7 @@
 		<PowerGroup>HeartSeeker</PowerGroup>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.45 damage]</Description>
+		<Description>Deliver a single, penetrating strike. Deals 40% bonus damage to enemies affected by Black Miasma. [Stats: x3.45 damage]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50619,7 +50605,7 @@
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating, Staggering strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.62 damage, -100% Speed, over 1s]</Description>
+		<Description>Deliver a single, penetrating, Staggering strike. Deals 40% bonus damage to enemies affected by Black Miasma. [Stats: x3.62 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Staggers the target. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50653,7 +50639,7 @@
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating, Staggering strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.62 damage, -100% Speed, over 1s]</Description>
+		<Description>Deliver a single, penetrating, Staggering strike. Deals 40% bonus damage to enemies affected by Black Miasma. [Stats: x3.62 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>-2 Mana Cost.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50687,7 +50673,7 @@
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating, Staggering strike. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.8 damage, -100% Speed, over 1s]</Description>
+		<Description>Deliver a single, penetrating, Staggering strike. Deals 40% bonus damage to enemies affected by Black Miasma. [Stats: x3.8 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50721,7 +50707,7 @@
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating, Staggering strike. Dazes if cast out of Stealth. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.8 damage, -100% Speed, over 1s]</Description>
+		<Description>Deliver a single, penetrating, Staggering strike. Dazes if cast out of Stealth. Deals 40% bonus damage to enemies affected by Black Miasma. [Stats: x3.8 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>If Stealthed, Dazes the target.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50755,7 +50741,7 @@
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating, Staggering strike. Dazes if cast out of Stealth. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x3.99 damage, -100% Speed, over 1s]</Description>
+		<Description>Deliver a single, penetrating, Staggering strike. Dazes if cast out of Stealth. Deals 40% bonus damage to enemies affected by Black Miasma. [Stats: x3.99 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>-1 Mana. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -50789,7 +50775,7 @@
 		<AddTargetBuff>Staggered</AddTargetBuff>
 		<DisplayName>Heart Seeker</DisplayName>
 		<BasePowerName>HeartSeeker</BasePowerName>
-		<Description>Deliver a single, penetrating, Staggering strike. Dazes if cast out of Stealth. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x4.24 damage, -100% Speed, over 1s]</Description>
+		<Description>Deliver a single, penetrating, Staggering strike. Dazes if cast out of Stealth. Deals 40% bonus damage to enemies affected by Black Miasma. [Stats: x4.24 damage, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowBlade</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -51872,7 +51858,7 @@
 		<SpawnLimit>3</SpawnLimit>
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
-		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their special attacks.</Description>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowLegion</FireSound>
@@ -51904,7 +51890,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their special attacks.</Description>
 		<UpgradeDescription>Summon two Shadow Clones to fight alongside you.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -51937,7 +51923,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their special attacks.</Description>
 		<UpgradeDescription>-2 Mana Cost. Clones have +15% HP and increased Hate.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -51970,7 +51956,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their special attacks.</Description>
 		<UpgradeDescription>-2 Mana Cost. Clones have +15% Defense and increased Hate.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -52003,7 +51989,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their special attacks.</Description>
 		<UpgradeDescription>-2 Mana Cost. Clones explode on death, Weakening targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -52036,7 +52022,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their special attacks.</Description>
 		<UpgradeDescription>-2 Mana Cost. Clones have +15% HP and increased Hate.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -52069,7 +52055,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their special attacks.</Description>
 		<UpgradeDescription>-2 Mana Cost. Clones have +15% Defense and increased Hate.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -52102,7 +52088,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their special attacks.</Description>
 		<UpgradeDescription>-3 Mana Cost. Clone explosion deals +5% Damage and Binds targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -52135,7 +52121,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their special attacks.</Description>
 		<UpgradeDescription>-3 Mana Cost. Clones have +15% HP and increased Hate.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -52168,7 +52154,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their special attacks.</Description>
 		<UpgradeDescription>-4 Mana Cost. Clones have +15% Defense and increased Hate.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -52201,7 +52187,7 @@
 		<SpawnDuration>12000</SpawnDuration>
 		<DisplayName>Shadow Legion</DisplayName>
 		<BasePowerName>ShadowLegion</BasePowerName>
-		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their attacks.</Description>
+		<Description>Summon three Shadow Clones for 12 seconds. Clones use your Scorpion Sting, Dark Chi and Black Miasma ranks, generate +50% Hate, and Bind with their special attacks.</Description>
 		<UpgradeDescription>Clone explosion deals +10% Damage and Blinds targets.</UpgradeDescription>
 		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<CastGfx/>
@@ -52298,7 +52284,6 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SaberMelee</PowerGroup>
-		<AddTargetBuff>Bound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Sword Melee</DisplayName>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
@@ -52659,7 +52644,7 @@
 		<PowerGroup>WhitheringMist</PowerGroup>
 		<AddTargetBuff>Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
-		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. [Stats: x1.35 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. [Stats: x1.35 damage, -10% Melee Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
 		<CastSound>CHR_ShadowWalker_WitheringMist_A</CastSound>
@@ -52693,7 +52678,7 @@
 		<AddTargetBuff>Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens and Binds your foes. [Stats: x0.95 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens and Binds your foes. [Stats: x0.95 damage, -10% Melee Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Release a debilitating cloud that Weakens and Binds your foes.</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52728,7 +52713,7 @@
 		<AddTargetBuff>Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens and Binds your foes. [Stats: x1.09 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens and Binds your foes. [Stats: x1.09 damage, -10% Melee Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52763,7 +52748,7 @@
 		<AddTargetBuff>Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.25 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.25 damage, -10% Melee Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 30% of Expertise as bonus damage against Bound targets. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52798,7 +52783,7 @@
 		<AddTargetBuff>Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.25 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.25 damage, -10% Melee Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of Weaken. Increased Range and AoE.</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52833,7 +52818,7 @@
 		<AddTargetBuff>Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.44 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.44 damage, -10% Melee Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52868,7 +52853,7 @@
 		<AddTargetBuff>Blinded,Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.44 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.44 damage, -10% Melee Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Adds Blind</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52903,7 +52888,7 @@
 		<AddTargetBuff>Blinded,Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.58 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.58 damage, -10% Melee Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52938,7 +52923,7 @@
 		<AddTargetBuff>Blinded,Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.74 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.74 damage, -10% Melee Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -52973,7 +52958,7 @@
 		<AddTargetBuff>Blinded,Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.92 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.92 damage, -10% Melee Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Range and AoE. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -53008,7 +52993,7 @@
 		<AddTargetBuff>Blinded,Weakened,Weakened,Weakened,Bound</AddTargetBuff>
 		<DisplayName>Withering Mist</DisplayName>
 		<BasePowerName>WhitheringMist</BasePowerName>
-		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.92 damage, -10% Melee Damage, over 5s]</Description>
+		<Description>Release a debilitating cloud that Weakens, Blinds and Binds your foes. Deals 30% of Expertise as bonus damage against Bound targets. [Stats: x1.92 damage, -10% Melee Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Adds 1 stack of Weaken</UpgradeDescription>
 		<IconName>a_PowerIcon_WitherMist</IconName>
 		<RuneIcon>a_RuneIcon_26</RuneIcon>
@@ -53063,7 +53048,7 @@
 		<DamageType>Dark</DamageType>
 		<PowerGroup>ShadowTendril</PowerGroup>
 		<AddTargetBuff>ShadowTendrilDamage</AddTargetBuff>
-		<Description>ShadowTendril helper power. [Stats: -30% Defense, over 0.5s]</Description>
+		<Description>ShadowTendril helper power. [Stats: -6% Defense, over 0.5s]</Description>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
 		<FireGfx>
@@ -53116,7 +53101,7 @@
 		<PowerGroup>ShadowTendril</PowerGroup>
 		<AddTargetBuff>ShadowTendrilRank1</AddTargetBuff>
 		<BasePowerName>ShadowTendril</BasePowerName>
-		<Description>ShadowTendril helper power. [Stats: -30% Defense, over 0.6s]</Description>
+		<Description>ShadowTendril helper power. [Stats: -6% Defense, over 0.6s]</Description>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
 		<FireGfx>
@@ -53169,7 +53154,7 @@
 		<PowerGroup>ShadowTendril</PowerGroup>
 		<AddTargetBuff>ShadowTendrilRank1</AddTargetBuff>
 		<BasePowerName>ShadowTendril</BasePowerName>
-		<Description>ShadowTendril helper power. [Stats: -30% Defense, over 0.6s]</Description>
+		<Description>ShadowTendril helper power. [Stats: -6% Defense, over 0.6s]</Description>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
 		<FireGfx>
@@ -53222,7 +53207,7 @@
 		<PowerGroup>ShadowTendril</PowerGroup>
 		<AddTargetBuff>ShadowTendrilRank1</AddTargetBuff>
 		<BasePowerName>ShadowTendril</BasePowerName>
-		<Description>ShadowTendril helper power. [Stats: -30% Defense, over 0.6s]</Description>
+		<Description>ShadowTendril helper power. [Stats: -6% Defense, over 0.6s]</Description>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
 		<FireGfx>
@@ -53275,7 +53260,7 @@
 		<PowerGroup>ShadowTendril</PowerGroup>
 		<AddTargetBuff>ShadowTendrilRank4</AddTargetBuff>
 		<BasePowerName>ShadowTendril</BasePowerName>
-		<Description>ShadowTendril helper power. [Stats: -30% Defense, -30% Speed, over 0.6s]</Description>
+		<Description>ShadowTendril helper power. [Stats: -6% Defense, -30% Speed, over 0.6s]</Description>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
 		<FireGfx>
@@ -53328,7 +53313,7 @@
 		<PowerGroup>ShadowTendril</PowerGroup>
 		<AddTargetBuff>ShadowTendrilRank4</AddTargetBuff>
 		<BasePowerName>ShadowTendril</BasePowerName>
-		<Description>ShadowTendril helper power. [Stats: -30% Defense, -30% Speed, over 0.6s]</Description>
+		<Description>ShadowTendril helper power. [Stats: -6% Defense, -30% Speed, over 0.6s]</Description>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
 		<FireGfx>
@@ -53381,7 +53366,7 @@
 		<PowerGroup>ShadowTendril</PowerGroup>
 		<AddTargetBuff>ShadowTendrilRank6</AddTargetBuff>
 		<BasePowerName>ShadowTendril</BasePowerName>
-		<Description>ShadowTendril helper power. [Stats: -40% Defense, -30% Speed, over 0.6s]</Description>
+		<Description>ShadowTendril helper power. [Stats: -8% Defense, -30% Speed, over 0.6s]</Description>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
 		<FireGfx>
@@ -53434,7 +53419,7 @@
 		<PowerGroup>ShadowTendril</PowerGroup>
 		<AddTargetBuff>ShadowTendrilRank6</AddTargetBuff>
 		<BasePowerName>ShadowTendril</BasePowerName>
-		<Description>ShadowTendril helper power. [Stats: -40% Defense, -30% Speed, over 0.6s]</Description>
+		<Description>ShadowTendril helper power. [Stats: -8% Defense, -30% Speed, over 0.6s]</Description>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
 		<FireGfx>
@@ -53487,7 +53472,7 @@
 		<PowerGroup>ShadowTendril</PowerGroup>
 		<AddTargetBuff>ShadowTendrilRank8</AddTargetBuff>
 		<BasePowerName>ShadowTendril</BasePowerName>
-		<Description>ShadowTendril helper power. [Stats: -40% Defense, -40% Speed, over 0.6s]</Description>
+		<Description>ShadowTendril helper power. [Stats: -8% Defense, -40% Speed, over 0.6s]</Description>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
 		<FireGfx>
@@ -53540,7 +53525,7 @@
 		<PowerGroup>ShadowTendril</PowerGroup>
 		<AddTargetBuff>ShadowTendrilRank8</AddTargetBuff>
 		<BasePowerName>ShadowTendril</BasePowerName>
-		<Description>ShadowTendril helper power. [Stats: -40% Defense, -40% Speed, over 0.6s]</Description>
+		<Description>ShadowTendril helper power. [Stats: -8% Defense, -40% Speed, over 0.6s]</Description>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
 		<FireGfx>
@@ -53593,7 +53578,7 @@
 		<PowerGroup>ShadowTendril</PowerGroup>
 		<AddTargetBuff>ShadowTendrilRank10</AddTargetBuff>
 		<BasePowerName>ShadowTendril</BasePowerName>
-		<Description>ShadowTendril helper power. [Stats: -50% Defense, -40% Speed, over 0.6s]</Description>
+		<Description>ShadowTendril helper power. [Stats: -10% Defense, -40% Speed, over 0.6s]</Description>
 		<CastGfx/>
 		<FireAnimSource>Ground</FireAnimSource>
 		<FireGfx>
@@ -53624,11 +53609,16 @@
 		<AddTargetBuff>Bound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
-		<Description>Dash forward, leaving behind a debilitating cloud that slows and lowers enemy defenses. [Stats: x1 damage]</Description>
+		<Description>Dash forward, leaving behind a debilitating cloud that slows and lowers enemy defenses. [Stats: x1 damage, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ShadowCloud_Random_1_3</AnimClass>
+			<AnimScale>.5</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx/>
 	</Power>
@@ -53649,7 +53639,7 @@
 		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. [Stats: x1.86 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. [Stats: x1.86 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_Executioner_ScorpionsSting</CastSound>
@@ -53683,7 +53673,7 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. [Stats: x0.67 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. [Stats: x0.67 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Strike your foes and apply Bind, Weaken, Cripple and Armor Bane.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -53718,7 +53708,7 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 70% of Expertise as bonus damage against Bound targets. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -53753,7 +53743,7 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of Armor Bane</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -53788,7 +53778,7 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of Crippled</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -53823,7 +53813,7 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.74 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 2 stacks of Weaken.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -53858,7 +53848,7 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -53893,7 +53883,7 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.81 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Deals 3 stacks of Crippled.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -53928,7 +53918,7 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.85 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.85 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -53963,7 +53953,7 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
-		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.89 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.89 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -53994,11 +53984,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>PoisonStrike,ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionPoisonStrike,ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
-		<Description>Deliver a venomous strike that applies Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.89 damage, 2 damage/s, over 5s, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s]</Description>
+		<Description>Deliver a venomous strike that applies Weaken, Cripple and Armor Bane. Deals 70% of Expertise as bonus damage against Bound targets. [Stats: x0.89 damage, 2 damage/s, over 5s, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Poisons the target.</UpgradeDescription>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -54035,12 +54025,17 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
-		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x0.9 damage]</Description>
-		<UpgradeDescription>Dash forward, leaving behind a debilitating cloud that slows and lowers enemy defenses.</UpgradeDescription>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x0.9 damage, -10% Melee Damage, 1 damage/s, over 5s]</Description>
+		<UpgradeDescription>Tendril Defense reduction is 6%.</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ShadowCloud_Random_1_3</AnimClass>
+			<AnimScale>.5</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx/>
 	</Power>
@@ -54064,12 +54059,17 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
-		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.04 damage]</Description>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.04 damage, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ShadowCloud_Random_1_3</AnimClass>
+			<AnimScale>.5</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx/>
 	</Power>
@@ -54093,12 +54093,17 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
-		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.2 damage]</Description>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.2 damage, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ShadowCloud_Random_1_3</AnimClass>
+			<AnimScale>.5</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx/>
 	</Power>
@@ -54122,12 +54127,17 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
-		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.2 damage]</Description>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.2 damage, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Tendril speed reduction is 30%</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ShadowCloud_Random_1_3</AnimClass>
+			<AnimScale>.5</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx/>
 	</Power>
@@ -54151,12 +54161,17 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
-		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.5 damage]</Description>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.5 damage, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ShadowCloud_Random_1_3</AnimClass>
+			<AnimScale>.5</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx/>
 	</Power>
@@ -54180,12 +54195,17 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
-		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.5 damage]</Description>
-		<UpgradeDescription>Tendril Defense reduction is 40%.</UpgradeDescription>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.5 damage, -10% Melee Damage, 1 damage/s, over 5s]</Description>
+		<UpgradeDescription>Tendril Defense reduction is 8%.</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ShadowCloud_Random_1_3</AnimClass>
+			<AnimScale>.5</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx/>
 	</Power>
@@ -54209,12 +54229,17 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
-		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.73 damage]</Description>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.73 damage, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ShadowCloud_Random_1_3</AnimClass>
+			<AnimScale>.5</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx/>
 	</Power>
@@ -54238,12 +54263,17 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
-		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.73 damage]</Description>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.73 damage, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Tendril speed reduction is 40%</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ShadowCloud_Random_1_3</AnimClass>
+			<AnimScale>.5</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx/>
 	</Power>
@@ -54267,12 +54297,17 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
-		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.9 damage]</Description>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x1.9 damage, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ShadowCloud_Random_1_3</AnimClass>
+			<AnimScale>.5</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx/>
 	</Power>
@@ -54296,12 +54331,17 @@
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
-		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x2.06 damage]</Description>
-		<UpgradeDescription>Tendril Defense reduction is 50%.Increased Damage #olddmg#</UpgradeDescription>
+		<Description>Dash forward, leaving behind a cloud that slows and lowers enemy defenses. [Stats: x2.06 damage, -10% Melee Damage, 1 damage/s, over 5s]</Description>
+		<UpgradeDescription>Tendril Defense reduction is 10%.</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
 		<FireSound>CHR_ShadowWalker_ShadowTendril</FireSound>
-		<FireGfx/>
+		<FireGfx>
+			<AnimFile>SFX_2.swf</AnimFile>
+			<AnimClass>a_ShadowCloud_Random_1_3</AnimClass>
+			<AnimScale>.5</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</FireGfx>
 		<HitGfx/>
 		<ProjGfx/>
 	</Power>
@@ -54319,7 +54359,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>BlackStorm</PowerGroup>
 		<DisplayName>Black Storm</DisplayName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.62 damage]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.62 damage]</Description>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
 		<CastAnimSource>Ground</CastAnimSource>
@@ -54355,7 +54395,7 @@
 		<PowerGroup>BlackStorm</PowerGroup>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.16 damage]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.16 damage]</Description>
 		<UpgradeDescription>Create a Shadow Clone that launches an attack on foes around it</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54393,7 +54433,7 @@
 		<AddSelfBuff>MisdirectionArmor20</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.16 damage, +20% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.16 damage, +20% Defense, over 3s]</Description>
 		<UpgradeDescription>20% Defense Boost for 3 seconds.</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54431,7 +54471,7 @@
 		<AddSelfBuff>MisdirectionArmor20</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.28 damage, +20% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.28 damage, +20% Defense, over 3s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54469,7 +54509,7 @@
 		<AddSelfBuff>MisdirectionArmor20</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.41 damage, +20% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.41 damage, +20% Defense, over 3s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54507,7 +54547,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.41 damage, +40% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.41 damage, +40% Defense, over 3s]</Description>
 		<UpgradeDescription>40% Defense Boost.</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54545,7 +54585,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.55 damage, +40% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.55 damage, +40% Defense, over 3s]</Description>
 		<UpgradeDescription>Increased AoE. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54584,7 +54624,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.55 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
+		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.55 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Add Stagger</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54623,7 +54663,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.71 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
+		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.71 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54662,7 +54702,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.83 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
+		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.83 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Increased AoE. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54701,7 +54741,7 @@
 		<AddSelfBuff>MisdirectionArmor50</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 160% bonus damage to enemies affected by Black Miasma. [Stats: x1.95 damage, +50% Defense, over 3s, -100% Speed, over 1s]</Description>
+		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.95 damage, +50% Defense, over 3s, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>50% Defense Boost. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>

@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "1.22.0",
+  "version": "1.23.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -24,6 +24,8 @@
     "patch:charm-text": "ts-node scripts/patch_gameswz_charm_text.ts",
     "patch:rogue-mastery-balance": "ts-node scripts/patch_gameswz_rogue_mastery_balance.ts",
     "patch:shadowstalker-balance": "ts-node scripts/patch_gameswz_shadowstalker_balance.ts",
+    "patch:shadowstalker-miasma-bonus": "ts-node scripts/patch-dungeonblitz-shadowstalker-miasma-bonus.ts",
+    "patch:talentstone-rework": "node scripts/patch-dungeonblitz-talentstone-rework.js",
     "patch:paladin-mastery-balance": "ts-node scripts/patch_gameswz_paladin_mastery_balance.ts",
     "patch:portrait-upload": "node scripts/patch-dungeonblitz-portrait-upload.js",
     "patch:sentinel-form-cooldown": "ts-node scripts/patch_gameswz_sentinel_form_cooldown.ts",

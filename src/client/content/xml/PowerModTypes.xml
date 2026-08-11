@@ -315,11 +315,11 @@
 		<ModName>ContactPoison1</ModName>
 		<ModID>31</ModID>
 		<DisplayName>Contact Poison</DisplayName>
-		<Description>Increases Poison Damage vs. Bleeding targets@Poison vs Bleeding:, +2%, +4%, +8%, +12%, +18%</Description>
+		<Description>Increases Poison Damage vs. Bleeding targets@Poison vs Bleeding:, +5%, +10%, +15%, +20%, +30%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.04</BuffValue>
+		<BuffValue>.10</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -329,7 +329,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.08</BuffValue>
+		<BuffValue>.20</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -339,7 +339,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.16</BuffValue>
+		<BuffValue>.30</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -349,7 +349,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.24</BuffValue>
+		<BuffValue>.40</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -359,7 +359,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.35</BuffValue>
+		<BuffValue>.60</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2680,7 +2680,7 @@
 		<ModName>WindCloak1</ModName>
 		<ModID>281</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
-		<Description>Gain Bonus Defense vs Projectiles@Defense:, +1%, +2%, +3%, +5%, +7%</Description>
+		<Description>Gain Bonus Defense vs Bound Enemies@Defense:, +1%, +3%, +5%, +7%, +10%</Description>
 		<ModType>WTF</ModType>
 		<SelfValue>.01</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
@@ -2690,7 +2690,7 @@
 		<ModID>282</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.02</SelfValue>
+		<SelfValue>.03</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2698,7 +2698,7 @@
 		<ModID>283</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.03</SelfValue>
+		<SelfValue>.05</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2706,7 +2706,7 @@
 		<ModID>284</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.05</SelfValue>
+		<SelfValue>.07</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2714,7 +2714,7 @@
 		<ModID>285</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.07</SelfValue>
+		<SelfValue>.10</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2757,7 +2757,7 @@
 		<ModName>CurseSword1</ModName>
 		<ModID>291</ModID>
 		<DisplayName>Cursed Sword</DisplayName>
-		<Description>Gain Bonus Defense vs Cursed Enemies@Defense:, +1%, +2%, +4%, +6%, +10%</Description>
+		<Description>Minions gain Bonus Damage vs Cursed Enemies@Damage:, +1%, +3%, +5%, +7%, +10%</Description>
 		<ModType>WTF</ModType>
 		<SelfValue>.01</SelfValue>
 		<IconName>a_Signet_CurseSword</IconName>
@@ -2767,7 +2767,7 @@
 		<ModID>292</ModID>
 		<DisplayName>Cursed Sword</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.02</SelfValue>
+		<SelfValue>.03</SelfValue>
 		<IconName>a_Signet_CurseSword</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2775,7 +2775,7 @@
 		<ModID>293</ModID>
 		<DisplayName>Cursed Sword</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.04</SelfValue>
+		<SelfValue>.05</SelfValue>
 		<IconName>a_Signet_CurseSword</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2783,7 +2783,7 @@
 		<ModID>294</ModID>
 		<DisplayName>Cursed Sword</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.06</SelfValue>
+		<SelfValue>.07</SelfValue>
 		<IconName>a_Signet_CurseSword</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2791,7 +2791,7 @@
 		<ModID>295</ModID>
 		<DisplayName>Cursed Sword</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.1</SelfValue>
+		<SelfValue>.10</SelfValue>
 		<IconName>a_Signet_CurseSword</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2949,9 +2949,9 @@
 		<ModName>CurseArmor1</ModName>
 		<ModID>311</ModID>
 		<DisplayName>Cursed Armor</DisplayName>
-		<Description>Gain Bonus Damage vs Cursed Enemies@Defense:, +1%, +2%, +3%, +4%, +5%</Description>
+		<Description>Minions gain Bonus Defense and Expertise vs Cursed Enemies@Defense and Expertise:, +3%, +5%, +10%, +15%, +20%</Description>
 		<ModType>WTF</ModType>
-		<SelfValue>0.01</SelfValue>
+		<SelfValue>.03</SelfValue>
 		<IconName>a_Signet_CurseArmor</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2959,7 +2959,7 @@
 		<ModID>312</ModID>
 		<DisplayName>Cursed Armor</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.02</SelfValue>
+		<SelfValue>.05</SelfValue>
 		<IconName>a_Signet_CurseArmor</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2967,7 +2967,7 @@
 		<ModID>313</ModID>
 		<DisplayName>Cursed Armor</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.03</SelfValue>
+		<SelfValue>.10</SelfValue>
 		<IconName>a_Signet_CurseArmor</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2975,7 +2975,7 @@
 		<ModID>314</ModID>
 		<DisplayName>Cursed Armor</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.04</SelfValue>
+		<SelfValue>.15</SelfValue>
 		<IconName>a_Signet_CurseArmor</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2983,7 +2983,7 @@
 		<ModID>315</ModID>
 		<DisplayName>Cursed Armor</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.05</SelfValue>
+		<SelfValue>.20</SelfValue>
 		<IconName>a_Signet_CurseArmor</IconName>
 	</PowerModType>
 	<PowerModType>
