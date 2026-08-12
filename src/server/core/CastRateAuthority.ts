@@ -81,6 +81,15 @@ export class CastRateAuthority {
      * hook on that power id covers cancelling early, running dry, and dying in form.
      */
     private static readonly SENTINEL_FORM_EXIT_LOCKOUT_MS = 30000;
+    /**
+     * Smallest exit cooldown an honest client can produce (issue #674).
+     *
+     * Entity.method_247 reduces the form's cooldown by `0.75 * (mana / maxMana)`, so a Sentinel
+     * who drops out at full mana legitimately waits a quarter of the authored 30s. A flat floor
+     * at the full lockout refused exactly that recast, which is the "cancelling gives full
+     * cooldown" report -- the server was overriding the scaling the client had just applied.
+     */
+    private static readonly SENTINEL_FORM_MIN_COOLDOWN_FRACTION = 0.25;
 
     private static timingsByPowerId: Map<number, PowerTiming> | null = null;
     /** Every rank of the form. Stamped together -- see noteSentinelFormExit. */
@@ -242,7 +251,9 @@ export class CastRateAuthority {
         // Same tolerance as every other cooldown here: this is a cheat check, not a second copy
         // of the simulation, and an honest client on a stalled connection must not be refused.
         const readyAt = nowMs + Math.round(
-            CastRateAuthority.SENTINEL_FORM_EXIT_LOCKOUT_MS * CastRateAuthority.TOLERANCE
+            CastRateAuthority.SENTINEL_FORM_EXIT_LOCKOUT_MS *
+            CastRateAuthority.SENTINEL_FORM_MIN_COOLDOWN_FRACTION *
+            CastRateAuthority.TOLERANCE
         );
         for (const formPowerId of CastRateAuthority.sentinelFormPowerIds) {
             if (Number(state.cooldownReadyAtMs.get(formPowerId) ?? 0) < readyAt) {

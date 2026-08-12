@@ -115,7 +115,34 @@ const REDUCE_ANCHOR = [
     ''
 ].join('\n');
 
+/**
+ * Issue #674: the exit cooldown has to scale with what the Sentinel had left, not sit at a flat
+ * 30 seconds. The authored rule in Entity.method_247 is already exactly that --
+ * `method_390(SentinelForm<rank>, 0.75 * (var_31 / const_156))`, i.e. reduce the cooldown by up
+ * to 75% of the remaining mana fraction -- so a Sentinel who drops out at full mana waits 7.5s
+ * and one who burned the form dry waits the full 30s.
+ *
+ * The first cut of this patch excluded the form from method_390 outright, which fixed "no
+ * cooldown at all" by throwing the scaling away with it. That is the bug being reported now.
+ * Rather than skipping the call, this writes what method_390 always meant to write: the same
+ * `mTimeThisTick + ...` base every other var_114 stamp in the file uses, instead of the authored
+ * `0 +` that always lands in the past.
+ *
+ * Still scoped to Sentinel Form by name. The Blademaster path (var_1586, hudPowers 4-6) has the
+ * same `0 +` bug and repairing it is a real balance change to another class -- it stays its own
+ * decision, exactly as the previous pass argued.
+ */
 const REDUCE_GUARD = [
+    '         if(param1.basePowerName == "SentinelForm")',
+    '         {',
+    '            this.var_114[param1.powerID] = this.var_1.mTimeThisTick + (1 - param2) * param1.coolDownTime;',
+    '            return;',
+    '         }',
+    ''
+].join('\n');
+
+/** The flat-30s cut this replaces: skip method_390 for the form entirely. */
+const LEGACY_REDUCE_GUARD = [
     '         if(param1.basePowerName == "SentinelForm")',
     '         {',
     '            return;',
@@ -295,10 +322,17 @@ function patchSource(source, swfPath) {
             next = next.replace(REMOVE_BUFF_ANCHOR, REMOVE_BUFF_ANCHOR + REMOVE_BUFF_GUARD);
         }
         if (!next.includes(REDUCE_GUARD)) {
-            if (!next.includes(REDUCE_ANCHOR)) {
-                throw new Error(`${name}: CombatState.method_390 does not open the way this patch expects.`);
+            // An SWF carrying the flat-30s cut has the skip-outright guard sitting at this
+            // anchor. Inserting beside it would leave its `return;` first and turn the scaled
+            // stamp into dead code, so that one is replaced rather than added to.
+            if (next.includes(LEGACY_REDUCE_GUARD)) {
+                next = next.replace(LEGACY_REDUCE_GUARD, REDUCE_GUARD);
+            } else {
+                if (!next.includes(REDUCE_ANCHOR)) {
+                    throw new Error(`${name}: CombatState.method_390 does not open the way this patch expects.`);
+                }
+                next = next.replace(REDUCE_ANCHOR, REDUCE_ANCHOR + REDUCE_GUARD);
             }
-            next = next.replace(REDUCE_ANCHOR, REDUCE_ANCHOR + REDUCE_GUARD);
         }
         return next;
     }
