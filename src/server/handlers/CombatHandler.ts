@@ -4721,39 +4721,71 @@ export class CombatHandler {
     }
 
     /**
-     * Sentinel: the discipline's basic melee swing carries a slice of the wearer's own
-     * health pool, which is the stat a Sentinel actually stacks.
+     * Sentinel: the discipline's melee swing carries a slice of the wearer's own health pool,
+     * which is the stat a Sentinel actually stacks.
      *
-     * Server-side for the same reason as Soulthieft -- the client's damage formula scales
-     * the attacker's damage stats and has no term for their max HP -- but with a bonus this
-     * one gets for free: the server knows MasterClass, so unlike the weapon-data changes
-     * that ride alongside it, this really is Sentinel-only rather than every Paladin.
+     * The powers are the Paladin weapon melee attacks -- GearTypes gives every Paladin sword,
+     * mace and axe one of SwordMelee/MaceMelee/AxeMelee, PunchMelee is the unarmed one, and
+     * SFMelee/SFMeleeCombo are what the swing becomes inside Sentinel Form. Those powers are
+     * shared by the whole class, which is exactly why this is server-side: the server knows
+     * MasterClass, so the bonus really is Sentinel-only where a weapon-data change would have
+     * handed it to every Justicar and Templar as well.
      *
-     * It rides the Sentinel's signature power, ConcussionBolt -- the AbilityTypes
-     * HotbarLocation 0 slot, which is one power per discipline. The weapon-driven basic
-     * attacks it first hung off are shared by the whole class, so that version handed a
-     * Sentinel passive to every Justicar and Templar as well.
+     * It used to ride ConcussionBolt, the discipline's *ranged* attack, with no Defense term
+     * at all (issue #670).
+     *
+     * The rates are picked against the client's own stat tables rather than guessed. The
+     * issue first asked for 0.01% of max HP and 0.1% of Defense; shipping those showed how
+     * small they are. A level-50 Paladin runs about 122k max HP and 1,680 Defense (GearType's
+     * per-level rune tables) against a basic swing of 5,264 -- BaseDamageMult 1.0 times
+     * Attack -- so the passive was worth 14 damage, a quarter of one percent. At the rates
+     * below it is 368 + 504, about 17% of a swing, and that share holds within half a point
+     * at every level from 10 to 50 because the gear tables and the HP table climb together.
+     *
+     * Defense is deliberately the larger term despite being much the smaller stat. A Sentinel
+     * who stacks Defense should out-damage one who stacks raw Health -- that is the point of
+     * the discipline -- and the 10:1 rate ratio the issue proposed inverts it, because max HP
+     * is some 65 times Defense in absolute terms.
+     *
+     * The ceiling to measure against is Holy Smash, which draws 3 x Defense from one 20-mana
+     * cast. This is a tenth of that, on an attack that costs nothing and swings every 435ms.
+     *
+     * The Defense half needed the client to start telling the server its Defense, which it
+     * never had: patch-dungeonblitz-combat-stats-armor appends armorClass to packet 0xFC.
+     * That is why the term reads off the session rather than off anything the hit carries,
+     * and why it is written to survive a zero -- a browser can serve a cached SWF older than
+     * the server, and such a client sends the packet without the field. When that happens the
+     * Health half still lands and the Defense half is simply absent, which is the failure
+     * mode worth having.
      */
-    private static readonly SENTINEL_MAX_HP_RATE = 0.001;
-    private static readonly SENTINEL_SIGNATURE_POWER_NAMES = ['ConcussionBolt'];
-    private static sentinelSignaturePowerIds: Set<number> | null = null;
+    private static readonly SENTINEL_MAX_HP_RATE = 0.003;
+    private static readonly SENTINEL_ARMOR_RATE = 0.3;
+    private static readonly SENTINEL_MELEE_POWER_NAMES = [
+        'SwordMelee',
+        'MaceMelee',
+        'AxeMelee',
+        'PunchMelee',
+        'SFMelee',
+        'SFMeleeCombo'
+    ];
+    private static sentinelMeleePowerIds: Set<number> | null = null;
 
     /**
      * Resolved from the authored power data rather than hardcoded, because the ids are
      * whatever PlayerPowerTypes says they are and a wrong constant here would silently
      * attach the passive to some unrelated power.
      */
-    private static getSentinelSignaturePowerIds(): Set<number> {
-        if (CombatHandler.sentinelSignaturePowerIds) {
-            return CombatHandler.sentinelSignaturePowerIds;
+    private static getSentinelMeleePowerIds(): Set<number> {
+        if (CombatHandler.sentinelMeleePowerIds) {
+            return CombatHandler.sentinelMeleePowerIds;
         }
 
         const ids = new Set<number>();
-        CombatHandler.sentinelSignaturePowerIds = ids;
+        CombatHandler.sentinelMeleePowerIds = ids;
 
         const xmlDir = resolveClientXmlDir(['PlayerPowerTypes.xml']);
         if (!xmlDir) {
-            console.warn('[CombatHandler] PlayerPowerTypes.xml not found; the Sentinel basic-attack passive is inactive.');
+            console.warn('[CombatHandler] PlayerPowerTypes.xml not found; the Sentinel melee passive is inactive.');
             return ids;
         }
 
@@ -4761,7 +4793,7 @@ export class CombatHandler {
             const xml = fs.readFileSync(path.join(xmlDir, 'PlayerPowerTypes.xml'), 'utf8');
             for (const block of xml.match(/<Power PowerName="[^"]*">[\s\S]*?<\/Power>/g) ?? []) {
                 const name = block.match(/<Power PowerName="([^"]*)">/)?.[1] ?? '';
-                if (!CombatHandler.SENTINEL_SIGNATURE_POWER_NAMES.some((base) => name === base || new RegExp(`^${base}\\d+$`).test(name))) {
+                if (!CombatHandler.SENTINEL_MELEE_POWER_NAMES.some((base) => name === base || new RegExp(`^${base}\\d+$`).test(name))) {
                     continue;
                 }
 
@@ -4770,9 +4802,9 @@ export class CombatHandler {
                     ids.add(powerId);
                 }
             }
-            console.log(`[CombatHandler] Sentinel passive covers ${ids.size} ConcussionBolt rank(s).`);
+            console.log(`[CombatHandler] Sentinel passive covers ${ids.size} melee attack rank(s).`);
         } catch (err) {
-            console.warn('[CombatHandler] Could not read PlayerPowerTypes.xml; the Sentinel basic-attack passive is inactive.', err);
+            console.warn('[CombatHandler] Could not read PlayerPowerTypes.xml; the Sentinel melee passive is inactive.', err);
         }
 
         return ids;
@@ -4790,17 +4822,67 @@ export class CombatHandler {
             return 0;
         }
 
-        if (!CombatHandler.getSentinelSignaturePowerIds().has(Math.round(Number(powerId) || 0))) {
+        if (!CombatHandler.getSentinelMeleePowerIds().has(Math.round(Number(powerId) || 0))) {
             return 0;
         }
 
         const damage = Math.max(0, Math.round(Number(baseDamage) || 0));
-        const maxHp = Math.max(0, Math.round(Number(sourceSession.authoritativeMaxHp ?? 0) || 0));
-        if (damage <= 0 || maxHp <= 0) {
+        if (damage <= 0) {
             return 0;
         }
 
-        return Math.round(maxHp * CombatHandler.SENTINEL_MAX_HP_RATE);
+        const maxHp = Math.max(0, Math.round(Number(sourceSession.authoritativeMaxHp ?? 0) || 0));
+        const armorClass = Math.max(0, Math.round(Number(sourceSession.authoritativeArmorClass ?? 0) || 0));
+        return Math.round(maxHp * CombatHandler.SENTINEL_MAX_HP_RATE)
+            + Math.round(armorClass * CombatHandler.SENTINEL_ARMOR_RATE);
+    }
+
+    /**
+     * Justicar: a tenth of the discipline's Expertise is added to its Attack (issue #670).
+     * The Justicar had no passive at all before this.
+     *
+     * Expressed as a share of the hit rather than as a stat, because a stat is not something
+     * the server owns -- the client computes Attack and Expertise and reports both in 0xFC as
+     * meleeDamage and magicDamage. A hit's damage is the power's BaseDamageMult times Attack,
+     * so scaling it by Expertise/Attack lands the same number that adding 10% of Expertise to
+     * Attack would have, for any power that scales off Attack -- which for a Paladin is all of
+     * them.
+     *
+     * Like Soulthieft, the floating combat number the attacker's own client draws will show
+     * the hit before the bonus; the health bar is server authoritative and drops by the real
+     * amount. Unlike a stat change it also does not show up in the Armory's Attack figure,
+     * which is why the passive is spelled out on AxeFlurry's tooltip instead.
+     */
+    private static readonly JUSTICAR_EXPERTISE_TO_ATTACK_RATE = 0.1;
+
+    private static getJusticarExpertiseBonus(
+        sourceSession: Client | null,
+        sourceEntity: any,
+        baseDamage: number
+    ): number {
+        if (
+            !sourceSession?.character ||
+            Number(sourceSession.character.MasterClass ?? 0) !== MasterClassID.Justicar
+        ) {
+            return 0;
+        }
+
+        const damage = Math.max(0, Math.round(Number(baseDamage) || 0));
+        if (damage <= 0) {
+            return 0;
+        }
+
+        // Either copy of the player's entity will do -- CommandHandler writes the declared
+        // stats to both the session's own map and the level's -- but only one of them is
+        // guaranteed to be in hand at a given hit site.
+        const localSource = sourceSession.clientEntID > 0 ? sourceSession.entities.get(sourceSession.clientEntID) : null;
+        const attack = Math.max(Number(sourceEntity?.meleeDamage ?? 0), Number(localSource?.meleeDamage ?? 0));
+        const expertise = Math.max(Number(sourceEntity?.magicDamage ?? 0), Number(localSource?.magicDamage ?? 0));
+        if (!Number.isFinite(attack) || !Number.isFinite(expertise) || attack <= 0 || expertise <= 0) {
+            return 0;
+        }
+
+        return Math.round(damage * CombatHandler.JUSTICAR_EXPERTISE_TO_ATTACK_RATE * (expertise / attack));
     }
 
     private static updatePlayerTargetAfterHit(targetSession: Client, damage: number, preventDeath: boolean = false): PlayerHitResolution {
@@ -5458,6 +5540,7 @@ export class CombatHandler {
             damage = AdminRuntimeSettings.scaleDamage(damage);
             damage += CombatHandler.getSoulthieftMaxHpBonus(sourceSession, targetEntity, damage, levelScope);
             damage += CombatHandler.getSentinelMaxHpBonus(sourceSession, info.powerId, damage);
+            damage += CombatHandler.getJusticarExpertiseBonus(sourceSession, sourceEntity, damage);
         }
         if (
             (!targetEntity && !targetSession) ||

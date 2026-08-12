@@ -11,7 +11,7 @@ export enum MissionID {
     DeliverToSwamp = 8,
     GetGoblinNoserings = 9,
     GetGoblinWands = 10,
-    DELETED1 = 11,
+    ClearTheBandits = 11,
     KillGoblins = 12,
     RecoverMyStuff = 13,
     KillGraveyardSkeleton = 14,

@@ -4734,7 +4734,7 @@
 		<BuffID>646</BuffID>
 		<Attack>false</Attack>
 		<Duration>3000</Duration>
-		<DoTDamage>-0.375</DoTDamage>
+		<DoTDamage>-0.9375</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4747,7 +4747,7 @@
 		<BuffID>647</BuffID>
 		<Attack>false</Attack>
 		<Duration>3000</Duration>
-		<DoTDamage>-0.5</DoTDamage>
+		<DoTDamage>-1.25</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4760,7 +4760,7 @@
 		<BuffID>648</BuffID>
 		<Attack>false</Attack>
 		<Duration>3000</Duration>
-		<DoTDamage>-0.625</DoTDamage>
+		<DoTDamage>-1.5625</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<BuffLoc>Feet</BuffLoc>
 		<GfxType>
@@ -4961,7 +4961,7 @@
 		<Duration>5000</Duration>
 		<DoTDamage>1</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
-		<StackCount>2</StackCount>
+		<StackCount>3</StackCount>
 		<BuffLoc>Chest</BuffLoc>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -4975,7 +4975,7 @@
 		<Duration>5000</Duration>
 		<DoTDamage>1.3</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
-		<StackCount>2</StackCount>
+		<StackCount>3</StackCount>
 		<BuffLoc>Chest</BuffLoc>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -4989,7 +4989,7 @@
 		<Duration>5000</Duration>
 		<DoTDamage>1.6</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
-		<StackCount>2</StackCount>
+		<StackCount>3</StackCount>
 		<BuffLoc>Chest</BuffLoc>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5003,7 +5003,7 @@
 		<Duration>5000</Duration>
 		<DoTDamage>2</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
-		<StackCount>2</StackCount>
+		<StackCount>3</StackCount>
 		<BuffLoc>Chest</BuffLoc>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5017,7 +5017,7 @@
 		<Duration>5000</Duration>
 		<DoTDamage>2.5</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
-		<StackCount>2</StackCount>
+		<StackCount>3</StackCount>
 		<BuffLoc>Chest</BuffLoc>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5783,5 +5783,14 @@
 			<StackCount>1</StackCount>
 			<BuffLoc>Head</BuffLoc>
 			<BuffIcon>a_StatusIcon_Poisoned</BuffIcon>
+		</BuffType>
+	<BuffType BuffName="SentinelFury">
+			<BuffID>742</BuffID>
+			<Attack>false</Attack>
+			<Duration>0</Duration>
+			<MagicDamage>0.6</MagicDamage>
+			<MeleeDamage>0.6</MeleeDamage>
+			<EntTint>0xFF3030</EntTint>
+			<GfxType/>
 		</BuffType>
 </PlayerBuffTypes>

@@ -1,7 +1,7 @@
 import { Client } from '../core/Client';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
-import { GameData } from '../core/GameData';
+import { GameData, MAX_GEAR_TIER } from '../core/GameData';
 import { GlobalState } from '../core/GlobalState';
 import { noteDungeonRunChestOpened, noteDungeonRunTreasure } from '../core/DungeonRunStats';
 import { CombatHandler } from './CombatHandler';
@@ -853,7 +853,7 @@ export class RewardHandler {
             if (!Number.isFinite(normalizedGearId) || normalizedGearId <= 0) {
                 return;
             }
-            const normalizedTier = Math.max(0, Math.min(2, Math.round(Number(tier ?? 0) || 0)));
+            const normalizedTier = Math.max(0, Math.min(MAX_GEAR_TIER, Math.round(Number(tier ?? 0) || 0)));
             for (let t = 0; t <= normalizedTier; t++) {
                 owned.add(GameData.buildGearTierKey(normalizedGearId, t));
             }

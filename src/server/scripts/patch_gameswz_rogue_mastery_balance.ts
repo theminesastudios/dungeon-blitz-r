@@ -249,10 +249,19 @@ const VIPERBLADE_BUFFS = new Map<string, string>([
 //
 //   Sentinel  ConcussionBolt   Justicar  AxeFlurry     Templar   DivineBolt
 //   Viper     PoisonDagger     Soulthief HeavyDagger   Shadow    CorrosiveDagger
-// What each discipline's signature power says it does. Only passives that actually work
-// are written here: Justicar's Ignited bonus and Shadowstalker's auto-shroud are not
-// implemented, so AxeFlurry and CorrosiveDagger keep their authored text rather than
-// promising something the game will not do.
+// What each discipline's signature power says it does. Only passives that actually work are
+// written here: Shadowstalker's auto-shroud is not implemented, so CorrosiveDagger keeps its
+// authored text rather than promising something the game will not do.
+//
+// The Sentinel's sentence describes the melee swing rather than the bolt it is attached to,
+// and that is deliberate (issue #670). The passive moved onto the melee attacks -- see
+// CombatHandler.getSentinelMaxHpBonus -- but the weapon melee powers author no Description at
+// all, and ConcussionBolt is the discipline's one power with a tooltip a player reliably
+// reads. Saying it here is the only place it can be said.
+//
+// The Justicar's is new: the discipline had no passive, and the Ignited bonus this slot once
+// promised was never implemented. 10% of Expertise on Attack is, in the same issue --
+// CombatHandler.getJusticarExpertiseBonus.
 //
 // The authored sentence is replaced and any trailing "[Stats: ...]" is left alone --
 // patch_gameswz_power_stat_tooltips regenerates that block afterwards.
@@ -281,7 +290,14 @@ const SIGNATURE_DESCRIPTIONS = new Map<string, [string, string]>([
     "ConcussionBolt",
     [
       "The Sentinel's ranged energy attacks.",
-      "The Sentinel's ranged energy attacks. Sentinel passive: every bolt also strikes for 0.1% of your maximum Health.",
+      "The Sentinel's ranged energy attacks. Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 30% of your Defense.",
+    ],
+  ],
+  [
+    "AxeFlurry",
+    [
+      "The Justicar's signature throwing axes.",
+      "The Justicar's signature throwing axes. Justicar passive: 10% of your Expertise is added to your Attack.",
     ],
   ],
   [
@@ -425,6 +441,22 @@ const TEXT_MIGRATIONS: Array<{ power: RegExp; from: string; to: string }> = [
     power: /^DivineBolt\d*$/,
     from: "Templar passive: every bolt bursts in a small area.",
     to: "Templar passive: your ranged attacks arc to up to 3 more enemies.",
+  },
+  {
+    // The Sentinel passive moved off the bolt and onto the melee swing, and its rates moved
+    // with it: 0.1% of max HP became 0.01%, plus a Defense term the old one did not have
+    // (issue #670).
+    power: /^ConcussionBolt\d*$/,
+    from: "Sentinel passive: every bolt also strikes for 0.1% of your maximum Health.",
+    to: "Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 30% of your Defense.",
+  },
+  {
+    // The rates the issue opened with, shipped and then measured: 0.01% of max HP and
+    // 0.1% of Defense came to 14 damage on a 5,264 basic swing at level 50. See
+    // CombatHandler.getSentinelMaxHpBonus for where the replacements come from.
+    power: /^ConcussionBolt\d*$/,
+    from: "Sentinel passive: your melee attacks also strike for 0.01% of your maximum Health and 0.1% of your Defense.",
+    to: "Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 30% of your Defense.",
   },
 ];
 

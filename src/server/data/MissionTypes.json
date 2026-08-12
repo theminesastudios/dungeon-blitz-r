@@ -204,9 +204,25 @@
         "PraiseText": "I hate the way those Death Eyes look at me.=Thanks again."
     },
     {
-        "MissionName": "DELETED1",
+        "MissionName": "ClearTheBandits",
         "MissionID": "11",
-        "ZoneSet": "TOBEDELETED"
+        "PreReqMissions": "SeeTheWarden",
+        "ZoneSet": "BridgeTown",
+        "Priority": "Side",
+        "ContactName": "Felguard",
+        "ReturnName": "Felguard",
+        "CompleteCount": "20",
+        "MissionLevel": "11",
+        "ExpReward": "300",
+        "GoldReward": "500",
+        "DisplayName": "Clear the Bandits",
+        "TrackerText": "Defeat 20 human bandits around Felbridge",
+        "TrackerReturn": "Return to Benjaea at the Felbridge bridge",
+        "Description": "Benjaea needs your help to drive the human bandits away from Felbridge. Defeat 20 bandits and return to the bridge guard.",
+        "OfferText": "Hey! Are you the slayer of Aracnaea?=@Yes, I am.=Hero please help me! I am really tired of the bandit problem. Could you kill some of them for me?=@Okey I will do my best for our people.",
+        "ActiveText": "Hey! Are you the slayer of Aracnaea?=@Yes, I am.=Hero please help me! I am really tired of the bandit problem. Could you kill some of them for me?=@Okey I will do my best for our people.",
+        "ReturnText": "Thank you hero. Please accept this little gift. Maybe this could help for your adventure.=@My pleasures. I will help all of you as much as I can. Good luck for guarding the bridge!=Good luck to you, too. May your path be clear, great hero.",
+        "PraiseText": "Thank you hero. Please accept this little gift. Maybe this could help for your adventure.=@My pleasures. I will help all of you as much as I can. Good luck for guarding the bridge!=Good luck to you, too. May your path be clear, great hero."
     },
     {
         "MissionName": "KillGoblins",

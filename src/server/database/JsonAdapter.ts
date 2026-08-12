@@ -57,6 +57,34 @@ export class JsonAdapter implements IDatabase {
         return String(value ?? '').trim().toLowerCase();
     }
 
+    /**
+     * The six Rogue lockbox uniques are Mystic-only above Legendary: their tier 3 ("Y") variants
+     * carry the ability-bonus rune chains and the red UI treatment, and there is no drop or forge
+     * path that grants tier 3. Promoting owned Legendary copies here — on every load and save —
+     * migrates existing characters without needing the server offline.
+     */
+    private static readonly MYSTIC_ROGUE_GEAR_IDS = new Set([1171, 1172, 1173, 1174, 1175, 1176]);
+    private static readonly LEGENDARY_TIER = 2;
+    private static readonly MYSTIC_TIER = 3;
+
+    private promoteMysticRogueGear(gears: unknown): void {
+        if (!Array.isArray(gears)) {
+            return;
+        }
+        for (const gear of gears) {
+            if (!gear || typeof gear !== 'object') {
+                continue;
+            }
+            const entry = gear as { gearID?: number; tier?: number };
+            if (
+                JsonAdapter.MYSTIC_ROGUE_GEAR_IDS.has(Number(entry.gearID ?? 0)) &&
+                Number(entry.tier ?? 0) === JsonAdapter.LEGENDARY_TIER
+            ) {
+                entry.tier = JsonAdapter.MYSTIC_TIER;
+            }
+        }
+    }
+
     private normalizeCharacterProgress(character: Character | null | undefined): Character | null | undefined {
         if (!character) {
             return character;
@@ -67,6 +95,9 @@ export class JsonAdapter implements IDatabase {
         if (Number(character.level ?? 1) !== normalizedLevel) {
             character.level = normalizedLevel;
         }
+
+        this.promoteMysticRogueGear((character as { equippedGears?: unknown }).equippedGears);
+        this.promoteMysticRogueGear((character as { inventoryGears?: unknown }).inventoryGears);
 
         return character;
     }

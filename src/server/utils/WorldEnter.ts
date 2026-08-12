@@ -15,6 +15,7 @@ import { normalizeCharacterMaterials } from './MaterialInventory';
 import { CharmID } from '../data/runtime/Charms';
 
 export class WorldEnter {
+    private static readonly CLIENT_HIDDEN_MISSION_IDS = new Set<number>([11]);
     private static readonly MASTERCLASS_TO_BUILDING: Record<number, number> = {
         [MasterClassID.Executioner]: BuildingID.ExecutionerTower,
         [MasterClassID.Shadowwalker]: BuildingID.ShadowwalkerTower,
@@ -97,7 +98,11 @@ export class WorldEnter {
     }
 
     private static buildSerializableMissionsState(character: Character): Record<string, any> {
-        return { ...WorldEnter.asRecord(character.missions) };
+        const missions = { ...WorldEnter.asRecord(character.missions) };
+        for (const missionId of WorldEnter.CLIENT_HIDDEN_MISSION_IDS) {
+            delete missions[String(missionId)];
+        }
+        return missions;
     }
 
     private static normalizeMissionEntry(

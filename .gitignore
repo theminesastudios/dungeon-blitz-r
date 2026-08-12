@@ -10,6 +10,7 @@ build/
 logs/
 src/server/data/runtime/*crash*.log
 src/server/data/discord_account_links.json
+src/server/portraits/
 .env
 .discord-social-token.json
 .discord-social-channel-link.json
@@ -18,3 +19,4 @@ src/server/.discord-social-token.json
 src/server/.discord-social-channel-link.json
 src/server/native_bridge/build/
 src/server/native_bridge/discord_social_sdk/
+.swf..bak

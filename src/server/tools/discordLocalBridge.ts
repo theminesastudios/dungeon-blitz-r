@@ -55,6 +55,7 @@ interface PresencePayload {
     levelKey?: string;
     levelName?: string;
     areaKey?: string;
+    portraitUrl?: string;
     disciplineKey?: string;
     activityKind?: string;
     playerStatus?: string;
@@ -383,6 +384,7 @@ class LocalDiscordBridge {
         const levelKey = String(body.levelKey ?? '').trim();
         const activityKind = String(body.activityKind ?? '').trim();
         const areaKey = String(body.areaKey ?? '').trim();
+        const portraitUrl = String(body.portraitUrl ?? '').trim();
         const disciplineKey = String(body.disciplineKey ?? '').trim();
         const playerStatus = String(body.playerStatus ?? '').trim();
         const levelName = String(body.levelName ?? '').trim();
@@ -406,6 +408,7 @@ class LocalDiscordBridge {
             levelKey,
             levelName,
             areaKey,
+            portraitUrl,
             disciplineKey,
             activityKind,
             playerStatus
@@ -480,6 +483,7 @@ class LocalDiscordBridge {
                 levelKey: String(session.levelKey ?? '').trim(),
                 activityKind: String(session.activityKind ?? '').trim(),
                 areaKey: String(session.areaKey ?? '').trim(),
+                portraitUrl: String(session.portraitUrl ?? '').trim(),
                 disciplineKey: String(session.disciplineKey ?? '').trim(),
                 playerStatus: String(session.playerStatus ?? '').trim(),
                 levelName: String(session.levelName ?? '').trim(),
@@ -687,7 +691,11 @@ class LocalDiscordBridge {
             }
         }
 
-        const largeImageKey = payload.areaKey || this.resolveLargeImageKey(payload);
+        // Rich Presence accepts a full http(s) URL here as well as an uploaded asset key, so the
+        // player's own portrait wins when the server published one; the area art is the fallback.
+        const largeImageKey = normalizeHttpUrl(payload.portraitUrl)
+            || payload.areaKey
+            || this.resolveLargeImageKey(payload);
         if (largeImageKey) {
             activity.largeImageKey = largeImageKey;
             activity.largeImageText = payload.levelName || this.config.largeImageText;

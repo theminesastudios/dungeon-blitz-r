@@ -19,6 +19,10 @@ type BuildingDef = {
     UpgradeTime?: string;
 };
 
+type BuildingUpdateOptions = {
+    includeClassTowers?: boolean;
+};
+
 const buildingDefsByKey = new Map<string, BuildingDef>(
     (buildingTypes as BuildingDef[]).map((entry) => [
         `${Number(entry.BuildingID ?? 0)}:${Number(entry.Rank ?? 0)}`,
@@ -29,6 +33,7 @@ const buildingDefsByKey = new Map<string, BuildingDef>(
 export class BuildingHandler {
     private static readonly MAX_BUILDING_UPGRADE_SECONDS = 4 * 24 * 60 * 60;
     private static readonly CRAFT_TOWN_REFRESH_RETRY_DELAYS_MS = [1200, 2800];
+    private static readonly craftTownRefreshGeneration = new WeakMap<Client, number>();
 
     private static rejectVisitedHomeMutation(client: Client, action: string): boolean {
         if (!isVisitingAnotherPlayersCraftTown(client)) {
@@ -121,15 +126,28 @@ export class BuildingHandler {
             return;
         }
 
+        const refreshGeneration = (BuildingHandler.craftTownRefreshGeneration.get(client) ?? 0) + 1;
+        BuildingHandler.craftTownRefreshGeneration.set(client, refreshGeneration);
+
+        // Class-tower deltas replace their authored display object. Do that exactly
+        // once per Home spawn so nested flame timelines are not torn down again
+        // after they have started playing.
         BuildingHandler.sendBuildingUpdate(client);
 
         for (const delayMs of BuildingHandler.CRAFT_TOWN_REFRESH_RETRY_DELAYS_MS) {
             const timer = setTimeout(() => {
-                if (!client.character || !client.playerSpawned || client.currentLevel !== 'CraftTown') {
+                if (
+                    BuildingHandler.craftTownRefreshGeneration.get(client) !== refreshGeneration
+                    || !client.character
+                    || !client.playerSpawned
+                    || client.currentLevel !== 'CraftTown'
+                ) {
                     return;
                 }
 
-                BuildingHandler.sendBuildingUpdate(client);
+                // Keep the reliability retries for non-animated Home buildings,
+                // but never reconstruct a running discipline-tower timeline.
+                BuildingHandler.sendBuildingUpdate(client, { includeClassTowers: false });
             }, delayMs);
             timer.unref?.();
         }
@@ -319,7 +337,7 @@ export class BuildingHandler {
 
     // Ported from WorldEnter.py: send_building_update
     // Packet 0xDA
-    static sendBuildingUpdate(client: Client, overrideRank: number = -1): void {
+    static sendBuildingUpdate(client: Client, options: BuildingUpdateOptions = {}): void {
          if (!client.character) return;
 
          const homeCharacter = client.currentLevel === 'CraftTown' && client.craftTownHostCharacter
@@ -379,7 +397,9 @@ export class BuildingHandler {
          // discipline towers fall back to rank 1 after a relog/House refresh.
          const classTowerIds = CLASS_TOWER_BUILDINGS[String(homeCharacter.class ?? '').toLowerCase()] ?? [towerBuildingId];
          const inactiveClassTowerIds = classTowerIds.filter((buildingId) => buildingId !== towerBuildingId);
-         const bids = Array.from(new Set([2, 12, ...inactiveClassTowerIds, towerBuildingId, 1, 13]));
+         const bids = options.includeClassTowers === false
+            ? [2, 12, 1, 13]
+            : Array.from(new Set([2, 12, ...inactiveClassTowerIds, towerBuildingId, 1, 13]));
          for (const bid of bids) {
              sendDelta(bid, getStat(bid));
          }

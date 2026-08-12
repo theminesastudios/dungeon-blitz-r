@@ -18,6 +18,11 @@ import { HomeStatueHandler } from './HomeStatueHandler';
 
 type MissionEntry = Record<string, any>;
 type ResolvedNpc = Record<string, any>;
+type ClearBanditsDialogueCursor = {
+    phase: 'offer' | 'return';
+    index: number;
+    initialOffer: boolean;
+};
 
 export class NpcHandler {
     private static readonly MISSION_NOT_STARTED = 0;
@@ -31,6 +36,27 @@ export class NpcHandler {
     private static readonly RETURN_DIALOGUE_CHAR_MS = 1;
     private static readonly DEFAULT_TURN_IN_STARS = 3;
     private static readonly DEFAULT_DIALOGUE_LANGUAGE = 'en';
+    private static readonly CLEAR_THE_BANDITS_DIALOGUE_CURSORS = new WeakMap<Client, ClearBanditsDialogueCursor>();
+    private static readonly CLEAR_THE_BANDITS_OFFER_LINES = [
+        { speaker: 'npc', text: 'Hey! Are you the slayer of Aracnaea?' },
+        { speaker: 'player', text: 'Yes, I am.' },
+        {
+            speaker: 'npc',
+            text: 'Hero please help me! I am really tired of the bandit problem. Could you kill some of them for me?'
+        },
+        { speaker: 'player', text: 'Okey I will do my best for our people.' }
+    ] as const;
+    private static readonly CLEAR_THE_BANDITS_RETURN_LINES = [
+        {
+            speaker: 'npc',
+            text: 'Thank you hero. Please accept this little gift. Maybe this could help for your adventure.'
+        },
+        {
+            speaker: 'player',
+            text: 'My pleasures. I will help all of you as much as I can. Good luck for guarding the bridge!'
+        },
+        { speaker: 'npc', text: 'Good luck to you, too. May your path be clear, great hero.' }
+    ] as const;
     private static readonly ARCHIVIST_ENT_NAME = 'npchomeneo';
     private static readonly ATTACK_OF_OPPORTUNITY_MISSION_ID = 233;
     private static readonly ATTACK_OF_OPPORTUNITY_HARD_MISSION_ID = 254;
@@ -192,12 +218,16 @@ export class NpcHandler {
                         // Сначала показываем UI завершения миссии
                         const missionDef = MissionLoader.getMissionDef(missionId);
                         const missionEntry = NpcHandler.getMissionEntry(client.character, missionId);
-                        NpcHandler.sendMissionCompleteUi(
-                            client,
-                            missionId,
-                            NpcHandler.getMissionCompletionStars(missionDef, missionEntry),
-                            NpcHandler.getMissionCompletionScore(missionDef, missionEntry)
-                        );
+                        if (missionId === MissionID.ClearTheBandits) {
+                            NpcHandler.sendMissionClaimed(client, missionId);
+                        } else {
+                            NpcHandler.sendMissionCompleteUi(
+                                client,
+                                missionId,
+                                NpcHandler.getMissionCompletionStars(missionDef, missionEntry),
+                                NpcHandler.getMissionCompletionScore(missionDef, missionEntry)
+                            );
+                        }
 
                         // Затем начисляем награды
                         if (missionDef) {
@@ -279,6 +309,11 @@ export class NpcHandler {
 
         if (didMutate && client.userId) {
             NpcHandler.persistCharacter(client, 'npc dialogue mission update');
+        }
+
+        if (missionId === MissionID.ClearTheBandits) {
+            NpcHandler.sendClearTheBanditsDialogue(client, npcId, dialogueId);
+            return;
         }
 
         NpcHandler.sendResolvedDialogue(client, npcId, dialogueId, missionId);
@@ -802,10 +837,53 @@ export class NpcHandler {
         client.sendBitBuffer(0x84, bb);
     }
 
+    private static sendMissionClaimed(client: Client, missionId: number): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(missionId);
+        bb.writeMethod11(0, 1);
+        client.sendBitBuffer(0x84, bb);
+    }
+
     private static sendXpReward(client: Client, amount: number): void {
         const bb = new BitBuffer(false);
         bb.writeMethod4(amount);
         client.sendBitBuffer(0x2B, bb);
+    }
+
+    private static sendClearTheBanditsDialogue(client: Client, npcId: number, dialogueId: number): void {
+        if (!client.character) {
+            return;
+        }
+        const playerId = Math.max(0, Number(client.clientEntID ?? 0));
+        let cursor = NpcHandler.CLEAR_THE_BANDITS_DIALOGUE_CURSORS.get(client);
+
+        if (dialogueId === 2) {
+            cursor = { phase: 'offer', index: 0, initialOffer: true };
+        } else if (dialogueId === 4) {
+            cursor = { phase: 'return', index: 0, initialOffer: false };
+        } else if (dialogueId === 3 && cursor?.phase !== 'offer') {
+            cursor = { phase: 'offer', index: 0, initialOffer: false };
+        } else if (dialogueId === 5 && cursor?.phase !== 'return') {
+            cursor = { phase: 'return', index: 0, initialOffer: false };
+        }
+
+        if (!cursor) {
+            return;
+        }
+
+        const lines = cursor.phase === 'offer'
+            ? NpcHandler.CLEAR_THE_BANDITS_OFFER_LINES
+            : NpcHandler.CLEAR_THE_BANDITS_RETURN_LINES;
+        const line = lines[cursor.index];
+        const targetId = line.speaker === 'player' ? playerId : npcId;
+        NpcHandler.sendNpcBubble(client, targetId, line.text);
+
+        cursor.index += 1;
+        if (cursor.index < lines.length) {
+            NpcHandler.CLEAR_THE_BANDITS_DIALOGUE_CURSORS.set(client, cursor);
+        } else {
+            NpcHandler.CLEAR_THE_BANDITS_DIALOGUE_CURSORS.delete(client);
+        }
     }
 
     private static sendStartSkit(client: Client, npcId: number, dialogueId: number, missionId: number): void {

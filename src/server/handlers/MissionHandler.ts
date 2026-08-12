@@ -128,6 +128,8 @@ export class MissionHandler {
     private static readonly PRIMED_CONTACT_DIALOGUE_COUNT = -1;
     private static readonly ACHIEVEMENT_MAMMOTH_IDOL_REWARD = 10;
     private static readonly CRAFT_TOWN_REPAIRED_KEEP_RANK = 5;
+    private static readonly LEGACY_CLEAR_THE_BANDITS_MISSION_ID = 294;
+    private static readonly ATTEMPTED_CLEAR_THE_BANDITS_MISSION_ID = 293;
     private static readonly DUNGEON_COMPLETION_FOLLOWUP_MISSIONS = new Map<number, number>([
         [MissionID.MouthOfMeylour, MissionID.DerelictionOfDuty],
         [MissionID.MouthOfMeylourHard, MissionID.DerelictionOfDutyHard],
@@ -158,6 +160,32 @@ export class MissionHandler {
         'GoblinMiniBossHard',
         'GoblinShamanHoodHard',
         'GoblinShamanSkullHatHard'
+    ]);
+    // Mission 11 stays server-authoritative because changing the legacy client's
+    // MissionTypes table makes its Game stage fail to load.
+    private static readonly FELBRIDGE_HUMAN_BANDIT_KILL_NAMES = new Set([
+        'BanditRogue',
+        'BanditRogue2',
+        'BanditGreatWarrior',
+        'BanditGreatWizard',
+        'BanditGreatRogue',
+        'BanditTwinA',
+        'BanditTwinB',
+        'BanditBoss',
+        'BanditRogueHard',
+        'BanditRogue2Hard',
+        'BanditGreatWarriorHard',
+        'BanditGreatWizardHard',
+        'BanditGreatRogueHard',
+        'BanditTwinAHard',
+        'BanditTwinBHard',
+        'BanditBossHard'
+    ]);
+    private static readonly CLEAR_THE_BANDITS_DUNGEON_LEVELS = new Set([
+        'BT_Mission1',
+        'BT_Mission1Hard',
+        'BT_Mission2',
+        'BT_Mission2Hard'
     ]);
     private static readonly SWAMP_SPIDER_KILL_NAMES = new Set([
         'SwampSpider',
@@ -572,6 +600,7 @@ export class MissionHandler {
         [MissionID.GetGoblinWands]: new Set(['GoblinShamanHood', 'GoblinShamanSkullHat']),
         [MissionID.GetGoblinNoseringsHard]: new Set(['GoblinBruteHard']),
         [MissionID.GetGoblinWandsHard]: new Set(['GoblinShamanHoodHard', 'GoblinShamanSkullHatHard']),
+        [MissionID.ClearTheBandits]: MissionHandler.FELBRIDGE_HUMAN_BANDIT_KILL_NAMES,
         [MissionID.KillGoblins]: MissionHandler.NEWBIE_ROAD_GOBLIN_KILL_NAMES,
         [MissionID.KillGoblinsHard]: MissionHandler.NEWBIE_ROAD_HARD_GOBLIN_KILL_NAMES,
         [MissionID.GetLizardBanners]: MissionHandler.SWAMP_LIZARD_BANNER_KILL_NAMES,
@@ -724,6 +753,13 @@ export class MissionHandler {
         let didMutate = false;
         let addedMissionId = 0;
 
+        if (MissionHandler.migrateClearTheBanditsReservedSlot(character)) {
+            didMutate = true;
+        }
+        if (MissionHandler.resetInvisibleClearTheBanditsStart(character)) {
+            didMutate = true;
+        }
+
         const mission1State = MissionHandler.getMissionState(character, MissionID.DefendTheShip);
         const mission2State = MissionHandler.getMissionState(character, MissionID.MeetTheTown);
 
@@ -854,6 +890,65 @@ export class MissionHandler {
         return { didMutate, addedMissionId };
     }
 
+    private static migrateClearTheBanditsReservedSlot(character: Character): boolean {
+        const migrationCharacter = character as Character & {
+            clearTheBanditsSlotMigrated?: boolean;
+            clearTheBanditsStableSlotMigrated?: boolean;
+            clearTheBanditsServerPresentationMigrated?: boolean;
+        };
+        if (migrationCharacter.clearTheBanditsServerPresentationMigrated) {
+            return false;
+        }
+
+        const missions = MissionHandler.getMissionStateMap(character);
+        const legacyMission = missions[String(MissionHandler.LEGACY_CLEAR_THE_BANDITS_MISSION_ID)];
+        const attemptedMission = migrationCharacter.clearTheBanditsStableSlotMigrated
+            ? missions[String(MissionHandler.ATTEMPTED_CLEAR_THE_BANDITS_MISSION_ID)]
+            : null;
+        const serverMission = migrationCharacter.clearTheBanditsSlotMigrated
+            ? missions[String(MissionID.ClearTheBandits)]
+            : null;
+        delete missions[String(MissionHandler.LEGACY_CLEAR_THE_BANDITS_MISSION_ID)];
+        delete missions[String(MissionHandler.ATTEMPTED_CLEAR_THE_BANDITS_MISSION_ID)];
+        delete missions[String(MissionID.ClearTheBandits)];
+
+        const migratedMission =
+            legacyMission && typeof legacyMission === 'object' && Number(legacyMission.state ?? 0) > 0
+                ? legacyMission
+                : attemptedMission && typeof attemptedMission === 'object' && Number(attemptedMission.state ?? 0) > 0
+                    ? attemptedMission
+                    : serverMission && typeof serverMission === 'object' && Number(serverMission.state ?? 0) > 0
+                        ? serverMission
+                        : null;
+        if (migratedMission) {
+            missions[String(MissionID.ClearTheBandits)] = { ...migratedMission };
+        }
+
+        migrationCharacter.clearTheBanditsServerPresentationMigrated = true;
+        return true;
+    }
+
+    private static resetInvisibleClearTheBanditsStart(character: Character): boolean {
+        const migrationCharacter = character as Character & { clearTheBanditsPresentationResetV3?: boolean };
+        if (migrationCharacter.clearTheBanditsPresentationResetV3) {
+            return false;
+        }
+
+        const missions = MissionHandler.getMissionStateMap(character);
+        const mission = missions[String(MissionID.ClearTheBandits)];
+        if (
+            mission &&
+            typeof mission === 'object' &&
+            Number(mission.state ?? 0) === MissionHandler.MISSION_IN_PROGRESS &&
+            Number(mission.currCount ?? 0) === 0
+        ) {
+            delete missions[String(MissionID.ClearTheBandits)];
+        }
+
+        migrationCharacter.clearTheBanditsPresentationResetV3 = true;
+        return true;
+    }
+
     private static primeZoneInstantReturnMission(character: Character): number {
         for (let missionId = 1; missionId <= MissionLoader.getTotalMissions(); missionId++) {
             if (MissionHandler.getMissionState(character, missionId) !== MissionHandler.MISSION_NOT_STARTED) {
@@ -930,6 +1025,25 @@ export class MissionHandler {
         }
 
         MissionHandler.sendQuestProgress(client, Math.max(0, Number(client.character.questTrackerState ?? 0)));
+        const clearTheBandits = MissionHandler.asMissionEntry(
+            MissionHandler.getMissionStateMap(client.character)[String(MissionID.ClearTheBandits)]
+        );
+        const clearTheBanditsState = Number(clearTheBandits.state ?? 0);
+        if (clearTheBanditsState >= MissionHandler.MISSION_CLAIMED) {
+            MissionHandler.sendMissionClaimed(client, MissionID.ClearTheBandits);
+        } else if (
+            clearTheBanditsState === MissionHandler.MISSION_IN_PROGRESS ||
+            clearTheBanditsState === MissionHandler.MISSION_READY_TO_TURN_IN
+        ) {
+            MissionHandler.sendMissionAdded(client, MissionID.ClearTheBandits, clearTheBanditsState);
+            const progress = Math.max(0, Math.min(20, Number(clearTheBandits.currCount ?? 0)));
+            if (progress > 0) {
+                MissionHandler.sendMissionProgress(client, MissionID.ClearTheBandits, progress);
+            }
+            if (clearTheBanditsState === MissionHandler.MISSION_READY_TO_TURN_IN) {
+                MissionHandler.sendMissionComplete(client, MissionID.ClearTheBandits);
+            }
+        }
     }
 
     static async prepareFullClearDungeonEntry(client: Client): Promise<void> {
@@ -1191,6 +1305,7 @@ export class MissionHandler {
 
         const missions = MissionHandler.getMissionStateMap(client.character);
         let didMutate = false;
+        let shouldPersistDungeonBanditProgressImmediately = false;
 
         for (const [missionIdText, rawEntry] of Object.entries(missions)) {
             const missionId = Number(missionIdText);
@@ -1235,10 +1350,22 @@ export class MissionHandler {
                 MissionHandler.sendMissionComplete(client, missionId);
             }
             didMutate = true;
+            if (
+                missionId === MissionID.ClearTheBandits &&
+                LevelConfig.isDungeonLevel(currentLevel)
+            ) {
+                shouldPersistDungeonBanditProgressImmediately = true;
+            }
         }
 
         if (didMutate) {
             MissionHandler.saveCharacter(client, 'enemy kill mission progress');
+            if (
+                shouldPersistDungeonBanditProgressImmediately &&
+                typeof client.flushCharacterSave === 'function'
+            ) {
+                await client.flushCharacterSave('dungeon bandit mission progress');
+            }
         }
     }
 
@@ -3463,6 +3590,13 @@ export class MissionHandler {
         client.sendBitBuffer(0x86, bb);
     }
 
+    private static sendMissionClaimed(client: Client, missionId: number): void {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(missionId);
+        bb.writeMethod11(0, 1);
+        client.sendBitBuffer(0x84, bb);
+    }
+
     private static sendMissionCompleteUi(
         client: Client,
         missionId: number,
@@ -3662,6 +3796,14 @@ export class MissionHandler {
         currentLevel: string
     ): boolean {
         const targetNames = MissionHandler.KILL_PROGRESS_TARGETS[missionId];
+        if (missionId === MissionID.ClearTheBandits) {
+            const isDungeon = LevelConfig.isDungeonLevel(currentLevel);
+            return (
+                (!isDungeon || MissionHandler.CLEAR_THE_BANDITS_DUNGEON_LEVELS.has(currentLevel)) &&
+                Boolean(targetNames && defeatedNames.some((name) => targetNames.has(name)))
+            );
+        }
+
         if (targetNames && defeatedNames.some((name) => targetNames.has(name))) {
             return true;
         }

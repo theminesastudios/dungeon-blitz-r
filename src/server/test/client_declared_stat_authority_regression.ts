@@ -46,13 +46,18 @@ function createClient(level: number): any {
     };
 }
 
-function combatStatsPacket(maxHp: number): Buffer {
+// `armorClass` null is the packet a client whose cached SWF predates
+// patch-dungeonblitz-combat-stats-armor sends: the same fields, stopping one short.
+function combatStatsPacket(maxHp: number, armorClass: number | null = null): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod9(100);   // meleeDamage
     bb.writeMethod9(100);   // magicDamage
     bb.writeMethod9(maxHp);
-    bb.writeMethod20(0, 4);
+    bb.writeMethod20(4, 0);
     bb.writeMethod9(0);
+    if (armorClass !== null) {
+        bb.writeMethod9(armorClass);
+    }
     return bb.toBuffer();
 }
 
@@ -112,8 +117,37 @@ function testCeilingScalesWithLevel(): void {
     assert.equal(lowLevel.authoritativeMaxHp, 7_400 * BONUS_MULTIPLE, 'level 1 base is 7400');
 }
 
+/*
+ * Defense rides on the end of the same packet, and it is a declaration like everything else
+ * in it -- the client computes it and Cheat Engine can edit it. It is bounded rather than
+ * modelled; reproducing the client's gear/rune/mod stat pass to know the true figure is a
+ * different job, and a ceiling is enough that a declared Defense in the millions cannot turn
+ * the Sentinel passive's 0.1% into a one-shot.
+ */
+function testDeclaredArmorClassIsReadAndCapped(): void {
+    const client = createClient(50);
+    CommandHandler.handleSendCombatStats(client, combatStatsPacket(LEVEL_50_BASE_HP, 3200));
+    assert.equal(client.authoritativeArmorClass, 3200, 'a real Defense must pass through untouched');
+
+    CommandHandler.handleSendCombatStats(client, combatStatsPacket(LEVEL_50_BASE_HP, 50_000_000));
+    assert.equal(client.authoritativeArmorClass, 100_000, 'a memory-edited Defense must be cut to the ceiling');
+}
+
+// The field is optional on purpose: browsers cache the SWF, so a client older than the server
+// ends the packet one field early. The fields before it must still be read, not lost to a
+// parse error.
+function testCombatStatsPacketWithoutArmorStillParses(): void {
+    const client = createClient(50);
+    client.authoritativeArmorClass = 4242;
+    CommandHandler.handleSendCombatStats(client, combatStatsPacket(LEVEL_50_BASE_HP));
+    assert.equal(client.authoritativeMaxHp, LEVEL_50_BASE_HP, 'max HP must survive a short packet');
+    assert.equal(client.authoritativeArmorClass, 4242, 'a short packet must not zero the last known Defense');
+}
+
 function main(): void {
     testDeclaredMaxHpIsCapped();
+    testDeclaredArmorClassIsReadAndCapped();
+    testCombatStatsPacketWithoutArmorStillParses();
     testHpIncreaseNoticeCannotClimbPastTheCap();
     testCeilingScalesWithLevel();
     assert.equal(typeof CombatHandler.clampDeclaredMaxHp, 'function');

@@ -150,6 +150,40 @@ export class CommandHandler {
         CombatHandler.completePendingRespawnAfterCombatStats(client);
     }
 
+    /**
+     * The client computes Defense and every other derived stat, so this is a declaration and
+     * not a fact -- the same trust boundary 0xFC's max HP sits on, and Cheat Engine edits
+     * client memory the server cannot see. Bounded rather than modelled: reproducing the
+     * client's gear/rune/mod stat pass server-side to know the true figure is a different and
+     * much larger job, while a ceiling is enough to stop a declared Defense in the millions
+     * from turning a 0.1% bonus into a one-shot. Real level-50 Defense is in the low
+     * thousands.
+     */
+    private static readonly MAX_DECLARED_ARMOR_CLASS = 100_000;
+
+    private static readOptionalDeclaredArmorClass(br: BitReader): number | null {
+        // A method_9 is a 4-bit width prefix plus at least 2 bits of value.
+        if (br.remainingBits() < 6) {
+            return null;
+        }
+
+        try {
+            const declared = Math.max(0, Math.round(br.readMethod9()));
+            // A short packet is padded to a byte boundary with zero bits, and up to seven of
+            // them decode as a method_9 of 0. Reading that as a real Defense of zero would
+            // wipe the last good value for no gain -- a zero contributes nothing to any bonus
+            // anyway -- so it is treated as "the field is not there", which is what it is.
+            if (!Number.isFinite(declared) || declared <= 0) {
+                return null;
+            }
+            return Math.min(CommandHandler.MAX_DECLARED_ARMOR_CLASS, declared);
+        } catch {
+            // Trailing padding that happens to look like the start of a field. Nothing to
+            // report -- the packet's required fields have already been read.
+            return null;
+        }
+    }
+
     static handleSendCombatStats(client: Client, data: Buffer): void {
         const br = new BitReader(data);
         const meleeDamage = br.readMethod9();
@@ -157,8 +191,15 @@ export class CommandHandler {
         const maxHp = CombatHandler.clampDeclaredMaxHp(client, br.readMethod9());
         br.readMethod20(4);
         br.readMethod9();
+        // Defense, appended to the packet by patch-dungeonblitz-combat-stats-armor. Optional
+        // on purpose: browsers cache the SWF, so a client older than the server ends the
+        // packet here and must still be understood.
+        const armorClass = CommandHandler.readOptionalDeclaredArmorClass(br);
 
         client.authoritativeMaxHp = maxHp;
+        if (armorClass !== null) {
+            client.authoritativeArmorClass = armorClass;
+        }
         client.authoritativeCurrentHp = Math.min(Math.max(0, Number(client.authoritativeCurrentHp ?? maxHp)), maxHp);
 
         const entity = client.clientEntID > 0 ? client.entities.get(client.clientEntID) : null;
