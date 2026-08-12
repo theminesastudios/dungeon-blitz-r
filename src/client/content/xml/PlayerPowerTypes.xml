@@ -36603,8 +36603,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion1</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion1,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36636,8 +36636,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion2</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion2,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36669,8 +36669,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion3</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion3,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36702,8 +36702,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion4</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion4,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36735,8 +36735,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion5</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion5,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36768,8 +36768,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion6</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion6,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36801,8 +36801,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion7</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion7,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36834,8 +36834,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalion,PlagueBattalion,PlagueBattalion</AddTargetBuff>
-		<AddSelfBuff>PlagueStackLimit,PlagueBattalion,PlagueBattalion,PlagueBattalion</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion8,PlagueBattalion8,PlagueBattalion8</AddTargetBuff>
+		<AddSelfBuff>PlagueStackLimit,PlagueBattalion8,PlagueBattalion8,PlagueBattalion8</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36867,8 +36867,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalion,PlagueBattalion,PlagueBattalion</AddTargetBuff>
-		<AddSelfBuff>PlagueStackLimit,PlagueBattalion,PlagueBattalion,PlagueBattalion</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion9,PlagueBattalion9,PlagueBattalion9</AddTargetBuff>
+		<AddSelfBuff>PlagueStackLimit,PlagueBattalion9,PlagueBattalion9,PlagueBattalion9</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36900,8 +36900,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalion,PlagueBattalion,PlagueBattalion</AddTargetBuff>
-		<AddSelfBuff>PlagueStackLimit,PlagueBattalion,PlagueBattalion,PlagueBattalion</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion10,PlagueBattalion10,PlagueBattalion10</AddTargetBuff>
+		<AddSelfBuff>PlagueStackLimit,PlagueBattalion10,PlagueBattalion10,PlagueBattalion10</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -55593,5 +55593,565 @@
 			<FireAndForget>TRUE</FireAndForget>
 		</HitGfx>
 		<ProjGfx/>
+	</Power>
+	<Power PowerName="PlagueBattalionMelee1">
+		<PowerID>7019</PowerID>
+		<TargetMethod>MeleeCombo</TargetMethod>
+		<Range>120</Range>
+		<CastAnim>Melee</CastAnim>
+		<CastTime>65</CastTime>
+		<RecoverTime>435</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued1</AddTargetBuff>
+		<BasePowerName>PlagueBattalionMelee</BasePowerName>
+		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx/>
+		<HitAnimSource>TargetCenter</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_MeleeHitReact</AnimClass>
+			<AnimScale>0.48</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="PlagueBattalionROR1">
+		<PowerID>7029</PowerID>
+		<TargetMethod>ProjectilePlayer</TargetMethod>
+		<AoERadius>100</AoERadius>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued1</AddTargetBuff>
+		<BasePowerName>PlagueBattalionROR</BasePowerName>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</FireGfx>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.8</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="PlagueBattalionMelee2">
+		<PowerID>7020</PowerID>
+		<TargetMethod>MeleeCombo</TargetMethod>
+		<Range>120</Range>
+		<CastAnim>Melee</CastAnim>
+		<CastTime>65</CastTime>
+		<RecoverTime>435</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued2</AddTargetBuff>
+		<BasePowerName>PlagueBattalionMelee</BasePowerName>
+		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx/>
+		<HitAnimSource>TargetCenter</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_MeleeHitReact</AnimClass>
+			<AnimScale>0.48</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="PlagueBattalionROR2">
+		<PowerID>7030</PowerID>
+		<TargetMethod>ProjectilePlayer</TargetMethod>
+		<AoERadius>100</AoERadius>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued2</AddTargetBuff>
+		<BasePowerName>PlagueBattalionROR</BasePowerName>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</FireGfx>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.8</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="PlagueBattalionMelee3">
+		<PowerID>7021</PowerID>
+		<TargetMethod>MeleeCombo</TargetMethod>
+		<Range>120</Range>
+		<CastAnim>Melee</CastAnim>
+		<CastTime>65</CastTime>
+		<RecoverTime>435</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued3</AddTargetBuff>
+		<BasePowerName>PlagueBattalionMelee</BasePowerName>
+		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx/>
+		<HitAnimSource>TargetCenter</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_MeleeHitReact</AnimClass>
+			<AnimScale>0.48</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="PlagueBattalionROR3">
+		<PowerID>7031</PowerID>
+		<TargetMethod>ProjectilePlayer</TargetMethod>
+		<AoERadius>100</AoERadius>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued3</AddTargetBuff>
+		<BasePowerName>PlagueBattalionROR</BasePowerName>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</FireGfx>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.8</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="PlagueBattalionMelee4">
+		<PowerID>7022</PowerID>
+		<TargetMethod>MeleeCombo</TargetMethod>
+		<Range>120</Range>
+		<CastAnim>Melee</CastAnim>
+		<CastTime>65</CastTime>
+		<RecoverTime>435</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued4</AddTargetBuff>
+		<BasePowerName>PlagueBattalionMelee</BasePowerName>
+		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx/>
+		<HitAnimSource>TargetCenter</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_MeleeHitReact</AnimClass>
+			<AnimScale>0.48</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="PlagueBattalionROR4">
+		<PowerID>7032</PowerID>
+		<TargetMethod>ProjectilePlayer</TargetMethod>
+		<AoERadius>100</AoERadius>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued4</AddTargetBuff>
+		<BasePowerName>PlagueBattalionROR</BasePowerName>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</FireGfx>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.8</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="PlagueBattalionMelee5">
+		<PowerID>7023</PowerID>
+		<TargetMethod>MeleeCombo</TargetMethod>
+		<Range>120</Range>
+		<CastAnim>Melee</CastAnim>
+		<CastTime>65</CastTime>
+		<RecoverTime>435</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued5</AddTargetBuff>
+		<BasePowerName>PlagueBattalionMelee</BasePowerName>
+		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx/>
+		<HitAnimSource>TargetCenter</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_MeleeHitReact</AnimClass>
+			<AnimScale>0.48</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="PlagueBattalionROR5">
+		<PowerID>7033</PowerID>
+		<TargetMethod>ProjectilePlayer</TargetMethod>
+		<AoERadius>100</AoERadius>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued5</AddTargetBuff>
+		<BasePowerName>PlagueBattalionROR</BasePowerName>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</FireGfx>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.8</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="PlagueBattalionMelee6">
+		<PowerID>7024</PowerID>
+		<TargetMethod>MeleeCombo</TargetMethod>
+		<Range>120</Range>
+		<CastAnim>Melee</CastAnim>
+		<CastTime>65</CastTime>
+		<RecoverTime>435</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued6</AddTargetBuff>
+		<BasePowerName>PlagueBattalionMelee</BasePowerName>
+		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx/>
+		<HitAnimSource>TargetCenter</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_MeleeHitReact</AnimClass>
+			<AnimScale>0.48</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="PlagueBattalionROR6">
+		<PowerID>7034</PowerID>
+		<TargetMethod>ProjectilePlayer</TargetMethod>
+		<AoERadius>100</AoERadius>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued6</AddTargetBuff>
+		<BasePowerName>PlagueBattalionROR</BasePowerName>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</FireGfx>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.8</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="PlagueBattalionMelee7">
+		<PowerID>7025</PowerID>
+		<TargetMethod>MeleeCombo</TargetMethod>
+		<Range>120</Range>
+		<CastAnim>Melee</CastAnim>
+		<CastTime>65</CastTime>
+		<RecoverTime>435</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued7</AddTargetBuff>
+		<BasePowerName>PlagueBattalionMelee</BasePowerName>
+		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx/>
+		<HitAnimSource>TargetCenter</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_MeleeHitReact</AnimClass>
+			<AnimScale>0.48</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="PlagueBattalionROR7">
+		<PowerID>7035</PowerID>
+		<TargetMethod>ProjectilePlayer</TargetMethod>
+		<AoERadius>100</AoERadius>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued7</AddTargetBuff>
+		<BasePowerName>PlagueBattalionROR</BasePowerName>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</FireGfx>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.8</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="PlagueBattalionMelee8">
+		<PowerID>7026</PowerID>
+		<TargetMethod>MeleeCombo</TargetMethod>
+		<Range>120</Range>
+		<CastAnim>Melee</CastAnim>
+		<CastTime>65</CastTime>
+		<RecoverTime>435</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued8</AddTargetBuff>
+		<BasePowerName>PlagueBattalionMelee</BasePowerName>
+		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx/>
+		<HitAnimSource>TargetCenter</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_MeleeHitReact</AnimClass>
+			<AnimScale>0.48</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="PlagueBattalionROR8">
+		<PowerID>7036</PowerID>
+		<TargetMethod>ProjectilePlayer</TargetMethod>
+		<AoERadius>100</AoERadius>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued8</AddTargetBuff>
+		<BasePowerName>PlagueBattalionROR</BasePowerName>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</FireGfx>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.8</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="PlagueBattalionMelee9">
+		<PowerID>7027</PowerID>
+		<TargetMethod>MeleeCombo</TargetMethod>
+		<Range>120</Range>
+		<CastAnim>Melee</CastAnim>
+		<CastTime>65</CastTime>
+		<RecoverTime>435</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued9</AddTargetBuff>
+		<BasePowerName>PlagueBattalionMelee</BasePowerName>
+		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx/>
+		<HitAnimSource>TargetCenter</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_MeleeHitReact</AnimClass>
+			<AnimScale>0.48</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="PlagueBattalionROR9">
+		<PowerID>7037</PowerID>
+		<TargetMethod>ProjectilePlayer</TargetMethod>
+		<AoERadius>100</AoERadius>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued9</AddTargetBuff>
+		<BasePowerName>PlagueBattalionROR</BasePowerName>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</FireGfx>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.8</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
+	</Power>
+	<Power PowerName="PlagueBattalionMelee10">
+		<PowerID>7028</PowerID>
+		<TargetMethod>MeleeCombo</TargetMethod>
+		<Range>120</Range>
+		<CastAnim>Melee</CastAnim>
+		<CastTime>65</CastTime>
+		<RecoverTime>435</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued10</AddTargetBuff>
+		<BasePowerName>PlagueBattalionMelee</BasePowerName>
+		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx/>
+		<HitAnimSource>TargetCenter</HitAnimSource>
+		<HitGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_MeleeHitReact</AnimClass>
+			<AnimScale>0.48</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</HitGfx>
+		<ProjGfx/>
+	</Power>
+	<Power PowerName="PlagueBattalionROR10">
+		<PowerID>7038</PowerID>
+		<TargetMethod>ProjectilePlayer</TargetMethod>
+		<AoERadius>100</AoERadius>
+		<CastAnim>Shoot</CastAnim>
+		<CastTime>0</CastTime>
+		<RecoverTime>500</RecoverTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>1</BaseDamageMult>
+		<ProcModifier>1</ProcModifier>
+		<DamageType>Dark</DamageType>
+		<PowerGroup>PlagueBattalion</PowerGroup>
+		<AddTargetBuff>Plagued10</AddTargetBuff>
+		<BasePowerName>PlagueBattalionROR</BasePowerName>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<CastGfx/>
+		<FireGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>1</AnimScale>
+			<FireAndForget>TRUE</FireAndForget>
+		</FireGfx>
+		<HitGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.8</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
 	</Power>
 </PlayerPowerTypes>
