@@ -5915,4 +5915,114 @@
 			<AnimClass>a_LeechAura</AnimClass>
 		</GfxType>
 	</BuffType>
+	<BuffType BuffName="PlagueBattalionMinion1">
+		<BuffID>753</BuffID>
+		<Attack>false</Attack>
+		<Duration>10000</Duration>
+		<MeleeOverride>PlagueBattalionMelee1</MeleeOverride>
+		<GfxType>
+			<AnimScale>1.5</AnimScale>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+		</GfxType>
+	</BuffType>
+	<BuffType BuffName="PlagueBattalionMinion2">
+		<BuffID>754</BuffID>
+		<Attack>false</Attack>
+		<Duration>10000</Duration>
+		<MeleeOverride>PlagueBattalionMelee2</MeleeOverride>
+		<GfxType>
+			<AnimScale>1.5</AnimScale>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+		</GfxType>
+	</BuffType>
+	<BuffType BuffName="PlagueBattalionMinion3">
+		<BuffID>755</BuffID>
+		<Attack>false</Attack>
+		<Duration>10000</Duration>
+		<MeleeOverride>PlagueBattalionMelee3</MeleeOverride>
+		<GfxType>
+			<AnimScale>1.5</AnimScale>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+		</GfxType>
+	</BuffType>
+	<BuffType BuffName="PlagueBattalionMinion4">
+		<BuffID>756</BuffID>
+		<Attack>false</Attack>
+		<Duration>10000</Duration>
+		<MeleeOverride>PlagueBattalionMelee4</MeleeOverride>
+		<GfxType>
+			<AnimScale>1.5</AnimScale>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+		</GfxType>
+	</BuffType>
+	<BuffType BuffName="PlagueBattalionMinion5">
+		<BuffID>757</BuffID>
+		<Attack>false</Attack>
+		<Duration>10000</Duration>
+		<MeleeOverride>PlagueBattalionMelee5</MeleeOverride>
+		<GfxType>
+			<AnimScale>1.5</AnimScale>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+		</GfxType>
+	</BuffType>
+	<BuffType BuffName="PlagueBattalionMinion6">
+		<BuffID>758</BuffID>
+		<Attack>false</Attack>
+		<Duration>10000</Duration>
+		<MeleeOverride>PlagueBattalionMelee6</MeleeOverride>
+		<GfxType>
+			<AnimScale>1.5</AnimScale>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+		</GfxType>
+	</BuffType>
+	<BuffType BuffName="PlagueBattalionMinion7">
+		<BuffID>759</BuffID>
+		<Attack>false</Attack>
+		<Duration>10000</Duration>
+		<MeleeOverride>PlagueBattalionMelee7</MeleeOverride>
+		<GfxType>
+			<AnimScale>1.5</AnimScale>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+		</GfxType>
+	</BuffType>
+	<BuffType BuffName="PlagueBattalionMinion8">
+		<BuffID>760</BuffID>
+		<Attack>false</Attack>
+		<Duration>10000</Duration>
+		<MeleeOverride>PlagueBattalionMelee8</MeleeOverride>
+		<GfxType>
+			<AnimScale>1.5</AnimScale>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+		</GfxType>
+	</BuffType>
+	<BuffType BuffName="PlagueBattalionMinion9">
+		<BuffID>761</BuffID>
+		<Attack>false</Attack>
+		<Duration>10000</Duration>
+		<MeleeOverride>PlagueBattalionMelee9</MeleeOverride>
+		<GfxType>
+			<AnimScale>1.5</AnimScale>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+		</GfxType>
+	</BuffType>
+	<BuffType BuffName="PlagueBattalionMinion10">
+		<BuffID>762</BuffID>
+		<Attack>false</Attack>
+		<Duration>10000</Duration>
+		<MeleeOverride>PlagueBattalionMelee10</MeleeOverride>
+		<GfxType>
+			<AnimScale>1.5</AnimScale>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+		</GfxType>
+	</BuffType>
 </PlayerBuffTypes>

@@ -24,11 +24,18 @@ function main(): void {
     const powerNames = new Set([...powers.matchAll(/<Power PowerName="([^"]*)">/g)].map((m) => m[1]));
 
     for (const rank of RANKS) {
-        const buff = block(buffs, new RegExp(`<BuffType BuffName="PlagueBattalion${rank}">[\\s\\S]*?</BuffType>`));
-        const melee = tag(buff, 'MeleeOverride');
-        const ranged = tag(buff, 'RangedOverride');
-        assert.equal(melee, `PlagueBattalionMelee${rank}`, `rank ${rank} melee override`);
-        assert.equal(ranged, `PlagueBattalionROR${rank}`, `rank ${rank} ranged override`);
+        const casterBuff = block(buffs, new RegExp(`<BuffType BuffName="PlagueBattalion${rank}">[\\s\\S]*?</BuffType>`));
+        const melee = tag(casterBuff, 'MeleeOverride');
+        const ranged = tag(casterBuff, 'RangedOverride');
+        assert.equal(melee, `PlagueBattalionMelee${rank}`, `caster buff ${rank} melee override`);
+        assert.equal(ranged, `PlagueBattalionROR${rank}`, `caster buff ${rank} ranged override`);
+
+        // Call the Horde raises melee-only minions. Giving their buff a ranged override handed
+        // them a bolt they never had, which is what the horde was seen lobbing plague with.
+        // AddSelfBuff and AddTargetBuff are separate fields for exactly this reason.
+        const minionBuff = block(buffs, new RegExp(`<BuffType BuffName="PlagueBattalionMinion${rank}">[\\s\\S]*?</BuffType>`));
+        assert.equal(tag(minionBuff, 'MeleeOverride'), `PlagueBattalionMelee${rank}`, `minion buff ${rank} melee`);
+        assert.ok(!minionBuff.includes('RangedOverride'), `minion buff ${rank} must have no ranged override`);
 
         // A buff naming a power that does not exist is the bug PlagueBearer still has.
         assert.ok(powerNames.has(melee), `${melee} must exist in PlayerPowerTypes`);
@@ -36,18 +43,34 @@ function main(): void {
 
         for (const name of [melee, ranged]) {
             const power = block(powers, new RegExp(`<Power PowerName="${name}">[\\s\\S]*?</Power>`));
-            assert.equal(tag(power, 'AddTargetBuff'), `Plagued${rank}`, `${name} must apply its rank's poison`);
-            // The override replaces the attack, so dropping this drops the minion's damage.
+            const applied = tag(power, 'AddTargetBuff').split(',').map((entry) => entry.trim());
+            assert.ok(applied.includes(`Plagued${rank}`), `${name} must apply its rank's poison`);
+            // The override replaces the attack, so dropping this drops the attacker's damage.
             assert.equal(tag(power, 'BaseDamageMult'), '1', `${name} must keep normal attack damage`);
         }
 
-        // The cast has to hand out the ranked buff, or the overrides above are never reached.
-        const cast = block(powers, new RegExp(`<Power PowerName="PlagueBattalion${rank}">[\\s\\S]*?</Power>`));
-        const targets = tag(cast, 'AddTargetBuff').split(',');
+        // Overriding Lich Shot must not quietly cost the Necromancer its third-shot debuff.
+        const rangedPower = block(powers, new RegExp(`<Power PowerName="${ranged}">[\\s\\S]*?</Power>`));
         assert.ok(
-            targets.length > 0 && targets.every((entry) => entry === `PlagueBattalion${rank}`),
-            `rank ${rank} must buff the horde with its own ranked buff, got "${tag(cast, 'AddTargetBuff')}"`
+            tag(rangedPower, 'AddTargetBuff').includes('MinorCurse'),
+            `${ranged} must keep Lich Shot's MinorCurse`
         );
+
+        // The cast hands the horde the melee-only buff and keeps the both-overrides one itself.
+        const cast = block(powers, new RegExp(`<Power PowerName="PlagueBattalion${rank}">[\\s\\S]*?</Power>`));
+        const targets = tag(cast, 'AddTargetBuff').split(',').map((entry) => entry.trim());
+        assert.ok(
+            targets.length > 0 && targets.every((entry) => entry === `PlagueBattalionMinion${rank}`),
+            `rank ${rank} must buff the horde with the melee-only buff, got "${tag(cast, 'AddTargetBuff')}"`
+        );
+        assert.ok(
+            tag(cast, 'AddSelfBuff').split(',').map((e) => e.trim()).includes(`PlagueBattalion${rank}`),
+            `rank ${rank} must give the caster the both-overrides buff`
+        );
+
+        // One stack per target, by product decision -- four was authored but never played.
+        const poison = block(buffs, new RegExp(`<BuffType BuffName="Plagued${rank}">[\\s\\S]*?</BuffType>`));
+        assert.equal(tag(poison, 'StackCount'), '1', `Plagued${rank} must cap at one stack`);
     }
 
     // Ranks 8-10 apply the buff three times where 1-7 apply it once; that authored shape stays.
@@ -60,26 +83,13 @@ function main(): void {
         );
     }
 
-
-    // Issue #668 follow-up: one stack per target, and no plague projectile of its own -- the
-    // minion shoots what it normally shoots and the poison rides along.
-    for (const rank of RANKS) {
-        const poison = block(buffs, new RegExp(`<BuffType BuffName="Plagued${rank}">[\\s\\S]*?</BuffType>`));
-        assert.equal(tag(poison, 'StackCount'), '1', `Plagued${rank} must cap at one stack`);
-
-        const ranged = block(powers, new RegExp(`<Power PowerName="PlagueBattalionROR${rank}">[\\s\\S]*?</Power>`));
-        // Emptying this is what stopped Game.swz loading at all: the client will not parse a
-        // ProjectilePlayer power with no projectile art. Kept small rather than absent.
-        assert.ok(!ranged.includes('<ProjGfx/>'), `ROR${rank} must author projectile art`);
-    }
-
-
-    // The invariant that would have caught it: a projectile power without projectile art is a
-    // shape the client cannot load, and none of the authored 1711 powers has it.
-    for (const block_ of powers.matchAll(/<Power PowerName="([^"]*)">[\s\S]*?<\/Power>/g)) {
-        const [body, name] = block_;
-        if (body.includes('<TargetMethod>ProjectilePlayer</TargetMethod>')) {
-            assert.ok(!body.includes('<ProjGfx/>'), `${name}: ProjectilePlayer power must author ProjGfx`);
+    // The invariant that would have caught the load failure: emptying ProjGfx on a projectile
+    // power is a shape the client cannot parse, and none of the authored powers has it. Asserted
+    // across the whole table rather than only the blocks this patch writes.
+    for (const match of powers.matchAll(/<Power PowerName="([^"]*)">[\s\S]*?<\/Power>/g)) {
+        const [body, name] = match;
+        if (/<TargetMethod>Projectile[A-Za-z]*<\/TargetMethod>/.test(body)) {
+            assert.ok(!body.includes('<ProjGfx/>'), `${name}: projectile power must author ProjGfx`);
         }
     }
 

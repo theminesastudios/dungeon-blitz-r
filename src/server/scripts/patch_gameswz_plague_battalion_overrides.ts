@@ -38,6 +38,7 @@ const CBQ_DIR = path.resolve(__dirname, "..", "..", "client", "content", "localh
 
 const RANKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const FIRST_BUFF_ID = 743;
+const FIRST_MINION_BUFF_ID = 753;
 const FIRST_MELEE_POWER_ID = 7019;
 const FIRST_ROR_POWER_ID = 7029;
 
@@ -48,6 +49,29 @@ function buffBlock(rank: number): string {
     "\t\t<Attack>false</Attack>",
     "\t\t<Duration>10000</Duration>",
     `\t\t<RangedOverride>PlagueBattalionROR${rank}</RangedOverride>`,
+    `\t\t<MeleeOverride>PlagueBattalionMelee${rank}</MeleeOverride>`,
+    "\t\t<GfxType>",
+    "\t\t\t<AnimScale>1.5</AnimScale>",
+    "\t\t\t<AnimFile>SFX_1.swf</AnimFile>",
+    "\t\t\t<AnimClass>a_LeechAura</AnimClass>",
+    "\t\t</GfxType>",
+    "\t</BuffType>",
+  ].join("\n");
+}
+
+/**
+ * The horde's own buff, and the reason it is a second BuffType rather than the one the caster
+ * gets: Call the Horde raises melee minions. They have no ranged attack at all, so handing their
+ * buff a RangedOverride did not decorate an existing bolt -- it gave a melee-only minion a bolt it
+ * never had, which is why the horde was seen lobbing plague. AddSelfBuff and AddTargetBuff are
+ * separate fields, so the caster can keep both overrides while the horde gets melee only.
+ */
+function minionBuffBlock(rank: number): string {
+  return [
+    `\t<BuffType BuffName="PlagueBattalionMinion${rank}">`,
+    `\t\t<BuffID>${FIRST_MINION_BUFF_ID + rank - 1}</BuffID>`,
+    "\t\t<Attack>false</Attack>",
+    "\t\t<Duration>10000</Duration>",
     `\t\t<MeleeOverride>PlagueBattalionMelee${rank}</MeleeOverride>`,
     "\t\t<GfxType>",
     "\t\t\t<AnimScale>1.5</AnimScale>",
@@ -93,33 +117,41 @@ function rangedPowerBlock(rank: number): string {
   return [
     `\t<Power PowerName="PlagueBattalionROR${rank}">`,
     `\t\t<PowerID>${FIRST_ROR_POWER_ID + rank - 1}</PowerID>`,
-    "\t\t<TargetMethod>ProjectilePlayer</TargetMethod>",
-    "\t\t<AoERadius>100</AoERadius>",
+    // A faithful LichShot clone, because that is the shot this replaces: same ProjectileCombo
+    // targeting, same mana return, same NecroBolt art, and MinorCurse kept alongside the plague
+    // so overriding the shot does not quietly cost the Necromancer its third-shot debuff. Only
+    // the caster ever holds this -- the horde's buff has no ranged override.
+    "\t\t<TargetMethod>ProjectileCombo</TargetMethod>",
     "\t\t<CastAnim>Shoot</CastAnim>",
     "\t\t<CastTime>0</CastTime>",
     "\t\t<RecoverTime>500</RecoverTime>",
-    "\t\t<ManaCost>0</ManaCost>",
+    "\t\t<ManaCost>0,5</ManaCost>",
     "\t\t<BaseDamageMult>1</BaseDamageMult>",
     "\t\t<ProcModifier>1</ProcModifier>",
     "\t\t<DamageType>Dark</DamageType>",
     "\t\t<PowerGroup>PlagueBattalion</PowerGroup>",
-    `\t\t<AddTargetBuff>Plagued${rank}</AddTargetBuff>`,
+    `\t\t<AddTargetBuff>MinorCurse,Plagued${rank}</AddTargetBuff>`,
     "\t\t<BasePowerName>PlagueBattalionROR</BasePowerName>",
     "\t\t<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>",
-    // A ProjectilePlayer power MUST author projectile art. Emptying ProjGfx to stop the horde
-    // visibly lobbing plague balls is what stopped Game.swz loading at all: of the 1711 authored
-    // powers, not one ProjectilePlayer entry ships an empty <ProjGfx/>. (The eleven empty-ProjGfx
-    // overrides that suggested it was safe are PBAoE cones -- FlamethrowerROR and its ranks --
-    // not projectiles.) The art is small and quiet rather than absent; making the bolt read as
-    // the minion's own shot is a visual problem to solve with art, not by deleting the tag.
+    // LichShot's own art, so the caster's shot still reads as a Lich Shot. Emptying ProjGfx to
+    // change how it looked is what stopped Game.swz loading: of the 1711 authored powers not one
+    // projectile entry ships an empty <ProjGfx/>. The tag is required; the art is how you change
+    // the look.
+    "\t\t<CastSound>snd_pwr_range_poison_shoot_01</CastSound>",
     "\t\t<CastGfx/>",
-    "\t\t<FireGfx/>",
+    "\t\t<FireSound>snd_pwr_range_poison_imp</FireSound>",
+    "\t\t<FireGfx>",
+    "\t\t\t<AnimFile>SFX_1.swf</AnimFile>",
+    "\t\t\t<AnimClass>a_NecroBolt_Impact</AnimClass>",
+    "\t\t\t<AnimScale>.7</AnimScale>",
+    "\t\t\t<FireAndForget>true</FireAndForget>",
+    "\t\t</FireGfx>",
     "\t\t<HitGfx/>",
     "\t\t<ProjGfx>",
     "\t\t\t<AnimFile>SFX_1.swf</AnimFile>",
-    "\t\t\t<AnimClass>a_LeechAura</AnimClass>",
-    "\t\t\t<AnimScale>0.35</AnimScale>",
-    "\t\t\t<FireAndForget>false</FireAndForget>",
+    "\t\t\t<AnimClass>a_NecroBolt_Hand,a_NecroBolt_Face</AnimClass>",
+    "\t\t\t<AnimScale>.7</AnimScale>",
+    "\t\t\t<FireAndForget>FALSE</FireAndForget>",
     "\t\t</ProjGfx>",
     "\t</Power>",
   ].join("\n");
@@ -134,10 +166,16 @@ function repointPowerBuffLists(xml: string): { xml: string; changes: number } {
       return block.replace(
         /<(AddTargetBuff|AddSelfBuff)>([^<]*)<\/\1>/g,
         (match: string, tag: string, list: string) => {
+          // The horde gets the melee-only buff, the caster keeps the one with both overrides.
           // Repeat counts and the PlagueStackLimit companion stay exactly as authored.
+          const replacement =
+            tag === "AddTargetBuff" ? `PlagueBattalionMinion${rank}` : `PlagueBattalion${rank}`;
           const next = list
             .split(",")
-            .map((entry) => (entry.trim() === "PlagueBattalion" ? `PlagueBattalion${rank}` : entry.trim()))
+            .map((entry) => {
+              const trimmed = entry.trim();
+              return /^PlagueBattalion(?:Minion)?\d*$/.test(trimmed) ? replacement : trimmed;
+            })
             .join(",");
           if (next === list) {
             return match;
@@ -211,14 +249,22 @@ export function patchPlayerBuffTypes(xml: string): { xml: string; changes: numbe
   next = capped.xml;
   changes += capped.changes;
 
-  if (!next.includes('<BuffType BuffName="PlagueBattalion1">')) {
-    const closing = "</PlayerBuffTypes>";
-    if (!next.includes(closing)) {
-      throw new Error("PlayerBuffTypes.xml has no closing tag to insert before.");
-    }
-    next = next.replace(closing, `${RANKS.map(buffBlock).join("\n")}\n${closing}`);
-    changes += RANKS.length;
+  // Same rewrite-rather-than-skip rule as the powers, so a changed block converges.
+  const staleBuffs = new RegExp(
+    `\\n?\\t<BuffType BuffName="PlagueBattalion(?:Minion)?\\d+">[\\s\\S]*?<\\/BuffType>`,
+    "g",
+  );
+  const withoutStaleBuffs = next.replace(staleBuffs, "");
+  const buffClosing = "</PlayerBuffTypes>";
+  if (!withoutStaleBuffs.includes(buffClosing)) {
+    throw new Error("PlayerBuffTypes.xml has no closing tag to insert before.");
   }
+  const buffBlocks = [...RANKS.map(buffBlock), ...RANKS.map(minionBuffBlock)].join("\n");
+  const rebuiltBuffs = withoutStaleBuffs.replace(buffClosing, `${buffBlocks}\n${buffClosing}`);
+  if (rebuiltBuffs !== next) {
+    changes += RANKS.length * 2;
+  }
+  next = rebuiltBuffs;
 
   // The rank-0 buff keeps its own entry but stops being a dead end.
   next = next.replace(
