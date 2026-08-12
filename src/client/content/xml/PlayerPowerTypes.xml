@@ -55636,19 +55636,9 @@
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
 		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
 		<CastGfx/>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>1</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</FireGfx>
+		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>0.8</AnimScale>
-			<FireAndForget>false</FireAndForget>
-		</ProjGfx>
+		<ProjGfx/>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee2">
 		<PowerID>7020</PowerID>
@@ -55692,19 +55682,9 @@
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
 		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
 		<CastGfx/>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>1</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</FireGfx>
+		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>0.8</AnimScale>
-			<FireAndForget>false</FireAndForget>
-		</ProjGfx>
+		<ProjGfx/>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee3">
 		<PowerID>7021</PowerID>
@@ -55748,19 +55728,9 @@
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
 		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
 		<CastGfx/>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>1</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</FireGfx>
+		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>0.8</AnimScale>
-			<FireAndForget>false</FireAndForget>
-		</ProjGfx>
+		<ProjGfx/>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee4">
 		<PowerID>7022</PowerID>
@@ -55804,19 +55774,9 @@
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
 		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
 		<CastGfx/>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>1</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</FireGfx>
+		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>0.8</AnimScale>
-			<FireAndForget>false</FireAndForget>
-		</ProjGfx>
+		<ProjGfx/>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee5">
 		<PowerID>7023</PowerID>
@@ -55860,19 +55820,9 @@
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
 		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
 		<CastGfx/>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>1</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</FireGfx>
+		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>0.8</AnimScale>
-			<FireAndForget>false</FireAndForget>
-		</ProjGfx>
+		<ProjGfx/>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee6">
 		<PowerID>7024</PowerID>
@@ -55916,19 +55866,9 @@
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
 		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
 		<CastGfx/>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>1</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</FireGfx>
+		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>0.8</AnimScale>
-			<FireAndForget>false</FireAndForget>
-		</ProjGfx>
+		<ProjGfx/>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee7">
 		<PowerID>7025</PowerID>
@@ -55972,19 +55912,9 @@
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
 		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
 		<CastGfx/>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>1</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</FireGfx>
+		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>0.8</AnimScale>
-			<FireAndForget>false</FireAndForget>
-		</ProjGfx>
+		<ProjGfx/>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee8">
 		<PowerID>7026</PowerID>
@@ -56028,19 +55958,9 @@
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
 		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
 		<CastGfx/>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>1</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</FireGfx>
+		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>0.8</AnimScale>
-			<FireAndForget>false</FireAndForget>
-		</ProjGfx>
+		<ProjGfx/>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee9">
 		<PowerID>7027</PowerID>
@@ -56084,19 +56004,9 @@
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
 		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
 		<CastGfx/>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>1</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</FireGfx>
+		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>0.8</AnimScale>
-			<FireAndForget>false</FireAndForget>
-		</ProjGfx>
+		<ProjGfx/>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee10">
 		<PowerID>7028</PowerID>
@@ -56140,18 +56050,8 @@
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
 		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
 		<CastGfx/>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>1</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</FireGfx>
+		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_LeechAura</AnimClass>
-			<AnimScale>0.8</AnimScale>
-			<FireAndForget>false</FireAndForget>
-		</ProjGfx>
+		<ProjGfx/>
 	</Power>
 </PlayerPowerTypes>

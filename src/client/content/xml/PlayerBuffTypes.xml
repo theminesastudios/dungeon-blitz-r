@@ -5542,7 +5542,7 @@
 		<DoTDamage>2.5</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<Effect>Poisoned</Effect>
-		<StackCount>4</StackCount>
+		<StackCount>1</StackCount>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -5556,7 +5556,7 @@
 		<DoTDamage>2.75</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<Effect>Poisoned</Effect>
-		<StackCount>4</StackCount>
+		<StackCount>1</StackCount>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -5570,7 +5570,7 @@
 		<DoTDamage>2.75</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<Effect>Poisoned</Effect>
-		<StackCount>4</StackCount>
+		<StackCount>1</StackCount>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -5584,7 +5584,7 @@
 		<DoTDamage>2.85</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<Effect>Poisoned</Effect>
-		<StackCount>4</StackCount>
+		<StackCount>1</StackCount>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -5598,7 +5598,7 @@
 		<DoTDamage>2.85</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<Effect>Poisoned</Effect>
-		<StackCount>5</StackCount>
+		<StackCount>1</StackCount>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -5612,7 +5612,7 @@
 		<DoTDamage>3.05</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<Effect>Poisoned</Effect>
-		<StackCount>5</StackCount>
+		<StackCount>1</StackCount>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -5626,7 +5626,7 @@
 		<DoTDamage>3.05</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<Effect>Poisoned</Effect>
-		<StackCount>5</StackCount>
+		<StackCount>1</StackCount>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -5640,7 +5640,7 @@
 		<DoTDamage>3.15</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<Effect>Poisoned</Effect>
-		<StackCount>5</StackCount>
+		<StackCount>1</StackCount>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -5654,7 +5654,7 @@
 		<DoTDamage>3.3</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<Effect>Poisoned</Effect>
-		<StackCount>5</StackCount>
+		<StackCount>1</StackCount>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
 			<AnimFile>SFX_1.swf</AnimFile>
@@ -5668,7 +5668,7 @@
 		<DoTDamage>3.3</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<Effect>Poisoned</Effect>
-		<StackCount>6</StackCount>
+		<StackCount>1</StackCount>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
 			<AnimFile>SFX_1.swf</AnimFile>

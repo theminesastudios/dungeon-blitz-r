@@ -106,20 +106,14 @@ function rangedPowerBlock(rank: number): string {
     `\t\t<AddTargetBuff>Plagued${rank}</AddTargetBuff>`,
     "\t\t<BasePowerName>PlagueBattalionROR</BasePowerName>",
     "\t\t<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>",
+    // No authored projectile art, which is the point: the minion keeps shooting whatever it
+    // normally shoots and the plague rides along. Giving this its own a_LeechAura projectile
+    // made the horde visibly lob plague balls, which is not what the power describes. Eleven
+    // existing ranged overrides ship the same empty pair (FlamethrowerROR and its ranks).
     "\t\t<CastGfx/>",
-    "\t\t<FireGfx>",
-    "\t\t\t<AnimFile>SFX_1.swf</AnimFile>",
-    "\t\t\t<AnimClass>a_LeechAura</AnimClass>",
-    "\t\t\t<AnimScale>1</AnimScale>",
-    "\t\t\t<FireAndForget>TRUE</FireAndForget>",
-    "\t\t</FireGfx>",
+    "\t\t<FireGfx/>",
     "\t\t<HitGfx/>",
-    "\t\t<ProjGfx>",
-    "\t\t\t<AnimFile>SFX_1.swf</AnimFile>",
-    "\t\t\t<AnimClass>a_LeechAura</AnimClass>",
-    "\t\t\t<AnimScale>0.8</AnimScale>",
-    "\t\t\t<FireAndForget>false</FireAndForget>",
-    "\t\t</ProjGfx>",
+    "\t\t<ProjGfx/>",
     "\t</Power>",
   ].join("\n");
 }
@@ -154,23 +148,61 @@ export function patchPlayerPowerTypes(xml: string): { xml: string; changes: numb
   let next = xml;
   let changes = 0;
 
-  if (!next.includes('<Power PowerName="PlagueBattalionMelee1">')) {
-    const inserts = RANKS.map((rank) => `${meleePowerBlock(rank)}\n${rangedPowerBlock(rank)}`).join("\n");
-    const closing = "</PlayerPowerTypes>";
-    if (!next.includes(closing)) {
-      throw new Error("PlayerPowerTypes.xml has no closing tag to insert before.");
-    }
-    next = next.replace(closing, `${inserts}\n${closing}`);
+  // Drop any blocks a previous run wrote before re-inserting, so the generators above stay the
+  // single source of truth and a changed block (the projectile art, say) actually converges
+  // instead of being skipped as "already present".
+  const stale = new RegExp(
+    `\\n?\\t<Power PowerName="PlagueBattalion(?:Melee|ROR)\\d+">[\\s\\S]*?<\\/Power>`,
+    "g",
+  );
+  const withoutStale = next.replace(stale, "");
+  const inserts = RANKS.map((rank) => `${meleePowerBlock(rank)}\n${rangedPowerBlock(rank)}`).join("\n");
+  const closing = "</PlayerPowerTypes>";
+  if (!withoutStale.includes(closing)) {
+    throw new Error("PlayerPowerTypes.xml has no closing tag to insert before.");
+  }
+  const rebuilt = withoutStale.replace(closing, `${inserts}\n${closing}`);
+  if (rebuilt !== next) {
     changes += RANKS.length * 2;
   }
+  next = rebuilt;
 
   const repointed = repointPowerBuffLists(next);
   return { xml: repointed.xml, changes: changes + repointed.changes };
 }
 
+/**
+ * One stack of Plague on a target, not four.
+ *
+ * Plagued1..10 author StackCount 4 and rank 1's UpgradeDescription still says "Place up to four
+ * stacks of Plague", so four was the authors' intent -- but nothing had ever applied a single one
+ * of them, so that intent had never actually been played. With the horde applying it on every
+ * swing and every bolt, four stacks per target landed far above the rest of the kit. Capped at
+ * one by product decision; the authored text is left alone so the original intent stays visible.
+ */
+function capPlagueStacks(xml: string): { xml: string; changes: number } {
+  let changes = 0;
+  const patched = xml.replace(
+    /<BuffType BuffName="Plagued\d+">[\s\S]*?<\/BuffType>/g,
+    (block: string) =>
+      block.replace(/<StackCount>([^<]*)<\/StackCount>/, (match: string, value: string) => {
+        if (value.trim() === "1") {
+          return match;
+        }
+        changes += 1;
+        return "<StackCount>1</StackCount>";
+      }),
+  );
+  return { xml: patched, changes };
+}
+
 export function patchPlayerBuffTypes(xml: string): { xml: string; changes: number } {
   let next = xml;
   let changes = 0;
+
+  const capped = capPlagueStacks(next);
+  next = capped.xml;
+  changes += capped.changes;
 
   if (!next.includes('<BuffType BuffName="PlagueBattalion1">')) {
     const closing = "</PlayerBuffTypes>";

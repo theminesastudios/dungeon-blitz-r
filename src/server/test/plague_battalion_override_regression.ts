@@ -60,6 +60,18 @@ function main(): void {
         );
     }
 
+
+    // Issue #668 follow-up: one stack per target, and no plague projectile of its own -- the
+    // minion shoots what it normally shoots and the poison rides along.
+    for (const rank of RANKS) {
+        const poison = block(buffs, new RegExp(`<BuffType BuffName="Plagued${rank}">[\\s\\S]*?</BuffType>`));
+        assert.equal(tag(poison, 'StackCount'), '1', `Plagued${rank} must cap at one stack`);
+
+        const ranged = block(powers, new RegExp(`<Power PowerName="PlagueBattalionROR${rank}">[\\s\\S]*?</Power>`));
+        assert.ok(ranged.includes('<ProjGfx/>'), `ROR${rank} must not author its own projectile art`);
+        assert.ok(ranged.includes('<FireGfx/>'), `ROR${rank} must not author its own fire art`);
+    }
+
     console.log('plague battalion override regression passed');
 }
 
