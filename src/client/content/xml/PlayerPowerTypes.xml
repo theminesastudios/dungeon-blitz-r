@@ -46437,7 +46437,7 @@
 		<AddTargetBuff>Bound,ChaosWeaken</AddTargetBuff>
 		<AddSelfBuff>ChaosArmor</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
-		<Description>Release Chaotic energy, Binding and reducing the Attack of nearby foes [Stats: x0.9 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. [Stats: x0.9 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_ChaosWave_A[280]CHR_SoulThief_ChaosWave_B</CastSound>
@@ -46470,7 +46470,7 @@
 		<AddSelfBuff>ChaosArmor</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy, Binding and reducing the Attack of nearby foes [Stats: x0.9 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. [Stats: x0.9 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_ChaosWave_A[280]CHR_SoulThief_ChaosWave_B</CastSound>
@@ -46503,8 +46503,8 @@
 		<AddSelfBuff>ChaosArmor5</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1 damage, +5% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
-		<UpgradeDescription>Gain 5% Expertise bonus for duration</UpgradeDescription>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. [Stats: x1 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_ChaosWave_A[280]CHR_SoulThief_ChaosWave_B</CastSound>
@@ -46537,7 +46537,7 @@
 		<AddSelfBuff>ChaosArmor5</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1 damage, +5% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. [Stats: x1 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>-1 Mana</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -46571,7 +46571,7 @@
 		<AddSelfBuff>ChaosArmor5</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1.35 damage, +5% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. [Stats: x1.35 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -46605,7 +46605,7 @@
 		<AddSelfBuff>ChaosArmor5</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1.35 damage, +5% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. [Stats: x1.35 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
 		<UpgradeDescription>-1 Mana</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
@@ -46639,8 +46639,8 @@
 		<AddSelfBuff>ChaosArmor10</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1.5 damage, +10% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
-		<UpgradeDescription>Gain 10% Expertise bonus for duration</UpgradeDescription>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. [Stats: x1.5 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_ChaosWave_A[280]CHR_SoulThief_ChaosWave_B</CastSound>
@@ -46673,8 +46673,8 @@
 		<AddSelfBuff>ChaosArmor10</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1.6 damage, +10% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
-		<UpgradeDescription>-1 Mana</UpgradeDescription>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. [Stats: x1.6 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>-1 Mana. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_ChaosWave_A[280]CHR_SoulThief_ChaosWave_B</CastSound>
@@ -46707,8 +46707,8 @@
 		<AddSelfBuff>ChaosArmor15</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1.75 damage, +15% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
-		<UpgradeDescription>Gain 15% Expertise bonus for duration</UpgradeDescription>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. [Stats: x1.75 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_ChaosWave_A[280]CHR_SoulThief_ChaosWave_B</CastSound>
@@ -46741,8 +46741,8 @@
 		<AddSelfBuff>ChaosArmor15</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x1.9 damage, +15% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
-		<UpgradeDescription>-2 Mana</UpgradeDescription>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. [Stats: x1.9 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>-2 Mana. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_ChaosWave_A[280]CHR_SoulThief_ChaosWave_B</CastSound>
@@ -46775,8 +46775,8 @@
 		<AddSelfBuff>ChaosArmor30</AddSelfBuff>
 		<DisplayName>Chaos Wave</DisplayName>
 		<BasePowerName>ChaosArmor</BasePowerName>
-		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. Grants an Expertise buff [Stats: x2.1 damage, +30% Magic Damage, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
-		<UpgradeDescription>Gain 30% Expertise bonus for duration</UpgradeDescription>
+		<Description>Release Chaotic energy that damages, Binds and reduces the Attack of nearby foes. [Stats: x2.1 damage, -10% Melee Damage, 1 damage/s, over 5s, -10% Melee Damage, over 5s]</Description>
+		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_ChaosArmor</IconName>
 		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>CHR_SoulThief_ChaosWave_A[280]CHR_SoulThief_ChaosWave_B</CastSound>

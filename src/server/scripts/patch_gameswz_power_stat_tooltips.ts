@@ -139,6 +139,8 @@ export function describeBuff(fields: BuffFields): string[] {
 
 export function buildStatsSuffix(block: string, buffs: Map<string, BuffFields>): string {
   const parts: string[] = [];
+  const isChaosWave = readTag(block, "PowerGroup") === "ChaosArmor"
+    || readTag(block, "BasePowerName") === "ChaosArmor";
 
   // A power's damage multiplier. 0 means the power deals none of its own -- a stance or a
   // pure buff -- and printing "x0 damage" on those would be actively misleading.
@@ -159,6 +161,13 @@ export function buildStatsSuffix(block: string, buffs: Map<string, BuffFields>):
       continue;
     }
     seen.add(buffName);
+
+    // Chaos Wave's authored self-buffs use MagicDamage fields, but the ability does not
+    // grant the player an Expertise bonus. Do not turn those carrier values into a tooltip
+    // promise; target debuffs and the power's own damage remain visible below.
+    if (isChaosWave && /^ChaosArmor(?:5|10|15|30)$/.test(buffName)) {
+      continue;
+    }
 
     const fields = buffs.get(buffName);
     if (fields) {
@@ -186,6 +195,12 @@ export function patchPowerDescriptions(powerXml: string, buffs: Map<string, Buff
     stats.powerBlocks += 1;
     const next = `<Description>${authored}${buildStatsSuffix(block, buffs)}</Description>`;
     if (next === descriptionMatch[0]) {
+      const isChaosWave = readTag(block, "PowerGroup") === "ChaosArmor"
+        || readTag(block, "BasePowerName") === "ChaosArmor";
+      if (isChaosWave && block.includes(`${descriptionMatch[0]}\r\n`)) {
+        stats.changes += 1;
+        return block.replace(`${descriptionMatch[0]}\r\n`, `${next}\n`);
+      }
       return block;
     }
 

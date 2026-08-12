@@ -465,6 +465,16 @@ for (const rank of ["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]) {
  */
 const TEXT_MIGRATIONS: Array<{ power: RegExp; from: string; to: string }> = [
   {
+    power: /^ChaosArmor\d*$/,
+    from: ". Grants an Expertise buff",
+    to: ".",
+  },
+  {
+    power: /^ChaosArmor\d*$/,
+    from: "foes [Stats:",
+    to: "foes. [Stats:",
+  },
+  {
     power: /^DivineBolt\d*$/,
     from: "Templar passive: every bolt bursts in a small area.",
     to: "Templar passive: your ranged attacks arc to up to 3 more enemies.",
@@ -486,6 +496,20 @@ const TEXT_MIGRATIONS: Array<{ power: RegExp; from: string; to: string }> = [
     to: "Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 30% of your Defense.",
   },
 ];
+
+// Chaos Wave's authored Expertise upgrades do not work. Describe only the changes that the
+// power actually receives at each rank: its damage multiplier and mana cost.
+const CHAOS_WAVE_UPGRADES = new Map<string, string>([
+  ["ChaosArmor2", "Increased Damage #olddmg#"],
+  ["ChaosArmor3", "-1 Mana"],
+  ["ChaosArmor4", "Increased Damage #olddmg#"],
+  ["ChaosArmor5", "-1 Mana"],
+  ["ChaosArmor6", "Increased Damage #olddmg#"],
+  ["ChaosArmor7", "-1 Mana. Increased Damage #olddmg#"],
+  ["ChaosArmor8", "Increased Damage #olddmg#"],
+  ["ChaosArmor9", "-2 Mana. Increased Damage #olddmg#"],
+  ["ChaosArmor10", "Increased Damage #olddmg#"],
+]);
 
 
 for (const migration of TEXT_MIGRATIONS) {
@@ -773,6 +797,21 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
       touched = true;
       stats.changes += 1;
       next = next.split(migration.from).join(migration.to);
+    }
+
+    const chaosWaveUpgrade = CHAOS_WAVE_UPGRADES.get(powerName);
+    if (chaosWaveUpgrade) {
+      const before = next;
+      if (/<UpgradeDescription>[^<]*<\/UpgradeDescription>/.test(next)) {
+        next = replaceTag(next, "UpgradeDescription", chaosWaveUpgrade, stats);
+      } else {
+        next = next.replace(/(<Description>[^<]*<\/Description>)/, (match) => {
+          stats.changes += 1;
+          return `${match}\r\n\t\t<UpgradeDescription>${chaosWaveUpgrade}</UpgradeDescription>`;
+        });
+      }
+      next = next.replace(/(<UpgradeDescription>[^<]*<\/UpgradeDescription>)\r\n/g, "$1\n");
+      touched = touched || next !== before;
     }
 
     const signatureText = SIGNATURE_DESCRIPTIONS.get(powerName.replace(/\d+$/, ""));
