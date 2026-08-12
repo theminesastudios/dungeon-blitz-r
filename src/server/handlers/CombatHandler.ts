@@ -5476,9 +5476,10 @@ export class CombatHandler {
         let damage = packetDamage;
         const currentLevel = client.currentLevel;
         const levelScope = getClientLevelScope(client);
-        if (LevelHandler.isDungeonCutsceneCombatLocked(client)) {
-            return;
-        }
+        // The cutscene lock exists to stop mobs beating on a player who is stuck watching boss
+        // dialogue -- it was never meant to disarm the player. Blanket-locking this handler ate
+        // every player hit landed during the speech (Meteor Channel, Firebrand, Plague Battalion),
+        // so only the hostile-source check below applies here.
         if (CombatHandler.shouldSuppressCutsceneHostileCombat(client, levelScope, sourceId)) {
             return;
         }
@@ -5795,9 +5796,9 @@ export class CombatHandler {
         if (LevelHandler.isGoblinRiverBossIntroLocked(client)) {
             return;
         }
-        if (LevelHandler.isDungeonCutsceneCombatLocked(client)) {
-            return;
-        }
+        // A projectile only reaches its explode packet if the cast that spawned it was allowed,
+        // and hostile casts are already suppressed during a cutscene. Gating the explode as well
+        // only swallowed the player's own projectiles mid-dialogue.
         CombatHandler.broadcastCombatPacket(client, 0x0E, data, {
             referencedEntityIds: CombatHandler.parseReferencedEntityIds(0x0E, data)
         });
@@ -6520,17 +6521,9 @@ export class CombatHandler {
             if (amount < 0 && entity && !entity.isPlayer && Boolean(entity.untargetable)) {
                 return;
             }
-            if (
-                amount < 0 &&
-                LevelHandler.isDungeonCutsceneCombatLocked(client) &&
-                !DungeonCompletionConditions.isRequiredBoss(
-                    getScopeLevelName(levelScope),
-                    entity,
-                    levelScope
-                )
-            ) {
-                return;
-            }
+            // Damage reported against a hostile is player-initiated by definition, so the cutscene
+            // lock has no business dropping it. The untargetable guard above still covers bosses
+            // that are meant to be invulnerable through their intro.
             if (CombatHandler.recordClientHostileHpDelta(client, levelScope, rawEntityId, entityId, entity, amount)) {
                 return;
             }
@@ -6773,7 +6766,9 @@ export class CombatHandler {
             levelScope,
             EntityHandler.resolveEntityAlias(client, rawSourceId)
         );
-        if (LevelHandler.isDungeonCutsceneCombatLocked(client)) {
+        // Same as handlePowerHit: only hostile-sourced ticks pause for the cutscene. Blocking every
+        // tick killed the player's poison/DoT stacks (Plague Battalion) during boss dialogue.
+        if (CombatHandler.shouldSuppressCutsceneHostileCombat(client, levelScope, info.sourceId)) {
             return;
         }
 

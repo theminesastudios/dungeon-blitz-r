@@ -28,6 +28,7 @@ type FakeClient = {
     triggeredLevelStates: Set<string>;
     entities: Map<number, any>;
     entityIdAliases: Map<number, number>;
+    knownEntityIds: Set<number>;
     activeDungeonCutsceneScope: string;
     activeDungeonCutsceneRoomId: number;
     activeDungeonCutsceneJoinedAtDialogIndex: number;
@@ -71,6 +72,7 @@ function createFakeClient(name: string, token: number): FakeClient {
         triggeredLevelStates: new Set<string>(),
         entities: new Map<number, any>(),
         entityIdAliases: new Map<number, number>(),
+        knownEntityIds: new Set<number>([token + 1000]),
         activeDungeonCutsceneScope: '',
         activeDungeonCutsceneRoomId: 0,
         activeDungeonCutsceneJoinedAtDialogIndex: 0,
@@ -441,33 +443,45 @@ function testSoloKeepCutsceneSkitIsNotSuppressedBySharedState(): void {
     assert.equal(packetCount(mage, 0x76), 1, 'solo keep cutscene skits should not be suppressed by shared cinematic duplicate state');
 }
 
-async function testSharedDungeonCinematicSuppressesPlayerDamage(): Promise<void> {
+// Issue #668: the cinematic must not disarm the player. Invulnerability during a boss intro is
+// the level script's call, relayed as the untargetable flag -- the cutscene itself is not a
+// blanket combat lock, or every ability dies while the boss is talking.
+async function testSharedDungeonCinematicKeepsPlayerDamage(): Promise<void> {
     const mage = createFakeClient('Mage', 91001);
     const rogue = createFakeClient('Rogue', 92002);
     GlobalState.sessionsByToken.set(mage.token, mage as never);
     GlobalState.sessionsByToken.set(rogue.token, rogue as never);
-
     const scope = getLevelScopeKey(mage.currentLevel, mage.levelInstanceId);
+    const hostile = (untargetable: boolean) => ({
+        id: untargetable ? 500002 : 500001,
+        name: 'AncientDragonGoldMini',
+        isPlayer: false,
+        team: 2,
+        hp: 10000,
+        maxHp: 10000,
+        entState: 0,
+        roomId: 2,
+        untargetable
+    });
     GlobalState.levelEntities.set(scope, new Map<number, any>([
-        [500001, {
-            id: 500001,
-            name: 'AncientDragonGoldMini',
-            isPlayer: false,
-            team: 2,
-            hp: 10000,
-            maxHp: 10000,
-            entState: 0,
-            roomId: 2
-        }]
+        [500001, hostile(false)],
+        [500002, hostile(true)]
     ]));
 
     LevelHandler.handleRoomEventStart(mage as never, buildRoomEventStartPayload(2));
-    await CombatHandler.handlePowerHit(rogue as never, buildPowerHitPayload(500001, rogue.clientEntID, 9000));
 
+    await CombatHandler.handlePowerHit(rogue as never, buildPowerHitPayload(500001, rogue.clientEntID, 9000));
     assert.equal(
         GlobalState.levelEntities.get(scope)?.get(500001)?.hp,
+        1000,
+        'player power hits during the shared cinematic must still damage a targetable hostile'
+    );
+
+    await CombatHandler.handlePowerHit(rogue as never, buildPowerHitPayload(500002, rogue.clientEntID, 9000));
+    assert.equal(
+        GlobalState.levelEntities.get(scope)?.get(500002)?.hp,
         10000,
-        'player power hits during the shared cinematic should not damage the hostile'
+        'an untargetable hostile stays invulnerable through its intro'
     );
 }
 
@@ -531,7 +545,7 @@ async function main(): Promise<void> {
         GlobalState.dungeonCutscenes.clear();
         GlobalState.dungeonCompletions.clear();
         GlobalState.levelEntities.clear();
-        await testSharedDungeonCinematicSuppressesPlayerDamage();
+        await testSharedDungeonCinematicKeepsPlayerDamage();
         console.log('shared_dungeon_cinematic_regression: ok');
     } finally {
         GlobalState.sessionsByToken = sessionsByToken;
