@@ -48,7 +48,7 @@ function requiredDouble(abc: ReturnType<typeof parseAbc>, value: number): number
 function buildPatches(swfPath: string): { ctx: ReturnType<typeof parseSwf>; patches: BytePatch[]; state: string } {
   const ctx = parseSwf(swfPath);
   const abc = parseAbc(ctx);
-  const desiredStorm = requiredDouble(abc, 0.8);
+  const desiredStorm = requiredDouble(abc, 0.9);
   const desiredHeart = requiredDouble(abc, 0.4);
 
   for (const body of abc.methodBodies.values()) {
@@ -76,8 +76,8 @@ function buildPatches(swfPath: string): { ctx: ReturnType<typeof parseSwf>; patc
 
       const currentStorm = doubleValue(abc, stormBonus);
       const currentHeart = doubleValue(abc, heartBonus);
-      if (currentStorm === 0.8 && currentHeart === 0.4) return { ctx, patches: [], state: "desired" };
-      if (currentStorm !== 1.6 || currentHeart !== 0.8) {
+      if (currentStorm === 0.9 && currentHeart === 0.4) return { ctx, patches: [], state: "desired" };
+      if (!([0.8, 1.6].includes(currentStorm ?? NaN)) || !([0.4, 0.8].includes(currentHeart ?? NaN))) {
         throw new PatchError(`Unexpected Black Miasma bonuses: Black Storm ${currentStorm}, Heart Seeker ${currentHeart}.`);
       }
 
@@ -87,7 +87,7 @@ function buildPatches(swfPath: string): { ctx: ReturnType<typeof parseSwf>; patc
           start: body.codeStart + stormBonus.offset,
           end: body.codeStart + stormBonus.offset + stormBonus.size,
           data: Buffer.concat([Buffer.from([0x2f]), writeU30(desiredStorm)]),
-          detail: "reduce Black Storm Black Miasma bonus from 160% to 80%",
+          detail: `set Black Storm Black Miasma bonus from ${currentStorm! * 100}% to 90%`,
         },
         {
           key: "CombatState.blackMiasma.heartSeekerBonus",
@@ -129,7 +129,7 @@ export function patchShadowstalkerMiasmaBonus(swfPath: string, verifyOnly = fals
   const verified = buildPatches(swfPath);
   if (verified.state !== "desired") throw new PatchError("Black Miasma bonus verification failed.");
   syncClientRevision(swfPath, verifyOnly);
-  console.log(`${verifyOnly ? "Verified" : first.patches.length ? "Patched" : "Already patched"} Heart Seeker +40% / Black Storm +80% Black Miasma bonuses in ${swfPath}`);
+  console.log(`${verifyOnly ? "Verified" : first.patches.length ? "Patched" : "Already patched"} Heart Seeker +40% / Black Storm +90% Black Miasma bonuses in ${swfPath}`);
 }
 
 const { swfPath, verify } = parseArgs(process.argv);

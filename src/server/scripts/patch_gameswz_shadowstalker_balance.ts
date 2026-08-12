@@ -159,9 +159,10 @@ function addRankedScorpionPowers(xml: string, stats: Stats): string {
 
 /**
  * Keep clone attacks mechanically identical to the owner's matching rank. The clone-only
- * identity/resource fields stay separate so the AI can rotate them without consuming the
- * owner's mana or colliding with the player's cooldown entries. Hate and Bind are explicit
- * Shadow Legion bonuses and therefore remain layered on top of the copied player power.
+ * PowerName/BasePowerName/PowerID and resource fields stay separate so the loader treats the
+ * clone powers as their own ranked families and the AI can rotate them without consuming the
+ * owner's mana or colliding with player cooldowns. Runtime patches alias these False* base
+ * names to the matching player behavior. Hate and Bind remain clone-only bonuses.
  */
 function syncClonePowers(xml: string, stats: Stats): string {
   let patched = xml;
@@ -185,7 +186,11 @@ function syncClonePowers(xml: string, stats: Stats): string {
         .replace(`PowerName="${sourceName}"`, `PowerName="${cloneName}"`)
         .replace(/^[ \t]*<FromMasterMana>[^<]*<\/FromMasterMana>\r?\n/m, "");
       clone = replaceTag(clone, "PowerID", String(rank === 0 ? definition.baseId : definition.firstRankId + rank - 1), localStats);
-      if (rank > 0) clone = replaceTag(clone, "BasePowerName", definition.clone, localStats);
+      clone = upsertAfter(clone, "DisplayName", "BasePowerName", definition.clone, localStats);
+      clone = clone.replace(
+        /(<BasePowerName>[^<]*<\/BasePowerName>)\r\n/,
+        "$1\n",
+      );
       clone = replaceTag(clone, "ManaCost", "0", localStats);
       clone = replaceTag(clone, "CoolDownTime", "0", localStats);
       clone = replaceTag(clone, "PowerGroup", "ShadowLegion", localStats);
@@ -193,6 +198,16 @@ function syncClonePowers(xml: string, stats: Stats): string {
       clone = upsertAfter(clone, "AddTargetBuff", "AggroBonus", "1.5", localStats);
       if (definition.clone === "FalseTendrilDash") {
         clone = addCloneTendrilGfx(clone, localStats);
+        // The clone-only Bind is reflected by the tooltip pass. Preserve that generated
+        // stats suffix while continuing to inherit the player's description prose.
+        const currentDescription = tagValue(current, "Description") ?? "";
+        const currentStats = currentDescription.match(/\s*\[Stats:[\s\S]*$/)?.[0];
+        const sourceDescription = tagValue(clone, "Description") ?? "";
+        if (currentStats) {
+          const sourceProse = sourceDescription.replace(/\s*\[Stats:[\s\S]*$/, "");
+          clone = replaceTag(clone, "Description", `${sourceProse}${currentStats}`, localStats);
+        }
+        clone = clone.replace(/(<Description>[^<]*<\/Description>)\r\n/, "$1\n");
         clone = clone.replace(
           /(<UpgradeDescription>Tendril Defense reduction is (?:6|8|10)%\.<\/UpgradeDescription>)\r\n/,
           "$1\n",
@@ -258,11 +273,12 @@ function validateClonePowerIdentities(xml: string): void {
       ids.set(powerId, powerName);
     }
 
-    const match = powerName.match(/^(False(?:Chi|TendrilDash|ScorpionSting))(?:[1-9]|10)$/);
+    const match = powerName.match(/^(False(?:Chi|TendrilDash|ScorpionSting))(?:[1-9]|10)?$/);
     if (!match) continue;
     const basePowerName = tagValue(block, "BasePowerName");
-    if (basePowerName !== match[1]) {
-      throw new Error(`${powerName} must use BasePowerName ${match[1]}, found ${basePowerName ?? "(missing)"}.`);
+    const expectedBase = match[1];
+    if (basePowerName !== expectedBase) {
+      throw new Error(`${powerName} must use BasePowerName ${expectedBase}, found ${basePowerName ?? "(missing)"}.`);
     }
   }
 }

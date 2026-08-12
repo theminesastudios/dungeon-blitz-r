@@ -18,13 +18,23 @@ const TARGET_SWF = path.join('src', 'client', 'content', 'localhost', 'p', 'cbp'
 const INDEX_HTML = path.join('src', 'client', 'content', 'localhost', 'index.html');
 const OLD_MARKER = 'if(this.var_414 && (param2.basePowerName == "CrippleStrike" || param2.basePowerName == "WhitheringMist"))';
 const LEGACY_BOUND_MARKER = 'param2.basePowerName == "CrippleStrike" ? 0.6 : 0.4';
-const PREVIOUS_BLACK_MIASMA_MARKER = 'param2.basePowerName == "BlackStorm" ? 1.6 : 0.8';
-const MARKER = 'param2.basePowerName == "BlackStorm" ? 0.8 : 0.4';
+const LEGACY_BLACK_MIASMA_MARKER = 'param2.basePowerName == "BlackStorm" ? 1.6 : 0.8';
+const MARKER = 'param2.basePowerName == "BlackStorm" ? 0.9 : 0.4';
+const VICIOUS_ASSAULT_MARKER = 'param2.var_7 >= 10 ? 0.02 : (param2.var_7 >= 7 ? 0.015 : 0.01)';
+const CLONE_SCORPION_MARKER = 'param2.basePowerName == "CrippleStrike" || param2.basePowerName == "FalseScorpionSting"';
+const CLONE_DARK_CHI_DAZE_MARKER = 'param1.basePowerName == "DarkChi" || param1.basePowerName == "FalseChi"';
+const CLONE_DARK_CHI_PROJECTILE_MARKER = 'else if(this.powerType.basePowerName == "DarkChi" || this.powerType.basePowerName == "FalseChi")';
+const CLONE_MIASMA_MARKER = 'this.powerType.basePowerName == "ShadowTendrilDash" || this.powerType.basePowerName == "FalseTendrilDash"';
+const METHOD_1507_GUARD_MARKER = 'if(this.var_4)\n            {\n               this.var_4.var_997 = false;';
+const METHOD_243_GUARD_MARKER = 'this.method_129();\n            return false;';
 const EXPERTISE_MARKER = '_loc28_ = 2.25;';
 const BLACK_MIASMA_FIELD = 'internal var _blackMiasma:Boolean = false;';
 const BLEED_STACKS_FIELD = 'internal var _bleedStacks:int = 0;';
 const CLONE_RANK_MARKER = '"FalseSaberMelee","FalseSaberMelee","FalseSaberMelee"';
 const CLONE_ROTATION_MARKER = 'var _shadowLegionCompletedPower:PowerType = this.var_3.hudPowers.shift()';
+const SAFE_CLONE_SKILL_MARKER = '_loc56_ > 0 ? "FalseTendrilDash" + String(_loc56_) : "FalseSaberMelee"';
+const UNEQUIPPED_CLONE_SKILL_MARKER = '                     _loc55_ = param1.var_7;\n                     _loc56_ = param1.var_7;\n                     _loc57_ = param1.var_7;';
+const EQUIPPED_ONLY_RANK_INIT = '                     _loc55_ = 0;\n                     _loc56_ = 0;\n                     _loc57_ = 0;';
 const OLD_CLONE_GATE_CHECK = '(param1.powerName.indexOf("FalseChi") == 0 || param1.powerName.indexOf("FalseTendrilDash") == 0 || param1.powerName.indexOf("FalseScorpionSting") == 0)';
 const CLONE_GATE_CHECK = '(param1.powerName.indexOf("FalseSaberMelee") == 0 || param1.powerName.indexOf("FalseChi") == 0 || param1.powerName.indexOf("FalseTendrilDash") == 0 || param1.powerName.indexOf("FalseScorpionSting") == 0)';
 const SAFE_DARK_CHI_RANK_CHECK = 'if(_loc54_ && _loc54_.basePowerName == "DarkChi")';
@@ -86,7 +96,7 @@ const PREVIOUS_REPLACEMENT = [
     '         }',
     '         _loc6_ += _loc7_ / param1;'
 ].join('\n');
-const REPLACEMENT = PREVIOUS_REPLACEMENT.replace(
+const PREVIOUS_RUNTIME_REPLACEMENT = PREVIOUS_REPLACEMENT.replace(
     '         _loc6_ += _loc7_ / param1;',
     [
         '         if(_loc5_._blackMiasma && (param2.basePowerName == "HeartSeeker" || param2.basePowerName == "BlackStorm"))',
@@ -99,6 +109,15 @@ const REPLACEMENT = PREVIOUS_REPLACEMENT.replace(
         '         }',
         '         _loc6_ += _loc7_ / param1;'
     ].join('\n')
+);
+const REPLACEMENT = PREVIOUS_RUNTIME_REPLACEMENT
+    .replace('param2.basePowerName == "BlackStorm" ? 0.8 : 0.4', 'param2.basePowerName == "BlackStorm" ? 0.9 : 0.4')
+    .replace('param2.var_7 >= 7 ? 0.015 : 0.01', 'param2.var_7 >= 10 ? 0.02 : param2.var_7 >= 7 ? 0.015 : 0.01')
+    .replace('param2.basePowerName == "CrippleStrike" && param2.var_7 >= 2', '(param2.basePowerName == "CrippleStrike" || param2.basePowerName == "FalseScorpionSting") && param2.var_7 >= 2')
+    .replace('param2.basePowerName == "CrippleStrike" ? 0.7 : 0.3', 'param2.basePowerName == "CrippleStrike" || param2.basePowerName == "FalseScorpionSting" ? 0.7 : 0.3');
+const PREVIOUS_RUNTIME_DECOMPILED_REPLACEMENT = PREVIOUS_RUNTIME_REPLACEMENT.replace(
+    'if(_loc5_.var_1033 && ((param2.basePowerName == "CrippleStrike" && param2.var_7 >= 2) || (param2.basePowerName == "WhitheringMist" && param2.var_7 >= 3)))',
+    'if(_loc5_.var_1033 && (param2.basePowerName == "CrippleStrike" && param2.var_7 >= 2 || param2.basePowerName == "WhitheringMist" && param2.var_7 >= 3))'
 );
 const PREVIOUS_DECOMPILED_REPLACEMENT = PREVIOUS_REPLACEMENT.replace(
     'if(_loc5_.var_1033 && ((param2.basePowerName == "CrippleStrike" && param2.var_7 >= 2) || (param2.basePowerName == "WhitheringMist" && param2.var_7 >= 3)))',
@@ -262,7 +281,7 @@ const THREE_SKILL_CLONE_SPAWN_REPLACEMENT = [
     '                     }',
     '                     _loc48_.bLeft = this.mActivePower.var_188;'
 ].join('\n');
-const CLONE_SPAWN_REPLACEMENT = [
+const UNSAFE_RANK_ZERO_CLONE_SPAWN_REPLACEMENT = [
     '                     _loc48_.ResetEntType(_loc48_.entType);',
     '                     _loc55_ = 0;',
     '                     _loc56_ = 0;',
@@ -296,6 +315,12 @@ const CLONE_SPAWN_REPLACEMENT = [
     '                     }',
     '                     _loc48_.bLeft = this.mActivePower.var_188;'
 ].join('\n');
+const EQUIPPED_ONLY_CLONE_SPAWN_REPLACEMENT = UNSAFE_RANK_ZERO_CLONE_SPAWN_REPLACEMENT
+    .replaceAll('"FalseTendrilDash" + (_loc56_ > 0 ? String(_loc56_) : "")', '(_loc56_ > 0 ? "FalseTendrilDash" + String(_loc56_) : "FalseSaberMelee")')
+    .replaceAll('"FalseChi" + (_loc55_ > 0 ? String(_loc55_) : "")', '(_loc55_ > 0 ? "FalseChi" + String(_loc55_) : "FalseSaberMelee")')
+    .replaceAll('"FalseScorpionSting" + (_loc57_ > 0 ? String(_loc57_) : "")', '(_loc57_ > 0 ? "FalseScorpionSting" + String(_loc57_) : "FalseSaberMelee")');
+const CLONE_SPAWN_REPLACEMENT = EQUIPPED_ONLY_CLONE_SPAWN_REPLACEMENT
+    .replace('                     _loc55_ = 0;\n                     _loc56_ = 0;\n                     _loc57_ = 0;', UNEQUIPPED_CLONE_SKILL_MARKER);
 const CLONE_ROTATION_ANCHOR = [
     '         this.var_114[param1.powerID] = _loc5_ + param1.coolDownTime + _loc11_;',
     '         if(param1.basePowerName == "SentinelForm")'
@@ -391,23 +416,90 @@ function main() {
     fs.rmSync(work, { recursive: true, force: true });
     fs.mkdirSync(work, { recursive: true });
     runFfdec(base, ffdec, ['-selectclass', 'CombatState', '-export', 'script', work, swf]);
+    runFfdec(base, ffdec, ['-selectclass', 'ActivePower', '-export', 'script', work, swf]);
 
     const sourcePath = path.join(work, 'scripts', 'CombatState.as');
+    const activePowerPath = path.join(work, 'scripts', 'ActivePower.as');
     let source = fs.readFileSync(sourcePath, 'utf8').replace(/\r\n/g, '\n');
+    let activePowerSource = fs.readFileSync(activePowerPath, 'utf8').replace(/\r\n/g, '\n');
     if (args.verify) {
         if (!source.includes(MARKER)) throw new Error('DungeonBlitz.swf is missing the Black Miasma conditional damage bonuses.');
+        if (!source.includes(VICIOUS_ASSAULT_MARKER)) throw new Error('DungeonBlitz.swf is missing the rank 10 Vicious Assault Bleed multiplier.');
         if (!source.includes(EXPERTISE_MARKER)) throw new Error('DungeonBlitz.swf is missing the Soulthief Expertise multiplier increases.');
         if (!source.includes(BLACK_MIASMA_FIELD) || !source.includes(BLEED_STACKS_FIELD)) throw new Error('DungeonBlitz.swf is missing Rogue target-state tracking.');
         if (source.includes(OLD_MARKER)) throw new Error('DungeonBlitz.swf still contains the old stealth-only Expertise bonus.');
         if (source.includes(LEGACY_BOUND_MARKER)) throw new Error('DungeonBlitz.swf still contains the old Bound-target Expertise values.');
         if (!source.includes(CLONE_RANK_MARKER)) throw new Error('DungeonBlitz.swf is missing Shadow Legion owner-rank skill inheritance.');
         if (!source.includes(CLONE_ROTATION_MARKER)) throw new Error('DungeonBlitz.swf is missing deterministic Shadow Legion skill rotation.');
+        if (!source.includes(SAFE_CLONE_SKILL_MARKER)) throw new Error('DungeonBlitz.swf still assigns unlearned rank-zero skills to Shadow Legion clones.');
+        if (!source.includes(UNEQUIPPED_CLONE_SKILL_MARKER)) throw new Error('DungeonBlitz.swf does not provide Shadow Legion skills when they are unequipped.');
+        if (!source.includes(CLONE_SCORPION_MARKER)) throw new Error('DungeonBlitz.swf is missing clone Scorpion Sting conditional damage.');
+        if (!source.includes(CLONE_DARK_CHI_DAZE_MARKER)) throw new Error('DungeonBlitz.swf is missing clone Dark Chi Daze behavior.');
+        if (!activePowerSource.includes(CLONE_DARK_CHI_PROJECTILE_MARKER)) throw new Error('DungeonBlitz.swf is missing clone Dark Chi projectile behavior.');
+        if (!activePowerSource.includes(CLONE_MIASMA_MARKER)) throw new Error('DungeonBlitz.swf is missing clone Black Miasma field behavior.');
+        if (!activePowerSource.includes(METHOD_1507_GUARD_MARKER)) throw new Error('DungeonBlitz.swf is missing the ActivePower.method_1507 null guard.');
+        if (!activePowerSource.includes(METHOD_243_GUARD_MARKER)) throw new Error('DungeonBlitz.swf is missing the ActivePower.method_243 null guard.');
         syncClientRevision(base, swf, true);
         console.log(`Verified Shadowstalker runtime balance changes in ${swf}`);
         return;
     }
 
     let changed = false;
+
+    if (!source.includes(UNEQUIPPED_CLONE_SKILL_MARKER) && source.includes(SAFE_CLONE_SKILL_MARKER)) {
+        const rankInitCount = source.split(EQUIPPED_ONLY_RANK_INIT).length - 1;
+        if (rankInitCount !== 1) throw new Error(`CombatState clone rank initialization matched ${rankInitCount} times, expected 1.`);
+        source = source.replace(EQUIPPED_ONLY_RANK_INIT, UNEQUIPPED_CLONE_SKILL_MARKER);
+        changed = true;
+    }
+
+    if (!source.includes(CLONE_DARK_CHI_DAZE_MARKER)) {
+        source = source.replace(
+            'param1.basePowerName == "DarkChi" && param1.var_7 >= 10',
+            '(param1.basePowerName == "DarkChi" || param1.basePowerName == "FalseChi") && param1.var_7 >= 10'
+        );
+        changed = true;
+    }
+    if (!source.includes(CLONE_SCORPION_MARKER)) {
+        source = source
+            .replace(
+                'param2.basePowerName == "CrippleStrike" && param2.var_7 >= 2',
+                '(param2.basePowerName == "CrippleStrike" || param2.basePowerName == "FalseScorpionSting") && param2.var_7 >= 2'
+            )
+            .replace(
+                'param2.basePowerName == "CrippleStrike" ? 0.7 : 0.3',
+                'param2.basePowerName == "CrippleStrike" || param2.basePowerName == "FalseScorpionSting" ? 0.7 : 0.3'
+            );
+        changed = true;
+    }
+    if (!activePowerSource.includes(CLONE_DARK_CHI_PROJECTILE_MARKER)) {
+        activePowerSource = activePowerSource.replace(
+            'else if(this.powerType.basePowerName == "DarkChi")',
+            'else if(this.powerType.basePowerName == "DarkChi" || this.powerType.basePowerName == "FalseChi")'
+        );
+        changed = true;
+    }
+    if (!activePowerSource.includes(CLONE_MIASMA_MARKER)) {
+        activePowerSource = activePowerSource.replace(
+            'this.powerType.basePowerName == "ShadowTendrilDash"',
+            '(this.powerType.basePowerName == "ShadowTendrilDash" || this.powerType.basePowerName == "FalseTendrilDash")'
+        );
+        changed = true;
+    }
+    if (!activePowerSource.includes(METHOD_1507_GUARD_MARKER)) {
+        activePowerSource = activePowerSource.replace(
+            '         catch(_loc_e_:*)\n         {\n            §§pop();\n            return;\n         }',
+            '         catch(_loc_e_:*)\n         {\n            if(this.var_4)\n            {\n               this.var_4.var_997 = false;\n            }\n            return;\n         }'
+        );
+        changed = true;
+    }
+    if (!activePowerSource.includes(METHOD_243_GUARD_MARKER)) {
+        activePowerSource = activePowerSource.replace(
+            '         catch(_loc_e_:*)\n         {\n         }\n         return undefined;',
+            '         catch(_loc_e_:*)\n         {\n            this.method_129();\n            return false;\n         }'
+        );
+        changed = true;
+    }
 
     if (!source.includes(BLACK_MIASMA_FIELD)) {
         const fieldCount = source.split(STATE_FIELDS_ANCHOR).length - 1;
@@ -436,8 +528,8 @@ function main() {
         changed = true;
     }
 
-    if (source.includes(PREVIOUS_BLACK_MIASMA_MARKER)) {
-        source = source.replace(PREVIOUS_BLACK_MIASMA_MARKER, MARKER);
+    if (source.includes(LEGACY_BLACK_MIASMA_MARKER)) {
+        source = source.replace(LEGACY_BLACK_MIASMA_MARKER, MARKER);
         changed = true;
     }
 
@@ -450,7 +542,13 @@ function main() {
         changed = true;
     }
 
-    if (source.includes(THREE_SKILL_CLONE_SPAWN_REPLACEMENT)) {
+    if (source.includes(EQUIPPED_ONLY_CLONE_SPAWN_REPLACEMENT)) {
+        source = source.replace(EQUIPPED_ONLY_CLONE_SPAWN_REPLACEMENT, CLONE_SPAWN_REPLACEMENT);
+        changed = true;
+    } else if (source.includes(UNSAFE_RANK_ZERO_CLONE_SPAWN_REPLACEMENT)) {
+        source = source.replace(UNSAFE_RANK_ZERO_CLONE_SPAWN_REPLACEMENT, CLONE_SPAWN_REPLACEMENT);
+        changed = true;
+    } else if (source.includes(THREE_SKILL_CLONE_SPAWN_REPLACEMENT)) {
         source = source.replace(THREE_SKILL_CLONE_SPAWN_REPLACEMENT, CLONE_SPAWN_REPLACEMENT);
         changed = true;
     }
@@ -470,7 +568,13 @@ function main() {
         changed = true;
     }
 
-    if (source.includes(PREVIOUS_DECOMPILED_REPLACEMENT)) {
+    if (source.includes(PREVIOUS_RUNTIME_DECOMPILED_REPLACEMENT)) {
+        source = source.replace(PREVIOUS_RUNTIME_DECOMPILED_REPLACEMENT, REPLACEMENT);
+        changed = true;
+    } else if (source.includes(PREVIOUS_RUNTIME_REPLACEMENT)) {
+        source = source.replace(PREVIOUS_RUNTIME_REPLACEMENT, REPLACEMENT);
+        changed = true;
+    } else if (source.includes(PREVIOUS_DECOMPILED_REPLACEMENT)) {
         source = source.replace(PREVIOUS_DECOMPILED_REPLACEMENT, REPLACEMENT);
         changed = true;
     } else if (source.includes(PREVIOUS_REPLACEMENT)) {
@@ -506,6 +610,7 @@ function main() {
         return;
     }
     fs.writeFileSync(sourcePath, source);
+    fs.writeFileSync(activePowerPath, activePowerSource);
     const output = path.join(work, 'DungeonBlitz.patched.swf');
     runFfdec(base, ffdec, ['-importScript', swf, output, path.join(work, 'scripts')]);
     if (!fs.existsSync(`${swf}.bak`)) fs.copyFileSync(swf, `${swf}.bak`);

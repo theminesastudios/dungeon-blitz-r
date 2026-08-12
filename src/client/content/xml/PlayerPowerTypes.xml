@@ -42634,7 +42634,7 @@
 		<PowerID>1153</PowerID>
 		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
-		<AoERadius>150</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42674,7 +42674,7 @@
 		<PowerID>1154</PowerID>
 		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
-		<AoERadius>150</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42716,7 +42716,7 @@
 		<PowerID>1155</PowerID>
 		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
-		<AoERadius>150</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42758,7 +42758,7 @@
 		<PowerID>1156</PowerID>
 		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
-		<AoERadius>150</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42800,7 +42800,7 @@
 		<PowerID>1157</PowerID>
 		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
-		<AoERadius>150</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42842,7 +42842,7 @@
 		<PowerID>1158</PowerID>
 		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
-		<AoERadius>150</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42853,12 +42853,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.9 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
-		<UpgradeDescription>Deals 2 stacks of Poison</UpgradeDescription>
+		<Description>Applies one stack of Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.9 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
+		<UpgradeDescription>Deals 4 stacks of Bleed</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
 		<CastSound>[150]CHR_Executioner_Assassinate</CastSound>
@@ -42884,7 +42884,7 @@
 		<PowerID>1159</PowerID>
 		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
-		<AoERadius>150</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42895,12 +42895,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.9 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
-		<UpgradeDescription>Deals 2 stacks of ArmorBane and 4 stacks of Bleed.</UpgradeDescription>
+		<Description>Applies one stack of Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x0.9 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
+		<UpgradeDescription>Deals 2 stacks of Armor Bane and 6 stacks of Bleed.</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
 		<CastSound>[150]CHR_Executioner_Assassinate</CastSound>
@@ -42926,7 +42926,7 @@
 		<PowerID>1160</PowerID>
 		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
-		<AoERadius>150</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42937,11 +42937,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.13 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
+		<Description>Applies one stack of Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.13 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
@@ -42968,7 +42968,7 @@
 		<PowerID>1161</PowerID>
 		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
-		<AoERadius>150</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -42979,12 +42979,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.13 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
-		<UpgradeDescription>Deals 3 stacks of Poison</UpgradeDescription>
+		<Description>Applies one stack of Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.13 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
+		<UpgradeDescription>Deals 7 stacks of Bleed</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
 		<CastSound>[150]CHR_Executioner_Assassinate</CastSound>
@@ -43010,7 +43010,7 @@
 		<PowerID>1162</PowerID>
 		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
-		<AoERadius>150</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -43021,11 +43021,11 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.3 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
+		<Description>Applies one stack of Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.3 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
@@ -43052,7 +43052,7 @@
 		<PowerID>1163</PowerID>
 		<TargetMethod>Cleave</TargetMethod>
 		<Range>140</Range>
-		<AoERadius>150</AoERadius>
+		<AoERadius>200</AoERadius>
 		<CenterOffset>70</CenterOffset>
 		<CastAnim>HeavyBlow</CastAnim>
 		<CastTime>330</CastTime>
@@ -43063,12 +43063,12 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>DeathBlow</PowerGroup>
-		<AddTargetBuff>PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
+		<AddTargetBuff>PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding</AddTargetBuff>
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Assassinate</DisplayName>
 		<BasePowerName>DeathBlowOld</BasePowerName>
-		<Description>Applies Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.46 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
-		<UpgradeDescription>Deals 6 Stacks of Bleed, Increased bonus damage. Increased Damage #olddmg#</UpgradeDescription>
+		<Description>Applies one stack of Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health. [Stats: x1.46 damage, 2 damage/s, over 5s, -5% Defense, over 5s, 0.2 damage/s, over 5s]</Description>
+		<UpgradeDescription>Deals 8 stacks of Bleed. Increased bonus damage. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DeathBlow</IconName>
 		<RuneIcon>a_RuneIcon_27</RuneIcon>
 		<CastSound>[150]CHR_Executioner_Assassinate</CastSound>
@@ -44583,8 +44583,8 @@
 		<SwooshChange>RogueRed</SwooshChange>
 		<DisplayName>Vicious Assault</DisplayName>
 		<BasePowerName>Assassinate</BasePowerName>
-		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals 1.5% more damage per Bleed stack on the target. [Stats: +60% Defense, over 10s]</Description>
-		<UpgradeDescription>Each hit deals 2 stacks of Bleed. Grants 60% Dash Armor.</UpgradeDescription>
+		<Description>Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals 2% more damage per Bleed stack on the target. [Stats: +60% Defense, over 10s]</Description>
+		<UpgradeDescription>Gains 2% damage per Bleed stack. Each hit deals 2 stacks of Bleed. Grants 60% Dash Armor.</UpgradeDescription>
 		<IconName>a_PowerIcon_Assassinate</IconName>
 		<RuneIcon>a_RuneIcon_13</RuneIcon>
 		<CastSound>CHR_Executioner_VisiousAssault_Start</CastSound>
@@ -44615,7 +44615,7 @@
 		<PowerGroup>Assassinate</PowerGroup>
 		<AddTargetBuff>Bleeding,Bleeding</AddTargetBuff>
 		<BasePowerName>AssassinateClose</BasePowerName>
-		<Description>Vicious Assault combo. Deals 1.5% more damage per Bleed stack on the target. [Stats: x1.43 damage, 0.2 damage/s, over 5s]</Description>
+		<Description>Vicious Assault combo. Deals 2% more damage per Bleed stack on the target. [Stats: x1.43 damage, 0.2 damage/s, over 5s]</Description>
 		<CastSound>snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_steelCyclone_sword_01|snd_pwr_rogue_steelCyclone_sword_04[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03[160]snd_pwr_rogue_openDamage_sword_01|snd_pwr_rogue_openDamage_sword_03</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>
 		<CastGfx>
@@ -51292,6 +51292,7 @@
 		<AggroBonus>1.5</AggroBonus>
 		<SwooshChange>Shadow</SwooshChange>
 		<DisplayName>Dark Chi</DisplayName>
+		<BasePowerName>FalseChi</BasePowerName>
 		<Description>Fires projectile that applies Cripple, Bind and Armor Bane. [Stats: x3.25 damage, -5% Defense, over 5s, -10% Melee Damage, 1 damage/s, over 5s, -10% Speed, over 5s]</Description>
 		<IconName>a_PowerIcon_DarkChi</IconName>
 		<CastGfx/>
@@ -53609,6 +53610,7 @@
 		<AddTargetBuff>Bound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
+		<BasePowerName>FalseTendrilDash</BasePowerName>
 		<Description>Dash forward, leaving behind a debilitating cloud that slows and lowers enemy defenses. [Stats: x1 damage, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_BlackMiasma</IconName>
 		<CastGfx/>
@@ -53639,6 +53641,7 @@
 		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
+		<BasePowerName>FalseScorpionSting</BasePowerName>
 		<Description>Strike a foe and apply Bind, Weaken, Cripple and Armor Bane. [Stats: x1.86 damage, -5% Defense, over 5s, -10% Melee Damage, over 5s, -10% Speed, over 5s, -10% Melee Damage, 1 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_CripplingStrike</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -54359,7 +54362,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>BlackStorm</PowerGroup>
 		<DisplayName>Black Storm</DisplayName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.62 damage]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 90% bonus damage to enemies affected by Black Miasma. [Stats: x1.62 damage]</Description>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
 		<CastAnimSource>Ground</CastAnimSource>
@@ -54395,7 +54398,7 @@
 		<PowerGroup>BlackStorm</PowerGroup>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.16 damage]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 90% bonus damage to enemies affected by Black Miasma. [Stats: x1.16 damage]</Description>
 		<UpgradeDescription>Create a Shadow Clone that launches an attack on foes around it</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54433,7 +54436,7 @@
 		<AddSelfBuff>MisdirectionArmor20</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.16 damage, +20% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 90% bonus damage to enemies affected by Black Miasma. [Stats: x1.16 damage, +20% Defense, over 3s]</Description>
 		<UpgradeDescription>20% Defense Boost for 3 seconds.</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54471,7 +54474,7 @@
 		<AddSelfBuff>MisdirectionArmor20</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.28 damage, +20% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 90% bonus damage to enemies affected by Black Miasma. [Stats: x1.28 damage, +20% Defense, over 3s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54509,7 +54512,7 @@
 		<AddSelfBuff>MisdirectionArmor20</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.41 damage, +20% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 90% bonus damage to enemies affected by Black Miasma. [Stats: x1.41 damage, +20% Defense, over 3s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54547,7 +54550,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.41 damage, +40% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 90% bonus damage to enemies affected by Black Miasma. [Stats: x1.41 damage, +40% Defense, over 3s]</Description>
 		<UpgradeDescription>40% Defense Boost.</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54585,7 +54588,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.55 damage, +40% Defense, over 3s]</Description>
+		<Description>Create a Shadow Clone that launches an attack on foes around it. You use the distraction to become elusive. Deals 90% bonus damage to enemies affected by Black Miasma. [Stats: x1.55 damage, +40% Defense, over 3s]</Description>
 		<UpgradeDescription>Increased AoE. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54624,7 +54627,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.55 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
+		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 90% bonus damage to enemies affected by Black Miasma. [Stats: x1.55 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Add Stagger</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54663,7 +54666,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.71 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
+		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 90% bonus damage to enemies affected by Black Miasma. [Stats: x1.71 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54702,7 +54705,7 @@
 		<AddSelfBuff>MisdirectionArmor40</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.83 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
+		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 90% bonus damage to enemies affected by Black Miasma. [Stats: x1.83 damage, +40% Defense, over 3s, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>Increased AoE. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>
@@ -54741,7 +54744,7 @@
 		<AddSelfBuff>MisdirectionArmor50</AddSelfBuff>
 		<DisplayName>Black Storm</DisplayName>
 		<BasePowerName>BlackStorm</BasePowerName>
-		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma. [Stats: x1.95 damage, +50% Defense, over 3s, -100% Speed, over 1s]</Description>
+		<Description>Create a Shadow Clone that launches a Staggering attack on foes around it. You use the distraction to become elusive. Deals 90% bonus damage to enemies affected by Black Miasma. [Stats: x1.95 damage, +50% Defense, over 3s, -100% Speed, over 1s]</Description>
 		<UpgradeDescription>50% Defense Boost. Increased Damage #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_BlackStorm</IconName>
 		<CastSound>snd_pwr_rogue_stealth[160]snd_pwr_rogue_steelCyclone_sword_01[160]snd_pwr_rogue_steelCyclone_sword_02|snd_pwr_rogue_steelCyclone_sword_03</CastSound>

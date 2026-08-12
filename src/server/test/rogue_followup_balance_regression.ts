@@ -73,9 +73,30 @@ for (const [rank, expected] of [[1, "6"], [6, "8"], [10, "10"]] as const) {
 }
 
 assert.match(tag(block(powers, "Power", "PowerName", "HeartSeeker10"), "Description"), /40% bonus damage.*Black Miasma/);
-assert.match(tag(block(powers, "Power", "PowerName", "BlackStorm10"), "Description"), /80% bonus damage.*Black Miasma/);
+assert.match(tag(block(powers, "Power", "PowerName", "BlackStorm10"), "Description"), /90% bonus damage.*Black Miasma/);
 assert.match(tag(block(powers, "Power", "PowerName", "Assassinate3"), "Description"), /1% more damage per Bleed stack/);
 assert.match(tag(block(powers, "Power", "PowerName", "Assassinate7"), "Description"), /1\.5% more damage per Bleed stack/);
+assert.match(tag(block(powers, "Power", "PowerName", "Assassinate10"), "UpgradeDescription"), /2% damage per Bleed stack/);
+assert.match(tag(block(powers, "Power", "PowerName", "AssassinateClose10"), "Description"), /2% more damage per Bleed stack/);
+
+for (const [rank, targetBuff, upgrade] of [
+  [5, "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding", /4 stacks of Bleed/],
+  [6, "PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding", /2 stacks of Armor Bane and 6 stacks of Bleed/],
+  [8, "PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding", /7 stacks of Bleed/],
+  [10, "PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding", /8 stacks of Bleed/],
+] as const) {
+  const assassinate = block(powers, "Power", "PowerName", `DeathBlowOld${rank}`);
+  assert.equal(tag(assassinate, "AddTargetBuff"), targetBuff);
+  assert.match(tag(assassinate, "UpgradeDescription"), upgrade);
+  assert.match(tag(assassinate, "Description"), /one stack of Poison/);
+}
+
+for (let rank = 1; rank <= 10; rank += 1) {
+  const assassinate = block(powers, "Power", "PowerName", `DeathBlowOld${rank}`);
+  const targetBuff = tag(assassinate, "AddTargetBuff");
+  assert.equal(targetBuff.split(",").filter((buff) => buff === "PoisonStrike").length, 1, `Assassinate rank ${rank} must apply exactly one Poison stack`);
+  assert.equal(tag(assassinate, "AoERadius"), "200", `Assassinate rank ${rank} AoE radius`);
+}
 
 const reaper4 = block(powers, "Power", "PowerName", "Reaper4");
 assert.equal(tag(reaper4, "AddTargetBuff"), "ArmorBane");
@@ -95,6 +116,22 @@ const clonePoison = block(buffs, "BuffType", "BuffName", "ShadowLegionPoisonStri
 assert.equal(tag(clonePoison, "BuffID"), "743");
 assert.equal(tag(clonePoison, "DoTDamage"), "2");
 assert.equal(tag(clonePoison, "DoTTickLength"), "1000");
+
+for (const [sourceFamily, cloneFamily] of [
+  ["DarkChi", "FalseChi"],
+  ["ShadowTendrilDash", "FalseTendrilDash"],
+  ["CrippleStrike", "FalseScorpionSting"],
+] as const) {
+  for (let rank = 0; rank <= 10; rank += 1) {
+    const suffix = rank === 0 ? "" : String(rank);
+    const source = block(powers, "Power", "PowerName", `${sourceFamily}${suffix}`);
+    const clone = block(powers, "Power", "PowerName", `${cloneFamily}${suffix}`);
+    assert.equal(tag(clone, "BasePowerName"), cloneFamily, `${cloneFamily}${suffix} loader-safe family`);
+    for (const field of ["TargetMethod", "Range", "AoERadius", "CenterOffset", "FireImpulse", "CastAnim", "CastTime", "RecoverTime", "BaseDamageMult", "ProcModifier", "DamageType"] as const) {
+      assert.equal(tag(clone, field), tag(source, field), `${cloneFamily}${suffix} ${field}`);
+    }
+  }
+}
 const cloneBasicAttack = block(powers, "Power", "PowerName", "FalseSaberMelee");
 assert.doesNotMatch(tag(cloneBasicAttack, "AddTargetBuff"), /(?:^|,)Bound(?:,|$)/);
 assert.match(tag(block(powers, "Power", "PowerName", "ShadowLegion10"), "Description"), /Bind with their special attacks/);
@@ -125,8 +162,12 @@ for (const power of powers.match(/<Power PowerName="[^"]+">[\s\S]*?<\/Power>/g) 
 assert.doesNotMatch(buffs, /<BuffType BuffName="ViperbladeBleed">/);
 assert.match(buffs, /<BuffType BuffName="ViperbladePoison">/);
 
-assert.match(runtimePatch, /BlackStorm" \? 0\.8 : 0\.4/);
-assert.match(runtimePatch, /0\.015 : 0\.01/);
+assert.match(runtimePatch, /BlackStorm" \? 0\.9 : 0\.4/);
+assert.match(runtimePatch, />= 10 \? 0\.02 : param2\.var_7 >= 7 \? 0\.015 : 0\.01/);
+assert.match(runtimePatch, /_loc56_ > 0 \? "FalseTendrilDash" \+ String\(_loc56_\) : "FalseSaberMelee"/);
+assert.match(runtimePatch, /_loc55_ > 0 \? "FalseChi" \+ String\(_loc55_\) : "FalseSaberMelee"/);
+assert.match(runtimePatch, /_loc57_ > 0 \? "FalseScorpionSting" \+ String\(_loc57_\) : "FalseSaberMelee"/);
+assert.match(runtimePatch, /_loc55_ = param1\.var_7;[\s\S]*_loc56_ = param1\.var_7;[\s\S]*_loc57_ = param1\.var_7;/);
 assert.match(runtimePatch, /_loc27_ = 1\.2/);
 assert.match(runtimePatch, /_loc28_ = 2\.25/);
 assert.match(talentstoneRuntimePatch, /param1\.var_1033/);

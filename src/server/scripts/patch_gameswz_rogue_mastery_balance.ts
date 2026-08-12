@@ -13,7 +13,7 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  *
  * Executioner:
  *   Shadow Rend        more bleed, and armor bane it never had
- *   Assassinate        Melee -> Cleave with a 150 radius, so it is an AoE
+ *   Assassinate        Melee -> Cleave with a 200 radius, so it is an AoE
  *   Mist Walk          armor bane from the first rank, two stacks at rank 8
  *   Withering Impact   rank 3's armor bane becomes poison; rank 10's two banes
  *                      become six stacks of bleed
@@ -83,6 +83,17 @@ const TARGET_BUFFS = new Map<string, string>([
   ["WitherStrike8", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding"], // was First:ArmorBane,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding
   ["WitherStrike9", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding"], // was First:ArmorBane,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding
   ["WitherStrike10", "First:PoisonStrike,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"], // was First:ArmorBane,ArmorBane,Weakened,Weakened,Bleeding,Bleeding,Bleeding,Bleeding
+  // Assassinate. Ranks 7 and 9 inherit the preceding rank's status effects.
+  ["DeathBlowOld1", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding"],
+  ["DeathBlowOld2", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding"],
+  ["DeathBlowOld3", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding"],
+  ["DeathBlowOld4", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding"],
+  ["DeathBlowOld5", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding"],
+  ["DeathBlowOld6", "PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"],
+  ["DeathBlowOld7", "PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"],
+  ["DeathBlowOld8", "PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"],
+  ["DeathBlowOld9", "PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"],
+  ["DeathBlowOld10", "PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding"],
   // Mist Walk
   ["MistWalkClose", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane"], // was Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate
   ["MistWalkClose1", "Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane"], // was Bleeding,Bleeding,Bleeding,Intimidate45
@@ -209,12 +220,12 @@ const VIPERBLADE_BUFFS = new Map<string, string>([
   ["DeathBlowOld2", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
   ["DeathBlowOld3", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
   ["DeathBlowOld4", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld5", "PoisonStrike,PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld6", "PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld7", "PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld8", "PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld9", "PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding'
-  ["DeathBlowOld10", "PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // was 'PoisonStrike,PoisonStrike,PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding'
+  ["DeathBlowOld5", "PoisonStrike,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // one Poison, 1 Armor Bane, 4 Bleed
+  ["DeathBlowOld6", "PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // one Poison, 2 Armor Bane, 6 Bleed
+  ["DeathBlowOld7", "PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // inherits rank 6
+  ["DeathBlowOld8", "PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // one Poison, 2 Armor Bane, 7 Bleed
+  ["DeathBlowOld9", "PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // inherits rank 8
+  ["DeathBlowOld10", "PoisonStrike,ArmorBane,ArmorBane,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,ViperbladeBleed"], // one Poison, 2 Armor Bane, 8 Bleed
   // MistWalkClose (PBAoE) +Bleeding
   ["MistWalkClose", "Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Bleeding,Bleeding,Intimidate,ArmorBane'
   ["MistWalkClose1", "Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane,ViperbladeBleed"], // was 'Bleeding,Bleeding,Bleeding,Intimidate45,ArmorBane'
@@ -396,10 +407,9 @@ const REAPER_EXPERTISE_BY_RANK = [0.12, 0.12, 0.12, 0.12, 0.12, 0.3, 0.3, 0.6, 0
 const PAIN_BENDER_EXPERTISE_BY_RANK = [0.45, 0.45, 0.45, 0.45, 0.9, 0.9, 0.9, 1.35, 1.35, 1.8, 2.25] as const;
 
 
-// Assassinate becomes an AoE. Cleave is what Shadow Rend already uses, and the radius is
-// sized to its own 140 reach rather than invented.
+// Assassinate becomes an AoE using the same Cleave target method as Shadow Rend.
 const ASSASSINATE_RANKS = ["DeathBlowOld", ...Array.from({ length: 10 }, (_, i) => `DeathBlowOld${i + 1}`)];
-const ASSASSINATE_AOE_RADIUS = "150";
+const ASSASSINATE_AOE_RADIUS = "200";
 
 // Soul Reaver heals the caster through a negative DoT. Halved, rounded to the same
 // precision the file already uses.
@@ -510,6 +520,10 @@ const UPGRADE_TEXT = new Map<string, [string, string]>([
   ["VitalStrike9", ["-2 Mana Cost.", "-2 Mana Cost. Deals 3 stacks of Armor Bane."]],
   ["VitalStrike10", ["Deals 5 stacks of Bleed.", "Deals 8 stacks of Bleed."]],
   ["WitherStrike10", ["Deals 2 stacks of Armor Bane.", "Deals 6 stacks of Bleed."]],
+  ["DeathBlowOld5", ["Deals 2 stacks of Poison", "Deals 4 stacks of Bleed"]],
+  ["DeathBlowOld6", ["Deals 2 stacks of ArmorBane and 4 stacks of Bleed.", "Deals 2 stacks of Armor Bane and 6 stacks of Bleed."]],
+  ["DeathBlowOld8", ["Deals 3 stacks of Poison", "Deals 7 stacks of Bleed"]],
+  ["DeathBlowOld10", ["Deals 6 Stacks of Bleed, Increased bonus damage. Increased Damage #olddmg#", "Deals 8 stacks of Bleed. Increased bonus damage. Increased Damage #olddmg#"]],
   [
     "MistWalk1",
     [
@@ -807,7 +821,7 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
       );
     }
 
-    const rankedName = powerName.match(/^(HeartSeeker|BlackStorm|Assassinate|AssassinateClose|PainBender|Reaper)(\d*)$/);
+    const rankedName = powerName.match(/^(HeartSeeker|BlackStorm|Assassinate|AssassinateClose|DeathBlowOld|PainBender|Reaper)(\d*)$/);
     if (rankedName) {
       const family = rankedName[1];
       const rank = Number(rankedName[2] || 0);
@@ -821,11 +835,13 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
         prose = `${effect} Deals 40% bonus damage to enemies affected by Black Miasma.`;
       } else if (family === "BlackStorm") {
         const attack = rank >= 7 ? "launches a Staggering attack" : "launches an attack";
-        prose = `Create a Shadow Clone that ${attack} on foes around it. You use the distraction to become elusive. Deals 80% bonus damage to enemies affected by Black Miasma.`;
+        prose = `Create a Shadow Clone that ${attack} on foes around it. You use the distraction to become elusive. Deals 90% bonus damage to enemies affected by Black Miasma.`;
       } else if (family === "Assassinate" && rank >= 3) {
-        prose = `Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals ${rank >= 7 ? "1.5" : "1"}% more damage per Bleed stack on the target.`;
+        prose = `Dash to a target and unleash a multi-hit combo that applies Bleed with every blow. Each hit deals ${rank >= 10 ? "2" : rank >= 7 ? "1.5" : "1"}% more damage per Bleed stack on the target.`;
       } else if (family === "AssassinateClose" && rank >= 3) {
-        prose = `Vicious Assault combo. Deals ${rank >= 7 ? "1.5" : "1"}% more damage per Bleed stack on the target.`;
+        prose = `Vicious Assault combo. Deals ${rank >= 10 ? "2" : rank >= 7 ? "1.5" : "1"}% more damage per Bleed stack on the target.`;
+      } else if (family === "DeathBlowOld" && rank >= 5) {
+        prose = "Applies one stack of Poison, Armor Bane, and Bleed. Deals bonus damage to target based on missing health.";
       } else if (family === "PainBender") {
         prose = `Strike your opponent with a powerful blow, gaining ${formatPercent(PAIN_BENDER_EXPERTISE_BY_RANK[rank])}% of Expertise as bonus damage against Bound targets.`;
       } else if (family === "Reaper") {
@@ -850,6 +866,9 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: PatchStats
     const absoluteUpgrade = new Map<string, string>([
       ["Assassinate3", "Gains 1% damage per Bleed stack. Increased Damage #olddmg#"],
       ["Assassinate7", "Gains 1.5% damage per Bleed stack. Increased Damage #olddmg#"],
+      ["Assassinate10", "Gains 2% damage per Bleed stack. Each hit deals 2 stacks of Bleed. Grants 60% Dash Armor."],
+      ["DeathBlowOld8", "Deals 7 stacks of Bleed"],
+      ["DeathBlowOld10", "Deals 8 stacks of Bleed. Increased bonus damage. Increased Damage #olddmg#"],
       ["PainBender1", "45% Expertise bonus damage vs Bound"],
       ["PainBender4", "90% Expertise bonus damage vs Bound"],
       ["PainBender7", "-1 Mana, 135% Expertise bonus damage vs Bound"],
