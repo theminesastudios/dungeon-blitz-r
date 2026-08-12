@@ -1015,13 +1015,31 @@ try {
 
         // Character portraits captured by the client's /portrait chat command.
         this.app.post('/api/portrait', express.raw({ type: () => true, limit: '512kb' }), (req, res) => {
+            // Not String(req.query.name): Express parses `?name=a&name=b` into an array and
+            // `?name[x]=y` into an object, and String() would flatten those to "a,b" and
+            // "[object Object]" -- a name the lookup below never intended to be asked about.
+            // Anything that is not a plain string is no name at all.
+            const requestedName = typeof req.query.name === 'string' ? req.query.name : '';
+            res.setHeader('Cache-Control', 'no-store');
+
+            // express.raw leaves a Buffer when the request carried a body and `{}` when it did
+            // not. A string or an array is what a body reaches this handler as when something
+            // else parsed it first, and both answer `.length` while answering nothing useful:
+            // the PNG check below would measure a character count or an element count as if it
+            // were bytes. Rejected outright rather than coerced.
+            const raw: unknown = req.body;
+            if (typeof raw === 'string' || Array.isArray(raw)) {
+                console.log('[StaticServer] portrait upload rejected (not-raw-body)');
+                res.status(400).type('text/plain').send('not-png');
+                return;
+            }
+
             const result = storeCharacterPortrait(
-                String(req.query.name ?? ''),
-                Buffer.isBuffer(req.body) ? req.body : Buffer.alloc(0),
+                requestedName,
+                raw instanceof Buffer ? raw : Buffer.alloc(0),
                 this.resolveRequesterAddress(req)
             );
 
-            res.setHeader('Cache-Control', 'no-store');
             if (!result.ok) {
                 console.log(`[StaticServer] portrait upload rejected (${result.reason})`);
                 res.status(result.reason === 'not-online' ? 403 : 400).type('text/plain').send(result.reason);

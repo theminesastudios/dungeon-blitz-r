@@ -440,9 +440,6 @@ interface Corpus {
  */
 const LINE_SEPARATOR = "&#10;";
 
-/** Line rows that fit inside the card's fixed-height text block at the patched line pitch. */
-const MAX_CARD_LINES = 6;
-
 /**
  * am_ProcTypeName1/2 are separate fields pinned at fixed pixel positions that land on rows 3 and 5
  * of the power field grid, and the proc effects only work under their stock rune names

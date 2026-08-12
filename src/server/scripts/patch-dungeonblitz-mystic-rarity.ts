@@ -1207,40 +1207,10 @@ function findFinalReturnVoid(insts: Instruction[], code: Buffer, label: string):
 }
 
 /**
- * Same contract as `findFinalReturnVoid`, but tolerates kills on the given locals — for methods
- * whose kills provably never touch the locals the epilogue reads.
- */
-function findFinalReturnVoidAllowingKills(insts: Instruction[], code: Buffer, label: string, allowed: number[]): number {
-  const killed = insts.filter((inst) => inst.opcode === 0x08).map((inst) => inst.operands[0][1]);
-  const unexpected = killed.filter((local) => !allowed.includes(local));
-  if (unexpected.length > 0) {
-    throw new PatchError(`${label}: kills locals ${unexpected.join(", ")}, which the epilogue may rely on.`);
-  }
-  return findFinalReturnVoidIgnoringKillCheck(insts, code, label);
-}
-
-function findFinalReturnVoidIgnoringKillCheck(insts: Instruction[], code: Buffer, label: string): number {
-  const last = insts[insts.length - 1];
-  if (last.opcode !== 0x47 || last.offset + last.size !== code.length) {
-    throw new PatchError(`${label}: expected the body to end with returnvoid.`);
-  }
-  const BRANCH = new Set([0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a]);
-  const isTarget = insts.some((inst) => BRANCH.has(inst.opcode) && inst.offset + 4 + inst.operands[0][1] === last.offset);
-  if (!isTarget) {
-    throw new PatchError(`${label}: the final returnvoid is not a branch target, so appending there would be dead code.`);
-  }
-  return last.offset;
-}
-
-/**
  * For methods whose final `returnvoid` is reached by fallthrough rather than branches: safe to
  * append at when it is the method's only return, because every path (bar a throw) must flow into it.
  */
 const OP_IFLE = 0x16;
-
-/** method_1120 scratch register for the measured overflow; its own locals are 0..20. */
-/** Gap kept under the last proc row, matching the stock card's bottom margin. */
-const CARD_BOTTOM_PAD_PX = 10;
 
 const LAYOUT_DELTA_LOCAL = 21;
 const LAYOUT_LOCAL_COUNT = 22;

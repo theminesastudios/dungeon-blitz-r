@@ -110,32 +110,6 @@ function localiseTurkish(legendaryBlock: string): string | null {
   return current.startsWith("Efsanevi ") ? `Mistik ${current.slice("Efsanevi ".length)}` : `Mistik ${current}`;
 }
 
-/**
- * UNUSED. Kept for reference: stripping the proc runes freed two tooltip lines, but the proc
- * *effects* are applied by literal string compare in Entity/CombatState ("Haste", "CritChance",
- * "ProcMassive", ...), so removing the runes silently removed the item bonuses too. The lines are
- * reclaimed by reserving space in the ability text instead.
- *
- * Removes the crit-proc runes from existing Mystic blocks. The tooltip card has fixed positions for
- * the two proc lines and cannot grow (the layout-shift epilogue proved unreachable), so on a Mystic
- * item the multi-line ability text renders across them. Dropping the procs frees exactly those two
- * lines; the ability bonuses are the item's identity anyway. Trade-off: Mystic copies lose the
- * on-critical-hit procs the Legendary versions have.
- */
-function stripMysticProcs(xml: string): { xml: string; changed: number } {
-  let out = xml;
-  let changed = 0;
-  for (const item of ITEMS) {
-    const block = findGearBlock(out, `${item.base}${MYSTIC_LETTER}`);
-    const stripped = block.block.replace(/[ \t]*<ProcRune2?>[\s\S]*?<\/ProcRune2?>\r?\n/g, "");
-    if (stripped !== block.block) {
-      out = `${out.slice(0, block.start)}${stripped}${out.slice(block.end)}`;
-      changed += 1;
-    }
-  }
-  return { xml: out, changed };
-}
-
 /** Inserts each Mystic block directly after its Legendary sibling. Idempotent. */
 function addMysticGear(xml: string, turkish: boolean, label: string): { xml: string; added: number } {
   let out = xml;
