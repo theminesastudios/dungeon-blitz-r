@@ -224,7 +224,7 @@
 		<DoTDamage>2</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<Effect>Poisoned</Effect>
-		<StackCount>3</StackCount>
+		<StackCount>1</StackCount>
 		<BuffLoc>Head</BuffLoc>
 		<BuffIcon>a_StatusIcon_Poisoned</BuffIcon>
 		<GfxType>
@@ -302,6 +302,19 @@
 			<AnimClass>a_Debuff_Slow</AnimClass>
 		</GfxType>
 	</BuffType>
+	<BuffType BuffName="ShadowLegionCrippled">
+		<BuffID>746</BuffID>
+		<Attack>true</Attack>
+		<Duration>5000</Duration>
+		<SpeedChange>-0.1</SpeedChange>
+		<StackCount>1</StackCount>
+		<BuffIcon>a_StatusIcon_SpeedDown</BuffIcon>
+		<GfxType>
+			<AnimScale>0.7</AnimScale>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_Debuff_Slow</AnimClass>
+		</GfxType>
+	</BuffType>
 	<BuffType BuffName="MistArmor">
 		<BuffID>24</BuffID>
 		<Attack>false</Attack>
@@ -318,6 +331,21 @@
 		<MagicDefense>-0.05</MagicDefense>
 		<MeleeDefense>-0.05</MeleeDefense>
 		<StackCount>7</StackCount>
+		<BuffLoc>Head</BuffLoc>
+		<BuffIcon>a_StatusIcon_DefenseDown</BuffIcon>
+		<GfxType>
+			<AnimScale>0.5</AnimScale>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_Debuff_Armor</AnimClass>
+		</GfxType>
+	</BuffType>
+	<BuffType BuffName="ShadowLegionArmorBane">
+		<BuffID>744</BuffID>
+		<Attack>true</Attack>
+		<Duration>5000</Duration>
+		<MagicDefense>-0.05</MagicDefense>
+		<MeleeDefense>-0.05</MeleeDefense>
+		<StackCount>1</StackCount>
 		<BuffLoc>Head</BuffLoc>
 		<BuffIcon>a_StatusIcon_DefenseDown</BuffIcon>
 		<GfxType>
@@ -345,6 +373,20 @@
 		<Duration>5000</Duration>
 		<MeleeDamage>-0.1</MeleeDamage>
 		<StackCount>5</StackCount>
+		<BuffLoc>Head</BuffLoc>
+		<BuffIcon>a_StatusIcon_AttackDown</BuffIcon>
+		<GfxType>
+			<AnimScale>0.5</AnimScale>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_Debuff_Weaken</AnimClass>
+		</GfxType>
+	</BuffType>
+	<BuffType BuffName="ShadowLegionWeakened">
+		<BuffID>747</BuffID>
+		<Attack>true</Attack>
+		<Duration>5000</Duration>
+		<MeleeDamage>-0.1</MeleeDamage>
+		<StackCount>1</StackCount>
 		<BuffLoc>Head</BuffLoc>
 		<BuffIcon>a_StatusIcon_AttackDown</BuffIcon>
 		<GfxType>
@@ -422,6 +464,22 @@
 		<DoTDamage>1</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<StackCount>3</StackCount>
+		<BuffLoc>Feet</BuffLoc>
+		<BuffIcon>a_StatusIcon_AttackDown</BuffIcon>
+		<GfxType>
+			<AnimScale>2</AnimScale>
+			<AnimFile>SFX_3.swf</AnimFile>
+			<AnimClass>a_BindSoulThief</AnimClass>
+		</GfxType>
+	</BuffType>
+	<BuffType BuffName="ShadowLegionBound">
+		<BuffID>745</BuffID>
+		<Attack>true</Attack>
+		<Duration>5000</Duration>
+		<MeleeDamage>-0.1</MeleeDamage>
+		<DoTDamage>1</DoTDamage>
+		<DoTTickLength>1000</DoTTickLength>
+		<StackCount>1</StackCount>
 		<BuffLoc>Feet</BuffLoc>
 		<BuffIcon>a_StatusIcon_AttackDown</BuffIcon>
 		<GfxType>

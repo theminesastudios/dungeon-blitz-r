@@ -51288,7 +51288,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,Bound,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionBound,ShadowLegionCrippled</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<SwooshChange>Shadow</SwooshChange>
 		<DisplayName>Dark Chi</DisplayName>
@@ -51332,7 +51332,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,Bound,Crippled,Crippled</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionBound,ShadowLegionCrippled</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<SwooshChange>Shadow</SwooshChange>
 		<DisplayName>Dark Chi</DisplayName>
@@ -51377,7 +51377,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,Bound,Crippled,Crippled,Weakened</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionBound,ShadowLegionCrippled,ShadowLegionWeakened</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<SwooshChange>Shadow</SwooshChange>
 		<DisplayName>Dark Chi</DisplayName>
@@ -51422,7 +51422,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,Bound,Crippled,Crippled,Weakened</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionBound,ShadowLegionCrippled,ShadowLegionWeakened</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<SwooshChange>Shadow</SwooshChange>
 		<DisplayName>Dark Chi</DisplayName>
@@ -51467,7 +51467,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,Bound,Crippled,Crippled,Weakened</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionBound,ShadowLegionCrippled,ShadowLegionWeakened</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<SwooshChange>Shadow</SwooshChange>
 		<DisplayName>Dark Chi</DisplayName>
@@ -51512,7 +51512,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Bound,Crippled,Crippled,Weakened</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionBound,ShadowLegionCrippled,ShadowLegionWeakened</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<SwooshChange>Shadow</SwooshChange>
 		<DisplayName>Dark Chi</DisplayName>
@@ -51557,7 +51557,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Bound,Bound,Crippled,Crippled,Crippled,Weakened</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionBound,ShadowLegionCrippled,ShadowLegionWeakened</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<SwooshChange>Shadow</SwooshChange>
 		<DisplayName>Dark Chi</DisplayName>
@@ -51602,7 +51602,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Bound,Bound,Crippled,Crippled,Crippled,Weakened</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionBound,ShadowLegionCrippled,ShadowLegionWeakened</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<SwooshChange>Shadow</SwooshChange>
 		<DisplayName>Dark Chi</DisplayName>
@@ -51647,7 +51647,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Bound,Bound,Crippled,Crippled,Crippled,Weakened,Weakened</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionBound,ShadowLegionCrippled,ShadowLegionWeakened</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<SwooshChange>Shadow</SwooshChange>
 		<DisplayName>Dark Chi</DisplayName>
@@ -51692,7 +51692,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Bound,Bound,Crippled,Crippled,Crippled,Weakened,Weakened</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionBound,ShadowLegionCrippled,ShadowLegionWeakened</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<SwooshChange>Shadow</SwooshChange>
 		<DisplayName>Dark Chi</DisplayName>
@@ -51737,7 +51737,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Bound,Bound,Crippled,Crippled,Crippled,Weakened,Weakened</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionBound,ShadowLegionCrippled,ShadowLegionWeakened</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<SwooshChange>Shadow</SwooshChange>
 		<DisplayName>Dark Chi</DisplayName>
@@ -53607,7 +53607,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
@@ -53638,7 +53638,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionWeakened,ShadowLegionCrippled,ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
@@ -53672,7 +53672,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionWeakened,ShadowLegionCrippled,ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
@@ -53707,7 +53707,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionWeakened,ShadowLegionCrippled,ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
@@ -53742,7 +53742,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Crippled,Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionWeakened,ShadowLegionCrippled,ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
@@ -53777,7 +53777,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Crippled,Crippled,Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionWeakened,ShadowLegionCrippled,ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
@@ -53812,7 +53812,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionWeakened,ShadowLegionCrippled,ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
@@ -53847,7 +53847,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionWeakened,ShadowLegionCrippled,ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
@@ -53882,7 +53882,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionWeakened,ShadowLegionCrippled,ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
@@ -53917,7 +53917,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionWeakened,ShadowLegionCrippled,ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
@@ -53952,7 +53952,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionArmorBane,ShadowLegionWeakened,ShadowLegionCrippled,ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
@@ -53987,7 +53987,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>ShadowLegionPoisonStrike,ArmorBane,ArmorBane,Weakened,Weakened,Crippled,Crippled,Crippled,Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionPoisonStrike,ShadowLegionArmorBane,ShadowLegionWeakened,ShadowLegionCrippled,ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Scorpion's Sting</DisplayName>
 		<BasePowerName>FalseScorpionSting</BasePowerName>
@@ -54024,7 +54024,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
@@ -54058,7 +54058,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
@@ -54092,7 +54092,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
@@ -54126,7 +54126,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
@@ -54160,7 +54160,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
@@ -54194,7 +54194,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
@@ -54228,7 +54228,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
@@ -54262,7 +54262,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
@@ -54296,7 +54296,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>
@@ -54330,7 +54330,7 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>ShadowLegion</PowerGroup>
-		<AddTargetBuff>Bound</AddTargetBuff>
+		<AddTargetBuff>ShadowLegionBound</AddTargetBuff>
 		<AggroBonus>1.5</AggroBonus>
 		<DisplayName>Black Miasma</DisplayName>
 		<BasePowerName>FalseTendrilDash</BasePowerName>

@@ -16,6 +16,13 @@ function tag(xml: string, name: string): string {
   return xml.match(new RegExp(`<${name}>([^<]*)<\\/${name}>`))?.[1] ?? "";
 }
 
+function entity(xml: string, name: string): string {
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = xml.match(new RegExp(`<EntType EntName="${escaped}"(?: [^>]*)?>[\\s\\S]*?<\\/EntType>`));
+  assert.ok(match, `EntType ${name} must exist`);
+  return match[0];
+}
+
 function powerMod(xml: string, name: string): string {
   const match = (xml.match(/<PowerModType>[\s\S]*?<\/PowerModType>/g) ?? [])
     .find((candidate) => tag(candidate, "ModName") === name);
@@ -25,12 +32,24 @@ function powerMod(xml: string, name: string): string {
 
 const powers = fs.readFileSync(path.join(XML_DIR, "PlayerPowerTypes.xml"), "utf8");
 const buffs = fs.readFileSync(path.join(XML_DIR, "PlayerBuffTypes.xml"), "utf8");
+const entities = fs.readFileSync(path.join(XML_DIR, "EntTypes.xml"), "utf8");
 const mods = fs.readFileSync(path.join(XML_DIR, "PowerModTypes.xml"), "utf8");
 const runtimePatch = fs.readFileSync(path.join(ROOT, "server", "scripts", "patch-dungeonblitz-shadowstalker-expertise.js"), "utf8");
+const equippedSkillPatch = fs.readFileSync(path.join(ROOT, "server", "scripts", "patch-dungeonblitz-shadow-legion-equipped-skills.ts"), "utf8");
 const talentstoneRuntimePatch = fs.readFileSync(
   path.join(ROOT, "server", "scripts", "patch-dungeonblitz-talentstone-rework.js"),
   "utf8",
 );
+
+for (const family of ["ShadowLegionClone", "ShadowLegionCloneTwo", "ShadowLegionCloneThree"] as const) {
+  for (let rank = 1; rank <= 10; rank += 1) {
+    assert.equal(
+      tag(entity(entities, `${family}${rank}`), "MeleeDamage"),
+      "0.3",
+      `${family}${rank} base damage`,
+    );
+  }
+}
 
 assert.deepEqual(
   [1, 2, 3, 4, 5].map((rank) => tag(powerMod(mods, `Pounce${rank}`), "SelfValue")),
@@ -116,6 +135,22 @@ const clonePoison = block(buffs, "BuffType", "BuffName", "ShadowLegionPoisonStri
 assert.equal(tag(clonePoison, "BuffID"), "743");
 assert.equal(tag(clonePoison, "DoTDamage"), "2");
 assert.equal(tag(clonePoison, "DoTTickLength"), "1000");
+assert.equal(tag(clonePoison, "StackCount"), "1");
+for (const [name, id] of [
+  ["ShadowLegionArmorBane", "744"],
+  ["ShadowLegionBound", "745"],
+  ["ShadowLegionCrippled", "746"],
+  ["ShadowLegionWeakened", "747"],
+] as const) {
+  const cloneDebuff = block(buffs, "BuffType", "BuffName", name);
+  assert.equal(tag(cloneDebuff, "BuffID"), id);
+  assert.equal(tag(cloneDebuff, "StackCount"), "1");
+}
+for (const power of powers.match(/<Power PowerName="False(?:Chi|TendrilDash|ScorpionSting)(?:[1-9]|10)?">[\s\S]*?<\/Power>/g) ?? []) {
+  const targetBuffs = tag(power, "AddTargetBuff").split(",").filter(Boolean);
+  assert.equal(new Set(targetBuffs).size, targetBuffs.length, "clone debuffs must not repeat within one attack");
+  assert.doesNotMatch(targetBuffs.join(","), /(?:^|,)(?:ArmorBane|Bound|Crippled|Weakened)(?:,|$)/);
+}
 
 for (const [sourceFamily, cloneFamily] of [
   ["DarkChi", "FalseChi"],
@@ -167,7 +202,13 @@ assert.match(runtimePatch, />= 10 \? 0\.02 : param2\.var_7 >= 7 \? 0\.015 : 0\.0
 assert.match(runtimePatch, /_loc56_ > 0 \? "FalseTendrilDash" \+ String\(_loc56_\) : "FalseSaberMelee"/);
 assert.match(runtimePatch, /_loc55_ > 0 \? "FalseChi" \+ String\(_loc55_\) : "FalseSaberMelee"/);
 assert.match(runtimePatch, /_loc57_ > 0 \? "FalseScorpionSting" \+ String\(_loc57_\) : "FalseSaberMelee"/);
-assert.match(runtimePatch, /_loc55_ = param1\.var_7;[\s\S]*_loc56_ = param1\.var_7;[\s\S]*_loc57_ = param1\.var_7;/);
+assert.match(runtimePatch, /_loc55_ = 0;\\n                     _loc56_ = 0;\\n                     _loc57_ = 0;/);
+assert.match(runtimePatch, /const CLONE_SPAWN_REPLACEMENT = EQUIPPED_ONLY_CLONE_SPAWN_REPLACEMENT;/);
+assert.match(equippedSkillPatch, /CLONE_SKILL_RANK_LOCALS = \[55, 56, 57\]/);
+assert.match(equippedSkillPatch, /pushbyte 0; convert_i; setlocal/);
+assert.match(runtimePatch, /"FalseTendrilDash" \+ \(_loc56_ > 0 \? String\(_loc56_\) : ""\),"FalseSaberMelee","FalseSaberMelee","FalseSaberMelee"/);
+assert.match(runtimePatch, /"FalseChi" \+ \(_loc55_ > 0 \? String\(_loc55_\) : ""\),"FalseSaberMelee","FalseSaberMelee","FalseSaberMelee"/);
+assert.match(runtimePatch, /"FalseScorpionSting" \+ \(_loc57_ > 0 \? String\(_loc57_\) : ""\),"FalseSaberMelee","FalseSaberMelee","FalseSaberMelee"/);
 assert.match(runtimePatch, /_loc27_ = 1\.2/);
 assert.match(runtimePatch, /_loc28_ = 2\.25/);
 assert.match(talentstoneRuntimePatch, /param1\.var_1033/);

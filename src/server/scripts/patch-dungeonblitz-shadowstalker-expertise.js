@@ -319,8 +319,7 @@ const EQUIPPED_ONLY_CLONE_SPAWN_REPLACEMENT = UNSAFE_RANK_ZERO_CLONE_SPAWN_REPLA
     .replaceAll('"FalseTendrilDash" + (_loc56_ > 0 ? String(_loc56_) : "")', '(_loc56_ > 0 ? "FalseTendrilDash" + String(_loc56_) : "FalseSaberMelee")')
     .replaceAll('"FalseChi" + (_loc55_ > 0 ? String(_loc55_) : "")', '(_loc55_ > 0 ? "FalseChi" + String(_loc55_) : "FalseSaberMelee")')
     .replaceAll('"FalseScorpionSting" + (_loc57_ > 0 ? String(_loc57_) : "")', '(_loc57_ > 0 ? "FalseScorpionSting" + String(_loc57_) : "FalseSaberMelee")');
-const CLONE_SPAWN_REPLACEMENT = EQUIPPED_ONLY_CLONE_SPAWN_REPLACEMENT
-    .replace('                     _loc55_ = 0;\n                     _loc56_ = 0;\n                     _loc57_ = 0;', UNEQUIPPED_CLONE_SKILL_MARKER);
+const CLONE_SPAWN_REPLACEMENT = EQUIPPED_ONLY_CLONE_SPAWN_REPLACEMENT;
 const CLONE_ROTATION_ANCHOR = [
     '         this.var_114[param1.powerID] = _loc5_ + param1.coolDownTime + _loc11_;',
     '         if(param1.basePowerName == "SentinelForm")'
@@ -422,6 +421,7 @@ function main() {
     const activePowerPath = path.join(work, 'scripts', 'ActivePower.as');
     let source = fs.readFileSync(sourcePath, 'utf8').replace(/\r\n/g, '\n');
     let activePowerSource = fs.readFileSync(activePowerPath, 'utf8').replace(/\r\n/g, '\n');
+    let activePowerChanged = false;
     if (args.verify) {
         if (!source.includes(MARKER)) throw new Error('DungeonBlitz.swf is missing the Black Miasma conditional damage bonuses.');
         if (!source.includes(VICIOUS_ASSAULT_MARKER)) throw new Error('DungeonBlitz.swf is missing the rank 10 Vicious Assault Bleed multiplier.');
@@ -432,7 +432,8 @@ function main() {
         if (!source.includes(CLONE_RANK_MARKER)) throw new Error('DungeonBlitz.swf is missing Shadow Legion owner-rank skill inheritance.');
         if (!source.includes(CLONE_ROTATION_MARKER)) throw new Error('DungeonBlitz.swf is missing deterministic Shadow Legion skill rotation.');
         if (!source.includes(SAFE_CLONE_SKILL_MARKER)) throw new Error('DungeonBlitz.swf still assigns unlearned rank-zero skills to Shadow Legion clones.');
-        if (!source.includes(UNEQUIPPED_CLONE_SKILL_MARKER)) throw new Error('DungeonBlitz.swf does not provide Shadow Legion skills when they are unequipped.');
+        if (!source.includes(EQUIPPED_ONLY_RANK_INIT)) throw new Error('DungeonBlitz.swf does not gate Shadow Legion skills by the owner equipped powers.');
+        if (source.includes(UNEQUIPPED_CLONE_SKILL_MARKER)) throw new Error('DungeonBlitz.swf still provides Shadow Legion skills when they are unequipped.');
         if (!source.includes(CLONE_SCORPION_MARKER)) throw new Error('DungeonBlitz.swf is missing clone Scorpion Sting conditional damage.');
         if (!source.includes(CLONE_DARK_CHI_DAZE_MARKER)) throw new Error('DungeonBlitz.swf is missing clone Dark Chi Daze behavior.');
         if (!activePowerSource.includes(CLONE_DARK_CHI_PROJECTILE_MARKER)) throw new Error('DungeonBlitz.swf is missing clone Dark Chi projectile behavior.');
@@ -446,10 +447,10 @@ function main() {
 
     let changed = false;
 
-    if (!source.includes(UNEQUIPPED_CLONE_SKILL_MARKER) && source.includes(SAFE_CLONE_SKILL_MARKER)) {
-        const rankInitCount = source.split(EQUIPPED_ONLY_RANK_INIT).length - 1;
+    if (source.includes(UNEQUIPPED_CLONE_SKILL_MARKER) && source.includes(SAFE_CLONE_SKILL_MARKER)) {
+        const rankInitCount = source.split(UNEQUIPPED_CLONE_SKILL_MARKER).length - 1;
         if (rankInitCount !== 1) throw new Error(`CombatState clone rank initialization matched ${rankInitCount} times, expected 1.`);
-        source = source.replace(EQUIPPED_ONLY_RANK_INIT, UNEQUIPPED_CLONE_SKILL_MARKER);
+        source = source.replace(UNEQUIPPED_CLONE_SKILL_MARKER, EQUIPPED_ONLY_RANK_INIT);
         changed = true;
     }
 
@@ -477,6 +478,7 @@ function main() {
             'else if(this.powerType.basePowerName == "DarkChi")',
             'else if(this.powerType.basePowerName == "DarkChi" || this.powerType.basePowerName == "FalseChi")'
         );
+        activePowerChanged = true;
         changed = true;
     }
     if (!activePowerSource.includes(CLONE_MIASMA_MARKER)) {
@@ -484,6 +486,7 @@ function main() {
             'this.powerType.basePowerName == "ShadowTendrilDash"',
             '(this.powerType.basePowerName == "ShadowTendrilDash" || this.powerType.basePowerName == "FalseTendrilDash")'
         );
+        activePowerChanged = true;
         changed = true;
     }
     if (!activePowerSource.includes(METHOD_1507_GUARD_MARKER)) {
@@ -491,6 +494,7 @@ function main() {
             '         catch(_loc_e_:*)\n         {\n            §§pop();\n            return;\n         }',
             '         catch(_loc_e_:*)\n         {\n            if(this.var_4)\n            {\n               this.var_4.var_997 = false;\n            }\n            return;\n         }'
         );
+        activePowerChanged = true;
         changed = true;
     }
     if (!activePowerSource.includes(METHOD_243_GUARD_MARKER)) {
@@ -498,6 +502,7 @@ function main() {
             '         catch(_loc_e_:*)\n         {\n         }\n         return undefined;',
             '         catch(_loc_e_:*)\n         {\n            this.method_129();\n            return false;\n         }'
         );
+        activePowerChanged = true;
         changed = true;
     }
 
@@ -542,10 +547,7 @@ function main() {
         changed = true;
     }
 
-    if (source.includes(EQUIPPED_ONLY_CLONE_SPAWN_REPLACEMENT)) {
-        source = source.replace(EQUIPPED_ONLY_CLONE_SPAWN_REPLACEMENT, CLONE_SPAWN_REPLACEMENT);
-        changed = true;
-    } else if (source.includes(UNSAFE_RANK_ZERO_CLONE_SPAWN_REPLACEMENT)) {
+    if (source.includes(UNSAFE_RANK_ZERO_CLONE_SPAWN_REPLACEMENT)) {
         source = source.replace(UNSAFE_RANK_ZERO_CLONE_SPAWN_REPLACEMENT, CLONE_SPAWN_REPLACEMENT);
         changed = true;
     } else if (source.includes(THREE_SKILL_CLONE_SPAWN_REPLACEMENT)) {
@@ -610,7 +612,8 @@ function main() {
         return;
     }
     fs.writeFileSync(sourcePath, source);
-    fs.writeFileSync(activePowerPath, activePowerSource);
+    if (activePowerChanged) fs.writeFileSync(activePowerPath, activePowerSource);
+    else fs.rmSync(activePowerPath);
     const output = path.join(work, 'DungeonBlitz.patched.swf');
     runFfdec(base, ffdec, ['-importScript', swf, output, path.join(work, 'scripts')]);
     if (!fs.existsSync(`${swf}.bak`)) fs.copyFileSync(swf, `${swf}.bak`);

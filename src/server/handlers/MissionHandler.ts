@@ -1029,8 +1029,9 @@ export class MissionHandler {
             MissionHandler.getMissionStateMap(client.character)[String(MissionID.ClearTheBandits)]
         );
         const clearTheBanditsState = Number(clearTheBandits.state ?? 0);
-        // Packet 0x84 is a presentation event: replaying it for a claimed mission opens the
-        // reward screen again. Claimed state remains authoritative in the persisted character.
+        // Packets 0x84 and 0x86 are presentation events. Replaying 0x86 while a completed
+        // mission is waiting for turn-in opens the completion popup on every map entry.
+        // Persisted mission state and the tracker packets below are enough to restore it.
         if (
             clearTheBanditsState === MissionHandler.MISSION_IN_PROGRESS ||
             clearTheBanditsState === MissionHandler.MISSION_READY_TO_TURN_IN
@@ -1039,9 +1040,6 @@ export class MissionHandler {
             const progress = Math.max(0, Math.min(20, Number(clearTheBandits.currCount ?? 0)));
             if (progress > 0) {
                 MissionHandler.sendMissionProgress(client, MissionID.ClearTheBandits, progress);
-            }
-            if (clearTheBanditsState === MissionHandler.MISSION_READY_TO_TURN_IN) {
-                MissionHandler.sendMissionComplete(client, MissionID.ClearTheBandits);
             }
         }
     }

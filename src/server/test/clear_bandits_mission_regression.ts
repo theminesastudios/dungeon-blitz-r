@@ -453,6 +453,19 @@ function testTrackerStateResyncDoesNotReplayClaimedReward(): void {
     assert.equal(progressReader.readMethod4(), MissionID.ClearTheBandits);
     assert.equal(progressReader.readMethod4(), 8);
 
+    const readyClient = createClient();
+    readyClient.character.missions[String(MissionID.ClearTheBandits)] = {
+        state: MISSION_READY_TO_TURN_IN,
+        currCount: 20
+    };
+    MissionHandler.syncMissionStateToClient(readyClient as never);
+    MissionHandler.syncMissionStateToClient(readyClient as never);
+    assert.equal(
+        readyClient.sentPackets.some((packet) => packet.id === 0x86),
+        false,
+        'ready Mission 11 replayed its completion popup during map-entry synchronization'
+    );
+
     const claimedClient = createClient();
     claimedClient.character.missions[String(MissionID.ClearTheBandits)] = { state: MISSION_CLAIMED, currCount: 20 };
     MissionHandler.syncMissionStateToClient(claimedClient as never);

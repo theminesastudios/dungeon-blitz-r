@@ -12,6 +12,7 @@ const BUFF_XML = path.join(XML_DIR, "PlayerBuffTypes.xml");
 
 const cloneHp = [1, 1, 1.15, 1.15, 1.15, 1.3, 1.3, 1.3, 1.45, 1.45, 1.45];
 const cloneDefense = [1, 1, 1, 1.15, 1.15, 1.15, 1.3, 1.3, 1.3, 1.45, 1.45];
+const cloneBaseDamage = 0.3;
 
 function replaceTag(block: string, tag: string, value: string, stats: Stats): string {
   const pattern = new RegExp(`<${tag}>[^<]*<\\/${tag}>`);
@@ -60,6 +61,30 @@ function removeBuff(block: string, buff: string, stats: Stats): string {
     return block.replace(match[0], `<AddTargetBuff>${buffs.join(",")}</AddTargetBuff>`);
   }
   return block.replace(/^[ \t]*<AddTargetBuff>[^<]*<\/AddTargetBuff>\r?\n/m, "");
+}
+
+const CLONE_NON_STACKING_DEBUFFS: ReadonlyMap<string, string> = new Map([
+  ["ArmorBane", "ShadowLegionArmorBane"],
+  ["Bound", "ShadowLegionBound"],
+  ["Crippled", "ShadowLegionCrippled"],
+  ["Weakened", "ShadowLegionWeakened"],
+]);
+
+function makeCloneDebuffsNonStacking(xml: string, stats: Stats): string {
+  return xml.replace(/<Power PowerName="False(?:Chi|TendrilDash|ScorpionSting)(?:[1-9]|10)?">[\s\S]*?<\/Power>/g, (block) => {
+    const match = block.match(/<AddTargetBuff>([^<]*)<\/AddTargetBuff>/);
+    if (!match) return block;
+    const buffs = match[1]
+      .split(",")
+      .filter(Boolean)
+      .map((buff) => CLONE_NON_STACKING_DEBUFFS.get(buff) ?? buff);
+    const nonStackingBuffs = [...new Set(buffs)];
+    const next = block
+      .replace(match[0], `<AddTargetBuff>${nonStackingBuffs.join(",")}</AddTargetBuff>`)
+      .replace(/(<AddTargetBuff>[^<]*<\/AddTargetBuff>)\r\n/, "$1\n");
+    if (next !== block) stats.changes += 1;
+    return next;
+  });
 }
 
 function addCloneTendrilGfx(block: string, stats: Stats): string {
@@ -250,6 +275,40 @@ export function patchPlayerBuffs(xml: string): { xml: string; stats: Stats } {
     stats.changes += 1;
   }
 
+  const cloneDebuffDefinitions = [
+    { source: "ArmorBane", clone: "ShadowLegionArmorBane", id: 744 },
+    { source: "Bound", clone: "ShadowLegionBound", id: 745 },
+    { source: "Crippled", clone: "ShadowLegionCrippled", id: 746 },
+    { source: "Weakened", clone: "ShadowLegionWeakened", id: 747 },
+  ] as const;
+  for (const definition of cloneDebuffDefinitions) {
+    if (patched.includes(`BuffName="${definition.clone}"`)) continue;
+    const source = patched.match(new RegExp(`<BuffType BuffName="${definition.source}">[\\s\\S]*?<\\/BuffType>`))?.[0];
+    if (!source) throw new Error(`${definition.source} buff template not found.`);
+    let clone = source
+      .replace(`BuffName="${definition.source}"`, `BuffName="${definition.clone}"`)
+      .replace(/<BuffID>[^<]*<\/BuffID>/, `<BuffID>${definition.id}</BuffID>`);
+    if (/<StackCount>[^<]*<\/StackCount>/.test(clone)) {
+      clone = clone.replace(/<StackCount>[^<]*<\/StackCount>/, "<StackCount>1</StackCount>");
+    } else {
+      clone = clone.replace(/(<Duration>[^<]*<\/Duration>)/, "$1\n\t\t<StackCount>1</StackCount>");
+    }
+    clone = clone.replace(/\r\n/g, "\n");
+    const newline = source.includes("\r\n") ? "\r\n" : "\n";
+    patched = patched
+      .replace(source, `${source}${newline}\t${clone}`)
+      .replace(`${clone}\r\n`, `${clone}\n`);
+    stats.changes += 1;
+  }
+
+  const clonePoison = patched.match(/<BuffType BuffName="ShadowLegionPoisonStrike">[\s\S]*?<\/BuffType>/)?.[0];
+  if (!clonePoison) throw new Error("ShadowLegionPoisonStrike buff not found.");
+  const nonStackingClonePoison = clonePoison.replace(/<StackCount>[^<]*<\/StackCount>/, "<StackCount>1</StackCount>");
+  if (nonStackingClonePoison !== clonePoison) {
+    patched = patched.replace(clonePoison, nonStackingClonePoison);
+    stats.changes += 1;
+  }
+
   const ids = new Map<string, string>();
   for (const block of patched.match(/<BuffType BuffName="[^"]+">[\s\S]*?<\/BuffType>/g) ?? []) {
     const name = block.match(/<BuffType BuffName="([^"]+)">/)?.[1] ?? "";
@@ -388,6 +447,7 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: Stats } {
   patched = addRankedClonePowers(patched, stats);
   patched = addRankedScorpionPowers(patched, stats);
   patched = syncClonePowers(patched, stats);
+  patched = makeCloneDebuffsNonStacking(patched, stats);
   validateClonePowerIdentities(patched);
   return { xml: patched, stats };
 }
@@ -398,7 +458,8 @@ export function patchEntTypes(xml: string): { xml: string; stats: Stats } {
     /<EntType EntName="(ShadowLegionClone(?:Two|Three)?(\d+))"[\s\S]*?<\/EntType>/g,
     (block, _name: string, rankText: string) => {
       const rank = Math.max(1, Math.min(10, Number(rankText) || 1));
-      let next = replaceTag(block, "HitPoints", String(cloneHp[rank]), stats);
+      let next = replaceTag(block, "MeleeDamage", String(cloneBaseDamage), stats);
+      next = replaceTag(next, "HitPoints", String(cloneHp[rank]), stats);
       next = replaceTag(next, "ArmorClass", String(cloneDefense[rank]), stats);
       if (next !== block) stats.entities += 1;
       return next;
@@ -433,7 +494,7 @@ function patchFile(filePath: string, patcher: (xml: string) => { xml: string; st
   const original = fs.readFileSync(filePath, "utf8");
   const result = patcher(original);
   if (!verify && result.xml !== original) fs.writeFileSync(filePath, result.xml, "utf8");
-  return result.stats;
+  return result.xml === original ? { powers: 0, entities: 0, changes: 0 } : result.stats;
 }
 
 function patchSwz(filePath: string, verify: boolean): Stats {
@@ -448,8 +509,8 @@ function patchSwz(filePath: string, verify: boolean): Stats {
     const chunk = ctx.chunks.find((candidate) => candidate.xml.includes(entry.marker));
     if (!chunk) continue;
     const result = entry.patcher(chunk.xml);
-    results.push(result.stats);
     if (result.xml !== chunk.xml) {
+      results.push(result.stats);
       changed = true;
       if (!verify) chunk.xml = result.xml;
     }
