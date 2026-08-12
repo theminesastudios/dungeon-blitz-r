@@ -55638,7 +55638,12 @@
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.35</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee2">
 		<PowerID>7020</PowerID>
@@ -55684,7 +55689,12 @@
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.35</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee3">
 		<PowerID>7021</PowerID>
@@ -55730,7 +55740,12 @@
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.35</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee4">
 		<PowerID>7022</PowerID>
@@ -55776,7 +55791,12 @@
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.35</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee5">
 		<PowerID>7023</PowerID>
@@ -55822,7 +55842,12 @@
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.35</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee6">
 		<PowerID>7024</PowerID>
@@ -55868,7 +55893,12 @@
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.35</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee7">
 		<PowerID>7025</PowerID>
@@ -55914,7 +55944,12 @@
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.35</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee8">
 		<PowerID>7026</PowerID>
@@ -55960,7 +55995,12 @@
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.35</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee9">
 		<PowerID>7027</PowerID>
@@ -56006,7 +56046,12 @@
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.35</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
 	</Power>
 	<Power PowerName="PlagueBattalionMelee10">
 		<PowerID>7028</PowerID>
@@ -56052,6 +56097,11 @@
 		<CastGfx/>
 		<FireGfx/>
 		<HitGfx/>
-		<ProjGfx/>
+		<ProjGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_LeechAura</AnimClass>
+			<AnimScale>0.35</AnimScale>
+			<FireAndForget>false</FireAndForget>
+		</ProjGfx>
 	</Power>
 </PlayerPowerTypes>

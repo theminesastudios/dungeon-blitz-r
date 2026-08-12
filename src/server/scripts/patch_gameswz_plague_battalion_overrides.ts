@@ -106,14 +106,21 @@ function rangedPowerBlock(rank: number): string {
     `\t\t<AddTargetBuff>Plagued${rank}</AddTargetBuff>`,
     "\t\t<BasePowerName>PlagueBattalionROR</BasePowerName>",
     "\t\t<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>",
-    // No authored projectile art, which is the point: the minion keeps shooting whatever it
-    // normally shoots and the plague rides along. Giving this its own a_LeechAura projectile
-    // made the horde visibly lob plague balls, which is not what the power describes. Eleven
-    // existing ranged overrides ship the same empty pair (FlamethrowerROR and its ranks).
+    // A ProjectilePlayer power MUST author projectile art. Emptying ProjGfx to stop the horde
+    // visibly lobbing plague balls is what stopped Game.swz loading at all: of the 1711 authored
+    // powers, not one ProjectilePlayer entry ships an empty <ProjGfx/>. (The eleven empty-ProjGfx
+    // overrides that suggested it was safe are PBAoE cones -- FlamethrowerROR and its ranks --
+    // not projectiles.) The art is small and quiet rather than absent; making the bolt read as
+    // the minion's own shot is a visual problem to solve with art, not by deleting the tag.
     "\t\t<CastGfx/>",
     "\t\t<FireGfx/>",
     "\t\t<HitGfx/>",
-    "\t\t<ProjGfx/>",
+    "\t\t<ProjGfx>",
+    "\t\t\t<AnimFile>SFX_1.swf</AnimFile>",
+    "\t\t\t<AnimClass>a_LeechAura</AnimClass>",
+    "\t\t\t<AnimScale>0.35</AnimScale>",
+    "\t\t\t<FireAndForget>false</FireAndForget>",
+    "\t\t</ProjGfx>",
     "\t</Power>",
   ].join("\n");
 }

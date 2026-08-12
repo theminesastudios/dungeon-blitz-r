@@ -68,8 +68,19 @@ function main(): void {
         assert.equal(tag(poison, 'StackCount'), '1', `Plagued${rank} must cap at one stack`);
 
         const ranged = block(powers, new RegExp(`<Power PowerName="PlagueBattalionROR${rank}">[\\s\\S]*?</Power>`));
-        assert.ok(ranged.includes('<ProjGfx/>'), `ROR${rank} must not author its own projectile art`);
-        assert.ok(ranged.includes('<FireGfx/>'), `ROR${rank} must not author its own fire art`);
+        // Emptying this is what stopped Game.swz loading at all: the client will not parse a
+        // ProjectilePlayer power with no projectile art. Kept small rather than absent.
+        assert.ok(!ranged.includes('<ProjGfx/>'), `ROR${rank} must author projectile art`);
+    }
+
+
+    // The invariant that would have caught it: a projectile power without projectile art is a
+    // shape the client cannot load, and none of the authored 1711 powers has it.
+    for (const block_ of powers.matchAll(/<Power PowerName="([^"]*)">[\s\S]*?<\/Power>/g)) {
+        const [body, name] = block_;
+        if (body.includes('<TargetMethod>ProjectilePlayer</TargetMethod>')) {
+            assert.ok(!body.includes('<ProjGfx/>'), `${name}: ProjectilePlayer power must author ProjGfx`);
+        }
     }
 
     console.log('plague battalion override regression passed');
