@@ -315,11 +315,11 @@
 		<ModName>ContactPoison1</ModName>
 		<ModID>31</ModID>
 		<DisplayName>Contact Poison</DisplayName>
-		<Description>Increases Poison Damage vs. Bleeding targets@Poison vs Bleeding:, +5%, +10%, +15%, +20%, +30%</Description>
+		<Description>Increases Poison Damage vs. Bleeding targets@Poison vs Bleeding:, +3%, +5%, +10%, +15%, +20%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,ViperbladePoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.10</BuffValue>
+		<BuffValue>.03</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -329,7 +329,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,ViperbladePoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.20</BuffValue>
+		<BuffValue>.05</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -339,7 +339,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,ViperbladePoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.30</BuffValue>
+		<BuffValue>.10</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -349,7 +349,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,ViperbladePoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.40</BuffValue>
+		<BuffValue>.15</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -359,7 +359,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,PoisonCloud,ChaosPoison,ViperbladePoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonCloud,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.60</BuffValue>
+		<BuffValue>.20</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>

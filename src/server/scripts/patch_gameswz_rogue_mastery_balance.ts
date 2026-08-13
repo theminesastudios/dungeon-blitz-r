@@ -591,7 +591,11 @@ const TALENTSTONE_VALUES = {
   StrengthDmgTime: ["500", "1000", "1500", "2000", "3000"],
   StrengthDmg: ["-.003,-.003", "-.005,-.005", "-.01,-.01", "-.015,-.015", "-.02,-.02"],
   Pounce: [".01", ".02", ".03", ".05", ".07"],
-  ContactPoison: [".10", ".20", ".30", ".40", ".60"],
+  // 1:1 with the percentages the description quotes, like every other stone in this table.
+  // The authored data was 2:1 (.04 for "+2%" and so on, i.e. double what it advertised);
+  // Insidious Poison was normalised earlier and this was the one left over, so rank 5 drops
+  // from a real +60% to a real +20%.
+  ContactPoison: [".03", ".05", ".10", ".15", ".20"],
   WindCloak: [".01", ".03", ".05", ".07", ".10"],
   CurseSword: [".01", ".03", ".05", ".07", ".10"],
   CurseArmor: [".03", ".05", ".10", ".15", ".20"],
@@ -622,7 +626,7 @@ const TALENTSTONE_DESCRIPTIONS = new Map<string, string>([
   ["StrengthDmgTime1", "Increases Enfeeble and Weaken durations@Duration (seconds):, +.5, +1, +1.5, +2, +3"],
   ["StrengthDmg1", "Increases Enfeeble and Weaken effectiveness@Effect:, +3%, +5%, +10%, +15%, +20%"],
   ["Pounce1", "Deal extra damage to slowed and immobilized enemies@Bonus Damage:, 1%, 2%, 3%, 5%, 7%"],
-  ["ContactPoison1", "Increases Poison Damage vs. Bleeding targets@Poison vs Bleeding:, +5%, +10%, +15%, +20%, +30%"],
+  ["ContactPoison1", "Increases Poison Damage vs. Bleeding targets@Poison vs Bleeding:, +3%, +5%, +10%, +15%, +20%"],
   ["WindCloak1", "Gain Bonus Defense vs Bound Enemies@Defense:, +1%, +3%, +5%, +7%, +10%"],
   ["CurseSword1", "Minions gain Bonus Damage vs Cursed Enemies@Damage:, +1%, +3%, +5%, +7%, +10%"],
   ["CurseArmor1", "Minions gain Bonus Defense and Expertise vs Cursed Enemies@Defense and Expertise:, +3%, +5%, +10%, +15%, +20%"],

@@ -58,7 +58,7 @@ assert.deepEqual(
 assert.match(powerMod(mods, "Pounce1"), /1%, 2%, 3%, 5%, 7%/);
 
 for (const [family, expected, description] of [
-  ["ContactPoison", [".10", ".20", ".30", ".40", ".60"], /\+5%, \+10%, \+15%, \+20%, \+30%/],
+  ["ContactPoison", [".03", ".05", ".10", ".15", ".20"], /\+3%, \+5%, \+10%, \+15%, \+20%/],
   ["WindCloak", [".01", ".03", ".05", ".07", ".10"], /Defense vs Bound Enemies/],
   ["CurseSword", [".01", ".03", ".05", ".07", ".10"], /Minions gain Bonus Damage vs Cursed Enemies/],
   ["CurseArmor", [".03", ".05", ".10", ".15", ".20"], /Minions gain Bonus Defense and Expertise vs Cursed Enemies/],
