@@ -54457,7 +54457,30 @@
 		<Powers>FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
+		<MagicDamage>1</MagicDamage>
+		<ArmorClass>1</ArmorClass>
+		<HitPoints>1</HitPoints>
+		<RewardClass>NoLoot</RewardClass>
+		<Realm>PlayerPet</Realm>
+		<Speed>9</Speed>
+		<Width>70</Width>
+		<Height>125</Height>
+		<Behavior>ScalingFollowPet</Behavior>
+		<DramaAnim>Revive</DramaAnim>
+		<EquippedGear/>
+		<GfxType>
+			<Shadow>None</Shadow>
+		</GfxType>
+	</EntType>
+	<EntType EntName="ShadowLegionCloneThree1" parent="RogueBase">
+		<DisplayName>Shadow Legion Clone 3 Rank 1</DisplayName>
+		<DevStatus>Base</DevStatus>
+		<MeleePower>FalseSaberMelee</MeleePower>
+		<Powers>FalseChi</Powers>
+		<Level>25</Level>
+		<EntRank>Pet</EntRank>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1</ArmorClass>
 		<HitPoints>1</HitPoints>
@@ -54480,7 +54503,30 @@
 		<Powers>FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
+		<MagicDamage>1</MagicDamage>
+		<ArmorClass>1</ArmorClass>
+		<HitPoints>1.15</HitPoints>
+		<RewardClass>NoLoot</RewardClass>
+		<Realm>PlayerPet</Realm>
+		<Speed>9</Speed>
+		<Width>70</Width>
+		<Height>125</Height>
+		<Behavior>ScalingFollowPet</Behavior>
+		<DramaAnim>Revive</DramaAnim>
+		<EquippedGear/>
+		<GfxType>
+			<Shadow>None</Shadow>
+		</GfxType>
+	</EntType>
+	<EntType EntName="ShadowLegionCloneThree2" parent="RogueBase">
+		<DisplayName>Shadow Legion Clone 3 Rank 2</DisplayName>
+		<DevStatus>Base</DevStatus>
+		<MeleePower>FalseSaberMelee</MeleePower>
+		<Powers>FalseChi</Powers>
+		<Level>25</Level>
+		<EntRank>Pet</EntRank>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1</ArmorClass>
 		<HitPoints>1.15</HitPoints>
@@ -54503,7 +54549,30 @@
 		<Powers>FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
+		<MagicDamage>1</MagicDamage>
+		<ArmorClass>1.15</ArmorClass>
+		<HitPoints>1.15</HitPoints>
+		<RewardClass>NoLoot</RewardClass>
+		<Realm>PlayerPet</Realm>
+		<Speed>9</Speed>
+		<Width>70</Width>
+		<Height>125</Height>
+		<Behavior>ScalingFollowPet</Behavior>
+		<DramaAnim>Revive</DramaAnim>
+		<EquippedGear/>
+		<GfxType>
+			<Shadow>None</Shadow>
+		</GfxType>
+	</EntType>
+	<EntType EntName="ShadowLegionCloneThree3" parent="RogueBase">
+		<DisplayName>Shadow Legion Clone 3 Rank 3</DisplayName>
+		<DevStatus>Base</DevStatus>
+		<MeleePower>FalseSaberMelee</MeleePower>
+		<Powers>FalseChi</Powers>
+		<Level>25</Level>
+		<EntRank>Pet</EntRank>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.15</ArmorClass>
 		<HitPoints>1.15</HitPoints>
@@ -54526,7 +54595,30 @@
 		<Powers>FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
+		<MagicDamage>1</MagicDamage>
+		<ArmorClass>1.15</ArmorClass>
+		<HitPoints>1.15</HitPoints>
+		<RewardClass>NoLoot</RewardClass>
+		<Realm>PlayerPet</Realm>
+		<Speed>9</Speed>
+		<Width>70</Width>
+		<Height>125</Height>
+		<Behavior>ScalingFollowPet</Behavior>
+		<DramaAnim>Revive</DramaAnim>
+		<EquippedGear/>
+		<GfxType>
+			<Shadow>None</Shadow>
+		</GfxType>
+	</EntType>
+	<EntType EntName="ShadowLegionCloneThree4" parent="RogueBase">
+		<DisplayName>Shadow Legion Clone 3 Rank 4</DisplayName>
+		<DevStatus>Base</DevStatus>
+		<MeleePower>FalseSaberMelee</MeleePower>
+		<Powers>FalseChi</Powers>
+		<Level>25</Level>
+		<EntRank>Pet</EntRank>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.15</ArmorClass>
 		<HitPoints>1.15</HitPoints>
@@ -54549,7 +54641,30 @@
 		<Powers>FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
+		<MagicDamage>1</MagicDamage>
+		<ArmorClass>1.15</ArmorClass>
+		<HitPoints>1.3</HitPoints>
+		<RewardClass>NoLoot</RewardClass>
+		<Realm>PlayerPet</Realm>
+		<Speed>9</Speed>
+		<Width>70</Width>
+		<Height>125</Height>
+		<Behavior>ScalingFollowPet</Behavior>
+		<DramaAnim>Revive</DramaAnim>
+		<EquippedGear/>
+		<GfxType>
+			<Shadow>None</Shadow>
+		</GfxType>
+	</EntType>
+	<EntType EntName="ShadowLegionCloneThree5" parent="RogueBase">
+		<DisplayName>Shadow Legion Clone 3 Rank 5</DisplayName>
+		<DevStatus>Base</DevStatus>
+		<MeleePower>FalseSaberMelee</MeleePower>
+		<Powers>FalseChi</Powers>
+		<Level>25</Level>
+		<EntRank>Pet</EntRank>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.15</ArmorClass>
 		<HitPoints>1.3</HitPoints>
@@ -54572,7 +54687,30 @@
 		<Powers>FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
+		<MagicDamage>1</MagicDamage>
+		<ArmorClass>1.3</ArmorClass>
+		<HitPoints>1.3</HitPoints>
+		<RewardClass>NoLoot</RewardClass>
+		<Realm>PlayerPet</Realm>
+		<Speed>9</Speed>
+		<Width>70</Width>
+		<Height>125</Height>
+		<Behavior>ScalingFollowPet</Behavior>
+		<DramaAnim>Revive</DramaAnim>
+		<EquippedGear/>
+		<GfxType>
+			<Shadow>None</Shadow>
+		</GfxType>
+	</EntType>
+	<EntType EntName="ShadowLegionCloneThree6" parent="RogueBase">
+		<DisplayName>Shadow Legion Clone 3 Rank 6</DisplayName>
+		<DevStatus>Base</DevStatus>
+		<MeleePower>FalseSaberMelee</MeleePower>
+		<Powers>FalseChi</Powers>
+		<Level>25</Level>
+		<EntRank>Pet</EntRank>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.3</ArmorClass>
 		<HitPoints>1.3</HitPoints>
@@ -54595,7 +54733,30 @@
 		<Powers>FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
+		<MagicDamage>1</MagicDamage>
+		<ArmorClass>1.3</ArmorClass>
+		<HitPoints>1.3</HitPoints>
+		<RewardClass>NoLoot</RewardClass>
+		<Realm>PlayerPet</Realm>
+		<Speed>9</Speed>
+		<Width>70</Width>
+		<Height>125</Height>
+		<Behavior>ScalingFollowPet</Behavior>
+		<DramaAnim>Revive</DramaAnim>
+		<EquippedGear/>
+		<GfxType>
+			<Shadow>None</Shadow>
+		</GfxType>
+	</EntType>
+	<EntType EntName="ShadowLegionCloneThree7" parent="RogueBase">
+		<DisplayName>Shadow Legion Clone 3 Rank 7</DisplayName>
+		<DevStatus>Base</DevStatus>
+		<MeleePower>FalseSaberMelee</MeleePower>
+		<Powers>FalseChi</Powers>
+		<Level>25</Level>
+		<EntRank>Pet</EntRank>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.3</ArmorClass>
 		<HitPoints>1.3</HitPoints>
@@ -54618,7 +54779,30 @@
 		<Powers>FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
+		<MagicDamage>1</MagicDamage>
+		<ArmorClass>1.3</ArmorClass>
+		<HitPoints>1.45</HitPoints>
+		<RewardClass>NoLoot</RewardClass>
+		<Realm>PlayerPet</Realm>
+		<Speed>9</Speed>
+		<Width>70</Width>
+		<Height>125</Height>
+		<Behavior>ScalingFollowPet</Behavior>
+		<DramaAnim>Revive</DramaAnim>
+		<EquippedGear/>
+		<GfxType>
+			<Shadow>None</Shadow>
+		</GfxType>
+	</EntType>
+	<EntType EntName="ShadowLegionCloneThree8" parent="RogueBase">
+		<DisplayName>Shadow Legion Clone 3 Rank 8</DisplayName>
+		<DevStatus>Base</DevStatus>
+		<MeleePower>FalseSaberMelee</MeleePower>
+		<Powers>FalseChi</Powers>
+		<Level>25</Level>
+		<EntRank>Pet</EntRank>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.3</ArmorClass>
 		<HitPoints>1.45</HitPoints>
@@ -54641,7 +54825,30 @@
 		<Powers>FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
+		<MagicDamage>1</MagicDamage>
+		<ArmorClass>1.45</ArmorClass>
+		<HitPoints>1.45</HitPoints>
+		<RewardClass>NoLoot</RewardClass>
+		<Realm>PlayerPet</Realm>
+		<Speed>9</Speed>
+		<Width>70</Width>
+		<Height>125</Height>
+		<Behavior>ScalingFollowPet</Behavior>
+		<DramaAnim>Revive</DramaAnim>
+		<EquippedGear/>
+		<GfxType>
+			<Shadow>None</Shadow>
+		</GfxType>
+	</EntType>
+	<EntType EntName="ShadowLegionCloneThree9" parent="RogueBase">
+		<DisplayName>Shadow Legion Clone 3 Rank 9</DisplayName>
+		<DevStatus>Base</DevStatus>
+		<MeleePower>FalseSaberMelee</MeleePower>
+		<Powers>FalseChi</Powers>
+		<Level>25</Level>
+		<EntRank>Pet</EntRank>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.45</ArmorClass>
 		<HitPoints>1.45</HitPoints>
@@ -54664,7 +54871,30 @@
 		<Powers>FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
+		<MagicDamage>1</MagicDamage>
+		<ArmorClass>1.45</ArmorClass>
+		<HitPoints>1.45</HitPoints>
+		<RewardClass>NoLoot</RewardClass>
+		<Realm>PlayerPet</Realm>
+		<Speed>9</Speed>
+		<Width>70</Width>
+		<Height>125</Height>
+		<Behavior>ScalingFollowPet</Behavior>
+		<DramaAnim>Revive</DramaAnim>
+		<EquippedGear/>
+		<GfxType>
+			<Shadow>None</Shadow>
+		</GfxType>
+	</EntType>
+	<EntType EntName="ShadowLegionCloneThree10" parent="RogueBase">
+		<DisplayName>Shadow Legion Clone 3</DisplayName>
+		<DevStatus>Base</DevStatus>
+		<MeleePower>FalseSaberMelee</MeleePower>
+		<Powers>FalseChi</Powers>
+		<Level>25</Level>
+		<EntRank>Pet</EntRank>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.45</ArmorClass>
 		<HitPoints>1.45</HitPoints>
@@ -54687,7 +54917,7 @@
 		<Powers>FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1</ArmorClass>
 		<HitPoints>1</HitPoints>
@@ -54710,7 +54940,7 @@
 		<Powers>FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1</ArmorClass>
 		<HitPoints>1.15</HitPoints>
@@ -54733,7 +54963,7 @@
 		<Powers>FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.15</ArmorClass>
 		<HitPoints>1.15</HitPoints>
@@ -54756,7 +54986,7 @@
 		<Powers>FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.15</ArmorClass>
 		<HitPoints>1.15</HitPoints>
@@ -54779,7 +55009,7 @@
 		<Powers>FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.15</ArmorClass>
 		<HitPoints>1.3</HitPoints>
@@ -54802,7 +55032,7 @@
 		<Powers>FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.3</ArmorClass>
 		<HitPoints>1.3</HitPoints>
@@ -54825,7 +55055,7 @@
 		<Powers>FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.3</ArmorClass>
 		<HitPoints>1.3</HitPoints>
@@ -54848,7 +55078,7 @@
 		<Powers>FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.3</ArmorClass>
 		<HitPoints>1.45</HitPoints>
@@ -54871,7 +55101,7 @@
 		<Powers>FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.45</ArmorClass>
 		<HitPoints>1.45</HitPoints>
@@ -54894,7 +55124,7 @@
 		<Powers>FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
-		<MeleeDamage>0.5</MeleeDamage>
+		<MeleeDamage>0.3</MeleeDamage>
 		<MagicDamage>1</MagicDamage>
 		<ArmorClass>1.45</ArmorClass>
 		<HitPoints>1.45</HitPoints>

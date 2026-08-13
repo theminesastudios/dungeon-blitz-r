@@ -1895,10 +1895,6 @@ function patchMapMarker(swfPath: string): void {
 }
 
 function syncClientRevision(swfPath: string, verifyOnly: boolean): void {
-    // sha1, not sha256: StaticServer.clientRevision derives the token browsers actually get with
-    // sha1, and every other patch that writes this literal uses sha1 too. Hashing differently here
-    // meant these three could never agree with the rest -- whoever synced last won and the others
-    // failed verification forever, on any SWF change.
     const digest = crypto.createHash('sha1').update(fs.readFileSync(swfPath)).digest('hex').slice(0, 12);
     const html = fs.readFileSync(INDEX_HTML, 'utf8');
     const expected = `clientrev=swf-${digest}`;

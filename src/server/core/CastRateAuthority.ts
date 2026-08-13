@@ -11,6 +11,10 @@ export interface CastRateState {
     cooldownReadyAtMs: Map<number, number>;
     /** powerId -> when hits for it stop being dropped, after a cast we refused. */
     blockedHitPowersUntilMs: Map<number, number>;
+    /** Server-clock time at which the current Sentinel Form began, or 0 outside the form. */
+    sentinelFormEnteredAtMs: number;
+    /** True after any Sentinel Form melee, combo, or ranged attack was cast this activation. */
+    sentinelFormAttackUsed: boolean;
 }
 
 type PowerTiming = {
@@ -66,7 +70,7 @@ export class CastRateAuthority {
     private static readonly HIT_BLOCK_MS = 1000;
 
     /**
-     * Sentinel Form is the one power whose lockout does not run from its own cast.
+     * Sentinel Form is the one power whose final lockout depends on how long it stayed active.
      *
      * The form has no Duration -- it runs until the mana bar cannot pay for the next swing --
      * and its per-swing cost is now low enough that a form routinely outlasts the 30s cooldown
@@ -76,24 +80,20 @@ export class CastRateAuthority {
      * re-stamp gets an unlimited-uptime tank stance. Mirrored here for the same reason every
      * other cooldown is: the client's copy is a convenience, not the authority.
      *
-     * Both ways out of the form cast EndSentinelForm and both are relayed as 0x09 -- the hotbar
+     * An attack-free early manual exit refunds the unused portion: six seconds in form means six
+     * seconds of cooldown after leaving, while any attack or 30 seconds in form keeps the full
+     * 30-second cooldown. Both
+     * ways out of the form cast EndSentinelForm and both are relayed as 0x09 -- the hotbar
      * cancel through CombatState.method_51, the mana-ran-out exit through method_46 -- so one
      * hook on that power id covers cancelling early, running dry, and dying in form.
      */
     private static readonly SENTINEL_FORM_EXIT_LOCKOUT_MS = 30000;
-    /**
-     * Smallest exit cooldown an honest client can produce (issue #674).
-     *
-     * Entity.method_247 reduces the form's cooldown by `0.75 * (mana / maxMana)`, so a Sentinel
-     * who drops out at full mana legitimately waits a quarter of the authored 30s. A flat floor
-     * at the full lockout refused exactly that recast, which is the "cancelling gives full
-     * cooldown" report -- the server was overriding the scaling the client had just applied.
-     */
-    private static readonly SENTINEL_FORM_MIN_COOLDOWN_FRACTION = 0.25;
 
     private static timingsByPowerId: Map<number, PowerTiming> | null = null;
     /** Every rank of the form. Stamped together -- see noteSentinelFormExit. */
     private static sentinelFormPowerIds = new Set<number>();
+    /** Every melee, combo, and ranged attack substituted while Sentinel Form is active. */
+    private static sentinelFormAttackPowerIds = new Set<number>();
     /** The cancel power, whose cast is what starts the lockout. */
     private static endSentinelFormPowerIds = new Set<number>();
 
@@ -103,7 +103,9 @@ export class CastRateAuthority {
             creditUpdatedAtMs: 0,
             violations: 0,
             cooldownReadyAtMs: new Map(),
-            blockedHitPowersUntilMs: new Map()
+            blockedHitPowersUntilMs: new Map(),
+            sentinelFormEnteredAtMs: 0,
+            sentinelFormAttackUsed: false
         };
     }
 
@@ -148,6 +150,10 @@ export class CastRateAuthority {
                     CastRateAuthority.endSentinelFormPowerIds.add(powerId);
                 } else if (/^SentinelForm\d*$/.test(powerName)) {
                     CastRateAuthority.sentinelFormPowerIds.add(powerId);
+                }
+                const basePowerName = String(block.match(/<BasePowerName>([^<]*)<\/BasePowerName>/)?.[1] ?? '');
+                if (/^SF(?:Melee(?:Combo)?|Ranged)$/.test(basePowerName)) {
+                    CastRateAuthority.sentinelFormAttackPowerIds.add(powerId);
                 }
 
                 const castTimes = String(block.match(/<CastTime>([^<]*)<\/CastTime>/)?.[1] ?? '')
@@ -227,38 +233,51 @@ export class CastRateAuthority {
         if (timing.cooldownMs > 0) {
             state.cooldownReadyAtMs.set(id, now + Math.round(timing.cooldownMs * CastRateAuthority.TOLERANCE));
         }
-        CastRateAuthority.noteSentinelFormExit(state, id, now);
+        CastRateAuthority.noteSentinelFormTransition(state, id, now);
         state.violations = Math.max(0, state.violations - 1);
         return true;
     }
 
     /**
-     * Leaving Sentinel Form starts the form's own cooldown over.
+     * Leaving Sentinel Form replaces the cast-time stamp with a usage-proportional cooldown.
      *
      * Every rank is stamped, not just the one that was cast: var_114 is keyed per power id and
      * SentinelForm1..10 are ten separate powers, but the server has no cheap way to know which
      * rank this character owns. A player only ever holds one of them, so stamping all ten costs
      * nothing and cannot be dodged by a client that lies about its rank.
      *
-     * Never shortens an existing stamp -- a form cancelled two seconds after it started is still
-     * inside the cast-time cooldown, and that one is longer.
+     * A two-second attack-free use therefore waits two seconds client-side (one second in this
+     * deliberately tolerant authority). Any form attack, a 30-second use, or an exit without a
+     * matching observed entry receives the full lockout.
      */
-    private static noteSentinelFormExit(state: CastRateState, powerId: number, nowMs: number): void {
+    private static noteSentinelFormTransition(state: CastRateState, powerId: number, nowMs: number): void {
+        if (CastRateAuthority.sentinelFormPowerIds.has(powerId)) {
+            state.sentinelFormEnteredAtMs = nowMs;
+            state.sentinelFormAttackUsed = false;
+            return;
+        }
+        if (CastRateAuthority.sentinelFormAttackPowerIds.has(powerId) && state.sentinelFormEnteredAtMs > 0) {
+            state.sentinelFormAttackUsed = true;
+            return;
+        }
         if (!CastRateAuthority.endSentinelFormPowerIds.has(powerId)) {
             return;
         }
 
+        const enteredAt = Number(state.sentinelFormEnteredAtMs ?? 0);
+        const usedMs = enteredAt > 0 && !state.sentinelFormAttackUsed
+            ? Math.max(0, Math.min(CastRateAuthority.SENTINEL_FORM_EXIT_LOCKOUT_MS, nowMs - enteredAt))
+            : CastRateAuthority.SENTINEL_FORM_EXIT_LOCKOUT_MS;
+        state.sentinelFormEnteredAtMs = 0;
+        state.sentinelFormAttackUsed = false;
+
         // Same tolerance as every other cooldown here: this is a cheat check, not a second copy
         // of the simulation, and an honest client on a stalled connection must not be refused.
         const readyAt = nowMs + Math.round(
-            CastRateAuthority.SENTINEL_FORM_EXIT_LOCKOUT_MS *
-            CastRateAuthority.SENTINEL_FORM_MIN_COOLDOWN_FRACTION *
-            CastRateAuthority.TOLERANCE
+            usedMs * CastRateAuthority.TOLERANCE
         );
         for (const formPowerId of CastRateAuthority.sentinelFormPowerIds) {
-            if (Number(state.cooldownReadyAtMs.get(formPowerId) ?? 0) < readyAt) {
-                state.cooldownReadyAtMs.set(formPowerId, readyAt);
-            }
+            state.cooldownReadyAtMs.set(formPowerId, readyAt);
         }
     }
 
