@@ -22,6 +22,7 @@
     "patch:pet-ability-balance": "ts-node scripts/patch_gameswz_pet_ability_balance.ts",
     "patch:plague-battalion-overrides": "ts-node scripts/patch_gameswz_plague_battalion_overrides.ts",
     "patch:plague-battalion-window": "node scripts/patch-dungeonblitz-plague-battalion-window.js",
+    "patch:cutscene-input-lock": "node scripts/patch-dungeonblitz-cutscene-input-lock.js",
     "patch:power-stat-tooltips": "ts-node scripts/patch_gameswz_power_stat_tooltips.ts",
     "patch:charm-text": "ts-node scripts/patch_gameswz_charm_text.ts",
     "patch:rogue-mastery-balance": "ts-node scripts/patch_gameswz_rogue_mastery_balance.ts",
