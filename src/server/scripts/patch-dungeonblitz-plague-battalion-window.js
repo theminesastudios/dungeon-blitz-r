@@ -113,7 +113,11 @@ const TICK_PATCHED = TICK_ANCHOR + [
     '         {',
     '            var _pbHeld:Buff = null;',
     '            var _pbRank:String = null;',
-    '            for each(_pbHeld in this.var_84)',
+    // var_84 is nulled by method_1206 when a CombatState is torn down, and method_960 can still
+    // tick against one in that state -- a level transition destroys the old level's entities while
+    // the update loop is running. Iterating a null Vector throws, and this block sits at the top of
+    // the per-tick combat update, so the throw took the whole update with it.
+    '            for each(_pbHeld in (this.var_84 ? this.var_84 : new Vector.<Buff>()))',
     '            {',
     '               if(Boolean(_pbHeld) && Boolean(_pbHeld.type) && _pbHeld.type.buffName.indexOf("PlagueBattalion") == 0 && _pbHeld.type.buffName.indexOf("PlagueBattalionMinion") != 0)',
     '               {',
@@ -127,7 +131,7 @@ const TICK_PATCHED = TICK_ANCHOR + [
     '               {',
     `                  var _pbNear:Array = this.var_1.GatherEntities(this.var_3,this.var_3.var_10,this.var_3.var_12,${PET_RADIUS},${PET_RADIUS},Game.FRIEND);`,
     '                  var _pbPet:Entity = null;',
-    '                  for each(_pbPet in _pbNear)',
+    '                  for each(_pbPet in (_pbNear ? _pbNear : []))',
     '                  {',
     '                     if(_pbPet != this.var_3 && _pbPet.var_20 & Entity.MONSTER && _pbPet.team == this.var_3.team && Boolean(_pbPet.behaviorType) && _pbPet.behaviorType.var_679 && Boolean(_pbPet.combatState) && !_pbPet.combatState.method_135(_pbMinionBuff))',
     '                     {',
