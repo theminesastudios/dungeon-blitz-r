@@ -73461,7 +73461,7 @@
 		<UsedBy>Rogue</UsedBy>
 		<MagicRune>ItemDrop</MagicRune>
 		<ProcRune>HealthPercent</ProcRune>
-		<StatRune>RogueArmor</StatRune>
+		<StatRune>RogueExpertise</StatRune>
 		<Rarity>M</Rarity>
 		<Realm>Demon</Realm>
 		<Level>29</Level>
@@ -73482,7 +73482,7 @@
 		<MagicRune>ItemDrop+CraftDrop</MagicRune>
 		<PowerRune>ShadowBlade</PowerRune>
 		<ProcRune>HealthPercent</ProcRune>
-		<StatRune>RogueArmor</StatRune>
+		<StatRune>RogueExpertise</StatRune>
 		<Rarity>R</Rarity>
 		<Realm>Demon</Realm>
 		<Level>29</Level>
@@ -73503,8 +73503,8 @@
 		<MagicRune>ItemDrop+CraftDrop</MagicRune>
 		<PowerRune>ShadowBlade</PowerRune>
 		<ProcRune>HealthPercent</ProcRune>
-		<ProcRune2>ResistEarth</ProcRune2>
-		<StatRune>RogueArmor</StatRune>
+		<ProcRune2>CritDamage</ProcRune2>
+		<StatRune>RogueExpertise</StatRune>
 		<Rarity>L</Rarity>
 		<Realm>Demon</Realm>
 		<Level>29</Level>
@@ -73906,8 +73906,8 @@
 		<GearSet>12</GearSet>
 		<UsedBy>Rogue</UsedBy>
 		<MagicRune>ItemDrop</MagicRune>
-		<ProcRune>DeathSlay</ProcRune>
-		<StatRune>RogueArmor</StatRune>
+		<ProcRune>Haste</ProcRune>
+		<StatRune>RogueExpertise</StatRune>
 		<Rarity>M</Rarity>
 		<BossName>PortalMaster</BossName>
 		<Level>29</Level>
@@ -73928,8 +73928,8 @@
 		<UsedBy>Rogue</UsedBy>
 		<MagicRune>ItemDrop+GoldDrop</MagicRune>
 		<PowerRune>MistWalk</PowerRune>
-		<ProcRune>DeathSlay</ProcRune>
-		<StatRune>RogueArmor</StatRune>
+		<ProcRune>Haste</ProcRune>
+		<StatRune>RogueExpertise</StatRune>
 		<Rarity>R</Rarity>
 		<BossName>PortalMaster</BossName>
 		<Level>29</Level>
@@ -73950,9 +73950,9 @@
 		<UsedBy>Rogue</UsedBy>
 		<MagicRune>ItemDrop+GoldDrop</MagicRune>
 		<PowerRune>MistWalk</PowerRune>
-		<ProcRune>DeathSlay</ProcRune>
+		<ProcRune>Haste</ProcRune>
 		<ProcRune2>CritChance</ProcRune2>
-		<StatRune>RogueArmor</StatRune>
+		<StatRune>RogueExpertise</StatRune>
 		<Rarity>L</Rarity>
 		<BossName>PortalMaster</BossName>
 		<Level>29</Level>
