@@ -17,7 +17,19 @@ import {
 const ROOT = path.resolve(__dirname, "..", "..", "..");
 const DEFAULT_SWF = path.join(ROOT, "src", "client", "content", "localhost", "p", "cbp", "DungeonBlitz.swf");
 const INDEX_HTML = path.join(ROOT, "src", "client", "content", "localhost", "index.html");
-const CLONE_SKILL_RANK_LOCALS = [55, 56, 57] as const;
+/**
+ * The three clone skill ranks used to be addressed as locals 55, 56 and 57, which is how
+ * FireThisPower numbered them in the SWF this patch was first written against. Local numbers are
+ * not stable: any script that decompiles and recompiles CombatState -- the Sentinel Form exit
+ * cooldown and the Shadow Legion rotation both do -- makes FFDec renumber the whole method, and
+ * the hardcoded triple then matched nothing and failed the build even though the gating itself
+ * had round-tripped through the recompile untouched.
+ *
+ * So the invariant is stated directly instead: FireThisPower must not read the power's rank
+ * (var_7) into any local at all. Unpatched there are exactly three such reads, one per clone;
+ * patched there are none, whatever the locals are called this build.
+ */
+const MAX_LOCAL = 255;
 
 function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
   let swfPath = DEFAULT_SWF;
@@ -61,7 +73,7 @@ function rankPatterns(var7Multiname: number, local: number): { unequipped: Buffe
 
 function syncClientRevision(swfPath: string, verify: boolean): void {
   if (path.resolve(swfPath) !== path.resolve(DEFAULT_SWF)) return;
-  const digest = crypto.createHash("sha256").update(fs.readFileSync(swfPath)).digest("hex").slice(0, 12);
+  const digest = crypto.createHash("sha1").update(fs.readFileSync(swfPath)).digest("hex").slice(0, 12);
   const expected = `clientrev=swf-${digest}`;
   const html = fs.readFileSync(INDEX_HTML, "utf8");
   if (html.includes(expected)) return;
@@ -85,23 +97,22 @@ function patchShadowLegionEquippedSkills(swfPath: string, verify: boolean): void
   const code = ctx.body.subarray(methodBody.codeStart, methodBody.codeStart + methodBody.codeLen);
 
   const patches: BytePatch[] = [];
-  for (const local of CLONE_SKILL_RANK_LOCALS) {
+  for (let local = 0; local <= MAX_LOCAL; local += 1) {
     const patterns = rankPatterns(var7Multiname, local);
-    const oldOffsets = occurrences(code, patterns.unequipped);
-    const desiredOffsets = occurrences(code, patterns.equippedOnly);
-    if (oldOffsets.length === 0 && desiredOffsets.length === 1) continue;
-    if (oldOffsets.length !== 1 || desiredOffsets.length !== 0) {
-      throw new PatchError(
-        `Unexpected Shadow Legion rank initialization for local ${local}: unequipped=${oldOffsets.length}, equippedOnly=${desiredOffsets.length}.`,
-      );
+    for (const offset of occurrences(code, patterns.unequipped)) {
+      patches.push({
+        key: `CombatState.FireThisPower.shadowLegionEquippedRank${local}@${offset}`,
+        start: methodBody.codeStart + offset,
+        end: methodBody.codeStart + offset + patterns.unequipped.length,
+        data: patterns.equippedOnly,
+        detail: `initialize Shadow Legion clone skill rank local ${local} to zero until found among equipped powers`,
+      });
     }
-    patches.push({
-      key: `CombatState.FireThisPower.shadowLegionEquippedRank${local}`,
-      start: methodBody.codeStart + oldOffsets[0],
-      end: methodBody.codeStart + oldOffsets[0] + patterns.unequipped.length,
-      data: patterns.equippedOnly,
-      detail: `initialize Shadow Legion clone skill rank local ${local} to zero until found among equipped powers`,
-    });
+  }
+  if (patches.length > 3) {
+    throw new PatchError(
+      `CombatState.FireThisPower reads the power rank into ${patches.length} locals, expected at most the three clone skill ranks.`,
+    );
   }
 
   if (verify && patches.length > 0) {

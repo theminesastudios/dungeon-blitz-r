@@ -328,7 +328,7 @@ function syncClientRev(repoRoot, swfPath) {
     const defaultSwf = path.join(repoRoot, TARGETS[0].swf);
     if (path.resolve(swfPath) !== defaultSwf || !fs.existsSync(indexHtml)) return;
 
-    const digest = crypto.createHash('sha256').update(fs.readFileSync(swfPath)).digest('hex').slice(0, 12);
+    const digest = crypto.createHash('sha1').update(fs.readFileSync(swfPath)).digest('hex').slice(0, 12);
     const html = fs.readFileSync(indexHtml, 'utf8');
     const updated = html.replace(/clientrev=[^&`"'$]+/, `clientrev=swf-${digest}`);
     if (updated !== html) {

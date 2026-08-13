@@ -452,15 +452,37 @@ export function patchPlayerPowers(xml: string): { xml: string; stats: Stats } {
   return { xml: patched, stats };
 }
 
+/**
+ * All three clones run the same rotation -- Scorpion's Sting, Black Miasma, Dark Chi, three
+ * sword swings between each -- and only differ in where they enter it.
+ *
+ * Brain scans hudPowers, which is EntType <Powers> in order, and fires the first entry whose
+ * cooldown has expired. At spawn nothing is on cooldown, so the head of this list is the skill
+ * a clone opens with; from then on the spacing comes from the cooldown schedule that
+ * patch-dungeonblitz-shadow-legion-rotation stamps in CombatState.method_51. Reordering here
+ * without that patch in the SWF just makes all three fire back to back.
+ */
+export const CLONE_ROTATION = ["FalseScorpionSting", "FalseTendrilDash", "FalseChi"] as const;
+
+export function clonePowerList(entName: string): string {
+  const start = entName.startsWith("ShadowLegionCloneThree")
+    ? 2
+    : entName.startsWith("ShadowLegionCloneTwo")
+      ? 1
+      : 0;
+  return [0, 1, 2].map((step) => CLONE_ROTATION[(start + step) % 3]).join(",");
+}
+
 export function patchEntTypes(xml: string): { xml: string; stats: Stats } {
   const stats: Stats = { powers: 0, entities: 0, changes: 0 };
   let patched = xml.replace(
     /<EntType EntName="(ShadowLegionClone(?:Two|Three)?(\d+))"[\s\S]*?<\/EntType>/g,
-    (block, _name: string, rankText: string) => {
+    (block, name: string, rankText: string) => {
       const rank = Math.max(1, Math.min(10, Number(rankText) || 1));
       let next = replaceTag(block, "MeleeDamage", String(cloneBaseDamage), stats);
       next = replaceTag(next, "HitPoints", String(cloneHp[rank]), stats);
       next = replaceTag(next, "ArmorClass", String(cloneDefense[rank]), stats);
+      next = replaceTag(next, "Powers", clonePowerList(name), stats);
       if (next !== block) stats.entities += 1;
       return next;
     },
@@ -472,7 +494,9 @@ export function patchEntTypes(xml: string): { xml: string; stats: Stats } {
     if (!source) continue;
     const clone = source
       .replace(`EntName="ShadowLegionClone${rank}"`, `EntName="ShadowLegionCloneThree${rank}"`)
-      .replace(/<DisplayName>[^<]*<\/DisplayName>/, `<DisplayName>Shadow Legion Clone 3 Rank ${rank}</DisplayName>`);
+      .replace(/<DisplayName>[^<]*<\/DisplayName>/, `<DisplayName>Shadow Legion Clone 3 Rank ${rank}</DisplayName>`)
+      // Copied from clone one, so it would otherwise open on clone one's skill.
+      .replace(/<Powers>[^<]*<\/Powers>/, `<Powers>${clonePowerList("ShadowLegionCloneThree")}</Powers>`);
     const newline = source.includes("\r\n") ? "\r\n" : "\n";
     patched = patched.replace(source, `${source}${newline}\t${clone}`);
     stats.entities += 1;

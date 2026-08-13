@@ -393,7 +393,7 @@ function syncClientRevision(base, swf, verifyOnly) {
     const servedSwf = absolute(base, TARGET_SWF);
     if (path.resolve(swf) !== path.resolve(servedSwf)) return;
     const indexPath = path.join(base, INDEX_HTML);
-    const digest = crypto.createHash('sha256').update(fs.readFileSync(swf)).digest('hex').slice(0, 12);
+    const digest = crypto.createHash('sha1').update(fs.readFileSync(swf)).digest('hex').slice(0, 12);
     const expected = `clientrev=swf-${digest}`;
     const html = fs.readFileSync(indexPath, 'utf8');
     if (html.includes(expected)) return;

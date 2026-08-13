@@ -54454,7 +54454,7 @@
 		<DisplayName>golge Legion klon 1</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseScorpionSting,FalseTendrilDash,FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54477,7 +54477,7 @@
 		<DisplayName>Shadow Legion Clone 3 Rank 1</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseChi,FalseScorpionSting,FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54500,7 +54500,7 @@
 		<DisplayName>golge Legion klon 2</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseScorpionSting,FalseTendrilDash,FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54523,7 +54523,7 @@
 		<DisplayName>Shadow Legion Clone 3 Rank 2</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseChi,FalseScorpionSting,FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54546,7 +54546,7 @@
 		<DisplayName>golge Legion klon 3</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseScorpionSting,FalseTendrilDash,FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54569,7 +54569,7 @@
 		<DisplayName>Shadow Legion Clone 3 Rank 3</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseChi,FalseScorpionSting,FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54592,7 +54592,7 @@
 		<DisplayName>golge Legion klon 4</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseScorpionSting,FalseTendrilDash,FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54615,7 +54615,7 @@
 		<DisplayName>Shadow Legion Clone 3 Rank 4</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseChi,FalseScorpionSting,FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54638,7 +54638,7 @@
 		<DisplayName>golge Legion klon 5</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseScorpionSting,FalseTendrilDash,FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54661,7 +54661,7 @@
 		<DisplayName>Shadow Legion Clone 3 Rank 5</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseChi,FalseScorpionSting,FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54684,7 +54684,7 @@
 		<DisplayName>golge Legion klon 6</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseScorpionSting,FalseTendrilDash,FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54707,7 +54707,7 @@
 		<DisplayName>Shadow Legion Clone 3 Rank 6</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseChi,FalseScorpionSting,FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54730,7 +54730,7 @@
 		<DisplayName>golge Legion klon 7</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseScorpionSting,FalseTendrilDash,FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54753,7 +54753,7 @@
 		<DisplayName>Shadow Legion Clone 3 Rank 7</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseChi,FalseScorpionSting,FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54776,7 +54776,7 @@
 		<DisplayName>golge Legion klon 8</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseScorpionSting,FalseTendrilDash,FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54799,7 +54799,7 @@
 		<DisplayName>Shadow Legion Clone 3 Rank 8</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseChi,FalseScorpionSting,FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54822,7 +54822,7 @@
 		<DisplayName>golge Legion klon 9</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseScorpionSting,FalseTendrilDash,FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54845,7 +54845,7 @@
 		<DisplayName>Shadow Legion Clone 3 Rank 9</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseChi,FalseScorpionSting,FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54868,7 +54868,7 @@
 		<DisplayName>golge Legion klon 10</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseScorpionSting,FalseTendrilDash,FalseChi</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54891,7 +54891,7 @@
 		<DisplayName>Shadow Legion Clone 3</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseChi</Powers>
+		<Powers>FalseChi,FalseScorpionSting,FalseTendrilDash</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54914,7 +54914,7 @@
 		<DisplayName>golge Legion klon Two 1</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseTendrilDash</Powers>
+		<Powers>FalseTendrilDash,FalseChi,FalseScorpionSting</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54937,7 +54937,7 @@
 		<DisplayName>golge Legion klon Two 2</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseTendrilDash</Powers>
+		<Powers>FalseTendrilDash,FalseChi,FalseScorpionSting</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54960,7 +54960,7 @@
 		<DisplayName>golge Legion klon Two 3</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseTendrilDash</Powers>
+		<Powers>FalseTendrilDash,FalseChi,FalseScorpionSting</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -54983,7 +54983,7 @@
 		<DisplayName>golge Legion klon Two 4</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseTendrilDash</Powers>
+		<Powers>FalseTendrilDash,FalseChi,FalseScorpionSting</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -55006,7 +55006,7 @@
 		<DisplayName>golge Legion klon Two 5</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseTendrilDash</Powers>
+		<Powers>FalseTendrilDash,FalseChi,FalseScorpionSting</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -55029,7 +55029,7 @@
 		<DisplayName>golge Legion klon Two 6</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseTendrilDash</Powers>
+		<Powers>FalseTendrilDash,FalseChi,FalseScorpionSting</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -55052,7 +55052,7 @@
 		<DisplayName>golge Legion klon Two 7</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseTendrilDash</Powers>
+		<Powers>FalseTendrilDash,FalseChi,FalseScorpionSting</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -55075,7 +55075,7 @@
 		<DisplayName>golge Legion klon Two 8</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseTendrilDash</Powers>
+		<Powers>FalseTendrilDash,FalseChi,FalseScorpionSting</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -55098,7 +55098,7 @@
 		<DisplayName>golge Legion klon Two 9</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseTendrilDash</Powers>
+		<Powers>FalseTendrilDash,FalseChi,FalseScorpionSting</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>
@@ -55121,7 +55121,7 @@
 		<DisplayName>golge Legion klon Two 10</DisplayName>
 		<DevStatus>Base</DevStatus>
 		<MeleePower>FalseSaberMelee</MeleePower>
-		<Powers>FalseTendrilDash</Powers>
+		<Powers>FalseTendrilDash,FalseChi,FalseScorpionSting</Powers>
 		<Level>25</Level>
 		<EntRank>Pet</EntRank>
 		<MeleeDamage>0.3</MeleeDamage>

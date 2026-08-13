@@ -108,7 +108,7 @@ function buildPatches(swfPath: string): { ctx: ReturnType<typeof parseSwf>; patc
 
 function syncClientRevision(swfPath: string, verifyOnly: boolean): void {
   if (path.resolve(swfPath) !== path.resolve(DEFAULT_SWF)) return;
-  const digest = crypto.createHash("sha256").update(fs.readFileSync(swfPath)).digest("hex").slice(0, 12);
+  const digest = crypto.createHash("sha1").update(fs.readFileSync(swfPath)).digest("hex").slice(0, 12);
   const expected = `clientrev=swf-${digest}`;
   const html = fs.readFileSync(INDEX_HTML, "utf8");
   if (html.includes(expected)) return;

@@ -141,7 +141,7 @@ function runFfdec(base, ffdec, args) {
 function syncClientRevision(base, swf, verifyOnly) {
     if (path.resolve(swf) !== path.resolve(absolute(base, TARGET_SWF))) return;
     const indexPath = absolute(base, INDEX_HTML);
-    const digest = crypto.createHash('sha256').update(fs.readFileSync(swf)).digest('hex').slice(0, 12);
+    const digest = crypto.createHash('sha1').update(fs.readFileSync(swf)).digest('hex').slice(0, 12);
     const expected = `clientrev=swf-${digest}`;
     const html = fs.readFileSync(indexPath, 'utf8');
     if (html.includes(expected)) return;

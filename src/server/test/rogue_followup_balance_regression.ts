@@ -41,15 +41,38 @@ const talentstoneRuntimePatch = fs.readFileSync(
   "utf8",
 );
 
-for (const family of ["ShadowLegionClone", "ShadowLegionCloneTwo", "ShadowLegionCloneThree"] as const) {
+// Every clone runs Scorpion's Sting -> Black Miasma -> Dark Chi; they differ only in where they
+// enter it. Brain fires the first entry in this list whose cooldown has expired, so at spawn --
+// when nothing is on cooldown -- the head decides which skill a clone opens with. The spacing
+// between them is stamped by patch-dungeonblitz-shadow-legion-rotation, not authored here.
+const CLONE_ROTATION_STARTS: ReadonlyArray<readonly [string, string]> = [
+  ["ShadowLegionClone", "FalseScorpionSting,FalseTendrilDash,FalseChi"],
+  ["ShadowLegionCloneTwo", "FalseTendrilDash,FalseChi,FalseScorpionSting"],
+  ["ShadowLegionCloneThree", "FalseChi,FalseScorpionSting,FalseTendrilDash"],
+];
+
+for (const [family, powers] of CLONE_ROTATION_STARTS) {
   for (let rank = 1; rank <= 10; rank += 1) {
-    assert.equal(
-      tag(entity(entities, `${family}${rank}`), "MeleeDamage"),
-      "0.3",
-      `${family}${rank} base damage`,
-    );
+    const block = entity(entities, `${family}${rank}`);
+    assert.equal(tag(block, "MeleeDamage"), "0.3", `${family}${rank} base damage`);
+    assert.equal(tag(block, "Powers"), powers, `${family}${rank} rotation order`);
+    assert.equal(tag(block, "MeleePower"), "FalseSaberMelee", `${family}${rank} basic attack`);
   }
 }
+
+// The rotation is worthless without the schedule that spaces it: without this hook all three
+// skills come off cooldown together and fire back to back.
+const rotationPatch = fs.readFileSync(
+  path.join(ROOT, "server", "scripts", "patch-dungeonblitz-shadow-legion-rotation.js"),
+  "utf8",
+);
+for (const base of ["FalseScorpionSting", "FalseTendrilDash", "FalseChi"]) {
+  assert.ok(rotationPatch.includes(`base: '${base}'`), `rotation patch must schedule ${base}`);
+}
+assert.ok(
+  rotationPatch.includes("this.var_114[_slPower.powerID] = _slReadyAt;"),
+  "rotation patch must stamp the cooldown table",
+);
 
 assert.deepEqual(
   [1, 2, 3, 4, 5].map((rank) => tag(powerMod(mods, `Pounce${rank}`), "SelfValue")),
@@ -217,7 +240,12 @@ assert.match(runtimePatch, /_loc55_ > 0 \? "FalseChi" \+ String\(_loc55_\) : "Fa
 assert.match(runtimePatch, /_loc57_ > 0 \? "FalseScorpionSting" \+ String\(_loc57_\) : "FalseSaberMelee"/);
 assert.match(runtimePatch, /_loc55_ = 0;\\n                     _loc56_ = 0;\\n                     _loc57_ = 0;/);
 assert.match(runtimePatch, /const CLONE_SPAWN_REPLACEMENT = EQUIPPED_ONLY_CLONE_SPAWN_REPLACEMENT;/);
-assert.match(equippedSkillPatch, /CLONE_SKILL_RANK_LOCALS = \[55, 56, 57\]/);
+// Locals 55/56/57 were the numbering in one particular build of FireThisPower. Recompiling
+// CombatState renumbers them, so the patch scans every local for the rank read instead of naming
+// three, and caps the result at the three clone skills.
+assert.match(equippedSkillPatch, /for \(let local = 0; local <= MAX_LOCAL; local \+= 1\)/);
+assert.match(equippedSkillPatch, /patches\.length > 3/);
+assert.doesNotMatch(equippedSkillPatch, /CLONE_SKILL_RANK_LOCALS = \[55, 56, 57\]/);
 assert.match(equippedSkillPatch, /pushbyte 0; convert_i; setlocal/);
 assert.match(runtimePatch, /"FalseTendrilDash" \+ \(_loc56_ > 0 \? String\(_loc56_\) : ""\),"FalseSaberMelee","FalseSaberMelee","FalseSaberMelee"/);
 assert.match(runtimePatch, /"FalseChi" \+ \(_loc55_ > 0 \? String\(_loc55_\) : ""\),"FalseSaberMelee","FalseSaberMelee","FalseSaberMelee"/);
