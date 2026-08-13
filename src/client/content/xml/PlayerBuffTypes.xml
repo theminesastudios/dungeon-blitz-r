@@ -5035,7 +5035,7 @@
 		<Duration>5000</Duration>
 		<DoTDamage>1</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
-		<StackCount>5</StackCount>
+		<StackCount>3</StackCount>
 		<BuffLoc>Chest</BuffLoc>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5049,7 +5049,7 @@
 		<Duration>5000</Duration>
 		<DoTDamage>1.3</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
-		<StackCount>5</StackCount>
+		<StackCount>3</StackCount>
 		<BuffLoc>Chest</BuffLoc>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5063,7 +5063,7 @@
 		<Duration>5000</Duration>
 		<DoTDamage>1.6</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
-		<StackCount>5</StackCount>
+		<StackCount>3</StackCount>
 		<BuffLoc>Chest</BuffLoc>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5077,7 +5077,7 @@
 		<Duration>5000</Duration>
 		<DoTDamage>2</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
-		<StackCount>5</StackCount>
+		<StackCount>3</StackCount>
 		<BuffLoc>Chest</BuffLoc>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5091,7 +5091,7 @@
 		<Duration>5000</Duration>
 		<DoTDamage>2.5</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
-		<StackCount>5</StackCount>
+		<StackCount>3</StackCount>
 		<BuffLoc>Chest</BuffLoc>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
