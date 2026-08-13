@@ -15184,7 +15184,7 @@
 		<MagicRune>Speed+GoldDrop</MagicRune>
 		<PowerRune>ShadowStep</PowerRune>
 		<ProcRune>DeathSlay</ProcRune>
-		<ProcRune2>ResistLife</ProcRune2>
+		<ProcRune2>CritDamage</ProcRune2>
 		<StatRune>RogueAttack</StatRune>
 		<Rarity>L</Rarity>
 		<BossName>DragonGreen</BossName>

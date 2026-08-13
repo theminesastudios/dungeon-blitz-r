@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "1.23.12",
+  "version": "1.23.13",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,7 @@
     "multiplayer:pm2": "node tools/deployMultiplayer.js",
     "verify:client-patches": "node tools/verifyClientPatches.js",
     "patch:legendary-gear-runes": "ts-node scripts/patch_gameswz_legendary_gear_runes.ts",
+    "patch:gear-227-critical-power": "ts-node scripts/patch_gameswz_gear_227_critical_power.ts",
     "patch:power-mana-costs": "ts-node scripts/patch_gameswz_power_mana_costs.ts",
     "patch:english-text": "ts-node scripts/patch_gameswz_english_text.ts",
     "patch:bandit-camp-text": "ts-node scripts/patch_bandit_camp_text.ts",
