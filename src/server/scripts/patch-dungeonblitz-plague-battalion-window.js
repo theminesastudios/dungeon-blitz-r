@@ -203,12 +203,12 @@ function patchCombatState(source, swfPath) {
     if (!next.includes(SELF_ANCHOR)) {
         throw new Error(`${name}: CombatState self-buff application does not open the way this patch expects.`);
     }
-    if (!next.includes(TICK_ANCHOR)) {
-        throw new Error(`${name}: CombatState.method_960 does not open the way this patch expects.`);
-    }
-    const withSelf = next.replace(SELF_ANCHOR, SELF_PATCHED);
-    // Only the first occurrence -- the per-tick method's own timestamp read.
-    return withSelf.replace(TICK_ANCHOR, TICK_PATCHED);
+    // The per-tick minion refresh is deliberately NOT applied. Three separate crashes came out
+    // of it, all the same shape: reaching into another entity's CombatState from a tick while
+    // that entity is still being built. Guarding var_84 fixed two of them and AddBuff still had
+    // its own uninitialised state to trip over. The horde belongs in Entity.GetMeleePower, read
+    // -only, once Entity itself is compilable again -- see TICK_PATCHED below, kept for that.
+    return next.replace(SELF_ANCHOR, SELF_PATCHED);
 }
 
 function unusedPatchEntity(source, swfPath) {
@@ -232,8 +232,7 @@ function verifyAll(combatSource, entitySource, swfPath) {
     const checks = [
         [combatSource, `new class_140(${PLAGUE_EXPERTISE_MOD_ID},_pbValue)`],
         [combatSource, `var _pbBonus:Number = this.var_3.magicDamage * ${MS_PER_EXPERTISE};`],
-        [combatSource, 'Boolean(_pbPet.combatState.var_84)'],
-        [combatSource, '_pbPet.combatState.AddBuff(_pbMinionBuff,this.var_3,0,0);'],
+
     ];
     for (const [source, snippet] of checks) {
         if (!source.replace(/\r\n/g, '\n').includes(snippet)) {
