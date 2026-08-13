@@ -56682,14 +56682,14 @@
 		<RangedPower>Iceball</RangedPower>
 		<GfxType>
 			<CustomArt>Gfx_Mage_1.swf/StaffAngelic04</CustomArt>
-			<ColorSwap2>0x80C0F0=0xDFFEFF</ColorSwap2>
-			<ColorSwap3>0x0070E0=0x88D2D4</ColorSwap3>
-			<ColorSwap4>0xFF9999=0xDFFEFF</ColorSwap4>
-			<ColorSwap5>0xB00000=0x26DADF</ColorSwap5>
-			<ColorSwap6>0x600000=0x00969B</ColorSwap6>
-			<ColorSwap7>0xF0F0F0=0xFFFFFF</ColorSwap7>
-			<ColorSwap8>0xCCCCCC=0xFFE547</ColorSwap8>
-			<ColorSwap9>0xA5A5A5=0xF29C00</ColorSwap9>
+			<ColorSwap2>0x80C0F0=0xFFF4CC</ColorSwap2>
+			<ColorSwap3>0x0070E0=0xC3B78B</ColorSwap3>
+			<ColorSwap4>0xFF9999=0x48EBEC</ColorSwap4>
+			<ColorSwap5>0xB00000=0x00B1B2</ColorSwap5>
+			<ColorSwap6>0x600000=0x00768F</ColorSwap6>
+			<ColorSwap7>0xF0F0F0=0xAAC0C4</ColorSwap7>
+			<ColorSwap8>0xCCCCCC=0x3E484A</ColorSwap8>
+			<ColorSwap9>0xA5A5A5=0x1A1F20</ColorSwap9>
 		</GfxType>
 	</Gear>
 	<Gear GearName="IceStaffDragonUnique22R" GearID="866" Type="Sword">
@@ -56730,14 +56730,14 @@
 		<RangedPower>Iceball</RangedPower>
 		<GfxType>
 			<CustomArt>Gfx_Mage_1.swf/StaffAngelic04</CustomArt>
-			<ColorSwap2>0x80C0F0=0xFFF4CC</ColorSwap2>
-			<ColorSwap3>0x0070E0=0xC3B78B</ColorSwap3>
-			<ColorSwap4>0xFF9999=0x48EBEC</ColorSwap4>
-			<ColorSwap5>0xB00000=0x00B1B2</ColorSwap5>
-			<ColorSwap6>0x600000=0x00768F</ColorSwap6>
-			<ColorSwap7>0xF0F0F0=0xAAC0C4</ColorSwap7>
-			<ColorSwap8>0xCCCCCC=0x3E484A</ColorSwap8>
-			<ColorSwap9>0xA5A5A5=0x1A1F20</ColorSwap9>
+			<ColorSwap2>0x80C0F0=0xDFFEFF</ColorSwap2>
+			<ColorSwap3>0x0070E0=0x88D2D4</ColorSwap3>
+			<ColorSwap4>0xFF9999=0xDFFEFF</ColorSwap4>
+			<ColorSwap5>0xB00000=0x26DADF</ColorSwap5>
+			<ColorSwap6>0x600000=0x00969B</ColorSwap6>
+			<ColorSwap7>0xF0F0F0=0xFFFFFF</ColorSwap7>
+			<ColorSwap8>0xCCCCCC=0xFFE547</ColorSwap8>
+			<ColorSwap9>0xA5A5A5=0xF29C00</ColorSwap9>
 		</GfxType>
 	</Gear>
 	<Gear GearName="BioStaffDread21" GearID="867" Type="Sword">

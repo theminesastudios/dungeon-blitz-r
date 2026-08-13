@@ -81,7 +81,32 @@ export function patchLegendaryGearRunes(xml: string): PatchResult {
           const renewRune = replaceTag(gearFindRune.block, "ProcRune", "ProcHealTime");
           const balancedStat = replaceTag(renewRune.block, "StatRune", "MageBalanced");
           changes += Number(gearFindRune.changed) + Number(renewRune.changed) + Number(balancedStat.changed);
-          return balancedStat.block;
+          const appearance = rarity === "M" ? {
+            ColorSwap2: "0x80C0F0=0xFFF4CC",
+            ColorSwap3: "0x0070E0=0xC3B78B",
+            ColorSwap4: "0xFF9999=0x48EBEC",
+            ColorSwap5: "0xB00000=0x00B1B2",
+            ColorSwap6: "0x600000=0x00768F",
+            ColorSwap7: "0xF0F0F0=0xAAC0C4",
+            ColorSwap8: "0xCCCCCC=0x3E484A",
+            ColorSwap9: "0xA5A5A5=0x1A1F20",
+          } : rarity === "L" ? {
+            ColorSwap2: "0x80C0F0=0xDFFEFF",
+            ColorSwap3: "0x0070E0=0x88D2D4",
+            ColorSwap4: "0xFF9999=0xDFFEFF",
+            ColorSwap5: "0xB00000=0x26DADF",
+            ColorSwap6: "0x600000=0x00969B",
+            ColorSwap7: "0xF0F0F0=0xFFFFFF",
+            ColorSwap8: "0xCCCCCC=0xFFE547",
+            ColorSwap9: "0xA5A5A5=0xF29C00",
+          } : null;
+          let appearanceBlock = balancedStat.block;
+          for (const [tag, value] of Object.entries(appearance ?? {})) {
+            const colorSwap = replaceTag(appearanceBlock, tag, value);
+            appearanceBlock = colorSwap.block;
+            changes += Number(colorSwap.changed);
+          }
+          return appearanceBlock;
         }
 
         const movementRune = replaceTag(block, "MagicRune", rarity === "M" ? "ItemDrop" : "Speed+ItemDrop");
