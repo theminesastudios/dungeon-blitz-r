@@ -109,15 +109,15 @@ const SELF_PATCHED = [
 const TICK_ANCHOR = '         _loc1_ = this.var_1.mTimeThisTick;\n';
 
 const TICK_PATCHED = TICK_ANCHOR + [
-    '         if(Boolean(this.var_1) && Boolean(this.var_3) && this.var_1.clientEntID == this.var_3.id)',
+    // var_84 is nulled by method_1206 on teardown and is still null on a freshly built
+    // CombatState, and method_135 iterates it with no guard of its own. Both ends are checked:
+    // this.var_84 for our own state, and each pet's before we ask it anything. A pet skipped for
+    // being half-built is picked up on a later tick, which is all the window needs.
+    '         if(Boolean(this.var_1) && Boolean(this.var_3) && Boolean(this.var_84) && this.var_1.clientEntID == this.var_3.id)',
     '         {',
     '            var _pbHeld:Buff = null;',
     '            var _pbRank:String = null;',
-    // var_84 is nulled by method_1206 when a CombatState is torn down, and method_960 can still
-    // tick against one in that state -- a level transition destroys the old level's entities while
-    // the update loop is running. Iterating a null Vector throws, and this block sits at the top of
-    // the per-tick combat update, so the throw took the whole update with it.
-    '            for each(_pbHeld in (this.var_84 ? this.var_84 : new Vector.<Buff>()))',
+    '            for each(_pbHeld in this.var_84)',
     '            {',
     '               if(Boolean(_pbHeld) && Boolean(_pbHeld.type) && _pbHeld.type.buffName.indexOf("PlagueBattalion") == 0 && _pbHeld.type.buffName.indexOf("PlagueBattalionMinion") != 0)',
     '               {',
@@ -133,7 +133,7 @@ const TICK_PATCHED = TICK_ANCHOR + [
     '                  var _pbPet:Entity = null;',
     '                  for each(_pbPet in (_pbNear ? _pbNear : []))',
     '                  {',
-    '                     if(_pbPet != this.var_3 && _pbPet.var_20 & Entity.MONSTER && _pbPet.team == this.var_3.team && Boolean(_pbPet.behaviorType) && _pbPet.behaviorType.var_679 && Boolean(_pbPet.combatState) && !_pbPet.combatState.method_135(_pbMinionBuff))',
+    '                     if(_pbPet != this.var_3 && _pbPet.var_20 & Entity.MONSTER && _pbPet.team == this.var_3.team && Boolean(_pbPet.behaviorType) && _pbPet.behaviorType.var_679 && Boolean(_pbPet.combatState) && Boolean(_pbPet.combatState.var_84) && !_pbPet.combatState.method_135(_pbMinionBuff))',
     '                     {',
     '                        _pbPet.combatState.AddBuff(_pbMinionBuff,this.var_3,0,0);',
     '                     }',
@@ -181,23 +181,23 @@ function runFfdec(ffdecPath, args) {
     execFileSync(resolved, ['-cli', ...args], { stdio: 'inherit' });
 }
 
-function exportCombatState(ffdecPath, workRoot, swfPath) {
+function exportClass(ffdecPath, workRoot, swfPath, className) {
     fs.rmSync(workRoot, { recursive: true, force: true });
     fs.mkdirSync(workRoot, { recursive: true });
-    runFfdec(ffdecPath, ['-selectclass', 'CombatState', '-export', 'script', workRoot, swfPath]);
-    const classPath = path.join(workRoot, 'scripts', 'CombatState.as');
+    runFfdec(ffdecPath, ['-selectclass', className, '-export', 'script', workRoot, swfPath]);
+    const classPath = path.join(workRoot, 'scripts', `${className}.as`);
     if (!fs.existsSync(classPath)) throw new Error(`FFDec export did not produce ${classPath}`);
     return classPath;
 }
 
-function patchSource(source, swfPath) {
-    let next = source.replace(/\r\n/g, '\n');
+function patchCombatState(source, swfPath) {
+    const next = source.replace(/\r\n/g, '\n');
     const name = path.basename(swfPath);
 
     if (next.includes('§§goto')) {
         throw new Error(`${name}: CombatState is uncompilable (§§goto). Repair that before patching.`);
     }
-    if (next.includes('_pbRank')) {
+    if (next.includes('_pbBonus')) {
         return next;
     }
     if (!next.includes(SELF_ANCHOR)) {
@@ -206,28 +206,44 @@ function patchSource(source, swfPath) {
     if (!next.includes(TICK_ANCHOR)) {
         throw new Error(`${name}: CombatState.method_960 does not open the way this patch expects.`);
     }
-    next = next.replace(SELF_ANCHOR, SELF_PATCHED);
+    const withSelf = next.replace(SELF_ANCHOR, SELF_PATCHED);
     // Only the first occurrence -- the per-tick method's own timestamp read.
-    return next.replace(TICK_ANCHOR, TICK_PATCHED);
+    return withSelf.replace(TICK_ANCHOR, TICK_PATCHED);
 }
 
-function verifySource(source, swfPath) {
+function unusedPatchEntity(source, swfPath) {
     const next = source.replace(/\r\n/g, '\n');
     const name = path.basename(swfPath);
-    const required = [
-        `new class_140(${PLAGUE_EXPERTISE_MOD_ID},_pbValue)`,
-        `var _pbBonus:Number = this.var_3.magicDamage * ${MS_PER_EXPERTISE};`,
-        'class_14.buffTypesDict["PlagueBattalionMinion" + _pbRank]',
-        '_pbPet.behaviorType.var_679',
-        '_pbPet.combatState.AddBuff(_pbMinionBuff,this.var_3,0,0);'
+
+    if (next.includes('§§goto')) {
+        throw new Error(`${name}: Entity is uncompilable (§§goto).`);
+    }
+    if (next.includes('_pbOwner')) {
+        return next;
+    }
+    if (!next.includes(ENTITY_ANCHOR)) {
+        throw new Error(`${name}: Entity.GetMeleePower does not open the way this patch expects.`);
+    }
+    return next.replace(ENTITY_ANCHOR, ENTITY_PATCHED);
+}
+
+function verifyAll(combatSource, entitySource, swfPath) {
+    const name = path.basename(swfPath);
+    const checks = [
+        [combatSource, `new class_140(${PLAGUE_EXPERTISE_MOD_ID},_pbValue)`],
+        [combatSource, `var _pbBonus:Number = this.var_3.magicDamage * ${MS_PER_EXPERTISE};`],
+        [combatSource, 'Boolean(_pbPet.combatState.var_84)'],
+        [combatSource, '_pbPet.combatState.AddBuff(_pbMinionBuff,this.var_3,0,0);'],
     ];
-    for (const snippet of required) {
-        if (!next.includes(snippet)) {
+    for (const [source, snippet] of checks) {
+        if (!source.replace(/\r\n/g, '\n').includes(snippet)) {
             throw new Error(`${name} is missing the Plague Battalion window: ${snippet}`);
         }
     }
-    if (next.includes('§§goto')) {
-        throw new Error(`${name}: CombatState is uncompilable again -- a §§goto is back.`);
+    for (const source of [combatSource]) {
+        if (source.includes('§§goto')) {
+            throw new Error(`${name}: a class is uncompilable again -- a §§goto is back.`);
+        }
     }
     console.log(`Verified Plague Battalion window in ${swfPath}`);
 }
@@ -241,24 +257,33 @@ function main() {
     if (!ffdecPath) throw new Error('FFDec not found. Pass --ffdec or install JPEXS FFDec.');
     if (!fs.existsSync(swfPath)) throw new Error(`SWF not found: ${swfPath}`);
 
-    const workRoot = path.join(root, 'build', args.verify ? 'ffdec-plague-window-verify' : 'ffdec-plague-window');
-    const classPath = exportCombatState(ffdecPath, workRoot, swfPath);
+    const suffix = args.verify ? '-verify' : '';
+    const combatRoot = path.join(root, 'build', `ffdec-plague-window-combat${suffix}`);
+    const entityRoot = path.join(root, 'build', `ffdec-plague-window-entity${suffix}`);
 
     if (args.verify) {
-        verifySource(fs.readFileSync(classPath, 'utf8'), swfPath);
+        const combatPath = exportClass(ffdecPath, combatRoot, swfPath, 'CombatState');
+        verifyAll(fs.readFileSync(combatPath, 'utf8'), '', swfPath);
         return;
     }
 
-    fs.writeFileSync(classPath, patchSource(fs.readFileSync(classPath, 'utf8'), swfPath));
+    // One class at a time: each import rewrites the SWF, so the second export has to read the
+    // file the first one produced.
+    for (const [className, workRoot, patcher] of [
+        ['CombatState', combatRoot, patchCombatState],
+    ]) {
+        const classPath = exportClass(ffdecPath, workRoot, swfPath, className);
+        fs.writeFileSync(classPath, patcher(fs.readFileSync(classPath, 'utf8'), swfPath));
+        const patchedSwfPath = path.join(workRoot, `${path.basename(swfPath, path.extname(swfPath))}.patched.swf`);
+        runFfdec(ffdecPath, ['-importScript', swfPath, patchedSwfPath, path.dirname(classPath)]);
+        if (!fs.existsSync(`${swfPath}.bak`)) fs.copyFileSync(swfPath, `${swfPath}.bak`);
+        fs.copyFileSync(patchedSwfPath, swfPath);
+        console.log(`Patched ${className} for the Plague Battalion window.`);
+    }
 
-    const patchedSwfPath = path.join(workRoot, `${path.basename(swfPath, path.extname(swfPath))}.patched.swf`);
-    runFfdec(ffdecPath, ['-importScript', swfPath, patchedSwfPath, path.dirname(classPath)]);
-    if (!fs.existsSync(`${swfPath}.bak`)) fs.copyFileSync(swfPath, `${swfPath}.bak`);
-    fs.copyFileSync(patchedSwfPath, swfPath);
-    console.log(`Patched Plague Battalion window in ${swfPath}`);
     console.log(
-        'NOTE: recompiling CombatState rebuilds the ABC constant pool. Re-run\n' +
-        '      patch-dungeonblitz-forge-charm-durations.ts afterwards.'
+        'NOTE: recompiling these classes rebuilds the ABC constant pool. Re-run\n' +
+        '      patch-dungeonblitz-forge-charm-durations.ts and the CombatState byte patches afterwards.'
     );
 }
 
