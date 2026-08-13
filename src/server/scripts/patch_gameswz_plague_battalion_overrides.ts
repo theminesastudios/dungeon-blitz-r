@@ -37,8 +37,11 @@ const XML_DIR = path.resolve(__dirname, "..", "..", "client", "content", "xml");
 const CBQ_DIR = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbq");
 
 const RANKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const FIRST_BUFF_ID = 743;
-const FIRST_MINION_BUFF_ID = 753;
+// 800, not 743: PR #682's ShadowLegion buffs took 743-747 independently -- both sides picked the
+// first id that was free at the time. Moved above their block rather than theirs being moved,
+// since theirs shipped to release first.
+const FIRST_BUFF_ID = 800;
+const FIRST_MINION_BUFF_ID = 810;
 const FIRST_MELEE_POWER_ID = 7019;
 const FIRST_ROR_POWER_ID = 7029;
 /**

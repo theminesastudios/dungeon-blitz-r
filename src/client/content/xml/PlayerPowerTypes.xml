@@ -56800,7 +56800,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>Plagued1</AddTargetBuff>
 		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion melee override power [Stats: x1 damage, 2.5 damage/s, over 9s]</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -56825,7 +56825,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>MinorCurse,Plagued1</AddTargetBuff>
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 2.5 damage/s, over 9s]</Description>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -56857,7 +56857,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>Plagued2</AddTargetBuff>
 		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion melee override power [Stats: x1 damage, 2.8 damage/s, over 9s]</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -56882,7 +56882,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>MinorCurse,Plagued2</AddTargetBuff>
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 2.8 damage/s, over 9s]</Description>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -56914,7 +56914,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>Plagued3</AddTargetBuff>
 		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion melee override power [Stats: x1 damage, 2.8 damage/s, over 9s]</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -56939,7 +56939,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>MinorCurse,Plagued3</AddTargetBuff>
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 2.8 damage/s, over 9s]</Description>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -56971,7 +56971,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>Plagued4</AddTargetBuff>
 		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion melee override power [Stats: x1 damage, 2.9 damage/s, over 9s]</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -56996,7 +56996,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>MinorCurse,Plagued4</AddTargetBuff>
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 2.9 damage/s, over 9s]</Description>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -57028,7 +57028,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>Plagued5</AddTargetBuff>
 		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion melee override power [Stats: x1 damage, 2.9 damage/s, over 9s]</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -57053,7 +57053,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>MinorCurse,Plagued5</AddTargetBuff>
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 2.9 damage/s, over 9s]</Description>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -57085,7 +57085,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>Plagued6</AddTargetBuff>
 		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion melee override power [Stats: x1 damage, 3.1 damage/s, over 9s]</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -57110,7 +57110,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>MinorCurse,Plagued6</AddTargetBuff>
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 3.1 damage/s, over 9s]</Description>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -57142,7 +57142,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>Plagued7</AddTargetBuff>
 		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion melee override power [Stats: x1 damage, 3.1 damage/s, over 9s]</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -57167,7 +57167,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>MinorCurse,Plagued7</AddTargetBuff>
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 3.1 damage/s, over 9s]</Description>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -57199,7 +57199,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>Plagued8</AddTargetBuff>
 		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion melee override power [Stats: x1 damage, 3.2 damage/s, over 9s]</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -57224,7 +57224,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>MinorCurse,Plagued8</AddTargetBuff>
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 3.2 damage/s, over 9s]</Description>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -57256,7 +57256,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>Plagued9</AddTargetBuff>
 		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion melee override power [Stats: x1 damage, 3.3 damage/s, over 9s]</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -57281,7 +57281,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>MinorCurse,Plagued9</AddTargetBuff>
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 3.3 damage/s, over 9s]</Description>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
@@ -57313,7 +57313,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>Plagued10</AddTargetBuff>
 		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion melee override power [Stats: x1 damage, 3.3 damage/s, over 9s]</Description>
 		<CastGfx/>
 		<FireGfx/>
 		<HitAnimSource>TargetCenter</HitAnimSource>
@@ -57338,7 +57338,7 @@
 		<PowerGroup>PlagueBattalion</PowerGroup>
 		<AddTargetBuff>MinorCurse,Plagued10</AddTargetBuff>
 		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage plus Plague]</Description>
+		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 3.3 damage/s, over 9s]</Description>
 		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
 		<CastGfx/>
 		<FireSound>snd_pwr_range_poison_imp</FireSound>
