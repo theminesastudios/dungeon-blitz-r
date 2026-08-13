@@ -26,8 +26,18 @@ function rotateKey(key: number, shift: number): number {
 
 // masterFileList.xml serves Login.swz from p/cbq; p/cbp still holds an older copy
 // that no client ever downloads.
+/**
+ * The served copy, which is cbp -- StaticServer.selectedAssetVersion is 'cbp', so /p/cbp is what
+ * the client actually fetches.
+ *
+ * This pointed at cbq, and Login.swz exists in both directories, so every patch defaulting here
+ * wrote to a file nothing loads. That is why the Mystic gear tier had no colours in game despite
+ * verifying as applied: the 18 rarity-Y entries were all in cbq/Login.swz while the client read
+ * cbp/Login.swz, which had none. Game.swz is unaffected -- cbp has no copy of it, so requests for
+ * it fall through to cbq.
+ */
 export function defaultLoginSwzPath(): string {
-  return path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbq", "Login.swz");
+  return path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbp", "Login.swz");
 }
 
 export function ensureBackup(filePath: string): string {
