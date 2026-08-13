@@ -41,13 +41,25 @@ const FIRST_BUFF_ID = 743;
 const FIRST_MINION_BUFF_ID = 753;
 const FIRST_MELEE_POWER_ID = 7019;
 const FIRST_ROR_POWER_ID = 7029;
+/**
+ * Carrier for the Expertise duration extension, modelled exactly on EmpyreanExpertise (ModID 900).
+ *
+ * Buff computes its lifetime as the authored Duration plus whatever its mods vector adds, and a
+ * mod can only be handed over as a class_140 built against a real PowerModType. Nothing in
+ * NodeTypes points here, so it is never a stone a player can own, and the authored BuffValue is
+ * never the number that lands -- CombatState fabricates the entry at cast time with the
+ * milliseconds in place of a magnitude. See patch-dungeonblitz-plague-battalion-window.
+ */
+const PLAGUE_EXPERTISE_MOD_ID = 1099;
 
 function buffBlock(rank: number): string {
   return [
     `\t<BuffType BuffName="PlagueBattalion${rank}">`,
     `\t\t<BuffID>${FIRST_BUFF_ID + rank - 1}</BuffID>`,
     "\t\t<Attack>false</Attack>",
-    "\t\t<Duration>10000</Duration>",
+    // 3s base. The Expertise extension rides the PlagueExpertise carrier below and is added at
+    // cast time by patch-dungeonblitz-plague-battalion-window, not authored here.
+    "\t\t<Duration>3000</Duration>",
     `\t\t<RangedOverride>PlagueBattalionROR${rank}</RangedOverride>`,
     `\t\t<MeleeOverride>PlagueBattalionMelee${rank}</MeleeOverride>`,
     "\t\t<GfxType>",
@@ -71,7 +83,9 @@ function minionBuffBlock(rank: number): string {
     `\t<BuffType BuffName="PlagueBattalionMinion${rank}">`,
     `\t\t<BuffID>${FIRST_MINION_BUFF_ID + rank - 1}</BuffID>`,
     "\t\t<Attack>false</Attack>",
-    "\t\t<Duration>10000</Duration>",
+    // Short and refreshed every tick while the caster's window is open, which is what lets a
+    // minion summoned mid-window pick it up on the next tick.
+    "\t\t<Duration>3000</Duration>",
     `\t\t<MeleeOverride>PlagueBattalionMelee${rank}</MeleeOverride>`,
     "\t\t<GfxType>",
     "\t\t\t<AnimScale>1.5</AnimScale>",
@@ -80,6 +94,32 @@ function minionBuffBlock(rank: number): string {
     "\t\t</GfxType>",
     "\t</BuffType>",
   ].join("\n");
+}
+
+function plagueExpertiseModBlock(): string {
+  return [
+    "\t<PowerModType>",
+    "\t\t<ModName>PlagueExpertise</ModName>",
+    `\t\t<ModID>${PLAGUE_EXPERTISE_MOD_ID}</ModID>`,
+    "\t\t<DisplayName>Plague Battalion</DisplayName>",
+    "\t\t<ModType>Buff</ModType>",
+    `\t\t<BuffName>${RANKS.map((rank) => `PlagueBattalion${rank}`).join(",")}</BuffName>`,
+    "\t\t<BuffProperty>Duration</BuffProperty>",
+    "\t\t<BuffValue>0</BuffValue>",
+    "\t\t<IconName>a_PowerIcon_LeechAura</IconName>",
+    "\t</PowerModType>",
+  ].join("\n");
+}
+
+export function patchPowerModTypes(xml: string): { xml: string; changes: number } {
+  if (xml.includes("<ModName>PlagueExpertise</ModName>")) {
+    return { xml, changes: 0 };
+  }
+  const closing = "</PowerModTypes>";
+  if (!xml.includes(closing)) {
+    throw new Error("PowerModTypes.xml has no closing tag to insert before.");
+  }
+  return { xml: xml.replace(closing, `${plagueExpertiseModBlock()}\n${closing}`), changes: 1 };
 }
 
 function meleePowerBlock(rank: number): string {
@@ -305,6 +345,7 @@ function patchSwzFile(swzPath: string, verifyOnly: boolean): number {
   for (const [marker, apply] of [
     ["<PlayerPowerTypes", patchPlayerPowerTypes],
     ["<PlayerBuffTypes", patchPlayerBuffTypes],
+    ["<PowerModTypes", patchPowerModTypes],
   ] as const) {
     const chunk = ctx.chunks.find((entry) => entry.xml.includes(marker));
     if (!chunk) {
@@ -330,6 +371,7 @@ export function patchPlagueBattalionOverrides(verifyOnly: boolean): number {
   let changes = 0;
   changes += patchXmlFile(path.join(XML_DIR, "PlayerPowerTypes.xml"), patchPlayerPowerTypes, verifyOnly);
   changes += patchXmlFile(path.join(XML_DIR, "PlayerBuffTypes.xml"), patchPlayerBuffTypes, verifyOnly);
+  changes += patchXmlFile(path.join(XML_DIR, "PowerModTypes.xml"), patchPowerModTypes, verifyOnly);
   for (const fileName of ["Game.swz", "Game.en.swz", "Game.tr.swz"]) {
     const swzPath = path.join(CBQ_DIR, fileName);
     if (fs.existsSync(swzPath)) {

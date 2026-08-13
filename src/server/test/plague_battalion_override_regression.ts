@@ -68,6 +68,11 @@ function main(): void {
             `rank ${rank} must give the caster the both-overrides buff`
         );
 
+        // 3s base window on both buffs; the Expertise extension is added at cast time by
+        // patch-dungeonblitz-plague-battalion-window, not authored here.
+        assert.equal(tag(casterBuff, 'Duration'), '3000', `caster buff ${rank} base window`);
+        assert.equal(tag(minionBuff, 'Duration'), '3000', `minion buff ${rank} base window`);
+
         // One stack per target, by product decision -- four was authored but never played.
         const poison = block(buffs, new RegExp(`<BuffType BuffName="Plagued${rank}">[\\s\\S]*?</BuffType>`));
         assert.equal(tag(poison, 'StackCount'), '1', `Plagued${rank} must cap at one stack`);
@@ -80,6 +85,19 @@ function main(): void {
             tag(cast, 'AddTargetBuff').split(',').length,
             expected,
             `rank ${rank} authored buff repeat count must be preserved`
+        );
+    }
+
+    // The Expertise extension can only be handed to a buff as a class_140 built against a real
+    // PowerModType, so the carrier has to exist and has to name every rank.
+    const mods = fs.readFileSync(path.join(XML_DIR, 'PowerModTypes.xml'), 'utf8');
+    const carrier = block(mods, /<PowerModType>(?:(?!<\/PowerModType>)[\s\S])*?PlagueExpertise[\s\S]*?<\/PowerModType>/);
+    assert.equal(tag(carrier, 'ModID'), '1099', 'PlagueExpertise carrier id');
+    assert.equal(tag(carrier, 'BuffProperty'), 'Duration', 'carrier must extend Duration');
+    for (const rank of RANKS) {
+        assert.ok(
+            tag(carrier, 'BuffName').split(',').includes(`PlagueBattalion${rank}`),
+            `carrier must name PlagueBattalion${rank}`
         );
     }
 

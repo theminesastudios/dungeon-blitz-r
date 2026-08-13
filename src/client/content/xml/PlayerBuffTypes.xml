@@ -5798,7 +5798,7 @@
 	<BuffType BuffName="PlagueBattalion1">
 		<BuffID>743</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<RangedOverride>PlagueBattalionROR1</RangedOverride>
 		<MeleeOverride>PlagueBattalionMelee1</MeleeOverride>
 		<GfxType>
@@ -5810,7 +5810,7 @@
 	<BuffType BuffName="PlagueBattalion2">
 		<BuffID>744</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<RangedOverride>PlagueBattalionROR2</RangedOverride>
 		<MeleeOverride>PlagueBattalionMelee2</MeleeOverride>
 		<GfxType>
@@ -5822,7 +5822,7 @@
 	<BuffType BuffName="PlagueBattalion3">
 		<BuffID>745</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<RangedOverride>PlagueBattalionROR3</RangedOverride>
 		<MeleeOverride>PlagueBattalionMelee3</MeleeOverride>
 		<GfxType>
@@ -5834,7 +5834,7 @@
 	<BuffType BuffName="PlagueBattalion4">
 		<BuffID>746</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<RangedOverride>PlagueBattalionROR4</RangedOverride>
 		<MeleeOverride>PlagueBattalionMelee4</MeleeOverride>
 		<GfxType>
@@ -5846,7 +5846,7 @@
 	<BuffType BuffName="PlagueBattalion5">
 		<BuffID>747</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<RangedOverride>PlagueBattalionROR5</RangedOverride>
 		<MeleeOverride>PlagueBattalionMelee5</MeleeOverride>
 		<GfxType>
@@ -5858,7 +5858,7 @@
 	<BuffType BuffName="PlagueBattalion6">
 		<BuffID>748</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<RangedOverride>PlagueBattalionROR6</RangedOverride>
 		<MeleeOverride>PlagueBattalionMelee6</MeleeOverride>
 		<GfxType>
@@ -5870,7 +5870,7 @@
 	<BuffType BuffName="PlagueBattalion7">
 		<BuffID>749</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<RangedOverride>PlagueBattalionROR7</RangedOverride>
 		<MeleeOverride>PlagueBattalionMelee7</MeleeOverride>
 		<GfxType>
@@ -5882,7 +5882,7 @@
 	<BuffType BuffName="PlagueBattalion8">
 		<BuffID>750</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<RangedOverride>PlagueBattalionROR8</RangedOverride>
 		<MeleeOverride>PlagueBattalionMelee8</MeleeOverride>
 		<GfxType>
@@ -5894,7 +5894,7 @@
 	<BuffType BuffName="PlagueBattalion9">
 		<BuffID>751</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<RangedOverride>PlagueBattalionROR9</RangedOverride>
 		<MeleeOverride>PlagueBattalionMelee9</MeleeOverride>
 		<GfxType>
@@ -5906,7 +5906,7 @@
 	<BuffType BuffName="PlagueBattalion10">
 		<BuffID>752</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<RangedOverride>PlagueBattalionROR10</RangedOverride>
 		<MeleeOverride>PlagueBattalionMelee10</MeleeOverride>
 		<GfxType>
@@ -5918,7 +5918,7 @@
 	<BuffType BuffName="PlagueBattalionMinion1">
 		<BuffID>753</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<MeleeOverride>PlagueBattalionMelee1</MeleeOverride>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5929,7 +5929,7 @@
 	<BuffType BuffName="PlagueBattalionMinion2">
 		<BuffID>754</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<MeleeOverride>PlagueBattalionMelee2</MeleeOverride>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5940,7 +5940,7 @@
 	<BuffType BuffName="PlagueBattalionMinion3">
 		<BuffID>755</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<MeleeOverride>PlagueBattalionMelee3</MeleeOverride>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5951,7 +5951,7 @@
 	<BuffType BuffName="PlagueBattalionMinion4">
 		<BuffID>756</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<MeleeOverride>PlagueBattalionMelee4</MeleeOverride>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5962,7 +5962,7 @@
 	<BuffType BuffName="PlagueBattalionMinion5">
 		<BuffID>757</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<MeleeOverride>PlagueBattalionMelee5</MeleeOverride>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5973,7 +5973,7 @@
 	<BuffType BuffName="PlagueBattalionMinion6">
 		<BuffID>758</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<MeleeOverride>PlagueBattalionMelee6</MeleeOverride>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5984,7 +5984,7 @@
 	<BuffType BuffName="PlagueBattalionMinion7">
 		<BuffID>759</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<MeleeOverride>PlagueBattalionMelee7</MeleeOverride>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -5995,7 +5995,7 @@
 	<BuffType BuffName="PlagueBattalionMinion8">
 		<BuffID>760</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<MeleeOverride>PlagueBattalionMelee8</MeleeOverride>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -6006,7 +6006,7 @@
 	<BuffType BuffName="PlagueBattalionMinion9">
 		<BuffID>761</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<MeleeOverride>PlagueBattalionMelee9</MeleeOverride>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
@@ -6017,7 +6017,7 @@
 	<BuffType BuffName="PlagueBattalionMinion10">
 		<BuffID>762</BuffID>
 		<Attack>false</Attack>
-		<Duration>10000</Duration>
+		<Duration>3000</Duration>
 		<MeleeOverride>PlagueBattalionMelee10</MeleeOverride>
 		<GfxType>
 			<AnimScale>1.5</AnimScale>
