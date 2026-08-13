@@ -41,6 +41,16 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  * method_59 then sums across every mod the player owns, which is why per-rank values of
  * 0.5/0.75/1/1.5/2 add up to the ~6% at 15 points that was asked for.
  *
+ * Contact Poison only ever fired on the eight poison DoTs the stock game shipped with, and
+ * this server has moved the Viper's poison since. The gate is Buff.method_1572: a DoT tick
+ * is multiplied by 1 + method_59("BleedMultiplier") when the buff's own BuffType carries
+ * <Effect>Poisoned</Effect> and the target's CombatState is carrying stacks of the buff
+ * named exactly "Bleeding". method_59 sums the mods the caster owned at the moment the buff
+ * landed, and a mod only contributes when the DoT's BuffName appears in the mod's own
+ * BuffName list -- so Bone Daggers (ViperbladePoison, minted here) and Poison Cloud were
+ * outside the talent entirely. The list below is Concentrated Venom's coverage, minus the
+ * Plagued family no rogue can apply, plus this server's own Viperblade poison.
+ *
  * Absolute values throughout, because this runs on every prebuild and a multiplier would
  * compound on the second pass. The comment on each row is the authored value it replaces.
  */
@@ -587,6 +597,23 @@ const TALENTSTONE_VALUES = {
   CurseArmor: [".03", ".05", ".10", ".15", ".20"],
 } as const;
 
+// Every poison DoT a rogue can put on a target, so Contact Poison means the same thing
+// Concentrated Venom does. Authored list was PoisonStrike,DaggerPoison,ChaosPoison,
+// ThornPoison1-4,RunePoisonStrike.
+const CONTACT_POISON_BUFFS = [
+  "PoisonStrike",
+  "DaggerPoison",
+  "PoisonCloud",
+  "ChaosPoison",
+  "ViperbladePoison",
+  "ThornPoison1",
+  "ThornPoison2",
+  "ThornPoison3",
+  "ThornPoison4",
+  "RunePoisonCloud",
+  "RunePoisonStrike",
+].join(",");
+
 const ETHEREAL_EXPERTISE_VALUES = [".01", ".03", ".05", ".07", ".10"] as const;
 const ORIGINAL_SHADOW_REFUGE_VALUES = [".05", ".10", ".2", ".35", ".6"] as const;
 
@@ -1039,6 +1066,9 @@ export function patchPowerMods(xml: string): { xml: string; stats: PatchStats } 
         next = replaceTag(next, "BuffValue", value, stats);
       } else {
         next = replaceTag(next, "SelfValue", value, stats);
+      }
+      if (family === "ContactPoison") {
+        next = replaceTag(next, "BuffName", CONTACT_POISON_BUFFS, stats);
       }
       const talentDescription = TALENTSTONE_DESCRIPTIONS.get(modName);
       if (talentDescription) next = replaceTag(next, "Description", talentDescription, stats);

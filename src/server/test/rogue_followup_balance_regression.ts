@@ -71,6 +71,19 @@ for (const [family, expected, description] of [
   assert.match(tag(powerMod(mods, `${family}1`), "Description"), description);
 }
 
+// Contact Poison multiplies a poison DoT only when the DoT's own BuffName is listed on the
+// mod, so every poison a rogue can apply has to be here -- Bone Daggers (ViperbladePoison)
+// and Poison Cloud were outside the talent while it read as a blanket poison bonus.
+for (let rank = 1; rank <= 5; rank += 1) {
+  const buffNames = tag(powerMod(mods, `ContactPoison${rank}`), "BuffName").split(",");
+  for (const buffName of ["PoisonStrike", "DaggerPoison", "PoisonCloud", "ViperbladePoison"]) {
+    assert.ok(
+      buffNames.includes(buffName),
+      `ContactPoison${rank} must cover ${buffName}`,
+    );
+  }
+}
+
 for (const [name, expected] of [
   ["ShadowTendrilDamage", "-0.06"],
   ["ShadowTendrilRank1", "-0.06"],
