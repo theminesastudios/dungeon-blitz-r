@@ -202,7 +202,7 @@ const TARGET_BUFFS = new Map<string, string>([
    *
    * The Lance is the only source that stacks at all. Divine Word, Hallowed Reckoning and
    * Sanctum each land exactly one at every rank; ranks 1-7 of the Lance land one and 8-10 land
-   * two, which moves HolyFire1 toward its base cap of three and gives the Crusading Flames
+   * two, which moves HolyFire1 toward its base cap of five and gives the Crusading Flames
    * stone something to raise further.
    *
    * The rank bands are the combos, not the ranks: Combo2 is ranks 4-5, Combo3 6-7, Combo4 8-9,
@@ -909,9 +909,9 @@ const BUFF_DOT_DAMAGE = new Map<string, string>([
   ["DivineWordBuff20", "-1.5625"], // -1.25
 ]);
 
-/** Holy Fire starts at three stacks; Crusading Flames adds up to five more for a cap of eight. */
+/** Holy Fire starts at five stacks; Crusading Flames adds up to five more for a cap of ten. */
 const HOLY_FIRE_STACK_COUNTS = new Map<string, string>(
-  [1, 2, 3, 4, 5].map((rank) => [`HolyFire${rank}`, "3"]),
+  [1, 2, 3, 4, 5].map((rank) => [`HolyFire${rank}`, "5"]),
 );
 
 /**
@@ -987,8 +987,8 @@ const MOD_BUFF_VALUES = new Map<string, string>([
   ["IgniteDmg4", "0.1"], // 0.05
   ["IgniteDmg5", "0.16"], // 0.08
   /**
-   * Crusading Flames, down from +1/2/3/5/8 to +1/2/3/4/5. With the new base cap of three,
-   * the old curve would have reached eleven stacks instead of the intended maximum of eight.
+   * Crusading Flames, down from +1/2/3/5/8 to +1/2/3/4/5. With the base cap of five,
+   * the old curve would reach thirteen stacks instead of the intended maximum of ten.
    *
    * These are here as well as in MOD_INSERTS because the family only gets inserted on a tree
    * that does not have it yet -- an already-patched PowerModTypes is edited through this map.
@@ -1208,8 +1208,8 @@ const MOD_REWRITES = new Map<string, ModRewrite>([
  * ModIDs 895-899 are the first free ones -- the file authors 0 through 894 with no gaps -- and
  * they are what a Templar's save will key against, so they must not be renumbered later.
  *
- * It raises the *cap*, not the damage: HolyFire1..5 all have a patched StackCount of 3, and
- * the +5 final rank reaches the intended maximum of 8. Deep Cuts and Napalm are the same mod
+ * It raises the *cap*, not the damage: HolyFire1..5 all have a patched StackCount of 5, and
+ * the +5 final rank reaches the intended maximum of 10. Deep Cuts and Napalm are the same mod
  * shape against Bleeding and Burned.
  *
  * The icon stays a_Signet_RapidRecover. It is the icon the Templar's node has always shown,
