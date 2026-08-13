@@ -15184,7 +15184,7 @@
 		<MagicRune>Speed+GoldDrop</MagicRune>
 		<PowerRune>ShadowStep</PowerRune>
 		<ProcRune>DeathSlay</ProcRune>
-		<ProcRune2>ResistLife</ProcRune2>
+		<ProcRune2>CritDamage</ProcRune2>
 		<StatRune>RogueAttack</StatRune>
 		<Rarity>L</Rarity>
 		<BossName>DragonGreen</BossName>
@@ -73461,7 +73461,7 @@
 		<UsedBy>Rogue</UsedBy>
 		<MagicRune>ItemDrop</MagicRune>
 		<ProcRune>HealthPercent</ProcRune>
-		<StatRune>RogueArmor</StatRune>
+		<StatRune>RogueExpertise</StatRune>
 		<Rarity>M</Rarity>
 		<Realm>Demon</Realm>
 		<Level>29</Level>
@@ -73479,10 +73479,10 @@
 		<DisplayName>Nadir Haydut Ayaklik Iblis Seviye 29</DisplayName>
 		<GearSet>12</GearSet>
 		<UsedBy>Rogue</UsedBy>
-		<MagicRune>ItemDrop+CraftDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>ShadowBlade</PowerRune>
 		<ProcRune>HealthPercent</ProcRune>
-		<StatRune>RogueArmor</StatRune>
+		<StatRune>RogueExpertise</StatRune>
 		<Rarity>R</Rarity>
 		<Realm>Demon</Realm>
 		<Level>29</Level>
@@ -73500,11 +73500,11 @@
 		<DisplayName>Efsanevi Haydut Ayaklik Iblis Seviye 29</DisplayName>
 		<GearSet>12</GearSet>
 		<UsedBy>Rogue</UsedBy>
-		<MagicRune>ItemDrop+CraftDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>ShadowBlade</PowerRune>
 		<ProcRune>HealthPercent</ProcRune>
-		<ProcRune2>ResistEarth</ProcRune2>
-		<StatRune>RogueArmor</StatRune>
+		<ProcRune2>CritDamage</ProcRune2>
+		<StatRune>RogueExpertise</StatRune>
 		<Rarity>L</Rarity>
 		<Realm>Demon</Realm>
 		<Level>29</Level>
@@ -73906,8 +73906,8 @@
 		<GearSet>12</GearSet>
 		<UsedBy>Rogue</UsedBy>
 		<MagicRune>ItemDrop</MagicRune>
-		<ProcRune>DeathSlay</ProcRune>
-		<StatRune>RogueArmor</StatRune>
+		<ProcRune>Haste</ProcRune>
+		<StatRune>RogueExpertise</StatRune>
 		<Rarity>M</Rarity>
 		<BossName>PortalMaster</BossName>
 		<Level>29</Level>
@@ -73926,10 +73926,10 @@
 		<DisplayName>Nadir Haydut El Imp Seviye 29</DisplayName>
 		<GearSet>12</GearSet>
 		<UsedBy>Rogue</UsedBy>
-		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>MistWalk</PowerRune>
-		<ProcRune>DeathSlay</ProcRune>
-		<StatRune>RogueArmor</StatRune>
+		<ProcRune>Haste</ProcRune>
+		<StatRune>RogueExpertise</StatRune>
 		<Rarity>R</Rarity>
 		<BossName>PortalMaster</BossName>
 		<Level>29</Level>
@@ -73948,11 +73948,11 @@
 		<DisplayName>Efsanevi Haydut El Imp Seviye 29</DisplayName>
 		<GearSet>12</GearSet>
 		<UsedBy>Rogue</UsedBy>
-		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>MistWalk</PowerRune>
-		<ProcRune>DeathSlay</ProcRune>
+		<ProcRune>Haste</ProcRune>
 		<ProcRune2>CritChance</ProcRune2>
-		<StatRune>RogueArmor</StatRune>
+		<StatRune>RogueExpertise</StatRune>
 		<Rarity>L</Rarity>
 		<BossName>PortalMaster</BossName>
 		<Level>29</Level>

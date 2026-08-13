@@ -315,11 +315,11 @@
 		<ModName>ContactPoison1</ModName>
 		<ModID>31</ModID>
 		<DisplayName>Contact Poison</DisplayName>
-		<Description>Increases Poison Damage vs. Bleeding targets@Poison vs Bleeding:, +2%, +4%, +8%, +12%, +18%</Description>
+		<Description>Increases Poison Damage vs. Bleeding targets@Poison vs Bleeding:, +5%, +10%, +15%, +20%, +30%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.04</BuffValue>
+		<BuffValue>.10</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -329,7 +329,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.08</BuffValue>
+		<BuffValue>.20</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -339,7 +339,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.16</BuffValue>
+		<BuffValue>.30</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -349,7 +349,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.24</BuffValue>
+		<BuffValue>.40</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -359,18 +359,18 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4,RunePoisonStrike</BuffName>
 		<BuffProperty>BleedMultiplier</BuffProperty>
-		<BuffValue>.35</BuffValue>
+		<BuffValue>.60</BuffValue>
 		<IconName>a_Signet_Poison02</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>ArmorDmgTime1</ModName>
 		<ModID>36</ModID>
 		<DisplayName>Corrosive Strikes</DisplayName>
-		<Description>Increases Armor Bane and Armor Break durations@Duration (seconds):, +.1, +.3, +.6, +1.1, +1.8</Description>
+		<Description>Increases Armor Bane and Armor Break durations@Duration (seconds):, +.2, +.5, +1, +1.5, +2</Description>
 		<ModType>Buff</ModType>
 		<BuffName>ArmorBane,ReduceArmor,ReduceArmor20,ReduceArmor35,ReduceArmor50,ShadowReduce20,ShadowReduce35,ShadowReduce50</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>100</BuffValue>
+		<BuffValue>200</BuffValue>
 		<IconName>a_Signet_ArmorDmg02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -380,7 +380,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>ArmorBane,ReduceArmor,ReduceArmor20,ReduceArmor35,ReduceArmor50,ShadowReduce20,ShadowReduce35,ShadowReduce50</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>300</BuffValue>
+		<BuffValue>500</BuffValue>
 		<IconName>a_Signet_ArmorDmg02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -390,7 +390,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>ArmorBane,ReduceArmor,ReduceArmor20,ReduceArmor35,ReduceArmor50,ShadowReduce20,ShadowReduce35,ShadowReduce50</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>600</BuffValue>
+		<BuffValue>1000</BuffValue>
 		<IconName>a_Signet_ArmorDmg02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -400,7 +400,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>ArmorBane,ReduceArmor,ReduceArmor20,ReduceArmor35,ReduceArmor50,ShadowReduce20,ShadowReduce35,ShadowReduce50</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>1100</BuffValue>
+		<BuffValue>1500</BuffValue>
 		<IconName>a_Signet_ArmorDmg02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -410,7 +410,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>ArmorBane,ReduceArmor,ReduceArmor20,ReduceArmor35,ReduceArmor50,ShadowReduce20,ShadowReduce35,ShadowReduce50</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>1800</BuffValue>
+		<BuffValue>2000</BuffValue>
 		<IconName>a_Signet_ArmorDmg02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -667,11 +667,11 @@
 		<ModName>StrengthDmgTime1</ModName>
 		<ModID>66</ModID>
 		<DisplayName>Nerve Strike</DisplayName>
-		<Description>Increases Enfeeble and Weaken durations@Duration (seconds):, +.25, +.5, +75, +1.25, +1.75</Description>
+		<Description>Increases Enfeeble and Weaken durations@Duration (seconds):, +.5, +1, +1.5, +2, +3</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Enfeeble,Weakened,Enfeeble30,Enfeeble45,Enfeeble60,ChaosWeaken</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>250</BuffValue>
+		<BuffValue>500</BuffValue>
 		<IconName>a_Signet_StrDmg02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -681,7 +681,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Enfeeble,Weakened,Enfeeble30,Enfeeble45,Enfeeble60,ChaosWeaken</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>250</BuffValue>
+		<BuffValue>1000</BuffValue>
 		<IconName>a_Signet_StrDmg02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -691,7 +691,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Enfeeble,Weakened,Enfeeble30,Enfeeble45,Enfeeble60,ChaosWeaken</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>250</BuffValue>
+		<BuffValue>1500</BuffValue>
 		<IconName>a_Signet_StrDmg02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -701,7 +701,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Enfeeble,Weakened,Enfeeble30,Enfeeble45,Enfeeble60,ChaosWeaken</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>500</BuffValue>
+		<BuffValue>2000</BuffValue>
 		<IconName>a_Signet_StrDmg02</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -711,18 +711,18 @@
 		<ModType>Buff</ModType>
 		<BuffName>Enfeeble,Weakened,Enfeeble30,Enfeeble45,Enfeeble60,ChaosWeaken</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>500</BuffValue>
+		<BuffValue>3000</BuffValue>
 		<IconName>a_Signet_StrDmg02</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>StrengthDmg1</ModName>
 		<ModID>71</ModID>
 		<DisplayName>Bind Strength</DisplayName>
-		<Description>Increases Enfeeble and Weaken effectiveness@Effect:, +1%, +2%, +5%, +10%, +15%</Description>
+		<Description>Increases Enfeeble and Weaken effectiveness@Effect:, +3%, +5%, +10%, +15%, +20%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Enfeeble,Weakened,Enfeeble30,Enfeeble45,Enfeeble60,ChaosWeaken</BuffName>
 		<BuffProperty>MeleeDamage,MagicDamage</BuffProperty>
-		<BuffValue>-.001,-.001</BuffValue>
+		<BuffValue>-.003,-.003</BuffValue>
 		<IconName>a_Signet_StrDmg01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -732,7 +732,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Enfeeble,Weakened,Enfeeble30,Enfeeble45,Enfeeble60,ChaosWeaken</BuffName>
 		<BuffProperty>MeleeDamage,MagicDamage</BuffProperty>
-		<BuffValue>-.002,-.002</BuffValue>
+		<BuffValue>-.005,-.005</BuffValue>
 		<IconName>a_Signet_StrDmg01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -742,7 +742,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Enfeeble,Weakened,Enfeeble30,Enfeeble45,Enfeeble60,ChaosWeaken</BuffName>
 		<BuffProperty>MeleeDamage,MagicDamage</BuffProperty>
-		<BuffValue>-.005,-.005</BuffValue>
+		<BuffValue>-.01,-.01</BuffValue>
 		<IconName>a_Signet_StrDmg01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -752,7 +752,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Enfeeble,Weakened,Enfeeble30,Enfeeble45,Enfeeble60,ChaosWeaken</BuffName>
 		<BuffProperty>MeleeDamage,MagicDamage</BuffProperty>
-		<BuffValue>-.01,-.01</BuffValue>
+		<BuffValue>-.015,-.015</BuffValue>
 		<IconName>a_Signet_StrDmg01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -762,7 +762,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>Enfeeble,Weakened,Enfeeble30,Enfeeble45,Enfeeble60,ChaosWeaken</BuffName>
 		<BuffProperty>MeleeDamage,MagicDamage</BuffProperty>
-		<BuffValue>-.015,-.015</BuffValue>
+		<BuffValue>-.02,-.02</BuffValue>
 		<IconName>a_Signet_StrDmg01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -912,11 +912,11 @@
 		<ModName>Ethereal1</ModName>
 		<ModID>91</ModID>
 		<DisplayName>Ethereal</DisplayName>
-		<Description>Gain a Defense bonus while in Stealth@Defense Bonus:, 1%, 2%, 3%, 5%, 8%</Description>
+		<Description>Gain an Expertise bonus while in Stealth@Expertise Bonus:, 1%, 3%, 5%, 7%, 10%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>ShadowArmor1,ShadowArmor2,ShadowArmor3,ShadowArmor4,ShadowArmor5,ShadowArmor6,ShadowArmor7,ShadowArmor8,ShadowArmor9,ShadowArmor10</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.01,.01</BuffValue>
+		<BuffProperty>MagicDamage</BuffProperty>
+		<BuffValue>.01</BuffValue>
 		<IconName>a_Signet_Stealth01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -925,8 +925,8 @@
 		<DisplayName>Ethereal</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>ShadowArmor1,ShadowArmor2,ShadowArmor3,ShadowArmor4,ShadowArmor5,ShadowArmor6,ShadowArmor7,ShadowArmor8,ShadowArmor9,ShadowArmor10</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.02,.02</BuffValue>
+		<BuffProperty>MagicDamage</BuffProperty>
+		<BuffValue>.03</BuffValue>
 		<IconName>a_Signet_Stealth01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -935,8 +935,8 @@
 		<DisplayName>Ethereal</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>ShadowArmor1,ShadowArmor2,ShadowArmor3,ShadowArmor4,ShadowArmor5,ShadowArmor6,ShadowArmor7,ShadowArmor8,ShadowArmor9,ShadowArmor10</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.03,.03</BuffValue>
+		<BuffProperty>MagicDamage</BuffProperty>
+		<BuffValue>.05</BuffValue>
 		<IconName>a_Signet_Stealth01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -945,8 +945,8 @@
 		<DisplayName>Ethereal</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>ShadowArmor1,ShadowArmor2,ShadowArmor3,ShadowArmor4,ShadowArmor5,ShadowArmor6,ShadowArmor7,ShadowArmor8,ShadowArmor9,ShadowArmor10</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.05,.05</BuffValue>
+		<BuffProperty>MagicDamage</BuffProperty>
+		<BuffValue>.07</BuffValue>
 		<IconName>a_Signet_Stealth01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -955,8 +955,8 @@
 		<DisplayName>Ethereal</DisplayName>
 		<ModType>Buff</ModType>
 		<BuffName>ShadowArmor1,ShadowArmor2,ShadowArmor3,ShadowArmor4,ShadowArmor5,ShadowArmor6,ShadowArmor7,ShadowArmor8,ShadowArmor9,ShadowArmor10</BuffName>
-		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
-		<BuffValue>.08,.08</BuffValue>
+		<BuffProperty>MagicDamage</BuffProperty>
+		<BuffValue>.10</BuffValue>
 		<IconName>a_Signet_Stealth01</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2680,7 +2680,7 @@
 		<ModName>WindCloak1</ModName>
 		<ModID>281</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
-		<Description>Gain Bonus Defense vs Projectiles@Defense:, +1%, +2%, +3%, +5%, +7%</Description>
+		<Description>Gain Bonus Defense vs Bound Enemies@Defense:, +1%, +3%, +5%, +7%, +10%</Description>
 		<ModType>WTF</ModType>
 		<SelfValue>.01</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
@@ -2690,7 +2690,7 @@
 		<ModID>282</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.02</SelfValue>
+		<SelfValue>.03</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2698,7 +2698,7 @@
 		<ModID>283</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.03</SelfValue>
+		<SelfValue>.05</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2706,7 +2706,7 @@
 		<ModID>284</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.05</SelfValue>
+		<SelfValue>.07</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2714,7 +2714,7 @@
 		<ModID>285</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.07</SelfValue>
+		<SelfValue>.10</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2757,7 +2757,7 @@
 		<ModName>CurseSword1</ModName>
 		<ModID>291</ModID>
 		<DisplayName>Cursed Sword</DisplayName>
-		<Description>Gain Bonus Defense vs Cursed Enemies@Defense:, +1%, +2%, +4%, +6%, +10%</Description>
+		<Description>Minions gain Bonus Damage vs Cursed Enemies@Damage:, +1%, +3%, +5%, +7%, +10%</Description>
 		<ModType>WTF</ModType>
 		<SelfValue>.01</SelfValue>
 		<IconName>a_Signet_CurseSword</IconName>
@@ -2767,7 +2767,7 @@
 		<ModID>292</ModID>
 		<DisplayName>Cursed Sword</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.02</SelfValue>
+		<SelfValue>.03</SelfValue>
 		<IconName>a_Signet_CurseSword</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2775,7 +2775,7 @@
 		<ModID>293</ModID>
 		<DisplayName>Cursed Sword</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.04</SelfValue>
+		<SelfValue>.05</SelfValue>
 		<IconName>a_Signet_CurseSword</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2783,7 +2783,7 @@
 		<ModID>294</ModID>
 		<DisplayName>Cursed Sword</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.06</SelfValue>
+		<SelfValue>.07</SelfValue>
 		<IconName>a_Signet_CurseSword</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2791,7 +2791,7 @@
 		<ModID>295</ModID>
 		<DisplayName>Cursed Sword</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.1</SelfValue>
+		<SelfValue>.10</SelfValue>
 		<IconName>a_Signet_CurseSword</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2949,9 +2949,9 @@
 		<ModName>CurseArmor1</ModName>
 		<ModID>311</ModID>
 		<DisplayName>Cursed Armor</DisplayName>
-		<Description>Gain Bonus Damage vs Cursed Enemies@Defense:, +1%, +2%, +3%, +4%, +5%</Description>
+		<Description>Minions gain Bonus Defense and Expertise vs Cursed Enemies@Defense and Expertise:, +3%, +5%, +10%, +15%, +20%</Description>
 		<ModType>WTF</ModType>
-		<SelfValue>0.01</SelfValue>
+		<SelfValue>.03</SelfValue>
 		<IconName>a_Signet_CurseArmor</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2959,7 +2959,7 @@
 		<ModID>312</ModID>
 		<DisplayName>Cursed Armor</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.02</SelfValue>
+		<SelfValue>.05</SelfValue>
 		<IconName>a_Signet_CurseArmor</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2967,7 +2967,7 @@
 		<ModID>313</ModID>
 		<DisplayName>Cursed Armor</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.03</SelfValue>
+		<SelfValue>.10</SelfValue>
 		<IconName>a_Signet_CurseArmor</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2975,7 +2975,7 @@
 		<ModID>314</ModID>
 		<DisplayName>Cursed Armor</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.04</SelfValue>
+		<SelfValue>.15</SelfValue>
 		<IconName>a_Signet_CurseArmor</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2983,7 +2983,7 @@
 		<ModID>315</ModID>
 		<DisplayName>Cursed Armor</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>0.05</SelfValue>
+		<SelfValue>.20</SelfValue>
 		<IconName>a_Signet_CurseArmor</IconName>
 	</PowerModType>
 	<PowerModType>

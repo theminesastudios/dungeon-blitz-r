@@ -1895,7 +1895,7 @@ function patchMapMarker(swfPath: string): void {
 }
 
 function syncClientRevision(swfPath: string, verifyOnly: boolean): void {
-    const digest = crypto.createHash('sha256').update(fs.readFileSync(swfPath)).digest('hex').slice(0, 12);
+    const digest = crypto.createHash('sha1').update(fs.readFileSync(swfPath)).digest('hex').slice(0, 12);
     const html = fs.readFileSync(INDEX_HTML, 'utf8');
     const expected = `clientrev=swf-${digest}`;
     if (verifyOnly) {

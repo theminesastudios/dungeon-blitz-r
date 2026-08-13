@@ -32,9 +32,9 @@ function discoverVerifiableScripts() {
 
 function runVerify(name) {
     const isTypeScript = name.endsWith('.ts');
-    const command = isTypeScript ? 'npx' : process.execPath;
+    const command = process.execPath;
     const args = isTypeScript
-        ? ['ts-node', path.join('scripts', name), '--verify']
+        ? ['-r', 'ts-node/register', path.join('scripts', name), '--verify']
         : [path.join('scripts', name), '--verify'];
 
     return new Promise((resolve) => {

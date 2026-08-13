@@ -1911,8 +1911,6 @@ function localizePowerSentence(source) {
         'Damages, Cripples and Binds a single target.': 'Tek hedefe hasar verir; Sakatlama ve Baglama uygular.',
         'Damages, Cripples, Poisons and Binds a single target.': 'Tek hedefe hasar verir; Sakatlama, Zehir ve Baglama uygular.',
         'Release Chaotic energy, Binding and reducing the Attack of nearby foes': 'Kaotik enerji salar; yakindaki dusmanlari baglar ve saldirilarini azaltir',
-        'Release Chaotic energy, Binding and reducing the Attack of nearby foes. Grants an Expertise buff': 'Kaotik enerji salar; yakindaki dusmanlari baglar ve saldirilarini azaltir. Uzmanlik guclendirmesi verir.',
-        'Release Chaotic energy, Binding, Poisoning and reducing the Attack of nearby foes. Grants an Expertise buff': 'Kaotik enerji salar; yakindaki dusmanlari baglar, zehirler ve saldirilarini azaltir. Uzmanlik guclendirmesi verir.',
         'Strike your opponent with a powerful blow, dealing increased damage to Bound targets': 'Rakibe guclu bir darbe indirir; Bagli hedeflere daha fazla hasar verir',
         'Vampiric AoE attack.': 'Vampirik alan saldirisi.',
         'Vampiric AoE attack that deals increased damage to Bound targets': 'Bagli hedeflere daha fazla hasar veren vampirik alan saldirisi',

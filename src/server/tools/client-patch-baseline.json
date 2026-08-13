@@ -1,6 +1,6 @@
 {
-    "_comment": "Client patches that already fail --verify as of 2026-07-25. The gate only fails on regressions outside this list; entries that start passing must be removed. Triage and shrink this list -- some are deliberate reverts, others are genuinely dropped patches. 2026-07-25: transfer-pet-mount-sync recovered when the forge tutorial patch rewrote (and recompressed) DungeonBlitz.swf.",
-    "recordedAt": "2026-07-25",
+    "_comment": "Client patches that already fail --verify as of 2026-08-11. The gate only fails on regressions outside this list; entries that start passing must be removed. Triage and shrink this list -- some are deliberate reverts, others are genuinely dropped patches. Forge tutorial persistence is deliberately disabled because it crashes on world enter.",
+    "recordedAt": "2026-08-11",
     "knownFailing": [
         "patch-dungeonblitz-banshee-wail-cap.ts",
         "patch-dungeonblitz-chatbubble-method901-null-guard.ts",
@@ -9,6 +9,7 @@
         "patch-dungeonblitz-class82-bitmapdata-guard.ts",
         "patch-dungeonblitz-destroy-entity-without-brain.ts",
         "patch-dungeonblitz-dye-ui-owned-color.ts",
+        "patch-dungeonblitz-forge-tutorial-persistence.ts",
         "patch-dungeonblitz-game-method1947-screen-bitmapdata.ts",
         "patch-dungeonblitz-game-method527-clamp-floaters.ts",
         "patch-dungeonblitz-hide-duplicate-boss-visual.ts",
