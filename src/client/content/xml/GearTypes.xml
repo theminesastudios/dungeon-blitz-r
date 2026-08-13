@@ -73479,7 +73479,7 @@
 		<DisplayName>Nadir Haydut Ayaklik Iblis Seviye 29</DisplayName>
 		<GearSet>12</GearSet>
 		<UsedBy>Rogue</UsedBy>
-		<MagicRune>ItemDrop+CraftDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>ShadowBlade</PowerRune>
 		<ProcRune>HealthPercent</ProcRune>
 		<StatRune>RogueExpertise</StatRune>
@@ -73500,7 +73500,7 @@
 		<DisplayName>Efsanevi Haydut Ayaklik Iblis Seviye 29</DisplayName>
 		<GearSet>12</GearSet>
 		<UsedBy>Rogue</UsedBy>
-		<MagicRune>ItemDrop+CraftDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>ShadowBlade</PowerRune>
 		<ProcRune>HealthPercent</ProcRune>
 		<ProcRune2>CritDamage</ProcRune2>
@@ -73926,7 +73926,7 @@
 		<DisplayName>Nadir Haydut El Imp Seviye 29</DisplayName>
 		<GearSet>12</GearSet>
 		<UsedBy>Rogue</UsedBy>
-		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>MistWalk</PowerRune>
 		<ProcRune>Haste</ProcRune>
 		<StatRune>RogueExpertise</StatRune>
@@ -73948,7 +73948,7 @@
 		<DisplayName>Efsanevi Haydut El Imp Seviye 29</DisplayName>
 		<GearSet>12</GearSet>
 		<UsedBy>Rogue</UsedBy>
-		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>MistWalk</PowerRune>
 		<ProcRune>Haste</ProcRune>
 		<ProcRune2>CritChance</ProcRune2>

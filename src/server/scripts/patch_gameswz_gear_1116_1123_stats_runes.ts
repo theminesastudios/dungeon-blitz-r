@@ -54,6 +54,16 @@ export function patchGear1116And1123StatsRunes(xml: string): PatchResult {
       );
       changes += Number(result.changed);
 
+      if (rarity === "M") {
+        if (readTag(result.block, "MagicRune") !== "ItemDrop") {
+          throw new Error(`${variant} has unexpected MagicRune ${readTag(result.block, "MagicRune") ?? "<missing>"}.`);
+        }
+      } else {
+        const oldMagicRune = gearId === "1116" ? "ItemDrop+CraftDrop" : "ItemDrop+GoldDrop";
+        result = replaceExpectedTag(result.block, "MagicRune", oldMagicRune, "Speed+ItemDrop", variant);
+        changes += Number(result.changed);
+      }
+
       if (gearId === "1123") {
         result = replaceExpectedTag(result.block, "ProcRune", "DeathSlay", "Haste", variant);
         changes += Number(result.changed);
