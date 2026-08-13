@@ -16128,7 +16128,7 @@
 		<DisplayName>Buyucu Odak Magaza Seviye 9</DisplayName>
 		<GearSet>2</GearSet>
 		<UsedBy>Mage</UsedBy>
-		<MagicRune>CraftDrop</MagicRune>
+		<MagicRune>ItemDrop</MagicRune>
 		<ProcRune>CritChance</ProcRune>
 		<StatRune>MageBalanced</StatRune>
 		<Rarity>M</Rarity>
@@ -16148,7 +16148,7 @@
 		<DisplayName>Nadir Buyucu Odak Magaza Seviye 9</DisplayName>
 		<GearSet>2</GearSet>
 		<UsedBy>Mage</UsedBy>
-		<MagicRune>Speed+CraftDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>PoisonCloud</PowerRune>
 		<ProcRune>CritChance</ProcRune>
 		<StatRune>MageBalanced</StatRune>
@@ -16169,7 +16169,7 @@
 		<DisplayName>Efsanevi Buyucu Odak Magaza Seviye 9</DisplayName>
 		<GearSet>2</GearSet>
 		<UsedBy>Mage</UsedBy>
-		<MagicRune>Speed+CraftDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>PoisonCloud</PowerRune>
 		<ProcRune>CritChance</ProcRune>
 		<ProcRune2>Haste</ProcRune2>
@@ -16476,8 +16476,8 @@
 		<DisplayName>Buyucu Ayakkabi Kertenkele Seviye 9</DisplayName>
 		<GearSet>2</GearSet>
 		<UsedBy>Mage</UsedBy>
-		<MagicRune>CraftDrop</MagicRune>
-		<ProcRune>ResistIce</ProcRune>
+		<MagicRune>Speed</MagicRune>
+		<ProcRune>HealthPercent</ProcRune>
 		<StatRune>MageBalanced</StatRune>
 		<Rarity>M</Rarity>
 		<Realm>Lizard</Realm>
@@ -16494,9 +16494,9 @@
 		<DisplayName>Nadir Buyucu Ayakkabi Kertenkele Seviye 9</DisplayName>
 		<GearSet>2</GearSet>
 		<UsedBy>Mage</UsedBy>
-		<MagicRune>GoldDrop+CraftDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>SummonRangedGhoul</PowerRune>
-		<ProcRune>ResistIce</ProcRune>
+		<ProcRune>HealthPercent</ProcRune>
 		<StatRune>MageBalanced</StatRune>
 		<Rarity>R</Rarity>
 		<Realm>Lizard</Realm>
@@ -16513,10 +16513,10 @@
 		<DisplayName>Efsanevi Buyucu Ayakkabi Kertenkele Seviye 9</DisplayName>
 		<GearSet>2</GearSet>
 		<UsedBy>Mage</UsedBy>
-		<MagicRune>GoldDrop+CraftDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>SummonRangedGhoul</PowerRune>
-		<ProcRune>ResistIce</ProcRune>
-		<ProcRune2>ResistEarth</ProcRune2>
+		<ProcRune>HealthPercent</ProcRune>
+		<ProcRune2>CritDamage</ProcRune2>
 		<StatRune>MageBalanced</StatRune>
 		<Rarity>L</Rarity>
 		<Realm>Lizard</Realm>
@@ -17003,7 +17003,7 @@
 		<UsedBy>Mage</UsedBy>
 		<MagicRune>ItemDrop</MagicRune>
 		<ProcRune>HealthPercent</ProcRune>
-		<StatRune>MageArmor</StatRune>
+		<StatRune>MageBalanced</StatRune>
 		<Rarity>M</Rarity>
 		<Realm>Lizard</Realm>
 		<Level>9</Level>
@@ -17019,10 +17019,10 @@
 		<DisplayName>Nadir Buyucu Mucevher Kertenkele Seviye 9</DisplayName>
 		<GearSet>2</GearSet>
 		<UsedBy>Mage</UsedBy>
-		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>PlagueBattalion</PowerRune>
 		<ProcRune>HealthPercent</ProcRune>
-		<StatRune>MageArmor</StatRune>
+		<StatRune>MageBalanced</StatRune>
 		<Rarity>R</Rarity>
 		<Realm>Lizard</Realm>
 		<Level>9</Level>
@@ -17038,11 +17038,11 @@
 		<DisplayName>Efsanevi Buyucu Mucevher Kertenkele Seviye 9</DisplayName>
 		<GearSet>2</GearSet>
 		<UsedBy>Mage</UsedBy>
-		<MagicRune>ItemDrop+GoldDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>PlagueBattalion</PowerRune>
 		<ProcRune>HealthPercent</ProcRune>
-		<ProcRune2>Resilience</ProcRune2>
-		<StatRune>MageArmor</StatRune>
+		<ProcRune2>Haste</ProcRune2>
+		<StatRune>MageBalanced</StatRune>
 		<Rarity>L</Rarity>
 		<Realm>Lizard</Realm>
 		<Level>9</Level>
@@ -34149,7 +34149,7 @@
 		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>SummonGuard</PowerRune>
 		<ProcRune>RecoveryBoost</ProcRune>
-		<ProcRune2>Resilience</ProcRune2>
+		<ProcRune2>CritChance</ProcRune2>
 		<StatRune>MageBalanced</StatRune>
 		<Rarity>L</Rarity>
 		<BossName>SwampSpiderQueen</BossName>
@@ -56672,9 +56672,9 @@
 		<DisplayName>Buyucu Buz Asa Ejderha Ozel Seviye 22</DisplayName>
 		<GearSet>9</GearSet>
 		<UsedBy>Mage</UsedBy>
-		<MagicRune>CraftDrop</MagicRune>
-		<ProcRune>ProcMassive</ProcRune>
-		<StatRune>MageAttack</StatRune>
+		<MagicRune>ItemDrop</MagicRune>
+		<ProcRune>ProcHealTime</ProcRune>
+		<StatRune>MageBalanced</StatRune>
 		<Rarity>M</Rarity>
 		<BossName>AncientDragonSilver</BossName>
 		<Level>22</Level>
@@ -56696,10 +56696,10 @@
 		<DisplayName>Nadir Buyucu Buz Asa Ejderha Ozel Seviye 22</DisplayName>
 		<GearSet>9</GearSet>
 		<UsedBy>Mage</UsedBy>
-		<MagicRune>Speed+CraftDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>IceSpike</PowerRune>
-		<ProcRune>ProcMassive</ProcRune>
-		<StatRune>MageAttack</StatRune>
+		<ProcRune>ProcHealTime</ProcRune>
+		<StatRune>MageBalanced</StatRune>
 		<Rarity>R</Rarity>
 		<BossName>AncientDragonSilver</BossName>
 		<Level>22</Level>
@@ -56718,11 +56718,11 @@
 		<DisplayName>Efsanevi Buyucu Buz Asa Ejderha Ozel Seviye 22</DisplayName>
 		<GearSet>9</GearSet>
 		<UsedBy>Mage</UsedBy>
-		<MagicRune>Speed+CraftDrop</MagicRune>
+		<MagicRune>Speed+ItemDrop</MagicRune>
 		<PowerRune>IceSpike</PowerRune>
-		<ProcRune>ProcMassive</ProcRune>
+		<ProcRune>ProcHealTime</ProcRune>
 		<ProcRune2>ProcHeal</ProcRune2>
-		<StatRune>MageAttack</StatRune>
+		<StatRune>MageBalanced</StatRune>
 		<Rarity>L</Rarity>
 		<BossName>AncientDragonSilver</BossName>
 		<Level>22</Level>
