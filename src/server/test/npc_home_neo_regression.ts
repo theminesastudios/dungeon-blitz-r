@@ -273,9 +273,16 @@ function testCraftTownAuthoredNeoNpcSpawnsAfterPlayerSpawn(): void {
 
     EntityHandler.sendCraftTownAuthoredNpcs(client);
 
+    // Two server-owned figures stand in Craft Town now: Archivist Neo in the
+    // library, and Titus on the path under the Legends' Inn portal. This test is
+    // Neo's, so it picks him out rather than assuming he is the only one.
     const spawnPackets = client.sentPackets.filter((packet: any) => packet.id === 0x0F);
-    assert.equal(spawnPackets.length, 1, 'authored Home NPC should be sent after player spawn');
-    assert.deepEqual(readSerializedNpcEntity(spawnPackets[0].payload), {
+    assert.equal(spawnPackets.length, 2, 'Neo and Titus should both be sent after player spawn');
+    const neoPacket = spawnPackets.find(
+        (packet: any) => Number(readSerializedNpcEntity(packet.payload).id) === NEO_ID
+    );
+    assert.ok(neoPacket, 'authored Home NPC should be sent after player spawn');
+    assert.deepEqual(readSerializedNpcEntity(neoPacket.payload), {
         id: NEO_ID,
         name: 'NPCHomeNeo',
         isPlayer: false,
@@ -293,8 +300,8 @@ function testCraftTownAuthoredNeoNpcSpawnsAfterPlayerSpawn(): void {
     EntityHandler.sendCraftTownAuthoredNpcs(client);
     assert.equal(
         client.sentPackets.filter((packet: any) => packet.id === 0x0F).length,
-        1,
-        'known Home NPC should not duplicate'
+        2,
+        'known Home NPCs should not duplicate'
     );
 }
 

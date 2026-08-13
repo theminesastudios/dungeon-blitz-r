@@ -68,6 +68,15 @@
   <Level Version="cbp"				 Size="2658" Name="LevelsHome.swf" />
   <Level Version="cbp"				 Size="3728" Name="LevelsJC.swf" />
   <Level Version="cam"				 Size="1337" Name="LevelsLD.swf" />
+  <Level Version="cbp"				 Size="320" Name="LevelsLI01.swf" />
+  <Level Version="cbp"				 Size="464" Name="LevelsLI02.swf" />
+  <Level Version="cbp"				 Size="638" Name="LevelsLI03.swf" />
+  <Level Version="cbp"				 Size="572" Name="LevelsLI04.swf" />
+  <Level Version="cbp"				 Size="532" Name="LevelsLI05.swf" />
+  <Level Version="cbp"				 Size="718" Name="LevelsLI06.swf" />
+  <Level Version="cbp"				 Size="913" Name="LevelsLI07.swf" />
+  <Level Version="cbp"				 Size="363" Name="LevelsLI08.swf" />
+  <Level Version="cbp"				 Size="200" Name="LevelsLI09.swf" />
   <Level Version="cbp"				 Size="2647" Name="LevelsNR.swf" />
   <Level Version="cbp"				 Size="1967" Name="LevelsOMM.swf" />
   <Level Version="cam"				 Size="1792" Name="LevelsSD.swf" />

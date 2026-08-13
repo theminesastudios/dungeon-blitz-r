@@ -28,6 +28,12 @@ export interface PendingLootDrop {
     tier?: number;
     material?: number;
     dye?: number;
+    /**
+     * A consumable the `material` above is only the carrier for. The loot-drop
+     * packet has no consumable slot, so the Legends' Inn chest drops a catalyst as
+     * a rarity-matched material and swaps it back on pickup.
+     */
+    consumable?: number;
     __lootDropMetadata?: {
         lootdropId: number;
         lootDropNonce: string;

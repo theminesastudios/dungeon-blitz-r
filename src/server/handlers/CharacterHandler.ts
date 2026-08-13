@@ -43,6 +43,7 @@ import {
 } from '../core/LevelScope';
 import { getCharacterRuntimeLevel, getPartyRuntimeLevelForClient } from '../core/RuntimeLevel';
 import { RegionPositionPersistence } from '../core/RegionPositionPersistence';
+import { LegendsInn } from '../core/LegendsInn';
 
 const db = new JsonAdapter();
 
@@ -1107,7 +1108,12 @@ export class CharacterHandler {
         // Get Level Config
         const levelSpec = LevelConfig.get(currentLevelName);
         const isHard = currentLevelName.endsWith("Hard");
-        const runtimeMapLevel = CharacterHandler.resolveDungeonMapPacketLevel(currentLevelName, levelSpec.mapId, char, client);
+        // The entry plate reads mapLevel + mBonusLevels, so hand it the level the
+        // dungeon presents as rather than the one its monsters fight at.
+        const runtimeMapLevel = LegendsInn.adjustDisplayMapLevel(
+            currentLevelName,
+            CharacterHandler.resolveDungeonMapPacketLevel(currentLevelName, levelSpec.mapId, char, client)
+        );
         const runtimeBaseLevel = levelSpec.baseId;
 
         const momentParams = DungeonEntryDisplay.buildMomentParams(currentLevelName, isHard ? "Hard" : "");
@@ -1322,8 +1328,10 @@ export class CharacterHandler {
         const pdPkt = WorldEnter.buildPlayerDataPacket(
             client.character,
             token,
-            0, 
             0,
+            // mBonusLevels. The only thing that decides how much health a
+            // client-spawned hostile has - see LegendsInn.getMonsterBonusLevels.
+            LegendsInn.getMonsterBonusLevels(entry.targetLevel),
             entry.targetLevel,
             spawn.x,
             spawn.y,

@@ -30,6 +30,8 @@ import {
 } from '../core/HomeStatues';
 import { getCraftTownHomeOwnerCharacter } from '../utils/HomeVisitGuard';
 import { HomeStatueHandler } from './HomeStatueHandler';
+import { LegendsInn } from '../core/LegendsInn';
+import { LEGENDS_INN_TITUS_ENTITY_ID, LegendsInnGate } from '../core/LegendsInnGate';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
@@ -1396,6 +1398,9 @@ export class EntityHandler {
         GlobalState.levelEntities.delete(levelScope);
         GlobalState.levelQuestProgress.delete(levelScope);
         DungeonCompletionSystem.reset(levelScope);
+        // A reused instance must not inherit the last run's open exit portal, or the
+        // new party could walk past a boss that is standing there alive.
+        LegendsInn.resetScope(levelScope);
         // A fresh run must not inherit the previous run's open boss scene, or the
         // first legitimate boss cue of the new run would be read as a copy.
         clearOpenBossScene(levelScope);
@@ -1443,6 +1448,9 @@ export class EntityHandler {
         EntityHandler.clearDeadServerAuthorityHostileTombstones(levelScope, 'new_run');
         GlobalState.levelQuestProgress.delete(levelScope);
         DungeonCompletionSystem.reset(levelScope);
+        // A reused instance must not inherit the last run's open exit portal, or the
+        // new party could walk past a boss that is standing there alive.
+        LegendsInn.resetScope(levelScope);
         TutorialDungeonMechanics.resetState(levelScope);
         const keyPrefix = `${levelScope}:`;
         for (const key of Array.from(GlobalState.combatContributions.keys())) {
@@ -3835,6 +3843,35 @@ export class EntityHandler {
             client.entities.set(entityId, { ...entityProps });
             EntityHandler.sendEntity(client, entityProps);
         }
+
+        EntityHandler.sendLegendsInnGatekeeper(client, levelMap);
+    }
+
+    /**
+     * Titus, on the stone path under the Legends' Inn portal.
+     *
+     * He is built in code rather than listed in `npcs/CraftTown.json` because he is
+     * not level furniture: the door he stands next to is one this project added,
+     * his dialogue is dispatched on his entity id, and the gate he enforces lives
+     * beside him in `core/LegendsInnGate.ts`. Keeping the three together is what
+     * stops a stray edit to the NPC table from silently unlocking the dungeon.
+     *
+     * Sent to every visitor, including guests in someone else's keep - the warning
+     * is about the dungeon, not about whose garden it is reached from.
+     */
+    private static sendLegendsInnGatekeeper(client: Client, levelMap: Map<number, any>): void {
+        if (client.knownEntityIds.has(LEGENDS_INN_TITUS_ENTITY_ID)) {
+            return;
+        }
+
+        let entityProps = levelMap.get(LEGENDS_INN_TITUS_ENTITY_ID);
+        if (!entityProps) {
+            entityProps = LegendsInnGate.buildEntity();
+            levelMap.set(LEGENDS_INN_TITUS_ENTITY_ID, entityProps);
+        }
+
+        client.entities.set(LEGENDS_INN_TITUS_ENTITY_ID, { ...entityProps });
+        EntityHandler.sendEntity(client, entityProps);
     }
 
     /**
@@ -4168,6 +4205,10 @@ export class EntityHandler {
              BuildingHandler.refreshCraftTownBuildingsOnSpawn(client);
              EntityHandler.sendCraftTownAuthoredNpcs(client);
              HomeStatueHandler.onCraftTownSpawn(client);
+             // Covers the two arrivals the boss-death broadcast cannot reach: a
+             // party member who was still loading when the boss fell, and anyone
+             // rejoining a run that is already open.
+             LegendsInn.onPlayerSpawned(client);
         }
     }
 

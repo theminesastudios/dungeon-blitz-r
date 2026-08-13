@@ -170,6 +170,15 @@
     "SwampRoadConnectionMissionHard": {"mode":"bosses","bossGroups":[["SwampSpiderQueenHard"]],"bossAliases":{"Aracnae":"SwampSpiderQueenHard","Arachnae":"SwampSpiderQueenHard","Hsalt's Pride":"SwampSpiderQueenHard","SwampSpiderQueen":"SwampSpiderQueenHard"},"cutscene":{"requiredAfterObjectives":true}},
     "TutorialBoat": {"mode":"client-signal"},
     "TutorialDungeon":{"mode":"bosses","partyHostileSync":"bosses-only","bossGroups":[["GoblinBoss1"]],"bossAliases":{"Tag Ugo":"GoblinBoss1","TagUgo":"GoblinBoss1"},"entityObjectives":[{"names":["Chains03"],"role":"anna_freed"}],"cutscene":{"requiredAfterObjectives":true}},
-    "TutorialDungeonHard": {"mode":"bosses","partyHostileSync":"bosses-only","bossGroups":[["GoblinBoss1Hard"]],"bossAliases":{"GoblinBoss1":"GoblinBoss1Hard","Tag Ugo":"GoblinBoss1Hard","TagUgo":"GoblinBoss1Hard"},"cutscene":{"requiredAfterObjectives":true}}
+    "TutorialDungeonHard": {"mode":"bosses","partyHostileSync":"bosses-only","bossGroups":[["GoblinBoss1Hard"]],"bossAliases":{"GoblinBoss1":"GoblinBoss1Hard","Tag Ugo":"GoblinBoss1Hard","TagUgo":"GoblinBoss1Hard"},"cutscene":{"requiredAfterObjectives":true}},
+    "LegendsInn1Hard": {"mode":"disabled"},
+    "LegendsInn2Hard": {"mode":"disabled"},
+    "LegendsInn3Hard": {"mode":"disabled"},
+    "LegendsInn4Hard": {"mode":"disabled"},
+    "LegendsInn5Hard": {"mode":"disabled"},
+    "LegendsInn6Hard": {"mode":"disabled"},
+    "LegendsInn7Hard": {"mode":"disabled"},
+    "LegendsInn8Hard": {"mode":"disabled"},
+    "LegendsInn9Hard": {"mode":"full-clear"}
   }
 }

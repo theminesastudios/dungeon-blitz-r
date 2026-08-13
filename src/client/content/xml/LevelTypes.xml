@@ -999,4 +999,58 @@
 		<RankingsURL>event</RankingsURL>
 		<MusicLoop>D_dungeon_catacomb_v1.mp3</MusicLoop>
 	</LevelType>
+	<LevelType LevelName="LegendsInn1Hard">
+		<ZoneSet>NewbieRoad</ZoneSet>
+		<DisplayName>Legends' Inn</DisplayName>
+		<RankingsURL>legendsinn1</RankingsURL>
+		<MusicLoop>LegendsInn_Theme.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="LegendsInn2Hard">
+		<ZoneSet>SwampRoadNorth</ZoneSet>
+		<DisplayName>Legends' Inn</DisplayName>
+		<RankingsURL>legendsinn2</RankingsURL>
+		<MusicLoop>LegendsInn_Theme.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="LegendsInn3Hard">
+		<ZoneSet>BridgeTown</ZoneSet>
+		<DisplayName>Legends' Inn</DisplayName>
+		<RankingsURL>legendsinn3</RankingsURL>
+		<MusicLoop>LegendsInn_Theme.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="LegendsInn4Hard">
+		<ZoneSet>CemeteryHill</ZoneSet>
+		<DisplayName>Legends' Inn</DisplayName>
+		<RankingsURL>legendsinn4</RankingsURL>
+		<MusicLoop>LegendsInn_Theme.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="LegendsInn5Hard">
+		<ZoneSet>OldMineMountain</ZoneSet>
+		<DisplayName>Legends' Inn</DisplayName>
+		<RankingsURL>legendsinn5</RankingsURL>
+		<MusicLoop>LegendsInn_Theme.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="LegendsInn6Hard">
+		<ZoneSet>EmeraldGlades</ZoneSet>
+		<DisplayName>Legends' Inn</DisplayName>
+		<RankingsURL>legendsinn6</RankingsURL>
+		<MusicLoop>LegendsInn_Theme.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="LegendsInn7Hard">
+		<ZoneSet>Castle</ZoneSet>
+		<DisplayName>Legends' Inn</DisplayName>
+		<RankingsURL>legendsinn7</RankingsURL>
+		<MusicLoop>LegendsInn_Theme.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="LegendsInn8Hard">
+		<ZoneSet>ShazariDesert</ZoneSet>
+		<DisplayName>Legends' Inn</DisplayName>
+		<RankingsURL>legendsinn8</RankingsURL>
+		<MusicLoop>LegendsInn_Theme.mp3</MusicLoop>
+	</LevelType>
+	<LevelType LevelName="LegendsInn9Hard">
+		<ZoneSet>JadeCity</ZoneSet>
+		<DisplayName>Legends' Inn</DisplayName>
+		<RankingsURL>legendsinn9</RankingsURL>
+		<MusicLoop>LegendsInn_Theme.mp3</MusicLoop>
+	</LevelType>
 </LevelTypes>

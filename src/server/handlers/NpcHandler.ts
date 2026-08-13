@@ -15,6 +15,7 @@ import { getClientLevelScope } from '../core/LevelScope';
 import { RewardHandler } from './RewardHandler';
 import { MissionHandler } from './MissionHandler';
 import { HomeStatueHandler } from './HomeStatueHandler';
+import { LegendsInnGate } from '../core/LegendsInnGate';
 
 type MissionEntry = Record<string, any>;
 type ResolvedNpc = Record<string, any>;
@@ -117,6 +118,16 @@ export class NpcHandler {
 
         // Keep garden statues ride the same interact packet but have no dialogue of their own.
         if (HomeStatueHandler.handleStatueInteract(client, npcId)) {
+            return;
+        }
+
+        // Titus, under the Legends' Inn portal. Dispatched on his entity id rather
+        // than on a dialogue key, because he borrows the keep cue Archivist Neo is
+        // clickable through and the two would otherwise answer to the same key.
+        // His lines are the dungeon's story told by someone who lost to it; the
+        // warning that gates the portal is separate and lives on the door.
+        if (LegendsInnGate.isTitus(npcId)) {
+            NpcHandler.sendNpcBubble(client, npcId, LegendsInnGate.getLine());
             return;
         }
 

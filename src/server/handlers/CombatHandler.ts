@@ -36,6 +36,7 @@ import { RewardHandler } from './RewardHandler';
 import { MovementAuthority } from '../core/MovementAuthority';
 import { CastRateAuthority } from '../core/CastRateAuthority';
 import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
+import { LegendsInn } from '../core/LegendsInn';
 import { AdminRuntimeSettings } from '../core/AdminRuntimeSettings';
 
 type CombatRelayOptions = {
@@ -5833,6 +5834,10 @@ export class CombatHandler {
         const destroyedEntity = EntityHandler.usesServerAuthorityHostiles(levelName)
             ? (canonicalServerAuthorityEntity ?? client.entities.get(entityId) ?? rawLocalDestroyedEntity ?? canonicalDestroyedEntity)
             : (client.entities.get(entityId) ?? canonicalDestroyedEntity ?? rawLocalDestroyedEntity);
+        // A Legends' Inn stage opens its exit on the body leaving, not on the death,
+        // so this packet - the client telling us the corpse is gone - is the signal.
+        LegendsInn.noteEntityDestroyed(client, destroyedEntity);
+
         const scriptedAuthority = TutorialDungeonMechanics.isTutorialDungeon(levelName)
             ? TutorialDungeonMechanics.getAuthorityEntity(rawLocalDestroyedEntity, Number(client.currentRoomId ?? 0))
             : null;

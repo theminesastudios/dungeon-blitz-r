@@ -37539,6 +37539,242 @@
           "ColorSwap2": "0xD3FF6F=0xE8F7FF",
           "ColorSwap3": "0xec0000=0x2647FF"
         }
+      },
+      {
+        "EntName": "LegendsInnPortal",
+        "parent": "Base",
+        "DevStatus": "LegendsInn",
+        "Level": "0",
+        "GroupLevel": "0",
+        "MeleeDamage": "0",
+        "MagicDamage": "0",
+        "ArmorClass": "0",
+        "HitPoints": "0",
+        "RewardClass": "NoLoot",
+        "Realm": "Object",
+        "Speed": "0",
+        "Width": "200",
+        "Height": "250",
+        "Behavior": "NPC",
+        "Flying": "True"
+      },
+      {
+        "EntName": "LegendsInnServant",
+        "parent": "RageGuardianServant",
+        "DevStatus": "LegendsInn",
+        "Powers": "LegendsInnServantSummon"
+      },
+      {
+        "EntName": "LegendsInnServantHard",
+        "parent": "RageGuardianServant",
+        "DevStatus": "LegendsInn",
+        "Powers": "LegendsInnServantSummon"
+      },
+      {
+        "EntName": "NPCLegendsInnTitus",
+        "parent": "NPCTitus2",
+        "DisplayName": "Titus",
+        "DevStatus": "LegendsInn"
+      },
+      {
+        "EntName": "LegendsInnBoss1",
+        "parent": "JackalChieftain",
+        "DisplayName": "Vehr the Courier",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "6",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss1Hard",
+        "parent": "JackalChieftainHard",
+        "DisplayName": "Vehr the Courier",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "6",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss2",
+        "parent": "GreaterSkeletonRogue",
+        "DisplayName": "Osk the Witness",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "7",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss2Hard",
+        "parent": "GreaterSkeletonRogueHard",
+        "DisplayName": "Osk the Witness",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "7",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss3A",
+        "parent": "BanditTwinA",
+        "DisplayName": "Sarn, the Left Hand",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "8",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss3AHard",
+        "parent": "BanditTwinAHard",
+        "DisplayName": "Sarn, the Left Hand",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "8",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss3B",
+        "parent": "BanditTwinB",
+        "DisplayName": "Vael, the Right Hand",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "8",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss3BHard",
+        "parent": "BanditTwinBHard",
+        "DisplayName": "Vael, the Right Hand",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "8",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss4",
+        "parent": "MeylourEnthralledRogue",
+        "DisplayName": "Elsyn the Bought",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "9",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss4Hard",
+        "parent": "MeylourEnthralledRogueHard",
+        "DisplayName": "Elsyn the Bought",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "9",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss5",
+        "parent": "ScarabRogue",
+        "DisplayName": "Karrog the Forgemaster",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "10",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss5Hard",
+        "parent": "ScarabRogueHard",
+        "DisplayName": "Karrog the Forgemaster",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "10",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss6",
+        "parent": "SpiritJackalRogue",
+        "DisplayName": "Ysel the Keeper",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "11",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss6Hard",
+        "parent": "SpiritJackalRogueHard",
+        "DisplayName": "Ysel the Keeper",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "11",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss7",
+        "parent": "TowerGuard2",
+        "DisplayName": "Arden Hollowhelm",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "12",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss7Hard",
+        "parent": "TowerGuard2Hard",
+        "DisplayName": "Arden Hollowhelm",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "12",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss8",
+        "parent": "DemonMaligner",
+        "DisplayName": "Nekhet the Warden",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "13",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss8Hard",
+        "parent": "DemonMalignerHard",
+        "DisplayName": "Nekhet the Warden",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "13",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss9",
+        "parent": "GreaterDemonMaligner",
+        "DisplayName": "Maugrim, the Last Lock",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "14",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "LegendsInnBoss9Hard",
+        "parent": "GreaterDemonMalignerHard",
+        "DisplayName": "Maugrim, the Last Lock",
+        "DevStatus": "LegendsInn",
+        "EntRank": "Boss",
+        "HitPoints": "14",
+        "MeleePower": "HumanMeleeLR",
+        "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
       }
     ]
   }

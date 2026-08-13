@@ -193,5 +193,15 @@
     "JC_Mini1Hard": "LevelsJC.swf/a_Level_JCMini1 44 29 true Hard",
     "JC_Mini2": "LevelsJC.swf/a_Level_JCMini2 29 29 true",
     "JC_Mini2Hard": "LevelsJC.swf/a_Level_JCMini2 44 29 true Hard",
+    "--------LEGENDS INN------------": "",
+    "LegendsInn1Hard": "LevelsLI01.swf/a_Level_GoblinRiver 91 50 true Hard",
+    "LegendsInn2Hard": "LevelsLI02.swf/a_Level_SRNMission7Svath 89 50 true Hard",
+    "LegendsInn3Hard": "LevelsLI03.swf/a_Level_BTMission1 91 50 true Hard",
+    "LegendsInn4Hard": "LevelsLI04.swf/a_Level_CHMission3 96 50 true Hard",
+    "LegendsInn5Hard": "LevelsLI05.swf/a_Level_OMMMission06ForgottenForge 88 50 true Hard",
+    "LegendsInn6Hard": "LevelsLI06.swf/a_Level_EGMission5 86 50 true Hard",
+    "LegendsInn7Hard": "LevelsLI07.swf/a_Level_TheEmeraldThrone 88 50 true Hard",
+    "LegendsInn8Hard": "LevelsLI08.swf/a_Level_SDMission1 89 50 true Hard",
+    "LegendsInn9Hard": "LevelsLI09.swf/a_Level_JCMini1 89 50 true Hard",
     "--------PROTOTYPES------------": ""
 }

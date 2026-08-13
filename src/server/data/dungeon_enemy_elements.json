@@ -6107,5 +6107,755 @@
       "a_Room_JCMini2_03",
       "a_Room_JCMini2_04"
     ]
+  },
+  "LegendsInn1Hard": {
+    "elements": [
+      "Ice",
+      "Death",
+      "Fire",
+      "Air",
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BanditRogue2Hard",
+        "count": 8
+      },
+      {
+        "enemyType": "CastleLizard1Hard",
+        "count": 8
+      },
+      {
+        "enemyType": "MeylourMage2Hard",
+        "count": 8
+      },
+      {
+        "enemyType": "AshenDryad2Hard",
+        "count": 7
+      },
+      {
+        "enemyType": "SpiritDogRogueHard",
+        "count": 7
+      },
+      {
+        "enemyType": "SwampSkeletonSorcererHard",
+        "count": 7
+      },
+      {
+        "enemyType": "DogAlphaHard",
+        "count": 5
+      },
+      {
+        "enemyType": "ShadeMage2Hard",
+        "count": 5
+      },
+      {
+        "enemyType": "CougarGreaterHard",
+        "count": 4
+      },
+      {
+        "enemyType": "CastleLizard2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "GreaterSkeletonClubHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LegendsInnBoss1Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeWarriorHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_GoblinCamp01",
+      "a_Room_GoblinCamp02",
+      "a_Room_GoblinCamp03",
+      "a_Room_GoblinCamp04",
+      "a_Room_GoblinCamp05",
+      "a_Room_GoblinCamp06",
+      "a_Room_GoblinCamp07",
+      "a_Room_GoblinCamp08",
+      "a_Room_GoblinCamp09",
+      "a_Room_GoblinCamp10",
+      "a_Room_GoblinCamp11"
+    ]
+  },
+  "LegendsInn2Hard": {
+    "elements": [
+      "Ice",
+      "Death",
+      "Fire",
+      "Life",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "DogPackmate2Hard",
+        "count": 10
+      },
+      {
+        "enemyType": "MeylourMageHard",
+        "count": 10
+      },
+      {
+        "enemyType": "CastleLizard3Hard",
+        "count": 7
+      },
+      {
+        "enemyType": "LionAlphaHard",
+        "count": 7
+      },
+      {
+        "enemyType": "BanditRogueHard",
+        "count": 6
+      },
+      {
+        "enemyType": "AshenDryadHard",
+        "count": 5
+      },
+      {
+        "enemyType": "GreaterSkeletonFistHard",
+        "count": 4
+      },
+      {
+        "enemyType": "ShadeMageHard",
+        "count": 4
+      },
+      {
+        "enemyType": "DeepLizardWarriorHard",
+        "count": 3
+      },
+      {
+        "enemyType": "DogRogueHard",
+        "count": 3
+      },
+      {
+        "enemyType": "LegendsInnBoss2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritAshenDryadHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SRNM07R03",
+      "a_Room_SRNM07R05",
+      "a_Room_SRNM07R06",
+      "a_Room_SRNM07R08",
+      "a_Room_SRNM07R10",
+      "a_Room_SRNM07R11",
+      "a_Room_SRNM07R16",
+      "a_Room_SRNM07R17",
+      "a_Room_SRNM07R22",
+      "a_Room_SRNM07R23",
+      "a_Room_SRNM07R24",
+      "a_Room_SRNM07R25",
+      "a_Room_SRNM07R27",
+      "a_Room_SRNM07SvathBoss"
+    ]
+  },
+  "LegendsInn3Hard": {
+    "elements": [
+      "Ice",
+      "Air",
+      "Death",
+      "Fire"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "GreatLizardBanner2Hard",
+        "count": 8
+      },
+      {
+        "enemyType": "ImperialMagiHard",
+        "count": 8
+      },
+      {
+        "enemyType": "JackalRogueHard",
+        "count": 8
+      },
+      {
+        "enemyType": "ShadeSummonerHard",
+        "count": 8
+      },
+      {
+        "enemyType": "SpiritImperialCenturion1Hard",
+        "count": 8
+      },
+      {
+        "enemyType": "GreaterDemonMalignerHard",
+        "count": 6
+      },
+      {
+        "enemyType": "GreaterSkeletonRogueHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LegendsInnBoss3AHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LegendsInnBoss3BHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LionGreaterHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_BT26",
+      "a_Room_BT27",
+      "a_Room_BT28",
+      "a_Room_BT29",
+      "a_Room_BT30",
+      "a_Room_BT31",
+      "a_Room_BT32",
+      "a_Room_BT33",
+      "a_Room_BTM01RBanditCampBoss"
+    ]
+  },
+  "LegendsInn4Hard": {
+    "elements": [
+      "Ice",
+      "Death",
+      "Fire",
+      "Life",
+      "Air",
+      "Earth"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "SpiritDeepLizardWarriorHard",
+        "count": 6
+      },
+      {
+        "enemyType": "SkeletonSorcererHard",
+        "count": 5
+      },
+      {
+        "enemyType": "AshenDryadHard",
+        "count": 4
+      },
+      {
+        "enemyType": "BrigandCutthroat2Hard",
+        "count": 4
+      },
+      {
+        "enemyType": "SkeletonLifebaneHard",
+        "count": 4
+      },
+      {
+        "enemyType": "SpiritJackalRogueHard",
+        "count": 4
+      },
+      {
+        "enemyType": "BrigandCutthroatHard",
+        "count": 3
+      },
+      {
+        "enemyType": "CougarWarriorHard",
+        "count": 3
+      },
+      {
+        "enemyType": "DeepLizardHeavy2Hard",
+        "count": 3
+      },
+      {
+        "enemyType": "DreamInfusedSkeletonSorcererHard",
+        "count": 3
+      },
+      {
+        "enemyType": "GreatLizardWarrior2Hard",
+        "count": 3
+      },
+      {
+        "enemyType": "LionAlpha2Hard",
+        "count": 3
+      },
+      {
+        "enemyType": "SkeletonDervishHard",
+        "count": 3
+      },
+      {
+        "enemyType": "SpiritCougarWarriorHard",
+        "count": 3
+      },
+      {
+        "enemyType": "AshenDryad2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "CastleLizard1Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "CougarGreater2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "ImperialMagi2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "ScarabRogueHard",
+        "count": 2
+      },
+      {
+        "enemyType": "ShadowPuppetHard",
+        "count": 2
+      },
+      {
+        "enemyType": "CougarWarrior2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "DeepLizardWarrior2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "GreaterDemonMalignerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LegendsInnBoss4Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "OutlanderRogueHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeMage2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeSummoner2Hard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_CHM03RCrovnagBoss",
+      "a_Room_WarslainCrypt01",
+      "a_Room_WarslainCrypt02",
+      "a_Room_WarslainCrypt03",
+      "a_Room_WarslainCrypt04",
+      "a_Room_WarslainCrypt05",
+      "a_Room_WarslainCrypt06",
+      "a_Room_WarslainCrypt07",
+      "a_Room_WarslainCrypt09",
+      "a_Room_WarslainCrypt10"
+    ]
+  },
+  "LegendsInn5Hard": {
+    "elements": [
+      "Death",
+      "Ice",
+      "Fire",
+      "Air",
+      "Earth",
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "CastleLizard1Hard",
+        "count": 9
+      },
+      {
+        "enemyType": "SpiritDogPackmateHard",
+        "count": 9
+      },
+      {
+        "enemyType": "JackalAlphaHard",
+        "count": 8
+      },
+      {
+        "enemyType": "BrigandCryomancerHard",
+        "count": 7
+      },
+      {
+        "enemyType": "GreaterSkeletonSorcererHard",
+        "count": 7
+      },
+      {
+        "enemyType": "ImperialMagiHard",
+        "count": 7
+      },
+      {
+        "enemyType": "JackalPackmate2Hard",
+        "count": 7
+      },
+      {
+        "enemyType": "DreamJackalChieftainHard",
+        "count": 6
+      },
+      {
+        "enemyType": "InfusedSkeletonRogue2Hard",
+        "count": 6
+      },
+      {
+        "enemyType": "CastleLizardHeavy1Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "GreaterDemonMalignerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "InfusedSkeletonRogueHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LegendsInnBoss5Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "MeylourEnthralledMageHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadeMage2Hard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_OMM06_ForgottenForgeBoss",
+      "a_Room_SSM_Forge_R01",
+      "a_Room_SSM_Forge_R02",
+      "a_Room_SSM_Forge_R03",
+      "a_Room_SSM_Forge_R04",
+      "a_Room_SSM_Forge_R05",
+      "a_Room_SSM_Forge_R06",
+      "a_Room_SSM_Forge_R08",
+      "a_Room_SSM_Forge_R09",
+      "a_Room_SSM_Forge_R10"
+    ]
+  },
+  "LegendsInn6Hard": {
+    "elements": [
+      "Death",
+      "Fire",
+      "Life",
+      "Ice",
+      "Air"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "CastleLizardBanner1Hard",
+        "count": 7
+      },
+      {
+        "enemyType": "MeylourGreatWizardHard",
+        "count": 7
+      },
+      {
+        "enemyType": "ShadeMage2Hard",
+        "count": 7
+      },
+      {
+        "enemyType": "SkeletonScourgeHard",
+        "count": 7
+      },
+      {
+        "enemyType": "GreaterDemonMalignerHard",
+        "count": 6
+      },
+      {
+        "enemyType": "ImperialMagiHard",
+        "count": 6
+      },
+      {
+        "enemyType": "SpiritGreatLizardBannerHard",
+        "count": 6
+      },
+      {
+        "enemyType": "CastleLizard1Hard",
+        "count": 5
+      },
+      {
+        "enemyType": "ImperialMagi2Hard",
+        "count": 5
+      },
+      {
+        "enemyType": "MeylourEnthralledRogueHard",
+        "count": 5
+      },
+      {
+        "enemyType": "SpiritJackalAlphaHard",
+        "count": 5
+      },
+      {
+        "enemyType": "OutlanderGladiatorHard",
+        "count": 3
+      },
+      {
+        "enemyType": "CastleLizardMasterHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LegendsInnBoss6Hard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_M05RRefugeOfTheDamnedBoss",
+      "a_Room_Refuge_R01",
+      "a_Room_Refuge_R02",
+      "a_Room_Refuge_R03",
+      "a_Room_Refuge_R04",
+      "a_Room_Refuge_R05",
+      "a_Room_Refuge_R06",
+      "a_Room_Refuge_R07",
+      "a_Room_Refuge_R08",
+      "a_Room_Refuge_R09",
+      "a_Room_Refuge_R10"
+    ]
+  },
+  "LegendsInn7Hard": {
+    "elements": [
+      "Ice",
+      "Death",
+      "Air",
+      "Life",
+      "Fire",
+      "Earth"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "ShadeMage2Hard",
+        "count": 9
+      },
+      {
+        "enemyType": "LionPridemateHard",
+        "count": 8
+      },
+      {
+        "enemyType": "InfusedSkeletonEliteHard",
+        "count": 7
+      },
+      {
+        "enemyType": "JackalRogueHard",
+        "count": 7
+      },
+      {
+        "enemyType": "InfusedSkeletonSorcererHard",
+        "count": 6
+      },
+      {
+        "enemyType": "AshenDryad2Hard",
+        "count": 4
+      },
+      {
+        "enemyType": "ScarabRogueHard",
+        "count": 4
+      },
+      {
+        "enemyType": "AshenDryadHard",
+        "count": 3
+      },
+      {
+        "enemyType": "BanditGreatRogueHard",
+        "count": 2
+      },
+      {
+        "enemyType": "DeepLizardHeavyHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GreaterDemonMalignerHard",
+        "count": 2
+      },
+      {
+        "enemyType": "DreamFirePriestWizardHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LegendsInnBoss7Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "LionPridemate2Hard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_ACM02REmeraldThroneBoss",
+      "a_Room_Throne_R01",
+      "a_Room_Throne_R02",
+      "a_Room_Throne_R03",
+      "a_Room_Throne_R04",
+      "a_Room_Throne_R05",
+      "a_Room_Throne_R06",
+      "a_Room_Throne_R07",
+      "a_Room_Throne_R08",
+      "a_Room_Throne_R09"
+    ]
+  },
+  "LegendsInn8Hard": {
+    "elements": [
+      "Ice",
+      "Death",
+      "Air",
+      "Life"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "BrigandCutthroat2Hard",
+        "count": 9
+      },
+      {
+        "enemyType": "MeylourEnthralledRogueHard",
+        "count": 9
+      },
+      {
+        "enemyType": "DreamJackalChieftainHard",
+        "count": 7
+      },
+      {
+        "enemyType": "JackalRogueHard",
+        "count": 7
+      },
+      {
+        "enemyType": "InfusedSkeletonRogueHard",
+        "count": 5
+      },
+      {
+        "enemyType": "SpiritJackalRogueHard",
+        "count": 5
+      },
+      {
+        "enemyType": "DogRogueHard",
+        "count": 4
+      },
+      {
+        "enemyType": "InfusedSkeletonRogue2Hard",
+        "count": 4
+      },
+      {
+        "enemyType": "ShadowPuppetHard",
+        "count": 4
+      },
+      {
+        "enemyType": "GreaterDemonMalignerHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LegendsInnBoss8Hard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_SDMission01",
+      "a_Room_SDMission02",
+      "a_Room_SDMission03",
+      "a_Room_SDMission04",
+      "a_Room_SDMission05",
+      "a_Room_SDMission06",
+      "a_Room_SDMission07",
+      "a_Room_SDMission08",
+      "a_Room_SDMission09",
+      "a_Room_SDMission10",
+      "a_Room_SDMission11",
+      "a_Room_SDMission12",
+      "a_Room_SDMission13",
+      "a_Room_SDMission14",
+      "a_Room_SDMission15"
+    ]
+  },
+  "LegendsInn9Hard": {
+    "elements": [
+      "Death",
+      "Ice",
+      "Life",
+      "Fire",
+      "Air",
+      "Earth"
+    ],
+    "enemyTypes": [
+      {
+        "enemyType": "InfusedSkeletonRogueHard",
+        "count": 3
+      },
+      {
+        "enemyType": "BanditGreatRogueHard",
+        "count": 2
+      },
+      {
+        "enemyType": "DogRogueHard",
+        "count": 2
+      },
+      {
+        "enemyType": "GreaterSkeletonRogueHard",
+        "count": 2
+      },
+      {
+        "enemyType": "InfusedSkeletonRogue2Hard",
+        "count": 2
+      },
+      {
+        "enemyType": "SkeletonDervishHard",
+        "count": 2
+      },
+      {
+        "enemyType": "SkeletonScourgeHard",
+        "count": 2
+      },
+      {
+        "enemyType": "SpiritJackalRogueHard",
+        "count": 2
+      },
+      {
+        "enemyType": "CastleLizard2Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "JackalRogueHard",
+        "count": 1
+      },
+      {
+        "enemyType": "LegendsInnBoss9Hard",
+        "count": 1
+      },
+      {
+        "enemyType": "MeylourEnthralledRogueHard",
+        "count": 1
+      },
+      {
+        "enemyType": "OutlanderRogueHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ScarabRogueHard",
+        "count": 1
+      },
+      {
+        "enemyType": "ShadowPuppetHard",
+        "count": 1
+      },
+      {
+        "enemyType": "SpiritDogRogueHard",
+        "count": 1
+      }
+    ],
+    "source": "level-swf",
+    "rooms": [
+      "a_Room_JCMini1_01",
+      "a_Room_JCMini1_02",
+      "a_Room_JCMini1_03",
+      "a_Room_JCMini1_04"
+    ]
   }
 }

@@ -61,6 +61,12 @@ import { DungeonCompletionSystem } from '../core/DungeonCompletionSystem';
 import { DungeonCompletionConditions } from '../core/DungeonCompletionConditions';
 import { MovementAuthority } from '../core/MovementAuthority';
 import { noteGroundedSample, resolveConfirmedGroundedPosition, resolveGroundedPosition } from '../core/GroundedPosition';
+import { LegendsInn } from '../core/LegendsInn';
+import {
+    LEGENDS_INN_TITUS_ENTITY_ID,
+    LEGENDS_INN_TITUS_WARNING,
+    LegendsInnGate
+} from '../core/LegendsInnGate';
 
 const db = new JsonAdapter();
 
@@ -150,6 +156,8 @@ export class LevelHandler {
         '^tA powerful magic seals this entrance.=^tI still need to learn more about the Sleeping Lands.';
     private static readonly LOCKED_DUNGEON_ENTRY_MESSAGE = "^tI haven't unlocked this dungeon yet.";
     private static readonly LOCKED_STORY_AREA_ENTRY_MESSAGE = "^tI haven't unlocked this area yet.";
+    private static readonly LEGENDS_INN_PORTAL_CLOSED_MESSAGE =
+        '^tThe way on is still sealed.=^tNothing opens until the master of this place falls.';
     private static readonly CASTLE_HOCKE_GATE_DOOR_ID = 3;
     private static readonly VALHAVEN_GATE_DOOR_ID = 2;
     private static readonly GOBLIN_RIVER_INITIAL_PROGRESS = 11;
@@ -4416,6 +4424,38 @@ export class LevelHandler {
         client.sendBitBuffer(0x76, bb);
     }
 
+    /**
+     * Refuses the portal and puts the warning in Titus's mouth.
+     *
+     * Deliberately not `sendDeniedDoorResponse`: that one speaks over the *player's*
+     * head, which is right for "I can't go in there yet" and wrong for a second
+     * character telling you something. The bubble is addressed to Titus's entity id
+     * instead, so it appears over the man standing on the path.
+     *
+     * The door itself is refused the same way every other locked door is - state
+     * LOCKED, and the pending transfer state cleared so the client is not left
+     * half-way through a door it is not going through.
+     */
+    private static sendLegendsInnPortalWarning(
+        client: Client,
+        doorId: number,
+        targetLevelRaw: string | null | undefined
+    ): void {
+        const targetLevel = LevelConfig.normalizeLevelName(targetLevelRaw) || String(targetLevelRaw ?? '').trim();
+        if (Number.isFinite(Number(doorId)) && Number(doorId) >= 0 && targetLevel) {
+            LevelHandler.sendDoorState(client, Math.round(Number(doorId)), LevelHandler.DOORSTATE_LOCKED, targetLevel);
+        }
+
+        const bb = new BitBuffer();
+        bb.writeMethod4(LEGENDS_INN_TITUS_ENTITY_ID);
+        bb.writeMethod13(LEGENDS_INN_TITUS_WARNING);
+        client.sendBitBuffer(0x76, bb);
+
+        client.lastDoorId = -1;
+        client.lastDoorTargetLevel = '';
+        client.mountTransferGraceUntil = 0;
+    }
+
     private static sendDeniedDoorResponse(
         client: Client,
         doorId: number,
@@ -4475,6 +4515,11 @@ export class LevelHandler {
             );
         }
 
+        const legendsInnEntryTarget = LevelHandler.resolveLegendsInnEntryDoorTarget(client, currentLevel, doorId);
+        if (legendsInnEntryTarget) {
+            return legendsInnEntryTarget;
+        }
+
         const arachnaeConnectorTarget = LevelHandler.resolveArachnaeConnectorDoorTarget(client, currentLevel, doorId);
         if (arachnaeConnectorTarget) {
             return arachnaeConnectorTarget;
@@ -4491,6 +4536,40 @@ export class LevelHandler {
         }
 
         return LevelConfig.getDoorTarget(currentLevel, doorId);
+    }
+
+    /**
+     * Where the Craft Town portal into Legends' Inn actually leads.
+     *
+     * `door_map.json` chains the entrance to stage 1, because that is the shape of
+     * the dungeon; this is the one door in the chain that answers per character
+     * instead. Nine stages is a long run, and a disconnect part-way through used to
+     * cost all of it - the player walked back in and started again at Wolf's End.
+     * So the entrance reads the checkpoint the character carries and drops them
+     * back where they were.
+     *
+     * Only the entrance is redirected. Every stage-to-stage portal keeps leading to
+     * the stage after it, so the run itself still walks forward one stage at a time.
+     */
+    private static resolveLegendsInnEntryDoorTarget(
+        client: Client,
+        currentLevel: string,
+        doorId: number
+    ): string | null {
+        const configured = LevelConfig.getDoorTarget(currentLevel, doorId);
+        if (!configured || !LegendsInn.isStageLevel(configured) || LegendsInn.isStageLevel(currentLevel)) {
+            return null;
+        }
+
+        const checkpoint = LegendsInn.getCheckpointLevelName(client.character);
+        if (!checkpoint || checkpoint === configured) {
+            return null;
+        }
+
+        console.log(
+            `[LegendsInn] ${String(client.character?.name ?? '')} resumes at ${checkpoint} instead of ${configured}`
+        );
+        return checkpoint;
     }
 
     private static resolveCastleHockeGatewayDoorTarget(client: Client, currentLevel: string, doorId: number): string | null {
@@ -4983,7 +5062,26 @@ export class LevelHandler {
         
         const bb = new BitBuffer();
         bb.writeMethod4(doorId);
-        
+
+        if (LegendsInn.isStageLevel(currentLevel)) {
+            // Legends' Inn shows nothing but its portal.
+            //
+            // A door's floating name plate is built by `Entity.method_579`, and the
+            // first thing that method does is return without building one when the
+            // door's state is CLOSED or LOCKED. Nothing else consults the state:
+            // `Game.OpenDoor` sends the open request off the door the player is
+            // standing on regardless, and every rule about where that door may lead -
+            // including the portal gate below - is enforced here on the server. So
+            // answering CLOSED costs the stage nothing except the plate, which is the
+            // point: the stages pretend to be one place, and a plate naming Craft Town
+            // on the way in or the next stage over the boss's head gives that away
+            // before the portal has even been earned.
+            bb.writeMethod91(LevelHandler.DOORSTATE_CLOSED);
+            bb.writeMethod13(target || '');
+            client.sendBitBuffer(0x42, bb);
+            return;
+        }
+
         if (target && isDreadfoldGateLocked) {
             bb.writeMethod91(LevelHandler.DOORSTATE_LOCKED);
             bb.writeMethod13(target);
@@ -5063,6 +5161,33 @@ export class LevelHandler {
         ) {
             console.log(`[Level] Open Door ${doorId} in ${currentLevel} blocked until the required story area mission state is reached`);
             LevelHandler.sendDeniedDoorResponse(client, doorId, rawTargetLevel, LevelHandler.LOCKED_STORY_AREA_ENTRY_MESSAGE, true);
+            return;
+        }
+
+        // Titus stops everyone once, on the way in.
+        //
+        // The refusal *is* the dialogue: the door is denied, he says his piece over
+        // his own head, and the flag he sets means the next reach for the portal
+        // goes straight through. So a player cannot be inside Legends' Inn without
+        // having been told what is at the end of it, and cannot be made to sit
+        // through it twice.
+        if (LegendsInnGate.shouldStopAtPortal(client, rawTargetLevel)) {
+            LegendsInnGate.markBriefed(client.character);
+            if (typeof client.scheduleCharacterSave === 'function') {
+                client.scheduleCharacterSave("legends' inn briefing");
+            }
+            console.log(`[LegendsInn] ${String(client.character?.name ?? '')} was stopped at the portal by Titus`);
+            LevelHandler.sendLegendsInnPortalWarning(client, doorId, rawTargetLevel);
+            return;
+        }
+
+        // The way on out of a Legends' Inn stage. There is nothing drawn on this
+        // door until its boss falls, so a player can only reach it by walking into
+        // the spot the portal will stand in - but the refusal is what makes the
+        // rule real rather than cosmetic.
+        if (!LegendsInn.isDoorUnlocked(client, doorId)) {
+            console.log(`[Level] Open Door ${doorId} in ${currentLevel} blocked until the Legends' Inn stage boss is defeated`);
+            LevelHandler.sendDeniedDoorResponse(client, doorId, rawTargetLevel, LevelHandler.LEGENDS_INN_PORTAL_CLOSED_MESSAGE, true);
             return;
         }
 
@@ -5586,6 +5711,34 @@ export class LevelHandler {
             return;
         }
 
+        // Titus's warning, applied to the transfer the client actually asks for.
+        // The door-open path above is where it normally happens, but a transfer
+        // request names its own target, so without this the whole gate is one
+        // hand-made packet away from being skipped.
+        if (!teleportOverride && LegendsInnGate.shouldStopAtPortal(client, targetLevel)) {
+            LegendsInnGate.markBriefed(client.character);
+            if (typeof client.scheduleCharacterSave === 'function') {
+                client.scheduleCharacterSave("legends' inn briefing");
+            }
+            console.log(`[LegendsInn] Transfer to ${targetLevel} held until Titus has spoken`);
+            LevelHandler.sendLegendsInnPortalWarning(client, client.lastDoorId, targetLevel);
+            return;
+        }
+
+        // Same rule as the door open above, applied to the transfer the client
+        // actually asks for: a stage's exit is refused while its boss is standing.
+        if (!teleportOverride && !LegendsInn.isDoorUnlocked(client, client.lastDoorId)) {
+            console.log(`[Level] Transfer to ${targetLevel} blocked until the Legends' Inn stage boss is defeated`);
+            LevelHandler.sendDeniedDoorResponse(
+                client,
+                client.lastDoorId,
+                targetLevel,
+                LevelHandler.LEGENDS_INN_PORTAL_CLOSED_MESSAGE,
+                true
+            );
+            return;
+        }
+
         if (!teleportOverride && !LevelHandler.isStoryAreaTransferUnlocked(client, targetLevel)) {
             console.log(`[Level] Transfer to ${targetLevel} blocked until the required story area mission state is reached`);
             LevelHandler.sendDeniedDoorResponse(
@@ -5734,7 +5887,12 @@ export class LevelHandler {
         const levelSpec = LevelConfig.get(targetLevel);
         const isHard = targetLevel.endsWith("Hard");
         const oldLevelSpec = LevelConfig.get(oldLevel);
-        const runtimeMapLevel = LevelHandler.resolveDungeonMapPacketLevel(targetLevel, levelSpec.mapId, activeCharacter, client);
+        // The entry plate reads mapLevel + mBonusLevels, so hand it the level the
+        // dungeon presents as rather than the one its monsters fight at.
+        const runtimeMapLevel = LegendsInn.adjustDisplayMapLevel(
+            targetLevel,
+            LevelHandler.resolveDungeonMapPacketLevel(targetLevel, levelSpec.mapId, activeCharacter, client)
+        );
         const runtimeBaseLevel = levelSpec.baseId;
         const isVisitedCraftTown = targetLevel === 'CraftTown' && LevelHandler.isDifferentCharacter(activeCharacter, hostChar);
         const craftTownOwnerToken = isVisitedCraftTown

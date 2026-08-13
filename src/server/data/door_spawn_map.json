@@ -86,5 +86,35 @@
   "JadeCityHard": {
     "1": { "x": 10399, "y": 1043 },
     "300": { "x": 19337, "y": -682 }
+  },
+  "CraftTown": {
+    "101": { "x": -240, "y": 1360 }
+  },
+  "LegendsInn1Hard": {
+    "1": { "x": 591, "y": 1641 }
+  },
+  "LegendsInn2Hard": {
+    "1": { "x": -317, "y": 377 }
+  },
+  "LegendsInn3Hard": {
+    "1": { "x": -4120, "y": 931 }
+  },
+  "LegendsInn4Hard": {
+    "1": { "x": -1151, "y": 1592 }
+  },
+  "LegendsInn5Hard": {
+    "1": { "x": -1974, "y": 1438 }
+  },
+  "LegendsInn6Hard": {
+    "1": { "x": -4182, "y": 1014 }
+  },
+  "LegendsInn7Hard": {
+    "1": { "x": -492, "y": -1911 }
+  },
+  "LegendsInn8Hard": {
+    "1": { "x": 8145, "y": 1111 }
+  },
+  "LegendsInn9Hard": {
+    "1": { "x": 12887, "y": 4953 }
   }
 }

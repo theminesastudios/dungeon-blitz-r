@@ -3,6 +3,7 @@ import { GlobalState } from '../core/GlobalState';
 import { areClientsInSameLevelScope, getClientLevelScope } from '../core/LevelScope';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { WorldEnter } from './WorldEnter';
+import { LegendsInn } from '../core/LegendsInn';
 
 export class CharacterSync {
     static sendPlayerDataRefresh(client: Client): void {
@@ -14,12 +15,17 @@ export class CharacterSync {
         const x = Number(entity?.x ?? client.character.CurrentLevel?.x ?? 0);
         const y = Number(entity?.y ?? client.character.CurrentLevel?.y ?? 0);
         const hasCoord = Number.isFinite(x) && Number.isFinite(y);
+        const levelName = String(client.currentLevel ?? client.character.CurrentLevel?.name ?? '');
         const payload = WorldEnter.buildPlayerDataPacket(
             client.character,
             Number(client.token ?? 0),
             0,
-            0,
-            String(client.currentLevel ?? client.character.CurrentLevel?.name ?? ''),
+            // mBonusLevels has to be repeated on every refresh: this packet
+            // replaces the client's copy wholesale, so sending 0 here would drop
+            // every hostile in a Legends' Inn stage back to its authored level
+            // in the middle of the run.
+            LegendsInn.getMonsterBonusLevels(levelName),
+            levelName,
             Math.round(hasCoord ? x : 0),
             Math.round(hasCoord ? y : 0),
             hasCoord,

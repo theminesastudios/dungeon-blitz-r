@@ -11,7 +11,8 @@ import { LevelConfig } from '../core/LevelConfig';
 import { upsertInventoryGear } from '../utils/GearInventory';
 import { getEquippedCharmBonuses } from '../utils/CharmBonuses';
 import { getEquippedGearGoldFind } from '../utils/GearGoldBonuses';
-import { getActivePotionBonuses } from '../utils/ConsumableState';
+import { getActivePotionBonuses, getConsumableDef, sendConsumableUpdate } from '../utils/ConsumableState';
+import { LegendsInnChest, claimChestOpening } from '../core/LegendsInnChest';
 import { normalizeCharacterMaterials } from '../utils/MaterialInventory';
 import { PetHandler } from './PetHandler';
 import { Config } from '../core/config';
@@ -46,6 +47,16 @@ interface LootReward {
     tier?: number;
     material?: number;
     dye?: number;
+    /**
+     * A consumable riding down on the `material` above.
+     *
+     * The loot-drop packet describes gold, gear, a material, health or a dye and
+     * has no consumable slot, so a catalyst is dropped as a *carrier material*
+     * chosen for its rarity colour, and the pickup grants both - the material the
+     * player saw as well as the catalyst it was carrying. Set only by the Legends'
+     * Inn chest; see `core/LegendsInnChest.ts`.
+     */
+    consumable?: number;
     __lootDropMetadata?: LootDropServerMetadata;
 }
 
@@ -730,6 +741,30 @@ export class RewardHandler {
         return true;
     }
 
+    /**
+     * Puts a catalyst in the bag and tells the client its new count.
+     *
+     * The 0x32 loot packet has no consumable slot, so this is the other half of
+     * the carrier-material trick: what the player walked over was drawn as a
+     * material, and this is what they actually receive.
+     */
+    private static grantConsumableLoot(client: Client, consumableId: number): boolean {
+        if (!client.character || consumableId <= 0 || !getConsumableDef(consumableId)) {
+            return false;
+        }
+
+        const consumables = Array.isArray(client.character.consumables) ? client.character.consumables : [];
+        const existing = consumables.find((entry: any) => Number(entry?.consumableID ?? 0) === consumableId);
+        if (existing) {
+            existing.count = Math.max(0, Number(existing.count ?? 0)) + 1;
+        } else {
+            consumables.push({ consumableID: consumableId, count: 1 });
+        }
+        client.character.consumables = consumables;
+        sendConsumableUpdate(client, consumableId);
+        return true;
+    }
+
     private static spawnLoot(
         client: Client,
         x: number,
@@ -1288,6 +1323,110 @@ export class RewardHandler {
         return true;
     }
 
+    /**
+     * The gold chest behind a Legends' Inn stage boss.
+     *
+     * Nothing about this payout is a roll, so the loot tables are stepped over
+     * entirely: everyone standing in the instance is handed the stage's gold on the
+     * floor, plus whichever of the three catalysts they have not already taken
+     * this week. See `core/LegendsInnChest.ts` for the rules, for how the gold
+     * scales, and for why the catalysts ride down on carrier materials.
+     *
+     * The opening is claimed per level scope so that the report from whichever
+     * client landed the killing blow pays the instance exactly once - and so that
+     * a second player's report of the same chest is a no-op rather than a second
+     * million.
+     *
+     * Returns true when the reward request was this feature's to answer.
+     */
+    private static handleLegendsInnStageChestReward(
+        client: Client,
+        sourceEntity: any,
+        dropPosition: { x: number; y: number }
+    ): boolean {
+        if (!LegendsInnChest.isStageChest(client.currentLevel, sourceEntity, dropPosition)) {
+            return false;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        const chestKey = `${Math.max(0, Math.round(Number(sourceEntity?.id ?? 0)))}:${Math.round(dropPosition.x)}:${Math.round(dropPosition.y)}`;
+        if (!claimChestOpening(levelScope, chestKey)) {
+            return true;
+        }
+
+        for (const recipient of GlobalState.getSessionsInLevelScope(levelScope)) {
+            if (!recipient.playerSpawned || !recipient.character || getClientLevelScope(recipient) !== levelScope) {
+                continue;
+            }
+
+            const payout = LegendsInnChest.takePayout(recipient);
+            payout.forEach((entry, index) => {
+                const reward: LootReward = entry.consumableId
+                    ? { material: entry.carrierMaterialId, consumable: entry.consumableId }
+                    : { gold: entry.gold };
+                // Fanned out along the floor so a stack of four pickups does not
+                // land on one point and read as a single drop.
+                RewardHandler.spawnLoot(recipient, dropPosition.x, dropPosition.y, reward, (index - 1) * 70, 0, {
+                    reason: 'chest_reward',
+                    caller: 'legends_inn_stage_chest'
+                });
+            });
+
+            console.log(
+                `[LegendsInn] chest ${chestKey} paid ${String(recipient.character?.name ?? '')}: ` +
+                payout.map((entry) => entry.label).join(', ')
+            );
+            RewardHandler.persistCharacter(recipient, "legends' inn chest");
+        }
+        return true;
+    }
+
+    /**
+     * One of the borrowed dungeon's own chests, standing in a Legends' Inn stage.
+     *
+     * These were the chests that "gave nothing": they are authored props with
+     * authored loot tables, and most of those tables roll no gold at all at this
+     * tier. In here they pay a share of the stage's gold instead - on the floor,
+     * to everyone in the instance, exactly the way the boss chest does - so every
+     * chest in the run is worth the detour.
+     *
+     * Claimed per opening per scope for the same reason the boss chest is: the
+     * report comes from whichever client broke it and the whole instance is paid.
+     *
+     * Returns true when the reward request was this feature's to answer.
+     */
+    private static handleLegendsInnSideChestReward(
+        client: Client,
+        sourceEntity: any,
+        dropPosition: { x: number; y: number }
+    ): boolean {
+        if (!LegendsInnChest.isSideChest(client.currentLevel, sourceEntity, dropPosition)) {
+            return false;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        const chestKey = `side:${Math.max(0, Math.round(Number(sourceEntity?.id ?? 0)))}:${Math.round(dropPosition.x)}:${Math.round(dropPosition.y)}`;
+        if (!claimChestOpening(levelScope, chestKey)) {
+            return true;
+        }
+
+        for (const recipient of GlobalState.getSessionsInLevelScope(levelScope)) {
+            if (!recipient.playerSpawned || !recipient.character || getClientLevelScope(recipient) !== levelScope) {
+                continue;
+            }
+
+            const payout = LegendsInnChest.takeSidePayout(recipient);
+            RewardHandler.spawnLoot(recipient, dropPosition.x, dropPosition.y, { gold: payout.gold }, 0, 0, {
+                reason: 'chest_reward',
+                caller: 'legends_inn_side_chest'
+            });
+            console.log(
+                `[LegendsInn] side chest ${chestKey} paid ${String(recipient.character?.name ?? '')}: ${payout.label}`
+            );
+        }
+        return true;
+    }
+
     static handleGrantReward(client: Client, data: Buffer): void {
         const br = new BitReader(data);
         const reward: RewardRequest = {
@@ -1315,6 +1454,12 @@ export class RewardHandler {
         const sourceEntity = RewardHandler.resolveSourceEntity(client, reward.sourceId);
         const dropPosition = RewardHandler.resolveDropPosition(client, sourceEntity, reward.worldX, reward.worldY);
         if (RewardHandler.handleAuthoritativeTutorialChestReward(client, reward, sourceEntity, dropPosition)) {
+            return;
+        }
+        if (RewardHandler.handleLegendsInnStageChestReward(client, sourceEntity, dropPosition)) {
+            return;
+        }
+        if (RewardHandler.handleLegendsInnSideChestReward(client, sourceEntity, dropPosition)) {
             return;
         }
         const { rewardNonce, recipients } = RewardHandler.resolveEligibleRecipients(client, reward.sourceId);
@@ -1501,6 +1646,20 @@ export class RewardHandler {
             shouldSave = true;
         }
 
+        // A catalyst rides down on a carrier material, and *both* are granted.
+        //
+        // The carrier used to be dropped on the floor and then thrown away on
+        // pickup, on the grounds that it was only ever a drawing. From the other
+        // side of the screen that reads as a bug and was reported as one: the
+        // player walks over a material, no material notification appears, and the
+        // bag has no new material in it - because the only thing that landed was a
+        // consumable, and a consumable count update (0x10C) is silent. Paying the
+        // material the player actually saw fixes both halves at once, and the
+        // catalyst still arrives underneath it.
+        const consumableId = Math.max(0, Math.round(Number(reward.consumable ?? 0)));
+        if (consumableId > 0 && RewardHandler.grantConsumableLoot(client, consumableId)) {
+            shouldSave = true;
+        }
         if (RewardHandler.grantMaterialLoot(client, Number(reward.material ?? 0))) {
             shouldSave = true;
         }

@@ -45,10 +45,13 @@ import { JsonAdapter } from './database/JsonAdapter';
 import * as path from 'path';
 
 import { StaticServer } from './core/StaticServer';
+import { LegendsInn } from './core/LegendsInn';
 
 // Load Config
 const dataDir = path.join(Config.DATA_DIR, 'data');
 LevelConfig.load(dataDir);
+// After LevelConfig: stage names are resolved through it.
+LegendsInn.load(dataDir);
 CharacterTemplates.load(dataDir);
 PetConfig.load(dataDir);
 GameData.load(dataDir);

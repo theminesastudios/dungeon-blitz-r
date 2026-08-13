@@ -39,6 +39,7 @@ import { MissionID } from '../data/runtime';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { BitReader } from '../network/protocol/bitReader';
 import { RewardHandler } from './RewardHandler';
+import { LegendsInn } from '../core/LegendsInn';
 
 type MissionEntry = Record<string, any>;
 type DungeonCompletionResult = {
@@ -1770,6 +1771,11 @@ export class MissionHandler {
         }
 
         DungeonCompletionSystem.noteEntityDefeated(levelScope, destroyedEntity);
+
+        // Legends' Inn stages carry no completion condition of their own (they are
+        // a road, not nine dungeons), so their boss has to be recognised here or
+        // the way onward never opens.
+        LegendsInn.noteEntityDefeated(client, destroyedEntity);
 
         if (
             currentLevel === 'CraftTownTutorial' &&

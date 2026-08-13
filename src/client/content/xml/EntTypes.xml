@@ -57968,4 +57968,199 @@
 			<ColorSwap3>0xec0000=0x2647FF</ColorSwap3>
 		</GfxType>
 	</EntType>
+	<EntType EntName="LegendsInnBoss1" parent="JackalChieftain">
+		<DisplayName>Vehr the Courier</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>6</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss1Hard" parent="JackalChieftainHard">
+		<DisplayName>Vehr the Courier</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>6</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss2" parent="GreaterSkeletonRogue">
+		<DisplayName>Osk the Witness</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>7</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss2Hard" parent="GreaterSkeletonRogueHard">
+		<DisplayName>Osk the Witness</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>7</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss3A" parent="BanditTwinA">
+		<DisplayName>Sarn, the Left Hand</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>8</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss3AHard" parent="BanditTwinAHard">
+		<DisplayName>Sarn, the Left Hand</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>8</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss3B" parent="BanditTwinB">
+		<DisplayName>Vael, the Right Hand</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>8</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss3BHard" parent="BanditTwinBHard">
+		<DisplayName>Vael, the Right Hand</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>8</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss4" parent="MeylourEnthralledRogue">
+		<DisplayName>Elsyn the Bought</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>9</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss4Hard" parent="MeylourEnthralledRogueHard">
+		<DisplayName>Elsyn the Bought</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>9</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss5" parent="ScarabRogue">
+		<DisplayName>Karrog the Forgemaster</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>10</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss5Hard" parent="ScarabRogueHard">
+		<DisplayName>Karrog the Forgemaster</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>10</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss6" parent="SpiritJackalRogue">
+		<DisplayName>Ysel the Keeper</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>11</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss6Hard" parent="SpiritJackalRogueHard">
+		<DisplayName>Ysel the Keeper</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>11</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss7" parent="TowerGuard2">
+		<DisplayName>Arden Hollowhelm</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>12</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss7Hard" parent="TowerGuard2Hard">
+		<DisplayName>Arden Hollowhelm</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>12</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss8" parent="DemonMaligner">
+		<DisplayName>Nekhet the Warden</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>13</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss8Hard" parent="DemonMalignerHard">
+		<DisplayName>Nekhet the Warden</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>13</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss9" parent="GreaterDemonMaligner">
+		<DisplayName>Maugrim, the Last Lock</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>14</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnBoss9Hard" parent="GreaterDemonMalignerHard">
+		<DisplayName>Maugrim, the Last Lock</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+		<EntRank>Boss</EntRank>
+		<HitPoints>14</HitPoints>
+		<MeleePower>HumanMeleeLR</MeleePower>
+		<Powers>HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnPortal" parent="Base">
+		<DevStatus>LegendsInn</DevStatus>
+		<Level>0</Level>
+		<GroupLevel>0</GroupLevel>
+		<MeleeDamage>0</MeleeDamage>
+		<MagicDamage>0</MagicDamage>
+		<ArmorClass>0</ArmorClass>
+		<HitPoints>0</HitPoints>
+		<RewardClass>NoLoot</RewardClass>
+		<Realm>Object</Realm>
+		<Speed>0</Speed>
+		<Width>200</Width>
+		<Height>250</Height>
+		<Behavior>NPC</Behavior>
+		<Flying>True</Flying>
+		<EquippedGear/>
+		<GfxType>
+			<AnimClass>a__NephitPortal</AnimClass>
+			<AnimFile>Animation_Nephit.swf</AnimFile>
+			<Shadow>None</Shadow>
+			<AnimScale>1.0</AnimScale>
+		</GfxType>
+	</EntType>
+	<EntType EntName="LegendsInnServant" parent="RageGuardianServant">
+		<DevStatus>LegendsInn</DevStatus>
+		<Powers>LegendsInnServantSummon</Powers>
+	</EntType>
+	<EntType EntName="LegendsInnServantHard" parent="RageGuardianServant">
+		<DevStatus>LegendsInn</DevStatus>
+		<Powers>LegendsInnServantSummon</Powers>
+	</EntType>
+	<EntType EntName="NPCLegendsInnTitus" parent="NPCTitus2">
+		<DisplayName>Titus</DisplayName>
+		<DevStatus>LegendsInn</DevStatus>
+	</EntType>
 </EntTypes>

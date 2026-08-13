@@ -11,6 +11,7 @@ import { LevelHandler } from './LevelHandler';
 import { MissionHandler } from './MissionHandler';
 import { PetHandler } from './PetHandler';
 import { DialogueTranslationLoader } from '../data/DialogueTranslationLoader';
+import { LegendsInnDialogue } from '../core/LegendsInnDialogue';
 import { discordSocialBridge } from '../integrations/DiscordSocialBridge';
 import {
     clampSocialLevel,
@@ -855,6 +856,21 @@ export class SocialHandler {
     }
 
     private static translateRoomThought(client: Client, entityId: number, text: string): string {
+        // Legends' Inn borrows nine dungeons whole, and a borrowed dungeon brings
+        // its own dialogue with it: the room scripts still fire the lines the
+        // goblins and raptors that used to stand here were written to shout. The
+        // event is kept - the level still decides *when* a hostile speaks - and
+        // only the words are swapped, for Telahair's story.
+        //
+        // Returned untranslated, on purpose. These lines are authored English and
+        // are meant to be read as written, and running them through the translator
+        // would do worse than nothing: with no entry to match, an enemy line falls
+        // through to `fallbackToGeneric`, which answers a story beat with a canned
+        // taunt.
+        const legendsInnLine = LegendsInnDialogue.resolveLine(client, entityId, text);
+        if (legendsInnLine) {
+            return legendsInnLine;
+        }
         return DialogueTranslationLoader.translateText(
             text,
             SocialHandler.getDialogueLanguage(client.character),
