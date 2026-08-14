@@ -21,6 +21,84 @@ const INDEX_HTML = path.resolve(__dirname, "..", "..", "client", "content", "loc
 const CUSTOM_TRIGGER = "PlagueBattalion";
 const DISABLED_TRIGGER = "ShadowLegionCloneTwo";
 
+function patchHostilePositionReporting(
+  ctx: ReturnType<typeof parseSwf>,
+  abc: ReturnType<typeof parseAbc>,
+  verify: boolean,
+): BytePatch | null {
+  const classIndex = classIndexByName(abc, "LinkUpdater");
+  if (classIndex === null) throw new PatchError("LinkUpdater class not found.");
+  const methodIndex = methodIdxForTrait(abc.instances[classIndex].traits, abc, "method_1926");
+  if (methodIndex === null) throw new PatchError("LinkUpdater.method_1926 not found.");
+  const body = abc.methodBodies.get(methodIndex);
+  if (!body) throw new PatchError("LinkUpdater.method_1926 body not found.");
+  const code = ctx.body.subarray(body.codeStart, body.codeStart + body.codeLen);
+  const instructions = disassemble(code, "LinkUpdater.method_1926");
+  const booleanName = abc.multinameNames.indexOf("Boolean");
+  const brainName = abc.multinameNames.indexOf("var_38");
+  const entityFlagsName = abc.multinameNames.indexOf("var_20");
+  const excludedFlagName = abc.multinameNames.indexOf("const_241");
+  if ([booleanName, brainName, entityFlagsName, excludedFlagName].some((index) => index < 0)) {
+    throw new PatchError("LinkUpdater hostile position gate multinames not found.");
+  }
+
+  // The shipped loop deliberately skips every entity with a Brain:
+  //   !(Boolean(entity.var_38) || Boolean(entity.var_20 & Entity.const_241))
+  // Enemies are simulated by that Brain on the client, so the server otherwise retains only
+  // their authored spawn coordinates. Keep the const_241 exclusion, but remove the Brain half
+  // so the normal throttled 0x07 path reports the live positions used by combat rendering.
+  const maskStartIndex = instructions.findIndex((inst, index) =>
+    inst.opcode === 0x5d &&
+    inst.operands[0]?.[1] === booleanName &&
+    instructions[index + 2]?.opcode === 0x66 &&
+    instructions[index + 2]?.operands[0]?.[1] === entityFlagsName &&
+    instructions[index + 3]?.opcode === 0x60 &&
+    instructions[index + 4]?.opcode === 0x66 &&
+    instructions[index + 4]?.operands[0]?.[1] === excludedFlagName,
+  );
+  if (maskStartIndex < 0) throw new PatchError("LinkUpdater const_241 position-reporting gate not found.");
+  const maskStart = instructions[maskStartIndex].offset;
+  const expectedPatchedPrefixLength = 17;
+  if (
+    maskStart >= expectedPatchedPrefixLength &&
+    code.subarray(maskStart - expectedPatchedPrefixLength, maskStart).every((byte) => byte === 0x02)
+  ) {
+    return null;
+  }
+
+  const brainGateIndex = instructions.findIndex((inst, index) =>
+    index < maskStartIndex &&
+    inst.opcode === 0x5d &&
+    inst.operands[0]?.[1] === booleanName &&
+    instructions[index + 1]?.opcode === 0x62 &&
+    instructions[index + 1]?.operands[0]?.[1] === 4 &&
+    instructions[index + 2]?.opcode === 0x66 &&
+    instructions[index + 2]?.operands[0]?.[1] === brainName &&
+    instructions[index + 3]?.opcode === 0x46 &&
+    instructions[index + 3]?.operands[0]?.[1] === booleanName &&
+    instructions[index + 4]?.opcode === 0x2a &&
+    instructions[index + 5]?.opcode === 0x76 &&
+    instructions[index + 6]?.opcode === 0x11 &&
+    instructions[index + 7]?.opcode === 0x29 &&
+    instructions[index + 8]?.offset === maskStart,
+  );
+  if (brainGateIndex < 0) {
+    throw new PatchError("LinkUpdater Brain position-reporting gate has an unexpected shape.");
+  }
+  if (verify) {
+    throw new PatchError("Client-simulated hostile positions are still excluded from 0x07 reports.");
+  }
+
+  const start = instructions[brainGateIndex].offset;
+  return {
+    key: "LinkUpdater.method_1926.reportHostilePositions",
+    start: body.codeStart + start,
+    end: body.codeStart + maskStart,
+    data: Buffer.alloc(maskStart - start, 0x02),
+    detail: "report live client-simulated hostile positions through the existing throttled 0x07 update loop",
+  };
+}
+
 function opU30(opcode: number, value: number): Buffer {
   return Buffer.concat([Buffer.from([opcode]), writeU30(value)]);
 }
@@ -238,7 +316,9 @@ export function restorePlagueBattalionClient(swfPath: string, verify = false): v
   const rankPatch = patchPlagueRankResolution(ctx, abc, classIndex, verify);
   const chargeGatePatch = patchBrokenGlobalChargeGate(ctx, abc, classIndex, verify);
   const ownerPatch = patchLocalPlagueOwnerResolution(ctx, abc, classIndex, verify);
-  const behaviorPatches = [rankPatch, chargeGatePatch, ownerPatch].filter((patch): patch is BytePatch => patch !== null);
+  const positionPatch = patchHostilePositionReporting(ctx, abc, verify);
+  const behaviorPatches = [rankPatch, chargeGatePatch, ownerPatch, positionPatch]
+    .filter((patch): patch is BytePatch => patch !== null);
   const methodIndex = methodIdxForTrait(abc.instances[classIndex].traits, abc, "FireThisPower");
   if (methodIndex === null) throw new PatchError("CombatState.FireThisPower not found.");
   const body = abc.methodBodies.get(methodIndex);

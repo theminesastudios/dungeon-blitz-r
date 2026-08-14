@@ -6128,6 +6128,13 @@ export class LevelHandler {
             }
         }
         if (canonicalTerminal) {
+            const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+            CombatHandler.markRawHostileDefeated(
+                client,
+                getClientLevelScope(client),
+                rawEntityId,
+                canonicalEntity
+            );
             if (
                 isDefeatEntState &&
                 !Boolean(ent.questDefeatProcessed) &&
@@ -6175,7 +6182,6 @@ export class LevelHandler {
                 }
                 client.entities.set(rawEntityId, ent);
             }
-            const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
             CombatHandler.correctServerAuthorityHostileProxy(
                 client,
                 getClientLevelScope(client),
@@ -6393,6 +6399,12 @@ export class LevelHandler {
         }
         if (isEnemyEntity && isDefeatEntState) {
             const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+            CombatHandler.markRawHostileDefeated(
+                client,
+                getClientLevelScope(client),
+                rawEntityId,
+                levelEntity ?? ent
+            );
             const contributionSnapshot = CombatHandler.getContributionSnapshot(getClientLevelScope(client), entityId);
             if (contributionSnapshot.contributors.length) {
                 ent.clientDefeatVerified = true;
@@ -6422,6 +6434,12 @@ export class LevelHandler {
         ent.x += deltaX;
         ent.y += deltaY;
         ent.v = Number(ent.v ?? 0) + deltaVX;
+        // Preserve which raw client entity is actually participating in the live simulation.
+        // Server-authored duplicate proxies can remain parked at their spawn coordinates and must
+        // not be mistaken for the current position of a moving dungeon hostile.
+        ent.lastClientMovementAt = Date.now();
+        ent.lastClientMovementRawId = rawEntityId;
+        ent.clientMovementReportCount = Math.max(0, Math.round(Number(ent.clientMovementReportCount ?? 0))) + 1;
         ent.entState = canonicalEntState;
         ent.dead = canonicalIsDefeatState ? true : isActiveSelfState ? false : Boolean(ent.dead);
         ent.facingLeft = flags.bLeft;
@@ -6455,6 +6473,12 @@ export class LevelHandler {
             levelEntity.x = ent.x;
             levelEntity.y = ent.y;
             levelEntity.v = ent.v;
+            levelEntity.lastClientMovementAt = ent.lastClientMovementAt;
+            levelEntity.lastClientMovementRawId = rawEntityId;
+            levelEntity.clientMovementReportCount = Math.max(
+                Math.round(Number(levelEntity.clientMovementReportCount ?? 0)),
+                ent.clientMovementReportCount
+            );
             levelEntity.entState = canonicalEntState;
             levelEntity.dead = canonicalIsDefeatState ? true : isActiveSelfState ? false : Boolean(levelEntity.dead);
             levelEntity.facingLeft = flags.bLeft;

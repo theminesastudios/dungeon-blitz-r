@@ -2546,6 +2546,14 @@ export class EntityHandler {
             return canonicalId;
         }
 
+        // Promoted Plague proxies are already exact local ids. Searching the inverse alias map
+        // first can find another same-archetype proxy that was later pointed at this id, moving
+        // visual removals/health corrections away from the creature that actually owns the buff.
+        const independentPlagueHostileIds = (client as any).independentPlagueHostileIds as Set<number> | undefined;
+        if (independentPlagueHostileIds?.has(canonicalId) && client.entities?.has(canonicalId)) {
+            return canonicalId;
+        }
+
         for (const [localId, mappedCanonicalId] of (client.entityIdAliases ?? new Map<number, number>()).entries()) {
             if (Math.max(0, Math.round(Number(mappedCanonicalId) || 0)) === canonicalId) {
                 const mappedLocalId = Math.max(0, Math.round(Number(localId) || 0));
@@ -2582,6 +2590,16 @@ export class EntityHandler {
     static resolveEntityAlias(client: Client, entityId: number): number {
         const localId = Math.max(0, Math.round(Number(entityId) || 0));
         if (localId <= 0) {
+            return localId;
+        }
+
+        // A Plague transfer can promote one on-screen proxy out of a shared canonical alias
+        // group. That raw id is a real authority target from then on, so a later spawn/update
+        // packet must not be allowed to silently attach it to the old (often dead) canonical
+        // entity again. Requiring the local entity to still exist keeps stale ids harmless after
+        // the proxy has been removed from this client.
+        const independentPlagueHostileIds = (client as any).independentPlagueHostileIds as Set<number> | undefined;
+        if (independentPlagueHostileIds?.has(localId) && client.entities?.has(localId)) {
             return localId;
         }
 
