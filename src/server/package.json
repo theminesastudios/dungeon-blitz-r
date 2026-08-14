@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "1.23.18",
+  "version": "1.23.19",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -22,8 +22,8 @@
     "patch:mage-skill-balance": "ts-node scripts/patch_gameswz_mage_skill_balance.ts",
     "patch:form-stance-balance": "ts-node scripts/patch_gameswz_form_stance_balance.ts",
     "patch:pet-ability-balance": "ts-node scripts/patch_gameswz_pet_ability_balance.ts",
-    "patch:plague-battalion-overrides": "ts-node scripts/patch_gameswz_plague_battalion_overrides.ts",
-    "patch:plague-battalion-window": "node scripts/patch-dungeonblitz-plague-battalion-window.js",
+    "patch:plague-battalion-original": "ts-node scripts/patch_gameswz_plague_battalion_original.ts",
+    "patch:plague-battalion-client-original": "ts-node scripts/patch-dungeonblitz-plague-battalion-original.ts",
     "patch:cutscene-input-lock": "node scripts/patch-dungeonblitz-cutscene-input-lock.js",
     "patch:power-stat-tooltips": "ts-node scripts/patch_gameswz_power_stat_tooltips.ts",
     "patch:charm-text": "ts-node scripts/patch_gameswz_charm_text.ts",
@@ -36,7 +36,7 @@
     "patch:sentinel-form-cooldown": "ts-node scripts/patch_gameswz_sentinel_form_cooldown.ts",
     "patch:sentinel-fury-buff": "ts-node scripts/patch_gameswz_sentinel_fury_buff.ts",
     "patch:home-dummy-bosses": "ts-node scripts/patch_gameswz_home_dummy_bosses.ts",
-    "prebuild": "npm run patch:home-dummy-bosses && npm run patch:legendary-gear-runes && npm run patch:gear-227-critical-power && npm run patch:gear-1116-1123-stats-runes && npm run patch:power-mana-costs && npm run patch:form-stance-balance && npm run patch:pet-ability-balance && npm run patch:english-text && npm run patch:bandit-camp-text && npm run patch:clear-bandits-mission && npm run patch:clear-bandits-tracker && npm run patch:clear-bandits-npc-marker && npm run patch:clear-bandits-notification && npm run patch:mage-skill-balance && npm run patch:rogue-mastery-balance && npm run patch:shadowstalker-balance && npm run patch:paladin-mastery-balance && npm run patch:sentinel-form-cooldown && npm run patch:sentinel-fury-buff && npm run patch:charm-text && npm run patch:plague-battalion-overrides && npm run patch:power-stat-tooltips",
+    "prebuild": "npm run patch:home-dummy-bosses && npm run patch:legendary-gear-runes && npm run patch:gear-227-critical-power && npm run patch:gear-1116-1123-stats-runes && npm run patch:power-mana-costs && npm run patch:form-stance-balance && npm run patch:pet-ability-balance && npm run patch:english-text && npm run patch:bandit-camp-text && npm run patch:clear-bandits-mission && npm run patch:clear-bandits-tracker && npm run patch:clear-bandits-npc-marker && npm run patch:clear-bandits-notification && npm run patch:mage-skill-balance && npm run patch:rogue-mastery-balance && npm run patch:shadowstalker-balance && npm run patch:paladin-mastery-balance && npm run patch:sentinel-form-cooldown && npm run patch:sentinel-fury-buff && npm run patch:charm-text && npm run patch:plague-battalion-original && npm run patch:plague-battalion-client-original && npm run patch:power-stat-tooltips",
     "build": "tsc",
     "premultiplayer": "npm run build",
     "multiplayer": "node dist/main.js",

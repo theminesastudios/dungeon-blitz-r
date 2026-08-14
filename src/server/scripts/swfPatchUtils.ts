@@ -657,6 +657,23 @@ export function disassemble(code: Buffer, ctx: string): Instruction[] {
     const offset = pos;
     const opcode = code[pos];
     pos += 1;
+    // lookupswitch has a variable-width operand list: default offset, case count, then
+    // caseCount + 1 case offsets. CombatState.method_322 uses it for buff-name dispatch.
+    if (opcode === 0x1b) {
+      const operands: Array<[OperandKind, number]> = [];
+      let value: number;
+      [value, pos] = readS24(code, pos, `${ctx}@${offset}`);
+      operands.push(["s24", value]);
+      let caseCount: number;
+      [caseCount, pos] = readU30(code, pos, `${ctx}@${offset}`);
+      operands.push(["u30", caseCount]);
+      for (let caseIndex = 0; caseIndex <= caseCount; caseIndex += 1) {
+        [value, pos] = readS24(code, pos, `${ctx}@${offset}`);
+        operands.push(["s24", value]);
+      }
+      instructions.push({ offset, opcode, operands, size: pos - offset });
+      continue;
+    }
     const signature = OPCODE_INFO.get(opcode);
     if (signature === undefined) {
       throw new PatchError(`Unsupported opcode 0x${opcode.toString(16)} in ${ctx} at ${offset}`);

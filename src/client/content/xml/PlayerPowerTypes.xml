@@ -36603,8 +36603,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalionMinion1</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion1,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36636,8 +36636,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalionMinion2</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion2,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36669,8 +36669,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalionMinion3</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion3,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36702,8 +36702,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalionMinion4</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion4,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36735,8 +36735,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalionMinion5</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion5,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36768,8 +36768,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalionMinion6</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion6,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36801,8 +36801,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalionMinion7</AddTargetBuff>
-		<AddSelfBuff>PlagueBattalion7,PlagueStackLimit</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueBattalion,PlagueStackLimit</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36834,8 +36834,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalionMinion8,PlagueBattalionMinion8,PlagueBattalionMinion8</AddTargetBuff>
-		<AddSelfBuff>PlagueStackLimit,PlagueBattalion8,PlagueBattalion8,PlagueBattalion8</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion,PlagueBattalion,PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueStackLimit,PlagueBattalion,PlagueBattalion,PlagueBattalion</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36867,8 +36867,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalionMinion9,PlagueBattalionMinion9,PlagueBattalionMinion9</AddTargetBuff>
-		<AddSelfBuff>PlagueStackLimit,PlagueBattalion9,PlagueBattalion9,PlagueBattalion9</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion,PlagueBattalion,PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueStackLimit,PlagueBattalion,PlagueBattalion,PlagueBattalion</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -36900,8 +36900,8 @@
 		<ProcModifier>1</ProcModifier>
 		<DamageType>Dark</DamageType>
 		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>PlagueBattalionMinion10,PlagueBattalionMinion10,PlagueBattalionMinion10</AddTargetBuff>
-		<AddSelfBuff>PlagueStackLimit,PlagueBattalion10,PlagueBattalion10,PlagueBattalion10</AddSelfBuff>
+		<AddTargetBuff>PlagueBattalion,PlagueBattalion,PlagueBattalion</AddTargetBuff>
+		<AddSelfBuff>PlagueStackLimit,PlagueBattalion,PlagueBattalion,PlagueBattalion</AddSelfBuff>
 		<DisplayName>Plague Battalion</DisplayName>
 		<BasePowerName>PlagueBattalion</BasePowerName>
 		<Description>You and each of your Undead minions place a powerful Poison on the next enemy they attack.</Description>
@@ -56785,575 +56785,5 @@
 			<FireAndForget>TRUE</FireAndForget>
 		</HitGfx>
 		<ProjGfx/>
-	</Power>
-	<Power PowerName="PlagueBattalionMelee1">
-		<PowerID>7019</PowerID>
-		<TargetMethod>MeleeCombo</TargetMethod>
-		<Range>120</Range>
-		<CastAnim>Melee</CastAnim>
-		<CastTime>65</CastTime>
-		<RecoverTime>435</RecoverTime>
-		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>Plagued1</AddTargetBuff>
-		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage, 2.5 damage/s, over 9s]</Description>
-		<CastGfx/>
-		<FireGfx/>
-		<HitAnimSource>TargetCenter</HitAnimSource>
-		<HitGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_MeleeHitReact</AnimClass>
-			<AnimScale>0.48</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</HitGfx>
-		<ProjGfx/>
-	</Power>
-	<Power PowerName="PlagueBattalionROR1">
-		<PowerID>7029</PowerID>
-		<TargetMethod>ProjectileCombo</TargetMethod>
-		<CastAnim>Shoot</CastAnim>
-		<CastTime>0</CastTime>
-		<RecoverTime>500</RecoverTime>
-		<ManaCost>0,5</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>MinorCurse,Plagued1</AddTargetBuff>
-		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 2.5 damage/s, over 9s]</Description>
-		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
-		<CastGfx/>
-		<FireSound>snd_pwr_range_poison_imp</FireSound>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Impact</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>true</FireAndForget>
-		</FireGfx>
-		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Hand,a_NecroBolt_Face</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>FALSE</FireAndForget>
-		</ProjGfx>
-	</Power>
-	<Power PowerName="PlagueBattalionMelee2">
-		<PowerID>7020</PowerID>
-		<TargetMethod>MeleeCombo</TargetMethod>
-		<Range>120</Range>
-		<CastAnim>Melee</CastAnim>
-		<CastTime>65</CastTime>
-		<RecoverTime>435</RecoverTime>
-		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>Plagued2</AddTargetBuff>
-		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage, 2.8 damage/s, over 9s]</Description>
-		<CastGfx/>
-		<FireGfx/>
-		<HitAnimSource>TargetCenter</HitAnimSource>
-		<HitGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_MeleeHitReact</AnimClass>
-			<AnimScale>0.48</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</HitGfx>
-		<ProjGfx/>
-	</Power>
-	<Power PowerName="PlagueBattalionROR2">
-		<PowerID>7030</PowerID>
-		<TargetMethod>ProjectileCombo</TargetMethod>
-		<CastAnim>Shoot</CastAnim>
-		<CastTime>0</CastTime>
-		<RecoverTime>500</RecoverTime>
-		<ManaCost>0,5</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>MinorCurse,Plagued2</AddTargetBuff>
-		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 2.8 damage/s, over 9s]</Description>
-		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
-		<CastGfx/>
-		<FireSound>snd_pwr_range_poison_imp</FireSound>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Impact</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>true</FireAndForget>
-		</FireGfx>
-		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Hand,a_NecroBolt_Face</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>FALSE</FireAndForget>
-		</ProjGfx>
-	</Power>
-	<Power PowerName="PlagueBattalionMelee3">
-		<PowerID>7021</PowerID>
-		<TargetMethod>MeleeCombo</TargetMethod>
-		<Range>120</Range>
-		<CastAnim>Melee</CastAnim>
-		<CastTime>65</CastTime>
-		<RecoverTime>435</RecoverTime>
-		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>Plagued3</AddTargetBuff>
-		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage, 2.8 damage/s, over 9s]</Description>
-		<CastGfx/>
-		<FireGfx/>
-		<HitAnimSource>TargetCenter</HitAnimSource>
-		<HitGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_MeleeHitReact</AnimClass>
-			<AnimScale>0.48</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</HitGfx>
-		<ProjGfx/>
-	</Power>
-	<Power PowerName="PlagueBattalionROR3">
-		<PowerID>7031</PowerID>
-		<TargetMethod>ProjectileCombo</TargetMethod>
-		<CastAnim>Shoot</CastAnim>
-		<CastTime>0</CastTime>
-		<RecoverTime>500</RecoverTime>
-		<ManaCost>0,5</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>MinorCurse,Plagued3</AddTargetBuff>
-		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 2.8 damage/s, over 9s]</Description>
-		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
-		<CastGfx/>
-		<FireSound>snd_pwr_range_poison_imp</FireSound>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Impact</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>true</FireAndForget>
-		</FireGfx>
-		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Hand,a_NecroBolt_Face</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>FALSE</FireAndForget>
-		</ProjGfx>
-	</Power>
-	<Power PowerName="PlagueBattalionMelee4">
-		<PowerID>7022</PowerID>
-		<TargetMethod>MeleeCombo</TargetMethod>
-		<Range>120</Range>
-		<CastAnim>Melee</CastAnim>
-		<CastTime>65</CastTime>
-		<RecoverTime>435</RecoverTime>
-		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>Plagued4</AddTargetBuff>
-		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage, 2.9 damage/s, over 9s]</Description>
-		<CastGfx/>
-		<FireGfx/>
-		<HitAnimSource>TargetCenter</HitAnimSource>
-		<HitGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_MeleeHitReact</AnimClass>
-			<AnimScale>0.48</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</HitGfx>
-		<ProjGfx/>
-	</Power>
-	<Power PowerName="PlagueBattalionROR4">
-		<PowerID>7032</PowerID>
-		<TargetMethod>ProjectileCombo</TargetMethod>
-		<CastAnim>Shoot</CastAnim>
-		<CastTime>0</CastTime>
-		<RecoverTime>500</RecoverTime>
-		<ManaCost>0,5</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>MinorCurse,Plagued4</AddTargetBuff>
-		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 2.9 damage/s, over 9s]</Description>
-		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
-		<CastGfx/>
-		<FireSound>snd_pwr_range_poison_imp</FireSound>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Impact</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>true</FireAndForget>
-		</FireGfx>
-		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Hand,a_NecroBolt_Face</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>FALSE</FireAndForget>
-		</ProjGfx>
-	</Power>
-	<Power PowerName="PlagueBattalionMelee5">
-		<PowerID>7023</PowerID>
-		<TargetMethod>MeleeCombo</TargetMethod>
-		<Range>120</Range>
-		<CastAnim>Melee</CastAnim>
-		<CastTime>65</CastTime>
-		<RecoverTime>435</RecoverTime>
-		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>Plagued5</AddTargetBuff>
-		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage, 2.9 damage/s, over 9s]</Description>
-		<CastGfx/>
-		<FireGfx/>
-		<HitAnimSource>TargetCenter</HitAnimSource>
-		<HitGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_MeleeHitReact</AnimClass>
-			<AnimScale>0.48</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</HitGfx>
-		<ProjGfx/>
-	</Power>
-	<Power PowerName="PlagueBattalionROR5">
-		<PowerID>7033</PowerID>
-		<TargetMethod>ProjectileCombo</TargetMethod>
-		<CastAnim>Shoot</CastAnim>
-		<CastTime>0</CastTime>
-		<RecoverTime>500</RecoverTime>
-		<ManaCost>0,5</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>MinorCurse,Plagued5</AddTargetBuff>
-		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 2.9 damage/s, over 9s]</Description>
-		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
-		<CastGfx/>
-		<FireSound>snd_pwr_range_poison_imp</FireSound>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Impact</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>true</FireAndForget>
-		</FireGfx>
-		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Hand,a_NecroBolt_Face</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>FALSE</FireAndForget>
-		</ProjGfx>
-	</Power>
-	<Power PowerName="PlagueBattalionMelee6">
-		<PowerID>7024</PowerID>
-		<TargetMethod>MeleeCombo</TargetMethod>
-		<Range>120</Range>
-		<CastAnim>Melee</CastAnim>
-		<CastTime>65</CastTime>
-		<RecoverTime>435</RecoverTime>
-		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>Plagued6</AddTargetBuff>
-		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage, 3.1 damage/s, over 9s]</Description>
-		<CastGfx/>
-		<FireGfx/>
-		<HitAnimSource>TargetCenter</HitAnimSource>
-		<HitGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_MeleeHitReact</AnimClass>
-			<AnimScale>0.48</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</HitGfx>
-		<ProjGfx/>
-	</Power>
-	<Power PowerName="PlagueBattalionROR6">
-		<PowerID>7034</PowerID>
-		<TargetMethod>ProjectileCombo</TargetMethod>
-		<CastAnim>Shoot</CastAnim>
-		<CastTime>0</CastTime>
-		<RecoverTime>500</RecoverTime>
-		<ManaCost>0,5</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>MinorCurse,Plagued6</AddTargetBuff>
-		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 3.1 damage/s, over 9s]</Description>
-		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
-		<CastGfx/>
-		<FireSound>snd_pwr_range_poison_imp</FireSound>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Impact</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>true</FireAndForget>
-		</FireGfx>
-		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Hand,a_NecroBolt_Face</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>FALSE</FireAndForget>
-		</ProjGfx>
-	</Power>
-	<Power PowerName="PlagueBattalionMelee7">
-		<PowerID>7025</PowerID>
-		<TargetMethod>MeleeCombo</TargetMethod>
-		<Range>120</Range>
-		<CastAnim>Melee</CastAnim>
-		<CastTime>65</CastTime>
-		<RecoverTime>435</RecoverTime>
-		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>Plagued7</AddTargetBuff>
-		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage, 3.1 damage/s, over 9s]</Description>
-		<CastGfx/>
-		<FireGfx/>
-		<HitAnimSource>TargetCenter</HitAnimSource>
-		<HitGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_MeleeHitReact</AnimClass>
-			<AnimScale>0.48</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</HitGfx>
-		<ProjGfx/>
-	</Power>
-	<Power PowerName="PlagueBattalionROR7">
-		<PowerID>7035</PowerID>
-		<TargetMethod>ProjectileCombo</TargetMethod>
-		<CastAnim>Shoot</CastAnim>
-		<CastTime>0</CastTime>
-		<RecoverTime>500</RecoverTime>
-		<ManaCost>0,5</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>MinorCurse,Plagued7</AddTargetBuff>
-		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 3.1 damage/s, over 9s]</Description>
-		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
-		<CastGfx/>
-		<FireSound>snd_pwr_range_poison_imp</FireSound>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Impact</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>true</FireAndForget>
-		</FireGfx>
-		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Hand,a_NecroBolt_Face</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>FALSE</FireAndForget>
-		</ProjGfx>
-	</Power>
-	<Power PowerName="PlagueBattalionMelee8">
-		<PowerID>7026</PowerID>
-		<TargetMethod>MeleeCombo</TargetMethod>
-		<Range>120</Range>
-		<CastAnim>Melee</CastAnim>
-		<CastTime>65</CastTime>
-		<RecoverTime>435</RecoverTime>
-		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>Plagued8</AddTargetBuff>
-		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage, 3.2 damage/s, over 9s]</Description>
-		<CastGfx/>
-		<FireGfx/>
-		<HitAnimSource>TargetCenter</HitAnimSource>
-		<HitGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_MeleeHitReact</AnimClass>
-			<AnimScale>0.48</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</HitGfx>
-		<ProjGfx/>
-	</Power>
-	<Power PowerName="PlagueBattalionROR8">
-		<PowerID>7036</PowerID>
-		<TargetMethod>ProjectileCombo</TargetMethod>
-		<CastAnim>Shoot</CastAnim>
-		<CastTime>0</CastTime>
-		<RecoverTime>500</RecoverTime>
-		<ManaCost>0,5</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>MinorCurse,Plagued8</AddTargetBuff>
-		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 3.2 damage/s, over 9s]</Description>
-		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
-		<CastGfx/>
-		<FireSound>snd_pwr_range_poison_imp</FireSound>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Impact</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>true</FireAndForget>
-		</FireGfx>
-		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Hand,a_NecroBolt_Face</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>FALSE</FireAndForget>
-		</ProjGfx>
-	</Power>
-	<Power PowerName="PlagueBattalionMelee9">
-		<PowerID>7027</PowerID>
-		<TargetMethod>MeleeCombo</TargetMethod>
-		<Range>120</Range>
-		<CastAnim>Melee</CastAnim>
-		<CastTime>65</CastTime>
-		<RecoverTime>435</RecoverTime>
-		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>Plagued9</AddTargetBuff>
-		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage, 3.3 damage/s, over 9s]</Description>
-		<CastGfx/>
-		<FireGfx/>
-		<HitAnimSource>TargetCenter</HitAnimSource>
-		<HitGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_MeleeHitReact</AnimClass>
-			<AnimScale>0.48</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</HitGfx>
-		<ProjGfx/>
-	</Power>
-	<Power PowerName="PlagueBattalionROR9">
-		<PowerID>7037</PowerID>
-		<TargetMethod>ProjectileCombo</TargetMethod>
-		<CastAnim>Shoot</CastAnim>
-		<CastTime>0</CastTime>
-		<RecoverTime>500</RecoverTime>
-		<ManaCost>0,5</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>MinorCurse,Plagued9</AddTargetBuff>
-		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 3.3 damage/s, over 9s]</Description>
-		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
-		<CastGfx/>
-		<FireSound>snd_pwr_range_poison_imp</FireSound>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Impact</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>true</FireAndForget>
-		</FireGfx>
-		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Hand,a_NecroBolt_Face</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>FALSE</FireAndForget>
-		</ProjGfx>
-	</Power>
-	<Power PowerName="PlagueBattalionMelee10">
-		<PowerID>7028</PowerID>
-		<TargetMethod>MeleeCombo</TargetMethod>
-		<Range>120</Range>
-		<CastAnim>Melee</CastAnim>
-		<CastTime>65</CastTime>
-		<RecoverTime>435</RecoverTime>
-		<ManaCost>0</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>Plagued10</AddTargetBuff>
-		<BasePowerName>PlagueBattalionMelee</BasePowerName>
-		<Description>Plague Battalion melee override power [Stats: x1 damage, 3.3 damage/s, over 9s]</Description>
-		<CastGfx/>
-		<FireGfx/>
-		<HitAnimSource>TargetCenter</HitAnimSource>
-		<HitGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_MeleeHitReact</AnimClass>
-			<AnimScale>0.48</AnimScale>
-			<FireAndForget>TRUE</FireAndForget>
-		</HitGfx>
-		<ProjGfx/>
-	</Power>
-	<Power PowerName="PlagueBattalionROR10">
-		<PowerID>7038</PowerID>
-		<TargetMethod>ProjectileCombo</TargetMethod>
-		<CastAnim>Shoot</CastAnim>
-		<CastTime>0</CastTime>
-		<RecoverTime>500</RecoverTime>
-		<ManaCost>0,5</ManaCost>
-		<BaseDamageMult>1</BaseDamageMult>
-		<ProcModifier>1</ProcModifier>
-		<DamageType>Dark</DamageType>
-		<PowerGroup>PlagueBattalion</PowerGroup>
-		<AddTargetBuff>MinorCurse,Plagued10</AddTargetBuff>
-		<BasePowerName>PlagueBattalionROR</BasePowerName>
-		<Description>Plague Battalion ranged override power. [Stats: x1 damage, 3.3 damage/s, over 9s]</Description>
-		<CastSound>snd_pwr_range_poison_shoot_01</CastSound>
-		<CastGfx/>
-		<FireSound>snd_pwr_range_poison_imp</FireSound>
-		<FireGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Impact</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>true</FireAndForget>
-		</FireGfx>
-		<HitGfx/>
-		<ProjGfx>
-			<AnimFile>SFX_1.swf</AnimFile>
-			<AnimClass>a_NecroBolt_Hand,a_NecroBolt_Face</AnimClass>
-			<AnimScale>.7</AnimScale>
-			<FireAndForget>FALSE</FireAndForget>
-		</ProjGfx>
 	</Power>
 </PlayerPowerTypes>

@@ -9630,14 +9630,4 @@
 		<BuffValue>.05,.05</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
-	<PowerModType>
-		<ModName>PlagueExpertise</ModName>
-		<ModID>1099</ModID>
-		<DisplayName>Plague Battalion</DisplayName>
-		<ModType>Buff</ModType>
-		<BuffName>PlagueBattalion1,PlagueBattalion2,PlagueBattalion3,PlagueBattalion4,PlagueBattalion5,PlagueBattalion6,PlagueBattalion7,PlagueBattalion8,PlagueBattalion9,PlagueBattalion10</BuffName>
-		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>0</BuffValue>
-		<IconName>a_PowerIcon_LeechAura</IconName>
-	</PowerModType>
 </PowerModTypes>
