@@ -297,7 +297,10 @@ function verifyOriginalNextHitHandler(ctx: ReturnType<typeof parseSwf>, abc: Ret
 
 function syncClientRevision(swfPath: string, verify: boolean): void {
   if (path.resolve(swfPath) !== path.resolve(DEFAULT_SWF)) return;
-  const digest = crypto.createHash("sha256").update(fs.readFileSync(swfPath)).digest("hex").slice(0, 12);
+  // sha1, matching every other patch that writes the clientrev token (Sentinel Form exit
+  // cooldown, Shadow Legion equipped skills, ...). sha256 produced a different token for the
+  // same SWF, so whichever patch wrote index.html last made the other patches' verifies fail.
+  const digest = crypto.createHash("sha1").update(fs.readFileSync(swfPath)).digest("hex").slice(0, 12);
   const expected = `clientrev=swf-${digest}`;
   const html = fs.readFileSync(INDEX_HTML, "utf8");
   if (html.includes(expected)) return;

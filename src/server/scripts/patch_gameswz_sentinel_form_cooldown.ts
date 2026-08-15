@@ -3,7 +3,7 @@ import * as path from "path";
 import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
 
 /**
- * Sentinel Form costs a flat 30 seconds every time it is used, at every rank.
+ * Sentinel Form's cooldown is a 30-second budget at every rank.
  *
  * The authored cooldown was a rank curve -- 60s at ranks 1-4, 40s at 5-9, 30s at rank 10 --
  * and the client stamps it at the cast (CombatState.method_51). That was the whole lockout,
@@ -15,10 +15,14 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  *
  * Two halves fix that and they are deliberately split:
  *
- *   this file                                     what the number is -- 30s, every rank.
- *   patch-dungeonblitz-sentinel-form-exit-cooldown when the clock starts -- re-stamped when
- *                                                 the form ends, so a long form cannot run
- *                                                 its own cooldown out from under itself.
+ *   this file                                     what the budget is -- 30s, every rank. This
+ *                                                 is the cast-time stamp AND the cap on the
+ *                                                 exit cooldown below.
+ *   patch-dungeonblitz-sentinel-form-exit-cooldown what the wait actually is -- re-stamped
+ *                                                 when the form ends, scaled to the energy the
+ *                                                 form spent (each swing drains the mana bar),
+ *                                                 floored at 10s so a tap cannot be spammed
+ *                                                 and capped at this file's 30s.
  *
  * Values are absolute, not multipliers applied to whatever is in the file, because this runs
  * on every prebuild.
@@ -62,23 +66,35 @@ const SENTINEL_FORM_POWERS = new Set<string>([
  * Both ranks that advertised a cooldown reduction now describe the rule that replaced it.
  * Leaving them alone would have rank 5 promising 40 seconds it no longer has, and neither
  * line mentioned the part players actually trip over -- that the wait starts when you leave
- * the form, not when the mana runs out.
+ * the form and scales with the energy the form spent (every swing drains the mana bar).
  *
  * Ordered whole-phrase replacements, both languages: Game.tr.swz carries its own translated
  * copy of the same string, so an English-only rewrite leaves Turkish players reading the old
  * number. Turkish here matches the machine-translated house style already in that file
  * (ASCII-folded, "bekleme" for cooldown).
+ *
+ * The FROM list includes every wording this file has shipped: the authored lines, the first
+ * attack-free-time cut, and the attack-penalty cut that the previous release carried, so an
+ * SWF built from any of them converges on the energy wording. The trailing pair in each list
+ * is a fragment upgrade, not a whole phrase: it rewrites any leftover "(max 30 seconds)" span
+ * to "(min 10, max 30 seconds)" so a tooltip that missed a whole-phrase rewrite still picks up
+ * the floor. "(min 10, max 30 seconds)" does not contain "(max 30 seconds)", so re-running is
+ * a no-op.
  */
 const SENTINEL_TOOLTIPS = new Map<string, Array<[string, string]>>([
   [
     "SentinelForm5",
     [
-      ["Cooldown decreased to 40 seconds.", "If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown."],
-      ["30 second Cooldown, starting when you leave the form.", "If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown."],
-      ["Cooldown after leaving equals time spent in form, up to 30 seconds.", "If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown."],
-      ["Bekleme decreased 40 saniye.", "Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular."],
-      ["Formdan cikinca baslayan 30 saniyelik bekleme.", "Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular."],
-      ["Formdan sonraki bekleme, formda gecirilen sure kadardir; en fazla 30 saniye.", "Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular."],
+      ["Cooldown decreased to 40 seconds.", "Cooldown after leaving grows with the energy spent in the form (min 10, max 30 seconds)."],
+      ["30 second Cooldown, starting when you leave the form.", "Cooldown after leaving grows with the energy spent in the form (min 10, max 30 seconds)."],
+      ["Cooldown after leaving equals time spent in form, up to 30 seconds.", "Cooldown after leaving grows with the energy spent in the form (min 10, max 30 seconds)."],
+      ["If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown.", "Cooldown after leaving grows with the energy spent in the form (min 10, max 30 seconds)."],
+      ["Bekleme decreased 40 saniye.", "Formdan sonraki bekleme, formda harcanan enerjiyle artar (en az 10, en fazla 30 saniye)."],
+      ["Formdan cikinca baslayan 30 saniyelik bekleme.", "Formdan sonraki bekleme, formda harcanan enerjiyle artar (en az 10, en fazla 30 saniye)."],
+      ["Formdan sonraki bekleme, formda gecirilen sure kadardir; en fazla 30 saniye.", "Formdan sonraki bekleme, formda harcanan enerjiyle artar (en az 10, en fazla 30 saniye)."],
+      ["Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular.", "Formdan sonraki bekleme, formda harcanan enerjiyle artar (en az 10, en fazla 30 saniye)."],
+      ["(max 30 seconds)", "(min 10, max 30 seconds)"],
+      ["(en fazla 30 saniye)", "(en az 10, en fazla 30 saniye)"],
     ],
   ],
   [
@@ -86,28 +102,38 @@ const SENTINEL_TOOLTIPS = new Map<string, Array<[string, string]>>([
     [
       [
         "Reduced Cooldown to 30 seconds. +5% Sentinel attack Damage.",
-        "If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown. +5% Sentinel attack Damage.",
+        "Cooldown after leaving grows with the energy spent in the form (min 10, max 30 seconds). +5% Sentinel attack Damage.",
       ],
       [
         "30 second Cooldown, starting when you leave the form. +5% Sentinel attack Damage.",
-        "If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown. +5% Sentinel attack Damage.",
+        "Cooldown after leaving grows with the energy spent in the form (min 10, max 30 seconds). +5% Sentinel attack Damage.",
       ],
       [
         "Cooldown after leaving equals time spent in form, up to 30 seconds. +5% Sentinel attack Damage.",
+        "Cooldown after leaving grows with the energy spent in the form (min 10, max 30 seconds). +5% Sentinel attack Damage.",
+      ],
+      [
         "If no attack is made, cooldown after leaving equals time spent in form (max 30 seconds). Attacking causes a 30-second cooldown. +5% Sentinel attack Damage.",
+        "Cooldown after leaving grows with the energy spent in the form (min 10, max 30 seconds). +5% Sentinel attack Damage.",
       ],
       [
         "Reduced bekleme 30 saniye. +5% nobetci saldiri hasar.",
-        "Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular. +5% nobetci saldiri hasar.",
+        "Formdan sonraki bekleme, formda harcanan enerjiyle artar (en az 10, en fazla 30 saniye). +5% nobetci saldiri hasar.",
       ],
       [
         "Formdan cikinca baslayan 30 saniyelik bekleme. +5% nobetci saldiri hasar.",
-        "Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular. +5% nobetci saldiri hasar.",
+        "Formdan sonraki bekleme, formda harcanan enerjiyle artar (en az 10, en fazla 30 saniye). +5% nobetci saldiri hasar.",
       ],
       [
         "Formdan sonraki bekleme, formda gecirilen sure kadardir; en fazla 30 saniye. +5% nobetci saldiri hasar.",
-        "Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular. +5% nobetci saldiri hasar.",
+        "Formdan sonraki bekleme, formda harcanan enerjiyle artar (en az 10, en fazla 30 saniye). +5% nobetci saldiri hasar.",
       ],
+      [
+        "Hic saldiri yapilmazsa formdan sonraki bekleme, formda gecirilen sure kadardir (en fazla 30 saniye). Saldiri yapmak 30 saniye bekleme uygular. +5% nobetci saldiri hasar.",
+        "Formdan sonraki bekleme, formda harcanan enerjiyle artar (en az 10, en fazla 30 saniye). +5% nobetci saldiri hasar.",
+      ],
+      ["(max 30 seconds)", "(min 10, max 30 seconds)"],
+      ["(en fazla 30 saniye)", "(en az 10, en fazla 30 saniye)"],
     ],
   ],
 ]);

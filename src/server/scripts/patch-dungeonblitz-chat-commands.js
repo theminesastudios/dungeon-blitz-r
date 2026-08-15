@@ -290,10 +290,15 @@ function patchChatItemLinkRendering(source, swfPath) {
 }
 
 function patchSocialCommandPackets(source, swfPath) {
+    // Only the social-command branch matters for idempotency. The TELEPORT branch that follows it
+    // sends SendPacket(null) on purpose, so a whole-file `!SendPacket(null)` check misreads an
+    // already-patched source as unpatched and throws. Scope the check to the block, exactly as
+    // verifyPatchedClass127 already does.
+    const socialCommandBlock = /if\(const_20\[param1\]\)[\s\S]*?\n\s*\}\r?\n\s*else if\(param1 == "TELEPORT"\)/.exec(source)?.[0] ?? '';
     if (
-        source.includes('var _loc7_:Packet = new Packet(_loc6_);') &&
-        source.includes('var_1.serverConn.SendPacket(_loc7_);') &&
-        !source.includes('var_1.serverConn.SendPacket(null);')
+        socialCommandBlock.includes('var _loc7_:Packet = new Packet(_loc6_);') &&
+        socialCommandBlock.includes('var_1.serverConn.SendPacket(_loc7_);') &&
+        !socialCommandBlock.includes('var_1.serverConn.SendPacket(null);')
     ) {
         return source;
     }

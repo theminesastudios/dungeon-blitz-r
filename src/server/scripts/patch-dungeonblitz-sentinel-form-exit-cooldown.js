@@ -6,7 +6,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 /**
- * Sentinel Form's cooldown after leaving scales with the time spent in the form.
+ * Sentinel Form's cooldown after leaving grows with the energy the form spent.
  *
  * The form already had a cooldown and it already started at the cast: CombatState.method_51
  * stamps `var_114[powerID] = now + coolDownTime` when the power goes off, method_414 refuses a
@@ -22,11 +22,16 @@ const { execFileSync } = require('child_process');
  * the time the Sentinel drops out of it the stamp has long expired and they can transform again
  * on the same frame. From the player's seat that reads as no cooldown at all.
  *
- * So the cast-time stamp is used as the start-time marker. When the form ends without any attack,
- * the unused part is refunded: 6 seconds in form produces 6 seconds of cooldown after leaving.
- * Making even one form attack, or staying transformed for 30 seconds, produces the full 30-second
- * cooldown. Both exits remove the SentinelForm buff, so the single
- * RemoveBuff hook covers manual cancellation, running out of mana, death and forced cleanup.
+ * So the cast-time stamp is used only as the start marker, and the lockout itself is charged by
+ * what the form actually cost: every swing in the form (SFMelee, SFMeleeCombo, SFRanged) spends
+ * its authored ManaCost from the master-mana bar, method_51 accumulates that into
+ * sentinelFormEnergyUsed as the swings are cast, and the exit helper converts the total at
+ * ENERGY_TO_MS (a full 100-point bar drained is the 30-second cooldown). A form that burned 50
+ * energy waits 15 seconds; a partial burn scales down from there but never below FLOOR_MS (10s),
+ * so an instant attack-free exit cannot be spammed. Staying transformed long enough to spend the
+ * whole bar produces the full 30-second cooldown; the cap is the energy budget, not the clock.
+ * Both exits remove the SentinelForm buff, so the single RemoveBuff hook covers manual
+ * cancellation, running out of mana, death and forced cleanup.
  *
  *   manual cancel    the hotbar slot holds EndSentinelForm while the buff is up (BuffType sets
  *                    var_611/var_1251), so pressing it casts through method_51.
@@ -46,17 +51,52 @@ const { execFileSync } = require('child_process');
  * are then stamped together so changing the reported rank cannot bypass the result.
  *
  * CombatState has to be decompiled and recompiled for this: it needs a helper plus a buff-removal
- * hook, which no small in-place byte splice can express safely.
+ * hook, which no small in-place byte splice can express safely. The same recompile also restores
+ * method_51's Sentinel melee combo -- an earlier recompile flattened its counter to a bare
+ * `currMeleeCombo = 0` and killed the second swing -- since that fix lives in a method this patch
+ * already rewrites.
  */
 
 const TARGET_SWF = path.join('src', 'client', 'content', 'localhost', 'p', 'cbp', 'DungeonBlitz.swf');
 const LOCKOUT_MS = 30000;
+// Cooldown milliseconds per point of master-mana spent in the form. The mana bar holds 100 points,
+// so draining it dry -- the way the form normally ends -- costs the authored 30-second cooldown and
+// a partial burn costs proportionally less. Must agree with SENTINEL_FORM_ENERGY_TO_MS in
+// CastRateAuthority.ts (server); a mismatch makes the server and the honest client enforce
+// different lockouts.
+const ENERGY_TO_MS = 300;
+// Minimum cooldown an early exit can be refunded down to. Without it, tapping the form and leaving
+// on the same frame spends ~0 energy and the transform can be spammed with no cooldown at all.
+const FLOOR_MS = 10000;
 
 const HELPER_ANCHOR = '      public function method_749(param1:PowerType) : void\n';
 const FIELD_ANCHOR = '      private var var_2361:uint;\n';
 const ATTACK_FIELD = '      private var sentinelFormAttackUsed:Boolean = false;\n';
+// An earlier cut made attacking in form forfeit the whole refund, tracked by this field and the
+// method_51 block below. Dropping that penalty leaves both dead, so both are now STRIPPED from any
+// SWF that still carries them; the energy accumulator below replaces the whole arrangement.
+const ATTACK_FIELD_BLANK = '      \n' + ATTACK_FIELD;
+// The energy the current form has spent, filled by ENERGY_TRACKER and read by
+// sentinelFormExitCooldown(). Reset on every entry so a previous form cannot leak into the next.
+const ENERGY_FIELD = '      private var sentinelFormEnergyUsed:uint = 0;\n';
 const CAST_STAMP_ANCHOR = '         this.var_114[param1.powerID] = _loc5_ + param1.coolDownTime + _loc11_;\n';
-const CAST_TRACKER = [
+// method_51 sees every player cast. The SentinelForm cast opens the form, so it resets the meter;
+// each form swing spends its ManaCost and adds to it. This is also where the abandoned
+// attack-penalty tracker lived, so an old SWF carries this block (in the old shape, writing
+// sentinelFormAttackUsed) and is stripped before the new one is inserted.
+const ENERGY_TRACKER = [
+    '         if(param1.basePowerName == "SentinelForm")',
+    '         {',
+    '            this.sentinelFormEnergyUsed = 0;',
+    '         }',
+    '         else if(param1.basePowerName == "SFMelee" || param1.basePowerName == "SFMeleeCombo" || param1.basePowerName == "SFRanged")',
+    '         {',
+    '            this.sentinelFormEnergyUsed = this.sentinelFormEnergyUsed + param1.manaCost;',
+    '         }',
+    ''
+].join('\n');
+// The old attack-penalty tracker, kept only so an upgraded SWF can be recognized and stripped.
+const OLD_CAST_TRACKER = [
     '         if(param1.basePowerName == "SentinelForm")',
     '         {',
     '            this.sentinelFormAttackUsed = false;',
@@ -66,6 +106,28 @@ const CAST_TRACKER = [
     '            this.sentinelFormAttackUsed = true;',
     '         }',
     ''
+].join('\n');
+
+// Bug: an earlier recompile decompiled method_51's Sentinel melee combo counter as a bare
+// `currMeleeCombo = 0`, so the `== 1` test that swaps SFMelee for SFMeleeCombo was permanently
+// false and the second swing never fired. Restore the original window/increment, byte-for-byte as
+// it decompiled cleanly before, so the re-import round-trips. Keyed on the currMeleeCombo field
+// name (stable across recompiles; locals get renumbered) and idempotent -- once the if/else is
+// back, COMBO_BROKEN no longer appears. The preceding `_loc13_` window flag is left untouched.
+const COMBO_BROKEN = [
+    '                  this.currMeleeCombo = 0;',
+    '                  if(this.currMeleeCombo == 1)'
+].join('\n');
+const COMBO_FIXED = [
+    '                  if(!_loc13_ || this.currMeleeCombo >= param1.var_1075)',
+    '                  {',
+    '                     this.currMeleeCombo = 0;',
+    '                  }',
+    '                  else',
+    '                  {',
+    '                     ++this.currMeleeCombo;',
+    '                  }',
+    '                  if(this.currMeleeCombo == 1)'
 ].join('\n');
 
 /**
@@ -124,9 +186,16 @@ const GUARD = [
 ].join('\n');
 
 /**
- * The active rank's cast stamp is `enteredAt + 30000`. While it remains in the future, subtracting
- * its remaining portion from 30000 yields time already spent in form. Once it is in the past, the
- * form has run at least 30 seconds and receives the full cooldown.
+ * The exit lockout is the energy the form spent, not the wall-clock time it was up: the form only
+ * drains the mana bar when a swing lands, so time would over-charge a Sentinel who spends most of
+ * the form idle. The fresh (_sfFutureCount == 1) branch converts sentinelFormEnergyUsed at
+ * ENERGY_TO_MS, floored at FLOOR_MS so an instant exit still costs something, capped at LOCKOUT_MS
+ * so a long, regen-fueled form cannot overshoot the authored budget. The active rank's cast stamp
+ * (`enteredAt + 30000`) is still required to be future here -- it is what makes the exit "fresh"
+ * rather than a re-entry -- and once it has expired the form has been up at least 30 seconds, which
+ * also means well past a full bar of energy, so the full lockout branch is the same answer. The
+ * floor and cap live only in the fresh branch; the idempotent re-entry branch preserves the
+ * already-computed earliest stamp, so a second call in the same exit cannot drift it.
  */
 const HELPER_BODY = [
     '      public function sentinelFormExitCooldown() : void',
@@ -157,7 +226,15 @@ const HELPER_BODY = [
     '         }',
     '         if(_sfFutureCount == 1)',
     '         {',
-    '            _sfUsedMs = ' + LOCKOUT_MS + ' - (_sfEarliestReadyAt - _sfNow);',
+    '            _sfUsedMs = this.sentinelFormEnergyUsed * ' + ENERGY_TO_MS + ';',
+    '            if(_sfUsedMs > ' + LOCKOUT_MS + ')',
+    '            {',
+    '               _sfUsedMs = ' + LOCKOUT_MS + ';',
+    '            }',
+    '            if(_sfUsedMs < ' + FLOOR_MS + ')',
+    '            {',
+    '               _sfUsedMs = ' + FLOOR_MS + ';',
+    '            }',
     '            _sfReadyAt = _sfNow + _sfUsedMs;',
     '         }',
     '         else if(_sfFutureCount > 1)',
@@ -165,10 +242,6 @@ const HELPER_BODY = [
     '            _sfReadyAt = _sfEarliestReadyAt;',
     '         }',
     '         else',
-    '         {',
-    '            _sfReadyAt = _sfNow + ' + LOCKOUT_MS + ';',
-    '         }',
-    '         if(this.sentinelFormAttackUsed)',
     '         {',
     '            _sfReadyAt = _sfNow + ' + LOCKOUT_MS + ';',
     '         }',
@@ -202,7 +275,7 @@ function parseArgs(argv) {
                 '              after every script that writes DungeonBlitz.swf, or players keep',
                 '              loading the cached copy.',
                 '',
-                `Refunds Sentinel Form cooldown after an attack-free early exit.`
+                `Scales Sentinel Form's post-exit cooldown to the energy the form spent.`
             ].join('\n'));
             process.exit(0);
         }
@@ -290,22 +363,41 @@ function patchSource(source, swfPath) {
     let next = source.replace(/\r\n/g, '\n');
     const name = path.basename(swfPath);
 
-    if (!next.includes(ATTACK_FIELD.trim())) {
+    // Drop the abandoned attack penalty: strip the field and its method_51 tracker from any SWF
+    // that still carries them. Fresh source has neither, so these are no-ops there.
+    next = next.split(ATTACK_FIELD_BLANK).join('');
+    next = next.split(ATTACK_FIELD).join('');
+    next = next.split(OLD_CAST_TRACKER).join('');
+
+    // The energy meter: the field next to the other CombatState flags, and the method_51 tracker
+    // right after the cast stamp. Both are idempotent -- an SWF already carrying them (or an old
+    // stripped one being re-run) is left alone.
+    if (!next.includes(ENERGY_FIELD.trim())) {
         if (!next.includes(FIELD_ANCHOR)) {
             throw new Error(`${name}: CombatState fields do not open the way this patch expects.`);
         }
-        next = next.replace(FIELD_ANCHOR, FIELD_ANCHOR + '      \n' + ATTACK_FIELD);
+        next = next.replace(FIELD_ANCHOR, FIELD_ANCHOR + '      \n' + ENERGY_FIELD);
     }
-    if (!next.includes(CAST_TRACKER.trimEnd())) {
+    if (!next.includes(ENERGY_TRACKER.trimEnd())) {
         if (!next.includes(CAST_STAMP_ANCHOR)) {
             throw new Error(`${name}: CombatState.method_51 cooldown stamp was not found.`);
         }
-        next = next.replace(CAST_STAMP_ANCHOR, CAST_STAMP_ANCHOR + CAST_TRACKER);
+        next = next.replace(CAST_STAMP_ANCHOR, CAST_STAMP_ANCHOR + ENERGY_TRACKER);
     }
 
-    // Upgrade an SWF that carries an earlier full-lockout cut of this patch.
+    // Restore the Sentinel melee second swing (see COMBO_FIXED). Fresh source already has the
+    // if/else, so COMBO_BROKEN is absent and this is a no-op there.
+    if (next.includes(COMBO_BROKEN)) {
+        next = next.replace(COMBO_BROKEN, COMBO_FIXED);
+    }
+
+    // Upgrade an SWF that carries an earlier cut of this patch.
     if (next.includes('sentinelFormExitCooldown')) {
-        const helperPattern = /      public function sentinelFormExitCooldown\(\) : void[\s\S]*?\n      }\n      \n(?=      public function method_749)/;
+        // Isolate the helper by its own signature and 6-space method brace, NOT by the method that
+        // follows it: FFDec reorders methods on import, so an earlier `(?=method_749)` lookahead
+        // grew to swallow whatever method it shuffled in between and delete it on replace. The body
+        // has no 6-space closing brace of its own, so the first one ends the method.
+        const helperPattern = /      public function sentinelFormExitCooldown\(\) : void\n      \{\n[\s\S]*?\n      \}\n      \n/;
         if (!helperPattern.test(next)) {
             throw new Error(`${name}: could not isolate the existing sentinelFormExitCooldown helper.`);
         }
@@ -348,22 +440,43 @@ function verifySource(source, swfPath) {
     source = source.replace(/\r\n/g, '\n');
     const required = [
         'public function sentinelFormExitCooldown() : void',
-        `var _sfUsedMs:uint = ${LOCKOUT_MS};`,
-        '_sfFutureCount++;',
-        `_sfUsedMs = ${LOCKOUT_MS} - (_sfEarliestReadyAt - _sfNow);`,
+        'private var sentinelFormEnergyUsed:uint = 0;',
+        `_sfUsedMs = this.sentinelFormEnergyUsed * ${ENERGY_TO_MS};`,
+        `if(_sfUsedMs > ${LOCKOUT_MS})`,
+        `_sfUsedMs = ${LOCKOUT_MS};`,
+        `if(_sfUsedMs < ${FLOOR_MS})`,
+        `_sfUsedMs = ${FLOOR_MS};`,
         '_sfReadyAt = _sfEarliestReadyAt;',
-        'private var sentinelFormAttackUsed:Boolean = false;',
-        'this.sentinelFormAttackUsed = false;',
-        'this.sentinelFormAttackUsed = true;',
-        'if(this.sentinelFormAttackUsed)',
         // Matches both the source form and the `while` FFDec turns it back into on re-export.
         '_sfRank <= 10',
         'this.var_114[_sfPower.powerID] = _sfReadyAt;'
     ];
+    // FFDec recompiles `x = x + y` as `x += y` on import, so accept both spellings of the
+    // accumulator. The important part is that each form swing adds param1.manaCost to the meter.
+    if (!source.includes('this.sentinelFormEnergyUsed = this.sentinelFormEnergyUsed + param1.manaCost;')
+        && !source.includes('this.sentinelFormEnergyUsed += param1.manaCost;')) {
+        throw new Error(`${path.basename(swfPath)} is missing the Sentinel Form energy accumulator.`);
+    }
     // The rank-reading first cut must not survive: it stamps SentinelForm1 whenever var_498 is
     // stale, which leaves every other rank with no lockout at all.
     if (source.includes('this.var_498 > 0 ? this.var_498 : 1')) {
         throw new Error(`${path.basename(swfPath)} still carries the rank-reading Sentinel Form lockout.`);
+    }
+    // The dropped attack penalty must be fully gone -- field, tracker and helper override -- or the
+    // server (which charges cooldown by energy, not by attacking) and the client would enforce
+    // different rules.
+    if (source.includes('sentinelFormAttackUsed')) {
+        throw new Error(`${path.basename(swfPath)} still carries the removed Sentinel Form attack penalty.`);
+    }
+    // The energy meter must reset on entry as well as accumulate on swings; a form that never
+    // spends energy must not inherit the previous form's lockout.
+    if (!source.includes('this.sentinelFormEnergyUsed = 0;')) {
+        throw new Error(`${path.basename(swfPath)} is missing the Sentinel Form energy meter reset.`);
+    }
+    // The melee combo must swing twice: a bare `currMeleeCombo = 0` right before the `== 1` swap is
+    // the corruption that left the substitution dead and killed the second swing.
+    if (source.includes(COMBO_BROKEN)) {
+        throw new Error(`${path.basename(swfPath)} still has the broken Sentinel Form melee combo (no second swing).`);
     }
     for (const snippet of required) {
         if (!source.includes(snippet)) {

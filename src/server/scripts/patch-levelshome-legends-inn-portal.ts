@@ -145,6 +145,13 @@ function main(): void {
 
   const homeSymbols = readSymbolClasses(home);
   if (homeSymbols.some((entry) => entry.name === DOOR_CLASS)) {
+    // A door that is already there means the portal was placed in an earlier build. In apply mode
+    // that is a double-apply and must stop; in verify mode it is the state this patch produces, so
+    // re-applying is impossible and the check should report success.
+    if (verify) {
+      console.log(`verify only - ${DOOR_CLASS} already present; Legends' Inn portal already applied.`);
+      return;
+    }
     throw new SwfLevelError(`${DOOR_CLASS} already exists in LevelsHome.swf - patch already applied?`);
   }
 

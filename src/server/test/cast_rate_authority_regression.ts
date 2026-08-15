@@ -193,17 +193,43 @@ function testRefusedCastAlsoDropsItsHits(): void {
  * A client that skips its half of that gets a tank stance with no downtime at all, which is
  * why the server keeps its own copy.
  *
+ * The lockout is charged by the ENERGY the form spent, not by the time it was up: the form only
+ * drains the mana bar when a swing lands (SFMelee/SFMeleeCombo/SFRanged each author a ManaCost),
+ * so wall-clock time would over-charge a Sentinel who spends most of the form idle. Each swing
+ * adds its ManaCost to the running total; the exit converts it at 300ms per point of energy, so
+ * a full 100-point bar drained is the 30-second budget, floored at 10 seconds so a tap cannot be
+ * spammed. The authority then applies its standard 50% tolerance -- the client presents the exact
+ * client-side cooldown and an honest client is never refused.
+ *
  *   447 SentinelForm    448 EndSentinelForm    455-464 SentinelForm1..10
+ *   465 SFMelee1 (5 mana)    472 SFMeleeCombo1 (5 mana)    479 SFRanged1 (5 mana)
  */
-function testLongSentinelFormUseGetsFullCooldown(): void {
+
+/** Enter the form, swing `swings` times at 200ms gaps, then leave at `exitedAt`. */
+function runSentinelFormUse(swings: number, exitedAt: number): any {
     const client = createClient();
     const now = 1_000_000;
-
     assert.ok(CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, now), 'entering the form must be allowed');
+    for (let swing = 0; swing < swings; swing += 1) {
+        assert.ok(
+            CastRateAuthority.chargeCast(client, SENTINEL_FORM_MELEE_1, now + 200 * (swing + 1)),
+            `form swing ${swing} must be allowed`
+        );
+    }
+    assert.ok(CastRateAuthority.chargeCast(client, END_SENTINEL_FORM, exitedAt), 'cancelling must always be allowed');
+    return client;
+}
 
+/*
+ * A form that runs long enough to outlast its own cast-time cooldown -- the case that broke --
+ * while draining more than a full energy bar (21 swings x 5 mana = 105 energy) must still come
+ * out with the full 30-second lockout, capped at the energy budget.
+ */
+function testLongSentinelFormUseGetsFullCooldown(): void {
+    const now = 1_000_000;
     // A form long enough to outlast its own cast-time cooldown -- the case that broke.
     const exitedAt = now + 120_000;
-    assert.ok(CastRateAuthority.chargeCast(client, END_SENTINEL_FORM, exitedAt), 'cancelling must always be allowed');
+    const client = runSentinelFormUse(21, exitedAt);
 
     assert.equal(
         CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 1_000),
@@ -216,48 +242,51 @@ function testLongSentinelFormUseGetsFullCooldown(): void {
         false,
         'claiming a different rank must not dodge the lockout'
     );
+    assert.equal(
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 14_900),
+        false,
+        'a full-bar burn must still be refused just short of the full lockout'
+    );
     assert.ok(
-        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 31_000),
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 15_100),
         'the form must come back once the full lockout has run'
     );
 }
 
 /*
- * Cancelling early refunds the unused part of the 30-second budget. The authority applies its
- * standard 50% tolerance, so six seconds of use is enforced as three seconds here; the client
- * presents the exact six-second cooldown.
+ * Ten swings at 5 mana each spend half the energy bar, so the exit cooldown is half the
+ * 30-second budget. The authority applies its standard 50% tolerance, so 15 seconds of cooldown
+ * is enforced as 7.5 seconds here; the client presents the exact 15-second cooldown.
  */
 function testCancellingEarlyRefundsCooldownProportionally(): void {
-    const client = createClient();
     const now = 1_000_000;
-
-    CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, now);
     const exitedAt = now + 6_000;
-    CastRateAuthority.chargeCast(client, END_SENTINEL_FORM, exitedAt);
+    const client = runSentinelFormUse(10, exitedAt);
 
     assert.equal(
-        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 2_900),
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 7_400),
         false,
-        'six seconds of form use must not be ready before its proportional lockout'
+        '50 energy spent in the form must not be ready before its proportional lockout'
     );
     assert.ok(
-        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 3_100),
-        'an early-cancelled form must return after its proportional lockout'
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 7_600),
+        'an early-cancelled form must return after its energy-proportional lockout'
     );
 }
 
+/*
+ * More energy spent means a longer wait: 16 swings x 5 mana = 80 energy -> 24 seconds client-side,
+ * enforced as 12 seconds here. The swing count, not the time in the form, is what moves the number.
+ */
 function testLaterCancelProducesLongerCooldown(): void {
-    const client = createClient();
     const now = 1_000_000;
-
-    CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, now);
     const exitedAt = now + 24_000;
-    CastRateAuthority.chargeCast(client, END_SENTINEL_FORM, exitedAt);
+    const client = runSentinelFormUse(16, exitedAt);
 
     assert.equal(
         CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 11_900),
         false,
-        'using more of Sentinel Form must produce a proportionally longer cooldown'
+        'spending more energy in Sentinel Form must produce a proportionally longer cooldown'
     );
     assert.ok(
         CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 12_100),
@@ -265,26 +294,78 @@ function testLaterCancelProducesLongerCooldown(): void {
     );
 }
 
-function testAnySentinelFormAttackForfeitsRefund(): void {
+/*
+ * Every kind of form attack feeds the same energy meter. Ten swings of each cost 50 energy and
+ * must NOT trigger the old attack-penalty full lockout -- attacking in the form is what the
+ * energy meter is for, so it shortens the wait relative to a no-attack full cooldown, not lengthens
+ * it to a flat 30 seconds.
+ */
+function testAnySentinelFormAttackChargesEnergyCooldown(): void {
     for (const attack of [SENTINEL_FORM_MELEE_1, SENTINEL_FORM_MELEE_COMBO_1, SENTINEL_FORM_RANGED_1]) {
         const client = createClient();
         const now = 1_000_000;
 
         assert.ok(CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, now));
-        assert.ok(CastRateAuthority.chargeCast(client, attack, now + 1_000));
+        for (let swing = 0; swing < 10; swing += 1) {
+            assert.ok(
+                CastRateAuthority.chargeCast(client, attack, now + 200 * (swing + 1)),
+                `Sentinel Form ${attack} swing must be allowed`
+            );
+        }
         const exitedAt = now + 6_000;
         assert.ok(CastRateAuthority.chargeCast(client, END_SENTINEL_FORM, exitedAt));
 
         assert.equal(
-            CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 14_900),
+            CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 7_400),
             false,
-            `Sentinel Form attack ${attack} must forfeit the proportional refund`
+            `Sentinel Form attack ${attack} must charge the energy-proportional cooldown`
         );
         assert.ok(
-            CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 15_100),
-            `full cooldown after Sentinel Form attack ${attack} must eventually expire`
+            CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 7_600),
+            `the energy-proportional cooldown after ${attack} must eventually expire`
         );
     }
+}
+
+/*
+ * An instant exit spends ~0 energy, so without a floor the transform could be re-entered for free
+ * -- the spam the floor exists to stop. The ten-second floor is enforced as five seconds here.
+ */
+function testAttackFreeInstantExitStillCostsFloor(): void {
+    const now = 1_000_000;
+    const exitedAt = now + 1_000;
+    const client = runSentinelFormUse(0, exitedAt);
+
+    assert.equal(
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 4_900),
+        false,
+        'an attack-free instant exit must still pay the floor cooldown'
+    );
+    assert.ok(
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 5_100),
+        'the floor cooldown must expire at the expected time'
+    );
+}
+
+/*
+ * An exit with no observed entry means the client skipped the re-stamp entirely -- treat it as a
+ * full lockout, exactly as a form that burned the whole bar would earn.
+ */
+function testExitWithoutObservedEntryGetsFullLockout(): void {
+    const client = createClient();
+    const now = 1_000_000;
+    const exitedAt = now + 1_000;
+    assert.ok(CastRateAuthority.chargeCast(client, END_SENTINEL_FORM, exitedAt));
+
+    assert.equal(
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 14_900),
+        false,
+        'an unobserved exit must not be re-enterable before the full lockout'
+    );
+    assert.ok(
+        CastRateAuthority.chargeCast(client, SENTINEL_FORM_10, exitedAt + 15_100),
+        'the full lockout after an unobserved exit must eventually expire'
+    );
 }
 
 function main(): void {
@@ -298,7 +379,9 @@ function main(): void {
     testLongSentinelFormUseGetsFullCooldown();
     testCancellingEarlyRefundsCooldownProportionally();
     testLaterCancelProducesLongerCooldown();
-    testAnySentinelFormAttackForfeitsRefund();
+    testAnySentinelFormAttackChargesEnergyCooldown();
+    testAttackFreeInstantExitStillCostsFloor();
+    testExitWithoutObservedEntryGetsFullLockout();
     console.log('cast_rate_authority_regression: ok');
 }
 
