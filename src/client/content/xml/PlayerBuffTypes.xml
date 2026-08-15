@@ -1572,11 +1572,12 @@
 		<BuffID>360</BuffID>
 		<Attack>true</Attack>
 		<Duration>5000</Duration>
-		<DoTDamage>1</DoTDamage>
+		<DoTDamage>0.5</DoTDamage>
 		<DoTTickLength>1000</DoTTickLength>
 		<Effect>Poisoned</Effect>
-		<StackCount>6</StackCount>
+		<StackCount>8</StackCount>
 		<BuffLoc>Head</BuffLoc>
+		<BuffIcon>a_StatusIcon_AttackUp</BuffIcon>
 		<GfxType>
 			<AnimScale>0.8</AnimScale>
 			<AnimFile>SFX_2.swf</AnimFile>

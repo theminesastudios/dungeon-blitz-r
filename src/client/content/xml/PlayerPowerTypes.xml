@@ -40495,7 +40495,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Nature</DamageType>
 		<PowerGroup>PoisonDaggers</PowerGroup>
-		<AddTargetBuff>ViperbladePoison</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison</AddTargetBuff>
 		<DisplayName>Bone Daggers</DisplayName>
 		<Description>Bone-shaped daggers favored by the Viperblade. Ranged basic attacks leave Poison. [Stats: x0.8 damage, 1.5 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_PoisonDagger</IconName>
@@ -40528,7 +40528,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Nature</DamageType>
 		<PowerGroup>PoisonDaggers</PowerGroup>
-		<AddTargetBuff>ViperbladePoison</AddTargetBuff>
+		<AddTargetBuff>DaggerPoison</AddTargetBuff>
 		<DisplayName>Bone Daggers</DisplayName>
 		<BasePowerName>PoisonDagger</BasePowerName>
 		<Description>Bone-shaped daggers favored by the Viperblade. Ranged basic attacks leave Poison. [Stats: x0.8 damage, 1.5 damage/s, over 5s]</Description>
