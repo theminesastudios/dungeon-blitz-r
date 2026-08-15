@@ -1,25 +1,58 @@
 #!/usr/bin/env node
 
+import * as crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
 import {
-  AbcParseResult,
-  BytePatch,
-  Instruction,
-  MethodBodyInfo,
-  PatchError,
-  SwfContext,
   applyPatchesToBody,
+  BytePatch,
   classIndexByName,
   disassemble,
+  ensureBackup,
+  Instruction,
   methodIdxForTrait,
   parseAbc,
   parseSwf,
+  PatchError,
   readU30,
   writeSwf,
   writeU30,
 } from "./swfPatchUtils";
 
+// The Charms Forge tutorial replays after every client restart. The tutorial's
+// completed-bit lives only on Game.mTutorialsCompletedList, an in-memory bitmask,
+// so a relog clears it. On world enter the client re-derives bits from game state
+// in class_89.CheckCompletedTutorials, but the forge block restored its bit only
+// while a forge was *actively* crafting:
+//
+//     if (Game.mMagicForgeStatus.GetCurrentlyCrafting()) {
+//         Game.mTutorialsCompletedList |= class_89.const_138; // forge tutorial bit
+//     }
+//
+// GetCurrentlyCrafting() returns the charm currently in the forge, which is 0 for
+// the idle forge every player has after login. So the bit never came back, and the
+// tutorial fired again the next time the forge screen opened.
+//
+// This patch swaps that transient condition for the persistent craft XP the server
+// already sends at world enter: a player who has forged even once (the tutorial's
+// whole point) has craftXP > 0 forever, so the bit is restored and the tutorial
+// plays exactly once.
+//
+//     if (Game.mCraftTalentData.craftXP) {
+//         Game.mTutorialsCompletedList |= class_89.const_138;
+//     }
+//
+// The replacement is exactly the same length as the code it replaces (11 bytes),
+// so no branch offset anywhere in the method moves.
+//
+// History: the first fix for this (#628 / #644) persisted the whole bitmask in the
+// client's dbSavedGameData SharedObject. That SWF could not enter the world -- the
+// client authenticated, parsed its first level, then tore down the socket. Root
+// cause was never found (an AVM2 error needs a debug Flash player; ruled out were
+// the null SharedObject dereference, max_stack, and the multiname namespaces).
+// That script is now deliberately disabled (DB_FORGE_TUTORIAL_PATCH_ANYWAY) and
+// this in-place rewrite replaces it entirely -- no SharedObject access, no inserted
+// code, just the condition swap above.
 const DEFAULT_SWF = path.resolve(
   __dirname,
   "..",
@@ -31,602 +64,298 @@ const DEFAULT_SWF = path.resolve(
   "cbp",
   "DungeonBlitz.swf",
 );
+const INDEX_HTML = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "index.html");
 
-const GAME_CLASS = "Game";
-const GAME_INITIALIZE_METHOD = "method_1435";
 const TUTORIAL_CLASS = "class_89";
-const TUTORIAL_COMPLETE_METHOD = "method_345";
 const TUTORIAL_CHECK_METHOD = "CheckCompletedTutorials";
 
-type ParsedMethod = {
-  body: MethodBodyInfo;
-  code: Buffer;
-};
+// Resolved per-SWF by name; these are the names the client ships with.
+const NAME_FORGE_BIT = "const_138";
+const NAME_MAGIC_FORGE_STATUS = "mMagicForgeStatus";
+const NAME_GET_CURRENTLY_CRAFTING = "GetCurrentlyCrafting";
+const NAME_CRAFT_TALENT_DATA = "mCraftTalentData";
+const NAME_CRAFT_XP = "craftXP";
+const NAME_TUTORIALS_COMPLETED = "mTutorialsCompletedList";
+const NAME_VAR_1 = "var_1";
 
-type PatchSymbols = {
-  var1: number;
-  var304: number;
-  data: number;
-  tutorialsCompleted: number;
-  currentTutorial: number;
-  flush: number;
-};
+const OP_GETLEX = 0x60;
+const OP_GETPROPERTY = 0x66;
+const OP_CALLPROPERTY = 0x46;
+const OP_CONVERT_B = 0x76;
+const OP_LABEL = 0x09;
+const OP_IFFALSE = 0x12;
 
-type Args = {
-  swfPath: string;
-  verify: boolean;
-};
+/**
+ * The unpatched forge-tutorial restore condition:
+ *   getlex var_1; getproperty mMagicForgeStatus; callproperty GetCurrentlyCrafting,0; convert_b; label
+ */
+function unpatchedSequence(abc: ReturnType<typeof parseAbc>, mns: Record<string, number>): Buffer {
+  return Buffer.concat([
+    Buffer.from([OP_GETLEX]), writeU30(mns[NAME_VAR_1]),
+    Buffer.from([OP_GETPROPERTY]), writeU30(mns[NAME_MAGIC_FORGE_STATUS]),
+    Buffer.from([OP_CALLPROPERTY]), writeU30(mns[NAME_GET_CURRENTLY_CRAFTING]), writeU30(0),
+    Buffer.from([OP_CONVERT_B]),
+    Buffer.from([OP_LABEL]),
+  ]);
+}
 
-function parseArgs(argv: string[]): Args {
-  let swfPath = DEFAULT_SWF;
-  let verify = false;
+/**
+ * The patched condition, same byte length (11):
+ *   getlex var_1; getproperty mCraftTalentData; getproperty craftXP; convert_b; label; label
+ */
+function patchedSequence(abc: ReturnType<typeof parseAbc>, mns: Record<string, number>): Buffer {
+  return Buffer.concat([
+    Buffer.from([OP_GETLEX]), writeU30(mns[NAME_VAR_1]),
+    Buffer.from([OP_GETPROPERTY]), writeU30(mns[NAME_CRAFT_TALENT_DATA]),
+    Buffer.from([OP_GETPROPERTY]), writeU30(mns[NAME_CRAFT_XP]),
+    Buffer.from([OP_CONVERT_B]),
+    Buffer.from([OP_LABEL]),
+    Buffer.from([OP_LABEL]),
+  ]);
+}
 
-  for (let index = 2; index < argv.length; index += 1) {
-    const arg = argv[index];
-    if (arg === "--verify") {
-      verify = true;
-      continue;
-    }
-    if (arg === "--swf" || arg === "-s") {
-      const value = argv[++index];
-      if (!value) {
-        throw new PatchError(`${arg} requires a path`);
+function resolveMultinames(abc: ReturnType<typeof parseAbc>, names: string[]): Record<string, number> {
+  const indices: Record<string, number> = {};
+  for (const name of names) {
+    const matches: number[] = [];
+    for (let index = 0; index < abc.multinameNames.length; index += 1) {
+      if (abc.multinameNames[index] === name) {
+        matches.push(index);
       }
-      swfPath = path.resolve(value);
-      continue;
     }
-    if (arg === "--help" || arg === "-h") {
-      console.log([
-        "Usage:",
-        "  ts-node src/server/scripts/patch-dungeonblitz-forge-tutorial-persistence.ts [--verify] [--swf <path>]",
-        "",
-        "Persists DungeonBlitz.swf's completed interactive-tutorial bitmask in its",
-        "existing dbSavedGameData SharedObject so the Forge tutorial remains complete",
-        "after the client restarts.",
-      ].join("\n"));
-      process.exit(0);
+    if (matches.length !== 1) {
+      throw new PatchError(`Expected one multiname ${name}, found ${matches.length}`);
     }
-    throw new PatchError(`Unknown argument: ${arg}`);
+    indices[name] = matches[0];
   }
-
-  return { swfPath, verify };
+  return indices;
 }
 
-function requireMultiname(abc: AbcParseResult, name: string): number {
-  const matches: number[] = [];
-  for (let index = 0; index < abc.multinameNames.length; index += 1) {
-    if (abc.multinameNames[index] === name) {
-      matches.push(index);
-    }
-  }
-  if (matches.length !== 1) {
-    throw new PatchError(`Expected one multiname ${name}, found ${matches.length}`);
-  }
-  return matches[0];
-}
-
-function requireReferencedMultiname(
-  abc: AbcParseResult,
+/**
+ * var_1 is a common obfuscator name; resolve it to the single index this method
+ * actually references via getlex, mirroring how the original patch located it.
+ */
+function resolveVar1InMethod(
+  abc: ReturnType<typeof parseAbc>,
   code: Buffer,
-  name: string,
-  opcodes: ReadonlySet<number>,
-  label: string,
+  candidates: number[],
 ): number {
-  const namedIndices = new Set<number>();
-  for (let index = 0; index < abc.multinameNames.length; index += 1) {
-    if (abc.multinameNames[index] === name) {
-      namedIndices.add(index);
-    }
-  }
-
   const referenced = new Set(
-    disassemble(code, label)
-      .filter((instruction) =>
-        opcodes.has(instruction.opcode) &&
-        instruction.operands[0]?.[0] === "u30" &&
-        namedIndices.has(instruction.operands[0][1])
-      )
-      .map((instruction) => instruction.operands[0][1]),
+    disassemble(code, `${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD}`)
+      .filter((inst) => inst.opcode === OP_GETLEX && candidates.includes(inst.operands[0]?.[1] ?? -1))
+      .map((inst) => inst.operands[0][1]),
   );
   if (referenced.size !== 1) {
     throw new PatchError(
-      `Expected ${label} to reference one ${name} multiname, found ${referenced.size}`,
+      `Expected ${TUTORIAL_CHECK_METHOD} to reference one var_1 multiname via getlex, found ${referenced.size}`,
     );
   }
   return [...referenced][0];
 }
 
-function getSymbols(ctx: SwfContext, abc: AbcParseResult): PatchSymbols {
-  const game = getMethod(ctx, abc, GAME_CLASS, GAME_INITIALIZE_METHOD);
-  const tutorial = getMethod(ctx, abc, TUTORIAL_CLASS, TUTORIAL_COMPLETE_METHOD);
-  return {
-    var1: requireReferencedMultiname(
-      abc,
-      tutorial.code,
-      "var_1",
-      new Set([0x60]),
-      `${TUTORIAL_CLASS}.${TUTORIAL_COMPLETE_METHOD}`,
-    ),
-    var304: requireReferencedMultiname(
-      abc,
-      game.code,
-      "var_304",
-      new Set([0x66, 0x68]),
-      `${GAME_CLASS}.${GAME_INITIALIZE_METHOD}`,
-    ),
-    data: requireReferencedMultiname(
-      abc,
-      game.code,
-      "data",
-      new Set([0x66]),
-      `${GAME_CLASS}.${GAME_INITIALIZE_METHOD}`,
-    ),
-    tutorialsCompleted: requireReferencedMultiname(
-      abc,
-      tutorial.code,
-      "mTutorialsCompletedList",
-      new Set([0x66, 0x61]),
-      `${TUTORIAL_CLASS}.${TUTORIAL_COMPLETE_METHOD}`,
-    ),
-    currentTutorial: requireReferencedMultiname(
-      abc,
-      tutorial.code,
-      "mCurrentTutorialIdx",
-      new Set([0x66]),
-      `${TUTORIAL_CLASS}.${TUTORIAL_COMPLETE_METHOD}`,
-    ),
-    flush: requireMultiname(abc, "flush"),
-  };
-}
-
-function getMethod(
-  ctx: SwfContext,
-  abc: AbcParseResult,
-  className: string,
-  methodName: string,
-): ParsedMethod {
-  const classIndex = classIndexByName(abc, className);
-  if (classIndex === null) {
-    throw new PatchError(`Class ${className} not found`);
-  }
-  const methodIndex = methodIdxForTrait(abc.instances[classIndex].traits, abc, methodName);
-  if (methodIndex === null) {
-    throw new PatchError(`Method ${className}.${methodName} not found`);
-  }
-  const body = abc.methodBodies.get(methodIndex);
-  if (!body) {
-    throw new PatchError(`Method body ${className}.${methodName} not found`);
-  }
-  if (body.exceptionCount !== 0) {
-    throw new PatchError(`${className}.${methodName} unexpectedly contains exception handlers`);
-  }
-  return {
-    body,
-    code: Buffer.from(ctx.body.subarray(body.codeStart, body.codeStart + body.codeLen)),
-  };
-}
-
-function op(opcode: number, ...operands: number[]): Buffer {
-  return Buffer.concat([
-    Buffer.from([opcode]),
-    ...operands.map((operand) => writeU30(operand)),
-  ]);
-}
-
-function tutorialCompletionSequence(symbols: PatchSymbols): Buffer {
-  return Buffer.concat([
-    op(0x60, symbols.var1), // getlex var_1
-    op(0x60, symbols.var1), // getlex var_1
-    op(0x66, symbols.tutorialsCompleted), // getproperty mTutorialsCompletedList
-    Buffer.from([0xd0]), // getlocal0 (the interactive tutorial screen)
-    op(0x66, symbols.currentTutorial), // getproperty mCurrentTutorialIdx
-    Buffer.from([0xa9]), // bitor
-    op(0x61, symbols.tutorialsCompleted), // setproperty mTutorialsCompletedList
-  ]);
-}
-
 /**
- * Skip `body` entirely when the saved-game SharedObject is not there.
+ * Locates the forge-tutorial OR-in block inside CheckCompletedTutorials and the
+ * condition region right before it.
  *
- * Game.var_304 is declared null, is only assigned when the master-client dev flag is off,
- * is set back to null on teardown, and SharedObject.getLocal itself throws when local
- * storage is unavailable -- a standalone Flash player with storage denied is exactly that.
- * Game's own code never touches it without checking first (`if(this.var_304)` before
- * writing dbProfaneFilterOff), and neither sequence below did. The restore runs from
- * CheckCompletedTutorials, which the client calls on world enter, so a null there took the
- * whole session down: the player authenticated, entered CraftTown, and the client tore down
- * its socket the moment it finished parsing.
- *
- * iffalse pops the reference and branches past the body, so the guard leaves the stack
- * exactly as it found it and needs one slot, well under the three the body already claims.
+ * The anchor is `getlex const_138` (the forge tutorial bit) inside
+ *   getlex var_1; getlex var_1; getproperty mTutorialsCompletedList; getlex const_138; bitor; setproperty ...
+ * which is unique in the method. Because the patch is length-preserving, the byte
+ * coordinates of the surrounding region are identical before and after patching.
  */
-function guardedByStorage(symbols: PatchSymbols, body: Buffer): Buffer {
-  return Buffer.concat([
-    op(0x60, symbols.var1), // getlex var_1 (Game)
-    op(0x66, symbols.var304), // getproperty saved-game SharedObject
-    Buffer.concat([Buffer.from([0x12]), writeS24(body.length)]), // iffalse past the body
-    body,
-  ]);
-}
-
-/** The write half, without its guard. */
-function persistenceBody(symbols: PatchSymbols): Buffer {
-  return Buffer.concat([
-    op(0x60, symbols.var1), // getlex var_1
-    op(0x66, symbols.var304), // getproperty saved-game SharedObject
-    op(0x66, symbols.data), // getproperty data
-    op(0x60, symbols.var1), // getlex var_1
-    op(0x66, symbols.tutorialsCompleted), // getproperty completed mask
-    op(0x61, symbols.tutorialsCompleted), // data.mTutorialsCompletedList = mask
-    op(0x60, symbols.var1), // getlex var_1
-    op(0x66, symbols.var304), // getproperty saved-game SharedObject
-    op(0x4f, symbols.flush, 0), // callpropvoid flush, 0
-  ]);
-}
-
-/** The read half, without its guard. */
-function restoreBody(symbols: PatchSymbols): Buffer {
-  return Buffer.concat([
-    op(0x60, symbols.var1), // getlex var_1 (Game)
-    op(0x60, symbols.var1), // getlex var_1 (Game)
-    op(0x66, symbols.tutorialsCompleted), // current in-memory mask
-    op(0x60, symbols.var1), // getlex var_1 (Game)
-    op(0x66, symbols.var304), // saved-game SharedObject
-    op(0x66, symbols.data),
-    op(0x66, symbols.tutorialsCompleted), // persisted mask (undefined => uint(0))
-    Buffer.from([0xa9]), // bitor, retaining any already-completed bits
-    op(0x61, symbols.tutorialsCompleted),
-  ]);
-}
-
-function persistenceSequence(symbols: PatchSymbols): Buffer {
-  return guardedByStorage(symbols, persistenceBody(symbols));
-}
-
-function restoreSequence(symbols: PatchSymbols): Buffer {
-  return guardedByStorage(symbols, restoreBody(symbols));
-}
-
-function unsafeStartupRestoreSequence(symbols: PatchSymbols): Buffer {
-  return Buffer.concat([
-    Buffer.from([0xd0]), // getlocal0 (Game)
-    Buffer.from([0xd0]), // getlocal0 (Game)
-    op(0x66, symbols.tutorialsCompleted),
-    Buffer.from([0xd0]), // getlocal0 (Game)
-    op(0x66, symbols.var304),
-    op(0x66, symbols.data),
-    op(0x66, symbols.tutorialsCompleted),
-    Buffer.from([0xa9]), // bitor
-    op(0x61, symbols.tutorialsCompleted),
-  ]);
-}
-
-function findAll(code: Buffer, needle: Buffer): number[] {
-  const offsets: number[] = [];
-  let from = 0;
-  while (from <= code.length - needle.length) {
-    const offset = code.indexOf(needle, from);
-    if (offset < 0) {
-      break;
-    }
-    offsets.push(offset);
-    from = offset + 1;
-  }
-  return offsets;
-}
-
-function requireUniqueSequence(code: Buffer, needle: Buffer, label: string): number {
-  const matches = findAll(code, needle);
-  if (matches.length !== 1) {
-    throw new PatchError(`Expected one ${label} sequence, found ${matches.length}`);
-  }
-  return matches[0];
-}
-
-function writeS24(value: number): Buffer {
-  if (value < -0x800000 || value > 0x7fffff) {
-    throw new PatchError(`s24 branch offset out of range: ${value}`);
-  }
-  const encoded = value < 0 ? value + 0x1000000 : value;
-  return Buffer.from([
-    encoded & 0xff,
-    (encoded >>> 8) & 0xff,
-    (encoded >>> 16) & 0xff,
-  ]);
-}
-
-function branchTarget(instruction: Instruction): number | null {
-  const operand = instruction.operands[0];
-  if (!operand || operand[0] !== "s24") {
-    return null;
-  }
-  return instruction.offset + instruction.size + operand[1];
-}
-
-function verifyBranchTargets(code: Buffer, label: string): void {
-  const instructions = disassemble(code, label);
-  const boundaries = new Set(instructions.map((instruction) => instruction.offset));
-  boundaries.add(code.length);
-
-  const last = instructions[instructions.length - 1];
-  if (!last || last.offset + last.size !== code.length) {
-    throw new PatchError(`${label} does not disassemble to its declared code length`);
-  }
-
-  for (const instruction of instructions) {
-    const target = branchTarget(instruction);
-    if (target !== null && !boundaries.has(target)) {
-      throw new PatchError(
-        `${label} branch at ${instruction.offset} targets invalid boundary ${target}`,
-      );
-    }
-  }
-}
-
-function insertCode(code: Buffer, insertAt: number, inserted: Buffer, label: string): Buffer {
-  const instructions = disassemble(code, label);
-  const boundaries = new Set(instructions.map((instruction) => instruction.offset));
-  boundaries.add(code.length);
-  if (!boundaries.has(insertAt)) {
-    throw new PatchError(`${label} insertion ${insertAt} is not an instruction boundary`);
-  }
-
-  const delta = inserted.length;
-  const patched = Buffer.concat([
-    code.subarray(0, insertAt),
-    inserted,
-    code.subarray(insertAt),
-  ]);
-
-  for (const instruction of instructions) {
-    const oldTarget = branchTarget(instruction);
-    if (oldTarget === null) {
-      continue;
-    }
-    if (!boundaries.has(oldTarget)) {
-      throw new PatchError(
-        `${label} original branch at ${instruction.offset} targets invalid boundary ${oldTarget}`,
-      );
-    }
-
-    const newOffset = instruction.offset + (instruction.offset >= insertAt ? delta : 0);
-    const newTarget = oldTarget + (oldTarget >= insertAt ? delta : 0);
-    const newRelative = newTarget - (newOffset + instruction.size);
-    writeS24(newRelative).copy(patched, newOffset + 1);
-  }
-
-  verifyBranchTargets(patched, `${label} patched`);
-  return patched;
-}
-
-function findMethodEntryInsertion(code: Buffer, label: string): number {
-  const scopeSetup = Buffer.from([0xd0, 0x30]); // getlocal0; pushscope
-  return requireUniqueSequence(code, scopeSetup, `${label} scope setup`) + scopeSetup.length;
-}
-
-function patchStatus(
-  ctx: SwfContext,
-  abc: AbcParseResult,
-  symbols: PatchSymbols,
-): {
-  tutorialCheck: ParsedMethod;
-  tutorial: ParsedMethod;
-  restoreInsertAt: number;
-  tutorialInsertAt: number;
-  hasRestore: boolean;
-  hasPersistence: boolean;
-  hasUnguarded: boolean;
-} {
-  const tutorialCheck = getMethod(ctx, abc, TUTORIAL_CLASS, TUTORIAL_CHECK_METHOD);
-  const tutorial = getMethod(ctx, abc, TUTORIAL_CLASS, TUTORIAL_COMPLETE_METHOD);
-
-  const completion = tutorialCompletionSequence(symbols);
-  const completionOffset = requireUniqueSequence(
-    tutorial.code,
-    completion,
-    "interactive tutorial completion",
+function findForgeRestoreRegion(
+  abc: ReturnType<typeof parseAbc>,
+  code: Buffer,
+  mns: Record<string, number>,
+): { start: number; end: number; patched: boolean } {
+  const instructions = disassemble(code, `${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD}`);
+  // The OR-in block is `getlex var_1; getlex var_1; getproperty mTutorialsCompletedList;
+  // getlex const_138; bitor; setproperty mTutorialsCompletedList`. The same bit is also
+  // *compared* later in the method, so anchor on the one that feeds a bitor.
+  const anchors = instructions.filter(
+    (inst, index) =>
+      inst.opcode === OP_GETLEX &&
+      inst.operands[0]?.[1] === mns[NAME_FORGE_BIT] &&
+      instructions[index + 1]?.opcode === 0xa9, // bitor
   );
-  const tutorialInsertAt = completionOffset + completion.length;
-  const restoreInsertAt = findMethodEntryInsertion(
-    tutorialCheck.code,
-    `${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD}`,
-  );
-  const persistence = persistenceSequence(symbols);
-  const restore = restoreSequence(symbols);
+  if (anchors.length !== 1) {
+    throw new PatchError(
+      `Expected one ${NAME_FORGE_BIT} bitor in ${TUTORIAL_CHECK_METHOD}, found ${anchors.length}`,
+    );
+  }
+  const bitLoad = anchors[0];
 
-  return {
-    tutorialCheck,
-    tutorial,
-    restoreInsertAt,
-    tutorialInsertAt,
-    hasRestore: tutorialCheck.code
-      .subarray(restoreInsertAt, restoreInsertAt + restore.length)
-      .equals(restore),
-    hasPersistence: tutorial.code
-      .subarray(tutorialInsertAt, tutorialInsertAt + persistence.length)
-      .equals(persistence),
-    hasUnguarded: hasUnguardedSequences(tutorialCheck, tutorial, restoreInsertAt, tutorialInsertAt, symbols),
-  };
+  // The block reads `getlex var_1; getlex var_1; getproperty mTutorialsCompletedList` before the bit.
+  const completedLoad = instructions.find(
+    (inst) => inst.offset === bitLoad.offset - 3 &&
+      inst.opcode === OP_GETPROPERTY &&
+      inst.operands[0]?.[1] === mns[NAME_TUTORIALS_COMPLETED],
+  );
+  if (!completedLoad) {
+    throw new PatchError(`Forge tutorial bit is not OR-ed into ${NAME_TUTORIALS_COMPLETED} as expected`);
+  }
+  const blockStart = completedLoad.offset - 2 - 2; // two getlex var_1 (2 bytes each) precede it
+
+  // The condition region is 11 bytes, immediately before the `iffalse` that guards the OR-in.
+  const guardOffset = blockStart - 4;
+  const guard = instructions.find((inst) => inst.offset === guardOffset && inst.opcode === OP_IFFALSE);
+  if (!guard) {
+    throw new PatchError(`Forge tutorial OR-in is not guarded by an iffalse at 0x${guardOffset.toString(16)}`);
+  }
+
+  const start = guardOffset - 11;
+  const end = guardOffset;
+  if (start < 0 || end > code.length) {
+    throw new PatchError(`Forge tutorial condition region out of bounds: ${start}:${end}`);
+  }
+
+  const region = code.subarray(start, end);
+  const unpatched = unpatchedSequence(abc, mns);
+  const patched = patchedSequence(abc, mns);
+  if (region.equals(unpatched)) {
+    return { start, end, patched: false };
+  }
+  if (region.equals(patched)) {
+    return { start, end, patched: true };
+  }
+  throw new PatchError(
+    `Forge tutorial condition at 0x${start.toString(16)} matches neither the stock nor the patched form`,
+  );
 }
 
-/**
- * True for a SWF carrying the shipped-and-crashing form: the same bodies with no storage
- * guard. It has to be named, because the guarded bytes do not match it, so every check
- * below would otherwise read "not patched" and happily insert a second copy on top.
- */
-function hasUnguardedSequences(
-  tutorialCheck: ParsedMethod,
-  tutorial: ParsedMethod,
-  restoreInsertAt: number,
-  tutorialInsertAt: number,
-  symbols: PatchSymbols,
-): boolean {
-  const restore = restoreBody(symbols);
-  const persistence = persistenceBody(symbols);
-  return tutorialCheck.code.subarray(restoreInsertAt, restoreInsertAt + restore.length).equals(restore) ||
-    tutorial.code.subarray(tutorialInsertAt, tutorialInsertAt + persistence.length).equals(persistence);
+function resolveSymbols(ctx: ReturnType<typeof parseSwf>, abc: ReturnType<typeof parseAbc>): { mns: Record<string, number>; code: Buffer } {
+  const mns = resolveMultinames(abc, [
+    NAME_FORGE_BIT,
+    NAME_MAGIC_FORGE_STATUS,
+    NAME_GET_CURRENTLY_CRAFTING,
+    NAME_CRAFT_TALENT_DATA,
+    NAME_CRAFT_XP,
+    NAME_TUTORIALS_COMPLETED,
+  ]);
+  const { code } = getTutorialCheck(ctx, abc);
+  const var1Candidates = abc.multinameNames
+    .map((name, index) => (name === NAME_VAR_1 ? index : -1))
+    .filter((index) => index >= 0);
+  mns[NAME_VAR_1] = resolveVar1InMethod(abc, code, var1Candidates);
+  return { mns, code };
 }
 
 function verifySwf(swfPath: string): void {
   const ctx = parseSwf(swfPath);
   const abc = parseAbc(ctx);
-  const symbols = getSymbols(ctx, abc);
-  const status = patchStatus(ctx, abc, symbols);
-
-  if (status.hasUnguarded) {
+  const { mns, code } = resolveSymbols(ctx, abc);
+  const region = findForgeRestoreRegion(abc, code, mns);
+  if (!region.patched) {
     throw new PatchError(
-      "Forge tutorial persistence is present WITHOUT its SharedObject guard -- this is the " +
-      "form that kills the client on world enter. Restore the SWF from git and re-run.",
+      "Forge tutorial restore still keys on an actively-crafting forge (GetCurrentlyCrafting) instead of persistent craft XP.",
     );
   }
-  if (!status.hasRestore || !status.hasPersistence) {
-    throw new PatchError(
-      `Forge tutorial persistence is incomplete: restore=${status.hasRestore} persist=${status.hasPersistence}`,
-    );
-  }
+  console.log("Forge tutorial persistence patch verified (restore keyed on craft XP).");
+}
 
-  const gameInitialize = getMethod(ctx, abc, GAME_CLASS, GAME_INITIALIZE_METHOD);
-  if (findAll(gameInitialize.code, unsafeStartupRestoreSequence(symbols)).length !== 0) {
-    throw new PatchError(
-      "Forge tutorial restore still runs during early Game initialization",
-    );
+function getTutorialCheck(
+  ctx: ReturnType<typeof parseSwf>,
+  abc: ReturnType<typeof parseAbc>,
+): { code: Buffer; bodyStart: number } {
+  const classIndex = classIndexByName(abc, TUTORIAL_CLASS);
+  if (classIndex === null) {
+    throw new PatchError(`Class ${TUTORIAL_CLASS} not found`);
   }
-
-  const [tutorialCheckMaxStack] = readU30(
-    ctx.body,
-    status.tutorialCheck.body.maxStackPos,
-    `${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD}.max_stack`,
-  );
-  if (tutorialCheckMaxStack < 3) {
-    throw new PatchError(
-      `${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD} max_stack ${tutorialCheckMaxStack} is below 3`,
-    );
+  const methodIndex = methodIdxForTrait(abc.instances[classIndex].traits, abc, TUTORIAL_CHECK_METHOD);
+  if (methodIndex === null) {
+    throw new PatchError(`Method ${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD} not found`);
   }
-
-  verifyBranchTargets(
-    status.tutorialCheck.code,
-    `${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD}`,
-  );
-  verifyBranchTargets(status.tutorial.code, `${TUTORIAL_CLASS}.${TUTORIAL_COMPLETE_METHOD}`);
-  console.log("Forge tutorial persistence patch verified with lazy restore.");
+  const body = abc.methodBodies.get(methodIndex);
+  if (!body) {
+    throw new PatchError(`Method body ${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD} not found`);
+  }
+  const code = Buffer.from(ctx.body.subarray(body.codeStart, body.codeStart + body.codeLen));
+  // The verifier's max_stack must cover the new getproperty chain (needs 2 slots; the
+  // method already declares 5).
+  const [maxStack] = readU30(ctx.body, body.maxStackPos, `${TUTORIAL_CHECK_METHOD}.max_stack`);
+  if (maxStack < 3) {
+    throw new PatchError(`${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD} max_stack ${maxStack} is below 3`);
+  }
+  return { code, bodyStart: body.codeStart };
 }
 
 /**
- * This patch kills the client at world enter and nobody knows why yet.
- *
- * Confirmed on 2026-07-30 by three loads of the same build, changing one thing each time:
- * the SWF with neither patch enters the world fine, adding callforhelp-fixed-radius is
- * still fine, and adding this one drops the connection the instant the client finishes
- * parsing its first level -- authenticated, entered, then FIN, with 35 bytes sent where a
- * live session sends thousands. It reproduced in CraftTown and in BridgeTownHard.
- *
- * Ruled out, so nobody re-treads them: the unguarded SharedObject dereference (guarding it
- * changed nothing, and the guard decompiles correctly in both places); max_stack (7 and 5
- * declared against the 2 and 3 the inserted code needs); and the multiname namespaces
- * (Game.var_304 is internal in the root package, so class_89 can reach it, and every index
- * the patch reuses is the one the surrounding code already uses).
- *
- * What is left needs an AVM2 error, which means a debug Flash player -- the client dies
- * before it can send its own 0x7C crash report. Until then this refuses to run, because a
- * SWF carrying it cannot enter the world at all. #644 is reopened as the cost.
+ * Moves index.html's cache-busting token to match the SWF that was just written.
+ * Leave the token alone and browsers keep loading the old SWF.
  */
-const CRASH_OVERRIDE_ENV = "DB_FORGE_TUTORIAL_PATCH_ANYWAY";
-
-function patchSwf(swfPath: string): void {
-  if (String(process.env[CRASH_OVERRIDE_ENV] ?? "").trim() !== "1") {
-    throw new PatchError(
-      "Refusing to apply: this patch makes the client drop its connection on world enter " +
-      "(see the comment above patchSwf). Set " + CRASH_OVERRIDE_ENV + "=1 to apply it anyway " +
-      "while debugging.",
-    );
+function syncClientRev(swfPath: string): void {
+  if (path.resolve(swfPath) !== DEFAULT_SWF || !fs.existsSync(INDEX_HTML)) return;
+  const digest = crypto.createHash("sha1").update(fs.readFileSync(swfPath)).digest("hex").slice(0, 12);
+  const html = fs.readFileSync(INDEX_HTML, "utf8");
+  const updated = html.replace(/clientrev=[^&`"'$]+/, `clientrev=swf-${digest}`);
+  if (updated !== html) {
+    fs.writeFileSync(INDEX_HTML, updated);
+    console.log(`  index.html clientrev -> swf-${digest} (cache buster)`);
   }
+}
 
+function patchSwf(swfPath: string, verify: boolean): void {
   const ctx = parseSwf(swfPath);
   const abc = parseAbc(ctx);
-  const symbols = getSymbols(ctx, abc);
-  const status = patchStatus(ctx, abc, symbols);
+  const { mns, code } = resolveSymbols(ctx, abc);
+  const bodyStart = getTutorialCheck(ctx, abc).bodyStart;
+  const region = findForgeRestoreRegion(abc, code, mns);
 
-  if (status.hasUnguarded) {
-    throw new PatchError(
-      "Refusing to patch on top of the unguarded form, which would insert a second copy. " +
-      "Restore the SWF from git and re-run.",
-    );
-  }
-  if (status.hasRestore || status.hasPersistence) {
-    if (status.hasRestore && status.hasPersistence) {
-      console.log("Forge tutorial persistence patch is already applied.");
-      verifySwf(swfPath);
-      return;
-    }
-    throw new PatchError(
-      `Refusing to patch a partial state: restore=${status.hasRestore} persist=${status.hasPersistence}`,
-    );
-  }
-
-  const patchedTutorialCheck = insertCode(
-    status.tutorialCheck.code,
-    status.restoreInsertAt,
-    restoreSequence(symbols),
-    `${TUTORIAL_CLASS}.${TUTORIAL_CHECK_METHOD}`,
-  );
-  const patchedTutorial = insertCode(
-    status.tutorial.code,
-    status.tutorialInsertAt,
-    persistenceSequence(symbols),
-    `${TUTORIAL_CLASS}.${TUTORIAL_COMPLETE_METHOD}`,
-  );
-
-  const patches: BytePatch[] = [
-    {
-      key: "forge-tutorial-load-code",
-      start: status.tutorialCheck.body.codeStart,
-      end: status.tutorialCheck.body.codeStart + status.tutorialCheck.body.codeLen,
-      data: patchedTutorialCheck,
-      detail: "restore completed tutorials from dbSavedGameData when tutorials are checked",
-    },
-    {
-      key: "forge-tutorial-load-code-length",
-      start: status.tutorialCheck.body.codeLenPos,
-      end: status.tutorialCheck.body.codeStart,
-      data: writeU30(patchedTutorialCheck.length),
-      detail: "update tutorial-check code length",
-    },
-    {
-      key: "forge-tutorial-save-code",
-      start: status.tutorial.body.codeStart,
-      end: status.tutorial.body.codeStart + status.tutorial.body.codeLen,
-      data: patchedTutorial,
-      detail: "persist completed tutorials after tutorial completion",
-    },
-    {
-      key: "forge-tutorial-save-code-length",
-      start: status.tutorial.body.codeLenPos,
-      end: status.tutorial.body.codeStart,
-      data: writeU30(patchedTutorial.length),
-      detail: "update interactive tutorial completion code length",
-    },
-  ];
-
-  const patchedBody = applyPatchesToBody(ctx.body, patches);
-  writeSwf(ctx, patchedBody.body, patchedBody.delta);
-  verifySwf(swfPath);
-}
-
-function main(): void {
-  const args = parseArgs(process.argv);
-  if (!fs.existsSync(args.swfPath)) {
-    throw new PatchError(`SWF not found: ${args.swfPath}`);
-  }
-  if (args.verify) {
-    verifySwf(args.swfPath);
+  if (verify) {
+    verifySwf(swfPath);
     return;
   }
-  patchSwf(args.swfPath);
+  if (region.patched) {
+    console.log("Forge tutorial persistence patch already applied.");
+    verifySwf(swfPath);
+    return;
+  }
+
+  const patches: BytePatch[] = [{
+    key: "forge-tutorial-restore-craft-xp",
+    start: bodyStart + region.start,
+    end: bodyStart + region.end,
+    data: patchedSequence(abc, mns),
+    detail: "restore the forge tutorial bit from persistent craft XP instead of an active forge",
+  }];
+
+  ensureBackup(swfPath);
+  const { body: patchedBody, delta } = applyPatchesToBody(ctx.body, patches);
+  if (delta !== 0) {
+    throw new PatchError(`Expected a length-preserving patch, got delta ${delta}.`);
+  }
+  writeSwf(ctx, patchedBody, delta);
+  syncClientRev(swfPath);
+  verifySwf(swfPath);
+  console.log("Forge tutorial persistence patch applied (restore keyed on craft XP).");
 }
 
-try {
-  main();
-} catch (error) {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exitCode = 1;
+function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
+  let swfPath = DEFAULT_SWF;
+  let verify = false;
+  for (let index = 2; index < argv.length; index += 1) {
+    const arg = argv[index];
+    if (arg === "--swf" || arg === "-s") {
+      swfPath = path.resolve(argv[++index] || "");
+    } else if (arg === "--verify" || arg === "--dry-run") {
+      verify = true;
+    } else if (arg === "--help" || arg === "-h") {
+      console.log([
+        "Usage:",
+        "  ts-node src/server/scripts/patch-dungeonblitz-forge-tutorial-persistence.ts [--verify] [--swf <path>]",
+        "",
+        "Restores the Charms Forge tutorial's completed bit from the player's persistent craft XP",
+        "so the tutorial plays once instead of after every client restart.",
+      ].join("\n"));
+      process.exit(0);
+    } else {
+      throw new PatchError(`Unknown argument: ${arg}`);
+    }
+  }
+  return { swfPath, verify };
 }
+
+const { swfPath, verify } = parseArgs(process.argv);
+if (!fs.existsSync(swfPath)) {
+  throw new PatchError(`SWF not found: ${swfPath}`);
+}
+patchSwf(swfPath, verify);

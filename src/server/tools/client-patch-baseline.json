@@ -1,5 +1,5 @@
 {
-    "_comment": "Client patches that already fail --verify as of 2026-08-11. The gate only fails on regressions outside this list; entries that start passing must be removed. Triage and shrink this list -- some are deliberate reverts, others are genuinely dropped patches. Forge tutorial persistence is deliberately disabled because it crashes on world enter.",
+    "_comment": "Client patches that already fail --verify as of 2026-08-11. The gate only fails on regressions outside this list; entries that start passing must be removed. Triage and shrink this list -- some are deliberate reverts, others are genuinely dropped patches. Forge tutorial persistence is fixed and verifies again: the restore now keys on persistent craft XP instead of the SharedObject form that crashed on world enter.",
     "recordedAt": "2026-08-11",
     "knownFailing": [
         "patch-dungeonblitz-banshee-wail-cap.ts",
@@ -9,7 +9,6 @@
         "patch-dungeonblitz-class82-bitmapdata-guard.ts",
         "patch-dungeonblitz-destroy-entity-without-brain.ts",
         "patch-dungeonblitz-dye-ui-owned-color.ts",
-        "patch-dungeonblitz-forge-tutorial-persistence.ts",
         "patch-dungeonblitz-game-method1947-screen-bitmapdata.ts",
         "patch-dungeonblitz-game-method527-clamp-floaters.ts",
         "patch-dungeonblitz-hide-duplicate-boss-visual.ts",
