@@ -305,8 +305,13 @@ const CLIENT = path.resolve(__dirname, "..", "..", "client", "content");
 const GAME_SWZ = [path.join(CLIENT, "localhost", "p", "cbq", "Game.swz")];
 const LOOSE_POWER_MODS = path.join(CLIENT, "xml", "PowerModTypes.xml");
 const LOOSE_GEAR = path.join(CLIENT, "xml", "GearTypes.xml");
-/** cbq, not cbp: masterFileList.xml pins Login.swz there, so the cbp copy is one no client loads. */
-const LOGIN_SWZ = defaultLoginSwzPath();
+/**
+ * Login.swz exists in both p/cbp and p/cbq, and which one the client downloads has flipped
+ * historically: masterFileList.xml pins it to cbq, while the served DungeonBlitz.swf (and the
+ * default below) lives in cbp. Patch both so the Mystic power runes can never drift out of the
+ * copy a player actually loads.
+ */
+const LOGIN_SWZ_FILES = [defaultLoginSwzPath(), path.join(CLIENT, "localhost", "p", "cbq", "Login.swz")];
 
 function parseArgs(argv: string[]): { verify: boolean } {
   let verify = false;
@@ -706,19 +711,23 @@ function patch(verify: boolean): void {
     pending.push(() => fs.writeFileSync(loosePowersPath, loosePowersResult.xml, "utf8"));
   }
 
-  const loginSwz = parseSwz(LOGIN_SWZ);
-  const gearChunk = loginSwz.chunks.find((chunk) => chunk.xml.includes("<GearTypes"));
-  if (!gearChunk) throw new SwzPatchError("Login.swz has no GearTypes chunk.");
-  const swzGear = retargetGearRunes(gearChunk.xml, runeByGearId);
-  summary.push(`Login.swz gear runes: ${swzGear.changed} retargeted`);
-  changes += swzGear.changed;
-  if (swzGear.changed > 0 && !verify) {
-    pending.push(() => {
-      ensureBackup(LOGIN_SWZ);
-      gearChunk.xml = swzGear.xml;
-      writeSwz(loginSwz);
-    });
+  let loginChanged = 0;
+  for (const loginPath of LOGIN_SWZ_FILES) {
+    const loginSwz = parseSwz(loginPath);
+    const gearChunk = loginSwz.chunks.find((chunk) => chunk.xml.includes("<GearTypes"));
+    if (!gearChunk) throw new SwzPatchError(`${path.basename(loginPath)} has no GearTypes chunk.`);
+    const swzGear = retargetGearRunes(gearChunk.xml, runeByGearId);
+    loginChanged += swzGear.changed;
+    if (swzGear.changed > 0 && !verify) {
+      pending.push(() => {
+        ensureBackup(loginPath);
+        gearChunk.xml = swzGear.xml;
+        writeSwz(loginSwz);
+      });
+    }
   }
+  summary.push(`Login.swz (cbp+cbq) gear runes: ${loginChanged} retargeted`);
+  changes += loginChanged;
 
   const looseGear = fs.readFileSync(LOOSE_GEAR, "utf8");
   const looseGearResult = retargetGearRunes(looseGear, runeByGearId);

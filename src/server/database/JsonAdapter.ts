@@ -58,16 +58,20 @@ export class JsonAdapter implements IDatabase {
     }
 
     /**
-     * The six Rogue lockbox uniques are Mystic-only above Legendary: their tier 3 ("Y") variants
+     * The eighteen class lockbox uniques are Mystic-only above Legendary: their tier 3 ("Y") variants
      * carry the ability-bonus rune chains and the red UI treatment, and there is no drop or forge
      * path that grants tier 3. Promoting owned Legendary copies here — on every load and save —
      * migrates existing characters without needing the server offline.
      */
-    private static readonly MYSTIC_ROGUE_GEAR_IDS = new Set([1171, 1172, 1173, 1174, 1175, 1176]);
+    private static readonly MYSTIC_LOCKBOX_GEAR_IDS = new Set([
+        1165, 1166, 1167, 1168, 1169, 1170, // Mage lockbox set
+        1171, 1172, 1173, 1174, 1175, 1176, // Rogue lockbox set
+        1177, 1178, 1179, 1180, 1181, 1182  // Paladin lockbox set
+    ]);
     private static readonly LEGENDARY_TIER = 2;
     private static readonly MYSTIC_TIER = 3;
 
-    private promoteMysticRogueGear(gears: unknown): void {
+    private promoteMysticLockboxGear(gears: unknown): void {
         if (!Array.isArray(gears)) {
             return;
         }
@@ -77,7 +81,7 @@ export class JsonAdapter implements IDatabase {
             }
             const entry = gear as { gearID?: number; tier?: number };
             if (
-                JsonAdapter.MYSTIC_ROGUE_GEAR_IDS.has(Number(entry.gearID ?? 0)) &&
+                JsonAdapter.MYSTIC_LOCKBOX_GEAR_IDS.has(Number(entry.gearID ?? 0)) &&
                 Number(entry.tier ?? 0) === JsonAdapter.LEGENDARY_TIER
             ) {
                 entry.tier = JsonAdapter.MYSTIC_TIER;
@@ -96,8 +100,8 @@ export class JsonAdapter implements IDatabase {
             character.level = normalizedLevel;
         }
 
-        this.promoteMysticRogueGear((character as { equippedGears?: unknown }).equippedGears);
-        this.promoteMysticRogueGear((character as { inventoryGears?: unknown }).inventoryGears);
+        this.promoteMysticLockboxGear((character as { equippedGears?: unknown }).equippedGears);
+        this.promoteMysticLockboxGear((character as { inventoryGears?: unknown }).inventoryGears);
 
         return character;
     }

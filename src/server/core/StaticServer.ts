@@ -543,7 +543,7 @@ try {
         ], authRateLimit());
 
         this.app.get('/', (_req, res) => {
-            res.sendFile(path.join(this.contentDir, 'index.html'));
+            res.sendFile(path.join(this.contentDir, 'index.html'), { dotfiles: 'allow' });
         });
 
         this.app.get('/lostpw', (req, res) => {
@@ -791,13 +791,13 @@ try {
         this.app.get('/p/cbq/Game.swz', (req, res) => {
             res.type('application/x-shockwave-flash');
             res.setHeader('X-DungeonBlitz-Language', 'en');
-            res.sendFile(this.getGameSwzPath());
+            res.sendFile(this.getGameSwzPath(), { dotfiles: 'allow' });
         });
 
         this.app.get('/p/:assetVersion/Game.swz', (req, res) => {
             res.type('application/x-shockwave-flash');
             res.setHeader('X-DungeonBlitz-Language', 'en');
-            res.sendFile(this.getGameSwzPath());
+            res.sendFile(this.getGameSwzPath(), { dotfiles: 'allow' });
         });
 
         this.app.get(/^\/p\/[^/]+\/masterFileList(?:_\d+)?\.xml$/, (req, res, next) => {
@@ -808,7 +808,7 @@ try {
             }
 
             res.type('application/xml');
-            res.sendFile(assetPath);
+            res.sendFile(assetPath, { dotfiles: 'allow' });
         });
 
         this.app.get('/DungeonBlitzRemote.swf', (req, res) => {
@@ -841,7 +841,7 @@ try {
             if (assetPath.endsWith('.xml')) {
                 res.type('application/xml');
             }
-            res.sendFile(assetPath);
+            res.sendFile(assetPath, { dotfiles: 'allow' });
         });
 
         this.app.get('/api/presence/sessions', (req, res) => {

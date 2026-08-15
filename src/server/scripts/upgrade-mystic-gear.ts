@@ -14,6 +14,7 @@ import * as path from "path";
  */
 /** Mage 1165-1170, Rogue 1171-1176, Paladin 1177-1182 — every lockbox unique with a Mystic row. */
 const MYSTIC_GEAR_IDS = Array.from({ length: 18 }, (_, index) => 1165 + index);
+const MYSTIC_GEAR_RANGES = "Mage 1165-1170, Rogue 1171-1176, Paladin 1177-1182";
 const LEGENDARY_TIER = 2;
 const MYSTIC_TIER = 3;
 
@@ -72,7 +73,10 @@ function parseArgs(argv: string[]): { character: string | null; userId: number |
         "Usage:",
         "  npx ts-node src/server/scripts/upgrade-mystic-gear.ts [--character <name>] [--verify] [--downgrade]",
         "",
-        "Promotes owned Legendary copies of the six Rogue lockbox items (GearID 1171-1176) to Mystic.",
+        `Promotes owned Legendary copies of the eighteen class lockbox items (${MYSTIC_GEAR_RANGES}) to Mystic.`,
+        "",
+        "The same promotion runs automatically on character load/save in JsonAdapter; this script",
+        "is the one-shot version for running against saves while the server is offline.",
         "",
         "  --character <name>  Only this character; default is every character in every save.",
         "  --user-id <id>      Only this account. Character names are not unique across accounts.",
