@@ -69,6 +69,51 @@ export function normalizeCharacterKey(value: unknown): string {
     return String(value ?? '').trim().toLowerCase();
 }
 
+/**
+ * The account's primary character name — the name of the first character created
+ * on the account. The account roster is stored in creation order (new characters
+ * are appended), so the first named entry is the primary character.
+ *
+ * Social identity is account-level: friend entries, presence and requests are all
+ * keyed by this name, and the online display name falls back to the character the
+ * player is currently logged in with.
+ */
+export function getAccountPrimaryCharacterName(characters: Character[] | null | undefined): string {
+    if (!Array.isArray(characters)) {
+        return '';
+    }
+
+    for (const character of characters) {
+        const name = sanitizeSocialText(character?.name);
+        if (name) {
+            return name;
+        }
+    }
+
+    return '';
+}
+
+/**
+ * The account's primary character record (first created on the account), falling
+ * back to `fallback` when the roster is missing or empty.
+ */
+export function getAccountPrimaryCharacter(
+    characters: Character[] | null | undefined,
+    fallback: Character | null = null
+): Character | null {
+    if (!Array.isArray(characters)) {
+        return fallback;
+    }
+
+    for (const character of characters) {
+        if (character && sanitizeSocialText(character.name)) {
+            return character;
+        }
+    }
+
+    return fallback;
+}
+
 export function normalizeFriendEntry(value: unknown): FriendEntry | null {
     if (typeof value === 'string') {
         const name = sanitizeSocialText(value);

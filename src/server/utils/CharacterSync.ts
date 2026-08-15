@@ -4,6 +4,7 @@ import { areClientsInSameLevelScope, getClientLevelScope } from '../core/LevelSc
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { WorldEnter } from './WorldEnter';
 import { LegendsInn } from '../core/LegendsInn';
+import { getAccountPrimaryCharacter } from '../core/SocialState';
 
 export class CharacterSync {
     static sendPlayerDataRefresh(client: Client): void {
@@ -29,7 +30,8 @@ export class CharacterSync {
             Math.round(hasCoord ? x : 0),
             Math.round(hasCoord ? y : 0),
             hasCoord,
-            false
+            false,
+            getAccountPrimaryCharacter(client.characters, client.character)
         );
 
         client.send(0x10, payload.toBuffer());

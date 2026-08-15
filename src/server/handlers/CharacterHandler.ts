@@ -28,7 +28,7 @@ import { BuildingHandler } from './BuildingHandler';
 import { ForgeHandler } from './ForgeHandler';
 import { TalentHandler } from './TalentHandler';
 import { syncClientDungeonRunState } from '../core/DungeonRunStats';
-import { ensureCharacterSocialState, normalizeCharacterKey } from '../core/SocialState';
+import { ensureCharacterSocialState, getAccountPrimaryCharacter, normalizeCharacterKey } from '../core/SocialState';
 import { getPartyIdForClient, areClientsInSameParty } from '../core/PartySync';
 import { TransferTokenAllocator } from '../core/TransferTokenAllocator';
 import { normalizeGender } from '../utils/normalizeGender';
@@ -1325,6 +1325,7 @@ export class CharacterHandler {
         await MissionHandler.prepareFullClearDungeonEntry(client);
 
         // Send Player Data (0x10)
+        SocialHandler.migrateAccountFriendsToPrimary(client);
         const pdPkt = WorldEnter.buildPlayerDataPacket(
             client.character,
             token,
@@ -1336,7 +1337,8 @@ export class CharacterHandler {
             spawn.x,
             spawn.y,
             spawn.hasCoord,
-            sendExtended
+            sendExtended,
+            getAccountPrimaryCharacter(client.characters, client.character)
         );
         const pdBuffer = pdPkt.toBuffer();
 

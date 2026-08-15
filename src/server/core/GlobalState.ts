@@ -2,7 +2,12 @@ import { Character, UserAccount } from '../database/Database';
 import { Client } from './Client';
 import type { DungeonCompletionRunState } from './DungeonCompletionTypes';
 import type { TutorialDungeonMechanicsState } from './TutorialDungeonMechanics';
-import { normalizeCharacterKey, PartyGroup, PendingTeleport } from './SocialState';
+import {
+    getAccountPrimaryCharacterName,
+    normalizeCharacterKey,
+    PartyGroup,
+    PendingTeleport
+} from './SocialState';
 import { getClientLevelScope } from './LevelScope';
 
 type SessionIndexSnapshot = {
@@ -549,6 +554,35 @@ export class GlobalState {
                 normalizeCharacterKey(session.character?.name) === characterKey
             ) {
                 GlobalState.sessionsByCharacterName.set(characterKey, session);
+                return session;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Finds the active session for an account by its primary character name. The
+     * player may be online as a different character of the same account, so the
+     * exact-name index is checked first and then every active session's account
+     * roster is scanned for the primary name.
+     */
+    static getActiveSessionForAccount(name: unknown): Client | null {
+        const direct = GlobalState.getActiveSessionByCharacterName(name);
+        if (direct) {
+            return direct;
+        }
+
+        const primaryKey = normalizeCharacterKey(name);
+        if (!primaryKey) {
+            return null;
+        }
+
+        for (const session of GlobalState.sessionsByToken.values()) {
+            if (!GlobalState.isSessionOpen(session) || !session.character) {
+                continue;
+            }
+            if (normalizeCharacterKey(getAccountPrimaryCharacterName(session.characters)) === primaryKey) {
                 return session;
             }
         }

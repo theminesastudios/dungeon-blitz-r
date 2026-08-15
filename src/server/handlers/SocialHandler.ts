@@ -17,11 +17,14 @@ import {
     clampSocialLevel,
     ensureCharacterSocialState,
     FriendEntry,
+    getAccountPrimaryCharacter,
+    getAccountPrimaryCharacterName,
     getFriendListSanitizationSummary,
     getCharacterIgnoredEntries,
     isCharacterIgnoring,
     MAX_FRIEND_ENTRIES,
     normalizeCharacterKey,
+    normalizeFriendEntries,
     PartyGroup,
     PendingTeleport,
     sanitizeSocialText
@@ -34,6 +37,8 @@ interface LoadedCharacterRecord {
     userId: number;
     characters: Character[];
     character: Character;
+    /** The account's primary character name (first character created). */
+    accountPrimaryName: string;
 }
 
 interface PendingFriendRequestPrompt {
@@ -96,8 +101,70 @@ export class SocialHandler {
         return normalizeCharacterKey(value);
     }
 
-    private static getCharacterName(client: Client): string {
-        return String(client.character?.name ?? '').trim();
+    private static getCharacterName(client: Client | null | undefined): string {
+        return String(client?.character?.name ?? '').trim();
+    }
+
+    /**
+     * The account's primary character name — the first character created on the
+     * account. Friendships are account-level and every social entry is keyed by
+     * this name; the currently-logged-in character is only the online display.
+     */
+    private static getAccountPrimaryNameFromCharacters(characters: Character[] | null | undefined): string {
+        return getAccountPrimaryCharacterName(characters);
+    }
+
+    private static getAccountPrimaryName(client: Client | null | undefined): string {
+        const primaryName = SocialHandler.getAccountPrimaryNameFromCharacters(client?.characters);
+        return primaryName || SocialHandler.getCharacterName(client);
+    }
+
+    /**
+     * The character that owns the account's social state. Friends data lives on
+     * the account's primary character so every character on the account shares
+     * one friends list and one set of pending requests.
+     */
+    private static getSocialCharacter(client: Client | null | undefined): Character | null {
+        return getAccountPrimaryCharacter(client?.characters, client?.character ?? null);
+    }
+
+    private static getSocialCharacterFromRecord(record: LoadedCharacterRecord | null | undefined): Character | null {
+        return getAccountPrimaryCharacter(record?.characters, record?.character ?? null);
+    }
+
+    /**
+     * Migrates any friends stored on a non-primary character of the account onto
+     * the primary character, so pre-account-level saves keep their friends when
+     * the player first logs in on a later-created character. Idempotent.
+     */
+    static migrateAccountFriendsToPrimary(client: Client): void {
+        if (!client.userId || !client.character) {
+            return;
+        }
+
+        const primary = SocialHandler.getSocialCharacter(client);
+        if (!primary || SocialHandler.getFriendEntries(primary).length > 0) {
+            return;
+        }
+
+        let merged: FriendEntry[] = [];
+        for (const character of Array.isArray(client.characters) ? client.characters : []) {
+            if (character === primary) {
+                continue;
+            }
+            const friends = SocialHandler.getFriendEntries(character);
+            if (friends.length === 0) {
+                continue;
+            }
+            merged = normalizeFriendEntries([...merged, ...friends]);
+        }
+
+        if (merged.length === 0) {
+            return;
+        }
+
+        primary.friends = merged;
+        void SocialHandler.persistClientCharacter(client);
     }
 
     private static getOnlineSession(name: string): Client | null {
@@ -107,6 +174,14 @@ export class SocialHandler {
         }
 
         return GlobalState.getActiveSessionByCharacterName(key);
+    }
+
+    /**
+     * Online session for an account given its primary character name — the player
+     * may be online as a different character of the same account.
+     */
+    private static getOnlineSessionByAccount(name: string): Client | null {
+        return GlobalState.getActiveSessionForAccount(name);
     }
 
     private static findSessionByEntityId(entityId: number): Client | null {
@@ -351,7 +426,7 @@ export class SocialHandler {
     }
 
     private static sendFriendRequestPrompt(target: Client, requesterName: string): void {
-        const targetName = SocialHandler.getCharacterName(target);
+        const targetName = SocialHandler.getAccountPrimaryName(target);
         if (!targetName || !requesterName) {
             return;
         }
@@ -525,9 +600,15 @@ export class SocialHandler {
             return;
         }
 
-        SocialHandler.logFriendListSanitization(client.character, 'request');
+        const socialCharacter = SocialHandler.getSocialCharacter(client);
+        if (!socialCharacter) {
+            return;
+        }
+
+        SocialHandler.migrateAccountFriendsToPrimary(client);
+        SocialHandler.logFriendListSanitization(socialCharacter, 'request');
         const bb = new BitBuffer(false);
-        const friends = SocialHandler.getSerializableFriendEntries(client.character);
+        const friends = SocialHandler.getSerializableFriendEntries(socialCharacter);
         bb.writeMethod4(friends.length);
 
         for (const friend of friends) {
@@ -535,7 +616,7 @@ export class SocialHandler {
                 bb,
                 friend.name,
                 friend.isRequest,
-                SocialHandler.getOnlineSession(friend.name)
+                SocialHandler.getOnlineSessionByAccount(friend.name)
             );
         }
 
@@ -666,7 +747,12 @@ export class SocialHandler {
         }
 
         ensureCharacterSocialState(character);
-        return { userId, characters, character };
+        return {
+            userId,
+            characters,
+            character,
+            accountPrimaryName: SocialHandler.getAccountPrimaryNameFromCharacters(characters)
+        };
     }
 
     private static async persistLoadedCharacter(record: LoadedCharacterRecord): Promise<void> {
@@ -680,17 +766,18 @@ export class SocialHandler {
             return;
         }
 
-        const senderName = client.character.name;
+        const senderName = SocialHandler.getAccountPrimaryName(client);
         const senderKey = SocialHandler.normalizeName(senderName);
-        const friends = SocialHandler.getFriendEntries(client.character).filter((entry) => !entry.isRequest);
+        const socialCharacter = SocialHandler.getSocialCharacter(client);
+        const friends = SocialHandler.getFriendEntries(socialCharacter).filter((entry) => !entry.isRequest);
 
         for (const friend of friends) {
-            const session = SocialHandler.getOnlineSession(friend.name);
+            const session = SocialHandler.getOnlineSessionByAccount(friend.name);
             if (!session?.character) {
                 continue;
             }
 
-            const reverseEntries = SocialHandler.getFriendEntries(session.character);
+            const reverseEntries = SocialHandler.getFriendEntries(SocialHandler.getSocialCharacter(session));
             const hasAcceptedReverseEntry = reverseEntries.some((entry) =>
                 SocialHandler.normalizeName(entry.name) === senderKey && !entry.isRequest
             );
@@ -713,13 +800,17 @@ export class SocialHandler {
 
         SocialHandler.cleanupExpiredFriendRequestPrompts();
         const prompt = SocialHandler.pendingFriendRequestPrompts.get(token);
-        if (!prompt || SocialHandler.normalizeName(prompt.targetName) !== SocialHandler.normalizeName(client.character.name)) {
+        const clientPrimaryName = SocialHandler.getAccountPrimaryName(client);
+        if (
+            !prompt ||
+            SocialHandler.normalizeName(prompt.targetName) !== SocialHandler.normalizeName(clientPrimaryName)
+        ) {
             return false;
         }
 
         SocialHandler.pendingFriendRequestPrompts.delete(token);
 
-        const requesterSession = SocialHandler.getOnlineSession(prompt.requesterName);
+        const requesterSession = SocialHandler.getOnlineSessionByAccount(prompt.requesterName);
         const requesterRecord = requesterSession ? null : await SocialHandler.loadCharacterRecordByName(prompt.requesterName);
         const requesterCharacter = requesterSession?.character ?? requesterRecord?.character ?? null;
         if (!requesterCharacter) {
@@ -727,16 +818,26 @@ export class SocialHandler {
             return true;
         }
 
-        ensureCharacterSocialState(client.character);
-        ensureCharacterSocialState(requesterCharacter);
+        const requesterSocialCharacter = requesterSession
+            ? SocialHandler.getSocialCharacter(requesterSession)
+            : SocialHandler.getSocialCharacterFromRecord(requesterRecord);
+        const targetSocialCharacter = SocialHandler.getSocialCharacter(client);
+        if (!requesterSocialCharacter || !targetSocialCharacter) {
+            SocialHandler.sendChatStatus(client, 'Friend request has expired.');
+            return true;
+        }
 
+        ensureCharacterSocialState(targetSocialCharacter);
+        ensureCharacterSocialState(requesterSocialCharacter);
+
+        const requesterPrimaryName = prompt.requesterName;
         const requesterDisplayName = requesterCharacter.name;
         const targetDisplayName = client.character.name;
-        const targetEntry = SocialHandler.getFriendEntry(client.character, requesterDisplayName);
+        const targetEntry = SocialHandler.getFriendEntry(targetSocialCharacter, requesterPrimaryName);
 
         if (!accepted) {
             if (targetEntry?.isRequest) {
-                const removedEntry = SocialHandler.removeFriendEntry(client.character, targetEntry.name);
+                const removedEntry = SocialHandler.removeFriendEntry(targetSocialCharacter, targetEntry.name);
                 await SocialHandler.persistClientCharacter(client);
                 if (removedEntry) {
                     SocialHandler.sendFriendRemoved(client, removedEntry.name);
@@ -749,15 +850,15 @@ export class SocialHandler {
             return true;
         }
 
-        const targetEntryName = targetEntry?.name ?? requesterDisplayName;
-        const requesterEntry = SocialHandler.getFriendEntry(requesterCharacter, targetDisplayName);
-        const requesterEntryName = requesterEntry?.name ?? targetDisplayName;
+        const targetEntryName = targetEntry?.name ?? requesterPrimaryName;
+        const requesterEntry = SocialHandler.getFriendEntry(requesterSocialCharacter, clientPrimaryName);
+        const requesterEntryName = requesterEntry?.name ?? clientPrimaryName;
 
-        const targetChanged = SocialHandler.upsertFriendEntry(client.character, {
+        const targetChanged = SocialHandler.upsertFriendEntry(targetSocialCharacter, {
             name: targetEntryName,
             isRequest: false
         });
-        const requesterChanged = SocialHandler.upsertFriendEntry(requesterCharacter, {
+        const requesterChanged = SocialHandler.upsertFriendEntry(requesterSocialCharacter, {
             name: requesterEntryName,
             isRequest: false
         });
@@ -1178,6 +1279,7 @@ export class SocialHandler {
             return;
         }
 
+        SocialHandler.migrateAccountFriendsToPrimary(client);
         SocialHandler.notifyFriendsAboutStatus(client, true);
         SocialHandler.broadcastPartyUpdateForMember(client.character.name);
         GuildHandler.handleSessionReady(client);
@@ -1380,37 +1482,52 @@ export class SocialHandler {
         const targetNameRaw = br.readMethod26();
         const targetName = String(targetNameRaw ?? '').trim();
         const senderName = client.character.name;
+        const senderPrimaryName = SocialHandler.getAccountPrimaryName(client);
+        const senderSocialCharacter = SocialHandler.getSocialCharacter(client);
 
-        if (!targetName) {
+        if (!targetName || !senderSocialCharacter) {
             return;
         }
 
-        if (SocialHandler.normalizeName(targetName) === SocialHandler.normalizeName(senderName)) {
-            SocialHandler.sendChatStatus(client, 'You cannot be friends with yourself.');
-            return;
-        }
-
-        const targetSession = SocialHandler.getOnlineSession(targetName);
+        // The target may be named by any character on their account (the primary
+        // name, or the character they are currently playing), so resolve online
+        // sessions by account and fall back to the saved record for offline targets.
+        const targetSession = SocialHandler.getOnlineSessionByAccount(targetName);
         const targetRecord = targetSession ? null : await SocialHandler.loadCharacterRecordByName(targetName);
         const targetCharacter = targetSession?.character ?? targetRecord?.character ?? null;
-
         if (!targetCharacter) {
             SocialHandler.sendChatStatus(client, `Could not find player ${targetName}.`);
             return;
         }
 
-        ensureCharacterSocialState(client.character);
-        ensureCharacterSocialState(targetCharacter);
+        const targetPrimaryName = targetSession
+            ? SocialHandler.getAccountPrimaryName(targetSession)
+            : targetRecord?.accountPrimaryName ?? targetName;
+        const targetSocialCharacter = targetSession
+            ? SocialHandler.getSocialCharacter(targetSession)
+            : SocialHandler.getSocialCharacterFromRecord(targetRecord);
+        if (!targetSocialCharacter) {
+            SocialHandler.sendChatStatus(client, `Could not find player ${targetName}.`);
+            return;
+        }
+
+        if (SocialHandler.normalizeName(targetPrimaryName) === SocialHandler.normalizeName(senderPrimaryName)) {
+            SocialHandler.sendChatStatus(client, 'You cannot be friends with yourself.');
+            return;
+        }
+
+        ensureCharacterSocialState(senderSocialCharacter);
+        ensureCharacterSocialState(targetSocialCharacter);
 
         const targetDisplayName = targetCharacter.name;
-        const senderEntry = SocialHandler.getFriendEntry(client.character, targetDisplayName);
-        const targetEntry = SocialHandler.getFriendEntry(targetCharacter, senderName);
-        const senderEntryName = senderEntry?.name ?? targetDisplayName;
-        const targetEntryName = targetEntry?.name ?? senderName;
+        const senderEntry = SocialHandler.getFriendEntry(senderSocialCharacter, targetPrimaryName);
+        const targetEntry = SocialHandler.getFriendEntry(targetSocialCharacter, senderPrimaryName);
+        const senderEntryName = senderEntry?.name ?? targetPrimaryName;
+        const targetEntryName = targetEntry?.name ?? senderPrimaryName;
 
         if (senderEntry && !senderEntry.isRequest) {
             if (!targetEntry || targetEntry.isRequest) {
-                const repaired = SocialHandler.upsertFriendEntry(targetCharacter, {
+                const repaired = SocialHandler.upsertFriendEntry(targetSocialCharacter, {
                     name: targetEntryName,
                     isRequest: false
                 });
@@ -1424,16 +1541,16 @@ export class SocialHandler {
             }
 
             SocialHandler.sendChatStatus(client, `${targetDisplayName} is already on your friends list.`);
-            SocialHandler.clearPendingFriendRequestPrompts(senderName, targetDisplayName);
+            SocialHandler.clearPendingFriendRequestPrompts(senderPrimaryName, targetPrimaryName);
             return;
         }
 
         if (senderEntry?.isRequest) {
-            const senderChanged = SocialHandler.upsertFriendEntry(client.character, {
+            const senderChanged = SocialHandler.upsertFriendEntry(senderSocialCharacter, {
                 name: senderEntryName,
                 isRequest: false
             });
-            const targetChanged = SocialHandler.upsertFriendEntry(targetCharacter, {
+            const targetChanged = SocialHandler.upsertFriendEntry(targetSocialCharacter, {
                 name: targetEntryName,
                 isRequest: false
             });
@@ -1454,12 +1571,12 @@ export class SocialHandler {
             if (targetSession) {
                 SocialHandler.sendFriendUpdate(targetSession, targetEntryName, false, client);
             }
-            SocialHandler.clearPendingFriendRequestPrompts(targetDisplayName, senderName);
+            SocialHandler.clearPendingFriendRequestPrompts(targetPrimaryName, senderPrimaryName);
             return;
         }
 
         if (targetEntry && !targetEntry.isRequest) {
-            const senderChanged = SocialHandler.upsertFriendEntry(client.character, {
+            const senderChanged = SocialHandler.upsertFriendEntry(senderSocialCharacter, {
                 name: senderEntryName,
                 isRequest: false
             });
@@ -1471,21 +1588,21 @@ export class SocialHandler {
             if (targetSession) {
                 SocialHandler.sendFriendUpdate(targetSession, targetEntryName, false, client);
             }
-            SocialHandler.clearPendingFriendRequestPrompts(senderName, targetDisplayName);
+            SocialHandler.clearPendingFriendRequestPrompts(senderPrimaryName, targetPrimaryName);
             return;
         }
 
         if (targetEntry?.isRequest) {
             if (targetSession) {
                 SocialHandler.sendFriendUpdate(targetSession, targetEntryName, true, client);
-                SocialHandler.sendFriendRequestPrompt(targetSession, senderName);
+                SocialHandler.sendFriendRequestPrompt(targetSession, senderPrimaryName);
             }
             SocialHandler.sendChatStatus(client, `Friend request already sent to ${targetDisplayName}.`);
             return;
         }
 
-        const changed = SocialHandler.upsertFriendEntry(targetCharacter, {
-            name: senderName,
+        const changed = SocialHandler.upsertFriendEntry(targetSocialCharacter, {
+            name: senderPrimaryName,
             isRequest: true
         });
         if (changed) {
@@ -1497,8 +1614,8 @@ export class SocialHandler {
         }
 
         if (targetSession) {
-            SocialHandler.sendFriendUpdate(targetSession, senderName, true, client);
-            SocialHandler.sendFriendRequestPrompt(targetSession, senderName);
+            SocialHandler.sendFriendUpdate(targetSession, senderPrimaryName, true, client);
+            SocialHandler.sendFriendRequestPrompt(targetSession, senderPrimaryName);
         }
 
         SocialHandler.sendChatStatus(client, `Friend request sent to ${targetDisplayName}.`);
@@ -1512,36 +1629,39 @@ export class SocialHandler {
         const br = new BitReader(data);
         const targetNameRaw = br.readMethod26();
         const targetName = String(targetNameRaw ?? '').trim();
-        const senderName = client.character.name;
+        const senderPrimaryName = SocialHandler.getAccountPrimaryName(client);
+        const senderSocialCharacter = SocialHandler.getSocialCharacter(client);
 
-        if (!targetName) {
+        if (!targetName || !senderSocialCharacter) {
             return;
         }
 
-        const friendIndex = SocialHandler.findFriendIndex(client.character, targetName);
+        const friendIndex = SocialHandler.findFriendIndex(senderSocialCharacter, targetName);
         if (friendIndex < 0) {
             SocialHandler.sendChatStatus(client, `${targetName} is not on your friends list.`);
             return;
         }
 
-        const friendEntry = SocialHandler.getFriendEntries(client.character)[friendIndex];
-        const targetSession = SocialHandler.getOnlineSession(friendEntry.name);
+        const friendEntry = SocialHandler.getFriendEntries(senderSocialCharacter)[friendIndex];
+        const targetSession = SocialHandler.getOnlineSessionByAccount(friendEntry.name);
         const targetRecord = targetSession ? null : await SocialHandler.loadCharacterRecordByName(friendEntry.name);
-        const targetCharacter = targetSession?.character ?? targetRecord?.character ?? null;
+        const targetSocialCharacter = targetSession
+            ? SocialHandler.getSocialCharacter(targetSession)
+            : SocialHandler.getSocialCharacterFromRecord(targetRecord);
 
-        const removedSenderEntry = SocialHandler.removeFriendEntry(client.character, friendEntry.name);
+        const removedSenderEntry = SocialHandler.removeFriendEntry(senderSocialCharacter, friendEntry.name);
         if (removedSenderEntry) {
             await SocialHandler.persistClientCharacter(client);
         }
         SocialHandler.sendFriendRemoved(client, removedSenderEntry?.name ?? friendEntry.name);
-        SocialHandler.clearPendingFriendRequestPrompts(senderName, friendEntry.name);
-        SocialHandler.clearPendingFriendRequestPrompts(friendEntry.name, senderName);
+        SocialHandler.clearPendingFriendRequestPrompts(senderPrimaryName, friendEntry.name);
+        SocialHandler.clearPendingFriendRequestPrompts(friendEntry.name, senderPrimaryName);
 
-        if (!targetCharacter) {
+        if (!targetSocialCharacter) {
             return;
         }
 
-        const removedTargetEntry = SocialHandler.removeFriendEntry(targetCharacter, senderName);
+        const removedTargetEntry = SocialHandler.removeFriendEntry(targetSocialCharacter, senderPrimaryName);
         if (!removedTargetEntry) {
             return;
         }
