@@ -68,26 +68,17 @@ function patchPlagueRankResolution(
     u30OperandName(instructions[startIndex - 2], abc.multinameNames) === "class_14" &&
     instructions[startIndex - 1].opcode === 0x66 &&
     u30OperandName(instructions[startIndex - 1], abc.multinameNames) === "powerTypes";
-  // Only pushnulls that are not consumed by an immediate pop are unbalanced (the stable
-  // variant's own net-zero padding uses pushnull+pop pairs).
-  const hasUnbalancedPushNulls = resolver.some((inst, index) => {
-    if (inst.opcode !== 0x02) return false;
-    const next = resolver[index + 1];
-    return !next || next.opcode !== 0x29;
-  });
   // The stable resolver ends with a bitand: bitwise ops always yield int32, and var_1188 is a
   // uint field whose other (original) writers all push int -- so this keeps the assignment
-  // verifier-clean without a Number->uint coercion.
+  // verifier-clean without a Number->uint coercion. Its trailing nop (0x02) padding has no stack
+  // effect, so arithmetic-rank + bitand + no stale prefix uniquely identifies the stable result.
   const hasBitandRank = resolver.some((inst) => inst.opcode === 0xa8);
   const stableResolver =
-    hasVar1209 && hasArithmeticRank && hasBitandRank && !hasStalePowerTypesPrefix && !hasUnbalancedPushNulls;
+    hasVar1209 && hasArithmeticRank && hasBitandRank && !hasStalePowerTypesPrefix;
   if (stableResolver) return null;
   if (verify) {
     if (hasVar1209 && hasArithmeticRank && !hasBitandRank) {
       throw new PatchError("Plague Battalion rank resolver still stores a Number into the uint field var_1188.");
-    }
-    if (hasVar1209 && hasArithmeticRank) {
-      throw new PatchError("Plague Battalion rank resolver still leaves unbalanced values on the operand stack.");
     }
     if (hasVar1209) {
       throw new PatchError("Plague Battalion rank resolver still dereferences powerTypes without a null guard.");
@@ -105,8 +96,8 @@ function patchPlagueRankResolution(
   // this.var_1188 = (powerId - 5931) & -1. Net operand-stack effect of this whole block is
   // exactly 0 (matching the branch-over path at the join point) and its peak depth is D+2
   // (same as the original resolver, so it fits the method's declared max_stack). The trailing
-  // bitand is what guarantees an int result for the uint field. Remaining slack is filled with
-  // pushnull+pop pairs (net 0) -- both known broken states leave an even number of spare bytes.
+  // bitand is what guarantees an int result for the uint field. Any reclaimed slack is filled
+  // with nops (0x02) -- the same padding idiom the other resolvers in this file use.
   const core = Buffer.concat([
     opU30(0x62, 8),                            // getlocal 8 (the marker Buff)
     opU30(0x66, multiname("var_1209")),        // getproperty var_1209 (persistent power id)
@@ -118,20 +109,16 @@ function patchPlagueRankResolution(
     Buffer.from([0x2b]),                       // swap
     opU30(0x61, multiname("var_1188")),        // setproperty var_1188
   ]);
-  const lead = hasStalePowerTypesPrefix ? Buffer.from([0x29]) : Buffer.alloc(0);
+  // When a stale class_14.powerTypes prefix is present the span starts two instructions earlier
+  // so the replacement subsumes (and discards) that dangling push -- the core is self-contained,
+  // so nothing is left on the stack and no lead pop is needed.
   const start = hasStalePowerTypesPrefix ? instructions[startIndex - 2].offset : original[0].offset;
   const end = instructions[nextGoto].offset;
   const width = end - start;
-  const fill = width - core.length - lead.length;
-  if (fill < 0 || fill % 2 !== 0) {
-    throw new PatchError(`Stable Plague rank resolver does not fit the ${width}-byte original span cleanly.`);
+  if (core.length > width) {
+    throw new PatchError(`Stable Plague rank resolver (${core.length} bytes) does not fit the ${width}-byte original span.`);
   }
-  const padBytes: number[] = [];
-  for (let i = 0; i < fill / 2; i += 1) padBytes.push(0x02, 0x29);
-  const replacement = Buffer.concat([lead, core, Buffer.from(padBytes)]);
-  if (replacement.length !== width) {
-    throw new PatchError(`Stable Plague rank resolver is ${replacement.length} bytes but the original span is ${width}.`);
-  }
+  const replacement = Buffer.concat([core, Buffer.alloc(width - core.length, 0x02)]);
   return {
     key: "CombatState.method_322.stabilizePlagueMinionRank",
     start: body.codeStart + start,
