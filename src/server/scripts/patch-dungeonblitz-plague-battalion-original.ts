@@ -21,84 +21,6 @@ const INDEX_HTML = path.resolve(__dirname, "..", "..", "client", "content", "loc
 const CUSTOM_TRIGGER = "PlagueBattalion";
 const DISABLED_TRIGGER = "ShadowLegionCloneTwo";
 
-function patchHostilePositionReporting(
-  ctx: ReturnType<typeof parseSwf>,
-  abc: ReturnType<typeof parseAbc>,
-  verify: boolean,
-): BytePatch | null {
-  const classIndex = classIndexByName(abc, "LinkUpdater");
-  if (classIndex === null) throw new PatchError("LinkUpdater class not found.");
-  const methodIndex = methodIdxForTrait(abc.instances[classIndex].traits, abc, "method_1926");
-  if (methodIndex === null) throw new PatchError("LinkUpdater.method_1926 not found.");
-  const body = abc.methodBodies.get(methodIndex);
-  if (!body) throw new PatchError("LinkUpdater.method_1926 body not found.");
-  const code = ctx.body.subarray(body.codeStart, body.codeStart + body.codeLen);
-  const instructions = disassemble(code, "LinkUpdater.method_1926");
-  const booleanName = abc.multinameNames.indexOf("Boolean");
-  const brainName = abc.multinameNames.indexOf("var_38");
-  const entityFlagsName = abc.multinameNames.indexOf("var_20");
-  const excludedFlagName = abc.multinameNames.indexOf("const_241");
-  if ([booleanName, brainName, entityFlagsName, excludedFlagName].some((index) => index < 0)) {
-    throw new PatchError("LinkUpdater hostile position gate multinames not found.");
-  }
-
-  // The shipped loop deliberately skips every entity with a Brain:
-  //   !(Boolean(entity.var_38) || Boolean(entity.var_20 & Entity.const_241))
-  // Enemies are simulated by that Brain on the client, so the server otherwise retains only
-  // their authored spawn coordinates. Keep the const_241 exclusion, but remove the Brain half
-  // so the normal throttled 0x07 path reports the live positions used by combat rendering.
-  const maskStartIndex = instructions.findIndex((inst, index) =>
-    inst.opcode === 0x5d &&
-    inst.operands[0]?.[1] === booleanName &&
-    instructions[index + 2]?.opcode === 0x66 &&
-    instructions[index + 2]?.operands[0]?.[1] === entityFlagsName &&
-    instructions[index + 3]?.opcode === 0x60 &&
-    instructions[index + 4]?.opcode === 0x66 &&
-    instructions[index + 4]?.operands[0]?.[1] === excludedFlagName,
-  );
-  if (maskStartIndex < 0) throw new PatchError("LinkUpdater const_241 position-reporting gate not found.");
-  const maskStart = instructions[maskStartIndex].offset;
-  const expectedPatchedPrefixLength = 17;
-  if (
-    maskStart >= expectedPatchedPrefixLength &&
-    code.subarray(maskStart - expectedPatchedPrefixLength, maskStart).every((byte) => byte === 0x02)
-  ) {
-    return null;
-  }
-
-  const brainGateIndex = instructions.findIndex((inst, index) =>
-    index < maskStartIndex &&
-    inst.opcode === 0x5d &&
-    inst.operands[0]?.[1] === booleanName &&
-    instructions[index + 1]?.opcode === 0x62 &&
-    instructions[index + 1]?.operands[0]?.[1] === 4 &&
-    instructions[index + 2]?.opcode === 0x66 &&
-    instructions[index + 2]?.operands[0]?.[1] === brainName &&
-    instructions[index + 3]?.opcode === 0x46 &&
-    instructions[index + 3]?.operands[0]?.[1] === booleanName &&
-    instructions[index + 4]?.opcode === 0x2a &&
-    instructions[index + 5]?.opcode === 0x76 &&
-    instructions[index + 6]?.opcode === 0x11 &&
-    instructions[index + 7]?.opcode === 0x29 &&
-    instructions[index + 8]?.offset === maskStart,
-  );
-  if (brainGateIndex < 0) {
-    throw new PatchError("LinkUpdater Brain position-reporting gate has an unexpected shape.");
-  }
-  if (verify) {
-    throw new PatchError("Client-simulated hostile positions are still excluded from 0x07 reports.");
-  }
-
-  const start = instructions[brainGateIndex].offset;
-  return {
-    key: "LinkUpdater.method_1926.reportHostilePositions",
-    start: body.codeStart + start,
-    end: body.codeStart + maskStart,
-    data: Buffer.alloc(maskStart - start, 0x02),
-    detail: "report live client-simulated hostile positions through the existing throttled 0x07 update loop",
-  };
-}
-
 function opU30(opcode: number, value: number): Buffer {
   return Buffer.concat([Buffer.from([opcode]), writeU30(value)]);
 }
@@ -122,46 +44,100 @@ function patchPlagueRankResolution(
   const nextGoto = instructions.findIndex((inst, index) => index > plague && inst.opcode === 0x10);
   if (nextGoto < 0) throw new PatchError("Plague Battalion rank resolver boundary not found.");
   const resolver = instructions.slice(plague, nextGoto);
-  if (resolver.some((inst) => u30OperandName(inst, abc.multinameNames) === "var_1209")) return null;
-  if (verify) throw new PatchError("Plague Battalion still derives minion rank from transient buff history.");
-
+  const hasVar1209 = resolver.some((inst) => u30OperandName(inst, abc.multinameNames) === "var_1209");
+  // The stable resolver derives the rank arithmetically (powerId - PLAGUE_BASE_POWER_ID). Every
+  // Plague Battalion power id is exactly baseId + rank, so this is identical to the original
+  // powerTypes[powerId].var_7 lookup for all shipped ranks -- but it cannot throw a null
+  // reference when the marker buff's power id does not resolve (0 or a removed/custom power).
+  const hasArithmeticRank = resolver.some((inst, index) =>
+    inst.opcode === 0x25 &&
+    resolver.slice(index + 1).some((later) => later.opcode === 0xa1),
+  );
   const startIndex = instructions.findIndex((inst, index) =>
     index > plague && inst.opcode === 0x62 && inst.operands[0]?.[1] === 8,
   );
   if (startIndex < 0 || startIndex >= nextGoto) throw new PatchError("Plague Battalion resolver start not found.");
+  // Earlier patch variants are all detectable and must be re-applied: (1) the original
+  // feature-era resolver dereferenced powerTypes[powerId].var_7 with no null guard (crash on
+  // cast); (2) a variant left `class_14.powerTypes` pushed above the getlocal 8; (3) a variant
+  // filled the slack with raw pushnull padding; (4) a variant stored the subtract result
+  // (Number) into the uint field var_1188, which the AVM2 verifier rejects at first execution.
+  const hasStalePowerTypesPrefix =
+    startIndex >= 2 &&
+    instructions[startIndex - 2].opcode === 0x60 &&
+    u30OperandName(instructions[startIndex - 2], abc.multinameNames) === "class_14" &&
+    instructions[startIndex - 1].opcode === 0x66 &&
+    u30OperandName(instructions[startIndex - 1], abc.multinameNames) === "powerTypes";
+  // Only pushnulls that are not consumed by an immediate pop are unbalanced (the stable
+  // variant's own net-zero padding uses pushnull+pop pairs).
+  const hasUnbalancedPushNulls = resolver.some((inst, index) => {
+    if (inst.opcode !== 0x02) return false;
+    const next = resolver[index + 1];
+    return !next || next.opcode !== 0x29;
+  });
+  // The stable resolver ends with a bitand: bitwise ops always yield int32, and var_1188 is a
+  // uint field whose other (original) writers all push int -- so this keeps the assignment
+  // verifier-clean without a Number->uint coercion.
+  const hasBitandRank = resolver.some((inst) => inst.opcode === 0xa8);
+  const stableResolver =
+    hasVar1209 && hasArithmeticRank && hasBitandRank && !hasStalePowerTypesPrefix && !hasUnbalancedPushNulls;
+  if (stableResolver) return null;
+  if (verify) {
+    if (hasVar1209 && hasArithmeticRank && !hasBitandRank) {
+      throw new PatchError("Plague Battalion rank resolver still stores a Number into the uint field var_1188.");
+    }
+    if (hasVar1209 && hasArithmeticRank) {
+      throw new PatchError("Plague Battalion rank resolver still leaves unbalanced values on the operand stack.");
+    }
+    if (hasVar1209) {
+      throw new PatchError("Plague Battalion rank resolver still dereferences powerTypes without a null guard.");
+    }
+    throw new PatchError("Plague Battalion still derives minion rank from transient buff history.");
+  }
+
   const original = instructions.slice(startIndex, nextGoto);
-  const var342 = original.findIndex((inst) => u30OperandName(inst, abc.multinameNames) === "var_342");
-  const arrayAccess = var342 >= 0 ? original.slice(var342 + 1).find((inst) => inst.opcode === 0x66) : undefined;
-  if (!arrayAccess) throw new PatchError("PowerType array access not found in Plague Battalion resolver.");
 
   const multiname = (name: string): number => {
     const index = abc.multinameNames.indexOf(name);
     if (index < 0) throw new PatchError(`ABC multiname ${name} not found.`);
     return index;
   };
-  const replacement = Buffer.concat([
-    opU30(0x60, multiname("class_14")),
-    opU30(0x66, multiname("powerTypes")),
-    opU30(0x62, 8),
-    opU30(0x66, multiname("var_1209")),
-    opU30(0x66, arrayAccess.operands[0][1]),
-    opU30(0x80, multiname("PowerType")),
-    opU30(0x63, 38),
-    Buffer.from([0xd0]),
-    opU30(0x62, 38),
-    opU30(0x66, multiname("var_7")),
-    opU30(0x61, multiname("var_1188")),
+  // this.var_1188 = (powerId - 5931) & -1. Net operand-stack effect of this whole block is
+  // exactly 0 (matching the branch-over path at the join point) and its peak depth is D+2
+  // (same as the original resolver, so it fits the method's declared max_stack). The trailing
+  // bitand is what guarantees an int result for the uint field. Remaining slack is filled with
+  // pushnull+pop pairs (net 0) -- both known broken states leave an even number of spare bytes.
+  const core = Buffer.concat([
+    opU30(0x62, 8),                            // getlocal 8 (the marker Buff)
+    opU30(0x66, multiname("var_1209")),        // getproperty var_1209 (persistent power id)
+    opU30(0x25, 5931),                         // pushshort PLAGUE_BASE_POWER_ID
+    Buffer.from([0xa1]),                       // subtract -> rank
+    Buffer.from([0x24, 0xff]),                 // pushbyte -1
+    Buffer.from([0xa8]),                       // bitand -> int32 rank (verifier-typed int)
+    Buffer.from([0xd0]),                       // getlocal_0 (this)
+    Buffer.from([0x2b]),                       // swap
+    opU30(0x61, multiname("var_1188")),        // setproperty var_1188
   ]);
-  const start = original[0].offset;
+  const lead = hasStalePowerTypesPrefix ? Buffer.from([0x29]) : Buffer.alloc(0);
+  const start = hasStalePowerTypesPrefix ? instructions[startIndex - 2].offset : original[0].offset;
   const end = instructions[nextGoto].offset;
   const width = end - start;
-  if (replacement.length > width) throw new PatchError("Stable Plague rank resolver does not fit original bytecode span.");
+  const fill = width - core.length - lead.length;
+  if (fill < 0 || fill % 2 !== 0) {
+    throw new PatchError(`Stable Plague rank resolver does not fit the ${width}-byte original span cleanly.`);
+  }
+  const padBytes: number[] = [];
+  for (let i = 0; i < fill / 2; i += 1) padBytes.push(0x02, 0x29);
+  const replacement = Buffer.concat([lead, core, Buffer.from(padBytes)]);
+  if (replacement.length !== width) {
+    throw new PatchError(`Stable Plague rank resolver is ${replacement.length} bytes but the original span is ${width}.`);
+  }
   return {
     key: "CombatState.method_322.stabilizePlagueMinionRank",
     start: body.codeStart + start,
     end: body.codeStart + end,
-    data: Buffer.concat([replacement, Buffer.alloc(width - replacement.length, 0x02)]),
-    detail: "derive Plague Battalion rank from the buff's persistent power id instead of transient stack history",
+    data: replacement,
+    detail: "derive Plague Battalion rank from the marker buff's power id so no powerTypes lookup can throw",
   };
 }
 
@@ -319,8 +295,7 @@ export function restorePlagueBattalionClient(swfPath: string, verify = false): v
   const rankPatch = patchPlagueRankResolution(ctx, abc, classIndex, verify);
   const chargeGatePatch = patchBrokenGlobalChargeGate(ctx, abc, classIndex, verify);
   const ownerPatch = patchLocalPlagueOwnerResolution(ctx, abc, classIndex, verify);
-  const positionPatch = patchHostilePositionReporting(ctx, abc, verify);
-  const behaviorPatches = [rankPatch, chargeGatePatch, ownerPatch, positionPatch]
+  const behaviorPatches = [rankPatch, chargeGatePatch, ownerPatch]
     .filter((patch): patch is BytePatch => patch !== null);
   const methodIndex = methodIdxForTrait(abc.instances[classIndex].traits, abc, "FireThisPower");
   if (methodIndex === null) throw new PatchError("CombatState.FireThisPower not found.");
