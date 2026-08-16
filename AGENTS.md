@@ -19,10 +19,17 @@ Do all work in a git worktree on a new branch — never work directly on the sha
    - `git fetch origin && git checkout release/2026-08-20 && git pull --ff-only`
 2. Create the worktree on the new branch:
    - `git worktree add -b <branch> ../dungeon-blitz-r-<suffix> release/2026-08-20`
-3. Implement the change inside the worktree and commit it there.
-4. Push the branch to the remote so the work is available:
+3. Copy the gitignored local runtime data from the shared checkout into the worktree, so it
+   starts with the same accounts, saves, and environment a fresh `git worktree add` does not
+   carry (these paths never travel with a branch):
+   - `cp src/server/Accounts.json ../dungeon-blitz-r-<suffix>/src/server/Accounts.json`
+   - `mkdir -p ../dungeon-blitz-r-<suffix>/src/server/data/saves && cp src/server/data/saves/*.json ../dungeon-blitz-r-<suffix>/src/server/data/saves/`
+   - `cp src/server/.env ../dungeon-blitz-r-<suffix>/src/server/.env`
+   Guard each `cp` with `[ -f ... ] &&` so a checkout that never had the file does not fail.
+4. Implement the change inside the worktree and commit it there.
+5. Push the branch to the remote so the work is available:
    - `git push -u origin <branch>`
-5. Once all worktrees for that branch are done, merge them into one and finish:
+6. Once all worktrees for that branch are done, merge them into one and finish:
    - In a worktree with the release branch checked out, squash-merge the worktree branch(es) into a single commit:
      - `git merge --squash <branch> && git commit`
    - Push the release branch: `git push origin release/2026-08-20`
