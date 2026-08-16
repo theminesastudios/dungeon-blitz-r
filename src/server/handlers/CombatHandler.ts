@@ -98,8 +98,6 @@ type ServerAuthorityBuffSnapshot = {
     sourceName: string;
     payloadHex: string;
     updatedAt: number;
-    stackCount?: number;
-    observedRawTargetId?: number;
 };
 
 type AddBuffPacketInfo = {
@@ -171,14 +169,6 @@ export class CombatHandler {
     private static readonly SERVER_AUTHORITY_PROXY_HP_DEDUPE_MS = 500;
     private static readonly PARTY_SHARED_HOSTILE_HP_DEDUPE_MS = 500;
     private static readonly DEATH_EPSILON_HP = 1;
-    private static readonly PLAGUED_FIRST_BUFF_ID = 720;
-    private static readonly PLAGUED_LAST_BUFF_ID = 729;
-    private static readonly PLAGUE_FIRST_POWER_ID = 5932;
-    private static readonly PLAGUE_LAST_POWER_ID = 5941;
-    private static readonly PLAGUE_TRANSFER_RADIUS = 2_000;
-    private static readonly PLAGUE_DURATION_MS = 9_000;
-    private static readonly PLAGUE_VISUAL_TRACE_PATH = path.resolve(__dirname, '..', 'data', 'plague-visual-test.ndjson');
-    private static readonly plagueBuffsByScope = new Map<string, Map<number, Record<string, ServerAuthorityBuffSnapshot>>>();
     private static readonly recentFireBrandThirdShotHits = new Map<string, number>();
     private static readonly recentFireBrandPiercingCasts = new Map<string, number>();
     private static readonly recentServerAuthorityProxyHpApplies = new Map<string, number>();
@@ -1346,10 +1336,6 @@ export class CombatHandler {
 
     private static resolveClientHostileEntityAlias(client: Client, levelScope: string, entityId: number): number {
         const localId = Math.max(0, Math.round(Number(entityId) || 0));
-        const independentPlagueHostileIds = (client as any).independentPlagueHostileIds as Set<number> | undefined;
-        if (independentPlagueHostileIds?.has(localId) && client.entities?.has(localId)) {
-            return localId;
-        }
         if (
             !levelScope ||
             localId <= 0 ||
@@ -2434,91 +2420,6 @@ export class CombatHandler {
         return bb.toBuffer();
     }
 
-    private static isPlaguedBuffId(buffId: number): boolean {
-        return buffId >= CombatHandler.PLAGUED_FIRST_BUFF_ID && buffId <= CombatHandler.PLAGUED_LAST_BUFF_ID;
-    }
-
-    private static plaguedStackCap(buffId: number): number {
-        const rank = buffId - CombatHandler.PLAGUED_FIRST_BUFF_ID + 1;
-        return rank >= 10 ? 6 : rank >= 5 ? 5 : 4;
-    }
-
-    private static getTrackedPlagueBuffs(
-        levelScope: string,
-        targetId: number,
-        create: boolean = false
-    ): Record<string, ServerAuthorityBuffSnapshot> | null {
-        if (!levelScope || targetId <= 0) return null;
-        let scopeBuffs = CombatHandler.plagueBuffsByScope.get(levelScope);
-        if (!scopeBuffs && create) {
-            scopeBuffs = new Map<number, Record<string, ServerAuthorityBuffSnapshot>>();
-            CombatHandler.plagueBuffsByScope.set(levelScope, scopeBuffs);
-        }
-        if (!scopeBuffs) return null;
-        let targetBuffs = scopeBuffs.get(targetId);
-        if (!targetBuffs && create) {
-            targetBuffs = {};
-            scopeBuffs.set(targetId, targetBuffs);
-        }
-        return targetBuffs ?? null;
-    }
-
-    private static clearTrackedPlagueTarget(levelScope: string, targetId: number): void {
-        const scopeBuffs = CombatHandler.plagueBuffsByScope.get(levelScope);
-        if (!scopeBuffs) return;
-        scopeBuffs.delete(targetId);
-        if (scopeBuffs.size === 0) CombatHandler.plagueBuffsByScope.delete(levelScope);
-    }
-
-    private static tracePlagueVisual(client: Client, event: string, details: Record<string, unknown>): void {
-        try {
-            fs.appendFileSync(CombatHandler.PLAGUE_VISUAL_TRACE_PATH, `${JSON.stringify({
-                at: new Date().toISOString(),
-                event,
-                token: client.token,
-                scope: getClientLevelScope(client),
-                ...details
-            })}\n`, 'utf8');
-        } catch {
-            // Temporary diagnostics must not affect combat.
-        }
-    }
-
-    private static recoverMissingPlagueFromDotTick(client: Client, levelScope: string, info: BuffTickDotInfo): void {
-        if (
-            !levelScope ||
-            info.powerId < CombatHandler.PLAGUE_FIRST_POWER_ID ||
-            info.powerId > CombatHandler.PLAGUE_LAST_POWER_ID
-        ) {
-            return;
-        }
-        const canonicalTargetId = CombatHandler.resolveClientHostileEntityAlias(
-            client,
-            levelScope,
-            EntityHandler.resolveEntityAlias(client, info.targetId)
-        );
-        const tracked = CombatHandler.getTrackedPlagueBuffs(levelScope, canonicalTargetId);
-        const nowMs = Date.now();
-        if (Object.values(tracked ?? {}).some((snapshot) =>
-            snapshot.expiresAt === 0 || snapshot.expiresAt > nowMs
-        )) {
-            return;
-        }
-
-        const buffId = CombatHandler.PLAGUED_FIRST_BUFF_ID +
-            (info.powerId - CombatHandler.PLAGUE_FIRST_POWER_ID);
-        const recovered = CombatHandler.buildAddBuffPacket({
-            targetId: canonicalTargetId,
-            sourceId: info.sourceId,
-            buffId,
-            powerId: info.powerId,
-            baseValue: Math.max(1, Math.round(Number(info.damage ?? 1))),
-            stackDelta: 1,
-            mods: []
-        });
-        CombatHandler.recordServerAuthorityBuffPacket(client, 0x0B, recovered);
-    }
-
     private static packetLabel(packetId: number): string {
         return `0x${packetId.toString(16).toUpperCase().padStart(2, '0')}`;
     }
@@ -3255,9 +3156,7 @@ export class CombatHandler {
         entity.targetToken = 0;
         entity.nextAttack = 0;
         // Every hostile death route converges here, including lethal HP and DoT reports that do
-        // not subsequently enter handleEnemyDefeatState. Transfer before canonical buff cleanup
-        // so the Plague snapshot and the dying entity's live proxy position are still available.
-        const plagueDefeatedLocalId = CombatHandler.transferPlagueOnDefeat(anchor, levelScope, entityId, entity);
+        // not subsequently enter handleEnemyDefeatState.
         CombatHandler.clearCanonicalHostileBuffs(levelScope, entity, options.reason ?? 'hostile_death');
 
         const levelEntity = GlobalState.levelEntities.get(levelScope)?.get(entityId);
@@ -3320,18 +3219,8 @@ export class CombatHandler {
                     levelScope,
                     canonicalEntity
                 );
-                // A canonical dungeon archetype can represent several simultaneous raw enemies.
-                // When Plague identified the exact defeated proxy, never let the generic one-entry
-                // alias registry redirect A's death correction onto the still-living transfer
-                // target B. That race made the freshly delivered AddBuff disappear intermittently.
-                const exactPlagueLocalId = viewer === anchor && plagueDefeatedLocalId > 0 &&
-                    (viewer.entities.has(plagueDefeatedLocalId) || viewer.knownEntityIds.has(plagueDefeatedLocalId))
-                    ? plagueDefeatedLocalId
-                    : 0;
-                const resolvedLocalId = exactPlagueLocalId > 0
-                    ? exactPlagueLocalId
-                    : resolved.ok && resolved.localId > 0
-                        ? resolved.localId
+                const resolvedLocalId = resolved.ok && resolved.localId > 0
+                    ? resolved.localId
                     : isTutorialCompletionBoss && registeredLocalId > 0
                         ? registeredLocalId
                         : isTutorialCompletionBoss
@@ -5425,52 +5314,6 @@ export class CombatHandler {
         });
     }
 
-    static markRawHostileDefeated(client: Client, levelScope: string, entityId: number, entity: any): void {
-        if (!client || !levelScope || !entity || entity.isPlayer || Number(entity.team ?? 0) !== EntityTeam.ENEMY) {
-            return;
-        }
-        const rawId = Math.max(0, Math.round(Number(entityId ?? entity?.id ?? 0)));
-        const canonicalId = Math.max(0, Math.round(Number(
-            entity?.plagueOriginalCanonicalId ??
-            CombatHandler.resolveClientHostileEntityAlias(
-                client,
-                levelScope,
-                EntityHandler.resolveEntityAlias(client, rawId)
-            ) ??
-            rawId
-        )));
-        const canonicalEntity = CombatHandler.resolveLevelEntity(levelScope, canonicalId);
-        const referencePositions = Array.from(new Set<any>([
-            entity,
-            canonicalEntity,
-            client.entities?.get(rawId)
-        ].filter(Boolean)));
-        const defeatedIds = ((client as any).defeatedRawHostileIds ??= new Set<number>()) as Set<number>;
-        if (rawId > 0) defeatedIds.add(rawId);
-        if (canonicalId > 0) defeatedIds.add(canonicalId);
-
-        for (const [localId, localEntity] of client.entities?.entries() ?? []) {
-            const localAliasGroupId = Math.max(0, Math.round(Number(
-                client.entityIdAliases?.get(localId) ??
-                localEntity?.plagueOriginalCanonicalId ??
-                localEntity?.canonicalEntityId ??
-                localEntity?.sharedCanonicalId ??
-                localId
-            )));
-            if (localId !== rawId && localAliasGroupId !== canonicalId) continue;
-            const samePhysicalBody = referencePositions.some((reference) => {
-                const referenceX = Number(reference?.x ?? reference?.posX ?? NaN);
-                const referenceY = Number(reference?.y ?? reference?.posY ?? NaN);
-                const localX = Number(localEntity?.x ?? localEntity?.posX ?? NaN);
-                const localY = Number(localEntity?.y ?? localEntity?.posY ?? NaN);
-                return Number.isFinite(referenceX) && Number.isFinite(referenceY) &&
-                    Number.isFinite(localX) && Number.isFinite(localY) &&
-                    Math.abs(localX - referenceX) <= 1 && Math.abs(localY - referenceY) <= 1;
-            });
-            if (samePhysicalBody) defeatedIds.add(localId);
-        }
-    }
-
     private static handleEnemyDefeatState(
         client: Client,
         levelScope: string,
@@ -5482,8 +5325,6 @@ export class CombatHandler {
             return;
         }
 
-        CombatHandler.markRawHostileDefeated(client, levelScope, entityId, entity);
-
         if (
             !options.fromDestroy &&
             !options.fromKillState &&
@@ -5491,8 +5332,6 @@ export class CombatHandler {
         ) {
             return;
         }
-
-        CombatHandler.transferPlagueOnDefeat(client, levelScope, entityId, entity);
 
         if (Boolean(entity.questDefeatProcessed)) {
             CombatHandler.observeDungeonCompletion(client, entity, 'deduplicated dungeon completion observation');
@@ -5509,475 +5348,6 @@ export class CombatHandler {
         );
 
         CombatHandler.observeDungeonCompletion(client, entity, 'forced dungeon boss completion');
-    }
-
-    private static transferPlagueOnDefeat(client: Client, levelScope: string, entityId: number, entity: any): number {
-        const lifeNonce = Math.max(1, Math.round(Number(entity?.lifeNonce ?? entity?.spawnNonce ?? 1)));
-        if (!levelScope) return 0;
-        if (Number(entity?.plagueTransferNonce ?? 0) === lifeNonce) {
-            return Math.max(0, Math.round(Number(entity?.plagueDefeatedRawId ?? 0)));
-        }
-
-        const nowMs = Date.now();
-        const activeBuffs = CombatHandler.getServerAuthorityActiveBuffs(entity);
-        const canonicalEntityId = CombatHandler.resolveClientHostileEntityAlias(
-            client,
-            levelScope,
-            EntityHandler.resolveEntityAlias(client, entityId)
-        );
-        const registryTargetIds = Array.from(new Set([
-            canonicalEntityId,
-            entityId,
-            Math.max(0, Math.round(Number(entity?.id ?? 0)))
-        ].filter((id) => id > 0)));
-        const independentPlagueHostileIds = (client as any).independentPlagueHostileIds as Set<number> | undefined;
-        for (const independentRawId of independentPlagueHostileIds ?? []) {
-            const independentEntity = client.entities?.get(independentRawId);
-            const originalCanonicalId = Math.max(0, Math.round(Number(
-                independentEntity?.plagueOriginalCanonicalId ?? 0
-            )));
-            if (
-                !independentEntity ||
-                originalCanonicalId <= 0 ||
-                (originalCanonicalId !== canonicalEntityId && originalCanonicalId !== entityId)
-            ) {
-                continue;
-            }
-            const trackedIndependent = CombatHandler.getTrackedPlagueBuffs(levelScope, independentRawId);
-            const hasActiveTrackedPlague = Object.values(trackedIndependent ?? {}).some((snapshot) =>
-                snapshot.expiresAt === 0 || snapshot.expiresAt > nowMs
-            );
-            if (hasActiveTrackedPlague && !registryTargetIds.includes(independentRawId)) {
-                registryTargetIds.push(independentRawId);
-            }
-        }
-        const snapshotsByKey = new Map<string, ServerAuthorityBuffSnapshot>();
-        for (const snapshot of Object.values(activeBuffs)) snapshotsByKey.set(snapshot.key, snapshot);
-        for (const targetId of registryTargetIds) {
-            for (const snapshot of Object.values(CombatHandler.getTrackedPlagueBuffs(levelScope, targetId) ?? {})) {
-                const current = snapshotsByKey.get(snapshot.key);
-                if (!current || snapshot.updatedAt >= current.updatedAt) snapshotsByKey.set(snapshot.key, snapshot);
-            }
-        }
-        const plagueSnapshots = Array.from(snapshotsByKey.values()).filter((snapshot) =>
-            CombatHandler.isPlaguedBuffId(Math.round(Number(snapshot.buffId ?? 0))) &&
-            Math.max(0, Math.round(Number(snapshot.stackCount ?? 0))) > 0 &&
-            (Math.max(0, Math.round(Number(snapshot.expiresAt ?? 0))) === 0 || snapshot.expiresAt > nowMs)
-        );
-        if (plagueSnapshots.length === 0) {
-            CombatHandler.tracePlagueVisual(client, 'transfer-skipped-no-active-plague', {
-                entityId,
-                canonicalEntityId,
-                registryTargetIds,
-                activeBuffKeys: Object.keys(activeBuffs)
-            });
-            for (const targetId of registryTargetIds) CombatHandler.clearTrackedPlagueTarget(levelScope, targetId);
-            return 0;
-        }
-        // A lethal hit and its AddBuff packet are separate client messages. Do not consume the
-        // life nonce when death wins that race and reaches us a few milliseconds before Plague.
-        // The late AddBuff path can then record the stack(s) and retry this transfer once.
-        entity.plagueTransferNonce = lifeNonce;
-
-        const canonicalDefeatedId = canonicalEntityId > 0 ? canonicalEntityId : entityId;
-        const canonicalOrigin = GlobalState.levelEntities.get(levelScope)?.get(canonicalDefeatedId) ?? null;
-        const observedOriginIds = new Set<number>(
-            plagueSnapshots
-                .map((snapshot) => Math.max(0, Math.round(Number(snapshot.observedRawTargetId ?? 0))))
-                .filter((id) => id > 0)
-        );
-        if (observedOriginIds.size === 0 && client.entities?.has(entityId)) {
-            observedOriginIds.add(entityId);
-        }
-        const observedOrigins: any[] = [];
-        for (const observedOriginId of observedOriginIds) {
-            const observedOrigin = client.entities?.get(observedOriginId);
-            if (observedOrigin) observedOrigins.push(observedOrigin);
-        }
-        const defeatedRawId = Array.from(observedOriginIds).find((id) => client.entities?.has(id)) ??
-            (client.entities?.has(entityId) ? entityId : 0);
-        entity.plagueDefeatedRawId = defeatedRawId > 0 ? defeatedRawId : undefined;
-        if (defeatedRawId > 0 && canonicalOrigin) {
-            // The canonical registry stores only one local alias per viewer. Pin it back to the
-            // exact plague-bearing body before promoting B, so every later terminal/death relay
-            // continues to address A rather than whichever same-archetype proxy registered last.
-            EntityHandler.registerCanonicalHostileAlias(
-                client,
-                levelScope,
-                canonicalOrigin,
-                defeatedRawId,
-                'plague_exact_defeated_proxy'
-            );
-        }
-        // A transferred Plague snapshot remembers the exact on-screen proxy that received it.
-        // Once that representation exists, mixing its live position with the canonical entity's
-        // authored spawn position makes the latter a false second origin for proximity checks.
-        const originEntities = Array.from(new Set<any>(
-            (observedOrigins.length > 0 ? observedOrigins : [canonicalOrigin, entity]).filter(Boolean)
-        ));
-        const defeatedRawHostileIds = ((client as any).defeatedRawHostileIds ??= new Set<number>()) as Set<number>;
-        const defeatedAliasGroupId = Math.max(0, Math.round(Number(
-            entity?.plagueOriginalCanonicalId ?? canonicalDefeatedId
-        )));
-        for (const originEntity of originEntities) {
-            const originId = Math.max(0, Math.round(Number(originEntity?.id ?? 0)));
-            if (originId > 0) defeatedRawHostileIds.add(originId);
-            originEntity.hp = 0;
-            originEntity.dead = true;
-            originEntity.destroyed = true;
-            originEntity.entState = EntityState.DEAD;
-        }
-        // One physical hostile can have a raw proxy, a canonical entry and additional aliases at
-        // the exact same coordinates. Persistently retire every representation of this one body so
-        // a later hop cannot bounce Plague back onto a different id for the already-dead creature.
-        for (const [localId, localEntity] of client.entities?.entries() ?? []) {
-            const localAliasGroupId = Math.max(0, Math.round(Number(
-                client.entityIdAliases?.get(localId) ??
-                localEntity?.plagueOriginalCanonicalId ??
-                localEntity?.canonicalEntityId ??
-                localEntity?.sharedCanonicalId ??
-                localId
-            )));
-            if (localAliasGroupId !== defeatedAliasGroupId) continue;
-            const samePhysicalOrigin = originEntities.some((originPosition) => {
-                const originX = Number(originPosition?.x ?? originPosition?.posX ?? NaN);
-                const originY = Number(originPosition?.y ?? originPosition?.posY ?? NaN);
-                const localX = Number(localEntity?.x ?? localEntity?.posX ?? NaN);
-                const localY = Number(localEntity?.y ?? localEntity?.posY ?? NaN);
-                return Number.isFinite(originX) && Number.isFinite(originY) &&
-                    Number.isFinite(localX) && Number.isFinite(localY) &&
-                    Math.abs(localX - originX) <= 1 && Math.abs(localY - originY) <= 1;
-            });
-            if (!samePhysicalOrigin) continue;
-            defeatedRawHostileIds.add(localId);
-            localEntity.hp = 0;
-            localEntity.dead = true;
-            localEntity.destroyed = true;
-            localEntity.entState = EntityState.DEAD;
-        }
-        const radiusSq = CombatHandler.PLAGUE_TRANSFER_RADIUS * CombatHandler.PLAGUE_TRANSFER_RADIUS;
-        let nearest: any | null = null;
-        let nearestTargetId = 0;
-        let nearestDistanceSq = Number.POSITIVE_INFINITY;
-        const candidateDiagnostics: any[] = [];
-        const candidates: Array<{
-            positionEntities: any[];
-            stateEntity: any;
-            targetId: number;
-            isLocal: boolean;
-        }> = [];
-        const representedCanonicalIds = new Set<number>();
-        // Every raw client hostile is a distinct live creature. Several dungeon archetypes reuse
-        // one canonical server id for many same-type spawns, so grouping these entries by alias
-        // incorrectly removes all same-type neighbours when one member dies.
-        for (const [localId, candidate] of client.entities?.entries() ?? []) {
-            // The map key is the exact wire id for this on-screen representation. `candidate.id`
-            // can still contain the shared canonical id on legacy dungeon proxies.
-            const candidateId = Math.max(0, Math.round(Number(localId ?? candidate?.id ?? 0)));
-            if (candidateId <= 0) continue;
-            const lastClientMovementRawId = Math.max(0, Math.round(Number(
-                candidate?.lastClientMovementRawId ?? 0
-            )));
-            if (
-                lastClientMovementRawId > 0 &&
-                lastClientMovementRawId !== candidateId &&
-                client.entities?.has(lastClientMovementRawId)
-            ) {
-                // Shared canonical entries are also updated while processing each raw proxy's
-                // movement. Their coordinates therefore look current, but the canonical id is not
-                // one physical on-screen creature and the client's inverse lookup can display an
-                // AddBuff on an arbitrary same-type proxy. The referenced raw entry below is the
-                // addressable body that actually produced this position report.
-                continue;
-            }
-            const representedCanonicalId = Math.max(0, Math.round(Number(
-                client.entityIdAliases?.get(localId) ??
-                candidate?.canonicalEntityId ??
-                candidate?.sharedCanonicalId ??
-                0
-            )));
-            if (representedCanonicalId > 0) representedCanonicalIds.add(representedCanonicalId);
-            candidates.push({
-                positionEntities: [candidate],
-                stateEntity: candidate,
-                targetId: candidateId,
-                isLocal: true
-            });
-        }
-        // Canonical-only enemies still participate when the client has no raw representation.
-        for (const candidate of GlobalState.levelEntities.get(levelScope)?.values() ?? []) {
-            const candidateId = Math.max(0, Math.round(Number(candidate?.id ?? 0)));
-            if (
-                candidateId > 0 &&
-                !client.entities?.has(candidateId) &&
-                !representedCanonicalIds.has(candidateId)
-            ) {
-                candidates.push({
-                    positionEntities: [candidate],
-                    stateEntity: candidate,
-                    targetId: candidateId,
-                    isLocal: false
-                });
-            }
-        }
-        const originRepresentationIds = new Set(originEntities.map((origin) =>
-            Math.max(0, Math.round(Number(origin?.id ?? 0)))
-        ));
-        for (const observedOriginId of observedOriginIds) originRepresentationIds.add(observedOriginId);
-        const hasLiveReportedLocalCandidate = candidates.some((entry) =>
-            entry.isLocal &&
-            !originRepresentationIds.has(entry.targetId) &&
-            Math.max(0, Math.round(Number(entry.stateEntity?.clientMovementReportCount ?? 0))) >= 2
-        );
-        for (const entry of candidates) {
-            const stateEntity = entry.stateEntity;
-            const candidateId = Math.max(0, Math.round(Number(
-                entry.isLocal ? entry.targetId : stateEntity?.id ?? entry.targetId ?? 0
-            )));
-            const candidateAliasId = Math.max(0, Math.round(Number(
-                client.entityIdAliases?.get(candidateId) ??
-                stateEntity?.canonicalEntityId ??
-                stateEntity?.sharedCanonicalId ??
-                0
-            )));
-            const duplicatesDefeatedOrigin = entry.isLocal && candidateAliasId === defeatedAliasGroupId &&
-                originEntities.some((originPosition) => {
-                    const originX = Number(originPosition?.x ?? originPosition?.posX ?? NaN);
-                    const originY = Number(originPosition?.y ?? originPosition?.posY ?? NaN);
-                    const candidateX = Number(stateEntity?.x ?? stateEntity?.posX ?? NaN);
-                    const candidateY = Number(stateEntity?.y ?? stateEntity?.posY ?? NaN);
-                    return Number.isFinite(originX) && Number.isFinite(originY) &&
-                        Number.isFinite(candidateX) && Number.isFinite(candidateY) &&
-                        Math.abs(candidateX - originX) <= 1 && Math.abs(candidateY - originY) <= 1;
-                });
-            if (
-                !stateEntity ||
-                candidateId <= 0 ||
-                candidateId === canonicalDefeatedId ||
-                duplicatesDefeatedOrigin ||
-                originRepresentationIds.has(candidateId) ||
-                (!entry.isLocal && registryTargetIds.includes(entry.targetId)) ||
-                (hasLiveReportedLocalCandidate && (
-                    !entry.isLocal ||
-                    Math.max(0, Math.round(Number(stateEntity?.clientMovementReportCount ?? 0))) < 2
-                )) ||
-                stateEntity?.isPlayer ||
-                Number(stateEntity?.team ?? 0) !== EntityTeam.ENEMY ||
-                (entry.isLocal
-                    ? defeatedRawHostileIds.has(candidateId)
-                    : Boolean(stateEntity?.dead) || Boolean(stateEntity?.destroyed)) ||
-                Boolean(stateEntity?.untargetable) ||
-                (!entry.isLocal && (
-                    Number(stateEntity?.entState ?? EntityState.ACTIVE) === EntityState.DEAD ||
-                    Math.max(0, Math.round(Number(stateEntity?.hp ?? 1))) <= 0
-                ))
-            ) {
-                continue;
-            }
-            const eligiblePositions = entry.positionEntities;
-            candidateDiagnostics.push({
-                targetId: entry.targetId,
-                stateId: stateEntity?.id,
-                stateName: stateEntity?.name,
-                stateHp: stateEntity?.hp,
-                positions: entry.positionEntities.map((position) => {
-                    let bestOriginDistance = Number.POSITIVE_INFINITY;
-                    for (const originPosition of originEntities) {
-                        const originX = Number(originPosition?.x ?? originPosition?.posX ?? NaN);
-                        const originY = Number(originPosition?.y ?? originPosition?.posY ?? NaN);
-                        const positionX = Number(position?.x ?? position?.posX ?? NaN);
-                        const positionY = Number(position?.y ?? position?.posY ?? NaN);
-                        if (
-                            Number.isFinite(originX) &&
-                            Number.isFinite(originY) &&
-                            Number.isFinite(positionX) &&
-                            Number.isFinite(positionY)
-                        ) {
-                            bestOriginDistance = Math.min(
-                                bestOriginDistance,
-                                Math.hypot(positionX - originX, positionY - originY)
-                            );
-                        }
-                    }
-                    return {
-                        id: position?.id,
-                        name: position?.name,
-                        x: position?.x,
-                        y: position?.y,
-                        alias: client.entityIdAliases?.get(Math.max(0, Math.round(Number(position?.id ?? 0)))) ?? 0,
-                        declaredCanonicalId: position?.canonicalEntityId ?? position?.sharedCanonicalId ?? 0,
-                        lastClientMovementAt: position?.lastClientMovementAt ?? 0,
-                        lastClientMovementRawId: position?.lastClientMovementRawId ?? 0,
-                        clientMovementReportCount: position?.clientMovementReportCount ?? 0,
-                        eligible: eligiblePositions.includes(position),
-                        distance: Number.isFinite(bestOriginDistance) ? bestOriginDistance : null
-                    };
-                })
-            });
-            for (const originPosition of originEntities) {
-                const originX = Number(originPosition?.x ?? originPosition?.posX ?? NaN);
-                const originY = Number(originPosition?.y ?? originPosition?.posY ?? NaN);
-                if (!Number.isFinite(originX) || !Number.isFinite(originY)) continue;
-                for (const candidate of eligiblePositions) {
-                    const candidateX = Number(candidate?.x ?? candidate?.posX ?? NaN);
-                    const candidateY = Number(candidate?.y ?? candidate?.posY ?? NaN);
-                    if (!Number.isFinite(candidateX) || !Number.isFinite(candidateY)) continue;
-                    const dx = candidateX - originX;
-                    const dy = candidateY - originY;
-                    const distanceSq = (dx * dx) + (dy * dy);
-                    if (distanceSq <= radiusSq && distanceSq < nearestDistanceSq) {
-                        nearest = candidate;
-                        nearestTargetId = entry.targetId;
-                        nearestDistanceSq = distanceSq;
-                    }
-                }
-            }
-        }
-        if (!nearest) {
-            CombatHandler.tracePlagueVisual(client, 'transfer-skipped-no-target', {
-                fromCanonicalId: canonicalDefeatedId,
-                fromRepresentations: originEntities.map((position) => ({
-                    id: position?.id,
-                    name: position?.name,
-                    x: position?.x,
-                    y: position?.y
-                })),
-                radius: CombatHandler.PLAGUE_TRANSFER_RADIUS,
-                stacks: plagueSnapshots.map((snapshot) => snapshot.stackCount),
-                candidateDiagnostics
-            });
-            for (const targetId of registryTargetIds) CombatHandler.clearTrackedPlagueTarget(levelScope, targetId);
-            return defeatedRawId;
-        }
-
-        let nearestId = Math.max(0, Math.round(Number(nearestTargetId || nearest.id || 0)));
-        const selectedRepresentationId = Math.max(0, Math.round(Number(nearest?.id ?? 0)));
-        let nearestLocalId = nearestId > 0 && client.entities?.has(nearestId)
-            ? nearestId
-            : selectedRepresentationId > 0 && client.entities?.has(selectedRepresentationId)
-                ? selectedRepresentationId
-                : nearestId;
-        const levelMap = GlobalState.levelEntities.get(levelScope);
-        if (
-            nearestLocalId > 0 &&
-            client.entities?.has(nearestLocalId) &&
-            !levelMap?.has(nearestLocalId)
-        ) {
-            // Promote the chosen raw proxy to an independent authority target. Otherwise its DoT
-            // tick is immediately resolved back to the shared canonical archetype that may already
-            // be dead because a different same-type creature triggered this transfer.
-            const originalCanonicalId = Math.max(0, Math.round(Number(
-                client.entityIdAliases?.get(nearestLocalId) ??
-                nearest?.canonicalEntityId ??
-                nearest?.sharedCanonicalId ??
-                0
-            )));
-            const independentPlagueHostileIds = ((client as any).independentPlagueHostileIds ??=
-                new Set<number>()) as Set<number>;
-            independentPlagueHostileIds.add(nearestLocalId);
-            client.entityIdAliases?.delete(nearestLocalId);
-            nearest.plagueOriginalCanonicalId = originalCanonicalId > 0
-                ? originalCanonicalId
-                : undefined;
-            nearest.canonicalEntityId = undefined;
-            nearest.sharedCanonicalId = undefined;
-            nearest.id = nearestLocalId;
-            nearest.dead = false;
-            nearest.destroyed = false;
-            nearest.entState = EntityState.ACTIVE;
-            if (Math.max(0, Math.round(Number(nearest.hp ?? 0))) <= 0) {
-                nearest.hp = Math.max(1, Math.round(Number(nearest.maxHp ?? 1)));
-            }
-            levelMap?.set(nearestLocalId, nearest);
-            nearestId = nearestLocalId;
-        }
-        const nearestLocalEntity = client.entities?.get(nearestLocalId) ?? null;
-        const nearestCanonicalEntity = CombatHandler.resolveLevelEntity(levelScope, nearestId);
-        const playerEntity = client.entities?.get(client.clientEntID) ?? null;
-        CombatHandler.tracePlagueVisual(client, 'transfer-selected', {
-            fromCanonicalId: canonicalDefeatedId,
-            fromRepresentations: originEntities.map((position) => ({
-                id: position?.id,
-                name: position?.name,
-                x: position?.x,
-                y: position?.y,
-                dead: position?.dead,
-                hp: position?.hp
-            })),
-            toCanonicalId: nearestId,
-            toLocalId: nearestLocalId,
-            selectedRepresentation: { id: nearest?.id, name: nearest?.name, x: nearest?.x, y: nearest?.y },
-            canonicalRepresentation: nearestCanonicalEntity ? {
-                id: nearestCanonicalEntity.id,
-                name: nearestCanonicalEntity.name,
-                x: nearestCanonicalEntity.x,
-                y: nearestCanonicalEntity.y,
-                hp: nearestCanonicalEntity.hp
-            } : null,
-            localRepresentation: nearestLocalEntity ? {
-                id: nearestLocalEntity.id,
-                name: nearestLocalEntity.name,
-                x: nearestLocalEntity.x,
-                y: nearestLocalEntity.y,
-                hp: nearestLocalEntity.hp
-            } : null,
-            playerRepresentation: playerEntity ? {
-                id: playerEntity.id,
-                x: playerEntity.x,
-                y: playerEntity.y,
-                lastClientMovementAt: playerEntity.lastClientMovementAt ?? 0
-            } : null,
-            distance: Math.sqrt(nearestDistanceSq),
-            stacks: plagueSnapshots.map((snapshot) => snapshot.stackCount),
-            candidateDiagnostics
-        });
-        for (const snapshot of plagueSnapshots) {
-            const original = CombatHandler.parseAddBuffPacket(Buffer.from(snapshot.payloadHex, 'hex'));
-            if (!original) continue;
-            const stackCount = Math.max(1, Math.round(Number(snapshot.stackCount ?? 1)));
-            for (let stackIndex = 0; stackIndex < stackCount; stackIndex += 1) {
-                // Natural Plague application reaches the client one stack at a time. Preserve that
-                // wire behavior so the first stack creates the poison aura and subsequent packets
-                // only advance its stack counter.
-                const transferPayload = CombatHandler.buildAddBuffPacket({
-                    ...original,
-                    targetId: nearestId,
-                    stackDelta: 1
-                });
-                const recorded = CombatHandler.recordServerAuthorityBuffPacket(
-                    client,
-                    0x0B,
-                    transferPayload,
-                    nearestLocalId
-                );
-                if (CombatHandler.resolveLevelEntity(levelScope, nearestId)) {
-                    CombatHandler.broadcastCombatPacket(client, 0x0B, recorded.payload, {
-                        referencedEntityIds: [nearestId]
-                    });
-                }
-                // Do not run the owning client through the heuristic inverse alias resolver: levels
-                // can contain many same-name proxies, and that resolver may translate the selected
-                // target to a different copy. Deliver the exact representation used by proximity.
-                const localSourceId = CombatHandler.translateEntityIdForViewer(
-                    client,
-                    0x0B,
-                    original.sourceId
-                ) ?? original.sourceId;
-                client.send(0x0B, CombatHandler.buildAddBuffPacket({
-                    ...original,
-                    sourceId: localSourceId,
-                    targetId: nearestLocalId,
-                    stackDelta: 1
-                }));
-            }
-            delete activeBuffs[snapshot.key];
-            for (const targetId of registryTargetIds) {
-                const tracked = CombatHandler.getTrackedPlagueBuffs(levelScope, targetId);
-                if (tracked) delete tracked[snapshot.key];
-            }
-        }
-        for (const targetId of registryTargetIds) CombatHandler.clearTrackedPlagueTarget(levelScope, targetId);
-        return defeatedRawId;
     }
 
     private static parseReferencedEntityIds(packetId: number, data: Buffer): number[] {
@@ -6598,12 +5968,6 @@ export class CombatHandler {
                 rawLocalDestroyedEntity.destroyed = true;
                 rawLocalDestroyedEntity.hp = 0;
                 rawLocalDestroyedEntity.entState = EntityState.DEAD;
-                CombatHandler.transferPlagueOnDefeat(
-                    client,
-                    levelScope,
-                    rawEntityId,
-                    rawLocalDestroyedEntity
-                );
                 EntityHandler.broadcastTutorialDungeonObjectTransition(client, transition.authority);
                 if (transition.authority.role === 'anna_chain') {
                     await MissionHandler.handleForcedDungeonObjectiveCompletion(client, rawLocalDestroyedEntity);
@@ -6644,20 +6008,12 @@ export class CombatHandler {
                 destroyPayload = data;
             } else
             if (!destroyedEntity || !CombatHandler.isServerAuthoritySyncNpc(levelScope, destroyedEntity)) {
-                if (
-                    destroyedEntity &&
-                    !destroyedEntity.isPlayer &&
-                    Number(destroyedEntity.team ?? 0) === EntityTeam.ENEMY
-                ) {
-                    CombatHandler.transferPlagueOnDefeat(client, levelScope, entityId, destroyedEntity);
-                }
                 EntityHandler.destroyClientLocalEntity(client, rawEntityId, 'client_destroy_unresolved_server_authority', destroyedEntity);
                 return;
             }
 
             if (!isSeedOutsideClientSpawnDestroy) {
                 if (Boolean(destroyedEntity.destroyed)) {
-                    CombatHandler.transferPlagueOnDefeat(client, levelScope, entityId, destroyedEntity);
                     CombatHandler.sendHostileDeathCorrectionToViewer(
                         client,
                         levelScope,
@@ -7362,8 +6718,6 @@ export class CombatHandler {
         targetId: number;
         buffId: number;
         durationMs: number;
-        sourceId: number;
-        powerId: number;
         stackDelta: number;
         uncertain: boolean;
     } {
@@ -7371,8 +6725,6 @@ export class CombatHandler {
             targetId: 0,
             buffId: 0,
             durationMs: 0,
-            sourceId: 0,
-            powerId: 0,
             stackDelta: 0,
             uncertain: true
         };
@@ -7381,14 +6733,8 @@ export class CombatHandler {
             const info = CombatHandler.parseAddBuffPacket(data);
             if (info && info.buffId > 0 && info.stackDelta > 0) {
                 parsed.targetId = info.targetId;
-                parsed.sourceId = info.sourceId;
                 parsed.buffId = info.buffId;
-                parsed.powerId = info.powerId;
                 parsed.stackDelta = info.stackDelta;
-                if (CombatHandler.isPlaguedBuffId(info.buffId)) {
-                    parsed.durationMs = CombatHandler.PLAGUE_DURATION_MS;
-                    parsed.uncertain = false;
-                }
                 return parsed;
             }
 
@@ -7426,9 +6772,8 @@ export class CombatHandler {
     private static recordServerAuthorityBuffPacket(
         client: Client,
         packetId: number,
-        data: Buffer,
-        observedRawTargetIdOverride = 0
-    ): { payload: Buffer; referencedEntityIds: number[]; accepted: boolean } {
+        data: Buffer
+    ): { payload: Buffer; referencedEntityIds: number[] } {
         const parsedBuff = CombatHandler.parseServerAuthorityBuffPayload(data);
         const parsedAdd = packetId === 0x0B && parsedBuff.stackDelta > 0
             ? CombatHandler.parseAddBuffPacket(data)
@@ -7460,30 +6805,20 @@ export class CombatHandler {
                     ? CombatHandler.buildRemoveBuffPacket({ ...parsedRemoval, targetId: trackedTargetId })
                     : CombatHandler.replaceLeadingMethod9(data, trackedTargetId)
             : data;
-        const trackedBuffId = packetId === 0x0B ? parsedBuff.buffId : Math.round(Number(parsedRemoval?.buffId ?? 0));
-        const trackedSourceId = packetId === 0x0B ? parsedBuff.sourceId : Math.round(Number(parsedRemoval?.sourceId ?? 0));
-        const tracksPlague = Boolean(entity) && CombatHandler.isPlaguedBuffId(trackedBuffId);
         if (
-            !tracksPlague &&
             !CombatHandler.isServerAuthoritySyncNpc(levelScope, entity) &&
             !CombatHandler.shouldMirrorClientSpawnEntityToParty(getScopeLevelName(levelScope), entity)
         ) {
             return {
                 payload,
-                referencedEntityIds: CombatHandler.parseReferencedEntityIds(packetId, payload),
-                accepted: true
+                referencedEntityIds: CombatHandler.parseReferencedEntityIds(packetId, payload)
             };
         }
 
-        const key = tracksPlague && packetId === 0x0B
-            ? `plagued:${parsedBuff.buffId}:${parsedBuff.sourceId}:${parsedBuff.powerId}`
-            : CombatHandler.getServerAuthorityBuffPacketKey(payload);
+        const key = CombatHandler.getServerAuthorityBuffPacketKey(payload);
         const activeBuffs = CombatHandler.getServerAuthorityActiveBuffs(entity);
         const nowMs = Date.now();
         if (packetId === 0x0B) {
-            const previousStacks = tracksPlague
-                ? Math.max(0, Math.round(Number(activeBuffs[key]?.stackCount ?? 0)))
-                : 0;
             activeBuffs[key] = {
                 key,
                 packetId,
@@ -7494,85 +6829,10 @@ export class CombatHandler {
                 sourceToken: Math.max(0, Math.round(Number(client.token ?? 0))),
                 sourceName: String(client.character?.name ?? ''),
                 payloadHex: payload.toString('hex'),
-                updatedAt: nowMs,
-                stackCount: tracksPlague
-                    ? Math.min(
-                        CombatHandler.plaguedStackCap(parsedBuff.buffId),
-                        previousStacks + Math.max(1, parsedBuff.stackDelta)
-                    )
-                    : undefined,
-                // Keep the exact entity id from the packet that visibly received Plague. Alias
-                // tables can contain heuristic same-name links, so reconstructing this id at
-                // death time may select an unrelated proxy elsewhere in the dungeon.
-                observedRawTargetId: tracksPlague
-                    ? Math.max(0, Math.round(Number(observedRawTargetIdOverride || rawTargetId)))
-                    : undefined
+                updatedAt: nowMs
             };
-        } else if (tracksPlague) {
-            const prefix = `plagued:${trackedBuffId}:${trackedSourceId}:`;
-            const matchingSnapshots = Object.entries(activeBuffs)
-                .filter(([activeKey]) => activeKey.startsWith(prefix));
-            const exactSnapshots = matchingSnapshots.filter(([, snapshot]) => {
-                const observedRawTargetId = Math.max(0, Math.round(Number(snapshot.observedRawTargetId ?? 0)));
-                return observedRawTargetId <= 0 ||
-                    observedRawTargetId === rawTargetId ||
-                    trackedTargetId === rawTargetId;
-            });
-            if (matchingSnapshots.length > 0 && exactSnapshots.length === 0) {
-                CombatHandler.tracePlagueVisual(client, 'remove-rejected-wrong-raw-target', {
-                    rawTargetId,
-                    canonicalTargetId,
-                    trackedTargetId,
-                    localTargetId,
-                    buffId: trackedBuffId,
-                    sourceId: trackedSourceId,
-                    observedRawTargetIds: matchingSnapshots.map(([, snapshot]) => snapshot.observedRawTargetId ?? 0)
-                });
-                return {
-                    payload,
-                    referencedEntityIds: [trackedSourceId, rawTargetId].filter((id) => id > 0),
-                    accepted: false
-                };
-            }
-            for (const [activeKey] of exactSnapshots) {
-                delete activeBuffs[activeKey];
-            }
         } else {
             delete activeBuffs[key];
-        }
-
-        if (tracksPlague) {
-            const trackedPlague = CombatHandler.getTrackedPlagueBuffs(levelScope, trackedTargetId, packetId === 0x0B);
-            if (trackedPlague && packetId === 0x0B) {
-                trackedPlague[key] = { ...activeBuffs[key] };
-            } else if (trackedPlague) {
-                const prefix = `plagued:${trackedBuffId}:${trackedSourceId}:`;
-                for (const trackedKey of Object.keys(trackedPlague)) {
-                    if (trackedKey.startsWith(prefix)) delete trackedPlague[trackedKey];
-                }
-                if (Object.keys(trackedPlague).length === 0) {
-                    CombatHandler.clearTrackedPlagueTarget(levelScope, trackedTargetId);
-                }
-            }
-        }
-
-        if (tracksPlague) {
-            CombatHandler.tracePlagueVisual(client, packetId === 0x0B ? 'add-recorded' : 'remove-accepted', {
-                rawTargetId,
-                canonicalTargetId,
-                trackedTargetId,
-                localTargetId,
-                buffId: trackedBuffId,
-                sourceId: trackedSourceId,
-                powerId: parsedBuff.powerId,
-                stackDelta: parsedBuff.stackDelta,
-                activeSnapshots: Object.values(activeBuffs).map((snapshot) => ({
-                    key: snapshot.key,
-                    stackCount: snapshot.stackCount ?? 0,
-                    observedRawTargetId: snapshot.observedRawTargetId ?? 0,
-                    expiresAt: snapshot.expiresAt
-                }))
-            });
         }
 
         entity.buffStateVersion = Math.max(0, Math.round(Number(entity.buffStateVersion ?? 0))) + 1;
@@ -7588,25 +6848,13 @@ export class CombatHandler {
 
         return {
             payload,
-            referencedEntityIds: [trackedSourceId, trackedTargetId].filter((id) => id > 0),
-            accepted: true
+            referencedEntityIds: [trackedTargetId].filter((id) => id > 0)
         };
     }
 
     static processBuffExpirations(levelScope: string, nowMs: number = Date.now()): void {
         if (!levelScope) {
             return;
-        }
-
-        const trackedScope = CombatHandler.plagueBuffsByScope.get(levelScope);
-        if (trackedScope) {
-            for (const [targetId, trackedBuffs] of trackedScope.entries()) {
-                for (const [key, snapshot] of Object.entries(trackedBuffs)) {
-                    if (snapshot.expiresAt > 0 && snapshot.expiresAt <= nowMs) delete trackedBuffs[key];
-                }
-                if (Object.keys(trackedBuffs).length === 0) trackedScope.delete(targetId);
-            }
-            if (trackedScope.size === 0) CombatHandler.plagueBuffsByScope.delete(levelScope);
         }
 
         const levelMap = GlobalState.levelEntities.get(levelScope);
@@ -7668,35 +6916,6 @@ export class CombatHandler {
         const targetEntity = CombatHandler.resolveLevelEntity(levelScope, targetId);
         if (targetEntity && CombatHandler.isTerminalHostileEntity(targetEntity)) {
             return;
-        }
-        CombatHandler.recoverMissingPlagueFromDotTick(client, levelScope, info);
-        if (info.powerId >= CombatHandler.PLAGUE_FIRST_POWER_ID && info.powerId <= CombatHandler.PLAGUE_LAST_POWER_ID) {
-            const localTargetId = EntityHandler.resolveEntityLocalId(client, targetId);
-            const localTarget = client.entities?.get(localTargetId) ?? null;
-            CombatHandler.tracePlagueVisual(client, 'tick-received', {
-                rawTargetId,
-                canonicalTargetId: targetId,
-                localTargetId,
-                rawSourceId,
-                canonicalSourceId: sourceId,
-                damage,
-                canonicalTarget: targetEntity ? {
-                    id: targetEntity.id,
-                    name: targetEntity.name,
-                    x: targetEntity.x,
-                    y: targetEntity.y,
-                    hp: targetEntity.hp
-                } : null,
-                localTarget: localTarget ? {
-                    id: localTarget.id,
-                    name: localTarget.name,
-                    x: localTarget.x,
-                    y: localTarget.y,
-                    hp: localTarget.hp
-                } : null,
-                trackedStacks: Object.values(CombatHandler.getTrackedPlagueBuffs(levelScope, targetId) ?? {})
-                    .map((snapshot) => snapshot.stackCount)
-            });
         }
         // Same as handlePowerHit: only hostile-sourced ticks pause for the cutscene. Blocking every
         // tick killed the player's poison/DoT stacks (Plague Battalion) during boss dialogue.
@@ -7864,42 +7083,8 @@ export class CombatHandler {
     }
 
     static async handleAddBuff(client: Client, data: Buffer): Promise<void> {
-        const parsedBuff = CombatHandler.parseServerAuthorityBuffPayload(data);
-        const rawTargetId = Math.max(0, Math.round(Number(parsedBuff.targetId ?? 0)));
+        const rawTargetId = CombatHandler.parseBuffTargetEntityId(data);
         const levelScope = getClientLevelScope(client);
-        if (CombatHandler.isPlaguedBuffId(parsedBuff.buffId)) {
-            const localTarget = client.entities?.get(rawTargetId);
-            if (
-                rawTargetId > 0 &&
-                localTarget &&
-                !localTarget.isPlayer &&
-                Number(localTarget.team ?? 0) === EntityTeam.ENEMY
-            ) {
-                const originalCanonicalId = Math.max(0, Math.round(Number(
-                    client.entityIdAliases?.get(rawTargetId) ??
-                    localTarget.canonicalEntityId ??
-                    localTarget.sharedCanonicalId ??
-                    0
-                )));
-                const independentPlagueHostileIds = ((client as any).independentPlagueHostileIds ??=
-                    new Set<number>()) as Set<number>;
-                independentPlagueHostileIds.add(rawTargetId);
-                client.entityIdAliases?.delete(rawTargetId);
-                localTarget.plagueOriginalCanonicalId = originalCanonicalId > 0 && originalCanonicalId !== rawTargetId
-                    ? originalCanonicalId
-                    : localTarget.plagueOriginalCanonicalId;
-                localTarget.canonicalEntityId = undefined;
-                localTarget.sharedCanonicalId = undefined;
-                localTarget.id = rawTargetId;
-                const explicitlyTerminal = Boolean(localTarget.dead) ||
-                    Boolean(localTarget.destroyed) ||
-                    Number(localTarget.entState ?? EntityState.ACTIVE) === EntityState.DEAD;
-                if (!explicitlyTerminal && Math.max(0, Math.round(Number(localTarget.hp ?? 0))) <= 0) {
-                    localTarget.hp = Math.max(1, Math.round(Number(localTarget.maxHp ?? 1)));
-                }
-                GlobalState.levelEntities.get(levelScope)?.set(rawTargetId, localTarget);
-            }
-        }
         const targetId = CombatHandler.resolveClientHostileEntityAlias(
             client,
             levelScope,
@@ -7907,23 +7092,6 @@ export class CombatHandler {
         );
         const targetEntity = CombatHandler.resolveLevelEntity(levelScope, targetId);
         if (targetEntity && CombatHandler.isTerminalHostileEntity(targetEntity)) {
-            if (CombatHandler.isPlaguedBuffId(parsedBuff.buffId)) {
-                const lifeNonce = Math.max(1, Math.round(Number(
-                    targetEntity.lifeNonce ?? targetEntity.spawnNonce ?? 1
-                )));
-                if (Number(targetEntity.plagueTransferNonce ?? 0) !== lifeNonce) {
-                    CombatHandler.recordServerAuthorityBuffPacket(client, 0x0B, data);
-                    if (targetEntity.plagueLateTransferTimer) {
-                        clearTimeout(targetEntity.plagueLateTransferTimer);
-                    }
-                    // Collect contiguous late stack packets before transferring so a lethal
-                    // multi-stack application cannot lose every stack after the first one.
-                    targetEntity.plagueLateTransferTimer = setTimeout(() => {
-                        delete targetEntity.plagueLateTransferTimer;
-                        CombatHandler.transferPlagueOnDefeat(client, levelScope, targetId, targetEntity);
-                    }, 25);
-                }
-            }
             return;
         }
         const recorded = CombatHandler.recordServerAuthorityBuffPacket(client, 0x0B, data);
@@ -7934,9 +7102,6 @@ export class CombatHandler {
 
     static async handleRemoveBuff(client: Client, data: Buffer): Promise<void> {
         const recorded = CombatHandler.recordServerAuthorityBuffPacket(client, 0x0C, data);
-        if (!recorded.accepted) {
-            return;
-        }
         CombatHandler.broadcastCombatPacket(client, 0x0C, recorded.payload, {
             referencedEntityIds: recorded.referencedEntityIds
         });
