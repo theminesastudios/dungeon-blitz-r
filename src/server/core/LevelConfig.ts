@@ -799,6 +799,17 @@ export class LevelConfig {
             return { x: Math.round(doorSpawn.x), y: Math.round(doorSpawn.y), hasCoord: true };
         }
 
+        // Leaving the house (CraftTown / the keep tutorial) back to the region the player came
+        // from. The confirmed spawn for that region only updates on level entry, so it is the
+        // stale point the player *arrived* at -- not where they stood when they walked through
+        // the gate. The position saved on house entry (PreviousLevel) is the return point the
+        // player expects, so it wins over the stale confirmed record; without one for the
+        // target region the callers fall through to the authored spawn below.
+        const homeReturn = this.getHomeReturnSpawn(char, currentLevel, targetLevel);
+        if (homeReturn) {
+            return homeReturn;
+        }
+
         if (targetLevel === 'CraftTownTutorial') {
             const spawn = this.getSpawn(targetLevel);
             return { x: Math.round(spawn.x), y: Math.round(spawn.y), hasCoord: true };
@@ -834,6 +845,55 @@ export class LevelConfig {
 
         const spawn = this.getSpawn(targetLevel);
         return { x: Math.round(spawn.x), y: Math.round(spawn.y), hasCoord: true };
+    }
+
+    /**
+     * The region position saved when the player entered the house, for the house exit to
+     * return to.
+     *
+     * Entering the house (updateSavedLevelsOnTransfer's CraftTown branch) writes the last
+     * grounded position in the source region to PreviousLevel. On the way back out that is
+     * the exact spot the player expects to reappear at, and it is fresher than anything
+     * getConfirmedSpawnForLevel can offer -- that table only updates on level entry, so a
+     * player who walks across the region to the house gate carries a confirmed record still
+     * pointing at the region's spawn.
+     *
+     * Only the house sources qualify, the record must name the target region, and the
+     * coordinates must be a usable standing point; otherwise the caller falls through to the
+     * confirmed / authored spawn path unchanged.
+     */
+    private static getHomeReturnSpawn(
+        char: any,
+        currentLevelName: string | null | undefined,
+        targetLevelName: string | null | undefined
+    ): { x: number; y: number; hasCoord: boolean } | null {
+        const currentLevel = this.normalizeLevelName(currentLevelName);
+        const targetLevel = this.normalizeLevelName(targetLevelName);
+        if (
+            currentLevel !== 'CraftTown' &&
+            currentLevel !== 'CraftTownTutorial'
+        ) {
+            return null;
+        }
+        if (!targetLevel || !this.isSaveAllowedLevel(targetLevel)) {
+            return null;
+        }
+        if (targetLevel === 'CraftTown' || targetLevel === 'CraftTownTutorial') {
+            return null;
+        }
+
+        const previous = this.asLevelRecord(char?.PreviousLevel);
+        if (this.normalizeLevelName(previous.name) !== targetLevel) {
+            return null;
+        }
+
+        const x = Number(previous.x);
+        const y = Number(previous.y);
+        if (!Number.isFinite(x) || !Number.isFinite(y) || this.isMissingAuthoredSpawn(targetLevel, x, y)) {
+            return null;
+        }
+
+        return { x: Math.round(x), y: Math.round(y), hasCoord: true };
     }
 
     static updateSavedLevelsOnTransfer(
