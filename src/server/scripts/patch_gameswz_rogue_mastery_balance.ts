@@ -32,8 +32,8 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  * Viperblade's Bone Daggers keep a Poison DoT as the discipline's ranged basic attack, and
  * DaggerFlurry's daggers apply the same ViperbladePoison. Each dagger is its own stacking
  * instance of the DoT: the dagger count in the buff list is the multiplicity per cast and the
- * buff's StackCount (8) is how far one instance ramps with repeated hits, so the poison builds
- * up over a fight instead of landing at full strength (DoTDamage 1 per stack per second).
+ * buff's StackCount (16) is how far one instance ramps with repeated hits, so the poison builds
+ * up over a fight instead of landing at full strength (DoTDamage 0.8 per stack per second).
  * The former blanket passive is removed from actual skills: melee skills gain no extra Bleed
  * and ranged skills gain no extra Poison.
  *
@@ -152,7 +152,7 @@ const TARGET_BUFFS = new Map<string, string>([
   ["Reaper9", "ArmorBane"],
   ["Reaper10", "ArmorBane"],
   // DaggerFlurry -- one entry per dagger (three through rank 4, four from rank 5); each entry
-  // is one stacking instance of ViperbladePoison, which ramps toward its own StackCount of 8.
+  // is one stacking instance of ViperbladePoison, which ramps toward its own StackCount of 16.
   ["DaggerFlurry", "ViperbladePoison,ViperbladePoison,ViperbladePoison"], // was 'DaggerPoison'
   ["DaggerFlurry1", "ViperbladePoison,ViperbladePoison,ViperbladePoison"], // was 'DaggerPoison'
   ["DaggerFlurry2", "ViperbladePoison,ViperbladePoison,ViperbladePoison"], // was 'DaggerPoison'
@@ -476,30 +476,30 @@ for (const rank of ["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]) {
 }
 
 // Viperblade poison tooltips. patch_gameswz_power_stat_tooltips regenerates the trailing
-// "[Stats: ...]" block from DoTDamage alone (1 damage/s per stack), so the prose is where the
-// real output is said out loud: the poison stacks up to the buff's StackCount. Keep the "8"
-// here in step with VIPERBLADE_POISON_STACK_COUNT.
+// "[Stats: ...]" block from DoTDamage alone (0.8 damage/s per stack), so the prose is where
+// the real output is said out loud: the poison stacks up to the buff's StackCount. Keep the
+// "16" here in step with VIPERBLADE_POISON_STACK_COUNT.
 for (const rank of ["", "1"]) {
   DESCRIPTIONS.set(`PoisonDagger${rank}`, [
     "Ranged basic attacks leave Poison.",
-    "Ranged basic attacks leave Poison that stacks up to 8 times.",
+    "Ranged basic attacks leave Poison that stacks up to 16 times.",
   ]);
 }
 for (const rank of ["", "1", "2", "3", "4"]) {
   DESCRIPTIONS.set(`DaggerFlurry${rank}`, [
     "Throw three Poison Daggers.",
-    "Throw three Poison Daggers that stack Poison up to 8 times.",
+    "Throw three Poison Daggers that stack Poison up to 16 times.",
   ]);
 }
 for (const rank of ["5", "6", "7", "8", "9"]) {
   DESCRIPTIONS.set(`DaggerFlurry${rank}`, [
     "Throw four Poison Daggers.",
-    "Throw four Poison Daggers that stack Poison up to 8 times.",
+    "Throw four Poison Daggers that stack Poison up to 16 times.",
   ]);
 }
 DESCRIPTIONS.set("DaggerFlurry10", [
   "Throw four Poison Daggers that reduce target Defense.",
-  "Throw four Poison Daggers that reduce target Defense and stack Poison up to 8 times.",
+  "Throw four Poison Daggers that reduce target Defense and stack Poison up to 16 times.",
 ]);
 
 /**
@@ -539,6 +539,15 @@ const TEXT_MIGRATIONS: Array<{ power: RegExp; from: string; to: string }> = [
     power: /^ConcussionBolt\d*$/,
     from: "Sentinel passive: your melee attacks also strike for 0.01% of your maximum Health and 0.1% of your Defense.",
     to: "Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 30% of your Defense.",
+  },
+  {
+    // The Viperblade poison cap moved from 8 to 16 (DoTDamage halved to 0.5 to match), and
+    // the prose quoting the old cap was already rewritten once, so the DESCRIPTIONS entries
+    // below no longer match it. Rewrite the current wording instead. Covers the Description
+    // and the DaggerFlurry rank-1 UpgradeDescription alike.
+    power: /^(PoisonDagger|DaggerFlurry)\d*$/,
+    from: " up to 8 times.",
+    to: " up to 16 times.",
   },
 ];
 
@@ -719,14 +728,15 @@ const VIPERBLADE_POISON_POWERS = new Set([
 // up instead of refreshing, and a single hit never reaches the cap.
 //
 // Sizing, against a normal-dungeon enemy (~200K HP) with the ~109 Attack the old 35k
-// measurement implies (5s x 64 stacks x 1 damage x Attack): one Bone Dagger ramps its single
-// instance to 8 stacks (~4.4K over 5s) and a four-dagger DaggerFlurry ramps four instances to
-// 8 stacks each (~17.5K over 5s). The 16-cap dealt ~35K and the 1-cap dealt a flat ~10K with
-// no stacking; 8 lands the fully-ramped Flurry closest to the ~15K middle target. 10 would
-// overshoot to ~21.9K, so 8 is the pick unless in-game testing feels weak -- then 10, and the
-// tooltip prose quoting the cap (see DESCRIPTIONS) has to move with it.
-const VIPERBLADE_POISON_DOT_DAMAGE = "1";
-const VIPERBLADE_POISON_STACK_COUNT = "8";
+// measurement implies (5s x 64 stacks x 1 damage x Attack): the old 8 x 1 design ramped one
+// Bone Dagger's instance to 8 stacks (~4.4K over 5s) and a four-dagger DaggerFlurry's four
+// instances to 8 stacks each (~17.5K over 5s), while the 16-cap at 1 damage dealt ~35K.
+// With the cap at 16, DoTDamage 0.8 puts the fully-ramped peak at 12.8 damage/s -- 60% above
+// the old 8 x 1 peak of 8 damage/s -- and the ramp still takes 16 hits to reach it, so burst
+// over a short fight climbs more slowly but out-trades the old poison once stacked. The
+// tooltip prose quoting the cap (see DESCRIPTIONS) has to move in step.
+const VIPERBLADE_POISON_DOT_DAMAGE = "0.8";
+const VIPERBLADE_POISON_STACK_COUNT = "16";
 const VIPERBLADE_POISON_BUFF = {
   name: "ViperbladePoison",
   xml: [
