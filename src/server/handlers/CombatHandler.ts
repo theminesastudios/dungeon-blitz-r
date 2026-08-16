@@ -6555,6 +6555,42 @@ export class CombatHandler {
         });
     }
 
+    /**
+     * Decides whether a destroy (0x0D) for a party-shared client hostile may be
+     * accepted, or whether the server should answer with an alive-correction.
+     *
+     * The alive-correction exists to stop a client from destroying a hostile the
+     * server believes is still alive. It must not fire for a kill the server
+     * already accepted: the kill-state packet marks the canonical entity dead
+     * (dead=true, entState=DEAD) without zeroing a stale positive HP, so a
+     * positive `canonicalHp` alone would reject a legitimate destroy and drop the
+     * side-quest credit (and shared dungeon progress) for that kill.
+     *
+     * The server also only trusts its own HP snapshot when it actually tracks the
+     * hostile (explicit maxHp + finite hp). For a client-spawned mob the server
+     * never saw take damage, getNpcHealthState answers with the estimated max HP,
+     * which is not evidence the mob is alive -- rejecting the destroy on it would
+     * resurrect a corpse and lose the kill entirely.
+     */
+    private static shouldAcceptPartySharedHostileDestroy(
+        destroyedEntity: any,
+        canonicalHp: number,
+        serverTracksHostileHp: boolean,
+        verifiedRequiredBossDestroy: boolean
+    ): boolean {
+        if (verifiedRequiredBossDestroy) {
+            return true;
+        }
+        if (canonicalHp <= 0) {
+            return true;
+        }
+        if (!serverTracksHostileHp) {
+            return true;
+        }
+        return Boolean(destroyedEntity?.dead) ||
+            Number(destroyedEntity?.entState ?? EntityState.ACTIVE) === EntityState.DEAD;
+    }
+
     static async handleEntityDestroy(client: Client, data: Buffer): Promise<void> {
         const br = new BitReader(data);
         const rawEntityId = br.readMethod9();
@@ -6734,7 +6770,13 @@ export class CombatHandler {
             if (Boolean(destroyedEntity.destroyed)) {
                 return;
             }
-            if (canonicalHp > 0 && !verifiedRequiredBossDestroy) {
+            const serverTracksHostileHp = healthState?.authoritativeKill === true;
+            if (!CombatHandler.shouldAcceptPartySharedHostileDestroy(
+                destroyedEntity,
+                canonicalHp,
+                serverTracksHostileHp,
+                verifiedRequiredBossDestroy
+            )) {
                 destroyedEntity.dead = false;
                 if (Number(destroyedEntity.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
                     destroyedEntity.entState = EntityState.ACTIVE;
