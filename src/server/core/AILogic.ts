@@ -18,12 +18,18 @@ import { AdminRuntimeSettings } from './AdminRuntimeSettings';
 export class AILogic {
     static readonly INTERVAL = 125; // ms (0.125s)
     static readonly TIMESTEP = 1 / 60.0;
-    // Aggro radii, halved from their original values (240/360/180/260) so enemies
-    // pull from roughly half the distance they used to.
-    static readonly MELEE_AGGRO_RADIUS = 120;
-    static readonly RANGED_AGGRO_RADIUS = 180;
-    static readonly BOSS_MELEE_AGGRO_RADIUS = 90;
-    static readonly BOSS_RANGED_AGGRO_RADIUS = 130;
+    // Aggro radii, restored to the original game values (240/360/180/260). The v1.11.0
+    // halving (120/180/90/130) left enemies standing still until the player was almost
+    // on top of them: boss-melee aggro (90) sat below melee attack range (95) and ranged
+    // aggro (180) below ranged attack range (300), so a pulled enemy swung in place
+    // instead of closing the gap. These values also keep the server's boss radii aligned
+    // with CombatHandler's (180/260) and roughly in line with the client SWF's own
+    // 250px Brain.AGGRO_RADIUS, so server-driven and client-driven enemies engage at
+    // similar distances.
+    static readonly MELEE_AGGRO_RADIUS = 240;
+    static readonly RANGED_AGGRO_RADIUS = 360;
+    static readonly BOSS_MELEE_AGGRO_RADIUS = 180;
+    static readonly BOSS_RANGED_AGGRO_RADIUS = 260;
     static readonly LEASH_RADIUS = 1800;
     static readonly RETURN_SPEED = 20;
     static readonly HOME_EPSILON = 1;
