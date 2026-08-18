@@ -226,7 +226,7 @@ export class CombatHandler {
                     }
                     const localId = EntityHandler.resolveEntityLocalId(viewer, entityId);
                     const localEntity = viewer.entities.get(localId) ?? viewer.entities.get(entityId) ?? entity;
-                    const maxHp = Math.max(1, Math.round(Number(localEntity?.maxHp ?? entity?.maxHp ?? entity?.hp ?? 1)) || 1);
+                    const maxHp = EntityHandler.resolveLethalHostileDelta(levelScope, entity, localEntity);
                     viewer.send(0x78, CombatHandler.buildHpDeltaPayload(localId, -maxHp));
                     viewer.send(0x07, CombatHandler.buildEntityStatePayload(localId, EntityState.DEAD, Boolean(localEntity?.facingLeft)));
                     viewer.send(0x0D, CombatHandler.buildDestroyEntityPayload(localId, true));
@@ -3724,7 +3724,16 @@ export class CombatHandler {
         const previousHp = Number.isFinite(previousHpRaw)
             ? Math.max(0, Math.round(previousHpRaw))
             : maxHp;
-        viewer.send(0x78, CombatHandler.buildHpDeltaPayload(localId, -previousHp));
+        // Sized to the largest credible pool, not to what the server thinks this viewer has
+        // left: the two sides do not always agree on how big the enemy is, and a burial that
+        // falls short leaves it standing. See resolveLethalHostileDelta.
+        viewer.send(
+            0x78,
+            CombatHandler.buildHpDeltaPayload(
+                localId,
+                -Math.max(previousHp, EntityHandler.resolveLethalHostileDelta(levelScope, canonicalEntity, existing))
+            )
+        );
         viewer.send(0x07, CombatHandler.buildEntityStatePayload(localId, EntityState.DEAD, Boolean(canonicalEntity?.facingLeft)));
         viewer.send(0x0D, CombatHandler.buildDestroyEntityPayload(localId, true));
         viewer.entities.delete(localId);
@@ -3987,6 +3996,41 @@ export class CombatHandler {
      * Routed through the same relay as a server kill, so the other members get the lethal 0x78
      * their client actually acts on, addressed with their own id.
      */
+    /**
+     * Bury a canonical because the client that owns the body says it died, and share it.
+     *
+     * One place for what several signals mean. A client announces a kill in more than one way
+     * -- a terminal state update, its own destroy, and the reward it asks for -- and the
+     * canonical can never reach zero on its own to confirm any of them, because the client
+     * stops reporting damage the moment its copy dies. Whichever signal arrives first is the
+     * kill.
+     */
+    static acceptClientReportedKill(client: Client, levelScope: string, entity: any, reason: string): boolean {
+        if (!entity || typeof entity !== 'object' || !CombatHandler.isServerAuthoritySyncNpc(levelScope, entity)) {
+            return false;
+        }
+        if (Boolean(entity.dead) || Math.round(Number(entity.hp ?? 0)) <= 0) {
+            return false;
+        }
+
+        const remainder = Math.round(Number(entity.hp ?? 0));
+        const maxHp = Math.max(0, Math.round(Number(entity.maxHp ?? 0)));
+        entity.hp = 0;
+        entity.dead = true;
+        entity.entState = EntityState.DEAD;
+        if (maxHp > 0) {
+            entity.healthDelta = -maxHp;
+            entity.health_delta = -maxHp;
+        }
+        console.log(
+            `[HostileDeathAccepted] ${getScopeLevelName(levelScope)} ${reason} ` +
+            `id=${Math.round(Number(entity.id ?? 0))} name=${String(entity.name ?? '?')} ` +
+            `reporter=${String(client.character?.name ?? '?')} remainder=${remainder}/${maxHp}`
+        );
+        CombatHandler.shareHostileDeathOnce(client, levelScope, entity);
+        LevelHandler.scheduleSharedDungeonQuestProgressRefresh(levelScope, { reason });
+        return true;
+    }
     static relayClientReportedHostileDeath(anchor: Client, levelScope: string, entity: any): void {
         CombatHandler.shareHostileDeathOnce(anchor, levelScope, entity);
     }
@@ -4076,10 +4120,7 @@ export class CombatHandler {
         }
 
         const localCopy = viewer.entities.get(localId) ?? viewer.entities.get(canonicalId) ?? entity;
-        const lethalHp = Math.max(
-            1,
-            Math.round(Number(localCopy?.maxHp ?? entity?.maxHp ?? entity?.hp ?? 1)) || 1
-        );
+        const lethalHp = EntityHandler.resolveLethalHostileDelta(levelScope, entity, localCopy);
         viewer.send(0x78, CombatHandler.buildHpDeltaPayload(localId, -lethalHp));
         viewer.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
         viewer.send(0x0D, CombatHandler.buildDestroyEntityPayload(localId, true));
@@ -4270,10 +4311,7 @@ export class CombatHandler {
                 // and the destroy. The damage is the only one of the three the client acts on
                 // for a hostile it spawned itself -- see the comment there.
                 const localCopy = viewer.entities.get(localId) ?? viewer.entities.get(canonicalId) ?? entity;
-                const lethalHp = Math.max(
-                    1,
-                    Math.round(Number(localCopy?.maxHp ?? entity?.maxHp ?? entity?.hp ?? 1)) || 1
-                );
+                const lethalHp = EntityHandler.resolveLethalHostileDelta(levelScope, entity, localCopy);
                 viewer.send(0x78, CombatHandler.buildHpDeltaPayload(localId, -lethalHp));
                 viewer.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
                 viewer.send(0x0D, CombatHandler.buildDestroyEntityPayload(localId, true));
@@ -4359,10 +4397,7 @@ export class CombatHandler {
                 const localCopy = viewer.entities.get(localEntityId) ??
                     viewer.entities.get(entityId) ??
                     destroyedEntity;
-                const lethalHp = Math.max(
-                    1,
-                    Math.round(Number(localCopy?.maxHp ?? destroyedEntity?.maxHp ?? destroyedEntity?.hp ?? 1)) || 1
-                );
+                const lethalHp = EntityHandler.resolveLethalHostileDelta(levelScope, destroyedEntity, localCopy);
                 viewer.send(0x78, CombatHandler.buildHpDeltaPayload(localEntityId, -lethalHp));
             }
             viewer.send(0x07, EntityHandler.buildEntityStateDeadPayload(localEntityId));
@@ -5957,10 +5992,7 @@ export class CombatHandler {
             const buriedLocalId = Math.max(0, Math.round(Number(parsedInfo.targetId) || 0));
             if (buriedLocalId > 0) {
                 const localCopy = client.entities.get(buriedLocalId) ?? targetEntity;
-                const lethalHp = Math.max(
-                    1,
-                    Math.round(Number(localCopy?.maxHp ?? targetEntity?.maxHp ?? 1)) || 1
-                );
+                const lethalHp = EntityHandler.resolveLethalHostileDelta(levelScope, targetEntity, localCopy);
                 client.send(0x78, CombatHandler.buildHpDeltaPayload(buriedLocalId, -lethalHp));
                 client.send(0x07, EntityHandler.buildEntityStateDeadPayload(buriedLocalId));
                 client.send(0x0D, CombatHandler.buildDestroyEntityPayload(buriedLocalId, true));

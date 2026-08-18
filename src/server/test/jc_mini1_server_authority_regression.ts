@@ -283,12 +283,18 @@ function attachProxy(client: FakeClient, localId: number, name: string, x: numbe
 function assertSevenCanonicalHostiles(scope: string): void {
     const hostiles = getHostiles(scope);
     assert.equal(hostiles.length, 7, 'JC_Mini1Hard should seed exactly seven canonical hostiles');
-    // Dread JC_Mini1Hard is authored at tier 44 (mapId 44 over baseId 29), so that is the
-    // tier every party member gets -- not the flat 50 this used to be pinned to.
-    // The run is fought at the highest player level in the party, shared by everyone in it,
-    // so both members see the same enemy with the same pool and it dies at the same moment.
+    // Dread JC_Mini1Hard is authored at tier 44 (mapId 44 over baseId 29), and that is the tier
+    // every member gets. It was briefly scaled to the highest player level in the party instead,
+    // which reads well and is unenforceable here: the client spawns these hostiles from the
+    // level's own cues and sizes them from the authored tier, so the copy the player kills is
+    // smaller than the canonical the server holds. The kill then lands on their screen and
+    // nowhere else. Both sides have to use one number, and only the authored one is shared.
     const partyLevel = EntityHandler.resolveServerAuthorityEntityLevel(scope);
-    assert.equal(partyLevel, 50, 'a level 50 party fights level 50 enemies');
+    assert.equal(
+        partyLevel,
+        LevelConfig.getAuthoredDungeonEnemyLevel('JC_Mini1Hard'),
+        'client-owned hostiles are sized at the authored dungeon tier'
+    );
     for (const hostile of hostiles) {
         assert.equal(hostile.clientSpawned, false, `${hostile.name} should be server canonical`);
         assert.equal(hostile.level, partyLevel, `${hostile.name} should carry the party's tier`);

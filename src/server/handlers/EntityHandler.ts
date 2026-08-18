@@ -413,10 +413,30 @@ export class EntityHandler {
      */
     static resolveServerAuthorityEntityLevel(levelNameOrScope: string | null | undefined): number {
         const scopeKey = String(levelNameOrScope ?? '');
-        const authoredLevel = LevelConfig.getAuthoredDungeonEnemyLevel(getScopeLevelName(scopeKey));
+        const levelName = getScopeLevelName(scopeKey);
+        const authoredLevel = LevelConfig.getAuthoredDungeonEnemyLevel(levelName);
         const fallback = authoredLevel > 0 ? authoredLevel : EntityHandler.SERVER_AUTHORITY_ENTITY_LEVEL;
         if (!scopeKey) {
             return fallback;
+        }
+
+        // Where the CLIENT owns the bodies, the authored tier is the only honest number.
+        //
+        // Scaling to the party's highest level is enforceable only for an enemy the server
+        // draws and drives. These are spawned by the client from the level's own cues, and the
+        // client sizes them from the dungeon's authored tier -- 29 in The East Wing, so a
+        // ShadeWarrior copy holds 7380 while the canonical was carrying 26912. The player kills
+        // what is on their screen after a fifth of the damage the server is waiting for, and
+        // the canonical is left standing with the rest: dead for them, alive for everyone else,
+        // and alive again for whoever joins later. The measured survivors were
+        // ShadeWarrior 21689/26912 and BoneFiend 21012/26912, both reported killed.
+        //
+        // The bigger pool never bought any difficulty -- the client decides when the enemy
+        // dies regardless -- so all it ever produced was that disagreement. Making a level 50
+        // party fight harder enemies here needs the client to be told the pool, which is a
+        // client patch, not a server number.
+        if (authoredLevel > 0 && !EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelName)) {
+            return Math.max(1, Math.min(EntityHandler.HOSTILE_BASE_HITPOINTS.length - 1, authoredLevel));
         }
 
         const partyLevel = EntityHandler.resolvePartyEnemyLevelForScope(scopeKey);
@@ -513,6 +533,162 @@ export class EntityHandler {
 
         return Math.max(1, Math.round(baseHp * hitPointScale));
     }
+
+    /**
+     * How much damage it takes to be sure a client kills its own copy of a hostile.
+     *
+     * Sizing this from the canonical's pool looked obvious and is wrong, because the two sides
+     * do not always agree on how big the enemy is. The East Wing roster holds
+     * `PortalFiend canonicalHp=135/135` next to `ShadeWarrior 26912` and
+     * `GreaterDemonMaligner 161472`; a burial sized at 135 is a scratch to a client copy with
+     * the real pool, so those enemies stayed alive on a joiner's screen while being long dead
+     * on everybody else's -- dead for the run, dead for the member who killed them, standing
+     * for the one who arrived later.
+     *
+     * So take the largest credible pool: the canonical's, the copy the server has cached for
+     * that viewer, and the level-scaled estimate for the type. Overshooting costs nothing --
+     * the client's TakeDamage stops at the health the entity actually has.
+     */
+    static resolveLethalHostileDelta(
+        levelNameOrScope: string | null | undefined,
+        canonical: any,
+        localCopy: any = null
+    ): number {
+        const canonicalMaxHp = Math.max(0, Math.round(Number(canonical?.maxHp ?? 0)) || 0);
+        const localMaxHp = Math.max(0, Math.round(Number(localCopy?.maxHp ?? 0)) || 0);
+        const estimated = Math.max(
+            0,
+            Math.round(Number(EntityHandler.estimateServerAuthorityHostileMaxHp(canonical ?? localCopy, levelNameOrScope) ?? 0)) || 0
+        );
+
+        // Double the biggest of the three, and no more.
+        //
+        // This used to reach for twice the largest hostile in the whole roster, from back when
+        // the two sides disagreed about pool sizes and a burial could fall short. They agree
+        // now -- both are built from the dungeon's authored tier -- so that bound is no longer
+        // buying anything, and it was costing plenty: a Ghoul with 7380 health was being sent
+        // 221400 damage, which the client's TakeDamage patch then reported straight back at
+        // that magnitude. Doubling covers any rounding between the two sides while keeping the
+        // number recognisable in a log. Overshooting is still free: TakeDamage stops at the
+        // health the entity has, and 0x78 is delivered with the floater suppressed.
+        return Math.max(1, canonicalMaxHp, localMaxHp, estimated) * 2;
+    }
+
+    /**
+     * The chests a dungeon room breaks open.
+     *
+     * They arrive as ordinary ENEMY-team entities the client spawned -- a `[RewardSource]`
+     * capture named them: `TreasureChestEmpty team=2 reason=chest_reward`, HitPoints 0.001,
+     * `clientSpawned: true`. What they are NOT is part of the generated roster, which holds
+     * only the 35 authored hostiles, so nothing ever seeded a canonical for them and every
+     * client kept its own private chest: one member broke theirs and the other walked up to an
+     * unbroken one.
+     *
+     * Breaking a chest also changes its name -- `TreasureChestMedium` becomes
+     * `TreasureChestEmpty` -- so the family has to be matched as one identity, by where the
+     * cue put it rather than by what it is called at the moment it is looked at.
+     */
+    private static readonly CHEST_ENTITY_NAMES = new Set<string>([
+        'treasurechestmedium',
+        'treasurechestlarge',
+        'questtreasurechest',
+        'treasurechestempty'
+    ]);
+
+    static isChestEntity(entity: any): boolean {
+        if (!entity || entity.isPlayer) {
+            return false;
+        }
+        const name = EntityHandler.normalizeIdentityName(
+            entity.entType ?? entity.EntType ?? entity.name ?? entity.EntName
+        );
+        return EntityHandler.CHEST_ENTITY_NAMES.has(name);
+    }
+
+    /** A chest canonical already standing at the same cue, whatever it is currently called. */
+    private static findChestCanonicalAtAnchor(levelMap: Map<number, any> | null, entity: any): any | null {
+        if (!levelMap || !EntityHandler.isChestEntity(entity)) {
+            return null;
+        }
+        const proxyX = Number(entity.x ?? NaN);
+        const proxyY = Number(entity.y ?? NaN);
+        if (!Number.isFinite(proxyX) || !Number.isFinite(proxyY)) {
+            return null;
+        }
+
+        let best: any = null;
+        let bestDistanceSq = Number.POSITIVE_INFINITY;
+        for (const candidate of levelMap.values()) {
+            if (Boolean(candidate?.clientSpawned) || !EntityHandler.isChestEntity(candidate)) {
+                continue;
+            }
+            const anchorX = Number(candidate.spawnAnchorX ?? candidate.x ?? NaN);
+            const anchorY = Number(candidate.spawnAnchorY ?? candidate.y ?? NaN);
+            if (!Number.isFinite(anchorX) || !Number.isFinite(anchorY)) {
+                continue;
+            }
+            const distanceSq = ((anchorX - proxyX) ** 2) + ((anchorY - proxyY) ** 2);
+            if (distanceSq <= EntityHandler.CANONICAL_VISIBLE_PROXY_MATCH_MAX_DISTANCE_SQ && distanceSq < bestDistanceSq) {
+                bestDistanceSq = distanceSq;
+                best = candidate;
+            }
+        }
+        return best;
+    }
+
+    /** Turn the first report of a chest into the run's canonical for it. */
+    private static promoteChestToCanonical(
+        client: Client,
+        levelName: string | null | undefined,
+        levelMap: Map<number, any> | null,
+        entity: any
+    ): any | null {
+        if (!levelMap || !EntityHandler.isChestEntity(entity)) {
+            return null;
+        }
+
+        const levelScope = getClientLevelScope(client);
+        const canonicalId = EntityHandler.nextChestCanonicalId(levelMap);
+        const canonical: any = {
+            ...entity,
+            id: canonicalId,
+            clientSpawned: false,
+            ownerToken: 0,
+            ownerUserId: 0,
+            ownerPartyId: 0,
+            ownerCharacterName: '',
+            canonicalEntityId: undefined,
+            sharedCanonicalId: undefined,
+            proxyOwnerToken: client.token,
+            proxyOwnerName: client.character?.name ?? '',
+            spawnAnchorX: Number(entity.x ?? 0),
+            spawnAnchorY: Number(entity.y ?? 0),
+            requiredForClear: false,
+            dead: false,
+            destroyed: false,
+            entState: EntityState.ACTIVE
+        };
+        canonical.spawnKey = canonical.spawnKey || EntityHandler.getHostileSpawnKey(levelScope, canonical);
+        EntityHandler.normalizeServerAuthorityHostileState(levelName, canonical);
+        levelMap.set(canonicalId, canonical);
+        console.log(
+            `[ChestCanonical] ${LevelConfig.normalizeLevelName(levelName)} seeded id=${canonicalId} ` +
+            `name=${String(canonical.name ?? '?')} at ${Math.round(canonical.spawnAnchorX)},${Math.round(canonical.spawnAnchorY)} ` +
+            `from ${String(client.character?.name ?? '?')}`
+        );
+        return canonical;
+    }
+
+    /** Chest canonicals live above the authored roster so they can never collide with it. */
+    private static nextChestCanonicalId(levelMap: Map<number, any>): number {
+        let next = EntityHandler.CHEST_CANONICAL_ID_BASE;
+        while (levelMap.has(next)) {
+            next += 1;
+        }
+        return next;
+    }
+
+    private static readonly CHEST_CANONICAL_ID_BASE = 940001;
 
     static isServerAuthorityHostileEntity(levelNameOrScope: string | null | undefined, entity: any): boolean {
         return EntityHandler.usesServerAuthorityHostiles(getScopeLevelName(String(levelNameOrScope ?? ''))) &&
@@ -1325,7 +1501,7 @@ export class EntityHandler {
         if (tombstone.canonicalId > 0) {
             client.knownEntityIds.add(tombstone.canonicalId);
         }
-        client.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -maxHp));
+        client.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -EntityHandler.resolveLethalHostileDelta(getClientLevelScope(client), entity, client.entities.get(localId))));
         client.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
         client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
         client.entities.delete(localId);
@@ -1375,7 +1551,13 @@ export class EntityHandler {
             return true;
         }
 
-        const existingCanonical = EntityHandler.findServerAuthorityProxyCanonical(levelName, levelMap, entity);
+        // A chest is matched by its cue, not by its name: breaking one turns a
+        // `TreasureChestMedium` into a `TreasureChestEmpty`, and the run has to treat both as
+        // the same object or the second member's unbroken copy binds to nothing.
+        const chestCanonical = EntityHandler.findChestCanonicalAtAnchor(levelMap, entity) ??
+            EntityHandler.promoteChestToCanonical(client, levelName, levelMap, entity);
+        const existingCanonical = chestCanonical ??
+            EntityHandler.findServerAuthorityProxyCanonical(levelName, levelMap, entity);
         const canonical = existingCanonical ??
             EntityHandler.promoteFirstSightServerAuthorityHostile(client, levelName, levelMap, entity, rawEntityId);
         if (!canonical) {
@@ -1455,7 +1637,7 @@ export class EntityHandler {
             if (isDead) {
                 const maxHp = Math.max(0, Math.round(Number(canonical.maxHp ?? 0)));
                 if (maxHp > 0) {
-                    client.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -maxHp));
+                    client.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -EntityHandler.resolveLethalHostileDelta(getClientLevelScope(client), canonical ?? entity ?? null, client.entities.get(localId))));
                 }
                 client.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
                 client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
@@ -1490,7 +1672,7 @@ export class EntityHandler {
         if (isDead) {
             const maxHp = Math.max(0, Math.round(Number(canonical.maxHp ?? 0)));
             if (maxHp > 0) {
-                client.send(0x78, EntityHandler.buildHpDeltaPayload(canonicalId, -maxHp));
+                client.send(0x78, EntityHandler.buildHpDeltaPayload(canonicalId, -EntityHandler.resolveLethalHostileDelta(getClientLevelScope(client), canonical ?? entity ?? null, client.entities.get(localId))));
             }
             client.send(0x07, EntityHandler.buildEntityStateDeadPayload(canonicalId));
             client.send(0x0D, EntityHandler.buildDestroyEntityPayload(canonicalId));
@@ -1614,7 +1796,7 @@ export class EntityHandler {
 
         if (isDead) {
             if (maxHp > 0) {
-                client.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -maxHp));
+                client.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -EntityHandler.resolveLethalHostileDelta(getClientLevelScope(client), canonical, client.entities.get(localId))));
             }
             client.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
             client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
@@ -1664,7 +1846,7 @@ export class EntityHandler {
         client.entities.set(localId, deadSnapshot);
         client.knownEntityIds.add(localId);
         if (maxHp > 0) {
-            client.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -maxHp));
+            client.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -EntityHandler.resolveLethalHostileDelta(getClientLevelScope(client), deadSnapshot, client.entities.get(localId))));
         }
         client.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
         client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
@@ -3048,7 +3230,7 @@ export class EntityHandler {
             Math.round(Number(entity?.maxHp ?? canonical?.maxHp ?? entity?.hp ?? canonical?.hp ?? 0) || 0)
         );
         if (maxHp > 0) {
-            client.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -maxHp));
+            client.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -EntityHandler.resolveLethalHostileDelta(getClientLevelScope(client), canonical ?? entity ?? null, client.entities.get(localId))));
         }
         client.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
         client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
@@ -4620,6 +4802,25 @@ export class EntityHandler {
             return;
         }
 
+        // Every non-player, non-hostile object a client spawns in a shared dungeon.
+        //
+        // Chests are next on the list and nothing in the hostile machinery covers them: they
+        // are not enemies, so they have no canonical, no binding and no death to relay. Before
+        // designing that, the one thing worth knowing is how a chest actually reaches the
+        // server -- what name it carries, what team it claims, whether it has a health pool at
+        // all -- because every wrong guess this session came from designing before measuring.
+        if (
+            !isPlayer &&
+            Number(props?.team ?? 0) !== EntityTeam.ENEMY &&
+            EntityHandler.usesServerAuthorityHostiles(levelName)
+        ) {
+            console.log(
+                `[ClientObject] ${levelName} -> ${String(client.character?.name ?? '?')} ` +
+                `id=${rawEntityId} name=${String(props?.name ?? '?')} team=${Number(props?.team ?? 0)} ` +
+                `hp=${Math.round(Number((props as any)?.hp ?? 0))}/${Math.round(Number((props as any)?.maxHp ?? 0))} ` +
+                `room=${Number(props?.roomId ?? -1)} state=${Number(props?.entState ?? -1)}`
+            );
+        }
         if (EntityHandler.suppressServerAuthorityClientHostileSpawn(client, levelName, props, rawEntityId)) {
             return;
         }

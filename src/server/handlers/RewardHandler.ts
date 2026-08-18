@@ -1288,6 +1288,55 @@ export class RewardHandler {
         return true;
     }
 
+    /**
+     * One payout per chest per run.
+     *
+     * Chests are not in the generated roster, so the run has no id for them to key on -- but
+     * it does not need one. Two members standing at the same chest report it from the same
+     * place, so the cue it stands on is identity enough: the first claim within that radius
+     * takes the gold and every later one is a duplicate of it.
+     *
+     * Returns false when the chest has already paid, and the reward is dropped.
+     */
+    private static readonly CHEST_CLAIM_RADIUS_SQ = 400 * 400;
+    private static readonly claimedChestsByScope = new Map<string, Array<{ x: number; y: number }>>();
+
+    static forgetClaimedChests(levelScope: string): void {
+        RewardHandler.claimedChestsByScope.delete(String(levelScope ?? ''));
+    }
+
+    private static claimSharedChest(client: Client, sourceEntity: any, reward: RewardRequest): boolean {
+        const levelScope = getClientLevelScope(client);
+        if (!levelScope) {
+            return true;
+        }
+
+        const x = Number(sourceEntity?.x ?? reward.worldX ?? NaN);
+        const y = Number(sourceEntity?.y ?? reward.worldY ?? NaN);
+        if (!Number.isFinite(x) || !Number.isFinite(y)) {
+            return true;
+        }
+
+        const claimed = RewardHandler.claimedChestsByScope.get(levelScope) ?? [];
+        for (const claim of claimed) {
+            const distanceSq = ((claim.x - x) ** 2) + ((claim.y - y) ** 2);
+            if (distanceSq <= RewardHandler.CHEST_CLAIM_RADIUS_SQ) {
+                console.log(
+                    `[ChestClaim] ${levelScope} refused duplicate for ${String(client.character?.name ?? '?')} ` +
+                    `at ${Math.round(x)},${Math.round(y)} (gold=${reward.gold})`
+                );
+                return false;
+            }
+        }
+
+        claimed.push({ x: Math.round(x), y: Math.round(y) });
+        RewardHandler.claimedChestsByScope.set(levelScope, claimed);
+        console.log(
+            `[ChestClaim] ${levelScope} paid ${String(client.character?.name ?? '?')} ` +
+            `at ${Math.round(x)},${Math.round(y)} gold=${reward.gold}`
+        );
+        return true;
+    }
     static handleGrantReward(client: Client, data: Buffer): void {
         const br = new BitReader(data);
         const reward: RewardRequest = {
@@ -1317,10 +1366,57 @@ export class RewardHandler {
         if (RewardHandler.handleAuthoritativeTutorialChestReward(client, reward, sourceEntity, dropPosition)) {
             return;
         }
+        // The only moment a chest exists as far as this server is concerned.
+        //
+        // A full capture of a shared East Wing run produced zero [ClientObject] lines: chests
+        // are never reported to the server as entities at all, so there is nothing to seed,
+        // bind or take away -- none of the machinery that now shares enemy deaths can reach
+        // them. This request, carrying the chest's own client-side id, is the one signal there
+        // is. Log what the server can and cannot resolve about it, because that decides
+        // whether sharing a chest is a server change or needs the client to report it first.
+        if (LevelConfig.isDungeonLevel(client.currentLevel)) {
+            console.log(
+                `[RewardSource] ${String(client.currentLevel)} -> ${String(client.character?.name ?? '?')} ` +
+                `sourceId=${reward.sourceId} resolved=${sourceEntity ? 'yes' : 'no'} ` +
+                `name=${String(sourceEntity?.name ?? '-')} team=${Number(sourceEntity?.team ?? -1)} ` +
+                `reason=${RewardHandler.getRewardSourceReason(sourceEntity)} ` +
+                `gold=${reward.gold} exp=${reward.exp} gear=${reward.dropGear} item=${reward.dropItem}`
+            );
+        }
         const { rewardNonce, recipients } = RewardHandler.resolveEligibleRecipients(client, reward.sourceId);
         const reason = RewardHandler.getRewardSourceReason(sourceEntity);
         const caller = 'handleGrantReward';
         const levelScope = getClientLevelScope(client);
+
+        // A reward request is also a death certificate.
+        //
+        // A client only asks for a kill reward once the thing died on its screen, and for a
+        // hostile it owns that is the most reliable signal there is: the terminal state update
+        // and the destroy both go missing sometimes, and the canonical can never reach zero on
+        // its own to confirm anything, because the client stops reporting damage the moment its
+        // own copy dies. The live capture had `BoneFiend 1480/7380` standing in the roster with
+        // its killer's reward request sitting right there in the same log.
+        if (sourceEntity && reason === 'legacy_enemy_reward') {
+            // Through the CANONICAL, not the copy that asked. `resolveSourceEntity` hands back
+            // the client's own local proxy, and a proxy carries `clientSpawned`, which is the
+            // one thing that makes it not the shared enemy.
+            const canonicalSourceId = EntityHandler.resolveEntityAlias(client, reward.sourceId);
+            const canonicalSource = GlobalState.levelEntities.get(levelScope)?.get(canonicalSourceId) ?? null;
+            if (canonicalSource) {
+                const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+                CombatHandler.acceptClientReportedKill(client, levelScope, canonicalSource, 'reward_request');
+            }
+        }
+
+        // A chest pays the run once.
+        //
+        // Both members break the same chest -- one opens it, the other's copy is broken for
+        // them by the share -- and both clients then ask for the gold. The live capture had
+        // four chest_reward requests for two chests, 960 + 790 to one member and 816 + 1009 to
+        // the other. Only the opening pays; the shared break is a visual, not a second purse.
+        if (reason === 'chest_reward' && !RewardHandler.claimSharedChest(client, sourceEntity, reward)) {
+            return;
+        }
         if (!sourceEntity || reason === 'unknown') {
             return;
         }

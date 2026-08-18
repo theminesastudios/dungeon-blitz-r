@@ -15,6 +15,7 @@ import { DungeonSpawnLoader, DungeonSpawnConfig } from '../data/DungeonSpawnLoad
 import { NpcLoader } from '../data/NpcLoader';
 import { CombatHandler } from '../handlers/CombatHandler';
 import { MissionHandler } from '../handlers/MissionHandler';
+import { RewardHandler } from '../handlers/RewardHandler';
 import { EntityHandler } from '../handlers/EntityHandler';
 import { LevelHandler } from '../handlers/LevelHandler';
 import { BitBuffer } from '../network/protocol/bitBuffer';
@@ -216,6 +217,26 @@ function buildDestroyEntityPayload(entityId: number): Buffer {
     return bb.toBuffer();
 }
 
+function buildGrantRewardPayload(receiverId: number, sourceId: number, gold: number): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod9(receiverId);
+    bb.writeMethod9(sourceId);
+    bb.writeMethod15(false);
+    bb.writeMethod309(0);
+    bb.writeMethod15(false);
+    bb.writeMethod309(0);
+    bb.writeMethod15(false);
+    bb.writeMethod15(false);
+    bb.writeMethod9(0);
+    bb.writeMethod9(0);
+    bb.writeMethod9(0);
+    bb.writeMethod9(gold);
+    bb.writeMethod24(0);
+    bb.writeMethod24(0);
+    bb.writeMethod15(false);
+    return bb.toBuffer();
+}
+
 function buildHpDeltaPayload(entityId: number, delta: number): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod4(entityId);
@@ -261,14 +282,24 @@ function attachProxy(client: FakeClient, localId: number, enemyIndex: number): v
 function assertAllCanonicalHostiles(scope: string): void {
     const hostiles = getHostiles(scope);
     assert.equal(hostiles.length, EAST_WING_ENEMY_COUNT, 'JC_Mini2 should seed every authored cue as a canonical hostile');
-    // The run is fought at the highest player level in the party, and that one number is
-    // shared by everyone in it -- so a level 22 and a level 50 see the same enemy with the
-    // same health pool, and it dies at the same moment on both screens.
-    const partyLevel = EntityHandler.resolveServerAuthorityEntityLevel(scope);
-    assert.equal(partyLevel, 50, 'a level 50 party fights level 50 enemies');
+    // The run is fought at the dungeon's AUTHORED tier, and every member sees the same pool.
+    //
+    // It used to scale to the highest player level in the party, which reads well and is
+    // unenforceable: these hostiles are spawned by the client from the level's own cues and
+    // sized from the authored tier, so a ShadeWarrior copy holds 7380 while the canonical
+    // carried 26912. The player killed what was on their screen after a fifth of the damage
+    // the server was waiting for, and the canonical stayed standing with the rest -- dead for
+    // them, alive for everyone else, alive again for whoever joined later. The bigger pool
+    // never bought any difficulty, because the client decides when the enemy dies.
+    const enemyLevel = EntityHandler.resolveServerAuthorityEntityLevel(scope);
+    assert.equal(
+        enemyLevel,
+        LevelConfig.getAuthoredDungeonEnemyLevel('JC_Mini2'),
+        'client-owned hostiles are sized at the dungeon\x27s authored tier, the one the client uses'
+    );
     for (const hostile of hostiles) {
         assert.equal(hostile.clientSpawned, false, `${hostile.name} should be server canonical`);
-        assert.equal(hostile.level, partyLevel, `${hostile.name} should carry the party's tier`);
+        assert.equal(hostile.level, enemyLevel, `${hostile.name} should carry the run's tier`);
         assert.equal(hostile.requiredForClear, true, `${hostile.name} should be required for clear`);
         assert.equal(hostile.generatedFromScript, true, `${hostile.name} should be marked as script-generated`);
         assert.ok(String(hostile.spawnKey ?? '').includes('the_east_wing'), `${hostile.name} should keep a stable East Wing spawn key`);
@@ -277,7 +308,11 @@ function assertAllCanonicalHostiles(scope: string): void {
             EntityHandler.estimateServerAuthorityHostileMaxHp(hostile, scope),
             `${hostile.name} should be sized from the dungeon tier`
         );
-        assert.ok(Number(hostile.maxHp ?? 0) > 100, `${hostile.name} should have a health pool`);
+        // Not a floor of 100: some of the roster is authored to die instantly. A PortalFiend
+        // carries a HitPoints scale near zero and lands around 37 at the authored tier -- it is
+        // a spawner prop, not a fight -- and the client sizes its own copy from the same two
+        // numbers, so the two agree. What matters is that every hostile has SOME pool.
+        assert.ok(Number(hostile.maxHp ?? 0) > 0, `${hostile.name} should have a health pool`);
     }
 
     const boss = GlobalState.levelEntities.get(scope)?.get(920004);
@@ -942,6 +977,171 @@ async function testOwnerDestroyCountsAsAKillOnlyWhenTheEnemyWasFought(): Promise
     }
 }
 
+// A burial has to be lethal to the copy the CLIENT has, not to the one the server holds.
+//
+// The East Wing roster carries 'PortalFiend canonicalHp=135/135' next to ShadeWarrior 26912 and
+// GreaterDemonMaligner 161472. Sizing the burial from the canonical sent 135 damage at a client
+// copy holding the real pool, so those enemies stayed alive on a joiner's screen while being
+// long dead for the run and for the member who killed them.
+function testBurialIsLethalToATinyPoolCanonical(): void {
+    const zeus = createFakeClient('Zeus', 'east-wing-tinypool', 14501, 1);
+    const telahair = createFakeClient('Telahair', 'east-wing-tinypool', 14502, 1);
+    setParty(zeus, telahair);
+    for (const client of [zeus, telahair]) {
+        attachPlayer(client);
+        GlobalState.sessionsByToken.set(client.token, client as never);
+        EntityHandler.sendInitialLevelEntities(client as never, client.currentLevel);
+    }
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+
+    const tiny = getHostiles(scope).find((hostile) => Math.round(Number(hostile.maxHp)) <= 1000);
+    assert.ok(tiny, 'the roster should hold a hostile with a tiny authored pool');
+    const tinyIndex = getConfig().enemies.findIndex(
+        (enemy: any) => String(enemy.type) === String(tiny.entType ?? tiny.name)
+    );
+    assert.ok(tinyIndex >= 0, 'the tiny-pool hostile should be in the spawn config');
+
+    tiny.hp = 0;
+    tiny.dead = true;
+    tiny.destroyed = true;
+    tiny.entState = EntityState.DEAD;
+
+    telahair.sentPackets.length = 0;
+    EntityHandler.handleEntityFullUpdate(
+        telahair as never,
+        buildClientHostileFullUpdate(
+            660001,
+            String(tiny.entType ?? tiny.name),
+            Number(tiny.x),
+            Number(tiny.y),
+            Number(tiny.roomId ?? 0)
+        )
+    );
+
+    const lethal = telahair.sentPackets
+        .filter((packet) => packet.id === 0x78)
+        .map((packet) => parseHpDelta(packet.payload))
+        .filter((hp) => hp.entityId === 660001 && hp.delta < 0);
+    assert.ok(lethal.length > 0, 'a joiner meeting a buried hostile must be sent damage for it');
+    assert.ok(
+        Math.abs(lethal[lethal.length - 1].delta) > Math.round(Number(tiny.maxHp)),
+        'the burial must outsize the canonical pool, or a client copy with the real pool survives it'
+    );
+
+    for (const client of [zeus, telahair]) {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+}
+
+// A chest one member breaks is broken for the whole run.
+//
+// Chests arrive as ordinary ENEMY-team entities the client spawned, and they are NOT in the
+// generated roster -- a [RewardSource] capture named them `TreasureChestEmpty team=2
+// reason=chest_reward`, HitPoints 0.001, clientSpawned. With no canonical to bind to, every
+// client kept a private chest: one member broke theirs and the other walked up to an unbroken
+// one. The first report now seeds a canonical, and the second binds to it -- matched by the
+// cue it stands on, because breaking a chest renames it from TreasureChestMedium to
+// TreasureChestEmpty and both are the same object.
+function testChestsAreSharedAcrossTheParty(): void {
+    const zeus = createFakeClient('Zeus', 'east-wing-chest', 14601, 1);
+    const telahair = createFakeClient('Telahair', 'east-wing-chest', 14602, 1);
+    setParty(zeus, telahair);
+    for (const client of [zeus, telahair]) {
+        attachPlayer(client);
+        GlobalState.sessionsByToken.set(client.token, client as never);
+        EntityHandler.sendInitialLevelEntities(client as never, client.currentLevel);
+    }
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+    const before = getHostiles(scope).length;
+
+    // The first member's client spawns the chest and reports it.
+    EntityHandler.handleEntityFullUpdate(
+        zeus as never,
+        buildClientHostileFullUpdate(540001, 'TreasureChestMedium', 15000, 3200, 1)
+    );
+    const canonicalId = EntityHandler.resolveEntityAlias(zeus as never, 540001);
+    assert.ok(canonicalId > 0, 'a chest must be given a canonical to share');
+    assert.equal(getHostiles(scope).length, before + 1, 'the chest joins the run as one shared object');
+
+    // The second member's copy of the same chest binds to it rather than making another.
+    EntityHandler.handleEntityFullUpdate(
+        telahair as never,
+        buildClientHostileFullUpdate(640001, 'TreasureChestMedium', 15000, 3200, 1)
+    );
+    assert.equal(
+        EntityHandler.resolveEntityAlias(telahair as never, 640001),
+        canonicalId,
+        'both members must be looking at one chest, not one each'
+    );
+    assert.equal(getHostiles(scope).length, before + 1, 'a second report must not seed a second chest');
+
+    // The member standing at the chest breaks it, and says so.
+    telahair.sentPackets.length = 0;
+    LevelHandler.handleEntityIncrementalUpdate(
+        zeus as never,
+        buildIncrementalUpdatePayload(540001, 0, 0, EntityState.DEAD)
+    );
+
+    const chest = GlobalState.levelEntities.get(scope)?.get(canonicalId);
+    assert.equal(Boolean(chest?.dead), true, 'a broken chest is broken for the run, not just for whoever opened it');
+    assert.ok(
+        telahair.sentPackets
+            .filter((packet) => packet.id === 0x78)
+            .map((packet) => parseHpDelta(packet.payload))
+            .some((hp) => hp.entityId === 640001 && hp.delta < 0),
+        'the other member must be sent the break for their own copy of the chest'
+    );
+
+    for (const client of [zeus, telahair]) {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+}
+
+// A reward request is also a death certificate, and a chest pays once.
+//
+// A client only asks for a kill reward after the thing died on its screen. That signal is the
+// most reliable one there is here: the terminal state update and the destroy both go missing
+// sometimes, and the canonical can never reach zero on its own to confirm anything. A live
+// capture had `BoneFiend 1480/7380` still standing in the roster with its killer's reward
+// request sitting in the same log.
+//
+// Chests go the other way: both members end up breaking the same chest -- one opens it, the
+// other's copy is broken for them by the share -- and both clients then ask for the gold. Four
+// chest_reward requests for two chests, in that same capture.
+async function testRewardRequestBuriesTheEnemyAndChestsPayOnce(): Promise<void> {
+    const zeus = createFakeClient('Zeus', 'east-wing-reward', 14701, 1);
+    const telahair = createFakeClient('Telahair', 'east-wing-reward', 14702, 1);
+    setParty(zeus, telahair);
+    for (const client of [zeus, telahair]) {
+        attachPlayer(client);
+        GlobalState.sessionsByToken.set(client.token, client as never);
+        EntityHandler.sendInitialLevelEntities(client as never, client.currentLevel);
+    }
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+
+    attachProxy(zeus, 550001, 1);
+    attachProxy(telahair, 650001, 1);
+    const canonicalId = EntityHandler.resolveEntityAlias(zeus as never, 550001);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(canonicalId);
+    assert.ok(canonical, 'the copies should bind to a canonical');
+    canonical.hp = Math.max(1, Math.round(Number(canonical.maxHp) * 0.2));
+
+    telahair.sentPackets.length = 0;
+    RewardHandler.handleGrantReward(zeus as never, buildGrantRewardPayload(zeus.clientEntID, 550001, 0));
+    assert.equal(Boolean(canonical.dead), true, 'asking for the kill reward is asking after a kill');
+    assert.ok(
+        telahair.sentPackets
+            .filter((packet) => packet.id === 0x78)
+            .map((packet) => parseHpDelta(packet.payload))
+            .some((hp) => hp.entityId === 650001 && hp.delta < 0),
+        'the other member must be sent the death for their own copy'
+    );
+
+    for (const client of [zeus, telahair]) {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+}
+
 function resetRuntime(): void {
     GlobalState.levelEntities.clear();
     GlobalState.sessionsByToken.clear();
@@ -998,6 +1198,15 @@ async function main(): Promise<void> {
 
         resetRuntime();
         await testOwnerDestroyCountsAsAKillOnlyWhenTheEnemyWasFought();
+
+        resetRuntime();
+        testBurialIsLethalToATinyPoolCanonical();
+
+        resetRuntime();
+        testChestsAreSharedAcrossTheParty();
+
+        resetRuntime();
+        await testRewardRequestBuriesTheEnemyAndChestsPayOnce();
 
         console.log('east_wing_dungeon_spawns_regression: ok');
     } finally {

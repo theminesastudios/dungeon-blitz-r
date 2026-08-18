@@ -16,6 +16,8 @@ const path = require('path');
  */
 
 const TAGS = [
+    '[ClientObject]',
+    '[RewardSource]',
     '[HostileAttach]',
     '[HostileHit]',
     '[HostileHpReport]',
