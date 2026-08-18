@@ -209,6 +209,13 @@ function buildIncrementalUpdatePayload(entityId: number, deltaX: number, deltaY:
     return bb.toBuffer();
 }
 
+function buildDestroyEntityPayload(entityId: number): Buffer {
+    const bb = new BitBuffer(false);
+    bb.writeMethod4(entityId);
+    bb.writeMethod15(true);
+    return bb.toBuffer();
+}
+
 function buildHpDeltaPayload(entityId: number, delta: number): Buffer {
     const bb = new BitBuffer(false);
     bb.writeMethod4(entityId);
@@ -880,6 +887,61 @@ function testClientReportedDeathIsAcceptedWithHealthRemaining(): void {
     }
 }
 
+// Some kills only ever arrive as a destroy, and those must count too.
+//
+// A client does not always announce a kill as a terminal state update; sometimes the only
+// signal is its 0x0D. That path still refused a destroy whose canonical had health left AND
+// revived the enemy, so a handful survived every clear -- the run that reached 75% against a
+// joiner's 70% had exactly two of them left standing.
+//
+// A destroy is not automatically a kill, though: clients throw copies away when they tear a
+// room down. Two things together make it one -- the client reporting its own copy dead, and the
+// run's record showing the enemy most of the way down.
+async function testOwnerDestroyCountsAsAKillOnlyWhenTheEnemyWasFought(): Promise<void> {
+    const zeus = createFakeClient('Zeus', 'east-wing-destroy', 14401, 1);
+    const telahair = createFakeClient('Telahair', 'east-wing-destroy', 14402, 1);
+    setParty(zeus, telahair);
+    for (const client of [zeus, telahair]) {
+        attachPlayer(client);
+        GlobalState.sessionsByToken.set(client.token, client as never);
+        EntityHandler.sendInitialLevelEntities(client as never, client.currentLevel);
+    }
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+
+    attachProxy(zeus, 530001, 1);
+    attachProxy(telahair, 630001, 1);
+    const canonicalId = EntityHandler.resolveEntityAlias(zeus as never, 530001);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(canonicalId);
+    assert.ok(canonical, 'the copies should bind to a canonical');
+
+    // Walking away from an untouched enemy is not a kill.
+    zeus.entities.set(530001, { ...zeus.entities.get(530001), hp: 0, dead: true, entState: EntityState.DEAD });
+    await CombatHandler.handleEntityDestroy(zeus as never, buildDestroyEntityPayload(530001));
+    assert.equal(Boolean(canonical.dead), false, 'a destroy of an enemy at full health must not bury it');
+
+    // Fought most of the way down and then destroyed by its owner: that is the kill.
+    canonical.hp = Math.max(1, Math.round(Number(canonical.maxHp) * 0.15));
+    canonical.dead = false;
+    canonical.entState = EntityState.ACTIVE;
+    zeus.entities.set(530001, { ...zeus.entities.get(530001), hp: 0, dead: true, entState: EntityState.DEAD });
+    telahair.sentPackets.length = 0;
+    await CombatHandler.handleEntityDestroy(zeus as never, buildDestroyEntityPayload(530001));
+
+    assert.equal(Boolean(canonical.dead), true, 'an owner destroying a copy it fought down must bury the canonical');
+    assert.equal(Math.round(Number(canonical.hp)), 0, 'the remainder must not keep it standing');
+    assert.ok(
+        telahair.sentPackets
+            .filter((packet) => packet.id === 0x78)
+            .map((packet) => parseHpDelta(packet.payload))
+            .some((hp) => hp.entityId === 630001 && hp.delta < 0),
+        'the other member must be sent the death for their own copy'
+    );
+
+    for (const client of [zeus, telahair]) {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+}
+
 function resetRuntime(): void {
     GlobalState.levelEntities.clear();
     GlobalState.sessionsByToken.clear();
@@ -933,6 +995,9 @@ async function main(): Promise<void> {
 
         resetRuntime();
         testClientReportedDeathIsAcceptedWithHealthRemaining();
+
+        resetRuntime();
+        await testOwnerDestroyCountsAsAKillOnlyWhenTheEnemyWasFought();
 
         console.log('east_wing_dungeon_spawns_regression: ok');
     } finally {

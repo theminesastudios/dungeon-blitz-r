@@ -6430,16 +6430,68 @@ export class CombatHandler {
                 EntityHandler.normalizeServerAuthorityHostileState(levelScope, destroyedEntity);
             }
 
+            // The owner of the body is believed about its destruction too.
+            //
+            // This is the same refusal the incremental-update path used to make, still standing
+            // on the other door: a destroy for an enemy whose canonical has health left was
+            // rejected AND the enemy revived. A client does not always announce a kill as a
+            // terminal state update -- sometimes the only signal is this destroy -- and for
+            // those the canonical can never reach zero on its own, because the client stops
+            // reporting damage the moment its own copy dies.
+            //
+            // That is the handful of enemies left standing for a joiner after their mate had
+            // cleared the room: 75% against 70%, with two survivors and no death recorded for
+            // either of them.
+            // A destroy is not automatically a kill. A client throws its copies away
+            // routinely -- tearing a room down, culling what it can no longer see -- and
+            // accepting every one of those as a death would let enemies die by being walked
+            // away from. Two things together say this one is a kill: the client is reporting
+            // its OWN copy dead, and the run's own record shows the enemy was most of the way
+            // down. A body the party never really fought is still above half its pool; the
+            // ones this exists for were at 3483/26912, 5072/26912, 64361/134560.
+            const localCopyReportedDead = Boolean(
+                rawLocalDestroyedEntity &&
+                (
+                    Boolean(rawLocalDestroyedEntity.dead) ||
+                    Math.round(Number(rawLocalDestroyedEntity.hp ?? 1)) <= 0 ||
+                    Number(rawLocalDestroyedEntity.entState ?? EntityState.ACTIVE) === EntityState.DEAD
+                )
+            );
+            const canonicalMostlyDown = Math.round(Number(destroyedEntity.hp ?? 0)) * 2 <=
+                Math.round(Number(destroyedEntity.maxHp ?? 0));
+            const destroyReportedByOwner = !isSeedOutsideClientSpawnDestroy &&
+                localCopyReportedDead &&
+                canonicalMostlyDown &&
+                EntityHandler.isServerAuthorityProxyOwner(client, destroyedEntity, rawEntityId);
             if (
                 !isSeedOutsideClientSpawnDestroy &&
                 Math.round(Number(destroyedEntity.hp ?? 0)) > 0
             ) {
-                destroyedEntity.dead = false;
-                if (Number(destroyedEntity.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
-                    destroyedEntity.entState = EntityState.ACTIVE;
+                if (destroyReportedByOwner) {
+                    const remainder = Math.round(Number(destroyedEntity.hp ?? 0));
+                    const maxHp = Math.max(0, Math.round(Number(destroyedEntity.maxHp ?? 0)));
+                    destroyedEntity.hp = 0;
+                    destroyedEntity.dead = true;
+                    destroyedEntity.entState = EntityState.DEAD;
+                    if (maxHp > 0) {
+                        destroyedEntity.healthDelta = -maxHp;
+                        destroyedEntity.health_delta = -maxHp;
+                    }
+                    console.log(
+                        `[HostileDeathAccepted] ${getScopeLevelName(levelScope)} destroy ` +
+                        `id=${Math.round(Number(destroyedEntity.id ?? entityId))} ` +
+                        `name=${String(destroyedEntity.name ?? "?")} ` +
+                        `reporter=${String(client.character?.name ?? "?")} ` +
+                        `remainder=${remainder}/${maxHp}`
+                    );
+                } else {
+                    destroyedEntity.dead = false;
+                    if (Number(destroyedEntity.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
+                        destroyedEntity.entState = EntityState.ACTIVE;
+                    }
+                    CombatHandler.sendServerAuthorityAliveCorrection(client, levelScope, destroyedEntity, 'client_destroy_rejected_alive', rawEntityId);
+                    return;
                 }
-                CombatHandler.sendServerAuthorityAliveCorrection(client, levelScope, destroyedEntity, 'client_destroy_rejected_alive', rawEntityId);
-                return;
             }
         }
         if (EntityHandler.isHomeDummyEntity(destroyedEntity)) {
