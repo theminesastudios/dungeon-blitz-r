@@ -131,6 +131,18 @@ export class DungeonCompletionConditions {
         return Boolean(DungeonCompletionConditions.get(levelName)?.acceptRoomBossClearSignal);
     }
 
+    static acceptsRoomBossClearInRoom(levelName: string | null | undefined, roomId: number): boolean {
+        if (!DungeonCompletionConditions.acceptsRoomBossClearSignal(levelName)) {
+            return false;
+        }
+        const rooms = DungeonCompletionConditions.get(levelName)?.acceptRoomBossClearRooms;
+        if (!rooms?.length) {
+            return true;
+        }
+        const normalizedRoomId = Math.max(0, Math.round(Number(roomId ?? -1)));
+        return rooms.some((allowedRoomId) => Math.max(0, Math.round(Number(allowedRoomId))) === normalizedRoomId);
+    }
+
     static getRequiredBossNames(levelName: string | null | undefined): ReadonlySet<string> {
         const names = new Set<string>();
         for (const group of DungeonCompletionConditions.get(levelName)?.bossGroups ?? []) {
@@ -298,6 +310,17 @@ export class DungeonCompletionConditions {
                     typeof condition.acceptRoomBossClearSignal !== 'boolean'
                 ) {
                     errors.push(`${levelName}: acceptRoomBossClearSignal must be boolean`);
+                }
+                if (condition.acceptRoomBossClearRooms !== undefined && (
+                        !Array.isArray(condition.acceptRoomBossClearRooms) ||
+                        !condition.acceptRoomBossClearRooms.length ||
+                        condition.acceptRoomBossClearRooms.some((roomId) => !Number.isInteger(roomId) || roomId < 0)
+                    )
+                ) {
+                    errors.push(`${levelName}: acceptRoomBossClearRooms must be a non-empty array of non-negative integers`);
+                }
+                if (condition.acceptRoomBossClearRooms?.length && !condition.acceptRoomBossClearSignal) {
+                    errors.push(`${levelName}: acceptRoomBossClearRooms requires acceptRoomBossClearSignal`);
                 }
             }
             if (condition.mode === 'objectives' && !condition.entityObjectives?.length) {

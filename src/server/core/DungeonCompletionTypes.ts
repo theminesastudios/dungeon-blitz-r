@@ -21,6 +21,12 @@ export type DungeonCompletionCondition = {
     simultaneousBossWindowMs?: number;
     requireBossesCurrentlyDefeated?: boolean;
     acceptRoomBossClearSignal?: boolean;
+    // When acceptRoomBossClearSignal is true, only a boss-clear (0xAD) reported
+    // from one of these rooms may complete the encounter. Needed by multi-part
+    // fights like The Capstone, whose intermediate Nephit body has its own
+    // BossFight: without scoping, that early clear would finish the dungeon
+    // before the final fight ever starts.
+    acceptRoomBossClearRooms?: number[];
     autoCompleteOnObjectives?: boolean;
     allowDefeatedBossProxyCopies?: boolean;
     requirePlayerDamageForClientBosses?: boolean;

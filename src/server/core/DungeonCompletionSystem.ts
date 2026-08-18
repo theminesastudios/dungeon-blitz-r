@@ -334,7 +334,8 @@ export class DungeonCompletionSystem {
             !state ||
             !condition ||
             condition.mode !== 'bosses' ||
-            !DungeonCompletionConditions.acceptsRoomBossClearSignal(state.levelName)
+            !DungeonCompletionConditions.acceptsRoomBossClearSignal(state.levelName) ||
+            !DungeonCompletionConditions.acceptsRoomBossClearInRoom(state.levelName, roomId)
         ) {
             return false;
         }
