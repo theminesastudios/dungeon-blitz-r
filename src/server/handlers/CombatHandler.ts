@@ -6031,7 +6031,16 @@ export class CombatHandler {
             CombatHandler.shouldDeferPowerHitKillToClient(levelName, destroyedEntity) &&
             DungeonCompletionConditions.isRequiredBoss(levelName, destroyedEntity, levelScope)
         ) {
+            // Commit the entity death so noteEntityDefeated recognises it.
+            destroyedEntity.hp = 0;
+            destroyedEntity.dead = true;
+            destroyedEntity.destroyed = true;
+            destroyedEntity.entState = EntityState.DEAD;
+            const maxHpForDeath = Math.max(1, Math.round(Number(destroyedEntity.maxHp ?? 0)) || CombatHandler.estimateHostileMaxHp(destroyedEntity, levelScope) || 1);
+            destroyedEntity.healthDelta = -maxHpForDeath;
+            destroyedEntity.health_delta = -maxHpForDeath;
             destroyedEntity.clientDefeatVerified = true;
+            CombatHandler.syncHostileHealthCopies(levelScope, destroyedEntity, 0, maxHpForDeath);
             await MissionHandler.handleForcedDungeonBossCompletion(client, destroyedEntity);
         }
         let isSeedOutsideClientSpawnDestroy = false;
