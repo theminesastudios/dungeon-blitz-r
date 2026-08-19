@@ -6021,6 +6021,19 @@ export class CombatHandler {
             destroyedEntity.clientDefeatVerified = true;
             await MissionHandler.handleForcedDungeonBossCompletion(client, destroyedEntity);
         }
+        // Deferred-kill required bosses: the client's destroy packet is the
+        // authoritative signal that the boss is dead. The server kept the boss
+        // at hp=1 because its health pool was only a derived estimate, but the
+        // client knows the real HP and has confirmed the kill.
+        if (
+            destroyedEntity &&
+            !CombatHandler.isTerminalHostileEntity(destroyedEntity) &&
+            CombatHandler.shouldDeferPowerHitKillToClient(levelName, destroyedEntity) &&
+            DungeonCompletionConditions.isRequiredBoss(levelName, destroyedEntity, levelScope)
+        ) {
+            destroyedEntity.clientDefeatVerified = true;
+            await MissionHandler.handleForcedDungeonBossCompletion(client, destroyedEntity);
+        }
         let isSeedOutsideClientSpawnDestroy = false;
         if (
             destroyedEntity &&

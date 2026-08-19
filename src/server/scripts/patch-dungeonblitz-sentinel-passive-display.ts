@@ -410,7 +410,7 @@ function computeBonus(mn: Mn, entity: Emitted[]): Emitted[] {
  * param4 += bonus when param4 != 0, param1.basePowerName is a melee power and
  * param2 (the attacker) is a Sentinel. Entry/exit stack 0, uses only locals 1/2/4.
  */
-function buildMeleeHitBlock(mn: Mn, strIdx: Record<string, number>, meleeStr: number[]): Buffer {
+function buildMeleeHitBlock(mn: Mn, strIdx: Record<string, number>, meleeStr: number[], nullGuards: boolean = true): Buffer {
     const program: Emitted[] = [
         getlocal(4),
         { opcode: 0x2a, pop: 1, push: 2 }, // dup
@@ -420,6 +420,13 @@ function buildMeleeHitBlock(mn: Mn, strIdx: Record<string, number>, meleeStr: nu
         { opcode: OP.jump, branchTo: "done" },
         { label: "compute" },
     ];
+    // Null guard: if param1 (power info) is null, skip the bonus.
+    if (nullGuards) {
+        program.push(
+            getlocal(1),
+            { opcode: OP.iffalse, branchTo: "skip", pop: 1 },
+        );
+    }
     // melee power names: if basePowerName == name -> Sentinel check, else next name.
     for (let i = 0; i < MELEE_POWER_NAMES.length; i += 1) {
         if (i > 0) {
@@ -438,6 +445,15 @@ function buildMeleeHitBlock(mn: Mn, strIdx: Record<string, number>, meleeStr: nu
         { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
         { opcode: OP.jump, branchTo: "done" },
         { label: "sentinelCheck" },
+    );
+    // Null guard: if param2 (attacker entity) is null, skip the bonus.
+    if (nullGuards) {
+        program.push(
+            getlocal(2),
+            { opcode: OP.iffalse, branchTo: "skip", pop: 1 },
+        );
+    }
+    program.push(
         getlocal(2),
         get(mn.mMasterClass),
         pushStr(strIdx.Sentinel),
@@ -446,6 +462,11 @@ function buildMeleeHitBlock(mn: Mn, strIdx: Record<string, number>, meleeStr: nu
         { opcode: OP.jump, branchTo: "done" },
         { label: "notSentinel" },
         { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
+        ...(nullGuards
+            ? [{ opcode: OP.jump, branchTo: "done" } as Emitted,
+               { label: "skip" } as Emitted,
+               { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 } as Emitted]
+            : []),
         { label: "done" },
         { opcode: OP.add, pop: 2, push: 1 },
         setlocal(4),
@@ -457,7 +478,7 @@ function buildMeleeHitBlock(mn: Mn, strIdx: Record<string, number>, meleeStr: nu
  * param4 += bonus when param4 != 0, param1 is ProcCriticalHit and this.var_3
  * (the player) is a Sentinel. Entry/exit stack 0, uses only locals 1/4.
  */
-function buildCritBlock(mn: Mn, strIdx: Record<string, number>, procCriticalHitStr: number): Buffer {
+function buildCritBlock(mn: Mn, strIdx: Record<string, number>, procCriticalHitStr: number, nullGuards: boolean = true): Buffer {
     const entity: Emitted[] = [getlocal(0), get(mn.var_3)];
     const program: Emitted[] = [
         getlocal(4),
@@ -467,10 +488,28 @@ function buildCritBlock(mn: Mn, strIdx: Record<string, number>, procCriticalHitS
         { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
         { opcode: OP.jump, branchTo: "done" },
         { label: "compute" },
+    ];
+    // Null guard: if param1 (power info) is null, skip the bonus.
+    if (nullGuards) {
+        program.push(
+            getlocal(1),
+            { opcode: OP.iffalse, branchTo: "skip", pop: 1 },
+        );
+    }
+    program.push(
         getlocal(1),
         get(mn.basePowerName),
         pushStr(procCriticalHitStr),
         { opcode: OP.ifne, branchTo: "notProc", pop: 2 },
+    );
+    // Null guard: if this.var_3 (the player entity) is null, skip the bonus.
+    if (nullGuards) {
+        program.push(
+            ...entity,
+            { opcode: OP.iffalse, branchTo: "skip", pop: 1 },
+        );
+    }
+    program.push(
         ...entity,
         get(mn.mMasterClass),
         pushStr(strIdx.Sentinel),
@@ -482,10 +521,15 @@ function buildCritBlock(mn: Mn, strIdx: Record<string, number>, procCriticalHitS
         { opcode: OP.jump, branchTo: "done" },
         { label: "notSentinel" },
         { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
+        ...(nullGuards
+            ? [{ opcode: OP.jump, branchTo: "done" } as Emitted,
+               { label: "skip" } as Emitted,
+               { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 } as Emitted]
+            : []),
         { label: "done" },
         { opcode: OP.add, pop: 2, push: 1 },
         setlocal(4),
-    ];
+    );
     return assemble(program);
 }
 
@@ -579,8 +623,10 @@ function patchSwf(swfPath: string, verifyOnly: boolean): void {
     });
 
     const mn = resolveMultinames(abc);
-    const meleeBlock = buildMeleeHitBlock(mn, strIdx, meleeStr);
-    const critBlock = buildCritBlock(mn, strIdx, procCriticalHitStr);
+    const meleeBlock = buildMeleeHitBlock(mn, strIdx, meleeStr, true);
+    const oldMeleeBlock = buildMeleeHitBlock(mn, strIdx, meleeStr, false);
+    const critBlock = buildCritBlock(mn, strIdx, procCriticalHitStr, true);
+    const oldCritBlock = buildCritBlock(mn, strIdx, procCriticalHitStr, false);
 
     // ---- class_91.method_175: the dispatcher every melee-hit floater goes through ----
     {
@@ -589,20 +635,25 @@ function patchSwf(swfPath: string, verifyOnly: boolean): void {
             throw new PatchError("class_91.method_175 has exception handlers; the prepend is not safe.");
         }
         const code = ctx.body.subarray(body.codeStart, body.codeStart + body.codeLen);
-        const already = code.length >= meleeBlock.length && code.subarray(0, meleeBlock.length).equals(meleeBlock);
-        if (already) {
-            console.log(`${swfPath}: class_91.method_175 already carries the Sentinel melee floater bonus.`);
+        const alreadyNew = code.length >= meleeBlock.length && code.subarray(0, meleeBlock.length).equals(meleeBlock);
+        const alreadyOld = !alreadyNew && code.length >= oldMeleeBlock.length && code.subarray(0, oldMeleeBlock.length).equals(oldMeleeBlock);
+        if (alreadyNew) {
+            console.log(`${swfPath}: class_91.method_175 already carries the Sentinel melee floater bonus with null guards.`);
         } else if (verifyOnly) {
-            throw new PatchError(`${swfPath}: verify failed; the Sentinel melee floater bonus is missing.`);
+            throw new PatchError(`${swfPath}: verify failed; the Sentinel melee floater bonus is missing or needs updating.`);
         } else {
-            const patchedCode = Buffer.concat([meleeBlock, code]);
+            // Strip the old unguarded block if present, then prepend the new guarded block.
+            const originalCode = alreadyOld ? code.subarray(oldMeleeBlock.length) : code;
+            const patchedCode = Buffer.concat([meleeBlock, originalCode]);
             patches.push(
                 {
                     key: "class_91.method_175.code",
                     start: body.codeStart,
                     end: body.codeStart + body.codeLen,
                     data: patchedCode,
-                    detail: `prepend Sentinel melee floater bonus (${meleeBlock.length} bytes)`,
+                    detail: alreadyOld
+                        ? `replace unguarded Sentinel melee floater bonus with null-guarded version (${meleeBlock.length} bytes)`
+                        : `prepend Sentinel melee floater bonus with null guards (${meleeBlock.length} bytes)`,
                 },
                 {
                     key: "class_91.method_175.codeLen",
@@ -612,7 +663,11 @@ function patchSwf(swfPath: string, verifyOnly: boolean): void {
                     detail: `update class_91.method_175 code length (${body.codeLen} -> ${patchedCode.length})`,
                 },
             );
-            console.log(`${swfPath}: prepended Sentinel melee floater bonus to class_91.method_175 (+${meleeBlock.length} bytes).`);
+            if (alreadyOld) {
+                console.log(`${swfPath}: replaced unguarded Sentinel melee floater bonus with null-guarded version in class_91.method_175.`);
+            } else {
+                console.log(`${swfPath}: prepended Sentinel melee floater bonus with null guards to class_91.method_175 (+${meleeBlock.length} bytes).`);
+            }
         }
     }
 
@@ -628,21 +683,36 @@ function patchSwf(swfPath: string, verifyOnly: boolean): void {
             throw new PatchError("CombatState.method_72 has no 0xef prologue to anchor the insert.");
         }
         const instructions = disassemble(code, "CombatState.method_72");
-        const already =
+        const alreadyNew =
             code.length >= insertAt + critBlock.length && code.subarray(insertAt, insertAt + critBlock.length).equals(critBlock);
-        if (already) {
-            console.log(`${swfPath}: CombatState.method_72 already carries the Sentinel crit floater bonus.`);
+        const alreadyOld = !alreadyNew &&
+            code.length >= insertAt + oldCritBlock.length && code.subarray(insertAt, insertAt + oldCritBlock.length).equals(oldCritBlock);
+        if (alreadyNew) {
+            console.log(`${swfPath}: CombatState.method_72 already carries the Sentinel crit floater bonus with null guards.`);
         } else if (verifyOnly) {
-            throw new PatchError(`${swfPath}: verify failed; the Sentinel crit floater bonus is missing.`);
+            throw new PatchError(`${swfPath}: verify failed; the Sentinel crit floater bonus is missing or needs updating.`);
         } else {
-            const patchedCode = spliceInsert(code, instructions, insertAt, critBlock);
+            // Strip the old unguarded block if present, then insert the new guarded block.
+            let patchedCode: Buffer;
+            if (alreadyOld) {
+                // Remove old block, insert new one in its place.
+                patchedCode = Buffer.concat([
+                    code.subarray(0, insertAt),
+                    critBlock,
+                    code.subarray(insertAt + oldCritBlock.length),
+                ]);
+            } else {
+                patchedCode = spliceInsert(code, instructions, insertAt, critBlock);
+            }
             patches.push(
                 {
                     key: "CombatState.method_72.code",
                     start: body.codeStart,
                     end: body.codeStart + body.codeLen,
                     data: patchedCode,
-                    detail: `insert Sentinel crit floater bonus (${critBlock.length} bytes)`,
+                    detail: alreadyOld
+                        ? `replace unguarded Sentinel crit floater bonus with null-guarded version (${critBlock.length} bytes)`
+                        : `insert Sentinel crit floater bonus with null guards (${critBlock.length} bytes)`,
                 },
                 {
                     key: "CombatState.method_72.codeLen",
@@ -652,7 +722,11 @@ function patchSwf(swfPath: string, verifyOnly: boolean): void {
                     detail: `update CombatState.method_72 code length (${body.codeLen} -> ${patchedCode.length})`,
                 },
             );
-            console.log(`${swfPath}: inserted Sentinel crit floater bonus into CombatState.method_72 at +${insertAt} (${critBlock.length} bytes).`);
+            if (alreadyOld) {
+                console.log(`${swfPath}: replaced unguarded Sentinel crit floater bonus with null-guarded version in CombatState.method_72.`);
+            } else {
+                console.log(`${swfPath}: inserted Sentinel crit floater bonus with null guards into CombatState.method_72 at +${insertAt} (${critBlock.length} bytes).`);
+            }
         }
     }
 
