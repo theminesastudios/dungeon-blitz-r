@@ -15,6 +15,7 @@ import { getActivePotionBonuses } from '../utils/ConsumableState';
 import { normalizeCharacterMaterials } from '../utils/MaterialInventory';
 import { PetHandler } from './PetHandler';
 import { Config } from '../core/config';
+import { EntityState } from '../core/Entity';
 import { EntityHandler } from './EntityHandler';
 import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { DungeonCompletionSystem } from '../core/DungeonCompletionSystem';
@@ -1288,55 +1289,6 @@ export class RewardHandler {
         return true;
     }
 
-    /**
-     * One payout per chest per run.
-     *
-     * Chests are not in the generated roster, so the run has no id for them to key on -- but
-     * it does not need one. Two members standing at the same chest report it from the same
-     * place, so the cue it stands on is identity enough: the first claim within that radius
-     * takes the gold and every later one is a duplicate of it.
-     *
-     * Returns false when the chest has already paid, and the reward is dropped.
-     */
-    private static readonly CHEST_CLAIM_RADIUS_SQ = 400 * 400;
-    private static readonly claimedChestsByScope = new Map<string, Array<{ x: number; y: number }>>();
-
-    static forgetClaimedChests(levelScope: string): void {
-        RewardHandler.claimedChestsByScope.delete(String(levelScope ?? ''));
-    }
-
-    private static claimSharedChest(client: Client, sourceEntity: any, reward: RewardRequest): boolean {
-        const levelScope = getClientLevelScope(client);
-        if (!levelScope) {
-            return true;
-        }
-
-        const x = Number(sourceEntity?.x ?? reward.worldX ?? NaN);
-        const y = Number(sourceEntity?.y ?? reward.worldY ?? NaN);
-        if (!Number.isFinite(x) || !Number.isFinite(y)) {
-            return true;
-        }
-
-        const claimed = RewardHandler.claimedChestsByScope.get(levelScope) ?? [];
-        for (const claim of claimed) {
-            const distanceSq = ((claim.x - x) ** 2) + ((claim.y - y) ** 2);
-            if (distanceSq <= RewardHandler.CHEST_CLAIM_RADIUS_SQ) {
-                console.log(
-                    `[ChestClaim] ${levelScope} refused duplicate for ${String(client.character?.name ?? '?')} ` +
-                    `at ${Math.round(x)},${Math.round(y)} (gold=${reward.gold})`
-                );
-                return false;
-            }
-        }
-
-        claimed.push({ x: Math.round(x), y: Math.round(y) });
-        RewardHandler.claimedChestsByScope.set(levelScope, claimed);
-        console.log(
-            `[ChestClaim] ${levelScope} paid ${String(client.character?.name ?? '?')} ` +
-            `at ${Math.round(x)},${Math.round(y)} gold=${reward.gold}`
-        );
-        return true;
-    }
     static handleGrantReward(client: Client, data: Buffer): void {
         const br = new BitReader(data);
         const reward: RewardRequest = {
@@ -1388,6 +1340,51 @@ export class RewardHandler {
         const caller = 'handleGrantReward';
         const levelScope = getClientLevelScope(client);
 
+        // A chest pays the run once, and opening it empties it on every other screen.
+        //
+        // This request is the only moment a chest exists as far as the server is concerned --
+        // they are never reported as entities in their own right. It carries where the chest
+        // stands, which is identity enough: two members at one chest report it from the same
+        // place, and that survives the rename opening causes.
+        //
+        // The other member's copy is then broken BY us, so their client asks for the gold
+        // exactly as if they had opened it themselves. Refusing the second request is what
+        // keeps one chest worth one payout.
+        if (reason === 'chest_reward') {
+            // Two questions, two keys.
+            //
+            // Position answers "which chest is standing there", which is what another member's
+            // screen needs in order to break theirs. It is the wrong key for money: a capture
+            // caught one member opening four chests that all reported the SAME coordinate at
+            // reward time, with four different gold rolls -- so paying by position swallowed
+            // three real chests, and each of those also went unrecorded and stood back up for
+            // the joiner. The identity of a payout is the entity the client names.
+            // Where the chest SPAWNED, not where the request says it is. Both chests in a
+            // capture reported the first one's coordinate, so the second was recorded on top of
+            // the first and its own cue never got marked -- which is the chest that stood back
+            // up for the joiner.
+            const chestAt = EntityHandler.resolveChestPosition(
+                client,
+                levelScope,
+                reward.sourceId,
+                Number(sourceEntity?.x ?? reward.worldX ?? NaN),
+                Number(sourceEntity?.y ?? reward.worldY ?? NaN)
+            );
+            const chestX = chestAt?.x ?? NaN;
+            const chestY = chestAt?.y ?? NaN;
+            EntityHandler.noteChestOpened(client, levelScope, chestX, chestY);
+            if (!EntityHandler.claimChestPayout(levelScope, client, reward.sourceId)) {
+                console.log(
+                    `[Chest] ${levelScope} refused a repeat payout for ` +
+                    `${String(client.character?.name ?? '?')} chest=${reward.sourceId} (gold=${reward.gold})`
+                );
+                return;
+            }
+            console.log(
+                `[Chest] ${levelScope} paid ${String(client.character?.name ?? '?')} ` +
+                `chest=${reward.sourceId} at ${Math.round(chestX)},${Math.round(chestY)} gold=${reward.gold}`
+            );
+        }
         // A reward request is also a death certificate.
         //
         // A client only asks for a kill reward once the thing died on its screen, and for a
@@ -1396,7 +1393,20 @@ export class RewardHandler {
         // its own to confirm anything, because the client stops reporting damage the moment its
         // own copy dies. The live capture had `BoneFiend 1480/7380` standing in the roster with
         // its killer's reward request sitting right there in the same log.
-        if (sourceEntity && reason === 'legacy_enemy_reward') {
+        // The request alone is not a kill. Taking it as one executed enemies on the first hit:
+        // a client asks for a reward in more cases than a death, and this had no corroboration
+        // at all. What makes it a death certificate is the state of the copy that asked -- the
+        // client's own body for that enemy, which only reads dead once it died on their screen.
+        const sourceCopyIsDead = Boolean(
+            sourceEntity &&
+            (
+                Boolean(sourceEntity.dead) ||
+                Boolean(sourceEntity.destroyed) ||
+                Math.round(Number(sourceEntity.hp ?? 1)) <= 0 ||
+                Number(sourceEntity.entState ?? -1) === EntityState.DEAD
+            )
+        );
+        if (sourceEntity && reason === 'legacy_enemy_reward' && sourceCopyIsDead) {
             // Through the CANONICAL, not the copy that asked. `resolveSourceEntity` hands back
             // the client's own local proxy, and a proxy carries `clientSpawned`, which is the
             // one thing that makes it not the shared enemy.
@@ -1408,15 +1418,6 @@ export class RewardHandler {
             }
         }
 
-        // A chest pays the run once.
-        //
-        // Both members break the same chest -- one opens it, the other's copy is broken for
-        // them by the share -- and both clients then ask for the gold. The live capture had
-        // four chest_reward requests for two chests, 960 + 790 to one member and 816 + 1009 to
-        // the other. Only the opening pays; the shared break is a visual, not a second purse.
-        if (reason === 'chest_reward' && !RewardHandler.claimSharedChest(client, sourceEntity, reward)) {
-            return;
-        }
         if (!sourceEntity || reason === 'unknown') {
             return;
         }

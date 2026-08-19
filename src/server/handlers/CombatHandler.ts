@@ -764,6 +764,37 @@ export class CombatHandler {
      * and the sites that send positive deltas are also the ones that legitimately top up a
      * living enemy's copy on attach. The line names the caller.
      */
+    /**
+     * Damage aimed at an enemy the run has not touched.
+     *
+     * Reported live: an enemy the player had never hit dropped dead on sight, and the ones it
+     * happened to were the ones with a small health bar. Nothing in the kill paths fired for
+     * them -- not one [HostileDeathAccepted] in the whole capture -- so the damage is coming
+     * from a health CORRECTION, and a correction is a subtraction between two numbers that are
+     * supposed to describe the same enemy. When one of them is wrong by the size of a pool,
+     * the correction is a killing blow. This names the site that sent it.
+     */
+    static noteHostileDamageSend(
+        viewer: Client,
+        canonical: any,
+        localId: number,
+        delta: number,
+        reason: string
+    ): void {
+        if (delta >= 0 || !canonical || typeof canonical !== 'object') {
+            return;
+        }
+        const hp = Math.round(Number(canonical.hp ?? 0));
+        const maxHp = Math.round(Number(canonical.maxHp ?? 0));
+        if (hp <= 0 || maxHp <= 0 || hp < maxHp) {
+            return;
+        }
+        console.warn(
+            `[HostileUntouchedDamage] canonical=${Math.round(Number(canonical.id ?? 0))} ` +
+            `name=${String(canonical.name ?? '?')} -> ${String(viewer.character?.name ?? '?')}:${localId} ` +
+            `delta=${Math.round(delta)} canonicalHp=${hp}/${maxHp} reason=${reason}`
+        );
+    }
     static noteHostileHpSend(
         viewer: Client,
         canonical: any,
@@ -3594,6 +3625,7 @@ export class CombatHandler {
             return;
         }
         CombatHandler.noteHostileHpSend(viewer, entity, localEntityId, delta, `hp_correction:${reason}`);
+        CombatHandler.noteHostileDamageSend(viewer, entity, localEntityId, delta, `hp_correction:${reason}`);
         viewer.send(
             CombatHandler.CLIENT_HEAL_PACKET_ID,
             CombatHandler.buildHpDeltaPayload(localEntityId, delta)
@@ -3636,6 +3668,7 @@ export class CombatHandler {
         } else {
             const delta = canonicalHp - previousHp;
             CombatHandler.noteHostileHpSend(viewer, entity, localId, delta, `authoritative_delta:${reason}`);
+            CombatHandler.noteHostileDamageSend(viewer, entity, localId, delta, `authoritative_delta:${reason}`);
             viewer.send(0x78, CombatHandler.buildHpDeltaPayload(localId, delta));
         }
         viewer.entities.set(localId, {
@@ -6369,6 +6402,29 @@ export class CombatHandler {
             ? (canonicalServerAuthorityEntity ?? client.entities.get(entityId) ?? rawLocalDestroyedEntity ?? canonicalDestroyedEntity)
             : (client.entities.get(entityId) ?? canonicalDestroyedEntity ?? rawLocalDestroyedEntity);
 
+        // Breaking a chest is a destroy, and that is a signal we can always hear.
+        //
+        // The reward request was the only thing telling the run a chest had been opened, and it
+        // does not always come: a live capture had a member break two chests and ask for gold on
+        // one of them, so the other stayed 'unopened' and stood back up for the joiner. The
+        // client always destroys what it breaks, though, and a chest is an ordinary ENEMY-team
+        // body to it -- so this arrives whether a reward follows or not.
+        //
+        // Recording it here does not pay anybody. The gold still belongs to the reward path,
+        // which pays the opener once and refuses every request after it.
+        const chestBeingDestroyed = rawLocalDestroyedEntity ?? destroyedEntity;
+        if (levelScope && EntityHandler.isChestEntity(chestBeingDestroyed)) {
+            const chestAt = EntityHandler.resolveChestPosition(
+                client,
+                levelScope,
+                rawEntityId,
+                Number(chestBeingDestroyed?.x ?? NaN),
+                Number(chestBeingDestroyed?.y ?? NaN)
+            );
+            if (chestAt) {
+                EntityHandler.noteChestOpened(client, levelScope, chestAt.x, chestAt.y);
+            }
+        }
         // A client has no authority over anybody else's body.
         //
         // Player lifecycles are the server's: it spawns a body when a session enters a scope
@@ -6824,6 +6880,26 @@ export class CombatHandler {
             return false;
         }
 
+        // Damage that empties a chest is an opening too.
+        //
+        // The third and last way a client can tell us: some breaks arrive as neither a reward
+        // request nor a destroy, only as the health the client took off its own copy. A chest
+        // carries a tiny pool, so any real hit empties it.
+        if (EntityHandler.isChestEntity(entity) && amount < 0) {
+            const chestPool = Math.max(1, Math.round(Number(entity?.maxHp ?? entity?.hp ?? 1)) || 1);
+            if (Math.abs(amount) >= chestPool) {
+                const chestAt = EntityHandler.resolveChestPosition(
+                    client,
+                    levelScope,
+                    rawEntityId,
+                    Number(entity?.x ?? NaN),
+                    Number(entity?.y ?? NaN)
+                );
+                if (chestAt) {
+                    EntityHandler.noteChestOpened(client, levelScope, chestAt.x, chestAt.y);
+                }
+            }
+        }
         const levelEntity = CombatHandler.resolveLevelEntity(levelScope, entityId);
         const targetEntity = levelEntity ?? entity;
         const rejectLivingBossRegen = Boolean(

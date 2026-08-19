@@ -5087,6 +5087,10 @@ export class LevelHandler {
     }
 
     static spawnLevelNpcs(client: Client, levelName: string): void {
+        // Before the level's own cues run, not after: `Game.mBonusLevels` only sizes bodies
+        // the client spawns once it holds the value, so a late one leaves the room already
+        // built at the wrong tier. This is the entry point every level change passes through.
+        EntityHandler.sendDungeonBonusLevels(client, levelName);
         EntityHandler.sendInitialLevelEntities(client, levelName);
     }
 

@@ -411,6 +411,107 @@ export class EntityHandler {
      * scope with nobody in it -- an entity looked up by name alone, or mid-transfer state --
      * where sizing a hostile down would be worse than leaving it where it was.
      */
+    /**
+     * 'party' scales client-owned hostiles to the highest player level in the run;
+     * 'authored' keeps them at the dungeon's own tier, the number the client uses.
+     * See the note inside resolveServerAuthorityEntityLevel for what each one costs.
+     */
+    static readonly CLIENT_OWNED_HOSTILE_TIER: 'party' | 'authored' = 'authored';
+    /**
+     * Tell the client which tier to spawn this run's hostiles at.
+     *
+     * The client already has the knob and already uses it. Every hostile it spawns is sized
+     * as `const_867[Game.mBonusLevels + level.mapLevel] * entType.HitPoints`, and packet 0x5E
+     * -- `LinkUpdater.method_1061`, three operations long -- reads one integer straight into
+     * `Game.mBonusLevels` and does nothing else. The server has never sent it.
+     *
+     * So the run's difficulty is one number away: send the DIFFERENCE between the tier this
+     * run is fought at and the level's own authored tier, and the client sizes the bodies it
+     * spawns to match what the server is holding. That is what makes party scaling
+     * enforceable at all -- without it the server's pool is a number the client never sees,
+     * and every health correction turns into a second helping of damage.
+     *
+     * Two properties of `mBonusLevels` shape how this is used:
+     *   - it is an OFFSET on `mapLevel`, not an absolute level;
+     *   - it only affects bodies spawned after it arrives, so it has to be sent before the
+     *     client plays the room's cues -- level entry, and again for anyone who joins.
+     *
+     * Sent for every level, zero included: leaving a dungeon has to clear the offset, or the
+     * next map inherits it.
+     */
+    static readonly DUNGEON_BONUS_LEVELS_PACKET = 0x5E;
+
+    /**
+     * Count a player towards their run's tier before the scope has caught up with them.
+     *
+     * `resolvePartyEnemyLevelForScope` reads live sessions, which is right everywhere else and
+     * useless during a login: the client is not spawned yet, so it sees nobody. Seeding the
+     * latch from the arriving character closes that window, and because the latch is what the
+     * run is locked to, the tier a member is TOLD is always the tier the run is fought at.
+     */
+    static noteRunTierFromClient(levelScope: string, client: Client): void {
+        const scopeKey = String(levelScope ?? '').trim();
+        const characterLevel = Math.max(0, Math.round(Number(client.character?.level ?? 0)));
+        if (!scopeKey || characterLevel <= 0) {
+            return;
+        }
+
+        const clamped = Math.max(1, Math.min(EntityHandler.HOSTILE_BASE_HITPOINTS.length - 1, characterLevel));
+        const latched = EntityHandler.serverAuthorityScopeLevels.get(scopeKey) ?? 0;
+        if (clamped > latched) {
+            EntityHandler.serverAuthorityScopeLevels.set(scopeKey, clamped);
+        }
+    }
+    static sendDungeonBonusLevels(client: Client, levelName: string | null | undefined): void {
+        const normalized = LevelConfig.normalizeLevelName(levelName) || '';
+        const authoredLevel = LevelConfig.getAuthoredDungeonEnemyLevel(normalized);
+        let bonus = 0;
+        if (authoredLevel > 0 && EntityHandler.usesServerAuthorityHostiles(normalized)) {
+            const scope = getLevelScopeKey(normalized, client.levelInstanceId);
+
+            // The entering player's own level counts, and it has to count HERE.
+            //
+            // The tier normally comes from the sessions already standing in the scope, and at
+            // this moment there are none: this client is still logging in and is not spawned or
+            // indexed yet. So the first member into a dungeon resolved a tier of zero, fell back
+            // to the authored one, and was sent an offset of nothing -- their client then built
+            // the whole room at the authored tier while the server, once they finally counted,
+            // locked the run at 50 and sized every canonical to match.
+            //
+            // That is one player fighting 7380-point bodies against 26912-point canonicals for
+            // the rest of the run: they kill what is on their screen, the server keeps the enemy
+            // alive with the difference, and everyone else sees it standing. It was the first
+            // member every time, which is exactly who clears the dungeon.
+            EntityHandler.noteRunTierFromClient(scope, client);
+
+            // Held at zero, deliberately, and the packet still sent.
+            //
+            // `mBonusLevels` only reaches the client's OTHER level branch; a hostile spawned
+            // from a level cue reads `entType.baseLevel` and never sees it. Sending a real
+            // offset therefore does nothing for the bodies this dungeon is made of, while
+            // quietly enlarging any entity that does use the branch -- a fresh mismatch of
+            // exactly the kind the server now goes out of its way to avoid, since it sizes
+            // canonicals from the same `entType` level the client uses.
+            //
+            // The packet is still worth sending at zero: it clears an offset left over from
+            // wherever the player was before.
+            bonus = 0;
+        }
+
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(bonus);
+        client.sendBitBuffer(EntityHandler.DUNGEON_BONUS_LEVELS_PACKET, bb);
+        // Logged for every dungeon entry, zero included. A missing line used to be
+        // indistinguishable from an offset of nothing, and an offset of nothing was the bug:
+        // one member silently building the room at the authored tier while the run was fought
+        // at another.
+        if (authoredLevel > 0) {
+            console.log(
+                `[DungeonBonusLevels] ${normalized} -> ${String(client.character?.name ?? '?')} ` +
+                `+${bonus} (authored ${authoredLevel})`
+            );
+        }
+    }
     static resolveServerAuthorityEntityLevel(levelNameOrScope: string | null | undefined): number {
         const scopeKey = String(levelNameOrScope ?? '');
         const levelName = getScopeLevelName(scopeKey);
@@ -420,22 +521,34 @@ export class EntityHandler {
             return fallback;
         }
 
-        // Where the CLIENT owns the bodies, the authored tier is the only honest number.
+        // Which tier a client-owned hostile is sized at. One switch, because the two answers
+        // are a real trade and the right one is decided by playing, not by reading.
         //
-        // Scaling to the party's highest level is enforceable only for an enemy the server
-        // draws and drives. These are spawned by the client from the level's own cues, and the
-        // client sizes them from the dungeon's authored tier -- 29 in The East Wing, so a
-        // ShadeWarrior copy holds 7380 while the canonical was carrying 26912. The player kills
-        // what is on their screen after a fifth of the damage the server is waiting for, and
-        // the canonical is left standing with the rest: dead for them, alive for everyone else,
-        // and alive again for whoever joins later. The measured survivors were
-        // ShadeWarrior 21689/26912 and BoneFiend 21012/26912, both reported killed.
+        // AUTHORED: the number the client itself uses. Both sides then agree on the pool, and
+        // an enemy dies on the server at the same moment it dies on the screen.
         //
-        // The bigger pool never bought any difficulty -- the client decides when the enemy
-        // dies regardless -- so all it ever produced was that disagreement. Making a level 50
-        // party fight harder enemies here needs the client to be told the pool, which is a
-        // client patch, not a server number.
-        if (authoredLevel > 0 && !EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelName)) {
+        // PARTY: the highest player level in the run, which is what makes a level 50 party
+        // fight level 50 enemies. The server cannot push that pool into the client -- these
+        // bodies are spawned and sized by the client from the authored tier -- so the two
+        // disagree by the ratio between the tiers (3.65x in The East Wing: 26912 against 7380).
+        // 'party' was tried on 2026-08-18 and reverted the same day, and the reason is worth
+        // keeping: it is not cosmetic. Every health correction is a subtraction between two
+        // numbers in the CANONICAL's scale, and the client applies the result to a body in its
+        // own. Hit an enemy for 5900 and the attacker's client takes it down locally, 7380 to
+        // 1480; the canonical goes 26912 to 21012; the correction that follows is
+        // 21012 - 26912 = -5900, and that lands on the copy a second time -- on 1480 of health.
+        // So one or two hits execute anything, with the health bar barely moving. That is the
+        // reported "they die without the bar going down".
+        //
+        // Making 'party' work needs every HP packet to be expressed in the client's scale
+        // (multiplied by clientPool / canonicalPool) at each of the ~15 sites that send one.
+        // Until then the two sides have to share a number, and 'authored' is the one they both
+        // already use.
+        if (
+            EntityHandler.CLIENT_OWNED_HOSTILE_TIER === 'authored' &&
+            authoredLevel > 0 &&
+            !EntityHandler.usesCanonicalVisibleServerAuthorityHostiles(levelName)
+        ) {
             return Math.max(1, Math.min(EntityHandler.HOSTILE_BASE_HITPOINTS.length - 1, authoredLevel));
         }
 
@@ -446,19 +559,20 @@ export class EntityHandler {
             return fallback;
         }
 
+        // Locked once the run has a tier, and deliberately not raised afterwards.
+        //
+        // The tier reaches the client as `Game.mBonusLevels`, and that only sizes bodies the
+        // client spawns AFTER it arrives. Raising the run mid-way would grow the server's pools
+        // while every enemy already standing on every screen kept the old one -- the exact
+        // disagreement this whole mechanism exists to remove, reintroduced halfway through a
+        // fight. A higher-level member joining gets the run as it was when it started.
         const clamped = Math.max(1, Math.min(EntityHandler.HOSTILE_BASE_HITPOINTS.length - 1, resolved));
+        if (latched > 0) {
+            return latched;
+        }
         if (clamped !== latched) {
             EntityHandler.serverAuthorityScopeLevels.set(scopeKey, clamped);
-            if (latched > 0) {
-                console.log(
-                    `[DungeonDifficulty] ${scopeKey} enemy level ${latched} -> ${clamped} ` +
-                    '(a higher-level party member joined the run)'
-                );
-                // Resize what is already standing, or the run would be half at the old tier:
-                // the pools are recomputed with the damage already dealt preserved, so nothing
-                // resurrects and nothing dies from the change itself.
-                EntityHandler.rescaleServerAuthorityHostilesForScope(scopeKey);
-            }
+            console.log(`[DungeonDifficulty] ${scopeKey} run locked at enemy level ${clamped}`);
         }
         return clamped;
     }
@@ -523,6 +637,31 @@ export class EntityHandler {
     static estimateServerAuthorityHostileMaxHp(entity: any, levelNameOrScope?: string | null): number {
         const entType = GameData.getEntType(String(entity?.name ?? '')) ?? {};
         const hitPointScale = Number(entity?.HitPoints ?? entity?.hitPoints ?? entType?.HitPoints ?? NaN);
+
+        // Sized the way the CLIENT sizes it, from the type's own level.
+        //
+        // The client has six places that set an entity's level, and the one that adds the run's
+        // `mBonusLevels` is not the one a hostile spawned from a level cue takes -- those read
+        // `entType.baseLevel` and nothing else. So the offset we send reaches these bodies never,
+        // and any tier the server picks for itself is a number only the server has.
+        //
+        // Every symptom of that gap is the same one: the player kills what is on their screen,
+        // the canonical keeps the difference, and the enemy stands for everyone else. Measured
+        // at its worst, a ShadeWarrior recorded at 26912 died to 8572 of damage -- the client
+        // was fighting a tier 26 body the whole time.
+        //
+        // So the server stops choosing. It mirrors the type's own level, both sides compute the
+        // same pool from the same two numbers, and a kill lands on the canonical by arithmetic
+        // rather than by inference. Scaling a run above that needs the client to be told, and
+        // the only place that would work is a patch at those `entType.baseLevel` writes.
+        const entTypeLevel = Math.round(Number(
+            entity?.baseLevel ?? entType?.Level ?? entType?.baseLevel ?? entType?.ExpLevel ?? 0
+        ));
+        if (Number.isFinite(entTypeLevel) && entTypeLevel > 0 && Number.isFinite(hitPointScale) && hitPointScale > 0) {
+            const clamped = Math.max(1, Math.min(EntityHandler.HOSTILE_BASE_HITPOINTS.length - 1, entTypeLevel));
+            return Math.max(1, Math.round(EntityHandler.getHostileBaseHpForLevel(clamped) * hitPointScale));
+        }
+
         const entityLevel = EntityHandler.resolveServerAuthorityEntityLevel(
             levelNameOrScope ?? entity?.levelScope ?? entity?.levelName
         );
@@ -561,32 +700,40 @@ export class EntityHandler {
             Math.round(Number(EntityHandler.estimateServerAuthorityHostileMaxHp(canonical ?? localCopy, levelNameOrScope) ?? 0)) || 0
         );
 
-        // Double the biggest of the three, and no more.
+        // Big enough to kill anything the health table can produce, on purpose.
         //
-        // This used to reach for twice the largest hostile in the whole roster, from back when
-        // the two sides disagreed about pool sizes and a burial could fall short. They agree
-        // now -- both are built from the dungeon's authored tier -- so that bound is no longer
-        // buying anything, and it was costing plenty: a Ghoul with 7380 health was being sent
-        // 221400 damage, which the client's TakeDamage patch then reported straight back at
-        // that magnitude. Doubling covers any rounding between the two sides while keeping the
-        // number recognisable in a log. Overshooting is still free: TakeDamage stops at the
-        // health the entity has, and 0x78 is delivered with the floater suppressed.
-        return Math.max(1, canonicalMaxHp, localMaxHp, estimated) * 2;
+        // Every estimate here is the SERVER's idea of the pool, and the body being buried is the
+        // CLIENT's. The two are supposed to agree -- both build from the run's tier -- but the
+        // tier now travels in a packet (`Game.mBonusLevels`), and anything that arrives late,
+        // out of order, or after a body was already spawned puts them out of step. When that
+        // happens a burial sized from the server's number is simply too small, the copy survives
+        // it, and the enemy stands on that screen for the rest of the run: dead for the party,
+        // alive for one member. That failure has come back three times in this dungeon under
+        // three different causes, so this stops depending on the estimate at all.
+        //
+        // The largest pool the table can express is base level 50 (134560) times the largest
+        // HitPoints multiplier in EntTypes, which is single digits. Sixteen times that is past
+        // anything reachable, and overshooting is free: the client's TakeDamage stops at the
+        // health the entity actually has, and 0x78 is delivered with the damage floater
+        // suppressed, so nothing is drawn for the excess.
+        const lethalFloor = EntityHandler.HOSTILE_BASE_HITPOINTS[EntityHandler.HOSTILE_BASE_HITPOINTS.length - 1] * 16;
+        return Math.max(1, canonicalMaxHp, localMaxHp, estimated, lethalFloor);
     }
 
     /**
-     * The chests a dungeon room breaks open.
+     * Chests, kept deliberately out of the hostile machinery.
      *
-     * They arrive as ordinary ENEMY-team entities the client spawned -- a `[RewardSource]`
-     * capture named them: `TreasureChestEmpty team=2 reason=chest_reward`, HitPoints 0.001,
-     * `clientSpawned: true`. What they are NOT is part of the generated roster, which holds
-     * only the 35 authored hostiles, so nothing ever seeded a canonical for them and every
-     * client kept its own private chest: one member broke theirs and the other walked up to an
-     * unbroken one.
+     * They look like hostiles -- `team=2`, a health pool, `clientSpawned` -- and the first
+     * attempt at sharing them leaned on that, giving each one a canonical so the enemy code
+     * could carry it. It could, and it also carried everything else: the reconcile swept them,
+     * and chests vanished before anyone opened them. A chest has none of the problems that
+     * machinery exists for. It is opened once, by one person, and every other screen simply
+     * needs to be told.
      *
-     * Breaking a chest also changes its name -- `TreasureChestMedium` becomes
-     * `TreasureChestEmpty` -- so the family has to be matched as one identity, by where the
-     * cue put it rather than by what it is called at the moment it is looked at.
+     * So this is the whole model: a set of opened chests per run, keyed by where the chest
+     * stands. Two members at the same chest report it from the same place, so the cue is
+     * identity enough -- and it survives the rename that opening causes
+     * (`TreasureChestMedium` becomes `TreasureChestEmpty`), which a name never would.
      */
     private static readonly CHEST_ENTITY_NAMES = new Set<string>([
         'treasurechestmedium',
@@ -594,102 +741,193 @@ export class EntityHandler {
         'questtreasurechest',
         'treasurechestempty'
     ]);
+    // Tight on purpose. This was 400px, which is not "the same chest" -- it is "somewhere near
+    // that side of the room", and a room can stand two chests inside it. The live capture caught
+    // exactly that: one member opened a chest, opened a second one a few hundred pixels away, and
+    // the run read the second as a repeat of the first -- so it paid nothing and, worse, was
+    // never broken on anybody else's screen. It then stood there unopened for the joiner, which
+    // is the chest that "respawned".
+    //
+    // A chest does not move, and both clients spawn it from the same cue, so the two reports of
+    // one chest land on the same coordinate give or take rounding. 64px is far more than that
+    // and far less than the gap between two chests.
+    private static readonly CHEST_MATCH_RADIUS_SQ = 64 * 64;
+    private static readonly openedChestsByScope = new Map<string, Array<{ x: number; y: number }>>();
 
     static isChestEntity(entity: any): boolean {
         if (!entity || entity.isPlayer) {
             return false;
         }
-        const name = EntityHandler.normalizeIdentityName(
+        return EntityHandler.CHEST_ENTITY_NAMES.has(EntityHandler.normalizeIdentityName(
             entity.entType ?? entity.EntType ?? entity.name ?? entity.EntName
-        );
-        return EntityHandler.CHEST_ENTITY_NAMES.has(name);
+        ));
     }
 
-    /** A chest canonical already standing at the same cue, whatever it is currently called. */
-    private static findChestCanonicalAtAnchor(levelMap: Map<number, any> | null, entity: any): any | null {
-        if (!levelMap || !EntityHandler.isChestEntity(entity)) {
-            return null;
-        }
-        const proxyX = Number(entity.x ?? NaN);
-        const proxyY = Number(entity.y ?? NaN);
-        if (!Number.isFinite(proxyX) || !Number.isFinite(proxyY)) {
-            return null;
-        }
+    /**
+     * Where each client's chest actually stands, remembered from the moment it spawned.
+     *
+     * The position a chest reports later is not reliable. A capture had two chests spawn at
+     * `16546,6659` and `15104,6619`, and then BOTH of their reward requests arrive carrying the
+     * first coordinate -- so the second was recorded on top of the first, its own cue was never
+     * marked opened, and it stood back up for the joiner. The spawn is the one report that
+     * cannot be confused: it comes from the cue that placed the chest, and it names the entity.
+     */
+    private static readonly chestSpawnPositions = new Map<string, Map<string, { x: number; y: number }>>();
 
-        let best: any = null;
-        let bestDistanceSq = Number.POSITIVE_INFINITY;
-        for (const candidate of levelMap.values()) {
-            if (Boolean(candidate?.clientSpawned) || !EntityHandler.isChestEntity(candidate)) {
-                continue;
-            }
-            const anchorX = Number(candidate.spawnAnchorX ?? candidate.x ?? NaN);
-            const anchorY = Number(candidate.spawnAnchorY ?? candidate.y ?? NaN);
-            if (!Number.isFinite(anchorX) || !Number.isFinite(anchorY)) {
-                continue;
-            }
-            const distanceSq = ((anchorX - proxyX) ** 2) + ((anchorY - proxyY) ** 2);
-            if (distanceSq <= EntityHandler.CANONICAL_VISIBLE_PROXY_MATCH_MAX_DISTANCE_SQ && distanceSq < bestDistanceSq) {
-                bestDistanceSq = distanceSq;
-                best = candidate;
-            }
+    static noteChestSpawnPosition(client: Client, levelScope: string, localId: number, x: number, y: number): void {
+        const scopeKey = String(levelScope ?? '').trim();
+        const id = Math.max(0, Math.round(Number(localId) || 0));
+        if (!scopeKey || id <= 0 || !Number.isFinite(x) || !Number.isFinite(y)) {
+            return;
         }
-        return best;
+        const byChest = EntityHandler.chestSpawnPositions.get(scopeKey) ?? new Map<string, { x: number; y: number }>();
+        byChest.set(`${client.token}:${id}`, { x: Math.round(x), y: Math.round(y) });
+        EntityHandler.chestSpawnPositions.set(scopeKey, byChest);
     }
 
-    /** Turn the first report of a chest into the run's canonical for it. */
-    private static promoteChestToCanonical(
+    static resolveChestPosition(
         client: Client,
-        levelName: string | null | undefined,
-        levelMap: Map<number, any> | null,
-        entity: any
-    ): any | null {
-        if (!levelMap || !EntityHandler.isChestEntity(entity)) {
-            return null;
+        levelScope: string,
+        localId: number,
+        fallbackX: number,
+        fallbackY: number
+    ): { x: number; y: number } | null {
+        const scopeKey = String(levelScope ?? '').trim();
+        const id = Math.max(0, Math.round(Number(localId) || 0));
+        const spawned = id > 0 ? EntityHandler.chestSpawnPositions.get(scopeKey)?.get(`${client.token}:${id}`) : undefined;
+        if (spawned) {
+            return spawned;
+        }
+        return Number.isFinite(fallbackX) && Number.isFinite(fallbackY)
+            ? { x: Math.round(fallbackX), y: Math.round(fallbackY) }
+            : null;
+    }
+
+    static forgetChestSpawnPositions(levelScope: string): void {
+        EntityHandler.chestSpawnPositions.delete(String(levelScope ?? ''));
+    }
+    static isChestOpened(levelScope: string, x: number, y: number): boolean {
+        const opened = EntityHandler.openedChestsByScope.get(String(levelScope ?? ''));
+        if (!opened || !Number.isFinite(x) || !Number.isFinite(y)) {
+            return false;
+        }
+        return opened.some((chest) =>
+            (((chest.x - x) ** 2) + ((chest.y - y) ** 2)) <= EntityHandler.CHEST_MATCH_RADIUS_SQ);
+    }
+
+    static forgetOpenedChests(levelScope: string): void {
+        EntityHandler.openedChestsByScope.delete(String(levelScope ?? ''));
+    }
+
+    /**
+     * Record an opened chest and break it on every other screen that still has one there.
+     *
+     * Returns false when the run had already opened this chest, which is what stops it paying
+     * a second time: the other member's copy breaks because we broke it, and their client asks
+     * for the gold exactly as if they had done it themselves.
+     */
+    private static readonly paidChestClaims = new Map<string, Set<string>>();
+
+    static forgetPaidChestClaims(levelScope: string): void {
+        EntityHandler.paidChestClaims.delete(String(levelScope ?? ''));
+    }
+
+    /**
+     * Whether this exact chest has already been paid for.
+     *
+     * Position answers "which chest is standing there", and that is the right key for breaking
+     * one on somebody else's screen. It is the wrong key for money: a capture caught one member
+     * opening four chests that all reported the SAME coordinate at reward time, with four
+     * different gold rolls -- so paying by position swallowed three real chests. The identity of
+     * a payout is the entity that was opened, which the client names, and which is unique per
+     * chest even when the coordinate is not.
+     */
+    static claimChestPayout(levelScope: string, opener: Client, sourceId: number): boolean {
+        const scopeKey = String(levelScope ?? '').trim();
+        const id = Math.max(0, Math.round(Number(sourceId) || 0));
+        if (!scopeKey || id <= 0) {
+            return true;
         }
 
-        const levelScope = getClientLevelScope(client);
-        const canonicalId = EntityHandler.nextChestCanonicalId(levelMap);
-        const canonical: any = {
-            ...entity,
-            id: canonicalId,
-            clientSpawned: false,
-            ownerToken: 0,
-            ownerUserId: 0,
-            ownerPartyId: 0,
-            ownerCharacterName: '',
-            canonicalEntityId: undefined,
-            sharedCanonicalId: undefined,
-            proxyOwnerToken: client.token,
-            proxyOwnerName: client.character?.name ?? '',
-            spawnAnchorX: Number(entity.x ?? 0),
-            spawnAnchorY: Number(entity.y ?? 0),
-            requiredForClear: false,
-            dead: false,
-            destroyed: false,
-            entState: EntityState.ACTIVE
-        };
-        canonical.spawnKey = canonical.spawnKey || EntityHandler.getHostileSpawnKey(levelScope, canonical);
-        EntityHandler.normalizeServerAuthorityHostileState(levelName, canonical);
-        levelMap.set(canonicalId, canonical);
+        const key = `${opener.token}:${id}`;
+        const paid = EntityHandler.paidChestClaims.get(scopeKey) ?? new Set<string>();
+        if (paid.has(key)) {
+            return false;
+        }
+        paid.add(key);
+        EntityHandler.paidChestClaims.set(scopeKey, paid);
+        return true;
+    }
+
+    static noteChestOpened(opener: Client, levelScope: string, x: number, y: number): boolean {
+        const scopeKey = String(levelScope ?? '');
+        if (!scopeKey || !Number.isFinite(x) || !Number.isFinite(y)) {
+            return true;
+        }
+        if (EntityHandler.isChestOpened(scopeKey, x, y)) {
+            console.log(
+                `[Chest] ${scopeKey} ${String(opener.character?.name ?? '?')} asked again for the chest ` +
+                `at ${Math.round(x)},${Math.round(y)} -- already opened`
+            );
+            return false;
+        }
+
+        const opened = EntityHandler.openedChestsByScope.get(scopeKey) ?? [];
+        opened.push({ x: Math.round(x), y: Math.round(y) });
+        EntityHandler.openedChestsByScope.set(scopeKey, opened);
         console.log(
-            `[ChestCanonical] ${LevelConfig.normalizeLevelName(levelName)} seeded id=${canonicalId} ` +
-            `name=${String(canonical.name ?? '?')} at ${Math.round(canonical.spawnAnchorX)},${Math.round(canonical.spawnAnchorY)} ` +
-            `from ${String(client.character?.name ?? '?')}`
+            `[Chest] ${scopeKey} opened by ${String(opener.character?.name ?? '?')} ` +
+            `at ${Math.round(x)},${Math.round(y)}`
         );
-        return canonical;
-    }
 
-    /** Chest canonicals live above the authored roster so they can never collide with it. */
-    private static nextChestCanonicalId(levelMap: Map<number, any>): number {
-        let next = EntityHandler.CHEST_CANONICAL_ID_BASE;
-        while (levelMap.has(next)) {
-            next += 1;
+        for (const viewer of GlobalState.getSessionsInLevelScope(scopeKey)) {
+            if (viewer === opener || !viewer.playerSpawned || getClientLevelScope(viewer) !== scopeKey) {
+                continue;
+            }
+            EntityHandler.breakChestOnScreen(viewer, x, y);
         }
-        return next;
+        return true;
     }
 
-    private static readonly CHEST_CANONICAL_ID_BASE = 940001;
+    /** Break whatever chest this viewer is holding at that spot. */
+    static breakChestOnScreen(viewer: Client, x: number, y: number): boolean {
+        for (const [localId, entity] of viewer.entities.entries()) {
+            if (!EntityHandler.isChestEntity(entity)) {
+                continue;
+            }
+            const dx = Number(entity.x ?? NaN) - x;
+            const dy = Number(entity.y ?? NaN) - y;
+            if (!Number.isFinite(dx) || !Number.isFinite(dy)) {
+                continue;
+            }
+            if (((dx * dx) + (dy * dy)) > EntityHandler.CHEST_MATCH_RADIUS_SQ) {
+                continue;
+            }
+            EntityHandler.sendChestBreak(viewer, Math.round(Number(localId)), entity);
+            return true;
+        }
+        return false;
+    }
 
+    /**
+     * The same three packets that bury a hostile, for the same reason: 0x07 and 0x0D are
+     * dropped by the client for a body it spawned itself, and only the damage lands.
+     */
+    static sendChestBreak(viewer: Client, localId: number, entity: any): void {
+        if (localId <= 0) {
+            return;
+        }
+        console.log(
+            `[Chest] broke ${String(entity?.name ?? '?')} on ${String(viewer.character?.name ?? '?')}:${localId} ` +
+            `at ${Math.round(Number(entity?.x ?? 0))},${Math.round(Number(entity?.y ?? 0))}`
+        );
+        const lethal = EntityHandler.resolveLethalHostileDelta(getClientLevelScope(viewer), entity, entity);
+        viewer.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -lethal));
+        viewer.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
+        viewer.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
+        viewer.entities.delete(localId);
+        viewer.knownEntityIds.delete(localId);
+    }
     static isServerAuthorityHostileEntity(levelNameOrScope: string | null | undefined, entity: any): boolean {
         return EntityHandler.usesServerAuthorityHostiles(getScopeLevelName(String(levelNameOrScope ?? ''))) &&
             Boolean(entity) &&
@@ -938,10 +1176,41 @@ export class EntityHandler {
             return;
         }
 
-        const destinationHasRun = Array.from(newMap.values())
-            .some((entity) => EntityHandler.isServerAuthorityHostileEntity(levelName, entity));
-        if (destinationHasRun) {
+        // A pristine roster is not a run. It is seeding.
+        //
+        // The destination usually holds hostiles already -- somebody entered and the level was
+        // populated for them -- and refusing to carry into it looked like the safe choice. It is
+        // not: the party then lands on that untouched roster and every enemy they had fought
+        // stands back up at full health. The live capture caught it exactly, one canonical
+        // walked down to 4932/26912 by both members and then reported at 26912/26912 the moment
+        // the scope re-keyed.
+        //
+        // So the test is not "are there hostiles here" but "has anything happened to them". A
+        // destination where nothing is dead and nothing is damaged has no history to lose, and
+        // the run being carried in does.
+        const destinationHostiles = Array.from(newMap.values())
+            .filter((entity) => EntityHandler.isServerAuthorityHostileEntity(levelName, entity));
+        const destinationHasHistory = destinationHostiles.some((entity) =>
+            EntityHandler.isEntityDead(entity) ||
+            Math.round(Number(entity?.hp ?? 0)) < Math.round(Number(entity?.maxHp ?? 0)));
+        if (destinationHasHistory) {
             return;
+        }
+
+        const sourceHasHistory = Array.from(oldMap.values()).some((entity) =>
+            EntityHandler.isServerAuthorityHostileEntity(levelName, entity) &&
+            (
+                EntityHandler.isEntityDead(entity) ||
+                Math.round(Number(entity?.hp ?? 0)) < Math.round(Number(entity?.maxHp ?? 0))
+            ));
+        if (destinationHostiles.length > 0 && !sourceHasHistory) {
+            return;
+        }
+
+        // Clear the pristine roster out of the way so the run replaces it rather than merging
+        // with it -- two rosters in one scope would double every count the dungeon keeps.
+        for (const entity of destinationHostiles) {
+            newMap.delete(Math.max(0, Math.round(Number(entity?.id ?? 0))));
         }
 
         let carried = 0;
@@ -964,6 +1233,11 @@ export class EntityHandler {
         EntityHandler.moveScopeKeyedEntry(EntityHandler.serverAuthorityDestroyedFingerprintsByScope, oldScope, newScope);
         EntityHandler.moveScopeKeyedEntry(GlobalState.deadServerAuthorityHostilesByScope, oldScope, newScope);
         EntityHandler.moveScopeKeyedEntry(GlobalState.levelQuestProgress, oldScope, newScope);
+        // The opened chests are part of the run too. Leaving them behind would stand every one
+        // of them back up the moment the scope was re-keyed.
+        EntityHandler.moveScopeKeyedEntry(EntityHandler.openedChestsByScope, oldScope, newScope);
+        EntityHandler.moveScopeKeyedEntry(EntityHandler.paidChestClaims, oldScope, newScope);
+        EntityHandler.moveScopeKeyedEntry(EntityHandler.chestSpawnPositions, oldScope, newScope);
         // The tier is latched per scope, and these enemies are already sized to it. Dropping it
         // would leave the roster at the old tier while the new key resolved a different one.
         EntityHandler.moveScopeKeyedEntry(EntityHandler.serverAuthorityScopeLevels, oldScope, newScope);
@@ -1551,13 +1825,7 @@ export class EntityHandler {
             return true;
         }
 
-        // A chest is matched by its cue, not by its name: breaking one turns a
-        // `TreasureChestMedium` into a `TreasureChestEmpty`, and the run has to treat both as
-        // the same object or the second member's unbroken copy binds to nothing.
-        const chestCanonical = EntityHandler.findChestCanonicalAtAnchor(levelMap, entity) ??
-            EntityHandler.promoteChestToCanonical(client, levelName, levelMap, entity);
-        const existingCanonical = chestCanonical ??
-            EntityHandler.findServerAuthorityProxyCanonical(levelName, levelMap, entity);
+        const existingCanonical = EntityHandler.findServerAuthorityProxyCanonical(levelName, levelMap, entity);
         const canonical = existingCanonical ??
             EntityHandler.promoteFirstSightServerAuthorityHostile(client, levelName, levelMap, entity, rawEntityId);
         if (!canonical) {
@@ -4820,6 +5088,26 @@ export class EntityHandler {
                 `hp=${Math.round(Number((props as any)?.hp ?? 0))}/${Math.round(Number((props as any)?.maxHp ?? 0))} ` +
                 `room=${Number(props?.roomId ?? -1)} state=${Number(props?.entState ?? -1)}`
             );
+        }
+        // A chest the run has already opened is broken the moment this client spawns it.
+        //
+        // This is what a joiner walks into: their client plays the room's cues and puts an
+        // unbroken chest in front of them, hours after somebody emptied it. Nothing else can
+        // catch it -- chests are not in the roster, so none of the hostile paths ever see one.
+        if (!isPlayer && EntityHandler.isChestEntity(props)) {
+            const chestScope = getClientLevelScope(client);
+            const chestX = Number((props as any)?.x ?? NaN);
+            const chestY = Number((props as any)?.y ?? NaN);
+            const alreadyOpen = EntityHandler.isChestOpened(chestScope, chestX, chestY);
+            EntityHandler.noteChestSpawnPosition(client, chestScope, rawEntityId, chestX, chestY);
+            console.log(
+                `[Chest] ${String(client.character?.name ?? '?')} spawned ${String(props?.name ?? '?')} ` +
+                `id=${rawEntityId} at ${Math.round(chestX)},${Math.round(chestY)} opened=${alreadyOpen}`
+            );
+            if (alreadyOpen) {
+                EntityHandler.sendChestBreak(client, rawEntityId, props);
+                return;
+            }
         }
         if (EntityHandler.suppressServerAuthorityClientHostileSpawn(client, levelName, props, rawEntityId)) {
             return;

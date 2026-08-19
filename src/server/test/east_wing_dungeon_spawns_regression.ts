@@ -291,12 +291,15 @@ function assertAllCanonicalHostiles(scope: string): void {
     // the server was waiting for, and the canonical stayed standing with the rest -- dead for
     // them, alive for everyone else, alive again for whoever joined later. The bigger pool
     // never bought any difficulty, because the client decides when the enemy dies.
+    // Which tier this is depends on EntityHandler.CLIENT_OWNED_HOSTILE_TIER, and both answers
+    // are legitimate -- 'authored' keeps the server's pool equal to the one the client uses,
+    // 'party' scales the run to its highest member and accepts that the two disagree. Assert
+    // the rule rather than a number, so switching the mode does not read as a broken test.
     const enemyLevel = EntityHandler.resolveServerAuthorityEntityLevel(scope);
-    assert.equal(
-        enemyLevel,
-        LevelConfig.getAuthoredDungeonEnemyLevel('JC_Mini2'),
-        'client-owned hostiles are sized at the dungeon\x27s authored tier, the one the client uses'
-    );
+    const expectedLevel = EntityHandler.CLIENT_OWNED_HOSTILE_TIER === 'authored'
+        ? LevelConfig.getAuthoredDungeonEnemyLevel('JC_Mini2')
+        : 50;
+    assert.equal(enemyLevel, expectedLevel, 'the run sizes its hostiles from the configured tier');
     for (const hostile of hostiles) {
         assert.equal(hostile.clientSpawned, false, `${hostile.name} should be server canonical`);
         assert.equal(hostile.level, enemyLevel, `${hostile.name} should carry the run's tier`);
@@ -727,6 +730,12 @@ function testScopeRekeyCarriesTheRun(): void {
     const carried = getHostiles(newScope);
     assert.equal(carried.length, EAST_WING_ENEMY_COUNT, 'the whole roster must move with the run');
     assert.equal(
+        carried.filter((hostile) => Math.round(Number(hostile.hp)) < Math.round(Number(hostile.maxHp))).length +
+            carried.filter((hostile) => Boolean(hostile.dead)).length > 0,
+        true,
+        'the run that arrives is the one with a history, not a fresh copy of the roster'
+    );
+    assert.equal(
         Boolean(carried.find((hostile) => Math.round(Number(hostile.id)) === killedId)?.dead),
         true,
         'an enemy the run had killed must still be dead under the new key'
@@ -1023,73 +1032,16 @@ function testBurialIsLethalToATinyPoolCanonical(): void {
         .map((packet) => parseHpDelta(packet.payload))
         .filter((hp) => hp.entityId === 660001 && hp.delta < 0);
     assert.ok(lethal.length > 0, 'a joiner meeting a buried hostile must be sent damage for it');
+    // Not merely bigger than the canonical: bigger than anything the health table can express.
+    // Every pool the server knows is the server's idea of one, and the body being buried is the
+    // client's. They are supposed to agree, but the run's tier travels in a packet now, and
+    // anything that arrives late or out of order puts them out of step -- at which point a
+    // burial sized from the server's number is too small and the enemy stands on that screen
+    // for the rest of the run. This is the one number that cannot be wrong.
+    const largestPossiblePool = 134560 * 3;
     assert.ok(
-        Math.abs(lethal[lethal.length - 1].delta) > Math.round(Number(tiny.maxHp)),
-        'the burial must outsize the canonical pool, or a client copy with the real pool survives it'
-    );
-
-    for (const client of [zeus, telahair]) {
-        GlobalState.sessionsByToken.delete(client.token);
-    }
-}
-
-// A chest one member breaks is broken for the whole run.
-//
-// Chests arrive as ordinary ENEMY-team entities the client spawned, and they are NOT in the
-// generated roster -- a [RewardSource] capture named them `TreasureChestEmpty team=2
-// reason=chest_reward`, HitPoints 0.001, clientSpawned. With no canonical to bind to, every
-// client kept a private chest: one member broke theirs and the other walked up to an unbroken
-// one. The first report now seeds a canonical, and the second binds to it -- matched by the
-// cue it stands on, because breaking a chest renames it from TreasureChestMedium to
-// TreasureChestEmpty and both are the same object.
-function testChestsAreSharedAcrossTheParty(): void {
-    const zeus = createFakeClient('Zeus', 'east-wing-chest', 14601, 1);
-    const telahair = createFakeClient('Telahair', 'east-wing-chest', 14602, 1);
-    setParty(zeus, telahair);
-    for (const client of [zeus, telahair]) {
-        attachPlayer(client);
-        GlobalState.sessionsByToken.set(client.token, client as never);
-        EntityHandler.sendInitialLevelEntities(client as never, client.currentLevel);
-    }
-    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
-    const before = getHostiles(scope).length;
-
-    // The first member's client spawns the chest and reports it.
-    EntityHandler.handleEntityFullUpdate(
-        zeus as never,
-        buildClientHostileFullUpdate(540001, 'TreasureChestMedium', 15000, 3200, 1)
-    );
-    const canonicalId = EntityHandler.resolveEntityAlias(zeus as never, 540001);
-    assert.ok(canonicalId > 0, 'a chest must be given a canonical to share');
-    assert.equal(getHostiles(scope).length, before + 1, 'the chest joins the run as one shared object');
-
-    // The second member's copy of the same chest binds to it rather than making another.
-    EntityHandler.handleEntityFullUpdate(
-        telahair as never,
-        buildClientHostileFullUpdate(640001, 'TreasureChestMedium', 15000, 3200, 1)
-    );
-    assert.equal(
-        EntityHandler.resolveEntityAlias(telahair as never, 640001),
-        canonicalId,
-        'both members must be looking at one chest, not one each'
-    );
-    assert.equal(getHostiles(scope).length, before + 1, 'a second report must not seed a second chest');
-
-    // The member standing at the chest breaks it, and says so.
-    telahair.sentPackets.length = 0;
-    LevelHandler.handleEntityIncrementalUpdate(
-        zeus as never,
-        buildIncrementalUpdatePayload(540001, 0, 0, EntityState.DEAD)
-    );
-
-    const chest = GlobalState.levelEntities.get(scope)?.get(canonicalId);
-    assert.equal(Boolean(chest?.dead), true, 'a broken chest is broken for the run, not just for whoever opened it');
-    assert.ok(
-        telahair.sentPackets
-            .filter((packet) => packet.id === 0x78)
-            .map((packet) => parseHpDelta(packet.payload))
-            .some((hp) => hp.entityId === 640001 && hp.delta < 0),
-        'the other member must be sent the break for their own copy of the chest'
+        Math.abs(lethal[lethal.length - 1].delta) > largestPossiblePool,
+        'a burial must kill any body the client could have spawned, whatever tier it used'
     );
 
     for (const client of [zeus, telahair]) {
@@ -1126,6 +1078,19 @@ async function testRewardRequestBuriesTheEnemyAndChestsPayOnce(): Promise<void> 
     assert.ok(canonical, 'the copies should bind to a canonical');
     canonical.hp = Math.max(1, Math.round(Number(canonical.maxHp) * 0.2));
 
+    // A reward request on its own is NOT a kill. Taking it as one executed enemies on the
+    // first hit: a client asks for a reward in more cases than a death. The corroboration is
+    // the state of the copy that asked -- it only reads dead once it died on their screen.
+    telahair.sentPackets.length = 0;
+    RewardHandler.handleGrantReward(zeus as never, buildGrantRewardPayload(zeus.clientEntID, 550001, 0));
+    assert.equal(
+        Boolean(canonical.dead),
+        false,
+        'a reward request from a client whose copy is still standing must not execute the enemy'
+    );
+
+    // Once their own copy is dead, the same request is the death certificate.
+    zeus.entities.set(550001, { ...zeus.entities.get(550001), hp: 0, dead: true, entState: EntityState.DEAD });
     telahair.sentPackets.length = 0;
     RewardHandler.handleGrantReward(zeus as never, buildGrantRewardPayload(zeus.clientEntID, 550001, 0));
     assert.equal(Boolean(canonical.dead), true, 'asking for the kill reward is asking after a kill');
@@ -1138,6 +1103,363 @@ async function testRewardRequestBuriesTheEnemyAndChestsPayOnce(): Promise<void> 
     );
 
     for (const client of [zeus, telahair]) {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+}
+
+// The run's tier has to reach the client, or party scaling is a number only the server sees.
+//
+// Every hostile the client spawns is sized as `const_867[Game.mBonusLevels + level.mapLevel]
+// * entType.HitPoints`, and packet 0x5E writes straight into `mBonusLevels`. Without it the
+// server holds a level-50 pool while the client fights a level-29 body, and every health
+// correction between the two lands as a second helping of damage -- one or two hits executed
+// anything, with the bar barely moving.
+function testTheRunTellsTheClientItsTier(): void {
+    const zeus = createFakeClient('Zeus', 'east-wing-bonus', 14801, 1);
+    attachPlayer(zeus);
+    GlobalState.sessionsByToken.set(zeus.token, zeus as never);
+
+    zeus.sentPackets.length = 0;
+    LevelHandler.spawnLevelNpcs(zeus as never, zeus.currentLevel);
+
+    const bonus = zeus.sentPackets.find((packet) => packet.id === EntityHandler.DUNGEON_BONUS_LEVELS_PACKET);
+    assert.ok(bonus, 'entering a dungeon must tell the client which tier to spawn its hostiles at');
+
+    // Zero, and the packet still sent. `mBonusLevels` only reaches the client's other level
+    // branch -- a hostile spawned from a level cue reads `entType.baseLevel` and never sees it
+    // -- so a real offset would do nothing for the bodies this dungeon is made of while quietly
+    // enlarging anything that does use the branch. What the packet is still good for is clearing
+    // an offset left over from wherever the player was before.
+    assert.equal(
+        new BitReader(bonus!.payload).readMethod4(),
+        0,
+        'the offset is held at zero while the server mirrors the type level the client uses'
+    );
+
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+    const authored = LevelConfig.getAuthoredDungeonEnemyLevel('JC_Mini2');
+    const tier = EntityHandler.resolveServerAuthorityEntityLevel(scope);
+    assert.equal(
+        new BitReader(bonus!.payload).readMethod4(),
+        Math.max(0, tier - authored),
+        'the value is the OFFSET on the authored map level, not the level itself'
+    );
+
+    // The tier is locked for the run: a higher-level member arriving later must not grow the
+    // server's pools while every body already on every screen keeps the old one.
+    const locked = EntityHandler.resolveServerAuthorityEntityLevel(scope);
+    assert.equal(locked, tier, 'the run keeps the tier it started at');
+
+    GlobalState.sessionsByToken.delete(zeus.token);
+}
+
+// A chest is opened once for the run, and it pays once.
+//
+// Chests are never reported to the server as entities in their own right and are absent from
+// the generated roster, so none of the hostile machinery ever sees one -- an earlier attempt
+// gave them canonicals so that code could carry them, and it carried everything else too:
+// the reconcile swept them and chests vanished before anyone opened them. A chest needs none
+// of that. It is opened once, by one person, and every other screen is told.
+//
+// The reward request is the only moment it exists here, and it carries where the chest stands.
+// That is identity enough, and unlike a name it survives opening -- which renames a
+// TreasureChestMedium into a TreasureChestEmpty.
+function testAnOpenedChestIsOpenedForEveryoneAndPaysOnce(): void {
+    const zeus = createFakeClient('Zeus', 'east-wing-chest2', 14901, 1);
+    const telahair = createFakeClient('Telahair', 'east-wing-chest2', 14902, 1);
+    setParty(zeus, telahair);
+    for (const client of [zeus, telahair]) {
+        attachPlayer(client);
+        GlobalState.sessionsByToken.set(client.token, client as never);
+        EntityHandler.sendInitialLevelEntities(client as never, client.currentLevel);
+    }
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+    EntityHandler.forgetOpenedChests(scope);
+
+    // Both members are standing at the same chest, each holding their own copy.
+    const chestX = 15000;
+    const chestY = 3200;
+    zeus.entities.set(560001, { id: 560001, name: 'TreasureChestMedium', team: EntityTeam.ENEMY, x: chestX, y: chestY, hp: 135, maxHp: 135 });
+    telahair.entities.set(660001, { id: 660001, name: 'TreasureChestMedium', team: EntityTeam.ENEMY, x: chestX, y: chestY, hp: 135, maxHp: 135 });
+
+    telahair.sentPackets.length = 0;
+    RewardHandler.handleGrantReward(zeus as never, buildGrantRewardPayload(zeus.clientEntID, 560001, 500));
+
+    // The mate's chest is emptied for them, with the packet their client acts on.
+    assert.ok(
+        telahair.sentPackets
+            .filter((packet) => packet.id === 0x78)
+            .map((packet) => parseHpDelta(packet.payload))
+            .some((hp) => hp.entityId === 660001 && hp.delta < 0),
+        'opening a chest must break it on every other screen'
+    );
+    assert.equal(telahair.entities.has(660001), false, 'the broken chest leaves the run record for that screen');
+
+    // Payment is keyed on the chest the client names, not on where it says the chest is.
+    //
+    // Reward requests were seen arriving with one shared coordinate and four different gold
+    // rolls -- four real chests reporting from one spot -- so refusing by position swallowed
+    // three of them, and left each unrecorded to stand back up for the joiner. Position still
+    // answers the other question, which is whose screen to break.
+    assert.equal(
+        EntityHandler.claimChestPayout(scope, telahair as never, 660001),
+        true,
+        'the first request for a chest is paid'
+    );
+    assert.equal(
+        EntityHandler.claimChestPayout(scope, telahair as never, 660001),
+        false,
+        'the same chest must not pay the same client twice'
+    );
+    assert.equal(
+        EntityHandler.claimChestPayout(scope, telahair as never, 660002),
+        true,
+        'a different chest is a different payout, whatever coordinate it reports from'
+    );
+
+    // Two chests in one room are two chests. The match tolerance used to be 400px, which is
+    // not 'the same chest' but 'that side of the room': opening one swallowed the next, so the
+    // second paid nothing, was never broken on anyone else's screen, and stood there unopened
+    // for the joiner -- the chest that 'respawned'.
+    const secondChestX = chestX + 300;
+    telahair.entities.set(660002, { id: 660002, name: 'TreasureChestMedium', team: EntityTeam.ENEMY, x: secondChestX, y: chestY, hp: 135, maxHp: 135 });
+    zeus.entities.set(560002, { id: 560002, name: 'TreasureChestMedium', team: EntityTeam.ENEMY, x: secondChestX, y: chestY, hp: 135, maxHp: 135 });
+    telahair.sentPackets.length = 0;
+    RewardHandler.handleGrantReward(zeus as never, buildGrantRewardPayload(zeus.clientEntID, 560002, 500));
+    assert.ok(
+        telahair.sentPackets
+            .filter((packet) => packet.id === 0x78)
+            .map((packet) => parseHpDelta(packet.payload))
+            .some((hp) => hp.entityId === 660002 && hp.delta < 0),
+        'a second chest a few hundred pixels away is its own chest, and opening it must break it too'
+    );
+
+    // And a joiner whose client spawns it later walks up to an opened one.
+    const late = createFakeClient('Late', 'east-wing-chest2', 14903, 1);
+    attachPlayer(late);
+    GlobalState.sessionsByToken.set(late.token, late as never);
+    late.sentPackets.length = 0;
+    EntityHandler.handleEntityFullUpdate(
+        late as never,
+        buildClientHostileFullUpdate(760001, 'TreasureChestMedium', chestX, chestY, 1)
+    );
+    assert.ok(
+        late.sentPackets
+            .filter((packet) => packet.id === 0x78)
+            .map((packet) => parseHpDelta(packet.payload))
+            .some((hp) => hp.entityId === 760001 && hp.delta < 0),
+        'a chest the run already opened must be broken the moment a joiner spawns it'
+    );
+
+    EntityHandler.forgetOpenedChests(scope);
+    EntityHandler.forgetPaidChestClaims(scope);
+    for (const client of [zeus, telahair, late]) {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+}
+
+// A run must not be lost to a roster that was merely seeded.
+//
+// The destination scope usually holds hostiles already -- somebody entered and the level was
+// populated for them -- and refusing to carry into it looks safe. It is not: the party lands
+// on that untouched roster and every enemy they fought stands back up at full health. The
+// live capture caught one canonical walked down to 4932/26912 by both members, reporting
+// 26912/26912 the moment the scope re-keyed.
+function testAPristineRosterDoesNotOutrankARunInProgress(): void {
+    const telahair = createFakeClient('Telahair', '70001', 70001, 1);
+    attachPlayer(telahair);
+    GlobalState.sessionsByToken.set(telahair.token, telahair as never);
+    EntityHandler.sendInitialLevelEntities(telahair as never, telahair.currentLevel);
+    const oldScope = getLevelScopeKey(telahair.currentLevel, telahair.levelInstanceId);
+
+    // A fight in progress: one enemy down to a fifth, one dead.
+    const fought = getHostiles(oldScope)[0];
+    const killed = getHostiles(oldScope)[1];
+    fought.hp = Math.max(1, Math.round(Number(fought.maxHp) * 0.2));
+    killed.hp = 0;
+    killed.dead = true;
+    const foughtId = Math.round(Number(fought.id));
+
+    // The second member arrives and their entry seeds a fresh, untouched roster of its own.
+    // Their scope is seeded BEFORE the party exists, so it holds a full, untouched roster of
+    // its own -- which is the live shape: the joiner's own entry populated the scope that the
+    // party then anchors on, and the member holding the run is the one that moves onto it.
+    const lanorut = createFakeClient('Lanorut', '60002', 60002, 1);
+    attachPlayer(lanorut);
+    GlobalState.sessionsByToken.set(lanorut.token, lanorut as never);
+    EntityHandler.sendInitialLevelEntities(lanorut as never, lanorut.currentLevel);
+    assert.equal(
+        getHostiles(getLevelScopeKey(lanorut.currentLevel, lanorut.levelInstanceId)).length,
+        EAST_WING_ENEMY_COUNT,
+        'the joiner own entry seeds a full roster'
+    );
+    setParty(telahair, lanorut);
+
+    const newScope = EntityHandler.ensureJcMini1PartySharedScope(
+        telahair as never,
+        telahair.currentLevel,
+        'test_pristine'
+    );
+    assert.notEqual(newScope, oldScope, 'this test needs the scope to be re-keyed');
+
+    const arrived = getHostiles(newScope);
+    assert.equal(arrived.length, EAST_WING_ENEMY_COUNT, 'exactly one roster may live in a scope');
+    const survivor = arrived.find((hostile) => Math.round(Number(hostile.id)) === foughtId);
+    assert.ok(survivor, 'the enemy the party fought must still be there');
+    assert.ok(
+        Math.round(Number(survivor.hp)) < Math.round(Number(survivor.maxHp)),
+        'the damage the party dealt must survive the move, not be replaced by a fresh copy'
+    );
+
+    for (const client of [telahair, lanorut]) {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+}
+
+// The server must size a hostile exactly the way the client does.
+//
+// The client has six places that set an entity's level, and the one adding the run's
+// `mBonusLevels` is not the one a cue-spawned hostile takes -- those read `entType.baseLevel`
+// and nothing else. So any tier the server picks for itself is a number only the server has,
+// and the gap is the whole bug: the player kills what is on their screen, the canonical keeps
+// the difference, and the enemy stands for everyone else. Measured at its worst, a ShadeWarrior
+// recorded at 26912 died to 8572 of damage -- the client had been fighting a tier 26 body.
+function testTheServerSizesHostilesTheWayTheClientDoes(): void {
+    const zeus = createFakeClient('Zeus', 'east-wing-mirror', 15001, 1);
+    attachPlayer(zeus);
+    GlobalState.sessionsByToken.set(zeus.token, zeus as never);
+    EntityHandler.sendInitialLevelEntities(zeus as never, zeus.currentLevel);
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+
+    const table = (EntityHandler as any).HOSTILE_BASE_HITPOINTS as number[];
+    for (const hostile of getHostiles(scope)) {
+        const entType = GameData.getEntType(String(hostile.name)) ?? {};
+        const level = Math.round(Number(entType.Level ?? 0));
+        const scale = Number(entType.HitPoints ?? NaN);
+        if (!(level > 0) || !Number.isFinite(scale) || scale <= 0) {
+            continue;
+        }
+        const clientPool = Math.max(1, Math.round(table[Math.min(level, table.length - 1)] * scale));
+        assert.equal(
+            Math.round(Number(hostile.maxHp)),
+            clientPool,
+            `${hostile.name} must be the same size on the server as it is on the screen`
+        );
+    }
+
+    GlobalState.sessionsByToken.delete(zeus.token);
+}
+
+// A chest counts as opened however the client says so.
+//
+// The reward request was the only signal the run listened to, and it does not always come: a
+// live capture had a member break two chests and ask for gold on only one, so the other stayed
+// 'unopened' and stood back up for the joiner. A client breaking a chest also destroys it, and
+// takes its health off first -- both arrive whether a reward follows or not.
+async function testAnyBreakSignalCountsAsOpeningAChest(): Promise<void> {
+    const zeus = createFakeClient('Zeus', 'east-wing-signals', 15101, 1);
+    attachPlayer(zeus);
+    GlobalState.sessionsByToken.set(zeus.token, zeus as never);
+    EntityHandler.sendInitialLevelEntities(zeus as never, zeus.currentLevel);
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+    EntityHandler.forgetOpenedChests(scope);
+
+    // Signal one: the client destroys what it broke.
+    const destroyedAt = { x: 16546, y: 6659 };
+    zeus.entities.set(570001, { id: 570001, name: 'TreasureChestMedium', team: EntityTeam.ENEMY, x: destroyedAt.x, y: destroyedAt.y, hp: 135, maxHp: 135 });
+    await CombatHandler.handleEntityDestroy(zeus as never, buildDestroyEntityPayload(570001));
+    assert.equal(
+        EntityHandler.isChestOpened(scope, destroyedAt.x, destroyedAt.y),
+        true,
+        'a chest the client destroyed is an opened chest, reward or no reward'
+    );
+
+    // Signal two: the health it took off its own copy.
+    const damagedAt = { x: 15104, y: 6619 };
+    zeus.entities.set(570002, { id: 570002, name: 'TreasureChestMedium', team: EntityTeam.ENEMY, x: damagedAt.x, y: damagedAt.y, hp: 135, maxHp: 135 });
+    CombatHandler.handleCharRegen(zeus as never, buildHpDeltaPayload(570002, -135));
+    assert.equal(
+        EntityHandler.isChestOpened(scope, damagedAt.x, damagedAt.y),
+        true,
+        'a chest emptied of its health is an opened chest'
+    );
+
+    // And a joiner spawning either of them walks up to an opened one.
+    const late = createFakeClient('Late', 'east-wing-signals', 15102, 1);
+    attachPlayer(late);
+    GlobalState.sessionsByToken.set(late.token, late as never);
+    for (const [localId, at] of [[770001, destroyedAt], [770002, damagedAt]] as Array<[number, { x: number; y: number }]>) {
+        late.sentPackets.length = 0;
+        EntityHandler.handleEntityFullUpdate(
+            late as never,
+            buildClientHostileFullUpdate(localId, 'TreasureChestMedium', at.x, at.y, 1)
+        );
+        assert.ok(
+            late.sentPackets
+                .filter((packet) => packet.id === 0x78)
+                .map((packet) => parseHpDelta(packet.payload))
+                .some((hp) => hp.entityId === localId && hp.delta < 0),
+            `a chest opened at ${at.x},${at.y} must be broken for whoever spawns it later`
+        );
+    }
+
+    EntityHandler.forgetOpenedChests(scope);
+    for (const client of [zeus, late]) {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+}
+
+// A chest is recorded where it SPAWNED, not where its reward request says it is.
+//
+// A capture had two chests spawn at 16546,6659 and 15104,6619, and then both of their reward
+// requests arrived carrying the first coordinate. The second was recorded on top of the first,
+// its own cue was never marked opened, and it stood back up for the joiner -- the chest that
+// kept respawning. The spawn is the one report that cannot be confused: it comes from the cue
+// that placed the chest and it names the entity.
+function testAChestIsRecordedWhereItSpawned(): void {
+    const zeus = createFakeClient('Zeus', 'east-wing-spawnpos', 15201, 1);
+    attachPlayer(zeus);
+    GlobalState.sessionsByToken.set(zeus.token, zeus as never);
+    EntityHandler.sendInitialLevelEntities(zeus as never, zeus.currentLevel);
+    const scope = getLevelScopeKey(zeus.currentLevel, zeus.levelInstanceId);
+    EntityHandler.forgetOpenedChests(scope);
+    EntityHandler.forgetPaidChestClaims(scope);
+    EntityHandler.forgetChestSpawnPositions(scope);
+
+    const first = { x: 16546, y: 6659 };
+    const second = { x: 15104, y: 6619 };
+    EntityHandler.handleEntityFullUpdate(zeus as never, buildClientHostileFullUpdate(580001, 'TreasureChestMedium', first.x, first.y, 1));
+    EntityHandler.handleEntityFullUpdate(zeus as never, buildClientHostileFullUpdate(580002, 'TreasureChestMedium', second.x, second.y, 1));
+
+    // Both requests arrive claiming the FIRST chest's coordinate, as they did live.
+    RewardHandler.handleGrantReward(zeus as never, buildGrantRewardPayload(zeus.clientEntID, 580001, 500));
+    RewardHandler.handleGrantReward(zeus as never, buildGrantRewardPayload(zeus.clientEntID, 580002, 500));
+
+    assert.equal(EntityHandler.isChestOpened(scope, first.x, first.y), true, 'the first chest is opened');
+    assert.equal(
+        EntityHandler.isChestOpened(scope, second.x, second.y),
+        true,
+        'the second chest is recorded at its own cue, not on top of the first'
+    );
+
+    // So a joiner spawning either one walks up to an opened chest.
+    const late = createFakeClient('Late', 'east-wing-spawnpos', 15202, 1);
+    attachPlayer(late);
+    GlobalState.sessionsByToken.set(late.token, late as never);
+    late.sentPackets.length = 0;
+    EntityHandler.handleEntityFullUpdate(late as never, buildClientHostileFullUpdate(780002, 'TreasureChestMedium', second.x, second.y, 1));
+    assert.ok(
+        late.sentPackets
+            .filter((packet) => packet.id === 0x78)
+            .map((packet) => parseHpDelta(packet.payload))
+            .some((hp) => hp.entityId === 780002 && hp.delta < 0),
+        'the second chest must be broken for a joiner too'
+    );
+
+    EntityHandler.forgetOpenedChests(scope);
+    EntityHandler.forgetPaidChestClaims(scope);
+    EntityHandler.forgetChestSpawnPositions(scope);
+    for (const client of [zeus, late]) {
         GlobalState.sessionsByToken.delete(client.token);
     }
 }
@@ -1188,6 +1510,9 @@ async function main(): Promise<void> {
         testScopeRekeyCarriesTheRun();
 
         resetRuntime();
+        testAPristineRosterDoesNotOutrankARunInProgress();
+
+        resetRuntime();
         await testHitsFromAnUnseenAttackerAreNotRelayed();
 
         resetRuntime();
@@ -1203,10 +1528,16 @@ async function main(): Promise<void> {
         testBurialIsLethalToATinyPoolCanonical();
 
         resetRuntime();
-        testChestsAreSharedAcrossTheParty();
+        await testRewardRequestBuriesTheEnemyAndChestsPayOnce();
 
         resetRuntime();
-        await testRewardRequestBuriesTheEnemyAndChestsPayOnce();
+        testAnOpenedChestIsOpenedForEveryoneAndPaysOnce();
+
+        resetRuntime();
+        await testAnyBreakSignalCountsAsOpeningAChest();
+
+        resetRuntime();
+        testAChestIsRecordedWhereItSpawned();
 
         console.log('east_wing_dungeon_spawns_regression: ok');
     } finally {

@@ -290,11 +290,10 @@ function assertSevenCanonicalHostiles(scope: string): void {
     // smaller than the canonical the server holds. The kill then lands on their screen and
     // nowhere else. Both sides have to use one number, and only the authored one is shared.
     const partyLevel = EntityHandler.resolveServerAuthorityEntityLevel(scope);
-    assert.equal(
-        partyLevel,
-        LevelConfig.getAuthoredDungeonEnemyLevel('JC_Mini1Hard'),
-        'client-owned hostiles are sized at the authored dungeon tier'
-    );
+    const expectedLevel = EntityHandler.CLIENT_OWNED_HOSTILE_TIER === 'authored'
+        ? LevelConfig.getAuthoredDungeonEnemyLevel('JC_Mini1Hard')
+        : 50;
+    assert.equal(partyLevel, expectedLevel, 'the run sizes its hostiles from the configured tier');
     for (const hostile of hostiles) {
         assert.equal(hostile.clientSpawned, false, `${hostile.name} should be server canonical`);
         assert.equal(hostile.level, partyLevel, `${hostile.name} should carry the party's tier`);
