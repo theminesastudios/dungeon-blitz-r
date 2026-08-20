@@ -1340,10 +1340,16 @@ export class CharacterHandler {
             sendExtended,
             getAccountPrimaryCharacter(client.characters, client.character)
         );
-        const pdBuffer = pdPkt.toBuffer();
+        let pdBuffer: Buffer;
+        try {
+            pdBuffer = pdPkt.toBuffer();
+        } catch (err) {
+            console.error(`[GameLogin] FAILED to serialize Player Data for ${client.character?.name}:`, err);
+            return;
+        }
 
         client.send(0x10, pdBuffer);
-        console.log(`[GameLogin] Sent 0x10 (Player Data)`);
+        console.log(`[GameLogin] Sent 0x10 (Player Data) len=${pdBuffer.length}`);
 
         MissionHandler.syncMissionStateToClient(client);
         MissionHandler.syncFullClearDungeonEntryMissionToClient(client);

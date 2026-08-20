@@ -2380,23 +2380,37 @@ export class CombatHandler {
     }
 
     private static buildAddBuffPacket(info: AddBuffPacketInfo): Buffer {
-        const bb = new BitBuffer(false);
-        bb.writeMethod9(info.targetId);
-        bb.writeMethod9(info.sourceId);
-        bb.writeMethod9(info.buffId);
-        bb.writeMethod9(info.powerId);
-        bb.writeMethod9(info.baseValue);
-        bb.writeMethod9(info.stackDelta);
-        bb.writeMethod15(info.mods.length > 0);
-        if (info.mods.length > 0) {
-            bb.writeMethod9(info.mods.length);
-            for (const mod of info.mods) {
-                bb.writeMethod9(mod.id);
-                bb.writeMethod9(mod.values.length);
-                for (const value of mod.values) bb.writeMethod309(value);
+        try {
+            const bb = new BitBuffer(false);
+            bb.writeMethod9(info.targetId);
+            bb.writeMethod9(info.sourceId);
+            bb.writeMethod9(info.buffId);
+            bb.writeMethod9(info.powerId);
+            bb.writeMethod9(info.baseValue);
+            bb.writeMethod9(info.stackDelta);
+            bb.writeMethod15(info.mods.length > 0);
+            if (info.mods.length > 0) {
+                bb.writeMethod9(info.mods.length);
+                for (const mod of info.mods) {
+                    bb.writeMethod9(mod.id);
+                    bb.writeMethod9(mod.values.length);
+                    for (const value of mod.values) bb.writeMethod309(value);
+                }
             }
+            return bb.toBuffer();
+        } catch (err) {
+            console.error(`[CombatHandler] buildAddBuffPacket FAILED: target=${info.targetId} buff=${info.buffId} power=${info.powerId}:`, err);
+            // Return minimal valid packet to prevent Flash crash
+            const fallback = new BitBuffer(false);
+            fallback.writeMethod9(info.targetId);
+            fallback.writeMethod9(info.sourceId);
+            fallback.writeMethod9(info.buffId);
+            fallback.writeMethod9(info.powerId);
+            fallback.writeMethod9(0);
+            fallback.writeMethod9(0);
+            fallback.writeMethod15(false);
+            return fallback.toBuffer();
         }
-        return bb.toBuffer();
     }
 
     private static parseRemoveBuffPacket(data: Buffer): { targetId: number; sourceId: number; buffId: number } | null {
