@@ -3796,8 +3796,37 @@ export class EntityHandler {
             // movement update"; visible seed spawns avoid a join-time gfx race.
             v: 0
         };
-        const data = Entity.serialize(serializedProps);
-        client.send(0xF, data);
+        try {
+            // Sanitize arrays to prevent Flash deserialization crashes
+            if (serializedProps.isPlayer) {
+                const gears = serializedProps.equippedGears;
+                if (Array.isArray(gears)) {
+                    while (gears.length < 6) gears.push(null);
+                    serializedProps.equippedGears = gears.slice(0, 6);
+                }
+                const talents = serializedProps.talents;
+                if (Array.isArray(talents)) {
+                    while (talents.length < 27) talents.push(null);
+                    serializedProps.talents = talents.slice(0, 27);
+                }
+            }
+            const buffs = serializedProps.buffs;
+            if (Array.isArray(buffs)) {
+                for (const buff of buffs) {
+                    if (buff && typeof buff === 'object') {
+                        buff.type_id = Number(buff.type_id ?? 0) || 0;
+                        buff.param1 = Number(buff.param1 ?? 0) || 0;
+                        buff.param2 = Number(buff.param2 ?? 0) || 0;
+                        buff.param3 = Number(buff.param3 ?? 0) || 0;
+                        buff.param4 = Number(buff.param4 ?? 0) || 0;
+                    }
+                }
+            }
+            const data = Entity.serialize(serializedProps);
+            client.send(0xF, data);
+        } catch (err) {
+            console.error(`[EntityHandler] sendEntity FAILED for entity ${props.id} (${props.name}) to ${client.character?.name}:`, err);
+        }
         EntityHandler.rememberEntityKnown(client, client.currentLevel, props);
         if (EntityHandler.isServerAuthorityHostileEntity(client.currentLevel, props)) {
             const entityId = Math.max(0, Math.round(Number(props.id ?? 0)));

@@ -446,13 +446,17 @@ export class Client {
     }
 
     public send(packetId: number, buffer: Buffer): void {
-        const header = Buffer.alloc(4);
-        header.writeUInt16BE(packetId, 0);
-        header.writeUInt16BE(buffer.length, 2);
-        const payload = Buffer.concat([header, buffer]);
-        this.rawBytesOut += payload.length;
-        this.scheduleOutboundUncork();
-        this.socket.write(payload);
+        try {
+            const header = Buffer.alloc(4);
+            header.writeUInt16BE(packetId, 0);
+            header.writeUInt16BE(buffer.length, 2);
+            const payload = Buffer.concat([header, buffer]);
+            this.rawBytesOut += payload.length;
+            this.scheduleOutboundUncork();
+            this.socket.write(payload);
+        } catch (err) {
+            console.error(`[Client] send FAILED: packet=0x${packetId.toString(16).toUpperCase()} len=${buffer.length} char=${this.character?.name ?? '?'}:`, err);
+        }
     }
 
     public sendBitBuffer(packetId: number, bb: BitBuffer): void {

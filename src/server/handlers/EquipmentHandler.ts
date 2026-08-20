@@ -248,6 +248,7 @@ export class EquipmentHandler {
             )
         );
 
+        try {
         const bb = new BitBuffer(false);
         bb.writeMethod4(entityId);
 
@@ -273,6 +274,13 @@ export class EquipmentHandler {
             bb.writeMethod6(Number(colors[1] ?? 0), 8);
         }
 
+                } catch (err) {
+            console.error(`[EquipmentHandler] buildEntityGearUpdatePacket FAILED for entity ${entityId}:`, err);
+            const fallback = new BitBuffer(false);
+            fallback.writeMethod4(entityId);
+            for (let i = 0; i < 6; i++) fallback.writeMethod6(0, 1);
+            return fallback.toBuffer();
+        }
         return bb.toBuffer();
     }
 
