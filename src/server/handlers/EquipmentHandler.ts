@@ -249,39 +249,39 @@ export class EquipmentHandler {
         );
 
         try {
-        const bb = new BitBuffer(false);
-        bb.writeMethod4(entityId);
+            const bb = new BitBuffer(false);
+            bb.writeMethod4(entityId);
 
-        for (let index = 0; index < EquipmentHandler.LAST_SLOT; index++) {
-            const gear = normalizedGears[index];
-            const gearId = Number(gear.gearID ?? 0);
+            for (let index = 0; index < EquipmentHandler.LAST_SLOT; index++) {
+                const gear = normalizedGears[index];
+                const gearId = Number(gear.gearID ?? 0);
 
-            bb.writeMethod15(true);
-            bb.writeMethod15(gearId > 0);
-            if (!gearId) {
-                continue;
+                bb.writeMethod15(true);
+                bb.writeMethod15(gearId > 0);
+                if (!gearId) {
+                    continue;
+                }
+
+                const runes = Array.isArray(gear.runes) ? gear.runes : [0, 0, 0];
+                const colors = Array.isArray(gear.colors) ? gear.colors : [0, 0];
+
+                bb.writeMethod6(gearId, 11);
+                bb.writeMethod6(Number(gear.tier ?? 0), 2);
+                bb.writeMethod6(Number(runes[0] ?? 0), 16);
+                bb.writeMethod6(Number(runes[1] ?? 0), 16);
+                bb.writeMethod6(Number(runes[2] ?? 0), 16);
+                bb.writeMethod6(Number(colors[0] ?? 0), 8);
+                bb.writeMethod6(Number(colors[1] ?? 0), 8);
             }
 
-            const runes = Array.isArray(gear.runes) ? gear.runes : [0, 0, 0];
-            const colors = Array.isArray(gear.colors) ? gear.colors : [0, 0];
-
-            bb.writeMethod6(gearId, 11);
-            bb.writeMethod6(Number(gear.tier ?? 0), 2);
-            bb.writeMethod6(Number(runes[0] ?? 0), 16);
-            bb.writeMethod6(Number(runes[1] ?? 0), 16);
-            bb.writeMethod6(Number(runes[2] ?? 0), 16);
-            bb.writeMethod6(Number(colors[0] ?? 0), 8);
-            bb.writeMethod6(Number(colors[1] ?? 0), 8);
-        }
-
-                } catch (err) {
+            return bb.toBuffer();
+        } catch (err) {
             console.error(`[EquipmentHandler] buildEntityGearUpdatePacket FAILED for entity ${entityId}:`, err);
             const fallback = new BitBuffer(false);
             fallback.writeMethod4(entityId);
             for (let i = 0; i < 6; i++) fallback.writeMethod6(0, 1);
             return fallback.toBuffer();
         }
-        return bb.toBuffer();
     }
 
     private static ensureEquippedGears(client: Client): GearEntry[] {
