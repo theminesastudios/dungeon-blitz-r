@@ -690,6 +690,197 @@ function testRefusedDuplicateCopyIsKilledOnTheClient(): void {
     GlobalState.sessionsByToken.delete(zeus.token);
 }
 
+// A reward request for an enemy spent down to the pool gap is the kill, even with no other word
+// from that client.
+//
+// This is the last hole the three-signal design had. `sourceCopyIsDead` reads the SERVER's
+// record of the client's copy, and for these hostiles that record is only as fresh as the
+// client's last report -- which stops the moment the copy dies. So the one enemy whose death
+// produced no terminal update, no destroy and no HP report is also the one whose corroboration
+// can never arrive. Live: Ghoul 920009 took `requested=5987 applied=5987 hp=89/6076`, its
+// killer's reward request sat in the same log, and it stood in front of the member who joined
+// afterwards for the whole run.
+//
+// The remainder is the corroboration. Once the copy is dead, what is left on the canonical is
+// the gap between the two pools -- here exactly 6076 - 5987 -- not a fight in progress. Assert
+// that the tight threshold accepts it while the sibling invariant at 20% still refuses.
+async function testARewardRequestForAnEnemySpentToThePoolGapIsTheKill(): Promise<void> {
+    const telahair = createFakeClient('Telahair', 'east-wing-poolgap', 23001, 1);
+    const lanorut = createFakeClient('Lanorut', 'east-wing-poolgap', 23002, 1);
+    setParty(telahair, lanorut);
+    for (const client of [telahair, lanorut]) {
+        attachPlayer(client);
+        GlobalState.sessionsByToken.set(client.token, client as never);
+        EntityHandler.sendInitialLevelEntities(client as never, client.currentLevel);
+    }
+    const scope = getLevelScopeKey(telahair.currentLevel, telahair.levelInstanceId);
+
+    attachProxy(telahair, 640001, 1);
+    attachProxy(lanorut, 740001, 1);
+    const canonicalId = EntityHandler.resolveEntityAlias(telahair as never, 640001);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(canonicalId);
+    assert.ok(canonical, 'the copies should bind to a canonical');
+
+    // The killing hit landed. The copy died on the killer's screen, so nothing more is reported
+    // and the canonical keeps the difference between the two pools -- and only that.
+    canonical.hp = Math.max(1, Math.round(Number(canonical.maxHp) * 0.015));
+    canonical.dead = false;
+    canonical.entState = EntityState.ACTIVE;
+
+    // Deliberately NOT marking the server's record of the copy dead: that is exactly the
+    // information this path never receives.
+    lanorut.sentPackets.length = 0;
+    RewardHandler.handleGrantReward(
+        telahair as never,
+        buildGrantRewardPayload(telahair.clientEntID, 640001, 0)
+    );
+
+    assert.equal(
+        Boolean(canonical.dead),
+        true,
+        'a reward request for an enemy spent to the pool gap is a kill, with or without a fresh copy record'
+    );
+    assert.ok(
+        lanorut.sentPackets
+            .filter((packet) => packet.id === 0x78)
+            .map((packet) => parseHpDelta(packet.payload))
+            .some((hp) => hp.entityId === 740001 && hp.delta < 0),
+        'the other member must be sent the death for their own copy'
+    );
+
+    for (const client of [telahair, lanorut]) {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+}
+
+// A lethal HP report is the kill, when the reporter was actually fighting the enemy.
+//
+// The canonical cannot reach zero on its own -- the client stops reporting the moment its own
+// copy dies, so the last slice never arrives. That remainder used to fall straight through to
+// the alive correction: live, ShadeWarrior 920007 took 5987 of 6076, logged `kill-report`, and
+// stayed at 89 HP for the rest of the run, so the member who joined afterwards bound to it
+// alive and it stood in front of them. One enemy left standing at the end of a clean clear.
+//
+// The corroboration matters as much as the acceptance. A client echoes the damage it was ASKED
+// to take, so our own burial delta comes back at us; acting on size alone would execute healthy
+// enemies. Assert both halves here -- the fought enemy dies, the untouched one does not.
+function testALethalReportKillsOnlyTheEnemyThatWasFought(): void {
+    const telahair = createFakeClient('Telahair', 'east-wing-remainder-report', 22001, 1);
+    const lanorut = createFakeClient('Lanorut', 'east-wing-remainder-report', 22002, 1);
+    setParty(telahair, lanorut);
+    for (const client of [telahair, lanorut]) {
+        attachPlayer(client);
+        GlobalState.sessionsByToken.set(client.token, client as never);
+        EntityHandler.sendInitialLevelEntities(client as never, client.currentLevel);
+    }
+    const scope = getLevelScopeKey(telahair.currentLevel, telahair.levelInstanceId);
+
+    attachProxy(telahair, 630001, 1);
+    const foughtId = EntityHandler.resolveEntityAlias(telahair as never, 630001);
+    const fought = GlobalState.levelEntities.get(scope)?.get(foughtId);
+    assert.ok(fought, 'the copy should bind to a canonical');
+
+    // Worn down to a sliver and then killed on the player's own screen, which is all the
+    // server ever sees of the last slice.
+    fought.hp = Math.max(1, Math.round(Number(fought.maxHp) * 0.015));
+    fought.dead = false;
+    fought.entState = EntityState.ACTIVE;
+
+    CombatHandler.handleCharRegen(
+        telahair as never,
+        buildHpDeltaPayload(630001, -Math.round(Number(fought.maxHp)) * 16)
+    );
+
+    assert.equal(Boolean(fought.dead), true, 'a lethal report from the member holding the copy is the kill');
+    assert.equal(Math.round(Number(fought.hp)), 0, 'the remainder must not keep the enemy standing');
+
+    // The same oversized report against an enemy nobody has touched must change nothing --
+    // this is our own burial echo, and it must never execute a healthy enemy.
+    attachProxy(telahair, 630002, 2);
+    const untouchedId = EntityHandler.resolveEntityAlias(telahair as never, 630002);
+    const untouched = GlobalState.levelEntities.get(scope)?.get(untouchedId);
+    assert.ok(untouched, 'the second copy should bind to a canonical');
+    assert.notEqual(untouchedId, foughtId, 'this test needs two different enemies');
+
+    CombatHandler.handleCharRegen(
+        telahair as never,
+        buildHpDeltaPayload(630002, -Math.round(Number(untouched.maxHp)) * 16)
+    );
+
+    assert.equal(
+        Boolean(untouched.dead),
+        false,
+        'an echo of our own burial must not kill an enemy that was never fought'
+    );
+
+    for (const client of [telahair, lanorut]) {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+}
+
+// A joiner must not be shown the corpses of kills made before they arrived.
+//
+// The burial is not optional -- it is what makes the arriving client count the kill in the room
+// bookkeeping its dungeon percentage is computed from -- but it goes through the client's own
+// TakeDamage path, so the body dies on screen and then lies there for the client's ten-second
+// TIME_MONSTER_LAYS_DEAD_BEFORE_VANISHING. Walking into a dungeon your party has been clearing
+// meant walking into a room of enemies dying in front of you for kills somebody else made
+// minutes ago.
+//
+// 0x3B is the answer: a channel the game never used, whose reader is patched to set
+// Entity.var_1835, the engine's own retire-me tombstone. Game.method_1970 destroys and splices
+// the body on its next tick, with no death animation and no corpse -- and it is the only
+// removal that reaches a hostile the client spawned from a level cue, because those have no
+// class_122 record and so discard 0x07 and 0x0D at the door.
+//
+// Assert the pairing, not either half: a retire with no burial loses the joiner's progress
+// count, and a burial with no retire is the corpse this fixes.
+function testAJoinerIsNotShownCorpsesOfEarlierKills(): void {
+    const telahair = createFakeClient('Telahair', 'east-wing-corpses', 21001, 1);
+    attachPlayer(telahair);
+    GlobalState.sessionsByToken.set(telahair.token, telahair as never);
+    EntityHandler.sendInitialLevelEntities(telahair as never, telahair.currentLevel);
+
+    const scope = getLevelScopeKey(telahair.currentLevel, telahair.levelInstanceId);
+    const killed = getHostiles(scope)[0];
+    assert.ok(killed, 'the run should have a roster to kill from');
+    killed.hp = 0;
+    killed.dead = true;
+    killed.destroyed = true;
+    killed.entState = EntityState.DEAD;
+
+    // A second member arrives into the same run and their client plays the room's cues, so it
+    // spawns its own copy of an enemy that has been dead since before they were in the level.
+    const lanorut = createFakeClient('Lanorut', 'east-wing-corpses', 21002, 1);
+    setParty(telahair, lanorut);
+    attachPlayer(lanorut);
+    GlobalState.sessionsByToken.set(lanorut.token, lanorut as never);
+
+    lanorut.sentPackets.length = 0;
+    attachProxy(lanorut, 510001, 0);
+
+    const buried = lanorut.sentPackets
+        .filter((packet) => packet.id === 0x78)
+        .map((packet) => parseHpDelta(packet.payload))
+        .some((hp) => hp.entityId === 510001 && hp.delta < 0);
+    assert.ok(
+        buried,
+        'the joiner must still be told the enemy is dead, or their client never counts the kill'
+    );
+
+    const retired = lanorut.sentPackets
+        .filter((packet) => packet.id === 0x3B)
+        .map((packet) => new BitReader(packet.payload).readMethod4())
+        .includes(510001);
+    assert.ok(
+        retired,
+        'a kill made before this member arrived must be retired, not left as a corpse to walk past'
+    );
+
+    GlobalState.sessionsByToken.delete(telahair.token);
+    GlobalState.sessionsByToken.delete(lanorut.token);
+}
+
 // Re-keying a scope must carry the run, not abandon it.
 //
 // `moveClientOwnedEntitiesBetweenScopes` moved only entities carrying the client's own
@@ -1514,6 +1705,123 @@ function testAnyMemberCanReportTheKillTheyMade(): void {
     }
 }
 
+// Nothing here is keyed to who is playing, or to there being two of them.
+//
+// The whole East Wing effort was driven by one pair of characters, and every fix has to hold
+// for an arbitrary party joining in an arbitrary order. This walks the full shape with three
+// members arriving at three different times, and deliberately makes the LAST arrival the killer
+// -- the member least likely to hold proxy ownership, which is the gate that used to decide
+// whose kills counted.
+//
+// It also drives two different death signals, because the three doors have different
+// corroboration and a party-size bug could easily live in only one of them.
+async function testTheWholeShapeHoldsForAnyPartyInAnyOrder(): Promise<void> {
+    const first = createFakeClient('MemberOne', 'east-wing-any-party', 24001, 1);
+    attachPlayer(first);
+    GlobalState.sessionsByToken.set(first.token, first as never);
+    EntityHandler.sendInitialLevelEntities(first as never, first.currentLevel);
+    const scope = getLevelScopeKey(first.currentLevel, first.levelInstanceId);
+
+    // The first member kills one enemy outright, and wears a second down to the pool gap and
+    // asks for its reward -- the signal that has nothing else to corroborate it.
+    attachProxy(first, 660001, 1);
+    const killedId = EntityHandler.resolveEntityAlias(first as never, 660001);
+    const killed = GlobalState.levelEntities.get(scope)?.get(killedId);
+    assert.ok(killed, 'the first copy should bind to a canonical');
+    LevelHandler.handleEntityIncrementalUpdate(
+        first as never,
+        buildIncrementalUpdatePayload(660001, 0, 0, EntityState.DEAD)
+    );
+    assert.equal(Boolean(killed.dead), true, 'the first member must be able to kill');
+
+    attachProxy(first, 660002, 2);
+    const spentId = EntityHandler.resolveEntityAlias(first as never, 660002);
+    const spent = GlobalState.levelEntities.get(scope)?.get(spentId);
+    assert.ok(spent, 'the second copy should bind to a canonical');
+    assert.notEqual(spentId, killedId, 'this test needs two different enemies');
+    spent.hp = Math.max(1, Math.round(Number(spent.maxHp) * 0.015));
+    RewardHandler.handleGrantReward(
+        first as never,
+        buildGrantRewardPayload(first.clientEntID, 660002, 0)
+    );
+    assert.equal(Boolean(spent.dead), true, 'a reward request for an enemy spent to the pool gap is a kill');
+
+    // Two more members arrive, one after the other. Each of them plays the room's cues and
+    // spawns its own copies of enemies that died before they were in the level.
+    const joiners: FakeClient[] = [];
+    let localIdSeed = 670000;
+    for (const name of ['MemberTwo', 'MemberThree']) {
+        const joiner = createFakeClient(name, 'east-wing-any-party', 24001 + joiners.length + 1, 1);
+        setParty(first, ...joiners, joiner);
+        attachPlayer(joiner);
+        GlobalState.sessionsByToken.set(joiner.token, joiner as never);
+        joiners.push(joiner);
+
+        joiner.sentPackets.length = 0;
+        const deadLocalIds: number[] = [];
+        for (const enemyIndex of [1, 2]) {
+            localIdSeed += 1;
+            attachProxy(joiner, localIdSeed, enemyIndex);
+            deadLocalIds.push(localIdSeed);
+        }
+
+        const retired = joiner.sentPackets
+            .filter((packet) => packet.id === 0x3B)
+            .map((packet) => new BitReader(packet.payload).readMethod4());
+        for (const localId of deadLocalIds) {
+            assert.ok(
+                retired.includes(localId),
+                `${name} must have every already-dead enemy retired, not left as a corpse`
+            );
+            assert.equal(
+                joiner.entities.has(localId),
+                false,
+                `${name} must not be left holding a copy of an enemy the run already buried`
+            );
+        }
+    }
+
+    // The LAST member to arrive makes a kill. Everyone else must be told, including the member
+    // who started the run and the one who joined between them.
+    const lastJoiner = joiners[joiners.length - 1];
+    localIdSeed += 1;
+    const lastLocalId = localIdSeed;
+    attachProxy(lastJoiner, lastLocalId, 3);
+    const freshId = EntityHandler.resolveEntityAlias(lastJoiner as never, lastLocalId);
+    const fresh = GlobalState.levelEntities.get(scope)?.get(freshId);
+    assert.ok(fresh, 'the late arrival should bind to a live canonical');
+    assert.equal(Boolean(fresh.dead), false, 'this test needs an enemy that is still alive');
+
+    // Give the other members a bound copy of that same enemy so there is something to correct.
+    const witnesses: Array<[FakeClient, number]> = [];
+    for (const witness of [first, ...joiners.slice(0, -1)]) {
+        localIdSeed += 1;
+        attachProxy(witness, localIdSeed, 3);
+        witnesses.push([witness, localIdSeed]);
+        witness.sentPackets.length = 0;
+    }
+
+    LevelHandler.handleEntityIncrementalUpdate(
+        lastJoiner as never,
+        buildIncrementalUpdatePayload(lastLocalId, 0, 0, EntityState.DEAD)
+    );
+
+    assert.equal(Boolean(fresh.dead), true, 'the last member to arrive must be able to kill too');
+    for (const [witness, localId] of witnesses) {
+        assert.ok(
+            witness.sentPackets
+                .filter((packet) => packet.id === 0x78)
+                .map((packet) => parseHpDelta(packet.payload))
+                .some((hp) => hp.entityId === localId && hp.delta < 0),
+            `${String(witness.character?.name)} must be sent the death for their own copy`
+        );
+    }
+
+    for (const client of [first, ...joiners]) {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+}
+
 function resetRuntime(): void {
     GlobalState.levelEntities.clear();
     GlobalState.sessionsByToken.clear();
@@ -1555,6 +1863,18 @@ async function main(): Promise<void> {
 
         resetRuntime();
         testRefusedDuplicateCopyIsKilledOnTheClient();
+
+        resetRuntime();
+        await testTheWholeShapeHoldsForAnyPartyInAnyOrder();
+
+        resetRuntime();
+        await testARewardRequestForAnEnemySpentToThePoolGapIsTheKill();
+
+        resetRuntime();
+        testALethalReportKillsOnlyTheEnemyThatWasFought();
+
+        resetRuntime();
+        testAJoinerIsNotShownCorpsesOfEarlierKills();
 
         resetRuntime();
         testScopeRekeyCarriesTheRun();

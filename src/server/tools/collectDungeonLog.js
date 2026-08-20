@@ -26,6 +26,7 @@ const TAGS = [
     '[EnemyDestroy]',
     '[HostileUntouchedDamage]',
     '[HostileDeathAccepted]',
+    '[HostileRetire]',
     '[ChestCanonical]',
     '[ChestClaim]',
     '[HostileDeathRejected]',

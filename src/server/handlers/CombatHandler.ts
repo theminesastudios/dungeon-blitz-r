@@ -6998,6 +6998,39 @@ export class CombatHandler {
                         CombatHandler.shareHostileDeathOnce(client, levelScope, targetEntity, { echoGuard: true });
                         return true;
                     }
+                    // The report itself can BE the kill, and this is the last of the three
+                    // signals that had no door.
+                    //
+                    // The canonical cannot reach zero on its own: the client stops reporting the
+                    // moment its own copy dies, so the last slice never arrives and a remainder
+                    // sits there forever. Live: ShadeWarrior 920007 took 5987 of 6076 from one
+                    // member, logged `kill-report`, and then fell through to the alive
+                    // correction below -- 89 HP, never dead, so the member who joined afterwards
+                    // bound to it alive and it stood in front of them for the rest of the run.
+                    // That is the one enemy left standing at the end of an otherwise clean clear.
+                    //
+                    // A lethal-sized report alone is NOT enough to act on. The client echoes the
+                    // damage it was ASKED to take, not what it applied, so our own burial delta
+                    // comes straight back at us -- taking that at face value would execute a
+                    // healthy enemy, which is exactly how the reward-request path once killed
+                    // things on first hit. So it needs the same corroboration the destroy path
+                    // uses: the reporter must hold a bound copy, and the canonical must already
+                    // be at or below half its pool. 89/6076 passes; an untouched
+                    // TowerGuard2 at 110700/110700 -- the other enemy alive in that same run,
+                    // and legitimately so -- cannot.
+                    if (
+                        reportIsLethal &&
+                        EntityHandler.holdsBoundCopyOfCanonical(client, targetEntity, rawEntityId) &&
+                        currentHp * 2 <= Math.round(Number(targetEntity.maxHp ?? 0)) &&
+                        CombatHandler.acceptClientReportedKill(
+                            client,
+                            levelScope,
+                            targetEntity,
+                            'lethal_hp_report'
+                        )
+                    ) {
+                        return true;
+                    }
                     CombatHandler.sendServerAuthorityAliveCorrection(client, levelScope, targetEntity, 'client_hostile_hp_report', rawEntityId);
                 } else {
                     CombatHandler.shareHostileDeathOnce(client, levelScope, targetEntity, { echoGuard: true });

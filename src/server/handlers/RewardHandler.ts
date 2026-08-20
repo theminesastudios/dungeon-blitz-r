@@ -1406,15 +1406,51 @@ export class RewardHandler {
                 Number(sourceEntity.entState ?? -1) === EntityState.DEAD
             )
         );
-        if (sourceEntity && reason === 'legacy_enemy_reward' && sourceCopyIsDead) {
+        if (sourceEntity && reason === 'legacy_enemy_reward') {
             // Through the CANONICAL, not the copy that asked. `resolveSourceEntity` hands back
             // the client's own local proxy, and a proxy carries `clientSpawned`, which is the
             // one thing that makes it not the shared enemy.
             const canonicalSourceId = EntityHandler.resolveEntityAlias(client, reward.sourceId);
             const canonicalSource = GlobalState.levelEntities.get(levelScope)?.get(canonicalSourceId) ?? null;
-            if (canonicalSource) {
+            // `sourceCopyIsDead` reads the SERVER's record of that copy, and for these hostiles
+            // it is only ever as fresh as the client's last report -- which stops the moment the
+            // copy dies. So the one enemy whose death produced no other signal is also the one
+            // whose corroboration cannot arrive: live, Ghoul 920009 took `requested=5987
+            // applied=5987 hp=89/6076`, its killer's reward request sat in the same log, and it
+            // stood in front of the member who joined afterwards for the rest of the run.
+            //
+            // A remainder this small is the same corroboration by another route, because of
+            // WHAT the remainder is. It is not a race and not a partial fight: once the client
+            // has killed its own copy, what is left on the canonical is the gap between the two
+            // pools, which is small by construction. Here it is exactly `6076 - 5987` -- the
+            // client's copy died to the very hit that left the canonical at 89.
+            //
+            // So the threshold is deliberately far tighter than the half-pool gate the destroy
+            // and HP-report paths use. Those have a bound copy to corroborate against; this one
+            // is corroborating against nothing but the number, so it has to be a number no
+            // ongoing fight produces. An enemy a player is still working on sits well above
+            // this: the sibling test holds a reward request at 20% and requires it be refused,
+            // and that invariant stands. TowerGuard2, alive and untouched at 110700/110700 in
+            // the same run, is nowhere near it.
+            //
+            // The honest cost: an enemy genuinely abandoned below this line by a client that
+            // then asks for a reward would be counted dead. That trade is worth it -- the
+            // failure it replaces left the enemy standing in front of every member who joined
+            // later, for the rest of the run.
+            const canonicalMaxHp = Math.round(Number(canonicalSource?.maxHp ?? 0));
+            const canonicalIsSpentToThePoolGap = Boolean(
+                canonicalSource &&
+                canonicalMaxHp > 0 &&
+                Math.round(Number(canonicalSource.hp ?? 0)) * 10 <= canonicalMaxHp
+            );
+            if (canonicalSource && (sourceCopyIsDead || canonicalIsSpentToThePoolGap)) {
                 const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
-                CombatHandler.acceptClientReportedKill(client, levelScope, canonicalSource, 'reward_request');
+                CombatHandler.acceptClientReportedKill(
+                    client,
+                    levelScope,
+                    canonicalSource,
+                    sourceCopyIsDead ? 'reward_request' : 'reward_request_pool_gap'
+                );
             }
         }
 

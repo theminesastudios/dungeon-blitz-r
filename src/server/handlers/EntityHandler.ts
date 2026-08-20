@@ -1507,6 +1507,40 @@ export class EntityHandler {
         return bb.toBuffer();
     }
 
+    /**
+     * Take a body off one screen with no death and no corpse.
+     *
+     * 0x3B is a channel the game has never used. Its reader, LinkUpdater.method_1408, is
+     * patched by scripts/patch-dungeonblitz-retire-entity-packet.ts to resolve the entity id
+     * and set `Entity.var_1835` -- the engine's own retire-me tombstone, which Game.method_1970
+     * answers on its next tick by destroying and splicing the entity itself. Both fields are
+     * still read by the patched method (only its tail was replaced), so the wire shape is
+     * unchanged and the second one is written and ignored; under-writing here would desync
+     * every packet behind it in the buffer.
+     *
+     * This is the only removal that works on a hostile the client spawned from a level cue.
+     * Those have no class_122 record, so 0x07 and 0x0D are discarded at the door and only 0x78
+     * lands -- which kills the body rather than removing it, leaving the corpse lying there for
+     * the client's ten-second TIME_MONSTER_LAYS_DEAD_BEFORE_VANISHING.
+     *
+     * It does NOT replace the burial. A burial is still sent first so the client runs its own
+     * death path and counts the kill in the room bookkeeping its dungeon percentage comes from;
+     * this only stops the corpse being drawn afterwards.
+     */
+    static retireClientLocalEntity(client: Client, rawEntityId: number, reason: string): void {
+        const localId = Math.max(0, Math.round(Number(rawEntityId) || 0));
+        if (localId <= 0) {
+            return;
+        }
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(localId);
+        bb.writeMethod4(0);
+        client.send(0x3B, bb.toBuffer());
+        console.log(
+            `[HostileRetire] ${String(client.character?.name ?? '?')}:${localId} retired (${reason})`
+        );
+    }
+
     // The incremental-update shape, standing still. The client applies the deltas
     // to whatever position it currently believes, which is what makes this usable
     // to snap a stale local copy onto the shared enemy's real position.
@@ -1805,6 +1839,7 @@ export class EntityHandler {
         client.send(0x78, EntityHandler.buildHpDeltaPayload(localId, -EntityHandler.resolveLethalHostileDelta(getClientLevelScope(client), entity, client.entities.get(localId))));
         client.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
         client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
+        EntityHandler.retireClientLocalEntity(client, localId, 'rejoin_tombstone');
         client.entities.delete(localId);
         client.knownEntityIds.delete(localId);
     }
@@ -1936,6 +1971,7 @@ export class EntityHandler {
                 }
                 client.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
                 client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
+                EntityHandler.retireClientLocalEntity(client, localId, 'proxy_attach_dead');
                 client.entities.delete(localId);
             } else {
                 EntityHandler.sendServerAuthorityProxyInitialHpSync(client, canonical, localId, 'proxy_attach');
@@ -1971,6 +2007,14 @@ export class EntityHandler {
             }
             client.send(0x07, EntityHandler.buildEntityStateDeadPayload(canonicalId));
             client.send(0x0D, EntityHandler.buildDestroyEntityPayload(canonicalId));
+            // This path addresses the enemy by its canonical id, because
+            // replaceClientHostileProxyWithCanonical has just re-pointed the client's copy onto
+            // it. Retire both ids: the local one is what the client spawned and may still be
+            // holding, and only one of the two will resolve to a body.
+            EntityHandler.retireClientLocalEntity(client, canonicalId, 'proxy_replaced_dead');
+            if (localId > 0 && localId !== canonicalId) {
+                EntityHandler.retireClientLocalEntity(client, localId, 'proxy_replaced_dead_local');
+            }
             client.entities.delete(canonicalId);
             client.knownEntityIds.delete(canonicalId);
         }
@@ -2095,6 +2139,12 @@ export class EntityHandler {
             }
             client.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
             client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
+            // This copy is being bound to an enemy that was already dead when it arrived, which
+            // in practice means a member walking into a dungeon their party has been clearing
+            // without them. The burial above makes their client count the kill; without the
+            // retire they would then watch it die and lie there for ten seconds, for a kill
+            // somebody else made before they were in the level.
+            EntityHandler.retireClientLocalEntity(client, localId, 'attached_to_dead_canonical');
             client.entities.delete(localId);
             client.knownEntityIds.delete(localId);
             return;
@@ -2145,6 +2195,10 @@ export class EntityHandler {
         }
         client.send(0x07, EntityHandler.buildEntityStateDeadPayload(localId));
         client.send(0x0D, EntityHandler.buildDestroyEntityPayload(localId));
+        // The client just played this room's cues and spawned a copy of an enemy the run had
+        // already destroyed. It should never have been drawn at all, so it is retired outright
+        // rather than left as a corpse the arriving player has to walk past.
+        EntityHandler.retireClientLocalEntity(client, localId, 'destroyed_before_this_client_arrived');
         client.entities.delete(localId);
         client.knownEntityIds.delete(localId);
     }
