@@ -1464,6 +1464,56 @@ function testAChestIsRecordedWhereItSpawned(): void {
     }
 }
 
+// Any member's kill counts, not just the one session that happens to drive the canonical.
+//
+// The accept gates asked for proxy OWNERSHIP, which exactly one session can hold. Every member
+// spawns and fights their own copy, so every member is the authority on the body in front of
+// them -- and with a third player in the room, two of the three had their kills refused and
+// watched the enemy stay standing. Nothing here is about who started the dungeon; it has to
+// hold for whoever is in it.
+function testAnyMemberCanReportTheKillTheyMade(): void {
+    const starter = createFakeClient('Starter', 'east-wing-three', 15301, 1);
+    const second = createFakeClient('Second', 'east-wing-three', 15302, 1);
+    const third = createFakeClient('Third', 'east-wing-three', 15303, 1);
+    setParty(starter, second, third);
+    for (const client of [starter, second, third]) {
+        attachPlayer(client);
+        GlobalState.sessionsByToken.set(client.token, client as never);
+        EntityHandler.sendInitialLevelEntities(client as never, client.currentLevel);
+    }
+    const scope = getLevelScopeKey(starter.currentLevel, starter.levelInstanceId);
+
+    attachProxy(starter, 590001, 1);
+    attachProxy(second, 690001, 1);
+    attachProxy(third, 790001, 1);
+    const canonicalId = EntityHandler.resolveEntityAlias(third as never, 790001);
+    const canonical = GlobalState.levelEntities.get(scope)?.get(canonicalId);
+    assert.ok(canonical, 'all three copies should bind to one canonical');
+
+    // The THIRD member kills it -- the one least likely to be holding proxy ownership.
+    starter.sentPackets.length = 0;
+    second.sentPackets.length = 0;
+    LevelHandler.handleEntityIncrementalUpdate(
+        third as never,
+        buildIncrementalUpdatePayload(790001, 0, 0, EntityState.DEAD)
+    );
+
+    assert.equal(Boolean(canonical.dead), true, 'a kill counts whoever in the party made it');
+    for (const [client, localId] of [[starter, 590001], [second, 690001]] as Array<[any, number]>) {
+        assert.ok(
+            client.sentPackets
+                .filter((packet: any) => packet.id === 0x78)
+                .map((packet: any) => parseHpDelta(packet.payload))
+                .some((hp: any) => hp.entityId === localId && hp.delta < 0),
+            `${client.character.name} must be sent the death for their own copy`
+        );
+    }
+
+    for (const client of [starter, second, third]) {
+        GlobalState.sessionsByToken.delete(client.token);
+    }
+}
+
 function resetRuntime(): void {
     GlobalState.levelEntities.clear();
     GlobalState.sessionsByToken.clear();
@@ -1520,6 +1570,9 @@ async function main(): Promise<void> {
 
         resetRuntime();
         testClientReportedDeathIsAcceptedWithHealthRemaining();
+
+        resetRuntime();
+        testAnyMemberCanReportTheKillTheyMade();
 
         resetRuntime();
         await testOwnerDestroyCountsAsAKillOnlyWhenTheEnemyWasFought();

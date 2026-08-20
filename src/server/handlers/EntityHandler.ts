@@ -1732,6 +1732,33 @@ export class EntityHandler {
         }
     }
 
+    /**
+     * Whether this client is holding a body of this enemy, and may therefore report its death.
+     *
+     * `isServerAuthorityProxyOwner` answers a different question: which ONE session drives the
+     * canonical. That is the right rule for movement, and the wrong one for a kill. Every member
+     * spawns and fights their own copy, so every member is the authority on the copy in front of
+     * them -- but the accept gates asked for proxy ownership, which exactly one of them can hold.
+     * With two players it usually landed on whoever was driving; with a third in the room, two
+     * of the three had their kills refused and watched the enemy stay up.
+     *
+     * Holding a bound copy is the honest test, and it scales to any number of members.
+     */
+    static holdsBoundCopyOfCanonical(client: Client, canonicalEntity: any, localEntityId: number): boolean {
+        if (!EntityHandler.isServerAuthorityHostileEntity(client.currentLevel, canonicalEntity)) {
+            return false;
+        }
+        if (EntityHandler.getRegisteredHostileLocalIdForViewer(client, canonicalEntity) > 0) {
+            return true;
+        }
+
+        const canonicalId = Math.max(0, Math.round(Number(canonicalEntity?.id ?? 0)));
+        const localId = Math.max(0, Math.round(Number(localEntityId) || 0));
+        if (canonicalId > 0 && localId > 0 && EntityHandler.resolveEntityAlias(client, localId) === canonicalId) {
+            return true;
+        }
+        return EntityHandler.isServerAuthorityProxyOwner(client, canonicalEntity, localEntityId);
+    }
     static isServerAuthorityProxyOwner(client: Client, canonicalEntity: any, localEntityId: number): boolean {
         if (!EntityHandler.isServerAuthorityHostileEntity(client.currentLevel, canonicalEntity)) {
             return false;

@@ -6550,7 +6550,7 @@ export class CombatHandler {
             const destroyReportedByOwner = !isSeedOutsideClientSpawnDestroy &&
                 localCopyReportedDead &&
                 canonicalMostlyDown &&
-                EntityHandler.isServerAuthorityProxyOwner(client, destroyedEntity, rawEntityId);
+                EntityHandler.holdsBoundCopyOfCanonical(client, destroyedEntity, rawEntityId);
             if (
                 !isSeedOutsideClientSpawnDestroy &&
                 Math.round(Number(destroyedEntity.hp ?? 0)) > 0

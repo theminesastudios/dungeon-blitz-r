@@ -6032,7 +6032,7 @@ export class LevelHandler {
                 // the owning client; the server only hears the damage that client reports, and
                 // it stops reporting the moment its own copy dies -- so the canonical keeps a
                 // remainder forever and no client-reported death would ever be honoured.
-                EntityHandler.isServerAuthorityProxyOwner(client, canonicalEntity, rawEntityId)
+                EntityHandler.holdsBoundCopyOfCanonical(client, canonicalEntity, rawEntityId)
             )
         );
         const canonicalTerminal = isEnemyCanonical && (
