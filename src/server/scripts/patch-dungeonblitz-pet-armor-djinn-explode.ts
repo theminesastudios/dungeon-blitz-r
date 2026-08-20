@@ -489,7 +489,24 @@ const callVoid = (mn: number, args: number): Emitted => ({
  * Entry/exit stack depth is 0; locals used (74, 75, 77) are free at this point
  * (the LeoneanAura block that follows reuses them later).
  */
-function petArmorModBlock(petArmorBaneStr: number): Buffer {
+function petArmorModBlock(petArmorBaneStr: number, legacyPositiveSign = false): Buffer {
+  const defenseReduction = legacyPositiveSign
+    ? [
+        // Legacy bug: level / 200 - 0, which increases defense.
+        getlocal(74),
+        pushShort(200),
+        { opcode: OP.divide, pop: 2, push: 1 } as Emitted,
+        { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 } as Emitted,
+        { opcode: OP.subtract, pop: 2, push: 1 } as Emitted,
+      ]
+    : [
+        // Correct debuff: 0 - level / 200.
+        { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 } as Emitted,
+        getlocal(74),
+        pushShort(200),
+        { opcode: OP.divide, pop: 2, push: 1 } as Emitted,
+        { opcode: OP.subtract, pop: 2, push: 1 } as Emitted,
+      ];
   const program: Emitted[] = [
     // if (_loc52_.buffName != "PetArmorBane") skip the injection
     getlocal(52),
@@ -537,18 +554,10 @@ function petArmorModBlock(petArmorBaneStr: number): Buffer {
     setlocal(77),
     // _eaValue.push(0 - level / 200)  (one value per BuffProperty: MeleeDefense, MagicDefense)
     getlocal(77),
-    getlocal(74),
-    pushShort(200),
-    { opcode: OP.divide, pop: 2, push: 1 },
-    { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
-    { opcode: OP.subtract, pop: 2, push: 1 },
+    ...defenseReduction,
     callVoid(MN.push, 1),
     getlocal(77),
-    getlocal(74),
-    pushShort(200),
-    { opcode: OP.divide, pop: 2, push: 1 },
-    { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
-    { opcode: OP.subtract, pop: 2, push: 1 },
+    ...defenseReduction,
     callVoid(MN.push, 1),
     // _eaMods.push(new class_140(1100, _eaValue))
     getlocal(75),
@@ -706,12 +715,25 @@ function patchSwf(swfPath: string, verify: boolean): void {
     }
 
     const block = petArmorModBlock(petArmorBaneStr);
+    const legacyPositiveBlock = petArmorModBlock(petArmorBaneStr, true);
     // The block is inserted at 3963 and shifts nothing before it; after a re-run the
     // stored codeLen already accounts for it, so just check the bytes in place.
     const patched = code.length >= 3963 + block.length && code.subarray(3963, 3963 + block.length).equals(block);
+    const hasLegacyPositiveSign =
+      code.length >= 3963 + legacyPositiveBlock.length &&
+      code.subarray(3963, 3963 + legacyPositiveBlock.length).equals(legacyPositiveBlock);
 
     if (patched) {
       console.log(`${swfPath}: CombatState.method_1192 PetArmorBane mod already patched.`);
+    } else if (hasLegacyPositiveSign && !verify) {
+      patches.push({
+        key: "CombatState.method_1192.fixPetArmorSign",
+        start: body.codeStart + 3963,
+        end: body.codeStart + 3963 + legacyPositiveBlock.length,
+        data: block,
+        detail: "correct PetArmorBane from +level/200 defense to -level/200 defense",
+      });
+      console.log(`${swfPath}: corrected CombatState.method_1192 PetArmorBane sign.`);
     } else if (verify) {
       throw new PatchError(`${swfPath}: verify failed; CombatState.method_1192 PetArmorBane mod is missing.`);
     } else {

@@ -16,7 +16,8 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  * ledge or slope. Nothing on PetFalcon itself could have fixed that: the power authors no
  * AoERadius, and adding one would not have mattered, because that branch never reads it.
  *
- * Height 160 matches Base, so the falcon now covers the same vertical band a player does.
+ * The existing reach tuning already raised the authored height from 50 to 160. Height 320
+ * doubles that shipped vertical gather half-extent from 80 to 160 pixels.
  * Only the four PetFalcon EntTypes move -- the other pets keep their 50, since none of them
  * uses a Cleave.
  *
@@ -37,8 +38,8 @@ const XML_DIR = path.resolve(__dirname, "..", "..", "client", "content", "xml");
 const CONTENT_DIR = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p");
 const ENT_XML = path.join(XML_DIR, "EntTypes.xml");
 
-// Base authors 160; every pet authors 50. Comment is the authored value.
-const FALCON_HEIGHT = "160"; // 50
+// Double the currently tuned 160. The original authored value before reach tuning was 50.
+const FALCON_HEIGHT = "320"; // 160 tuned, 50 authored
 const FALCON_ENTS = ["PetFalconRed", "PetFalconYellow", "PetFalconBlue", "PetFalconGreen"];
 
 function cloneStats(): PatchStats {
