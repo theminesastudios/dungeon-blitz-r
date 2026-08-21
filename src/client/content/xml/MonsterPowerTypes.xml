@@ -11718,4 +11718,26 @@
 		<HitGfx/>
 		<ProjGfx/>
 	</Power>
+	<Power PowerName="ProcPartyArrival">
+		<PowerID>4017</PowerID>
+		<TargetMethod>Self</TargetMethod>
+		<CastTime>0</CastTime>
+		<RecoverTime>0</RecoverTime>
+		<CoolDownTime>0</CoolDownTime>
+		<ManaCost>0</ManaCost>
+		<BaseDamageMult>0</BaseDamageMult>
+		<DamageType>Physical</DamageType>
+		<DisplayName>***Monster***</DisplayName>
+		<CastSound>snd_pwr_aoe_fire</CastSound>
+		<CastAnimSource>Feet</CastAnimSource>
+		<CastGfx>
+			<AnimFile>SFX_1.swf</AnimFile>
+			<AnimClass>a_TeleportEffect</AnimClass>
+			<AnimScale>1.2</AnimScale>
+			<FireAndForget>true</FireAndForget>
+		</CastGfx>
+		<FireGfx/>
+		<HitGfx/>
+		<ProjGfx/>
+	</Power>
 </MonsterPowerTypes>

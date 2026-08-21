@@ -265,6 +265,19 @@ export class Client {
     public syncAnchorCharacterName: string = "";
     public syncQuestProgress: number | undefined;
     public pendingTransferUntil: number = 0;
+    /** Armed by a party "Go to" transfer; consumed once by this session's first spawn. */
+    public partyArrivalEffectPending: boolean = false;
+    /**
+     * While this is in the future, every screen that is handed this player's body plays the
+     * arrival materialisation on it -- once each, tracked by `arrivalEffectSentToTokens`.
+     *
+     * Firing it per viewer, at the moment that viewer receives the body, is the only timing
+     * that works: the traveller's own screen is behind a loading card, and a party member who
+     * is still loading, or whose copy of the body was refused for being airborne, gets the
+     * effect whenever their copy actually appears rather than missing it.
+     */
+    public arrivalEffectWindowUntil: number = 0;
+    public arrivalEffectSentToTokens: Set<number> = new Set();
     public mountTransferGraceUntil: number = 0;
     public roomTransitionGraceUntil: number = 0;
     public movementAuthority: MovementAuthorityState = MovementAuthority.createState();
@@ -676,6 +689,9 @@ export class Client {
         this.syncAnchorCharacterName = "";
         this.syncQuestProgress = undefined;
         this.pendingTransferUntil = 0;
+        this.partyArrivalEffectPending = false;
+        this.arrivalEffectWindowUntil = 0;
+        this.arrivalEffectSentToTokens.clear();
         this.mountTransferGraceUntil = 0;
         this.roomTransitionGraceUntil = 0;
         MovementAuthority.reset(this, 'gameplay_state_clear');

@@ -192,6 +192,19 @@ export class GlobalState {
     // Current token -> social teleport override
     static pendingTeleports: Map<number, PendingTeleport> = new Map();
 
+    /**
+     * Normalized character name -> when the armed party-arrival effect stops being valid.
+     *
+     * Keyed by the character rather than by a session or a token on purpose. A "Go to" tears
+     * the socket down three times: the request arrives on one connection, the 0x1D transfer
+     * lands on a second that is closed immediately after, and the game login that actually
+     * spawns the body runs on a third with a *different* token. A flag on any of those objects
+     * is gone before the spawn it was meant for -- which is exactly how the first version of
+     * this failed, with `[PartyArrival] carried onto transfer` in the log and no cast after it.
+     * The character name is the only handle that survives all three.
+     */
+    static pendingArrivalEffects: Map<string, number> = new Map();
+
     // Level scope key -> Map<EntityId, EntityData>
     static levelEntities: Map<string, Map<number, any>> = new Map();
     static levelQuestProgress: Map<string, SharedDungeonProgressState> = new Map();

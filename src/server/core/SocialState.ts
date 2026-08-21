@@ -24,6 +24,12 @@ export interface PendingTeleport {
     syncRoomId?: number;
     syncStartedRoomIds?: number[];
     syncQuestProgress?: number;
+    /**
+     * True when this transfer is a party "Go to". The traveller lands on the anchor rather
+     * than on the level's door, and the arrival is drawn as a materialisation effect on every
+     * screen in the scope -- see `EntityHandler.playPartyArrivalEffect`.
+     */
+    arrivalEffect?: boolean;
 }
 
 export const MAX_FRIEND_ENTRIES = 100;

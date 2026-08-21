@@ -61,7 +61,7 @@ import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { DungeonCompletionSystem } from '../core/DungeonCompletionSystem';
 import { DungeonCompletionConditions } from '../core/DungeonCompletionConditions';
 import { MovementAuthority } from '../core/MovementAuthority';
-import { noteGroundedSample, resolveConfirmedGroundedPosition, resolveGroundedPosition, clearGroundedSample } from '../core/GroundedPosition';
+import { noteGroundedSample, resolveConfirmedGroundedPosition, resolveGroundedPosition, clearGroundedSample, isEntityAirborne } from '../core/GroundedPosition';
 
 const db = new JsonAdapter();
 
@@ -456,6 +456,13 @@ export class LevelHandler {
         return Array.from(startedRoomIds.values()).sort((left, right) => left - right);
     }
 
+    /**
+     * How far one accepted packet has to move a player before their body is re-seeded on the
+     * other screens. Doors and room changes move thousands of units in a single packet; the
+     * fastest legal run is ~900px/s, so nothing a walking player sends comes close.
+     */
+    private static readonly RELAY_GAP_REDRAW_DISTANCE = 800;
+
     private static normalizeSyncAnchorStartedAt(value: unknown): number | undefined {
         const numericValue = Number(value);
         if (!Number.isFinite(numericValue) || numericValue <= 0) {
@@ -488,6 +495,47 @@ export class LevelHandler {
         return resolveConfirmedGroundedPosition(entity, expectedLevel);
     }
 
+    /**
+     * Where a *live* anchor is standing right now, for the one job that needs it: dropping
+     * another player onto them.
+     *
+     * `resolveGroundedAnchorPosition` above only accepts a coordinate the client sent as an
+     * absolute, and the client sends exactly one of those per level -- `LinkUpdater.method_780`
+     * is called from the `Entity` constructor and from nowhere else. So an anchor who walked
+     * anywhere after loading the level has no confirmed sample except the doorway they came in
+     * through, and "go to" landed the traveller at the entrance instead of next to their
+     * friend. That is the bug this exists for.
+     *
+     * The relaxed sample is still a floor point, not a guess: `noteGroundedSample` only records
+     * a 0x07 whose flags say standing (not jumping, not dropping, not airborne), measured in
+     * this same level. What it is *not* is absolute -- it is the server's running sum of the
+     * client's deltas. That sum tracks the client rather than drifting away from it, for two
+     * reasons that hold only while the session is live:
+     *
+     *   - the client's delta is `ceil(physPos) - var_959`, and `var_959` is written *only* by
+     *     the two senders, so any correction the client makes to itself (the up-to-160px floor
+     *     snap included) turns up in the very next delta;
+     *   - a delta the server refuses is answered with a correction packet that moves the client
+     *     back onto the server's position, so a rejection re-syncs the pair instead of
+     *     splitting them.
+     *
+     * The compounding described at the top of core/GroundedPosition.ts comes from *saving* such
+     * a coordinate and replaying it in a later session or a different level; nothing here is
+     * saved. An airborne anchor still yields nothing, and so does an anchor with no sample at
+     * all, which sends the caller to the authored spawn exactly as before.
+     */
+    static resolveStandingAnchorPosition(
+        entity: any,
+        expectedLevel?: string | null
+    ): { x: number; y: number } | null {
+        const confirmed = resolveConfirmedGroundedPosition(entity, expectedLevel);
+        if (isEntityAirborne(entity)) {
+            return confirmed;
+        }
+
+        return resolveGroundedPosition(entity, expectedLevel) ?? confirmed;
+    }
+
     private static buildActiveTransferSyncAnchorCandidate(
         session: Client,
         targetLevel: string
@@ -505,7 +553,10 @@ export class LevelHandler {
         let y = 0;
         let hasCoord = false;
         const entity = session.entities.get(session.clientEntID);
-        const grounded = LevelHandler.resolveGroundedAnchorPosition(entity, targetLevel);
+        // The anchor is a live session standing in the level right now, so its last standing
+        // sample is usable even when it is not one of the client's absolutes -- otherwise every
+        // joiner lands on the anchor's doorway instead of the anchor.
+        const grounded = LevelHandler.resolveStandingAnchorPosition(entity, targetLevel);
         if (grounded) {
             x = grounded.x;
             y = grounded.y;
@@ -5597,6 +5648,13 @@ export class LevelHandler {
         if (teleportOverride) {
             GlobalState.pendingTeleports.delete(transferToken);
         }
+        // A transfer is a new connection, so the request that armed the effect is on a session
+        // that no longer exists. The flag rides the pending teleport across and is consumed by
+        // this session's own spawn.
+        if (teleportOverride?.arrivalEffect) {
+            client.partyArrivalEffectPending = true;
+            console.log(`[PartyArrival] carried onto transfer token=${transferToken} -> ${teleportOverride.targetLevel}`);
+        }
 
         // 1. Determine Target Level
         let targetLevel = requestedLevel;
@@ -5950,7 +6008,19 @@ export class LevelHandler {
             // where it was until something re-seeds it. Catching it here, rather than on a room
             // id, is what makes this work for *every* transition in a dungeon: the room id can
             // sit at 0 for a whole run, and did.
-            if (movementResult.accepted && movementResult.reason === 'transition_grace') {
+            //
+            // The distance test is not decoration. `transition_grace` is granted for a window
+            // after every arrival, mount and room change, so without it *any* ordinary step
+            // taken inside that window re-seeds this player on every other screen -- and a
+            // re-seed is a full re-spawn there, which the viewer sees as the body dropping into
+            // the room again. That is what made a party arrival read as two or three entries,
+            // and what cut the arrival effect off part-way through. A real transition is one
+            // packet carrying thousands of units; a walk is not.
+            if (
+                movementResult.accepted &&
+                movementResult.reason === 'transition_grace' &&
+                movementResult.actualDistance >= LevelHandler.RELAY_GAP_REDRAW_DISTANCE
+            ) {
                 EntityHandler.markPlayerBodyNeedsRedraw(client);
             }
             if (!movementResult.accepted) {

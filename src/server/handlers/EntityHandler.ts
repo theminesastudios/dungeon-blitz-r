@@ -25,7 +25,8 @@ import {
     inheritGroundedSample,
     isEntityAirborne,
     noteGroundedSample,
-    resolveConfirmedGroundedPosition
+    resolveConfirmedGroundedPosition,
+    resolveGroundedPosition
 } from '../core/GroundedPosition';
 import {
     buildHomeStatueEntity,
@@ -5242,6 +5243,20 @@ export class EntityHandler {
         if (isPlayer && !client.playerSpawned) {
              client.playerSpawned = true;
              client.mountTransferGraceUntil = Math.max(client.mountTransferGraceUntil, Date.now() + 4000);
+             // Opened before anything draws this body. The effect rides along with each
+             // viewer's copy as it is sent, and `sendExistingPlayersToJoiner` below is the send
+             // that reaches everyone already standing in the level.
+             //
+             // Read from the character-keyed map, not from this session: the socket that
+             // handled the transfer request has already been closed and this is a third
+             // connection with a token of its own. See GlobalState.pendingArrivalEffects.
+             client.partyArrivalEffectPending = false;
+             const { SocialHandler } = require('./SocialHandler') as typeof import('./SocialHandler');
+             const isPartyArrival = SocialHandler.consumePartyArrivalEffect(client);
+             if (isPartyArrival) {
+                 console.log(`[PartyArrival] armed spawn for ${String(client.character?.name ?? '?')} in ${client.currentLevel}`);
+                 EntityHandler.beginPartyArrivalEffectWindow(client);
+             }
              const equippedMountId = EntityHandler.getEquippedMountId(
                 client.character?.equippedMount ?? props.equippedMount ?? 0
             );
@@ -5252,6 +5267,12 @@ export class EntityHandler {
              BuildingHandler.refreshCraftTownBuildingsOnSpawn(client);
              EntityHandler.sendCraftTownAuthoredNpcs(client);
              HomeStatueHandler.onCraftTownSpawn(client);
+             // Deliberately nothing for the traveller's own screen. The effect is what the
+             // party sees when someone materialises next to them; on the arriving player's own
+             // screen it would play under the level's name card at best, and as a flash over
+             // their own character at worst. `sendPlayerBodyToViewer` never draws a player to
+             // themselves, so the per-viewer hook already leaves them out -- this is only a
+             // note that the omission is the design, not a gap.
         } else if (isPlayer) {
             // Standing invariant, not an event. The seed and its two retries all happen in the
             // first three seconds of a spawn, and a body lost after that -- by a late teardown,
@@ -5474,6 +5495,153 @@ export class EntityHandler {
      * These paths run on spawn and on gear/snapshot changes, not per frame, so the scan
      * is affordable.
      */
+    /**
+     * `ProcPartyArrival` (added to Game.swz by `scripts/patch_gameswz_party_arrival_effect.ts`):
+     * `a_TeleportEffect` from SFX_1, a white-blue column of water that rises into a body and
+     * breaks into sparks, plus `snd_pwr_aoe_fire`.
+     *
+     * It has to be the `Proc` copy rather than the stock `TeleportEffect` (2078) it was cloned
+     * from, and the reason is in the client's cast reader, not in the data. For a `Proc` power
+     * (`var_301`, set from the name prefix) the reader **casts it there and then** --
+     * `new ActivePower(...); method_243(); method_129();`. For anything else it only *stores*
+     * the ActivePower in `combatState.mActivePower` and leaves it for the entity's own update
+     * loop to start. On a freshly spawned remote body that loop does not pick it up, and 2078
+     * produced no sound and no graphic at all when it was tried here -- while the same 2078
+     * plays perfectly when cast on your own body through `fx:`, because there the local update
+     * loop does run it.
+     */
+    private static readonly PARTY_ARRIVAL_EFFECT_POWER_ID = 4017;
+
+    /**
+     * Default delay for the scope-wide send below, which is now only the `fx:` debug command --
+     * the arrival itself hands the effect to each viewer as their copy of the body goes out,
+     * so it never has to guess at a delay.
+     */
+    private static readonly PARTY_ARRIVAL_EFFECT_DELAY_MS = 0;
+
+    /**
+     * Play the "go to" materialisation on every screen that can see the traveller, their own
+     * included.
+     *
+     * Player entity ids are not aliased per viewer -- every client refers to a player by the
+     * same `clientEntID`, and a client's own body carries that id too -- so one payload serves
+     * the whole scope.
+     *
+     * Only `fx:` uses this now; a real arrival goes through the per-viewer path below.
+     */
+
+    /**
+     * How long an arrival keeps handing its effect to newly-drawn viewers. Long enough to cover
+     * a party member who is still loading the level, or one whose copy of the body was refused
+     * a few times for reading as airborne, and short enough that an ordinary redraw minutes
+     * later is just a redraw.
+     */
+    private static readonly ARRIVAL_EFFECT_WINDOW_MS = 8000;
+
+    /** Start the per-viewer window. Called once, on the spawn a `Go to` was armed for. */
+    static beginPartyArrivalEffectWindow(client: Client): void {
+        client.arrivalEffectWindowUntil = Date.now() + EntityHandler.ARRIVAL_EFFECT_WINDOW_MS;
+        client.arrivalEffectSentToTokens.clear();
+    }
+
+    /**
+     * How long to wait, after a viewer is handed the body, before casting the effect on it.
+     *
+     * Arriving in the same tick as the spawn is not enough. `ActivePower.method_750` places the
+     * graphic with `playerEntLayer.getChildIndex(entity.gfx.m_TheDO)`, which throws when that
+     * display object is not in the layer yet -- and a body the client built microseconds ago is
+     * exactly that. The throw is swallowed by `method_1507`'s own try/catch, so the cast's
+     * *sound* plays and its graphic silently never appears: the "efekt sesi duyuluyor ama
+     * görsel gösterilmiyor" report, precisely.
+     *
+     * A few frames is all it takes. This is short enough to still read as the arrival itself.
+     */
+    private static readonly ARRIVAL_EFFECT_DRAW_DELAY_MS = 700;
+
+    /**
+     * Play the arrival effect for one viewer, the first time that viewer is handed the body.
+     *
+     * Scheduled from the moment the body goes out, so the cast can never overtake the spawn it
+     * belongs to -- the client would drop it on `GetEntFromID`.
+     */
+    private static playArrivalEffectForViewer(viewer: Client, subject: Client): void {
+        // Written so an unarmed subject leaves without touching the set: `windowUntil` is
+        // undefined on the stub clients the regression tests hand this path, and `Date.now() >
+        // undefined` is false, not true.
+        const windowUntil = Number(subject.arrivalEffectWindowUntil ?? 0);
+        if (!(Date.now() <= windowUntil) || subject.arrivalEffectSentToTokens?.has(viewer.token)) {
+            return;
+        }
+
+        subject.arrivalEffectSentToTokens?.add(viewer.token);
+        const viewerToken = viewer.token;
+        const entityId = subject.clientEntID;
+        setTimeout(() => {
+            if (!viewer.playerSpawned || viewer.token !== viewerToken || !viewer.knownEntityIds.has(entityId)) {
+                return;
+            }
+
+            viewer.send(0x09, EntityHandler.buildArrivalEffectPayload(entityId));
+            console.log(
+                `[PartyArrival] effect drawn on ${String(viewer.character?.name ?? '?')}'s screen ` +
+                `for ${String(subject.character?.name ?? '?')} ent=${entityId}`
+            );
+        }, EntityHandler.ARRIVAL_EFFECT_DRAW_DELAY_MS).unref?.();
+    }
+
+    private static buildArrivalEffectPayload(entityId: number, powerId?: number): Buffer {
+        const bb = new BitBuffer(false);
+        bb.writeMethod4(entityId);
+        bb.writeMethod4(Math.max(1, Math.round(Number(powerId ?? EntityHandler.PARTY_ARRIVAL_EFFECT_POWER_ID))));
+        bb.writeMethod15(false); // hasTargetEntity
+        bb.writeMethod15(false); // hasTargetPos
+        bb.writeMethod15(false); // hasProjectile
+        bb.writeMethod15(false); // isPersistent
+        bb.writeMethod15(false); // hasComboData
+        bb.writeMethod15(false); // hasPowerResourceData
+        return bb.toBuffer();
+    }
+
+    static playPartyArrivalEffect(client: Client, delayMs?: number, powerIdOverride?: number): void {
+        const entityId = Math.max(0, Math.round(Number(client.clientEntID) || 0));
+        const token = client.token;
+        const powerId = Math.max(1, Math.round(Number(powerIdOverride ?? EntityHandler.PARTY_ARRIVAL_EFFECT_POWER_ID)));
+        if (entityId <= 0) {
+            console.log(`[PartyArrival] skipped ${String(client.character?.name ?? '?')}: no entity id yet`);
+            return;
+        }
+
+        setTimeout(() => {
+            if (!client.playerSpawned || client.token !== token || client.clientEntID !== entityId) {
+                console.log(`[PartyArrival] skipped ${String(client.character?.name ?? '?')}: session moved on`);
+                return;
+            }
+
+            const levelScope = getClientLevelScope(client);
+            if (!levelScope) {
+                console.log(`[PartyArrival] skipped ${String(client.character?.name ?? '?')}: no level scope`);
+                return;
+            }
+
+            const payload = EntityHandler.buildArrivalEffectPayload(entityId, powerId);
+
+            // Sent to the whole scope without consulting knownEntityIds: that set records
+            // that a body was *offered* to a viewer, not that the viewer drew it
+            // ([[known-entity-id-is-not-proof-a-body-was-drawn]]), and a viewer who really
+            // does not hold the entity drops this packet on its own `GetEntFromID`. Skipping
+            // one is a missed effect; sending one too many costs nothing.
+            let viewers = 0;
+            for (const viewer of EntityHandler.getSpawnedSessionsInScope(levelScope)) {
+                viewer.send(0x09, payload);
+                viewers += 1;
+            }
+            console.log(
+                `[PartyArrival] cast power=${powerId} on ${String(client.character?.name ?? '?')} ` +
+                `ent=${entityId} scope=${levelScope} viewers=${viewers} bytes=${payload.length}`
+            );
+        }, Math.max(0, Math.round(Number(delayMs ?? EntityHandler.PARTY_ARRIVAL_EFFECT_DELAY_MS)))).unref?.();
+    }
+
     private static getSpawnedSessionsInScope(levelScope: string): Client[] {
         if (!levelScope) {
             return [];
@@ -5499,16 +5667,32 @@ export class EntityHandler {
      * snap window the client accepts the point and lets the body fall to the floor, which
      * is the party members raining down at the start of the boss scene.
      *
-     * The live position still wins whenever it is itself a confirmed standing sample; the
-     * grounded fallback only replaces a point the client never claimed to be standing on.
-     * Movement packets correct any small difference on the next frame.
+     * The live position still wins whenever it is itself the standing sample; the grounded
+     * fallback only replaces a point the client never claimed to be standing on. Movement
+     * packets correct any small difference on the next frame.
      */
     private static withGroundedBodyPosition(entity: any, levelName: string | null | undefined): any | null {
         if (!entity) {
             return entity;
         }
 
-        const grounded = resolveConfirmedGroundedPosition(entity, levelName);
+        // The last position this body's own client reported standing at, absolute or not.
+        //
+        // Demanding an absolute was what made an arrival bounce. The client sends one only from
+        // the `Entity` constructor, so a player who is mid-drop at that instant -- which is
+        // every arrival that does not land dead on the floor -- has no absolute sample at all.
+        // Every pass then refused the placement, and after three refusals the fallback below
+        // drew the body at its live, airborne point: the party member watched them appear in
+        // the air and fall, once per pass, which is the "it jumps two or three times on entry"
+        // report. A standing 0x07 arrives within a frame of landing and is a floor point in
+        // this same level, so the body is drawn on the ground the first time and the later
+        // passes re-place it exactly where it already is -- inside the client's snap band,
+        // which resolves with no visible movement. See
+        // LevelHandler.resolveStandingAnchorPosition for why a live same-level sample tracks
+        // the client rather than drifting from it.
+        const grounded = isEntityAirborne(entity)
+            ? resolveConfirmedGroundedPosition(entity, levelName)
+            : resolveGroundedPosition(entity, levelName) ?? resolveConfirmedGroundedPosition(entity, levelName);
         if (!grounded) {
             // No confirmed floor sample. If the body is airborne on top of that there is
             // nothing safe to draw it at: the live point is somewhere in open air, and the
@@ -5655,6 +5839,8 @@ export class EntityHandler {
             Entity.fromCharacter(subject.clientEntID, subject.character, placed)
         );
         EntityHandler.sendOtherPlayerMountToJoiner(viewer, subject);
+        // Straight after the body, so the cast can never arrive before the entity it names.
+        EntityHandler.playArrivalEffectForViewer(viewer, subject);
         // Record which room this screen now shows the body in. A 0x0F spawn is the only packet
         // that can move it across a room boundary, so this is what later tells us the copy is
         // stale and has to be drawn again.
@@ -5675,8 +5861,17 @@ export class EntityHandler {
      * and a body the subject's own client has not reported yet cannot be sent at all. So this
      * runs on spawn and again on a short retry, and it is symmetric: whichever half was not
      * possible the first time is simply done on the next pass.
+     *
+     * `force` belongs to the seed pass only. A redraw is a full re-spawn on the viewer's client
+     * -- it destroys its copy and rebuilds it -- so a *forced* retry over a body that is already
+     * correct is a visible re-entry: the arriving player drops into the room again, and anything
+     * playing on that body (the arrival effect) is cut off mid-animation. The retries now ask
+     * `viewerNeedsPlayerBodyRedrawn` first, which is not weaker than forcing: a seed that never
+     * landed leaves no `drawnPlayerRoomIds` entry, and neither does the relay path that marks an
+     * id known without drawing it ([[known-entity-id-is-not-proof-a-body-was-drawn]]), so both
+     * still redraw.
      */
-    private static syncPlayerVisibilityInScope(client: Client): void {
+    private static syncPlayerVisibilityInScope(client: Client, force: boolean = true): void {
         const levelScope = getClientLevelScope(client);
         if (!client.playerSpawned || !levelScope) {
             return;
@@ -5687,8 +5882,8 @@ export class EntityHandler {
                 continue;
             }
 
-            EntityHandler.sendPlayerBodyToViewer(client, other);
-            EntityHandler.sendPlayerBodyToViewer(other, client);
+            EntityHandler.sendPlayerBodyToViewer(client, other, force);
+            EntityHandler.sendPlayerBodyToViewer(other, client, force);
         }
     }
 
@@ -6125,7 +6320,9 @@ export class EntityHandler {
                     return;
                 }
 
-                EntityHandler.syncPlayerVisibilityInScope(client);
+                // Not forced: this is a retry for the halves the seed could not do, not a
+                // second seed. See the note on syncPlayerVisibilityInScope.
+                EntityHandler.syncPlayerVisibilityInScope(client, false);
             }, delayMs).unref?.();
         }
     }

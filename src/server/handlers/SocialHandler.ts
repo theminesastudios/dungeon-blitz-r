@@ -243,6 +243,79 @@ export class SocialHandler {
         };
     }
 
+    /**
+     * How long an armed arrival effect stays valid. A "Go to" is three socket lifetimes and a
+     * level load, so this has to outlast a slow client -- but it must expire, or a transfer
+     * that never completes leaves the effect waiting for some unrelated spawn days later.
+     */
+    private static readonly ARRIVAL_EFFECT_TTL_MS = 60_000;
+
+    /** Remember that this character's next spawn is a party arrival. */
+    static armPartyArrivalEffect(client: Client): void {
+        const key = normalizeCharacterKey(client.character?.name);
+        if (!key) {
+            return;
+        }
+
+        GlobalState.pendingArrivalEffects.set(key, Date.now() + SocialHandler.ARRIVAL_EFFECT_TTL_MS);
+    }
+
+    /** True once, for the spawn that a `Go to` was armed for. */
+    static consumePartyArrivalEffect(client: Client): boolean {
+        const key = normalizeCharacterKey(client.character?.name);
+        if (!key) {
+            return false;
+        }
+
+        const expiresAt = GlobalState.pendingArrivalEffects.get(key);
+        if (expiresAt === undefined) {
+            return false;
+        }
+
+        GlobalState.pendingArrivalEffects.delete(key);
+        return Date.now() <= expiresAt;
+    }
+
+    /**
+     * `fx:` plays the party-arrival materialisation on yourself; `fx:<powerId>` plays any
+     * power's cast graphic instead.
+     *
+     * This exists because the arrival effect is only reachable through a level transfer, which
+     * makes "did the packet work, or is the power missing from the client's Game.swz?" a very
+     * slow question to answer. It is how the custom `ProcPartyArrival` copy was caught playing
+     * its sound and drawing nothing while the stock 2078 drew correctly, which is why the
+     * arrival now uses 2078.
+     *
+     * The `word:` shape is not a style choice -- it is the shape every other command in this
+     * file uses (`/teleport:`, `/maintenance:`), and a bare `/fx` typed in the chat box never
+     * reached the server at all.
+     */
+    private static handleEffectCommand(client: Client, message: string): boolean {
+        // The colon is required so a bare "fx" typed in chat stays chat. A leading slash is
+        // accepted but does nothing useful: the client's own allowlist (class_127.method_1940)
+        // only forwards /lang:, /teleport: and /maintenance:, and swallows every other slash
+        // command locally with "Unknown Command". Un-prefixed text always reaches the server,
+        // which is why `teleport:` has a slashless form too.
+        const match = /^\/?fx:\s*(\d{1,5})?\s*$/i.exec(String(message ?? '').trim());
+        if (!match) {
+            return false;
+        }
+        console.log(`[PartyArrival] fx command from ${String(client.character?.name ?? '?')}: "${message}"`);
+
+        if (!client.playerSpawned || client.clientEntID <= 0) {
+            SocialHandler.sendChatStatus(client, 'Not spawned yet.');
+            return true;
+        }
+
+        const powerId = match[1] ? Number(match[1]) : undefined;
+        // Required inline, as the other cross-handler calls in this file do, to keep
+        // SocialHandler out of EntityHandler's import cycle.
+        const { EntityHandler } = require('./EntityHandler') as typeof import('./EntityHandler');
+        EntityHandler.playPartyArrivalEffect(client, 0, powerId);
+        SocialHandler.sendChatStatus(client, `Playing effect power ${powerId ?? 4017}.`);
+        return true;
+    }
+
     private static async handleTeleportCommand(client: Client, message: string): Promise<boolean> {
         const parsed = SocialHandler.parseTeleportCommand(message);
         if (!parsed) {
@@ -1104,7 +1177,10 @@ export class SocialHandler {
         // Where the target was last standing, never where they are this instant: arriving on
         // a friend who is mid-jump would drop the traveller in from that height.
         const entity = target.entities.get(target.clientEntID);
-        const grounded = LevelHandler.resolveGroundedAnchorPosition(entity, targetLevel);
+        // "Go to" is the one place where landing *on* the friend is the whole point, so this
+        // reads the target's last standing sample rather than only the absolutes their client
+        // sent when it built the level. See LevelHandler.resolveStandingAnchorPosition.
+        const grounded = LevelHandler.resolveStandingAnchorPosition(entity, targetLevel);
         if (grounded) {
             x = grounded.x;
             y = grounded.y;
@@ -1293,6 +1369,10 @@ export class SocialHandler {
         }
 
         if (await SocialHandler.handleTeleportCommand(client, message)) {
+            return;
+        }
+
+        if (SocialHandler.handleEffectCommand(client, message)) {
             return;
         }
 
@@ -2069,6 +2149,8 @@ export class SocialHandler {
         client.craftTownHostCharacter = targetTeleport.targetLevel === 'CraftTown'
             ? targetTeleport.craftTownHostCharacter ?? null
             : null;
+        targetTeleport.arrivalEffect = true;
+        SocialHandler.armPartyArrivalEffect(client);
         GlobalState.pendingTeleports.set(client.token, targetTeleport);
         client.lastDoorId = 0;
         client.lastDoorTargetLevel = targetTeleport.targetLevel;
