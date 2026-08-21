@@ -45,7 +45,8 @@ import { parseSwz, writeSwz } from "./swzPatchUtils";
  *    block when `entType.entName == "Decoy"` (the mage's decoy); the Djinn pets
  *    are "PetDjinnRed/Yellow/Blue/Green", so they expired silently. The gate's
  *    `ifne` (not-equal -> skip) is re-pointed to an appended check that also
- *    lets an entity through when `entName.indexOf("PetDjinn") == 0`. The power
+ *    lets an entity through when `entName.indexOf("PetDjinn") == 0`; every
+ *    other summoned entity skips the explosion block. The power
  *    lookup inside the block falls back to the base "DecoyExplode" power when
  *    the entity's power has no level suffix (SummonPet has none), so the Djinn
  *    gets the base explosion: RangedAoE radius 300, x1.5 physical damage, cast
@@ -488,7 +489,24 @@ const callVoid = (mn: number, args: number): Emitted => ({
  * Entry/exit stack depth is 0; locals used (74, 75, 77) are free at this point
  * (the LeoneanAura block that follows reuses them later).
  */
-function petArmorModBlock(petArmorBaneStr: number): Buffer {
+function petArmorModBlock(petArmorBaneStr: number, legacyPositiveSign = false): Buffer {
+  const defenseReduction = legacyPositiveSign
+    ? [
+        // Legacy bug: level / 200 - 0, which increases defense.
+        getlocal(74),
+        pushShort(200),
+        { opcode: OP.divide, pop: 2, push: 1 } as Emitted,
+        { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 } as Emitted,
+        { opcode: OP.subtract, pop: 2, push: 1 } as Emitted,
+      ]
+    : [
+        // Correct debuff: 0 - level / 200.
+        { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 } as Emitted,
+        getlocal(74),
+        pushShort(200),
+        { opcode: OP.divide, pop: 2, push: 1 } as Emitted,
+        { opcode: OP.subtract, pop: 2, push: 1 } as Emitted,
+      ];
   const program: Emitted[] = [
     // if (_loc52_.buffName != "PetArmorBane") skip the injection
     getlocal(52),
@@ -536,18 +554,10 @@ function petArmorModBlock(petArmorBaneStr: number): Buffer {
     setlocal(77),
     // _eaValue.push(0 - level / 200)  (one value per BuffProperty: MeleeDefense, MagicDefense)
     getlocal(77),
-    getlocal(74),
-    pushShort(200),
-    { opcode: OP.divide, pop: 2, push: 1 },
-    { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
-    { opcode: OP.subtract, pop: 2, push: 1 },
+    ...defenseReduction,
     callVoid(MN.push, 1),
     getlocal(77),
-    getlocal(74),
-    pushShort(200),
-    { opcode: OP.divide, pop: 2, push: 1 },
-    { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
-    { opcode: OP.subtract, pop: 2, push: 1 },
+    ...defenseReduction,
     callVoid(MN.push, 1),
     // _eaMods.push(new class_140(1100, _eaValue))
     getlocal(75),
@@ -579,12 +589,12 @@ function petArmorModBlock(petArmorBaneStr: number): Buffer {
  * run when it starts with "PetDjinn"; otherwise behaves exactly like the old
  * not-equal path (jump straight to the "expiry handled" code at 1942).
  */
-function djinnAppendBlock(): Buffer {
+function djinnAppendBlock(nonDjinnSkipOffset: number = 4): Buffer {
   // Appended at codeLen (2150). Offsets below are fixed: the append is inserted
   // at the method end and nothing else shifts (the gate patch is same-size).
   //   2150: getlocal0; 2151: getproperty entType; 2153: getproperty entName;
   //   2156: pushstring "PetDjinn"; 2159: callproperty indexOf,1; 2162: pushbyte 0
-  //   2164: ifne +0 -> 2168 (not a Djinn: jump to expiry-handled)
+  //   2164: ifne +4 -> 2172 (not a Djinn: jump to expiry-handled)
   //   2168: jump -> 1748 (explosion block)
   //   2172: jump -> 1942 (expiry handled)
   const block = Buffer.concat([
@@ -595,7 +605,7 @@ function djinnAppendBlock(): Buffer {
     Buffer.from([0x46, ...writeU30(MN.indexOf), 0x01]), // callproperty indexOf, 1
     Buffer.from([0x24, 0x00]), // pushbyte 0
     Buffer.from([0x14]), // ifne -> skip (entName does not start with PetDjinn)
-    writeS24(0),
+    writeS24(nonDjinnSkipOffset),
     Buffer.from([0x10]), // jump -> explosion block (1748)
     writeS24(1748 - 2172),
     Buffer.from([0x10]), // jump -> expiry handled (1942)
@@ -642,6 +652,7 @@ function patchSwf(swfPath: string, verify: boolean): void {
     }
 
     const append = djinnAppendBlock();
+    const buggyAppend = djinnAppendBlock(0);
     // After a successful apply the stored codeLen already includes the append, so
     // the checks are position-relative (the gate patch is same-size, so the append
     // always starts at 2150 in the method body).
@@ -649,9 +660,22 @@ function patchSwf(swfPath: string, verify: boolean): void {
       code.length >= 2150 + append.length &&
       code.subarray(1744, 1748).equals(Buffer.from([0x14, 0x92, 0x01, 0x00])) &&
       code.subarray(2150, 2150 + append.length).equals(append);
+    const hasBuggyDjinnGate =
+      code.length >= 2150 + buggyAppend.length &&
+      code.subarray(1744, 1748).equals(Buffer.from([0x14, 0x92, 0x01, 0x00])) &&
+      code.subarray(2150, 2150 + buggyAppend.length).equals(buggyAppend);
 
     if (patched) {
       console.log(`${swfPath}: Entity.method_1770 Djinn gate already patched.`);
+    } else if (hasBuggyDjinnGate && !verify) {
+      patches.push({
+        key: "Entity.method_1770.fixDjinnGate",
+        start: body.codeStart + 2150,
+        end: body.codeStart + 2150 + append.length,
+        data: append,
+        detail: "prevent non-Djinn summons from entering the Decoy explosion block",
+      });
+      console.log(`${swfPath}: corrected Entity.method_1770 Djinn gate.`);
     } else if (verify) {
       throw new PatchError(`${swfPath}: verify failed; Entity.method_1770 Djinn gate is missing.`);
     } else {
@@ -691,12 +715,25 @@ function patchSwf(swfPath: string, verify: boolean): void {
     }
 
     const block = petArmorModBlock(petArmorBaneStr);
+    const legacyPositiveBlock = petArmorModBlock(petArmorBaneStr, true);
     // The block is inserted at 3963 and shifts nothing before it; after a re-run the
     // stored codeLen already accounts for it, so just check the bytes in place.
     const patched = code.length >= 3963 + block.length && code.subarray(3963, 3963 + block.length).equals(block);
+    const hasLegacyPositiveSign =
+      code.length >= 3963 + legacyPositiveBlock.length &&
+      code.subarray(3963, 3963 + legacyPositiveBlock.length).equals(legacyPositiveBlock);
 
     if (patched) {
       console.log(`${swfPath}: CombatState.method_1192 PetArmorBane mod already patched.`);
+    } else if (hasLegacyPositiveSign && !verify) {
+      patches.push({
+        key: "CombatState.method_1192.fixPetArmorSign",
+        start: body.codeStart + 3963,
+        end: body.codeStart + 3963 + legacyPositiveBlock.length,
+        data: block,
+        detail: "correct PetArmorBane from +level/200 defense to -level/200 defense",
+      });
+      console.log(`${swfPath}: corrected CombatState.method_1192 PetArmorBane sign.`);
     } else if (verify) {
       throw new PatchError(`${swfPath}: verify failed; CombatState.method_1192 PetArmorBane mod is missing.`);
     } else {

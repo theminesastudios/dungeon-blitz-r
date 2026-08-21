@@ -3829,7 +3829,7 @@
 		<Realm>Pet</Realm>
 		<Speed>12</Speed>
 		<Width>50</Width>
-		<Height>160</Height>
+		<Height>320</Height>
 		<Flying>True</Flying>
 		<Behavior>SingleTargetPet</Behavior>
 		<EquippedGear/>
@@ -4196,7 +4196,7 @@
 		<Realm>Pet</Realm>
 		<Speed>12</Speed>
 		<Width>50</Width>
-		<Height>160</Height>
+		<Height>320</Height>
 		<Flying>True</Flying>
 		<Behavior>SingleTargetPet</Behavior>
 		<EquippedGear/>
@@ -4567,7 +4567,7 @@
 		<Realm>Pet</Realm>
 		<Speed>12</Speed>
 		<Width>50</Width>
-		<Height>160</Height>
+		<Height>320</Height>
 		<Flying>True</Flying>
 		<Behavior>SingleTargetPet</Behavior>
 		<EquippedGear/>
@@ -4927,7 +4927,7 @@
 		<Realm>Pet</Realm>
 		<Speed>12</Speed>
 		<Width>50</Width>
-		<Height>160</Height>
+		<Height>320</Height>
 		<Flying>True</Flying>
 		<Behavior>SingleTargetPet</Behavior>
 		<EquippedGear/>
