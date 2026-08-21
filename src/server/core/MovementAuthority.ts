@@ -17,6 +17,7 @@ export interface MovementAuthorityState {
     mobilityGraceUntilMs: number;
     mobilityRemainingDistance: number;
     mobilityPowerId: number;
+    lastRoomTransitionAtMs: number;
 }
 
 export interface MovementAuthorityClient {
@@ -70,6 +71,17 @@ export class MovementAuthority {
     private static readonly QUARANTINE_SCORE = 8;
     private static readonly DISCONNECT_SCORE = 16;
     private static readonly QUARANTINE_MS = 5000;
+    // A door between two rooms of the same dungeon repositions the player thousands of units in
+    // a single packet, and it is the one teleport an honest player makes constantly. Live
+    // JC_Mini2 (The East Wing) captures show the jump at ~1500-1700 units, landing both members
+    // on the same authored y. The single-packet cap above still bounds what may be accepted
+    // this way, and the cooldown keeps it to what a door can actually produce.
+    private static readonly ROOM_TRANSITION_MIN_DISTANCE = 700;
+    private static readonly ROOM_TRANSITION_COOLDOWN_MS = 1500;
+    // Swapping rooms stalls the client while the new one is built, and that silence is what
+    // separates a door from a dash: the two live JC_Mini2 transitions arrived 983ms and 1015ms
+    // after the previous packet, while a player who is moving reports every few frames.
+    private static readonly ROOM_TRANSITION_MIN_PACKET_GAP_MS = 400;
     private static readonly MOBILITY_POWER_RANGES: ReadonlyArray<readonly [number, number]> = [
         [262, 283], [398, 419], [501, 511], [723, 737], [795, 805],
         [1164, 1184], [1187, 1207], [1209, 1219], [1323, 1333],
@@ -89,7 +101,8 @@ export class MovementAuthority {
             correctionGraceUntilMs: 0,
             mobilityGraceUntilMs: 0,
             mobilityRemainingDistance: 0,
-            mobilityPowerId: 0
+            mobilityPowerId: 0,
+            lastRoomTransitionAtMs: 0
         };
     }
 
@@ -323,6 +336,58 @@ export class MovementAuthority {
         const horizontalDistance = Math.abs(attemptedX - state.lastAcceptedX);
         const speedDistance = airborne ? horizontalDistance : actualDistance;
         if (speedDistance > normalAllowed) {
+            // Walking through a door inside a dungeon looks exactly like a speed cheat, and
+            // rejecting it is what made party members invisible to each other for the rest of
+            // a run.
+            //
+            // The grace that was supposed to cover this is armed by `cacheRoomId`, and only
+            // when the room *id* changes -- but the client reports room 0 for the whole of a
+            // dungeon (every `[Visibility]` line ever logged reads `room=0`), so the grace was
+            // never armed and the transition was scored against the run budget. Two live
+            // JC_Mini2 rejections tell the whole story: `old=15254,3198 attempted=15541,4719`
+            // and `old=15680,3066 attempted=15397,4719` -- two different players landing on
+            // the same authored floor of the next room, each refused.
+            //
+            // A refusal is not a rubber-band the mover can see: their own client has already
+            // moved them and keeps sending small deltas from the new room, which the server
+            // applies on top of the position it clamped them back to. So the server's copy of
+            // that body stays a full room behind for the rest of the run, and that stale point
+            // is what every other screen is handed -- the body is drawn, in a room nobody is
+            // looking at. Both players do it, so neither can see the other, in every room.
+            //
+            // So a jump of door size is accepted as what it is. The single-packet cap above
+            // still bounds it, the cooldown stops it becoming a general teleport, and the
+            // caller uses the reason to re-seed the bodies on both sides of the door.
+            if (MovementAuthority.isRoomTransitionJump(
+                client,
+                state,
+                attemptedX,
+                attemptedY,
+                actualDistance,
+                elapsedMs,
+                normalizedNowMs
+            )) {
+                const fromX = Math.round(state.lastAcceptedX);
+                const fromY = Math.round(state.lastAcceptedY);
+                state.lastRoomTransitionAtMs = normalizedNowMs;
+                state.movementBudgetDistance = 0;
+                MovementAuthority.accept(state, attemptedX, attemptedY, normalizedNowMs, 'room_transition');
+                console.log(
+                    `[RoomTransition] ${String(client.character?.name ?? 'unknown').replace(/\s+/g, '_')} ` +
+                    `level=${client.currentLevel || '(unknown)'} from=${fromX},${fromY} ` +
+                    `to=${Math.round(attemptedX)},${Math.round(attemptedY)} distance=${Math.round(actualDistance)}`
+                );
+                return MovementAuthority.result(
+                    true,
+                    'room_transition',
+                    attemptedX,
+                    attemptedY,
+                    state,
+                    elapsedMs,
+                    MovementAuthority.MAX_SINGLE_PACKET_DISTANCE,
+                    actualDistance
+                );
+            }
             return MovementAuthority.reject(client, state, 'speed_delta', attemptedX, attemptedY, elapsedMs, normalAllowed, actualDistance, normalizedNowMs);
         }
         if (airborne) {
@@ -422,6 +487,169 @@ export class MovementAuthority {
             nowMs < Number(client.roomTransitionGraceUntil ?? 0) ||
             Boolean(String(client.activeDungeonCutsceneScope ?? '').trim()) ||
             LevelConfig.normalizeLevelName(client.currentLevel) === 'TutorialBoat';
+    }
+
+    /**
+     * Is this jump the shape of a door inside a dungeon?
+     *
+     * Deliberately geometric rather than keyed on anything the client declares. The room id
+     * cannot be used -- it reads 0 for a whole dungeon -- and the room packets arrive far too
+     * often (a played sound is one) to be treated as a transition signal without disabling the
+     * speed check outright.
+     *
+     * Five bounds keep this from becoming a free teleport: the level must be a dungeon, the
+     * distance must be door-sized and still inside the single-packet cap that every path
+     * obeys, the packet must arrive after a gap no moving player produces -- the client is
+     * busy building the new room -- only one may be taken per cooldown, and the jump has to
+     * actually *leave the room it started in*, measured against the level's own authored room
+     * layout. A sprint across one long room, however large, is still `speed_delta`; so is a
+     * dash in mid flight, which reports continuously and fails the gap test.
+     */
+    private static isRoomTransitionJump(
+        client: MovementAuthorityClient,
+        state: MovementAuthorityState,
+        attemptedX: number,
+        attemptedY: number,
+        actualDistance: number,
+        elapsedMs: number,
+        nowMs: number
+    ): boolean {
+        if (!LevelConfig.isDungeonLevel(client.currentLevel)) {
+            return false;
+        }
+        if (
+            actualDistance < MovementAuthority.ROOM_TRANSITION_MIN_DISTANCE ||
+            actualDistance > MovementAuthority.MAX_SINGLE_PACKET_DISTANCE
+        ) {
+            return false;
+        }
+        if (elapsedMs < MovementAuthority.ROOM_TRANSITION_MIN_PACKET_GAP_MS) {
+            return false;
+        }
+        if (!MovementAuthority.leavesAuthoredRoom(
+            client.currentLevel,
+            state.lastAcceptedX,
+            state.lastAcceptedY,
+            attemptedX,
+            attemptedY
+        )) {
+            return false;
+        }
+
+        const lastAtMs = Math.max(0, Math.round(Number(state.lastRoomTransitionAtMs ?? 0)));
+        return lastAtMs <= 0 || nowMs - lastAtMs >= MovementAuthority.ROOM_TRANSITION_COOLDOWN_MS;
+    }
+
+    /**
+     * The authored rooms of a dungeon, as bands of world space.
+     *
+     * Built from the same spawn registry the server seeds the level's enemies from, which is
+     * the only data the server holds that says which room a coordinate belongs to -- the
+     * client's own room id is useless here, it reads 0 for a whole run. A level with no
+     * registry has no rooms as far as this is concerned, and nothing below it can fire: that
+     * is deliberate, an unknown layout must not be able to authorise a teleport.
+     */
+    private static roomBandsByLevel = new Map<string, ReadonlyArray<{
+        roomId: number;
+        minX: number;
+        maxX: number;
+        minY: number;
+        maxY: number;
+        anchors: ReadonlyArray<{ x: number; y: number }>;
+    }>>();
+
+    private static getRoomBands(levelName: string | null | undefined) {
+        const normalized = LevelConfig.normalizeLevelName(levelName) || String(levelName ?? '');
+        const cached = MovementAuthority.roomBandsByLevel.get(normalized);
+        if (cached) {
+            return cached;
+        }
+
+        const { DungeonSpawnLoader } = require('../data/DungeonSpawnLoader') as typeof import('../data/DungeonSpawnLoader');
+        // A Hard dungeon is the same authored map with harder enemies, and only the base name
+        // carries a spawn registry.
+        const baseName = /hard$/i.test(normalized) ? normalized.replace(/hard$/i, '') : normalized;
+        const anchors = [
+            ...DungeonSpawnLoader.getNpcsForLevel(normalized),
+            ...(baseName !== normalized ? DungeonSpawnLoader.getNpcsForLevel(baseName) : [])
+        ];
+
+        const byRoom = new Map<number, { roomId: number; minX: number; maxX: number; minY: number; maxY: number; anchors: { x: number; y: number }[] }>();
+        for (const anchor of anchors) {
+            const roomId = Math.round(Number(anchor?.roomId ?? -1));
+            const x = Number(anchor?.x);
+            const y = Number(anchor?.y);
+            if (roomId < 0 || !Number.isFinite(x) || !Number.isFinite(y)) {
+                continue;
+            }
+            const band = byRoom.get(roomId) ?? { roomId, minX: x, maxX: x, minY: y, maxY: y, anchors: [] };
+            band.minX = Math.min(band.minX, x);
+            band.maxX = Math.max(band.maxX, x);
+            band.minY = Math.min(band.minY, y);
+            band.maxY = Math.max(band.maxY, y);
+            band.anchors.push({ x, y });
+            byRoom.set(roomId, band);
+        }
+
+        const bands = Array.from(byRoom.values());
+        // An empty answer is never cached. It is indistinguishable from "asked before the spawn
+        // registry finished loading", and caching that would silently disable every door in the
+        // level for the lifetime of the process.
+        if (bands.length > 0) {
+            MovementAuthority.roomBandsByLevel.set(normalized, bands);
+        }
+        return bands;
+    }
+
+    /** The authored room whose nearest anchor is closest to this point, or null when unknown. */
+    private static resolveAuthoredRoom(levelName: string | null | undefined, x: number, y: number) {
+        let closest: ReturnType<typeof MovementAuthority.getRoomBands>[number] | null = null;
+        let closestDistance = Number.POSITIVE_INFINITY;
+        for (const band of MovementAuthority.getRoomBands(levelName)) {
+            for (const anchor of band.anchors) {
+                const distance = Math.hypot(anchor.x - x, anchor.y - y);
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closest = band;
+                }
+            }
+        }
+        return closest;
+    }
+
+    /**
+     * Did this jump end somewhere the room it started in does not reach?
+     *
+     * Two ways to be sure of that, because neither alone covers every door. The nearest
+     * authored anchor naming a different room is the direct answer. The second is for a room
+     * the registry does not populate -- a landing hall, a corridor -- where the nearest anchor
+     * still belongs to the room just left: a destination outside that room's own vertical band
+     * by more than a floor's worth is on another floor of the dungeon, and no door within one
+     * room does that.
+     */
+    private static readonly ROOM_BAND_FLOOR_TOLERANCE = 400;
+
+    private static leavesAuthoredRoom(
+        levelName: string | null | undefined,
+        fromX: number,
+        fromY: number,
+        toX: number,
+        toY: number
+    ): boolean {
+        const fromRoom = MovementAuthority.resolveAuthoredRoom(levelName, fromX, fromY);
+        if (!fromRoom) {
+            return false;
+        }
+
+        const toRoom = MovementAuthority.resolveAuthoredRoom(levelName, toX, toY);
+        if (toRoom && toRoom.roomId !== fromRoom.roomId) {
+            return true;
+        }
+
+        return (
+            toY < fromRoom.minY - MovementAuthority.ROOM_BAND_FLOOR_TOLERANCE ||
+            toY > fromRoom.maxY + MovementAuthority.ROOM_BAND_FLOOR_TOLERANCE
+        );
     }
 
     private static accept(state: MovementAuthorityState, x: number, y: number, nowMs: number, reason: string): void {

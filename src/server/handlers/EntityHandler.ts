@@ -5926,6 +5926,55 @@ export class EntityHandler {
         }
     }
 
+    /**
+     * Mark every *other* player's body stale on this one client's screen.
+     *
+     * The mirror image of `markPlayerBodyNeedsRedraw`, and the half that was missing. Walking
+     * through a door tears the old room down on the mover's own client, and it lets go of
+     * everything that room held -- the other players included. Nothing put them back: the
+     * server still had a draw record for each of them, so the sweep considered that screen
+     * correct and stayed silent for the rest of the run. Marking the records stale is enough;
+     * the sweep and the transition resync redraw within a second, and only for this viewer.
+     */
+    static markPeerBodiesNeedRedrawForViewer(viewer: Client): void {
+        const levelScope = getClientLevelScope(viewer);
+        if (!levelScope || !viewer.drawnPlayerRoomIds) {
+            return;
+        }
+
+        for (const subject of EntityHandler.getSpawnedSessionsInScope(levelScope)) {
+            if (subject !== viewer) {
+                viewer.drawnPlayerRoomIds.delete(subject.clientEntID);
+            }
+        }
+    }
+
+    /**
+     * Redraw the bodies on both sides of a door, twice, after the room has had time to load.
+     *
+     * One pass is not enough and never was: a client drops the spawns for a room it is not
+     * standing in yet, so a body sent while it is still swapping rooms is silently discarded --
+     * and the server, having recorded the draw, never sends it again. The second pass is what
+     * covers a slow room load; both are cheap, and each only sends what the screen is actually
+     * missing, so an already-correct pair costs a map lookup.
+     */
+    private static readonly ROOM_TRANSITION_REDRAW_DELAYS_MS = [700, 2200];
+
+    static scheduleRoomTransitionRedraw(client: Client): void {
+        const token = client.token;
+        for (const delayMs of EntityHandler.ROOM_TRANSITION_REDRAW_DELAYS_MS) {
+            setTimeout(() => {
+                if (!client.playerSpawned || client.token !== token) {
+                    return;
+                }
+
+                EntityHandler.markPlayerBodyNeedsRedraw(client);
+                EntityHandler.markPeerBodiesNeedRedrawForViewer(client);
+                EntityHandler.reconcilePlayerVisibilityInScope(client);
+            }, delayMs).unref?.();
+        }
+    }
+
     static resendPlayerBodyToViewer(viewer: Client, subjectEntityId: number): boolean {
         const entityId = Math.max(0, Math.round(Number(subjectEntityId) || 0));
         if (entityId <= 0 || !viewer.playerSpawned) {

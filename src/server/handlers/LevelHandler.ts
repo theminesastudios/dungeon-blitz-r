@@ -3150,44 +3150,68 @@ export class LevelHandler {
             client.currentRoomId = roomId;
             GlobalState.refreshSessionIndexes(client);
             if (previousRoomId >= 0 && previousRoomId !== roomId) {
-                // Same window the mount path already granted, but for every player: the door
-                // reposition arrives as one large delta and must not be scored as a teleport.
-                // Without this an on-foot player is clamped back into the room they just left,
-                // which is the position everyone else keeps rendering.
-                client.roomTransitionGraceUntil = Math.max(
-                    client.roomTransitionGraceUntil,
-                    Date.now() + LevelHandler.ROOM_TRANSITION_GRACE_MS
-                );
-                PetHandler.armMountTravelProtection(client, 4000, true);
-
-                // The floor sample belongs to the room it was measured in.
-                //
-                // It is only tagged with the *level*, which is not fine enough inside a
-                // dungeon: the room changed, the level did not, so the old room's floor point
-                // stays "confirmed" and every path that prefers a confirmed sample over the
-                // live position keeps re-pinning this body to the room it walked out of.
-                // Pushing the body without clearing it first actively re-sends the stale
-                // point, which is why this push alone did not move anybody.
-                const levelBody = LevelHandler.getCurrentLevelMap(client)?.get(client.clientEntID);
-                for (const entity of [client.entities.get(client.clientEntID), levelBody]) {
-                    if (entity) {
-                        clearGroundedSample(entity);
-                    }
-                }
-
-                // The grace above stops the server clamping the player back into the room they
-                // left, but it does not tell anyone else they moved. A room change is a single
-                // large jump, and it does not arrive as movement deltas anyone can relay -- so
-                // the other clients keep drawing the body exactly where it was, and the player
-                // is shown standing in the room they walked out of for the rest of the run.
-                // Push the authoritative body now, and let the resync pass cover the case where
-                // they are still mid-teleport with no floor sample to place them on yet.
-                EntityHandler.markPlayerBodyNeedsRedraw(client);
-                EntityHandler.refreshPlayerSnapshot(client);
-                EntityHandler.schedulePlayerVisibilityResync(client);
+                LevelHandler.notePlayerRoomTransition(client, `room_id_${previousRoomId}_to_${roomId}`);
             }
             LevelHandler.maybeStartTutorialDungeonTraversalTutorial(client, roomId);
         }
+    }
+
+    /**
+     * Everything that has to happen when a player moves from one room of a dungeon to another.
+     *
+     * There are two ways the server learns about it and neither is reliable on its own, so both
+     * land here. A room id change is the declared one -- and it never fires in most dungeons,
+     * where the client reports room 0 from the entrance to the boss. The one that always
+     * happens is the reposition itself: a single packet carrying a door-sized jump, which
+     * `MovementAuthority` now names `room_transition` instead of refusing as a speed cheat.
+     *
+     * Three things are wrong the instant a player steps through a door, and all three are
+     * silent:
+     *  - the mover's floor sample was measured in the room they left, and every path that
+     *    places a body prefers a confirmed sample over the live position, so it keeps
+     *    re-pinning them there;
+     *  - a teleport produces no deltas anyone can relay, so every other screen keeps drawing
+     *    the body in the old room;
+     *  - the mover's own client tore that room down and let go of the other players with it,
+     *    so their bodies are gone from this screen while the server still believes it drew
+     *    them.
+     */
+    private static notePlayerRoomTransition(client: Client, reason: string): void {
+        // Same window the mount path already granted, but for every player: the door
+        // reposition arrives as one large delta and must not be scored as a teleport. Without
+        // this an on-foot player is clamped back into the room they just left, which is the
+        // position everyone else keeps rendering.
+        client.roomTransitionGraceUntil = Math.max(
+            client.roomTransitionGraceUntil,
+            Date.now() + LevelHandler.ROOM_TRANSITION_GRACE_MS
+        );
+        PetHandler.armMountTravelProtection(client, 4000, true);
+
+        // The floor sample belongs to the room it was measured in. It is only tagged with the
+        // *level*, which is not fine enough inside a dungeon: the room changed, the level did
+        // not. Pushing the body without clearing it first actively re-sends the stale point,
+        // which is why that push alone did not move anybody.
+        const levelBody = LevelHandler.getCurrentLevelMap(client)?.get(client.clientEntID);
+        for (const entity of [client.entities.get(client.clientEntID), levelBody]) {
+            if (entity) {
+                clearGroundedSample(entity);
+            }
+        }
+
+        console.log(
+            `[RoomTransition] ${String(client.character?.name ?? '?')} in ${client.currentLevel || '(unknown)'} ` +
+            `reason=${reason} -- redrawing every body on both sides of the door`
+        );
+
+        // Both directions. The mover has to be redrawn for everyone else, and everyone else has
+        // to be redrawn for the mover.
+        EntityHandler.markPlayerBodyNeedsRedraw(client);
+        EntityHandler.markPeerBodiesNeedRedrawForViewer(client);
+        EntityHandler.refreshPlayerSnapshot(client);
+        EntityHandler.schedulePlayerVisibilityResync(client);
+        // ...and again once the new room has finished loading, because a client drops the
+        // spawns for a room it is not standing in yet.
+        EntityHandler.scheduleRoomTransitionRedraw(client);
     }
 
     static isGoblinRiverBossIntroLocked(client: Client): boolean {
@@ -6022,6 +6046,33 @@ export class LevelHandler {
                 movementResult.actualDistance >= LevelHandler.RELAY_GAP_REDRAW_DISTANCE
             ) {
                 EntityHandler.markPlayerBodyNeedsRedraw(client);
+                // The other half. A door is a two-sided event: this client tore its old room
+                // down and dropped the bodies it was holding, so they have to be drawn again
+                // for *them* as well, or they walk into the next room alone.
+                EntityHandler.markPeerBodiesNeedRedrawForViewer(client);
+                EntityHandler.scheduleRoomTransitionRedraw(client);
+            }
+            // `room_transition` is a door the movement itself declared, in a dungeon whose
+            // client never reports a room id. It carries the full set of consequences -- the
+            // stale floor sample, the grace for the packets still in flight behind it, and the
+            // redraw on both sides -- so it goes through the same path a declared room change
+            // does.
+            if (movementResult.accepted && movementResult.reason === 'room_transition') {
+                // Armed here rather than in the deferred pass: the packets already behind this
+                // one belong to the same transition and must not be scored against the run
+                // budget either.
+                client.roomTransitionGraceUntil = Math.max(
+                    client.roomTransitionGraceUntil,
+                    Date.now() + LevelHandler.ROOM_TRANSITION_GRACE_MS
+                );
+                // Deferred by one tick because this packet's position is committed further
+                // down: re-sending the body from here would hand every screen the point the
+                // player just left, and record it as correctly drawn.
+                setImmediate(() => {
+                    if (client.playerSpawned) {
+                        LevelHandler.notePlayerRoomTransition(client, 'movement_jump');
+                    }
+                });
             }
             if (!movementResult.accepted) {
                 const cappedMovement = MovementAuthority.commitCappedRejectedMovement(client, movementResult, nowMs);

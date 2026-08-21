@@ -9,6 +9,7 @@ import { GlobalState } from '../core/GlobalState';
 import { LevelConfig } from '../core/LevelConfig';
 import { getLevelScopeKey } from '../core/LevelScope';
 import { MovementAuthority } from '../core/MovementAuthority';
+import { DungeonSpawnLoader } from '../data/DungeonSpawnLoader';
 import { CombatHandler } from '../handlers/CombatHandler';
 import { EntityHandler } from '../handlers/EntityHandler';
 import { LevelHandler } from '../handlers/LevelHandler';
@@ -50,6 +51,15 @@ function ensureDataLoaded(): void {
     }
     if (Object.keys(GameData.ENTTYPES).length === 0) {
         GameData.load(dataDir);
+    }
+}
+
+// The authored room layout of the dungeon, which is what tells a door apart from a sprint.
+function ensureDungeonRoomsLoaded(): void {
+    const dataDir = path.resolve(__dirname, '../data');
+    ensureDataLoaded();
+    if (!DungeonSpawnLoader.hasLevel(DUNGEON_LEVEL)) {
+        DungeonSpawnLoader.load(dataDir);
     }
 }
 
@@ -1030,6 +1040,115 @@ function testEveryTransitionMarksTheBodyStaleEvenWithoutARoomChange(): void {
         sent.map((entry) => `${entry.viewer}:${entry.subject}`),
         [`Telahair:${walker.clientEntID}`],
         'the transitioning body must be redrawn for the other screen, with no room change involved'
+    );
+}
+
+/**
+ * A door between two rooms of the same dungeon is not a speed cheat.
+ *
+ * This is the one that kept two East Wing players invisible to each other in every room after
+ * the first. The grace that was supposed to cover a door is armed by `cacheRoomId`, and only
+ * when the room *id* moves -- but this dungeon reports room 0 from the entrance to the boss,
+ * so it was never armed and the reposition was scored against the run budget. Both lines below
+ * are copied from a live capture:
+ *
+ *   [MovementAuthority] rejected reason=speed_delta character=Telahair level=JC_Mini2
+ *     old=15254,3198 attempted=15541,4719 elapsedMs=983 allowed=1425 actual=1548
+ *   [MovementAuthority] rejected reason=speed_delta character=Lanorut level=JC_Mini2
+ *     old=15680,3066 attempted=15397,4719 elapsedMs=1015 allowed=1425 actual=1677
+ *
+ * Two players landing on the same authored floor of room 2, each refused. A refusal is not a
+ * rubber-band the mover notices -- their own client has moved them and keeps sending small
+ * deltas from the new room, which the server applies on top of the position it clamped them
+ * back to -- so the server's copy of that body stays a room behind for the rest of the run,
+ * and that is the point handed to every other screen.
+ *
+ * What may be accepted is bounded by the level's own authored room layout, so a sprint across
+ * one long room is still `speed_delta`.
+ */
+function testADoorBetweenRoomsIsNotScoredAsASpeedCheat(): void {
+    ensureDungeonRoomsLoaded();
+
+    const doorJump = (from: [number, number], to: [number, number], gapMs: number, level = DUNGEON_LEVEL) => {
+        const client: any = {
+            userId: 9,
+            token: 9,
+            character: { name: 'Telahair' },
+            currentLevel: level,
+            movementAuthority: null
+        };
+        const entity = { x: from[0], y: from[1] };
+        MovementAuthority.reset(client, 'test', from[0], from[1]);
+        return MovementAuthority.validateIncrementalMovement(
+            client,
+            entity,
+            to[0] - from[0],
+            to[1] - from[1],
+            MovementAuthority.nowMs() + gapMs,
+            [0, 0],
+            false
+        );
+    };
+
+    for (const [from, to, gapMs] of [
+        [[15254, 3198], [15541, 4719], 983],
+        [[15680, 3066], [15397, 4719], 1015]
+    ] as Array<[[number, number], [number, number], number]>) {
+        const result = doorJump(from, to, gapMs);
+        assert.equal(result.accepted, true, `the live door transition ${from} -> ${to} must be accepted`);
+        assert.equal(result.reason, 'room_transition', 'and it must be recognised as a door, not merely tolerated');
+        assert.equal(result.attemptedY, to[1], 'the player must end up on the floor their client reported');
+    }
+
+    // The bound. A jump of the same size that never leaves the room it started in is a cheat,
+    // and so is one in a dungeon whose room layout the server does not know.
+    assert.equal(
+        doorJump([15100, 3200], [16400, 3200], 900).accepted,
+        false,
+        'crossing one room in a single packet is still a speed cheat'
+    );
+    assert.equal(
+        doorJump([21450, 2959], [22952, 2959], 635, 'TutorialDungeon').accepted,
+        false,
+        'a level with no authored room registry must not authorise a teleport'
+    );
+}
+
+/**
+ * A door is two-sided, and the second side was missing.
+ *
+ * Walking through a door tears the old room down on the *mover's own* client, and it lets go
+ * of everything that room held -- the other players included. Only the mover's body was ever
+ * re-seeded; the peers were left to a server that still held a draw record for each of them,
+ * so the sweep considered that screen correct and stayed silent for the rest of the run. The
+ * mover walked into every later room alone.
+ */
+function testRoomTransitionRedrawsThePeersOnTheMoversOwnScreen(): void {
+    const host = createClient('Telahair', 95101, 50);
+    const walker = createClient('Lanorut', 95102, 22);
+    seedStandingBody(host);
+    seedStandingBody(walker);
+
+    const sent: Array<{ viewer: string; subject: number }> = [];
+    const originalSendEntity = (EntityHandler as any).sendEntity;
+    (EntityHandler as any).sendEntity = (viewer: Client, entity: any) => {
+        sent.push({ viewer: String(viewer.character?.name ?? '?'), subject: Number(entity?.id ?? 0) });
+        viewer.knownEntityIds.add(Number(entity?.id ?? 0));
+    };
+    try {
+        (EntityHandler as any).syncPlayerVisibilityInScope(walker);
+        sent.length = 0;
+
+        EntityHandler.markPeerBodiesNeedRedrawForViewer(walker);
+        EntityHandler.reconcilePlayerVisibilityInScope(walker);
+    } finally {
+        (EntityHandler as any).sendEntity = originalSendEntity;
+    }
+
+    assert.deepEqual(
+        sent.map((entry) => `${entry.viewer}:${entry.subject}`),
+        [`Lanorut:${host.clientEntID}`],
+        'the player who used the door must be sent the bodies their client dropped with the old room'
     );
 }
 
