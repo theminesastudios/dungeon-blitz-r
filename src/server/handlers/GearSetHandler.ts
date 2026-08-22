@@ -11,11 +11,12 @@ type GearSetEntry = {
 
 export class GearSetHandler {
     // Mirrors the patched client: Game.const_1057 gear sets, addressed with
-    // GearType.const_348 bits.
+    // GearType.const_348 bits. MAX_NAME_LENGTH mirrors am_NameField.maxChars,
+    // raised from the stock 16 by patch-dungeonblitz-gear-set-name-length.ts.
     private static readonly MAX_GEAR_SETS = 10;
     private static readonly GEAR_SET_INDEX_BITS = 4;
     private static readonly EQUIPMENT_SLOT_COUNT = 6;
-    private static readonly MAX_NAME_LENGTH = 16;
+    private static readonly MAX_NAME_LENGTH = 32;
 
     static async handleOverwriteGearSet(client: Client, data: Buffer): Promise<void> {
         if (!client.character) {
