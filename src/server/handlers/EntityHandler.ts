@@ -322,6 +322,35 @@ export class EntityHandler {
             return exact;
         }
 
+        // An enemy the scope owns is identified, and its own id is the only thing that may
+        // match it to a grave.
+        //
+        // The positional fallback below matches on `name:roomId:x/100:y/100` computed from
+        // where the enemy is standing RIGHT NOW. The East Wing rooms hold several copies of the
+        // same type -- four ShadeWarrior, three Ghoul, five PortalFiend -- and they walk. So
+        // the moment a living one wandered into the 100px box where its same-named sibling had
+        // died, it matched that sibling's tombstone, `isCanonicalHostileTerminal` called it
+        // dead, and the proxy correction buried it. Live: ShadeWarrior 920011 was killed
+        // properly (dealt=6076) and ShadeWarrior 920007 went down in the same breath with
+        // `dealt=0` -- never hit, never fought, executed by a grave that was not its own.
+        //
+        // That is the reported "enemies execute themselves at half health without me landing
+        // the last hit": the enemy in front of the player dies the instant another one of its
+        // kind does.
+        const canonicalId = Math.max(0, Math.round(Number(entity.id ?? 0)));
+        if (canonicalId > 0) {
+            for (const tombstone of tombstones.values()) {
+                if (Math.max(0, Math.round(Number(tombstone.canonicalId ?? 0))) === canonicalId) {
+                    return tombstone;
+                }
+            }
+            // Known to the scope under this id, so the roster entry is the authority on whether
+            // it is alive. Only a body the scope cannot identify is matched by where it stands.
+            if (GlobalState.levelEntities.get(scopeKey)?.has(canonicalId)) {
+                return null;
+            }
+        }
+
         const fingerprint = EntityHandler.getServerAuthorityHostileFingerprint(entity);
         if (!fingerprint) {
             return null;
@@ -3267,10 +3296,37 @@ export class EntityHandler {
         return false;
     }
 
+    /**
+     * Record that this client knows `canonicalEntityId` under its own `localEntityId`.
+     *
+     * **A session's own body is never a valid key.** Sixteen call sites can land here and none of
+     * them checked; an entry keyed on `client.clientEntID` silently rewrote the source of that
+     * player's own swings, and `isAuthorizedNetworkCombatSource` then refused every one of them
+     * (`dropped=20:unauthorized_source` against a live 161472 pool, with the other member's
+     * damage the only thing reaching the canonical). The combat paths now guard themselves --
+     * see `CombatHandler.resolveCombatEntityIdForClient` -- but an alias like this is wrong for
+     * every other reader too, so it is refused at the source and the caller is named. The log is
+     * the point: it says which of the sixteen writes it.
+     */
     static rememberEntityAlias(client: Client, localEntityId: number, canonicalEntityId: number): void {
         const localId = Math.max(0, Math.round(Number(localEntityId) || 0));
         const canonicalId = Math.max(0, Math.round(Number(canonicalEntityId) || 0));
         if (localId <= 0 || canonicalId <= 0 || localId === canonicalId) {
+            return;
+        }
+
+        const ownBodyId = Math.max(0, Math.round(Number(client?.clientEntID ?? 0)));
+        if (ownBodyId > 0 && localId === ownBodyId) {
+            const caller = String(new Error().stack ?? '')
+                .split('\n')
+                .slice(2, 5)
+                .map((line) => line.trim().replace(/^at\s+/, ''))
+                .join(' <- ');
+            console.log(
+                `[AliasRefused] ${String(client.currentLevel ?? '?')} ` +
+                `player=${String(client.character?.name ?? '?')} ownBody=${ownBodyId} ` +
+                `-> canonical=${canonicalId} from: ${caller}`
+            );
             return;
         }
 
@@ -4994,12 +5050,20 @@ export class EntityHandler {
         if (isPlayer && levelName && isSelfPacket) {
             const levelScope = getClientLevelScope(client);
             const canonicalEntityId = EntityHandler.allocateCanonicalPlayerEntityId(client, levelScope, rawEntityId);
+            // The new id is adopted BEFORE the alias is recorded, and the order matters.
+            //
+            // This is the one legitimate "alias my own body" case: the id the client calls
+            // itself collided with another session's, so the server renames it and has to be
+            // able to translate the client's own number forward. `rememberEntityAlias` refuses a
+            // key equal to `client.clientEntID` -- and until this assignment moved up, that was
+            // still the OLD id, so the refusal ate exactly the alias that makes the rename work
+            // and every later packet from that client arrived under an id nothing could resolve.
+            entityId = canonicalEntityId;
+            client.clientEntID = canonicalEntityId;
             if (canonicalEntityId !== rawEntityId) {
                 EntityHandler.rememberEntityAlias(client, rawEntityId, canonicalEntityId);
                 EntityHandler.migrateOwnedPlayerEntityId(client, existingLevelMap, rawEntityId, canonicalEntityId);
             }
-            entityId = canonicalEntityId;
-            client.clientEntID = canonicalEntityId;
         } else if (isPlayer && client.clientEntID === 0) {
             client.clientEntID = entityId;
         }

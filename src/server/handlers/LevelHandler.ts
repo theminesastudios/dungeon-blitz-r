@@ -6334,6 +6334,57 @@ export class LevelHandler {
                 return;
             }
             if (isDefeatEntState && !canonicalDead) {
+                // Believed, but only from the client that actually holds this body.
+                //
+                // This is the third and loosest door a client-announced kill can come through:
+                // unlike the destroy in `handleEntityDestroy` and the lethal report in
+                // `recordClientHostileHpDelta`, it asked for nothing at all. A report that
+                // resolves onto the wrong canonical therefore buries a full-health enemy the
+                // player never touched, which shows up as `[EnemyDestroy] ... dealt=0`.
+                //
+                // Requiring the reporter to hold a bound copy costs the legitimate case
+                // nothing -- the client announcing the death is by definition the one that was
+                // simulating the body -- and it is deliberately the ONLY thing required. No
+                // health threshold: the remainder here is structural (see below) and can be a
+                // fifth of the pool on a body that really is dead.
+                const { CombatHandler: CombatHandlerModule } = require('./CombatHandler') as typeof import('./CombatHandler');
+                const canonicalHpNow = Math.max(0, Math.round(Number(levelEntity?.hp ?? 0)));
+                const canonicalMaxHpNow = Math.max(0, Math.round(Number(levelEntity?.maxHp ?? 0)));
+                const allowedRemainder = canonicalMaxHpNow > 0
+                    ? Math.max(1, Math.round(canonicalMaxHpNow * CombatHandlerModule.CLIENT_REPORTED_KILL_MAX_REMAINDER_FRACTION))
+                    : 0;
+                // Two conditions now, and the health one is the reason this dungeon spent days
+                // on "enemies execute themselves at half health". A client whose own copy ran out
+                // early -- because its damage was never reaching the canonical -- announced the
+                // kill and this door took it, burying an enemy with most of its pool intact:
+                // live, 64229 dealt against a 161472 pool. Answer such a report by correcting
+                // that client's copy back to what the server actually has, not by killing the
+                // enemy for everybody.
+                const refusal = !EntityHandler.holdsBoundCopyOfCanonical(client, levelEntity, rawEntityId)
+                    ? 'unbound_copy'
+                    : (canonicalMaxHpNow > 0 && canonicalHpNow > allowedRemainder)
+                        ? 'canonical_still_healthy'
+                        : '';
+                if (refusal) {
+                    console.log(
+                        `[EarlyKillRefused] ${currentLevel} incremental_defeat_state ` +
+                        `id=${Math.round(Number(levelEntity?.id ?? entityId))} ` +
+                        `name=${String(levelEntity?.name ?? ent?.name ?? '?')} ` +
+                        `reporter=${String(client.character?.name ?? '?')} ` +
+                        `canonicalHp=${canonicalHpNow}/${canonicalMaxHpNow} ` +
+                        `allowedRemainder=${allowedRemainder} reason=${refusal}`
+                    );
+                    if (refusal === 'canonical_still_healthy') {
+                        CombatHandlerModule.correctServerAuthorityHostileProxy(
+                            client,
+                            getClientLevelScope(client),
+                            levelEntity,
+                            'incremental_defeat_refused_alive',
+                            rawEntityId
+                        );
+                    }
+                    return;
+                }
                 // The client that owns the body says it died. That is the truth here.
                 //
                 // This used to refuse the report and stand the copy back up, on the reasoning

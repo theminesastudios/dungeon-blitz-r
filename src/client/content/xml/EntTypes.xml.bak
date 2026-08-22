@@ -45761,7 +45761,7 @@
 		<DisplayName>Shade Warrior</DisplayName>
 		<DevStatus>Valhaven</DevStatus>
 		<MeleePower>SkeletonMeleeS</MeleePower>
-		<Level>50</Level>
+		<Level>26</Level>
 		<GroupLevel>26</GroupLevel>
 		<EntRank>Minion</EntRank>
 		<MeleeDamage>1</MeleeDamage>
@@ -45808,7 +45808,7 @@
 		<DisplayName>Abyssal Stinger</DisplayName>
 		<DevStatus>Valhaven</DevStatus>
 		<MeleePower>ScorpionMelee</MeleePower>
-		<Level>50</Level>
+		<Level>26</Level>
 		<GroupLevel>26</GroupLevel>
 		<EntRank>Minion</EntRank>
 		<MeleeDamage>1</MeleeDamage>
@@ -45848,7 +45848,7 @@
 		<DevStatus>Valhaven</DevStatus>
 		<MeleePower>ImpMelee</MeleePower>
 		<RangedPower>ImpFireball</RangedPower>
-		<Level>50</Level>
+		<Level>26</Level>
 		<GroupLevel>26</GroupLevel>
 		<EntRank>Minion</EntRank>
 		<MeleeDamage>0.9</MeleeDamage>
@@ -45890,7 +45890,7 @@
 		<DevStatus>Valhaven</DevStatus>
 		<MeleePower>ImpMelee</MeleePower>
 		<RangedPower>ImpFireball</RangedPower>
-		<Level>50</Level>
+		<Level>26</Level>
 		<GroupLevel>26</GroupLevel>
 		<EntRank>Minion</EntRank>
 		<MeleeDamage>0.9</MeleeDamage>
@@ -45930,7 +45930,7 @@
 		<DisplayName>Portal Fiend</DisplayName>
 		<DevStatus>Valhaven</DevStatus>
 		<RangedPower>ImpShot</RangedPower>
-		<Level>50</Level>
+		<Level>26</Level>
 		<GroupLevel>26</GroupLevel>
 		<EntRank>Minion</EntRank>
 		<MeleeDamage>2</MeleeDamage>
@@ -45968,7 +45968,7 @@
 		<DevStatus>Valhaven</DevStatus>
 		<MeleePower>ImpMeleeS</MeleePower>
 		<RangedPower>ImpShot</RangedPower>
-		<Level>50</Level>
+		<Level>27</Level>
 		<GroupLevel>26</GroupLevel>
 		<EntRank>Minion</EntRank>
 		<MeleeDamage>0.9</MeleeDamage>
@@ -46005,7 +46005,7 @@
 		<DisplayName>Kemik Fiend</DisplayName>
 		<DevStatus>Valhaven</DevStatus>
 		<MeleePower>RaptorMeleeS</MeleePower>
-		<Level>50</Level>
+		<Level>27</Level>
 		<GroupLevel>26</GroupLevel>
 		<EntRank>Minion</EntRank>
 		<MeleeDamage>1</MeleeDamage>
@@ -48128,7 +48128,7 @@
 		<MeleePower>WarlockMelee1</MeleePower>
 		<RangedPower>WarlockSummonBomb</RangedPower>
 		<Powers>WarlockHeal</Powers>
-		<Level>50</Level>
+		<Level>26</Level>
 		<GroupLevel>27</GroupLevel>
 		<EntRank>Lieutenant</EntRank>
 		<MeleeDamage>1</MeleeDamage>
@@ -48163,7 +48163,7 @@
 		<MeleePower>HumanMeleeMage</MeleePower>
 		<RangedPower>HumanPoisonball</RangedPower>
 		<Powers>ShadeHarrierSpawn,HumanPoisonCloud</Powers>
-		<Level>50</Level>
+		<Level>27</Level>
 		<GroupLevel>27</GroupLevel>
 		<EntRank>Lieutenant</EntRank>
 		<MeleeDamage>1</MeleeDamage>
@@ -48203,7 +48203,7 @@
 		<MeleePower>HumanMeleeMage</MeleePower>
 		<RangedPower>HumanIceball</RangedPower>
 		<Powers>HumanNova</Powers>
-		<Level>50</Level>
+		<Level>28</Level>
 		<GroupLevel>27</GroupLevel>
 		<EntRank>Lieutenant</EntRank>
 		<MeleeDamage>1</MeleeDamage>
@@ -48248,7 +48248,7 @@
 		<DevStatus>Valhaven</DevStatus>
 		<MeleePower>ShieldMelee1</MeleePower>
 		<Powers>ShieldBash,ShieldArmor</Powers>
-		<Level>50</Level>
+		<Level>27</Level>
 		<GroupLevel>27</GroupLevel>
 		<EntRank>Lieutenant</EntRank>
 		<MeleeDamage>1</MeleeDamage>
@@ -48288,7 +48288,7 @@
 		<MeleePower>HumanMeleeMage</MeleePower>
 		<RangedPower>MageSummonBomb</RangedPower>
 		<Powers>HumanFlames</Powers>
-		<Level>50</Level>
+		<Level>26</Level>
 		<GroupLevel>27</GroupLevel>
 		<EntRank>Lieutenant</EntRank>
 		<MeleeDamage>1</MeleeDamage>
@@ -48336,7 +48336,7 @@
 		<MeleePower>HumanMeleeMage</MeleePower>
 		<RangedPower>HumanFireball</RangedPower>
 		<Powers>HumanFireNova</Powers>
-		<Level>50</Level>
+		<Level>27</Level>
 		<GroupLevel>27</GroupLevel>
 		<EntRank>Lieutenant</EntRank>
 		<MeleeDamage>1</MeleeDamage>
@@ -49361,7 +49361,7 @@
 		<DevStatus>Valhaven</DevStatus>
 		<MeleePower>ScorpionMelee</MeleePower>
 		<Powers>ScorpionHeavy</Powers>
-		<Level>50</Level>
+		<Level>29</Level>
 		<GroupLevel>29</GroupLevel>
 		<EntRank>Lieutenant</EntRank>
 		<MeleeDamage>1</MeleeDamage>
@@ -49394,7 +49394,7 @@
 		<DevStatus>Valhaven</DevStatus>
 		<MeleePower>DemonMelee</MeleePower>
 		<Powers>DemonCyclone,DemonHawkStrike</Powers>
-		<Level>50</Level>
+		<Level>29</Level>
 		<GroupLevel>29</GroupLevel>
 		<EntRank>Lieutenant</EntRank>
 		<MeleeDamage>1</MeleeDamage>
@@ -51906,7 +51906,7 @@
 		<DevStatus>Valhaven</DevStatus>
 		<MeleePower>HumanMeleeLR</MeleePower>
 		<Powers>HumanCyclone,HumanQuickStrike</Powers>
-		<Level>50</Level>
+		<Level>29</Level>
 		<GroupLevel>29</GroupLevel>
 		<EntRank>Boss</EntRank>
 		<MeleeDamage>1</MeleeDamage>
