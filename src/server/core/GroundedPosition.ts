@@ -46,6 +46,27 @@ interface AirborneFlags {
     bDropping?: boolean;
     jumping?: boolean;
     dropping?: boolean;
+    dead?: boolean;
+    entState?: number;
+}
+
+/**
+ * A corpse is on the floor, whatever the last movement packet said.
+ *
+ * These flags live on the stored body and are only rewritten by a movement packet. A player
+ * killed mid-fall keeps `bDropping` forever -- nothing moves a dead body, so nothing ever
+ * clears it -- and every consumer then reads that corpse as airborne. For player visibility
+ * that is fatal: `withGroundedBodyPosition` refuses to place an airborne body with no confirmed
+ * floor sample, so the dead player is never drawn on their party member's screen at all.
+ * Reported from The East Wing as one member lying dead and simply not existing on the other's
+ * screen.
+ */
+// EntityState.DEAD, inlined rather than imported: this module is kept dependency-free so every
+// position path can use it without a cycle.
+const ENTITY_STATE_DEAD = 3;
+
+function isEntityDeadForAirborne(flags: AirborneFlags): boolean {
+    return Boolean(flags.dead) || Math.round(Number(flags.entState ?? NaN)) === ENTITY_STATE_DEAD;
 }
 
 /** Levels compare case-insensitively and ignoring surrounding space, as they do everywhere else. */
@@ -59,6 +80,9 @@ export function isEntityAirborne(entity: any): boolean {
     }
 
     const flags = entity as AirborneFlags;
+    if (isEntityDeadForAirborne(flags)) {
+        return false;
+    }
     return Boolean(flags.airborne || flags.bJumping || flags.bDropping || flags.jumping || flags.dropping);
 }
 
