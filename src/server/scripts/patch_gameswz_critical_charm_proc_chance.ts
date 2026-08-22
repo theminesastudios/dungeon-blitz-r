@@ -27,17 +27,13 @@ const CRITICAL_CHARM_FLAT_CHANCES = new Map<string, { field: "ProcChanceUp" | "P
       { field: "PowerBonus" as const, flatChance: level * 0.005 },
     ] as const;
   }),
-  ["TripleFind", { field: "ProcChanceUp", flatChance: 0.008 }],
-  ["DoubleFind2", { field: "ProcChanceUp", flatChance: 0.008 }],
-  ["DoubleFind3", { field: "ProcChanceUp", flatChance: 0.008 }],
+  ["TripleFind", { field: "ProcChanceUp", flatChance: 0.0075 }],
+  ["DoubleFind2", { field: "ProcChanceUp", flatChance: 0.0075 }],
+  ["DoubleFind3", { field: "ProcChanceUp", flatChance: 0.0075 }],
 ]);
 
 function storedProcChance(flatChance: number): string {
-  const storedValue = flatChance / BASE_CRIT_CHANCE;
-  const precision = storedValue < 0.01 ? 3 : 2;
-  const scale = 10 ** precision;
-  const truncatedValue = Math.floor((storedValue + Number.EPSILON) * scale) / scale;
-  return formatDecimal(truncatedValue);
+  return formatDecimal(flatChance / BASE_CRIT_CHANCE);
 }
 
 function expectedValueByCharm(): Map<string, { field: "ProcChanceUp" | "PowerBonus"; value: string }> {
@@ -82,9 +78,9 @@ function expectedDescriptionByCharm(): Map<string, string> {
 
 function expectedTroveCriticalChanceDescriptionByCharm(): Map<string, string> {
   return new Map([
-    ["TripleFind", formatPercent(0.008)],
-    ["DoubleFind2", formatPercent(0.008)],
-    ["DoubleFind3", formatPercent(0.008)],
+    ["TripleFind", formatPercent(0.0075)],
+    ["DoubleFind2", formatPercent(0.0075)],
+    ["DoubleFind3", formatPercent(0.0075)],
   ]);
 }
 
