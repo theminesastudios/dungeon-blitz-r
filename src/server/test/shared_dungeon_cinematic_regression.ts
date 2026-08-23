@@ -213,7 +213,11 @@ function testSharedDungeonCinematicRunsOnceFromOwner(): void {
     assert.equal(packetCount(mage, 0xA5), 0, 'late viewer start should not restart the cutscene for the owner');
     assert.equal(packetCount(rogue, 0xA5), 1, 'late viewer should receive its own cutscene border start');
     assert.equal(packetCount(mage, 0x76), 0, 'late viewer cutscene bubbles should not relay back to the owner');
-    assert.equal(packetCount(rogue, 0x76), 1, 'late viewer should skip stale lines and continue from the joined dialog index');
+    // A scene has one voice. The late viewer never draws its own dialogue track -- its client is
+    // replaying the same script on its own timeline, so drawing it meant every line landed twice
+    // on that screen: once relayed from the room, then again when the local timeline caught up.
+    // The lines it does see arrive from the owner through sendSharedDungeonCutsceneLineToCatchUpViewers.
+    assert.equal(packetCount(rogue, 0x76), 0, 'late viewer must not draw its own copy of the scene dialogue');
     assert.equal(packetCount(mage, 0xA9), 0, 'late viewer camera timeline should not relay');
     assert.equal(packetCount(mage, 0xA8), 0, 'late viewer sound timeline should not relay');
     assert.equal(packetCount(mage, 0x7e), 0, 'late viewer emote begin timeline should not relay');

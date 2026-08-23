@@ -4413,17 +4413,6 @@ export class LevelHandler {
             : 0;
 
         for (const viewer of LevelHandler.getSharedDungeonCutsceneParticipants(owner, roomId, false)) {
-            const localDialogIndex = Math.max(
-                0,
-                Math.round(Number(viewer.activeDungeonCutsceneLocalDialogIndex ?? 0) || 0)
-            );
-            const joinedAtDialogIndex = Math.max(
-                0,
-                Math.round(Number(viewer.activeDungeonCutsceneJoinedAtDialogIndex ?? 0) || 0)
-            );
-            if (joinedAtDialogIndex <= 0 || localDialogIndex >= joinedAtDialogIndex) {
-                continue;
-            }
 
             const resolution = canonicalId > 0
                 ? EntityHandler.resolveHostileLocalIdForViewer(viewer, levelScope, canonicalId, 'cutscene_line')
@@ -4498,19 +4487,21 @@ export class LevelHandler {
             return 'local';
         }
 
-        const localDialogIndex = Math.max(
+        // A scene has exactly one voice: the member who owns it.
+        //
+        // Every other client is running the same script on its own timeline. Letting a second
+        // member draw its own bubbles means each line is heard twice on their screen -- once
+        // relayed from the room while they were still behind, then again when their own timeline
+        // reaches it. That is the boss and the player repeating every line.
+        //
+        // Their whole local track is dropped and they are fed the owner's lines instead, which
+        // also settles where a mid-scene arrival picks up: the only lines they ever see are the
+        // ones the room is speaking now, so they join the dialogue exactly where it left off.
+        client.activeDungeonCutsceneLocalDialogIndex = Math.max(
             0,
             Math.round(Number(client.activeDungeonCutsceneLocalDialogIndex ?? 0) || 0)
-        );
-        const joinedAtDialogIndex = Math.max(
-            0,
-            Math.round(Number(client.activeDungeonCutsceneJoinedAtDialogIndex ?? 0) || 0)
-        );
-        client.activeDungeonCutsceneLocalDialogIndex = localDialogIndex + 1;
-        if (localDialogIndex < joinedAtDialogIndex) {
-            return 'suppress';
-        }
-        return 'local';
+        ) + 1;
+        return 'suppress';
     }
 
     private static markRoomEventStarted(client: Client, roomId: number): void {
