@@ -3879,8 +3879,21 @@ export class LevelHandler {
         const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
         const key = LevelHandler.getSharedDungeonCutsceneKey(levelScope, normalizedRoomId);
         const existing = GlobalState.dungeonCutscenes.get(key);
+        // A room holds ONE cutscene record, and Tanja's room has two scenes: the intro, and the
+        // defeat scene the boss death opens (`cutSceneDefeatBoss` in the level SWF -- "Father will
+        // hear about this..." answered by the player's "I'll tell him myself when I defeat him").
+        // The intro leaves the record `completed`, so the defeat scene was refused as a replay of
+        // it: no borders, and its dialogue suppressed. The old escape hatch only covered the run's
+        // ENDING cutscene (`objectivesMet` + `cutscene_gate_pending`), which is false whenever the
+        // boss dies before the room is cleared -- the usual case here.
+        //
+        // An open boss scene is the honest second condition: a required boss has died and the
+        // scene that follows it has not closed yet.
         if (existing?.completed) {
-            if (MissionHandler.isWaitingForDungeonCompletionCutscene(client)) {
+            if (
+                MissionHandler.isWaitingForDungeonCompletionCutscene(client) ||
+                MissionHandler.hasOpenBossSceneForScope(levelScope)
+            ) {
                 LevelHandler.setSharedDungeonCutsceneActive(levelScope, normalizedRoomId, client.token);
                 return 'started';
             }
@@ -4459,7 +4472,12 @@ export class LevelHandler {
             return 'level';
         }
         if (state.completed) {
-            if (!MissionHandler.isWaitingForDungeonCompletionCutscene(client)) {
+            // See the note in beginSharedDungeonCutscene: the boss defeat scene reuses the room
+            // record the intro left completed, and its lines were being dropped as a replay.
+            if (
+                !MissionHandler.isWaitingForDungeonCompletionCutscene(client) &&
+                !MissionHandler.hasOpenBossSceneForScope(levelScope)
+            ) {
                 return 'suppress';
             }
             LevelHandler.setSharedDungeonCutsceneActive(levelScope, resolvedRoomId, client.token);

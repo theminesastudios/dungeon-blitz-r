@@ -516,6 +516,19 @@ export class PetHandler {
         client.send(0xB2, PetHandler.buildMountEquipPacket(entityId, mountId));
     }
 
+    static broadcastMountStateToPeers(client: Client, entityId: number, mountId: number): void {
+        if (entityId <= 0) {
+            return;
+        }
+
+        for (const other of GlobalState.sessionsByToken.values()) {
+            if (other === client || !other.playerSpawned || !areClientsInSameLevelScope(client, other)) {
+                continue;
+            }
+            PetHandler.sendMountEquipPacket(other, entityId, mountId);
+        }
+    }
+
     private static updateLiveMount(client: Client): void {
         if (!client.character || client.clientEntID <= 0) {
             return;
@@ -569,6 +582,14 @@ export class PetHandler {
             PetHandler.updateLiveMount(client);
             if (client.currentLevel && client.playerSpawned) {
                 PetHandler.sendMountEquipPacket(client, client.clientEntID, mountId);
+                // Peers too, not just the rider.
+                //
+                // This is the "nothing changed" path -- the client re-asserting the mount it
+                // already has, which is exactly what it does after a level transfer. Telling only
+                // the rider left every other member drawing them on foot, because the relay below
+                // is reached solely when the mount id CHANGES, and a member who arrives after the
+                // reassert has nothing to change. Re-sending the same id is idempotent.
+                PetHandler.broadcastMountStateToPeers(client, client.clientEntID, mountId);
             }
             return;
         }

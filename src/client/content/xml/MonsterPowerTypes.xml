@@ -10137,7 +10137,7 @@
 		<AddTargetBuff>CritterStealth</AddTargetBuff>
 		<SpawnedMonsters>ShadowPuppet,ShadowPuppet</SpawnedMonsters>
 		<SpawnLimit>2</SpawnLimit>
-		<SpawnDuration>0</SpawnDuration>
+		<SpawnDuration>86400000</SpawnDuration>
 		<DisplayName>***Monster***</DisplayName>
 		<CastSound>snd_pwr_rogue_stealth</CastSound>
 		<CastAnimSource>Feet</CastAnimSource>

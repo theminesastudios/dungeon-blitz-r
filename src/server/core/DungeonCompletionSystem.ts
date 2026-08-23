@@ -241,11 +241,44 @@ export class DungeonCompletionSystem {
         }
     }
 
+    // One line naming who buried a hostile, and how.
+    //
+    // A summon that dies the instant the boss conjures it reaches this function already
+    // `dead/destroyed` with no hit ever recorded against it, and nothing in the logs says which
+    // path put it there -- merging, a grave, a client destroy, or a health correction all end up
+    // looking identical from here. The call stack is the one thing that separates them.
+    //
+    // Throttled to once per entity so a wave of summons cannot flood a run.
+    private static readonly loggedDefeatProvenance = new Set<string>();
+
+    private static logDefeatProvenance(levelScope: string, entity: any): void {
+        const entityId = Math.max(0, Math.round(Number(entity?.id ?? 0)));
+        const key = `${levelScope}:${entityId}`;
+        if (entityId <= 0 || DungeonCompletionSystem.loggedDefeatProvenance.has(key)) {
+            return;
+        }
+        DungeonCompletionSystem.loggedDefeatProvenance.add(key);
+
+        const caller = String(new Error().stack ?? '')
+            .split('\n')
+            .slice(2, 8)
+            .map((line) => line.trim().replace(/^at\s+/, ''))
+            .join(' <- ');
+        console.log(
+            `[DefeatFrom] ${getScopeLevelName(levelScope)} id=${entityId} ` +
+            `name=${String(entity?.name ?? '?')} hp=${String(entity?.hp ?? '?')}/${String(entity?.maxHp ?? '?')} ` +
+            `dead=${Boolean(entity?.dead)} destroyed=${Boolean(entity?.destroyed)} ` +
+            `clientSpawned=${Boolean(entity?.clientSpawned)} from: ${caller}`
+        );
+    }
+
     static noteEntityDefeated(levelScope: string, entity: any, now: number = Date.now()): boolean {
         const state = DungeonCompletionSystem.getOrCreateState(levelScope, now);
         if (!state || !entity || Boolean(entity.isPlayer) || !isDefeated(entity)) {
             return false;
         }
+
+        DungeonCompletionSystem.logDefeatProvenance(levelScope, entity);
 
         const entityId = getEntityId(entity);
         const lifeNonce = Math.max(0, Math.round(Number(entity?.lifeNonce ?? entity?.deathVersion ?? 0)));

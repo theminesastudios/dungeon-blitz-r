@@ -1886,7 +1886,16 @@ export class CombatHandler {
             }
 
             const candidateIsBoss = CombatHandler.isDungeonBossEntity(levelScope, candidate);
-            if (!sourceIsBoss && !candidateIsBoss) {
+            // BOTH sides, not either.
+            //
+            // This matcher exists to reunite a client's copy of a boss with the shared one, and
+            // the guard was written as "skip when NEITHER is a boss" -- which passes a non-boss
+            // paired with the boss. So an unmatched client hostile could be handed the room boss
+            // itself, and a boss that summons minions produces exactly those: the summon resolved
+            // AS the boss, burying the summon froze the boss, and the next hit made it vanish.
+            //
+            // A non-boss is never the same enemy as a boss, whichever side it sits on.
+            if (!sourceIsBoss || !candidateIsBoss) {
                 continue;
             }
 
@@ -1928,15 +1937,26 @@ export class CombatHandler {
             Math.round(Number(localEntity?.canonicalEntityId ?? localEntity?.sharedCanonicalId ?? 0))
         );
         if (explicitCanonicalId > 0 && CombatHandler.resolveLevelEntity(levelScope, explicitCanonicalId)) {
-            EntityHandler.rememberEntityAlias(client, localId, explicitCanonicalId);
-            return explicitCanonicalId;
+            // A refused alias means this client is not allowed to call that canonical by this id
+            // -- it already holds it under another one. Returning it anyway would hand this body's
+            // hits and its death to the enemy it was wrongly matched with, which is the whole
+            // point of the refusal, so the local id stands instead.
+            return EntityHandler.rememberEntityAlias(client, localId, explicitCanonicalId)
+                ? explicitCanonicalId
+                : localId;
         }
 
+        // This matcher is boss-gated on BOTH sides (see findEquivalentLevelHostile), so an
+        // unmatched client hostile can be handed the room boss itself -- which is exactly what a
+        // boss summoning minions produces. The summon was then resolved AS the boss: burying the
+        // summon froze the boss and the next hit made it vanish, and the summons died on their
+        // own. The refusal below is what stops it, and only if the caller honours it.
         const canonicalEntity = CombatHandler.findEquivalentLevelHostile(levelScope, localEntity);
         const canonicalId = Math.max(0, Math.round(Number(canonicalEntity?.id ?? 0)));
         if (canonicalId > 0) {
-            EntityHandler.rememberEntityAlias(client, localId, canonicalId);
-            return canonicalId;
+            return EntityHandler.rememberEntityAlias(client, localId, canonicalId)
+                ? canonicalId
+                : localId;
         }
 
         const localEntityName = String(
@@ -1962,8 +1982,9 @@ export class CombatHandler {
         const roomBoss = CombatHandler.findSingleRoomBossForUnknownClientHostile(client, levelScope);
         const roomBossId = Math.max(0, Math.round(Number(roomBoss?.id ?? 0)));
         if (roomBossId > 0) {
-            EntityHandler.rememberEntityAlias(client, localId, roomBossId);
-            return roomBossId;
+            return EntityHandler.rememberEntityAlias(client, localId, roomBossId)
+                ? roomBossId
+                : localId;
         }
 
         return localId;
@@ -2226,6 +2247,49 @@ export class CombatHandler {
         return normalizedHp;
     }
 
+    /**
+     * Can this token still drive a shared hostile?
+     *
+     * The authority is LATCHED on the first hit (`firstCombatAuthorityToken`) and never moves, and
+     * `shouldSuppressNonAuthorityPartySharedHostileAction` drops every cast and every action that
+     * does not come from it. That is fine while the holder is fighting. It is not fine once they
+     * are dead: their client stops driving the boss -- no living target on that screen -- so no
+     * casts arrive from the one session allowed to send them, while the surviving member's casts
+     * are refused. The boss then acts on exactly one screen and the two stop sharing anything.
+     *
+     * Reported live in The East Wing: the two screens' clones tracked each other until Lanorut
+     * died, and diverged from that moment.
+     */
+    private static isUsableHostileAuthority(levelScope: string, token: number): boolean {
+        const authorityToken = Math.max(0, Math.round(Number(token) || 0));
+        if (authorityToken <= 0) {
+            return false;
+        }
+        const session = GlobalState.sessionsByToken.get(authorityToken);
+        return Boolean(
+            session &&
+            session.playerSpawned &&
+            getClientLevelScope(session) === levelScope &&
+            !CombatHandler.isPlayerDeadForCombat(session, levelScope)
+        );
+    }
+
+    private static readonly releasedHostileAuthorityLoggedAt = new Map<string, number>();
+
+    private static noteReleasedHostileAuthority(levelScope: string, entity: any, token: number): void {
+        const key = `${levelScope}:${Math.round(Number(entity?.id ?? 0))}:${token}`;
+        const nowMs = Date.now();
+        if (nowMs - (CombatHandler.releasedHostileAuthorityLoggedAt.get(key) ?? 0) < 5_000) {
+            return;
+        }
+        CombatHandler.releasedHostileAuthorityLoggedAt.set(key, nowMs);
+        console.log(
+            `[HostileAuthority] ${getScopeLevelName(levelScope)} released ` +
+            `${String(entity?.name ?? '?')} id=${Math.round(Number(entity?.id ?? 0))} ` +
+            `from token=${token} (gone, elsewhere or dead)`
+        );
+    }
+
     private static assignPartySharedHostileCombatAuthority(levelScope: string, entity: any, authority: Client | null): void {
         if (
             !levelScope ||
@@ -2237,10 +2301,16 @@ export class CombatHandler {
             return;
         }
 
-        const existingToken = Math.max(
+        const latchedToken = Math.max(
             0,
             Math.round(Number(entity.combatAuthorityToken ?? entity.firstCombatAuthorityToken ?? 0) || 0)
         );
+        // A holder who is gone, in another scope or dead cannot drive this hostile, so the latch
+        // is not honoured for them -- the next hit re-latches onto whoever is still fighting.
+        const existingToken = CombatHandler.isUsableHostileAuthority(levelScope, latchedToken) ? latchedToken : 0;
+        if (latchedToken > 0 && existingToken === 0) {
+            CombatHandler.noteReleasedHostileAuthority(levelScope, entity, latchedToken);
+        }
         const authorityToken = existingToken > 0 ? existingToken : Math.max(0, Math.round(Number(authority.token) || 0));
         if (authorityToken <= 0) {
             return;
@@ -2316,6 +2386,12 @@ export class CombatHandler {
         const authorityToken = aiAuthorityToken > 0
             ? aiAuthorityToken
             : CombatHandler.getPartySharedHostileCombatAuthorityToken(levelScope, entity);
+        // Silence for one client is only justified while ANOTHER one is actually speaking. If the
+        // holder cannot act any more, refusing everybody else leaves the hostile driven by nobody.
+        if (authorityToken > 0 && authorityToken !== client.token && !CombatHandler.isUsableHostileAuthority(levelScope, authorityToken)) {
+            CombatHandler.noteReleasedHostileAuthority(levelScope, entity, authorityToken);
+            return false;
+        }
         const suppress = authorityToken > 0 && authorityToken !== client.token;
         if (suppress) {
         }
@@ -4234,6 +4310,13 @@ export class CombatHandler {
             return false;
         }
 
+        // Same refusal, for a body the server never draws either: a summon's visual belongs to
+        // the client whose own boss conjured it. Sending it here is what put a second, brainless
+        // clone on the other member's screen while the summoner saw one.
+        if (EntityHandler.isSummonCanonical(entity)) {
+            return false;
+        }
+
         EntityHandler.sendEntity(viewer, entity);
         const after = CombatHandler.getServerAuthorityViewerEntityState(viewer, canonicalId);
         const resolved = after.knownCanonical || after.hasCanonicalEntity || after.knownLocal || after.hasLocalEntity;
@@ -5009,6 +5092,16 @@ export class CombatHandler {
         if (entity && typeof entity === 'object') {
             entity.partyDeathRelayed = true;
         }
+        // Settle the corpse now, not on the next visibility sweep.
+        //
+        // The broadcast above is one packet per viewer, and a member whose copy of this enemy is
+        // one their own client spawned does not always act on it -- so the body stayed up on
+        // their screen.  is what actually clears those, and it only
+        // ran on the periodic sweep: the boss lay dead for everybody else while the joiner still
+        // had it standing, and it took a hit landing on a buried target to shift it. Running the
+        // reconcile in the same breath as the death costs one pass over the terminal hostiles and
+        // is idempotent -- the retry budget inside it is what stops it repeating.
+        CombatHandler.reconcileDeadHostilesForScope(levelScope);
         CombatHandler.refreshServerAuthorityProgressWithRetries(levelScope, 'authoritative_death_relay');
     }
 
@@ -5303,13 +5396,15 @@ export class CombatHandler {
         }
     }
 
-    static broadcastToCombatRoom(anchor: Client, packetId: number, data: Buffer, includeAnchor: boolean = false, referencedEntityIds: number[] = []): void {
+    static broadcastToCombatRoom(anchor: Client, packetId: number, data: Buffer, includeAnchor: boolean = false, referencedEntityIds: number[] = []): { recipients: number; delivered: number; missingEntity: number; untranslatable: number } {
+        const stats = { recipients: 0, delivered: 0, missingEntity: 0, untranslatable: 0 };
         const levelScope = getClientLevelScope(anchor);
         if (!levelScope || !anchor.playerSpawned) {
-            return;
+            return stats;
         }
 
         for (const other of CombatHandler.getCombatRecipients(anchor, includeAnchor)) {
+            stats.recipients++;
             let missingEntity = false;
             for (const entityId of referencedEntityIds) {
                 if (!CombatHandler.canViewerResolveAnchoredCombatEntity(other, anchor, levelScope, entityId)) {
@@ -5318,16 +5413,23 @@ export class CombatHandler {
                 }
             }
             if (missingEntity) {
+                stats.missingEntity++;
                 continue;
             }
 
-            CombatHandler.sendTranslatedPacket(other, packetId, data);
+            if (CombatHandler.sendTranslatedPacket(other, packetId, data)) {
+                stats.delivered++;
+            } else {
+                stats.untranslatable++;
+            }
         }
+
+        return stats;
     }
 
-    private static broadcastCombatPacket(anchor: Client, packetId: number, data: Buffer, options: CombatRelayOptions = {}): void {
+    private static broadcastCombatPacket(anchor: Client, packetId: number, data: Buffer, options: CombatRelayOptions = {}): { recipients: number; delivered: number; missingEntity: number; untranslatable: number } {
         const referencedEntityIds = Array.from(new Set((options.referencedEntityIds ?? []).filter((id) => Number.isFinite(id) && id > 0)));
-        CombatHandler.broadcastToCombatRoom(anchor, packetId, data, Boolean(options.includeAnchor), referencedEntityIds);
+        return CombatHandler.broadcastToCombatRoom(anchor, packetId, data, Boolean(options.includeAnchor), referencedEntityIds);
     }
 
     private static canViewerResolveCombatEntity(viewer: Client, levelScope: string, entityId: number): boolean {
@@ -5376,6 +5478,18 @@ export class CombatHandler {
      * EntityHandler.reconcilePartyFrameHealthForScope -- there is no absolute-health packet, so a
      * frame that has drifted is corrected with the difference.
      */
+    // Same wire as the player correction, addressed at a hostile a viewer is drawing. Kept
+    // separate so the two callers read for what they are, and so the payload builder can stay
+    // private.
+    static sendHostileHealthCorrection(viewer: Client, localEntityId: number, delta: number): void {
+        const id = Math.max(0, Math.round(Number(localEntityId) || 0));
+        const amount = Math.round(Number(delta) || 0);
+        if (id <= 0 || amount === 0 || !viewer.playerSpawned) {
+            return;
+        }
+        viewer.send(0x78, CombatHandler.buildHpDeltaPayload(id, amount));
+    }
+
     static sendPlayerHealthCorrection(viewer: Client, subjectEntityId: number, delta: number): void {
         const id = Math.max(0, Math.round(Number(subjectEntityId) || 0));
         const amount = Math.round(Number(delta) || 0);
@@ -5404,7 +5518,29 @@ export class CombatHandler {
         const targetInclusion = delta < 0 ? false : includeTarget;
 
         const payload = CombatHandler.buildHpDeltaPayload(targetSession.clientEntID, delta);
-        CombatHandler.broadcastToCombatRoom(targetSession, CombatHandler.CLIENT_HEAL_PACKET_ID, payload, targetInclusion, [targetSession.clientEntID]);
+        // Addressed to every member of the run, with none of the combat filters.
+        //
+        // This went through `broadcastToCombatRoom`, which drops the packet for any viewer that
+        // cannot "resolve" the referenced entity. A party frame is drawn from the client's own
+        // name lookup and survives exactly those states, so the filter was throwing away the only
+        // packets that move the bar: a member's frame sat at FULL health for the whole fight and
+        // then jumped straight to empty, because the one delta that did get through was the death
+        // drain -- which `notePlayerDeathState` already sends this way, for this reason, and its
+        // comment says so.
+        //
+        // The room filter it also applied is the reason it was worth keeping: a damage number
+        // floating on a screen two rooms away. That is a smaller wrong than a party frame that
+        // lies about whether a team-mate is about to die.
+        const levelScope = getClientLevelScope(targetSession);
+        for (const viewer of GlobalState.getSessionsInLevelScope(levelScope)) {
+            if (!viewer.playerSpawned || getClientLevelScope(viewer) !== levelScope) {
+                continue;
+            }
+            if (viewer === targetSession && !targetInclusion) {
+                continue;
+            }
+            viewer.send(CombatHandler.CLIENT_HEAL_PACKET_ID, payload);
+        }
     }
 
     /**
@@ -6866,6 +7002,58 @@ export class CombatHandler {
         return Boolean(candidate && !candidate.isPlayer && Number(candidate.team ?? 0) === EntityTeam.ENEMY);
     }
 
+    /**
+     * Why a boss's cast did or did not reach the other members' screens.
+     *
+     * Tanja summons on each client's own schedule, because her AI is client-local and every
+     * screen computes its own damage. The thing that is supposed to make the two agree anyway is
+     * this relay: a hostile's 0x09 cast is rebroadcast with the source id translated into each
+     * viewer's own copy, their client builds an ActivePower for it and fires it -- and
+     * `CombatState.FireThisPower` runs its spawn loop with no local/remote guard, so the viewer
+     * spawns the puppets too. Whoever casts first therefore drags everyone else with them, and
+     * the loser's own cast lands on zero `SpawnLimit` headroom and spawns nothing.
+     *
+     * Reported live: the clones still appear at different times. Every link above is present in
+     * the code, so the question is only which one drops the packet, and there are four candidates
+     * -- the three suppression gates, and the per-viewer translate that returns null when the
+     * viewer does not know the source. None of them says anything today.
+     *
+     * Throttled per scope and power so a boss mid-rotation cannot flood the log.
+     */
+    private static readonly hostileCastRelayLoggedAt = new Map<string, number>();
+    private static readonly HOSTILE_CAST_RELAY_LOG_THROTTLE_MS = 1500;
+
+    private static logHostileCastRelay(
+        client: Client,
+        levelScope: string,
+        sourceEntity: any,
+        powerId: number,
+        sourceId: number,
+        outcome: string
+    ): void {
+        if (
+            !sourceEntity ||
+            Boolean(sourceEntity.isPlayer) ||
+            Number(sourceEntity.team ?? 0) !== EntityTeam.ENEMY ||
+            !EntityHandler.usesServerAuthorityHostiles(getScopeLevelName(levelScope))
+        ) {
+            return;
+        }
+
+        const key = `${levelScope}:${Math.round(Number(sourceEntity.id ?? sourceId))}:${powerId}:${outcome}`;
+        const nowMs = Date.now();
+        if (nowMs - (CombatHandler.hostileCastRelayLoggedAt.get(key) ?? 0) < CombatHandler.HOSTILE_CAST_RELAY_LOG_THROTTLE_MS) {
+            return;
+        }
+        CombatHandler.hostileCastRelayLoggedAt.set(key, nowMs);
+
+        console.log(
+            `[HostileCast] ${getScopeLevelName(levelScope)} ` +
+            `name=${String(sourceEntity.name ?? '?')} canonical=${Math.round(Number(sourceEntity.id ?? 0))} ` +
+            `power=${powerId} from=${String(client.character?.name ?? '?')} ${outcome}`
+        );
+    }
+
     static async handlePowerCast(client: Client, data: Buffer): Promise<void> {
         if (LevelHandler.isGoblinRiverBossIntroLocked(client)) {
             return;
@@ -6899,12 +7087,15 @@ export class CombatHandler {
             return;
         }
         if (CombatHandler.shouldSuppressHostileBossPower(levelScope, sourceEntity)) {
+            CombatHandler.logHostileCastRelay(client, levelScope, sourceEntity, info.powerId, info.sourceId, 'DROPPED boss_power_no_player_in_room');
             return;
         }
         if (CombatHandler.shouldSuppressDeadPartySharedHostileAction(client, levelScope, sourceEntity, 'power_cast')) {
+            CombatHandler.logHostileCastRelay(client, levelScope, sourceEntity, info.powerId, info.sourceId, 'DROPPED dead_shared_hostile');
             return;
         }
         if (CombatHandler.shouldSuppressNonAuthorityPartySharedHostileAction(client, levelScope, sourceEntity)) {
+            CombatHandler.logHostileCastRelay(client, levelScope, sourceEntity, info.powerId, info.sourceId, 'DROPPED non_authority');
             return;
         }
         if (sourceSession) {
@@ -6934,12 +7125,22 @@ export class CombatHandler {
 
         const relayPayload = CombatHandler.normalizePowerCastRelay(client, info, data);
         if (!relayPayload) {
+            CombatHandler.logHostileCastRelay(client, levelScope, sourceEntity, info.powerId, info.sourceId, 'DROPPED normalize_returned_null');
             return;
         }
 
-        CombatHandler.broadcastCombatPacket(client, 0x09, relayPayload, {
+        const castRelay = CombatHandler.broadcastCombatPacket(client, 0x09, relayPayload, {
             referencedEntityIds: CombatHandler.parseReferencedEntityIds(0x09, relayPayload)
         });
+        CombatHandler.logHostileCastRelay(
+            client,
+            levelScope,
+            sourceEntity,
+            info.powerId,
+            info.sourceId,
+            `relayed delivered=${castRelay.delivered}/${castRelay.recipients} ` +
+            `missingEntity=${castRelay.missingEntity} untranslatable=${castRelay.untranslatable}`
+        );
         const relayInfo = CombatHandler.parsePowerCastRelayInfo(relayPayload) ?? info;
         CombatHandler.applyFireBrandPiercingCastDamage(client, levelScope, relayInfo, sourceSession, sourceEntity);
     }
@@ -8423,8 +8624,26 @@ export class CombatHandler {
         }
 
         const levelEntity = CombatHandler.resolveLevelEntity(levelScope, entityId);
-        const maxHp = CombatHandler.resolvePlayerMaxHp(client, entity, levelEntity);
-        const currentHp = CombatHandler.resolvePlayerCurrentHp(client, entity, levelEntity, maxHp);
+        const believedMaxHp = CombatHandler.resolvePlayerMaxHp(client, entity, levelEntity);
+        const currentHp = CombatHandler.resolvePlayerCurrentHp(client, entity, levelEntity, believedMaxHp);
+        // A heal the client reports past our ceiling means the ceiling is wrong, so raise it.
+        //
+        // `resolvePlayerMaxHp` falls back to the player health table row for the character's level,
+        // and that is not what the client actually has -- gear and mounts push the real pool far
+        // past it. Worse, the first resolution is written back to `authoritativeMaxHp`, so the
+        // underestimate becomes sticky and is never revisited: a member sat at `1186/21724` on the
+        // server while standing at full health on their own screen (see the note on
+        // `PARTY_FRAME_HEALTH_RECONCILE_ENABLED` for the same measurement at 91040/91040).
+        //
+        // Subtracting real damage from a pool a third of the true size empties this figure long
+        // before the player is in danger, and the death inference below then announces them dead
+        // to everybody else -- a living member drawn as a corpse on their team-mates' screens.
+        //
+        // Clamping the heal at the believed ceiling threw away the one piece of evidence that
+        // would fix it. Letting the ceiling rise instead converges on the real pool within a
+        // fight, and grants the client nothing it did not already have: these deltas are its own
+        // report of its own health either way.
+        const maxHp = Math.max(believedMaxHp, currentHp + Math.max(0, amount));
         const nextHp = Math.max(0, Math.min(maxHp, currentHp + amount));
         const appliedDelta = nextHp - currentHp;
         // Read before the flags below are cleared: this is what says the party is still drawing

@@ -1867,6 +1867,24 @@ export class MissionHandler {
             gateMet: evaluation.gateMet
         });
 
+        // The boss being down is its own event, true whether or not the RUN is finished.
+        //
+        // This sat below the readiness gate, so in a dungeon whose boss can be reached before the
+        // room is cleared -- East Wing, normally -- it never ran: no boss scene was ever recorded,
+        // the defeat cutscene stayed gated shut (no player line after the kill) and the room sweep
+        // was never armed.
+        //
+        // Only the marker moves up. `noteDungeonRunBossCutscene` stays below the gate on purpose:
+        // it switches the run into boss-room scoring, and doing that before the run is actually
+        // finished collapses the star award (goblin_kidnappers_server_authority_regression caught
+        // it going from ten stars to three).
+        const requiredBossRoomId = DungeonCompletionConditions.isRequiredBoss(currentLevel, destroyedEntity, levelScope)
+            ? MissionHandler.getEntityRoomId(destroyedEntity)
+            : -1;
+        if (requiredBossRoomId > 0) {
+            MissionHandler.armBossRoomSweep(levelScope, requiredBossRoomId, String(destroyedEntity?.name ?? '?'));
+        }
+
         if (!evaluation.ready) {
             if (DungeonCompletionSystem.canQueueCompletion(levelScope)) {
                 MissionHandler.scheduleDungeonCompletionForScope(levelScope, client);
@@ -1874,26 +1892,14 @@ export class MissionHandler {
             return;
         }
 
-        if (DungeonCompletionConditions.isRequiredBoss(currentLevel, destroyedEntity, levelScope)) {
-            const bossRoomId = MissionHandler.getEntityRoomId(destroyedEntity);
-            if (bossRoomId > 0) {
-                noteDungeonRunBossCutscene(
-                    levelScope,
-                    bossRoomId,
-                    Math.max(0, Math.round(Number(destroyedEntity?.id ?? 0)))
-                );
-
-                // Arm the boss room's sweep; it settles when the scene closes.
-                //
-                // Anything the boss left alive in that room is a body nobody can fight while the
-                // cinematic holds combat, and it is still standing when control returns. The scene
-                // implies they go down with the boss -- but killing them the moment it starts
-                // empties the room on screen while the camera is still pointed at it, which is the
-                // pile of corpses behind the boss in the scene. So record it here and let
-                // noteDungeonCutsceneEnd carry it out.
-                MissionHandler.armBossRoomSweep(levelScope, bossRoomId, String(destroyedEntity?.name ?? '?'));
-            }
+        if (requiredBossRoomId > 0) {
+            noteDungeonRunBossCutscene(
+                levelScope,
+                requiredBossRoomId,
+                Math.max(0, Math.round(Number(destroyedEntity?.id ?? 0)))
+            );
         }
+
 
         MissionHandler.scheduleDungeonCompletionForScope(levelScope, client);
     }
@@ -2480,6 +2486,12 @@ export class MissionHandler {
             roomId: normalizedRoomId,
             bossName: String(bossName ?? '?')
         });
+    }
+
+    // Whether this run has a boss scene open: a required boss died and the scene that follows it
+    // has not closed yet. Same window the room sweep waits on, so it is already tracked.
+    static hasOpenBossSceneForScope(levelScope: string): boolean {
+        return MissionHandler.pendingBossRoomSweeps.has(String(levelScope ?? '').trim());
     }
 
     private static runPendingBossRoomSweep(client: Client, levelScope: string): void {

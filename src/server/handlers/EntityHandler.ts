@@ -351,6 +351,27 @@ export class EntityHandler {
             }
         }
 
+        // A summon never inherits a grave.
+        //
+        // The fingerprint below is `name:roomId:x/100:y/100` computed from where the body stands,
+        // and a boss drops every wave of minions on the same spot with the same name. So the
+        // second wave matched the first wave's tombstone and was buried on arrival: clones dying
+        // the instant they spawned, with no hit ever landing on them. Same shape as the sibling
+        // grave that executed living ShadeWarriors, but positional identity cannot be tightened
+        // out of it here -- consecutive waves really do stand in the same place.
+        //
+        // The roster settles it instead. A hostile the level's enemy list does not name is
+        // transient: it is not the enemy any tombstone was written for, because tombstones are
+        // written for the run's own roster. Chests are excluded for the same reason as everywhere
+        // else -- they are unrostered but genuinely shared, and a chest's grave is its own.
+        // NOTE: both of these take a level NAME. `usesServerAuthorityHostiles` does not strip a
+        // scope key, so handing it `scopeKey` silently answers false and this whole guard never
+        // fires -- which is exactly how it shipped once already.
+        const tombstoneLevelName = getScopeLevelName(scopeKey);
+        if (EntityHandler.isTransientSummonHostile(tombstoneLevelName, entity)) {
+            return null;
+        }
+
         const fingerprint = EntityHandler.getServerAuthorityHostileFingerprint(entity);
         if (!fingerprint) {
             return null;
@@ -1891,6 +1912,23 @@ export class EntityHandler {
         }
 
         const levelScope = getClientLevelScope(client);
+        // Does a conjured body reach the server at ALL?
+        //
+        // Everything the summon machinery does hangs off this one call, and the whole of it is
+        // silent when it never runs -- no canonical, no binding, no shared death, and no log line
+        // to say so. An older note in patch_gameswz_shadowpuppet_spawnlimit.ts claims the clone ids
+        // appear in the server log only at their DESTROY, with no spawn at all; if that is still
+        // true then the classifier below is irrelevant and the whole approach needs rethinking.
+        // One line per conjured body settles it either way.
+        if (Math.max(0, Math.round(Number(entity?.summonerId ?? 0))) > 0) {
+            console.log(
+                `[SummonSpawn] ${LevelConfig.normalizeLevelName(levelName)} ` +
+                `${String(client.character?.name ?? '?')} spawned ${String(entity?.name ?? '?')} ` +
+                `id=${Math.max(0, Math.round(Number(rawEntityId || entity?.id) || 0))} ` +
+                `summoner=${Math.round(Number(entity.summonerId))} room=${Number(entity?.roomId ?? -1)} ` +
+                `transient=${EntityHandler.isTransientSummonHostile(levelName, entity)}`
+            );
+        }
         entity.spawnKey = entity.spawnKey || EntityHandler.getHostileSpawnKey(levelScope, entity);
         const tombstone = EntityHandler.findDeadServerAuthorityHostileTombstone(levelScope, entity);
         if (tombstone) {
@@ -1917,7 +1955,11 @@ export class EntityHandler {
             return true;
         }
 
-        const existingCanonical = EntityHandler.findServerAuthorityProxyCanonical(levelName, levelMap, entity);
+        // A summon finds its canonical a different way -- by arrival order, and minting one on
+        // first sight -- because the roster matcher below has nothing to match it against.
+        const summonCanonical = EntityHandler.resolveSummonCanonicalForClientSpawn(client, levelName, levelMap, entity, rawEntityId);
+        const existingCanonical = summonCanonical ??
+            EntityHandler.findServerAuthorityProxyCanonical(levelName, levelMap, entity);
         const canonical = existingCanonical ??
             EntityHandler.promoteFirstSightServerAuthorityHostile(client, levelName, levelMap, entity, rawEntityId);
         if (!canonical) {
@@ -1957,7 +1999,7 @@ export class EntityHandler {
             `canonical=${canonicalId} name=${String(canonical.name ?? '?')} ` +
             `-> ${String(client.character?.name ?? '?')}:${localId} ` +
             `dead=${isDead} canonicalHp=${Math.round(Number(canonical.hp ?? 0))}/${Math.round(Number(canonical.maxHp ?? 0))} ` +
-            `matched=${existingCanonical ? 'roster' : 'promoted'}`
+            `matched=${summonCanonical ? 'summon' : existingCanonical ? 'roster' : 'promoted'}`
         );
         EntityHandler.ensureServerAuthorityProxyOwner(client, canonical, localId);
         EntityHandler.registerCanonicalHostileAlias(
@@ -2953,6 +2995,253 @@ export class EntityHandler {
             DungeonCompletionConditions.sharesClientHostileWithParty(levelName, entity);
     }
 
+    private static readonly rosteredHostileNamesByLevel = new Map<string, Set<string>>();
+
+    private static stripHardSuffix(name: string): string {
+        return name.endsWith('hard') ? name.slice(0, -4) : name;
+    }
+
+    /**
+     * Is this hostile one the dungeon's authored roster knows about?
+     *
+     * A roster level seeds every enemy it has from `data/dungeonSpawns/*.enemies.json`. Anything
+     * a client spawns that is NOT in that list did not come from the level's layout -- it came
+     * from something in the fight, and in practice that means a boss's summons.
+     */
+    private static isRosteredHostileName(levelName: string | null | undefined, entity: any): boolean {
+        const normalizedLevel = LevelConfig.normalizeLevelName(levelName);
+        if (!normalizedLevel) {
+            return true;
+        }
+
+        let names = EntityHandler.rosteredHostileNamesByLevel.get(normalizedLevel);
+        if (!names) {
+            names = new Set<string>();
+            // The roster lives in data/dungeonSpawns, NOT data/npcs.
+            //
+            // `NpcLoader` was the first thing tried here and it has no entry for East Wing at all,
+            // so the name set came back empty, the "no roster, change nothing" branch below fired,
+            // and every guard built on this function was inert -- shipped, compiled, green, and
+            // doing nothing. See the same shadowing trap in the orphaned-dist-npcs note.
+            //
+            // A Hard dungeon is the same authored map with harder enemies and only the base name
+            // carries a spawn registry, which is the pairing MovementAuthority already does.
+            const { DungeonSpawnLoader } = require('../data/DungeonSpawnLoader') as typeof import('../data/DungeonSpawnLoader');
+            const baseLevel = /hard$/i.test(normalizedLevel) ? normalizedLevel.replace(/hard$/i, '') : normalizedLevel;
+            const roster = [
+                ...DungeonSpawnLoader.getNpcsForLevel(normalizedLevel),
+                ...(baseLevel !== normalizedLevel ? DungeonSpawnLoader.getNpcsForLevel(baseLevel) : [])
+            ];
+            for (const npc of roster) {
+                const name = EntityHandler.normalizeIdentityName((npc as any)?.name ?? (npc as any)?.type);
+                if (name) {
+                    names.add(name);
+                    // The level SWF spawns `TowerGuard1` where a Hard roster says
+                    // `TowerGuard1Hard`; there are no *Hard entity classes in the level files.
+                    names.add(EntityHandler.stripHardSuffix(name));
+                }
+            }
+            EntityHandler.rosteredHostileNamesByLevel.set(normalizedLevel, names);
+        }
+
+        // No roster to judge against: say yes and leave the behaviour exactly as it was.
+        if (names.size === 0) {
+            return true;
+        }
+
+        const entityName = EntityHandler.normalizeIdentityName(entity?.name);
+        return names.has(entityName) || names.has(EntityHandler.stripHardSuffix(entityName));
+    }
+
+    /**
+     * A hostile the fight produced rather than the level: a boss's summon.
+     *
+     * Tanja's ShadowPuppets are the case this is named for. They are not in the roster, so they
+     * score no objective, drop nothing shared and have no canonical of their own waiting for
+     * them -- everything the shared-hostile machinery does to an enemy is wrong for one of
+     * these, and three separate matchers had to grow the same guard before it was worth naming.
+     *
+     * Chests are excluded for the reason they always are: unrostered, but genuinely shared.
+     */
+    static isTransientSummonHostile(levelName: string | null | undefined, entity: any): boolean {
+        if (
+            !EntityHandler.usesServerAuthorityHostiles(levelName) ||
+            !entity ||
+            Boolean(entity.isPlayer) ||
+            Number(entity?.team ?? 0) !== EntityTeam.ENEMY ||
+            EntityHandler.isChestEntity(entity)
+        ) {
+            return false;
+        }
+
+        // The client says so outright, and that is worth more than the roster.
+        //
+        // `CombatState` builds a summon as `new Entity(..., LOCAL | MONSTER, team, 0, 0, caster.id,
+        // power, ...)` -- the caster's id in the tenth slot -- while `Room.SpawnCue` passes 0 there.
+        // The wire carries it (see the `summonerId` read in the entity packet) so a conjured body
+        // arrives already labelled, and a room-spawned one cannot be mistaken for it.
+        //
+        // The roster stays as the fallback, but it is the weaker test in both directions: a level
+        // whose registry failed to load answers "rostered" for everything and silently turns every
+        // guard built on it into dead code -- the exact way this family of bugs keeps shipping
+        // green -- and a boss that summons a copy of an enemy the level already lists would be
+        // merged into that enemy's canonical.
+        if (Math.max(0, Math.round(Number(entity.summonerId ?? 0))) > 0) {
+            return true;
+        }
+
+        return !EntityHandler.isRosteredHostileName(levelName, entity);
+    }
+
+    // Canonical ids minted for summons. Well clear of a level's authored roster (920001..920035
+    // in The East Wing) and of the millions a client uses for its own local ids, and it wraps so
+    // a long-lived process cannot climb into either band.
+    private static readonly SUMMON_CANONICAL_ID_BASE = 930_000;
+    private static readonly SUMMON_CANONICAL_ID_SPAN = 70_000;
+    private static summonCanonicalIdCounter = 0;
+    private static summonCanonicalSequence = 0;
+
+    /**
+     * A canonical minted for a summon -- and therefore one the server must never DRAW.
+     *
+     * Its visual is the copy each client's own boss conjures; the canonical exists only to hold
+     * the health and settle the death. Drawing it hands the viewer a second, brainless body, and
+     * their own clone then binds to the same canonical alongside it: one clone on the summoner's
+     * screen and two on everybody else's. The window is routine rather than rare -- a summon
+     * appears mid-fight, so a relay from the client that minted it lands before the other
+     * client's boss has got around to summoning at all.
+     *
+     * Read off the entity, not off the level name: `usesServerAuthorityHostiles` does not strip a
+     * scope key, and every guard in this file that forgot that shipped inert.
+     */
+    static isSummonCanonical(entity: any): boolean {
+        return Boolean(entity) && Number.isFinite(Number(entity?.summonSequence));
+    }
+
+    private static nextSummonCanonicalId(levelMap: Map<number, any> | null): number {
+        for (let attempt = 0; attempt < EntityHandler.SUMMON_CANONICAL_ID_SPAN; attempt++) {
+            const id = EntityHandler.SUMMON_CANONICAL_ID_BASE +
+                (EntityHandler.summonCanonicalIdCounter % EntityHandler.SUMMON_CANONICAL_ID_SPAN);
+            EntityHandler.summonCanonicalIdCounter += 1;
+            if (!levelMap || !levelMap.has(id)) {
+                return id;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * The one shared body behind every client's copy of a summon.
+     *
+     * A summon has no entry in the spawn registry, so no canonical is waiting for it and
+     * `findServerAuthorityProxyCanonical` -- which matches a seeded roster by name -- can never
+     * find one. Left at that, every client kept a private clone: the death did not cross, the two
+     * pools drained independently, and the server held a body it never sent anyone.
+     *
+     * So the first client to report a summon MINTS the canonical and the others bind to it. The
+     * pairing is by ARRIVAL ORDER, never by position: two clones dropped at one point in one tick
+     * are identical to every test there is, and matching them by where they stand is what
+     * collapsed a whole wave onto one canonical and buried it
+     * ([[hostile-identity-is-the-spawn-anchor]]). A canonical is available to a client only while
+     * it has no copy of its own registered against it, so the Nth clone on one screen lands on the
+     * Nth canonical on every other -- and a second wave, arriving once the first is bound, simply
+     * mints again.
+     *
+     * The clone stays CLIENT-drawn on both screens, which is the whole point: each client's own
+     * boss animates it with its authored script. Only its health and its death are the server's.
+     *
+     * A copy arriving on a canonical that is already dead is bound anyway. The caller buries it on
+     * sight, which is exactly right -- that clone died before this client finished drawing it.
+     */
+    private static resolveSummonCanonicalForClientSpawn(
+        client: Client,
+        levelName: string | null | undefined,
+        levelMap: Map<number, any> | null,
+        entity: any,
+        rawEntityId: number
+    ): any | null {
+        if (!levelMap || !EntityHandler.isTransientSummonHostile(levelName, entity)) {
+            return null;
+        }
+
+        const localId = Math.max(0, Math.round(Number(rawEntityId || entity?.id) || 0));
+        const normalizedName = EntityHandler.normalizeIdentityName(entity?.name);
+        if (localId <= 0 || !normalizedName) {
+            return null;
+        }
+
+        const roomId = Number.isFinite(Number(entity?.roomId))
+            ? Math.round(Number(entity.roomId))
+            : Math.round(Number(client.currentRoomId ?? -1));
+
+        let bestMatch: any | null = null;
+        let bestSequence = Number.POSITIVE_INFINITY;
+        for (const candidate of levelMap.values()) {
+            const sequence = Number(candidate?.summonSequence ?? NaN);
+            if (!Number.isFinite(sequence) || sequence >= bestSequence) {
+                continue;
+            }
+            if (EntityHandler.normalizeIdentityName(candidate?.name) !== normalizedName) {
+                continue;
+            }
+            const candidateRoomId = Number(candidate?.roomId ?? -1);
+            if (roomId >= 0 && candidateRoomId >= 0 && !sharesRoomIds(roomId, candidateRoomId)) {
+                continue;
+            }
+            // Already speaking for one of this client's other bodies, so it is not this one.
+            const boundLocalId = Math.max(0, Math.round(Number(
+                EntityHandler.getHostileAliasMap(candidate).get(client.token) ?? 0
+            ) || 0));
+            if (boundLocalId > 0 && boundLocalId !== localId) {
+                continue;
+            }
+            bestSequence = sequence;
+            bestMatch = candidate;
+        }
+
+        if (bestMatch) {
+            return bestMatch;
+        }
+
+        const canonicalId = EntityHandler.nextSummonCanonicalId(levelMap);
+        if (canonicalId <= 0) {
+            return null;
+        }
+
+        EntityHandler.summonCanonicalSequence += 1;
+        const canonical = {
+            ...entity,
+            id: canonicalId,
+            roomId,
+            clientSpawned: false,
+            summonSequence: EntityHandler.summonCanonicalSequence,
+            summonerToken: client.token,
+            ownerToken: 0,
+            ownerUserId: 0,
+            ownerPartyId: 0,
+            ownerCharacterName: '',
+            canonicalEntityId: undefined,
+            sharedCanonicalId: undefined,
+            // A grave is fingerprinted on `name:roomId:x/100:y/100` and a boss drops every wave on
+            // the same spot, so a summon must never leave one for its successor to inherit.
+            // `findDeadServerAuthorityHostileTombstone` refuses these for that reason; an empty
+            // spawn key keeps the positional matchers out too.
+            spawnKey: '',
+            spawnAnchorX: Number(entity?.x ?? 0),
+            spawnAnchorY: Number(entity?.y ?? 0)
+        };
+        EntityHandler.normalizeServerAuthorityHostileState(levelName, canonical);
+        levelMap.set(canonicalId, canonical);
+        console.log(
+            `[SummonCanonical] ${LevelConfig.normalizeLevelName(levelName)} minted ${canonicalId} ` +
+            `name=${String(canonical.name ?? '?')} room=${roomId} ` +
+            `hp=${Math.round(Number(canonical.hp ?? 0))}/${Math.round(Number(canonical.maxHp ?? 0))} ` +
+            `for ${String(client.character?.name ?? '?')}:${localId}`
+        );
+        return canonical;
+    }
+
     private static isPrivateClientSpawnDungeonHostile(levelName: string | null | undefined, entity: any): boolean {
         return EntityHandler.isSharedClientSpawnRegionActor(levelName, entity) &&
             Number(entity?.team ?? 0) === EntityTeam.ENEMY &&
@@ -3012,9 +3301,17 @@ export class EntityHandler {
             return false;
         }
 
+        // The third matcher with the same flaw, and the one still merging Tanja's clones.
+        //
+        // findLeaderAuthoritativeClientSpawnMatch pairs by name + nearest distance with no spawn
+        // key and no limit, so two minions dropped at one point in one tick are the same enemy to
+        // it. The guard already on findBestSharedClientSpawnCanonicalMatch has to be here too:
+        // a hostile the level roster does not name is transient, scores no objective and drops
+        // nothing shared, so it is never merged into somebody else's canonical.
+        const leaderMatchAllowed = !EntityHandler.isTransientSummonHostile(levelName, entity);
         const canonical =
             (levelMap && levelMap.get(Number(entity.id ?? 0))) ??
-            EntityHandler.findLeaderAuthoritativeClientSpawnMatch(levelMap, entity);
+            (leaderMatchAllowed ? EntityHandler.findLeaderAuthoritativeClientSpawnMatch(levelMap, entity) : null);
         // Non-leader suppression is only valid after a canonical shared hostile
         // already exists in-scope and can replace the follower's local spawn.
         if (!canonical) {
@@ -3085,6 +3382,24 @@ export class EntityHandler {
         const targetTeam = Number(entity?.team ?? 0);
         const targetObjectiveRole = DungeonCompletionConditions.getObjectiveRole(levelName, entity);
         const targetSpawnKey = String(entity?.spawnKey ?? EntityHandler.getHostileSpawnKey(getLevelScopeKey(levelName, ''), entity));
+        // A hostile the roster does not know is a summon, and summons are never merged.
+        //
+        // Mirroring one as its own canonical is fine and is what the rest of the system expects
+        // (jc_mini1_server_authority_regression asserts exactly that). Matching one to an EXISTING
+        // canonical is what breaks: two minions dropped at the same point in the same tick are
+        // identical to every test this function has -- the spawn key buckets position to 25px and
+        // summons carry no spawn index, the name is the same, and the distance fallback below has
+        // no limit. So all four bodies in a two-player fight collapsed onto one canonical, and
+        // burying that one buried them all: clones dying the instant the boss summoned them.
+        //
+        // They do not need merging. The roster is the whole enemy list the run scores against; a
+        // hostile outside it contributes to no objective and drops nothing shared, so each client
+        // simply keeps its own. Two rounds of guards trying to tell the copies apart only turned
+        // the ambiguity into cascading refusals -- there is nothing to tell apart here.
+        if (EntityHandler.isTransientSummonHostile(levelName, entity)) {
+            return null;
+        }
+
         let bestMatch: any | null = null;
         let bestDistanceSq = Number.POSITIVE_INFINITY;
 
@@ -3324,11 +3639,14 @@ export class EntityHandler {
      * every other reader too, so it is refused at the source and the caller is named. The log is
      * the point: it says which of the sixteen writes it.
      */
-    static rememberEntityAlias(client: Client, localEntityId: number, canonicalEntityId: number): void {
+    // Returns whether the alias was accepted. A refusal is not advisory: the caller must fall
+    // back to the local id, because resolving to a canonical this client is not allowed to alias
+    // hands its hits, its health and its death to somebody else's enemy.
+    static rememberEntityAlias(client: Client, localEntityId: number, canonicalEntityId: number): boolean {
         const localId = Math.max(0, Math.round(Number(localEntityId) || 0));
         const canonicalId = Math.max(0, Math.round(Number(canonicalEntityId) || 0));
         if (localId <= 0 || canonicalId <= 0 || localId === canonicalId) {
-            return;
+            return false;
         }
 
         const ownBodyId = Math.max(0, Math.round(Number(client?.clientEntID ?? 0)));
@@ -3343,10 +3661,11 @@ export class EntityHandler {
                 `player=${String(client.character?.name ?? '?')} ownBody=${ownBodyId} ` +
                 `-> canonical=${canonicalId} from: ${caller}`
             );
-            return;
+            return false;
         }
 
         client.entityIdAliases.set(localId, canonicalId);
+        return true;
     }
 
     static isClientOwnPlayerEntity(client: Client, levelScope: string | null | undefined, entityId: number, entity: any = null): boolean {
@@ -4327,6 +4646,13 @@ export class EntityHandler {
 
         const entity = EntityHandler.getLevelMap(levelName, client.levelInstanceId)?.get(entityId);
         if (!entity || !EntityHandler.canClientSeeEntity(client, entity)) {
+            return false;
+        }
+
+        // A summon is never drawn from here; see isSummonCanonical. Answering no makes the
+        // caller skip this viewer, which is right: their own boss is about to conjure the body
+        // and bind it, and until then there is nothing on their screen to correct.
+        if (EntityHandler.isSummonCanonical(entity)) {
             return false;
         }
 
@@ -6436,6 +6762,10 @@ export class EntityHandler {
                 // where it is standing.
                 EntityHandler.reconcileHostilePositionsForScope(levelScope, sessions);
 
+                // And on how much health it has left, which drifts the same way for a different
+                // reason: each client computes the damage itself.
+                EntityHandler.reconcileHostileHealthForScope(levelScope, sessions);
+
                 // And the party frames, which drift the same way for the same reason.
                 EntityHandler.reconcilePartyFrameHealthForScope(levelScope, sessions);
 
@@ -6481,6 +6811,89 @@ export class EntityHandler {
      * only way the client will accept mid-room: a 0x07 delta of exactly the gap, which lands the
      * copy on the canonical.
      */
+    // Every viewer's bar is pushed onto the canonical's health, on a cadence.
+    //
+    // Nothing did this. `syncHostileHealthCopies` writes the canonical's health into every
+    // session's *server-side* cache and sends nothing, and the one path that does send --
+    // `sendAuthoritativeHostileHpToViewer` -- subtracts what it PREDICTS the viewer's client
+    // already took off locally. That prediction is the attacker's damage number, and a viewer's
+    // client computes its own: a live capture had the attacker's client reporting 403754 total
+    // against the same boss the viewer's client scored at 360092, with the server applying
+    // 345664. Three different numbers, so the correction was computed against a figure the
+    // viewer never used and the two health bars simply drifted apart -- one member watching a
+    // boss at a sliver while the other still saw it past half.
+    //
+    // Prediction cannot be made to work here; only telling them outright can. This forces the
+    // bar with the same top-up pair the tutorial completion boss already uses (`+maxHp` to fill,
+    // then `-(maxHp - hp)` to cut it back), which lands on the canonical figure no matter what
+    // the client had. It runs on the visibility sweep rather than per hit, and only when the
+    // last figure this viewer was forced to has actually moved, so a stable fight costs nothing.
+    private static reconcileHostileHealthForScope(levelScope: string, sessions: Client[]): void {
+        const levelName = getScopeLevelName(levelScope);
+        if (!EntityHandler.usesServerAuthorityHostiles(levelName) || sessions.length < 2) {
+            return;
+        }
+
+        const levelMap = GlobalState.levelEntities.get(levelScope);
+        if (!levelMap) {
+            return;
+        }
+
+        const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+        for (const canonical of levelMap.values()) {
+            if (!EntityHandler.isServerAuthorityHostileEntity(levelName, canonical) || EntityHandler.isEntityDead(canonical)) {
+                continue;
+            }
+            const canonicalId = Math.max(0, Math.round(Number(canonical.id ?? 0)));
+            const canonicalHp = Math.round(Number(canonical.hp ?? NaN));
+            const maxHp = Math.max(1, Math.round(Number(canonical.maxHp ?? 0)) || 0);
+            if (canonicalId <= 0 || maxHp <= 1 || !Number.isFinite(canonicalHp) || canonicalHp <= 0) {
+                continue;
+            }
+
+            let forced = canonical.forcedHpByViewerToken;
+            if (!(forced instanceof Map)) {
+                forced = new Map<number, number>();
+                canonical.forcedHpByViewerToken = forced;
+            }
+
+            for (const viewer of sessions) {
+                if (getClientLevelScope(viewer) !== levelScope) {
+                    continue;
+                }
+                if (forced.get(viewer.token) === canonicalHp) {
+                    continue;
+                }
+
+                const registeredLocalId = EntityHandler.getRegisteredHostileLocalIdForViewer(viewer, canonical);
+                const localId = registeredLocalId > 0
+                    ? registeredLocalId
+                    : CombatHandler.resolvePartySharedHostileLocalIdForSharedState(
+                        viewer,
+                        levelScope,
+                        canonicalId,
+                        canonical
+                    );
+                // The alias registration IS the proof this viewer drew the body, and it is the
+                // only proof a member who joined mid-run has: their copy is one their own client
+                // spawned, so it does not have to be sitting in `viewer.entities` under the id we
+                // resolve for it. Requiring that was what left a joiner out of this correction
+                // while it worked for the member who started the run. Addressing an id a client
+                // does not know costs nothing -- the client ignores health for an unknown entity.
+                if (localId <= 0 || (registeredLocalId <= 0 && !viewer.entities.has(localId))) {
+                    continue;
+                }
+
+                CombatHandler.sendHostileHealthCorrection(viewer, localId, maxHp);
+                const damageTaken = maxHp - canonicalHp;
+                if (damageTaken > 0) {
+                    CombatHandler.sendHostileHealthCorrection(viewer, localId, -damageTaken);
+                }
+                forced.set(viewer.token, canonicalHp);
+            }
+        }
+    }
+
     private static reconcileHostilePositionsForScope(levelScope: string, sessions: Client[]): void {
         const levelName = getScopeLevelName(levelScope);
         if (!EntityHandler.usesServerAuthorityHostiles(levelName) || sessions.length < 2) {
