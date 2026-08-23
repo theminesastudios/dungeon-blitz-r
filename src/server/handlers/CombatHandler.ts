@@ -6402,6 +6402,21 @@ export class CombatHandler {
         CombatHandler.broadcastToSameLevel(getClientLevelScope(client), 0x82, bb.toBuffer(), [entId], client);
     }
 
+    private static shouldRejectLivingBossRegenReport(
+        levelScope: string,
+        targetEntity: any,
+        amount: number,
+        hasLivingPlayer: boolean
+    ): boolean {
+        return amount > 0 &&
+            hasLivingPlayer &&
+            DungeonCompletionConditions.isRequiredBoss(
+                getScopeLevelName(levelScope),
+                targetEntity,
+                levelScope
+            );
+    }
+
     private static recordClientHostileHpDelta(
         client: Client,
         levelScope: string,
@@ -6416,11 +6431,11 @@ export class CombatHandler {
 
         const levelEntity = CombatHandler.resolveLevelEntity(levelScope, entityId);
         const targetEntity = levelEntity ?? entity;
-        const rejectLivingBossRegen = Boolean(
-            amount > 0 &&
-            DungeonCompletionConditions.requiresBossDefeatSignal(getScopeLevelName(levelScope)) &&
-            DungeonCompletionConditions.isRequiredBoss(getScopeLevelName(levelScope), targetEntity, levelScope) &&
-            (
+        const rejectLivingBossRegen = CombatHandler.shouldRejectLivingBossRegenReport(
+            levelScope,
+            targetEntity,
+            amount,
+            Boolean(
                 CombatHandler.hasLivingPlayerInHostileRoom(levelScope, targetEntity) ||
                 !CombatHandler.isPlayerSessionDead(client)
             )
