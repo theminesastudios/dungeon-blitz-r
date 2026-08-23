@@ -2223,6 +2223,9 @@ export class SocialHandler {
 
         if (delivery === 'local') {
             client.send(0x76, payload);
+            // A member who joined mid-scene has no line of their own to draw yet -- their client
+            // is still replaying the ones the room already spoke. Give them this one.
+            LevelHandler.sendSharedDungeonCutsceneLineToCatchUpViewers(client, entityId, text);
             return;
         }
 
@@ -2252,6 +2255,9 @@ export class SocialHandler {
 
         if (delivery === 'local') {
             client.send(0x76, payload);
+            // A member who joined mid-scene has no line of their own to draw yet -- their client
+            // is still replaying the ones the room already spoke. Give them this one.
+            LevelHandler.sendSharedDungeonCutsceneLineToCatchUpViewers(client, entityId, text);
             return;
         }
 

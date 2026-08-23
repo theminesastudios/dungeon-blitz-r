@@ -3097,6 +3097,22 @@ export class EntityHandler {
             if (Number(candidate?.ownerToken ?? 0) === excludedOwnerToken && candidateId === entityId) {
                 continue;
             }
+            // One client never has two bodies for one enemy.
+            //
+            // If this candidate already has a local id registered for the client that is asking,
+            // and it is a different one, then the entity in hand is a second, distinct enemy. That
+            // is exactly what a boss summoning two of the same minion produces: they arrive at the
+            // same point in the same tick, so the spawn key (position bucketed to 25px, no spawn
+            // index) is identical and the name fallback below has no distance limit -- both
+            // collapsed onto one canonical. Burying that one buried the other, which is the pair
+            // of ShadowPuppets that died the instant Tanja summoned them, with no [HostileHit]
+            // ever recorded against either.
+            const boundLocalId = Math.max(0, Math.round(Number(
+                EntityHandler.getHostileAliasMap(candidate).get(excludedOwnerToken) ?? 0
+            ) || 0));
+            if (boundLocalId > 0 && entityId > 0 && boundLocalId !== entityId) {
+                continue;
+            }
             if (partyId > 0) {
                 if (EntityHandler.getSharedClientSpawnOwnerPartyId(candidate) !== partyId) {
                     continue;

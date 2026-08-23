@@ -1882,6 +1882,16 @@ export class MissionHandler {
                     bossRoomId,
                     Math.max(0, Math.round(Number(destroyedEntity?.id ?? 0)))
                 );
+
+                // Arm the boss room's sweep; it settles when the scene closes.
+                //
+                // Anything the boss left alive in that room is a body nobody can fight while the
+                // cinematic holds combat, and it is still standing when control returns. The scene
+                // implies they go down with the boss -- but killing them the moment it starts
+                // empties the room on screen while the camera is still pointed at it, which is the
+                // pile of corpses behind the boss in the scene. So record it here and let
+                // noteDungeonCutsceneEnd carry it out.
+                MissionHandler.armBossRoomSweep(levelScope, bossRoomId, String(destroyedEntity?.name ?? '?'));
             }
         }
 
@@ -2451,6 +2461,47 @@ export class MissionHandler {
         }
     }
 
+    // A boss room is cleared by its own scene, but only once the scene is over.
+    //
+    // Keyed by level scope rather than by room, deliberately: the boss entity carries the level
+    // SWF's authored room index while a cutscene close reports the client's room id, and those two
+    // numbers never match (see the room-id note on CombatHandler.hasLivingPlayerInHostileRoom). A
+    // run has one boss scene open at a time, so the scope is the key that actually lines up.
+    private static pendingBossRoomSweeps: Map<string, { roomId: number; bossName: string }> = new Map();
+
+    private static armBossRoomSweep(levelScope: string, roomId: number, bossName: string): void {
+        const scopeKey = String(levelScope ?? '').trim();
+        const normalizedRoomId = Math.round(Number(roomId ?? -1));
+        if (!scopeKey || !Number.isFinite(normalizedRoomId) || normalizedRoomId < 0) {
+            return;
+        }
+
+        MissionHandler.pendingBossRoomSweeps.set(scopeKey, {
+            roomId: normalizedRoomId,
+            bossName: String(bossName ?? '?')
+        });
+    }
+
+    private static runPendingBossRoomSweep(client: Client, levelScope: string): void {
+        const scopeKey = String(levelScope ?? '').trim();
+        const pending = scopeKey ? MissionHandler.pendingBossRoomSweeps.get(scopeKey) : null;
+        if (!pending) {
+            return;
+        }
+        MissionHandler.pendingBossRoomSweeps.delete(scopeKey);
+
+        // Routed through the same defeat path a normal kill uses, so loot, progress and the death
+        // relay to every screen all behave exactly as they would have.
+        const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+        const swept = CombatHandler.adminDefeatRoomHostiles(client, pending.roomId);
+        if (swept.defeated > 0) {
+            console.log(
+                `[BossCutsceneSweep] ${getScopeLevelName(scopeKey)} room=${swept.roomId} ` +
+                `defeated=${swept.defeated} after boss=${pending.bossName} on cutscene end`
+            );
+        }
+    }
+
     static noteDungeonCutsceneEnd(client: Client, roomId: number): void {
         const scope = getClientLevelScope(client);
         if (!scope) {
@@ -2518,6 +2569,11 @@ export class MissionHandler {
             client.activeDungeonCutsceneScope = '';
             client.activeDungeonCutsceneRoomId = 0;
         }
+
+        // The scene that was holding the boss room just closed, so anything the boss left alive
+        // in it goes down now -- not when the scene opened, which emptied the room while the
+        // camera was still on it.
+        MissionHandler.runPendingBossRoomSweep(client, scope);
 
         // The boss is already down and the skit that was playing over it just
         // closed, so the rank plate is what comes next. Release the ending gate
@@ -3544,7 +3600,7 @@ export class MissionHandler {
     }
 
 
-    private static sendQuestProgress(client: Client, percent: number): void {
+    private static sendQuestProgress(client: Client, percent: number): void {
         const bb = new BitBuffer(false);
         bb.writeMethod4(percent);
         client.sendBitBuffer(0xB7, bb);
@@ -3591,7 +3647,7 @@ export class MissionHandler {
 
             if (other.character) {
                 other.character.questTrackerState = progress;
-            }
+            }
             other.send(0xB7, payload);
         }
     }

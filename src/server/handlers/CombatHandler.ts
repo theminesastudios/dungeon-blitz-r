@@ -1488,12 +1488,25 @@ export class CombatHandler {
         return false;
     }
 
+    // Two different room-id spaces meet in this check. A session's currentRoomId is
+    // the client's own room id, while a hostile seeded from the dungeon spawn table
+    // carries the authored room index from the level SWF -- the East Wing boss sits
+    // in authored room 3 while the party standing in front of it is indexed under a
+    // client room id. Asking for "the sessions in room 3" then answers "nobody", and
+    // every boss power aimed at a player was refused as hostile_boss_power_suppressed.
+    // So the room filter is only applied when the boss's room is one the sessions in
+    // this scope actually use; otherwise the scope is the best answer available.
     private static hasLivingPlayerInHostileRoom(levelScope: string, entity: any): boolean {
         const sourceRoomId = getRoomBossAwareRoomId(entity);
-        const roomSessions = sourceRoomId >= 0
+        const sameRoomSessions = sourceRoomId >= 0
             ? GlobalState.getSessionsInRoom(levelScope, sourceRoomId)
+            : null;
+        const roomFilterApplies = Boolean(sameRoomSessions && sameRoomSessions.size > 0);
+        const sessions = roomFilterApplies && sameRoomSessions
+            ? sameRoomSessions
             : GlobalState.getSessionsInLevelScope(levelScope);
-        for (const session of roomSessions) {
+
+        for (const session of sessions) {
             if (!session.playerSpawned) {
                 continue;
             }
@@ -1502,7 +1515,7 @@ export class CombatHandler {
             }
         }
 
-        if (sourceRoomId >= 0) {
+        if (roomFilterApplies) {
             for (const session of GlobalState.getSessionsInLevelScope(levelScope)) {
                 if (
                     session.playerSpawned &&
@@ -1960,6 +1973,17 @@ export class CombatHandler {
         return CombatHandler.resolveClientHostileEntityAlias(client, levelScope, entityId);
     }
 
+    // The room filter below compares the client's own room id against the entity's, and a hostile
+    // seeded from the dungeon spawn table carries the authored room index instead -- the same two
+    // number spaces described on hasLivingPlayerInHostileRoom. In East Wing that discards every
+    // candidate, so this last-resort alias never fires there at all.
+    //
+    // That is deliberate now. Letting it fall back to the level's bosses when the rooms cannot be
+    // compared makes the fallback fire for every client hostile the server cannot place -- and a
+    // broken chest is exactly that, an unrostered team-2 entity the client renames. It was then
+    // aliased onto the boss and the chest stopped registering as opened (caught by
+    // east_wing_dungeon_spawns_regression and jc_mini1_server_authority_regression). Refusing to
+    // guess is the correct answer here, unlike in the living-player check.
     private static findSingleRoomBossForUnknownClientHostile(client: Client, levelScope: string): any | null {
         if (!levelScope) {
             return null;

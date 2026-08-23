@@ -1690,7 +1690,7 @@ export class LevelHandler {
 
         if (
             LevelConfig.isDungeonLevel(levelName) &&
-            !LevelHandler.beginSharedDungeonCutsceneForScope(scopeKey, roomId)
+            !LevelHandler.beginSharedDungeonCutsceneForScope(scopeKey, roomId, Number(sourceClient?.token ?? 0))
         ) {
             return false;
         }
@@ -1732,7 +1732,7 @@ export class LevelHandler {
 
         if (
             LevelConfig.isDungeonLevel(levelName) &&
-            !LevelHandler.finishSharedDungeonCutsceneForScope(scopeKey, roomId)
+            !LevelHandler.finishSharedDungeonCutsceneForScope(scopeKey, roomId, Number(sourceClient?.token ?? 0))
         ) {
             return false;
         }
@@ -3805,16 +3805,6 @@ export class LevelHandler {
         return Math.max(0, Math.round(Number(state?.dialogIndex ?? 0) || 0));
     }
 
-    private static hasSharedDungeonCutscenePeer(client: Client): boolean {
-        for (const other of GlobalState.getSessionsInLevelScope(getClientLevelScope(client))) {
-            if (other !== client && other.playerSpawned && areClientsInSameLevelScope(client, other)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private static setSharedDungeonCutsceneActive(levelScope: string, roomId: number, ownerToken: number): void {
         const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
         GlobalState.dungeonCutscenes.set(
@@ -3833,6 +3823,36 @@ export class LevelHandler {
         );
     }
 
+    private static hasSharedDungeonCutscenePeer(client: Client): boolean {
+        for (const other of GlobalState.getSessionsInLevelScope(getClientLevelScope(client))) {
+            if (other !== client && other.playerSpawned && areClientsInSameLevelScope(client, other)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Ownership of a running scene lapses with the session that holds it. Without this a member
+    // who disconnects mid-cinematic leaves the room locked behind a token nobody holds any more,
+    // and no one left in the dungeon can ever close it.
+    private static isSharedDungeonCutsceneOwnerPresent(levelScope: string, ownerToken: unknown): boolean {
+        const token = Math.max(0, Math.round(Number(ownerToken ?? 0) || 0));
+        if (token <= 0) {
+            return false;
+        }
+
+        const owner = GlobalState.sessionsByToken.get(token);
+        return Boolean(owner?.playerSpawned && getClientLevelScope(owner) === levelScope);
+    }
+
+    // Whether this client's cinematic is one the *other* members have to be kept in step with.
+    // That needs a second member to exist, and it decides suppression and per-participant relay,
+    // so it deliberately stays false for a lone player -- their own dialogue must never be
+    // filtered against a shared record only they can see.
+    //
+    // It does NOT decide whether the scene is written down. A scene a lone member starts is still
+    // recorded, owned by them; see the room-event handlers.
     private static isSharedDungeonCutsceneScope(client: Client): boolean {
         if (!client.currentLevel || !LevelConfig.isDungeonLevel(client.currentLevel)) {
             return false;
@@ -3874,7 +3894,18 @@ export class LevelHandler {
         return 'started';
     }
 
-    private static beginSharedDungeonCutsceneForScope(levelScope: string, roomId: number): boolean {
+    // A scene a lone player starts still has an owner.
+    //
+    // `isSharedDungeonCutsceneScope` is false while nobody else is in the level, so the first
+    // member into the boss room takes this path instead of the client-aware one -- and it used
+    // to record `ownerToken: 0`. The moment a second member walked in, the scene was one that
+    // belonged to nobody, so the first cutscene-end packet from anyone closed it and cut the
+    // watcher off mid-dialogue. Whoever started it owns it, alone or not.
+    private static beginSharedDungeonCutsceneForScope(
+        levelScope: string,
+        roomId: number,
+        ownerToken: number = 0
+    ): boolean {
         const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
         const key = LevelHandler.getSharedDungeonCutsceneKey(levelScope, normalizedRoomId);
         const existing = GlobalState.dungeonCutscenes.get(key);
@@ -3884,12 +3915,14 @@ export class LevelHandler {
 
         GlobalState.dungeonCutscenes.set(key, {
             roomId: normalizedRoomId,
-            ownerToken: 0,
+            ownerToken: Math.max(0, Math.round(Number(ownerToken) || 0)),
             active: true,
             completed: false,
             startedAt: Date.now(),
             endedAt: 0,
-            dialogIndex: 0
+            dialogIndex: 0,
+            participantKeys: new Set<string>(),
+            closedParticipantKeys: new Set<string>()
         });
         return true;
     }
@@ -3930,9 +3963,35 @@ export class LevelHandler {
                 return 'participant_finished';
             }
         }
-        if (existing?.active && existing.ownerToken > 0 && existing.ownerToken !== client.token &&
-            !TutorialDungeonMechanics.isTutorialDungeon(levelScope)) {
-            return 'active_duplicate';
+        // A running scene may only be ended by somebody who is actually watching it.
+        //
+        // This guarded on `ownerToken > 0`, so a scene with no recorded owner could be closed by
+        // anyone -- and that is exactly the state a player walks into when they join a dungeon
+        // mid-scene. Their client has no scene to play, reports it finished immediately, and the
+        // shared state flips to completed: the member who WAS watching gets cut off mid-dialogue
+        // and dropped straight into the boss fight.
+        //
+        // Participation is the honest test, not ownership: `isSharedDungeonCutsceneParticipant`
+        // is true for the members whose own client is playing the scene, and false for the one
+        // who just arrived. The tutorial dungeon keeps its own per-participant close accounting
+        // above and is left alone.
+        // A room with no record at all is one this client never watched start -- treat it the
+        // same as an unowned running scene rather than letting it write a completed record.
+        if ((existing?.active || !existing) && !TutorialDungeonMechanics.isTutorialDungeon(levelScope)) {
+            // Owned scene: only the owner may close it.
+            // Unowned scene, or one whose owner has left: only somebody actually watching it,
+            // which is what a mid-scene joiner is not.
+            const ownerToken = Math.max(0, Math.round(Number(existing?.ownerToken ?? 0) || 0));
+            const refuseClose = LevelHandler.isSharedDungeonCutsceneOwnerPresent(levelScope, ownerToken)
+                ? ownerToken !== client.token
+                : !LevelHandler.isSharedDungeonCutsceneParticipant(client, levelScope, normalizedRoomId);
+            if (refuseClose) {
+                console.log(
+                    `[CutsceneKeepRunning] ${getScopeLevelName(levelScope)} room=${normalizedRoomId} ` +
+                    `refusedCloseBy=${String(client.character?.name ?? '?')} owner=${ownerToken}`
+                );
+                return 'active_duplicate';
+            }
         }
 
         GlobalState.dungeonCutscenes.set(key, {
@@ -3949,7 +4008,18 @@ export class LevelHandler {
         return 'finished';
     }
 
-    private static finishSharedDungeonCutsceneForScope(levelScope: string, roomId: number): boolean {
+    // The scope-wide close, reached when the level has no second member yet or the scene is not
+    // a shared one. It used to end a RUNNING scene unconditionally, which is how a cutscene-end
+    // packet from somebody who was not watching cut the watcher off mid-dialogue and dropped the
+    // room straight into the boss fight.
+    //
+    // A running scene may now only be closed by whoever owns it. An unowned one is a scene no
+    // client is driving -- purely server-authored -- and stays closable by anyone, as before.
+    private static finishSharedDungeonCutsceneForScope(
+        levelScope: string,
+        roomId: number,
+        closingToken: number = 0
+    ): boolean {
         const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
         const key = LevelHandler.getSharedDungeonCutsceneKey(levelScope, normalizedRoomId);
         const existing = GlobalState.dungeonCutscenes.get(key);
@@ -3957,9 +4027,22 @@ export class LevelHandler {
             return false;
         }
 
+        const ownerToken = Math.max(0, Math.round(Number(existing?.ownerToken ?? 0) || 0));
+        if (
+            existing?.active &&
+            LevelHandler.isSharedDungeonCutsceneOwnerPresent(levelScope, ownerToken) &&
+            ownerToken !== Math.max(0, Math.round(Number(closingToken) || 0))
+        ) {
+            console.log(
+                `[CutsceneKeepRunning] ${getScopeLevelName(levelScope)} room=${normalizedRoomId} ` +
+                `refusedCloseBy=scope-wide closingToken=${closingToken} owner=${ownerToken}`
+            );
+            return false;
+        }
+
         GlobalState.dungeonCutscenes.set(key, {
             roomId: normalizedRoomId,
-            ownerToken: Math.max(0, Math.round(Number(existing?.ownerToken ?? 0) || 0)),
+            ownerToken,
             active: false,
             completed: true,
             startedAt: Math.max(0, Math.round(Number(existing?.startedAt ?? Date.now()) || Date.now())),
@@ -4072,11 +4155,21 @@ export class LevelHandler {
         LevelHandler.markSharedDungeonCutsceneParticipant(client, roomId, joinedAtDialogIndex);
     }
 
-    // A cinematic is a property of the room, not of whoever walked in first.
-    // Someone entering the dungeon while one is running used to be skipped
-    // entirely — they stood outside the borders watching the party freeze — so
-    // put them inside it, resumed at the line the room has already reached
-    // rather than replaying it from the top.
+    // A cinematic is a property of the room, not of whoever walked in first, so somebody entering
+    // the dungeon mid-scene is put inside it rather than skipped.
+    //
+    // Registering them is all that happens here -- deliberately no 0xA5.
+    //
+    // The boss intro is client-driven (`BossFight.method_1981`). An inbound 0xA5 only sets
+    // `room.var_1052` -- borders and freeze, no dialogue -- and when the arrival's own BossFight
+    // then starts the scene it finds `var_1052` already true, calls `method_502()` which sends a
+    // spurious 0xA6 and clears `var_1052` locally, and the `!var_1052` gate immediately runs
+    // `RoomAggro(player)` + `HookSetPhase(bossFightPhase)`. That is the skip: the server's own
+    // welcome packet is what tore the arrival's cinematic down and set the boss on them, and
+    // pushing 0xA5 at them again only repeats it.
+    //
+    // Left alone, their BossFight opens the scene itself, with dialogue, and reaches us as a
+    // normal `handleRoomEventStart` -- which only has to not end the room's scene early.
     static joinActiveSharedDungeonCutscene(client: Client, roomId: number): boolean {
         const levelScope = getClientLevelScope(client);
         const normalizedRoomId = Math.max(0, Math.round(Number(roomId) || 0));
@@ -4093,15 +4186,10 @@ export class LevelHandler {
         client.currentRoomId = normalizedRoomId;
         GlobalState.refreshSessionIndexes(client);
 
-        const cutsceneStart = new BitBuffer(false);
-        cutsceneStart.writeMethod9(normalizedRoomId);
-        cutsceneStart.writeMethod15(true);
-        LevelHandler.sendSharedDungeonCutsceneStartToClient(
+        LevelHandler.markSharedDungeonCutsceneParticipant(
             client,
             normalizedRoomId,
-            cutsceneStart.toBuffer(),
-            LevelHandler.getSharedDungeonCutsceneDialogIndex(state),
-            true
+            LevelHandler.getSharedDungeonCutsceneDialogIndex(state)
         );
         LevelHandler.setServerAuthorityHostilesUntargetableForScope(levelScope, normalizedRoomId, true);
         return true;
@@ -4236,12 +4324,132 @@ export class LevelHandler {
         return state.active && state.ownerToken > 0 && state.ownerToken !== client.token;
     }
 
+    // The room's dialogue progress has to be counted even while its owner is the only member in
+    // the level.
+    //
+    // It was not: `getDungeonCutsceneRoomThoughtDelivery` returns `'level'` before any bookkeeping
+    // when the scope has no second member, which is the whole first half of a boss scene. The
+    // shared dialogIndex therefore sat at 0 through it, and the next arrival was told the room had
+    // not spoken a line yet -- so their own client replayed the cinematic from the top instead of
+    // picking it up where the room actually was. Counting here is what makes the joiner's bubbles
+    // land in step with the member already watching.
+    private static noteOwnedSharedDungeonCutsceneLine(client: Client): void {
+        const levelScope = getClientLevelScope(client);
+        if (!levelScope || !client.currentLevel || !LevelConfig.isDungeonLevel(client.currentLevel)) {
+            return;
+        }
+
+        const rawRoomId = Number.isFinite(Number(client.currentRoomId))
+            ? Math.max(0, Math.round(Number(client.currentRoomId)))
+            : -1;
+        const roomId = LevelHandler.getSharedDungeonCutsceneRoomIdForClient(client, rawRoomId);
+        if (roomId < 0) {
+            return;
+        }
+
+        const state = LevelHandler.getSharedDungeonCutsceneState(levelScope, roomId);
+        if (!state?.active || state.completed) {
+            return;
+        }
+
+        const ownerToken = Math.max(0, Math.round(Number(state.ownerToken ?? 0) || 0));
+        if (ownerToken > 0 && ownerToken !== Math.max(0, Math.round(Number(client.token) || 0))) {
+            return;
+        }
+
+        state.dialogIndex = LevelHandler.getSharedDungeonCutsceneDialogIndex(state) + 1;
+        client.activeDungeonCutsceneLocalDialogIndex = state.dialogIndex;
+    }
+
+    // Lines the room is speaking now, sent to the members whose own timeline has not reached them.
+    //
+    // Each client normally draws its own dialogue, which is why an owner's bubble is `'local'` and
+    // never relayed. That breaks down for somebody who joined mid-scene: their client starts the
+    // cinematic from the top, so every line it would draw is one the room already spoke and is
+    // suppressed -- the scene plays silently on their screen while everyone else is mid-dialogue.
+    //
+    // So for exactly the stretch where they are behind, hand them the room's current line instead
+    // of their own stale one. The speaker id has to be re-resolved per viewer: the boss is spawned
+    // by each client with its own id, so the owner's id means nothing on the joiner's screen.
+    static sendSharedDungeonCutsceneLineToCatchUpViewers(owner: Client, entityId: number, text: string): void {
+        const levelScope = getClientLevelScope(owner);
+        if (!levelScope) {
+            return;
+        }
+
+        const rawRoomId = Number.isFinite(Number(owner.currentRoomId))
+            ? Math.max(0, Math.round(Number(owner.currentRoomId)))
+            : -1;
+        const roomId = LevelHandler.getSharedDungeonCutsceneRoomIdForClient(owner, rawRoomId);
+        if (roomId < 0) {
+            return;
+        }
+
+        const state = LevelHandler.getSharedDungeonCutsceneState(levelScope, roomId);
+        if (!state?.active || state.completed) {
+            return;
+        }
+
+        // Only the member driving the room's timeline feeds it. A catching-up member's own lines
+        // are the stale ones; echoing those back would replay the scene at everybody else.
+        const ownerToken = Math.max(0, Math.round(Number(state.ownerToken ?? 0) || 0));
+        if (ownerToken > 0 && ownerToken !== Math.max(0, Math.round(Number(owner.token) || 0))) {
+            return;
+        }
+
+        const spokenId = Math.max(0, Math.round(Number(entityId) || 0));
+
+        // The scene is a two-hander: the boss speaks and the player answers. A relayed reply that
+        // stays pinned to the owner's body puts the viewer's own line in somebody else's mouth,
+        // so the player half is redrawn over whoever is watching -- each member sees the exchange
+        // between the boss and themselves, which is what a solo run looks like.
+        const ownerBodyId = Math.max(0, Math.round(Number(owner.clientEntID) || 0));
+        const isOwnerPlayerLine = ownerBodyId > 0 && spokenId === ownerBodyId;
+
+        const canonicalId = spokenId > 0 && !isOwnerPlayerLine
+            // Required lazily: CombatHandler imports LevelHandler.
+            ? (require('./CombatHandler') as typeof import('./CombatHandler'))
+                .CombatHandler.resolveClientHostileAliasForSharedState(owner, levelScope, spokenId)
+            : 0;
+
+        for (const viewer of LevelHandler.getSharedDungeonCutsceneParticipants(owner, roomId, false)) {
+            const localDialogIndex = Math.max(
+                0,
+                Math.round(Number(viewer.activeDungeonCutsceneLocalDialogIndex ?? 0) || 0)
+            );
+            const joinedAtDialogIndex = Math.max(
+                0,
+                Math.round(Number(viewer.activeDungeonCutsceneJoinedAtDialogIndex ?? 0) || 0)
+            );
+            if (joinedAtDialogIndex <= 0 || localDialogIndex >= joinedAtDialogIndex) {
+                continue;
+            }
+
+            const resolution = canonicalId > 0
+                ? EntityHandler.resolveHostileLocalIdForViewer(viewer, levelScope, canonicalId, 'cutscene_line')
+                : null;
+            const drawId = isOwnerPlayerLine
+                ? Math.max(0, Math.round(Number(viewer.clientEntID) || 0))
+                : (resolution?.ok ? resolution.localId : canonicalId);
+            if (drawId <= 0) {
+                continue;
+            }
+
+            const bb = new BitBuffer(false);
+            bb.writeMethod4(drawId);
+            bb.writeMethod13(LevelHandler.translateDialogueText(viewer, text, false));
+            MissionHandler.noteDungeonSkitActivity(viewer);
+            viewer.send(0x76, bb.toBuffer());
+        }
+    }
+
     static getDungeonCutsceneRoomThoughtDelivery(
         client: Client,
         entityId: number = 0,
         text: string = ''
     ): DungeonCutsceneRoomThoughtDelivery {
         if (!LevelHandler.isSharedDungeonCutsceneScope(client)) {
+            LevelHandler.noteOwnedSharedDungeonCutsceneLine(client);
             return 'level';
         }
 
@@ -5374,6 +5582,24 @@ export class LevelHandler {
             return;
         }
 
+        // Write the scene down even though nobody else is here to share it yet.
+        //
+        // The first member into the boss room reaches this line, and nothing used to be
+        // recorded at all. When a second member then walked in, their client's first
+        // cutscene-end packet met a `finishSharedDungeonCutscene` with nothing to compare
+        // against and was read as the legitimate close of a scene the server had never seen
+        // start -- the member actually watching was cut off mid-dialogue and dropped into the
+        // boss fight, and the arrival never got to watch it either, because
+        // `joinActiveSharedDungeonCutscene` had nothing to join. Recording it, owned by the
+        // member who started it, is what both of those need.
+        if (LevelConfig.isDungeonLevel(client.currentLevel)) {
+            LevelHandler.beginSharedDungeonCutsceneForScope(
+                getClientLevelScope(client),
+                roomId,
+                Number(client.token ?? 0)
+            );
+        }
+
         LevelHandler.relayToLevel(client, 0xA5, data);
         for (const other of LevelHandler.forLevelRecipients(client, true)) {
             LevelHandler.markRoomEventStarted(other, roomId);
@@ -5433,6 +5659,16 @@ export class LevelHandler {
             }
             LevelHandler.setServerAuthorityHostilesUntargetableForScope(getClientLevelScope(client), roomId, false);
             return;
+        }
+
+        // Close the record the start above wrote, so a member who arrives after this point does
+        // not find a scene that looks like it is still running.
+        if (LevelConfig.isDungeonLevel(client.currentLevel)) {
+            LevelHandler.finishSharedDungeonCutsceneForScope(
+                getClientLevelScope(client),
+                roomId,
+                Number(client.token ?? 0)
+            );
         }
 
         LevelHandler.relayToLevel(client, 0xA6, data);

@@ -363,7 +363,11 @@ function testJoinerEntersRunningSharedCutsceneMidTimeline(): void {
 
     (EntityHandler as any).replayStartedDungeonRoomEventsToJoiner(rogue);
 
-    assert.equal(packetCount(rogue, 0xA5), 1, 'joiner should be placed inside the running shared cutscene');
+    // Registered into the scene, but deliberately not handed a 0xA5. The boss intro is
+    // client-driven: an inbound 0xA5 sets room.var_1052, and the joiner's own BossFight then
+    // finds it already true, fires a spurious 0xA6 and runs RoomAggro -- the server's welcome
+    // packet is what skipped the arrival's cutscene and set the boss on them.
+    assert.equal(packetCount(rogue, 0xA5), 0, 'joiner must not be handed borders its own client is about to open');
     assert.equal(rogue.currentRoomId, 2, 'joiner should be moved into the running cutscene room');
     assert.equal(
         rogue.activeDungeonCutsceneJoinedAtDialogIndex,
