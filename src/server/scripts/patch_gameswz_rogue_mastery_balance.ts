@@ -33,7 +33,7 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  * DaggerFlurry's daggers apply the same ViperbladePoison. Each dagger is its own stacking
  * instance of the DoT: the dagger count in the buff list is the multiplicity per cast and the
  * buff's StackCount (16) is how far one instance ramps with repeated hits, so the poison builds
- * up over a fight instead of landing at full strength (DoTDamage 0.8 per stack per second).
+ * up over a fight instead of landing at full strength (DoTDamage 0.5 per stack per second).
  * The former blanket passive is removed from actual skills: melee skills gain no extra Bleed
  * and ranged skills gain no extra Poison.
  *
@@ -476,7 +476,7 @@ for (const rank of ["", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]) {
 }
 
 // Viperblade poison tooltips. patch_gameswz_power_stat_tooltips regenerates the trailing
-// "[Stats: ...]" block from DoTDamage alone (0.8 damage/s per stack), so the prose is where
+// "[Stats: ...]" block from DoTDamage alone (0.5 damage/s per stack), so the prose is where
 // the real output is said out loud: the poison stacks up to the buff's StackCount. Keep the
 // "16" here in step with VIPERBLADE_POISON_STACK_COUNT.
 for (const rank of ["", "1"]) {
@@ -731,11 +731,10 @@ const VIPERBLADE_POISON_POWERS = new Set([
 // measurement implies (5s x 64 stacks x 1 damage x Attack): the old 8 x 1 design ramped one
 // Bone Dagger's instance to 8 stacks (~4.4K over 5s) and a four-dagger DaggerFlurry's four
 // instances to 8 stacks each (~17.5K over 5s), while the 16-cap at 1 damage dealt ~35K.
-// With the cap at 16, DoTDamage 0.8 puts the fully-ramped peak at 12.8 damage/s -- 60% above
-// the old 8 x 1 peak of 8 damage/s -- and the ramp still takes 16 hits to reach it, so burst
-// over a short fight climbs more slowly but out-trades the old poison once stacked. The
-// tooltip prose quoting the cap (see DESCRIPTIONS) has to move in step.
-const VIPERBLADE_POISON_DOT_DAMAGE = "0.8";
+// With the cap at 16, DoTDamage 0.5 puts the fully-ramped peak at 8 damage/s, matching the
+// old 8 x 1 peak while spreading the ramp over 16 hits. The tooltip prose quoting the cap
+// (see DESCRIPTIONS) has to move in step.
+const VIPERBLADE_POISON_DOT_DAMAGE = "0.5";
 const VIPERBLADE_POISON_STACK_COUNT = "16";
 const VIPERBLADE_POISON_BUFF = {
   name: "ViperbladePoison",
