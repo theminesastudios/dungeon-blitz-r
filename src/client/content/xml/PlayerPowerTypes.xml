@@ -55318,7 +55318,7 @@
 		<BaseDamageMult>0</BaseDamageMult>
 		<DamageType>Physical</DamageType>
 		<DisplayName>Critical Chance</DisplayName>
-		<Description>+1.5% Critical Chance</Description>
+		<Description>+2% Critical Chance</Description>
 		<RuneIcon>a_RuneIcon_MagicTypeGoldDrop</RuneIcon>
 		<CastGfx/>
 		<FireGfx/>

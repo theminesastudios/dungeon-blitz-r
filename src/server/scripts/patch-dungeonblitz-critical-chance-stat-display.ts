@@ -1,3 +1,5 @@
+import * as crypto from "crypto";
+import * as fs from "fs";
 import * as path from "path";
 import {
   applyPatchesToBody,
@@ -28,8 +30,21 @@ const DEFAULT_SWF = path.resolve(
 );
 
 const CRIT_CHANCE_LOCALS = new Set([7, 65]);
-const EXPECTED_PATCHED_SEQUENCES = 3;
+const EXPECTED_PATCHED_SEQUENCES = 2;
+const EXPECTED_FIXED_RAW_DISPLAYS = 1;
 const MIN_METHOD_43_MAX_STACK = 5;
+
+function syncClientRevision(swfPath: string, verifyOnly: boolean): void {
+  const indexPath = path.resolve(path.dirname(swfPath), "..", "..", "index.html");
+  if (!fs.existsSync(indexPath)) return;
+  const revision = `clientrev=swf-${crypto.createHash("sha1").update(fs.readFileSync(swfPath)).digest("hex").slice(0, 12)}`;
+  const html = fs.readFileSync(indexPath, "utf8");
+  if (html.includes(revision)) return;
+  if (verifyOnly) throw new PatchError(`${indexPath} is missing ${revision}.`);
+  const next = html.replace(/clientrev=[^&"'`$]+/, revision);
+  if (next === html) throw new PatchError(`Could not update clientrev in ${indexPath}.`);
+  fs.writeFileSync(indexPath, next, "utf8");
+}
 
 function parseArgs(argv: string[]): { swfPath: string; verify: boolean } {
   let swfPath = DEFAULT_SWF;
@@ -235,15 +250,21 @@ function findMethodBody(
 }
 
 function isFormattedPercentMethod43(instructions: Instruction[], abc: ReturnType<typeof parseAbc>): boolean {
-  return instructions.some((inst, index) => (
-    isGetLexMath(abc, inst) &&
-    instructions[index + 1]?.opcode === 0xd2 &&
-    pushByteValue(instructions[index + 2]) === 10 &&
-    instructions[index + 3]?.opcode === 0xa2 &&
-    isRoundCall(abc, instructions[index + 4]) &&
-    pushByteValue(instructions[index + 5]) === 10 &&
-    instructions[index + 6]?.opcode === 0xa3
-  ));
+  const roundedLocals = new Set<number>();
+  for (let index = 0; index < instructions.length - 6; index += 1) {
+    if (
+      isGetLexMath(abc, instructions[index]) &&
+      (instructions[index + 1]?.opcode === 0xd1 || instructions[index + 1]?.opcode === 0xd2) &&
+      pushByteValue(instructions[index + 2]) === 10 &&
+      instructions[index + 3]?.opcode === 0xa2 &&
+      isRoundCall(abc, instructions[index + 4]) &&
+      pushByteValue(instructions[index + 5]) === 10 &&
+      instructions[index + 6]?.opcode === 0xa3
+    ) {
+      roundedLocals.add(instructions[index + 1].opcode - 0xd0);
+    }
+  }
+  return !roundedLocals.has(1) && roundedLocals.has(2);
 }
 
 function buildMethod43Code(abc: ReturnType<typeof parseAbc>, currentInstructions: Instruction[]): Buffer {
@@ -355,6 +376,152 @@ function buildMethod43Code(abc: ReturnType<typeof parseAbc>, currentInstructions
   return code;
 }
 
+function pushStringValue(inst: Instruction, abc: ReturnType<typeof parseAbc>): string | null {
+  const operand = inst.operands[0];
+  if (inst.opcode !== 0x2c || !operand || operand[0] !== "u30") {
+    return null;
+  }
+  return abc.stringValues[operand[1]] ?? null;
+}
+
+function isCallTo(inst: Instruction, abc: ReturnType<typeof parseAbc>, methodName: string, argCount: number): boolean {
+  return (
+    inst.opcode === 0x46 &&
+    multiname(abc, inst) === methodName &&
+    inst.operands[1]?.[0] === "u30" &&
+    inst.operands[1][1] === argCount
+  );
+}
+
+function findRawCriticalChanceDisplay(
+  swfPath: string,
+): { ctx: ReturnType<typeof parseSwf>; patches: BytePatch[]; oldCount: number; fixedCount: number } {
+  const { ctx, abc, methodBodies } = getScreenArmoryMethodBodies(swfPath);
+  const patches: BytePatch[] = [];
+  let oldCount = 0;
+  let fixedCount = 0;
+
+  for (const { methodBody, instructions } of methodBodies) {
+    for (let index = 0; index < instructions.length - 13; index += 1) {
+      const isFixed =
+        pushStringValue(instructions[index], abc) === "+" &&
+        localOperand(instructions[index + 1]) === 7 &&
+        instructions[index + 2].opcode === 0x25 &&
+        instructions[index + 2].operands[0]?.[1] === 150 &&
+        instructions[index + 3].opcode === 0xa2 &&
+        instructions[index + 4].opcode === 0x73 &&
+        pushByteValue(instructions[index + 5]) === 10 &&
+        instructions[index + 6].opcode === 0xa3 &&
+        instructions[index + 7].opcode === 0xa0 &&
+        pushStringValue(instructions[index + 8], abc) === "%" &&
+        instructions[index + 9].opcode === 0xa0 &&
+        instructions[index + 10].opcode === 0x82 &&
+        instructions[index + 11].opcode === 0x63 &&
+        instructions[index + 11].operands[0]?.[1] === 35;
+      if (isFixed) {
+        fixedCount += 1;
+        continue;
+      }
+
+      let startIndex = -1;
+      let endIndex = -1;
+      let localIndex = -1;
+      let setLocalIndex = -1;
+
+      if (
+        instructions[index].opcode === 0xd0 &&
+        localOperand(instructions[index + 1]) === 7 &&
+        pushByteValue(instructions[index + 2]) === 15 &&
+        instructions[index + 3].opcode === 0xa2 &&
+        instructions[index + 4].opcode === 0x2a &&
+        instructions[index + 5].opcode === 0x26 &&
+        isCallTo(instructions[index + 6], abc, "method_43", 3) &&
+        instructions[index + 7].opcode === 0x82 &&
+        instructions[index + 8].opcode === 0x63 &&
+        instructions[index + 8].operands[0]?.[1] === 35
+      ) {
+        startIndex = index;
+        endIndex = index + 8;
+        while (instructions[endIndex + 1]?.opcode === 0x02) endIndex += 1;
+        localIndex = index + 1;
+        setLocalIndex = index + 8;
+      } else if (
+        pushStringValue(instructions[index], abc) !== "+" ||
+        localOperand(instructions[index + 1]) !== 7 ||
+        pushByteValue(instructions[index + 2]) !== 15 ||
+        instructions[index + 3].opcode !== 0xa2 ||
+        !instructions.slice(index + 4, index + 9).every((entry) => entry.opcode === 0x02) ||
+        instructions[index + 9].opcode !== 0xa0 ||
+        pushStringValue(instructions[index + 10], abc) !== "%" ||
+        instructions[index + 11].opcode !== 0xa0 ||
+        instructions[index + 12].opcode !== 0x82 ||
+        instructions[index + 13].opcode !== 0x63 ||
+        instructions[index + 13].operands[0]?.[1] !== 35
+      ) {
+        continue;
+      } else {
+        startIndex = index;
+        endIndex = index + 13;
+        localIndex = index + 1;
+        setLocalIndex = index + 13;
+      }
+
+      const start = instructions[startIndex].offset;
+      const end = instructions[endIndex].offset + instructions[endIndex].size;
+      const oldLen = end - start;
+      const localBytes = ctx.body.subarray(
+        methodBody.codeStart + instructions[localIndex].offset,
+        methodBody.codeStart + instructions[localIndex].offset + instructions[localIndex].size,
+      );
+      const setLocalBytes = ctx.body.subarray(
+        methodBody.codeStart + instructions[setLocalIndex].offset,
+        methodBody.codeStart + instructions[setLocalIndex].offset + instructions[setLocalIndex].size,
+      );
+      const replacement = Buffer.concat([
+        opU30(0x2c, findStringIndex(abc, "+")),
+        localBytes,
+        opU30(0x25, 150),
+        inst(0xa2), // value * 150
+        inst(0x73), // convert_i: exact tenths of a percent
+        Buffer.from([0x24, 10]),
+        inst(0xa3), // divide: integer percentages render without .0
+        inst(0xa0),
+        opU30(0x2c, findStringIndex(abc, "%")),
+        inst(0xa0),
+        inst(0x82),
+        setLocalBytes,
+      ]);
+      if (replacement.length > oldLen) {
+        throw new PatchError(`Call-free Critical Chance formatter does not fit: ${oldLen} -> ${replacement.length}`);
+      }
+      oldCount += 1;
+      patches.push({
+        key: `ScreenArmory.criticalChance.callFreeDisplay.${methodBody.codeStart + start}`,
+        start: methodBody.codeStart + start,
+        end: methodBody.codeStart + end,
+        data: Buffer.concat([replacement, nops(oldLen - replacement.length)]),
+        detail: "round Critical Chance to exact tenths without calling another method",
+      });
+    }
+  }
+  return { ctx, patches, oldCount, fixedCount };
+}
+
+function patchRawCriticalChanceDisplay(swfPath: string, verifyOnly = false): void {
+  const firstPass = findRawCriticalChanceDisplay(swfPath);
+  if (!verifyOnly && firstPass.patches.length > 0) {
+    ensureBackup(swfPath);
+    const { body, delta } = applyPatchesToBody(firstPass.ctx.body, firstPass.patches);
+    writeSwf(firstPass.ctx, body, delta);
+  }
+  const verifyPass = findRawCriticalChanceDisplay(swfPath);
+  if (verifyPass.oldCount !== 0 || verifyPass.fixedCount !== EXPECTED_FIXED_RAW_DISPLAYS) {
+    throw new PatchError(
+      `Raw Critical Chance display verification failed: old=${verifyPass.oldCount}, fixed=${verifyPass.fixedCount}`,
+    );
+  }
+}
+
 function patchMethod43PercentFormatting(swfPath: string, verifyOnly = false): void {
   const { ctx, abc, methodBody, instructions } = findMethodBody(swfPath, "ScreenArmory", "method_43");
   if (!isFormattedPercentMethod43(instructions, abc)) {
@@ -370,7 +537,7 @@ function patchMethod43PercentFormatting(swfPath: string, verifyOnly = false): vo
         start: methodBody.codeStart,
         end: methodBody.codeStart + methodBody.codeLen,
         data: newCode,
-        detail: "round percent display values to one decimal before string formatting",
+        detail: "round comparison percent values to one decimal before string formatting",
       },
       {
         key: "ScreenArmory.method_43.codeLen",
@@ -495,6 +662,8 @@ export function patchCriticalChanceStatDisplay(swfPath: string, verifyOnly = fal
     writeSwf(ctx, body, delta);
   }
 
+  patchRawCriticalChanceDisplay(swfPath, verifyOnly);
+
   const verifyPass = findCriticalChanceStatPatches(swfPath);
   if (verifyPass.oldCount !== 0 || verifyPass.patchedCount !== EXPECTED_PATCHED_SEQUENCES) {
     throw new PatchError(
@@ -502,6 +671,7 @@ export function patchCriticalChanceStatDisplay(swfPath: string, verifyOnly = fal
     );
   }
   patchMethod43PercentFormatting(swfPath, verifyOnly);
+  syncClientRevision(swfPath, verifyOnly);
 
   console.log(
     `${verifyOnly ? "Verified" : firstPass.patches.length > 0 ? "Patched" : "Already patched"} Critical Chance stat display and percent formatting in ${swfPath}`,
