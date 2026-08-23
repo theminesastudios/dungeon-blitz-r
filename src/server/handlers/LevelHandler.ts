@@ -3108,7 +3108,9 @@ export class LevelHandler {
         }
     }
 
-    private static buildEntityIncrementalUpdatePayload(
+    // Public so the position reconcile in EntityHandler can express a correction the only
+    // way the client accepts mid-room: a 0x07 delta. See reconcileHostilePositionsForScope.
+    static buildEntityIncrementalUpdatePayload(
         entityId: number,
         deltaX: number,
         deltaY: number,
@@ -6448,6 +6450,21 @@ export class LevelHandler {
             }
 
             if (!EntityHandler.isServerAuthorityProxyOwner(client, levelEntity, rawEntityId)) {
+                // Not the owner, so this may not touch the canonical -- but it is the ONLY thing
+                // that says where this client's own copy has wandered to.
+                //
+                // Every client runs the enemy AI itself. The owner's movement is relayed as
+                // deltas, and a delta applied from a different starting point keeps that
+                // difference forever: the two screens drift until the same enemy is at the top of
+                // the stairs on one and off the far edge on the other. Nothing could correct that
+                // because the server had no idea where the non-owner's copy was -- it threw these
+                // packets away unread. Recorded here, they let the sweep measure the gap and
+                // close it. See EntityHandler.reconcileHostilePositionsForScope.
+                const localCopy = client.entities.get(rawEntityId);
+                if (localCopy && typeof localCopy === 'object') {
+                    localCopy.x = Math.round(Number(localCopy.x ?? 0)) + deltaX;
+                    localCopy.y = Math.round(Number(localCopy.y ?? 0)) + deltaY;
+                }
                 return;
             }
         }
@@ -6561,7 +6578,21 @@ export class LevelHandler {
                 levelEntity ?? ent,
                 getClientLevelScope(client)
             );
-        const canonicalEntState = shouldIgnoreUnverifiedDungeonBossDeadState
+        // A movement packet may not carry a player's death to the other screens.
+        //
+        // This state travels with every position update and is relayed verbatim, so one DEAD in
+        // the stream -- from a stale flag, a mid-load frame, whatever the client happened to send
+        // -- puts that player face-down on every other screen and nothing in the movement path
+        // ever takes it back. It is the last channel through which a living player could be drawn
+        // dead after `broadcastPlayerState` started refusing to: the live capture showed the
+        // death pose with no [PlayerDeath] line anywhere, which rules that path out and leaves
+        // this one.
+        //
+        // Death has an authoritative channel of its own that checks the player's own reported
+        // health first. Movement carries position, not mortality.
+        const relayedPlayerIsAlive = Boolean(isSelf || ent?.isPlayer) &&
+            Math.round(Number(client.authoritativeCurrentHp ?? 0)) > 0;
+        const canonicalEntState = (shouldIgnoreUnverifiedDungeonBossDeadState || relayedPlayerIsAlive)
             ? EntityState.ACTIVE
             : entState;
         const canonicalIsDefeatState = LevelHandler.isDefeatedEntityStateValue(canonicalEntState);
@@ -6810,9 +6841,25 @@ export class LevelHandler {
             if (!EntityHandler.canClientSeeEntity(other, relayEntity)) {
                 continue;
             }
+            // Movement has to be addressed with the same resolver the health relay uses.
+            //
+            // A server-authority hostile is numbered differently on every screen, and this path
+            // only had the plain alias lookup: with no alias entry it falls back to the canonical
+            // id, which the receiving client has never heard of, so the packet lands nowhere and
+            // that screen keeps animating the enemy from its own simulation. The two views then
+            // drift apart until the same enemy is standing on opposite sides of the room --
+            // reported as "the enemy is in a different place for each player, so you cannot tell
+            // what it is hitting".
+            //
+            // `resolvePartySharedHostileLocalIdForSharedState` is what the death and health
+            // relays already use (it is the resolver behind `sentTo=[Telahair:14580092,
+            // Lanorut:6311178]`), and it adopts an unbound local copy rather than giving up.
+            // Only the proxy owner reaches here -- `handleEntityIncrementalUpdate` refuses
+            // movement from anyone else -- so this cannot make two clients fight over one body.
             const isSharedClientSpawnEntity = EntityHandler.shouldMirrorClientSpawnEntityToParty(client.currentLevel, relayEntity);
+            const isServerAuthorityHostile = EntityHandler.isServerAuthorityHostileEntity(client.currentLevel, relayEntity);
             let localEntityId = EntityHandler.resolveEntityLocalId(other, entityId);
-            if (isSharedClientSpawnEntity) {
+            if (isSharedClientSpawnEntity || isServerAuthorityHostile) {
                 // Wait until the joiner's local proxy is built; after that the
                 // owner must drive movement/state so party clients do not fork
                 // enemy simulation inside the same dungeon instance.
@@ -6837,20 +6884,46 @@ export class LevelHandler {
                 continue;
             }
 
-            const outboundData = localEntityId === entityId
+            // For a server-authority hostile the relay is a CORRECTION, not a copy of the
+            // owner's delta.
+            //
+            // Every client runs the enemy AI itself, so the viewer's copy is not where the
+            // owner's was when this delta was produced. Forwarding the raw delta preserves that
+            // difference on every packet and the two screens separate for good -- the same enemy
+            // beside one player and off the far edge of the other's. Sending the gap to the
+            // canonical instead makes every packet close the whole difference, so it can never
+            // accumulate, and the copy is recorded as landed so the next one measures from the
+            // right place.
+            let outDeltaX = relayDeltaX;
+            let outDeltaY = relayDeltaY;
+            let rebuildPayload = localEntityId !== entityId;
+            if (isServerAuthorityHostile) {
+                const canonicalX = Number(levelEntity?.x ?? ent.x ?? NaN);
+                const canonicalY = Number(levelEntity?.y ?? ent.y ?? NaN);
+                const viewerCopy = other.entities.get(localEntityId);
+                const copyX = Number(viewerCopy?.x ?? NaN);
+                const copyY = Number(viewerCopy?.y ?? NaN);
+                if (viewerCopy && Number.isFinite(canonicalX) && Number.isFinite(copyX) && Number.isFinite(copyY)) {
+                    outDeltaX = Math.round(canonicalX - copyX);
+                    outDeltaY = Math.round(canonicalY - copyY);
+                    viewerCopy.x = Math.round(canonicalX);
+                    viewerCopy.y = Math.round(canonicalY);
+                    rebuildPayload = true;
+                }
+            }
+
+            const outboundData = !rebuildPayload
                 ? relayData
                 : LevelHandler.buildEntityIncrementalUpdatePayload(
                     localEntityId,
-                    relayDeltaX,
-                    relayDeltaY,
+                    outDeltaX,
+                    outDeltaY,
                     relayDeltaVX,
                     canonicalEntState,
                     flags,
                     isAirborne,
                     velocityY
                 );
-            if (isSharedClientSpawnEntity) {
-            }
             other.send(0x07, outboundData);
         }
     }

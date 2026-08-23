@@ -2339,6 +2339,7 @@ export class CombatHandler {
         }
 
         const nextHp = currentHp + healAmount;
+        const wasMarkedDead = CombatHandler.isPlayerBodyMarkedDead(entity, levelEntity);
         if (entity && typeof entity === 'object') {
             entity.maxHp = maxHp;
             entity.hp = nextHp;
@@ -2365,6 +2366,7 @@ export class CombatHandler {
         const payload = CombatHandler.buildCharRegenPayload(client.clientEntID, healAmount);
         client.send(CombatHandler.CLIENT_HEAL_PACKET_ID, payload);
         CombatHandler.broadcastToSameLevel(levelScope, CombatHandler.CLIENT_HEAL_PACKET_ID, payload, [client.clientEntID], client);
+        CombatHandler.announcePlayerRevivedIfWasDead(client, wasMarkedDead);
     }
 
     private static processHostileOutOfCombatRegen(levelScope: string, entity: any, nowMs: number): void {
@@ -3188,6 +3190,66 @@ export class CombatHandler {
         const wasAlreadyDead = !hasActivePositiveSnapshot && CombatHandler.isPlayerSessionDead(client);
         const deathRegenWasArmed = Boolean(client.enemyDeathRegenArmed);
         const entity = localEntity;
+        // Empty the bar on everybody else's party frame, before the health is zeroed here.
+        //
+        // A party frame is driven by the HP deltas the viewer receives for that player, and the
+        // death itself is a STATE packet carrying no health. So a member could die -- their own
+        // screen on the revive prompt at 0/68109 -- while every other screen still showed them
+        // with a full red bar, because the last slice of health was never sent as a delta.
+        // Whatever the viewer's copy still has left is exactly what has to be taken off it.
+        const remainingHp = Math.max(
+            0,
+            Math.round(Number(
+                localEntity?.hp ?? levelEntity?.hp ?? client.authoritativeCurrentHp ?? 0
+            ))
+        );
+        if (remainingHp > 0) {
+            // Sent to the whole dungeon scope, not the combat room. A party frame shows a member
+            // wherever they are -- the room filter in `broadcastPlayerHpDelta` is right for a
+            // damage number nobody outside the fight should see, and wrong for the one delta that
+            // has to reach every frame: a member who died in another room otherwise keeps a full
+            // bar on the frame for the rest of the run.
+            const deathScope = getClientLevelScope(client);
+            if (deathScope) {
+                // Sent straight to each session, with none of the usual filters.
+                //
+                // `broadcastToSameLevel` drops a packet for a viewer that cannot "resolve" the
+                // referenced entity, and a party frame is drawn from the client's own name lookup
+                // -- it survives states in which the combat filters refuse to address that body.
+                // So the one delta that empties the frame was being filtered away and the dead
+                // member kept a full red bar. A heal packet for an id a client does not know is
+                // ignored by that client anyway, so addressing everyone costs nothing.
+                // Drained by the FULL pool, not by what the server thinks is left.
+                //
+                // The two sides do not agree on the exact figure -- the server's is a running
+                // subtraction, the viewer's bar is the sum of the deltas they happened to
+                // receive -- so a delta sized from the server's remainder leaves the bar short:
+                // the dead player shows a sliver of health instead of none. Overshooting is free
+                // here for the same reason it is for hostiles: the client's own health code
+                // stops at zero, it does not go negative.
+                const drainAmount = Math.max(
+                    remainingHp,
+                    Math.round(Number(client.authoritativeMaxHp ?? 0)),
+                    Math.round(Number(localEntity?.maxHp ?? 0)),
+                    Math.round(Number(levelEntity?.maxHp ?? 0))
+                );
+                const payload = CombatHandler.buildHpDeltaPayload(client.clientEntID, -drainAmount);
+                const recipients: string[] = [];
+                for (const viewer of GlobalState.getSessionsInLevelScope(deathScope)) {
+                    if (viewer === client || !viewer.playerSpawned || getClientLevelScope(viewer) !== deathScope) {
+                        continue;
+                    }
+                    viewer.send(CombatHandler.CLIENT_HEAL_PACKET_ID, payload);
+                    recipients.push(String(viewer.character?.name ?? viewer.token));
+                }
+                console.log(
+                    `[PlayerDeathBar] ${getScopeLevelName(deathScope)} ` +
+                    `player=${String(client.character?.name ?? '?')} id=${client.clientEntID} ` +
+                    `drained=${drainAmount} remaining=${remainingHp} sentTo=[${recipients.join(',')}]`
+                );
+            }
+        }
+
         if (entity && typeof entity === 'object') {
             entity.dead = true;
             entity.entState = EntityState.DEAD;
@@ -5140,6 +5202,20 @@ export class CombatHandler {
         return isRoomScopedClientNpc;
     }
 
+    /**
+     * One health correction for one viewer's party frame. See
+     * EntityHandler.reconcilePartyFrameHealthForScope -- there is no absolute-health packet, so a
+     * frame that has drifted is corrected with the difference.
+     */
+    static sendPlayerHealthCorrection(viewer: Client, subjectEntityId: number, delta: number): void {
+        const id = Math.max(0, Math.round(Number(subjectEntityId) || 0));
+        const amount = Math.round(Number(delta) || 0);
+        if (id <= 0 || amount === 0 || !viewer.playerSpawned) {
+            return;
+        }
+        viewer.send(CombatHandler.CLIENT_HEAL_PACKET_ID, CombatHandler.buildHpDeltaPayload(id, amount));
+    }
+
     private static broadcastPlayerHpDelta(targetSession: Client, delta: number, includeTarget: boolean = true): void {
         if (!targetSession.playerSpawned || !targetSession.currentLevel || targetSession.clientEntID <= 0 || delta === 0) {
             return;
@@ -5162,6 +5238,40 @@ export class CombatHandler {
         CombatHandler.broadcastToCombatRoom(targetSession, CombatHandler.CLIENT_HEAL_PACKET_ID, payload, targetInclusion, [targetSession.clientEntID]);
     }
 
+    /**
+     * Did this session's stored body still read as dead?
+     *
+     * Taken before any heal rewrites the flags, because it is what decides whether the rest of
+     * the party is still drawing a corpse.
+     */
+    private static isPlayerBodyMarkedDead(entity: any, levelEntity: any): boolean {
+        for (const body of [entity, levelEntity]) {
+            if (!body || typeof body !== 'object') {
+                continue;
+            }
+            if (Boolean(body.dead) || Number(body.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Tell the party a player is back on their feet.
+     *
+     * Death is broadcast; coming back was not. `handleCharRegen` and the regen tick both clear
+     * the dead flags on the server's copy and send an HP delta -- and an HP delta does not change
+     * a pose. The only packet that moves a body out of the death animation is a state update, and
+     * nothing sent one, so a revived player stayed face-down on every other screen with a full
+     * health bar on their own. Reported from The East Wing.
+     */
+    private static announcePlayerRevivedIfWasDead(client: Client, wasMarkedDead: boolean): void {
+        if (!wasMarkedDead) {
+            return;
+        }
+        CombatHandler.broadcastPlayerState(client, EntityState.ACTIVE);
+    }
+
     private static broadcastPlayerState(targetSession: Client, entState: number, roomScoped: boolean = false): void {
         if (!targetSession.playerSpawned || !targetSession.currentLevel || targetSession.clientEntID <= 0) {
             return;
@@ -5169,6 +5279,58 @@ export class CombatHandler {
 
         const entity = targetSession.entities.get(targetSession.clientEntID) ??
             CombatHandler.resolveLevelEntity(getClientLevelScope(targetSession), targetSession.clientEntID);
+
+        // A player with health left is not dead, whoever asked.
+        //
+        // Death is announced as a state packet and a state packet is what drops a body into the
+        // death animation -- it carries no health, so nothing downstream can sanity-check it. A
+        // single stray DEAD leaves a player face-down with a FULL bar (live: 68109/68109) until
+        // something else happens to move them, and no amount of health syncing corrects a pose.
+        // Rather than chase every caller, the announcement itself refuses to contradict the
+        // health the server is holding, and says who tried.
+        if (entState === EntityState.DEAD) {
+            // The player's OWN client is the authority on their health, so it is the figure that
+            // decides. The server's `entity.hp` is a running subtraction and it is the thing that
+            // drifts: a hit counted twice takes it to zero while the player is still at full
+            // health on their own screen, the death goes out, and they lie face-down with a full
+            // bar (live: 91040/91040). Reading `entity.hp` first, as this did, let exactly that
+            // through.
+            //
+            // Genuine deaths are unaffected because every path that kills a player calls
+            // `notePlayerDeathState` first, and that sets `authoritativeCurrentHp = 0`.
+            const clientHp = Math.round(Number(targetSession.authoritativeCurrentHp ?? NaN));
+            const aliveHp = Number.isFinite(clientHp)
+                ? clientHp
+                : Math.round(Number(entity?.hp ?? 0));
+            if (aliveHp > 0) {
+                const caller = String(new Error().stack ?? '')
+                    .split('\n')
+                    .slice(2, 5)
+                    .map((line) => line.trim().replace(/^at\s+/, ''))
+                    .join(' <- ');
+                console.log(
+                    `[DeathStateRefused] ${String(targetSession.currentLevel ?? '?')} ` +
+                    `player=${String(targetSession.character?.name ?? '?')} ` +
+                    `hp=${aliveHp}/${Math.round(Number(entity?.maxHp ?? targetSession.authoritativeMaxHp ?? 0))} ` +
+                    `from: ${caller}`
+                );
+                return;
+            }
+
+            // Allowed through, and worth a line of its own. The guard only sees the server's
+            // own figure; if that has drifted below the player's real health the death is
+            // announced legitimately by these rules and still wrong on screen. `hp=` next to
+            // `clientHp=` is what separates "the server killed them correctly" from "the
+            // server's copy of their health is wrong".
+            console.log(
+                `[PlayerDeath] ${String(targetSession.currentLevel ?? '?')} ` +
+                `player=${String(targetSession.character?.name ?? '?')} ` +
+                `hp=${aliveHp}/${Math.round(Number(entity?.maxHp ?? 0))} ` +
+                `clientHp=${Math.round(Number(targetSession.authoritativeCurrentHp ?? -1))}/` +
+                `${Math.round(Number(targetSession.authoritativeMaxHp ?? 0))}`
+            );
+        }
+
         const facingLeft = Boolean(entity?.facingLeft);
         const payload = CombatHandler.buildEntityStatePayload(targetSession.clientEntID, entState, facingLeft);
         if (roomScoped) {
@@ -5956,18 +6118,44 @@ export class CombatHandler {
         const entity = targetSession.entities.get(targetSession.clientEntID) ?? {};
         const levelEntity = CombatHandler.resolveLevelEntity(getClientLevelScope(targetSession), targetSession.clientEntID);
         if (CombatHandler.isEntityDead(entity) || CombatHandler.isEntityDead(levelEntity)) {
-            return {
-                appliedDamage: 0,
-                killed: true
-            };
+            // A body still flagged dead while its own client reports health is a stale flag, not
+            // a corpse. Nothing clears it on the way back up: the player revives on their own
+            // screen and the server's copy keeps the flag, so every later hit lands here.
+            const liveHp = Math.round(Number(targetSession.authoritativeCurrentHp ?? 0));
+            if (liveHp > 0) {
+                for (const body of [entity, levelEntity]) {
+                    if (body && typeof body === 'object') {
+                        body.dead = false;
+                        body.hp = Math.max(1, liveHp);
+                        if (Number(body.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
+                            body.entState = EntityState.ACTIVE;
+                        }
+                    }
+                }
+                // Clearing the server's flag is only half of it: the other screens were told this
+                // player died and nothing has told them otherwise.
+                CombatHandler.announcePlayerRevivedIfWasDead(targetSession, true);
+            } else {
+                // `killed` means "this hit killed them", and answering true for a target that was
+                // already dead made the caller re-broadcast EntityState.DEAD on every single hit
+                // that touched the corpse. On a stale flag that is a living player who drops into
+                // the death pose on their party member's screen the instant anything hits them,
+                // with a full health bar on their own. Reported from The East Wing.
+                return {
+                    appliedDamage: 0,
+                    killed: false
+                };
+            }
         }
 
         const knownMaxHp = CombatHandler.resolvePlayerMaxHp(targetSession, entity, levelEntity);
         const currentHp = CombatHandler.resolvePlayerCurrentHp(targetSession, entity, levelEntity, knownMaxHp);
         if (currentHp <= 0) {
+            // Same rule as above: already at zero is not "this hit killed them". Reporting it as
+            // a kill re-broadcasts the death for every hit that lands on the body afterwards.
             return {
                 appliedDamage: 0,
-                killed: Boolean(entity.dead)
+                killed: false
             };
         }
 
@@ -6756,8 +6944,21 @@ export class CombatHandler {
             }
 
             if (resolution.killed) {
+                // A player's death is announced by their OWN client, never from here.
+                //
+                // This path runs on the server's running subtraction, and that figure drifts --
+                // it reaches zero while the player is untouched on their own screen. Announcing
+                // from here therefore fired a DEAD on hits that killed nobody: the victim went
+                // into the death animation, the revive-announcement corrected them back to
+                // ACTIVE, and the next hit did it again. That is the reported "the death
+                // animation plays on every hit but they never fall down" -- a death and an undo,
+                // over and over, where a hit reaction belongs.
+                //
+                // `handleCharRegen` announces the real one, off the health the client itself
+                // reports, which is the authority for a player's health everywhere else in this
+                // file. The bookkeeping below still runs so loot, regen and gear react to the
+                // server's own view.
                 CombatHandler.armBossRegenForPlayerDeath(targetSession);
-                CombatHandler.broadcastPlayerState(targetSession, EntityState.DEAD, isHostileNpcSource);
                 EquipmentHandler.broadcastGearChange(targetSession, true);
             }
         } else {
@@ -7999,7 +8200,22 @@ export class CombatHandler {
         const currentHp = CombatHandler.resolvePlayerCurrentHp(client, entity, levelEntity, maxHp);
         const nextHp = Math.max(0, Math.min(maxHp, currentHp + amount));
         const appliedDelta = nextHp - currentHp;
-        if (nextHp <= 0) {
+        // Read before the flags below are cleared: this is what says the party is still drawing
+        // this player as a corpse. See announcePlayerRevivedIfWasDead.
+        const wasMarkedDeadOnReport = CombatHandler.isPlayerBodyMarkedDead(entity, levelEntity);
+        // Dying means "had health and lost it". Starting at zero is not a death.
+        //
+        // On level entry none of the sources this reads is populated yet, so `currentHp`
+        // resolves to zero -- and the client's first health packet then arrives, `nextHp` is
+        // zero, and this declared the player dead before they had taken a single hit. That is
+        // both members lying in the death pose at 0% dungeon progress with full bars on their
+        // own screens, and the empty party frames that went with it: `notePlayerDeathState`
+        // drains the whole pool from every other screen.
+        //
+        // Requiring health to have been there first costs a real death nothing -- a player who
+        // dies had health a moment ago -- and it cannot be replaced by trusting `nextHp` alone,
+        // because zero-from-unknown and zero-from-dead look identical in that number.
+        if (nextHp <= 0 && currentHp > 0) {
             CombatHandler.notePlayerDeathState(client);
             if (appliedDelta !== 0) {
                 CombatHandler.broadcastPlayerHpDelta(client, appliedDelta, false);
@@ -8030,6 +8246,11 @@ export class CombatHandler {
         client.authoritativeCurrentHp = nextHp;
         if (appliedDelta !== 0) {
             CombatHandler.broadcastPlayerHpDelta(client, appliedDelta, false);
+        }
+        // The body was flagged dead and this client has just reported health above zero, so the
+        // party is holding a corpse that is not one. An HP delta cannot change a pose.
+        if (nextHp > 0) {
+            CombatHandler.announcePlayerRevivedIfWasDead(client, wasMarkedDeadOnReport);
         }
         if (amount < 0) {
             CombatHandler.notePlayerDamageTakenActivity(client, Date.now());

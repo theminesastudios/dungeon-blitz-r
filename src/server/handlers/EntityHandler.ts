@@ -5898,9 +5898,25 @@ export class EntityHandler {
         }
         EntityHandler.playerBodyPlacementRefusals.delete(pairKey);
 
+        // A spawn places a body; it does not decide whether that body is alive.
+        //
+        // `placed` is the subject's stored entity and it carries whatever death flags that record
+        // happens to hold -- and those flags are sticky: nothing rewrites them until a movement
+        // packet arrives, so a player who died once, or whose record was written while the server
+        // briefly believed they were dead, is drawn face-down on every screen that draws them
+        // afterwards. Live: both members lying in the death pose at 0% dungeon progress, neither
+        // having taken a single point of damage, both at full health on their own screen.
+        //
+        // Death is announced separately and authoritatively by `broadcastPlayerState`, which
+        // refuses to contradict the player's own reported health. So a spawn always places a
+        // living body and lets that path say otherwise.
+        const spawnBody = (placed && typeof placed === 'object')
+            ? { ...placed, dead: false, entState: EntityState.ACTIVE }
+            : placed;
+
         EntityHandler.sendEntity(
             viewer,
-            Entity.fromCharacter(subject.clientEntID, subject.character, placed)
+            Entity.fromCharacter(subject.clientEntID, subject.character, spawnBody)
         );
         EntityHandler.sendOtherPlayerMountToJoiner(viewer, subject);
         // Straight after the body, so the cast can never arrive before the entity it names.
@@ -6400,6 +6416,13 @@ export class EntityHandler {
                     continue;
                 }
 
+                // Drawing an enemy on both screens is not enough; they also have to agree on
+                // where it is standing.
+                EntityHandler.reconcileHostilePositionsForScope(levelScope, sessions);
+
+                // And the party frames, which drift the same way for the same reason.
+                EntityHandler.reconcilePartyFrameHealthForScope(levelScope, sessions);
+
                 // A dead enemy is dead for the whole party. Reconciled here rather than
                 // announced once, so a member who missed the death packet does not spend the
                 // rest of the run fighting a corpse nobody else can see.
@@ -6417,6 +6440,236 @@ export class EntityHandler {
             }
         }, EntityHandler.PLAYER_VISIBILITY_SWEEP_INTERVAL_MS);
         EntityHandler.playerVisibilitySweep.unref?.();
+    }
+
+    /**
+     * How far a viewer's copy of an enemy may sit from the canonical before it is pulled back.
+     *
+     * Small enough that the two screens agree about what an enemy is standing next to, large
+     * enough that ordinary relay jitter is not constantly corrected -- a correction is a visible
+     * slide, so nudging every frame would look worse than the drift.
+     */
+    private static readonly HOSTILE_POSITION_DRIFT_LIMIT = 90;
+
+    /**
+     * Pull every viewer's copy of every enemy back onto the one the owner is driving.
+     *
+     * Movement is relayed as DELTAS, and every client also runs the enemy AI for itself. A delta
+     * applied from a different starting point preserves the difference, so the two views separate
+     * a little on every packet and never come back -- the same enemy ends up beside one player
+     * and off the far edge of the other's screen, and neither player can tell what it is
+     * attacking. Relaying more deltas cannot fix that; only an absolute correction can.
+     *
+     * The client has no reader for an absolute position that is not a spawn, and a spawn rebuilds
+     * the body (it would restart the animation and flicker). So the correction is expressed the
+     * only way the client will accept mid-room: a 0x07 delta of exactly the gap, which lands the
+     * copy on the canonical.
+     */
+    private static reconcileHostilePositionsForScope(levelScope: string, sessions: Client[]): void {
+        const levelName = getScopeLevelName(levelScope);
+        if (!EntityHandler.usesServerAuthorityHostiles(levelName) || sessions.length < 2) {
+            return;
+        }
+
+        const levelMap = GlobalState.levelEntities.get(levelScope);
+        if (!levelMap) {
+            return;
+        }
+
+        const { LevelHandler } = require('./LevelHandler') as typeof import('./LevelHandler');
+        const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+        for (const canonical of levelMap.values()) {
+            if (!EntityHandler.isServerAuthorityHostileEntity(levelName, canonical) || EntityHandler.isEntityDead(canonical)) {
+                continue;
+            }
+            const canonicalId = Math.max(0, Math.round(Number(canonical.id ?? 0)));
+            const canonicalX = Number(canonical.x ?? NaN);
+            const canonicalY = Number(canonical.y ?? NaN);
+            if (canonicalId <= 0 || !Number.isFinite(canonicalX) || !Number.isFinite(canonicalY)) {
+                continue;
+            }
+
+            const ownerToken = Math.max(0, Math.round(Number(canonical.proxyOwnerToken ?? 0)));
+            for (const viewer of sessions) {
+                // The owner IS the canonical's position; correcting them would fight their own
+                // simulation.
+                if (viewer.token === ownerToken || getClientLevelScope(viewer) !== levelScope) {
+                    continue;
+                }
+
+                const localId = CombatHandler.resolvePartySharedHostileLocalIdForSharedState(
+                    viewer,
+                    levelScope,
+                    canonicalId,
+                    canonical
+                );
+                if (localId <= 0) {
+                    continue;
+                }
+                const localCopy = viewer.entities.get(localId);
+                const localX = Number(localCopy?.x ?? NaN);
+                const localY = Number(localCopy?.y ?? NaN);
+                if (!localCopy || !Number.isFinite(localX) || !Number.isFinite(localY)) {
+                    continue;
+                }
+
+                const deltaX = Math.round(canonicalX - localX);
+                const deltaY = Math.round(canonicalY - localY);
+                if (Math.abs(deltaX) < EntityHandler.HOSTILE_POSITION_DRIFT_LIMIT &&
+                    Math.abs(deltaY) < EntityHandler.HOSTILE_POSITION_DRIFT_LIMIT) {
+                    continue;
+                }
+
+                viewer.send(
+                    0x07,
+                    LevelHandler.buildEntityIncrementalUpdatePayload(
+                        localId,
+                        deltaX,
+                        deltaY,
+                        0,
+                        Math.round(Number(canonical.entState ?? EntityState.ACTIVE)),
+                        {
+                            bLeft: Boolean(canonical.facingLeft),
+                            bRunning: false,
+                            bJumping: false,
+                            bDropping: false,
+                            bBackpedal: false
+                        },
+                        false,
+                        0
+                    )
+                );
+                localCopy.x = Math.round(canonicalX);
+                localCopy.y = Math.round(canonicalY);
+            }
+        }
+    }
+
+    /**
+     * Keep every party frame showing each member's real health.
+     *
+     * The frame is drawn from the HP deltas a client receives, so its bar is the sum of whatever
+     * happened to arrive. Deltas go out room-scoped, a death is announced as a state packet with
+     * no health in it, and anything sent before a body was drawn lands nowhere -- so the bar
+     * drifts and nothing pulled it back. Live: a member dead at 0/68109 reading as a sliver of
+     * health on the other frame, and a member at 18182/91040 reading as nearly full.
+     *
+     * There is no absolute-health packet, so the correction is the difference, and what the
+     * viewer is currently showing has to be tracked to compute it. Same shape as the hostile
+     * position reconcile: measure, send the gap, record it as landed.
+     */
+    /**
+     * OFF, and it must stay off until the server's own player-health figures are trustworthy.
+     *
+     * This pass writes the server's idea of a player's health onto everybody else's party frame.
+     * That is only an improvement if the server's figure is right, and it is not: a live capture
+     * had a level 50 at 91040/91040 on their own screen while the server held `1186/21724` for
+     * them -- 21724 is the level 25 row of the player health table, for a level 50 character.
+     * Reconciling against that number does not fix a stale frame, it drives a healthy player's
+     * bar down to nothing and then shows them as dead, once a second, from the moment they walk
+     * in. That is worse than the drift it was meant to correct.
+     *
+     * The measurement stays (see the `[PartyFrameHp]` line below): it is what exposed the bad
+     * figures. Turn this back on once `authoritativeMaxHp`/`authoritativeCurrentHp` agree with
+     * what the client shows.
+     */
+    private static readonly PARTY_FRAME_HEALTH_RECONCILE_ENABLED = false;
+
+    private static reconcilePartyFrameHealthForScope(levelScope: string, sessions: Client[]): void {
+        if (sessions.length < 2) {
+            return;
+        }
+
+        const { CombatHandler } = require('./CombatHandler') as typeof import('./CombatHandler');
+        for (const subject of sessions) {
+            const subjectId = Math.max(0, Math.round(Number(subject.clientEntID ?? 0)));
+            const subjectBody = subject.entities.get(subjectId);
+            const subjectPool = Math.max(
+                Math.round(Number(subject.authoritativeMaxHp ?? 0)),
+                Math.round(Number(subjectBody?.maxHp ?? 0))
+            );
+            // An unknown health is treated as FULL, never as empty.
+            //
+            // A party frame starts with no health data, so an empty bar is what a viewer sees
+            // until something fills it -- and an empty bar reads as a dead player. On entry
+            // `authoritativeCurrentHp` is still zero (the client has not reported yet), so
+            // skipping this pass left both members showing as dead in the HUD the moment they
+            // walked in. Assuming full is the safe direction: a player who really is dead is
+            // announced through `notePlayerDeathState`, which empties the bar explicitly, and the
+            // next pass corrects any overestimate as soon as the client reports.
+            const reportedHp = Math.round(Number(subject.authoritativeCurrentHp ?? NaN));
+            const realHp = Number.isFinite(reportedHp) && reportedHp > 0
+                ? reportedHp
+                : subjectPool;
+            // Zero is not "dead" here, it is "this client has not reported its health yet".
+            //
+            // `authoritativeCurrentHp` starts at zero and only becomes real once the client sends
+            // its first health packet, which is AFTER it is already visible to the party. Reading
+            // that as a dead player made this drain the bar of a member who had just walked in at
+            // full health and had never been touched -- both members lying in the death pose at
+            // 0% dungeon progress. Death has its own path (`notePlayerDeathState`) and does not
+            // need this one; a reconcile only ever corrects a living figure.
+            if (subjectId <= 0 || !Number.isFinite(realHp) || realHp <= 0) {
+                continue;
+            }
+
+            for (const viewer of sessions) {
+                if (viewer === subject || !viewer.playerSpawned || getClientLevelScope(viewer) !== levelScope) {
+                    continue;
+                }
+
+                const shown = Math.round(Number(viewer.partyFrameHpByEntityId.get(subjectId) ?? NaN));
+                // "Nothing recorded yet" used to mean "assume the frame is already right", and it
+                // is not: a party frame starts with no health data at all, so the bar is drawn
+                // EMPTY until something sends some. Adopting the real figure without sending it
+                // left both members showing a blank bar from the moment they walked in, never
+                // having been hit. The first pass has to build the bar, not just note it.
+                if (Number.isFinite(shown) && shown === realHp) {
+                    continue;
+                }
+
+                // Rebuilt absolutely, not nudged by the difference.
+                //
+                // The tracked figure is only ever an estimate -- other paths send HP deltas of
+                // their own and cannot all be intercepted -- and a difference computed from a
+                // wrong estimate leaves the bar wrong in a NEW way. Emptying the bar outright and
+                // refilling it to the real figure lands on the right value no matter how far the
+                // estimate had drifted. The client's own health code clamps at both ends, so the
+                // oversized drain costs nothing.
+                const pool = Math.max(1, subjectPool, realHp);
+                if (!EntityHandler.PARTY_FRAME_HEALTH_RECONCILE_ENABLED) {
+                    // Measure and report only. See the note on the flag.
+                    if (!Number.isFinite(shown)) {
+                        console.log(
+                            `[PartyFrameHp] ${getScopeLevelName(levelScope)} ` +
+                            `subject=${String(subject.character?.name ?? '?')} id=${subjectId} ` +
+                            `-> viewer=${String(viewer.character?.name ?? '?')} ` +
+                            `serverThinks=${realHp}/${pool} ` +
+                            `reported=${Number.isFinite(reportedHp) ? reportedHp : 'none'}`
+                        );
+                        viewer.partyFrameHpByEntityId.set(subjectId, realHp);
+                    }
+                    continue;
+                }
+                // The only record that this pass ran. Without it a blank party frame and a frame
+                // this code never reached look identical from the log, which is exactly the
+                // ambiguity the last few rounds were stuck on.
+                if (!Number.isFinite(shown)) {
+                    console.log(
+                        `[PartyFrameHp] ${getScopeLevelName(levelScope)} ` +
+                        `subject=${String(subject.character?.name ?? '?')} id=${subjectId} ` +
+                        `-> viewer=${String(viewer.character?.name ?? '?')} ` +
+                        `built=${realHp}/${pool} ` +
+                        `reported=${Number.isFinite(reportedHp) ? reportedHp : 'none'}`
+                    );
+                }
+                // Only ever reached with a living figure -- the guard above skips a subject whose
+                // client has not reported health yet, so the drain can never be the whole story.
+                CombatHandler.sendPlayerHealthCorrection(viewer, subjectId, -pool);
+                CombatHandler.sendPlayerHealthCorrection(viewer, subjectId, realHp);
+                viewer.partyFrameHpByEntityId.set(subjectId, realHp);
+            }
+        }
     }
 
     static schedulePlayerVisibilityResync(client: Client): void {

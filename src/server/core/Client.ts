@@ -295,6 +295,18 @@ export class Client {
      * this screen is in the wrong room and has to be drawn again.
      */
     public drawnPlayerRoomIds: Map<number, number> = new Map();
+    /**
+     * What this screen currently shows for each other player's health bar, keyed by their entity
+     * id.
+     *
+     * A party frame is driven by the HP deltas this client receives, so its bar is the sum of
+     * whatever happened to arrive -- room filters, packets sent before the body was drawn, a
+     * death announced as a state packet carrying no health. It drifts from the real figure and
+     * nothing brought it back, which is why a member could be dead, or at a fifth of their
+     * health, and still read as nearly full on somebody else's frame. The reconcile sweep
+     * compares this against the owner's real health and sends the difference.
+     */
+    public partyFrameHpByEntityId: Map<number, number> = new Map();
     public entityIdAliases: Map<number, number> = new Map();
     public sharedEntityRemoteUpdateDeferredIds: Set<number> = new Set();
     public pendingLoot: Map<number, PendingLootDrop> = new Map();
