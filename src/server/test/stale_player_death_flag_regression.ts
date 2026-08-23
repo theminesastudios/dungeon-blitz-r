@@ -62,8 +62,14 @@ function testRevivalIsAnnouncedToTheParty(): void {
     );
     const helper = source.slice(source.indexOf('private static announcePlayerRevivedIfWasDead'));
     assert.ok(
-        helper.slice(0, 400).includes('EntityState.ACTIVE'),
+        helper.slice(0, 2200).includes('EntityState.ACTIVE'),
         'the revival announcement must send an ACTIVE state, the only packet that changes the pose'
+    );
+    // Unfiltered, for the same reason the death drain is: a screen holding the corpse is exactly
+    // the screen the usual filters refuse to address.
+    assert.ok(
+        helper.slice(0, 2200).includes('getSessionsInLevelScope'),
+        'the revival must reach every session in the scope, not go through the filtered broadcast'
     );
     const callSites = (source.match(/announcePlayerRevivedIfWasDead\(/g) || []).length;
     assert.ok(
@@ -75,7 +81,7 @@ function testRevivalIsAnnouncedToTheParty(): void {
 // A death state may never contradict the health the server is holding.
 function testDeathStateIsRefusedForALivingPlayer(): void {
     const guard = source.slice(source.indexOf('private static broadcastPlayerState'));
-    const head = guard.slice(0, 3000);
+    const head = guard.slice(0, 4200);
     assert.ok(
         head.includes('DeathStateRefused'),
         'broadcastPlayerState must refuse a DEAD state for a player that still has health'
@@ -89,8 +95,8 @@ function testDeathStateIsRefusedForALivingPlayer(): void {
         "the guard must decide on the client's own reported health, not the server's running subtraction"
     );
     assert.ok(
-        decidingFigure.indexOf('authoritativeCurrentHp') < decidingFigure.indexOf('entity?.hp'),
-        'the server figure may only be a fallback when the client has reported nothing yet'
+        decidingFigure.includes('recordedDead'),
+        'an unreported health must fall back to the RECORDED death state, not to a raw hp number'
     );
 }
 
@@ -129,7 +135,7 @@ function testHitPathDoesNotAnnounceDeath(): void {
 // other screen while their own shows the revive prompt at 0.
 function testDeathEmptiesTheBarOnOtherScreens(): void {
     const note = source.slice(source.indexOf('static notePlayerDeathState'));
-    const head = note.slice(0, 5600);
+    const head = note.slice(0, 7400);
     assert.ok(
         head.includes('CLIENT_HEAL_PACKET_ID'),
         'recording a death must also send the remaining health as a delta, or party frames stay full'
@@ -149,6 +155,13 @@ function testDeathEmptiesTheBarOnOtherScreens(): void {
     assert.ok(
         head.includes('drainAmount'),
         'the death delta must be sized to empty the bar outright, not to the server remainder'
+    );
+    // Unconditional: gating on a non-zero remainder is why the FIRST death of a run never emptied
+    // the frame (nothing had tracked that player's health yet) while the second one did.
+    assert.equal(
+        head.includes('if (remainingHp > 0)'),
+        false,
+        'the death drain must not be gated on the server having tracked a remainder'
     );
 }
 

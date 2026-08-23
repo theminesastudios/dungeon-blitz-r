@@ -6590,8 +6590,19 @@ export class LevelHandler {
         //
         // Death has an authoritative channel of its own that checks the player's own reported
         // health first. Movement carries position, not mortality.
+        // "Not recorded as dead" -- not "has health above zero".
+        //
+        // The health figure is the unreliable one: it starts at zero, and the server's own copy
+        // of it has been seen holding 100 for a level 50. Gating on it meant a living player was
+        // not recognised as living, so their movement kept carrying a DEAD state to the other
+        // screen and the revival announcement -- which reads the same field -- never fired to
+        // undo it. That is a player alive on their own screen, dead on their party member's, and
+        // still dead after they respawn.
+        //
+        // A player is dead when something recorded them dead. Nothing did here, so they are not.
         const relayedPlayerIsAlive = Boolean(isSelf || ent?.isPlayer) &&
-            Math.round(Number(client.authoritativeCurrentHp ?? 0)) > 0;
+            !Boolean(ent?.dead) &&
+            Number(ent?.entState ?? EntityState.ACTIVE) !== EntityState.DEAD;
         const canonicalEntState = (shouldIgnoreUnverifiedDungeonBossDeadState || relayedPlayerIsAlive)
             ? EntityState.ACTIVE
             : entState;

@@ -6645,7 +6645,13 @@ export class EntityHandler {
                             `subject=${String(subject.character?.name ?? '?')} id=${subjectId} ` +
                             `-> viewer=${String(viewer.character?.name ?? '?')} ` +
                             `serverThinks=${realHp}/${pool} ` +
-                            `reported=${Number.isFinite(reportedHp) ? reportedHp : 'none'}`
+                            `reported=${Number.isFinite(reportedHp) ? reportedHp : 'none'} ` +
+                            // The one field that decides which row of the player health table is
+                            // read. A level 50 resolving to 21724 -- the level 25 row -- is either
+                            // a wrong level or a wrong lookup, and only this separates them.
+                            `level=${Math.round(Number(subject.character?.level ?? -1))} ` +
+                            `authMax=${Math.round(Number(subject.authoritativeMaxHp ?? -1))} ` +
+                            `bodyMax=${Math.round(Number(subjectBody?.maxHp ?? -1))}`
                         );
                         viewer.partyFrameHpByEntityId.set(subjectId, realHp);
                     }

@@ -497,9 +497,67 @@ export class CombatHandler {
     // legitimate build while turning the god-mode edit into a merely-high, bounded pool.
     private static readonly MAX_HP_BONUS_MULTIPLE = 4;
 
+    /**
+     * The ceiling is anchored to the TABLE, not to this session's level.
+     *
+     * Anchoring it to `character.level` assumed that level is always readable, and it is not: a
+     * live capture had a level 50 clamped to a pool of 100 -- the bottom row, i.e. the level had
+     * resolved to 1 -- and an earlier one to 21724, the level 25 row. Whatever makes that reading
+     * unreliable, the consequence here was fatal: the ceiling collapsed with it, so the client's
+     * real 91040 was refused as a cheat and the player entered the dungeon with 100 health and
+     * died to the first hit that touched them.
+     *
+     * A single ceiling built from the top of the table still does the job it exists for -- an
+     * engine user writing 10,000,000 is bounded to something the game can survive -- while a
+     * misread level can no longer starve a legitimate character down to nothing. It is more
+     * permissive for a low-level character, and that is the right trade: over-allowing costs a
+     * bounded amount of health, under-allowing kills people who did nothing wrong.
+     */
+    /**
+     * The lowest level whose base pool could produce this declared figure.
+     *
+     * `character.level` has been observed wrong on the live server -- a level 50 arriving as 25
+     * (another character's level) and as 1 -- and every health figure the server computes is
+     * built from it. The declared pool disproves a too-low level on its own: a level 25 cannot
+     * declare 68109, because that is the level 50 row and a character cannot have a bigger BASE
+     * pool than its level allows. So a declaration that outgrows the recorded level is taken as
+     * evidence the record is stale, and the ceiling is rebuilt from the level the declaration
+     * implies.
+     *
+     * This does not hand the ceiling to the client: the multiple still applies on top of the
+     * implied level, so a declared 10,000,000 lands on the top row and is bounded there exactly
+     * as before. It only stops a WRONG record from starving a legitimate character.
+     */
+    private static resolveEffectiveLevelForCeiling(client: Client, declaredMaxHp: number): number {
+        const recorded = Math.round(Number(client.character?.level ?? 0));
+        const declared = Math.max(1, Math.round(Number(declaredMaxHp) || 0));
+        const maxIndex = CombatHandler.PLAYER_HITPOINTS.length - 1;
+        const safeRecorded = Number.isFinite(recorded) && recorded >= 1 ? recorded : 1;
+        // A declaration bigger than any base pool in the table is not evidence of a high level,
+        // it is the memory edit this ceiling exists to stop. Only a declaration that a real
+        // character could actually have says anything about their level.
+        if (declared > CombatHandler.PLAYER_HITPOINTS[maxIndex]) {
+            return safeRecorded;
+        }
+        let implied = 1;
+        for (let level = maxIndex; level >= 1; level--) {
+            if (CombatHandler.PLAYER_HITPOINTS[level] <= declared) {
+                implied = level;
+                break;
+            }
+        }
+        return Math.max(safeRecorded, implied);
+    }
+
     static clampDeclaredMaxHp(client: Client, declaredMaxHp: number): number {
-        const level = Number(client.character?.level ?? 1);
-        const ceiling = CombatHandler.getBaseHpForLevel(level) * CombatHandler.MAX_HP_BONUS_MULTIPLE;
+        const level = CombatHandler.resolveEffectiveLevelForCeiling(client, declaredMaxHp);
+        // A readable level keeps the tight, level-shaped ceiling -- that is the anti-cheat and it
+        // stays. An UNREADABLE level falls back to the top of the table instead of collapsing to
+        // the bottom row, which is the failure this exists to survive rather than punish.
+        const ceiling = Number.isFinite(level) && level >= 1
+            ? CombatHandler.getBaseHpForLevel(level) * CombatHandler.MAX_HP_BONUS_MULTIPLE
+            : CombatHandler.PLAYER_HITPOINTS[CombatHandler.PLAYER_HITPOINTS.length - 1] *
+                CombatHandler.MAX_HP_BONUS_MULTIPLE;
         const declared = Math.max(1, Math.round(Number(declaredMaxHp) || 0));
         return Math.min(declared, Math.round(ceiling));
     }
@@ -524,6 +582,44 @@ export class CombatHandler {
         bb.writeMethod15(usePotion);
 
         client.sendBitBuffer(0x80, bb);
+
+        // The revive reply goes to the reviving player only. Everybody else was told they died
+        // and has heard nothing since, so they keep drawing the corpse -- with the potion or
+        // without it, this is the path every revive takes.
+        //
+        // Three things are owed to the other screens, and none of them were being sent: the
+        // server's own death flags cleared, a state packet to take the body out of the death
+        // animation (health deltas cannot do that), and the health itself, because the death
+        // drained their party frame to nothing.
+        const levelScope = getClientLevelScope(client);
+        const localEntity = client.entities.get(client.clientEntID);
+        const levelEntity = CombatHandler.resolveLevelEntity(levelScope, client.clientEntID);
+        const wasMarkedDead = CombatHandler.isPlayerBodyMarkedDead(localEntity, levelEntity);
+        const revivedHp = Math.max(1, Math.round(Number(healAmount) || 0));
+
+        for (const body of [localEntity, levelEntity]) {
+            if (body && typeof body === 'object') {
+                body.dead = false;
+                body.hp = Math.max(revivedHp, Math.round(Number(body.hp ?? 0)));
+                if (Number(body.entState ?? EntityState.ACTIVE) === EntityState.DEAD) {
+                    body.entState = EntityState.ACTIVE;
+                }
+            }
+        }
+        client.authoritativeCurrentHp = Math.max(revivedHp, Math.round(Number(client.authoritativeCurrentHp ?? 0)));
+
+        CombatHandler.announcePlayerRevivedIfWasDead(client, wasMarkedDead || true);
+
+        if (levelScope) {
+            const healPayload = CombatHandler.buildHpDeltaPayload(client.clientEntID, revivedHp);
+            for (const viewer of GlobalState.getSessionsInLevelScope(levelScope)) {
+                if (viewer === client || !viewer.playerSpawned || getClientLevelScope(viewer) !== levelScope) {
+                    continue;
+                }
+                viewer.send(CombatHandler.CLIENT_HEAL_PACKET_ID, healPayload);
+                viewer.partyFrameHpByEntityId.set(client.clientEntID, revivedHp);
+            }
+        }
     }
 
     // A death almost never has stats synced within the last second, so the deferred
@@ -602,11 +698,30 @@ export class CombatHandler {
             Number(levelEntity?.hp ?? 0),
             Number(client.authoritativeCurrentHp ?? 0)
         );
-        if (bestKnownMaxHp > 100) {
-            return Math.max(1, bestKnownMaxHp, bestKnownCurrentHp);
+        const resolved = bestKnownMaxHp > 100
+            ? Math.max(1, bestKnownMaxHp, bestKnownCurrentHp)
+            : Math.max(1, baseMaxHp, bestKnownCurrentHp);
+
+        // Every input, once per player, when the answer disagrees with the level's own row.
+        //
+        // Live: a level 50 resolved to 21724 -- the level 25 row -- while a level 25 resolved to
+        // 68109, the level 50 row. Two characters holding each other's pool is not an arithmetic
+        // slip, so the useful question is which of these four inputs carries the wrong number and
+        // whether `character.level` itself is right. Logged once per session because this runs on
+        // every health packet.
+        const declaredLevel = Math.round(Number(client.character?.level ?? 0));
+        if (!(client as any).loggedPlayerMaxHpResolution) {
+            (client as any).loggedPlayerMaxHpResolution = true;
+            console.log(
+                `[PlayerMaxHp] ${String(client.character?.name ?? '?')} level=${declaredLevel} ` +
+                `resolved=${resolved} levelRow=${baseMaxHp} ` +
+                `entity=${Math.round(Number(entity?.maxHp ?? 0))} ` +
+                `levelEntity=${Math.round(Number(levelEntity?.maxHp ?? 0))} ` +
+                `authoritative=${Math.round(Number(client.authoritativeMaxHp ?? 0))}`
+            );
         }
 
-        return Math.max(1, baseMaxHp, bestKnownCurrentHp);
+        return resolved;
     }
 
     private static resolvePlayerCurrentHp(client: Client, entity: any, levelEntity: any, maxHp: number): number {
@@ -3203,7 +3318,18 @@ export class CombatHandler {
                 localEntity?.hp ?? levelEntity?.hp ?? client.authoritativeCurrentHp ?? 0
             ))
         );
-        if (remainingHp > 0) {
+        // Sent on EVERY death, including one where the server thinks nothing is left.
+        //
+        // Gating on `remainingHp > 0` is why the first death of a run never emptied the party
+        // frame and the second one did: on the first death the server has not tracked this
+        // player's health at all yet, so every source here reads zero, the drain is skipped, and
+        // the frame keeps a full bar. By the second death the record exists, the gate passes, and
+        // it works -- which is exactly the "only the first time" shape reported from the live
+        // server.
+        //
+        // The amount is a fixed overshoot anyway (see `drainAmount`), so there is nothing for a
+        // zero remainder to save: a death always empties the bar.
+        {
             // Sent to the whole dungeon scope, not the combat room. A party frame shows a member
             // wherever they are -- the room filter in `broadcastPlayerHpDelta` is right for a
             // damage number nobody outside the fight should see, and wrong for the one delta that
@@ -3227,11 +3353,20 @@ export class CombatHandler {
                 // the dead player shows a sliver of health instead of none. Overshooting is free
                 // here for the same reason it is for hostiles: the client's own health code
                 // stops at zero, it does not go negative.
+                // Sized past anything a player can have, on purpose.
+                //
+                // Every figure the server holds for a player's pool is an estimate and they are
+                // demonstrably wrong -- a level 50 at 91040 was being held as 21724, the level 25
+                // row. A drain sized from those numbers erases a quarter of the bar and leaves
+                // the rest standing, which is a dead player still showing health on the party
+                // frame. Overshooting is free for the same reason it is when burying a hostile:
+                // the client's own health code stops at zero, it does not go negative.
+                //
+                // The largest pool the player table can express, times sixteen, is past anything
+                // gear can build on top of it.
                 const drainAmount = Math.max(
                     remainingHp,
-                    Math.round(Number(client.authoritativeMaxHp ?? 0)),
-                    Math.round(Number(localEntity?.maxHp ?? 0)),
-                    Math.round(Number(levelEntity?.maxHp ?? 0))
+                    CombatHandler.PLAYER_HITPOINTS[CombatHandler.PLAYER_HITPOINTS.length - 1] * 16
                 );
                 const payload = CombatHandler.buildHpDeltaPayload(client.clientEntID, -drainAmount);
                 const recipients: string[] = [];
@@ -3288,6 +3423,9 @@ export class CombatHandler {
             return;
         }
 
+        // Read before the flags below are cleared: this is what says the party is still
+        // drawing this player as a corpse.
+        const wasMarkedDeadBeforeRevive = CombatHandler.isPlayerBodyMarkedDead(localEntity, levelEntity);
         const maxHp = Math.max(
             1,
             Math.round(Number(client.authoritativeMaxHp ?? 0)),
@@ -3318,6 +3456,13 @@ export class CombatHandler {
         client.authoritativeMaxHp = maxHp;
         client.authoritativeCurrentHp = Math.max(1, Math.min(maxHp, nextHp));
         CombatHandler.clearEnemyDeathRegenArm(client);
+        // Standing back up is an event the other screens have to be told about.
+        //
+        // This path clears the death flags on the server and stops there. The party was sent a
+        // DEAD state when the player died, and only a state packet takes a body out of the death
+        // animation -- so a revived player stayed face-down on every other screen. Reported as
+        // "they revive but still show as dead".
+        CombatHandler.announcePlayerRevivedIfWasDead(client, wasMarkedDeadBeforeRevive);
     }
 
     private static clearEnemyDeathRegenArm(client: Client): void {
@@ -5269,7 +5414,55 @@ export class CombatHandler {
         if (!wasMarkedDead) {
             return;
         }
-        CombatHandler.broadcastPlayerState(client, EntityState.ACTIVE);
+
+        // Sent straight to every session in the scope, with none of the usual filters.
+        //
+        // `broadcastPlayerState` drops the packet for any viewer that cannot "resolve" the
+        // player's entity, and that is exactly the state a screen holding a corpse is in -- the
+        // body it is drawing is the one we are trying to stand back up. So the announcement was
+        // being filtered away by the very condition it exists to fix, and the revived player
+        // stayed face-down on the other screen while standing up on their own. The death drain
+        // had the identical problem and was fixed the same way.
+        //
+        // A state packet for an id a client does not know is ignored by that client, so
+        // addressing everyone costs nothing.
+        const levelScope = getClientLevelScope(client);
+        if (!levelScope || client.clientEntID <= 0) {
+            return;
+        }
+
+        const entity = client.entities.get(client.clientEntID) ??
+            CombatHandler.resolveLevelEntity(levelScope, client.clientEntID);
+        const payload = CombatHandler.buildEntityStatePayload(
+            client.clientEntID,
+            EntityState.ACTIVE,
+            Boolean(entity?.facingLeft)
+        );
+        const recipients: string[] = [];
+        for (const viewer of GlobalState.getSessionsInLevelScope(levelScope)) {
+            if (!viewer.playerSpawned || getClientLevelScope(viewer) !== levelScope) {
+                continue;
+            }
+            viewer.send(0x07, payload);
+            if (viewer !== client) {
+                recipients.push(String(viewer.character?.name ?? viewer.token));
+            }
+        }
+        // And force a redraw on every other screen.
+        //
+        // The ACTIVE state above is not enough on its own: a client that has already played the
+        // death animation keeps the body in that pose, and the state packet does not restart it.
+        // A redraw is a fresh spawn, which rebuilds the body from scratch -- and a spawn always
+        // places a LIVING body (see sendPlayerBodyToViewer), so this is what actually stands
+        // them back up. `markPlayerBodyNeedsRedraw` clears the draw record and the visibility
+        // sweep repaints within a tick, only for the screens holding a stale copy.
+        EntityHandler.markPlayerBodyNeedsRedraw(client);
+
+        console.log(
+            `[PlayerRevived] ${getScopeLevelName(levelScope)} ` +
+            `player=${String(client.character?.name ?? '?')} id=${client.clientEntID} ` +
+            `sentTo=[${recipients.join(',')}] redraw=queued`
+        );
     }
 
     private static broadcastPlayerState(targetSession: Client, entState: number, roomScoped: boolean = false): void {
@@ -5298,10 +5491,20 @@ export class CombatHandler {
             //
             // Genuine deaths are unaffected because every path that kills a player calls
             // `notePlayerDeathState` first, and that sets `authoritativeCurrentHp = 0`.
+            // A DEAD state is refused unless something actually recorded this player dead.
+            //
+            // This used to ask "is their health above zero", and that figure is the unreliable
+            // one -- it starts at zero and the server's own copy has held 100 for a level 50. So
+            // the guard let a death through for a perfectly healthy player simply because their
+            // health had not been reported yet. The recorded state is the honest signal:
+            // `notePlayerDeathState` is what sets it, and it is the only thing that should be
+            // able to authorise this packet.
             const clientHp = Math.round(Number(targetSession.authoritativeCurrentHp ?? NaN));
-            const aliveHp = Number.isFinite(clientHp)
+            const recordedDead = Boolean(entity?.dead) ||
+                Number(entity?.entState ?? EntityState.ACTIVE) === EntityState.DEAD;
+            const aliveHp = Number.isFinite(clientHp) && clientHp > 0
                 ? clientHp
-                : Math.round(Number(entity?.hp ?? 0));
+                : (recordedDead ? 0 : 1);
             if (aliveHp > 0) {
                 const caller = String(new Error().stack ?? '')
                     .split('\n')

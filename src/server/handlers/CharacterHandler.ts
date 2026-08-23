@@ -1319,7 +1319,16 @@ export class CharacterHandler {
         GlobalState.pendingWorld.delete(token);
         GlobalState.pendingExtended.delete(token);
         
-        console.log(`[GameLogin] Client logged in with token ${token} as ${client.character.name}`);
+        // Level is printed with the login because every health figure the server computes is
+        // built from it, and it has been seen wrong: a level 50 arriving as 25 (another
+        // character's level) and as 1 on different runs. Printing it HERE, at the moment the
+        // character enters the session, separates "it arrived wrong" from "something overwrote
+        // it later" -- the two have completely different causes and only this line tells them
+        // apart.
+        console.log(
+            `[GameLogin] Client logged in with token ${token} as ${client.character.name} ` +
+            `level=${Math.round(Number(client.character.level ?? -1))}`
+        );
 
         const spawn = {
             x: entry.newX ?? 0,

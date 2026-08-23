@@ -188,7 +188,23 @@ export class CommandHandler {
         const br = new BitReader(data);
         const meleeDamage = br.readMethod9();
         const magicDamage = br.readMethod9();
-        const maxHp = CombatHandler.clampDeclaredMaxHp(client, br.readMethod9());
+        const declaredMaxHp = br.readMethod9();
+        const maxHp = CombatHandler.clampDeclaredMaxHp(client, declaredMaxHp);
+        // The one place the server learns a player's real pool, and the only place it can be
+        // wrong before anything else reads it. `declared` is what the client says, `clamped` is
+        // what survived the anti-cheat ceiling, and `level` is what that ceiling was built from.
+        // A live capture had a level 50 with a real 91040 held as 68109, 21724 and 100 on
+        // different runs -- all of them rows of the player health table -- so the question is
+        // whether the client under-declares or the ceiling cuts a legitimate value down.
+        if (declaredMaxHp !== maxHp || !(client as any).loggedDeclaredStats) {
+            (client as any).loggedDeclaredStats = true;
+            console.log(
+                `[DeclaredStats] ${String(client.character?.name ?? '?')} ` +
+                `level=${Math.round(Number(client.character?.level ?? -1))} ` +
+                `declared=${declaredMaxHp} clamped=${maxHp}` +
+                (declaredMaxHp !== maxHp ? ' CUT' : '')
+            );
+        }
         br.readMethod20(4);
         br.readMethod9();
         // Defense, appended to the packet by patch-dungeonblitz-combat-stats-armor. Optional
@@ -196,16 +212,38 @@ export class CommandHandler {
         // packet here and must still be understood.
         const armorClass = CommandHandler.readOptionalDeclaredArmorClass(br);
 
-        client.authoritativeMaxHp = maxHp;
+        // The declared pool is a FLOOR, never a ceiling on what we have already seen.
+        //
+        // The client declares its base pool without gear bonuses: a level 50 wearing 91040 worth
+        // of health declares 68109, the bare level-50 row. Taking that as the truth capped the
+        // player at two thirds of their real health and then clamped their CURRENT health down to
+        // match -- so they entered a fight already missing a third of their bar, died to damage
+        // they should have survived, and were killed again by the next hit after every revive.
+        //
+        // Health the server has actually observed cannot be a lie in the dangerous direction: a
+        // client cannot heal above its own maximum, so a current value higher than the declared
+        // pool proves the pool is bigger than declared. The anti-cheat ceiling still applies --
+        // `maxHp` above has already been through it, and these observations are bounded by it.
+        const observedHp = Math.max(
+            Math.round(Number(client.authoritativeCurrentHp ?? 0)),
+            Math.round(Number(client.authoritativeMaxHp ?? 0)),
+            Math.round(Number(client.clientEntID > 0 ? client.entities.get(client.clientEntID)?.hp ?? 0 : 0))
+        );
+        const effectiveMaxHp = CombatHandler.clampDeclaredMaxHp(client, Math.max(maxHp, observedHp));
+
+        client.authoritativeMaxHp = effectiveMaxHp;
         if (armorClass !== null) {
             client.authoritativeArmorClass = armorClass;
         }
-        client.authoritativeCurrentHp = Math.min(Math.max(0, Number(client.authoritativeCurrentHp ?? maxHp)), maxHp);
+        client.authoritativeCurrentHp = Math.min(
+            Math.max(0, Number(client.authoritativeCurrentHp ?? effectiveMaxHp)),
+            effectiveMaxHp
+        );
 
         const entity = client.clientEntID > 0 ? client.entities.get(client.clientEntID) : null;
         if (entity && typeof entity === 'object') {
-            entity.maxHp = maxHp;
-            entity.hp = Math.min(Math.max(0, Number(entity.hp ?? maxHp)), maxHp);
+            entity.maxHp = effectiveMaxHp;
+            entity.hp = Math.min(Math.max(0, Number(entity.hp ?? effectiveMaxHp)), effectiveMaxHp);
             entity.meleeDamage = meleeDamage;
             entity.magicDamage = magicDamage;
         }
