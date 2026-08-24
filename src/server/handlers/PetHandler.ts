@@ -14,7 +14,7 @@ const db = new JsonAdapter();
 
 export class PetHandler {
     private static readonly MOUNT_REASSERT_DELAYS_MS = [0, 300, 1200, 2500, 4000];
-    private static readonly PET_ACTIVE_BONUS_BASE_RATE = 0.09;
+    private static readonly PET_ACTIVE_BONUS_BASE_RATE = 0.10;
     private static readonly PET_BONUS_RATE_PER_LEVEL = 0.01;
     private static readonly MAX_PASSIVE_PET_SLOTS = 3;
     private static readonly HATCHERY_RANK0_WEIGHT = 0.75;

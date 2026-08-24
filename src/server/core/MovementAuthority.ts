@@ -60,9 +60,21 @@ export class MovementAuthority {
     private static readonly BASE_PLAYER_SPEED_PER_SECOND = 900;
     private static readonly MOUNT_SPEED_MULTIPLIER = 1.45;
     private static readonly MAX_BUDGET_MS = 1000;
+    // Dungeon clients can go several seconds without emitting a movement sample
+    // while room scripts, cinematics and local summons run. Judge those sparse
+    // samples over a longer (still bounded) window instead of treating six
+    // seconds of ordinary travel as a one-second speed burst.
+    private static readonly DUNGEON_MAX_BUDGET_MS = 4000;
     private static readonly POSITION_TOLERANCE = 120;
     private static readonly MAX_SINGLE_PACKET_DISTANCE = 2600;
-    private static readonly TRANSFER_GRACE_MAX_DISTANCE = 12000;
+    private static readonly DUNGEON_MAX_SINGLE_PACKET_DISTANCE = 6000;
+    // Authored same-level dungeon portals can cross nearly the entire map. Dread
+    // Fable, for example, moves the player about 19,420 px between dream rooms
+    // and about 14,465 px when the boss intro releases them. The old 12,000 px
+    // cap rejected those legitimate transitions; after four rooms the violation
+    // score reached 16 and the server destroyed the socket as if the player had
+    // teleported. Keep this bounded, but large enough for the authored layouts.
+    private static readonly TRANSFER_GRACE_MAX_DISTANCE = 25000;
     private static readonly CORRECTION_GRACE_MAX_DISTANCE = 400;
     private static readonly CORRECTION_GRACE_MS = 750;
     private static readonly MOBILITY_GRACE_MS = 1250;
@@ -213,6 +225,17 @@ export class MovementAuthority {
         client.movementAuthority = state;
     }
 
+    static armRoomTransitionGrace(
+        client: Pick<MovementAuthorityClient, 'movementAuthority' | 'roomTransitionGraceUntil'>,
+        durationMs: number = 4000,
+        nowMs: number = MovementAuthority.nowMs()
+    ): void {
+        client.roomTransitionGraceUntil = Math.max(
+            Number(client.roomTransitionGraceUntil ?? 0),
+            nowMs + Math.max(0, Math.round(Number(durationMs) || 0))
+        );
+    }
+
     static validateIncrementalMovement(
         client: MovementAuthorityClient,
         entity: any,
@@ -291,7 +314,10 @@ export class MovementAuthority {
             return MovementAuthority.result(true, 'transition_grace', attemptedX, attemptedY, state, elapsedMs, MovementAuthority.TRANSFER_GRACE_MAX_DISTANCE, actualDistance);
         }
 
-        if (actualDistance > MovementAuthority.MAX_SINGLE_PACKET_DISTANCE) {
+        const maxSinglePacketDistance = LevelConfig.isDungeonLevel(client.currentLevel)
+            ? MovementAuthority.DUNGEON_MAX_SINGLE_PACKET_DISTANCE
+            : MovementAuthority.MAX_SINGLE_PACKET_DISTANCE;
+        if (actualDistance > maxSinglePacketDistance) {
             return MovementAuthority.reject(client, state, 'teleport_delta', attemptedX, attemptedY, elapsedMs, normalAllowed, actualDistance, normalizedNowMs);
         }
         if (normalizedNowMs < state.mobilityGraceUntilMs && state.mobilityRemainingDistance > 0) {
@@ -365,19 +391,22 @@ export class MovementAuthority {
             speedMultiplier;
     }
 
-    private static getMaxBudgetDistance(speed: number): number {
+    private static getMaxBudgetDistance(speed: number, maxBudgetMs: number = MovementAuthority.MAX_BUDGET_MS): number {
         if (speed <= 0) {
             return 0;
         }
-        return Math.round(speed * MovementAuthority.MAX_BUDGET_MS / 1000 + MovementAuthority.POSITION_TOLERANCE);
+        return Math.round(speed * maxBudgetMs / 1000 + MovementAuthority.POSITION_TOLERANCE);
     }
 
     private static refreshBudget(client: MovementAuthorityClient, state: MovementAuthorityState, nowMs: number): number {
         const speed = MovementAuthority.getSpeedPerSecond(client, nowMs);
-        const maxBudget = MovementAuthority.getMaxBudgetDistance(speed);
+        const maxBudgetMs = LevelConfig.isDungeonLevel(client.currentLevel)
+            ? MovementAuthority.DUNGEON_MAX_BUDGET_MS
+            : MovementAuthority.MAX_BUDGET_MS;
+        const maxBudget = MovementAuthority.getMaxBudgetDistance(speed, maxBudgetMs);
         const updatedAt = Math.max(0, Math.round(Number(state.movementBudgetUpdatedAtMs ?? 0)));
         const elapsedMs = updatedAt > 0
-            ? Math.max(0, Math.min(MovementAuthority.MAX_BUDGET_MS, Math.round(nowMs - updatedAt)))
+            ? Math.max(0, Math.min(maxBudgetMs, Math.round(nowMs - updatedAt)))
             : 0;
         const earnedDistance = speed * elapsedMs / 1000;
         const previousBudget = Number.isFinite(Number(state.movementBudgetDistance))

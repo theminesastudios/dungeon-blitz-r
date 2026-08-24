@@ -27,9 +27,8 @@ import { ensureBackup, parseSwz, writeSwz } from "./swzPatchUtils";
  * one aimed at yourself, and this is self-applied.
  *
  * BuffID 742 is the next free id -- 740/741 are the Viperblade pair added by
- * patch_gameswz_rogue_mastery_balance. Note AddBuff's `buffID >= 740` rule overwrites the
- * amount argument with the caster's meleeDamage; that only feeds DoT scaling, which this buff
- * does not have, so it is harmless here.
+ * patch_gameswz_rogue_mastery_balance. Custom buffs use AddBuff's normal Expertise-derived
+ * potency; this buff has no DoT, so the potency argument is irrelevant here.
  *
  * The buff has to land in the served archives, not just the loose XML: the client reads
  * Game*.swz and never downloads src/client/content/xml.

@@ -150,9 +150,9 @@ function verifySource(source, swfPath) {
             throw new Error(`${path.basename(swfPath)} is missing the Midnight Shroud passive: ${snippet}`);
         }
     }
-    // The two byte patches that also live in CombatState must have survived the recompile.
-    if (!source.includes('param3 = uint(param2.meleeDamage);')) {
-        throw new Error(`${path.basename(swfPath)} lost the Viperblade passive scaling patch.`);
+    // Viperblade poison uses the normal Expertise potency supplied to AddBuff.
+    if (source.includes('param3 = uint(param2.meleeDamage);')) {
+        throw new Error(`${path.basename(swfPath)} restored the retired Viperblade Attack-scaling override.`);
     }
     if (!source.includes('param2.maxHP * 0.3')) {
         throw new Error(`${path.basename(swfPath)} lost the Clutch Heal threshold patch.`);

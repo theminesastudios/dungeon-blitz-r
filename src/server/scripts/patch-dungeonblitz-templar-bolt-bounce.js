@@ -45,9 +45,8 @@ const { execFileSync } = require('child_process');
  * and a search loop, which is far past what an in-place ABC splice can express. That is the
  * same route patch-dungeonblitz-firebrand-pierce-missile.js already takes through this exact
  * class, which is the evidence it survives a round-trip -- most classes in this SWF do not.
- * Only class_130 is recompiled; every other class, including the two carrying raw ABC edits
- * (CombatState, for the Viperblade scaling and the Clutch Heal threshold), passes through
- * untouched.
+ * Only class_130 is recompiled; every other class, including CombatState with the Clutch Heal
+ * raw ABC edit, passes through untouched.
  */
 
 const TARGET_SWF = path.join('src', 'client', 'content', 'localhost', 'p', 'cbp', 'DungeonBlitz.swf');

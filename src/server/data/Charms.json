@@ -39,7 +39,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "1",
         "CharmSize": "1",
-        "ProcChanceUp": "0.006"
+        "ProcChanceUp": "0.006666666666667"
     },
     {
         "CharmName": "Undead01",
@@ -105,7 +105,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "8",
         "CharmSize": "2",
-        "ProcChanceUp": "0.01"
+        "ProcChanceUp": "0.013333333333333"
     },
     {
         "CharmName": "Undead02",
@@ -237,7 +237,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "57",
         "CharmSize": "4",
-        "ProcChanceUp": "0.02"
+        "ProcChanceUp": "0.026666666666667"
     },
     {
         "CharmName": "Undead04",
@@ -303,7 +303,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "95",
         "CharmSize": "5",
-        "ProcChanceUp": "0.03"
+        "ProcChanceUp": "0.033333333333333"
     },
     {
         "CharmName": "Undead05",
@@ -435,7 +435,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "197",
         "CharmSize": "7",
-        "ProcChanceUp": "0.04"
+        "ProcChanceUp": "0.046666666666667"
     },
     {
         "CharmName": "Undead07",
@@ -501,7 +501,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "261",
         "CharmSize": "8",
-        "ProcChanceUp": "0.05"
+        "ProcChanceUp": "0.053333333333333"
     },
     {
         "CharmName": "Undead08",
@@ -631,7 +631,7 @@
         "PrimaryType": "Infernal",
         "PrimaryCost": "400",
         "CharmSize": "10",
-        "ProcChanceUp": "0.06"
+        "ProcChanceUp": "0.066666666666667"
     },
     {
         "CharmName": "Undead10",

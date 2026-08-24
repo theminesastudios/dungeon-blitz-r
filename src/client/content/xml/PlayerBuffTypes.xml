@@ -5841,7 +5841,7 @@
 			<BuffID>741</BuffID>
 			<Attack>true</Attack>
 			<Duration>5000</Duration>
-			<DoTDamage>0.8</DoTDamage>
+			<DoTDamage>0.5</DoTDamage>
 			<DoTTickLength>1000</DoTTickLength>
 			<Effect>Poisoned</Effect>
 			<StackCount>16</StackCount>
