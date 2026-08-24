@@ -625,9 +625,9 @@ const HEMORRHAGE_RANKS: Array<{ mod: string; dot: string; defense: string }> = [
 const INSIDIOUS_POISON = new Map<string, string>([
   ["InsidiousPoison1", ".02"], // .02
   ["InsidiousPoison2", ".05"], // .06
-  ["InsidiousPoison3", ".11"], // .13
-  ["InsidiousPoison4", ".19"], // .23
-  ["InsidiousPoison5", ".28"], // .35
+  ["InsidiousPoison3", ".10"], // .13
+  ["InsidiousPoison4", ".15"], // .23
+  ["InsidiousPoison5", ".20"], // .35
 ]);
 
 const TALENTSTONE_VALUES = {
@@ -640,7 +640,7 @@ const TALENTSTONE_VALUES = {
   // Insidious Poison was normalised earlier and this was the one left over, so rank 5 drops
   // from a real +60% to a real +30%.
   ContactPoison: [".05", ".10", ".15", ".20", ".30"],
-  WindCloak: [".01", ".03", ".05", ".07", ".10"],
+  WindCloak: [".01", ".02", ".03", ".04", ".05"],
   CurseSword: [".01", ".03", ".05", ".07", ".10"],
   CurseArmor: [".03", ".05", ".10", ".15", ".20"],
 } as const;
@@ -671,7 +671,7 @@ const TALENTSTONE_DESCRIPTIONS = new Map<string, string>([
   ["StrengthDmg1", "Increases Enfeeble and Weaken effectiveness@Effect:, +3%, +5%, +10%, +15%, +20%"],
   ["Pounce1", "Deal extra damage to slowed and immobilized enemies@Bonus Damage:, 1%, 2%, 3%, 5%, 7%"],
   ["ContactPoison1", "Increases Poison Damage vs. Bleeding targets@Poison vs Bleeding:, +5%, +10%, +15%, +20%, +30%"],
-  ["WindCloak1", "Gain Bonus Defense vs Bound Enemies@Defense:, +1%, +3%, +5%, +7%, +10%"],
+  ["WindCloak1", "Gain Bonus Defense vs Bound Enemies@Defense:, +1%, +2%, +3%, +4%, +5%"],
   ["CurseSword1", "Minions gain Bonus Damage vs Cursed Enemies@Damage:, +1%, +3%, +5%, +7%, +10%"],
   ["CurseArmor1", "Minions gain Bonus Defense and Expertise vs Cursed Enemies@Defense and Expertise:, +3%, +5%, +10%, +15%, +20%"],
   ["Ethereal1", "Gain an Expertise bonus while in Stealth@Expertise Bonus:, 1%, 3%, 5%, 7%, 10%"],
@@ -690,10 +690,13 @@ const MOD_DESCRIPTIONS = new Map<string, [string, string]>([
     "InsidiousPoison1",
     [
       "Increases Poison Damage vs. Bound targets@Poison vs Bound:, +2%, +6%, +13%, +23%, +35%",
-      "Increases Poison Damage vs. Bound targets@Poison vs Bound:, +2%, +5%, +11%, +19%, +28%",
+      "Increases Poison Damage vs. Bound targets@Poison vs Bound:, +2%, +5%, +10%, +15%, +20%",
     ],
   ],
 ]);
+
+const PREVIOUS_INSIDIOUS_POISON_DESCRIPTION =
+  "Increases Poison Damage vs. Bound targets@Poison vs Bound:, +2%, +5%, +11%, +19%, +28%";
 
 /**
  * Ghost Blade steals the target's Attack and hands the Soulthief the same amount back -- but
@@ -1183,10 +1186,16 @@ export function patchPowerMods(xml: string): { xml: string; stats: PatchStats } 
     }
 
     const description = MOD_DESCRIPTIONS.get(modName);
-    if (description && next.includes(description[0]) && !next.includes(description[1])) {
+    const descriptionSource = description
+      ? [
+          description[0],
+          ...(modName === "InsidiousPoison1" ? [PREVIOUS_INSIDIOUS_POISON_DESCRIPTION] : []),
+        ].find((candidate) => next.includes(candidate))
+      : undefined;
+    if (description && descriptionSource && !next.includes(description[1])) {
       touched = true;
       stats.changes += 1;
-      next = next.split(description[0]).join(description[1]);
+      next = next.split(descriptionSource).join(description[1]);
     }
 
     if (touched) {
