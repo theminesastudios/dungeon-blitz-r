@@ -4805,11 +4805,16 @@ export class CombatHandler {
      *
      * The cost of that is cosmetic and worth stating: the floating combat number is computed
      * by the attacker's client and will show the unboosted hit. The health bar is server
-     * authoritative and will drop by the real amount.
+     * authoritative and drops by the real amount -- see handlePowerHit, which is where the
+     * attacker's own client is finally told about the difference.
      *
-     * Capped at the base hit, so it doubles a strike at most. Without a cap this scales with
-     * the target's health pool, which is exactly backwards for the bosses that have the
-     * largest pools -- a 1% bite out of a 500k boss would dwarf everything else a rogue does.
+     * Uncapped by design. It used to be clamped with Math.min(damage, ...), which took the
+     * passive away in exactly the fight it exists for: against a 4,000,000 HP boss the 1%
+     * bite is 40,000, and any rogue hitting for less than that got their own hit handed back
+     * instead of the bonus. The clamp also quietly made the bonus crit-dependent -- the
+     * damage it clamped against is the crit-inflated number -- which this passive is
+     * specified not to be. Scaling with the target's health pool is the point: the bigger
+     * the enemy, the more each strike takes off it.
      */
     private static readonly SOULTHIEFT_MAX_HP_RATE = 0.01;
 
@@ -4844,7 +4849,7 @@ export class CombatHandler {
             return 0;
         }
 
-        return Math.min(damage, Math.round(maxHp * CombatHandler.SOULTHIEFT_MAX_HP_RATE));
+        return Math.round(maxHp * CombatHandler.SOULTHIEFT_MAX_HP_RATE);
     }
 
     /**
@@ -5848,12 +5853,27 @@ export class CombatHandler {
             ? data
             : CombatHandler.buildPowerHitPayload(info, displayRelayDamage);
         if (partySharedHostileHealthRelay?.entity) {
+            // The two deltas are not the same number, and treating them as one is what made
+            // every server-side damage rewrite invisible -- the Soulthief passive above, the
+            // Sentinel and Justicar passives, and AdminRuntimeSettings.scaleDamage.
+            //
+            // The relay payload carrying `displayRelayDamage` goes to the *other* viewers
+            // (broadcastToCombatRoom excludes the anchor), so for them the expected local
+            // delta really is the rewritten number. The anchor never receives it: its client
+            // ran the hit itself, before the server saw the packet, and applied exactly the
+            // damage the packet carried. Telling converge the anchor had applied the boosted
+            // amount made correctionDelta come out zero, so the attacker's own copy of the
+            // hostile -- the copy that draws the health bar and decides the kill on a
+            // client-spawn level -- kept the unboosted health for the rest of the fight.
+            //
+            // With the anchor's real local delta the leftover arrives as a negative 0x78,
+            // which is live damage since patch-dungeonblitz-charregen-damage-channel.ts.
             CombatHandler.convergePartySharedHostileHealthToParty(
                 sourceSession ?? client,
                 levelScope,
                 partySharedHostileHealthRelay.entity,
                 partySharedHostileHealthRelay.snapshots,
-                -displayRelayDamage,
+                -CombatHandler.clampRelayPowerHitDamage(packetDamage),
                 -displayRelayDamage
             );
         }
