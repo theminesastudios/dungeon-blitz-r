@@ -88,13 +88,56 @@ const DEFAULT_SWF = path.resolve(
 );
 const INDEX_HTML = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "index.html");
 
-// Must agree with CombatHandler.SOULTHIEFT_MAX_HP_RATE (0.01).
-const MAX_HP_RATE_DEN = 100;
+// Must agree with CombatHandler.SOULTHIEFT_CURRENT_HP_RATE (0.01). Expressed as an integer
+// divisor so the block only needs a pushshort. If the rate moves server-side and this does not,
+// the floater promises a number the health bar will not deliver -- which is the whole failure
+// this patch exists to end.
+const CURRENT_HP_RATE_DEN = 100;
 
-const MASTER_CLASS_NAME = "Soulthief";
+// A superseded release capped the bonus at a quarter of the hit. The cap is gone -- it took
+// the passive away on exactly the high-health targets it exists for -- but the shape is kept
+// here so a re-run recognises and replaces those bytes instead of stacking a block in front of
+// them. See supersededBlocks.
+const LEGACY_HIT_SHARE_CAP_DEN = 4;
+
+/**
+ * Argument counts that tell the client's own floater calls apart from this patch's.
+ *
+ * Entity.TakeDamage always passes all nine; the bonus floater passes the seven required ones
+ * and leaves params eight and nine at their defaults. Without this distinction, re-running on
+ * an already-patched SWF finds six call sites instead of three -- the block's own call looks
+ * exactly like a real one.
+ */
+const CLIENT_FLOATER_ARG_COUNT = 9;
+const BONUS_FLOATER_ARG_COUNT = 7;
+
+/**
+ * LOWERCASE, and that is not a style choice.
+ *
+ * Entity.mMasterClass is assigned in LinkUpdater.method_1172 as `Game.method_233(id)`, which
+ * returns `Game.const_21[id]` -- and const_21 is built in Game's cinit as
+ * `const_85[const_21[i] = "necromancer"] = "Necromancer"`, i.e. const_21 holds the lowercase
+ * internal names and const_85 maps them to the capitalized display labels. The client's own
+ * two comparisons agree: `mMasterClass == "frostwarden"`, twice, in LinkUpdater.
+ *
+ * A capitalized literal here compiles and inserts perfectly and then never matches, so the
+ * passive silently does nothing -- which is exactly the state
+ * patch-dungeonblitz-sentinel-passive-display.ts is still in, comparing against "Sentinel".
+ *
+ * The rogue disciplines are renamed for display in this build (executioner -> "Viperblade",
+ * shadowwalker -> "Shadowstalker"); the internal keys are untouched, so "soulthief" is right.
+ */
+const MASTER_CLASS_NAME = "soulthief";
 
 /** Headroom for the block's own operand stack use, added to the method's max_stack. */
 const STACK_HEADROOM = 6;
+
+/**
+ * Entity.TakeDamage's max_stack in an unpatched client. Verified against the served SWF; the
+ * patch asserts it before touching a file it has not written to, so a rebuilt client fails
+ * loudly here rather than shipping a method whose declared stack is too small.
+ */
+const CLEAN_MAX_STACK = 12;
 
 const OP = {
     jump: 0x10,
@@ -108,7 +151,10 @@ const OP = {
     getlocal: 0x62,
     getproperty: 0x66,
     add: 0xa0,
+    subtract: 0xa1,
     divide: 0xa3,
+    pushfalse: 0x27,
+    callpropvoid: 0x4f,
 } as const;
 
 type Emitted = { label: string } | { opcode: number; operands?: Array<[string, number]>; branchTo?: string; pop?: number; push?: number };
@@ -120,6 +166,15 @@ const getLex = (mn: number): Emitted => ({ opcode: OP.getlex, operands: [["u30",
 const pushStr = (idx: number): Emitted => ({ opcode: OP.pushstring, operands: [["u30", idx]], push: 1 });
 const pushShort = (value: number): Emitted => ({ opcode: OP.pushshort, operands: [["u30", value]], push: 1 });
 const pushByte = (value: number): Emitted => ({ opcode: 0x24, operands: [["s8", value]], push: 1 });
+const pushFalse = (): Emitted => ({ opcode: OP.pushfalse, push: 1 });
+const callPropVoid = (mn: number, args: number): Emitted => ({
+    opcode: OP.callpropvoid,
+    operands: [
+        ["u30", mn],
+        ["u30", args],
+    ],
+    pop: args + 1,
+});
 const callProp = (mn: number, args: number): Emitted => ({
     opcode: OP.callproperty,
     operands: [
@@ -305,56 +360,11 @@ function parsePool(ctx: ReturnType<typeof parseSwf>): PoolInfo {
     return { strings, stringCountPos, stringCountEnd, stringPoolEnd: pos };
 }
 
-function appendStrings(pool: PoolInfo, wanted: string[]): { indexOf: Map<string, number>; patches: BytePatch[] } {
-    const indexOf = new Map<string, number>();
-    const missing: string[] = [];
-    for (const value of wanted) {
-        const existing = pool.strings.indexOf(value);
-        if (existing > 0) {
-            indexOf.set(value, existing);
-            continue;
-        }
-        if (!missing.includes(value)) {
-            missing.push(value);
-        }
-    }
-    if (missing.length === 0) {
-        return { indexOf, patches: [] };
-    }
-
-    let nextIndex = pool.strings.length;
-    const chunks: Buffer[] = [];
-    for (const value of missing) {
-        const bytes = Buffer.from(value, "utf8");
-        chunks.push(writeU30(bytes.length), bytes);
-        indexOf.set(value, nextIndex);
-        nextIndex += 1;
-    }
-
-    return {
-        indexOf,
-        patches: [
-            {
-                key: "abc.string_pool.append",
-                start: pool.stringPoolEnd,
-                end: pool.stringPoolEnd,
-                data: Buffer.concat(chunks),
-                detail: `append ${missing.length} string constants`,
-            },
-            {
-                key: "abc.string_count",
-                start: pool.stringCountPos,
-                end: pool.stringCountEnd,
-                data: writeU30(nextIndex),
-                detail: `string_count -> ${nextIndex}`,
-            },
-        ],
-    };
-}
-
 // ---- the bonus block --------------------------------------------------------
 
 interface Mn {
+    min: number;
+    currHP: number;
     var_1: number;
     clientEnt: number;
     mMasterClass: number;
@@ -367,6 +377,8 @@ interface Mn {
 
 function resolveMultinames(abc: ReturnType<typeof parseAbc>): Mn {
     const out: Mn = {
+        min: -1,
+        currHP: -1,
         var_1: -1,
         clientEnt: -1,
         mMasterClass: -1,
@@ -387,13 +399,123 @@ function resolveMultinames(abc: ReturnType<typeof parseAbc>): Mn {
 }
 
 /**
- * Stack in:  [.., Game, amount]
- * Stack out: [.., Game, amount + bonus]
- *
- * where bonus is Math.round(this.maxHP / 100) when the local player is the Soulthief who
- * landed a damaging direct power hit, and nothing happens otherwise.
+ * What the block reads and whether it clamps. Both axes have changed across releases, so a
+ * re-run has to be able to rebuild any shape this patch has ever shipped -- see
+ * supersededBlocks. Only `CURRENT_SHAPE` is ever written.
  */
-function buildFloaterBlock(mn: Mn, soulthiefStr: number): { code: Buffer; maxDepth: number } {
+interface BlockShape {
+    /** The health slot the bonus is derived from. */
+    source: "currHP" | "maxHP";
+    /** Clamp the bonus to a quarter of the hit. */
+    capped: boolean;
+    /**
+     * "merge" folds the bonus into the hit's own floating number, so the player sees one
+     * total and can no longer read their own weapon damage. "separate" leaves the hit's
+     * number alone and draws the bonus as a second floater beside it.
+     */
+    mode: "merge" | "separate";
+}
+
+const CURRENT_SHAPE: BlockShape = { source: "currHP", capped: false, mode: "separate" };
+
+/** Where the bonus floater sits relative to the hit's own, in pixels. */
+const BONUS_FLOATER_X_OFFSET = 46;
+const BONUS_FLOATER_Y_OFFSET = 26;
+
+/** Every shape this patch has written, newest first. Add to this list, never edit it in place. */
+const SHIPPED_SHAPES: BlockShape[] = [
+    { source: "currHP", capped: false, mode: "separate" },
+    { source: "currHP", capped: false, mode: "merge" },
+    { source: "maxHP", capped: false, mode: "merge" },
+    { source: "maxHP", capped: true, mode: "merge" },
+];
+
+/**
+ * Stack in:  [.., Game, amount]
+ * Stack out: [.., Game, amount]   (mode "separate")
+ *            [.., Game, amount + bonus]   (mode "merge", superseded)
+ *
+ * bonus is Math.round((this.currHP + param1) / 100) when the local player is the Soulthief who
+ * landed a damaging direct power hit, and nothing happens otherwise.
+ *
+ * In "separate" mode the block leaves the pending argument untouched and instead makes its own
+ * complete Game.method_527 call for the bonus, offset so the two numbers do not overlap. That
+ * is the whole point: merging them meant the player could not read their own weapon damage at
+ * all, only a total. The bonus floater borrows the hit's own colour local so it looks native.
+ *
+ * The extra call is stack-neutral -- receiver plus seven arguments, then callpropvoid -- so it
+ * can sit in the middle of the argument expression it is inserted into. Params 8 and 9 are
+ * optional and left at their defaults; param 9 is a grouping id, and passing the hit's would
+ * risk the two floaters being pooled together.
+ */
+function buildFloaterBlock(
+    mn: Mn,
+    soulthiefStr: number,
+    args: FloaterArgs,
+    shape: BlockShape = CURRENT_SHAPE,
+): { code: Buffer; maxDepth: number } {
+    // this.currHP is the target's health *after* this hit: Entity.TakeDamage applies the blow
+    // at +3054 (`this.currHP = this.currHP - param1`, its only write to that slot, and
+    // unclamped) long before it reaches these floater calls. Reading currHP as-is would give
+    // the post-hit health while the server reads the pre-hit health, so the two would disagree
+    // on every single hit; adding param1 back recovers the exact value the server used. maxHP
+    // needed no such correction, which is why this only appeared when the passive moved.
+    const health: Emitted[] = shape.source === "currHP"
+        ? [getlocal(0), get(mn.currHP), getlocal(1), { opcode: OP.add, pop: 2, push: 1 }]
+        : [getlocal(0), get(mn.maxHP)];
+
+    const bonus: Emitted[] = [
+        ...(shape.capped ? [getLex(mn.Math)] : []),
+        getLex(mn.Math),
+        ...health,
+        pushShort(CURRENT_HP_RATE_DEN),
+        { opcode: OP.divide, pop: 2, push: 1 },
+        callProp(mn.round, 1),
+        ...(shape.capped
+            ? [
+                  getLex(mn.Math),
+                  getlocal(1),
+                  pushByte(LEGACY_HIT_SHARE_CAP_DEN),
+                  { opcode: OP.divide, pop: 2, push: 1 } as Emitted,
+                  callProp(mn.round, 1),
+                  callProp(mn.min, 2),
+              ]
+            : []),
+    ];
+
+    // The hit's own position expressions, rebuilt from the operands lifted off the call site:
+    //   x = this.gfx.m_TheDO.x + this.var_596
+    //   y = this.gfx.m_TheDO.y - this.entType.height + this.var_351
+    const [gfxA, doA, xProp, var596, gfxB, doB, yProp, entType, height, var351] = args.props;
+    const position: Emitted[] = [
+        getlocal(0), get(gfxA), get(doA), get(xProp),
+        getlocal(0), get(var596),
+        { opcode: OP.add, pop: 2, push: 1 },
+        pushByte(BONUS_FLOATER_X_OFFSET),
+        { opcode: OP.add, pop: 2, push: 1 },
+        getlocal(0), get(gfxB), get(doB), get(yProp),
+        getlocal(0), get(entType), get(height),
+        { opcode: OP.subtract, pop: 2, push: 1 },
+        getlocal(0), get(var351),
+        { opcode: OP.add, pop: 2, push: 1 },
+        pushByte(BONUS_FLOATER_Y_OFFSET),
+        { opcode: OP.subtract, pop: 2, push: 1 },
+    ];
+
+    const payload: Emitted[] = shape.mode === "merge"
+        ? [...bonus, { opcode: OP.add, pop: 2, push: 1 }]
+        : [
+              getlocal(0),
+              get(mn.var_1),
+              ...bonus,
+              ...position,
+              getlocal(args.colourLocal),
+              pushFalse(),
+              pushFalse(),
+              pushFalse(),
+              callPropVoid(mn.method_527, BONUS_FLOATER_ARG_COUNT),
+          ];
+
     const program: Emitted[] = [
         // param1 (the amount) must be positive damage, not a heal.
         getlocal(1),
@@ -414,17 +536,38 @@ function buildFloaterBlock(mn: Mn, soulthiefStr: number): { code: Buffer; maxDep
         get(mn.mMasterClass),
         pushStr(soulthiefStr),
         { opcode: OP.ifne, branchTo: "skip", pop: 2 },
-        // amount += Math.round(this.maxHP / 100); `this` is the victim, so this is the target pool.
-        getLex(mn.Math),
-        getlocal(0),
-        get(mn.maxHP),
-        pushShort(MAX_HP_RATE_DEN),
-        { opcode: OP.divide, pop: 2, push: 1 },
-        callProp(mn.round, 1),
-        { opcode: OP.add, pop: 2, push: 1 },
+        ...payload,
         { label: "skip" },
     ];
     return assemble(program, 1, 1);
+}
+
+/**
+ * Blocks a previously shipped release may have left in the SWF, so a re-run overwrites them
+ * instead of stacking a second block in front of the same anchor -- which would pay the bonus
+ * twice. Two axes have moved: what the bonus reads (max HP, then current HP), whether it is
+ * clamped, and the discipline-name spelling (the first release compared against a capitalized
+ * "Soulthief", which the client never assigns and so never matched).
+ */
+function supersededBlocks(
+    abc: ReturnType<typeof parseAbc>,
+    mn: Mn,
+    args: FloaterArgs,
+): Array<{ code: Buffer; maxDepth: number }> {
+    const out: Array<{ code: Buffer; maxDepth: number }> = [];
+    for (const name of [MASTER_CLASS_NAME, "Soulthief"]) {
+        const idx = abc.stringValues.indexOf(name);
+        if (idx <= 0) {
+            continue;
+        }
+        for (const shape of SHIPPED_SHAPES) {
+            const built = buildFloaterBlock(mn, idx, args, shape);
+            if (!out.some((existing) => existing.code.equals(built.code))) {
+                out.push(built);
+            }
+        }
+    }
+    return out;
 }
 
 // ---- SWF patching -----------------------------------------------------------
@@ -450,36 +593,113 @@ function methodBody(abc: ReturnType<typeof parseAbc>, className: string, methodN
  * `getlocal_0; getproperty var_1` that pushed the Game receiver. At that byte the operand
  * stack holds exactly [Game, amount] and the x-coordinate argument is about to be built.
  */
+/**
+ * The x/y argument expressions each floater call builds, read out of the client's own
+ * instruction stream rather than resolved by name.
+ *
+ * "x" and "y" are not names that can be looked up safely -- the pool has many -- and the exact
+ * multiname a slot uses is the sort of thing a rebuilt client changes silently. Lifting the
+ * operands from the real call site pins them to whatever that site uses, and asserting the
+ * property order makes a changed client fail loudly here instead of drawing a floater at the
+ * wrong coordinates.
+ */
+const FLOATER_POSITION_PROPS = [
+    "gfx", "m_TheDO", "x", "var_596",
+    "gfx", "m_TheDO", "y", "entType", "height", "var_351",
+] as const;
+
+interface FloaterArgs {
+    /** getproperty operands, in FLOATER_POSITION_PROPS order. */
+    props: number[];
+    /** The local holding the colour argument the hit's own floater is drawn with. */
+    colourLocal: number;
+}
+
+function resolveFloaterArgs(
+    abc: ReturnType<typeof parseAbc>,
+    instructions: Instruction[],
+    mn: Mn,
+    anchor: number,
+    callIndex: number,
+): FloaterArgs {
+    const anchorIndex = instructions.findIndex((inst) => inst.offset === anchor);
+    // method_527 takes nine arguments. The first three -- amount, x, y -- are expressions of
+    // many instructions; params four through nine are always a single push each, so they are
+    // exactly the last six instructions before the call. Scanning forwards for them instead
+    // does not work: the obfuscator sprinkles `getlocal 40; dup; iffalse` opaque predicates
+    // through the position expressions, and those look just like an argument push.
+    const firstArgIndex = callIndex - 6;
+    if (firstArgIndex <= anchorIndex || instructions[firstArgIndex].opcode !== OP.getlocal) {
+        throw new PatchError(
+            `The method_527 call at +${instructions[callIndex].offset} does not end with six single-push arguments.`,
+        );
+    }
+
+    const props = instructions
+        .slice(anchorIndex, firstArgIndex)
+        .filter((inst) => inst.opcode === OP.getproperty)
+        .map((inst) => inst.operands[0][1]);
+    if (props.length !== FLOATER_POSITION_PROPS.length) {
+        throw new PatchError(
+            `Floater position expression at +${anchor} has ${props.length} properties, expected ${FLOATER_POSITION_PROPS.length}.`,
+        );
+    }
+    props.forEach((idx, i) => {
+        const actual = abc.multinameNames[idx];
+        if (actual !== FLOATER_POSITION_PROPS[i]) {
+            throw new PatchError(
+                `Floater position expression at +${anchor}: property ${i} is "${actual}", expected "${FLOATER_POSITION_PROPS[i]}".`,
+            );
+        }
+    });
+    if (props[0] !== mn.gfx) {
+        throw new PatchError(`Floater position expression at +${anchor} does not start at the gfx anchor.`);
+    }
+
+    return { props, colourLocal: instructions[firstArgIndex].operands[0][1] };
+}
+
+/**
+ * Where the bonus block goes at each of the client's three floater calls: the byte at which the
+ * operand stack holds exactly [Game, amount] and the x-coordinate argument is about to be
+ * built.
+ *
+ * Found by counting backwards, not forwards, and that is deliberate. The obvious route -- scan
+ * back to the `getlocal_0; getproperty var_1` that pushed the Game receiver, then forward to
+ * the first `getlocal_0; getproperty gfx` -- works on a clean SWF and breaks on a patched one,
+ * because the bonus block sits just before the anchor and pushes a Game receiver and a gfx
+ * chain of its own. The scan would land inside the block it is supposed to be replacing.
+ *
+ * Counting back from the argument pushes has no such ambiguity. The last six instructions
+ * before the call are params four through nine; before them sits the y expression, and before
+ * that the x expression. Both open with `getlocal_0; getproperty gfx`, so the second such pair
+ * encountered going backwards is the start of the x argument, whatever else is in the method.
+ */
 function findFloaterAnchors(instructions: Instruction[], mn: Mn): number[] {
     const anchors: number[] = [];
     for (let i = 0; i < instructions.length; i += 1) {
         const inst = instructions[i];
-        if (inst.opcode !== 0x4f || inst.operands[0]?.[1] !== mn.method_527) {
+        if (
+            inst.opcode !== OP.callpropvoid ||
+            inst.operands[0]?.[1] !== mn.method_527 ||
+            inst.operands[1]?.[1] !== CLIENT_FLOATER_ARG_COUNT
+        ) {
             continue;
         }
-        let receiver = -1;
-        for (let j = i - 1; j >= 1; j -= 1) {
-            if (
-                instructions[j].opcode === 0x66 &&
-                instructions[j].operands[0]?.[1] === mn.var_1 &&
-                instructions[j - 1].opcode === 0xd0
-            ) {
-                receiver = j - 1;
-                break;
-            }
-        }
-        if (receiver < 0) {
-            throw new PatchError(`No Game receiver push found for the method_527 call at +${inst.offset}.`);
-        }
+
+        let seen = 0;
         let anchor = -1;
-        for (let j = receiver + 1; j < i; j += 1) {
+        for (let j = i - 6; j >= 1; j -= 1) {
             if (
-                instructions[j].opcode === 0xd0 &&
-                instructions[j + 1]?.opcode === 0x66 &&
-                instructions[j + 1].operands[0]?.[1] === mn.gfx
+                instructions[j - 1].opcode === 0xd0 &&
+                instructions[j].opcode === OP.getproperty &&
+                instructions[j].operands[0]?.[1] === mn.gfx
             ) {
-                anchor = instructions[j].offset;
-                break;
+                seen += 1;
+                if (seen === 2) {
+                    anchor = instructions[j - 1].offset;
+                    break;
+                }
             }
         }
         if (anchor < 0) {
@@ -493,22 +713,55 @@ function findFloaterAnchors(instructions: Instruction[], mn: Mn): number[] {
     return anchors;
 }
 
+interface Edit {
+    /** Byte where the block starts: the anchor, minus any superseded block being replaced. */
+    at: number;
+    /** Bytes of a superseded block to drop at `at`, or 0 for a fresh insert. */
+    removeLen: number;
+    insert: Buffer;
+}
+
 /**
- * Insert `data` at each offset in `ats` (ascending) and re-target every branch across the
- * insertions. A branch whose target is at or past an insertion point moves by the bytes
- * inserted before that target; the instruction doing the branching moves by the bytes
- * inserted before it.
+ * Apply every edit and re-target the method's branches around them.
+ *
+ * An edit's net delta is `insert.length - removeLen`, so this covers a fresh insert
+ * (removeLen 0), an in-place swap of equal size, and a retune that changes the block's length.
+ *
+ * Two rules carry the correctness:
+ *   - A branch *target* shifts by the edits strictly before it, so a branch that used to land
+ *     on the anchor lands on the block's first byte and the block runs on that path too. Two
+ *     of the three anchors are exactly such targets.
+ *   - A branch *instruction* shifts by the edits at or before it, so an instruction pushed
+ *     back by its own block's insertion moves with it.
+ *
+ * Instructions inside a removed block are skipped: their bytes are gone, and their operands
+ * describe an offset space that no longer exists.
  */
-function spliceInsertMany(code: Buffer, instructions: Instruction[], ats: number[], data: Buffer): Buffer {
-    const sorted = [...ats].sort((a, b) => a - b);
-    const shiftFor = (offset: number, inclusive: boolean): number =>
-        sorted.filter((at) => (inclusive ? at <= offset : at < offset)).length * data.length;
+function spliceEdits(code: Buffer, instructions: Instruction[], edits: Edit[]): Buffer {
+    const sorted = [...edits].sort((a, b) => a.at - b.at);
+    for (let i = 1; i < sorted.length; i += 1) {
+        if (sorted[i].at < sorted[i - 1].at + sorted[i - 1].removeLen) {
+            throw new PatchError("Overlapping edits; the anchors are not what this patch assumes.");
+        }
+    }
+
+    const deltaBefore = (offset: number, inclusive: boolean): number =>
+        sorted
+            .filter((edit) => (inclusive ? edit.at <= offset : edit.at < offset))
+            .reduce((sum, edit) => sum + edit.insert.length - edit.removeLen, 0);
+    // An instruction at the block's first byte belongs to the block and goes with it.
+    const isRemovedInstruction = (offset: number): boolean =>
+        sorted.some((edit) => offset >= edit.at && offset < edit.at + edit.removeLen);
+    // A branch *target* at that same byte is the join point onto the block and stays valid --
+    // it simply lands on the replacement. Only a target strictly inside the old block is lost.
+    const isInsideRemoved = (offset: number): boolean =>
+        sorted.some((edit) => offset > edit.at && offset < edit.at + edit.removeLen);
 
     const chunks: Buffer[] = [];
     let cursor = 0;
-    for (const at of sorted) {
-        chunks.push(code.subarray(cursor, at), data);
-        cursor = at;
+    for (const edit of sorted) {
+        chunks.push(code.subarray(cursor, edit.at), edit.insert);
+        cursor = edit.at + edit.removeLen;
     }
     chunks.push(code.subarray(cursor));
     const patched = Buffer.concat(chunks);
@@ -517,7 +770,7 @@ function spliceInsertMany(code: Buffer, instructions: Instruction[], ats: number
         if (inst.opcode === 0x1b) {
             throw new PatchError("lookupswitch present; its case offsets would need re-targeting too.");
         }
-        if (!isBranchOpcode(inst.opcode)) {
+        if (!isBranchOpcode(inst.opcode) || isRemovedInstruction(inst.offset)) {
             continue;
         }
         const operand = inst.operands.find(([kind]) => kind === "s24");
@@ -525,11 +778,14 @@ function spliceInsertMany(code: Buffer, instructions: Instruction[], ats: number
             continue;
         }
         const oldTarget = inst.offset + inst.size + operand[1];
-        // A branch into an anchor must land on the inserted block, not after it, so the
-        // block runs on that path too: targets at an anchor shift by the insertions strictly
-        // before them.
-        const newTarget = oldTarget + shiftFor(oldTarget, false);
-        const newOffset = inst.offset + shiftFor(inst.offset, true);
+        if (isInsideRemoved(oldTarget)) {
+            throw new PatchError(
+                `A branch at +${inst.offset} targets +${oldTarget}, inside a block being replaced; ` +
+                    "restore DungeonBlitz.swf from git and re-run so the block is inserted fresh.",
+            );
+        }
+        const newTarget = oldTarget + deltaBefore(oldTarget, false);
+        const newOffset = inst.offset + deltaBefore(inst.offset, true);
         writeS24(newTarget - (newOffset + inst.size)).copy(patched, newOffset + 1);
     }
     return patched;
@@ -540,14 +796,22 @@ function patchSwf(swfPath: string, verifyOnly: boolean): void {
     const abc = parseAbc(ctx);
 
     const pool = parsePool(ctx);
-    const { indexOf: strIndexOf, patches } = appendStrings(pool, [MASTER_CLASS_NAME]);
-    const soulthiefStr = strIndexOf.get(MASTER_CLASS_NAME);
-    if (soulthiefStr === undefined) {
-        throw new PatchError(`Could not resolve the ${MASTER_CLASS_NAME} string constant.`);
+    // Deliberately NOT appendStrings. The discipline name has to be a constant the client
+    // itself already uses, because the whole gate turns on string equality with a value the
+    // client assigns. Appending a fresh literal would succeed, insert cleanly, and match
+    // nothing -- a silent no-op is the one failure mode this patch cannot afford, so a
+    // missing constant is a hard error instead.
+    const patches: BytePatch[] = [];
+    const soulthiefStr = pool.strings.indexOf(MASTER_CLASS_NAME);
+    if (soulthiefStr <= 0) {
+        throw new PatchError(
+            `The string constant "${MASTER_CLASS_NAME}" is not in the ABC pool. Entity.mMasterClass ` +
+                `holds Game.const_21[id], the lowercase internal discipline names; if that constant is ` +
+                `gone the client has been rebuilt and this gate needs re-deriving, not appending.`,
+        );
     }
 
     const mn = resolveMultinames(abc);
-    const { code: block, maxDepth } = buildFloaterBlock(mn, soulthiefStr);
 
     const body = methodBody(abc, "Entity", "TakeDamage");
     if (body.exceptionCount !== 0) {
@@ -557,51 +821,124 @@ function patchSwf(swfPath: string, verifyOnly: boolean): void {
     const instructions = disassemble(code, "Entity.TakeDamage");
     const anchors = findFloaterAnchors(instructions, mn);
 
+    // Every site builds its position arguments the same way, and the bonus floater borrows
+    // them. Resolving per site and then insisting they agree keeps one block for all three --
+    // if a future client makes them differ, that is a real change and it should stop here
+    // rather than quietly draw one of the three floaters in the wrong place.
+    const callIndexes = instructions
+        .map((inst, index) => ({ inst, index }))
+        .filter(({ inst }) =>
+            inst.opcode === OP.callpropvoid &&
+            inst.operands[0]?.[1] === mn.method_527 &&
+            inst.operands[1]?.[1] === CLIENT_FLOATER_ARG_COUNT)
+        .map(({ index }) => index);
+    const perSiteArgs = anchors.map((anchor, i) => resolveFloaterArgs(abc, instructions, mn, anchor, callIndexes[i]));
+    const args = perSiteArgs[0];
+    if (!perSiteArgs.every((candidate) =>
+        candidate.colourLocal === args.colourLocal &&
+        candidate.props.every((prop, i) => prop === args.props[i]))) {
+        throw new PatchError("The three floater call sites no longer build their arguments identically.");
+    }
+
+    const { code: block, maxDepth } = buildFloaterBlock(mn, soulthiefStr, args);
+
     // The block is inserted immediately *before* the anchor, and the anchor scan re-finds the
     // same x-argument start on an already-patched file, so look backwards from it.
-    const carriesBlock = (at: number): boolean =>
-        at >= block.length && code.subarray(at - block.length, at).equals(block);
+    const carriesBlockOf = (candidate: Buffer, at: number): boolean =>
+        at >= candidate.length && code.subarray(at - candidate.length, at).equals(candidate);
+    const carriesBlock = (at: number): boolean => carriesBlockOf(block, at);
+
+    // A shipped SWF may carry a superseded version of this block. The first release of this
+    // patch compared mMasterClass against the capitalized "Soulthief", which the client never
+    // assigns, so it inserted cleanly and matched nothing. Recognise those bytes and overwrite
+    // them; without this the anchor scan would find the x-argument start *after* the dead block
+    // and happily stack a second one on top of it.
+    const legacyBlocks = supersededBlocks(abc, mn, args).filter((candidate) => !candidate.code.equals(block));
+    const legacy = legacyBlocks.find((candidate) => anchors.every((at) => carriesBlockOf(candidate.code, at)));
+
     const alreadyPatched = anchors.every(carriesBlock);
-    if (alreadyPatched) {
+
+    // max_stack is settled here rather than inside the insert branch, because "the bytes are
+    // already right" is not the same as "the method declares enough stack for them". An earlier
+    // release wrote a shallower block and bought less headroom; re-running with a deeper block
+    // would have left the old, too-small value in place and the operand stack would overrun it.
+    // AVM2 verifies max_stack, so that is not a wrong number on screen -- it is a VerifyError
+    // and the class does not load at all.
+    //
+    // Writing an absolute value rather than adjusting the existing one makes every path -- fresh
+    // insert, replace, re-run on an already-correct file -- land on the same number, so it can
+    // neither creep upward nor be left behind.
+    const [maxStack, maxStackEnd] = readU30(ctx.body, body.maxStackPos, "Entity.TakeDamage.max_stack");
+    const neededStack = CLEAN_MAX_STACK + Math.max(STACK_HEADROOM, maxDepth);
+    const isUnpatched = !legacy && !anchors.some(carriesBlock);
+    if (isUnpatched && maxStack !== CLEAN_MAX_STACK) {
+        throw new PatchError(
+            `Entity.TakeDamage declares max_stack ${maxStack} on an unpatched SWF, expected ${CLEAN_MAX_STACK}. ` +
+                "The client has been rebuilt; re-derive CLEAN_MAX_STACK before trusting this patch.",
+        );
+    }
+    if (maxStack !== neededStack) {
+        patches.push({
+            key: "Entity.TakeDamage.max_stack",
+            start: body.maxStackPos,
+            end: maxStackEnd,
+            data: writeU30(neededStack),
+            detail: `set max_stack for the bonus block (${maxStack} -> ${neededStack})`,
+        });
+    }
+
+    if (alreadyPatched && patches.length === 0) {
         console.log(`${swfPath}: Entity.TakeDamage already carries the Soulthief floater bonus at all 3 sites.`);
+    } else if (alreadyPatched) {
+        console.log(`${swfPath}: Entity.TakeDamage carries the Soulthief floater bonus; correcting max_stack.`);
     } else if (verifyOnly) {
         throw new PatchError(`${swfPath}: verify failed; the Soulthief floater bonus is missing or needs updating.`);
     } else {
-        if (anchors.some(carriesBlock)) {
+        if (!legacy && anchors.some((at) => carriesBlock(at) || legacyBlocks.some((c) => carriesBlockOf(c.code, at)))) {
             throw new PatchError(
-                "Entity.TakeDamage carries the Soulthief floater bonus at some but not all sites; restore the .bak and re-run.",
+                "Entity.TakeDamage carries a Soulthief floater block at some but not all sites; " +
+                    "restore DungeonBlitz.swf from git and re-run.",
             );
         }
-        const patchedCode = spliceInsertMany(code, instructions, anchors, block);
 
-        const [maxStack, maxStackEnd] = readU30(ctx.body, body.maxStackPos, "Entity.TakeDamage.max_stack");
-        const neededStack = maxStack + Math.max(STACK_HEADROOM, maxDepth);
-        patches.push(
-            {
-                key: "Entity.TakeDamage.max_stack",
-                start: body.maxStackPos,
-                end: maxStackEnd,
-                data: writeU30(neededStack),
-                detail: `raise max_stack for the inserted block (${maxStack} -> ${neededStack})`,
-            },
-            {
-                key: "Entity.TakeDamage.code",
-                start: body.codeStart,
-                end: body.codeStart + body.codeLen,
-                data: patchedCode,
-                detail: `insert the Soulthief floater bonus at 3 sites (${block.length} bytes each)`,
-            },
-            {
+        // Replacing and inserting are the same operation with different removal lengths, so
+        // retuning a constant (which changes the block's length) is not a special case that
+        // needs the SWF restored from git first. Getting this wrong is not subtle: the anchor
+        // scan re-finds the x-argument start *after* an existing block, so a plain insert on an
+        // already-patched file stacks a second block in front of the first and pays the bonus
+        // twice.
+        const patchedCode = spliceEdits(
+            code,
+            instructions,
+            anchors.map((at) => ({
+                at: at - (legacy?.code.length ?? 0),
+                removeLen: legacy?.code.length ?? 0,
+                insert: block,
+            })),
+        );
+
+        patches.push({
+            key: "Entity.TakeDamage.code",
+            start: body.codeStart,
+            end: body.codeStart + body.codeLen,
+            data: patchedCode,
+            detail: legacy
+                ? `overwrite the superseded Soulthief floater bonus at 3 sites (${block.length} bytes each)`
+                : `insert the Soulthief floater bonus at 3 sites (${block.length} bytes each)`,
+        });
+        if (patchedCode.length !== body.codeLen) {
+            patches.push({
                 key: "Entity.TakeDamage.codeLen",
                 start: body.codeLenPos,
                 end: body.codeStart,
                 data: writeU30(patchedCode.length),
                 detail: `update Entity.TakeDamage code length (${body.codeLen} -> ${patchedCode.length})`,
-            },
-        );
+            });
+        }
         console.log(
-            `${swfPath}: inserted the Soulthief floater bonus into Entity.TakeDamage at +${anchors.join(", +")} ` +
-                `(${block.length} bytes each, max_stack ${maxStack} -> ${neededStack}).`,
+            `${swfPath}: ${legacy ? "overwrote the superseded" : "inserted the"} Soulthief floater bonus in ` +
+                `Entity.TakeDamage at +${anchors.map((at) => at - block.length).join(", +")} ` +
+                `(${block.length} bytes each, max_stack ${neededStack}).`,
         );
     }
 

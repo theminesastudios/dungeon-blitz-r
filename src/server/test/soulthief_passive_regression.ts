@@ -1,18 +1,19 @@
 /**
  * Regression test for the Soulthief passive.
  *
- * The passive -- "every successful attack also strikes for 1% of the target's
- * maximum Health" -- is applied server-side in CombatHandler.handlePowerHit via
- * getSoulthieftMaxHpBonus, because the target's health pool is not a term the
- * client's damage formula has.
+ * The passive -- "every successful attack also strikes for 1% of the health the
+ * target has when the blow lands" -- is applied server-side in
+ * CombatHandler.handlePowerHit via getSoulthieftMaxHpBonus, because the target's
+ * health is not a term the client's damage formula has.
  *
- * It was reported as doing nothing, and there were two separate reasons:
+ * It read as doing nothing for three separate reasons, each fixed and each with
+ * assertions below so it cannot come back:
  *
- *   1. The bonus was clamped with Math.min(baseDamage, ...). That took the
- *      passive away in exactly the fight it exists for -- a 4,000,000 HP boss
- *      owes 40,000, which is more than a rogue's hit, so the clamp handed back
- *      the plain hit instead. It also made the bonus crit-dependent, because the
- *      number it clamped against is the crit-inflated damage.
+ *   1. The bonus was clamped against the attacker's own hit. That took the
+ *      passive away in exactly the fight it exists for -- a full-health
+ *      4,000,000 HP boss owes 40,000, far more than a rogue's swing, so the
+ *      clamp handed back the plain hit instead. It also made the bonus
+ *      crit-dependent, because the number it clamped against is crit-inflated.
  *
  *   2. Nothing delivered the bonus to the attacker. On a client-spawn dungeon
  *      level the attacker's own client runs the hit locally before the server
@@ -22,10 +23,17 @@
  *      and the attacker's copy of the hostile -- the copy that draws the health
  *      bar and decides the kill -- never lost the extra health.
  *
- * Both halves are locked in here. The second half is the one that makes the
- * passive visible in play, so it is tested against the real converge routine and
- * the real packet it emits (a negative 0x78, which is live damage since
+ *   3. PvP targets skipped the rewrite entirely: the call site was gated on a
+ *      non-player target.
+ *
+ * The delivery half is the one that makes the passive visible in play, so it is
+ * tested against the real converge routine and the real packet it emits (a
+ * negative 0x78, which is live damage since
  * patch-dungeonblitz-charregen-damage-channel.ts).
+ *
+ * The display twin is patch-dungeonblitz-soulthief-passive-display.ts, which
+ * shows the same bonus in the floating damage numbers. It reads the pre-hit
+ * health as `currHP + param1`; the rate here and there must agree.
  */
 import * as fs from 'fs';
 import * as path from 'path';
@@ -59,7 +67,31 @@ function hostile(overrides: Record<string, any> = {}): any {
 }
 
 const bonus = (target: any, baseDamage: number, session: any = soulthiefSession()): number =>
-    (CombatHandler as any).getSoulthieftMaxHpBonus(session, target, baseDamage, LEVEL) as number;
+    (CombatHandler as any).getSoulthieftMaxHpBonus(session, target, baseDamage, LEVEL, null) as number;
+
+/** A hostile at `hp` out of `maxHp`, which is what the passive now reads. */
+const wounded = (maxHp: number, hp: number): any => hostile({ maxHp, hp, healthDelta: hp - maxHp });
+
+/**
+ * A PvP target. The pool comes from the session, not the entity, because a player's max HP is
+ * gear-derived and the server keeps its own authoritative copy.
+ */
+function playerTarget(maxHp: number, level: number = 50, hp: number = maxHp): any {
+    const entity = { id: 900, isPlayer: true, maxHp, hp };
+    return {
+        token: 2,
+        clientEntID: 900,
+        currentLevel: LEVEL,
+        levelInstanceId: '',
+        authoritativeMaxHp: maxHp,
+        authoritativeCurrentHp: hp,
+        character: { name: 'Victim', level },
+        entities: new Map<number, any>([[900, entity]])
+    };
+}
+
+const pvpBonus = (target: any, baseDamage: number, session: any = soulthiefSession()): number =>
+    (CombatHandler as any).getSoulthieftMaxHpBonus(session, null, baseDamage, LEVEL, target) as number;
 
 /**
  * Replays the reconciliation half of a power hit: the attacker's client already
@@ -119,34 +151,92 @@ function reconcileOnAttackerScreen(
 
 const assertions: Array<[string, () => boolean]> = [
     [
-        'the rate is 1% of the target maximum health',
-        () => (CombatHandler as any).SOULTHIEFT_MAX_HP_RATE === 0.01
+        'the rate is 1% of the health the target has when the hit lands',
+        () => (CombatHandler as any).SOULTHIEFT_CURRENT_HP_RATE === 0.01
     ],
     [
-        'a 10,000 HP enemy owes 100',
-        () => bonus(hostile({ maxHp: 10_000 }), 500) === 100
+        // The passive now reads the health the target still has when the blow connects, so it
+        // starts high on a full bar and tapers as the target is worn down.
+        'a full-health 100,000 HP target owes 1,000',
+        () => bonus(wounded(100_000, 100_000), 5_000) === 1_000
     ],
     [
-        'a 100,000 HP enemy owes 1,000',
-        () => bonus(hostile({ maxHp: 100_000 }), 500) === 1_000
+        'the same target at half health owes half as much',
+        () => bonus(wounded(100_000, 50_000), 5_000) === 500
     ],
     [
-        'a 4,000,000 HP boss owes 40,000, not the attacker\'s own hit',
-        () => bonus(hostile({ maxHp: 4_000_000 }), 5_000) === 40_000
+        'the same target at a tenth of its health owes a tenth',
+        () => bonus(wounded(100_000, 10_000), 5_000) === 100
     ],
     [
-        'the bonus does not scale with the hit, so a crit does not inflate it',
-        () => bonus(hostile({ maxHp: 4_000_000 }), 5_000) === bonus(hostile({ maxHp: 4_000_000 }), 15_000)
+        'the bonus falls monotonically as the target is worn down',
+        () => {
+            const steps = [100_000, 80_000, 60_000, 40_000, 20_000, 5_000]
+                .map((hp) => bonus(wounded(100_000, hp), 5_000));
+            return steps.every((value, i) => i === 0 || value < steps[i - 1]);
+        }
     ],
     [
-        'the bonus reads maximum health, not current health',
-        () => bonus(hostile({ maxHp: 100_000, hp: 1_000 }), 500) === bonus(hostile({ maxHp: 100_000, hp: 100_000 }), 500)
+        // The anti-tank identity survives the change: a 4,000,000 HP boss opens at 40,000.
+        'a full-health 4,000,000 HP boss owes 40,000',
+        () => bonus(wounded(4_000_000, 4_000_000), 5_000) === 40_000
     ],
     [
-        'a client-spawned hostile that never reported a pool still owes its share',
+        'a nearly dead target owes almost nothing, so the passive cannot execute',
+        () => bonus(wounded(4_000_000, 500), 5_000) === 5
+    ],
+    [
+        'the bonus is uncapped: it does not track the hit that carried it',
+        () => bonus(wounded(4_000_000, 4_000_000), 5_000) === bonus(wounded(4_000_000, 4_000_000), 40_000)
+    ],
+    [
+        'a crit does not modify the bonus',
+        () => bonus(wounded(100_000, 70_000), 20_000) === bonus(wounded(100_000, 70_000), 30_000)
+    ],
+    [
+        'the bonus scales linearly with the health remaining',
+        () => bonus(wounded(400_000, 200_000), 5_000) === 2 * bonus(wounded(400_000, 100_000), 5_000)
+    ],
+    [
+        'a hostile the server has never seen take damage is read at full health',
         () => bonus(hostile(), 5_000) ===
             Math.round(0.01 * Number((CombatHandler as any).getNpcHealthState(hostile(), LEVEL).maxHp))
     ],
+    [
+        // Elite and boss EntTypes differ from a minion only by HitPoints, so an untouched
+        // hostile's pool -- and with it the opening bonus -- grows with rank with no
+        // rank-specific code.
+        'an elite and a boss open strictly higher than a minion of the same level',
+        () => {
+            const minion = bonus(hostile({ name: 'GoblinBase' }), 5_000);
+            const elite = bonus(hostile({ name: 'GoblinMiniBoss' }), 5_000);
+            const boss = bonus(hostile({ name: 'GoblinBoss1' }), 5_000);
+            return minion > 0 && elite > minion && boss > elite;
+        }
+    ],
+
+    // --- PvP: a player target used to skip every server-side damage rewrite ---
+    [
+        'a full-health 100,000 HP player target owes 1,000',
+        () => pvpBonus(playerTarget(100_000), 5_000) === 1_000
+    ],
+    [
+        'a wounded player owes proportionally less',
+        () => pvpBonus(playerTarget(100_000, 50, 40_000), 5_000) === 400
+    ],
+    [
+        'the player health comes from the session, not from a passed entity',
+        () => pvpBonus(playerTarget(250_000), 5_000) === 2_500
+    ],
+    [
+        'a crit does not modify the bonus against a player either',
+        () => pvpBonus(playerTarget(100_000), 20_000) === pvpBonus(playerTarget(100_000), 30_000)
+    ],
+    [
+        'a non-Soulthief gets nothing in PvP',
+        () => pvpBonus(playerTarget(100_000), 5_000, soulthiefSession(MasterClassID.Executioner)) === 0
+    ],
+
     [
         'a missed swing (zero damage) owes nothing',
         () => bonus(hostile({ maxHp: 100_000 }), 0) === 0
@@ -157,12 +247,12 @@ const assertions: Array<[string, () => boolean]> = [
     ],
     [
         'the other two rogue disciplines get nothing',
-        () => bonus(hostile({ maxHp: 100_000 }), 500, soulthiefSession(MasterClassID.Executioner)) === 0 &&
-            bonus(hostile({ maxHp: 100_000 }), 500, soulthiefSession(MasterClassID.Shadowwalker)) === 0
+        () => bonus(hostile({ maxHp: 100_000 }), 20_000, soulthiefSession(MasterClassID.Executioner)) === 0 &&
+            bonus(hostile({ maxHp: 100_000 }), 20_000, soulthiefSession(MasterClassID.Shadowwalker)) === 0
     ],
     [
         'a player with no discipline gets nothing',
-        () => bonus(hostile({ maxHp: 100_000 }), 500, soulthiefSession(MasterClassID.None)) === 0
+        () => bonus(hostile({ maxHp: 100_000 }), 20_000, soulthiefSession(MasterClassID.None)) === 0
     ],
 
     // --- delivery: the half that made the passive read as "not working" ---
@@ -177,7 +267,7 @@ const assertions: Array<[string, () => boolean]> = [
         'the delivered correction is exactly the server-side bonus, not the whole hit',
         () => {
             const maxHp = 4_000_000;
-            const packetDamage = 5_000;
+            const packetDamage = 40_000;
             const passive = bonus(hostile({ maxHp }), packetDamage);
             const packets = reconcileOnAttackerScreen(maxHp, packetDamage, packetDamage + passive);
             return packets.length === 1 && packets[0].delta === -passive;
