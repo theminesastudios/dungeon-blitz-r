@@ -1414,26 +1414,6 @@ export class SocialHandler {
             return;
         }
 
-        if (client.character) {
-            const match = /^\/lang:\s*(tr|en)\s*$/i.exec(message);
-            if (match) {
-                const nextLanguage = match[1].toLowerCase();
-                client.character.dialogueLanguage = nextLanguage;
-
-                if (client.userId) {
-                    await db.saveCharacters(client.userId, client.characters);
-                }
-
-                SocialHandler.sendChatStatus(
-                    client,
-                    nextLanguage === 'tr'
-                        ? 'NPC dialog dili Turkce olarak ayarlandi.'
-                        : 'NPC dialog language set to English.'
-                );
-                return;
-            }
-        }
-
         if (client.character && message) {
             discordSocialBridge.relay({
                 scope: 'public',
