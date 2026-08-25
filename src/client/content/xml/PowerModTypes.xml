@@ -2629,7 +2629,7 @@
 		<ModName>InsidiousPoison1</ModName>
 		<ModID>276</ModID>
 		<DisplayName>Insidious Poison</DisplayName>
-		<Description>Increases Poison Damage vs. Bound targets@Poison vs Bound:, +2%, +5%, +11%, +19%, +28%</Description>
+		<Description>Increases Poison Damage vs. Bound targets@Poison vs Bound:, +2%, +5%, +10%, +15%, +20%</Description>
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
@@ -2653,7 +2653,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
-		<BuffValue>.11</BuffValue>
+		<BuffValue>.10</BuffValue>
 		<IconName>a_Signet_InsidiousPoison</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2663,7 +2663,7 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
-		<BuffValue>.19</BuffValue>
+		<BuffValue>.15</BuffValue>
 		<IconName>a_Signet_InsidiousPoison</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2673,14 +2673,14 @@
 		<ModType>Buff</ModType>
 		<BuffName>PoisonStrike,DaggerPoison,ChaosPoison,ThornPoison1,ThornPoison2,ThornPoison3,ThornPoison4</BuffName>
 		<BuffProperty>BoundMultiplier</BuffProperty>
-		<BuffValue>.28</BuffValue>
+		<BuffValue>.20</BuffValue>
 		<IconName>a_Signet_InsidiousPoison</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>WindCloak1</ModName>
 		<ModID>281</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
-		<Description>Gain Bonus Defense vs Bound Enemies@Defense:, +1%, +3%, +5%, +7%, +10%</Description>
+		<Description>Gain Bonus Defense vs Bound Enemies@Defense:, +1%, +2%, +3%, +4%, +5%</Description>
 		<ModType>WTF</ModType>
 		<SelfValue>.01</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
@@ -2690,7 +2690,7 @@
 		<ModID>282</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.03</SelfValue>
+		<SelfValue>.02</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2698,7 +2698,7 @@
 		<ModID>283</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.05</SelfValue>
+		<SelfValue>.03</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2706,7 +2706,7 @@
 		<ModID>284</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.07</SelfValue>
+		<SelfValue>.04</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -2714,7 +2714,7 @@
 		<ModID>285</ModID>
 		<DisplayName>Wind Cloak</DisplayName>
 		<ModType>WTF</ModType>
-		<SelfValue>.10</SelfValue>
+		<SelfValue>.05</SelfValue>
 		<IconName>a_Signet_WindCloak</IconName>
 	</PowerModType>
 	<PowerModType>
