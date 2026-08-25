@@ -2,16 +2,16 @@
  * Regression test for the Sentinel passive (issue #726).
  *
  * The passive -- "your melee attacks also strike for 0.3% of your maximum Health
- * and 30% of your Defense" -- is applied server-side on every melee hit
+ * and 100% of your Defense" -- is applied server-side on every melee hit
  * (CombatHandler.getSentinelMaxHpBonus). The Defense term reads the player's
  * declared armorClass from packet 0xFC, which is exactly the channel Defense
  * charms act through: the client folds each charm's ArmorBonus into Entity.armorClass,
- * sends it, and the server turns 30% of it into bonus damage.
+ * sends it, and the server turns 100% of it into bonus damage.
  *
  * This test locks in that chain so a future change cannot silently detach the
  * passive from Defense again: the rates, the melee power list, the class gate,
  * the old-client zero-Defense fallback, and the specific numbers a Defense charm
- * must produce (an Onyx10's +28 Defense is 30% of 28 = +8 damage on the armor term).
+ * must produce (an Onyx10's +28 Defense is 100% of 28 = +28 damage on the armor term).
  *
  * The display twin of this test is the client patch
  * patch-dungeonblitz-sentinel-passive-display.ts, which shows the same bonus in
@@ -69,8 +69,8 @@ const assertions: Array<[string, () => boolean]> = [
         () => (CombatHandler as any).SENTINEL_MAX_HP_RATE === 0.003
     ],
     [
-        'the Defense rate is 30%',
-        () => (CombatHandler as any).SENTINEL_ARMOR_RATE === 0.3
+        'the Defense rate is 100%',
+        () => (CombatHandler as any).SENTINEL_ARMOR_RATE === 1.0
     ],
     [
         'the melee power set resolves from PlayerPowerTypes.xml',
@@ -97,24 +97,24 @@ const assertions: Array<[string, () => boolean]> = [
         () => !meleePowerIds.has(SF_RANGED_ID)
     ],
     [
-        'the passive hits for 0.3% of max HP plus 30% of Defense',
+        'the passive hits for 0.3% of max HP plus 100% of Defense',
         () => getBonus(sentinelSession(BASE_ARMOR), SF_MELEE_ID, 5_264)
-            === Math.round(0.003 * MAX_HP) + Math.round(0.3 * BASE_ARMOR)
+            === Math.round(0.003 * MAX_HP) + Math.round(1.0 * BASE_ARMOR)
     ],
     [
-        'an Onyx10 Defense charm (+28 Defense) adds 30% of 28 to the armor term',
+        'an Onyx10 Defense charm (+28 Defense) adds 100% of 28 to the armor term',
         () => {
             const without = getBonus(sentinelSession(BASE_ARMOR), SF_MELEE_ID, 5_264);
             const withCharm = getBonus(sentinelSession(BASE_ARMOR + ONYX10_ARMOR_BONUS), SF_MELEE_ID, 5_264);
-            return withCharm - without === Math.round(0.3 * ONYX10_ARMOR_BONUS);
+            return withCharm - without === Math.round(1.0 * ONYX10_ARMOR_BONUS);
         }
     ],
     [
-        'Defense scales the passive point for point at 30%',
+        'Defense scales the passive point for point at 100%',
         () => {
             const low = getBonus(sentinelSession(1_000), SF_MELEE_ID, 5_264);
             const high = getBonus(sentinelSession(1_100), SF_MELEE_ID, 5_264);
-            return high - low === Math.round(0.3 * 100);
+            return high - low === Math.round(1.0 * 100);
         }
     ],
     [

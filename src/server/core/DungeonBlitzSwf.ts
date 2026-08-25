@@ -12,7 +12,6 @@ import {
 import { Config } from './config';
 
 export type DungeonBlitzSwfMode = 'local' | 'multiplayer';
-export type DungeonBlitzSwfLocale = 'en' | 'tr';
 
 const LOCAL_HOST = 'localhost';
 const REMOTE_HOST = Config.MULTIPLAYER_HOST;
@@ -68,7 +67,7 @@ const DISCONNECT_SCREEN_RESTORE_ENGLISH: StringReplacement[] = [
     { oldValue: 'Istemci Hatasi', newValue: 'Client Error' },
 ];
 
-function getReplacements(mode: DungeonBlitzSwfMode, _locale: DungeonBlitzSwfLocale): StringReplacement[] {
+function getReplacements(mode: DungeonBlitzSwfMode): StringReplacement[] {
     const localeReplacements = DISCONNECT_SCREEN_RESTORE_ENGLISH;
     if (mode === 'local') {
         return [
@@ -206,13 +205,12 @@ function buildMountedSpeedPatch(ctx: ReturnType<typeof parseSwf>) {
 export function buildDungeonBlitzSwfVariantBuffer(
     swfPath: string,
     mode: DungeonBlitzSwfMode,
-    locale: DungeonBlitzSwfLocale = 'en'
 ): Buffer {
     const ctx = parseSwf(swfPath);
     const abc = parseAbc(ctx);
     const patches = [];
 
-    for (const replacement of getReplacements(mode, locale)) {
+    for (const replacement of getReplacements(mode)) {
         for (let index = 1; index < abc.stringValues.length; index++) {
             if (abc.stringValues[index] !== replacement.oldValue) {
                 continue;

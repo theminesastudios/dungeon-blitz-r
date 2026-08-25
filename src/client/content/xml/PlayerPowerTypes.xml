@@ -14285,7 +14285,7 @@
 		<DamageType>Holy</DamageType>
 		<PowerGroup>ConcussionBolt</PowerGroup>
 		<DisplayName>Concussion Bolt</DisplayName>
-		<Description>The Sentinel's ranged energy attacks. Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 30% of your Defense. [Stats: x0.8 damage]</Description>
+		<Description>The Sentinel's ranged energy attacks. Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 100% of your Defense. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -14318,7 +14318,7 @@
 		<PowerGroup>ConcussionBolt</PowerGroup>
 		<DisplayName>Concussion Bolt</DisplayName>
 		<BasePowerName>ConcussionBolt</BasePowerName>
-		<Description>The Sentinel's ranged energy attacks. Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 30% of your Defense. [Stats: x0.8 damage]</Description>
+		<Description>The Sentinel's ranged energy attacks. Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 100% of your Defense. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
