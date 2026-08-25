@@ -3086,10 +3086,7 @@ export class LevelHandler {
                 // reposition arrives as one large delta and must not be scored as a teleport.
                 // Without this an on-foot player is clamped back into the room they just left,
                 // which is the position everyone else keeps rendering.
-                client.roomTransitionGraceUntil = Math.max(
-                    client.roomTransitionGraceUntil,
-                    Date.now() + LevelHandler.ROOM_TRANSITION_GRACE_MS
-                );
+                MovementAuthority.armRoomTransitionGrace(client, LevelHandler.ROOM_TRANSITION_GRACE_MS);
                 PetHandler.armMountTravelProtection(client, 4000, true);
             }
             LevelHandler.maybeStartTutorialDungeonTraversalTutorial(client, roomId);
@@ -5342,6 +5339,11 @@ export class LevelHandler {
             return;
         }
 
+        // The source client is not necessarily returned by forLevelRecipients or
+        // the shared-participant sweep. Reset it explicitly so portal movement
+        // accumulated before the cinematic cannot later disconnect the player.
+        MovementAuthority.resetFromEntity(client, client.entities.get(client.clientEntID), 'cutscene_start');
+
         if (sharedCutsceneDecision === 'owner_active' || sharedCutsceneDecision === 'started') {
             LevelHandler.markSharedDungeonCutsceneParticipant(client, roomId, 0);
             LevelHandler.setServerAuthorityHostilesUntargetableForScope(getClientLevelScope(client), roomId, true);
@@ -5386,6 +5388,12 @@ export class LevelHandler {
         ) {
             return;
         }
+
+        // The first movement packet after a cinematic contains the local
+        // room/portal reposition. activeDungeonCutsceneScope is cleared as the
+        // cinematic closes, so explicitly keep a short transition window alive.
+        MovementAuthority.resetFromEntity(client, client.entities.get(client.clientEntID), 'cutscene_end');
+        MovementAuthority.armRoomTransitionGrace(client, LevelHandler.ROOM_TRANSITION_GRACE_MS);
         if (sharedCutsceneDecision === 'participant_finished') {
             EntityHandler.sendTutorialDungeonWorldSnapshot(client, 'cutscene_participant_end');
             client.activeDungeonCutsceneScope = '';

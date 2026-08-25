@@ -32,7 +32,15 @@ const DEFAULT_SWF = path.resolve(
 const CRIT_CHANCE_LOCALS = new Set([7, 65]);
 const EXPECTED_PATCHED_SEQUENCES = 2;
 const EXPECTED_FIXED_RAW_DISPLAYS = 1;
+const PRECISE_PERCENT_LOCALS = new Set([8, 13, 14, 15, 16, 66, 71, 72, 73, 74]);
+const EXPECTED_PRECISE_PERCENT_SEQUENCES = 15;
 const MIN_METHOD_43_MAX_STACK = 5;
+const LEGACY_NORMALIZED_BONUS = 0.13333333333333333;
+const DISPLAYED_BONUS = 0.1;
+const NORMALIZED_BONUS_TRAITS = [
+  ["CombatState", "const_466"], // CritDamage gear rune: +10%
+  ["class_7", "const_661"], // Pet base bonus: 10% + 1% per level
+] as const;
 
 function syncClientRevision(swfPath: string, verifyOnly: boolean): void {
   const indexPath = path.resolve(path.dirname(swfPath), "..", "..", "index.html");
@@ -522,6 +530,308 @@ function patchRawCriticalChanceDisplay(swfPath: string, verifyOnly = false): voi
   }
 }
 
+function findPrecisePercentPatches(
+  swfPath: string,
+): { ctx: ReturnType<typeof parseSwf>; patches: BytePatch[]; oldCount: number; patchedCount: number } {
+  const { ctx, abc, methodBody, instructions } = findMethodBody(swfPath, "ScreenArmory", "method_170");
+  const patches: BytePatch[] = [];
+  let oldCount = 0;
+  let patchedCount = 0;
+
+  for (let index = 0; index < instructions.length; index += 1) {
+    const local = localOperand(instructions[index]);
+    if (local === null || !PRECISE_PERCENT_LOCALS.has(local)) continue;
+
+    const isPatched =
+      instructions[index + 1]?.opcode === 0x25 &&
+      instructions[index + 1].operands[0]?.[1] === 1000 &&
+      instructions[index + 2]?.opcode === 0xa2 &&
+      instructions[index + 3]?.opcode === 0x73 &&
+      pushByteValue(instructions[index + 4]) === 10 &&
+      instructions[index + 5]?.opcode === 0xa3;
+    if (isPatched) {
+      patchedCount += 1;
+      continue;
+    }
+
+    const mathInst = instructions[index - 1];
+    const scaleInst = instructions[index + 1];
+    const multiplyInst = instructions[index + 2];
+    const roundInst = instructions[index + 3];
+    if (
+      !isGetLexMath(abc, mathInst) ||
+      pushByteValue(scaleInst) !== 100 ||
+      multiplyInst?.opcode !== 0xa2 ||
+      !roundInst ||
+      !isRoundCall(abc, roundInst)
+    ) {
+      continue;
+    }
+
+    const start = mathInst.offset;
+    const end = roundInst.offset + roundInst.size;
+    const oldLen = end - start;
+    const localBytes = ctx.body.subarray(
+      methodBody.codeStart + instructions[index].offset,
+      methodBody.codeStart + instructions[index].offset + instructions[index].size,
+    );
+    const replacement = Buffer.concat([
+      localBytes,
+      opU30(0x25, 1000),
+      inst(0xa2), // value * 1000
+      inst(0x73), // truncate to tenths so the UI never overstates the bonus
+      Buffer.from([0x24, 10]),
+      inst(0xa3),
+    ]);
+    if (replacement.length > oldLen) {
+      throw new PatchError(`Precise percent formatter for local ${local} does not fit: ${oldLen} -> ${replacement.length}`);
+    }
+
+    oldCount += 1;
+    patches.push({
+      key: `ScreenArmory.precisePercent.local${local}.${methodBody.codeStart + start}`,
+      start: methodBody.codeStart + start,
+      end: methodBody.codeStart + end,
+      data: Buffer.concat([replacement, nops(oldLen - replacement.length)]),
+      detail: `display Critical Power/pet bonus local ${local} to one decimal without rounding upward`,
+    });
+  }
+
+  return { ctx, patches, oldCount, patchedCount };
+}
+
+function patchPrecisePercentDisplays(swfPath: string, verifyOnly = false): number {
+  const firstPass = findPrecisePercentPatches(swfPath);
+  if (!verifyOnly && firstPass.patches.length > 0) {
+    ensureBackup(swfPath);
+    const { body, delta } = applyPatchesToBody(firstPass.ctx.body, firstPass.patches);
+    writeSwf(firstPass.ctx, body, delta);
+  }
+
+  const verifyPass = findPrecisePercentPatches(swfPath);
+  if (verifyPass.oldCount !== 0 || verifyPass.patchedCount !== EXPECTED_PRECISE_PERCENT_SEQUENCES) {
+    throw new PatchError(
+      `Critical Power/pet bonus precision verification failed: old=${verifyPass.oldCount}, patched=${verifyPass.patchedCount}`,
+    );
+  }
+  return firstPass.patches.length;
+}
+
+function findNormalizedBonusConstantPatches(
+  swfPath: string,
+): { ctx: ReturnType<typeof parseSwf>; patches: BytePatch[] } {
+  const ctx = parseSwf(swfPath);
+  const abc = parseAbc(ctx);
+  const patches: BytePatch[] = [];
+  const doubleReferenceCounts = new Map<number, number>();
+  const addDoubleReference = (index: number | undefined): void => {
+    if (index === undefined || index <= 0) return;
+    doubleReferenceCounts.set(index, (doubleReferenceCounts.get(index) ?? 0) + 1);
+  };
+  for (const methodBody of abc.methodBodies.values()) {
+    const instructions = disassemble(
+      ctx.body.subarray(methodBody.codeStart, methodBody.codeStart + methodBody.codeLen),
+      `method.${methodBody.methodIdx}`,
+    );
+    for (const instruction of instructions) {
+      if (instruction.opcode === 0x2f) addDoubleReference(instruction.operands[0]?.[1]);
+    }
+  }
+  for (const traits of [
+    ...abc.instances.map((entry) => entry.traits),
+    ...abc.classTraits,
+    ...abc.scriptTraits,
+  ]) {
+    for (const trait of traits) {
+      if (trait.vkind === 0x06) addDoubleReference(trait.vindex);
+    }
+  }
+
+  let displayedBonusIndex = abc.doubleValues.findIndex(
+    (value, index) => index > 0 && index < 128 && value === DISPLAYED_BONUS,
+  );
+  if (displayedBonusIndex < 0) {
+    displayedBonusIndex = abc.doubleValues.findIndex(
+      (_value, index) => index > 0 && index < 128 && (doubleReferenceCounts.get(index) ?? 0) === 0,
+    );
+    if (displayedBonusIndex < 0) {
+      throw new PatchError("Could not find an unused one-byte double-pool slot for the exact 10% bonus.");
+    }
+    const encodedValue = Buffer.alloc(8);
+    encodedValue.writeDoubleLE(DISPLAYED_BONUS);
+    patches.push({
+      key: "ScreenArmory.normalizedBonus.reusableDouble",
+      start: abc.doubleValuePositions[displayedBonusIndex],
+      end: abc.doubleValuePositions[displayedBonusIndex] + 8,
+      data: encodedValue,
+      detail: `reuse unreferenced double ${displayedBonusIndex} for the exact 10% bonus`,
+    });
+  }
+
+  const targets = NORMALIZED_BONUS_TRAITS.map(([className, traitName]) => {
+    const classIndex = classIndexByName(abc, className);
+    if (classIndex === null) throw new PatchError(`Could not find ${className}.`);
+    const trait = (abc.classTraits[classIndex] ?? []).find(
+      (entry) => abc.multinameNames[entry.nameIdx] === traitName,
+    );
+    if (
+      !trait ||
+      trait.vkind !== 0x06 ||
+      !trait.vindex ||
+      trait.vindexPos === undefined ||
+      trait.vindexEnd === undefined
+    ) {
+      throw new PatchError(`Could not resolve ${className}.${traitName} as a double constant.`);
+    }
+    const classInitMethodIdx = abc.classInitMethodIdxs[classIndex];
+    const classInitBody = abc.methodBodies.get(classInitMethodIdx);
+    if (!classInitBody) throw new PatchError(`Could not find ${className} class initializer.`);
+    const classInitInstructions = disassemble(
+      ctx.body.subarray(classInitBody.codeStart, classInitBody.codeStart + classInitBody.codeLen),
+      `${className}.cinit`,
+    );
+    const initializerCandidates = classInitInstructions.filter((instruction, index) => (
+      instruction.opcode === 0x2f &&
+      multiname(abc, classInitInstructions[index - 1]) === traitName &&
+      multiname(abc, classInitInstructions[index + 1]) === traitName
+    ));
+    if (initializerCandidates.length !== 1) {
+      throw new PatchError(`Expected one ${className}.${traitName} runtime initializer, found ${initializerCandidates.length}.`);
+    }
+    const initializer = initializerCandidates[0];
+    const initializerIndex = initializer.operands[0]?.[1];
+    if (initializerIndex === undefined) throw new PatchError(`Could not resolve ${className}.${traitName} initializer value.`);
+    return {
+      className,
+      traitName,
+      trait,
+      value: abc.doubleValues[trait.vindex],
+      classInitBody,
+      initializer,
+      initializerValue: abc.doubleValues[initializerIndex],
+    };
+  });
+
+  const needsPatch = targets.some(({ value, initializerValue }) => (
+    value !== DISPLAYED_BONUS || initializerValue !== DISPLAYED_BONUS
+  ));
+  if (!needsPatch) return { ctx, patches };
+  for (const { className, traitName, value, initializerValue } of targets) {
+    if (
+      (value !== DISPLAYED_BONUS && value !== LEGACY_NORMALIZED_BONUS) ||
+      (initializerValue !== DISPLAYED_BONUS && initializerValue !== LEGACY_NORMALIZED_BONUS)
+    ) {
+      throw new PatchError(
+        `Unexpected ${className}.${traitName} values: trait=${value}, initializer=${initializerValue}.`,
+      );
+    }
+  }
+
+  for (const { className, traitName, trait, value, classInitBody, initializer, initializerValue } of targets) {
+    if (trait.vindex !== displayedBonusIndex) {
+      patches.push({
+        key: `${className}.${traitName}.normalizedBonus`,
+        start: trait.vindexPos!,
+        end: trait.vindexEnd!,
+        data: writeU30(displayedBonusIndex),
+        detail: `change ${className}.${traitName} from 13.333% to 10%`,
+      });
+    }
+    if (initializerValue !== DISPLAYED_BONUS) {
+      patches.push({
+        key: `${className}.${traitName}.runtimeInitializer`,
+        start: classInitBody.codeStart + initializer.offset,
+        end: classInitBody.codeStart + initializer.offset + initializer.size,
+        data: Buffer.concat([Buffer.from([0x2f]), writeU30(displayedBonusIndex)]),
+        detail: `initialize ${className}.${traitName} at 10% during runtime`,
+      });
+    }
+  }
+
+  const appendedDisplayedBonusIndex = abc.doubleValues.findIndex(
+    (value, index) => index >= 128 && value === DISPLAYED_BONUS,
+  );
+  if (appendedDisplayedBonusIndex === abc.doubleValues.length - 1) {
+    const targetReferenceCount = targets.reduce((count, { trait, initializer }) => (
+      count + (trait.vindex === appendedDisplayedBonusIndex ? 1 : 0) +
+      (initializer.operands[0]?.[1] === appendedDisplayedBonusIndex ? 1 : 0)
+    ), 0);
+    if ((doubleReferenceCounts.get(appendedDisplayedBonusIndex) ?? 0) === targetReferenceCount) {
+      patches.push(
+        {
+          key: "ScreenArmory.normalizedBonus.removeAppendedDouble",
+          start: abc.doubleValuePositions[appendedDisplayedBonusIndex],
+          end: abc.doubleValuePositions[appendedDisplayedBonusIndex] + 8,
+          data: Buffer.alloc(0),
+          detail: "remove the superseded two-byte-index 10% constant",
+        },
+        {
+          key: "ScreenArmory.normalizedBonus.restoreDoubleCount",
+          start: abc.doubleCountPos,
+          end: abc.doubleCountEnd,
+          data: writeU30(abc.doubleValues.length - 1),
+          detail: "restore the ABC double-pool count after migration",
+        },
+      );
+    }
+  }
+
+  // A previous patch pass may already have corrected the trait default while
+  // leaving the class initializer on the shared legacy constant.
+  for (const { className, traitName, classInitBody, initializer, initializerValue } of targets) {
+    if (initializerValue === DISPLAYED_BONUS) continue;
+    if (patches.some((patch) => patch.key === `${className}.${traitName}.runtimeInitializer`)) continue;
+    patches.push({
+      key: `${className}.${traitName}.runtimeInitializer`,
+      start: classInitBody.codeStart + initializer.offset,
+      end: classInitBody.codeStart + initializer.offset + initializer.size,
+      data: Buffer.concat([Buffer.from([0x2f]), writeU30(displayedBonusIndex)]),
+      detail: `initialize ${className}.${traitName} at 10% during runtime`,
+    });
+  }
+
+  return { ctx, patches };
+}
+
+function patchNormalizedBonusConstants(swfPath: string, verifyOnly = false): number {
+  const firstPass = findNormalizedBonusConstantPatches(swfPath);
+  if (verifyOnly && firstPass.patches.length > 0) {
+    throw new PatchError("Critical Power/pet base constants are still using the legacy 13.333% value.");
+  }
+  if (!verifyOnly && firstPass.patches.length > 0) {
+    ensureBackup(swfPath);
+    const { body, delta } = applyPatchesToBody(firstPass.ctx.body, firstPass.patches);
+    writeSwf(firstPass.ctx, body, delta);
+  }
+
+  const verifyCtx = parseSwf(swfPath);
+  const verifyAbc = parseAbc(verifyCtx);
+  if (findNormalizedBonusConstantPatches(swfPath).patches.length !== 0) {
+    throw new PatchError("Critical Power/pet runtime constants did not verify at 10%.");
+  }
+  for (const [className, traitName] of NORMALIZED_BONUS_TRAITS) {
+    const classIndex = classIndexByName(verifyAbc, className);
+    const trait = classIndex === null
+      ? undefined
+      : (verifyAbc.classTraits[classIndex] ?? []).find(
+          (entry) => verifyAbc.multinameNames[entry.nameIdx] === traitName,
+        );
+    if (!trait?.vindex || verifyAbc.doubleValues[trait.vindex] !== DISPLAYED_BONUS) {
+      throw new PatchError(`${className}.${traitName} did not verify at 10%.`);
+    }
+  }
+  const combatStateIndex = classIndexByName(verifyAbc, "CombatState");
+  const critChanceTrait = combatStateIndex === null
+    ? undefined
+    : (verifyAbc.classTraits[combatStateIndex] ?? []).find(
+        (entry) => verifyAbc.multinameNames[entry.nameIdx] === "const_560",
+      );
+  if (!critChanceTrait?.vindex || verifyAbc.doubleValues[critChanceTrait.vindex] !== LEGACY_NORMALIZED_BONUS) {
+    throw new PatchError("Critical Chance rune constant was changed while fixing Critical Power.");
+  }
+  return firstPass.patches.length;
+}
+
 function patchMethod43PercentFormatting(swfPath: string, verifyOnly = false): void {
   const { ctx, abc, methodBody, instructions } = findMethodBody(swfPath, "ScreenArmory", "method_43");
   if (!isFormattedPercentMethod43(instructions, abc)) {
@@ -654,6 +964,7 @@ function findCriticalChanceStatPatches(swfPath: string): { patches: BytePatch[];
 }
 
 export function patchCriticalChanceStatDisplay(swfPath: string, verifyOnly = false): void {
+  const normalizedBonusPatchCount = patchNormalizedBonusConstants(swfPath, verifyOnly);
   const firstPass = findCriticalChanceStatPatches(swfPath);
   if (!verifyOnly && firstPass.patches.length > 0) {
     const ctx = parseSwf(swfPath);
@@ -663,6 +974,7 @@ export function patchCriticalChanceStatDisplay(swfPath: string, verifyOnly = fal
   }
 
   patchRawCriticalChanceDisplay(swfPath, verifyOnly);
+  const precisePercentPatchCount = patchPrecisePercentDisplays(swfPath, verifyOnly);
 
   const verifyPass = findCriticalChanceStatPatches(swfPath);
   if (verifyPass.oldCount !== 0 || verifyPass.patchedCount !== EXPECTED_PATCHED_SEQUENCES) {
@@ -674,7 +986,7 @@ export function patchCriticalChanceStatDisplay(swfPath: string, verifyOnly = fal
   syncClientRevision(swfPath, verifyOnly);
 
   console.log(
-    `${verifyOnly ? "Verified" : firstPass.patches.length > 0 ? "Patched" : "Already patched"} Critical Chance stat display and percent formatting in ${swfPath}`,
+    `${verifyOnly ? "Verified" : firstPass.patches.length + precisePercentPatchCount + normalizedBonusPatchCount > 0 ? "Patched" : "Already patched"} Critical Chance, Critical Power, and pet bonus stat formatting in ${swfPath}`,
   );
 }
 

@@ -14285,7 +14285,7 @@
 		<DamageType>Holy</DamageType>
 		<PowerGroup>ConcussionBolt</PowerGroup>
 		<DisplayName>Concussion Bolt</DisplayName>
-		<Description>The Sentinel's ranged energy attacks. Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 100% of your Defense. [Stats: x0.8 damage]</Description>
+		<Description>The Sentinel's ranged energy attacks. Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 30% of your Defense. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -14318,7 +14318,7 @@
 		<PowerGroup>ConcussionBolt</PowerGroup>
 		<DisplayName>Concussion Bolt</DisplayName>
 		<BasePowerName>ConcussionBolt</BasePowerName>
-		<Description>The Sentinel's ranged energy attacks. Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 100% of your Defense. [Stats: x0.8 damage]</Description>
+		<Description>The Sentinel's ranged energy attacks. Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 30% of your Defense. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -40497,7 +40497,7 @@
 		<PowerGroup>PoisonDaggers</PowerGroup>
 		<AddTargetBuff>ViperbladePoison</AddTargetBuff>
 		<DisplayName>Bone Daggers</DisplayName>
-		<Description>Bone-shaped daggers favored by the Viperblade. Ranged basic attacks leave Poison that stacks up to 16 times. [Stats: x0.8 damage, 0.8 damage/s, over 5s]</Description>
+		<Description>Bone-shaped daggers favored by the Viperblade. Ranged basic attacks leave Poison that stacks up to 16 times. [Stats: x0.8 damage, 0.5 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_PoisonDagger</IconName>
 		<CastSound>snd_pwr_rogue_energyball</CastSound>
 		<CastGfx/>
@@ -40531,7 +40531,7 @@
 		<AddTargetBuff>ViperbladePoison</AddTargetBuff>
 		<DisplayName>Bone Daggers</DisplayName>
 		<BasePowerName>PoisonDagger</BasePowerName>
-		<Description>Bone-shaped daggers favored by the Viperblade. Ranged basic attacks leave Poison that stacks up to 16 times. [Stats: x0.8 damage, 0.8 damage/s, over 5s]</Description>
+		<Description>Bone-shaped daggers favored by the Viperblade. Ranged basic attacks leave Poison that stacks up to 16 times. [Stats: x0.8 damage, 0.5 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_PoisonDagger</IconName>
 		<CastSound>snd_pwr_rogue_energyball</CastSound>
 		<CastGfx/>
@@ -40565,7 +40565,7 @@
 		<PowerGroup>DaggerFlurry</PowerGroup>
 		<AddTargetBuff>ViperbladePoison,ViperbladePoison,ViperbladePoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
-		<Description>Throw three Poison Daggers that stack Poison up to 16 times. [Stats: x0.67 damage, 0.8 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers that stack Poison up to 16 times. [Stats: x0.67 damage, 0.5 damage/s, over 5s]</Description>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>CHR_Executioner_FlurryOfDaggers_Throw</CastSound>
@@ -40601,7 +40601,7 @@
 		<AddTargetBuff>ViperbladePoison,ViperbladePoison,ViperbladePoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw three Poison Daggers that stack Poison up to 16 times. [Stats: x0.67 damage, 0.8 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers that stack Poison up to 16 times. [Stats: x0.67 damage, 0.5 damage/s, over 5s]</Description>
 		<UpgradeDescription>Throw three Poison Daggers that stack Poison up to 16 times.</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40638,7 +40638,7 @@
 		<AddTargetBuff>ViperbladePoison,ViperbladePoison,ViperbladePoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw three Poison Daggers that stack Poison up to 16 times. [Stats: x0.7 damage, 0.8 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers that stack Poison up to 16 times. [Stats: x0.7 damage, 0.5 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40675,7 +40675,7 @@
 		<AddTargetBuff>ViperbladePoison,ViperbladePoison,ViperbladePoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw three Poison Daggers that stack Poison up to 16 times. [Stats: x0.74 damage, 0.8 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers that stack Poison up to 16 times. [Stats: x0.74 damage, 0.5 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40712,7 +40712,7 @@
 		<AddTargetBuff>ViperbladePoison,ViperbladePoison,ViperbladePoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw three Poison Daggers that stack Poison up to 16 times. [Stats: x0.77 damage, 0.8 damage/s, over 5s]</Description>
+		<Description>Throw three Poison Daggers that stack Poison up to 16 times. [Stats: x0.77 damage, 0.5 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40749,7 +40749,7 @@
 		<AddTargetBuff>ViperbladePoison,ViperbladePoison,ViperbladePoison,ViperbladePoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers that stack Poison up to 16 times. [Stats: x0.77 damage, 0.8 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers that stack Poison up to 16 times. [Stats: x0.77 damage, 0.5 damage/s, over 5s]</Description>
 		<UpgradeDescription>Adds extra Poison per dagger.</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40786,7 +40786,7 @@
 		<AddTargetBuff>ViperbladePoison,ViperbladePoison,ViperbladePoison,ViperbladePoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers that stack Poison up to 16 times. [Stats: x0.81 damage, 0.8 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers that stack Poison up to 16 times. [Stats: x0.81 damage, 0.5 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40823,7 +40823,7 @@
 		<AddTargetBuff>ViperbladePoison,ViperbladePoison,ViperbladePoison,ViperbladePoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers that stack Poison up to 16 times. [Stats: x0.85 damage, 0.8 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers that stack Poison up to 16 times. [Stats: x0.85 damage, 0.5 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40860,7 +40860,7 @@
 		<AddTargetBuff>ViperbladePoison,ViperbladePoison,ViperbladePoison,ViperbladePoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers that stack Poison up to 16 times. [Stats: x0.89 damage, 0.8 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers that stack Poison up to 16 times. [Stats: x0.89 damage, 0.5 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40897,7 +40897,7 @@
 		<AddTargetBuff>ViperbladePoison,ViperbladePoison,ViperbladePoison,ViperbladePoison</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers that stack Poison up to 16 times. [Stats: x0.97 damage, 0.8 damage/s, over 5s]</Description>
+		<Description>Throw four Poison Daggers that stack Poison up to 16 times. [Stats: x0.97 damage, 0.5 damage/s, over 5s]</Description>
 		<UpgradeDescription>Increased Damage per dagger #olddmg#</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>
@@ -40934,7 +40934,7 @@
 		<AddTargetBuff>ViperbladePoison,ViperbladePoison,ViperbladePoison,ViperbladePoison,ArmorBane</AddTargetBuff>
 		<DisplayName>Flurry of Daggers</DisplayName>
 		<BasePowerName>DaggerFlurry</BasePowerName>
-		<Description>Throw four Poison Daggers that reduce target Defense and stack Poison up to 16 times. [Stats: x0.97 damage, 0.8 damage/s, over 5s, -5% Defense, over 5s]</Description>
+		<Description>Throw four Poison Daggers that reduce target Defense and stack Poison up to 16 times. [Stats: x0.97 damage, 0.5 damage/s, over 5s, -5% Defense, over 5s]</Description>
 		<UpgradeDescription>Each dagger adds Armor Bane</UpgradeDescription>
 		<IconName>a_PowerIcon_DaggerFlurry</IconName>
 		<RuneIcon>a_RuneIcon_22</RuneIcon>

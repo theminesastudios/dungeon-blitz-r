@@ -38,6 +38,7 @@ import { CastRateAuthority } from '../core/CastRateAuthority';
 import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { LegendsInn } from '../core/LegendsInn';
 import { AdminRuntimeSettings } from '../core/AdminRuntimeSettings';
+import { DamageMeter } from '../core/DamageMeter';
 
 type CombatRelayOptions = {
     includeAnchor?: boolean;
@@ -4805,19 +4806,39 @@ export class CombatHandler {
      *
      * The cost of that is cosmetic and worth stating: the floating combat number is computed
      * by the attacker's client and will show the unboosted hit. The health bar is server
-     * authoritative and will drop by the real amount.
+     * authoritative and drops by the real amount -- see handlePowerHit, which is where the
+     * attacker's own client is finally told about the difference.
      *
-     * Capped at the base hit, so it doubles a strike at most. Without a cap this scales with
-     * the target's health pool, which is exactly backwards for the bosses that have the
-     * largest pools -- a 1% bite out of a 500k boss would dwarf everything else a rogue does.
+     * Reads the target's health *at the moment of the hit*, so the bonus starts high on a full
+     * health bar and tapers as the target is worn down. That is a deliberate reversal of the
+     * earlier max-HP rule: the passive now front-loads a fight instead of paying a flat tax.
+     *
+     * Two consequences worth knowing rather than discovering:
+     *   - The passive cannot land a killing blow. As the target approaches zero the bonus
+     *     approaches zero with it, so the last sliver of a health bar takes exactly as long as
+     *     it did before. This is the opposite of an execute.
+     *   - Both sides must now agree on a *moving* number instead of a static one. The pre-hit
+     *     health is the reading -- see the client patch, which reconstructs it as
+     *     `currHP + param1` because Entity.TakeDamage decrements currHP before it draws the
+     *     floater.
+     *
+     * Uncapped, deliberately, and the cap has been removed twice now for the same reason.
+     * Every clamp expressed against the attacker's own hit -- the original Math.min(damage,
+     * ...), and the later quarter-of-the-hit ceiling -- takes the passive away in exactly the
+     * fight it exists for, and a clamp against the hit also makes the bonus crit-dependent
+     * whenever it binds, because the hit it clamps against is the crit-inflated number.
+     *
+     * So: bonus = 1% of the target's current HP, full stop. Identical on a crit and a
+     * non-crit, and a low-health target barely notices it.
      */
-    private static readonly SOULTHIEFT_MAX_HP_RATE = 0.01;
+    private static readonly SOULTHIEFT_CURRENT_HP_RATE = 0.01;
 
     private static getSoulthieftMaxHpBonus(
         sourceSession: Client | null,
         targetEntity: any,
         baseDamage: number,
-        levelScope: string
+        levelScope: string,
+        targetSession: Client | null = null
     ): number {
         if (
             !sourceSession?.character ||
@@ -4831,20 +4852,128 @@ export class CombatHandler {
             return 0;
         }
 
-        // Not entity.maxHp. A client-spawned hostile never reports its health pool -- the
-        // patched client sends damage deltas only -- so that field is empty on most of what
-        // a rogue actually swings at, and reading it directly made this passive do nothing
-        // at all outside the handful of server-authority levels. getNpcHealthState is the
-        // server's own resolver: explicit maxHp when it has one, the EntTypes-derived pool
-        // otherwise.
-        const maxHp = Math.max(0, Math.round(Number(
-            CombatHandler.getNpcHealthState(targetEntity, levelScope)?.maxHp ?? 0
-        ) || 0));
-        if (maxHp <= 0) {
+        const currentHp = CombatHandler.resolveSoulthieftTargetCurrentHp(targetEntity, levelScope, targetSession);
+        if (currentHp <= 0) {
             return 0;
         }
 
-        return Math.min(damage, Math.round(maxHp * CombatHandler.SOULTHIEFT_MAX_HP_RATE));
+        const bonus = Math.round(currentHp * CombatHandler.SOULTHIEFT_CURRENT_HP_RATE);
+        CombatHandler.logSoulthieftBonus(targetEntity, targetSession, levelScope, currentHp, damage, bonus);
+        return bonus;
+    }
+
+    /**
+     * The target's health as it stands before this hit lands, for either kind of target.
+     *
+     * Pre-hit is not a detail: this runs from handlePowerHit *before* updateNpcTargetAfterHit /
+     * updatePlayerTargetAfterHit apply the damage, so what these resolvers report is the health
+     * the target still had when the blow connected. The client patch reconstructs the same
+     * reading on its side.
+     *
+     * A player target is the PvP case and has to come from the session: a player's health is
+     * gear-derived and the server keeps its own authoritative copy, which the level entity may
+     * not carry. resolvePlayerCurrentHp is the same resolver updatePlayerTargetAfterHit uses to
+     * apply the hit, so the bonus and the health bar read the same bar.
+     *
+     * For a hostile, deliberately not entity.hp on its own. A client-spawned hostile never
+     * reports an absolute health value -- the patched client sends damage deltas only -- so
+     * that field is empty on most of what a rogue actually swings at, and reading it directly
+     * made this passive do nothing outside the handful of server-authority levels.
+     * getNpcHealthState is the server's own resolver: it reconciles an explicit hp, the
+     * reported delta against the pool, and the EntTypes-derived pool as the floor case, and it
+     * answers with the full pool for a hostile it has never seen take damage.
+     */
+    private static resolveSoulthieftTargetCurrentHp(
+        targetEntity: any,
+        levelScope: string,
+        targetSession: Client | null
+    ): number {
+        if (targetSession) {
+            const entity = targetSession.clientEntID > 0
+                ? targetSession.entities.get(targetSession.clientEntID)
+                : null;
+            const levelEntity = CombatHandler.resolveLevelEntity(
+                getClientLevelScope(targetSession),
+                targetSession.clientEntID
+            );
+            const maxHp = CombatHandler.resolvePlayerMaxHp(targetSession, entity ?? {}, levelEntity);
+            return Math.max(0, Math.round(
+                CombatHandler.resolvePlayerCurrentHp(targetSession, entity ?? {}, levelEntity, maxHp)
+            ) || 0);
+        }
+
+        return Math.max(0, Math.round(Number(
+            CombatHandler.getNpcHealthState(targetEntity, levelScope)?.currentHp ?? 0
+        ) || 0));
+    }
+
+    /**
+     * Diagnostic for the one number this passive cannot be reasoned about without: which health
+     * pool the server actually resolved, and whether it is the client's or the server's own
+     * estimate.
+     *
+     * The client draws its floater from its *own* Entity.maxHP, and the server pays the bonus
+     * from this one. Nothing guarantees the two agree -- the client sizes its hostiles from
+     * Game.mBonusLevels while the server derives them from EntTypes and the level tier -- and
+     * when they disagree the passive reads as "the number shown is not the damage dealt".
+     * `source` is the tell: `client` means the target carried an explicit pool, `derived` means
+     * the server estimated it from EntTypes.
+     *
+     * Throttled per entity so a full dungeon does not flood the log.
+     */
+    private static readonly soulthieftBonusLoggedAt = new Map<string, number>();
+    private static readonly SOULTHIEFT_LOG_THROTTLE_MS = 5000;
+
+    private static logSoulthieftBonus(
+        targetEntity: any,
+        targetSession: Client | null,
+        levelScope: string,
+        currentHp: number,
+        damage: number,
+        bonus: number
+    ): void {
+        const entityId = Math.max(0, Math.round(Number(targetEntity?.id ?? 0)));
+        // A player target may arrive with no usable entity id, so key the throttle on the
+        // session instead -- otherwise every PvP target would share one bucket and only the
+        // first would ever be logged.
+        const key = targetSession
+            ? `${levelScope}:player:${targetSession.token}`
+            : `${levelScope}:${entityId}`;
+        const now = Date.now();
+        const lastAt = Math.max(0, Number(CombatHandler.soulthieftBonusLoggedAt.get(key) ?? 0));
+        if (now - lastAt < CombatHandler.SOULTHIEFT_LOG_THROTTLE_MS) {
+            return;
+        }
+        CombatHandler.soulthieftBonusLoggedAt.set(key, now);
+
+        if (targetSession) {
+            console.log('[Soulthief] passive bonus', {
+                scope: levelScope,
+                target: 'player',
+                name: String(targetSession.character?.name ?? ''),
+                resolvedCurrentHp: currentHp,
+                hit: damage,
+                bonus
+            });
+            return;
+        }
+
+        const explicitMaxHp = Math.max(0, Math.round(Number(targetEntity?.maxHp ?? 0)));
+        console.log('[Soulthief] passive bonus', {
+            scope: levelScope,
+            target: 'hostile',
+            entityId,
+            name: String(targetEntity?.name ?? ''),
+            entityLevel: Number(targetEntity?.level ?? 0),
+            hitPoints: Number(targetEntity?.HitPoints ?? targetEntity?.hitPoints ?? NaN),
+            source: explicitMaxHp > 0 ? 'client' : 'derived',
+            explicitMaxHp,
+            derivedMaxHp: CombatHandler.estimateHostileMaxHp(targetEntity, levelScope),
+            resolvedCurrentHp: currentHp,
+            clientSpawned: Boolean(targetEntity?.clientSpawned),
+            hit: damage,
+            bonus
+        });
     }
 
     /**
@@ -5672,11 +5801,45 @@ export class CombatHandler {
         const sourceSession = CombatHandler.resolveCombatSourceSession(levelScope, sourceId, client);
         const targetSession = CombatHandler.findPlayerSessionByEntityId(levelScope, targetId);
         const isPlayerSource = Boolean(sourceSession && !isHostileNpcSource);
+        let soulthieftBonus = 0;
         if (isPlayerSource && targetEntity && !targetEntity.isPlayer) {
             damage = AdminRuntimeSettings.scaleDamage(damage);
-            damage += CombatHandler.getSoulthieftMaxHpBonus(sourceSession, targetEntity, damage, levelScope);
+            soulthieftBonus = CombatHandler.getSoulthieftMaxHpBonus(sourceSession, targetEntity, damage, levelScope);
+            damage += soulthieftBonus;
             damage += CombatHandler.getSentinelMaxHpBonus(sourceSession, info.powerId, damage);
             damage += CombatHandler.getJusticarExpertiseBonus(sourceSession, sourceEntity, damage);
+        } else if (isPlayerSource && targetSession && targetSession !== sourceSession) {
+            // PvP. The hostile branch above is gated on a non-player target, so a player
+            // target used to skip every server-side damage rewrite -- the Soulthief passive
+            // included. Only the passive is extended here: the other two disciplines' bonuses
+            // and the admin damage scale were never specified for player targets, and turning
+            // them on silently would be a balance change nobody asked for.
+            //
+            // Self-hits are excluded: a power that damages its own caster must not pay the
+            // caster 1% of their own pool on top.
+            soulthieftBonus = CombatHandler.getSoulthieftMaxHpBonus(
+                sourceSession,
+                targetEntity,
+                damage,
+                levelScope,
+                targetSession
+            );
+            damage += soulthieftBonus;
+        }
+
+        // Metered here rather than at the packet, because this is the first point where the
+        // number is final: the client reported one figure and the rewrites above have just
+        // changed it. A meter fed from the packet would report what the player's screen used
+        // to say instead of what the target actually lost.
+        if (isPlayerSource) {
+            DamageMeter.note(
+                sourceSession,
+                targetSession
+                    ? `Oyuncu: ${targetSession.character?.name ?? '?'}`
+                    : String(targetEntity?.name ?? ''),
+                damage,
+                soulthieftBonus
+            );
         }
         if (
             (!targetEntity && !targetSession) ||
@@ -5848,12 +6011,27 @@ export class CombatHandler {
             ? data
             : CombatHandler.buildPowerHitPayload(info, displayRelayDamage);
         if (partySharedHostileHealthRelay?.entity) {
+            // The two deltas are not the same number, and treating them as one is what made
+            // every server-side damage rewrite invisible -- the Soulthief passive above, the
+            // Sentinel and Justicar passives, and AdminRuntimeSettings.scaleDamage.
+            //
+            // The relay payload carrying `displayRelayDamage` goes to the *other* viewers
+            // (broadcastToCombatRoom excludes the anchor), so for them the expected local
+            // delta really is the rewritten number. The anchor never receives it: its client
+            // ran the hit itself, before the server saw the packet, and applied exactly the
+            // damage the packet carried. Telling converge the anchor had applied the boosted
+            // amount made correctionDelta come out zero, so the attacker's own copy of the
+            // hostile -- the copy that draws the health bar and decides the kill on a
+            // client-spawn level -- kept the unboosted health for the rest of the fight.
+            //
+            // With the anchor's real local delta the leftover arrives as a negative 0x78,
+            // which is live damage since patch-dungeonblitz-charregen-damage-channel.ts.
             CombatHandler.convergePartySharedHostileHealthToParty(
                 sourceSession ?? client,
                 levelScope,
                 partySharedHostileHealthRelay.entity,
                 partySharedHostileHealthRelay.snapshots,
-                -displayRelayDamage,
+                -CombatHandler.clampRelayPowerHitDamage(packetDamage),
                 -displayRelayDamage
             );
         }
@@ -6402,6 +6580,21 @@ export class CombatHandler {
         CombatHandler.broadcastToSameLevel(getClientLevelScope(client), 0x82, bb.toBuffer(), [entId], client);
     }
 
+    private static shouldRejectLivingBossRegenReport(
+        levelScope: string,
+        targetEntity: any,
+        amount: number,
+        hasLivingPlayer: boolean
+    ): boolean {
+        return amount > 0 &&
+            hasLivingPlayer &&
+            DungeonCompletionConditions.isRequiredBoss(
+                getScopeLevelName(levelScope),
+                targetEntity,
+                levelScope
+            );
+    }
+
     private static recordClientHostileHpDelta(
         client: Client,
         levelScope: string,
@@ -6416,11 +6609,11 @@ export class CombatHandler {
 
         const levelEntity = CombatHandler.resolveLevelEntity(levelScope, entityId);
         const targetEntity = levelEntity ?? entity;
-        const rejectLivingBossRegen = Boolean(
-            amount > 0 &&
-            DungeonCompletionConditions.requiresBossDefeatSignal(getScopeLevelName(levelScope)) &&
-            DungeonCompletionConditions.isRequiredBoss(getScopeLevelName(levelScope), targetEntity, levelScope) &&
-            (
+        const rejectLivingBossRegen = CombatHandler.shouldRejectLivingBossRegenReport(
+            levelScope,
+            targetEntity,
+            amount,
+            Boolean(
                 CombatHandler.hasLivingPlayerInHostileRoom(levelScope, targetEntity) ||
                 !CombatHandler.isPlayerSessionDead(client)
             )

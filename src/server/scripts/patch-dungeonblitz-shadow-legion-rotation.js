@@ -250,12 +250,14 @@ function verifySource(source, swfPath) {
     for (const [snippet, owner] of [
         ['sentinelFormExitCooldown', 'Sentinel Form exit cooldown'],
         ['_shroudPower', 'Midnight Shroud passive'],
-        ['param3 = uint(param2.meleeDamage);', 'Viperblade passive scaling'],
         ['param2.maxHP * 0.3', 'Clutch Heal threshold']
     ]) {
         if (!source.includes(snippet)) {
             throw new Error(`${name} lost the ${owner} patch.`);
         }
+    }
+    if (source.includes('param3 = uint(param2.meleeDamage);')) {
+        throw new Error(`${name} still carries the retired Viperblade Attack-scaling override.`);
     }
     console.log(`Verified Shadow Legion rotation in ${swfPath}`);
 }

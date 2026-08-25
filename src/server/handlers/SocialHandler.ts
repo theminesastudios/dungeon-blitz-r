@@ -1,4 +1,5 @@
 import { Character } from '../database/Database';
+import { DamageMeter } from '../core/DamageMeter';
 import { Client } from '../core/Client';
 import { BitReader } from '../network/protocol/bitReader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
@@ -234,6 +235,65 @@ export class SocialHandler {
         bb.writeMethod91(Math.max(0, mapY));
         return bb.toBuffer();
     }
+
+    /**
+     * The damage meter: what this player is doing per second and per minute, broken down by
+     * what they are hitting.
+     *
+     * Both `yarrak:` and `/yarrak` are matched, but only the slashless form can actually
+     * arrive today. class_127.method_1940 in the client is a hardcoded allowlist -- it forwards
+     * /lang:, /teleport: and /maintenance: and answers "Unknown Command" locally for everything
+     * else, without ever sending a packet. The slash form is accepted here so it starts working
+     * the moment that allowlist is patched, rather than needing this file touched again.
+     *
+     * `yarrak: sifirla` clears the window.
+     */
+    private static handleDamageMeterCommand(client: Client, message: string): boolean {
+        const match = /^[\\/]?yarrak\s*:?\s*(.*)$/i.exec(message.trim());
+        if (!match) {
+            return false;
+        }
+
+        const argument = match[1].trim().toLowerCase();
+        if (argument === 'sifirla' || argument === 'sıfırla' || argument === 'reset') {
+            DamageMeter.reset(client);
+            SocialHandler.sendChatStatus(client, 'Hasar sayaci sifirlandi.');
+            return true;
+        }
+
+        const report = DamageMeter.report(client);
+        if (report.hits === 0) {
+            SocialHandler.sendChatStatus(client, 'Hasar sayaci: son 60 saniyede kayitli vurus yok.');
+            return true;
+        }
+
+        const seconds = Math.max(1, Math.round(report.elapsedMs / 1000));
+        const n = (value: number): string => Math.round(value).toLocaleString('tr-TR');
+        SocialHandler.sendChatStatus(
+            client,
+            `Hasar sayaci - son ${seconds} sn, ${report.hits} vurus: ` +
+                `toplam ${n(report.total)} | ${n(report.perSecond)}/sn | ${n(report.perMinute)}/dk` +
+                (report.bonus > 0 ? ` | pasif ${n(report.bonus)}` : '')
+        );
+
+        // One line per target type, biggest first, capped so a long trash pull cannot flood the
+        // chat window with rows nobody reads.
+        for (const entry of report.byTarget.slice(0, SocialHandler.DAMAGE_METER_MAX_ROWS)) {
+            const share = report.total > 0 ? Math.round((entry.total / report.total) * 100) : 0;
+            SocialHandler.sendChatStatus(
+                client,
+                `  ${entry.target}: ${n(entry.total)} (${n(entry.total / seconds)}/sn, %${share}, ` +
+                    `${entry.hits} vurus${entry.bonus > 0 ? `, pasif ${n(entry.bonus)}` : ''})`
+            );
+        }
+        const hidden = report.byTarget.length - SocialHandler.DAMAGE_METER_MAX_ROWS;
+        if (hidden > 0) {
+            SocialHandler.sendChatStatus(client, `  ... ve ${hidden} dusman turu daha.`);
+        }
+        return true;
+    }
+
+    private static readonly DAMAGE_METER_MAX_ROWS = 8;
 
     private static sendChatStatus(target: Client | null | undefined, text: string): void {
         if (!target) {
@@ -1413,6 +1473,7 @@ export class SocialHandler {
         if (await SocialHandler.handleTeleportCommand(client, message)) {
             return;
         }
+
 
         if (client.character && message) {
             discordSocialBridge.relay({

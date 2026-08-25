@@ -503,8 +503,8 @@ function verifySource(source, swfPath) {
     if (!source.includes('_shroudPower')) {
         throw new Error(`${path.basename(swfPath)} lost the Midnight Shroud passive patch.`);
     }
-    if (!source.includes('param3 = uint(param2.meleeDamage);')) {
-        throw new Error(`${path.basename(swfPath)} lost the Viperblade passive scaling patch.`);
+    if (source.includes('param3 = uint(param2.meleeDamage);')) {
+        throw new Error(`${path.basename(swfPath)} restored the retired Viperblade Attack-scaling override.`);
     }
     if (!source.includes('param2.maxHP * 0.3')) {
         throw new Error(`${path.basename(swfPath)} lost the Clutch Heal threshold patch.`);
