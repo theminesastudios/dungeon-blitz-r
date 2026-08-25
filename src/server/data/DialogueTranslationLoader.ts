@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import { normalizeDialogueTextForClient } from './DialogueTextNormalizer';
-import { localizeUnknownTurkishText } from './TurkishTextLocalizer';
 
 type RawDialogueTranslationFile = {
     translations?: Record<string, string>;
@@ -324,9 +323,6 @@ export class DialogueTranslationLoader {
                     this.translateUnknownRoomThought(text),
                     normalizedLocale
                 );
-            }
-            if (normalizedLocale === 'tr' && this.looksLikeEnglishText(this.stripClientDirectives(text))) {
-                return localizeUnknownTurkishText(text);
             }
             return text;
         }

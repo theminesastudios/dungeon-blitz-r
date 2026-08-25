@@ -3499,21 +3499,7 @@ export class LevelHandler {
     // Dread dungeon — TutorialDungeonMechanics is wired to TutorialDungeon only —
     // so the run could never satisfy its anna_freed objective and never finished.
     private static isAnnaReturnToTownLine(normalizedText: string): boolean {
-        if (normalizedText === LevelHandler.ANNA_RETURN_TO_TOWN_LINE) {
-            return true;
-        }
-
-        for (const locale of ['tr']) {
-            const localized = DialogueTranslationLoader.translateText(
-                LevelHandler.ANNA_RETURN_TO_TOWN_LINE,
-                locale
-            );
-            if (localized && normalizedText === localized) {
-                return true;
-            }
-        }
-
-        return false;
+        return normalizedText === LevelHandler.ANNA_RETURN_TO_TOWN_LINE;
     }
 
     static maybeFinishTutorialDungeonAfterAnnaCutscene(

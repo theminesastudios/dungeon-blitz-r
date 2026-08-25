@@ -23,12 +23,12 @@ import {
  * Show the Sentinel passive in the damage floaters (issue #726).
  *
  * The Sentinel passive ("your melee attacks also strike for 0.3% of your maximum
- * Health and 30% of your Defense") lives on the server: CombatHandler adds
+ * Health and 100% of your Defense") lives on the server: CombatHandler adds
  * getSentinelMaxHpBonus to every melee hit, because the server is the only side
  * that can tell a Sentinel from a Justicar or Templar by MasterClass. That works,
  * but the client draws its own floating damage numbers from the hits it computed
  * locally, before the server's bonus lands -- so equipping a Defense charm moved
- * the hit by 30% of the charm's Defense and the player could never see it. The
+ * the hit by 100% of the charm's Defense and the player could never see it. The
  * passive read as doing nothing at all.
  *
  * This patch shows the bonus where the player looks: the damage floaters. The
@@ -37,8 +37,8 @@ import {
  * simply keeps today's behavior.
  *
  *   - The computation mirrors CombatHandler.SENTINEL_MAX_HP_RATE /
- *     SENTINEL_ARMOR_RATE (0.003 / 0.3) and the SENTINEL_MELEE_POWER_NAMES set,
- *     using 3 * maxHP / 1000 and 3 * armorClass / 10 so no double constants are
+ *     SENTINEL_ARMOR_RATE (0.003 / 1.0) and the SENTINEL_MELEE_POWER_NAMES set,
+ *     using 3 * maxHP / 1000 and 1 * armorClass / 1 so no double constants are
  *     needed. Keep them in lockstep or the floater and the health bar disagree.
  *   - The MasterClass check is the same boundary the server uses: without it,
  *     SwordMelee/MaceMelee/AxeMelee/PunchMelee would hand the bonus to every
@@ -85,8 +85,8 @@ const INDEX_HTML = path.resolve(__dirname, "..", "..", "client", "content", "loc
 // Expressed as integer ratios so the block only needs pushshort operands.
 const MAX_HP_RATE_NUM = 3;
 const MAX_HP_RATE_DEN = 1000;
-const ARMOR_RATE_NUM = 3;
-const ARMOR_RATE_DEN = 10;
+const ARMOR_RATE_NUM = 1;
+const ARMOR_RATE_DEN = 1;
 
 // Must agree with CombatHandler.SENTINEL_MELEE_POWER_NAMES (the server matches
 // rank-suffixed variants too, but basePowerName is the base name on the client,
@@ -380,7 +380,7 @@ function resolveMultinames(abc: ReturnType<typeof parseAbc>): Mn {
 }
 
 /**
- * The shared arithmetic: Math.round(3 * ent.maxHP / 1000) + Math.round(3 * ent.armorClass / 10),
+ * The shared arithmetic: Math.round(3 * ent.maxHP / 1000) + Math.round(1 * ent.armorClass / 1),
  * where `entity` pushes the attacker Entity (param2 for the melee floater, this.var_3 for the
  * crit floater). Leaves the bonus on the stack.
  */

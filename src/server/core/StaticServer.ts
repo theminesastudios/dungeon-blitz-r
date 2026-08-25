@@ -6,7 +6,7 @@ import type { Server as HttpServer } from 'http';
 import * as path from 'path';
 import type { Request } from 'express';
 import { Config } from './config';
-import { buildDungeonBlitzSwfVariantBuffer, type DungeonBlitzSwfLocale } from './DungeonBlitzSwf';
+import { buildDungeonBlitzSwfVariantBuffer } from './DungeonBlitzSwf';
 import { PresenceService } from './PresenceService';
 import { SocialHandler } from '../handlers/SocialHandler';
 import { GlobalState } from './GlobalState';
@@ -197,19 +197,19 @@ export class StaticServer {
         return path.join(this.contentDir, 'p', this.selectedAssetVersion, 'DungeonBlitz.swf');
     }
 
-    private getSelectedSwfBuffer(locale: DungeonBlitzSwfLocale): Buffer {
+    private getSelectedSwfBuffer(): Buffer {
         const mode = Config.MULTIPLAYER_MODE ? 'multiplayer' : 'local';
         const swfPath = this.getSelectedSwfPath();
         const stats = fs.statSync(swfPath);
-        const cacheKey = `${mode}:${locale}:${swfPath}:${stats.mtimeMs}:${stats.size}`;
+        const cacheKey = `${mode}:${swfPath}:${stats.mtimeMs}:${stats.size}`;
         if (this.selectedSwfCache?.key === cacheKey) {
             return this.selectedSwfCache.buffer;
         }
 
-        const buffer = buildDungeonBlitzSwfVariantBuffer(swfPath, mode, locale);
+        const buffer = buildDungeonBlitzSwfVariantBuffer(swfPath, mode);
         this.selectedSwfCache = { key: cacheKey, buffer };
         if (StaticServer.shouldLog()) {
-            console.log(`[StaticServer] Prepared DungeonBlitz.swf variant for ${mode} mode (${locale}).`);
+            console.log(`[StaticServer] Prepared DungeonBlitz.swf variant for ${mode} mode.`);
         }
         return buffer;
     }
@@ -249,33 +249,8 @@ export class StaticServer {
             String(req.query.clientrev ?? '') === this.clientRevision;
     }
 
-    private normalizeLocale(value: unknown): 'en' | 'tr' | null {
-        const normalized = String(value ?? '').trim().toLowerCase();
-        return normalized === 'en' || normalized === 'tr' ? normalized : null;
-    }
-
     private normalizeRemoteAddress(value: string | null | undefined): string {
         return GlobalState.normalizeRemoteAddress(value);
-    }
-
-    private resolveSessionLocale(req: Request): 'en' | 'tr' | null {
-        const remoteAddress = this.normalizeRemoteAddress(this.resolveRequesterAddress(req));
-        if (!remoteAddress) {
-            return null;
-        }
-
-        const sessions = Array.from(GlobalState.sessionsByToken.values()).filter((client) => {
-            return this.normalizeRemoteAddress(client.socket.remoteAddress) === remoteAddress;
-        });
-        const activeSessions = sessions.filter((client) => client.playerSpawned);
-        const candidates = activeSessions.length > 0 ? activeSessions : sessions;
-        const locales = new Set(
-            candidates
-                .map((client) => this.normalizeLocale(client.character?.dialogueLanguage))
-                .filter((locale): locale is 'en' | 'tr' => Boolean(locale))
-        );
-
-        return locales.size === 1 ? [...locales][0] ?? null : null;
     }
 
     private resolveRequesterAccountEmail(req: Request): string {
@@ -323,12 +298,9 @@ export class StaticServer {
         return true;
     }
 
-    private resolveSwfLocale(req: Request): DungeonBlitzSwfLocale {
-        return (
-            this.normalizeLocale(req.query.lang) ??
-            this.resolveSessionLocale(req) ??
-            'en'
-        );
+    // The game ships English only – all locale resolution is removed.
+    private resolveSwfLocale(_req: Request): 'en' {
+        return 'en';
     }
 
     // The game ships English only, so Game.swz is the one build there is.
@@ -782,10 +754,9 @@ try {
                 return;
             }
 
-            const locale = this.resolveSwfLocale(req);
             res.type('application/x-shockwave-flash');
-            res.setHeader('X-DungeonBlitz-Language', locale);
-            res.send(this.getSelectedSwfBuffer(locale));
+            res.setHeader('X-DungeonBlitz-Language', 'en');
+            res.send(this.getSelectedSwfBuffer());
         });
 
         this.app.get('/p/cbq/Game.swz', (req, res) => {
@@ -811,11 +782,10 @@ try {
             res.sendFile(assetPath, { dotfiles: 'allow' });
         });
 
-        this.app.get('/DungeonBlitzRemote.swf', (req, res) => {
-            const locale = this.resolveSwfLocale(req);
+        this.app.get('/DungeonBlitzRemote.swf', (_req, res) => {
             res.type('application/x-shockwave-flash');
-            res.setHeader('X-DungeonBlitz-Language', locale);
-            res.send(this.getSelectedSwfBuffer(locale));
+            res.setHeader('X-DungeonBlitz-Language', 'en');
+            res.send(this.getSelectedSwfBuffer());
         });
 
         this.app.get('/p/cbq/devSettings.xml', (_req, res) => {

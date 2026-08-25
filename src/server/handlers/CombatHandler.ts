@@ -5015,7 +5015,7 @@ export class CombatHandler {
      * mode worth having.
      */
     private static readonly SENTINEL_MAX_HP_RATE = 0.003;
-    private static readonly SENTINEL_ARMOR_RATE = 0.3;
+    private static readonly SENTINEL_ARMOR_RATE = 1.0;
     private static readonly SENTINEL_MELEE_POWER_NAMES = [
         'SwordMelee',
         'MaceMelee',

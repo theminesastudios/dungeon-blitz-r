@@ -100,8 +100,7 @@ export class NpcHandler {
         if (!client.character) {
             return;
         }
-        const language = NpcHandler.getDialogueLanguage(client.character) === 'tr' ? 'tr' : 'en';
-        const ledger = Achievements.talk(client, language);
+        const ledger = Achievements.talk(client);
         NpcHandler.sendNpcBubble(client, npcId, ledger.text);
         if (ledger.didMutate && client.userId) {
             NpcHandler.persistCharacter(client, 'achievement ledger');
@@ -300,8 +299,7 @@ export class NpcHandler {
             // his cue name is borrowed from the library tome -- the client refuses
             // to interact with an entity whose character_name is not a cue the
             // level actually authored.
-            const language = NpcHandler.getDialogueLanguage(client.character) === 'tr' ? 'tr' : 'en';
-            const ledger = Achievements.talk(client, language);
+            const ledger = Achievements.talk(client);
             NpcHandler.sendNpcBubble(client, npcId, ledger.text);
             if ((ledger.didMutate || didMutate) && client.userId) {
                 NpcHandler.persistCharacter(client, 'achievement ledger');

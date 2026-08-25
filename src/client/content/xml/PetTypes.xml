@@ -1033,7 +1033,7 @@
 		<BonusInfo>Dusen uretim materyallerini senin yerine toplar</BonusInfo>
 		<ClassType>Lockbox01</ClassType>
 		<Color>Green</Color>
-		<Description>Kesin burunlu bir yoldas. Pesinde yurur ve arkanda biraktigin her uretim materyalini toplar.</Description>
+		<Description>A keen-nosed companion. Follows behind you and gathers every crafting material you leave behind.</Description>
 		<UseVanityPower>TRUE</UseVanityPower>
 		<DisplayRarity>L</DisplayRarity>
 	</PetType>
