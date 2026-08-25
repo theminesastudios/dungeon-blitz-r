@@ -1283,7 +1283,7 @@
 		<IdolCost>0</IdolCost>
 		<UpgradeTime>150</UpgradeTime>
 		<Art>a_Upgrade_Barn_1</Art>
-		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
+		<UpgradeDescription>Increases max pet level cap by 2</UpgradeDescription>
 	</Building>
 	<Building>
 		<DisplayName>Hatchery Level 2</DisplayName>
@@ -1293,7 +1293,7 @@
 		<IdolCost>3</IdolCost>
 		<UpgradeTime>14400</UpgradeTime>
 		<Art>a_Upgrade_Barn_2</Art>
-		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
+		<UpgradeDescription>Increases max pet level cap by 2</UpgradeDescription>
 	</Building>
 	<Building>
 		<DisplayName>Hatchery Level 3</DisplayName>
@@ -1303,7 +1303,7 @@
 		<IdolCost>17</IdolCost>
 		<UpgradeTime>43200</UpgradeTime>
 		<Art>a_Upgrade_Barn_3</Art>
-		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
+		<UpgradeDescription>Increases max pet level cap by 2</UpgradeDescription>
 	</Building>
 	<Building>
 		<DisplayName>Hatchery Level 4</DisplayName>
@@ -1313,7 +1313,7 @@
 		<IdolCost>39</IdolCost>
 		<UpgradeTime>86400</UpgradeTime>
 		<Art>a_Upgrade_Barn_4</Art>
-		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
+		<UpgradeDescription>Increases max pet level cap by 2</UpgradeDescription>
 	</Building>
 	<Building>
 		<DisplayName>Hatchery Level 5</DisplayName>
@@ -1323,7 +1323,7 @@
 		<IdolCost>55</IdolCost>
 		<UpgradeTime>172800</UpgradeTime>
 		<Art>a_Upgrade_Barn_5</Art>
-		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
+		<UpgradeDescription>Increases max pet level cap by 2</UpgradeDescription>
 	</Building>
 	<Building>
 		<DisplayName>Hatchery Level 6</DisplayName>
@@ -1333,7 +1333,7 @@
 		<IdolCost>85</IdolCost>
 		<UpgradeTime>201600</UpgradeTime>
 		<Art>a_Upgrade_Barn_6</Art>
-		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
+		<UpgradeDescription>Increases max pet level cap by 2</UpgradeDescription>
 	</Building>
 	<Building>
 		<DisplayName>Hatchery Level 7</DisplayName>
@@ -1343,7 +1343,7 @@
 		<IdolCost>123</IdolCost>
 		<UpgradeTime>230400</UpgradeTime>
 		<Art>a_Upgrade_Barn_7</Art>
-		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
+		<UpgradeDescription>Increases max pet level cap by 2</UpgradeDescription>
 	</Building>
 	<Building>
 		<DisplayName>Hatchery Level 8</DisplayName>
@@ -1353,7 +1353,7 @@
 		<IdolCost>158</IdolCost>
 		<UpgradeTime>259200</UpgradeTime>
 		<Art>a_Upgrade_Barn_8</Art>
-		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
+		<UpgradeDescription>Increases max pet level cap by 2</UpgradeDescription>
 	</Building>
 	<Building>
 		<DisplayName>Hatchery Level 9</DisplayName>
@@ -1363,7 +1363,7 @@
 		<IdolCost>198</IdolCost>
 		<UpgradeTime>302400</UpgradeTime>
 		<Art>a_Upgrade_Barn_9</Art>
-		<UpgradeDescription>Azami evcil seviyesini 2 artirir</UpgradeDescription>
+		<UpgradeDescription>Increases max pet level cap by 2</UpgradeDescription>
 	</Building>
 	<Building>
 		<DisplayName>Hatchery Level 10</DisplayName>

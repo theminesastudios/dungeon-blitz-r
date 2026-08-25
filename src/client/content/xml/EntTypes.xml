@@ -12680,7 +12680,7 @@
 		</GfxType>
 	</EntType>
 	<EntType EntName="GoblinMimicSpire" parent="Base">
-		<DisplayName>goblin Mimic kule</DisplayName>
+		<DisplayName>goblin Mimic Tower</DisplayName>
 		<DevStatus>RiverRoad</DevStatus>
 		<Level>3</Level>
 		<GroupLevel>3</GroupLevel>
@@ -39358,7 +39358,7 @@
 		</GfxType>
 	</EntType>
 	<EntType EntName="NephitSpireMarker" parent="Base">
-		<DisplayName>Nephit kule Marker</DisplayName>
+		<DisplayName>Nephit Tower Marker</DisplayName>
 		<DevStatus>Castle</DevStatus>
 		<Level>22</Level>
 		<GroupLevel>22</GroupLevel>
@@ -40683,7 +40683,7 @@
 		</GfxType>
 	</EntType>
 	<EntType EntName="DesertMimicSpire" parent="Base">
-		<DisplayName>col Mimic kule</DisplayName>
+		<DisplayName>Desert Mimic Tower</DisplayName>
 		<DevStatus>Shazari</DevStatus>
 		<Level>22</Level>
 		<GroupLevel>23</GroupLevel>
@@ -52929,7 +52929,7 @@
 		</GfxType>
 	</EntType>
 	<EntType EntName="TowerGuard1Hard" parent="PaladinBase">
-		<DisplayName>kule Guard1Hard</DisplayName>
+		<DisplayName>Tower Guard1Hard</DisplayName>
 		<DevStatus>Valhaven</DevStatus>
 		<MeleePower>HumanMeleeL</MeleePower>
 		<RangedPower>PhantomShot</RangedPower>
@@ -52982,7 +52982,7 @@
 		</GfxType>
 	</EntType>
 	<EntType EntName="TowerGuard2Hard" parent="RogueBase">
-		<DisplayName>kule Guard2Hard</DisplayName>
+		<DisplayName>Tower Guard2Hard</DisplayName>
 		<DevStatus>Valhaven</DevStatus>
 		<MeleePower>HumanMeleeLR</MeleePower>
 		<Powers>HumanCyclone,HumanQuickStrike</Powers>

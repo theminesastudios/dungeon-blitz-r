@@ -69,7 +69,7 @@
 		<OfferText>We need to find that village.</OfferText>
 		<ActiveText>You can find the village on the map.=@I'm headed there to see if those really are survivors.=Just head east and you'll find it.=I'll try to repair the Niobe.</ActiveText>
 		<ReturnText>It cannot be! Has someone from the homeland finally returned to Ellyria?=</ReturnText>
-		<PraiseText>Krala haber ulastirmam gerekiyor!=Burada hâlâ insanlar olduguna inanamiyorum.</PraiseText>
+		<PraiseText>I must get word to the king!=I'm amazed there are still humans here.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>RescueAnna</MissionName>
@@ -197,7 +197,7 @@
 		<ReturnName>NR_Villager02</ReturnName>
 		<CompleteCount>5</CompleteCount>
 		<ProgressIcon>a_QuestIcon_GoblinNoserings</ProgressIcon>
-		<ProgressText>Goblin Burnunu Sokmak</ProgressText>
+		<ProgressText>Goblin Nosering</ProgressText>
 		<MissionLevel>3</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -205,7 +205,7 @@
 		<TrackerText>Defeat five big goblins and recover their noserings</TrackerText>
 		<TrackerReturn>Collect the nosering bounty from Jarvis</TrackerReturn>
 		<Description>Goblins attack villagers and steal metal. The tougher goblins wear it as jewelry. Get some of the villager's stuff back.</Description>
-		<PreReqText>Uc gundur gorevdeyim.</PreReqText>
+		<PreReqText>I've been on duty for three days.</PreReqText>
 		<OfferText>Goblins stole all our horseshoes and made noserings</OfferText>
 		<ActiveText>The big goblins wear horseshoes as noserings.=To mock us, I think.=But we need horseshoes if we're going to rebuild our army and economy.=@Any chance to take something back from the goblins.</ActiveText>
 		<ReturnText>Thanks! I'll just get these rings cleaned off…</ReturnText>
@@ -220,7 +220,7 @@
 		<ReturnName>NR_Villager03</ReturnName>
 		<CompleteCount>10</CompleteCount>
 		<ProgressIcon>a_QuestIcon_Wands</ProgressIcon>
-		<ProgressText>Goblin Asasi</ProgressText>
+		<ProgressText>Goblin Wand</ProgressText>
 		<MissionLevel>4</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -270,7 +270,7 @@
 		<ActiveTarget>GoblinThief</ActiveTarget>
 		<CompleteCount>1</CompleteCount>
 		<ProgressIcon>a_QuestIcon_GrandmasBracelet</ProgressIcon>
-		<ProgressText>Buyukannenin Bilezigi</ProgressText>
+		<ProgressText>Grandma's Bracelet</ProgressText>
 		<MissionLevel>4</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -281,7 +281,7 @@
 		<OfferText>There are goblin raiders holed up in that farm.</OfferText>
 		<ActiveText>We've got the trogs cornered.=But they've got some tough commander in there.=If you take care of him, I can hold the line here.</ActiveText>
 		<ReturnText>You showed him!=We can keep them bottled up in there,= No problem.</ReturnText>
-		<PraiseText>Goblinleri kaciriyorsun.=Baskiyi surdurdugumuz surece...=Bu topraklari geri alabiliriz.</PraiseText>
+		<PraiseText>You've got the goblins on the run.=As long as we keep up the presure…=We can reclaim this land.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>KillGraveyardSkeleton</MissionName>
@@ -364,7 +364,7 @@
 		<OfferText>Ranger Affric has led a party to scout the old university district.</OfferText>
 		<ActiveText>Affric thinks the source of the corruption is to the east.=Someone named Hsalt has set up in the Citadel of Wissen.=@I wanted to poke around there myself.=@I'll go see what he has discovered.=Be careful, the road is overrung with Tuatara and Devourers.</ActiveText>
 		<ReturnText>It's good to see you again, friend.</ReturnText>
-		<PraiseText>Efsanen buyuyor.=Yakinda bu bolge sizi her yerde takip edecek.</PraiseText>
+		<PraiseText>Your legend grows.=Soon this region will follow you anywhere.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>SlayOoyak</MissionName>
@@ -536,7 +536,7 @@
 		<OfferText>Those lizards put a lot of stock in those banners</OfferText>
 		<ActiveText>The Tuatara rally around their war banners.=They're ferocious when their banner is up.=@And more organized than the goblins ever were.=The banners are enchanted in some way.=If you capture some of them, I might be able to use their magic against them.=@We could use our own magic banners to retake the land!</ActiveText>
 		<ReturnText>Perfect. I think I can sew our own enchanted banners now.</ReturnText>
-		<PraiseText>Now I just need a good design.=@If you want to use my portrait, you can.=Um, thanks, I'll consider it.=@I have an inspiring profile.=Oyle mi?=Evet, birkac secenek sunacagim.</PraiseText>
+		<PraiseText>Now I just need a good design.=@If you want to use my portrait, you can.=Um, thanks, I'll consider it.=@I have an inspiring profile.=Uh, you do?=Yes, well, I'll come up with a few options.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>StopTheInvader</MissionName>
@@ -557,7 +557,7 @@
 		<OfferText>A Tuatara squad has set up in an abandoned farm.</OfferText>
 		<ActiveText>The lizards took over this old house.=They're using it as a base to launch raids from.=They store supplies there too.=Mostly dried beetles and rancid meat.=So you can maybe leave that there.=Unless you're into that kind of food.=I'm not judging.</ActiveText>
 		<ReturnText>Thank you!</ReturnText>
-		<PraiseText>We'll keep an eye on that place.=If any more show ilgileniriz.=Thanks for not bringing me the dried beetles.=Although my cousin says they're tasty.=I guess I should try one before I judge.</PraiseText>
+		<PraiseText>We'll keep an eye on that place.=If any more show up, we'll take care of them.=Thanks for not bringing me the dried beetles.=Although my cousin says they're tasty.=I guess I should try one before I judge.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>DroppedInTheWell</MissionName>
@@ -599,7 +599,7 @@
 		<OfferText>There's something big up in that old farm.</OfferText>
 		<ActiveText>I don't know what it is.=I don't think it's Tuatara though.=I figured you would want to check it out.=Because I really don't want to.=Did I mention it sounded big?</ActiveText>
 		<ReturnText>Ooo! I hate spiders! Thanks!</ReturnText>
-		<PraiseText>A colossal spider it was?=I hate spiders.=I'm glad it was you and not me!</PraiseText>
+		<PraiseText>A colossal spider, it was?=I hate spiders.=I'm glad it was you and not me!</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>GetDevourerTeeth</MissionName>
@@ -687,7 +687,7 @@
 		<OfferText>We're wise to your kind's tricks. Present yourself to the Warden or taste steel.</OfferText>
 		<ActiveText>The Warden must approve all outsiders.=@You're human!=And so are you, that don't mean we're friends.=@But, how did you get here?=I was born here.=@I don't understand, the Goblin Horde…=Don't know nothing about no hordes.=You either check in with the Warden or off with you.=Although the Warden will no doubt send you on your way.=We're not looking for your kind of trouble.</ActiveText>
 		<ReturnText>We've had our fill of looters and bandits.</ReturnText>
-		<PraiseText>Uslu dur yabanci.</PraiseText>
+		<PraiseText>You behave, stranger.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>DefeatBanditCamp</MissionName>
@@ -728,7 +728,7 @@
 		<TrackerText>Defeat the Bandit Leader deep in the woods</TrackerText>
 		<TrackerReturn>Tell the Steward of your victory over the bandits</TrackerReturn>
 		<Description>Your bandit hunt leads you deeper into the forest. Here dwells the old villain Svagg, the mysterious bandit leader.</Description>
-		<PreReqText>Oh, glorious gods! Just what we don't need, daha outsiders...</PreReqText>
+		<PreReqText>Oh, glorious gods! Just what we don't need, more outsiders…</PreReqText>
 		<OfferText>The bandits say they're soldiers from your homeland.</OfferText>
 		<ActiveText>You claim to be from some kingdom across the sea.=@That's true. I was sent by The King.=I don't know any kings, but these other men said the same.=@I don't understand, where did YOU come from?=@I thought this town destroyed.=No, no, we're doing just fine.=Except for looters and raiders from across the sea.=Apparently from your kingdom.=@I have more questions...=Which I'll answer once you take care of your fellow bandits.=@I am no bandit!=Well, they are, and they're from your land.=@Very well, I shall see to them.</ActiveText>
 		<ReturnText>You've returned? So perhaps you aren't like the others.</ReturnText>
@@ -791,7 +791,7 @@
 		<PreReqText>The bandit camp was just back the other way</PreReqText>
 		<OfferText>The Steward went into that cave to prepare for the Harvest Ritual.</OfferText>
 		<ActiveText>You shouldn't disturb the Steward.=@Does this ritual power the shield on the bridge?=I think so.=Only the Steward knows how it works.=@It's powerful magic.=The Steward has long protected our people, ever since we came here.=@I need to speak with him about crossing the bridge.=Well, he's in there.=But don't bother him if he seems too busy.=He's doing important work.</ActiveText>
-		<PraiseText>Komiserle konustun mu?</PraiseText>
+		<PraiseText>Did you talk with the Steward?</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>DerelictionOfDuty</MissionName>
@@ -810,7 +810,7 @@
 		<TrackerText>Chase the Steward into the catacombs under the town</TrackerText>
 		<TrackerReturn>Consult with the Warden over the truth about Felbridge</TrackerReturn>
 		<Description>The steward flees into the catacombs beneath the town. It's up to you to chase the villain down and stop his evil plan.</Description>
-		<PreReqText>Komiseri henuz gormedin mi?</PreReqText>
+		<PreReqText>Have you seen the Steward yet.</PreReqText>
 		<ActiveText>You say the Steward worships dark powers?=@He's been sacrificing your people to some ancient god.=I had no idea!=@There's more to be learned. Where's his house?=Right over there, off the town square.=Hurry, you've got to find out who else is helping him.=The Steward, making pacts with evil gods...=I never imagined it.</ActiveText>
 		<ReturnText>With the Steward's evil unveiled, we have a lot to figure out.</ReturnText>
 		<ISayOnAccept>^tTime to chase down that Steward and end this</ISayOnAccept>
@@ -851,11 +851,11 @@
 		<TrackerText>The witch Yagarah was last seen at her mausoleum home</TrackerText>
 		<TrackerReturn>Why are the dead rising? Has Nephit returned?</TrackerReturn>
 		<Description>Cemertery Hill is overrun with undead. A witch named Yagarah might be in league with Nephit. You decide to investigate.</Description>
-		<PreReqText>Bridgetown'daki Mudurle konusmalisin</PreReqText>
+		<PreReqText>You should speak to the Warden in Bridgetown</PreReqText>
 		<OfferText>The Witch Yagarah might be in league with Nephit!</OfferText>
 		<ActiveText>The Steward of Felbridge said Cemetery Hill would be safe to settle.=@Clearly it's not.=The dead started rising from their graves this morning!=@Sounds like Nephit's work.=Aye, it does, but we've learned about a witch.=Her name's Yagarah, and she might be working with Nephit.=We think she's holed up in a mausoleum East of here.=@Any friend of Nephit's is an enemy of mine.</ActiveText>
 		<ReturnText>Thank you for rescuing me</ReturnText>
-		<PraiseText>Gnole's no surprise they turned ediyor.=Help for Nephit for help.</PraiseText>
+		<PraiseText>The gnoles have hated humans for decades.=It's no surprise they turned to Nephit for help.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>DestroyTheIdol</MissionName>
@@ -874,7 +874,7 @@
 		<TrackerText>The Gnoles and Nephit are raising dead in a nearby tomb</TrackerText>
 		<TrackerReturn>Tell Yagarah that you've taught Nephit a lesson</TrackerReturn>
 		<Description>The Gnoles have made an alliance with Nephit and seek to enslave the humans of Felbridge.</Description>
-		<PreReqText>Olumsuzler mozolemi tamamen istila etti.</PreReqText>
+		<PreReqText>The undead have completely overrun my mausoleum.</PreReqText>
 		<OfferText>The Gnoles and Undead have formed a frightening alliance.</OfferText>
 		<ActiveText>Gnoles and humans used to be allies.=Years ago we helped each other escape slavery.=But the two sides both wanted to be in charge afterwards.=We've fought ever since.=@And now they're in league with Nephit.=They must think undead allies will let them finally enslave us again.=@They might be right.=You'll find more gnoles and more undead in the tomb of Karl Tilly.</ActiveText>
 		<ReturnText>Great job! Hopefully that set back Nephit's and the Gnoles plans.</ReturnText>
@@ -1273,7 +1273,7 @@
 		<OfferText>Some of your kind might yet live as they once were.</OfferText>
 		<ActiveText>I know where some of your kind were taken.=@What are you? Some spirit?=We are the ancient protectors of this mountain.=Meylour toppled us from our thrones.=@Where are the survivors?=If they live, they're in one of Meylour's foul shrines.=You must hurry, lest their time come.=@I'm on my way!</ActiveText>
 		<ReturnText>Meylour rose in fury from the depths five decades past.</ReturnText>
-		<PraiseText>Meylour rose in fury from the depths fifty years ago.</PraiseText>
+		<PraiseText>Meylour rose in fury from the depths five decades past.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>EyeOfTheTyrant</MissionName>
@@ -1442,7 +1442,7 @@
 		<Description>Long ago the great artificer Uthor forged powerful weapons. His armory, hidden near Stormfalls, is haunted and shunned.</Description>
 		<OfferText>Uthor's Exquisite Creations</OfferText>
 		<ActiveText>Closed=Trespassers Will Be Annihilated</ActiveText>
-		<PraiseText>Uthor'un Enfes Kreasyonlari=Izinsiz girenler yok edilecek=Kapali</PraiseText>
+		<PraiseText>Uthor's Exquisite Creations=Trespassers Will Be Annihilated=Closed</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>ForgottenForge</MissionName>
@@ -1464,7 +1464,7 @@
 		<OfferText>Uthor's Exquisite Creations</OfferText>
 		<ActiveText>The forge remains hidden in the Stormshard Peaks.</ActiveText>
 		<ReturnText>Uthor's Exquisite Creations=The forge is found.</ReturnText>
-		<PraiseText>Uthor'un Enfes Kreasyonlari=Demirhane bulundu.</PraiseText>
+		<PraiseText>Uthor's Exquisite Creations=The forge is found.</PraiseText>
 		<ISayOnAccept>^tI wonder who this Uthor they speak of is…</ISayOnAccept>
 	</MissionType>
 	<MissionType>
@@ -1477,7 +1477,7 @@
 		<ReturnName>OMM_Villager01</ReturnName>
 		<CompleteCount>5</CompleteCount>
 		<ProgressIcon>a_QuestIcon_HobgoblinNoserings</ProgressIcon>
-		<ProgressText>Goblin Burnunu Sokmak</ProgressText>
+		<ProgressText>Goblin Nosering</ProgressText>
 		<MissionLevel>16</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -1501,7 +1501,7 @@
 		<ReturnName>OMM_Villager01</ReturnName>
 		<CompleteCount>10</CompleteCount>
 		<ProgressIcon>a_QuestIcon_RockShard</ProgressIcon>
-		<ProgressText>Alurit</ProgressText>
+		<ProgressText>Alurite</ProgressText>
 		<MissionLevel>17</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -1530,7 +1530,7 @@
 		<TrackerText>Drive the cave gnomes away wherever you find them</TrackerText>
 		<TrackerReturn>Amilie will be delighted you've driven the gnomes away</TrackerReturn>
 		<Description>Cave gnomes are plaguing the expedition. Driving gnomes away when you see them is a simple enough job.</Description>
-		<PreReqText>Bu tuyler urpertici cuceleri fark ettiniz mi?</PreReqText>
+		<PreReqText>Have you noticed those creepy gnomes?</PreReqText>
 		<OfferText>These Gnomes are driving me crazy!</OfferText>
 		<ActiveText>Those pesky Gnomes hide out in the caves.=They come at night and steal our supplies.</ActiveText>
 		<ReturnText>Thank you, maybe now they will bug someone else!</ReturnText>
@@ -1587,7 +1587,7 @@
 		<ReturnName>OMM_Villager03</ReturnName>
 		<CompleteCount>10</CompleteCount>
 		<ProgressIcon>a_QuestIcon_LionJewelry</ProgressIcon>
-		<ProgressText>Calinan Takilar</ProgressText>
+		<ProgressText>Stolen Jewelry</ProgressText>
 		<MissionLevel>17</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -1673,7 +1673,7 @@
 		<TrackerText>Defeat the traitorous Coalglow high up in the First Tree</TrackerText>
 		<TrackerReturn>Descend the Ur-Tree and tell Longroots of your success</TrackerReturn>
 		<Description>The fiendish Coalglow plots to burn the Ur-Tree. Pursue her into the Tree's highest branches and stop Meylour's plan.</Description>
-		<PreReqText>Wildbark'i gordun mu? Agacimizi batiya dogru birakti</PreReqText>
+		<PreReqText>Have you seen Wildbark? She left our tree headed west</PreReqText>
 		<OfferText>Meylour's corrupted Dryads have infested the Ur-Tree!</OfferText>
 		<ActiveText>Meylour's fiends drove us from the tree.=His corrupted plants and flames are everywhere.=@I won't let Meylour's cult destroy this tree.=You must hurry, I smell smoke!</ActiveText>
 		<ReturnText>Thank you, but the tree isn't safe yet.</ReturnText>
@@ -1745,7 +1745,7 @@
 		<OfferText>The last of Meylour's cult cowers in fear.</OfferText>
 		<ActiveText>You've almost beaten them.=@But I still don't know where The Heart of Meylour is.=@I will make these last cultists tell me.=@Meylour's terror will come to an end.</ActiveText>
 		<ReturnText>Now you can finally strike down Meylour forever.</ReturnText>
-		<PraiseText>Meylour'un takipcileri hak ettiklerini buldu.</PraiseText>
+		<PraiseText>Meylour's followers got what they deserved.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>GatherDarkTotems</MissionName>
@@ -1778,7 +1778,7 @@
 		<ReturnName>EG_Villager02</ReturnName>
 		<CompleteCount>10</CompleteCount>
 		<ProgressIcon>a_QuestIcon_PriestMask</ProgressIcon>
-		<ProgressText>Meylour'un Maskesi</ProgressText>
+		<ProgressText>Mask of Meylour</ProgressText>
 		<MissionLevel>20</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -1789,7 +1789,7 @@
 		<OfferText>We also need Meylour's Masks for the protection spell</OfferText>
 		<ActiveText>Please hurry, the priests attacks need to be repelled.</ActiveText>
 		<ReturnText>Just what we needed. Thank you!</ReturnText>
-		<PraiseText>Artik korunmamiz lazim. Tekrar tesekkurler!</PraiseText>
+		<PraiseText>We should be protected now. Thanks again!</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>KillGladeEmbers</MissionName>
@@ -1832,7 +1832,7 @@
 		<OfferText>By destroying Meylour, you've left the path to the Sleeping Lands unblocked.</OfferText>
 		<ActiveText>With Meylour's barrier gone, the path to the castle is open.=My people came up from there decades ago.=We were fleeing a life of slavery in The Sleeping Lands.=The Dragons and Goblins kept us in chains.=There's no knowing what's there now.=Meylour's barrier kept the Sleeping Lands locked away from this world.</ActiveText>
 		<ReturnText>Marshal Sythokahn is defeated, not just his dream this time.</ReturnText>
-		<PraiseText>You've stopped the dragons from invading again.=But who knows what else is down below?</PraiseText>
+		<PraiseText>You've stopped the dragons from invading again.=But who knows what else is down there.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>BattlesLostAndWon</MissionName>
@@ -1891,7 +1891,7 @@
 		<Description>Nephit has the ritual and is fleeing to the battlements. Stop him!</Description>
 		<OfferText>Nephit materialized on the ramparts after you fought him.</OfferText>
 		<ActiveText>I take it Nephit found the ritual?=@He has it, yes.=I don't know why, but he's going to use it.=Maybe he hopes it will restore him to life.=@Is that possible?=Maybe, but it would be a monstrous existence.=Hurry now, stop him before he can find out.</ActiveText>
-		<PraiseText>Nephit batiya, Kaleye gitti!</PraiseText>
+		<PraiseText>Nephit went west to the Castle!</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>Capstone</MissionName>
@@ -1910,10 +1910,10 @@
 		<TrackerText>Pursue Nephit into the dungeons of Castle Hocke</TrackerText>
 		<TrackerReturn>Tell Titus of Nephit's defeat and the broken Capstone</TrackerReturn>
 		<Description>Pursue the Nephit into the dungeons where the legendary Capstone sits. Stop him from using the ritual</Description>
-		<PreReqText>Acele etmek! Nephit bu tarafa gitti!</PreReqText>
+		<PreReqText>Hurry! Nephit went this way!</PreReqText>
 		<ActiveText>Beyond lies the portal to the Sleeping Lands=Baron Hocke's sages created a powerful Capstone to seal the portal.=It limits the travel between worlds.=Nephit will try and break the Capstone and use its energy for his ritual.=@What happens if he does that?=Travel between the realms will be unstoppable.=@More dragons, goblins and worse.=Assuming Nephit's ritual doesn't kill us all.</ActiveText>
 		<ReturnText>At least, Nephit is no more.</ReturnText>
-		<PraiseText>It's coming=@What is coming?=Everything=Riches and Nightmares=Monsters and Magic=Good and Evil=It's all down there now and it's all awake now</PraiseText>
+		<PraiseText>It's coming=@What is coming?=Everything=Riches and Nightmares=Monsters and Magic=Good and Evil=It's all down there, and it's all awake now</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>EmeraldThrone</MissionName>
@@ -1931,7 +1931,7 @@
 		<Description>The survivors remember a secret door in the castle's Throne Room that leads the treasury. You always have time for that.</Description>
 		<OfferText>There is a secret door in the throne room that leads to the cave</OfferText>
 		<ActiveText>Some of the dragon's soldiers are holed up down there.=Be careful, they have one of Baron Hocke's golems at their command.</ActiveText>
-		<PraiseText>Bu Baron Hocke'un Bas Paladin'iydi.=Golem muhafizlarinin ilki.=Boyle bir mucizenin saptirildigini gormek utanc verici.</PraiseText>
+		<PraiseText>That was Baron Hocke's Prime Paladin.=The first of his Golem guards.=A shame to see such a wonder perverted.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>SpiritProblem</MissionName>
@@ -1962,7 +1962,7 @@
 		<ReturnName>AC_Villager05</ReturnName>
 		<CompleteCount>10</CompleteCount>
 		<ProgressIcon>a_QuestIcon_DreadMask</ProgressIcon>
-		<ProgressText>Dread Maskesi</ProgressText>
+		<ProgressText>Dread Mask</ProgressText>
 		<MissionLevel>22</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -1991,7 +1991,7 @@
 		<TrackerText>Take to portal to the Sleeping Lands</TrackerText>
 		<TrackerReturn>Speak with Titus on the other side</TrackerReturn>
 		<Description>The seal between the Sleeping Land and this land lies broken. Unlimited danger lies below, and unlimited opportunity.</Description>
-		<PreReqText>Capstone'a dogru gidiyor!</PreReqText>
+		<PreReqText>He's headed towards the Capstone!</PreReqText>
 		<OfferText>Nephit is defeated, but the Capstone is destroyed. The link to the Sleeping Lands lies open</OfferText>
 		<ActiveText>What are the Sleeping Lands?=Everything=Riches and Nightmares=Monsters and Magic=Good and Evil=It's all down there, and it's all awake now=@Riches?=Ha, you are still an adventurer=You are going down there, aren't you?=Well, then, I will accompany you=That gate should take us there=Or else tear us to pieces=@Enough talk, let's go</ActiveText>
 		<ReturnText>Ah. You made it over and appear to be in one piece. Excellent!</ReturnText>
@@ -2182,7 +2182,7 @@
 		<ReturnName>SD_Acolyte01</ReturnName>
 		<CompleteCount>10</CompleteCount>
 		<ProgressIcon>a_QuestIcon_ScorpionStinger</ProgressIcon>
-		<ProgressText>Akrep Ignesi</ProgressText>
+		<ProgressText>Scorpion Stinger</ProgressText>
 		<MissionLevel>23</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -2226,7 +2226,7 @@
 		<ReturnName>SD_Slave01</ReturnName>
 		<CompleteCount>10</CompleteCount>
 		<ProgressIcon>a_QuestIcon_GoblinTag</ProgressIcon>
-		<ProgressText>Goblin Hafiza Buyusu</ProgressText>
+		<ProgressText>Goblin Memory Charm</ProgressText>
 		<MissionLevel>24</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -2249,7 +2249,7 @@
 		<ReturnName>SD_Nomad01</ReturnName>
 		<CompleteCount>10</CompleteCount>
 		<ProgressIcon>a_QuestIcon_GiantBracer</ProgressIcon>
-		<ProgressText>Turkce Description 7D3362.</ProgressText>
+		<ProgressText>Seelie Bracer</ProgressText>
 		<MissionLevel>24</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -2260,7 +2260,7 @@
 		<OfferText>Those Seelie bracers fascinate me</OfferText>
 		<ActiveText>If had a bunch of those Seelie bracers...=I could break them down and start replicating them.=Smaller size of course.=But Goblins would pay well for something like those.=Bring me what you can.</ActiveText>
 		<ReturnText>Hmm. Not exactly new anymore. Ah well, here's your pay.</ReturnText>
-		<PraiseText>Gormek?=Herkes kâr ediyor!</PraiseText>
+		<PraiseText>See?=Everyone profits!</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>CollectWormGlands</MissionName>
@@ -2272,7 +2272,7 @@
 		<ReturnName>SD_Matron01</ReturnName>
 		<CompleteCount>15</CompleteCount>
 		<ProgressIcon>a_QuestIcon_SandWormGland</ProgressIcon>
-		<ProgressText>Kum Solucani Mukus Bezi</ProgressText>
+		<ProgressText>Sandworm Mucus Gland</ProgressText>
 		<MissionLevel>25</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -2283,7 +2283,7 @@
 		<OfferText>We may be able to keep this from happening again</OfferText>
 		<ActiveText>Bring me enough mucus glands and I can mix up an repellent=That will keep the bugs out of the temple</ActiveText>
 		<ReturnText>This will do nicely. Take this for your trouble</ReturnText>
-		<PraiseText>Vay, bu sey berbat kokuyor=Yine de bocekleri korkutup kaciracaktir, bu yuzden buna deger=Gokyuzu yolculugunuzda sizi korusun</PraiseText>
+		<PraiseText>Wow, this stuff smells horrid=It'll scare away the bugs though, so it's worth it=The Sky bless you on your journey</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>DELETED4</MissionName>
@@ -2359,7 +2359,7 @@
 		<ReturnName>NR_Villager02Hard</ReturnName>
 		<CompleteCount>10</CompleteCount>
 		<ProgressIcon>a_QuestIcon_GoblinNoserings</ProgressIcon>
-		<ProgressText>Goblin Burnunu Sokmak</ProgressText>
+		<ProgressText>Goblin Nosering</ProgressText>
 		<MissionLevel>38</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -2382,7 +2382,7 @@
 		<ReturnName>NR_Villager02Hard</ReturnName>
 		<CompleteCount>20</CompleteCount>
 		<ProgressIcon>a_QuestIcon_Wands</ProgressIcon>
-		<ProgressText>Goblin Asasi</ProgressText>
+		<ProgressText>Goblin Wand</ProgressText>
 		<MissionLevel>39</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -2431,7 +2431,7 @@
 		<ActiveTarget>GoblinThiefHard</ActiveTarget>
 		<CompleteCount>1</CompleteCount>
 		<ProgressIcon>a_QuestIcon_GrandmasBracelet</ProgressIcon>
-		<ProgressText>Buyukannenin Bilezigi</ProgressText>
+		<ProgressText>Grandma's Bracelet</ProgressText>
 		<MissionLevel>39</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -2463,7 +2463,7 @@
 		<OfferText>The undead just keep rising from that crypt.</OfferText>
 		<ActiveText>The old shrine up there is where the undead first came from.=They've been coming ever since.=If you can help me destroy some of the worst of them…=We can keep them from spreading to Wolf's End.</ActiveText>
 		<ReturnText>You have my thanks.</ReturnText>
-		<PraiseText>Onlarla savasmaya devam edecegim.=Ama bunlara asla alisamayacagim.=Veya onlarin kokusu.=Ya da soyledikleri tuyler urpertici seyler.=Ama cogunlukla onlarin kokusu.</PraiseText>
+		<PraiseText>I'll keep fighting them.=But I'll never get used to them.=Or their smell.=Or the creepy things they say.=But mostly their smell.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>StopCastoutHard</MissionName>
@@ -2524,7 +2524,7 @@
 		<OfferText>Ranger Affric has led a party to scout the old university district.</OfferText>
 		<ActiveText>Affric thinks the source of the corruption is to the east.=Someone named Hsalt has set up in the Citadel of Wissen.=@I wanted to poke around there myself.=@I'll go see what he has discovered.=Be careful, the road is overrung with Tuatara and Devourers.</ActiveText>
 		<ReturnText>It's good to see you again, friend.</ReturnText>
-		<PraiseText>Efsanen buyuyor.=Yakinda bu bolge sizi her yerde takip edecek.</PraiseText>
+		<PraiseText>Your legend grows.=Soon this region will follow you anywhere.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>SlayOoyakHard</MissionName>
@@ -2716,7 +2716,7 @@
 		<OfferText>A Tuatara squad has set up in an abandoned farm.</OfferText>
 		<ActiveText>The lizards took over this old house.=They're using it as a base to launch raids from.=They store supplies there too.=Mostly dried beetles and rancid meat.=So you can maybe leave that there.=Unless you're into that kind of food.=I'm not judging.</ActiveText>
 		<ReturnText>Thank you!</ReturnText>
-		<PraiseText>We'll keep an eye on that place.=If any more show ilgileniriz.=Thanks for not bringing me the dried beetles.=Although my cousin says they're tasty.=I guess I should try one before I judge.</PraiseText>
+		<PraiseText>We'll keep an eye on that place.=If any more show up, we'll take care of them.=Thanks for not bringing me the dried beetles.=Although my cousin says they're tasty.=I guess I should try one before I judge.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>DroppedInTheWellHard</MissionName>
@@ -2758,7 +2758,7 @@
 		<OfferText>There's something big up in that old farm.</OfferText>
 		<ActiveText>I don't know what it is.=I don't think it's Tuatara though.=I figured you would want to check it out.=Because I really don't want to.=Did I mention it sounded big?</ActiveText>
 		<ReturnText>Ooo! I hate spiders! Thanks!</ReturnText>
-		<PraiseText>A colossal spider it was?=I hate spiders.=I'm glad it was you and not me!</PraiseText>
+		<PraiseText>A colossal spider, it was?=I hate spiders.=I'm glad it was you and not me!</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>GetDevourerTeethHard</MissionName>
@@ -2886,7 +2886,7 @@
 		<TrackerText>Defeat the Bandit Leader deep in the woods</TrackerText>
 		<TrackerReturn>Tell the Steward of your victory over the bandits</TrackerReturn>
 		<Description>Your bandit hunt leads you deeper into the forest. Here dwells the old villain Svagg, the mysterious bandit leader.</Description>
-		<PreReqText>Oh, glorious gods! Just what we don't need, daha outsiders...</PreReqText>
+		<PreReqText>Oh, glorious gods! Just what we don't need, more outsiders…</PreReqText>
 		<OfferText>The bandits say they're soldiers from your homeland.</OfferText>
 		<ActiveText>You claim to be from some kingdom across the sea.=@That's true. I was sent by The King.=I don't know any kings, but these other men said the same.=@I don't understand, where did YOU come from?=@I thought this town destroyed.=No, no, we're doing just fine.=Except for looters and raiders from across the sea.=Apparently from your kingdom.=@I have more questions...=Which I'll answer once you take care of your fellow bandits.=@I am no bandit!=Well, they are, and they're from your land.=@Very well, I shall see to them.</ActiveText>
 		<ReturnText>You've returned? So perhaps you aren't like the others.</ReturnText>
@@ -2949,7 +2949,7 @@
 		<PreReqText>The bandit camp was just back the other way</PreReqText>
 		<OfferText>The Steward went into that cave to prepare for the Harvest Ritual.</OfferText>
 		<ActiveText>You shouldn't disturb the Steward.=@Does this ritual power the shield on the bridge?=I think so.=Only the Steward knows how it works.=@It's powerful magic.=The Steward has long protected our people, ever since we came here.=@I need to speak with him about crossing the bridge.=Well, he's in there.=But don't bother him if he seems too busy.=He's doing important work.</ActiveText>
-		<PraiseText>Komiserle konustun mu?</PraiseText>
+		<PraiseText>Did you talk with the Steward?</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>DerelictionOfDutyHard</MissionName>
@@ -2968,7 +2968,7 @@
 		<TrackerText>Chase the Steward into the catacombs under the town</TrackerText>
 		<TrackerReturn>Consult with the Warden over the truth about Felbridge</TrackerReturn>
 		<Description>The steward flees into the catacombs beneath the town. It's up to you to chase the villain down and stop his evil plan.</Description>
-		<PreReqText>Komiseri henuz gormedin mi?</PreReqText>
+		<PreReqText>Have you seen the Steward yet.</PreReqText>
 		<ActiveText>You say the Steward worships dark powers?=@He's been sacrificing your people to some ancient god.=I had no idea!=@There's more to be learned. Where's his house?=Right over there, off the town square.=Hurry, you've got to find out who else is helping him.=The Steward, making pacts with evil gods...=I never imagined it.</ActiveText>
 		<ReturnText>With the Steward's evil unveiled, we have a lot to figure out.</ReturnText>
 		<ISayOnAccept>^tTime to chase down that Steward and end this</ISayOnAccept>
@@ -3009,11 +3009,11 @@
 		<TrackerText>The witch Yagarah was last seen at her mausoleum home</TrackerText>
 		<TrackerReturn>Why are the dead rising? Has Nephit returned?</TrackerReturn>
 		<Description>Cemertery Hill is overrun with undead. A witch named Yagarah might be in league with Nephit. You decide to investigate.</Description>
-		<PreReqText>Bridgetown'daki Mudurle konusmalisin</PreReqText>
+		<PreReqText>You should speak to the Warden in Bridgetown</PreReqText>
 		<OfferText>The Witch Yagarah might be in league with Nephit!</OfferText>
 		<ActiveText>The Steward of Felbridge said Cemetery Hill would be safe to settle.=@Clearly it's not.=The dead started rising from their graves this morning!=@Sounds like Nephit's work.=Aye, it does, but we've learned about a witch.=Her name's Yagarah, and she might be working with Nephit.=We think she's holed up in a mausoleum East of here.=@Any friend of Nephit's is an enemy of mine.</ActiveText>
 		<ReturnText>Thank you for rescuing me</ReturnText>
-		<PraiseText>Gnole's no surprise they turned ediyor.=Help for Nephit for help.</PraiseText>
+		<PraiseText>The gnoles have hated humans for decades.=It's no surprise they turned to Nephit for help.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>DestroyTheIdolHard</MissionName>
@@ -3032,7 +3032,7 @@
 		<TrackerText>The Gnoles and Nephit are raising dead in a nearby tomb</TrackerText>
 		<TrackerReturn>Tell Yagarah that you've taught Nephit a lesson</TrackerReturn>
 		<Description>The Gnoles have made an alliance with Nephit and seek to enslave the humans of Felbridge.</Description>
-		<PreReqText>Olumsuzler mozolemi tamamen istila etti.</PreReqText>
+		<PreReqText>The undead have completely overrun my mausoleum.</PreReqText>
 		<OfferText>The Gnoles and Undead have formed a frightening alliance.</OfferText>
 		<ActiveText>Gnoles and humans used to be allies.=Years ago we helped each other escape slavery.=But the two sides both wanted to be in charge afterwards.=We've fought ever since.=@And now they're in league with Nephit.=They must think undead allies will let them finally enslave us again.=@They might be right.=You'll find more gnoles and more undead in the tomb of Karl Tilly.</ActiveText>
 		<ReturnText>Great job! Hopefully that set back Nephit's and the Gnoles plans.</ReturnText>
@@ -3431,7 +3431,7 @@
 		<OfferText>Some of your kind might yet live as they once were.</OfferText>
 		<ActiveText>I know where some of your kind were taken.=@What are you? Some spirit?=We are the ancient protectors of this mountain.=Meylour toppled us from our thrones.=@Where are the survivors?=If they live, they're in one of Meylour's foul shrines.=You must hurry, lest their time come.=@I'm on my way!</ActiveText>
 		<ReturnText>Meylour rose in fury from the depths five decades past.</ReturnText>
-		<PraiseText>Meylour rose in fury from the depths fifty years ago.</PraiseText>
+		<PraiseText>Meylour rose in fury from the depths five decades past.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>EyeOfTheTyrantHard</MissionName>
@@ -3600,7 +3600,7 @@
 		<Description>Long ago the great artificer Uthor forged powerful weapons. His armory, hidden near Stormfalls, is haunted and shunned.</Description>
 		<OfferText>Uthor's Exquisite Creations</OfferText>
 		<ActiveText>Closed=Trespassers Will Be Annihilated</ActiveText>
-		<PraiseText>Uthor'un Enfes Kreasyonlari=Izinsiz girenler yok edilecek=Kapali</PraiseText>
+		<PraiseText>Uthor's Exquisite Creations=Trespassers Will Be Annihilated=Closed</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>ForgottenForgeHard</MissionName>
@@ -3622,7 +3622,7 @@
 		<OfferText>Uthor's Exquisite Creations</OfferText>
 		<ActiveText>The forge remains hidden in the Stormshard Peaks.</ActiveText>
 		<ReturnText>Uthor's Exquisite Creations=The forge is found.</ReturnText>
-		<PraiseText>Uthor'un Enfes Kreasyonlari=Demirhane bulundu.</PraiseText>
+		<PraiseText>Uthor's Exquisite Creations=The forge is found.</PraiseText>
 		<ISayOnAccept>^tI wonder who this Uthor they speak of is…</ISayOnAccept>
 	</MissionType>
 	<MissionType>
@@ -3635,7 +3635,7 @@
 		<ReturnName>OMM_Villager01Hard</ReturnName>
 		<CompleteCount>10</CompleteCount>
 		<ProgressIcon>a_QuestIcon_HobgoblinNoserings</ProgressIcon>
-		<ProgressText>Goblin Burnunu Sokmak</ProgressText>
+		<ProgressText>Goblin Nosering</ProgressText>
 		<MissionLevel>31</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -3659,7 +3659,7 @@
 		<ReturnName>OMM_Villager01Hard</ReturnName>
 		<CompleteCount>20</CompleteCount>
 		<ProgressIcon>a_QuestIcon_RockShard</ProgressIcon>
-		<ProgressText>Alurit</ProgressText>
+		<ProgressText>Alurite</ProgressText>
 		<MissionLevel>32</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -3688,7 +3688,7 @@
 		<TrackerText>Drive the cave gnomes away wherever you find them</TrackerText>
 		<TrackerReturn>Amilie will be delighted you've driven the gnomes away</TrackerReturn>
 		<Description>Cave gnomes are plaguing the expedition. Driving gnomes away when you see them is a simple enough job.</Description>
-		<PreReqText>Bu tuyler urpertici cuceleri fark ettiniz mi?</PreReqText>
+		<PreReqText>Have you noticed those creepy gnomes?</PreReqText>
 		<OfferText>These Gnomes are driving me crazy!</OfferText>
 		<ActiveText>Those pesky Gnomes hide out in the caves.=They come at night and steal our supplies.</ActiveText>
 		<ReturnText>Thank you, maybe now they will bug someone else!</ReturnText>
@@ -3745,7 +3745,7 @@
 		<ReturnName>OMM_Villager03Hard</ReturnName>
 		<CompleteCount>20</CompleteCount>
 		<ProgressIcon>a_QuestIcon_LionJewelry</ProgressIcon>
-		<ProgressText>Calinan Takilar</ProgressText>
+		<ProgressText>Stolen Jewelry</ProgressText>
 		<MissionLevel>32</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -3798,7 +3798,7 @@
 		<TrackerText>Defeat the traitorous Coalglow high up in the First Tree</TrackerText>
 		<TrackerReturn>Descend the Ur-Tree and tell Longroots of your success</TrackerReturn>
 		<Description>The fiendish Coalglow plots to burn the Ur-Tree. Pursue her into the Tree's highest branches and stop Meylour's plan.</Description>
-		<PreReqText>Wildbark'i gordun mu? Agacimizi batiya dogru birakti</PreReqText>
+		<PreReqText>Have you seen Wildbark? She left our tree headed west</PreReqText>
 		<OfferText>Meylour's corrupted Dryads have infested the Ur-Tree!</OfferText>
 		<ActiveText>Meylour's fiends drove us from the tree.=His corrupted plants and flames are everywhere.=@I won't let Meylour's cult destroy this tree.=You must hurry, I smell smoke!</ActiveText>
 		<ReturnText>Thank you, but the tree isn't safe yet.</ReturnText>
@@ -3870,7 +3870,7 @@
 		<OfferText>The last of Meylour's cult cowers in fear.</OfferText>
 		<ActiveText>You've almost beaten them.=@But I still don't know where The Heart of Meylour is.=@I will make these last cultists tell me.=@Meylour's terror will come to an end.</ActiveText>
 		<ReturnText>Now you can finally strike down Meylour forever.</ReturnText>
-		<PraiseText>Meylour'un takipcileri hak ettiklerini buldu.</PraiseText>
+		<PraiseText>Meylour's followers got what they deserved.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>GatherDarkTotemsHard</MissionName>
@@ -3903,7 +3903,7 @@
 		<ReturnName>EG_Villager02Hard</ReturnName>
 		<CompleteCount>20</CompleteCount>
 		<ProgressIcon>a_QuestIcon_PriestMask</ProgressIcon>
-		<ProgressText>Meylour'un Maskesi</ProgressText>
+		<ProgressText>Mask of Meylour</ProgressText>
 		<MissionLevel>35</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -3914,7 +3914,7 @@
 		<OfferText>We also need Meylour's Masks for the protection spell</OfferText>
 		<ActiveText>Please hurry, the priests attacks need to be repelled.</ActiveText>
 		<ReturnText>Just what we needed. Thank you!</ReturnText>
-		<PraiseText>Artik korunmamiz lazim. Tekrar tesekkurler!</PraiseText>
+		<PraiseText>We should be protected now. Thanks again!</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>KillGladeEmbersHard</MissionName>
@@ -3957,7 +3957,7 @@
 		<OfferText>By destroying Meylour, you've left the path to the Sleeping Lands unblocked.</OfferText>
 		<ActiveText>With Meylour's barrier gone, the path to the castle is open.=My people came up from there decades ago.=We were fleeing a life of slavery in The Sleeping Lands.=The Dragons and Goblins kept us in chains.=There's no knowing what's there now.=Meylour's barrier kept the Sleeping Lands locked away from this world.</ActiveText>
 		<ReturnText>Marshal Sythokahn is defeated, not just his dream this time.</ReturnText>
-		<PraiseText>You've stopped the dragons from invading again.=But who knows what else is down below?</PraiseText>
+		<PraiseText>You've stopped the dragons from invading again.=But who knows what else is down there.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>BattlesLostAndWonHard</MissionName>
@@ -4016,7 +4016,7 @@
 		<Description>Nephit has the ritual and is fleeing to the battlements. Stop him!</Description>
 		<OfferText>Nephit materialized on the ramparts after you fought him.</OfferText>
 		<ActiveText>I take it Nephit found the ritual?=@He has it, yes.=I don't know why, but he's going to use it.=Maybe he hopes it will restore him to life.=@Is that possible?=Maybe, but it would be a monstrous existence.=Hurry now, stop him before he can find out.</ActiveText>
-		<PraiseText>Nephit batiya, Kaleye gitti!</PraiseText>
+		<PraiseText>Nephit went west to the Castle!</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>CapstoneHard</MissionName>
@@ -4035,10 +4035,10 @@
 		<TrackerText>Pursue Nephit into the dungeons of Castle Hocke</TrackerText>
 		<TrackerReturn>Tell Titus of Nephit's defeat and the broken Capstone</TrackerReturn>
 		<Description>Pursue the Nephit into the dungeons where the legendary Capstone sits. Stop him from using the ritual</Description>
-		<PreReqText>Acele etmek! Nephit bu tarafa gitti!</PreReqText>
+		<PreReqText>Hurry! Nephit went this way!</PreReqText>
 		<ActiveText>Beyond lies the portal to the Sleeping Lands=Baron Hocke's sages created a powerful Capstone to seal the portal.=It limits the travel between worlds.=Nephit will try and break the Capstone and use its energy for his ritual.=@What happens if he does that?=Travel between the realms will be unstoppable.=@More dragons, goblins and worse.=Assuming Nephit's ritual doesn't kill us all.</ActiveText>
 		<ReturnText>At least, Nephit is no more.</ReturnText>
-		<PraiseText>It's coming=@What is coming?=Everything=Riches and Nightmares=Monsters and Magic=Good and Evil=It's all down there now and it's all awake now</PraiseText>
+		<PraiseText>It's coming=@What is coming?=Everything=Riches and Nightmares=Monsters and Magic=Good and Evil=It's all down there, and it's all awake now</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>EmeraldThroneHard</MissionName>
@@ -4056,7 +4056,7 @@
 		<Description>The survivors remember a secret door in the castle's Throne Room that leads the treasury. You always have time for that.</Description>
 		<OfferText>There is a secret door in the throne room that leads to the cave</OfferText>
 		<ActiveText>Some of the dragon's soldiers are holed up down there.=Be careful, they have one of Baron Hocke's golems at their command.</ActiveText>
-		<PraiseText>Bu Baron Hocke'un Bas Paladin'iydi.=Golem muhafizlarinin ilki.=Boyle bir mucizenin saptirildigini gormek utanc verici.</PraiseText>
+		<PraiseText>That was Baron Hocke's Prime Paladin.=The first of his Golem guards.=A shame to see such a wonder perverted.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>SpiritProblemHard</MissionName>
@@ -4087,7 +4087,7 @@
 		<ReturnName>AC_Villager05Hard</ReturnName>
 		<CompleteCount>20</CompleteCount>
 		<ProgressIcon>a_QuestIcon_DreadMask</ProgressIcon>
-		<ProgressText>Dread Maskesi</ProgressText>
+		<ProgressText>Dread Mask</ProgressText>
 		<MissionLevel>37</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -4116,7 +4116,7 @@
 		<TrackerText>Take to portal to the Sleeping Lands</TrackerText>
 		<TrackerReturn>Speak with Titus on the other side</TrackerReturn>
 		<Description>The seal between the Sleeping Land and this land lies broken. Unlimited danger lies below, and unlimited opportunity.</Description>
-		<PreReqText>Capstone'a dogru gidiyor!</PreReqText>
+		<PreReqText>He's headed towards the Capstone!</PreReqText>
 		<OfferText>Nephit is defeated, but the Capstone is destroyed. The link to the Sleeping Lands lies open</OfferText>
 		<ActiveText>What are the Sleeping Lands?=Everything=Riches and Nightmares=Monsters and Magic=Good and Evil=It's all down there, and it's all awake now=@Riches?=Ha, you are still an adventurer=You are going down there, aren't you?=Well, then, I will accompany you=That gate should take us there=Or else tear us to pieces=@Enough talk, let's go</ActiveText>
 		<ReturnText>Ah. You made it over and appear to be in one piece. Excellent!</ReturnText>
@@ -4307,7 +4307,7 @@
 		<ReturnName>SD_Acolyte01Hard</ReturnName>
 		<CompleteCount>20</CompleteCount>
 		<ProgressIcon>a_QuestIcon_ScorpionStinger</ProgressIcon>
-		<ProgressText>Akrep Ignesi</ProgressText>
+		<ProgressText>Scorpion Stinger</ProgressText>
 		<MissionLevel>38</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -4351,7 +4351,7 @@
 		<ReturnName>SD_Slave01Hard</ReturnName>
 		<CompleteCount>20</CompleteCount>
 		<ProgressIcon>a_QuestIcon_GoblinTag</ProgressIcon>
-		<ProgressText>Goblin Hafiza Buyusu</ProgressText>
+		<ProgressText>Goblin Memory Charm</ProgressText>
 		<MissionLevel>39</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -4374,7 +4374,7 @@
 		<ReturnName>SD_Nomad01Hard</ReturnName>
 		<CompleteCount>20</CompleteCount>
 		<ProgressIcon>a_QuestIcon_GiantBracer</ProgressIcon>
-		<ProgressText>Turkce Description 7D3362.</ProgressText>
+		<ProgressText>Seelie Bracer</ProgressText>
 		<MissionLevel>39</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -4385,7 +4385,7 @@
 		<OfferText>The Seelie bracers are fascinating to me</OfferText>
 		<ActiveText>If had a bunch of those Seelie bracers...=I could break them down and start replicating them.=Smaller size of course.=But Goblins would pay well for something like those.=Bring me what you can.</ActiveText>
 		<ReturnText>Hmm. Not exactly new anymore. Ah well, he's your pay</ReturnText>
-		<PraiseText>Gormek?=Herkes kâr ediyor!</PraiseText>
+		<PraiseText>See?=Everyone profits!</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>CollectWormGlandsHard</MissionName>
@@ -4397,7 +4397,7 @@
 		<ReturnName>SD_Matron01Hard</ReturnName>
 		<CompleteCount>30</CompleteCount>
 		<ProgressIcon>a_QuestIcon_SandWormGland</ProgressIcon>
-		<ProgressText>Kum Solucani Mukus Bezi</ProgressText>
+		<ProgressText>Sandworm Mucus Gland</ProgressText>
 		<MissionLevel>40</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -4408,7 +4408,7 @@
 		<OfferText>We may be able to keep this from happening again</OfferText>
 		<ActiveText>Bring me enough mucus glands and I can mix up an repellent=That will keep the bugs out of the temple</ActiveText>
 		<ReturnText>This will do nicely. Take this for your trouble</ReturnText>
-		<PraiseText>Vay, bu sey berbat kokuyor=Yine de bocekleri korkutup kaciracaktir, bu yuzden buna deger=Gokyuzu yolculugunuzda sizi korusun</PraiseText>
+		<PraiseText>Wow, this stuff smells horrid=It'll scare away the bugs though, so it's worth it=The Sky bless you on your journey</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>DELETED8</MissionName>
@@ -4616,7 +4616,7 @@
 		<OfferText>Now that you can get past the Seelie wards, it's time to strike.</OfferText>
 		<ActiveText>Before confronting The Emperor, we need to weaken him.=Take out all his support before you confront him.=His daughters command his army and secret police.=You can find them in the East and West wings of the palace.=You also need to defeat the Imperial Guard Commander.=He lives in the barracks.</ActiveText>
 		<ReturnText>Now The Emperor's defenses are in disarray.=The time to strike has come!</ReturnText>
-		<PraiseText>Etkilemek konusunda asla basarisiz olmuyorsun #tn#.</PraiseText>
+		<PraiseText>You never fail to impress, #tn#.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>TheWestWing</MissionName>
@@ -4753,7 +4753,7 @@
 		<ReturnName>VH_Vagrant01</ReturnName>
 		<CompleteCount>10</CompleteCount>
 		<ProgressIcon>a_QuestIcon_StolenMushroom</ProgressIcon>
-		<ProgressText>Mokie Mantarlari</ProgressText>
+		<ProgressText>Mokie Shrooms</ProgressText>
 		<MissionLevel>28</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -4764,7 +4764,7 @@
 		<OfferText>What's that?! Yep! They've robbed meh blind!</OfferText>
 		<ActiveText>Vermyn raided mah garden and stole mah mushrooms.=I use those mushrooms to make stew and mah hearty mushroom pie.=With all this Imperial nonsense, people on the streets need mah shrooms to get by!=I don't wanna see anyone starve, do you?</ActiveText>
 		<ReturnText>Hoo-yeah! You found mah shrooms!</ReturnText>
-		<PraiseText>Now I can go back to baking mushroom pie=And Mushroom Gumbo=And Mushroom Stew=And Mushroom Soufflé=And Stuffed Mushroom Saffron Surprise=And Mushroom ala Kelp=Ve let's see. I know there's more I can make with shrooms</PraiseText>
+		<PraiseText>Now I can go back to baking mushroom pie=And Mushroom Gumbo=And Mushroom Stew=And Mushroom Soufflé=And Stuffed Mushroom Saffron Surprise=And Mushroom ala Kelp=And, let's see. I know there's more I can make with shrooms</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>CollectBrigandNecklaces</MissionName>
@@ -4787,7 +4787,7 @@
 		<OfferText>The Imperials are bad enough, but the gangs are the worst kinds of opportunists.</OfferText>
 		<ActiveText>They are running a protection and extortion racket.=Preying off innocent civilians that can't defend themselves.=I think it's time someone showed them that their days are finished.</ActiveText>
 		<ReturnText>Thank you traveler.</ReturnText>
-		<PraiseText>Bu, is one less threat the people have to worry about.</PraiseText>
+		<PraiseText>That is one less threat the people have to worry about.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>CollectDemonTears</MissionName>
@@ -4799,7 +4799,7 @@
 		<ReturnName>VH_Monk01</ReturnName>
 		<CompleteCount>20</CompleteCount>
 		<ProgressIcon>a_QuestIcon_DemonTear</ProgressIcon>
-		<ProgressText>Seytan Gozyasi</ProgressText>
+		<ProgressText>Demon Tear</ProgressText>
 		<MissionLevel>29</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -4810,7 +4810,7 @@
 		<OfferText>It is a tragedy what the Emperor has done here, but all is not lost</OfferText>
 		<ActiveText>I can feel the city crying out from beneath the weight of Seelie filth that has tainted it.=As venom is key to making anti-venom, demon tears are key to cleanse Valhaven's aura.</ActiveText>
 		<ReturnText>Bless you, friend.</ReturnText>
-		<PraiseText>I will begin the long process of baslayacagim...=Senin things right…=It gladens my heart to meet a noble soul such as you</PraiseText>
+		<PraiseText>I will begin the long process of setting things right…=It gladens my heart to meet a noble soul such as you</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>HeadToValhavenHard</MissionName>
@@ -5013,7 +5013,7 @@
 		<OfferText>Now that you can get past the Seelie wards, it's time to strike.</OfferText>
 		<ActiveText>Before confronting The Emperor, we need to weaken him.=Take out all his support before you confront him.=His daughters command his army and secret police.=You can find them in the East and West wings of the palace.=You also need to defeat the Imperial Guard Commander.=He lives in the barracks.</ActiveText>
 		<ReturnText>Now The Emperor's defenses are in disarray.=The time to strike has come!</ReturnText>
-		<PraiseText>Etkilemek konusunda asla basarisiz olmuyorsun #tn#.</PraiseText>
+		<PraiseText>You never fail to impress, #tn#.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>TheWestWingHard</MissionName>
@@ -5150,7 +5150,7 @@
 		<ReturnName>VH_Vagrant01Hard</ReturnName>
 		<CompleteCount>20</CompleteCount>
 		<ProgressIcon>a_QuestIcon_StolenMushroom</ProgressIcon>
-		<ProgressText>Mokie Mantarlari</ProgressText>
+		<ProgressText>Mokie Shrooms</ProgressText>
 		<MissionLevel>28</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -5161,7 +5161,7 @@
 		<OfferText>What's that?! Yep! They've robbed meh blind!</OfferText>
 		<ActiveText>Vermyn raided mah garden and stole mah mushrooms.=I use those mushrooms to make stew and mah hearty mushroom pie.=With all this Imperial nonsense, people on the streets need mah shrooms to get by!=I don't wanna see anyone starve, do you?</ActiveText>
 		<ReturnText>Hoo-yeah! You found mah shrooms!</ReturnText>
-		<PraiseText>Now I can go back to baking mushroom pie=And Mushroom Gumbo=And Mushroom Stew=And Mushroom Soufflé=And Stuffed Mushroom Saffron Surprise=And Mushroom ala Kelp=Ve let's see. I know there's more I can make with shrooms</PraiseText>
+		<PraiseText>Now I can go back to baking mushroom pie=And Mushroom Gumbo=And Mushroom Stew=And Mushroom Soufflé=And Stuffed Mushroom Saffron Surprise=And Mushroom ala Kelp=And, let's see. I know there's more I can make with shrooms</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>CollectBrigandNecklacesHard</MissionName>
@@ -5184,7 +5184,7 @@
 		<OfferText>The Imperials are bad enough, but the gangs are the worst kinds of opportunists.</OfferText>
 		<ActiveText>They are running a protection and extortion racket.=Preying off innocent civilians that can't defend themselves.=I think it's time someone showed them that their days are finished.</ActiveText>
 		<ReturnText>Thank you traveler.</ReturnText>
-		<PraiseText>Bu, is one less threat the people have to worry about.</PraiseText>
+		<PraiseText>That is one less threat the people have to worry about.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>CollectDemonTearsHard</MissionName>
@@ -5196,7 +5196,7 @@
 		<ReturnName>VH_Monk01Hard</ReturnName>
 		<CompleteCount>40</CompleteCount>
 		<ProgressIcon>a_QuestIcon_DemonTear</ProgressIcon>
-		<ProgressText>Seytan Gozyasi</ProgressText>
+		<ProgressText>Demon Tear</ProgressText>
 		<MissionLevel>29</MissionLevel>
 		<ExpReward>M</ExpReward>
 		<GoldReward>M</GoldReward>
@@ -5207,7 +5207,7 @@
 		<OfferText>It is a tragedy what the Emperor has done here, but all is not lost</OfferText>
 		<ActiveText>I can feel the city crying out from beneath the weight of Seelie filth that has tainted it.=As venom is key to making anti-venom, demon tears are key to cleanse Valhaven's aura.</ActiveText>
 		<ReturnText>Bless you, friend.</ReturnText>
-		<PraiseText>I will begin the long process of baslayacagim...=Senin things right…=It gladens my heart to meet a noble soul such as you</PraiseText>
+		<PraiseText>I will begin the long process of setting things right…=It gladens my heart to meet a noble soul such as you</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>GoSeeGladiator</MissionName>
@@ -5543,7 +5543,7 @@
 		<OfferText>TODO</OfferText>
 		<ActiveText>TODO</ActiveText>
 		<ReturnText>TODO</ReturnText>
-		<PraiseText>YAPILACAKLAR</PraiseText>
+		<PraiseText>TODO</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>SDTales1Escort</MissionName>
@@ -5609,7 +5609,7 @@
 		<OfferText>We’re having a monstrous pest problem in the bazaar.</OfferText>
 		<ActiveText>Can you help us get the shops open again?=@You turned the arena into a shopping bazaar?=Rugs and candied fruits instead of blood and guts.=@That sounds much nicer, good work!=It was nicer, but there are pests everywhere.=@What kind of pests?=Giant spiders, bats, flying imps.=Please, help us get back to business!=@This place has seen too much death already.=@I’ll set things back on course for you.</ActiveText>
 		<ReturnText>Many thanks! For you, half off everything!</ReturnText>
-		<PraiseText>For for half off everything!@Thank you.=@I do love candied fruits.=You must try the fresh figs.=@Send a case to my keep.</PraiseText>
+		<PraiseText>For you, half off everything!@Thank you.=@I do love candied fruits.=You must try the fresh figs.=@Send a case to my keep.</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>SDTales4Oasis</MissionName>
@@ -5695,7 +5695,7 @@
 		<OfferText>TODO</OfferText>
 		<ActiveText>TODO</ActiveText>
 		<ReturnText>TODO</ReturnText>
-		<PraiseText>YAPILACAKLAR</PraiseText>
+		<PraiseText>TODO</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>ACTales1Rivals</MissionName>
@@ -5717,7 +5717,7 @@
 		<OfferText>TODO</OfferText>
 		<ActiveText>TODO</ActiveText>
 		<ReturnText>TODO</ReturnText>
-		<PraiseText>YAPILACAKLAR</PraiseText>
+		<PraiseText>TODO</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>ACTales2Ghosts</MissionName>
@@ -5739,7 +5739,7 @@
 		<OfferText>TODO</OfferText>
 		<ActiveText>TODO</ActiveText>
 		<ReturnText>TODO</ReturnText>
-		<PraiseText>YAPILACAKLAR</PraiseText>
+		<PraiseText>TODO</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>ACTales3Refugees</MissionName>
@@ -5761,7 +5761,7 @@
 		<OfferText>TODO</OfferText>
 		<ActiveText>TODO</ActiveText>
 		<ReturnText>TODO</ReturnText>
-		<PraiseText>YAPILACAKLAR</PraiseText>
+		<PraiseText>TODO</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>ACTales4Secrets</MissionName>
@@ -5783,7 +5783,7 @@
 		<OfferText>TODO</OfferText>
 		<ActiveText>TODO</ActiveText>
 		<ReturnText>TODO</ReturnText>
-		<PraiseText>YAPILACAKLAR</PraiseText>
+		<PraiseText>TODO</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>ACTales5Fued</MissionName>
@@ -5805,7 +5805,7 @@
 		<OfferText>TODO</OfferText>
 		<ActiveText>TODO</ActiveText>
 		<ReturnText>TODO</ReturnText>
-		<PraiseText>YAPILACAKLAR</PraiseText>
+		<PraiseText>TODO</PraiseText>
 	</MissionType>
 	<MissionType>
 		<MissionName>ACTales6Embassy</MissionName>
@@ -5827,6 +5827,6 @@
 		<OfferText>TODO</OfferText>
 		<ActiveText>TODO</ActiveText>
 		<ReturnText>TODO</ReturnText>
-		<PraiseText>YAPILACAKLAR</PraiseText>
+		<PraiseText>TODO</PraiseText>
 	</MissionType>
 </MissionTypes>
