@@ -258,23 +258,23 @@ export class SocialHandler {
         const argument = match[1].trim().toLowerCase();
         if (argument === 'sifirla' || argument === 'sıfırla' || argument === 'reset') {
             DamageMeter.reset(client);
-            SocialHandler.sendChatStatus(client, 'Hasar sayaci sifirlandi.');
+            SocialHandler.sendChatStatus(client, 'Damage counter reset.');
             return true;
         }
 
         const report = DamageMeter.report(client);
         if (report.hits === 0) {
-            SocialHandler.sendChatStatus(client, 'Hasar sayaci: son 60 saniyede kayitli vurus yok.');
+            SocialHandler.sendChatStatus(client, 'Damage counter: no hits recorded in the last 60 seconds.');
             return true;
         }
 
         const seconds = Math.max(1, Math.round(report.elapsedMs / 1000));
-        const n = (value: number): string => Math.round(value).toLocaleString('tr-TR');
+        const n = (value: number): string => Math.round(value).toLocaleString('en-US');
         SocialHandler.sendChatStatus(
             client,
-            `Hasar sayaci - son ${seconds} sn, ${report.hits} vurus: ` +
-                `toplam ${n(report.total)} | ${n(report.perSecond)}/sn | ${n(report.perMinute)}/dk` +
-                (report.bonus > 0 ? ` | pasif ${n(report.bonus)}` : '')
+            `Damage counter - last ${seconds}s, ${report.hits} hits: ` +
+                `total ${n(report.total)} | ${n(report.perSecond)}/s | ${n(report.perMinute)}/m` +
+                (report.bonus > 0 ? ` | passive ${n(report.bonus)}` : '')
         );
 
         // One line per target type, biggest first, capped so a long trash pull cannot flood the
@@ -283,13 +283,13 @@ export class SocialHandler {
             const share = report.total > 0 ? Math.round((entry.total / report.total) * 100) : 0;
             SocialHandler.sendChatStatus(
                 client,
-                `  ${entry.target}: ${n(entry.total)} (${n(entry.total / seconds)}/sn, %${share}, ` +
-                    `${entry.hits} vurus${entry.bonus > 0 ? `, pasif ${n(entry.bonus)}` : ''})`
+                `  ${entry.target}: ${n(entry.total)} (${n(entry.total / seconds)}/s, %${share}, ` +
+                    `${entry.hits} hits${entry.bonus > 0 ? `, passive ${n(entry.bonus)}` : ''})`
             );
         }
         const hidden = report.byTarget.length - SocialHandler.DAMAGE_METER_MAX_ROWS;
         if (hidden > 0) {
-            SocialHandler.sendChatStatus(client, `  ... ve ${hidden} dusman turu daha.`);
+            SocialHandler.sendChatStatus(client, `  ... and ${hidden} more enemy types.`);
         }
         return true;
     }

@@ -986,7 +986,7 @@ export class RewardHandler {
                 rarityWeights: RewardHandler.getDyeRarityWeights(client)
             };
 
-        // Küçük Intro düşmanlar (Minion rank) ve Chains entitylerinden eşya düşmez
+        // Small Intro enemies (Minion rank) and Chains entities do not drop items
         if (realm && materialChance > 0 && Math.random() < materialChance) {
             const rarityResult = RewardHandler.resolveMaterialDropRarityDebug(client);
             materialId = GameData.getRandomMaterialForRealm(realm, [rarityResult.rarity]);

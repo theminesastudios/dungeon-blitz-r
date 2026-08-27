@@ -22,52 +22,52 @@ export class DialogueTranslationLoader {
     private static readonly translationTemplatesByLocale: Map<string, DialogueTranslationTemplate[]> = new Map();
     private static loaded = false;
     private static readonly HELP_FALLBACKS = [
-        'Yardim edin!',
-        'Beni koruyun!',
-        'Buraya yardim gerek!'
+        'Help!',
+        'Protect me!',
+        'We need help here!'
     ];
     private static readonly WARNING_FALLBACKS = [
-        'Dikkat!',
-        'Tetikte olun!',
-        'Tehlike yakinda!'
+        'Watch out!',
+        'Stay alert!',
+        'Danger incoming!'
     ];
     private static readonly FIRE_FALLBACKS = [
-        'Her sey yanacak!',
-        'Kule doneceksin!',
-        'Alevler seni yutacak!'
+        'Everything will burn!',
+        'The tower is falling!',
+        'The flames will consume you!'
     ];
     private static readonly KILL_FALLBACKS = [
-        'Seni yok edecegim!',
-        'Burada oleceksin!',
-        'Seni parcalayacagim!',
-        'Sonun geldi!',
-        'Kanini dokecegim!',
-        'Seni mezara gonderecegim!'
+        'I will destroy you!',
+        'You will die here!',
+        'I will tear you apart!',
+        'Your end has come!',
+        'I will spill your blood!',
+        'I will send you to the grave!'
     ];
     private static readonly ATTACK_FALLBACKS = [
-        'Saldiriya gecin!',
-        'Ustune gidin!',
-        'Onu durdurun!',
-        'Hucum edin!',
-        'Etrafini sarin!',
-        'Savasa hazirlanin!'
+        'Attack!',
+        'Get him!',
+        'Stop him!',
+        'Charge!',
+        'Surround him!',
+        'Prepare for battle!'
     ];
     private static readonly INTRUDER_FALLBACKS = [
-        'Davetsiz misafir!',
-        'Yabanci burada!',
-        'Hirsizi yakalayin!',
-        'Buraya ait degilsin!',
-        'Ihlalciyi durdurun!'
+        'Uninvited guest!',
+        'Stranger here!',
+        'Catch the thief!',
+        'You don\'t belong here!',
+        'Stop the intruder!'
     ];
     private static readonly GENERIC_ENEMY_FALLBACKS = [
-        'Geri cekil!',
-        'Buradan gecemezsin!',
-        'Sana izin vermeyecegiz!',
-        'Bunu odetecegiz!',
-        'Kaderin burada bitecek!',
-        'Gucumuzu goreceksin!',
-        'Karsimiza cikmamaliydin!',
-        'Burasi bizim bolgemiz!'
+        'Fall back!',
+        'You shall not pass!',
+        'We won\'t allow it!',
+        'We will pay you back!',
+        'Your fate ends here!',
+        'You will see our power!',
+        'You should not have crossed us!',
+        'This is our territory!'
     ];
 
     private static normalizeLocale(locale: string): string {
@@ -230,7 +230,7 @@ export class DialogueTranslationLoader {
         }
 
         if (/^nothing\.?$/i.test(clean)) {
-            return 'Hicbir sey.';
+            return 'Nothing.';
         }
         if (/\b(help|save|protect)\b/i.test(clean)) {
             return this.pickFallback(clean, this.HELP_FALLBACKS);
@@ -239,10 +239,10 @@ export class DialogueTranslationLoader {
             return this.pickFallback(clean, this.WARNING_FALLBACKS);
         }
         if (/\b(Nephit)\b/i.test(clean)) {
-            return 'Nephit icin!';
+            return 'For Nephit!';
         }
         if (/\b(Emperor)\b/i.test(clean)) {
-            return 'Imparator icin!';
+            return 'For the Emperor!';
         }
         if (/\b(burn|fire|ashes|ash)\b/i.test(clean)) {
             return this.pickFallback(clean, this.FIRE_FALLBACKS);

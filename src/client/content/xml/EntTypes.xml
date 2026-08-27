@@ -7735,7 +7735,7 @@
 		</GfxType>
 	</EntType>
 	<EntType EntName="NPCFelbridgeRichan" parent="Base">
-		<DisplayName>NPC Fel Koprusu Richan</DisplayName>
+		<DisplayName>NPC Fel Bridge Richan</DisplayName>
 		<DevStatus>GlobalNPC</DevStatus>
 		<Level>0</Level>
 		<ArmorClass>1</ArmorClass>
@@ -22148,7 +22148,7 @@
 		</GfxType>
 	</EntType>
 	<EntType EntName="DeepPsychophage" parent="PsychophageBase">
-		<DisplayName>derin Psychophage</DisplayName>
+		<DisplayName>Deep Psychophage</DisplayName>
 		<DevStatus>Cemetery</DevStatus>
 		<RangedPower>EyeBoltBig</RangedPower>
 		<Level>15</Level>
@@ -22224,7 +22224,7 @@
 		</GfxType>
 	</EntType>
 	<EntType EntName="DeepPsychophageRabid" parent="PsychophageBase">
-		<DisplayName>derin Psychophage Rabid</DisplayName>
+		<DisplayName>Deep Psychophage Rabid</DisplayName>
 		<DevStatus>Cemetery</DevStatus>
 		<RangedPower>EyeBolt</RangedPower>
 		<Level>14</Level>
@@ -22261,7 +22261,7 @@
 		</GfxType>
 	</EntType>
 	<EntType EntName="DeepPsychophageGatherer" parent="PsychophageBase">
-		<DisplayName>derin Psychophage Gatherer</DisplayName>
+		<DisplayName>Deep Psychophage Gatherer</DisplayName>
 		<DevStatus>Cemetery</DevStatus>
 		<RangedPower>EyeBolt</RangedPower>
 		<Level>13</Level>
@@ -22298,7 +22298,7 @@
 		</GfxType>
 	</EntType>
 	<EntType EntName="DeepPsychophageBaby" parent="PsychophageBase">
-		<DisplayName>derin Psychophage Baby</DisplayName>
+		<DisplayName>Deep Psychophage Baby</DisplayName>
 		<DevStatus>Cemetery</DevStatus>
 		<RangedPower>EyeBolt</RangedPower>
 		<Level>12</Level>
@@ -41605,7 +41605,7 @@
 		</GfxType>
 	</EntType>
 	<EntType EntName="ScarabLarvaSpawnSmall" parent="LarvaBase">
-		<DisplayName>Scarab Larva Spawn kucuk</DisplayName>
+		<DisplayName>Scarab Larva Spawn Small</DisplayName>
 		<DevStatus>Shazari</DevStatus>
 		<Level>23</Level>
 		<GroupLevel>23</GroupLevel>
