@@ -1,27 +1,27 @@
 {
-    "name": "dungeon-blitz-r",
-    "version": "1.25.0",
-    "description": "Dungeon Blitz: R",
-    "main": "index.js",
-    "scripts": {
-        "dev": "concurrently -n GAME,RPC -c blue,magenta \"cd src/server && npm run dev\" \"cd src/server && npm run dev:discord-bridge\"",
-        "predev:built": "npm run build",
-        "dev:built": "concurrently -n GAME,RPC -c blue,magenta \"cd src/server && npm run dev:built\" \"cd src/server && npm run dev:discord-bridge:built\"",
-        "multiplayer": "cd src/server && npm run multiplayer:pm2",
-        "build": "cd src/server && npm run build",
-        "verify:client-patches": "cd src/server && npm run verify:client-patches",
-        "start:discord-bridge": "cd src/server && npm run start:discord-bridge",
-        "launch:multiplayer-with-discord": "node src/server/tools/launchMultiplayerClient.js",
-        "install:discord-social-sdk": "node src/server/tools/installDiscordSocialSdk.js",
-        "install:discord-bridge-autostart": "node src/server/tools/installDiscordBridgeAutostart.js",
-        "remove:discord-bridge-autostart": "node src/server/tools/removeDiscordBridgeAutostart.js",
-        "reset-password": "cd src/server && npm run reset-password --",
-        "migrate:game-data-to-mongo": "cd src/server && npm run migrate:game-data-to-mongo --",
-        "admin": "node --env-file-if-exists=src/server/.env src/server/tools/adminPanelServer.js"
-    },
-    "devDependencies": {
-        "concurrently": "^10.0.3"
-    },
-    "author": "The Minesa Studios",
-    "license": "MIT"
+  "name": "dungeon-blitz-r",
+  "version": "1.26.0",
+  "description": "Dungeon Blitz: R",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently -n GAME,RPC -c blue,magenta \"cd src/server && npm run dev\" \"cd src/server && npm run dev:discord-bridge\"",
+    "predev:built": "npm run build",
+    "dev:built": "concurrently -n GAME,RPC -c blue,magenta \"cd src/server && npm run dev:built\" \"cd src/server && npm run dev:discord-bridge:built\"",
+    "multiplayer": "cd src/server && npm run multiplayer:pm2",
+    "build": "cd src/server && npm run build",
+    "verify:client-patches": "cd src/server && npm run verify:client-patches",
+    "start:discord-bridge": "cd src/server && npm run start:discord-bridge",
+    "launch:multiplayer-with-discord": "node src/server/tools/launchMultiplayerClient.js",
+    "install:discord-social-sdk": "node src/server/tools/installDiscordSocialSdk.js",
+    "install:discord-bridge-autostart": "node src/server/tools/installDiscordBridgeAutostart.js",
+    "remove:discord-bridge-autostart": "node src/server/tools/removeDiscordBridgeAutostart.js",
+    "reset-password": "cd src/server && npm run reset-password --",
+    "migrate:game-data-to-mongo": "cd src/server && npm run migrate:game-data-to-mongo --",
+    "admin": "node --env-file-if-exists=src/server/.env src/server/tools/adminPanelServer.js"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  },
+  "author": "The Minesa Studios",
+  "license": "MIT"
 }
