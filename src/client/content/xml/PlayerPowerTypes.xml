@@ -9128,7 +9128,7 @@
 		<DamageType>Physical</DamageType>
 		<PowerGroup>AxeFlurry</PowerGroup>
 		<DisplayName>Axe Flurry</DisplayName>
-		<Description>The Justicar's signature throwing axes. Justicar passive: 10% of your Expertise is added to your Attack. [Stats: x0.8 damage]</Description>
+		<Description>The Justicar's signature throwing axes. Justicar passive: 5% of your Expertise is added to your Attack. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_AxeFlurry</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -9160,7 +9160,7 @@
 		<PowerGroup>AxeFlurry</PowerGroup>
 		<DisplayName>Axe Flurry</DisplayName>
 		<BasePowerName>AxeFlurry</BasePowerName>
-		<Description>The Justicar's signature throwing axes. Justicar passive: 10% of your Expertise is added to your Attack. [Stats: x0.8 damage]</Description>
+		<Description>The Justicar's signature throwing axes. Justicar passive: 5% of your Expertise is added to your Attack. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_AxeFlurry</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -14285,7 +14285,7 @@
 		<DamageType>Holy</DamageType>
 		<PowerGroup>ConcussionBolt</PowerGroup>
 		<DisplayName>Concussion Bolt</DisplayName>
-		<Description>The Sentinel's ranged energy attacks. Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 30% of your Defense. [Stats: x0.8 damage]</Description>
+		<Description>The Sentinel's ranged energy attacks. Sentinel passive: 0.1% of your maximum Health is added to your Attack. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>
@@ -14318,7 +14318,7 @@
 		<PowerGroup>ConcussionBolt</PowerGroup>
 		<DisplayName>Concussion Bolt</DisplayName>
 		<BasePowerName>ConcussionBolt</BasePowerName>
-		<Description>The Sentinel's ranged energy attacks. Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 30% of your Defense. [Stats: x0.8 damage]</Description>
+		<Description>The Sentinel's ranged energy attacks. Sentinel passive: 0.1% of your maximum Health is added to your Attack. [Stats: x0.8 damage]</Description>
 		<IconName>a_PowerIcon_SeverStrike</IconName>
 		<CastSound>snd_pwr_lightning_shoot_new_01|snd_pwr_lightning_shoot_new_02|snd_pwr_lightning_shoot_new_03</CastSound>
 		<CastGfx/>

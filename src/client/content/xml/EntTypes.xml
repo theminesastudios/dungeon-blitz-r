@@ -57810,26 +57810,6 @@
 			<Shadow>None</Shadow>
 		</GfxType>
 	</EntType>
-	<EntType EntName="NPCHalloweenWatcher" parent="Base">
-		<DisplayName>NPC Halloween Watcher</DisplayName>
-		<DevStatus>Halloween  Event</DevStatus>
-		<Level>0</Level>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0</HitPoints>
-		<Realm>Villager</Realm>
-		<Speed>5</Speed>
-		<Width>80</Width>
-		<Height>130</Height>
-		<Behavior>NPC</Behavior>
-		<EquippedGear/>
-		<GfxType>
-			<AnimFile>Animation_NPC.swf</AnimFile>
-			<FlipAnim>TRUE</FlipAnim>
-			<BaseAnim>ReadyRobes2</BaseAnim>
-			<AnimScale>.8</AnimScale>
-			<CustomArt>Animation_NPC.swf/Hood01</CustomArt>
-		</GfxType>
-	</EntType>
 	<EntType EntName="MushroomSpawner" parent="Base">
 		<DisplayName>Mushroom Spawner</DisplayName>
 		<DevStatus>Forgelands</DevStatus>
@@ -57856,22 +57836,6 @@
 			<Shadow>None</Shadow>
 			<AnimScale>1</AnimScale>
 			<MoveAnimSpeed>1</MoveAnimSpeed>
-		</GfxType>
-	</EntType>
-	<EntType EntName="HalloweenCoffers" parent="Base">
-		<Level>0</Level>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0</HitPoints>
-		<Realm>Villager</Realm>
-		<Speed>5</Speed>
-		<Width>175</Width>
-		<Height>180</Height>
-		<Behavior>NPC</Behavior>
-		<EquippedGear/>
-		<GfxType>
-			<AnimClass>a__EmptyAnimation</AnimClass>
-			<AnimFile>Animation_Environmentals.swf</AnimFile>
-			<Shadow>None</Shadow>
 		</GfxType>
 	</EntType>
 	<EntType EntName="HalloweenStatues" parent="Base">
@@ -58111,5 +58075,43 @@
 	<EntType EntName="NPCLegendsInnTitus" parent="NPCTitus2">
 		<DisplayName>Titus</DisplayName>
 		<DevStatus>LegendsInn</DevStatus>
+	</EntType>
+	<EntType EntName="HalloweenCoffers" parent="Base">
+		<DisplayName>Hallow's Eve Coffers</DisplayName>
+		<DevStatus>HallowsEve</DevStatus>
+		<Level>0</Level>
+		<ArmorClass>1</ArmorClass>
+		<HitPoints>0</HitPoints>
+		<RewardClass>NoLoot</RewardClass>
+		<Realm>Villager</Realm>
+		<Speed>0</Speed>
+		<Width>300</Width>
+		<Height>160</Height>
+		<Behavior>NPC</Behavior>
+		<EquippedGear/>
+		<GfxType>
+			<AnimClass>a__EmptyAnimation</AnimClass>
+			<Shadow>None</Shadow>
+		</GfxType>
+	</EntType>
+	<EntType EntName="NPCHalloweenWatcher" parent="Base">
+		<DisplayName>The Hollow Watcher</DisplayName>
+		<DevStatus>HallowsEve</DevStatus>
+		<Level>0</Level>
+		<ArmorClass>1</ArmorClass>
+		<HitPoints>0</HitPoints>
+		<Realm>Villager</Realm>
+		<Speed>5</Speed>
+		<Width>80</Width>
+		<Height>130</Height>
+		<Behavior>NPC</Behavior>
+		<EquippedGear/>
+		<GfxType>
+			<AnimFile>Animation_NPC.swf</AnimFile>
+			<FlipAnim>TRUE</FlipAnim>
+			<BaseAnim>ReadyRobes2</BaseAnim>
+			<AnimScale>.8</AnimScale>
+			<CustomArt>Animation_NPC.swf/Hood01</CustomArt>
+		</GfxType>
 	</EntType>
 </EntTypes>

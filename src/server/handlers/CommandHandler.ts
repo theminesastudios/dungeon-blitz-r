@@ -197,6 +197,12 @@ export class CommandHandler {
         const armorClass = CommandHandler.readOptionalDeclaredArmorClass(br);
 
         client.authoritativeMaxHp = maxHp;
+        if (Number.isFinite(meleeDamage) && meleeDamage > 0) {
+            client.authoritativeAttack = meleeDamage;
+        }
+        if (Number.isFinite(magicDamage) && magicDamage > 0) {
+            client.authoritativeExpertise = magicDamage;
+        }
         if (armorClass !== null) {
             client.authoritativeArmorClass = armorClass;
         }

@@ -446,6 +446,16 @@ export interface PlacementSpec {
   y?: number;
   scaleX?: number;
   scaleY?: number;
+  /**
+   * Turns this placement into a mask over the layers above it.
+   *
+   * Flash treats a placement carrying a clip depth as a stencil: everything drawn
+   * on depths `depth + 1 .. clipDepth` is shown only where this character covers
+   * it, and the mask itself is never drawn. It is the only way to show part of a
+   * character - a DefineShape is a single indivisible object, so the alternative
+   * to a mask is redrawing the artwork.
+   */
+  clipDepth?: number;
 }
 
 /** Builds a minimal PlaceObject2 (character + matrix + optional instance name). */
@@ -460,13 +470,37 @@ export function buildPlaceObject2(spec: PlacementSpec): SwfTag {
   };
   let flags = 0x02 | 0x04;
   if (spec.name) flags |= 0x20;
+  if (spec.clipDepth !== undefined) flags |= 0x40;
   const parts: Buffer[] = [Buffer.from([flags])];
   const depth = Buffer.alloc(4);
   depth.writeUInt16LE(spec.depth, 0);
   depth.writeUInt16LE(spec.charId, 2);
   parts.push(depth, encodeMatrix(matrix));
+  // Field order is fixed by the tag layout: character, matrix, colour transform,
+  // ratio, name, clip depth. Only the first two, the name and the clip depth are
+  // modelled here, so the name has to go in ahead of the clip depth.
   if (spec.name) parts.push(Buffer.from(spec.name, "utf8"), Buffer.from([0]));
+  if (spec.clipDepth !== undefined) {
+    const clip = Buffer.alloc(2);
+    clip.writeUInt16LE(spec.clipDepth, 0);
+    parts.push(clip);
+  }
   return { code: TAG_PLACE_OBJECT2, data: Buffer.concat(parts) };
+}
+
+/**
+ * Repoints an existing placement at a different character, leaving every other
+ * byte of the tag - instance name, colour transform, matrix, clip depth - alone.
+ *
+ * Rebuilding the tag would drop all of those; `parsePlace` already reports where
+ * the character id sits, so the id is written straight over.
+ */
+export function repointPlacement(tag: SwfTag, charId: number): SwfTag {
+  const info = parsePlace(tag);
+  if (info.charIdOffset === null) throw new Error("placement carries no character id");
+  const data = Buffer.from(tag.data);
+  data.writeUInt16LE(charId, info.charIdOffset);
+  return { code: tag.code, data };
 }
 
 export interface SpriteSpec {

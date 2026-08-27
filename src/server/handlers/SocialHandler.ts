@@ -8,6 +8,7 @@ import { EntityTeam } from '../core/Entity';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { LevelConfig } from '../core/LevelConfig';
 import { GuildHandler } from './GuildHandler';
+import { NpcHandler } from './NpcHandler';
 import { LevelHandler } from './LevelHandler';
 import { MissionHandler } from './MissionHandler';
 import { PetHandler } from './PetHandler';
@@ -1474,6 +1475,29 @@ export class SocialHandler {
             return;
         }
 
+        if (SocialHandler.handleDamageMeterCommand(client, message)) {
+            return;
+        }
+
+        if (client.character) {
+            const match = /^\/lang:\s*(tr|en)\s*$/i.exec(message);
+            if (match) {
+                const nextLanguage = match[1].toLowerCase();
+                client.character.dialogueLanguage = nextLanguage;
+
+                if (client.userId) {
+                    await db.saveCharacters(client.userId, client.characters);
+                }
+
+                SocialHandler.sendChatStatus(
+                    client,
+                    nextLanguage === 'tr'
+                        ? 'NPC dialog dili Turkce olarak ayarlandi.'
+                        : 'NPC dialog language set to English.'
+                );
+                return;
+            }
+        }
 
         if (client.character && message) {
             discordSocialBridge.relay({
@@ -1827,6 +1851,14 @@ export class SocialHandler {
         const inviterEntityId = br.readMethod9();
         br.readMethod26();
         const accepted = br.readMethod15();
+
+        // The square's two questions ride this packet too. Asked first because the
+        // token block is theirs alone, so a hit here can never be a party invite -
+        // and because the flows below fall back to "look up a session by entity id",
+        // which a Hallow's Eve token would match by accident at high entity counts.
+        if (NpcHandler.tryHandleHallowsEvePromptAnswer(client, inviterEntityId, accepted)) {
+            return;
+        }
 
         if (await GuildHandler.tryHandleInviteAnswer(client, inviterEntityId, accepted)) {
             return;

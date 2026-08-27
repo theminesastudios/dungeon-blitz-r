@@ -14,8 +14,18 @@ import { BitReader } from '../network/protocol/bitReader';
 import { getClientLevelScope } from '../core/LevelScope';
 import { RewardHandler } from './RewardHandler';
 import { MissionHandler } from './MissionHandler';
+import { LevelHandler } from './LevelHandler';
 import { HomeStatueHandler } from './HomeStatueHandler';
 import { LegendsInnGate } from '../core/LegendsInnGate';
+import {
+    HallowsEve,
+    HALLOWS_EVE_COFFERS_ENTITY_ID,
+    HALLOWS_EVE_DOOR_ID,
+    HALLOWS_EVE_LEVEL,
+    HALLOWS_EVE_PROMPT_CONTEXT
+} from '../core/HallowsEve';
+import { upsertInventoryGear } from '../utils/GearInventory';
+import { CharacterSync } from '../utils/CharacterSync';
 
 type MissionEntry = Record<string, any>;
 type ResolvedNpc = Record<string, any>;
@@ -127,6 +137,18 @@ export class NpcHandler {
         // warning that gates the portal is separate and lives on the door.
         if (LegendsInnGate.isTitus(npcId)) {
             NpcHandler.sendNpcBubble(client, npcId, LegendsInnGate.getLine());
+            return;
+        }
+
+        // The Hollow Watcher and the coffers, in Blackrose Mire's town square.
+        // Dispatched on entity id for the same reason Titus is: they borrow cues the
+        // room's own villagers answer to, and the two would otherwise share a key.
+        if (HallowsEve.isWatcher(npcId)) {
+            NpcHandler.sendNpcBubble(client, npcId, HallowsEve.getWatcherLine());
+            return;
+        }
+        if (HallowsEve.isCoffers(npcId)) {
+            NpcHandler.handleHallowsEveCoffers(client, npcId);
             return;
         }
 
@@ -915,6 +937,160 @@ export class NpcHandler {
         }
 
         NpcHandler.sendStartSkit(client, npcId, dialogueId, missionId);
+    }
+
+    /**
+     * The Hallow's Eve coffers.
+     *
+     * The shipped prompt screen states the loop: *"Defeat the Green Knight to earn
+     * a key to open a prize-filled coffer."* This is the second half of it.
+     *
+     * Clicking the coffers raises `a_DialogBox` - the client's own server-driven
+     * Yes/No window, opened on 0x58 and answered on 0x59 - naming what is inside
+     * and what it costs. Nothing is spent here; `grantHallowsEvePrize` runs on the
+     * Yes. With no key there is nothing to ask, so the coffers just says so.
+     *
+     * The shipped `a_ScreenHalloweenCoffers` panel - a forty-cell `am_CofferGroup`
+     * with `a_EvilCofferOpenAnimation` - is in `UI_Seasonal.swf`, but
+     * `DungeonBlitz.swf` refers to none of its names, so no code in this client
+     * build can open it. A real window with real buttons is as close as this gets
+     * without emitting new AVM2 classes into the obfuscated ABC.
+     */
+    private static handleHallowsEveCoffers(client: Client, npcId: number): void {
+        const character = client.character;
+        if (!character) {
+            return;
+        }
+
+        const text = HallowsEve.buildCoffersText(character);
+        if (!text) {
+            NpcHandler.sendNpcBubble(client, npcId, HallowsEve.buildNoKeyLine(character));
+            return;
+        }
+
+        const token = HallowsEve.openPrompt('coffers', character.name, client.currentLevel);
+        const bb = new BitBuffer(false);
+        bb.writeMethod9(token);
+        bb.writeMethod26(HALLOWS_EVE_PROMPT_CONTEXT);
+        bb.writeMethod26(text);
+        client.sendBitBuffer(0x58, bb);
+    }
+
+    /**
+     * An answer to one of the square's two questions, off packet 0x59.
+     *
+     * Called from `SocialHandler.handleQueryMessageAnswer` ahead of the party and
+     * guild flows, the same way the friend-request prompt is: the token block is
+     * this feature's own, so a miss here is never one of theirs.
+     *
+     * A Yes on the challenge answers the *door* - `LevelHandler.sendDoorTarget`
+     * emits exactly what a normal door open emits - with an entry grant left behind
+     * so the transfer that follows does not raise the window a second time.
+     *
+     * Returns true when the token was ours, answered or not.
+     */
+    static tryHandleHallowsEvePromptAnswer(client: Client, token: number, accepted: boolean): boolean {
+        if (!HallowsEve.ownsPromptToken(token)) {
+            return false;
+        }
+        const character = client.character;
+        const prompt = HallowsEve.claimPrompt(token, character?.name);
+        if (!prompt || !character) {
+            // Expired, already answered, or raised for a different character. Ours
+            // to swallow either way - nothing else answers in this token block.
+            return true;
+        }
+
+        if (!accepted) {
+            console.log(`[HallowsEve] ${String(character.name ?? '')} declined the ${prompt.kind} prompt`);
+            return true;
+        }
+
+        if (prompt.kind === 'challenge') {
+            HallowsEve.grantEntry(character.name);
+            LevelHandler.grantDoorTransfer(client, prompt.fromLevel, HALLOWS_EVE_DOOR_ID, HALLOWS_EVE_LEVEL);
+            console.log(`[HallowsEve] ${String(character.name ?? '')} accepted the challenge; arch opened`);
+            return true;
+        }
+
+        NpcHandler.grantHallowsEvePrize(client, HALLOWS_EVE_COFFERS_ENTITY_ID);
+        return true;
+    }
+
+    /**
+     * Spends one key and delivers what was in the coffers.
+     *
+     * Delivered first, paid for second: a grant the inventory refuses must not eat
+     * the key. `upsertInventoryGear` returns false when the piece is already there
+     * at the same tier or better, which `nextPrize` should already have caught -
+     * this is the belt on top of the braces.
+     *
+     * ## Why the bag is refreshed rather than notified
+     *
+     * There is no server-to-client "you spent a key" packet, and the key is not an
+     * inventory item at all - the shipped HUD reads it off a counter. Gold and a new
+     * helm would each need their own packet, and the count the client holds would
+     * still be stale. `CharacterSync.sendPlayerDataRefresh` replaces the client's
+     * whole copy of the character and covers all of it at once. A new pet still gets
+     * its own 0x37, because that is what raises the notification.
+     */
+    private static grantHallowsEvePrize(client: Client, npcId: number): void {
+        const character = client.character;
+        if (!character || HallowsEve.getKeys(character) <= 0) {
+            return;
+        }
+
+        const prize = HallowsEve.nextPrize(character);
+        let newPet: { typeId: number; specialId: number } | null = null;
+        let delivered = false;
+
+        if (prize.kind === 'gear') {
+            delivered = upsertInventoryGear(character, prize.gearId, 0, [0, 0, 0], [0, 0]).inserted;
+        } else if (prize.kind === 'pet') {
+            const pets = Array.isArray(character.pets) ? character.pets : [];
+            const specialId = pets.reduce((max: number, pet: any) => Math.max(max, Number(pet?.special_id ?? 0)), 0) + 1;
+            pets.push({ typeID: prize.petTypeId, special_id: specialId, level: 1, xp: 0 });
+            character.pets = pets;
+            newPet = { typeId: prize.petTypeId, specialId };
+            delivered = true;
+        } else {
+            const materials = Array.isArray(character.materials) ? character.materials : [];
+            const entry = materials.find((row: any) => Math.round(Number(row?.materialID ?? 0)) === prize.materialId);
+            if (entry) {
+                entry.count = Math.max(0, Math.round(Number(entry.count ?? 0))) + 1;
+            } else {
+                materials.push({ materialID: prize.materialId, count: 1 });
+            }
+            character.materials = materials;
+            character.gold = Number(character.gold ?? 0) + prize.gold;
+            delivered = true;
+        }
+
+        if (!delivered) {
+            NpcHandler.sendNpcBubble(client, npcId, 'You already carry that. Keep the key.');
+            return;
+        }
+
+        HallowsEve.spendKey(character);
+
+        if (newPet) {
+            const bb = new BitBuffer();
+            bb.writeMethod6(newPet.typeId, 7);
+            bb.writeMethod4(newPet.specialId);
+            bb.writeMethod6(1, 6);
+            bb.writeMethod15(false);
+            client.sendBitBuffer(0x37, bb);
+        }
+        CharacterSync.sendPlayerDataRefresh(client);
+        NpcHandler.persistCharacter(client, "hallow's eve coffers");
+
+        const left = HallowsEve.getKeys(character);
+        NpcHandler.sendNpcBubble(
+            client,
+            npcId,
+            `The lock turns, and ${prize.label} is yours. ${left > 0 ? `${left} key${left === 1 ? '' : 's'} left.` : 'That was your last key.'}`
+        );
+        console.log(`[HallowsEve] coffers paid ${String(character.name ?? '')}: ${prize.label} (${left} keys left)`);
     }
 
     private static sendNpcBubble(client: Client, npcId: number, text: string): void {

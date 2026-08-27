@@ -319,19 +319,27 @@ const VIPERBLADE_BUFFS = new Map<string, string>([
 // Viperblade keeps working where the scoping is real: on the Executioner tree's own powers,
 // below.
 
+// The two Paladin discipline passives' prose, in one place: the sentence is both appended to
+// the signature power's description below and used as the rewrite target for every earlier
+// wording in DESCRIPTION_REWRITES. The rates must match CombatHandler.SENTINEL_MAX_HP_TO_ATTACK_RATE
+// and JUSTICAR_EXPERTISE_TO_ATTACK_RATE.
+const SENTINEL_PASSIVE_SENTENCE =
+  "Sentinel passive: 0.1% of your maximum Health is added to your Attack.";
+const JUSTICAR_PASSIVE_SENTENCE = "Justicar passive: 5% of your Expertise is added to your Attack.";
+
 const SIGNATURE_DESCRIPTIONS = new Map<string, [string, string]>([
   [
     "ConcussionBolt",
     [
       "The Sentinel's ranged energy attacks.",
-      "The Sentinel's ranged energy attacks. Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 100% of your Defense.",
+      `The Sentinel's ranged energy attacks. ${SENTINEL_PASSIVE_SENTENCE}`,
     ],
   ],
   [
     "AxeFlurry",
     [
       "The Justicar's signature throwing axes.",
-      "The Justicar's signature throwing axes. Justicar passive: 10% of your Expertise is added to your Attack.",
+      `The Justicar's signature throwing axes. ${JUSTICAR_PASSIVE_SENTENCE}`,
     ],
   ],
   [
@@ -530,7 +538,7 @@ const TEXT_MIGRATIONS: Array<{ power: RegExp; from: string; to: string }> = [
     // (issue #670).
     power: /^ConcussionBolt\d*$/,
     from: "Sentinel passive: every bolt also strikes for 0.1% of your maximum Health.",
-    to: "Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 100% of your Defense.",
+    to: SENTINEL_PASSIVE_SENTENCE,
   },
   {
     // The rates the issue opened with, shipped and then measured: 0.01% of max HP and
@@ -538,7 +546,26 @@ const TEXT_MIGRATIONS: Array<{ power: RegExp; from: string; to: string }> = [
     // CombatHandler.getSentinelMaxHpBonus for where the replacements come from.
     power: /^ConcussionBolt\d*$/,
     from: "Sentinel passive: your melee attacks also strike for 0.01% of your maximum Health and 0.1% of your Defense.",
-    to: "Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 100% of your Defense.",
+    to: SENTINEL_PASSIVE_SENTENCE,
+  },
+  {
+    // The 0.3% / 30% pass, superseded by the current rates.
+    power: /^ConcussionBolt\d*$/,
+    from: "Sentinel passive: your melee attacks also strike for 0.3% of your maximum Health and 30% of your Defense.",
+    to: SENTINEL_PASSIVE_SENTENCE,
+  },
+  {
+    // The 0.001% / 0.01% pass: measured at 1 damage a swing, and the last of the flat
+    // melee-only adds -- the passive is a conversion into Attack now.
+    power: /^ConcussionBolt\d*$/,
+    from: "Sentinel passive: your melee attacks also strike for 0.001% of your maximum Health and 0.01% of your Defense.",
+    to: SENTINEL_PASSIVE_SENTENCE,
+  },
+  {
+    // The Justicar passive shipped at 10% of Expertise and was cut to 5%.
+    power: /^AxeFlurry\d*$/,
+    from: "Justicar passive: 10% of your Expertise is added to your Attack.",
+    to: JUSTICAR_PASSIVE_SENTENCE,
   },
   {
     // The Viperblade poison cap moved from 8 to 16 (DoTDamage halved to 0.5 to match), and

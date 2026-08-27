@@ -1735,11 +1735,22 @@
 		<DoorID>1</DoorID>
 		<TargetMapName>CraftTown</TargetMapName>
 		<TargetDoorID>101</TargetDoorID>
-	</DoorType>
-	<DoorType>
+	</DoorType>	<DoorType>
 		<MapName>LegendsInn9Hard</MapName>
 		<DoorID>2</DoorID>
 		<TargetMapName>CraftTown</TargetMapName>
 		<TargetDoorID>101</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorth</MapName>
+		<DoorID>108</DoorID>
+		<TargetMapName>LDArena1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
+	</DoorType>
+	<DoorType>
+		<MapName>SwampRoadNorthHard</MapName>
+		<DoorID>108</DoorID>
+		<TargetMapName>LDArena1</TargetMapName>
+		<TargetDoorID>1</TargetDoorID>
 	</DoorType>
 </DoorTypes>

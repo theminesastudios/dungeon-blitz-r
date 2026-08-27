@@ -37453,8 +37453,8 @@
       {
         "EntName": "NPCHalloweenWatcher",
         "parent": "Base",
-        "DisplayName": "Watcher",
-        "DevStatus": "Halloween  Event",
+        "DisplayName": "The Hollow Watcher",
+        "DevStatus": "HallowsEve",
         "Level": "0",
         "ArmorClass": "1",
         "HitPoints": "0",
@@ -37489,13 +37489,16 @@
       {
         "EntName": "HalloweenCoffers",
         "parent": "Base",
+        "DisplayName": "Hallow's Eve Coffers",
+        "DevStatus": "HallowsEve",
         "Level": "0",
         "ArmorClass": "1",
         "HitPoints": "0",
+        "RewardClass": "NoLoot",
         "Realm": "Villager",
-        "Speed": "5",
-        "Width": "175",
-        "Height": "180",
+        "Speed": "0",
+        "Width": "300",
+        "Height": "160",
         "Behavior": "NPC"
       },
       {
