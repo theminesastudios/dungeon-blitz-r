@@ -227,6 +227,16 @@ export class Client {
      * is populated.
      */
     public authoritativeArmorClass: number = 0;
+    /**
+     * Attack and Expertise, as the client reports them on packet 0xFC (meleeDamage /
+     * magicDamage). They are also written onto the player's entity records, but those are
+     * rebuilt on every level change and room hand-off, so a hit can land while the map copy
+     * is a fresh object with no stats on it yet. The Justicar passive reads Expertise/Attack
+     * and silently pays nothing when both are zero, so it needs the session copy -- which
+     * survives everything short of a logout -- as its fallback.
+     */
+    public authoritativeAttack: number = 0;
+    public authoritativeExpertise: number = 0;
     /** Last mana the client reported over packet 0xCB. Diagnostic only -- never trusted. */
     public lastReportedMana: number = 0;
     public authoritativeCurrentHp: number = 100;
@@ -624,6 +634,8 @@ export class Client {
         this.pendingMissionTurnIns.clear();
         this.authoritativeMaxHp = 100;
         this.authoritativeArmorClass = 0;
+        this.authoritativeAttack = 0;
+        this.authoritativeExpertise = 0;
         this.authoritativeCurrentHp = 100;
         this.combatStatsDirty = false;
         this.allowDirtyCombatStatsRegen = false;

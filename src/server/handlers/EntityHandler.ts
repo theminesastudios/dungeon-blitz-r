@@ -32,6 +32,7 @@ import { getCraftTownHomeOwnerCharacter } from '../utils/HomeVisitGuard';
 import { HomeStatueHandler } from './HomeStatueHandler';
 import { LegendsInn } from '../core/LegendsInn';
 import { LEGENDS_INN_TITUS_ENTITY_ID, LegendsInnGate } from '../core/LegendsInnGate';
+import { HallowsEve, HALLOWS_EVE_COFFERS_ENTITY_ID } from '../core/HallowsEve';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
@@ -3904,6 +3905,46 @@ export class EntityHandler {
     }
 
     /**
+     * The Hollow Watcher and the coffers, in Blackrose Mire's town square.
+     *
+     * They stand where the four leaderboard statues used to, flanking the portal
+     * on door 108. Built in code rather than listed in `npcs/SwampRoadNorth.json`
+     * for the reason Titus is - see `core/HallowsEve.ts` - and sent to both the
+     * ordinary town and its Dread copy, which share `a_Room_SRN04`.
+     */
+    private static sendHallowsEveSquare(client: Client): void {
+        if (!HallowsEve.isTown(client.currentLevel)) {
+            return;
+        }
+
+        const levelMap = EntityHandler.getLevelMapForClient(client, true);
+        if (!levelMap) {
+            return;
+        }
+
+        // The coffers alone. The Hollow Watcher used to stand beside it, in front
+        // of the tower the arch is now set into - a figure planted on the ruins,
+        // which is what made clicking the stonework open a speech bubble. See
+        // `HallowsEve.buildWatcherEntity` for what it would take to stand him
+        // somewhere off the artwork again.
+        const props: Array<[number, () => any]> = [
+            [HALLOWS_EVE_COFFERS_ENTITY_ID, () => HallowsEve.buildCoffersEntity()]
+        ];
+        for (const [entityId, build] of props) {
+            if (client.knownEntityIds.has(entityId)) {
+                continue;
+            }
+            let entityProps = levelMap.get(entityId);
+            if (!entityProps) {
+                entityProps = build();
+                levelMap.set(entityId, entityProps);
+            }
+            client.entities.set(entityId, { ...entityProps });
+            EntityHandler.sendEntity(client, entityProps);
+        }
+    }
+
+    /**
      * Spawns the keep garden statues for whoever just walked into a CraftTown instance.
      *
      * The line-up is always the one belonging to *this session's* keep owner - itself when you are
@@ -4233,6 +4274,7 @@ export class EntityHandler {
              EntityHandler.broadcastPlayerMountState(client, props.id, equippedMountId);
              BuildingHandler.refreshCraftTownBuildingsOnSpawn(client);
              EntityHandler.sendCraftTownAuthoredNpcs(client);
+             EntityHandler.sendHallowsEveSquare(client);
              HomeStatueHandler.onCraftTownSpawn(client);
              // Covers the two arrivals the boss-death broadcast cannot reach: a
              // party member who was still loading when the boss fell, and anyone

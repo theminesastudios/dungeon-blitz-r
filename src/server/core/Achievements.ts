@@ -8,14 +8,13 @@ import { RewardHandler } from '../handlers/RewardHandler';
  */
 
 type Progress = { count: number; claimed: boolean };
-type Locale = 'en' | 'tr';
 
 export type AchievementDef = {
     id: string;
     goal: number;
     goldReward: number;
     /** offer -> what to do, progress -> {n} of {goal}, claim -> paid out, done -> already collected. */
-    lines: Record<Locale, { offer: string; progress: string; claim: string; done: string }>;
+    lines: { offer: string; progress: string; claim: string; done: string };
 };
 
 // The boat's deck sits around y 600 and its rigging tops out near y 0, so a
@@ -29,18 +28,10 @@ export const ACHIEVEMENTS: readonly AchievementDef[] = [
         goal: 1,
         goldReward: 5000,
         lines: {
-            en: {
-                offer: 'The ship that carried you here still floats.%Climb its rigging, stand on the very top, and shout something worth writing down.%The archive pays for vanity. It always has.',
-                progress: 'Still on the deck, I see. The top, archivist. The very top.',
-                claim: 'They saw you up there, arms out, king of nothing at all.%Beautiful. Here is your gold -- the page is written.',
-                done: 'Your climb is already in the ledger. One crown per lifetime.'
-            },
-            tr: {
-                offer: 'Seni buraya getiren gemi hala yuzuyor.%Halatlarina tirman, en tepede dur ve yazilmaya deger bir sey bagir.%Arsiv kibri odullendirir. Hep oyle yapti.',
-                progress: 'Hala guvertedesin. Tepe dedim, arsivci. En tepe.',
-                claim: 'Seni orada gormusler, kollar iki yana acik, hicligin krali.%Muhtesem. Altinini al, sayfa yazildi.',
-                done: 'Tirmanisin defterde duruyor. Omur boyu tek tac.'
-            }
+            offer: 'The ship that carried you here still floats.%Climb its rigging, stand on the very top, and shout something worth writing down.%The archive pays for vanity. It always has.',
+            progress: 'Still on the deck, I see. The top, archivist. The very top.',
+            claim: 'They saw you up there, arms out, king of nothing at all.%Beautiful. Here is your gold -- the page is written.',
+            done: 'Your climb is already in the ledger. One crown per lifetime.'
         }
     },
     {
@@ -48,18 +39,10 @@ export const ACHIEVEMENTS: readonly AchievementDef[] = [
         goal: 250,
         goldReward: 25000,
         lines: {
-            en: {
-                offer: 'Bring me two hundred and fifty goblin heads and I will pay you a price you will not hear anywhere else.%Do not carry them. I count them from here -- the ledger writes itself, and it never miscounts.',
-                progress: 'The ledger says {n} of {goal} heads. Keep swinging, butcher.',
-                claim: '{goal} heads. I counted twice, out of respect.%Take the gold. Do not tell me what you did with the rest of them.',
-                done: 'That page is closed and paid. Bring me something new to count.'
-            },
-            tr: {
-                offer: 'Bana iki yuz elli goblin kafasi getir, hicbir yerde duymayacagin bir fiyat odeyeyim.%Tasima sakin. Buradan sayarim -- defter kendini yazar ve asla sasmaz.',
-                progress: 'Defterde {goal} kafadan {n} tanesi var. Sallamaya devam et, kasap.',
-                claim: '{goal} kafa. Saygimdan iki kez saydim.%Altini al. Geri kalanlarini ne yaptigini bana anlatma.',
-                done: 'O sayfa kapandi ve odendi. Bana sayacak yeni bir sey getir.'
-            }
+            offer: 'Bring me two hundred and fifty goblin heads and I will pay you a price you will not hear anywhere else.%Do not carry them. I count them from here -- the ledger writes itself, and it never miscounts.',
+            progress: 'The ledger says {n} of {goal} heads. Keep swinging, butcher.',
+            claim: '{goal} heads. I counted twice, out of respect.%Take the gold. Do not tell me what you did with the rest of them.',
+            done: 'That page is closed and paid. Bring me something new to count.'
         }
     }
 ];
@@ -144,14 +127,14 @@ export class Achievements {
      * Rewards are granted here because the bubble is the only place they can be
      * announced -- there is no achievement UI on the client.
      */
-    static talk(client: Client, locale: Locale = 'en'): { text: string; didMutate: boolean } {
+    static talk(client: Client): { text: string; didMutate: boolean } {
         const character: any = client.character;
         const lines: string[] = [];
         let didMutate = false;
 
         for (const def of ACHIEVEMENTS) {
             const progress = Achievements.getProgress(character, def.id);
-            const text = def.lines[locale] ?? def.lines.en;
+            const text = def.lines;
 
             if (progress.claimed) {
                 continue;
@@ -170,7 +153,7 @@ export class Achievements {
         if (!lines.length) {
             // Everything paid out: fall back to the last achievement's closing line.
             const last = ACHIEVEMENTS[ACHIEVEMENTS.length - 1];
-            lines.push((last.lines[locale] ?? last.lines.en).done);
+            lines.push(last.lines.done);
         }
 
         return { text: lines.join('%'), didMutate };

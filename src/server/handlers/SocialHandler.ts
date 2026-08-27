@@ -1,4 +1,5 @@
 import { Character } from '../database/Database';
+import { DamageMeter } from '../core/DamageMeter';
 import { Client } from '../core/Client';
 import { BitReader } from '../network/protocol/bitReader';
 import { BitBuffer } from '../network/protocol/bitBuffer';
@@ -7,6 +8,7 @@ import { EntityTeam } from '../core/Entity';
 import { JsonAdapter } from '../database/JsonAdapter';
 import { LevelConfig } from '../core/LevelConfig';
 import { GuildHandler } from './GuildHandler';
+import { NpcHandler } from './NpcHandler';
 import { LevelHandler } from './LevelHandler';
 import { MissionHandler } from './MissionHandler';
 import { PetHandler } from './PetHandler';
@@ -234,6 +236,65 @@ export class SocialHandler {
         bb.writeMethod91(Math.max(0, mapY));
         return bb.toBuffer();
     }
+
+    /**
+     * The damage meter: what this player is doing per second and per minute, broken down by
+     * what they are hitting.
+     *
+     * Both `yarrak:` and `/yarrak` are matched, but only the slashless form can actually
+     * arrive today. class_127.method_1940 in the client is a hardcoded allowlist -- it forwards
+     * /lang:, /teleport: and /maintenance: and answers "Unknown Command" locally for everything
+     * else, without ever sending a packet. The slash form is accepted here so it starts working
+     * the moment that allowlist is patched, rather than needing this file touched again.
+     *
+     * `yarrak: sifirla` clears the window.
+     */
+    private static handleDamageMeterCommand(client: Client, message: string): boolean {
+        const match = /^[\\/]?yarrak\s*:?\s*(.*)$/i.exec(message.trim());
+        if (!match) {
+            return false;
+        }
+
+        const argument = match[1].trim().toLowerCase();
+        if (argument === 'sifirla' || argument === 'sıfırla' || argument === 'reset') {
+            DamageMeter.reset(client);
+            SocialHandler.sendChatStatus(client, 'Damage counter reset.');
+            return true;
+        }
+
+        const report = DamageMeter.report(client);
+        if (report.hits === 0) {
+            SocialHandler.sendChatStatus(client, 'Damage counter: no hits recorded in the last 60 seconds.');
+            return true;
+        }
+
+        const seconds = Math.max(1, Math.round(report.elapsedMs / 1000));
+        const n = (value: number): string => Math.round(value).toLocaleString('en-US');
+        SocialHandler.sendChatStatus(
+            client,
+            `Damage counter - last ${seconds}s, ${report.hits} hits: ` +
+                `total ${n(report.total)} | ${n(report.perSecond)}/s | ${n(report.perMinute)}/m` +
+                (report.bonus > 0 ? ` | passive ${n(report.bonus)}` : '')
+        );
+
+        // One line per target type, biggest first, capped so a long trash pull cannot flood the
+        // chat window with rows nobody reads.
+        for (const entry of report.byTarget.slice(0, SocialHandler.DAMAGE_METER_MAX_ROWS)) {
+            const share = report.total > 0 ? Math.round((entry.total / report.total) * 100) : 0;
+            SocialHandler.sendChatStatus(
+                client,
+                `  ${entry.target}: ${n(entry.total)} (${n(entry.total / seconds)}/s, %${share}, ` +
+                    `${entry.hits} hits${entry.bonus > 0 ? `, passive ${n(entry.bonus)}` : ''})`
+            );
+        }
+        const hidden = report.byTarget.length - SocialHandler.DAMAGE_METER_MAX_ROWS;
+        if (hidden > 0) {
+            SocialHandler.sendChatStatus(client, `  ... and ${hidden} more enemy types.`);
+        }
+        return true;
+    }
+
+    private static readonly DAMAGE_METER_MAX_ROWS = 8;
 
     private static sendChatStatus(target: Client | null | undefined, text: string): void {
         if (!target) {
@@ -1414,6 +1475,10 @@ export class SocialHandler {
             return;
         }
 
+        if (SocialHandler.handleDamageMeterCommand(client, message)) {
+            return;
+        }
+
         if (client.character) {
             const match = /^\/lang:\s*(tr|en)\s*$/i.exec(message);
             if (match) {
@@ -1786,6 +1851,14 @@ export class SocialHandler {
         const inviterEntityId = br.readMethod9();
         br.readMethod26();
         const accepted = br.readMethod15();
+
+        // The square's two questions ride this packet too. Asked first because the
+        // token block is theirs alone, so a hit here can never be a party invite -
+        // and because the flows below fall back to "look up a session by entity id",
+        // which a Hallow's Eve token would match by accident at high entity counts.
+        if (NpcHandler.tryHandleHallowsEvePromptAnswer(client, inviterEntityId, accepted)) {
+            return;
+        }
 
         if (await GuildHandler.tryHandleInviteAnswer(client, inviterEntityId, accepted)) {
             return;

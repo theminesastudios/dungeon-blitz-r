@@ -67,6 +67,7 @@ import {
     LEGENDS_INN_TITUS_WARNING,
     LegendsInnGate
 } from '../core/LegendsInnGate';
+import { HallowsEve, HALLOWS_EVE_PROMPT_CONTEXT } from '../core/HallowsEve';
 
 const db = new JsonAdapter();
 
@@ -3086,10 +3087,7 @@ export class LevelHandler {
                 // reposition arrives as one large delta and must not be scored as a teleport.
                 // Without this an on-foot player is clamped back into the room they just left,
                 // which is the position everyone else keeps rendering.
-                client.roomTransitionGraceUntil = Math.max(
-                    client.roomTransitionGraceUntil,
-                    Date.now() + LevelHandler.ROOM_TRANSITION_GRACE_MS
-                );
+                MovementAuthority.armRoomTransitionGrace(client, LevelHandler.ROOM_TRANSITION_GRACE_MS);
                 PetHandler.armMountTravelProtection(client, 4000, true);
             }
             LevelHandler.maybeStartTutorialDungeonTraversalTutorial(client, roomId);
@@ -3502,21 +3500,7 @@ export class LevelHandler {
     // Dread dungeon — TutorialDungeonMechanics is wired to TutorialDungeon only —
     // so the run could never satisfy its anna_freed objective and never finished.
     private static isAnnaReturnToTownLine(normalizedText: string): boolean {
-        if (normalizedText === LevelHandler.ANNA_RETURN_TO_TOWN_LINE) {
-            return true;
-        }
-
-        for (const locale of ['tr']) {
-            const localized = DialogueTranslationLoader.translateText(
-                LevelHandler.ANNA_RETURN_TO_TOWN_LINE,
-                locale
-            );
-            if (localized && normalizedText === localized) {
-                return true;
-            }
-        }
-
-        return false;
+        return normalizedText === LevelHandler.ANNA_RETURN_TO_TOWN_LINE;
     }
 
     static maybeFinishTutorialDungeonAfterAnnaCutscene(
@@ -4456,6 +4440,44 @@ export class LevelHandler {
         client.mountTransferGraceUntil = 0;
     }
 
+    /**
+     * The Green Knight's Challenge, raised as a real window.
+     *
+     * The arch is refused with DOORSTATE_LOCKED and the pending transfer cleared -
+     * so the client is not left half-way through a door it is not going through -
+     * and the question goes up in `a_DialogBox`, the client's own server-driven
+     * Yes/No window. `HallowsEve.openPrompt` remembers the token; the answer
+     * arrives on 0x59 and `NpcHandler.tryHandleHallowsEvePromptAnswer` puts a Yes
+     * back through this exact door.
+     *
+     * This is the closest thing to the shipped `a_ScreenHalloweenDungeonPrompt`
+     * that can be reached without emitting new AVM2 classes: the panel's artwork is
+     * in `UI_Seasonal.swf`, but nothing in `DungeonBlitz.swf` can open it.
+     */
+    private static sendHallowsEveChallengePrompt(
+        client: Client,
+        doorId: number,
+        targetLevelRaw: string | null | undefined
+    ): void {
+        const targetLevel = LevelConfig.normalizeLevelName(targetLevelRaw) || String(targetLevelRaw ?? '').trim();
+        if (Number.isFinite(Number(doorId)) && Number(doorId) >= 0 && targetLevel) {
+            LevelHandler.sendDoorState(client, Math.round(Number(doorId)), LevelHandler.DOORSTATE_LOCKED, targetLevel);
+        }
+
+        const fromLevel = LevelConfig.normalizeLevelName(client.currentLevel) || String(client.currentLevel ?? '');
+        const token = HallowsEve.openPrompt('challenge', client.character?.name, fromLevel);
+
+        const bb = new BitBuffer(false);
+        bb.writeMethod9(token);
+        bb.writeMethod26(HALLOWS_EVE_PROMPT_CONTEXT);
+        bb.writeMethod26(HallowsEve.buildChallengeText(client.character));
+        client.sendBitBuffer(0x58, bb);
+
+        client.lastDoorId = -1;
+        client.lastDoorTargetLevel = '';
+        client.mountTransferGraceUntil = 0;
+    }
+
     private static sendDeniedDoorResponse(
         client: Client,
         doorId: number,
@@ -5181,6 +5203,16 @@ export class LevelHandler {
             return;
         }
 
+        // The Green Knight's Challenge. Raised every time the arch is reached for,
+        // the way the original panel was - it is not a briefing, it is where the
+        // player is told whether a key is due. A Yes comes back on 0x59 and is what
+        // actually opens the door.
+        if (HallowsEve.shouldStopAtPortal(client.character?.name, currentLevel, rawTargetLevel)) {
+            console.log(`[HallowsEve] ${String(client.character?.name ?? '')} was asked the challenge at the arch`);
+            LevelHandler.sendHallowsEveChallengePrompt(client, doorId, rawTargetLevel);
+            return;
+        }
+
         // The way on out of a Legends' Inn stage. There is nothing drawn on this
         // door until its boss falls, so a player can only reach it by walking into
         // the spot the portal will stand in - but the refusal is what makes the
@@ -5216,21 +5248,34 @@ export class LevelHandler {
 
         // Send 0x2E Door Target
         if (targetLevel) {
-            client.lastDoorId = doorId;
-            client.lastDoorTargetLevel = targetLevel;
-            client.armPendingTransferGrace();
-            PetHandler.armMountTravelProtection(client, 5000, false);
-            const bb = new BitBuffer();
-            const responseDoorId = LevelHandler.resolveDoorResponseId(currentLevel, targetLevel, doorId);
-            if (responseDoorId !== doorId) {
-                console.log(
-                    `[Level] Dungeon exit door response ${currentLevel} -> ${targetLevel}: ${doorId} -> ${responseDoorId}`
-                );
-            }
-            bb.writeMethod4(responseDoorId);
-            bb.writeMethod13(targetLevel);
-            client.sendBitBuffer(0x2E, bb);
+            LevelHandler.grantDoorTransfer(client, currentLevel, doorId, targetLevel);
         }
+    }
+
+    /**
+     * Answers a door: arms the transfer and tells the client where it leads.
+     *
+     * Lifted out of `handleOpenDoor` so that a door which was *refused* in order to
+     * ask the player something first can be granted afterwards without reproducing
+     * the arming by hand. The Hallow's Eve challenge prompt is the caller that
+     * needs it: the door is denied so the dialog can be shown, and a Yes has to put
+     * the player through exactly the door they reached for.
+     */
+    static grantDoorTransfer(client: Client, currentLevel: string, doorId: number, targetLevel: string): void {
+        client.lastDoorId = doorId;
+        client.lastDoorTargetLevel = targetLevel;
+        client.armPendingTransferGrace();
+        PetHandler.armMountTravelProtection(client, 5000, false);
+        const bb = new BitBuffer();
+        const responseDoorId = LevelHandler.resolveDoorResponseId(currentLevel, targetLevel, doorId);
+        if (responseDoorId !== doorId) {
+            console.log(
+                `[Level] Dungeon exit door response ${currentLevel} -> ${targetLevel}: ${doorId} -> ${responseDoorId}`
+            );
+        }
+        bb.writeMethod4(responseDoorId);
+        bb.writeMethod13(targetLevel);
+        client.sendBitBuffer(0x2E, bb);
     }
 
     static async handleQuestProgressUpdate(client: Client, data: Buffer): Promise<void> {
@@ -5356,6 +5401,11 @@ export class LevelHandler {
             return;
         }
 
+        // The source client is not necessarily returned by forLevelRecipients or
+        // the shared-participant sweep. Reset it explicitly so portal movement
+        // accumulated before the cinematic cannot later disconnect the player.
+        MovementAuthority.resetFromEntity(client, client.entities.get(client.clientEntID), 'cutscene_start');
+
         if (sharedCutsceneDecision === 'owner_active' || sharedCutsceneDecision === 'started') {
             LevelHandler.markSharedDungeonCutsceneParticipant(client, roomId, 0);
             LevelHandler.setServerAuthorityHostilesUntargetableForScope(getClientLevelScope(client), roomId, true);
@@ -5400,6 +5450,12 @@ export class LevelHandler {
         ) {
             return;
         }
+
+        // The first movement packet after a cinematic contains the local
+        // room/portal reposition. activeDungeonCutsceneScope is cleared as the
+        // cinematic closes, so explicitly keep a short transition window alive.
+        MovementAuthority.resetFromEntity(client, client.entities.get(client.clientEntID), 'cutscene_end');
+        MovementAuthority.armRoomTransitionGrace(client, LevelHandler.ROOM_TRANSITION_GRACE_MS);
         if (sharedCutsceneDecision === 'participant_finished') {
             EntityHandler.sendTutorialDungeonWorldSnapshot(client, 'cutscene_participant_end');
             client.activeDungeonCutsceneScope = '';
@@ -5750,6 +5806,15 @@ export class LevelHandler {
             }
             console.log(`[LegendsInn] Transfer to ${targetLevel} held until Titus has spoken`);
             LevelHandler.sendLegendsInnPortalWarning(client, client.lastDoorId, targetLevel);
+            return;
+        }
+
+        // Same for the challenge: a transfer request names its own target, so
+        // without this the gate is one hand-made packet away from being skipped.
+        // The transfer that *follows* a Yes carries an entry grant and passes.
+        if (!teleportOverride && HallowsEve.shouldStopAtPortal(client.character?.name, client.currentLevel, targetLevel)) {
+            console.log(`[HallowsEve] Transfer to ${targetLevel} held until the challenge is answered`);
+            LevelHandler.sendHallowsEveChallengePrompt(client, client.lastDoorId, targetLevel);
             return;
         }
 
@@ -6134,12 +6199,34 @@ export class LevelHandler {
                 getClientLevelScope(client)
             )
         );
+        // Client-spawned dungeon mobs do not all emit a later 0x0D destroy. SandWorms on the
+        // normal Ancient Unrest route, for example, report only this 0x07 DEAD transition while
+        // treasure-room worms also destroy their corpse. Rejecting DEAD solely because the
+        // server's derived HP pool is still positive therefore makes the same quest count only
+        // in those treasure rooms.
+        //
+        // Accept the terminal state when an active enemy-kill mission explicitly matches this
+        // mob. Dungeon bosses and authored completion objectives keep their stricter authority
+        // path below, so a side quest cannot bypass dungeon completion validation.
+        const acceptsEnemyKillMissionTerminal = Boolean(
+            isEnemyCanonical &&
+            isDefeatEntState &&
+            Boolean(
+                canonicalEntity?.clientSpawned ||
+                canonicalEntity?.hybridCanonicalHostile ||
+                ent?.clientSpawned ||
+                ent?.hybridCanonicalHostile
+            ) &&
+            MissionHandler.shouldWaitForEnemyKillStateMissionProgress(client, canonicalEntity) &&
+            !MissionHandler.shouldProcessEnemyKillStateDungeonCompletion(client, canonicalEntity)
+        );
         const canonicalTerminal = isEnemyCanonical && (
             acceptsClientAuthorityTerminal ||
+            acceptsEnemyKillMissionTerminal ||
             canonicalDestroyed ||
             (Number.isFinite(canonicalHp) && canonicalHp <= 0)
         );
-        if (acceptsClientAuthorityTerminal) {
+        if (acceptsClientAuthorityTerminal || acceptsEnemyKillMissionTerminal) {
             for (const acceptedEntity of new Set([canonicalEntity, ent])) {
                 if (!acceptedEntity || typeof acceptedEntity !== 'object') {
                     continue;

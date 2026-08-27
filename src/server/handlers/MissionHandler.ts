@@ -28,6 +28,7 @@ import { EntityState } from '../core/Entity';
 import { BuildingID } from '../core/Enums';
 import { LevelConfig } from '../core/LevelConfig';
 import { getClientLevelScope, getScopeLevelName } from '../core/LevelScope';
+import { HallowsEve } from '../core/HallowsEve';
 import {
     getOrCreateSharedDungeonProgressState,
     usesSharedDungeonProgress
@@ -1200,6 +1201,33 @@ export class MissionHandler {
         return false;
     }
 
+    /**
+     * Ancient Unrest's normal-route SandWorms do not emit the terminal entity-state/destroy
+     * packet that most client-authored dungeon enemies send after the final hit. Waiting for
+     * that packet therefore loses the kill, while the treasure-room worms happen to work.
+     *
+     * The combat handler has already reduced the canonical hostile to zero HP before asking
+     * this question, so accepting that server-resolved death is safe for the two non-boss worm
+     * variants. The authored SandWormGreater boss keeps the stricter dungeon-completion path.
+     */
+    static shouldAcceptServerResolvedEnemyKillMissionProgress(client: Client, defeatedEntity: any): boolean {
+        const currentLevel = LevelConfig.normalizeLevelName(
+            client.currentLevel || String(client.character?.CurrentLevel?.name ?? '')
+        );
+        if (currentLevel !== 'SD_Mission5' && currentLevel !== 'SD_Mission5Hard') {
+            return false;
+        }
+
+        const acceptedNames = currentLevel === 'SD_Mission5Hard'
+            ? new Set(['SandWormHard', 'SandWorm2Hard'])
+            : new Set(['SandWorm', 'SandWorm2']);
+        if (!MissionHandler.getDefeatedEnemyNames(defeatedEntity).some((name) => acceptedNames.has(name))) {
+            return false;
+        }
+
+        return MissionHandler.hasActiveEnemyKillMissionProgress(client, defeatedEntity);
+    }
+
     private static hasActiveEnemyKillMissionProgress(client: Client, destroyedEntity: any): boolean {
         if (!client.character) {
             return false;
@@ -1532,6 +1560,28 @@ export class MissionHandler {
                 scoringCompletionPercent
             }
         );
+
+        // The Green Knight's key.
+        //
+        // Paid per player who was standing in the finished run, not per party, and
+        // capped at one every twelve hours per character - which is the rule the
+        // event's own prompt screen states. Clearing the arena is never blocked by
+        // the clock; only the key is, so a second run inside the window is still a
+        // run, it simply does not pay again. His EntType is `RewardClass HealthOnly`
+        // with `ExpMult 0`, so without this he drops nothing at all.
+        if (clearedDungeon && HallowsEve.isDungeon(currentLevel) && client.character) {
+            if (HallowsEve.awardKey(client.character)) {
+                didMutate = true;
+                console.log(
+                    `[HallowsEve] ${String(client.character.name ?? '')} earned a coffer key ` +
+                    `(${HallowsEve.getKeys(client.character)} held)`
+                );
+            } else {
+                console.log(
+                    `[HallowsEve] ${String(client.character.name ?? '')} cleared the arena inside the 12h window; no key`
+                );
+            }
+        }
 
         let completedMissionId = 0;
         let completedMissionUpdate: DungeonMissionUpdateResult | null = null;

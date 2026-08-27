@@ -716,20 +716,37 @@ function patchSwf(swfPath: string, verify: boolean): void {
 
     const block = petArmorModBlock(petArmorBaneStr);
     const legacyPositiveBlock = petArmorModBlock(petArmorBaneStr, true);
-    // The block is inserted at 3963 and shifts nothing before it; after a re-run the
-    // stored codeLen already accounts for it, so just check the bytes in place.
-    const patched = code.length >= 3963 + block.length && code.subarray(3963, 3963 + block.length).equals(block);
+
+    // The insertion point used to be the literal offset 3963. It is found by its anchor bytes
+    // now, because another patch (patch-dungeonblitz-paladin-passive-attack) inserts earlier
+    // in this same method and shifts every offset after it: a hardcoded 3963 turned into
+    // "verify failed; PetArmorBane mod is missing" for a block that was sitting there intact,
+    // 78 bytes further along. The anchor is the five bytes ending at the insertion point --
+    // `setlocal 16` (the mods list) and the start of the LeoneanAura guard -- and it has to be
+    // unique in the method, so a client change that duplicates it fails loudly.
+    const ANCHOR = Buffer.from([0x80, 0xcc, 0x6e, 0x63, 0x10]);
+    const anchorAt = code.indexOf(ANCHOR);
+    if (anchorAt < 0 || code.indexOf(ANCHOR, anchorAt + 1) >= 0) {
+      throw new PatchError(
+        anchorAt < 0
+          ? "CombatState.method_1192: the PetArmorBane insertion anchor was not found."
+          : "CombatState.method_1192: the PetArmorBane insertion anchor is not unique.",
+      );
+    }
+    const insertAt = anchorAt + ANCHOR.length;
+
+    const patched = code.length >= insertAt + block.length && code.subarray(insertAt, insertAt + block.length).equals(block);
     const hasLegacyPositiveSign =
-      code.length >= 3963 + legacyPositiveBlock.length &&
-      code.subarray(3963, 3963 + legacyPositiveBlock.length).equals(legacyPositiveBlock);
+      code.length >= insertAt + legacyPositiveBlock.length &&
+      code.subarray(insertAt, insertAt + legacyPositiveBlock.length).equals(legacyPositiveBlock);
 
     if (patched) {
       console.log(`${swfPath}: CombatState.method_1192 PetArmorBane mod already patched.`);
     } else if (hasLegacyPositiveSign && !verify) {
       patches.push({
         key: "CombatState.method_1192.fixPetArmorSign",
-        start: body.codeStart + 3963,
-        end: body.codeStart + 3963 + legacyPositiveBlock.length,
+        start: body.codeStart + insertAt,
+        end: body.codeStart + insertAt + legacyPositiveBlock.length,
         data: block,
         detail: "correct PetArmorBane from +level/200 defense to -level/200 defense",
       });
@@ -737,16 +754,12 @@ function patchSwf(swfPath: string, verify: boolean): void {
     } else if (verify) {
       throw new PatchError(`${swfPath}: verify failed; CombatState.method_1192 PetArmorBane mod is missing.`);
     } else {
-      // The insertion point sits between the `setlocal 16` at 3961 (mods list)
-      // and the LeoneanAura guard at 3965. The `caster.var_18 == null` branch at
-      // 3939 (pets) targets 3963 and must land on the first byte of the block;
-      // every other branch is shifted by the generic rule.
-      const anchor = code.subarray(3958, 3963);
-      if (!anchor.equals(Buffer.from([0x80, 0xcc, 0x6e, 0x63, 0x10]))) {
-        throw new PatchError(`Unexpected bytes at CombatState.method_1192 +3958: ${anchor.toString("hex")}`);
-      }
+      // The insertion point sits between the `setlocal 16` that closes the mods list and the
+      // LeoneanAura guard. The `caster.var_18 == null` branch just above it (pets) targets the
+      // insertion point and must land on the first byte of the block; every other branch is
+      // shifted by the generic rule.
       const instructions = disassemble(code, "m3476");
-      const patchedCode = spliceInsertStay(code, instructions, 3963, block, new Set([3963]));
+      const patchedCode = spliceInsertStay(code, instructions, insertAt, block, new Set([insertAt]));
 
       patches.push(
         // The whole body is replaced (not just the insertion point) so the

@@ -37,6 +37,8 @@ export interface TraitInfo {
   slotId?: number;
   typeNameIdx?: number;
   vindex?: number;
+  vindexPos?: number;
+  vindexEnd?: number;
   vkind?: number;
 }
 
@@ -73,6 +75,8 @@ export interface AbcParseResult {
   intValueEndPositions: number[];
   uintValues: number[];
   doubleValues: number[];
+  doubleCountPos: number;
+  doubleCountEnd: number;
   doubleValuePositions: number[];
   stringValues: string[];
   stringCountPos: number;
@@ -87,7 +91,9 @@ export interface AbcParseResult {
     flags: number;
   }>;
   instances: InstanceInfo[];
+  classInitMethodIdxs: number[];
   classTraits: TraitInfo[][];
+  scriptTraits: TraitInfo[][];
   methodBodies: Map<number, MethodBodyInfo>;
 }
 
@@ -327,14 +333,16 @@ function parseTrait(data: Buffer, start: number, ctx: string): [TraitInfo, numbe
     [slotId, pos] = readU30(data, pos, `${ctx}.trait.slot_id`);
     [typeNameIdx, pos] = readU30(data, pos, `${ctx}.trait.type_name`);
     let vindex: number;
+    const vindexPos = pos;
     [vindex, pos] = readU30(data, pos, `${ctx}.trait.vindex`);
+    const vindexEnd = pos;
     let vkind: number | undefined;
     if (vindex !== 0) {
       requireBounds(data, pos, 1, `${ctx}.trait.vkind`);
       vkind = data[pos];
       pos += 1;
     }
-    return [{ nameIdx, kindId, methodIdx, slotId, typeNameIdx, vindex, vkind }, pos];
+    return [{ nameIdx, kindId, methodIdx, slotId, typeNameIdx, vindex, vindexPos, vindexEnd, vkind }, pos];
   } else if (kindId === 1 || kindId === 2 || kindId === 3) {
     [, pos] = readU30(data, pos, `${ctx}.trait.disp_id`);
     [methodIdx, pos] = readU30(data, pos, `${ctx}.trait.method`);
@@ -385,7 +393,9 @@ export function parseAbc(ctx: SwfContext): AbcParseResult {
     uintValues.push(value);
   }
 
+  const doubleCountPos = pos;
   [count, pos] = readU30(data, pos, "abc.double_count");
+  const doubleCountEnd = pos;
   const doubleValues = [NaN];
   const doubleValuePositions = [0];
   for (let i = 1; i < count; i += 1) {
@@ -546,8 +556,11 @@ export function parseAbc(ctx: SwfContext): AbcParseResult {
   }
 
   const classTraits: TraitInfo[][] = [];
+  const classInitMethodIdxs: number[] = [];
   for (let i = 0; i < classCount; i += 1) {
-    [, pos] = readU30(data, pos, `abc.class[${i}].cinit`);
+    let classInitMethodIdx: number;
+    [classInitMethodIdx, pos] = readU30(data, pos, `abc.class[${i}].cinit`);
+    classInitMethodIdxs.push(classInitMethodIdx);
     let traitCount: number;
     [traitCount, pos] = readU30(data, pos, `abc.class[${i}].trait_count`);
     const traits: TraitInfo[] = [];
@@ -560,13 +573,18 @@ export function parseAbc(ctx: SwfContext): AbcParseResult {
   }
 
   [count, pos] = readU30(data, pos, "abc.script_count");
+  const scriptTraits: TraitInfo[][] = [];
   for (let i = 0; i < count; i += 1) {
     [, pos] = readU30(data, pos, `abc.script[${i}].init`);
     let traitCount: number;
     [traitCount, pos] = readU30(data, pos, `abc.script[${i}].trait_count`);
+    const traits: TraitInfo[] = [];
     for (let j = 0; j < traitCount; j += 1) {
-      [, pos] = parseTrait(data, pos, `abc.script[${i}]`);
+      let trait: TraitInfo;
+      [trait, pos] = parseTrait(data, pos, `abc.script[${i}]`);
+      traits.push(trait);
     }
+    scriptTraits.push(traits);
   }
 
   const methodBodies = new Map<number, MethodBodyInfo>();
@@ -635,6 +653,8 @@ export function parseAbc(ctx: SwfContext): AbcParseResult {
     intValueEndPositions,
     uintValues,
     doubleValues,
+    doubleCountPos,
+    doubleCountEnd,
     doubleValuePositions,
     stringValues,
     stringCountPos,
@@ -645,7 +665,9 @@ export function parseAbc(ctx: SwfContext): AbcParseResult {
     multinameNames,
     methodInfos,
     instances,
+    classInitMethodIdxs,
     classTraits,
+    scriptTraits,
     methodBodies,
   };
 }

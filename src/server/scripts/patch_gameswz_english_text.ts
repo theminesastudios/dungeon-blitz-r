@@ -51,6 +51,10 @@ const TEXT_TAGS = [
   "ReturnText",
   "BonusInfo",
   "FlavorText",
+  "LockedMessage",
+  "PreReqText",
+  "PraiseText",
+  "ProgressText",
 ];
 
 type ChunkSpec = {
@@ -65,7 +69,7 @@ type ChunkSpec = {
 };
 
 const CHUNKS: ChunkSpec[] = [
-  { root: "BuildingTypes", block: "Building", keyAttr: "BuildingName" },
+  { root: "BuildingTypes", block: "Building", keyTag: "DisplayName" },
   { root: "ConsumableTypes", block: "ConsumableType", keyAttr: "ConsumableName" },
   { root: "DyeTypes", block: "DyeType", keyTag: "DyeName" },
   { root: "EggTypes", block: "EggType", keyAttr: "EggName" },
@@ -201,12 +205,99 @@ function patchSwz(swzPath: string, english: Map<string, string>, verifyOnly: boo
     }
   }
 
+  // Patch child <Building> elements without BuildingName (rank variants)
+  const buildingEnglish = english.get("BuildingTypes");
+  const buildingChunk = ctx.chunks.find((entry) => entry.xml.includes("<BuildingTypes"));
+  if (buildingEnglish && buildingChunk) {
+    const childResult = patchChildBuildings(buildingChunk.xml, buildingEnglish, verifyOnly);
+    collected.push(childResult.stats);
+    if (childResult.xml !== buildingChunk.xml) {
+      changed = true;
+      if (!verifyOnly) {
+        buildingChunk.xml = childResult.xml;
+      }
+    }
+  }
+
   if (!verifyOnly && changed) {
     ensureBackup(swzPath);
     writeSwz(ctx);
   }
 
   return mergeStats(...collected);
+}
+
+/**
+ * Patch child <Building> elements that lack a BuildingName attribute.
+ *
+ * The BuildingTypes chunk has parent entries keyed by BuildingName and child entries
+ * (rank variants) that carry no key. restoreEnglishText can only match the parents.
+ * This function groups children under each parent, pairs them with the English archive's
+ * children by ordinal position, and replaces text fields.
+ */
+function patchChildBuildings(
+  targetXml: string,
+  englishXml: string,
+  verifyOnly: boolean,
+): { xml: string; stats: PatchStats } {
+  const stats = cloneStats();
+
+  const BLOCK_RE = /<Building(?:\s+BuildingName="([^"]*)")?>[\s\S]*?<\/Building>/g;
+
+  function groupByParent(xml: string): Map<string, string[]> {
+    const groups = new Map<string, string[]>();
+    let currentParent = "---Template---";
+    let m: RegExpExecArray | null;
+    BLOCK_RE.lastIndex = 0;
+    while ((m = BLOCK_RE.exec(xml)) !== null) {
+      if (m[1]) {
+        currentParent = m[1];
+      } else {
+        // child without BuildingName
+        if (!groups.has(currentParent)) {
+          groups.set(currentParent, []);
+        }
+        groups.get(currentParent)!.push(m[0]);
+      }
+    }
+    return groups;
+  }
+
+  const trGroups = groupByParent(targetXml);
+  const enGroups = groupByParent(englishXml);
+
+  let changed = false;
+  for (const [parent, trChildren] of trGroups) {
+    const enChildren = enGroups.get(parent);
+    if (!enChildren) {
+      continue;
+    }
+    for (let i = 0; i < trChildren.length && i < enChildren.length; i++) {
+      const trBlock = trChildren[i];
+      const enBlock = enChildren[i];
+      stats.blocks += 1;
+      let next = trBlock;
+      for (const tag of TEXT_TAGS) {
+        const trVal = next.match(new RegExp(`<${tag}>([^<]*)<\/${tag}>`))?.[1];
+        const enVal = enBlock.match(new RegExp(`<${tag}>([^<]*)<\/${tag}>`))?.[1];
+        if (trVal !== undefined && enVal !== undefined && trVal !== enVal) {
+          const pattern = new RegExp(`<${tag}>[^<]*<\/${tag}>`);
+          next = next.replace(pattern, `<${tag}>${enVal}</${tag}>`);
+          stats.changes += 1;
+          changed = true;
+        }
+      }
+      if (next !== trBlock) {
+        targetXml = targetXml.replace(trBlock, next);
+      }
+    }
+  }
+
+  if (!verifyOnly && changed) {
+    // Return the full xml with replacements applied
+    return { xml: targetXml, stats };
+  }
+  return { xml: targetXml, stats };
 }
 
 /** The loose XML alongside the archive, where a resource has one. */

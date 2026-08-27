@@ -491,8 +491,8 @@ const CLASSES = [
 ];
 
 // Snippets that must be present once the patch has landed, and that a later FFDec import of
-// this same class would silently drop. The two byte patches at the end are not ours -- they
-// live in CombatState too, and a recompile is exactly what throws them away.
+// this same class would silently drop. The Clutch Heal byte patch is not ours -- it lives in
+// CombatState too, and a recompile is exactly what throws it away.
 const REQUIRED = {
     CombatState: [
         '_loc7_ += 3 * this.var_3.armorClass + 0.0001 * this.var_3.maxHP;',
@@ -502,7 +502,6 @@ const REQUIRED = {
         'param4 = param4 * 3 + 1.5 * this.var_3.armorClass;',
         'this.var_840 += int(_loc12_.substr(5)) * 0.01;',
         'if(param1.basePowerName == "FlameAxe" && param1.var_7 >= 1)',
-        'param3 = uint(param2.meleeDamage);',
         'param2.maxHP * 0.3',
         'if(param2.basePowerName == "Subjugate" || param2.basePowerName == "Penance")',
         'var _hbBonus:Number = this.var_3.var_18.method_102(this.var_3,param1.basePowerName,"BaseDamageMult");',
@@ -525,7 +524,11 @@ const REQUIRED = {
  *     +100% on the two states a Templar produces most reliably
  */
 const FORBIDDEN = {
-    CombatState: ['_loc59_ += this.var_1644;', '_loc6_ += 2 * this.var_1644;'],
+    CombatState: [
+        '_loc59_ += this.var_1644;',
+        '_loc6_ += 2 * this.var_1644;',
+        'param3 = uint(param2.meleeDamage);'
+    ],
     PowerType: []
 };
 
@@ -642,7 +645,7 @@ function verifySource(source, className, swfPath) {
     }
     for (const snippet of FORBIDDEN[className]) {
         if (text.includes(snippet)) {
-            throw new Error(`${name} still carries Dominate's old critical-chance clause: ${snippet}`);
+            throw new Error(`${name} still carries forbidden legacy code in ${className}: ${snippet}`);
         }
     }
 }

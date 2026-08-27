@@ -13,7 +13,6 @@ const CBQ_DIR = path.resolve(__dirname, "..", "..", "client", "content", "localh
 const CRIT_CHANCE_DESCRIPTIONS: Array<{ modName: string; values: string }> = [
   { modName: "CritChance1", values: "+0.3%, +0.6%, +0.9%, +1.2%, +1.5%" },
   { modName: "Opportunist1", values: "0.15%, 0.3%, 0.6%, 1.05%, 1.5%" },
-  { modName: "Dominate1", values: "0.15%, 0.3%, 0.45%, 0.75%, 1.2%" },
   { modName: "CurseCrit1", values: "0.3%, 0.6%, 0.9%, 1.2%, 1.5%" },
 ];
 
@@ -53,7 +52,7 @@ function mergeResults(originalXml: string, results: PatchResult[]): PatchResult 
 }
 
 export function patchPlayerPowerCritChanceDisplay(xml: string): PatchResult {
-  return replacePowerDescription(xml, "CritChance", "+1.5% Critical Chance");
+  return replacePowerDescription(xml, "CritChance", "+2% Critical Chance");
 }
 
 export function patchPowerModCritChanceDisplay(xml: string): PatchResult {

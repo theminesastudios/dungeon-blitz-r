@@ -17,6 +17,7 @@ const CHARM_SECONDARY_SHIFT = 9;
 const CHARM_SECONDARY_MASK = 0x1f;
 const CHARM_TIER_SHIFT = 14;
 const CHARM_TIER_MASK = 0x3;
+const CRITICAL_CHANCE_SECONDARY_TYPE = 2;
 const SECONDARY_CHARM_TYPES = [
     '',
     'Trog',
@@ -65,6 +66,23 @@ function getSecondaryCharm(primaryCharm: any, secondaryType: number): any | null
     return getCharmByName(`${secondaryPrefix}${suffix}`);
 }
 
+function getSecondaryMultiplier(primaryCharm: any, secondaryType: number, secondaryTier: number): number {
+    const tierMultiplier = secondaryTier === 1 ? 0.5 : 1;
+    if (secondaryType !== CRITICAL_CHANCE_SECONDARY_TYPE) {
+        return tierMultiplier;
+    }
+
+    const primaryName = String(primaryCharm?.CharmName ?? '');
+    const charmLevel = Number(primaryName.match(/(\d+)$/)?.[1] ?? 0);
+    if (!Number.isFinite(charmLevel) || charmLevel <= 0) {
+        return tierMultiplier;
+    }
+
+    // Critical-chance secondaries are flat by rarity: Rare grants 0.5% and
+    // Legendary grants 1%, regardless of the primary charm's level.
+    return (secondaryTier === 1 ? 5 : 10) / charmLevel;
+}
+
 export function getEquippedCharmBonuses(character: any): CharmBonuses {
     const bonuses: CharmBonuses = {
         goldFind: 0,
@@ -105,7 +123,7 @@ export function getEquippedCharmBonuses(character: any): CharmBonuses {
                 continue;
             }
 
-            addCharmStats(bonuses, secondaryCharm, secondaryTier === 1 ? 0.5 : 1);
+            addCharmStats(bonuses, secondaryCharm, getSecondaryMultiplier(charm, secondaryType, secondaryTier));
         }
     }
 

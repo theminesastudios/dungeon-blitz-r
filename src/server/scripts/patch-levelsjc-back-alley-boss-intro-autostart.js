@@ -60,7 +60,11 @@ function detectFfdec(repoRoot, preferred) {
     path.join(repoRoot, 'build', 'tools', 'ffdec_25.0.0', 'ffdec-cli.jar'),
     path.join(repoRoot, 'build', 'tools', 'ffdec_25.0.0', 'ffdec.jar'),
     path.join(repoRoot, 'build', 'ffdec_24.0.1', 'ffdec-cli.exe'),
-    path.join(repoRoot, 'build', 'ffdec_24.0.1', 'ffdec-cli.jar')
+    path.join(repoRoot, 'build', 'ffdec_24.0.1', 'ffdec-cli.jar'),
+    path.join(process.env['ProgramFiles(x86)'] || '', 'FFDec', 'ffdec-cli.jar'),
+    path.join(process.env['ProgramFiles(x86)'] || '', 'FFDec', 'ffdec.jar'),
+    path.join(process.env.ProgramFiles || '', 'FFDec', 'ffdec-cli.jar'),
+    path.join(process.env.ProgramFiles || '', 'FFDec', 'ffdec.jar')
   );
 
   for (const candidate of candidates) {
@@ -280,19 +284,32 @@ function patchRoomSource(source) {
 
   patched = replaceRequired(
     patched,
-    normalizeBlock(`
+    [
+      normalizeBlock(`
          if(this.BossCueReallyDefeated(this.am_Boss))
          {
             this.am_PowerMarker1.Remove();
             param1.SetPhase(this.UpdatePhaseMeleeEnraged);
             return;
          }
-    `, eol),
+      `, eol),
+      normalizeBlock(`
+         if(this.BossCueReallyDefeated(this.am_Boss))
+         {
+            this.am_PowerMarker1.Remove();
+            this.am_Mage.Remove();
+            param1.SetPhase(this.UpdatePhaseMeleeEnraged);
+            return;
+         }
+      `, eol)
+    ],
     normalizeBlock(`
          if(this.BossCueReallyDefeated(this.am_Boss))
          {
             this.am_PowerMarker1.Remove();
             this.am_Mage.Remove();
+            this.am_Boss.bHoldSpawn = true;
+            this.am_Boss.Remove();
             param1.SetPhase(this.UpdatePhaseMeleeEnraged);
             return;
          }
@@ -302,17 +319,29 @@ function patchRoomSource(source) {
 
   patched = replaceRequired(
     patched,
-    normalizeBlock(`
+    [
+      normalizeBlock(`
          if(this.BossCueReallyDefeated(this.am_Boss2))
          {
             param1.SetPhase(this.UpdatePhaseCasterEnraged);
             return;
          }
-    `, eol),
+      `, eol),
+      normalizeBlock(`
+         if(this.BossCueReallyDefeated(this.am_Boss2))
+         {
+            this.am_Mage.Remove();
+            param1.SetPhase(this.UpdatePhaseCasterEnraged);
+            return;
+         }
+      `, eol)
+    ],
     normalizeBlock(`
          if(this.BossCueReallyDefeated(this.am_Boss2))
          {
             this.am_Mage.Remove();
+            this.am_Boss2.bHoldSpawn = true;
+            this.am_Boss2.Remove();
             param1.SetPhase(this.UpdatePhaseCasterEnraged);
             return;
          }
@@ -340,6 +369,10 @@ function verifyRoomSource(source, label) {
     'param1.bossFightBeginsWhenThisGuyIsDead = null;',
     'param1.bossFightPhase = null;',
     'this.am_Mage.Remove();',
+    'this.am_Boss.bHoldSpawn = true;',
+    'this.am_Boss.Remove();',
+    'this.am_Boss2.bHoldSpawn = true;',
+    'this.am_Boss2.Remove();',
     `if(this.bMageLeaving && this.am_Mage.HasArrived())${source.includes('\r\n') ? '\r\n' : '\n'}         {${source.includes('\r\n') ? '\r\n' : '\n'}            this.am_Mage.Remove();`
   ];
 

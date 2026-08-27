@@ -14,7 +14,6 @@ import {
 import { LevelHandler } from './LevelHandler';
 import { EntityState, EntityTeam } from '../core/Entity';
 import { MasterClassID } from '../core/Enums';
-import { resolveClientXmlDir } from '../utils/ClientXmlDir';
 import { EntityHandler } from './EntityHandler';
 import { MissionHandler } from './MissionHandler';
 import { areClientsInSameParty, getClientCharacterKey, sharesRoomIds, shouldShareCombatView } from '../core/PartySync';
@@ -38,6 +37,7 @@ import { CastRateAuthority } from '../core/CastRateAuthority';
 import { TutorialDungeonMechanics } from '../core/TutorialDungeonMechanics';
 import { LegendsInn } from '../core/LegendsInn';
 import { AdminRuntimeSettings } from '../core/AdminRuntimeSettings';
+import { DamageMeter } from '../core/DamageMeter';
 
 type CombatRelayOptions = {
     includeAnchor?: boolean;
@@ -4225,8 +4225,14 @@ export class CombatHandler {
             return;
         }
 
+        // Damage never goes back to the player who is taking it: their own client ran that hit
+        // and would apply it a second time. Harmless while 0x78 discards negative deltas
+        // (LinkUpdater.method_3000 returns on `amount <= 0` in the shipped client), and the
+        // guard that has to be here the moment that gate is ever patched open.
+        const targetInclusion = delta < 0 ? false : includeTarget;
+
         const payload = CombatHandler.buildHpDeltaPayload(targetSession.clientEntID, delta);
-        CombatHandler.broadcastToCombatRoom(targetSession, CombatHandler.CLIENT_HEAL_PACKET_ID, payload, includeTarget, [targetSession.clientEntID]);
+        CombatHandler.broadcastToCombatRoom(targetSession, CombatHandler.CLIENT_HEAL_PACKET_ID, payload, targetInclusion, [targetSession.clientEntID]);
     }
 
     private static broadcastPlayerState(targetSession: Client, entState: number, roomScoped: boolean = false): void {
@@ -4805,19 +4811,39 @@ export class CombatHandler {
      *
      * The cost of that is cosmetic and worth stating: the floating combat number is computed
      * by the attacker's client and will show the unboosted hit. The health bar is server
-     * authoritative and will drop by the real amount.
+     * authoritative and drops by the real amount -- see handlePowerHit, which is where the
+     * attacker's own client is finally told about the difference.
      *
-     * Capped at the base hit, so it doubles a strike at most. Without a cap this scales with
-     * the target's health pool, which is exactly backwards for the bosses that have the
-     * largest pools -- a 1% bite out of a 500k boss would dwarf everything else a rogue does.
+     * Reads the target's health *at the moment of the hit*, so the bonus starts high on a full
+     * health bar and tapers as the target is worn down. That is a deliberate reversal of the
+     * earlier max-HP rule: the passive now front-loads a fight instead of paying a flat tax.
+     *
+     * Two consequences worth knowing rather than discovering:
+     *   - The passive cannot land a killing blow. As the target approaches zero the bonus
+     *     approaches zero with it, so the last sliver of a health bar takes exactly as long as
+     *     it did before. This is the opposite of an execute.
+     *   - Both sides must now agree on a *moving* number instead of a static one. The pre-hit
+     *     health is the reading -- see the client patch, which reconstructs it as
+     *     `currHP + param1` because Entity.TakeDamage decrements currHP before it draws the
+     *     floater.
+     *
+     * Uncapped, deliberately, and the cap has been removed twice now for the same reason.
+     * Every clamp expressed against the attacker's own hit -- the original Math.min(damage,
+     * ...), and the later quarter-of-the-hit ceiling -- takes the passive away in exactly the
+     * fight it exists for, and a clamp against the hit also makes the bonus crit-dependent
+     * whenever it binds, because the hit it clamps against is the crit-inflated number.
+     *
+     * So: bonus = 1% of the target's current HP, full stop. Identical on a crit and a
+     * non-crit, and a low-health target barely notices it.
      */
-    private static readonly SOULTHIEFT_MAX_HP_RATE = 0.01;
+    private static readonly SOULTHIEFT_CURRENT_HP_RATE = 0.01;
 
     private static getSoulthieftMaxHpBonus(
         sourceSession: Client | null,
         targetEntity: any,
         baseDamage: number,
-        levelScope: string
+        levelScope: string,
+        targetSession: Client | null = null
     ): number {
         if (
             !sourceSession?.character ||
@@ -4831,186 +4857,154 @@ export class CombatHandler {
             return 0;
         }
 
-        // Not entity.maxHp. A client-spawned hostile never reports its health pool -- the
-        // patched client sends damage deltas only -- so that field is empty on most of what
-        // a rogue actually swings at, and reading it directly made this passive do nothing
-        // at all outside the handful of server-authority levels. getNpcHealthState is the
-        // server's own resolver: explicit maxHp when it has one, the EntTypes-derived pool
-        // otherwise.
-        const maxHp = Math.max(0, Math.round(Number(
-            CombatHandler.getNpcHealthState(targetEntity, levelScope)?.maxHp ?? 0
+        const currentHp = CombatHandler.resolveSoulthieftTargetCurrentHp(targetEntity, levelScope, targetSession);
+        if (currentHp <= 0) {
+            return 0;
+        }
+
+        const bonus = Math.round(currentHp * CombatHandler.SOULTHIEFT_CURRENT_HP_RATE);
+        CombatHandler.logSoulthieftBonus(targetEntity, targetSession, levelScope, currentHp, damage, bonus);
+        return bonus;
+    }
+
+    /**
+     * The target's health as it stands before this hit lands, for either kind of target.
+     *
+     * Pre-hit is not a detail: this runs from handlePowerHit *before* updateNpcTargetAfterHit /
+     * updatePlayerTargetAfterHit apply the damage, so what these resolvers report is the health
+     * the target still had when the blow connected. The client patch reconstructs the same
+     * reading on its side.
+     *
+     * A player target is the PvP case and has to come from the session: a player's health is
+     * gear-derived and the server keeps its own authoritative copy, which the level entity may
+     * not carry. resolvePlayerCurrentHp is the same resolver updatePlayerTargetAfterHit uses to
+     * apply the hit, so the bonus and the health bar read the same bar.
+     *
+     * For a hostile, deliberately not entity.hp on its own. A client-spawned hostile never
+     * reports an absolute health value -- the patched client sends damage deltas only -- so
+     * that field is empty on most of what a rogue actually swings at, and reading it directly
+     * made this passive do nothing outside the handful of server-authority levels.
+     * getNpcHealthState is the server's own resolver: it reconciles an explicit hp, the
+     * reported delta against the pool, and the EntTypes-derived pool as the floor case, and it
+     * answers with the full pool for a hostile it has never seen take damage.
+     */
+    private static resolveSoulthieftTargetCurrentHp(
+        targetEntity: any,
+        levelScope: string,
+        targetSession: Client | null
+    ): number {
+        if (targetSession) {
+            const entity = targetSession.clientEntID > 0
+                ? targetSession.entities.get(targetSession.clientEntID)
+                : null;
+            const levelEntity = CombatHandler.resolveLevelEntity(
+                getClientLevelScope(targetSession),
+                targetSession.clientEntID
+            );
+            const maxHp = CombatHandler.resolvePlayerMaxHp(targetSession, entity ?? {}, levelEntity);
+            return Math.max(0, Math.round(
+                CombatHandler.resolvePlayerCurrentHp(targetSession, entity ?? {}, levelEntity, maxHp)
+            ) || 0);
+        }
+
+        return Math.max(0, Math.round(Number(
+            CombatHandler.getNpcHealthState(targetEntity, levelScope)?.currentHp ?? 0
         ) || 0));
-        if (maxHp <= 0) {
-            return 0;
-        }
-
-        return Math.min(damage, Math.round(maxHp * CombatHandler.SOULTHIEFT_MAX_HP_RATE));
     }
 
     /**
-     * Sentinel: the discipline's melee swing carries a slice of the wearer's own health pool,
-     * which is the stat a Sentinel actually stacks.
+     * Diagnostic for the one number this passive cannot be reasoned about without: which health
+     * pool the server actually resolved, and whether it is the client's or the server's own
+     * estimate.
      *
-     * The powers are the Paladin weapon melee attacks -- GearTypes gives every Paladin sword,
-     * mace and axe one of SwordMelee/MaceMelee/AxeMelee, PunchMelee is the unarmed one, and
-     * SFMelee/SFMeleeCombo are what the swing becomes inside Sentinel Form. Those powers are
-     * shared by the whole class, which is exactly why this is server-side: the server knows
-     * MasterClass, so the bonus really is Sentinel-only where a weapon-data change would have
-     * handed it to every Justicar and Templar as well.
+     * The client draws its floater from its *own* Entity.maxHP, and the server pays the bonus
+     * from this one. Nothing guarantees the two agree -- the client sizes its hostiles from
+     * Game.mBonusLevels while the server derives them from EntTypes and the level tier -- and
+     * when they disagree the passive reads as "the number shown is not the damage dealt".
+     * `source` is the tell: `client` means the target carried an explicit pool, `derived` means
+     * the server estimated it from EntTypes.
      *
-     * It used to ride ConcussionBolt, the discipline's *ranged* attack, with no Defense term
-     * at all (issue #670).
-     *
-     * The rates are picked against the client's own stat tables rather than guessed. The
-     * issue first asked for 0.01% of max HP and 0.1% of Defense; shipping those showed how
-     * small they are. A level-50 Paladin runs about 122k max HP and 1,680 Defense (GearType's
-     * per-level rune tables) against a basic swing of 5,264 -- BaseDamageMult 1.0 times
-     * Attack -- so the passive was worth 14 damage, a quarter of one percent. At the rates
-     * below it is 368 + 504, about 17% of a swing, and that share holds within half a point
-     * at every level from 10 to 50 because the gear tables and the HP table climb together.
-     *
-     * Defense is deliberately the larger term despite being much the smaller stat. A Sentinel
-     * who stacks Defense should out-damage one who stacks raw Health -- that is the point of
-     * the discipline -- and the 10:1 rate ratio the issue proposed inverts it, because max HP
-     * is some 65 times Defense in absolute terms.
-     *
-     * The ceiling to measure against is Holy Smash, which draws 3 x Defense from one 20-mana
-     * cast. This is a tenth of that, on an attack that costs nothing and swings every 435ms.
-     *
-     * The Defense half needed the client to start telling the server its Defense, which it
-     * never had: patch-dungeonblitz-combat-stats-armor appends armorClass to packet 0xFC.
-     * That is why the term reads off the session rather than off anything the hit carries,
-     * and why it is written to survive a zero -- a browser can serve a cached SWF older than
-     * the server, and such a client sends the packet without the field. When that happens the
-     * Health half still lands and the Defense half is simply absent, which is the failure
-     * mode worth having.
+     * Throttled per entity so a full dungeon does not flood the log.
      */
-    private static readonly SENTINEL_MAX_HP_RATE = 0.003;
-    private static readonly SENTINEL_ARMOR_RATE = 0.3;
-    private static readonly SENTINEL_MELEE_POWER_NAMES = [
-        'SwordMelee',
-        'MaceMelee',
-        'AxeMelee',
-        'PunchMelee',
-        'SFMelee',
-        'SFMeleeCombo'
-    ];
-    private static sentinelMeleePowerIds: Set<number> | null = null;
+    private static readonly soulthieftBonusLoggedAt = new Map<string, number>();
+    private static readonly SOULTHIEFT_LOG_THROTTLE_MS = 5000;
 
-    /**
-     * Resolved from the authored power data rather than hardcoded, because the ids are
-     * whatever PlayerPowerTypes says they are and a wrong constant here would silently
-     * attach the passive to some unrelated power.
-     */
-    private static getSentinelMeleePowerIds(): Set<number> {
-        if (CombatHandler.sentinelMeleePowerIds) {
-            return CombatHandler.sentinelMeleePowerIds;
+    private static logSoulthieftBonus(
+        targetEntity: any,
+        targetSession: Client | null,
+        levelScope: string,
+        currentHp: number,
+        damage: number,
+        bonus: number
+    ): void {
+        const entityId = Math.max(0, Math.round(Number(targetEntity?.id ?? 0)));
+        // A player target may arrive with no usable entity id, so key the throttle on the
+        // session instead -- otherwise every PvP target would share one bucket and only the
+        // first would ever be logged.
+        const key = targetSession
+            ? `${levelScope}:player:${targetSession.token}`
+            : `${levelScope}:${entityId}`;
+        const now = Date.now();
+        const lastAt = Math.max(0, Number(CombatHandler.soulthieftBonusLoggedAt.get(key) ?? 0));
+        if (now - lastAt < CombatHandler.SOULTHIEFT_LOG_THROTTLE_MS) {
+            return;
+        }
+        CombatHandler.soulthieftBonusLoggedAt.set(key, now);
+
+        if (targetSession) {
+            console.log('[Soulthief] passive bonus', {
+                scope: levelScope,
+                target: 'player',
+                name: String(targetSession.character?.name ?? ''),
+                resolvedCurrentHp: currentHp,
+                hit: damage,
+                bonus
+            });
+            return;
         }
 
-        const ids = new Set<number>();
-        CombatHandler.sentinelMeleePowerIds = ids;
-
-        const xmlDir = resolveClientXmlDir(['PlayerPowerTypes.xml']);
-        if (!xmlDir) {
-            console.warn('[CombatHandler] PlayerPowerTypes.xml not found; the Sentinel melee passive is inactive.');
-            return ids;
-        }
-
-        try {
-            const xml = fs.readFileSync(path.join(xmlDir, 'PlayerPowerTypes.xml'), 'utf8');
-            for (const block of xml.match(/<Power PowerName="[^"]*">[\s\S]*?<\/Power>/g) ?? []) {
-                const name = block.match(/<Power PowerName="([^"]*)">/)?.[1] ?? '';
-                if (!CombatHandler.SENTINEL_MELEE_POWER_NAMES.some((base) => name === base || new RegExp(`^${base}\\d+$`).test(name))) {
-                    continue;
-                }
-
-                const powerId = Math.round(Number(block.match(/<PowerID>([^<]*)<\/PowerID>/)?.[1] ?? 0));
-                if (Number.isFinite(powerId) && powerId > 0) {
-                    ids.add(powerId);
-                }
-            }
-            console.log(`[CombatHandler] Sentinel passive covers ${ids.size} melee attack rank(s).`);
-        } catch (err) {
-            console.warn('[CombatHandler] Could not read PlayerPowerTypes.xml; the Sentinel melee passive is inactive.', err);
-        }
-
-        return ids;
-    }
-
-    private static getSentinelMaxHpBonus(
-        sourceSession: Client | null,
-        powerId: number,
-        baseDamage: number
-    ): number {
-        if (
-            !sourceSession?.character ||
-            Number(sourceSession.character.MasterClass ?? 0) !== MasterClassID.Sentinel
-        ) {
-            return 0;
-        }
-
-        if (!CombatHandler.getSentinelMeleePowerIds().has(Math.round(Number(powerId) || 0))) {
-            return 0;
-        }
-
-        const damage = Math.max(0, Math.round(Number(baseDamage) || 0));
-        if (damage <= 0) {
-            return 0;
-        }
-
-        const maxHp = Math.max(0, Math.round(Number(sourceSession.authoritativeMaxHp ?? 0) || 0));
-        const armorClass = Math.max(0, Math.round(Number(sourceSession.authoritativeArmorClass ?? 0) || 0));
-        return Math.round(maxHp * CombatHandler.SENTINEL_MAX_HP_RATE)
-            + Math.round(armorClass * CombatHandler.SENTINEL_ARMOR_RATE);
+        const explicitMaxHp = Math.max(0, Math.round(Number(targetEntity?.maxHp ?? 0)));
+        console.log('[Soulthief] passive bonus', {
+            scope: levelScope,
+            target: 'hostile',
+            entityId,
+            name: String(targetEntity?.name ?? ''),
+            entityLevel: Number(targetEntity?.level ?? 0),
+            hitPoints: Number(targetEntity?.HitPoints ?? targetEntity?.hitPoints ?? NaN),
+            source: explicitMaxHp > 0 ? 'client' : 'derived',
+            explicitMaxHp,
+            derivedMaxHp: CombatHandler.estimateHostileMaxHp(targetEntity, levelScope),
+            resolvedCurrentHp: currentHp,
+            clientSpawned: Boolean(targetEntity?.clientSpawned),
+            hit: damage,
+            bonus
+        });
     }
 
     /**
-     * Justicar: a tenth of the discipline's Expertise is added to its Attack (issue #670).
-     * The Justicar had no passive at all before this.
+     * The two Paladin discipline passives -- the Sentinel's "0.1% of your maximum Health is
+     * converted into Attack" and the Justicar's "5% of your Expertise is converted into
+     * Attack" -- deliberately live in the CLIENT, not here.
      *
-     * Expressed as a share of the hit rather than as a stat, because a stat is not something
-     * the server owns -- the client computes Attack and Expertise and reports both in 0xFC as
-     * meleeDamage and magicDamage. A hit's damage is the power's BaseDamageMult times Attack,
-     * so scaling it by Expertise/Attack lands the same number that adding 10% of Expertise to
-     * Attack would have, for any power that scales off Attack -- which for a Paladin is all of
-     * them.
+     * They were server-side first: getSentinelMaxHpBonus and getJusticarExpertiseBonus added
+     * their share onto `damage` a few hundred lines below, right where the Soulthief passive
+     * still does. From inside the game they did nothing, and the reason is structural rather
+     * than a bug that could be fixed in place. The client computes the hit, draws the number,
+     * and on every level where it spawned the enemy it also owns that enemy's health and
+     * decides when it dies -- so a number added here afterwards was invisible, and on those
+     * levels had no effect at all. Two ways of delivering it after the fact were tried and
+     * both failed on their own terms: writing the bonus into class_91.method_175 moved the
+     * combat *log* line rather than the floater, and sending the difference as a negative
+     * PKTTYPE_CHAR_REGEN made the target take a second, separate hit that the client drew as
+     * its own damage number beside every swing.
      *
-     * Like Soulthieft, the floating combat number the attacker's own client draws will show
-     * the hit before the bonus; the health bar is server authoritative and drops by the real
-     * amount. Unlike a stat change it also does not show up in the Armory's Attack figure,
-     * which is why the passive is spelled out on AxeFlurry's tooltip instead.
+     * So the conversion is applied where Attack is read, in CombatState.method_1192, by
+     * scripts/patch-dungeonblitz-paladin-passive-attack.ts. The damage the client reports
+     * already carries it, this handler applies what it is told, and there is exactly one
+     * number on screen. The Soulthief passive is a different case and stays server-side: it
+     * scales off the *target's* health pool, which the attacker's client does not know.
      */
-    private static readonly JUSTICAR_EXPERTISE_TO_ATTACK_RATE = 0.1;
 
-    private static getJusticarExpertiseBonus(
-        sourceSession: Client | null,
-        sourceEntity: any,
-        baseDamage: number
-    ): number {
-        if (
-            !sourceSession?.character ||
-            Number(sourceSession.character.MasterClass ?? 0) !== MasterClassID.Justicar
-        ) {
-            return 0;
-        }
-
-        const damage = Math.max(0, Math.round(Number(baseDamage) || 0));
-        if (damage <= 0) {
-            return 0;
-        }
-
-        // Either copy of the player's entity will do -- CommandHandler writes the declared
-        // stats to both the session's own map and the level's -- but only one of them is
-        // guaranteed to be in hand at a given hit site.
-        const localSource = sourceSession.clientEntID > 0 ? sourceSession.entities.get(sourceSession.clientEntID) : null;
-        const attack = Math.max(Number(sourceEntity?.meleeDamage ?? 0), Number(localSource?.meleeDamage ?? 0));
-        const expertise = Math.max(Number(sourceEntity?.magicDamage ?? 0), Number(localSource?.magicDamage ?? 0));
-        if (!Number.isFinite(attack) || !Number.isFinite(expertise) || attack <= 0 || expertise <= 0) {
-            return 0;
-        }
-
-        return Math.round(damage * CombatHandler.JUSTICAR_EXPERTISE_TO_ATTACK_RATE * (expertise / attack));
-    }
 
     private static updatePlayerTargetAfterHit(targetSession: Client, damage: number, preventDeath: boolean = false): PlayerHitResolution {
         if (damage <= 0 || !targetSession.character || targetSession.clientEntID <= 0) {
@@ -5342,7 +5336,8 @@ export class CombatHandler {
         if (
             !options.fromDestroy &&
             !options.fromKillState &&
-            MissionHandler.shouldWaitForEnemyKillStateMissionProgress(client, entity)
+            MissionHandler.shouldWaitForEnemyKillStateMissionProgress(client, entity) &&
+            !MissionHandler.shouldAcceptServerResolvedEnemyKillMissionProgress(client, entity)
         ) {
             return;
         }
@@ -5672,11 +5667,43 @@ export class CombatHandler {
         const sourceSession = CombatHandler.resolveCombatSourceSession(levelScope, sourceId, client);
         const targetSession = CombatHandler.findPlayerSessionByEntityId(levelScope, targetId);
         const isPlayerSource = Boolean(sourceSession && !isHostileNpcSource);
+        let soulthieftBonus = 0;
         if (isPlayerSource && targetEntity && !targetEntity.isPlayer) {
             damage = AdminRuntimeSettings.scaleDamage(damage);
-            damage += CombatHandler.getSoulthieftMaxHpBonus(sourceSession, targetEntity, damage, levelScope);
-            damage += CombatHandler.getSentinelMaxHpBonus(sourceSession, info.powerId, damage);
-            damage += CombatHandler.getJusticarExpertiseBonus(sourceSession, sourceEntity, damage);
+            soulthieftBonus = CombatHandler.getSoulthieftMaxHpBonus(sourceSession, targetEntity, damage, levelScope);
+            damage += soulthieftBonus;
+        } else if (isPlayerSource && targetSession && targetSession !== sourceSession) {
+            // PvP. The hostile branch above is gated on a non-player target, so a player
+            // target used to skip every server-side damage rewrite -- the Soulthief passive
+            // included. Only the passive is extended here: the other two disciplines' bonuses
+            // and the admin damage scale were never specified for player targets, and turning
+            // them on silently would be a balance change nobody asked for.
+            //
+            // Self-hits are excluded: a power that damages its own caster must not pay the
+            // caster 1% of their own pool on top.
+            soulthieftBonus = CombatHandler.getSoulthieftMaxHpBonus(
+                sourceSession,
+                targetEntity,
+                damage,
+                levelScope,
+                targetSession
+            );
+            damage += soulthieftBonus;
+        }
+
+        // Metered here rather than at the packet, because this is the first point where the
+        // number is final: the client reported one figure and the rewrites above have just
+        // changed it. A meter fed from the packet would report what the player's screen used
+        // to say instead of what the target actually lost.
+        if (isPlayerSource) {
+            DamageMeter.note(
+                sourceSession,
+                targetSession
+                    ? `Oyuncu: ${targetSession.character?.name ?? '?'}`
+                    : String(targetEntity?.name ?? ''),
+                damage,
+                soulthieftBonus
+            );
         }
         if (
             (!targetEntity && !targetSession) ||
@@ -5848,12 +5875,27 @@ export class CombatHandler {
             ? data
             : CombatHandler.buildPowerHitPayload(info, displayRelayDamage);
         if (partySharedHostileHealthRelay?.entity) {
+            // The two deltas are not the same number, and treating them as one is what made
+            // every server-side damage rewrite invisible -- the Soulthief passive above, the
+            // Sentinel and Justicar passives, and AdminRuntimeSettings.scaleDamage.
+            //
+            // The relay payload carrying `displayRelayDamage` goes to the *other* viewers
+            // (broadcastToCombatRoom excludes the anchor), so for them the expected local
+            // delta really is the rewritten number. The anchor never receives it: its client
+            // ran the hit itself, before the server saw the packet, and applied exactly the
+            // damage the packet carried. Telling converge the anchor had applied the boosted
+            // amount made correctionDelta come out zero, so the attacker's own copy of the
+            // hostile -- the copy that draws the health bar and decides the kill on a
+            // client-spawn level -- kept the unboosted health for the rest of the fight.
+            //
+            // With the anchor's real local delta the leftover arrives as a negative 0x78,
+            // which is live damage since patch-dungeonblitz-charregen-damage-channel.ts.
             CombatHandler.convergePartySharedHostileHealthToParty(
                 sourceSession ?? client,
                 levelScope,
                 partySharedHostileHealthRelay.entity,
                 partySharedHostileHealthRelay.snapshots,
-                -displayRelayDamage,
+                -CombatHandler.clampRelayPowerHitDamage(packetDamage),
                 -displayRelayDamage
             );
         }
@@ -6402,6 +6444,21 @@ export class CombatHandler {
         CombatHandler.broadcastToSameLevel(getClientLevelScope(client), 0x82, bb.toBuffer(), [entId], client);
     }
 
+    private static shouldRejectLivingBossRegenReport(
+        levelScope: string,
+        targetEntity: any,
+        amount: number,
+        hasLivingPlayer: boolean
+    ): boolean {
+        return amount > 0 &&
+            hasLivingPlayer &&
+            DungeonCompletionConditions.isRequiredBoss(
+                getScopeLevelName(levelScope),
+                targetEntity,
+                levelScope
+            );
+    }
+
     private static recordClientHostileHpDelta(
         client: Client,
         levelScope: string,
@@ -6416,11 +6473,11 @@ export class CombatHandler {
 
         const levelEntity = CombatHandler.resolveLevelEntity(levelScope, entityId);
         const targetEntity = levelEntity ?? entity;
-        const rejectLivingBossRegen = Boolean(
-            amount > 0 &&
-            DungeonCompletionConditions.requiresBossDefeatSignal(getScopeLevelName(levelScope)) &&
-            DungeonCompletionConditions.isRequiredBoss(getScopeLevelName(levelScope), targetEntity, levelScope) &&
-            (
+        const rejectLivingBossRegen = CombatHandler.shouldRejectLivingBossRegenReport(
+            levelScope,
+            targetEntity,
+            amount,
+            Boolean(
                 CombatHandler.hasLivingPlayerInHostileRoom(levelScope, targetEntity) ||
                 !CombatHandler.isPlayerSessionDead(client)
             )
