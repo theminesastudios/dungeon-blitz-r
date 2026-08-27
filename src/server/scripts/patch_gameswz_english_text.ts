@@ -69,7 +69,7 @@ type ChunkSpec = {
 };
 
 const CHUNKS: ChunkSpec[] = [
-  { root: "BuildingTypes", block: "Building", keyAttr: "BuildingName" },
+  { root: "BuildingTypes", block: "Building", keyTag: "DisplayName" },
   { root: "ConsumableTypes", block: "ConsumableType", keyAttr: "ConsumableName" },
   { root: "DyeTypes", block: "DyeType", keyTag: "DyeName" },
   { root: "EggTypes", block: "EggType", keyAttr: "EggName" },
