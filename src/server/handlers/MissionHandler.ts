@@ -1580,6 +1580,10 @@ export class MissionHandler {
                 // cinematic still has to play. The mark is spent by
                 // `LevelHandler.sendRoomCutSceneEnd`.
                 HallowsEve.noteKeyEarned(client.character.name);
+                // The clock starts here, so the panel is told here. The square sends
+                // it again on arrival; this is what makes a player who walks straight
+                // back through the arch see the right thing.
+                HallowsEve.sendCooldownTimer(client);
                 console.log(
                     `[HallowsEve] ${String(client.character.name ?? '')} earned a coffer key ` +
                     `(${HallowsEve.getKeys(client.character)} held)`

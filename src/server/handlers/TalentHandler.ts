@@ -331,6 +331,9 @@ export class TalentHandler {
              * way through.
              */
             HallowsEve.grantEntry(client.character.name);
+            // The twelve hours were just bought out; the panel has to stop counting
+            // them before the player is back in front of it.
+            HallowsEve.sendCooldownTimer(client);
             const fromLevel =
                 LevelConfig.normalizeLevelName(client.currentLevel) || String(client.currentLevel ?? '');
             LevelHandler.grantDoorTransfer(client, fromLevel, HALLOWS_EVE_DOOR_ID, HALLOWS_EVE_LEVEL);
@@ -530,10 +533,24 @@ export class TalentHandler {
         client.sendBitBuffer(0xB5, packet);
     }
 
-    private static sendTalentResearchComplete(client: Client, classIndex: number): void {
+    /**
+     * 0xD5, which now carries a deadline rather than a finished research.
+     *
+     * The client's reader was `SetCurrentResearch(index, 0)` followed by a talent
+     * point and a notification; it is now `SetCurrentResearch(index, packet.method_4())`
+     * and nothing else, because that is the one channel that can put the Green
+     * Knight's twelve hours on his panel - see `HallowsEve.sendCooldownTimer` and
+     * `scripts/patch-dungeonblitz-hallows-eve-cooldown-timer.ts`.
+     *
+     * So the second field is a time now, not a flag. `(0, 0)` is the idle state, which
+     * is what a finished research is: the point itself is granted and saved server-side
+     * either way, and the screen that used to draw it is the seasonal panel now, so
+     * there is nothing left for this packet to announce.
+     */
+    private static sendTalentResearchComplete(client: Client, _classIndex: number): void {
         const packet = new BitBuffer();
-        packet.writeMethod6(classIndex, 2);
-        packet.writeMethod6(1, 1);
+        packet.writeMethod6(0, 2);
+        packet.writeMethod4(0);
         client.sendBitBuffer(0xD5, packet);
     }
 

@@ -466,6 +466,52 @@ const PORTAL_ART_OFFSET = { centreX: 128.4, top: -27.7, bottom: 357.0 };
 const PORTAL_SCALE = 0.7;
 
 /**
+ * How far right of the door point the rift is drawn.
+ *
+ * The rift used to be centred on the door point itself, and on screen that reads as
+ * off to the left: the name plate is *not* centred on that point. `a_DoorMarker`'s
+ * artwork runs 0..440.7 from its own origin and is placed at `door.x - 157`, so the
+ * plate the player actually sees is centred on `door.x + 63.4`. Sat 63px to its
+ * left, the rift also burned over the big skull carved into the ruin behind it.
+ *
+ * Centring the rift on the plate's drawn centre puts it back under its own sign and
+ * off the skull's left half. The door's own rectangle (200px wide around the door
+ * point) still covers the rift, so nothing about walking into it changes.
+ */
+const PORTAL_NUDGE_X = 63.4;
+
+/**
+ * Where the rift, its door and its name plate stand, in room-local pixels.
+ *
+ * Shared so that `patch-levelssrn-hallows-eve-portal-align.ts` can re-seat the rift
+ * of an already-patched file on exactly the point a rebuild would give it.
+ */
+export function portalLayout(): {
+  portal: { x: number; y: number };
+  door: { x: number; y: number };
+  plate: { x: number; y: number };
+} {
+  // Centred on the tower and standing on its stone pad, so the rift burns in the
+  // arch rather than out on the grass beside it. The door marker itself stays down
+  // on the walkable floor line, which is where the player has to be to use it.
+  const portalCentreX = sceneToLocalX(TOWER_IN_SCENE.centreX);
+  const portalBaseY = sceneToLocalY(TOWER_IN_SCENE.groundY);
+  const portal = {
+    x: portalCentreX + PORTAL_NUDGE_X - PORTAL_ART_OFFSET.centreX * PORTAL_SCALE,
+    y: portalBaseY - PORTAL_ART_OFFSET.bottom * PORTAL_SCALE,
+  };
+  const door = { x: portalCentreX, y: DECOR_FLOOR_Y };
+  // The plate hangs a fixed clearance above the top of the drawn rift, so moving
+  // or resizing the rift moves the plate with it.
+  const riftTop = portal.y + PORTAL_ART_OFFSET.top * PORTAL_SCALE;
+  const plate = {
+    x: door.x - PLATE_RENDER_OFFSET.x,
+    y: riftTop - PLATE_GAP_ABOVE_ART - PLATE_HALF_HEIGHT - PLATE_RENDER_OFFSET.y,
+  };
+  return { portal, door, plate };
+}
+
+/**
  * Where the carved face sits on the pumpkin.
  *
  * **Read off the artwork, not guessed.** `Animation_Pets.swf` composes the pet
@@ -852,12 +898,13 @@ const DECOR_ANIMATED: DecorEntry[] = [
    * smear. Over the rift it reads as what it is - the arch giving off light - so
    * that is the only place they are allowed.
    *
-   * The rift is drawn around room-local 304 (see `placePortal`), so these three
-   * sit inside its glow rather than beside it.
+   * The rift is drawn around room-local 304 + `PORTAL_NUDGE_X` (see `portalLayout`),
+   * so these three sit inside its glow rather than beside it - and they carry the
+   * nudge with it, so the motes never come adrift of the rift they belong to.
    */
-  { prop: "wisp", x: 240, y: -300, scale: 1.1 },
-  { prop: "wisp", x: 320, y: -430, scale: 0.85 },
-  { prop: "wisp", x: 370, y: -230, scale: 1.0 },
+  { prop: "wisp", x: 240 + PORTAL_NUDGE_X, y: -300, scale: 1.1 },
+  { prop: "wisp", x: 320 + PORTAL_NUDGE_X, y: -430, scale: 0.85 },
+  { prop: "wisp", x: 370 + PORTAL_NUDGE_X, y: -230, scale: 1.0 },
 ];
 
 /**
@@ -1111,23 +1158,7 @@ function placePortal(srn: SwfFile, props: Map<PropName, number>, verify: boolean
   const markerBinding = symbols.find((entry) => entry.name === MARKER_CLASS);
   if (!markerBinding) throw new SwfLevelError(`LevelsSRN.swf has no ${MARKER_CLASS} symbol`);
 
-  // Centred on the tower and standing on its stone pad, so the rift burns in the
-  // arch rather than out on the grass beside it. The door marker itself stays down
-  // on the walkable floor line, which is where the player has to be to use it.
-  const portalCentreX = sceneToLocalX(TOWER_IN_SCENE.centreX);
-  const portalBaseY = sceneToLocalY(TOWER_IN_SCENE.groundY);
-  const portalLocal = {
-    x: portalCentreX - PORTAL_ART_OFFSET.centreX * PORTAL_SCALE,
-    y: portalBaseY - PORTAL_ART_OFFSET.bottom * PORTAL_SCALE,
-  };
-  const doorLocal = { x: portalCentreX, y: DECOR_FLOOR_Y };
-  // The plate hangs a fixed clearance above the top of the drawn rift, so moving
-  // or resizing the rift moves the plate with it.
-  const riftTop = portalLocal.y + PORTAL_ART_OFFSET.top * PORTAL_SCALE;
-  const plateLocal = {
-    x: doorLocal.x - PLATE_RENDER_OFFSET.x,
-    y: riftTop - PLATE_GAP_ABOVE_ART - PLATE_HALF_HEIGHT - PLATE_RENDER_OFFSET.y,
-  };
+  const { portal: portalLocal, door: doorLocal, plate: plateLocal } = portalLayout();
 
   if (verify) {
     console.log(

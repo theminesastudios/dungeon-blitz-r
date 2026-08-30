@@ -313,6 +313,29 @@ const FIRST_ENTRY_FIELD = 'hallowsEveFirstEntryAt';
 export const HALLOWS_EVE_KEY_COOLDOWN_SECONDS = 12 * 60 * 60;
 
 /**
+ * The packet the deadline travels on: the Class Tower's research state.
+ *
+ * It is the only channel in this client that can set `mMasterClassTower.mEndtime`
+ * outside the login packet, and the Class Tower is gone from this build - its screen
+ * class draws the Hallow's Eve panel now - so nothing else is listening. See
+ * `sendCooldownTimer` and `patch-dungeonblitz-hallows-eve-cooldown-timer.ts`.
+ */
+const TIMER_PACKET_ID = 0xd5;
+
+/** `class_66.const_76`: which of the three towers a master class belongs to. */
+const TOWER_INDEX_BY_MASTER_CLASS: Record<string, number> = {
+    frostwarden: 1,
+    sentinel: 1,
+    executioner: 1,
+    flameseer: 2,
+    justicar: 2,
+    shadowwalker: 2,
+    necromancer: 3,
+    templar: 3,
+    soulthief: 3
+};
+
+/**
  * What the Watcher says when he stops someone at the portal.
  *
  * Delivered once, on the first reach for the door, and the door is refused while he
@@ -932,6 +955,11 @@ export class HallowsEve {
      */
     static onSpawn(client: PromptTarget): void {
         const level = LevelConfig.normalizeLevelName(client.currentLevel) || String(client.currentLevel ?? '');
+        // Before the arrival gate: the panel's clock has to be right on *every* way
+        // into the square, not only on the trip that comes back through the arch.
+        if (HALLOWS_EVE_TOWNS.includes(level)) {
+            HallowsEve.sendCooldownTimer(client);
+        }
         if (!HallowsEve.noteSpawn(client.character?.name, level)) {
             return;
         }
@@ -1125,6 +1153,65 @@ export class HallowsEve {
         bb.writeMethod4(HALLOWS_EVE_CHALLENGE_ENTITY_ID);
         bb.writeMethod13(text);
         client.sendBitBuffer(0x76, bb);
+    }
+
+    /**
+     * Puts the twelve hours on the panel's own clock.
+     *
+     * `a_ScreenHalloweenDungeonPrompt` was authored with two states, and `class_69` -
+     * the class this server binds the panel to - already switches between them and
+     * already draws a live countdown, every frame:
+     *
+     *     if (mMasterClassTower.mStatus == const_200) {                 // sleeping
+     *        MathUtil.method_8(am_ResearchProgressPanel.am_Progress.am_Time,
+     *                          Game.method_70(mEndtime - mServerGameTime), ...);
+     *     }
+     *
+     * The only thing missing was a way to say *when*. `mEndtime` is written by the
+     * login packet - sent once, at login - and by the reader for **0xD5**, which
+     * hardcoded a zero. `patch-dungeonblitz-hallows-eve-cooldown-timer.ts` makes that
+     * reader take the deadline off the packet instead, so this is the whole server
+     * end of the countdown: one packet, two numbers.
+     *
+     * `SetCurrentResearch` decides the state from the pair, so the two cases fall out
+     * of the numbers themselves:
+     *
+     *   - **(index, deadline)** - the Knight sleeps until `deadline`; the panel shows
+     *     *"The Green Knight returns in: 07:41:12"* and the twenty-idol price tag.
+     *   - **(0, 0)** - he is up; the panel shows *"The Green Knight has returned!"*.
+     *
+     * The index has to be non-zero for the sleeping state and is otherwise only used
+     * for a progress bar that is an empty dummy on this panel, so it is the
+     * character's own tower index purely so that the number means something.
+     *
+     * Sent on arrival in the square and again whenever the clock is cleared. The
+     * client keeps it until the next 0xD5, which is why nothing has to be re-sent
+     * while the player stands there - and why a clock that runs out under an open
+     * panel simply reaches zero, with the button still doing the right thing.
+     */
+    static sendCooldownTimer(client: PromptTarget): void {
+        const character = client.character;
+        if (!character) {
+            return;
+        }
+        const remaining = HallowsEve.secondsUntilNextKey(character);
+        const deadline = remaining > 0 ? Math.floor(Date.now() / 1000) + remaining : 0;
+        const bb = new BitBuffer();
+        bb.writeMethod6(deadline > 0 ? HallowsEve.towerIndex(character) : 0, 2);
+        bb.writeMethod4(deadline);
+        client.sendBitBuffer(TIMER_PACKET_ID, bb);
+    }
+
+    /**
+     * The character's Class Tower index, 1..3.
+     *
+     * `class_66.const_76` is the client's own table and this is the same one. Only its
+     * being non-zero matters to the panel; the mapping is kept honest so that the
+     * number in a packet log is not a lie.
+     */
+    private static towerIndex(character: any): number {
+        const masterClass = String(character?.mMasterClass ?? character?.class ?? '').trim().toLowerCase();
+        return TOWER_INDEX_BY_MASTER_CLASS[masterClass] ?? 1;
     }
 
     static secondsUntilNextKey(character: any, nowSeconds = Math.floor(Date.now() / 1000)): number {
