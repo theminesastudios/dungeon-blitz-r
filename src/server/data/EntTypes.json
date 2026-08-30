@@ -37441,14 +37441,17 @@
       {
         "EntName": "HalloweenPortal",
         "parent": "Base",
+        "DisplayName": "The Green Knight's Challenge",
+        "DevStatus": "HallowsEve",
         "Level": "0",
         "ArmorClass": "1",
         "HitPoints": "0",
         "Realm": "Villager",
-        "Speed": "5",
-        "Width": "175",
-        "Height": "200",
-        "Behavior": "NPC"
+        "Speed": "0",
+        "Width": "220",
+        "Height": "260",
+        "Behavior": "NPC",
+        "Flying": "True"
       },
       {
         "EntName": "NPCHalloweenWatcher",
@@ -37497,9 +37500,10 @@
         "RewardClass": "NoLoot",
         "Realm": "Villager",
         "Speed": "0",
-        "Width": "300",
-        "Height": "160",
-        "Behavior": "NPC"
+        "Width": "280",
+        "Height": "200",
+        "Behavior": "NPC",
+        "Flying": "True"
       },
       {
         "EntName": "HalloweenStatues",
@@ -37776,6 +37780,20 @@
         "HitPoints": "14",
         "MeleePower": "HumanMeleeLR",
         "Powers": "HumanMaceStrike,HumanPoisonStrike,HumanQuickStrike,HumanHawkStrike,HumanStealth,HumanSpinStrike,HumanRapierStrike"
+      },
+      {
+        "EntName": "NPCHalloweenHerald",
+        "parent": "Base",
+        "DisplayName": "Herald",
+        "DevStatus": "HallowsEve",
+        "Level": "0",
+        "ArmorClass": "1",
+        "HitPoints": "0",
+        "Realm": "Villager",
+        "Speed": "5",
+        "Width": "90",
+        "Height": "150",
+        "Behavior": "NPC"
       }
     ]
   }

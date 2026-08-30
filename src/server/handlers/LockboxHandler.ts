@@ -8,8 +8,44 @@ import { ensureSigilStoreAlertState } from '../utils/AlertState';
 import { upsertInventoryGear } from '../utils/GearInventory';
 import { PetHandler } from './PetHandler';
 import { RewardHandler } from './RewardHandler';
+import { HallowsEve, HALLOWS_EVE_COFFER_LOCKBOX_ID, HallowsEvePrize } from '../core/HallowsEve';
 
 const db = new JsonAdapter();
+
+/** `class_15.const_300`: the width `class_131.OpenLockbox` writes the id at. */
+const LOCKBOX_ID_BITS = 2;
+
+/** `PetName` by `PetID`, for the jack-o'-lanterns and the gargoyles. */
+const HALLOWS_EVE_PET_NAMES: Record<number, string> = {
+    57: 'PumpkinRed',
+    58: 'PumpkinYellow',
+    59: 'PumpkinBlue',
+    60: 'PumpkinGreen',
+    61: 'GargoyleRed',
+    62: 'GargoyleYellow',
+    63: 'GargoyleBlue',
+    64: 'GargoyleGreen'
+};
+
+const HALLOWS_EVE_PET_DISPLAY_NAMES: Record<number, string> = {
+    57: 'Bewildered Jack-O',
+    58: 'Menacing Jack-O',
+    59: 'Cyclops Jack-O',
+    60: 'Jubilant Jack-O',
+    61: 'Red-Eyed Gargoyle',
+    62: 'Yellow-Eyed Gargoyle',
+    63: 'Blue-Eyed Gargoyle',
+    64: 'Green-Eyed Gargoyle'
+};
+
+/**
+ * Which slot of the trove pool each seasonal prize borrows for its reveal icon.
+ *
+ * The reveal packet carries a six-bit index and the panel draws whatever that
+ * index means to it, so a coffer prize has to point at a slot that draws the same
+ * sort of thing: 1 is the pool's pet, 8 its class gear, 18 its gold.
+ */
+const HALLOWS_EVE_REVEAL_SLOT = { pet: 1, gear: 8, gold: 18 } as const;
 
 type LockboxRewardType = 'mount' | 'pet' | 'egg' | 'consumable' | 'gear' | 'charm' | 'gold' | 'dye';
 
@@ -206,8 +242,30 @@ export class LockboxHandler {
         await LockboxHandler.saveCharacter(client);
     }
 
-    static async handleLockboxReward(client: Client, _data: Buffer): Promise<void> {
+    static async handleLockboxReward(client: Client, data: Buffer): Promise<void> {
         if (!client.character) {
+            return;
+        }
+
+        /**
+         * Which box was opened.
+         *
+         * `class_131.OpenLockbox` writes the id as `class_15.const_300` bits -
+         * two of them, so the whole id space is 0..3 - and this handler used to
+         * throw the payload away and assume the Treasure Trove. It cannot any
+         * more: the Hallow's Eve coffer is a lockbox of its own now, and it pays
+         * a different prize out of a different stack.
+         */
+        let openedId = LockboxHandler.TROVE_LOCKBOX_ID;
+        try {
+            openedId = new BitReader(data).readMethod6(LOCKBOX_ID_BITS);
+        } catch {
+            // A short or malformed payload is not worth refusing the open over;
+            // the trove is what every client before this one meant.
+        }
+
+        if (openedId === HALLOWS_EVE_COFFER_LOCKBOX_ID) {
+            await LockboxHandler.openHallowsEveCoffer(client);
             return;
         }
 
@@ -255,6 +313,114 @@ export class LockboxHandler {
 
         await LockboxHandler.applyReward(client, reward);
         await LockboxHandler.saveCharacter(client);
+    }
+
+    /**
+     * Opens a Hallow's Eve coffer on the client's own lockbox screen.
+     *
+     * This is the whole point of making the coffer a lockbox: the panel, the Open
+     * button, the sparkle fountain and the reward reveal are all the client's and
+     * all already work. The server only has to say what came out.
+     *
+     * What comes out is `HallowsEve.nextPrize`, not the trove's weighted pool -
+     * the event hands out the hat, then the four jack-o'-lanterns, then the four
+     * gargoyles, in order, so a player who keeps coming back finishes the set
+     * instead of collecting four of one. `applyReward` and `sendLockboxReveal`
+     * are shared with the trove, so the grant and the reveal behave identically.
+     *
+     * The client has already decremented its own copies of the stack and the key
+     * by the time this runs (`class_131.OpenLockbox` does it locally before it
+     * sends), so both are spent here to match rather than checked and refused -
+     * except for the stack itself, which is the one thing worth guarding: without
+     * it a replayed packet would mint prizes.
+     */
+    private static async openHallowsEveCoffer(client: Client): Promise<void> {
+        const character = client.character;
+        if (!character) {
+            return;
+        }
+
+        const coffers = LockboxHandler.getLockboxCount(character, HALLOWS_EVE_COFFER_LOCKBOX_ID);
+        const keys = Number(character.DragonKeys ?? 0);
+        if (coffers <= 0 || keys <= 0) {
+            return;
+        }
+
+        // One call, not three: `spendKey` moves the event's own count, the coffer
+        // stack and the Dragon Key together, so opening here and opening at the
+        // Herald cost exactly the same thing.
+        if (!HallowsEve.spendKey(character)) {
+            return;
+        }
+
+        const prize = HallowsEve.nextPrize(character);
+        const reward = LockboxHandler.buildHallowsEveReward(prize);
+        LockboxHandler.sendLockboxReveal(client, reward);
+
+        console.log(
+            `[LockboxHandler] Hallow's Eve coffer opened by ${String(character.name ?? 'Unknown')}: ` +
+            `type=${reward.type} name="${reward.grantName}" gearId=${Number(reward.gearId ?? 0)} ` +
+            `gold=${Number(reward.goldAmount ?? 0)} ` +
+            `remainingCoffers=${LockboxHandler.getLockboxCount(character, HALLOWS_EVE_COFFER_LOCKBOX_ID)} ` +
+            `remainingKeys=${Number(character.DragonKeys ?? 0)}`
+        );
+
+        await LockboxHandler.applyReward(client, reward);
+        await LockboxHandler.saveCharacter(client);
+    }
+
+    /**
+     * Dresses one Hallow's Eve prize as a lockbox reward.
+     *
+     * `index` is what the reveal panel picks its icon from, so each kind borrows
+     * the slot in the trove pool that draws the same sort of thing: the pet slot
+     * for a pet, the class-gear slot for the helm, the gold slot for the
+     * consolation. `selectionDebug` is only ever read by the trove's own log line
+     * and is filled with zeroes rather than made optional, so the shared reward
+     * shape stays one type.
+     */
+    private static buildHallowsEveReward(prize: HallowsEvePrize): ResolvedLockboxReward {
+        const selectionDebug = {
+            topLevelRoll: 0,
+            topLevelChancePercent: 0,
+            topLevelBandStartPercent: 0,
+            topLevelBandEndPercent: 0
+        };
+
+        if (prize.kind === 'gear') {
+            return {
+                index: HALLOWS_EVE_REVEAL_SLOT.gear,
+                type: 'gear',
+                grantName: prize.label,
+                packetName: prize.label,
+                rarity: 'Legendary',
+                gearId: prize.gearId,
+                selectionDebug
+            };
+        }
+
+        if (prize.kind === 'pet') {
+            const petName = HALLOWS_EVE_PET_NAMES[prize.petTypeId] ?? '';
+            const displayName = HALLOWS_EVE_PET_DISPLAY_NAMES[prize.petTypeId] ?? prize.label;
+            return {
+                index: HALLOWS_EVE_REVEAL_SLOT.pet,
+                type: 'pet',
+                grantName: petName,
+                packetName: displayName,
+                rarity: 'Legendary',
+                selectionDebug
+            };
+        }
+
+        return {
+            index: HALLOWS_EVE_REVEAL_SLOT.gold,
+            type: 'gold',
+            grantName: `${prize.gold.toLocaleString('en-US')} Gold`,
+            packetName: `${prize.gold.toLocaleString('en-US')} Gold`,
+            rarity: 'Rare',
+            goldAmount: prize.gold,
+            selectionDebug
+        };
     }
 
     private static normalizeLockboxes(character: any): Array<{ lockboxID: number; count: number }> {

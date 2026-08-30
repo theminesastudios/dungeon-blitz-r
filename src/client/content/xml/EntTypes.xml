@@ -57794,22 +57794,6 @@
 			<ColorSwap6>0x666666=0x909027</ColorSwap6>
 		</GfxType>
 	</EntType>
-	<EntType EntName="HalloweenPortal" parent="Base">
-		<Level>0</Level>
-		<ArmorClass>1</ArmorClass>
-		<HitPoints>0</HitPoints>
-		<Realm>Villager</Realm>
-		<Speed>5</Speed>
-		<Width>175</Width>
-		<Height>200</Height>
-		<Behavior>NPC</Behavior>
-		<EquippedGear/>
-		<GfxType>
-			<AnimClass>a__EmptyAnimation</AnimClass>
-			<AnimFile>Animation_Environmentals.swf</AnimFile>
-			<Shadow>None</Shadow>
-		</GfxType>
-	</EntType>
 	<EntType EntName="MushroomSpawner" parent="Base">
 		<DisplayName>Mushroom Spawner</DisplayName>
 		<DevStatus>Forgelands</DevStatus>
@@ -58085,9 +58069,10 @@
 		<RewardClass>NoLoot</RewardClass>
 		<Realm>Villager</Realm>
 		<Speed>0</Speed>
-		<Width>300</Width>
-		<Height>160</Height>
+		<Width>280</Width>
+		<Height>200</Height>
 		<Behavior>NPC</Behavior>
+		<Flying>True</Flying>
 		<EquippedGear/>
 		<GfxType>
 			<AnimClass>a__EmptyAnimation</AnimClass>
@@ -58111,6 +58096,46 @@
 			<FlipAnim>TRUE</FlipAnim>
 			<BaseAnim>ReadyRobes2</BaseAnim>
 			<AnimScale>.8</AnimScale>
+			<CustomArt>Animation_NPC.swf/Hood01</CustomArt>
+		</GfxType>
+	</EntType>
+	<EntType EntName="HalloweenPortal" parent="Base">
+		<DisplayName>The Green Knight's Challenge</DisplayName>
+		<DevStatus>HallowsEve</DevStatus>
+		<Level>0</Level>
+		<ArmorClass>1</ArmorClass>
+		<HitPoints>0</HitPoints>
+		<Realm>Villager</Realm>
+		<Speed>0</Speed>
+		<Width>220</Width>
+		<Height>260</Height>
+		<Behavior>NPC</Behavior>
+		<Flying>True</Flying>
+		<EquippedGear/>
+		<GfxType>
+			<AnimClass>a__EmptyAnimation</AnimClass>
+			<AnimFile>Animation_Environmentals.swf</AnimFile>
+			<Shadow>None</Shadow>
+		</GfxType>
+	</EntType>
+	<EntType EntName="NPCHalloweenHerald" parent="Base">
+		<DisplayName>Herald</DisplayName>
+		<DevStatus>HallowsEve</DevStatus>
+		<Level>0</Level>
+		<ArmorClass>1</ArmorClass>
+		<HitPoints>0</HitPoints>
+		<Realm>Villager</Realm>
+		<Speed>5</Speed>
+		<Width>90</Width>
+		<Height>150</Height>
+		<Behavior>NPC</Behavior>
+		<EquippedGear/>
+		<GfxType>
+			<AnimFile>Animation_NPC.swf</AnimFile>
+			<FlipAnim>TRUE</FlipAnim>
+			<Shadow>SFX_1.swf/a_ShadowNPC</Shadow>
+			<BaseAnim>ReadyRobes2</BaseAnim>
+			<AnimScale>.95</AnimScale>
 			<CustomArt>Animation_NPC.swf/Hood01</CustomArt>
 		</GfxType>
 	</EntType>

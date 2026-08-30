@@ -75,6 +75,7 @@ import {
   buildPlaceObject2,
   buildSolidRectShape,
   buildSprite,
+  buildStrokedPolylineShape,
   ensureBackup,
   encodeTag,
   importCharacters,
@@ -254,6 +255,18 @@ const PROPS = {
   backdropSky: { swf: SEASONAL_SWF, charId: 28 },
   backdropGround: { swf: SEASONAL_SWF, charId: 26 },
 
+  /**
+   * The scene's own besom flame, imported only so it can be taken back out.
+   *
+   * Character 59 is an eight-frame orange flame that the scene recolours green on
+   * its placement. Inside `a_ScreenHalloweenOverview` something drives it; dropped
+   * into a level as part of an unbound composite, nothing does - see the note
+   * above `DECOR_ANIMATED` - so it stops on frame 1, which is a half-risen tongue
+   * standing beside the twigs instead of burning out of them. `stripBesom` drops
+   * its placement and `DECOR_ANIMATED` puts a real, driven flame in its place.
+   */
+  besomFlame: { swf: SEASONAL_SWF, charId: 59 },
+
   pumpkin: { swf: PETS_SWF, className: "a_PumpkinHead" },
   pumpkinFace: { swf: PETS_SWF, className: "a_PumpkinFace" },
 
@@ -335,6 +348,7 @@ const PROP_ANCHORS: Record<PropName, { anchor: PropAnchor; width: number; height
   // Imported and immediately stripped out; never placed, so the anchor is unused.
   backdropSky: { anchor: "hang", width: 0, height: 0 },
   backdropGround: { anchor: "hang", width: 0, height: 0 },
+  besomFlame: { anchor: "hang", width: 0, height: 0 },
   pumpkin: { anchor: "base", width: 102.2, height: 102.5 },
   pumpkinFace: { anchor: "base", width: 72.0, height: 63.7 },
   web: { anchor: "hang", width: 108.0, height: 214.0 },
@@ -365,7 +379,28 @@ const PROP_ANCHORS: Record<PropName, { anchor: PropAnchor; width: number; height
  * scaling the scene up grows it leftwards, into the empty half of the square,
  * instead of pushing the ruins away from the house.
  */
-const RUINS_SCALE = 1.9;
+/**
+ * 2.15, not 1.9, and **the second ruin is not enlarged separately.**
+ *
+ * It was, for two rounds, and both produced the same class of bug. Growing one
+ * ruin means showing a second, larger, masked copy of character 39 over the copy
+ * the scene already draws - because both ruins, the hill and every fence in the
+ * square are one DefineShape and a DefineShape cannot be split. That copy has to
+ * cover the original *exactly*: a pixel short on the left and the original's own
+ * iron fence stands out beyond it with no wall underneath, which is the fragment
+ * that kept appearing in the gap between the ruins. Cover it fully instead and
+ * the copy runs back into the tower. There is no setting that does both, because
+ * the copy grows about its own centre while the original does not move.
+ *
+ * Scaling the whole scene has none of that: one drawing, no seam, nothing to
+ * line up. The ruin gets bigger, the tower and the hill grow with it, and the
+ * ledges follow because they are written in scene coordinates.
+ *
+ * The scene is anchored by its right edge (`RUINS_RIGHT_EDGE`), so scaling up
+ * grows it leftwards into the empty half of the square: at 2.15 it runs from
+ * room-local -172 to 1020, which is inside the room's own artwork.
+ */
+const RUINS_SCALE = 2.15;
 
 /** Its bounds relative to its origin, from character 60. */
 const RUINS_ART_OFFSET = { left: -44.65, bottom: 265.05 };
@@ -433,11 +468,17 @@ const PORTAL_SCALE = 0.7;
 /**
  * Where the carved face sits on the pumpkin.
  *
- * The body runs y -102.5..0 and the face -63.7..0, both from a base origin, so an
- * offset of -22 lands the face across the pumpkin's upper middle - which is where
- * a lantern is carved - rather than centred on it.
+ * **Read off the artwork, not guessed.** `Animation_Pets.swf` composes the pet
+ * pumpkin itself: `a__AnimationPetPumpkin` places `a_PumpkinHead` at (0, 0) and
+ * `a_PumpkinFace` at **(12.9, -7.1)** on top of it. Both are drawn upward from a
+ * base origin and centred horizontally, so those two numbers are the whole
+ * relationship.
+ *
+ * The first pass used (0, -22), which pushed the face up and left of the gourd it
+ * is carved into - the eyes and mouth spilled over the silhouette, which is the
+ * overflow the square showed.
  */
-const PUMPKIN_FACE_OFFSET_Y = -22;
+const PUMPKIN_FACE_OFFSET = { x: 12.9, y: -7.1 };
 
 /** The floor, in room-local pixels. See `FLOOR_WORLD_Y`. */
 const DECOR_FLOOR_Y = FLOOR_WORLD_Y - HOST_ROOM_ORIGIN.y;
@@ -497,6 +538,233 @@ const RUINS_MASK = {
 const LOWER_WALL_TOP = { x: sceneToLocalX(420), y: sceneToLocalY(RUIN_LEDGE_SCENE_Y) };
 
 /**
+ * The besom by the mushroom house, and the flame that belongs on top of it.
+ *
+ * The broom is character 50 of the seasonal file, drawn *up* from its origin
+ * (y -351.9 .. -21.3), and its bristles are the top 100 units of that - a torch
+ * rather than a sweeping broom, which is what the scene's own copy is: bound
+ * twigs with green fire coming out of them.
+ *
+ * The fire was the thing that looked wrong. It was placed at a fixed room-local
+ * y while the broom was placed at a fixed scale, so the two only lined up by
+ * coincidence, and at 0.7 the broom was small enough that its flame cleared the
+ * bristles entirely and burned in the air beside them.
+ *
+ * Both numbers here are read off the broom's own artwork instead:
+ *
+ *   - `flameBaseY` seats the flame's base 60 units down into the bristles, so it
+ *     comes out of the twigs rather than hovering over them. `greenFlame` is
+ *     anchored `ground`, i.e. drawn upward from the point it is given.
+ *   - `flameX` is the broom's own horizontal centre (bounds -34.0..36.7), not
+ *     its origin.
+ *
+ * Scale is shared, so the flame is always sized to the broom it is standing on.
+ * 1.15 is a little over half a player height of bristle on a 175px character,
+ * which is how the scene's own besom reads against the ruins beside it.
+ */
+/**
+ * The bristle bundle of character 50, measured off a 1:1 export.
+ *
+ * The broom is drawn up from its origin over y -351.9..-21.3, and the bundle is
+ * the **top 100 units** of that - everything below is handle. Both numbers a
+ * flame needs come from the bundle, not from the character's box:
+ *
+ *   - `BUNDLE_CENTRE_X` 0.5 is where the twigs are centred. The box centre is
+ *     1.35 because the handle leans out of it.
+ *   - `BUNDLE_FLAME_SEAT` 344 puts the flame's base 8 units into the bundle -
+ *     i.e. right at the tip, which is what it should look like: fire coming off
+ *     the very end of the besom. The window is narrow. At 267 the flame was
+ *     swallowed by the twigs; at 332 it hovered over them with daylight between;
+ *     322 seated it a third of the way in, which read as burning *inside* the
+ *     bundle rather than off it.
+ */
+const BUNDLE_CENTRE_X = 0.5;
+const BUNDLE_FLAME_SEAT = 344;
+
+const BESOM = (() => {
+  const scale = 0.95;
+  /** Its own artwork: drawn up from the origin, centred on x 1.35. */
+  /**
+   * `flameScale` is deliberately larger than the broom's.
+   *
+   * `a_EvilTorchAnimation` is eight frames of a flame that grows and shrinks, and
+   * its shortest frames are barely two thirds the height of its tallest - so a
+   * flame sized 1:1 with the bundle it stands in spends half the loop looking
+   * like a spark, and the frames that *do* reach full height stick out past the
+   * twigs on the way. Drawing it a third larger and seating it deeper (85 units
+   * into the bundle rather than 60) keeps every frame of the loop inside the
+   * bristles at the bottom and well clear of them at the top.
+   */
+  const light = (x: number, y: number, s: number) => ({
+    x,
+    y,
+    scale: s,
+    /**
+     * Sized to the bundle: 77.7 x 1.3 is very nearly the bundle's own 100 units,
+     * which is how the scene's own besom draws it - a flame about as tall as the
+     * twigs it comes out of.
+     */
+    flameScale: s * 1.3,
+    /**
+     * `BUNDLE_CENTRE_X`, not the character's bounds centre.
+     *
+     * Character 50's box is 70.7 wide and centred on 1.35, but the *twigs* are
+     * centred on 0.5 - the box is widened by the handle, which leans. Anchoring
+     * on the box put the flame nearly a pixel off here and, when the same mistake
+     * was made in scene coordinates for the other besom, 37px off there.
+     */
+    flameX: x + BUNDLE_CENTRE_X * s,
+    flameBaseY: y - BUNDLE_FLAME_SEAT * s,
+  });
+  return {
+    scale,
+    /** The one by the mushroom house, added by this patch. */
+    house: light(1060, DECOR_FLOOR_Y, scale),
+    /**
+     * The scene's own, re-lit.
+     *
+     * Character 60 carries a besom of its own at scene (317.9, 262.9) with an
+     * orange flame (character 59) recoloured green by a transform on its
+     * placement. That flame is an eight-frame animation buried inside an unbound
+     * composite, so nothing drives it: it froze on frame 1, which is a
+     * half-drawn tongue sitting beside the twigs rather than in them. `stripBesom`
+     * takes it out and this puts a real `a_EvilTorchAnimation` in its place, on
+     * the same terms as the one by the house.
+     */
+    //
+    // **The scene's besom is not sized or seated like the one by the house, and
+    // both numbers were wrong the first time round.** Character 60 places the
+    // broom at scale 0.496 and its flame at 0.246 - not 1 - so the broom is drawn
+    // at 1.9 x 0.496 in the room, about the height of the house's besom rather
+    // than twice it. Lighting it at the scene's own 1.9 threw the flame 250px
+    // above the twigs, into open sky, which is the loose green light the square
+    // was showing.
+    //
+    // So the replacement is aimed at the *old flame's own footprint* rather than
+    // derived from the broom: character 59's frame 1 covers scene x 316.5..355.1,
+    // y 61.2..97.8, and 97.8 is where it meets the bundle. Standing the new torch
+    // on that point puts it exactly where the artwork always had it.
+    scene: light(sceneToLocalX(317.9), sceneToLocalY(262.9), RUINS_SCALE * 0.496),
+  };
+})();
+
+/**
+ * The iron railing, cut out of the ruins shape so it can stand in for the
+ * square's wooden fence.
+ *
+ * The square's foreground is ten copies of one wooden post-and-rope segment
+ * (character 18). The event's own screenshots show black iron railings there
+ * instead, and the railing exists - but it is *inside* character 39, the single
+ * DefineShape that carries both ruins, the hill and every fence in the scene.
+ * A DefineShape cannot be split, so the railing is cut out the same way the
+ * scene's bare right-hand third was: a clip-depth rectangle over a copy of the
+ * shape, which shows only the window it covers.
+ *
+ * The window is measured off a 1:1 export of character 39, whose bounds start at
+ * (-41.1, 7) - so an export pixel maps to shape x - 41.1, y + 7:
+ *
+ *   - The spears stand at export x 687.8, 711.3, 732.3, 753.8, 778.8, so the cut
+ *     is taken at 676.5 and 767.3, i.e. **midway between spears at both ends**.
+ *     That is where the scalloped bar between them is at the bottom of its dip,
+ *     which is what lets one tile butt against the next without a visible joint.
+ *   - Vertically it runs from just above the spear tips (export y 180) to 214,
+ *     three pixels into the grass the spears are planted in. The sliver of grass
+ *     is deliberate: it hides the cut ends of the posts, and it is the same
+ *     yellow-green the square is already drawn in.
+ *
+ * The tile is normalised so its bottom-left corner is its own origin, which is
+ * what lets one character be placed ten times at ten different heights.
+ */
+const RAIL_CROP = { left: 676.5 - 41.1, right: 767.3 - 41.1, top: 180 + 7, bottom: 214 + 7 };
+const RAIL_TILE = { width: RAIL_CROP.right - RAIL_CROP.left, height: RAIL_CROP.bottom - RAIL_CROP.top };
+
+/**
+ * The wooden fence, by the character its runs are placed from.
+ *
+ * **Character 384, not one of the room's loose props.** The square's
+ * post-and-rope fence is one of the room's `am_Foreground_1` instances - the
+ * layer `Level`'s room walk lifts out into the scenery system so it draws in
+ * *front* of the players standing behind it, which is exactly how the event's own
+ * screenshots show the crowd. Four placements carry it, one of them mirrored
+ * (`scaleX -1.101`), and the room's other `am_Foreground_1` instances are grass
+ * off a different character and are left alone.
+ *
+ * Every replacement keeps its segment's depth, name and matrix, so the railing
+ * inherits the fence's place in the foreground and the mirrored run stays
+ * mirrored. Nothing about the layer changes; only what is drawn in it.
+ */
+const WOODEN_FENCE_CHARACTER = 384;
+
+/** Character 384's bounds, i.e. the box one run of fence draws in. */
+const WOODEN_FENCE_ART = { left: -443.4, right: 75.4, top: 83.4, bottom: 226.7 };
+
+/** How many railing tiles make up one run. */
+const RAIL_TILES_PER_RUN = 2;
+
+/**
+ * How large the railing is drawn.
+ *
+ * Chosen so that a whole number of tiles spans one run of the fence exactly -
+ * there is no partial tile at either end, and no gap. It comes out at 97px tall
+ * against the wooden fence's 143, which is the right proportion: an iron railing
+ * is a lower thing than a post-and-rope fence, and the event's own screenshots
+ * draw it that way, standing on the same ground line.
+ */
+const RAIL_SCALE =
+  (WOODEN_FENCE_ART.right - WOODEN_FENCE_ART.left) / (RAIL_TILES_PER_RUN * RAIL_TILE.width);
+
+/**
+ * How far up a clip-depth mask reaches.
+ *
+ * Well past anything a composite lays out, so every layer above the mask is
+ * trimmed to its window.
+ */
+const MASK_CLIP_DEPTH = 999;
+
+/**
+ * `SOFT_FLOOR`, i.e. the kind of floor you can jump up through from below and
+ * drop back down out of.
+ *
+ * `DungeonBlitz.method_77` registers the collision palette: cyan is `HARD_FLOOR`,
+ * red is `SOFT_FLOOR`, white is `TRIGGER_BOUNDARY`. A ledge on a ruin has to be
+ * soft - a hard one would be a lid you could get wedged under.
+ */
+const SOFT_FLOOR_RGB = 0xff0000;
+
+/** The width the room's own collision lines are drawn at. */
+const COLLISION_STROKE_TWIPS = 100;
+
+/** Well past the two lines `am_CollisionObject` already carries (1 and 4). */
+const LEDGE_DEPTH = 20;
+
+/**
+ * The ledges a player can stand on, written against the *drawing*.
+ *
+ * All four are read off a 1:1 export of character 39 in the scene's own
+ * coordinates and mapped through `sceneToLocalX/Y`, so they follow `RUINS_SCALE`
+ * automatically - resize the square and the collision resizes with it. The three
+ * heights on the second ruin come out roughly a hundred pixels apart, which is
+ * what makes it climbable rather than merely tall: three steps, not one
+ * impossible one.
+ *
+ *   - **237** the stone pad at the wall's foot;
+ *   - **197** the stepped-down courses along its left-hand side;
+ *   - **153.5** the slab at the top, the one the iron railing stands on.
+ */
+const RUIN_LEDGES = [
+  { sceneY: 237, from: 353.9, to: 478.9 },
+  { sceneY: 197, from: 288.9, to: 358.9 },
+  { sceneY: 153.5, from: 288.9, to: 471.9 },
+  // The tower's lower course. Its crown is left bare - the rift hangs there, and
+  // a floor across the arch would let a player stand in the doorway.
+  { sceneY: 157, from: 133.9, to: 258.9 },
+].map((ledge) => ({
+  y: sceneToLocalY(ledge.sceneY),
+  left: sceneToLocalX(ledge.from),
+  right: sceneToLocalX(ledge.to),
+}));
+
+/**
  * The still dressing, in a composite of its own.
  *
  * No lanterns. Every jack-o'-lantern the square carried is gone: hung in the
@@ -512,7 +780,26 @@ const DECOR_BACK: DecorEntry[] = [
   { prop: "web", x: 1980, y: -700, scale: 1.1 },
 
   // A second besom stood against the house, the way the square carried one there.
-  { prop: "broom", x: 1060, scale: 0.7 },
+  { prop: "broom", x: BESOM.house.x, scale: BESOM.house.scale },
+
+  /**
+   * The jack-o'-lanterns, hung in the **bare tree** behind the ruins.
+   *
+   * Not on the mushroom house, where they were: that trunk belongs to the town
+   * and a lantern on it reads as somebody's porch light. The dead tree is the
+   * scene's own - part of character 60, standing between the second ruin and the
+   * treeline - and it is what the square is dressed around.
+   *
+   * Its branches run room-local 740..1020 across and about -549..-400 up, read
+   * off the scene through `sceneToLocalX/Y`, so these hang in the crown rather
+   * than against sky. Small on purpose: at 0.4 they read as lanterns tied to
+   * branches instead of as gourds parked in the air.
+   */
+  ...([
+    { x: 790, y: -470, scale: 0.62 },
+    { x: 880, y: -525, scale: 0.56 },
+    { x: 965, y: -430, scale: 0.6 },
+  ] as const).map((spot) => ({ prop: "pumpkin" as PropName, x: spot.x, y: spot.y, scale: spot.scale })),
 ];
 
 /**
@@ -543,15 +830,34 @@ const DECOR_BACK: DecorEntry[] = [
  * art, behind the foreground grass. That is where all of them want to be anyway.
  */
 const DECOR_ANIMATED: DecorEntry[] = [
-  // The besom's fire, seated in the bristles so it burns out of the top.
-  { prop: "greenFlame", x: 1062, y: -300, scale: 1.2 },
-  // Either end of the second ruin's ledge.
-  { prop: "greenFlame", x: LOWER_WALL_TOP.x - 80, y: LOWER_WALL_TOP.y, scale: 1.3 },
-  { prop: "greenFlame", x: LOWER_WALL_TOP.x + 70, y: LOWER_WALL_TOP.y, scale: 1.3 },
-  // Drifting across the arch.
-  { prop: "wisp", x: 300, y: -300, scale: 1.2 },
-  { prop: "wisp", x: 500, y: -450, scale: 0.9 },
-  { prop: "wisp", x: 640, y: -230, scale: 1.4 },
+  // The besom's fire, seated in the bristles so it burns out of the top. See
+  // `BESOM` for where the two numbers come from - they are read off the broom's
+  // own artwork, so resizing the broom carries the flame with it.
+  { prop: "greenFlame", x: BESOM.house.flameX, y: BESOM.house.flameBaseY, scale: BESOM.house.flameScale },
+  // The scene's own besom, re-lit after `stripBesom` takes its frozen flame out.
+  { prop: "greenFlame", x: BESOM.scene.flameX, y: BESOM.scene.flameBaseY, scale: BESOM.scene.flameScale },
+
+  // **No torches on the second ruin.** Two stood on its ledge and both read as
+  // floating: the slab they were seated on carries the scene's own iron railing,
+  // so a flame standing on the stone is drawn up among the spikes with nothing
+  // under it. The wall is dressed by its own skull lanterns - which are part of
+  // the artwork and always were - and wants nothing else.
+
+  /**
+   * The drifting motes, and **only over the arch**.
+   *
+   * There used to be one at room-local 640 as well, a few pixels off the scene's
+   * own besom, and that one was the trouble: a green mote beside a broom reads as
+   * a flame that has come loose from it, and out on open grass it reads as a
+   * smear. Over the rift it reads as what it is - the arch giving off light - so
+   * that is the only place they are allowed.
+   *
+   * The rift is drawn around room-local 304 (see `placePortal`), so these three
+   * sit inside its glow rather than beside it.
+   */
+  { prop: "wisp", x: 240, y: -300, scale: 1.1 },
+  { prop: "wisp", x: 320, y: -430, scale: 0.85 },
+  { prop: "wisp", x: 370, y: -230, scale: 1.0 },
 ];
 
 /**
@@ -578,7 +884,20 @@ const DECOR_ANIMATED: DecorEntry[] = [
  *   - `scene`   - the ruins composite on depth 124.
  *   - `decor`   - the two prop composites on depths 234 and 235.
  */
-const OPTIONAL_PHASES = ["green", "mask", "extras", "statues", "imports", "portal", "scene", "decor"] as const;
+const OPTIONAL_PHASES = [
+  "green",
+  "mask",
+  "extras",
+  "statues",
+  "imports",
+  "portal",
+  "scene",
+  "decor",
+  // `fence`  - the iron railing that replaces the square's wooden fence.
+  // `ledges` - the soft-floor collision lines that make the ruins climbable.
+  "fence",
+  "ledges",
+] as const;
 type OptionalPhase = (typeof OPTIONAL_PHASES)[number];
 
 interface Options {
@@ -873,6 +1192,132 @@ function placePortal(srn: SwfFile, props: Map<PropName, number>, verify: boolean
  * Returns false when either depth is already taken, which is what a re-run of an
  * already-patched file looks like.
  */
+/**
+ * One rectangular window onto a character, as a sprite with its own origin.
+ *
+ * The clip-depth trick that crops the scene works on a whole composite, which is
+ * fine when the crop happens once. The railing and the second ruin both need a
+ * *reusable* slice - one placed ten times at ten different heights, one placed at
+ * a different scale over the original - and a mask laid out in room coordinates
+ * cannot travel. So each slice is packed into a sprite of its own, with the mask
+ * inside it: a mask nested in a sprite moves and scales with that sprite, which
+ * is what makes the tile a tile.
+ *
+ * The window is normalised so the caller can place it by a point that means
+ * something. `anchor` picks which corner of the window lands on the sprite's own
+ * origin - `bottom-left` for something laid along a line, `bottom-centre` for
+ * something stood on a spot.
+ */
+function buildWindow(
+  srn: SwfFile,
+  charId: number,
+  window: { left: number; right: number; top: number; bottom: number },
+  anchor: "bottom-left" | "bottom-centre",
+): number {
+  const width = window.right - window.left;
+  const height = window.bottom - window.top;
+  const originX = anchor === "bottom-centre" ? window.left + width / 2 : window.left;
+  const originY = window.bottom;
+
+  const maskId = maxCharacterId(srn) + 1;
+  appendCharacterTag(
+    srn,
+    buildSolidRectShape(
+      maskId,
+      {
+        xMin: Math.round((window.left - originX) * 20),
+        xMax: Math.round((window.right - originX) * 20),
+        yMin: Math.round((window.top - originY) * 20),
+        yMax: 0,
+      },
+      0x000000,
+    ),
+  );
+
+  const id = maxCharacterId(srn) + 1;
+  appendCharacterTag(
+    srn,
+    buildSprite({
+      id,
+      placements: [
+        { depth: 1, charId: maskId, x: 0, y: 0, scaleX: 1, scaleY: 1, clipDepth: MASK_CLIP_DEPTH },
+        { depth: 2, charId, x: -originX, y: -originY, scaleX: 1, scaleY: 1 },
+      ],
+    }),
+  );
+  console.log(
+    `window onto character ${charId}: ${width.toFixed(1)}x${height.toFixed(1)} ` +
+      `anchored ${anchor} -> character ${id}`,
+  );
+  return id;
+}
+
+/**
+ * Swaps the square's ten wooden fence segments for the seasonal iron railing.
+ *
+ * Each railing tile is stood on the segment it replaces - same centre, same
+ * baseline - so the new fence follows the dip the old one followed through the
+ * middle of the square, and neither the collision line nor anything else in the
+ * room has to move.
+ *
+ * Returns false when the wooden segments are already gone, which is what a re-run
+ * of an already-patched file looks like.
+ */
+function replaceFence(srn: SwfFile, ruinsCharId: number, verify: boolean): boolean {
+  const roomIndex = roomSpriteIndex(srn);
+  const roomTag = srn.tags[roomIndex];
+  const inner = spriteInnerTags(roomTag);
+
+  const runs = inner.filter((tag) => {
+    if (tag.code !== TAG_PLACE_OBJECT2 && tag.code !== TAG_PLACE_OBJECT3) return false;
+    return parsePlace(tag).charId === WOODEN_FENCE_CHARACTER;
+  });
+
+  if (runs.length === 0) {
+    console.log(`${HOST_ROOM} has no wooden fence runs left; the railing already stands.`);
+    return false;
+  }
+  console.log(
+    `${runs.length} wooden fence runs -> ${RAIL_TILES_PER_RUN} railing tiles each at scale ${RAIL_SCALE.toFixed(3)}`,
+  );
+  if (verify) return true;
+
+  const tileId = buildWindow(srn, ruinsCharId, RAIL_CROP, "bottom-left");
+
+  /**
+   * One run of railing, laid out in character 384's own coordinates.
+   *
+   * Building it as a character in its own right is what lets each of the four
+   * fence placements keep its matrix: the run occupies the same box the wooden
+   * fence did, so the mirrored placement mirrors the railing and the scaled ones
+   * scale it, with no per-placement arithmetic here at all.
+   */
+  const runId = maxCharacterId(srn) + 1;
+  appendCharacterTag(
+    srn,
+    buildSprite({
+      id: runId,
+      placements: Array.from({ length: RAIL_TILES_PER_RUN }, (_unused, index) => ({
+        depth: index + 1,
+        charId: tileId,
+        x: WOODEN_FENCE_ART.left + index * RAIL_TILE.width * RAIL_SCALE,
+        y: WOODEN_FENCE_ART.bottom,
+        scaleX: RAIL_SCALE,
+        scaleY: RAIL_SCALE,
+      })),
+    }),
+  );
+
+  const rebuilt = inner.map((tag) => {
+    if (tag.code !== TAG_PLACE_OBJECT2 && tag.code !== TAG_PLACE_OBJECT3) return tag;
+    if (parsePlace(tag).charId !== WOODEN_FENCE_CHARACTER) return tag;
+    return repointPlacement(tag, runId);
+  });
+  srn.tags[roomIndex] = rebuildSprite(roomTag, rebuilt);
+  console.log(`${HOST_ROOM}: ${runs.length} fence runs repointed at the railing (character ${runId})`);
+  return true;
+}
+
 function placeDecor(srn: SwfFile, props: Map<PropName, number>, verify: boolean, without: Set<OptionalPhase>): boolean {
   const usedDepths = new Set<number>();
   for (const tag of spriteInnerTags(srn.tags[roomSpriteIndex(srn)])) {
@@ -900,7 +1345,7 @@ function placeDecor(srn: SwfFile, props: Map<PropName, number>, verify: boolean,
    * the rectangle covers. That is the only way to show part of a DefineShape, and
    * the scene's ruins and its bare right-hand hillside are one shape.
    */
-  const build = (layout: DecorEntry[], mask?: typeof RUINS_MASK): number => {
+  const build = (layout: DecorEntry[], mask?: typeof RUINS_MASK, extras: Placement[] = []): number => {
     const placements: Placement[] = [];
     let depth = 1;
     if (mask) {
@@ -920,7 +1365,7 @@ function placeDecor(srn: SwfFile, props: Map<PropName, number>, verify: boolean,
       );
       // A mask is never drawn, so its colour is arbitrary. The clip depth is well
       // past anything the layout can reach, so every layer above is masked.
-      placements.push({ depth: depth++, charId: maskId, x: 0, y: 0, scaleX: 1, scaleY: 1, clipDepth: 999 });
+      placements.push({ depth: depth++, charId: maskId, x: 0, y: 0, scaleX: 1, scaleY: 1, clipDepth: MASK_CLIP_DEPTH });
     }
     for (const entry of layout) {
       placements.push(placementFor(entry, props.get(entry.prop) as number, depth++));
@@ -930,13 +1375,18 @@ function placeDecor(srn: SwfFile, props: Map<PropName, number>, verify: boolean,
         placements.push({
           depth: depth++,
           charId: props.get("pumpkinFace") as number,
-          x: entry.x,
-          y: (entry.y ?? DECOR_FLOOR_Y) + PUMPKIN_FACE_OFFSET_Y * scale,
+          x: entry.x + PUMPKIN_FACE_OFFSET.x * scale,
+          y: (entry.y ?? DECOR_FLOOR_Y) + PUMPKIN_FACE_OFFSET.y * scale,
           scaleX: scale,
           scaleY: scale,
         });
       }
     }
+    // Above the mask's clip depth on purpose: an extra carries a window of its
+    // own (see `buildWindow`) and must not also be trimmed by the composite's,
+    // which is pinned to the scene's own footprint and cannot follow it.
+    let extraDepth = Math.max(depth, MASK_CLIP_DEPTH + 1);
+    for (const extra of extras) placements.push({ ...extra, depth: extraDepth++ });
     const id = maxCharacterId(srn) + 1;
     appendCharacterTag(srn, buildSprite({ id, placements }));
     return id;
@@ -982,6 +1432,94 @@ function placeDecor(srn: SwfFile, props: Map<PropName, number>, verify: boolean,
       `${DECOR_BACK.length} still props on depth ${DECOR_DEPTH}, ` +
       `${animated.length} animated props as room children from depth ${DECOR_FRONT_DEPTH}`,
   );
+  return true;
+}
+
+/**
+ * Puts walkable ledges on the ruins.
+ *
+ * A room's collision is a sprite called `am_CollisionObject` holding stroked
+ * polylines and nothing else, and the *colour* of a stroke is what it means:
+ * `DungeonBlitz.method_77` registers cyan as `HARD_FLOOR`, red as `SOFT_FLOOR`,
+ * white as `TRIGGER_BOUNDARY` and so on. `a_Room_SRN04` already carries both
+ * kinds - a cyan ground line and one short red segment above the door ramp - so
+ * a ledge is another red polyline dropped in beside them.
+ *
+ * Red rather than cyan because a soft floor is the one a player can jump up
+ * through and drop back down out of. On a hard floor the ruin would be a lid:
+ * you could stand on it, and you could also get wedged under it.
+ *
+ * The collision object is placed at room-local (-80, -80), so a room-local point
+ * is a collision-local one plus 80 either way; `RUIN_LEDGES` is in room-local
+ * pixels and the conversion happens here.
+ *
+ * The lines go in as one extra unnamed child. The two the room already has are
+ * unnamed too, and `class_154` only looks at children whose names begin with
+ * `am_`, so an unnamed sibling is read as geometry and nothing else.
+ *
+ * Returns false when the ledges are already there, which is what a re-run of an
+ * already-patched file looks like.
+ */
+function addRuinLedges(srn: SwfFile, verify: boolean): boolean {
+  const roomIndex = roomSpriteIndex(srn);
+  const roomTag = srn.tags[roomIndex];
+  const roomInner = spriteInnerTags(roomTag);
+
+  const collision = roomInner
+    .filter((tag) => tag.code === TAG_PLACE_OBJECT2 || tag.code === TAG_PLACE_OBJECT3)
+    .map(parsePlace)
+    .find((place) => place.name === "am_CollisionObject");
+  if (!collision || collision.charId === null) {
+    throw new SwfLevelError(`${HOST_ROOM} has no am_CollisionObject to hang ledges on`);
+  }
+
+  const index = srn.tags.findIndex(
+    (tag) => tag.code === TAG_DEFINE_SPRITE && tag.data.readUInt16LE(0) === collision.charId,
+  );
+  if (index === -1) throw new SwfLevelError(`collision sprite ${collision.charId} not found`);
+
+  const originX = (collision.matrix?.translateX ?? 0) / 20;
+  const originY = (collision.matrix?.translateY ?? 0) / 20;
+
+  const inner = spriteInnerTags(srn.tags[index]);
+  let depth = 0;
+  for (const tag of inner) {
+    if (tag.code !== TAG_PLACE_OBJECT2 && tag.code !== TAG_PLACE_OBJECT3) continue;
+    const place = parsePlace(tag);
+    if (place.depth > depth) depth = place.depth;
+  }
+  if (depth >= LEDGE_DEPTH) {
+    console.log(`am_CollisionObject already uses depth ${LEDGE_DEPTH}; ledges already cut.`);
+    return false;
+  }
+
+  for (const ledge of RUIN_LEDGES) {
+    console.log(
+      `ledge at room-local y ${ledge.y.toFixed(1)} from x ${ledge.left.toFixed(1)} to ${ledge.right.toFixed(1)} ` +
+        `(${(DECOR_FLOOR_Y - ledge.y).toFixed(0)}px above the floor)`,
+    );
+  }
+  if (verify) return true;
+
+  const shapeId = maxCharacterId(srn) + 1;
+  appendCharacterTag(
+    srn,
+    buildStrokedPolylineShape(
+      shapeId,
+      RUIN_LEDGES.map((ledge) => [
+        { x: Math.round((ledge.left - originX) * 20), y: Math.round((ledge.y - originY) * 20) },
+        { x: Math.round((ledge.right - originX) * 20), y: Math.round((ledge.y - originY) * 20) },
+      ]),
+      SOFT_FLOOR_RGB,
+      COLLISION_STROKE_TWIPS,
+    ),
+  );
+
+  const showFrameIndex = inner.findIndex((tag) => tag.code === 1);
+  const insertAt = showFrameIndex === -1 ? inner.length - 1 : showFrameIndex;
+  inner.splice(insertAt, 0, buildPlaceObject2({ depth: LEDGE_DEPTH, charId: shapeId, x: 0, y: 0 }));
+  srn.tags[index] = rebuildSprite(srn.tags[index], inner);
+  console.log(`am_CollisionObject: ${RUIN_LEDGES.length} soft-floor ledges on depth ${LEDGE_DEPTH}`);
   return true;
 }
 
@@ -1142,6 +1680,30 @@ function main(): void {
   if (without.size > 0) console.log(`leaving out: ${[...without].join(", ")}`);
 
   const srn = readSwfFile(SRN_SWF);
+
+  /**
+   * Refuse to run twice over the same file.
+   *
+   * Each step guards itself, so a second pass looks harmless - but `importProps`
+   * does not, and that is the one that matters. It brings the whole seasonal
+   * scene across again as a fresh set of characters, and `bindAnimations` then
+   * moves `a_Animation_Portal`, `a_Animation_Smoke2` and `a_Animation_PortaAngled`
+   * onto the *new* copies. The room is still placing the old ones, which are now
+   * bound to nothing - and a child bound to nothing is never handed to the
+   * scenery system, so the rift, both besom flames and every wisp freeze on
+   * frame 1 while the file quietly grows by a quarter of a megabyte.
+   *
+   * The patch is a build step, not an edit: rebuild from the backup instead.
+   */
+  if (readSymbolClasses(srn).some((entry) => entry.name === DOOR_CLASS)) {
+    console.log(
+      `${path.basename(SRN_SWF)} already carries the Hallow's Eve square (${DOOR_CLASS} is bound).\n` +
+        `This patch is not re-runnable in place - re-importing the scene would rebind the animation\n` +
+        `classes onto fresh copies and freeze every animated prop. To rebuild:\n` +
+        `  cp ${path.basename(SRN_SWF)}.bak ${path.basename(SRN_SWF)} && npm exec ts-node scripts/${path.basename(__filename)}`,
+    );
+    return;
+  }
   const greened = without.has("green") ? false : greenParallax(srn, verify);
   const clearedStatues = without.has("statues") ? false : removeStatues(srn, verify);
   // `imports` leaves the seasonal artwork out of the file entirely. Nothing can be
@@ -1152,15 +1714,22 @@ function main(): void {
     const dropped = stripBackdrop(srn, props.get("ruins") as number, [
       props.get("backdropSky") as number,
       props.get("backdropGround") as number,
+      // The besom's frozen flame goes with them; `DECOR_ANIMATED` relights it.
+      props.get("besomFlame") as number,
     ]);
-    console.log(`stripped ${dropped} backdrop placements out of the imported scene`);
+    console.log(`stripped ${dropped} backdrop and dead-flame placements out of the imported scene`);
   }
   const placedPortal = without.has("portal") ? false : placePortal(srn, props, verify);
   const dressedSquare = without.has("decor") ? false : placeDecor(srn, props, verify, without);
+  // The railing is cut out of the same character the scene is, so it can only run
+  // once that character has been imported.
+  const ironFence =
+    without.has("fence") || without.has("imports") ? false : replaceFence(srn, props.get("ruins") as number, verify);
+  const ledges = without.has("ledges") ? false : addRuinLedges(srn, verify);
   // After placePortal, which also rewrites the symbol table.
   const boundAnims = without.has("decor") || without.has("extras") ? false : bindAnimations(srn, props, verify);
 
-  if (!greened && !clearedStatues && !placedPortal && !dressedSquare && !boundAnims) {
+  if (!greened && !clearedStatues && !placedPortal && !dressedSquare && !ironFence && !ledges && !boundAnims) {
     console.log("nothing to do - LevelsSRN.swf already carries the Hallow's Eve square.");
     return;
   }

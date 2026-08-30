@@ -6,6 +6,14 @@ import { TalentConfig } from '../core/TalentConfig';
 import { EntityHandler } from './EntityHandler';
 import { WorldEnter } from '../utils/WorldEnter';
 import { SpeedupPricing } from '../core/SpeedupPricing';
+import {
+    HallowsEve,
+    HALLOWS_EVE_SUMMON_COST_IDOLS,
+    HALLOWS_EVE_DOOR_ID,
+    HALLOWS_EVE_LEVEL
+} from '../core/HallowsEve';
+import { LevelConfig } from '../core/LevelConfig';
+import { LevelHandler } from './LevelHandler';
 
 type TalentResearchRecord = {
     classIndex?: number | null;
@@ -220,6 +228,95 @@ export class TalentHandler {
 
         const br = new BitReader(data);
         const idolCost = br.readMethod9();
+
+        /**
+         * **The Green Knight's "Summon Knight Now", which arrives on this packet.**
+         *
+         * `class_69.method_1410` is the only sender of 0xE0 in the whole client, and
+         * `class_69` is no longer the Class Tower screen - it is bound to
+         * `a_ScreenHalloweenDungeonPrompt`, and the button that reaches it is the
+         * seasonal panel's own Summon art moved into the `am_SpeedUpPanel.am_SpeedUp`
+         * slot (see `scripts/patch-hallows-eve-challenge-screen.ts`). So in the two
+         * Hallow's Eve towns this packet can only mean the Summon button.
+         *
+         * The talent path below is left intact rather than deleted: it is what this
+         * packet meant before the screen was repointed, and it costs one branch to
+         * keep it honest.
+         *
+         * `idolCost` is whatever the client computed from the Class Tower's timer -
+         * meaningless here. The price and the check are `HallowsEve`'s.
+         */
+        if (HallowsEve.isTown(client.currentLevel)) {
+            const outcome = HallowsEve.summonKnightNow(client.character);
+
+            /**
+             * Nothing to skip, so nothing to charge - but the button still takes you in.
+             *
+             * The twelve hours are the thing being bought, and when they have already
+             * run out there is no purchase to make. Refusing outright was the first
+             * shape of this and it read as a broken button: the player presses Summon
+             * with the idols in hand, nothing is spent, nothing happens, and the panel
+             * has no way to explain itself. Taking them through instead makes the
+             * button mean one thing in both states - *go and fight him now* - and it
+             * only ever costs idols when there is a wait to buy out of.
+             */
+            if (outcome === 'ready') {
+                console.log(
+                    `[HallowsEve] ${String(client.character.name ?? '')} pressed Summon with no cooldown to skip; ` +
+                    'sent in free'
+                );
+                HallowsEve.sayAtTheArch(client, 'He is already waiting. Go - this one costs you nothing.');
+                HallowsEve.grantEntry(client.character.name);
+                LevelHandler.grantDoorTransfer(
+                    client,
+                    LevelConfig.normalizeLevelName(client.currentLevel) || String(client.currentLevel ?? ''),
+                    HALLOWS_EVE_DOOR_ID,
+                    HALLOWS_EVE_LEVEL
+                );
+                return;
+            }
+            if (outcome === 'poor') {
+                console.log(
+                    `[HallowsEve] ${String(client.character.name ?? '')} pressed Summon with ` +
+                    `${Math.max(0, Math.round(Number(client.character.mammothIdols ?? 0)) || 0)} idols; ` +
+                    `needs ${HALLOWS_EVE_SUMMON_COST_IDOLS}`
+                );
+                HallowsEve.sayAtTheArch(
+                    client,
+                    `The Knight answers only to ${HALLOWS_EVE_SUMMON_COST_IDOLS} Mammoth Idols. Come back with them.`
+                );
+                return;
+            }
+            if (outcome !== 'summoned') {
+                return;
+            }
+            TalentHandler.sendPremiumPurchase(client, 'HallowsEveSummon', HALLOWS_EVE_SUMMON_COST_IDOLS);
+            console.log(
+                `[HallowsEve] ${String(client.character.name ?? '')} summoned the Green Knight for ` +
+                `${HALLOWS_EVE_SUMMON_COST_IDOLS} idols (client claimed ${idolCost})`
+            );
+            await TalentHandler.saveCharacter(client);
+
+            /**
+             * Paying takes the player in.
+             *
+             * "Summon Knight Now" is a purchase, and what is bought is the fight - so
+             * ending on "go and walk through the arch yourself" would be charging for
+             * a message. `grantDoorTransfer` emits exactly what a normal door open
+             * emits, which is the same door this feature already uses: it is what the
+             * old `a_DialogBox` Yes did before the panel existed
+             * (`NpcHandler.tryHandleHallowsEvePromptAnswer`).
+             *
+             * The entry grant goes with it so the transfer is not questioned on the
+             * way through.
+             */
+            HallowsEve.grantEntry(client.character.name);
+            const fromLevel =
+                LevelConfig.normalizeLevelName(client.currentLevel) || String(client.currentLevel ?? '');
+            LevelHandler.grantDoorTransfer(client, fromLevel, HALLOWS_EVE_DOOR_ID, HALLOWS_EVE_LEVEL);
+            return;
+        }
+
         const research = TalentHandler.getTalentResearch(client.character);
         const classIndex = Number(research.classIndex ?? -1);
         if (classIndex < 0) {

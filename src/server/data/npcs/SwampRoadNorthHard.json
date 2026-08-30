@@ -529,26 +529,6 @@
     "buffs": []
   },
   {
-    "id": 1919494,
-    "name": "NPCSwampVillager02",
-    "x": 4633,
-    "y": 579,
-    "v": 0,
-    "team": 3,
-    "untargetable": false,
-    "render_depth_offset": -43,
-    "character_name": "SRN_Merchant01Hard",
-    "DramaAnim": "",
-    "SleepAnim": "",
-    "Linked_Mission": "",
-    "summonerId": 0,
-    "power_id": 0,
-    "entState": 1,
-    "facing_left": false,
-    "health_delta": 0,
-    "buffs": []
-  },
-  {
     "id": 1985030,
     "name": "NPCIeld",
     "x": 3675,

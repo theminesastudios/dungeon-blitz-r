@@ -49,6 +49,34 @@ export const HALLOWS_EVE_COFFERS_ENT = "HalloweenCoffers";
 export const HALLOWS_EVE_WATCHER_ENT = "NPCHalloweenWatcher";
 
 /**
+ * The square's herald - the one figure standing in it.
+ *
+ * This one is minted rather than re-dressed: the client ships no `Herald`, and
+ * the event's own screenshots put a named figure in the middle of the square
+ * with the crowd around him. He borrows the Watcher's `Hood01` costume, which is
+ * the only robed hood in `Animation_NPC.swf` and is the right silhouette for the
+ * night the arch opens, drawn a little larger so he reads as the one who is
+ * meant to be spoken to rather than as another villager.
+ *
+ * He also takes over what the coffers used to do. That is not a tidy-up: the
+ * coffers was an invisible interact box parked against the second ruin, so a
+ * click on the stonework opened a dialogue - which is exactly what the ruins
+ * should not do now that they are something to climb on. The key still buys the
+ * same prize; it is asked for by a person instead of by a wall.
+ */
+export const HALLOWS_EVE_HERALD_ENT = "NPCHalloweenHerald";
+
+/**
+ * The shipped portal EntType, re-dressed as the challenge panel's click box.
+ *
+ * It keeps its empty art - the rift is drawn by the level, this only has to be
+ * clickable - and gains `Flying`, because it hangs on the rift rather than
+ * standing on the floor. Without the flag a server-spawned entity drops, and it
+ * would land inside `a_Door_108`'s own click rectangle.
+ */
+export const HALLOWS_EVE_PORTAL_ENT = "HalloweenPortal";
+
+/**
  * EntTypes an earlier pass minted and no longer wants.
  *
  * `HallowsEveBoss` was a stand-in for a boss that turned out to already exist. It
@@ -79,13 +107,18 @@ const ENTS: EntSpec[] = [
       ["RewardClass", "NoLoot"],
       ["Realm", "Villager"],
       ["Speed", "0"],
-      // Sized to the stonework rather than to a chest: the skull-grid ruin runs
-      // room-local 600..942 and stands about 210px above the floor line, so this
-      // box covers the lower half of the wall - the part a player walks up to.
-      ["Width", "300"],
-      ["Height", "160"],
+      // Sized to the **skull grid**, not to the wall it is set into. The enlarged
+      // second ruin's base ledge runs room-local 768.6..1053.6 and its top ledge
+      // sits 190px above that, so a 280x200 box standing on the lower ledge covers
+      // the carved panel between the two lanterns and nothing else. A box on the
+      // floor, which is what this used to be, made the plain stonework talk.
+      ["Width", "280"],
+      ["Height", "200"],
       // Not TreasureChest: the coffers is talked to, not broken open.
       ["Behavior", "NPC"],
+      // Without this it is not on the skulls for long. A server-spawned entity
+      // gets no floor snap and drops, the way the Legends' Inn portal did.
+      ["Flying", "True"],
     ],
     /**
      * **No artwork at all - the ruin *is* the coffers.**
@@ -128,6 +161,55 @@ const ENTS: EntSpec[] = [
       ["FlipAnim", "TRUE"],
       ["BaseAnim", "ReadyRobes2"],
       ["AnimScale", ".8"],
+      ["CustomArt", "Animation_NPC.swf/Hood01"],
+    ],
+  },
+  {
+    entName: HALLOWS_EVE_PORTAL_ENT,
+    parent: "Base",
+    fields: [
+      ["DisplayName", "The Green Knight's Challenge"],
+      ["DevStatus", "HallowsEve"],
+      ["Level", "0"],
+      ["ArmorClass", "1"],
+      ["HitPoints", "0"],
+      ["Realm", "Villager"],
+      ["Speed", "0"],
+      // Sized to the drawn rift, which is what the player aims at.
+      ["Width", "220"],
+      ["Height", "260"],
+      ["Behavior", "NPC"],
+      ["Flying", "True"],
+    ],
+    gfx: [
+      ["AnimClass", "a__EmptyAnimation"],
+      ["AnimFile", "Animation_Environmentals.swf"],
+      ["Shadow", "None"],
+    ],
+  },
+  {
+    entName: HALLOWS_EVE_HERALD_ENT,
+    parent: "Base",
+    fields: [
+      ["DisplayName", "Herald"],
+      ["DevStatus", "HallowsEve"],
+      ["Level", "0"],
+      ["ArmorClass", "1"],
+      ["HitPoints", "0"],
+      ["Realm", "Villager"],
+      ["Speed", "5"],
+      // A shade broader and taller than the Watcher's 80x130, which is what
+      // makes him the figure in the square rather than one of the villagers.
+      ["Width", "90"],
+      ["Height", "150"],
+      ["Behavior", "NPC"],
+    ],
+    gfx: [
+      ["AnimFile", "Animation_NPC.swf"],
+      ["FlipAnim", "TRUE"],
+      ["Shadow", "SFX_1.swf/a_ShadowNPC"],
+      ["BaseAnim", "ReadyRobes2"],
+      ["AnimScale", ".95"],
       ["CustomArt", "Animation_NPC.swf/Hood01"],
     ],
   },

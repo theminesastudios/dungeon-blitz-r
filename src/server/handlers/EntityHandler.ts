@@ -32,7 +32,12 @@ import { getCraftTownHomeOwnerCharacter } from '../utils/HomeVisitGuard';
 import { HomeStatueHandler } from './HomeStatueHandler';
 import { LegendsInn } from '../core/LegendsInn';
 import { LEGENDS_INN_TITUS_ENTITY_ID, LegendsInnGate } from '../core/LegendsInnGate';
-import { HallowsEve, HALLOWS_EVE_COFFERS_ENTITY_ID } from '../core/HallowsEve';
+import {
+    HallowsEve,
+    HALLOWS_EVE_HERALD_ENTITY_ID,
+    HALLOWS_EVE_COFFERS_ENTITY_ID,
+    HALLOWS_EVE_CHALLENGE_ENTITY_ID
+} from '../core/HallowsEve';
 
 export class EntityHandler {
     private static readonly CLIENT_SPAWN_LEVELS = new Set<string>([
@@ -3922,23 +3927,55 @@ export class EntityHandler {
             return;
         }
 
-        // The coffers alone. The Hollow Watcher used to stand beside it, in front
-        // of the tower the arch is now set into - a figure planted on the ruins,
-        // which is what made clicking the stonework open a speech bubble. See
-        // `HallowsEve.buildWatcherEntity` for what it would take to stand him
-        // somewhere off the artwork again.
+        // The Herald, and the coffers on the skull grid above him.
+        //
+        // Two ways into the same question on purpose. The Herald is the figure you
+        // walk up to; the coffers is the skull panel on the second ruin, which is
+        // what the event's own screen is a picture of. Neither of them is the
+        // stonework itself - see `COFFERS_POSITION` for why that distinction is
+        // the whole point.
+        //
+        // The Hollow Watcher stands nowhere; see `HallowsEve.buildWatcherEntity`
+        // for what it would take to bring him back somewhere off the artwork.
+        // The level is handed to every builder: the client suffixes every cue name
+        // with "Hard" in a Dread level, so a prop's cue name is not a constant.
+        // See `cueFor` in `core/HallowsEve.ts`.
+        const level = client.currentLevel;
         const props: Array<[number, () => any]> = [
-            [HALLOWS_EVE_COFFERS_ENTITY_ID, () => HallowsEve.buildCoffersEntity()]
+            [HALLOWS_EVE_HERALD_ENTITY_ID, () => HallowsEve.buildHeraldEntity(level)],
+            [HALLOWS_EVE_COFFERS_ENTITY_ID, () => HallowsEve.buildCoffersEntity(level)],
+            [HALLOWS_EVE_CHALLENGE_ENTITY_ID, () => HallowsEve.buildChallengeMarkerEntity(level)]
         ];
+        // No coffer, no skull grid. The coffer screen is the Treasure Trove screen,
+        // and the client opens it on whatever lockbox the player owns - so leaving the
+        // grid clickable with no coffer left turns it into a trove dispenser. See
+        // `HallowsEve.hasCoffer`.
+        const hasCoffer = HallowsEve.hasCoffer(client.character);
+
         for (const [entityId, build] of props) {
             if (client.knownEntityIds.has(entityId)) {
                 continue;
             }
-            let entityProps = levelMap.get(entityId);
-            if (!entityProps) {
-                entityProps = build();
-                levelMap.set(entityId, entityProps);
+            if (entityId === HALLOWS_EVE_COFFERS_ENTITY_ID && !hasCoffer) {
+                continue;
             }
+            // **Always rebuilt, never read back out of the level map.**
+            //
+            // These three are static and defined entirely in code - there is no
+            // per-instance state on them to preserve. Reading them back meant
+            // `build()` ran exactly once per level scope, and a town scope outlives
+            // any single session: it is created for the first arrival and kept while
+            // the square has anyone in it. So the first player through after a server
+            // start decided what the props were, and every later edit to
+            // `core/HallowsEve.ts` - a position, an EntType, a cue name - was
+            // silently ignored until that scope happened to die. Three rounds of
+            // diagnosing the square were spent on experiments that may never have
+            // reached the game.
+            //
+            // The map is still written, because the generic joiner sync and the
+            // level sweeps read it; it is just no longer the source of truth.
+            const entityProps = build();
+            levelMap.set(entityId, entityProps);
             client.entities.set(entityId, { ...entityProps });
             EntityHandler.sendEntity(client, entityProps);
         }
@@ -4275,6 +4312,9 @@ export class EntityHandler {
              BuildingHandler.refreshCraftTownBuildingsOnSpawn(client);
              EntityHandler.sendCraftTownAuthoredNpcs(client);
              EntityHandler.sendHallowsEveSquare(client);
+             // After the square is dressed, so the challenge window opens over a
+             // finished scene rather than a half-drawn one.
+             HallowsEve.onSpawn(client);
              HomeStatueHandler.onCraftTownSpawn(client);
              // Covers the two arrivals the boss-death broadcast cannot reach: a
              // party member who was still loading when the boss fell, and anyone

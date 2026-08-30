@@ -19,7 +19,7 @@ import { HomeStatueHandler } from './HomeStatueHandler';
 import { LegendsInnGate } from '../core/LegendsInnGate';
 import {
     HallowsEve,
-    HALLOWS_EVE_COFFERS_ENTITY_ID,
+    HALLOWS_EVE_HERALD_ENTITY_ID,
     HALLOWS_EVE_DOOR_ID,
     HALLOWS_EVE_LEVEL,
     HALLOWS_EVE_PROMPT_CONTEXT
@@ -140,15 +140,37 @@ export class NpcHandler {
             return;
         }
 
-        // The Hollow Watcher and the coffers, in Blackrose Mire's town square.
-        // Dispatched on entity id for the same reason Titus is: they borrow cues the
-        // room's own villagers answer to, and the two would otherwise share a key.
+        // The Hallow's Eve square's figures, in Blackrose Mire. Dispatched on entity
+        // id for the same reason Titus is: they borrow cues the room's own villagers
+        // answer to, and the two would otherwise share a key.
+        // Every interact that reaches one of the square's props, logged.
+        //
+        // The two panel props open their screen entirely inside the client, so in
+        // normal operation nothing here ever fires for them and a dead click is
+        // indistinguishable from a click that never happened. Flip
+        // In the Dread town they always reach here: the client suffixes their cue
+        // with "Hard", `Special_ClassTowerHard` matches no arm of the interact chain,
+        // and the click falls through to an ordinary NPC talk. See `cueFor`.
+        if (HallowsEve.isWatcher(npcId) || HallowsEve.isHerald(npcId) || HallowsEve.isCoffers(npcId) || HallowsEve.isChallengeMarker(npcId)) {
+            console.log(`[HallowsEve] interact on entity ${npcId} by ${String(client.character?.name ?? '')} in ${String(client.currentLevel ?? '')}`);
+        }
+
         if (HallowsEve.isWatcher(npcId)) {
             NpcHandler.sendNpcBubble(client, npcId, HallowsEve.getWatcherLine());
             return;
         }
-        if (HallowsEve.isCoffers(npcId)) {
-            NpcHandler.handleHallowsEveCoffers(client, npcId);
+        // Diagnostic only - on its real cue the marker never gets this far. Answered
+        // rather than left to fall through, so the reply is visible in game as well
+        // as in the log.
+        if (HallowsEve.isChallengeMarker(npcId)) {
+            NpcHandler.sendNpcBubble(client, npcId, 'The arch hears you.');
+            return;
+        }
+        // The coffers is no longer spawned - the Herald took the job over - but the
+        // id is still answered, so a client holding a stale copy of the square is
+        // never left clicking something that does nothing.
+        if (HallowsEve.isHerald(npcId) || HallowsEve.isCoffers(npcId)) {
+            NpcHandler.handleHallowsEveHerald(client, npcId);
             return;
         }
 
@@ -940,15 +962,20 @@ export class NpcHandler {
     }
 
     /**
-     * The Hallow's Eve coffers.
+     * The Hallow's Eve Herald.
      *
      * The shipped prompt screen states the loop: *"Defeat the Green Knight to earn
-     * a key to open a prize-filled coffer."* This is the second half of it.
+     * a key to open a prize-filled coffer."* This is the second half of it, and it
+     * is a person now rather than the ruin it used to be attached to - see
+     * `HERALD_POSITION` in `core/HallowsEve.ts` for why the wall stopped talking.
      *
-     * Clicking the coffers raises `a_DialogBox` - the client's own server-driven
-     * Yes/No window, opened on 0x58 and answered on 0x59 - naming what is inside
-     * and what it costs. Nothing is spent here; `grantHallowsEvePrize` runs on the
-     * Yes. With no key there is nothing to ask, so the coffers just says so.
+     * Holding a key raises `a_DialogBox` - the client's own server-driven Yes/No
+     * window, opened on 0x58 and answered on 0x59 - naming what is inside and what
+     * it costs. Nothing is spent here; `grantHallowsEvePrize` runs on the Yes.
+     *
+     * With no key there is nothing to unlock, so he talks instead: the clock line
+     * while the twelve hours run or before the first clear, and one of his own
+     * lines otherwise, so the square's one figure is worth speaking to at all.
      *
      * The shipped `a_ScreenHalloweenCoffers` panel - a forty-cell `am_CofferGroup`
      * with `a_EvilCofferOpenAnimation` - is in `UI_Seasonal.swf`, but
@@ -956,24 +983,33 @@ export class NpcHandler {
      * build can open it. A real window with real buttons is as close as this gets
      * without emitting new AVM2 classes into the obfuscated ABC.
      */
-    private static handleHallowsEveCoffers(client: Client, npcId: number): void {
+    private static handleHallowsEveHerald(client: Client, npcId: number): void {
         const character = client.character;
         if (!character) {
             return;
         }
 
-        const text = HallowsEve.buildCoffersText(character);
-        if (!text) {
-            NpcHandler.sendNpcBubble(client, npcId, HallowsEve.buildNoKeyLine(character));
-            return;
-        }
+        // **He no longer opens anything.**
+        //
+        // Clicking him used to raise the coffers question in `a_DialogBox`,
+        // because the skull grid beside him was not clickable: its entity carried
+        // a `characterName` no cue in `a_Room_SRN04` defined, so
+        // `Game.method_668` found a null cue and returned before it reached the
+        // `Special_TreasureTrove` arm. `patch-levelssrn-hallows-eve-cues.ts`
+        // gives the grid a real cue, so it opens the coffer screen itself and the
+        // Herald goes back to being what he is - the man who tells you what the
+        // grid is for.
 
-        const token = HallowsEve.openPrompt('coffers', character.name, client.currentLevel);
-        const bb = new BitBuffer(false);
-        bb.writeMethod9(token);
-        bb.writeMethod26(HALLOWS_EVE_PROMPT_CONTEXT);
-        bb.writeMethod26(text);
-        client.sendBitBuffer(0x58, bb);
+        // No key, so there is nothing to unlock. He only falls back on the coffers
+        // line when the coffers is the answer - the player is waiting on the clock,
+        // or has never cleared the arena. The rest of the time he has a square to
+        // herald.
+        const waiting = HallowsEve.secondsUntilNextKey(character) > 0 || Math.random() < 0.25;
+        NpcHandler.sendNpcBubble(
+            client,
+            npcId,
+            waiting ? HallowsEve.buildNoKeyLine(character) : HallowsEve.getHeraldLine()
+        );
     }
 
     /**
@@ -1013,7 +1049,7 @@ export class NpcHandler {
             return true;
         }
 
-        NpcHandler.grantHallowsEvePrize(client, HALLOWS_EVE_COFFERS_ENTITY_ID);
+        NpcHandler.grantHallowsEvePrize(client, HALLOWS_EVE_HERALD_ENTITY_ID);
         return true;
     }
 

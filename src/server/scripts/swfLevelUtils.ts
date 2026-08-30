@@ -372,7 +372,18 @@ export function parsePlace(tag: SwfTag): PlaceInfo {
   };
   offset += 2;
   if (tag.code === TAG_PLACE_OBJECT3) {
-    if (flags2 & 0x01) {
+    // The ClassName string, when there is one.
+    //
+    // This used to test `flags2 & 0x01`, which is **PlaceFlagHasFilterList**, not
+    // HasClassName - so every PlaceObject3 carrying a filter had a string skipped
+    // that was not there, and `charId`, `charIdOffset` and `matrix` all came back
+    // shifted. It read `a_ScreenHalloweenDungeonPrompt`'s two text fields as
+    // characters 11804 and 11548, which do not exist; they are 172 and 174.
+    //
+    // Per the SWF spec the string is present when HasClassName (0x08), or when
+    // HasImage (0x10) is set together with HasCharacter.
+    const hasClassName = (flags2 & 0x08) !== 0 || ((flags2 & 0x10) !== 0 && (flags & 0x02) !== 0);
+    if (hasClassName) {
       while (data[offset] !== 0) offset += 1;
       offset += 1;
     }
@@ -581,6 +592,103 @@ export function buildSolidRectShape(id: number, bounds: Bounds, rgb: number): Sw
     shape.ub(1, 1); // GeneralLineFlag
     shape.sb(edgeBits, dx);
     shape.sb(edgeBits, dy);
+  }
+
+  shape.ub(6, 0); // EndShapeRecord
+
+  return {
+    code: TAG_DEFINE_SHAPE,
+    data: Buffer.concat([head, rect.toBuffer(), styles, shape.toBuffer()]),
+  };
+}
+
+/**
+ * A DefineShape holding stroked polylines, in twips.
+ *
+ * This is the shape a collision object is made of. `am_CollisionObject`'s two
+ * children are exactly this - no fills at all, one line style, and a run of
+ * straight edges - and the *colour* of the stroke is what the geometry means:
+ * `DungeonBlitz.method_77` maps cyan to `HARD_FLOOR`, red to `SOFT_FLOOR` (the
+ * kind you jump up through and drop back down out of), white to
+ * `TRIGGER_BOUNDARY`, and so on. So a new ledge is a red polyline dropped in
+ * beside the ones the room already carries; nothing else has to know about it.
+ *
+ * Each entry in `paths` is one subpath, a run of points in twips. They share a
+ * single line style, which is how the shipped collision shapes are built too.
+ */
+export function buildStrokedPolylineShape(
+  id: number,
+  paths: Array<Array<{ x: number; y: number }>>,
+  rgb: number,
+  widthTwips = 100,
+): SwfTag {
+  const points = paths.flat();
+  if (points.length === 0) throw new SwfLevelError("a collision shape needs at least one point");
+
+  const head = Buffer.alloc(2);
+  head.writeUInt16LE(id, 0);
+
+  // The bounds have to contain the stroke, not just its centre line, or Flash
+  // clips the ends off - hence the half-width margin.
+  const margin = Math.ceil(widthTwips / 2);
+  const bounds: Bounds = {
+    xMin: Math.min(...points.map((p) => p.x)) - margin,
+    xMax: Math.max(...points.map((p) => p.x)) + margin,
+    yMin: Math.min(...points.map((p) => p.y)) - margin,
+    yMax: Math.max(...points.map((p) => p.y)) + margin,
+  };
+
+  const rect = new BitWriter();
+  const rectBits = signedBitsNeeded(bounds.xMin, bounds.xMax, bounds.yMin, bounds.yMax);
+  rect.ub(5, rectBits);
+  rect.sb(rectBits, bounds.xMin);
+  rect.sb(rectBits, bounds.xMax);
+  rect.sb(rectBits, bounds.yMin);
+  rect.sb(rectBits, bounds.yMax);
+
+  const styles = Buffer.from([
+    0, // FillStyleCount
+    1, // LineStyleCount
+    widthTwips & 0xff,
+    (widthTwips >> 8) & 0xff,
+    (rgb >> 16) & 0xff,
+    (rgb >> 8) & 0xff,
+    rgb & 0xff,
+  ]);
+
+  const shape = new BitWriter();
+  shape.ub(4, 0); // NumFillBits
+  shape.ub(4, 1); // NumLineBits - one style, so one bit indexes it
+
+  for (const path of paths) {
+    if (path.length < 2) throw new SwfLevelError("a collision subpath needs at least two points");
+    // StyleChangeRecord: move to the subpath's first point and (re)select the
+    // stroke. The style is restated per subpath rather than relied on to carry
+    // over, which is what the shipped shapes do.
+    shape.ub(1, 0); // TypeFlag: non-edge
+    shape.ub(1, 0); // StateNewStyles
+    shape.ub(1, 1); // StateLineStyle
+    shape.ub(1, 0); // StateFillStyle1
+    shape.ub(1, 0); // StateFillStyle0
+    shape.ub(1, 1); // StateMoveTo
+    const moveBits = signedBitsNeeded(path[0].x, path[0].y);
+    shape.ub(5, moveBits);
+    shape.sb(moveBits, path[0].x);
+    shape.sb(moveBits, path[0].y);
+    shape.ub(1, 1); // LineStyle = the first (only) style
+
+    for (let index = 1; index < path.length; index += 1) {
+      const dx = path[index].x - path[index - 1].x;
+      const dy = path[index].y - path[index - 1].y;
+      if (dx === 0 && dy === 0) continue;
+      const edgeBits = Math.max(2, signedBitsNeeded(dx, dy));
+      shape.ub(1, 1); // TypeFlag: edge
+      shape.ub(1, 1); // StraightFlag
+      shape.ub(4, edgeBits - 2);
+      shape.ub(1, 1); // GeneralLineFlag
+      shape.sb(edgeBits, dx);
+      shape.sb(edgeBits, dy);
+    }
   }
 
   shape.ub(6, 0); // EndShapeRecord

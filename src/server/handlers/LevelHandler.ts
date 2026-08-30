@@ -1677,6 +1677,7 @@ export class LevelHandler {
             MovementAuthority.resetFromEntity(other, other.entities.get(other.clientEntID), 'cutscene_end');
             other.send(0xA6, payload);
             MissionHandler.noteDungeonCutsceneEnd(other, roomId);
+            LevelHandler.offerHallowsEveCoffers(other);
         }
         LevelHandler.setServerAuthorityHostilesUntargetableForScope(scopeKey, roomId, false);
         return true;
@@ -4020,6 +4021,12 @@ export class LevelHandler {
             MissionHandler.noteDungeonCutsceneEnd(other, roomId);
             other.activeDungeonCutsceneJoinedAtDialogIndex = 0;
             other.activeDungeonCutsceneLocalDialogIndex = 0;
+            // **This is the path a dungeon actually takes.** `sendRoomCutSceneEnd`
+            // hands every shared cutscene off to this method and returns, so a hook
+            // placed only in its own participant loop never runs inside a dungeon -
+            // which is exactly why the coffers stayed shut after the Green Knight
+            // stopped talking.
+            LevelHandler.offerHallowsEveCoffers(other);
         }
     }
 
@@ -4454,6 +4461,35 @@ export class LevelHandler {
      * that can be reached without emitting new AVM2 classes: the panel's artwork is
      * in `UI_Seasonal.swf`, but nothing in `DungeonBlitz.swf` can open it.
      */
+    /**
+     * Spends the coffer mark when the Green Knight stops talking.
+     *
+     * *"Cutscene biter bitmez bu ekranın açılması gerekiyor"* - so this hangs off
+     * the cutscene-end broadcast rather than off the clear, which happens a
+     * cinematic earlier. The mark is laid down by `MissionHandler` when the key is
+     * paid and spent here, once, so the arena's opening cinematic can never raise
+     * it and a second run inside the twelve hours raises nothing.
+     *
+     * Every participant is offered separately: keys are per character, and in a
+     * party one member can be inside the window while another is not.
+     */
+    private static offerHallowsEveCoffers(client: Client): void {
+        if (!HallowsEve.isDungeon(client.currentLevel)) {
+            return;
+        }
+        if (!HallowsEve.consumeCoffersOwed(client.character?.name)) {
+            return;
+        }
+        // The mark is spent, and that is all this does now.
+        //
+        // It used to raise the coffers question in `a_DialogBox` here. The key is
+        // already on the character by this point, and the skull grid in the square
+        // is where a key is turned into a prize - a window that opens itself over
+        // the dungeon result is not what the original did, and now that the grid is
+        // clickable it is not needed either.
+        console.log(`[HallowsEve] ${String(client.character?.name ?? '')} earned a key; the coffer is on the grid`);
+    }
+
     private static sendHallowsEveChallengePrompt(
         client: Client,
         doorId: number,
@@ -4465,13 +4501,7 @@ export class LevelHandler {
         }
 
         const fromLevel = LevelConfig.normalizeLevelName(client.currentLevel) || String(client.currentLevel ?? '');
-        const token = HallowsEve.openPrompt('challenge', client.character?.name, fromLevel);
-
-        const bb = new BitBuffer(false);
-        bb.writeMethod9(token);
-        bb.writeMethod26(HALLOWS_EVE_PROMPT_CONTEXT);
-        bb.writeMethod26(HallowsEve.buildChallengeText(client.character));
-        client.sendBitBuffer(0x58, bb);
+        HallowsEve.raiseChallengePrompt(client, fromLevel);
 
         client.lastDoorId = -1;
         client.lastDoorTargetLevel = '';

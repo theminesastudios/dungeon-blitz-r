@@ -10,6 +10,7 @@ import { clampSocialLevel, normalizeFriendEntries, sanitizeSocialText } from '..
 import { normalizeGender } from './normalizeGender';
 import { getVisibleConsumableCount, reconcileConsumableSelectionState } from './ConsumableState';
 import { ensureSigilStoreAlertState } from './AlertState';
+import { HallowsEve } from '../core/HallowsEve';
 import { writeSavedKeyBindings } from './KeyBindings';
 import { normalizeCharacterMaterials } from './MaterialInventory';
 import { CharmID } from '../data/runtime/Charms';
@@ -715,6 +716,19 @@ export class WorldEnter {
                 }
             }
             bb.writeMethod11(0, 1);
+
+            /**
+             * Hallow's Eve keys have to become a coffer *before* this packet is
+             * written, not after.
+             *
+             * The client's coffer panel is the lockbox panel, and it is driven
+             * entirely by the two counters below. Topping them up at spawn - which
+             * is where this used to happen - was too late by a whole packet: the
+             * client had already been told it owned nothing, so clicking the skull
+             * grid answered "Maybe that old man knows how to open this..." and the
+             * key sat there unspendable.
+             */
+            HallowsEve.ensureCofferStock(character);
 
             const lockboxes = WorldEnter.asArray(character.lockboxes);
             for (const rawLockbox of lockboxes) {

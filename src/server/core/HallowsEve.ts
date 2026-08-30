@@ -1,5 +1,19 @@
 import { EntityProps, EntityState, EntityTeam } from './Entity';
 import { LevelConfig } from './LevelConfig';
+import { BitBuffer } from '../network/protocol/bitBuffer';
+
+/**
+ * The little of a session this file needs.
+ *
+ * Structural rather than the real `Client` so that raising a window stays a core
+ * concern: `LevelHandler` and `NpcHandler` both open these prompts, and routing
+ * either of them through the other would close an import loop.
+ */
+interface PromptTarget {
+    character?: any;
+    currentLevel?: string | null;
+    sendBitBuffer(packetId: number, bb: BitBuffer): void;
+}
 
 /**
  * Hallow's Eve: the Green Knight's Challenge, put back where it used to stand.
@@ -59,10 +73,15 @@ import { LevelConfig } from './LevelConfig';
  */
 export const HALLOWS_EVE_WATCHER_ENTITY_ID = 29_000_001;
 export const HALLOWS_EVE_COFFERS_ENTITY_ID = 29_000_002;
+export const HALLOWS_EVE_HERALD_ENTITY_ID = 29_000_003;
+export const HALLOWS_EVE_CHALLENGE_ENTITY_ID = 29_000_004;
 
-/** The EntTypes. Both shipped; `patch_swz_hallows_eve_ents.ts` only re-dresses them. */
+/** The EntTypes. The first two shipped; the Herald is minted alongside them. */
 export const HALLOWS_EVE_WATCHER_ENT = 'NPCHalloweenWatcher';
 export const HALLOWS_EVE_COFFERS_ENT = 'HalloweenCoffers';
+export const HALLOWS_EVE_HERALD_ENT = 'NPCHalloweenHerald';
+/** The shipped portal EntType - empty art, used as a click box on the arch. */
+export const HALLOWS_EVE_PORTAL_ENT = 'HalloweenPortal';
 
 /**
  * The dungeon behind the portal, and the door that leads to it.
@@ -72,29 +91,71 @@ export const HALLOWS_EVE_COFFERS_ENT = 'HalloweenCoffers';
 export const HALLOWS_EVE_LEVEL = 'LDArena1';
 export const HALLOWS_EVE_DOOR_ID = 108;
 
+/**
+ * The coffer's lockbox id, minted by `patch_swz_hallows_eve_coffer.ts`.
+ *
+ * Its own id rather than the Treasure Trove's, because `class_131.OpenLockbox`
+ * decrements the stack of whatever id it is given - a coffer sharing id 1 would
+ * eat troves the player had bought. Ids are sent in two bits, so 0..3 is the
+ * whole range there will ever be.
+ */
+export const HALLOWS_EVE_COFFER_LOCKBOX_ID = 2;
+
+/**
+ * What "Summon Knight Now" costs, in Mammoth Idols.
+ *
+ * Twenty, because that is the number drawn on the panel's own price tag
+ * (`am_IdolGroup`), which is authored art and cannot be driven from here. Change one
+ * and the other is a lie.
+ */
+export const HALLOWS_EVE_SUMMON_COST_IDOLS = 20;
+
 /** The boss whose death pays the key. */
 export const HALLOWS_EVE_BOSS_ENT = 'GreenKnight';
 
 /** The towns the square is in. Both are drawn from the same `a_Room_SRN04`. */
-export const HALLOWS_EVE_TOWNS = ['SwampRoadNorth', 'SwampRoadNorthHard'];
+export const HALLOWS_EVE_TOWN_NORMAL = 'SwampRoadNorth';
+export const HALLOWS_EVE_TOWN_HARD = 'SwampRoadNorthHard';
+export const HALLOWS_EVE_TOWNS = [HALLOWS_EVE_TOWN_NORMAL, HALLOWS_EVE_TOWN_HARD];
 
 /**
- * Where the coffers stands, in `a_Level_SwampRoadNorth` world pixels.
+ * The coffers - on the skulls, not on the stonework.
  *
- * Room-local 770 - the middle of the skull-grid wall, the square's second ruin,
- * which spans 600..942. **The ruin is the reward point**: the player walks up to
- * the stonework and opens it, rather than to a chest standing in front of it.
+ * The first pass hung a 300x160 interact box on the floor against the second
+ * ruin, so every click anywhere on the lower wall opened a speech bubble. That
+ * was the complaint, and it is still the rule: **plain stone must not talk.**
  *
- * That is very nearly where it started (3260), which is worth knowing - the ruin
- * was always the right spot and the chest art was the thing that was wrong.
+ * What is wanted instead is the skull grid itself - the panel of carved skulls
+ * between the two lanterns, which is what a coffer *is* in this square. So the
+ * box is lifted off the floor onto that panel: room-local x 800 is the centre of
+ * the grid and room-local -140 is the ruin's base ledge, i.e. world (3240, 520).
+ * From there `Height` carries it up over the grid rather than down over the
+ * walkable rock.
  *
- * The Hollow Watcher used to stand at 2760, in front of the tower. He is gone: the
- * arch is set into that tower now, and a figure planted on the ruins was the one
- * thing in the square that answered a click on the stone with a speech bubble.
- * `buildWatcherEntity` and his lines are kept because the square may want a herald
- * again somewhere that is not on the artwork; nothing spawns him today.
+ * It only stays up there because the EntType is `Flying`: a server-spawned entity
+ * gets no floor snap, and without the flag it would drop to the ground - which is
+ * how the Legends' Inn portal once fell out of the world.
  */
-const COFFERS_POSITION = { x: 3210, y: 580 };
+const COFFERS_POSITION = { x: 3240, y: 520 };
+
+/**
+ * Where the Herald stands, in `a_Level_SwampRoadNorth` world pixels.
+ *
+ * Room-local 552, on the floor line, at the foot of the second ruin - **and the
+ * spot is chosen to hide something.**
+ *
+ * The scene carries a broken iron fence, and one of its posts hangs about 50px
+ * below the stonework it belongs to, ending in a point over open grass. It is
+ * baked into character 39 along with both ruins, the hill and every other fence
+ * in the square, so it cannot be deleted, moved or masked away - a clip window is
+ * a rectangle you see *through*, not a hole you can punch. The only way to be rid
+ * of it is to put something in front of it.
+ *
+ * A hooded figure a head and a half taller than the post covers it exactly, and
+ * he wants to be near the coffers anyway. So the glitch is the anchor: move him
+ * and it comes back.
+ */
+const HERALD_POSITION = { x: 2992, y: 580 };
 
 /**
  * The cues they are clickable through. See the file comment: the client refuses to
@@ -102,7 +163,115 @@ const COFFERS_POSITION = { x: 3210, y: 580 };
  * `a_Room_SRN04` already carries with an empty `sayOnInteract`.
  */
 const WATCHER_CUE_NAME = 'SRN_Mayor01';
-const COFFERS_CUE_NAME = 'Ield';
+
+/** What the Herald is clickable through - a cue the room already carries. */
+const HERALD_CUE_SOURCE = 'Ield';
+
+/**
+ * **The client renames every cue in a Hard level, and this is what broke the square.**
+ *
+ * `Level.method_1130`, which walks a room's cues and builds `level.var_1046` - the
+ * name -> cue dictionary a *server-spawned* entity is bound through - does this
+ * first:
+ *
+ *     if (this.alterParamsString == "Hard")
+ *         cue.characterName = cue.characterName + "Hard";
+ *
+ * So in Dread Black Rose Mire the dictionary holds `IeldHard`,
+ * `Special_ClassTowerHard`, `SRN_Mayor01Hard`; the unsuffixed names are simply not
+ * in it. An entity sent with `Ield` there resolves to `undefined`, `entity.cue`
+ * stays null, and `Entity.method_355()` - `team == NEUTRAL && cue && cue.characterName`
+ * - refuses it as an interact target. The body is still drawn and still stands
+ * there; it just cannot be clicked, and it grows no name plate, because the plate
+ * is `cue.displayName`.
+ *
+ * That is why `data/npcs/SwampRoadNorthHard.json` carries `IeldHard` while the level
+ * SWF defines only `Ield` - the suffix is synthesised on the client, not authored.
+ * The square's three props were built with the plain names whichever town they
+ * stood in, so **in the Dread town none of them, the Herald included, has ever been
+ * clickable**, which is exactly what a whole session of testing there kept showing.
+ *
+ * `Blackrose Mire` (the normal town) is unaffected: `alterParamsString` is empty and
+ * the plain names are the right ones.
+ */
+function cueFor(levelName: string | null | undefined, cueName: string): string {
+    const normalized = LevelConfig.normalizeLevelName(levelName) || String(levelName ?? '').trim();
+    return normalized === HALLOWS_EVE_TOWN_HARD ? `${cueName}Hard` : cueName;
+}
+
+/**
+ * **This string is the coffer screen.**
+ *
+ * `Game.method_668` branches on the clicked entity's `characterName`, and the
+ * `Special_TreasureTrove` arm opens `screenLockBox` - the client's real
+ * lockbox-opening panel, with its Open button, key counter, sparkle fountain and
+ * reward reveal. It is the only path in this build that lets the server open a
+ * screen without touching a byte of `DungeonBlitz.swf`.
+ *
+ * So the coffers is not "an NPC that says something about a coffer" any more. It
+ * is a lockbox, the skull grid is the box, and clicking it opens the panel.
+ * `HALLOWS_EVE_COFFER_LOCKBOX_ID` is what it costs to open.
+ *
+ * The gate on the client side is `mLockboxData.method_662()` - the player must
+ * own at least one lockbox - and `OpenLockbox` additionally wants a key. Both are
+ * paid by `grantCoffer` on a Green Knight clear.
+ */
+const COFFERS_CUE_NAME = 'Special_TreasureTrove';
+
+/**
+ * **This string is the challenge screen.**
+ *
+ * The other spare arm of `Game.method_668`'s `characterName` chain:
+ * `Special_ClassTower` opens `screenClassTowers`, and
+ * `patch-hallows-eve-challenge-screen.ts` has repointed that class at
+ * `a_ScreenHalloweenDungeonPrompt` - the event's own panel, with its clock, its
+ * chained door and its Enter button.
+ *
+ * The Class Tower was the one feature left in the chain this server does not use.
+ * There is no third spare arm; the remaining six are the barn, the forge, the
+ * dyer, the look-change, the sigil store and the ability tome.
+ */
+
+/** The cue each prop answers to, and the villager cue it borrows while diagnosing. */
+const CHALLENGE_CUE_NAME = 'Special_ClassTower';
+
+/**
+ * Where the challenge figure stands: **beside the arch, on the floor.**
+ *
+ * ## Why it moved off the rift
+ *
+ * It used to be an invisible box floating at (2744, 420), on the arch's centre
+ * line, and the note here claimed that lifting it "clear of the door's
+ * rectangle". That was simply wrong, and it is worth writing down because it cost
+ * three rounds. `a_Door_108` carries a 200x400 click rectangle **standing on the
+ * floor line**, so it spans y 180..580 - and the box at y 420, 260 tall, spanned
+ * y 160..420. It was not clear of the door's rectangle; it was **entirely inside
+ * it**, on the same centre x. Every reach for the arch had two targets stacked on
+ * one another and no reason to prefer the invisible one.
+ *
+ * ## Where it is now
+ *
+ * The door owns x 2644..2844. This stands at 2580 on the floor line, on the open
+ * grass the player walks in from: 80px wide, so it ends at 2620 and leaves 24px of
+ * daylight before the door's rectangle begins. The Herald keeps the far side at
+ * 2992. So the arch is a door and this is a person, and a click can only mean one
+ * of them.
+ *
+ * y is 580, the measured floor line - `NPCHalloweenWatcher` is not `Flying` and a
+ * server-spawned entity gets no floor snap, so the number has to be right.
+ */
+const CHALLENGE_POSITION = { x: 2580, y: 580 };
+
+/**
+ * The Herald's cue: the coffers' own, because he is standing where it stood and
+ * doing what it did.
+ *
+ * `Ield` is the one cue name in this room already proven to carry an interact for
+ * a prop this feature spawns - the coffers answered a click through it. Dialogue
+ * is dispatched on the entity id, never on the cue name, so sharing it with the
+ * room's own `NPCIeld` costs nothing. See the file comment.
+ */
+const HERALD_CUE_NAME = HERALD_CUE_SOURCE;
 
 /** Where the briefing is remembered on the character. */
 const BRIEFED_FIELD = 'hallowsEveBriefed';
@@ -146,6 +315,28 @@ const WATCHER_LINES: string[] = [
     'When the week turns the arch closes, and I go back to watching nothing.',
     'No, I do not know what is in the coffers. I have never had a key.',
     'Go on. He has been waiting a year.'
+];
+
+/**
+ * What the Herald says when he has nothing to unlock.
+ *
+ * He is the square's one figure, so he carries the whole briefing between them:
+ * where the arch goes, what is through it, what a key is worth and how often one
+ * is due. The coffers' old "locked, and you have no key" line is still used when
+ * the answer turns on the clock - see `buildNoKeyLine` - and these are what he
+ * says the rest of the time.
+ */
+const HERALD_LINES: string[] = [
+    'One night a year the arch opens, and the Green Knight takes callers. Tonight is that night.',
+    'Beat him and you have a key. Bring it back to me and we will see what the coffers is keeping.',
+    'He fights fair, more or less. The three standing with him do not fight at all.',
+    'Strike the skulls in there. They are laughing at you for a reason.',
+    'One key every twelve hours. After that he is only bored of you.',
+    'The bone thing at the back of the arena is his, not yours. Leave it if you can.',
+    'I have watched him lose. Not often, and not to anyone who went in alone.',
+    'Climb the stones if you like. They have held longer than anyone here has.',
+    'When the week turns the arch closes, and I go back to heralding nothing.',
+    'No, I do not know what is in the coffers. I have never had a key.'
 ];
 
 /**
@@ -291,6 +482,34 @@ export class HallowsEve {
     /** Characters who answered Yes and have not walked through yet, by expiry. */
     private static entryGrants: Map<string, number> = new Map();
 
+    /**
+     * Characters who have earned a key and not yet been offered the coffers.
+     *
+     * The event's own screen opens *"cutscene biter bitmez"* - the moment the Green
+     * Knight's last line finishes - and that is a different instant from the one
+     * the key is paid at. The key is awarded when the arena is cleared, which is
+     * the boss dying; the defeat cinematic runs after it. So the clear leaves a
+     * mark here and `LevelHandler.sendRoomCutSceneEnd` spends it on the next
+     * cutscene end inside the arena.
+     *
+     * A mark rather than a persisted field on purpose: it belongs to one run, and
+     * a player who logs out mid-cinematic should meet the Herald in the square
+     * rather than a window that opens itself a day later.
+     */
+    private static coffersOwed: Set<string> = new Set();
+
+    /**
+     * Characters currently inside the arena, so their next arrival in the square
+     * can be told apart from any other way into it.
+     *
+     * The challenge screen is asked for *"zindandan çıktığımız zaman"* - on the way
+     * out, not on the way in - and the way out is an ordinary level transfer with
+     * nothing about it that says where it came from. A transfer burns three
+     * sessions and two tokens (see the door-transfer notes), so this is keyed by
+     * character name, which is the one thing that survives all three.
+     */
+    private static insideArena: Set<string> = new Set();
+
     /** True for the two entity ids the square occupies. */
     static isWatcher(entityId: unknown): boolean {
         return Math.round(Number(entityId ?? 0)) === HALLOWS_EVE_WATCHER_ENTITY_ID;
@@ -298,6 +517,22 @@ export class HallowsEve {
 
     static isCoffers(entityId: unknown): boolean {
         return Math.round(Number(entityId ?? 0)) === HALLOWS_EVE_COFFERS_ENTITY_ID;
+    }
+
+    static isHerald(entityId: unknown): boolean {
+        return Math.round(Number(entityId ?? 0)) === HALLOWS_EVE_HERALD_ENTITY_ID;
+    }
+
+    /**
+     * The invisible click box on the arch.
+     *
+     * Only reached in the Dread town, where `Special_ClassTowerHard` matches no arm
+     * of the interact chain and the click falls through to the server as an ordinary
+     * NPC talk. In the normal town the client opens the panel itself and sends
+     * nothing.
+     */
+    static isChallengeMarker(entityId: unknown): boolean {
+        return Math.round(Number(entityId ?? 0)) === HALLOWS_EVE_CHALLENGE_ENTITY_ID;
     }
 
     /** Whether this level is one of the two towns the square stands in. */
@@ -325,14 +560,24 @@ export class HallowsEve {
      * arena has plainly answered it.
      */
     static shouldStopAtPortal(
-        characterName: unknown,
-        currentLevel: string | null | undefined,
-        targetLevel: string | null | undefined
+        _characterName: unknown,
+        _currentLevel: string | null | undefined,
+        _targetLevel: string | null | undefined
     ): boolean {
-        if (!HallowsEve.isDungeon(targetLevel) || HallowsEve.isDungeon(currentLevel)) {
-            return false;
-        }
-        return !HallowsEve.consumeEntryGrant(characterName);
+        /**
+         * **The arch no longer stops anyone.**
+         *
+         * This used to refuse the door and put the challenge up in `a_DialogBox`,
+         * because nothing in the client could open the real panel. Something can
+         * now: the marker on the arch is cued `Special_ClassTower` and clicking it
+         * opens `a_ScreenHalloweenDungeonPrompt` itself - clock, chained door and
+         * all. So the panel is where the challenge is read, and the door is just a
+         * door, which is how the original worked.
+         *
+         * Kept as a function rather than deleted at its two call sites so the door
+         * path still reads as having a gate, and so putting one back is one line.
+         */
+        return false;
     }
 
     /** One of his lines, chosen at random the way every other NPC's is. */
@@ -349,24 +594,118 @@ export class HallowsEve {
      * a spot that is not on the artwork - room-local 1300 and up is open ground.
      */
     static buildWatcherEntity(
-        position: { x: number; y: number } = { x: 3740, y: 580 }
+        position: { x: number; y: number } = { x: 3740, y: 580 },
+        levelName?: string | null
     ): EntityProps & Record<string, unknown> {
         // Facing left, back towards the arch he is keeping watch over.
         return buildProp(
             HALLOWS_EVE_WATCHER_ENTITY_ID,
             HALLOWS_EVE_WATCHER_ENT,
-            WATCHER_CUE_NAME,
+            cueFor(levelName, WATCHER_CUE_NAME),
             position,
             true
         );
     }
 
-    static buildCoffersEntity(): EntityProps & Record<string, unknown> {
+    /** One of the Herald's lines, chosen at random the way every other NPC's is. */
+    static getHeraldLine(): string {
+        return HERALD_LINES[Math.floor(Math.random() * HERALD_LINES.length)];
+    }
+
+    /**
+     * The Herald, standing in the middle of the square.
+     *
+     * Facing left, towards the arch he is heralding. He is the only figure the
+     * square spawns: the Watcher is kept in code but stands nowhere (see
+     * `buildWatcherEntity`), and the coffers is gone entirely because an invisible
+     * interact box on the ruins is what made the stonework talk.
+     */
+    static buildHeraldEntity(levelName?: string | null): EntityProps & Record<string, unknown> {
+        return buildProp(
+            HALLOWS_EVE_HERALD_ENTITY_ID,
+            HALLOWS_EVE_HERALD_ENT,
+            cueFor(levelName, HERALD_CUE_NAME),
+            HERALD_POSITION,
+            true
+        );
+    }
+
+    /**
+     * The figure beside the arch that opens the Green Knight's Challenge panel.
+     *
+     * **It is drawn now, and that is the point.** It used to be `HalloweenPortal`,
+     * whose GfxType is `a__EmptyAnimation` - a click box that draws nothing. Two
+     * things were wrong with that. It sat inside the door's own click rectangle
+     * (see `CHALLENGE_POSITION`), and even standing somewhere clear it would have
+     * been an invisible square that a player has no way of knowing to click.
+     *
+     * The panel cannot be raised any other way. `Game.method_668` opens it off the
+     * clicked entity's cue, entirely inside the client - no packet is sent, so the
+     * server cannot put it up on a door, on a transfer, or on anything else. If the
+     * only trigger is a click, then the thing to click has to be visible.
+     *
+     * So it borrows the Hollow Watcher, who was written for this square, is
+     * re-dressed by `patch_swz_hallows_eve_ents.ts`, and has been standing nowhere
+     * since the coffers took his spot. He stands on the near side of the arch facing
+     * right, towards the rift he is keeping watch over.
+     */
+    static buildChallengeMarkerEntity(levelName?: string | null): EntityProps & Record<string, unknown> {
+        return buildProp(
+            HALLOWS_EVE_CHALLENGE_ENTITY_ID,
+            HALLOWS_EVE_WATCHER_ENT,
+            cueFor(levelName, CHALLENGE_CUE_NAME),
+            CHALLENGE_POSITION,
+            false
+        );
+    }
+
+    /**
+     * Makes an old character's keys openable.
+     *
+     * Keys earned before the coffer became a lockbox live only in
+     * `hallowsEveKeys`; the client's panel is driven by `mOwnedLockboxes` and
+     * `DragonKeys`, which those characters have none of. Without this they would
+     * hold keys the skull grid refuses to open - it would say *"Maybe that old man
+     * knows how to open this..."* and nothing else.
+     *
+     * Tops the two client-side counters up to the key count, never down: a player
+     * who bought Dragon Keys keeps them.
+     */
+    static ensureCofferStock(character: any): boolean {
+        const keys = HallowsEve.getKeys(character);
+        if (!character || keys <= 0) {
+            return false;
+        }
+
+        const boxes = Array.isArray(character.lockboxes) ? character.lockboxes : [];
+        const entry = boxes.find(
+            (row: any) => Math.round(Number(row?.lockboxID ?? 0)) === HALLOWS_EVE_COFFER_LOCKBOX_ID
+        );
+        const held = Math.max(0, Math.round(Number(entry?.count ?? 0)));
+        let changed = false;
+
+        if (held < keys) {
+            if (entry) {
+                entry.count = keys;
+            } else {
+                boxes.push({ lockboxID: HALLOWS_EVE_COFFER_LOCKBOX_ID, count: keys });
+            }
+            character.lockboxes = boxes;
+            changed = true;
+        }
+        if (Math.max(0, Math.round(Number(character.DragonKeys ?? 0))) < keys) {
+            character.DragonKeys = keys;
+            changed = true;
+        }
+        return changed;
+    }
+
+    static buildCoffersEntity(levelName?: string | null): EntityProps & Record<string, unknown> {
         // Facing left, back towards the arch the keys come out of.
         return buildProp(
             HALLOWS_EVE_COFFERS_ENTITY_ID,
             HALLOWS_EVE_COFFERS_ENT,
-            COFFERS_CUE_NAME,
+            cueFor(levelName, COFFERS_CUE_NAME),
             COFFERS_POSITION,
             true
         );
@@ -378,7 +717,8 @@ export class HallowsEve {
         return (
             Boolean(record?.hallowsEveProp) ||
             normalizeName(record?.name) === normalizeName(HALLOWS_EVE_WATCHER_ENT) ||
-            normalizeName(record?.name) === normalizeName(HALLOWS_EVE_COFFERS_ENT)
+            normalizeName(record?.name) === normalizeName(HALLOWS_EVE_COFFERS_ENT) ||
+            normalizeName(record?.name) === normalizeName(HALLOWS_EVE_HERALD_ENT)
         );
     }
 
@@ -450,6 +790,149 @@ export class HallowsEve {
         return until > now;
     }
 
+    // -----------------------------------------------------------------------
+    // When the two windows open
+    // -----------------------------------------------------------------------
+
+    /**
+     * Records that a clear has paid a key, so the coffers can be offered as soon
+     * as the Green Knight has finished talking.
+     */
+    static noteKeyEarned(characterName: unknown): void {
+        HallowsEve.coffersOwed.add(String(characterName ?? ''));
+    }
+
+    /**
+     * True once, for the cutscene end that should open the coffers.
+     *
+     * Spent rather than tested so the arena's *intro* cinematic can never trip it:
+     * the mark is only ever laid down by a clear, and only the first cutscene end
+     * after that clear takes it.
+     */
+    static consumeCoffersOwed(characterName: unknown): boolean {
+        const name = String(characterName ?? '');
+        if (!HallowsEve.coffersOwed.has(name)) {
+            return false;
+        }
+        HallowsEve.coffersOwed.delete(name);
+        return true;
+    }
+
+    /**
+     * Follows a character across the arch, so an arrival in the square can be told
+     * apart from a walk in off the road.
+     *
+     * Called on every spawn. Returns true when this spawn is the one that just came
+     * back out of the arena, which is when the challenge screen is due.
+     */
+    static noteSpawn(characterName: unknown, levelName: string | null | undefined): boolean {
+        const name = String(characterName ?? '');
+        if (HallowsEve.isDungeon(levelName)) {
+            HallowsEve.insideArena.add(name);
+            return false;
+        }
+        if (!HallowsEve.insideArena.delete(name)) {
+            return false;
+        }
+        // Only the square asks the question. Anywhere else - a recall home, a
+        // teleport out - and the run simply ended.
+        return HallowsEve.isTown(levelName);
+    }
+
+    /** Forgets a character entirely, for a logout. */
+    static forget(characterName: unknown): void {
+        const name = String(characterName ?? '');
+        HallowsEve.coffersOwed.delete(name);
+        HallowsEve.insideArena.delete(name);
+        HallowsEve.entryGrants.delete(name);
+    }
+
+    /**
+     * Raises the coffers question, wherever the player is standing.
+     *
+     * Returns false when there is no key to spend, which is the one case the
+     * window has nothing to say - the caller decides whether that deserves a line
+     * of its own or silence.
+     *
+     * The packet is `a_DialogBox` on 0x58, answered on 0x59; see the note above
+     * `PROMPT_TOKEN_BASE` for why this rather than the shipped
+     * `a_ScreenHalloweenCoffers` panel.
+     */
+    static raiseCoffersPrompt(client: PromptTarget): boolean {
+        const character = client.character;
+        const text = character ? HallowsEve.buildCoffersText(character) : null;
+        if (!text) {
+            return false;
+        }
+        const token = HallowsEve.openPrompt('coffers', character.name, client.currentLevel);
+        const bb = new BitBuffer(false);
+        bb.writeMethod9(token);
+        bb.writeMethod26(HALLOWS_EVE_PROMPT_CONTEXT);
+        bb.writeMethod26(text);
+        client.sendBitBuffer(0x58, bb);
+        return true;
+    }
+
+    /**
+     * Raises the Green Knight's Challenge, worded off the shipped prompt screen.
+     *
+     * `fromLevel` is what a Yes answers the door *from*; the caller supplies it
+     * because the two callers mean different things by it - the arch means the
+     * square the player is standing in, and the way out of the arena means the
+     * square they have just arrived in.
+     */
+    static raiseChallengePrompt(client: PromptTarget, fromLevel: string): number {
+        const token = HallowsEve.openPrompt('challenge', client.character?.name, fromLevel);
+        const bb = new BitBuffer(false);
+        bb.writeMethod9(token);
+        bb.writeMethod26(HALLOWS_EVE_PROMPT_CONTEXT);
+        bb.writeMethod26(HallowsEve.buildChallengeText(client.character));
+        client.sendBitBuffer(0x58, bb);
+        return token;
+    }
+
+    /**
+     * Puts the Green Knight's Challenge up on the way *out* of the arena.
+     *
+     * *"Zindandan çıktığımız zaman direkt bu ekran belirmeli"* - the screen the
+     * original showed on the square, with the twelve-hour clock on it, so a player
+     * walking out knows straight away whether another run is worth a key. A Yes
+     * takes them back through the arch, which is what the original's own text
+     * offered impatient heroes.
+     *
+     * Called for every spawn; `noteSpawn` is what tells this arrival apart from any
+     * other way into the square, and answers true exactly once per trip through the
+     * arch. It lives here rather than in `LevelHandler` so that `EntityHandler` -
+     * which is where a spawn is finished - does not have to import it back and
+     * close a loop.
+     */
+    static onSpawn(client: PromptTarget): void {
+        const level = LevelConfig.normalizeLevelName(client.currentLevel) || String(client.currentLevel ?? '');
+        if (!HallowsEve.noteSpawn(client.character?.name, level)) {
+            return;
+        }
+        const name = String(client.character?.name ?? '');
+
+        /**
+         * **Nothing is raised here any more.**
+         *
+         * This used to put the challenge up in `a_DialogBox` the moment a player
+         * arrived back in the square, because at the time nothing in the client
+         * could open the event's own panel. Something can now: the two props in
+         * the square carry cues the interact handler knows
+         * (`patch-levelssrn-hallows-eve-cues.ts`), so the challenge is read off
+         * `a_ScreenHalloweenDungeonPrompt` by clicking the arch and the coffer is
+         * opened by clicking the skull grid - which is how the original worked, and
+         * a window that opens itself over the square is exactly what it did not do.
+         *
+         * The coffers mark is still spent so it cannot survive to a later arrival;
+         * the key it stands for is already on the character by this point and the
+         * grid is what turns it into a prize.
+         */
+        HallowsEve.consumeCoffersOwed(name);
+        console.log(`[HallowsEve] ${name} arrived in the square; the panels are on the props`);
+    }
+
     /** Whether a token belongs to this feature at all, before anything is looked up. */
     static ownsPromptToken(token: unknown): boolean {
         const value = Math.round(Number(token ?? 0));
@@ -510,28 +993,97 @@ export class HallowsEve {
         }
         const prize = HallowsEve.nextPrize(character);
         return (
+            'THE COFFERS\n\n' +
             `The coffers is locked, and you are holding ${keys} key${keys === 1 ? '' : 's'}.\n\n` +
             `Spend one to open it? There is ${prize.label} inside.`
         );
     }
 
-    /** What the coffers says when there is nothing to spend. */
+    /**
+     * What the Herald says when there is no key to spend.
+     *
+     * Only used when the answer turns on the clock or on the arch; when neither
+     * does, he has plenty else to say - see `getHeraldLine`.
+     */
     static buildNoKeyLine(character: any): string {
         const wait = HallowsEve.secondsUntilNextKey(character);
         return wait > 0
-            ? `Locked, and you have no key. The Green Knight will grant another in ${describeHallowsEveDelay(wait)}.`
-            : 'Locked. Beat the Green Knight through that arch and come back with a key.';
+            ? `The coffers stays shut, and you have no key. The Green Knight will grant another in ${describeHallowsEveDelay(wait)}.`
+            : 'No key, no coffers. Beat the Green Knight through that arch and come back with one.';
     }
 
     // -----------------------------------------------------------------------
     // Keys
     // -----------------------------------------------------------------------
 
+    /**
+     * Whether this character has a coffer to open.
+     *
+     * The square stops drawing the skull grid when this is false, and the reason is
+     * that the coffer and the Treasure Trove share one screen: the client picks which
+     * lockbox to open with `mLockboxData.method_1459()`, which walks whatever the
+     * player owns, and its gate (`method_662()`) only asks for **at least one lockbox
+     * of any kind**. So a player out of coffers who clicks the grid gets the same
+     * panel opening their *troves* - which is what happened the first time this ran:
+     * two coffers paid out event pets, and the third click spent a trove.
+     *
+     * Refusing to spawn the grid is the honest fix. It is server-side, it costs
+     * nothing, and it makes the grid mean what it looks like. The Herald is still
+     * there to say when the next key is due.
+     */
+    static hasCoffer(character: any): boolean {
+        const boxes = Array.isArray(character?.lockboxes) ? character.lockboxes : [];
+        return boxes.some(
+            (row: any) =>
+                Math.round(Number(row?.lockboxID ?? 0)) === HALLOWS_EVE_COFFER_LOCKBOX_ID &&
+                Math.round(Number(row?.count ?? 0)) > 0
+        );
+    }
+
     static getKeys(character: any): number {
         return Math.max(0, Math.round(Number(character?.[KEYS_FIELD] ?? 0)) || 0);
     }
 
     /** Seconds until this character can earn another key; 0 when one is due. */
+    /**
+     * Summons the Green Knight early, for Mammoth Idols.
+     *
+     * The panel's "Summon Knight Now" button is the Class Tower's *speed up the
+     * research* button wearing the seasonal art - see `SUMMON_BUTTON_SOURCE` in
+     * `scripts/patch-hallows-eve-challenge-screen.ts` for how the two were joined.
+     * `class_69.method_1410` computes a price from the Class Tower's own timer and
+     * writes it into the packet; that number is meaningless here and is ignored.
+     * **The price is this constant and the check is this method** - the client is
+     * never trusted with either.
+     *
+     * Clearing `LAST_KILL_FIELD` is all "summoning" means: the twelve-hour wait is a
+     * stamp of when the Knight last fell, and `secondsUntilNextKey` reads it. With it
+     * gone the arch pays a key again on the next clear.
+     */
+    static summonKnightNow(character: any): 'summoned' | 'ready' | 'poor' | 'unknown' {
+        if (!character) {
+            return 'unknown';
+        }
+        if (HallowsEve.secondsUntilNextKey(character) <= 0) {
+            return 'ready';
+        }
+        const idols = Math.max(0, Math.round(Number(character.mammothIdols ?? 0)) || 0);
+        if (idols < HALLOWS_EVE_SUMMON_COST_IDOLS) {
+            return 'poor';
+        }
+        character.mammothIdols = idols - HALLOWS_EVE_SUMMON_COST_IDOLS;
+        character[LAST_KILL_FIELD] = 0;
+        return 'summoned';
+    }
+
+    /** A line from the figure at the arch, on the entity the panel was opened from. */
+    static sayAtTheArch(client: PromptTarget, text: string): void {
+        const bb = new BitBuffer();
+        bb.writeMethod4(HALLOWS_EVE_CHALLENGE_ENTITY_ID);
+        bb.writeMethod13(text);
+        client.sendBitBuffer(0x76, bb);
+    }
+
     static secondsUntilNextKey(character: any, nowSeconds = Math.floor(Date.now() / 1000)): number {
         const last = Math.max(0, Math.round(Number(character?.[LAST_KILL_FIELD] ?? 0)) || 0);
         if (last <= 0) {
@@ -556,13 +1108,71 @@ export class HallowsEve {
         return true;
     }
 
-    /** Spends one key. Returns false when there is none, and takes nothing. */
+    /**
+     * Puts a coffer and a key where the client can see them.
+     *
+     * The coffer screen is the client's own lockbox panel (see
+     * `COFFERS_CUE_NAME`), and that panel is driven entirely by the two counters
+     * the player-data packet carries: `mOwnedLockboxes` and `mLockboxKeys`. So a
+     * Green Knight clear has to pay into *those*, not only into this feature's own
+     * `hallowsEveKeys`.
+     *
+     * **The key becomes a Dragon Key, and that is not a choice.** The client has
+     * exactly one key counter - `class_131.mLockboxKeys` - and `OpenLockbox`
+     * decrements it whatever kind of box is being opened. There is no per-type
+     * key anywhere in the client, so a coffer that opens on the real screen must
+     * spend the same currency a Treasure Trove does. `hallowsEveKeys` is still
+     * kept alongside it: it is what tells the server, when a box is opened, that
+     * this one is a coffer and should pay a seasonal prize.
+     */
+    static grantCoffer(character: any): void {
+        if (!character) {
+            return;
+        }
+        const boxes = Array.isArray(character.lockboxes) ? character.lockboxes : [];
+        const entry = boxes.find(
+            (row: any) => Math.round(Number(row?.lockboxID ?? 0)) === HALLOWS_EVE_COFFER_LOCKBOX_ID
+        );
+        if (entry) {
+            entry.count = Math.max(0, Math.round(Number(entry.count ?? 0))) + 1;
+        } else {
+            boxes.push({ lockboxID: HALLOWS_EVE_COFFER_LOCKBOX_ID, count: 1 });
+        }
+        character.lockboxes = boxes;
+        character.DragonKeys = Math.max(0, Math.round(Number(character.DragonKeys ?? 0))) + 1;
+    }
+
+    /**
+     * Spends one coffer, however it was opened.
+     *
+     * **All three counters move together**, because a clear pays all three and
+     * there are two ways to open a coffer: the client's lockbox panel on the skull
+     * grid, and the Herald's Yes/No window. Whichever is used, one Green Knight
+     * clear has to come out as exactly one prize - so this is the single place
+     * that charges for one, and both paths call it.
+     *
+     *   - `hallowsEveKeys` is the event's own count, and what the Herald reads;
+     *   - the coffer lockbox is the stack the client's panel draws and decrements;
+     *   - `DragonKeys` is the key that panel spends, because the client has only
+     *     one key counter (see `grantCoffer`).
+     *
+     * Returns false when there is no key, and takes nothing.
+     */
     static spendKey(character: any): boolean {
         const held = HallowsEve.getKeys(character);
         if (held <= 0) {
             return false;
         }
         character[KEYS_FIELD] = held - 1;
+
+        const boxes = Array.isArray(character.lockboxes) ? character.lockboxes : [];
+        const entry = boxes.find(
+            (row: any) => Math.round(Number(row?.lockboxID ?? 0)) === HALLOWS_EVE_COFFER_LOCKBOX_ID
+        );
+        if (entry) {
+            entry.count = Math.max(0, Math.round(Number(entry.count ?? 0)) - 1);
+        }
+        character.DragonKeys = Math.max(0, Math.round(Number(character.DragonKeys ?? 0)) - 1);
         return true;
     }
 

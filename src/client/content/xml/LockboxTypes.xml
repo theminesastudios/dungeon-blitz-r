@@ -17,4 +17,13 @@
 		<Droppable>true</Droppable>
 		<DroppableWeight>1</DroppableWeight>
 	</LockboxType>
+	<LockboxType LockboxName="HallowsEveCoffer">
+		<LockboxID>2</LockboxID>
+		<DisplayName>Hallow's Eve Coffer</DisplayName>
+		<CustomArt>a_Lockbox01art</CustomArt>
+		<IconName>a_Lockbox01icon</IconName>
+		<Droppable>false</Droppable>
+		<DroppableWeight>0</DroppableWeight>
+		<Description>A coffer sealed on the Green Knight's barrow. Only his keys turn it.</Description>
+	</LockboxType>
 </LockboxTypes>

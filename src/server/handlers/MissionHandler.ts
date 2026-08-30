@@ -1572,6 +1572,14 @@ export class MissionHandler {
         if (clearedDungeon && HallowsEve.isDungeon(currentLevel) && client.character) {
             if (HallowsEve.awardKey(client.character)) {
                 didMutate = true;
+                // The coffer itself, so the client's lockbox panel has something
+                // to open, plus the key it costs. See `HallowsEve.grantCoffer`.
+                HallowsEve.grantCoffer(client.character);
+                // The coffers is offered when the Green Knight has finished
+                // talking, not here: this is the boss dying, and the defeat
+                // cinematic still has to play. The mark is spent by
+                // `LevelHandler.sendRoomCutSceneEnd`.
+                HallowsEve.noteKeyEarned(client.character.name);
                 console.log(
                     `[HallowsEve] ${String(client.character.name ?? '')} earned a coffer key ` +
                     `(${HallowsEve.getKeys(client.character)} held)`
@@ -1715,6 +1723,23 @@ export class MissionHandler {
             logBossCopyCensus('rankPlate', levelScope, currentLevel, {
                 viewer: String(client.character?.name ?? '')
             });
+            // *"Zindan tamamlanma ekranı gelmeden önce"* - the coffers goes up
+            // ahead of the result panel, not after it.
+            //
+            // The cutscene-end hook in `LevelHandler` is the one that fires on a
+            // normal Green Knight run, and it usually gets here first; this is the
+            // guarantee that the offer is never simply lost. Whichever runs first
+            // spends the mark and the other is a no-op, so the window can only
+            // ever open once.
+            if (clearedDungeon && HallowsEve.isDungeon(currentLevel)) {
+                // Spends the mark only; see `LevelHandler.offerHallowsEveCoffers`
+                // for why nothing is raised any more.
+                if (HallowsEve.consumeCoffersOwed(client.character?.name)) {
+                    console.log(
+                        `[HallowsEve] ${String(client.character?.name ?? '')} earned a key; the coffer is on the grid`
+                    );
+                }
+            }
             MissionHandler.sendDungeonComplete(client, {
                 stars: completionResult.stars,
                 resultBar: completionResult.resultBar,

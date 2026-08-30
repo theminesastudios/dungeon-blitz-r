@@ -917,6 +917,12 @@ export class Client {
         if (!transferInProgress) {
             const { DungeonCompletionSystem } = require('./DungeonCompletionSystem') as typeof import('./DungeonCompletionSystem');
             DungeonCompletionSystem.releaseParticipant(this);
+            // Hallow's Eve's two marks belong to one trip through the arch. A real
+            // logout ends the trip; a transfer is the middle of it - it burns a
+            // socket on the way from the square to the arena - so the guard is not
+            // optional, or the challenge screen would never fire.
+            const { HallowsEve } = require('./HallowsEve') as typeof import('./HallowsEve');
+            HallowsEve.forget(this.character?.name);
         }
 
         this.clearGameplayState();
