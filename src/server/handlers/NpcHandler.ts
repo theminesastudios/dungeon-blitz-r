@@ -151,7 +151,7 @@ export class NpcHandler {
         // In the Dread town they always reach here: the client suffixes their cue
         // with "Hard", `Special_ClassTowerHard` matches no arm of the interact chain,
         // and the click falls through to an ordinary NPC talk. See `cueFor`.
-        if (HallowsEve.isWatcher(npcId) || HallowsEve.isHerald(npcId) || HallowsEve.isCoffers(npcId) || HallowsEve.isChallengeMarker(npcId)) {
+        if (HallowsEve.isWatcher(npcId) || HallowsEve.isHerald(npcId) || HallowsEve.isChallengeMarker(npcId)) {
             console.log(`[HallowsEve] interact on entity ${npcId} by ${String(client.character?.name ?? '')} in ${String(client.currentLevel ?? '')}`);
         }
 
@@ -169,7 +169,7 @@ export class NpcHandler {
         // The coffers is no longer spawned - the Herald took the job over - but the
         // id is still answered, so a client holding a stale copy of the square is
         // never left clicking something that does nothing.
-        if (HallowsEve.isHerald(npcId) || HallowsEve.isCoffers(npcId)) {
+        if (HallowsEve.isHerald(npcId)) {
             NpcHandler.handleHallowsEveHerald(client, npcId);
             return;
         }

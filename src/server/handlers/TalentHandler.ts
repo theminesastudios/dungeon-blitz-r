@@ -10,7 +10,8 @@ import {
     HallowsEve,
     HALLOWS_EVE_SUMMON_COST_IDOLS,
     HALLOWS_EVE_DOOR_ID,
-    HALLOWS_EVE_LEVEL
+    HALLOWS_EVE_LEVEL,
+    describeHallowsEveDelay
 } from '../core/HallowsEve';
 import { LevelConfig } from '../core/LevelConfig';
 import { LevelHandler } from './LevelHandler';
@@ -260,12 +261,20 @@ export class TalentHandler {
              * button mean one thing in both states - *go and fight him now* - and it
              * only ever costs idols when there is a wait to buy out of.
              */
-            if (outcome === 'ready') {
+            if (outcome === 'first' || outcome === 'ready') {
                 console.log(
-                    `[HallowsEve] ${String(client.character.name ?? '')} pressed Summon with no cooldown to skip; ` +
-                    'sent in free'
+                    `[HallowsEve] ${String(client.character.name ?? '')} sent in free ` +
+                    (outcome === 'first' ? '(first visit)' : '(no cooldown to skip)')
                 );
-                HallowsEve.sayAtTheArch(client, 'He is already waiting. Go - this one costs you nothing.');
+                HallowsEve.sayAtTheArch(
+                    client,
+                    outcome === 'first'
+                        ? 'Your first meeting is a gift. Go - he has been waiting a long time.'
+                        : 'He is already waiting. Go - this one costs you nothing.'
+                );
+                if (outcome === 'first') {
+                    await TalentHandler.saveCharacter(client);
+                }
                 HallowsEve.grantEntry(client.character.name);
                 LevelHandler.grantDoorTransfer(
                     client,
@@ -281,9 +290,20 @@ export class TalentHandler {
                     `${Math.max(0, Math.round(Number(client.character.mammothIdols ?? 0)) || 0)} idols; ` +
                     `needs ${HALLOWS_EVE_SUMMON_COST_IDOLS}`
                 );
+                /**
+                 * No idols means the twelve hours stand.
+                 *
+                 * The wait is what the idols buy out of, so a player who cannot pay
+                 * is simply told how long is left. The panel cannot show it - the
+                 * timer fields it was authored with are driven by a class this build
+                 * no longer has, which is why they were taken out - so the arch says
+                 * it instead.
+                 */
+                const wait = describeHallowsEveDelay(HallowsEve.secondsUntilNextKey(client.character));
                 HallowsEve.sayAtTheArch(
                     client,
-                    `The Knight answers only to ${HALLOWS_EVE_SUMMON_COST_IDOLS} Mammoth Idols. Come back with them.`
+                    `The Green Knight sleeps for another ${wait}. ` +
+                    `${HALLOWS_EVE_SUMMON_COST_IDOLS} Mammoth Idols would wake him now.`
                 );
                 return;
             }

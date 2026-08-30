@@ -271,7 +271,23 @@ const CHALLENGE_POSITION = { x: 2580, y: 580 };
  * is dispatched on the entity id, never on the cue name, so sharing it with the
  * room's own `NPCIeld` costs nothing. See the file comment.
  */
-const HERALD_CUE_NAME = HERALD_CUE_SOURCE;
+/**
+ * **The Herald is the coffers now.**
+ *
+ * He used to answer to `Ield` and merely talk about the skull grid, while an
+ * invisible box on the grid itself carried `Special_TreasureTrove` and opened the
+ * screen. That gave the square two mouths saying the same sentence - the Herald and
+ * a piece of ruin - and put the reward on masonry rather than on a person.
+ *
+ * Giving him the cue collapses the two: clicking him opens the coffer screen
+ * directly, client-side, and the grid is no longer an entity at all. With no coffer
+ * to open the client says so itself ("Maybe that old man knows how to open this...")
+ * - which, standing in front of him, finally reads correctly.
+ *
+ * In the Dread town the suffixed name matches no arm of the interact chain, so the
+ * click falls through to the server and he talks instead. See `cueFor`.
+ */
+const HERALD_CUE_NAME = COFFERS_CUE_NAME;
 
 /** Where the briefing is remembered on the character. */
 const BRIEFED_FIELD = 'hallowsEveBriefed';
@@ -281,6 +297,9 @@ const KEYS_FIELD = 'hallowsEveKeys';
 
 /** Unix seconds of the last Green Knight kill that paid a key. */
 const LAST_KILL_FIELD = 'hallowsEveLastKnightAt';
+
+/** When this character first walked into the arena. Absent means they never have. */
+const FIRST_ENTRY_FIELD = 'hallowsEveFirstEntryAt';
 
 /**
  * How long between keys.
@@ -560,24 +579,29 @@ export class HallowsEve {
      * arena has plainly answered it.
      */
     static shouldStopAtPortal(
-        _characterName: unknown,
-        _currentLevel: string | null | undefined,
-        _targetLevel: string | null | undefined
+        characterName: unknown,
+        currentLevel: string | null | undefined,
+        targetLevel: string | null | undefined
     ): boolean {
         /**
-         * **The arch no longer stops anyone.**
+         * **The arch is shut. The panel is the only way in.**
          *
-         * This used to refuse the door and put the challenge up in `a_DialogBox`,
-         * because nothing in the client could open the real panel. Something can
-         * now: the marker on the arch is cued `Special_ClassTower` and clicking it
-         * opens `a_ScreenHalloweenDungeonPrompt` itself - clock, chained door and
-         * all. So the panel is where the challenge is read, and the door is just a
-         * door, which is how the original worked.
+         * Walking into the rift used to work, which made the whole challenge screen
+         * optional: a player could read nothing, pay nothing and be in the arena.
+         * Now the door refuses, and the only thing that opens it is the entry grant
+         * the Summon button leaves behind (`grantEntry`, spent by the transfer that
+         * follows). That is what makes the price mean anything.
          *
-         * Kept as a function rather than deleted at its two call sites so the door
-         * path still reads as having a gate, and so putting one back is one line.
+         * Only the way *in* is gated, and only from the square: a transfer that is
+         * already carrying a grant passes, and nothing here touches the way out.
          */
-        return false;
+        const from = LevelConfig.normalizeLevelName(currentLevel) || String(currentLevel ?? '').trim();
+        const to = LevelConfig.normalizeLevelName(targetLevel) || String(targetLevel ?? '').trim();
+        if (to !== HALLOWS_EVE_LEVEL || !HALLOWS_EVE_TOWNS.includes(from)) {
+            return false;
+        }
+        // A live grant is the Summon button's doing; spend it and let them through.
+        return !HallowsEve.consumeEntryGrant(characterName);
     }
 
     /** One of his lines, chosen at random the way every other NPC's is. */
@@ -1060,10 +1084,29 @@ export class HallowsEve {
      * stamp of when the Knight last fell, and `secondsUntilNextKey` reads it. With it
      * gone the arch pays a key again on the next clear.
      */
-    static summonKnightNow(character: any): 'summoned' | 'ready' | 'poor' | 'unknown' {
+    static summonKnightNow(character: any): 'summoned' | 'first' | 'ready' | 'poor' | 'unknown' {
         if (!character) {
             return 'unknown';
         }
+
+        /**
+         * **The first visit is on the house.**
+         *
+         * Now that the arch itself is shut, the Summon button is the only way in, so
+         * a player who has never seen the event would be asked for twenty idols
+         * before ever meeting the Knight. That is the wrong first impression of a
+         * seasonal event, so the first entry is free and marked, and the price starts
+         * from the second.
+         *
+         * Marked rather than inferred from the twelve-hour stamp: that stamp is set
+         * by *killing* the Knight, so someone who went in and lost would have been
+         * asked to pay for a retry they had already been promised.
+         */
+        if (!character[FIRST_ENTRY_FIELD]) {
+            character[FIRST_ENTRY_FIELD] = Math.floor(Date.now() / 1000);
+            return 'first';
+        }
+
         if (HallowsEve.secondsUntilNextKey(character) <= 0) {
             return 'ready';
         }

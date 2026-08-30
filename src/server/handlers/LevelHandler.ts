@@ -4500,8 +4500,18 @@ export class LevelHandler {
             LevelHandler.sendDoorState(client, Math.round(Number(doorId)), LevelHandler.DOORSTATE_LOCKED, targetLevel);
         }
 
-        const fromLevel = LevelConfig.normalizeLevelName(client.currentLevel) || String(client.currentLevel ?? '');
-        HallowsEve.raiseChallengePrompt(client, fromLevel);
+        /**
+         * The arch says no, and says why.
+         *
+         * It used to raise the challenge in `a_DialogBox` here. The panel exists now,
+         * so the door's job is only to send the player to it - otherwise the whole
+         * screen, and the price on it, would be optional. A line at the arch is the
+         * cheapest way to say that without another window.
+         */
+        HallowsEve.sayAtTheArch(
+            client,
+            'The way is shut. Only the Watcher can call the Green Knight out.'
+        );
 
         client.lastDoorId = -1;
         client.lastDoorTargetLevel = '';

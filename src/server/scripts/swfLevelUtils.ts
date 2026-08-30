@@ -467,6 +467,47 @@ export interface PlacementSpec {
    * to a mask is redrawing the artwork.
    */
   clipDepth?: number;
+  /**
+   * Per-channel multiply, for recolouring a symbol without redrawing it.
+   *
+   * Flash multiplies each channel of everything the placement draws, so this can
+   * only ever darken a channel or amplify one already present - a green flame can be
+   * made orange (`{ r: 2, g: 0.55, b: 0.25 }`) because it has red in it to amplify,
+   * but nothing can add a colour to black. Terms are 8.8 fixed point.
+   */
+  tint?: { r: number; g: number; b: number; a?: number };
+  /**
+   * Per-channel offset, applied after `tint`.
+   *
+   * Multiplying cannot rescue a dark pixel - twice nothing is still nothing - so a
+   * dark mark inside a bright symbol survives any amount of `tint`. Adding lifts the
+   * darks hardest, because what is already bright simply clips, which is how a
+   * streaked effect is flattened into an even glow. Terms are 0..255 per channel.
+   */
+  tintAdd?: { r: number; g: number; b: number; a?: number };
+}
+
+/** A CXFORMWITHALPHA carrying multiply terms, offsets, or both. */
+function encodeColorTransform(
+  tint?: { r: number; g: number; b: number; a?: number },
+  add?: { r: number; g: number; b: number; a?: number },
+): Buffer {
+  const mult = tint ? [tint.r, tint.g, tint.b, tint.a ?? 1].map((v) => Math.round(v * 256)) : [];
+  const offs = add ? [add.r, add.g, add.b, add.a ?? 0].map((v) => Math.round(v)) : [];
+
+  // The field is signed and every term shares one width, so size it to the widest.
+  let bits = 1;
+  for (const term of [...mult, ...offs]) {
+    while (term >= 1 << (bits - 1) || term < -(1 << (bits - 1))) bits += 1;
+  }
+  const writer = new BitWriter();
+  writer.ub(1, offs.length ? 1 : 0);
+  writer.ub(1, mult.length ? 1 : 0);
+  writer.ub(4, bits);
+  // Order is fixed by the tag layout: every multiply term, then every offset.
+  for (const term of mult) writer.sb(bits, term);
+  for (const term of offs) writer.sb(bits, term);
+  return writer.toBuffer();
 }
 
 /** Builds a minimal PlaceObject2 (character + matrix + optional instance name). */
@@ -480,6 +521,7 @@ export function buildPlaceObject2(spec: PlacementSpec): SwfTag {
     translateY: Math.round((spec.y ?? 0) * 20),
   };
   let flags = 0x02 | 0x04;
+  if (spec.tint || spec.tintAdd) flags |= 0x08;
   if (spec.name) flags |= 0x20;
   if (spec.clipDepth !== undefined) flags |= 0x40;
   const parts: Buffer[] = [Buffer.from([flags])];
@@ -487,6 +529,7 @@ export function buildPlaceObject2(spec: PlacementSpec): SwfTag {
   depth.writeUInt16LE(spec.depth, 0);
   depth.writeUInt16LE(spec.charId, 2);
   parts.push(depth, encodeMatrix(matrix));
+  if (spec.tint || spec.tintAdd) parts.push(encodeColorTransform(spec.tint, spec.tintAdd));
   // Field order is fixed by the tag layout: character, matrix, colour transform,
   // ratio, name, clip depth. Only the first two, the name and the clip depth are
   // modelled here, so the name has to go in ahead of the clip depth.

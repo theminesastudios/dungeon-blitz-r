@@ -89,6 +89,42 @@ const LEVEL_SWF = path.resolve(
 const CUE_RENAMES = new Map<string, string>([
   ["Special_Halloween_Statue_First", "Special_ClassTower"],
   ["Special_Halloween_Statue_Second", "Special_TreasureTrove"],
+
+  /**
+   * The other two statue hotspots, silenced.
+   *
+   * `Game.method_668` has an arm for each `Special_Halloween_Statue_*` that runs a
+   * skit off `class_14.var_661[n]` - the leaderboard champions' lines. There are no
+   * champions on this server and no data behind that index, so the skit plays as an
+   * empty speech bubble: the "..." that appears on the ruin two or three times over.
+   *
+   * Renaming them to something the chain has no arm for stops the skit. The click
+   * then falls through to `PKTTYPE_TALK_TO_NPC`, and the server has no NPC at that
+   * id, so nothing is said at all.
+   *
+   * **This does not remove the interact cursor.** The hotspot is still an entity with
+   * a bound cue, and `Entity.method_355` asks only for a neutral team and a cue - so
+   * it stays clickable, silently. Hiding the icon means making one cue non-neutral in
+   * the room's own `__setProp`, which is a per-placement edit rather than the
+   * constant-pool rename this file does.
+   */
+  /**
+   * This one is renamed to `friend` on purpose, and the name is doing double duty.
+   *
+   * `Room.as` turns a cue's `team` string into a team id by comparing it against
+   * exactly three words - `friend` -> GOODGUY, `enemy` -> BADGUY, `neutral` ->
+   * NEUTRAL - and anything else falls through to 0, which the client draws as a
+   * hostile: a red health bar over each hotspot. `patch-levelssrn-hallows-eve-mute-hotspots.ts`
+   * needs a non-neutral team that is *not* hostile, and `friend` is the only one -
+   * but it is not in this level's string pool and a pool cannot be grown without
+   * moving every index after it.
+   *
+   * So the word arrives as a rename. This cue's name is otherwise meaningless (it
+   * matches no arm of the interact chain, which is the point), and the string it now
+   * holds is what the four team operands are repointed at.
+   */
+  ["Special_Halloween_Statue_Third", "friend"],
+  ["Special_Halloween_Statue_Fourth", "SRN_HallowsEveMute02"],
 ]);
 
 function main(): void {

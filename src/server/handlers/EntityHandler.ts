@@ -3943,7 +3943,9 @@ export class EntityHandler {
         const level = client.currentLevel;
         const props: Array<[number, () => any]> = [
             [HALLOWS_EVE_HERALD_ENTITY_ID, () => HallowsEve.buildHeraldEntity(level)],
-            [HALLOWS_EVE_COFFERS_ENTITY_ID, () => HallowsEve.buildCoffersEntity(level)],
+            // The coffers prop is gone: it was an invisible box on the ruin's skull
+            // grid, and stonework that answers a click was the one thing this square
+            // was told not to do. Its job moved to the Herald - see HERALD_CUE_NAME.
             [HALLOWS_EVE_CHALLENGE_ENTITY_ID, () => HallowsEve.buildChallengeMarkerEntity(level)]
         ];
         // No coffer, no skull grid. The coffer screen is the Treasure Trove screen,

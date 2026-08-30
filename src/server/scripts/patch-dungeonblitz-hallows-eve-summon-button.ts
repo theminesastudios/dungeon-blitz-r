@@ -80,6 +80,10 @@ const OP_CALLPROPVOID = 0x4f;
 const OP_GETPROPERTY = 0x66;
 const OP_GETLOCAL0 = 0xd0;
 const OP_FINDPROPSTRICT = 0x5d;
+const OP_PUSHBYTE = 0x24;
+const OP_GETLEX = 0x60;
+const OP_GETLOCAL2 = 0xd2;
+const OP_CALLPROPERTY = 0x46;
 
 /**
  * The second site: the click that disables the button forever.
@@ -108,6 +112,29 @@ const BUTTON_FIELD = "var_1324";
 const SEND_METHOD = "method_1410";
 const HIDE_CALL = "Hide";
 const HIDE_SOURCE = "method_687";
+
+/**
+ * The third site: the price the client checks against.
+ *
+ * `method_1410` derives its cost from the Class Tower's own clock -
+ * `Game.method_257(mMasterClassTower.mEndtime - mServerGameTime)` - which on a tower
+ * that never researches is a large negative time, and so a cost of nothing. The
+ * button therefore let anyone through, idols or not, and the server had to be the
+ * only thing saying no.
+ *
+ * Replacing that call with a literal 20 hands the check back to the client, and with
+ * it the game's own answer: `method_1410` opens `screenBuyIdols` when
+ * `mMammothIdols < cost` and **returns without sending**. So a player short of idols
+ * gets the shop's own "not enough Mammoth Idols" window, in the game's own words, and
+ * no packet is sent - which is also the "must not enter" half of the requirement.
+ *
+ * `getlex Game; getlocal2; callproperty method_257, 1` and `pushbyte 20` both leave
+ * one value on the stack, and the literal is shorter, so the remainder stays `nop`
+ * and nothing moves. The price still matters nowhere else: the server charges
+ * `HALLOWS_EVE_SUMMON_COST_IDOLS` and never reads the number in the packet.
+ */
+const COST_CALL = "method_257";
+const COST_VALUE = 20;
 
 /** Keeps index.html's cache token in step, or nobody is served the patch. */
 function syncClientRevision(): void {
@@ -177,6 +204,19 @@ function findNopRun(instructions: ReturnType<typeof disassemble>, need: number):
   return run >= need
     ? { start: instructions[instructions.length - run].offset, end: instructions[instructions.length - 1].offset + 1 }
     : null;
+}
+
+
+/** The `Game.method_257(...)` cost computation, as a byte range to overwrite. */
+function findCostBlock(instructions: ReturnType<typeof disassemble>, names: string[]): { start: number; end: number } | null {
+  for (let i = 2; i < instructions.length; i += 1) {
+    const call = instructions[i];
+    if (call.opcode !== OP_CALLPROPERTY || u30OperandName(call, names) !== COST_CALL) continue;
+    if (instructions[i - 1].opcode !== OP_GETLOCAL2) continue;
+    if (instructions[i - 2].opcode !== OP_GETLEX) continue;
+    return { start: instructions[i - 2].offset, end: call.offset + call.size };
+  }
+  return null;
 }
 
 function main(): void {
@@ -258,11 +298,14 @@ function main(): void {
     ? null
     : findDisableBlock(send.instructions, abc.multinameNames) ?? findNopRun(send.instructions, hideBytes.length);
 
-  // The two sites are independent: one may already be applied while the other is not.
-  if (hits.length === 0 && !disable) {
+  const cost = findCostBlock(send.instructions, abc.multinameNames);
+  const costBytes = Buffer.from([OP_PUSHBYTE, COST_VALUE]);
+
+  // The three sites are independent: any may already be applied while the others are not.
+  if (hits.length === 0 && !disable && !cost) {
     console.log(
       already
-        ? "the Summon button is already shown and already closes the window; nothing to do."
+        ? "the Summon button is already shown, priced and closing; nothing to do."
         : `no ${CONTAINER_FIELD}.${FROM_CALL}() and no ${DISABLE_CALL}(); nothing to do.`,
     );
     return;
@@ -276,6 +319,11 @@ function main(): void {
     disable
       ? `${HOST_CLASS}.${SEND_METHOD}: ${disable.end - disable.start} bytes -> ${HIDE_CALL}() + nops`
       : `${HOST_CLASS}.${SEND_METHOD}: already closes the window on purchase`,
+  );
+  console.log(
+    cost
+      ? `${HOST_CLASS}.${SEND_METHOD}: ${COST_CALL}(...) -> pushbyte ${COST_VALUE}`
+      : `${HOST_CLASS}.${SEND_METHOD}: price is already a literal`,
   );
   if (verify) {
     console.log("verify only - nothing written.");
@@ -310,6 +358,16 @@ function main(): void {
         Buffer.alloc(disable.end - disable.start - hideBytes.length, OP_NOP),
       ]),
       detail: `${BUTTON_FIELD}.${DISABLE_CALL}() -> ${HIDE_CALL}()`,
+    });
+  }
+
+  if (cost) {
+    patches.push({
+      key: "hallows-eve-summon-price",
+      start: sendBody.codeStart + cost.start,
+      end: sendBody.codeStart + cost.end,
+      data: Buffer.concat([costBytes, Buffer.alloc(cost.end - cost.start - costBytes.length, OP_NOP)]),
+      detail: `${COST_CALL}(...) -> ${COST_VALUE}`,
     });
   }
 

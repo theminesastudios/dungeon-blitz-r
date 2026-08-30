@@ -166,7 +166,7 @@ const DUMMY_DEPTH_BASE = 900;
  * re-running; it would want a line in `FROZEN_CHILDREN` too, since it is a 3-frame
  * clip like every other button.
  */
-const EMPTIED_CHILDREN = ["am_Enter", "am_ClearTimer"];
+const EMPTIED_CHILDREN = ["am_ClearTimer", "am_IdolGroup"];
 
 /**
  * **The Summon button, given a handler.**
@@ -199,7 +199,20 @@ const EMPTIED_CHILDREN = ["am_Enter", "am_ClearTimer"];
  * `HallowsEve.summonCostIdols` and the Hallow's Eve branch in
  * `TalentHandler.handleTalentSpeedup`.
  */
-const SUMMON_BUTTON_SOURCE = "am_ClearTimer";
+/**
+ * **The button says "Enter Dungeon".**
+ *
+ * The panel was authored with two states - Enter when the Knight is up, Summon when
+ * he is sleeping - and the class that switched between them is gone, so only one
+ * label can ever be drawn. Enter is the right one to keep: a first visit is free and
+ * so is every visit once the twelve hours have run out, which is nearly always. The
+ * paid case is the exception, and the arch says so in words when it applies
+ * ("The Green Knight sleeps for another 7 hours...").
+ *
+ * The Summon art and `am_IdolGroup`, its 20-idol price tag, are emptied with it:
+ * a price drawn on a button that is usually free is worse than no price at all.
+ */
+const SUMMON_BUTTON_SOURCE = "am_Enter";
 const SUMMON_BUTTON_CONTAINER = "am_SpeedUpPanel";
 const SUMMON_BUTTON_CHILD = "am_SpeedUp";
 
