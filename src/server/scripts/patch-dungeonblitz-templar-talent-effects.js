@@ -13,7 +13,7 @@ const { execFileSync } = require('child_process');
  * another power's cooldown. The magnitudes that *are* data stay in
  * patch_gameswz_paladin_mastery_balance; this file only ever changes what a number means.
  *
- *   Holy Smash        damage from 300% of Defense and 0.01% of max HP  (RollingSmash)
+ *   Holy Smash        damage from 1% of Defense and 0.01% of max HP    (RollingSmash)
  *   Juggernaut        damage from 0.02% of max HP                      (JuggernautCharge)
  *   Defiance          damage from 0.02% of max HP
  *   Unstable Barrier  damage from 0.06% of max HP                      (DetShieldDetonate)
@@ -77,7 +77,7 @@ const { execFileSync } = require('child_process');
  *                     edit itself for why it never did.
  *
  * "Expertise damage" is read the way the rest of this file already reads it: Holy Smash draws
- * "300% of Defense" as `_loc7_ += 3 * armorClass`, so 60% of Expertise is
+ * "1% of Defense" as `_loc7_ += 0.01 * armorClass`, so 60% of Expertise is
  * `_loc7_ += 0.6 * magicDamage`. _loc7_ is method_1393's flat-damage accumulator, folded in
  * against the hit's own base at the end, which is where a bonus drawn from a stat that is not
  * attack damage belongs. "vs Holy Fire" is read off the target's own buff list rather than by
@@ -125,7 +125,7 @@ const EMPYREAN_MS_PER_EXPERTISE = 4;
 const COMBAT_STATE_EDITS = [
     {
         name: 'Sentinel damage from Defence and max HP, and Dominate',
-        marker: '_loc7_ += 3 * this.var_3.armorClass',
+        marker: '_loc7_ += 0.01 * this.var_3.armorClass',
         anchor: [
             '         _loc6_ += _loc7_ / param1;',
             ''
@@ -133,7 +133,7 @@ const COMBAT_STATE_EDITS = [
         replacement: [
             '         if(param2.basePowerName == "RollingSmash")',
             '         {',
-            '            _loc7_ += 3 * this.var_3.armorClass + 0.0001 * this.var_3.maxHP;',
+            '            _loc7_ += 0.01 * this.var_3.armorClass + 0.0001 * this.var_3.maxHP;',
             '         }',
             '         else if(param2.basePowerName == "JuggernautCharge")',
             '         {',
@@ -495,7 +495,7 @@ const CLASSES = [
 // CombatState too, and a recompile is exactly what throws it away.
 const REQUIRED = {
     CombatState: [
-        '_loc7_ += 3 * this.var_3.armorClass + 0.0001 * this.var_3.maxHP;',
+        '_loc7_ += 0.01 * this.var_3.armorClass + 0.0001 * this.var_3.maxHP;',
         'else if(param2.basePowerName == "JuggernautCharge")',
         'else if(param2.basePowerName == "Defiance")',
         'else if(param2.basePowerName == "DetShieldDetonate")',
@@ -527,7 +527,8 @@ const FORBIDDEN = {
     CombatState: [
         '_loc59_ += this.var_1644;',
         '_loc6_ += 2 * this.var_1644;',
-        'param3 = uint(param2.meleeDamage);'
+        'param3 = uint(param2.meleeDamage);',
+        '_loc7_ += 3 * this.var_3.armorClass + 0.0001 * this.var_3.maxHP;'
     ],
     PowerType: []
 };
@@ -615,6 +616,15 @@ function exportClasses(ffdecPath, workRoot, swfPath) {
 function patchSource(source, className, edits, swfPath) {
     let next = source.replace(/\r\n/g, '\n');
     const name = path.basename(swfPath);
+
+    // Migrate clients patched before Holy Smash's Defense contribution was reduced from
+    // 300% to 1%. A clean client has neither line and is handled by the normal edit below.
+    if (className === 'CombatState') {
+        next = next.replace(
+            '_loc7_ += 3 * this.var_3.armorClass + 0.0001 * this.var_3.maxHP;',
+            '_loc7_ += 0.01 * this.var_3.armorClass + 0.0001 * this.var_3.maxHP;'
+        );
+    }
 
     for (const edit of edits) {
         const alreadyApplied = edit.marker
