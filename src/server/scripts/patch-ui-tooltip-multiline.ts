@@ -46,6 +46,8 @@ const FLAG2_HAS_LAYOUT = 0x20;
  * small positive value opens the rows up further to match the comparison card's spacing.
  */
 const TARGET_LEADING = 80;
+/** 12px in SWF twips; the authored 14px overflows on long conditional gear-buff descriptions. */
+const TARGET_FONT_HEIGHT = 240;
 
 const UI_DIR = path.resolve(__dirname, "..", "..", "client", "content", "localhost", "p", "cbp");
 
@@ -131,7 +133,11 @@ function flipEditText(body: Buffer, tagStart: number, label: string): boolean {
     throw new Error(`${label}: HasFontClass is set; the FontClass string parse is not implemented.`);
   }
   let cursor = flags2Pos + 1;
-  if ((flags1 & FLAG1_HAS_FONT) !== 0) cursor += 4; // FontID u16 + FontHeight u16
+  let fontHeightPos: number | null = null;
+  if ((flags1 & FLAG1_HAS_FONT) !== 0) {
+    fontHeightPos = cursor + 2; // FontID u16, then FontHeight u16
+    cursor += 4;
+  }
   if ((flags1 & FLAG1_HAS_TEXT_COLOR) !== 0) cursor += 4; // RGBA
   if ((flags1 & FLAG1_HAS_MAX_LENGTH) !== 0) cursor += 2; // MaxLength u16
   if ((flags2 & FLAG2_HAS_LAYOUT) !== 0) {
@@ -141,12 +147,16 @@ function flipEditText(body: Buffer, tagStart: number, label: string): boolean {
 
   const flagsAlready = (flags1 & FLAG1_MULTILINE) !== 0 && (flags2 & FLAG2_AUTOSIZE) !== 0;
   const leadingAlready = leadingPos !== null && body.readInt16LE(leadingPos) === TARGET_LEADING;
+  const fontHeightAlready = fontHeightPos !== null && body.readUInt16LE(fontHeightPos) === TARGET_FONT_HEIGHT;
   body[flags1Pos] = flags1 | FLAG1_MULTILINE;
   body[flags2Pos] = flags2 | FLAG2_AUTOSIZE;
   if (leadingPos !== null) {
     body.writeInt16LE(TARGET_LEADING, leadingPos);
   }
-  return !(flagsAlready && leadingAlready);
+  if (fontHeightPos !== null) {
+    body.writeUInt16LE(TARGET_FONT_HEIGHT, fontHeightPos);
+  }
+  return !(flagsAlready && leadingAlready && fontHeightAlready);
 }
 
 function patchFile(filePath: string, characterIds: number[], verify: boolean): number {

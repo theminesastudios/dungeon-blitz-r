@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { defaultLoginSwzPath, ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils";
+import { ROGUE_GEAR_EFFECT_PROPERTY, rogueGearRuneEffect } from "./rogueGearRuneEffects";
 
 /**
  * Gives the eighteen Mystic lockbox items their ability bonuses.
@@ -40,6 +41,8 @@ type Ability =
   | { kind: "damage"; base: string; pct: number; named?: string; en?: string; tr?: string }
   /** Copy an existing mod verbatim under a new name, so the stock one keeps no ComboMod. */
   | { kind: "clone"; from: string }
+  /** Discipline-specific Rogue effect shared with Legendary gear. */
+  | { kind: "rogue"; base: string; named?: string }
   /** Add to a numeric buff property, on the ranks that already declare it. */
   | { kind: "buff"; buffPrefix: string; property: string; value: number; named?: string; en: string; tr: string };
 
@@ -55,8 +58,8 @@ const ITEMS: Item[] = [
     gearId: 1171,
     rune: "MysticRogueSword",
     abilities: [
-      { kind: "damage", base: "WitherStrike", pct: 0.15, en: "+15% Withering Impact damage", tr: "Soldurucu Darbe hasari %15 artar." },
-      { kind: "damage", base: "SeverStrike", pct: 0.15, en: "+15% Severing Strike damage", tr: "Koparan Vurus hasari %15 artar." },
+      { kind: "rogue", base: "WitherStrike" },
+      { kind: "rogue", base: "SeverStrike" },
       { kind: "damage", base: "CrippleStrike", pct: 0.15, en: "+15% Scorpion's Sting damage", tr: "Akrep Sokmasi hasari %15 artar." },
       { kind: "damage", base: "HeartSeeker", pct: 0.15, en: "+15% Heart Seeker damage", tr: "Kalp Avcisi hasari %15 artar." },
       { kind: "damage", base: "FatiguingStrike", pct: 0.15, en: "+15% Hex Blade damage", tr: "Buyulu Kilic hasari %15 artar." },
@@ -67,14 +70,12 @@ const ITEMS: Item[] = [
     gearId: 1172,
     rune: "MysticRogueOffhand",
     abilities: [
-      // Chaos Wave is a pure self-buff with BaseDamageMult 0, so a damage mod would do nothing;
-      // its MagicDamage ranks run 0.05-0.10, so 0.015 is roughly the same +15% in effect terms.
       { kind: "buff", buffPrefix: "ChaosArmor", property: "MagicDamage", value: 0.015, en: "+15% Chaos Wave power", tr: "Kaos Dalgasi gucu %15 artar." },
       { kind: "damage", base: "PainBender", pct: 0.15, en: "+15% Butcher's Boon damage", tr: "Kasabin Lutfu hasari %15 artar." },
       { kind: "damage", base: "WhitheringMist", pct: 0.15, en: "+15% Withering Mist damage", tr: "Soldurucu Sis hasari %15 artar." },
       { kind: "damage", base: "ShadowTendrilDash", pct: 0.15, en: "+15% Black Miasma damage", tr: "Kara Miyazma hasari %15 artar." },
-      { kind: "damage", base: "DaggerFlurry", pct: 0.15, en: "+15% Flurry of Daggers damage", tr: "Hancer Yagmuru hasari %15 artar." },
-      { kind: "damage", base: "VitalStrike", pct: 0.15, en: "+15% Shadow Rend damage", tr: "Golge Parcalayis hasari %15 artar." },
+      { kind: "rogue", base: "DaggerFlurry" },
+      { kind: "rogue", base: "VitalStrike" },
     ],
   },
   {
@@ -94,8 +95,8 @@ const ITEMS: Item[] = [
       { kind: "damage", base: "Reaper", pct: 0.1, en: "+10% Shadow Scythe damage", tr: "Golge Tirpani hasari %10 artar." },
       { kind: "damage", base: "BlackStorm", pct: 0.1, en: "+10% Black Storm damage", tr: "Kara Firtina hasari %10 artar." },
       { kind: "damage", base: "DarkChi", pct: 0.1, en: "+10% Dark Chi damage", tr: "Kara Chi hasari %10 artar." },
-      { kind: "damage", base: "AssassinateClose", pct: 0.1, en: "+10% Vicious Assault damage", tr: "Vahsi Saldiri hasari %10 artar." },
-      { kind: "damage", base: "DeathBlowOld", pct: 0.1, en: "+10% Assassinate damage", tr: "Suikast hasari %10 artar." },
+      { kind: "rogue", base: "AssassinateClose", named: "Assassinate" },
+      { kind: "rogue", base: "DeathBlowOld" },
     ],
   },
   {
@@ -481,6 +482,65 @@ function buildMods(corpus: Corpus): { chains: string[][]; runeByGearId: Map<numb
         return;
       }
 
+      if (ability.kind === "rogue") {
+        const effect = rogueGearRuneEffect(ability.base);
+        if (!effect) throw new SwzPatchError(`No staged Rogue gear effect is defined for ${ability.base}.`);
+        const description = corpus.turkish ? effect.tr : effect.description;
+        const displayName = powerDisplayName(corpus.powers, ability.named ?? ability.base);
+
+        if (effect.kind === "buff") {
+          const entries = effect.buffNames.flatMap((buffName) => effect.properties.map((property) => ({ buffName, ...property })));
+          for (const entry of entries) {
+            const block = corpus.buffs.match(new RegExp(`<BuffType BuffName="${entry.buffName}">([\\s\\S]*?)</BuffType>`))?.[1];
+            if (!block?.includes(`<${entry.name}>`)) {
+              throw new SwzPatchError(`${entry.buffName} does not declare <${entry.name}>.`);
+            }
+          }
+          blocks.push(
+            [
+              "\t<PowerModType>",
+              `\t\t<ModName>${name}</ModName>`,
+              `\t\t<ModID>${modId++}</ModID>`,
+              `\t\t<DisplayName>${displayName}</DisplayName>`,
+              `\t\t<Description>${description}</Description>`,
+              "\t\t<ModType>Buff</ModType>",
+              `\t\t<BuffName>${entries.map((entry) => entry.buffName).join(",")}</BuffName>`,
+              `\t\t<BuffProperty>${entries.map((entry) => entry.name).join(",")}</BuffProperty>`,
+              `\t\t<BuffValue>${entries.map((entry) => round(entry.value)).join(",")}</BuffValue>`,
+              "\t\t<IconName>a_Signet_Empty</IconName>",
+              ...(next ? [`\t\t<ComboMod>${next}</ComboMod>`] : []),
+              "\t</PowerModType>",
+            ].join("\r\n"),
+          );
+          return;
+        }
+
+        const names = powerRanks(corpus.powers, ability.base);
+        const property = effect.kind === "conditional"
+          ? ROGUE_GEAR_EFFECT_PROPERTY
+          : effect.kind === "damage" ? "BaseDamageMult" : effect.property;
+        const value = effect.kind === "conditional"
+          ? String(effect.marker)
+          : effect.kind === "damage" ? round(effect.pct * maxRankDamage(corpus.powers, names)) : effect.value;
+        blocks.push(
+          [
+            "\t<PowerModType>",
+            `\t\t<ModName>${name}</ModName>`,
+            `\t\t<ModID>${modId++}</ModID>`,
+            `\t\t<DisplayName>${displayName}</DisplayName>`,
+            `\t\t<Description>${description}</Description>`,
+            "\t\t<ModType>Power</ModType>",
+            `\t\t<PowerName>${names.join(",")}</PowerName>`,
+            `\t\t<PowerProperty>${property}</PowerProperty>`,
+            `\t\t<PowerValue>${value}</PowerValue>`,
+            "\t\t<IconName>a_Signet_Empty</IconName>",
+            ...(next ? [`\t\t<ComboMod>${next}</ComboMod>`] : []),
+            "\t</PowerModType>",
+          ].join("\r\n"),
+        );
+        return;
+      }
+
       // An ability with no spelled-out text describes itself: "+15% <its DisplayName> damage", read
       // out of the file being written, so the Turkish swz says it in Turkish without a second table
       // here to keep in step.
@@ -609,11 +669,12 @@ function addPseudoPowers(powersXml: string, turkish: boolean): { xml: string; ad
  * genuinely broken file and still refuses to be patched over.
  */
 function insertMods(powerModsXml: string, chains: string[][]): { xml: string; added: number } {
+  let out = powerModsXml;
   const missing: string[] = [];
   for (const chain of chains) {
     const absent = chain.filter((block) => {
       const name = tag(block, "ModName");
-      return name !== null && !powerModsXml.includes(`<ModName>${name}</ModName>`);
+      return name !== null && !out.includes(`<ModName>${name}</ModName>`);
     });
     if (absent.length === 0) continue;
     if (absent.length !== chain.length) {
@@ -622,14 +683,27 @@ function insertMods(powerModsXml: string, chains: string[][]): { xml: string; ad
     }
     missing.push(...absent);
   }
-  if (missing.length === 0) return { xml: powerModsXml, added: 0 };
 
-  const close = powerModsXml.lastIndexOf("</PowerModTypes>");
+  let updated = 0;
+  for (const chain of chains) {
+    if (chain.some((block) => missing.includes(block))) continue;
+    for (const expected of chain) {
+      const name = tag(expected, "ModName");
+      if (!name) throw new SwzPatchError("Generated PowerModType has no ModName.");
+      const current = findMod(out, name);
+      if (current.replace(/\r\n/g, "\n") === expected.replace(/\r\n/g, "\n")) continue;
+      out = out.replace(current, expected);
+      updated += 1;
+    }
+  }
+  if (missing.length === 0) return { xml: out, added: updated };
+
+  const close = out.lastIndexOf("</PowerModTypes>");
   if (close === -1) throw new SwzPatchError("No </PowerModTypes> close tag.");
   const eol = powerModsXml.includes("\r\n") ? "\r\n" : "\n";
   return {
-    xml: `${powerModsXml.slice(0, close)}${missing.join(eol)}${eol}${powerModsXml.slice(close)}`,
-    added: missing.length,
+    xml: `${out.slice(0, close)}${missing.join(eol)}${eol}${out.slice(close)}`,
+    added: missing.length + updated,
   };
 }
 

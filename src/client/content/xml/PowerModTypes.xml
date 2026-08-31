@@ -8470,7 +8470,7 @@
 		<ModName>RuneMysticRogueSword</ModName>
 		<ModID>1000</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+15% Withering Impact damage&#10;+15% Severing Strike damage&#10;+15% Scorpion's Sting damage&#10;+15% Heart Seeker damage&#10;+15% Hex Blade damage&#10;+15% Devour damage</Description>
+		<Description>Withering Impact adds 2 stacks of Bleed&#10;+10% Severing Strike damage vs Poison/Hemo&#10;+15% Scorpion's Sting damage&#10;+15% Heart Seeker damage&#10;+15% Hex Blade damage&#10;+15% Devour damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -8482,11 +8482,11 @@
 		<ModName>RuneMysticRogueSword1</ModName>
 		<ModID>1001</ModID>
 		<DisplayName>Withering Impact</DisplayName>
-		<Description>+15% Withering Impact damage</Description>
+		<Description>Withering Impact adds 2 stacks of Bleed</Description>
 		<ModType>Power</ModType>
 		<PowerName>WitherStrike,WitherStrike1,WitherStrike2,WitherStrike3,WitherStrike4,WitherStrike5,WitherStrike6,WitherStrike7,WitherStrike8,WitherStrike9,WitherStrike10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.2085</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Bleeding,Append:Bleeding</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueSword2</ComboMod>
 	</PowerModType>
@@ -8494,11 +8494,11 @@
 		<ModName>RuneMysticRogueSword2</ModName>
 		<ModID>1002</ModID>
 		<DisplayName>Severing Strike</DisplayName>
-		<Description>+15% Severing Strike damage</Description>
+		<Description>+10% Severing Strike damage vs Poison/Hemo</Description>
 		<ModType>Power</ModType>
 		<PowerName>SeverStrike,SeverStrike1,SeverStrike2,SeverStrike3,SeverStrike4,SeverStrike5,SeverStrike6,SeverStrike7,SeverStrike8,SeverStrike9,SeverStrike10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.171</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>1</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueSword3</ComboMod>
 	</PowerModType>
@@ -8553,7 +8553,7 @@
 		<ModName>RuneMysticRogueOffhand</ModName>
 		<ModID>1007</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+15% Chaos Wave power&#10;+15% Butcher's Boon damage&#10;+15% Withering Mist damage&#10;+15% Black Miasma damage&#10;+15% Flurry of Daggers damage&#10;+15% Shadow Rend damage</Description>
+		<Description>+15% Chaos Wave power&#10;+15% Butcher's Boon damage&#10;+15% Withering Mist damage&#10;+15% Black Miasma damage&#10;+15% Flurry of Daggers damage&#10;+15% Shadow Rend damage vs Poison/Hemo</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -8581,7 +8581,7 @@
 		<ModType>Power</ModType>
 		<PowerName>PainBender,PainBender1,PainBender2,PainBender3,PainBender4,PainBender5,PainBender6,PainBender7,PainBender8,PainBender9,PainBender10</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.522</PowerValue>
+		<PowerValue>0.6525</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueOffhand3</ComboMod>
 	</PowerModType>
@@ -8625,11 +8625,11 @@
 		<ModName>RuneMysticRogueOffhand6</ModName>
 		<ModID>1013</ModID>
 		<DisplayName>Shadow Rend</DisplayName>
-		<Description>+15% Shadow Rend damage</Description>
+		<Description>+15% Shadow Rend damage vs Poison/Hemo</Description>
 		<ModType>Power</ModType>
 		<PowerName>VitalStrike,VitalStrike1,VitalStrike2,VitalStrike3,VitalStrike4,VitalStrike5,VitalStrike6,VitalStrike7,VitalStrike8,VitalStrike9,VitalStrike10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.267</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>2</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -8652,7 +8652,7 @@
 		<ModType>Power</ModType>
 		<PowerName>SeekingBladesAttack,SeekingBladesAttack1,SeekingBladesAttack2,SeekingBladesAttack3,SeekingBladesAttack4,SeekingBladesAttack5,SeekingBladesAttack6,SeekingBladesAttack7,SeekingBladesAttack8,SeekingBladesAttack9,SeekingBladesAttack10</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.854</PowerValue>
+		<PowerValue>0.6405</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueHat2</ComboMod>
 	</PowerModType>
@@ -8683,7 +8683,7 @@
 		<ModName>RuneMysticRogueArmor</ModName>
 		<ModID>1018</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+10% Necrotic Surge damage&#10;+10% Shadow Scythe damage&#10;+10% Black Storm damage&#10;+10% Dark Chi damage&#10;+10% Vicious Assault damage&#10;+10% Assassinate damage</Description>
+		<Description>+10% Necrotic Surge damage&#10;+10% Shadow Scythe damage&#10;+10% Black Storm damage&#10;+10% Dark Chi damage&#10;+10% Vicious Assault damage vs Poison/Hemo&#10;Assassinate adds 2 stacks of Bleed</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -8711,7 +8711,7 @@
 		<ModType>Power</ModType>
 		<PowerName>Reaper,Reaper1,Reaper2,Reaper3,Reaper4,Reaper5,Reaper6,Reaper7,Reaper8,Reaper9,Reaper10</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.2</PowerValue>
+		<PowerValue>0.25</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueArmor3</ComboMod>
 	</PowerModType>
@@ -8743,11 +8743,11 @@
 		<ModName>RuneMysticRogueArmor5</ModName>
 		<ModID>1023</ModID>
 		<DisplayName>Vicious Assault</DisplayName>
-		<Description>+10% Vicious Assault damage</Description>
+		<Description>+10% Vicious Assault damage vs Poison/Hemo</Description>
 		<ModType>Power</ModType>
 		<PowerName>AssassinateClose,AssassinateClose1,AssassinateClose2,AssassinateClose3,AssassinateClose4,AssassinateClose5,AssassinateClose6,AssassinateClose7,AssassinateClose8,AssassinateClose9,AssassinateClose10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.143</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>1</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueArmor6</ComboMod>
 	</PowerModType>
@@ -8755,11 +8755,11 @@
 		<ModName>RuneMysticRogueArmor6</ModName>
 		<ModID>1024</ModID>
 		<DisplayName>Assassinate</DisplayName>
-		<Description>+10% Assassinate damage</Description>
+		<Description>Assassinate adds 2 stacks of Bleed</Description>
 		<ModType>Power</ModType>
 		<PowerName>DeathBlowOld,DeathBlowOld1,DeathBlowOld2,DeathBlowOld3,DeathBlowOld4,DeathBlowOld5,DeathBlowOld6,DeathBlowOld7,DeathBlowOld8,DeathBlowOld9,DeathBlowOld10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.174</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Bleeding,Append:Bleeding</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -9397,7 +9397,7 @@
 		<ModType>Power</ModType>
 		<PowerName>FountainOfLife,FountainOfLife1,FountainOfLife2,FountainOfLife3,FountainOfLife4,FountainOfLife5,FountainOfLife6,FountainOfLife7,FountainOfLife8,FountainOfLife9,FountainOfLife10</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>-0.9</PowerValue>
+		<PowerValue>-0.45</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinOffhand6</ComboMod>
 	</PowerModType>
@@ -9432,7 +9432,7 @@
 		<ModType>Power</ModType>
 		<PowerName>Shockwave,Shockwave1,Shockwave2,Shockwave3,Shockwave4,Shockwave5,Shockwave6,Shockwave7,Shockwave8,Shockwave9,Shockwave10</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.121</PowerValue>
+		<PowerValue>0.145</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinArmor2</ComboMod>
 	</PowerModType>
@@ -10082,7 +10082,7 @@
 		<ModName>RuneLegendaryQuickStrike</ModName>
 		<ModID>2038</ModID>
 		<DisplayName>Quick Strike</DisplayName>
-		<Description>+15% Triple Strike damage&#10;+10% Severing Strike damage</Description>
+		<Description>+15% Triple Strike damage&#10;+10% Severing Strike damage vs Poison/Hemo</Description>
 		<ModType>Power</ModType>
 		<PowerName>QuickStrike</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10094,11 +10094,11 @@
 		<ModName>RuneLegendaryQuickStrikeBonus</ModName>
 		<ModID>2039</ModID>
 		<DisplayName>Severing Strike</DisplayName>
-		<Description>+10% Severing Strike damage</Description>
+		<Description>+10% Severing Strike damage vs Poison/Hemo</Description>
 		<ModType>Power</ModType>
 		<PowerName>SeverStrike,SeverStrike1,SeverStrike2,SeverStrike3,SeverStrike4,SeverStrike5,SeverStrike6,SeverStrike7,SeverStrike8,SeverStrike9,SeverStrike10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.114</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>1</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10151,7 +10151,7 @@
 		<ModName>RuneLegendarySteelCyclone</ModName>
 		<ModID>2044</ModID>
 		<DisplayName>Steel Whirlwind</DisplayName>
-		<Description>+10% Steel Whirlwind damage&#10;+10% Shadow Rend damage</Description>
+		<Description>+10% Steel Whirlwind damage&#10;+15% Shadow Rend damage vs Poison/Hemo</Description>
 		<ModType>Power</ModType>
 		<PowerName>SteelCyclone</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10163,11 +10163,11 @@
 		<ModName>RuneLegendarySteelCycloneBonus</ModName>
 		<ModID>2045</ModID>
 		<DisplayName>Shadow Rend</DisplayName>
-		<Description>+10% Shadow Rend damage</Description>
+		<Description>+15% Shadow Rend damage vs Poison/Hemo</Description>
 		<ModType>Power</ModType>
 		<PowerName>VitalStrike,VitalStrike1,VitalStrike2,VitalStrike3,VitalStrike4,VitalStrike5,VitalStrike6,VitalStrike7,VitalStrike8,VitalStrike9,VitalStrike10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.178</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>2</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10220,7 +10220,7 @@
 		<ModName>RuneLegendarySeekingBlades</ModName>
 		<ModID>2050</ModID>
 		<DisplayName>Charon's Blades</DisplayName>
-		<Description>+50% Charon's Blade damage&#10;+10% Vicious Assault damage</Description>
+		<Description>+50% Charon's Blade damage&#10;+10% Vicious Assault damage vs Poison/Hemo</Description>
 		<ModType>Power</ModType>
 		<PowerName>SeekingBladesAttack</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10232,11 +10232,11 @@
 		<ModName>RuneLegendarySeekingBladesBonus</ModName>
 		<ModID>2051</ModID>
 		<DisplayName>Vicious Assault</DisplayName>
-		<Description>+10% Vicious Assault damage</Description>
+		<Description>+10% Vicious Assault damage vs Poison/Hemo</Description>
 		<ModType>Power</ModType>
 		<PowerName>AssassinateClose,AssassinateClose1,AssassinateClose2,AssassinateClose3,AssassinateClose4,AssassinateClose5,AssassinateClose6,AssassinateClose7,AssassinateClose8,AssassinateClose9,AssassinateClose10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.143</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>1</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10289,7 +10289,7 @@
 		<ModName>RuneLegendaryDecoy</ModName>
 		<ModID>2056</ModID>
 		<DisplayName>Decoy</DisplayName>
-		<Description>+10% Decoy poison damage&#10;+10% Assassinate damage</Description>
+		<Description>+10% Decoy poison damage&#10;Assassinate adds 2 stacks of Bleed</Description>
 		<ModType>Power</ModType>
 		<PowerName>DecoyExplode</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
@@ -10301,11 +10301,11 @@
 		<ModName>RuneLegendaryDecoyBonus</ModName>
 		<ModID>2057</ModID>
 		<DisplayName>Assassinate</DisplayName>
-		<Description>+10% Assassinate damage</Description>
+		<Description>Assassinate adds 2 stacks of Bleed</Description>
 		<ModType>Power</ModType>
 		<PowerName>DeathBlowOld,DeathBlowOld1,DeathBlowOld2,DeathBlowOld3,DeathBlowOld4,DeathBlowOld5,DeathBlowOld6,DeathBlowOld7,DeathBlowOld8,DeathBlowOld9,DeathBlowOld10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.174</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Bleeding,Append:Bleeding</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10335,7 +10335,7 @@
 		<ModName>RuneLegendaryShadowBlade</ModName>
 		<ModID>2060</ModID>
 		<DisplayName>Crimson Butterfly</DisplayName>
-		<Description>+15% Crimson Butterfly damage&#10;+10% Flurry of Daggers damage</Description>
+		<Description>+15% Crimson Butterfly damage&#10;+15% Flurry of Daggers damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>ShadowBlade</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10347,18 +10347,18 @@
 		<ModName>RuneLegendaryShadowBladeBonus</ModName>
 		<ModID>2061</ModID>
 		<DisplayName>Flurry of Daggers</DisplayName>
-		<Description>+10% Flurry of Daggers damage</Description>
+		<Description>+15% Flurry of Daggers damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>DaggerFlurry,DaggerFlurry1,DaggerFlurry2,DaggerFlurry3,DaggerFlurry4,DaggerFlurry5,DaggerFlurry6,DaggerFlurry7,DaggerFlurry8,DaggerFlurry9,DaggerFlurry10</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.097</PowerValue>
+		<PowerValue>0.1455</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneLegendaryMistWalk</ModName>
 		<ModID>2062</ModID>
 		<DisplayName>Mist Walk</DisplayName>
-		<Description>Mist Walk adds 3 stacks of Bleed&#10;+10% Withering Impact damage</Description>
+		<Description>Mist Walk adds 3 stacks of Bleed&#10;Withering Impact adds 2 stacks of Bleed</Description>
 		<ModType>Power</ModType>
 		<PowerName>MistWalkClose</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
@@ -10370,11 +10370,11 @@
 		<ModName>RuneLegendaryMistWalkBonus</ModName>
 		<ModID>2063</ModID>
 		<DisplayName>Withering Impact</DisplayName>
-		<Description>+10% Withering Impact damage</Description>
+		<Description>Withering Impact adds 2 stacks of Bleed</Description>
 		<ModType>Power</ModType>
 		<PowerName>WitherStrike,WitherStrike1,WitherStrike2,WitherStrike3,WitherStrike4,WitherStrike5,WitherStrike6,WitherStrike7,WitherStrike8,WitherStrike9,WitherStrike10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.139</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Bleeding,Append:Bleeding</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>

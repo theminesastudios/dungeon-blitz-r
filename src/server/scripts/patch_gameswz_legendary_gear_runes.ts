@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils";
+import { ROGUE_GEAR_EFFECT_PROPERTY, ROGUE_GEAR_RUNE_EFFECTS } from "./rogueGearRuneEffects";
 
 type PatchResult = { xml: string; changes: number; matchedGearIds: Set<string> };
 interface LegendarySkillPair { primaryRune: string; secondaryPower: string; secondaryName: string }
@@ -75,6 +76,7 @@ const LOGIN_SWZ_FILES = [
 ].filter(fs.existsSync);
 const LOOSE_POWER_MODS = path.join(XML_DIR, "PowerModTypes.xml");
 const LOOSE_POWERS = path.join(XML_DIR, "PlayerPowerTypes.xml");
+const LOOSE_BUFFS = path.join(XML_DIR, "PlayerBuffTypes.xml");
 const LOOSE_GEAR = path.join(XML_DIR, "GearTypes.xml");
 const PROC_RUNE_TARGET_GEAR_IDS = new Set(["1162", "1163", "1164"]);
 const DAMAGE_BONUS = 0.1;
@@ -148,7 +150,7 @@ function strongestDamage(powerXml: string, names: string[]): number {
 function round(value: number): string { return String(Number(value.toFixed(4))); }
 function legendaryRune(primaryRune: string): string { return `Legendary${primaryRune}`; }
 
-function buildLegendaryMods(powerModsXml: string, powersXml: string): string[][] {
+function buildLegendaryMods(powerModsXml: string, powersXml: string, buffsXml: string): string[][] {
   let modId = FIRST_MOD_ID;
   const eol = powerModsXml.includes("\r\n") ? "\r\n" : "\n";
   return LEGENDARY_SKILL_PAIRS.map((pair) => {
@@ -158,21 +160,45 @@ function buildLegendaryMods(powerModsXml: string, powersXml: string): string[][]
     const originalHead = findMod(powerModsXml, `Rune${pair.primaryRune}`);
     const originalLine = readTag(originalHead, "Description")?.split("@")[0];
     if (!originalLine) throw new SwzPatchError(`Rune${pair.primaryRune} has no Description.`);
+    const rogueEffect = ROGUE_GEAR_RUNE_EFFECTS[pair.secondaryPower];
+    const bonusDescription = rogueEffect?.description ?? `+10% ${pair.secondaryName} damage`;
     const head = reidentify(originalHead, headName, modId++, bonusName).replace(
       /<Description>[\s\S]*?<\/Description>/,
-      `<Description>${originalLine}${LINE_SEPARATOR}+10% ${pair.secondaryName} damage</Description>`,
+      `<Description>${originalLine}${LINE_SEPARATOR}${bonusDescription}</Description>`,
     );
     const names = powerRanks(powersXml, pair.secondaryPower);
-    // These placeholder mods remain zero for skills with no direct damage multiplier; their final
-    // discipline-specific non-damage effects will replace them in the next balancing pass.
-    const powerValue = round(DAMAGE_BONUS * strongestDamage(powersXml, names));
-    const bonus = [
-      "\t<PowerModType>", `\t\t<ModName>${bonusName}</ModName>`, `\t\t<ModID>${modId++}</ModID>`,
-      `\t\t<DisplayName>${pair.secondaryName}</DisplayName>`, `\t\t<Description>+10% ${pair.secondaryName} damage</Description>`,
-      "\t\t<ModType>Power</ModType>", `\t\t<PowerName>${names.join(",")}</PowerName>`,
-      "\t\t<PowerProperty>BaseDamageMult</PowerProperty>", `\t\t<PowerValue>${powerValue}</PowerValue>`,
-      "\t\t<IconName>a_Signet_Empty</IconName>", "\t</PowerModType>",
-    ].join(eol);
+    let bonus: string;
+    if (rogueEffect?.kind === "buff") {
+      const entries = rogueEffect.buffNames.flatMap((buffName) => rogueEffect.properties.map((property) => ({ buffName, ...property })));
+      for (const entry of entries) {
+        const block = buffsXml.match(new RegExp(`<BuffType BuffName="${entry.buffName}">([\\s\\S]*?)</BuffType>`))?.[1];
+        if (!block?.includes(`<${entry.name}>`)) throw new SwzPatchError(`${entry.buffName} does not declare <${entry.name}>.`);
+      }
+      bonus = [
+        "\t<PowerModType>", `\t\t<ModName>${bonusName}</ModName>`, `\t\t<ModID>${modId++}</ModID>`,
+        `\t\t<DisplayName>${pair.secondaryName}</DisplayName>`, `\t\t<Description>${bonusDescription}</Description>`,
+        "\t\t<ModType>Buff</ModType>", `\t\t<BuffName>${entries.map((entry) => entry.buffName).join(",")}</BuffName>`,
+        `\t\t<BuffProperty>${entries.map((entry) => entry.name).join(",")}</BuffProperty>`,
+        `\t\t<BuffValue>${entries.map((entry) => round(entry.value)).join(",")}</BuffValue>`,
+        "\t\t<IconName>a_Signet_Empty</IconName>", "\t</PowerModType>",
+      ].join(eol);
+    } else {
+      const property = rogueEffect?.kind === "conditional"
+        ? ROGUE_GEAR_EFFECT_PROPERTY
+        : rogueEffect?.kind === "damage" ? "BaseDamageMult"
+        : rogueEffect?.kind === "power" ? rogueEffect.property : "BaseDamageMult";
+      const value = rogueEffect?.kind === "conditional"
+        ? String(rogueEffect.marker)
+        : rogueEffect?.kind === "damage" ? round(rogueEffect.pct * strongestDamage(powersXml, names))
+        : rogueEffect?.kind === "power" ? rogueEffect.value : round(DAMAGE_BONUS * strongestDamage(powersXml, names));
+      bonus = [
+        "\t<PowerModType>", `\t\t<ModName>${bonusName}</ModName>`, `\t\t<ModID>${modId++}</ModID>`,
+        `\t\t<DisplayName>${pair.secondaryName}</DisplayName>`, `\t\t<Description>${bonusDescription}</Description>`,
+        "\t\t<ModType>Power</ModType>", `\t\t<PowerName>${names.join(",")}</PowerName>`,
+        `\t\t<PowerProperty>${property}</PowerProperty>`, `\t\t<PowerValue>${value}</PowerValue>`,
+        "\t\t<IconName>a_Signet_Empty</IconName>", "\t</PowerModType>",
+      ].join(eol);
+    }
     return [head, bonus];
   });
 }
@@ -262,8 +288,9 @@ export function patchConfiguredLegendaryGearRunes(verifyOnly: boolean): number {
   const game = parseSwz(GAME_SWZ);
   const modsChunk = game.chunks.find((chunk) => chunk.xml.includes("<PowerModTypes"));
   const powersChunk = game.chunks.find((chunk) => chunk.xml.includes("<PlayerPowerTypes"));
-  if (!modsChunk || !powersChunk) throw new SwzPatchError("Game.swz is missing PowerModTypes/PlayerPowerTypes.");
-  const swzMods = insertMods(modsChunk.xml, buildLegendaryMods(modsChunk.xml, powersChunk.xml));
+  const buffsChunk = game.chunks.find((chunk) => chunk.xml.includes("<PlayerBuffTypes"));
+  if (!modsChunk || !powersChunk || !buffsChunk) throw new SwzPatchError("Game.swz is missing PowerModTypes/PlayerPowerTypes/PlayerBuffTypes.");
+  const swzMods = insertMods(modsChunk.xml, buildLegendaryMods(modsChunk.xml, powersChunk.xml, buffsChunk.xml));
   const swzPowers = addPseudoPowers(powersChunk.xml);
   summary.push(`Game.swz: +${swzMods.added} mods, +${swzPowers.added} pseudo-powers`);
   changes += swzMods.added + swzPowers.added;
@@ -273,7 +300,8 @@ export function patchConfiguredLegendaryGearRunes(verifyOnly: boolean): number {
 
   const looseMods = fs.readFileSync(LOOSE_POWER_MODS, "utf8");
   const loosePowers = fs.readFileSync(LOOSE_POWERS, "utf8");
-  const looseModsResult = insertMods(looseMods, buildLegendaryMods(looseMods, loosePowers));
+  const looseBuffs = fs.readFileSync(LOOSE_BUFFS, "utf8");
+  const looseModsResult = insertMods(looseMods, buildLegendaryMods(looseMods, loosePowers, looseBuffs));
   const loosePowersResult = addPseudoPowers(loosePowers);
   summary.push(`PowerModTypes.xml: +${looseModsResult.added} mods`);
   summary.push(`PlayerPowerTypes.xml: +${loosePowersResult.added} pseudo-powers`);

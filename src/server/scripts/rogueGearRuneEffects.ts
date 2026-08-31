@@ -1,0 +1,64 @@
+// Conditional skills do not spawn entities, so SpawnLimit is a harmless numeric marker that the
+// existing PowerMod runtime already knows how to store and expose without adding a new SWF string.
+export const ROGUE_GEAR_EFFECT_PROPERTY = "SpawnLimit";
+
+export type RogueGearRuneEffect =
+  | { kind: "conditional"; marker: number; description: string; tr: string }
+  | { kind: "damage"; pct: number; description: string; tr: string }
+  | { kind: "power"; property: string; value: string; description: string; tr: string }
+  | {
+      kind: "buff";
+      buffNames: string[];
+      properties: Array<{ name: string; value: number }>;
+      description: string;
+      tr: string;
+    };
+
+/**
+ * First staged Rogue effect batch shared by the Legendary and Mystic generators.
+ * Skills absent from this table retain their existing generic damage bonus.
+ */
+export const ROGUE_GEAR_RUNE_EFFECTS: Readonly<Record<string, RogueGearRuneEffect>> = {
+  WitherStrike: {
+    kind: "power",
+    property: "AddTargetBuff",
+    value: "Append:Bleeding,Append:Bleeding",
+    description: "Withering Impact adds 2 stacks of Bleed",
+    tr: "Soldurucu Darbe 2 Kanama yigi ekler.",
+  },
+  SeverStrike: {
+    kind: "conditional",
+    marker: 1,
+    description: "+10% Severing Strike damage vs Poison/Hemo",
+    tr: "Koparan Vurus Zehirlenmis veya Kanamali hedeflere %10 fazla hasar verir.",
+  },
+  DaggerFlurry: {
+    kind: "damage",
+    pct: 0.15,
+    description: "+15% Flurry of Daggers damage",
+    tr: "Hancer Yagmuru hasari %15 artar.",
+  },
+  VitalStrike: {
+    kind: "conditional",
+    marker: 2,
+    description: "+15% Shadow Rend damage vs Poison/Hemo",
+    tr: "Golge Parcalayis Zehirlenmis veya Kanamali hedeflere %15 fazla hasar verir.",
+  },
+  AssassinateClose: {
+    kind: "conditional",
+    marker: 1,
+    description: "+10% Vicious Assault damage vs Poison/Hemo",
+    tr: "Vahsi Saldiri Zehirlenmis veya Kanamali hedeflere %10 fazla hasar verir.",
+  },
+  DeathBlowOld: {
+    kind: "power",
+    property: "AddTargetBuff",
+    value: "Append:Bleeding,Append:Bleeding",
+    description: "Assassinate adds 2 stacks of Bleed",
+    tr: "Suikast 2 Kanama yigi ekler.",
+  },
+};
+
+export function rogueGearRuneEffect(powerName: string): RogueGearRuneEffect | undefined {
+  return ROGUE_GEAR_RUNE_EFFECTS[powerName];
+}
