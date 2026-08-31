@@ -294,10 +294,9 @@ export class TalentHandler {
                  * No idols means the twelve hours stand.
                  *
                  * The wait is what the idols buy out of, so a player who cannot pay
-                 * is simply told how long is left. The panel cannot show it - the
-                 * timer fields it was authored with are driven by a class this build
-                 * no longer has, which is why they were taken out - so the arch says
-                 * it instead.
+                 * is simply told how long is left. The panel's own countdown says the
+                 * same thing above the button (`HallowsEve.sendCooldownTimer`), but
+                 * only the arch can answer the press itself.
                  */
                 const wait = describeHallowsEveDelay(HallowsEve.secondsUntilNextKey(client.character));
                 HallowsEve.sayAtTheArch(

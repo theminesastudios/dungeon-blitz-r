@@ -1,50 +1,21 @@
 /**
- * Keeps the Summon button on screen, by stopping the host class from hiding it.
+ * Makes the panel's purchase land: a real price, and a window that closes behind it.
  *
- * ## The last thing in the way
+ * ## Where the button comes from
  *
- * "Summon Knight Now" is bound by moving its art into `am_SpeedUpPanel.am_SpeedUp`,
- * the one control `class_69` attaches a Mammoth Idol purchase to - see
- * `scripts/patch-hallows-eve-challenge-screen.ts`. That works, and the click reaches
- * `method_1410`, which sends `0xE0`.
+ * The Green Knight's panel is `class_69` - the Class Tower screen class, repointed at
+ * `a_ScreenHalloweenDungeonPrompt` by `patch-hallows-eve-challenge-screen.ts` - and the
+ * one control it binds a Mammoth Idol purchase to is `am_SpeedUpPanel.am_SpeedUp`, the
+ * tower's *speed up the research* button. The seasonal *Summon Knight Now* art is moved
+ * into that slot, so a click reaches `method_1410`, which sends `0xE0`.
  *
- * It is never clickable, though, because `class_69.OnRefreshScreen` decides what to
- * draw from the Class Tower's research state:
- *
- *     if (mMasterClassTower.mStatus == const_200) {   // research in progress
- *         var_1134.Show();     // am_SpeedUpPanel
- *         …
- *     } else {
- *         var_1134.Hide();     // am_SpeedUpPanel  <- always taken here
- *         …
- *     }
- *
- * and `class_66`'s constructor sets `mStatus = const_185` (0). Nothing on this server
- * starts tower research, so the panel is hidden on every refresh and the button with
- * it - drawn once by `OnCreateScreen`, gone by the first `Refresh()`.
- *
- * ## The patch
- *
- * One operand. The `callpropvoid` in the else branch is repointed from `Hide` to
- * `Show`, so the container the Summon button lives in is shown in the state this
- * server is always in. No instruction is added or removed and no branch offset moves;
- * the multiname index is simply the other one, and both are already in the pool
- * because the same method calls `Show` a dozen times.
- *
- * The site is found structurally rather than by offset: the class is looked up by
- * name, the method by trait name, and the instruction is the `callpropvoid Hide, 0`
- * whose receiver is the `getproperty var_1134` immediately before it. That pair
- * occurs exactly once, and the patch refuses to run if it does not.
- *
- * ## What else moves with it
- *
- * Only this one container. Everything `class_69` shows or hides beside it is an empty
- * dummy this project minted, so its visibility is invisible either way. `am_Close`
- * and the panel's own artwork are not touched by `OnRefreshScreen` at all.
+ * Which button is drawn in which state, and the handler behind the idle one, are
+ * `patch-dungeonblitz-hallows-eve-button-states.ts`'s. This script is only about what
+ * `method_1410` itself does when it runs.
  *
  * Usage: npm exec ts-node scripts/patch-dungeonblitz-hallows-eve-summon-button.ts [--verify]
  *
- * Re-runnable: it checks for its own result first.
+ * Re-runnable: each site checks for its own result first.
  */
 import * as crypto from "crypto";
 import * as fs from "fs";
@@ -67,12 +38,8 @@ const CLIENT_CONTENT = path.resolve(__dirname, "..", "..", "client", "content", 
 const CLIENT_SWF = path.join(CLIENT_CONTENT, "p", "cbp", "DungeonBlitz.swf");
 const INDEX_HTML = path.join(CLIENT_CONTENT, "index.html");
 
-/** The screen class, its refresh, and the wrapper that holds the Summon button. */
+/** The screen class and the handler both sites live in. */
 const HOST_CLASS = "class_69";
-const HOST_METHOD = "OnRefreshScreen";
-const CONTAINER_FIELD = "var_1134";
-const FROM_CALL = "Hide";
-const TO_CALL = "Show";
 
 const OP_NOP = 0x02;
 const OP_PUSHSTRING = 0x2c;
@@ -84,9 +51,11 @@ const OP_PUSHBYTE = 0x24;
 const OP_GETLEX = 0x60;
 const OP_GETLOCAL2 = 0xd2;
 const OP_CALLPROPERTY = 0x46;
+const OP_CONVERT_U = 0x74;
+const OP_SETLOCAL3 = 0xd7;
 
 /**
- * The second site: the click that disables the button forever.
+ * The first site: the click that disables the button forever.
  *
  * `method_1410` opens its send path with
  *
@@ -114,27 +83,38 @@ const HIDE_CALL = "Hide";
 const HIDE_SOURCE = "method_687";
 
 /**
- * The third site: the price the client checks against.
+ * The second site: the price the client checks against, taken out of its hands.
  *
- * `method_1410` derives its cost from the Class Tower's own clock -
- * `Game.method_257(mMasterClassTower.mEndtime - mServerGameTime)` - which on a tower
- * that never researches is a large negative time, and so a cost of nothing. The
- * button therefore let anyone through, idols or not, and the server had to be the
- * only thing saying no.
+ * `method_1410` derives a cost from the Class Tower's own clock -
+ * `Game.method_257(mMasterClassTower.mEndtime - mServerGameTime)` - and refuses to
+ * send anything when `mMammothIdols < cost`, opening `screenBuyIdols` instead. That
+ * check cannot be right here, because **one handler now serves both of the panel's
+ * buttons**: *Summon Knight Now* while the Knight sleeps, which costs twenty idols,
+ * and *Enter Dungeon* while he is up, which costs nothing (and neither does a first
+ * visit). Any literal that makes the paid press honest makes the free press
+ * impossible - and since the arch itself is shut, a player with no idols would have
+ * no way in at all, on the one screen that says *Enter Dungeon* to them.
  *
- * Replacing that call with a literal 20 hands the check back to the client, and with
- * it the game's own answer: `method_1410` opens `screenBuyIdols` when
- * `mMammothIdols < cost` and **returns without sending**. So a player short of idols
- * gets the shop's own "not enough Mammoth Idols" window, in the game's own words, and
- * no packet is sent - which is also the "must not enter" half of the requirement.
+ * A pass that priced it at twenty did exactly that, back when the panel had a single
+ * button and the twelve-hour wait was almost always over. So the literal is **0**: the
+ * client always sends, and the server - which is the only side that knows whether the
+ * Knight is up, whether this is a first visit, and what a summon costs - answers.
+ * `HallowsEve.summonKnightNow` charges `HALLOWS_EVE_SUMMON_COST_IDOLS`, and a player
+ * who cannot pay is told at the arch how long is left and what it would cost, in
+ * words, rather than by a shop window that cannot explain itself.
  *
- * `getlex Game; getlocal2; callproperty method_257, 1` and `pushbyte 20` both leave
- * one value on the stack, and the literal is shorter, so the remainder stays `nop`
- * and nothing moves. The price still matters nowhere else: the server charges
- * `HALLOWS_EVE_SUMMON_COST_IDOLS` and never reads the number in the packet.
+ * What is lost is the idol shop opening itself on a refused summon. What is kept is
+ * the price *on the panel*: `am_IdolGroup`, the twenty-idol tag, is drawn beside the
+ * Summon button in exactly the state that has to pay
+ * (`patch-hallows-eve-panel-timer.ts`).
+ *
+ * `getlex Game; getlocal2; callproperty method_257, 1` and `pushbyte 0` both leave one
+ * value on the stack, and the literal is shorter, so the remainder stays `nop` and
+ * nothing moves. The cost also travels in the packet, where it is now a zero the
+ * server logs and ignores.
  */
 const COST_CALL = "method_257";
-const COST_VALUE = 20;
+const COST_VALUE = 0;
 
 /** Keeps index.html's cache token in step, or nobody is served the patch. */
 function syncClientRevision(): void {
@@ -219,6 +199,25 @@ function findCostBlock(instructions: ReturnType<typeof disassemble>, names: stri
   return null;
 }
 
+/**
+ * The literal an earlier pass left in place of the cost computation.
+ *
+ * Found by what it feeds rather than by its value: the price is the only `pushbyte`
+ * in `method_1410` whose next real instructions are `convert_u; setlocal3`, local 3
+ * being the cost the idol check and the packet both read. Returns the byte to rewrite
+ * when the literal is not the one this script wants.
+ */
+function findCostLiteral(instructions: ReturnType<typeof disassemble>): { at: number; value: number } | null {
+  for (let i = 0; i < instructions.length - 1; i += 1) {
+    if (instructions[i].opcode !== OP_PUSHBYTE) continue;
+    const rest = instructions.slice(i + 1).filter((inst) => inst.opcode !== OP_NOP);
+    if (rest.length < 2) continue;
+    if (rest[0].opcode !== OP_CONVERT_U || rest[1].opcode !== OP_SETLOCAL3) continue;
+    return { at: instructions[i].offset + 1, value: instructions[i].operands[0][1] };
+  }
+  return null;
+}
+
 function main(): void {
   const verify = process.argv.includes("--verify");
 
@@ -227,51 +226,6 @@ function main(): void {
 
   const classIdx = classIndexByName(abc, HOST_CLASS);
   if (classIdx === null) throw new PatchError(`no ${HOST_CLASS} in this ABC`);
-  const methodIdx = methodIdxForTrait(abc.instances[classIdx].traits, abc, HOST_METHOD);
-  if (methodIdx === null) throw new PatchError(`${HOST_CLASS} has no ${HOST_METHOD}`);
-  const body = abc.methodBodies.get(methodIdx);
-  if (!body) throw new PatchError(`${HOST_CLASS}.${HOST_METHOD} has no body`);
-
-  const code = ctx.body.subarray(body.codeStart, body.codeStart + body.codeLen);
-  const instructions = disassemble(code, `${HOST_CLASS}.${HOST_METHOD}`);
-
-  // The multiname index `Show` is called through, taken from this same method so it
-  // is certainly the right one for this constant pool.
-  let showIdx: number | null = null;
-  for (const inst of instructions) {
-    if (inst.opcode === OP_CALLPROPVOID && u30OperandName(inst, abc.multinameNames) === TO_CALL) {
-      showIdx = inst.operands[0][1];
-      break;
-    }
-  }
-  if (showIdx === null) throw new PatchError(`${HOST_METHOD} never calls ${TO_CALL}; refusing to guess an index`);
-
-  // `getproperty var_1134` immediately followed by `callpropvoid Hide, 0`.
-  const hits: Array<{ start: number; length: number }> = [];
-  for (let i = 1; i < instructions.length; i += 1) {
-    const call = instructions[i];
-    const receiver = instructions[i - 1];
-    if (call.opcode !== OP_CALLPROPVOID || u30OperandName(call, abc.multinameNames) !== FROM_CALL) continue;
-    if (receiver.opcode !== OP_GETPROPERTY) continue;
-    if (u30OperandName(receiver, abc.multinameNames) !== CONTAINER_FIELD) continue;
-    hits.push({ start: call.offset + 1, length: writeU30(call.operands[0][1]).length });
-  }
-
-  const already = instructions.some(
-    (inst, i) =>
-      i > 0 &&
-      inst.opcode === OP_CALLPROPVOID &&
-      u30OperandName(inst, abc.multinameNames) === TO_CALL &&
-      instructions[i - 1].opcode === OP_GETPROPERTY &&
-      u30OperandName(instructions[i - 1], abc.multinameNames) === CONTAINER_FIELD,
-  );
-
-  if (hits.length > 1) {
-    throw new PatchError(
-      `${CONTAINER_FIELD}.${FROM_CALL}() occurs ${hits.length} times in ${HOST_METHOD}; ` +
-        "it is meant to be unique, so refusing to guess which one hides the Summon button",
-    );
-  }
 
   const send = methodCode(ctx, abc, classIdx, SEND_METHOD);
   const sendBody = send.body;
@@ -300,54 +254,34 @@ function main(): void {
 
   const cost = findCostBlock(send.instructions, abc.multinameNames);
   const costBytes = Buffer.from([OP_PUSHBYTE, COST_VALUE]);
+  // The computation is gone already: check the literal that replaced it is this one.
+  const literal = cost ? null : findCostLiteral(send.instructions);
+  const reprice = literal && literal.value !== COST_VALUE ? literal : null;
 
-  // The three sites are independent: any may already be applied while the others are not.
-  if (hits.length === 0 && !disable && !cost) {
-    console.log(
-      already
-        ? "the Summon button is already shown, priced and closing; nothing to do."
-        : `no ${CONTAINER_FIELD}.${FROM_CALL}() and no ${DISABLE_CALL}(); nothing to do.`,
-    );
+  // Both sites are independent: either may already be applied while the other is not.
+  if (!disable && !cost && !reprice) {
+    console.log("the Summon purchase already closes the window and carries its price; nothing to do.");
     return;
   }
-  console.log(
-    hits.length > 0
-      ? `${HOST_CLASS}.${HOST_METHOD}: ${CONTAINER_FIELD}.${FROM_CALL}() -> ${CONTAINER_FIELD}.${TO_CALL}()`
-      : `${HOST_CLASS}.${HOST_METHOD}: ${CONTAINER_FIELD} already shown`,
-  );
   console.log(
     disable
       ? `${HOST_CLASS}.${SEND_METHOD}: ${disable.end - disable.start} bytes -> ${HIDE_CALL}() + nops`
       : `${HOST_CLASS}.${SEND_METHOD}: already closes the window on purchase`,
   );
-  console.log(
-    cost
-      ? `${HOST_CLASS}.${SEND_METHOD}: ${COST_CALL}(...) -> pushbyte ${COST_VALUE}`
-      : `${HOST_CLASS}.${SEND_METHOD}: price is already a literal`,
-  );
+  if (cost) {
+    console.log(`${HOST_CLASS}.${SEND_METHOD}: ${COST_CALL}(...) -> pushbyte ${COST_VALUE}`);
+  } else if (reprice) {
+    console.log(`${HOST_CLASS}.${SEND_METHOD}: client-side price ${reprice.value} -> ${COST_VALUE}`);
+  } else {
+    console.log(`${HOST_CLASS}.${SEND_METHOD}: the client already leaves the price to the server`);
+  }
   if (verify) {
     console.log("verify only - nothing written.");
     return;
   }
 
   const patches: Parameters<typeof applyPatchesToBody>[1] = [];
-  if (hits.length > 0) {
-  const replacement = writeU30(showIdx);
-  if (replacement.length !== hits[0].length) {
-    throw new PatchError(
-      `${TO_CALL} encodes to ${replacement.length} bytes and ${FROM_CALL} to ${hits[0].length}; ` +
-        "this patch only swaps same-width operands so that no branch offset moves",
-    );
-  }
 
-    patches.push({
-      key: "hallows-eve-summon-visible",
-      start: body.codeStart + hits[0].start,
-      end: body.codeStart + hits[0].start + hits[0].length,
-      data: replacement,
-      detail: `${CONTAINER_FIELD}.${FROM_CALL}() -> ${TO_CALL}()`,
-    });
-  }
   if (disable) {
     patches.push({
       key: "hallows-eve-summon-closes-window",
@@ -368,6 +302,16 @@ function main(): void {
       end: sendBody.codeStart + cost.end,
       data: Buffer.concat([costBytes, Buffer.alloc(cost.end - cost.start - costBytes.length, OP_NOP)]),
       detail: `${COST_CALL}(...) -> ${COST_VALUE}`,
+    });
+  }
+
+  if (reprice) {
+    patches.push({
+      key: "hallows-eve-summon-price",
+      start: sendBody.codeStart + reprice.at,
+      end: sendBody.codeStart + reprice.at + 1,
+      data: Buffer.from([COST_VALUE]),
+      detail: `client-side price ${reprice.value} -> ${COST_VALUE}`,
     });
   }
 

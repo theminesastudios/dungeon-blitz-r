@@ -155,66 +155,77 @@ const ROOT_CHILDREN: ChildSpec[] = [
 const DUMMY_DEPTH_BASE = 900;
 
 /**
- * `am_Enter` ("Enter Dungeon"), emptied.
+ * The two authored buttons, emptied where they were drawn.
  *
- * The panel belongs to a state machine this build no longer has: one state offers
- * Enter, the other offers Summon. Both are drawn, and with nothing switching between
- * them they stack. Enter is the one that goes, because the arch beside the panel is
- * already the way in - the player closes the window and walks through it.
+ * The panel was authored with two states - *Enter Dungeon* while the Knight is up,
+ * *Summon Knight Now* while he sleeps - and both buttons are placed on the panel
+ * itself, so on their own placements they stack: two buttons drawn one over the
+ * other, in every state.
  *
- * The placement and its name stay, so putting it back is deleting one entry here and
- * re-running; it would want a line in `FROZEN_CHILDREN` too, since it is a 3-frame
- * clip like every other button.
+ * Neither is thrown away. `STATE_BUTTONS` copies each one into the state container
+ * `class_69` shows in the state it belongs to, and these two placements - the ones
+ * that drew them unconditionally - are blanked. The names stay, so the artwork can
+ * still be found by anyone reading the panel.
  */
-const EMPTIED_CHILDREN = ["am_ClearTimer", "am_IdolGroup"];
+const EMPTIED_CHILDREN = ["am_Enter", "am_ClearTimer"];
 
 /**
- * **The Summon button, given a handler.**
+ * **The two buttons, each given a handler and a state.**
  *
- * `am_ClearTimer` ("Summon Knight Now") is the panel's own art and `class_69` has
- * never heard of it, so on its own placement it is unbound: it flickers (a 3-frame
- * clip nothing calls `gotoAndStop` on) and a click does nothing.
+ * `am_Enter` and `am_ClearTimer` are the panel's own art and `class_69` has never
+ * heard of either name, so on their own placements they are unbound: they flicker
+ * (3-frame clips nothing calls `gotoAndStop` on) and a click does nothing.
  *
- * `class_69` *does* bind one button that spends Mammoth Idols -
- * `method_10(var_2.am_SpeedUpPanel.am_SpeedUp, method_1410)`, the Class Tower's
- * "speed up the research" button. Semantically it is the same purchase: pay idols,
- * skip a timer. So the art is moved into that slot: `am_SpeedUpPanel` stops being an
- * empty dummy and becomes a container carrying **the real button, at the exact
- * matrix its own placement used**, under the name `am_SpeedUp`. The original
- * `am_ClearTimer` placement is emptied so only one button is drawn.
+ * `class_69` binds a button inside each of the two containers it switches on the
+ * Class Tower's research flag, and that flag is now the Green Knight's twelve hours
+ * (`HallowsEve.sendCooldownTimer`, carried by 0xD5). So each art is moved into the
+ * slot whose state it was drawn for:
  *
- * Two things fall out of binding it, both wanted:
+ *     mStatus == const_200 (he sleeps)      else (he is up)
+ *     ------------------------------       ------------------------------
+ *     am_SpeedUpPanel          Show        am_SpeedUpPanel          Hide
+ *       am_SpeedUp   <- am_ClearTimer      am_TrainTalentPanel      Show
+ *     am_TrainTalentPanel      Hide          am_TrainTalent <- am_Enter
+ *
+ * which is the panel saying *Summon Knight Now* exactly while there is a wait to buy
+ * out of, and *Enter Dungeon* once there is not. The price tag rides the same switch:
+ * `patch-hallows-eve-panel-timer.ts` puts `am_IdolGroup` in the sleeping container,
+ * beside the countdown.
+ *
+ * Both slots end in the same place. `am_SpeedUp`'s handler is `method_1410`, and
+ * `am_TrainTalent`'s is repointed to it by
+ * `patch-dungeonblitz-hallows-eve-button-states.ts`, which also restores the `Hide`
+ * that keeps `am_SpeedUpPanel` out of the idle state. `method_1410` sends
+ * `LinkUpdater.const_1284` - **`0xE0`** - and it is the only sender of that id in the
+ * whole client, so a `0xE0` can only mean *the player pressed the button on this
+ * panel*. What it costs is the server's to decide: nothing while the Knight is up or
+ * on a first visit, twenty Mammoth Idols while he sleeps.
+ *
+ * Two things fall out of binding them, both wanted:
  *
  *   - `class_33`'s constructor calls `gotoAndStop(1)` on whatever it wraps, so the
  *     flicker is fixed by the binding itself rather than by freezing the character,
- *     and the button keeps its hover and pressed frames.
- *   - `method_1410` sends `LinkUpdater.const_1284`, and **that constant is `0xE0`**
- *     (derived from `LinkUpdater`'s cinit; the derivation checks out against the two
- *     ids this server already registers, `0xBA` apply-dyes and `0x7A` talk-to-npc).
- *     `class_69.method_1410` is the *only* sender of it in the whole client, and
- *     `class_69` is now this panel - so a `0xE0` can only mean "Summon pressed".
+ *     and each button keeps its hover and pressed frames.
+ *   - the switch is `class_69`'s own, already running on every `Refresh()`, so
+ *     nothing new has to drive it.
  *
- * The client computes a cost from the Class Tower's own timer and writes it into the
- * packet; the server ignores that number and charges its own price. See
- * `HallowsEve.summonCostIdols` and the Hallow's Eve branch in
- * `TalentHandler.handleTalentSpeedup`.
+ * The artwork is read from `UI_Seasonal.swf.bak`, the untouched original, because
+ * `EMPTIED_CHILDREN` blanks both placements on the panel: the characters stay in the
+ * file, but only the backup still says which name each one belonged to.
  */
-/**
- * **The button says "Enter Dungeon".**
- *
- * The panel was authored with two states - Enter when the Knight is up, Summon when
- * he is sleeping - and the class that switched between them is gone, so only one
- * label can ever be drawn. Enter is the right one to keep: a first visit is free and
- * so is every visit once the twelve hours have run out, which is nearly always. The
- * paid case is the exception, and the arch says so in words when it applies
- * ("The Green Knight sleeps for another 7 hours...").
- *
- * The Summon art and `am_IdolGroup`, its 20-idol price tag, are emptied with it:
- * a price drawn on a button that is usually free is worse than no price at all.
- */
-const SUMMON_BUTTON_SOURCE = "am_Enter";
-const SUMMON_BUTTON_CONTAINER = "am_SpeedUpPanel";
-const SUMMON_BUTTON_CHILD = "am_SpeedUp";
+interface ButtonSpec {
+  /** The authored placement the artwork and its matrix are taken from. */
+  source: string;
+  /** The container `class_69` shows in the state this button belongs to. */
+  container: string;
+  /** The name `class_69` reaches for inside that container. */
+  child: string;
+}
+
+const STATE_BUTTONS: ButtonSpec[] = [
+  { source: "am_ClearTimer", container: "am_SpeedUpPanel", child: "am_SpeedUp" },
+  { source: "am_Enter", container: "am_TrainTalentPanel", child: "am_TrainTalent" },
+];
 
 /**
  * The panel's own buttons, stopped on their first frame.
@@ -428,66 +439,93 @@ function emptyChildren(swf: SwfFile, containerId: number, nextId: { value: numbe
 }
 
 /**
- * Moves the Summon button's art into the one slot `class_69` binds a handler to.
+ * Puts each authored button into the state container that shows it.
  *
- * Runs after `ensureChildren`, which will have built `am_SpeedUpPanel` as an empty
- * container with an empty `am_SpeedUp` inside it. This replaces that container with
- * one holding the real button at its own placement's matrix. See
- * `SUMMON_BUTTON_SOURCE` for why.
+ * Runs after `ensureChildren`, which will have built both containers as empty
+ * sprites carrying an empty child. Each is replaced with one holding the real
+ * button, at the matrix its own placement on the panel used, so the artwork lands
+ * exactly where it was drawn. See `STATE_BUTTONS` for why these two slots.
+ *
+ * The artwork comes from the backup: `EMPTIED_CHILDREN` blanks both placements on
+ * the panel, so the patched file no longer says which character each name held.
+ *
+ * Returns the slots it wired. A slot already holding its own source character is
+ * left alone, which is what makes this re-runnable - and a slot holding the *other*
+ * button (an earlier pass, when one button served both states) is rebuilt.
  */
-function wireSummonButton(swf: SwfFile, panelId: number, nextId: { value: number }, verify: boolean): boolean {
+function wireStateButtons(swf: SwfFile, panelId: number, nextId: { value: number }, verify: boolean): string[] {
+  const authored = authoredButtonPlacements();
+
   const index = spriteIndexOf(swf, panelId);
   const inner = spriteInnerTags(swf.tags[index]);
+  const wired: string[] = [];
+  let changed = false;
 
-  let source: ReturnType<typeof parsePlace> | null = null;
-  let containerAt = -1;
-  for (let i = 0; i < inner.length; i += 1) {
-    if (!isPlacement(inner[i].code)) continue;
-    const place = parsePlace(inner[i]);
-    if (place.name === SUMMON_BUTTON_SOURCE) source = place;
-    if (place.name === SUMMON_BUTTON_CONTAINER) containerAt = i;
-  }
-  if (!source || source.charId === null || containerAt === -1) {
-    throw new SwfLevelError(
-      `cannot wire the Summon button: ${SUMMON_BUTTON_SOURCE} or ${SUMMON_BUTTON_CONTAINER} is missing`,
+  for (const spec of STATE_BUTTONS) {
+    const source = authored.get(spec.source);
+    if (!source || source.charId === null) {
+      throw new SwfLevelError(`the original ${PANEL_CHILD} has no ${spec.source} to wire`);
+    }
+
+    const containerAt = inner.findIndex(
+      (tag) => isPlacement(tag.code) && parsePlace(tag).name === spec.container,
     );
-  }
+    if (containerAt === -1) {
+      throw new SwfLevelError(`cannot wire ${spec.source}: ${spec.container} is missing`);
+    }
 
-  // Already wired when the container's child points at something drawable.
-  // Already wired when the container's child points at the real button, which is a
-  // multi-frame clip; every dummy this script mints has exactly one frame.
-  const containerId = parsePlace(inner[containerAt]).charId;
-  const existing = containerId === null ? undefined : namedChildren(swf, containerId).get(SUMMON_BUTTON_CHILD);
-  if (existing !== undefined && existing !== null) {
-    const at = swf.tags.findIndex(
-      (tag) => tag.code === TAG_DEFINE_SPRITE && tag.data.readUInt16LE(0) === existing,
+    // Already wired when the container's child is this button's own character.
+    const containerId = parsePlace(inner[containerAt]).charId;
+    const existing = containerId === null ? undefined : namedChildren(swf, containerId).get(spec.child);
+    if (existing === source.charId) continue;
+
+    wired.push(`${spec.container}.${spec.child} <- ${spec.source}`);
+    if (verify) continue;
+
+    const container = nextId.value;
+    nextId.value += 1;
+    appendCharacterTag(
+      swf,
+      buildSprite({
+        id: container,
+        placements: [
+          {
+            depth: 1,
+            charId: source.charId,
+            name: spec.child,
+            x: (source.matrix?.translateX ?? 0) / 20,
+            y: (source.matrix?.translateY ?? 0) / 20,
+            scaleX: source.matrix?.scaleX ?? 1,
+            scaleY: source.matrix?.scaleY ?? 1,
+          },
+        ],
+      }),
     );
-    if (at !== -1 && swf.tags[at].data.readUInt16LE(2) > 1) return false;
+    inner[containerAt] = repointPlacement(inner[containerAt], container);
+    changed = true;
   }
-  if (verify) return true;
 
-  const container = nextId.value;
-  nextId.value += 1;
-  appendCharacterTag(
-    swf,
-    buildSprite({
-      id: container,
-      placements: [
-        {
-          depth: 1,
-          charId: source.charId,
-          name: SUMMON_BUTTON_CHILD,
-          x: (source.matrix?.translateX ?? 0) / 20,
-          y: (source.matrix?.translateY ?? 0) / 20,
-          scaleX: source.matrix?.scaleX ?? 1,
-          scaleY: source.matrix?.scaleY ?? 1,
-        },
-      ],
-    }),
-  );
-  inner[containerAt] = repointPlacement(inner[containerAt], container);
-  swf.tags[index] = rebuildSprite(swf.tags[index], inner);
-  return true;
+  if (changed) swf.tags[index] = rebuildSprite(swf.tags[index], inner);
+  return wired;
+}
+
+/** The button placements as they were authored, read off the untouched backup. */
+function authoredButtonPlacements(): Map<string, ReturnType<typeof parsePlace>> {
+  const original = readSwfFile(`${SEASONAL_SWF}.bak`);
+  const screen = readSymbolClasses(original).find((entry) => entry.name === SEASONAL_SCREEN);
+  if (!screen) throw new SwfLevelError(`${path.basename(SEASONAL_SWF)}.bak has no ${SEASONAL_SCREEN}`);
+  const panel = namedChildren(original, screen.id).get(PANEL_CHILD);
+  if (panel === undefined || panel === null) throw new SwfLevelError(`${SEASONAL_SCREEN} has no ${PANEL_CHILD}`);
+
+  const found = new Map<string, ReturnType<typeof parsePlace>>();
+  const tag = characterTagsById(original).get(panel);
+  if (!tag) return found;
+  for (const child of spriteInnerTags(tag)) {
+    if (!isPlacement(child.code)) continue;
+    const place = parsePlace(child);
+    if (place.name) found.set(place.name, place);
+  }
+  return found;
 }
 
 /**
@@ -551,10 +589,10 @@ function addDummies(seasonal: SwfFile, verify: boolean): boolean {
   const nextId = { value: maxCharacterId(seasonal) + 1 };
   const onPanel = ensureChildren(seasonal, panelId, PANEL_CHILDREN, nextId, verify);
   const onRoot = ensureChildren(seasonal, screenId, ROOT_CHILDREN, nextId, verify);
-  // Wired first: `emptyChildren` blanks am_ClearTimer, and the wiring copies that
-  // very character. Emptying first would move an empty sprite into the button slot.
-  const wired = wireSummonButton(seasonal, panelId, nextId, verify);
-  if (wired) console.log("summon button wired into " + SUMMON_BUTTON_CONTAINER + "." + SUMMON_BUTTON_CHILD);
+  // Wired before `emptyChildren` only for readability: the artwork itself comes
+  // from the backup, so blanking the panel's own placements cannot disturb it.
+  const wired = wireStateButtons(seasonal, panelId, nextId, verify);
+  for (const slot of wired) console.log(`button wired: ${slot}`);
   const emptied = emptyChildren(seasonal, panelId, nextId, verify);
   if (emptied.length > 0) console.log(`emptied: ${emptied.join(", ")}`);
   const frozen = freezeChildren(seasonal, panelId, verify);
@@ -562,7 +600,7 @@ function addDummies(seasonal: SwfFile, verify: boolean): boolean {
   const removed = removeChildren(seasonal, panelId, verify);
   if (removed.length > 0) console.log(`removed: ${removed.join(", ")}`);
 
-  if (onPanel.length === 0 && onRoot.length === 0 && emptied.length === 0 && removed.length === 0 && frozen.length === 0 && !wired) {
+  if (onPanel.length === 0 && onRoot.length === 0 && emptied.length === 0 && removed.length === 0 && frozen.length === 0 && wired.length === 0) {
     console.log(`${SEASONAL_SCREEN} already carries every child class_69 reaches for.`);
     return false;
   }

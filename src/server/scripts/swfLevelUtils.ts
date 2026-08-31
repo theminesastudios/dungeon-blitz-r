@@ -130,11 +130,27 @@ export function characterTagsById(swf: SwfFile): Map<number, SwfTag> {
   return map;
 }
 
+/**
+ * Every tag that carries a character id in its first field - the definitions, plus the
+ * few that only refer to one, which cannot inflate a maximum and so are harmless here.
+ *
+ * `maxCharacterId` is what new characters are numbered from, so it has to see the
+ * *whole* dictionary, not just the part this file models with `CHARACTER_TAGS`.
+ * `DefineEditText` (37) is the one that bites: UI SWFs are full of text fields, and
+ * minting over one leaves a file with two definitions of the same id - the sprite
+ * resolves as a TextField, and the first `gotoAndStop` on it takes the whole screen
+ * down with a TypeError, which looks exactly like a click that never landed.
+ */
+const ID_BEARING_TAGS = new Set([
+  2, 4, 6, 7, 10, 11, 13, 14, 17, 20, 21, 22, 32, 34, 35, 36, 37, 39, 46, 48, 60, 75, 78, 83, 84, 87, 90,
+]);
+
 export function maxCharacterId(swf: SwfFile): number {
   let max = 0;
   for (const tag of swf.tags) {
-    const id = characterId(tag);
-    if (id !== null && id > max) max = id;
+    if (!ID_BEARING_TAGS.has(tag.code) || tag.data.length < 2) continue;
+    const id = tag.data.readUInt16LE(0);
+    if (id > max) max = id;
   }
   return max;
 }

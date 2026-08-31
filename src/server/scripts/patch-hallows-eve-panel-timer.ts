@@ -106,25 +106,22 @@ const CLOCK_NAME = "am_Time";
  * Where each field goes, in the panel's own coordinates.
  *
  * All four containers are placed at the panel's origin, so these are the matrices the
- * fields were authored with - read off the untouched file, not invented.
+ * fields were authored with - read off the untouched file, not invented. The price
+ * tag was drawn at x 266, tucked against the right end of the *Summon* button - which
+ * is the button that stands here now, in the sleeping state this container is shown in
+ * (`STATE_BUTTONS` in `patch-hallows-eve-challenge-screen.ts`), so it needs no
+ * adjusting:
  *
- * The price tag is the one exception, and it is measured rather than authored. It was
- * drawn at x 266, tucked against the right end of the *Summon* button; the button that
- * is actually on the panel now is the wider `am_Enter` art, which reaches x 301.7. The
- * space it has to live in is what is left inside the dark box the button and the clock
- * sit in - `am_BaseUpper`'s panel at panel-local **50.2 to 367.0** - and the tag is
- * 64.5px wide, which is 0.8px more than that gap. So it is drawn at 0.85 and set down
- * with a few pixels of air on both sides, vertically centred on the button:
+ *     button   84.7 .. 259.8      tag  266.2 .. 330.8      box ends at 367.0
  *
- *     button   116.3 .. 301.7      tag  306.2 .. 361.0      box ends at 367.0
- *
- * At its full size and its first position (318) it hung 15px past the end of the box.
+ * An earlier pass moved and shrank it, because the button drawn here then was the
+ * wider *Enter Dungeon* art, which reached x 301.7 and left the tag no room.
  */
 const AUTHORED: Record<string, { x: number; y: number; scale?: number }> = {
   [READY_TEXT]: { x: 74.0, y: -212.3 },
   [TIMER_HEADER]: { x: 72.5, y: -210.1 },
   [TIMER_FIELD]: { x: 73.5, y: -186.6 },
-  [PRICE_TAG]: { x: 306.2, y: -129.5, scale: 0.85 },
+  [PRICE_TAG]: { x: 266.25, y: -133.65 },
 };
 
 /**
