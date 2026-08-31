@@ -457,6 +457,14 @@ export class MissionHandler {
         'ScarabPredator2Hard',
         'ScarabScorpionHard'
     ]);
+    private static readonly SHAZARI_SCORPION_STINGER_DUNGEON_LEVELS = new Set([
+        'SD_Mission2',
+        'SD_Mission4',
+        'SD_Mission5',
+        'SD_Mission2Hard',
+        'SD_Mission4Hard',
+        'SD_Mission5Hard'
+    ]);
     private static readonly SHAZARI_WASP_HIVE_KILL_NAMES = new Set([
         'TreeHiveSpawner'
     ]);
@@ -1202,18 +1210,29 @@ export class MissionHandler {
     }
 
     /**
-     * Ancient Unrest's normal-route SandWorms do not emit the terminal entity-state/destroy
-     * packet that most client-authored dungeon enemies send after the final hit. Waiting for
-     * that packet therefore loses the kill, while the treasure-room worms happen to work.
+     * Some client-authored Shazari dungeon enemies do not emit the terminal entity-state/destroy
+     * packet that normally follows the server-resolved final hit. Waiting for that packet loses
+     * their side-quest kill even though the combat handler has reduced the canonical hostile to
+     * zero HP already.
      *
-     * The combat handler has already reduced the canonical hostile to zero HP before asking
-     * this question, so accepting that server-resolved death is safe for the two non-boss worm
-     * variants. The authored SandWormGreater boss keeps the stricter dungeon-completion path.
+     * Keep these exceptions to the exact enemy variants and authored dungeon routes known to
+     * omit the packet. Dungeon completion still uses its separate authority checks.
      */
     static shouldAcceptServerResolvedEnemyKillMissionProgress(client: Client, defeatedEntity: any): boolean {
         const currentLevel = LevelConfig.normalizeLevelName(
             client.currentLevel || String(client.character?.CurrentLevel?.name ?? '')
         );
+        const defeatedNames = MissionHandler.getDefeatedEnemyNames(defeatedEntity);
+
+        if (MissionHandler.SHAZARI_SCORPION_STINGER_DUNGEON_LEVELS.has(currentLevel)) {
+            const acceptedScorpions = currentLevel.endsWith('Hard')
+                ? MissionHandler.SHAZARI_SCORPION_STINGER_HARD_KILL_NAMES
+                : MissionHandler.SHAZARI_SCORPION_STINGER_KILL_NAMES;
+            if (defeatedNames.some((name) => acceptedScorpions.has(name))) {
+                return MissionHandler.hasActiveEnemyKillMissionProgress(client, defeatedEntity);
+            }
+        }
+
         if (currentLevel !== 'SD_Mission5' && currentLevel !== 'SD_Mission5Hard') {
             return false;
         }
@@ -1221,7 +1240,7 @@ export class MissionHandler {
         const acceptedNames = currentLevel === 'SD_Mission5Hard'
             ? new Set(['SandWormHard', 'SandWorm2Hard'])
             : new Set(['SandWorm', 'SandWorm2']);
-        if (!MissionHandler.getDefeatedEnemyNames(defeatedEntity).some((name) => acceptedNames.has(name))) {
+        if (!defeatedNames.some((name) => acceptedNames.has(name))) {
             return false;
         }
 
