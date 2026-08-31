@@ -1084,12 +1084,28 @@ function patch(swfPath: string, verify: boolean, only: Only): void {
   if (only === "both" || only === "layout") {
     const label = "class_101.method_1120";
     const target = loadMethod(ctx, abc, instanceTrait(abc, "class_101", "method_1120"), label);
-    const layoutBlock = buildTooltipLayoutBlock(harvestLayoutMultinames(ctx, abc), gearTypeMultinames);
+    const layoutMultinames = harvestLayoutMultinames(ctx, abc);
+    const layoutBlock = buildTooltipLayoutBlock(layoutMultinames, gearTypeMultinames);
+    const mysticOnlyLayoutBlock = buildTooltipLayoutBlock(layoutMultinames, gearTypeMultinames, true);
 
     // Search the whole body, not the anchor: splicing moves the live return past the block, so an
     // anchor-relative check would miss it and splice a second copy on every re-run.
     if (target.code.includes(layoutBlock)) {
       skipped.push(label);
+    } else if (target.code.includes(mysticOnlyLayoutBlock)) {
+      // The old and new blocks deliberately have identical lengths; replacing only the gate bytes
+      // preserves every surrounding branch target in this already-patched method body.
+      const newCode = Buffer.from(target.code);
+      layoutBlock.copy(newCode, target.code.indexOf(mysticOnlyLayoutBlock));
+      assertBranchesLand(newCode, label);
+      patches.push({
+        key: `${label}.code`,
+        start: target.body.codeStart,
+        end: target.body.codeStart + target.body.codeLen,
+        data: newCode,
+        detail: `${label}: proc rows follow every multi-line ability block`,
+      });
+      done.push(label);
     } else {
       const anchorOffset = findLiveReturn(target.code, target.insts, label);
       const newCode = spliceIntoMethod(target.code, target.insts, anchorOffset, layoutBlock, label);
@@ -1262,15 +1278,12 @@ function harvestLayoutMultinames(ctx: ReturnType<typeof parseSwf>, abc: Abc): La
  * The two proc rows sit at fixed pixel positions that land on rows 3 and 5 of the power field, so a
  * multi-line ability block (Mystic items) draws straight through them. This measures how far
  * `am_PowerTypeName` actually grew past one line and pushes the proc text and its rune icons down by
- * exactly that much.
- *
- * Gated to Mystic items, not self-adjusting: only they carry the authored multi-line ability text,
- * and every other Legendary card should keep its default height. `local4` is the GearType here (it
- * is read as `local4.var_1062` throughout the method and never reassigned or killed), so the marker
- * test excludes everything else. The measurement below still cannot compound across hovers — the
- * stock fill re-assigns those y values from constants on every call, before this runs.
+ * exactly that much. This is intentionally rarity-agnostic: Mystic and Legendary gear can both
+ * carry multi-line ability text now. A stock single-line field produces a non-positive delta and
+ * exits without moving anything. The measurement cannot compound across hovers because the stock
+ * fill re-assigns the proc text y values from constants before this runs.
  */
-function buildTooltipLayoutBlock(layout: LayoutMultinames, gearType: GearTypeMultinames): Buffer {
+function buildTooltipLayoutBlock(layout: LayoutMultinames, gearType: GearTypeMultinames, mysticOnly = false): Buffer {
   // Proc TEXT rows: additive `y += delta`. Safe because the stock fill re-sets am_ProcTypeName1/2.y
   // from constants on every call (verified: setproperty y off both), so each hover starts from the
   // authored y and this cannot compound.
@@ -1312,10 +1325,16 @@ function buildTooltipLayoutBlock(layout: LayoutMultinames, gearType: GearTypeMul
     { opcode: -1, label: `${tag}Done` },
   ];
 
+  // Keep the replacement byte-for-byte the same length as the earlier Mystic-only block. This lets
+  // an already-patched SWF upgrade in place without shifting surrounding AVM2 branch offsets.
+  const legacyGate = mysticGate(4, gearType, "done");
+  const legacyGateLength = assemble([...legacyGate, { opcode: -1, label: "done" }]).length;
+  const gate: Op[] = mysticOnly
+    ? legacyGate
+    : Array.from({ length: legacyGateLength }, () => ({ opcode: 0x02 })); // nop
+
   return assemble([
-    // Gate: only Mystic items get the enlarged card. local4 is the GearType; a null gear or any
-    // other rarity falls straight through to "done", leaving that tooltip byte-for-byte as stock.
-    ...mysticGate(4, gearType, "done"),
+    ...gate,
 
     { opcode: 0xd3 }, // getlocal3 -> card clip
     { opcode: OP_IFFALSE, branchTo: "done" },
