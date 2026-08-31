@@ -414,7 +414,16 @@ export class LevelConfig {
         if (doorId === 999) return "CraftTown";
         
         const key = `${level}_${doorId}`;
-        return this.DOOR_MAP.get(key) || this.DOOR_FALLBACKS[key] || null;
+        // DoorTypes.xml is the client-visible source of truth for door labels and contains
+        // several valid door-108 dungeon links omitted from the legacy door_map.json export.
+        // Falling back to the parsed DoorType keeps the nameplate response and the eventual
+        // open-door transfer on the same target instead of treating the door as a self-link.
+        return (
+            this.DOOR_MAP.get(key) ||
+            this.DOOR_TARGETS.get(key)?.targetLevel ||
+            this.DOOR_FALLBACKS[key] ||
+            null
+        );
     }
 
     static getDungeonEntranceDoorId(
