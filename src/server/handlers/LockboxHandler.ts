@@ -367,6 +367,8 @@ export class LockboxHandler {
 
         await LockboxHandler.applyReward(client, reward);
         await LockboxHandler.saveCharacter(client);
+        // The key just left the character's hands, and the HUD counts keys.
+        HallowsEve.sendNewsUpdate(client);
     }
 
     /**

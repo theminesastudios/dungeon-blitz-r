@@ -11,6 +11,7 @@ import { normalizeGender } from './normalizeGender';
 import { getVisibleConsumableCount, reconcileConsumableSelectionState } from './ConsumableState';
 import { ensureSigilStoreAlertState } from './AlertState';
 import { HallowsEve } from '../core/HallowsEve';
+import { NewsHud } from '../core/NewsHud';
 import { writeSavedKeyBindings } from './KeyBindings';
 import { normalizeCharacterMaterials } from './MaterialInventory';
 import { CharmID } from '../data/runtime/Charms';
@@ -52,13 +53,8 @@ export class WorldEnter {
         value > 0 ? 3 : 0
     );
 
-    private static readonly NEWS_EVENT_REMAINING_SECONDS = 666 * 60 * 60;
-    private static readonly DEFAULT_NEWS_EVENT = {
-        icon: 'a_NewsPetXPIcon',
-        url: 'https://theminesa.studio',
-        body: 'The Minesa Studios',
-        tooltip: 'https://theminesa.studio'
-    };
+    // The top-left news bar's content lives in `core/NewsHud.ts`, which the login packet
+    // below and `HallowsEve.sendNewsUpdate` both write from.
 
     private static asRecord(value: unknown): Record<string, any> {
         return value && typeof value === 'object' ? value as Record<string, any> : {};
@@ -947,11 +943,17 @@ export class WorldEnter {
                 bb.writeMethod11(0, 1);
             }
 
-            bb.writeMethod13(WorldEnter.DEFAULT_NEWS_EVENT.icon);
-            bb.writeMethod13(WorldEnter.DEFAULT_NEWS_EVENT.url);
-            bb.writeMethod13(WorldEnter.DEFAULT_NEWS_EVENT.body);
-            bb.writeMethod13(WorldEnter.DEFAULT_NEWS_EVENT.tooltip);
-            bb.writeMethod4(now + WorldEnter.NEWS_EVENT_REMAINING_SECONDS);
+            /**
+             * The top-left HUD: the studio's announcement, with the event's badge for an
+             * icon while the Green Knight is up. `HallowsEve.sendNewsUpdate` sends the
+             * same five fields on 0x103 whenever the key count changes.
+             */
+            const news = NewsHud.build(HallowsEve.newsHeadline(character, now), now);
+            bb.writeMethod13(news.icon);
+            bb.writeMethod13(news.url);
+            bb.writeMethod13(news.title);
+            bb.writeMethod13(news.tooltip);
+            bb.writeMethod4(news.endsAt);
         } else {
             bb.writeMethod6(0, 1);
         }

@@ -1584,6 +1584,8 @@ export class MissionHandler {
                 // it again on arrival; this is what makes a player who walks straight
                 // back through the arch see the right thing.
                 HallowsEve.sendCooldownTimer(client);
+                // And the key that was just earned is on the HUD's counter.
+                HallowsEve.sendNewsUpdate(client);
                 console.log(
                     `[HallowsEve] ${String(client.character.name ?? '')} earned a coffer key ` +
                     `(${HallowsEve.getKeys(client.character)} held)`

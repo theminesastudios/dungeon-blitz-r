@@ -18,7 +18,9 @@
 import {
     HallowsEve,
     HALLOWS_EVE_KEY_COOLDOWN_SECONDS,
-    HALLOWS_EVE_SUMMON_COST_IDOLS
+    HALLOWS_EVE_SUMMON_COST_IDOLS,
+    HALLOWS_EVE_ENDS_AT,
+    describeHallowsEveWindow
 } from '../core/HallowsEve';
 import { BitReader } from '../network/protocol/bitReader';
 
@@ -152,6 +154,62 @@ const now = Math.floor(Date.now() / 1000);
     const client = makeClient(character, 'SwampRoadNorth');
     HallowsEve.sendCooldownTimer(client);
     check('and leaves the panel saying he is up', readTimer(client.sent[0]).deadline === 0);
+}
+
+/**
+ * 7. The top-left HUD.
+ *
+ * The bar's announcement is artwork now and the field that used to hold it was moved down
+ * beside the skull and the key plate, so the headline the server sends *is* the key count.
+ * This pins the five fields going out in the order
+ * `class_116.method_690(icon, url, title, tooltip, endsAt)` reads them - get it wrong and
+ * the bar shows a URL where the count should be.
+ */
+{
+    const client = makeClient({ name: 'Reader', mMasterClass: 'templar' }, 'SwampRoadNorth');
+    HallowsEve.sendNewsUpdate(client);
+    check('the HUD is sent one packet', client.sent.length === 1);
+    check('and it is 0x103, the news update', client.sent[0]?.opcode === 0x103);
+
+    const br = new BitReader(client.sent[0].data);
+    br.readMethod13();
+    const url = br.readMethod13();
+    const title = br.readMethod13();
+    br.readMethod13();
+    const endsAt = br.readMethod4();
+    check('a character with no keys reads x0', title === 'x0');
+    check('the link is still the studio\'s', url === 'https://theminesa.studio');
+    check('and the bar keeps its own clock', endsAt > Math.floor(Date.now() / 1000));
+}
+
+// 8. The count, and the one rule the field cannot break.
+{
+    const count = (keys: number) => HallowsEve.newsHeadline({ hallowsEveKeys: keys }).title;
+    check('no keys reads x0', count(0) === 'x0');
+    check('two keys reads x2', count(2) === 'x2');
+    check('twelve keys reads x12 - the plate has room and the number is true', count(12) === 'x12');
+    check(
+        'the tooltip only speaks up when there is a key to spend',
+        HallowsEve.newsHeadline({ hallowsEveKeys: 0 }).tooltip === '' &&
+            /coffers in the square/.test(HallowsEve.newsHeadline({ hallowsEveKeys: 1 }).tooltip)
+    );
+    check('one key is singular', /1 Green Knight coffer key\./.test(HallowsEve.newsHeadline({ hallowsEveKeys: 1 }).tooltip));
+
+    /**
+     * `class_132.Refresh` hides the whole bar - static announcement included - when the
+     * headline is empty, so the field is never allowed to be.
+     */
+    const after = HallowsEve.newsHeadline({ hallowsEveKeys: 3 }, HALLOWS_EVE_ENDS_AT + 1);
+    check('after the event the count goes but the headline is not empty', after.title === ' ');
+    check('and every state before that is non-empty too', [0, 1, 12].every((n) => count(n).length > 0));
+}
+
+// 9. The event window reads coarsely, and never as "0 Days".
+{
+    check('a week out reads in days', describeHallowsEveWindow(7 * 86400) === '7 Days');
+    check('the last day reads in hours', describeHallowsEveWindow(5 * 3600) === '5 Hours');
+    check('one day is singular', describeHallowsEveWindow(86400 + 60) === '1 Day');
+    check('the last hour has its own name', describeHallowsEveWindow(600) === 'Final Hour');
 }
 
 console.log(`\nHallow's Eve cooldown timer: ${assertions} assertions, ${failures} failed.`);

@@ -1,6 +1,7 @@
 import { EntityProps, EntityState, EntityTeam } from './Entity';
 import { LevelConfig } from './LevelConfig';
 import { BitBuffer } from '../network/protocol/bitBuffer';
+import { NewsHud } from './NewsHud';
 
 /**
  * The little of a session this file needs.
@@ -313,6 +314,47 @@ const FIRST_ENTRY_FIELD = 'hallowsEveFirstEntryAt';
 export const HALLOWS_EVE_KEY_COOLDOWN_SECONDS = 12 * 60 * 60;
 
 /**
+ * When the arch closes, in unix seconds.
+ *
+ * *"In a week the Green Knight will disappear - possibly never to be seen again!"* is on
+ * the panel, and both figures in the square say the same thing, but nothing in this
+ * project has ever known a date. This is that date, and it is **display only**: the HUD
+ * counts down to it and the headline says how long is left. Nothing is gated on it - the
+ * arch does not shut itself - so a date that slips past costs a wrong number on a bar,
+ * not a broken event.
+ *
+ * Override it with `HALLOWS_EVE_ENDS_AT` in the environment, as either unix seconds or
+ * anything `Date` can parse (`2026-11-02T00:00:00Z`).
+ */
+export const HALLOWS_EVE_ENDS_AT = ((): number => {
+    const raw = String(process.env.HALLOWS_EVE_ENDS_AT ?? '').trim();
+    if (raw) {
+        const seconds = Number(raw);
+        if (Number.isFinite(seconds) && seconds > 0) {
+            return Math.round(seconds);
+        }
+        const parsed = Date.parse(raw);
+        if (Number.isFinite(parsed)) {
+            return Math.round(parsed / 1000);
+        }
+        console.warn(`[HallowsEve] HALLOWS_EVE_ENDS_AT is not a date or a timestamp: ${raw}`);
+    }
+    return Math.round(Date.parse('2026-11-02T00:00:00Z') / 1000);
+})();
+
+/**
+ * The skull under the bar is artwork, not a field.
+ *
+ * `a_ScreenHalloweenHUD` - the event's own HUD - ships in `UI_Seasonal.swf` with no class
+ * bound to it, the same way the challenge panel did, so its medallion is placed into the
+ * news HUD's own screen art by `scripts/patch-ui-seasonal-news-hud-badge.ts`. Nothing is
+ * sent for it: the icon field the bar offers has never resolved a name on this server.
+ */
+
+/** The packet that updates the news HUD mid-session, without a relog. */
+const NEWS_PACKET_ID = 0x103;
+
+/**
  * The packet the deadline travels on: the Class Tower's research state.
  *
  * It is the only channel in this client that can set `mMasterClassTower.mEndtime`
@@ -515,6 +557,27 @@ export function describeHallowsEveDelay(seconds: number): string {
     }
     const minutes = Math.max(1, Math.round(seconds / 60));
     return `${minutes} minute${minutes === 1 ? '' : 's'}`;
+}
+
+/**
+ * The same idea a week out: "2 Days", "18 Hours", "Final Hour".
+ *
+ * `describeHallowsEveDelay` is written for the twelve-hour gate and tops out at hours,
+ * which is right for a bubble at the arch and wrong for a bar that has to say how much of
+ * the *event* is left - "1512 hours" is not a sentence anyone reads. The HUD headline is
+ * a fixed string sent on arrival, so it is deliberately coarse: it only has to be true
+ * until the player next changes level.
+ */
+export function describeHallowsEveWindow(seconds: number): string {
+    const days = Math.floor(seconds / 86400);
+    if (days >= 1) {
+        return `${days} Day${days === 1 ? '' : 's'}`;
+    }
+    const hours = Math.floor(seconds / 3600);
+    if (hours >= 1) {
+        return `${hours} Hour${hours === 1 ? '' : 's'}`;
+    }
+    return 'Final Hour';
 }
 
 export class HallowsEve {
@@ -955,6 +1018,10 @@ export class HallowsEve {
      */
     static onSpawn(client: PromptTarget): void {
         const level = LevelConfig.normalizeLevelName(client.currentLevel) || String(client.currentLevel ?? '');
+        // The HUD is not the square's - it is drawn over every level - so the headline is
+        // refreshed wherever the player lands. It is what keeps "2 Days Remaining" from
+        // being yesterday's answer.
+        HallowsEve.sendNewsUpdate(client);
         // Before the arrival gate: the panel's clock has to be right on *every* way
         // into the square, not only on the trip that comes back through the arch.
         if (HALLOWS_EVE_TOWNS.includes(level)) {
@@ -1189,6 +1256,57 @@ export class HallowsEve {
      * while the player stands there - and why a clock that runs out under an open
      * panel simply reaches zero, with the button still doing the right thing.
      */
+    /**
+     * The key count, written into the one text field on this HUD the server can reach.
+     *
+     * The bar's announcement is artwork now - a static text field in the plate, put there by
+     * `scripts/patch-ui-seasonal-news-hud-badge.ts` - and the field that used to hold it,
+     * `am_TopLeftGroup.am_Title`, was moved down beside the skull and the key plate. So what
+     * goes out as `title` is drawn next to the key: `x0`, `x2`, and the plate supplies the
+     * key and the `x`.
+     *
+     * **Never empty.** `class_132.Refresh` hides `am_TopLeftGroup` - the whole bar, static
+     * announcement and all - when the headline is an empty string. Once the event is over
+     * the count would be meaningless, so a single space goes instead: the bar stays up and
+     * the number simply is not there.
+     */
+    static newsHeadline(character?: any, nowSeconds = Math.floor(Date.now() / 1000)): {
+        title: string;
+        tooltip: string;
+    } {
+        if (HALLOWS_EVE_ENDS_AT - nowSeconds <= 0) {
+            return { title: ' ', tooltip: '' };
+        }
+        const keys = character ? HallowsEve.getKeys(character) : 0;
+        return {
+            title: `x${keys}`,
+            tooltip:
+                keys > 0
+                    ? `You are holding ${keys} Green Knight coffer key${keys === 1 ? '' : 's'}. ` +
+                      `The coffers in the square will take ${keys === 1 ? 'it' : 'them'}.`
+                    : ''
+        };
+    }
+
+    /**
+     * Puts it on the HUD without waiting for a relog.
+     *
+     * The five news fields ship inside the *extended* login block, which is sent once and
+     * never again - so a key earned or spent mid-session would never reach the bar. 0x103
+     * carries the same five on their own and `LinkUpdater` ends its reader with `Refresh()`,
+     * so the line changes on screen the moment the count changes on the character.
+     */
+    static sendNewsUpdate(client: PromptTarget): void {
+        const news = NewsHud.build(HallowsEve.newsHeadline(client.character));
+        const bb = new BitBuffer();
+        bb.writeMethod13(news.icon);
+        bb.writeMethod13(news.url);
+        bb.writeMethod13(news.title);
+        bb.writeMethod13(news.tooltip);
+        bb.writeMethod4(news.endsAt);
+        client.sendBitBuffer(NEWS_PACKET_ID, bb);
+    }
+
     static sendCooldownTimer(client: PromptTarget): void {
         const character = client.character;
         if (!character) {

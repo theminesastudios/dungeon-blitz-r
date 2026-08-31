@@ -428,9 +428,21 @@ export function movePlacement(tag: SwfTag, dx: number, dy: number): SwfTag {
   const flags = data[0];
   const flags2 = tag.code === TAG_PLACE_OBJECT3 ? data[1] : 0;
   offset += 2; // depth
-  if (tag.code === TAG_PLACE_OBJECT3 && flags2 & 0x01) {
-    while (data[offset] !== 0) offset += 1;
-    offset += 1;
+  if (tag.code === TAG_PLACE_OBJECT3) {
+    /**
+     * The ClassName string, when there is one - the same trap `parsePlace` documents.
+     *
+     * This used to test `flags2 & 0x01`, **PlaceFlagHasFilterList**, so every filtered
+     * PlaceObject3 had a string skipped that was not there and the matrix was written
+     * somewhere in the middle of the filter list instead. The placement then moved not at
+     * all and its filter came back as nonsense - silently, since the tag stays the right
+     * length. `a_NewsHUD`'s `am_Title` is exactly such a placement.
+     */
+    const hasClassName = (flags2 & 0x08) !== 0 || ((flags2 & 0x10) !== 0 && (flags & 0x02) !== 0);
+    if (hasClassName) {
+      while (data[offset] !== 0) offset += 1;
+      offset += 1;
+    }
   }
   if (flags & 0x02) offset += 2; // character id
   if (!(flags & 0x04)) return tag;
