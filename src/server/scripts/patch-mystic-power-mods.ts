@@ -60,8 +60,8 @@ const ITEMS: Item[] = [
     abilities: [
       { kind: "rogue", base: "WitherStrike" },
       { kind: "rogue", base: "SeverStrike" },
-      { kind: "damage", base: "CrippleStrike", pct: 0.15, en: "+15% Scorpion's Sting damage", tr: "Akrep Sokmasi hasari %15 artar." },
-      { kind: "damage", base: "HeartSeeker", pct: 0.15, en: "+15% Heart Seeker damage", tr: "Kalp Avcisi hasari %15 artar." },
+      { kind: "rogue", base: "CrippleStrike" },
+      { kind: "rogue", base: "HeartSeeker" },
       { kind: "damage", base: "FatiguingStrike", pct: 0.15, en: "+15% Hex Blade damage", tr: "Buyulu Kilic hasari %15 artar." },
       { kind: "damage", base: "Devour", pct: 0.15, en: "+15% Devour damage", tr: "Yutma hasari %15 artar." },
     ],
@@ -72,8 +72,8 @@ const ITEMS: Item[] = [
     abilities: [
       { kind: "buff", buffPrefix: "ChaosArmor", property: "MagicDamage", value: 0.015, en: "+15% Chaos Wave power", tr: "Kaos Dalgasi gucu %15 artar." },
       { kind: "damage", base: "PainBender", pct: 0.15, en: "+15% Butcher's Boon damage", tr: "Kasabin Lutfu hasari %15 artar." },
-      { kind: "damage", base: "WhitheringMist", pct: 0.15, en: "+15% Withering Mist damage", tr: "Soldurucu Sis hasari %15 artar." },
-      { kind: "damage", base: "ShadowTendrilDash", pct: 0.15, en: "+15% Black Miasma damage", tr: "Kara Miyazma hasari %15 artar." },
+      { kind: "rogue", base: "WhitheringMist" },
+      { kind: "rogue", base: "ShadowTendrilDash" },
       { kind: "rogue", base: "DaggerFlurry" },
       { kind: "rogue", base: "VitalStrike" },
     ],
@@ -93,8 +93,8 @@ const ITEMS: Item[] = [
     abilities: [
       { kind: "damage", base: "PoisonLance", pct: 0.1, en: "+10% Necrotic Surge damage", tr: "Nekrotik Dalga hasari %10 artar." },
       { kind: "damage", base: "Reaper", pct: 0.1, en: "+10% Shadow Scythe damage", tr: "Golge Tirpani hasari %10 artar." },
-      { kind: "damage", base: "BlackStorm", pct: 0.1, en: "+10% Black Storm damage", tr: "Kara Firtina hasari %10 artar." },
-      { kind: "damage", base: "DarkChi", pct: 0.1, en: "+10% Dark Chi damage", tr: "Kara Chi hasari %10 artar." },
+      { kind: "rogue", base: "BlackStorm" },
+      { kind: "rogue", base: "DarkChi" },
       { kind: "rogue", base: "AssassinateClose", named: "Assassinate" },
       { kind: "rogue", base: "DeathBlowOld" },
     ],

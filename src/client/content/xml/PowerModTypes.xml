@@ -8470,7 +8470,7 @@
 		<ModName>RuneMysticRogueSword</ModName>
 		<ModID>1000</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>Withering Impact adds 2 stacks of Bleed&#10;+10% Severing Strike damage vs Poison/Hemo&#10;+15% Scorpion's Sting damage&#10;+15% Heart Seeker damage&#10;+15% Hex Blade damage&#10;+15% Devour damage</Description>
+		<Description>Withering Impact adds 2 stacks of Bleed&#10;+10% Severing Strike damage vs Poison/Hemo&#10;+15% Scorpion Sting damage vs Bind&#10;+10% Heart Seeker damage while Stealthed&#10;+15% Hex Blade damage&#10;+15% Devour damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -8506,11 +8506,11 @@
 		<ModName>RuneMysticRogueSword3</ModName>
 		<ModID>1003</ModID>
 		<DisplayName>Scorpion's Sting</DisplayName>
-		<Description>+15% Scorpion's Sting damage</Description>
+		<Description>+15% Scorpion Sting damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>CrippleStrike,CrippleStrike1,CrippleStrike2,CrippleStrike3,CrippleStrike4,CrippleStrike5,CrippleStrike6,CrippleStrike7,CrippleStrike8,CrippleStrike9,CrippleStrike10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.279</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>4</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueSword4</ComboMod>
 	</PowerModType>
@@ -8518,11 +8518,11 @@
 		<ModName>RuneMysticRogueSword4</ModName>
 		<ModID>1004</ModID>
 		<DisplayName>Heart Seeker</DisplayName>
-		<Description>+15% Heart Seeker damage</Description>
+		<Description>+10% Heart Seeker damage while Stealthed</Description>
 		<ModType>Power</ModType>
 		<PowerName>HeartSeeker,HeartSeeker1,HeartSeeker2,HeartSeeker3,HeartSeeker4,HeartSeeker5,HeartSeeker6,HeartSeeker7,HeartSeeker8,HeartSeeker9,HeartSeeker10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.636</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>6</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueSword5</ComboMod>
 	</PowerModType>
@@ -8553,7 +8553,7 @@
 		<ModName>RuneMysticRogueOffhand</ModName>
 		<ModID>1007</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+15% Chaos Wave power&#10;+15% Butcher's Boon damage&#10;+15% Withering Mist damage&#10;+15% Black Miasma damage&#10;+15% Flurry of Daggers damage&#10;+15% Shadow Rend damage vs Poison/Hemo</Description>
+		<Description>+15% Chaos Wave power&#10;+15% Butcher's Boon damage&#10;+10% Withering Mist damage vs Bind&#10;+3 second Black Miasma tendril duration&#10;+15% Flurry of Daggers damage&#10;+15% Shadow Rend damage vs Poison/Hemo</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -8589,11 +8589,11 @@
 		<ModName>RuneMysticRogueOffhand3</ModName>
 		<ModID>1010</ModID>
 		<DisplayName>Withering Mist</DisplayName>
-		<Description>+15% Withering Mist damage</Description>
+		<Description>+10% Withering Mist damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>WhitheringMist,WhitheringMist1,WhitheringMist2,WhitheringMist3,WhitheringMist4,WhitheringMist5,WhitheringMist6,WhitheringMist7,WhitheringMist8,WhitheringMist9,WhitheringMist10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.288</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>5</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueOffhand4</ComboMod>
 	</PowerModType>
@@ -8601,11 +8601,11 @@
 		<ModName>RuneMysticRogueOffhand4</ModName>
 		<ModID>1011</ModID>
 		<DisplayName>Black Miasma</DisplayName>
-		<Description>+15% Black Miasma damage</Description>
-		<ModType>Power</ModType>
-		<PowerName>ShadowTendrilDash,ShadowTendrilDash1,ShadowTendrilDash2,ShadowTendrilDash3,ShadowTendrilDash4,ShadowTendrilDash5,ShadowTendrilDash6,ShadowTendrilDash7,ShadowTendrilDash8,ShadowTendrilDash9,ShadowTendrilDash10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.309</PowerValue>
+		<Description>+3 second Black Miasma tendril duration</Description>
+		<ModType>Buff</ModType>
+		<BuffName>ShadowTendril,ShadowTendrilRank1,ShadowTendrilRank4,ShadowTendrilRank6,ShadowTendrilRank8,ShadowTendrilRank10</BuffName>
+		<BuffProperty>Duration,Duration,Duration,Duration,Duration,Duration</BuffProperty>
+		<BuffValue>3000,3000,3000,3000,3000,3000</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueOffhand5</ComboMod>
 	</PowerModType>
@@ -8683,7 +8683,7 @@
 		<ModName>RuneMysticRogueArmor</ModName>
 		<ModID>1018</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+10% Necrotic Surge damage&#10;+10% Shadow Scythe damage&#10;+10% Black Storm damage&#10;+10% Dark Chi damage&#10;+10% Vicious Assault damage vs Poison/Hemo&#10;Assassinate adds 2 stacks of Bleed</Description>
+		<Description>+10% Necrotic Surge damage&#10;+10% Shadow Scythe damage&#10;+15% Black Storm damage while Stealthed&#10;+10% Dark Chi damage vs Bind&#10;+10% Vicious Assault damage vs Poison/Hemo&#10;Assassinate adds 2 stacks of Bleed</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -8719,11 +8719,11 @@
 		<ModName>RuneMysticRogueArmor3</ModName>
 		<ModID>1021</ModID>
 		<DisplayName>Black Storm</DisplayName>
-		<Description>+10% Black Storm damage</Description>
+		<Description>+15% Black Storm damage while Stealthed</Description>
 		<ModType>Power</ModType>
 		<PowerName>BlackStorm,BlackStorm1,BlackStorm2,BlackStorm3,BlackStorm4,BlackStorm5,BlackStorm6,BlackStorm7,BlackStorm8,BlackStorm9,BlackStorm10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.195</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>7</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueArmor4</ComboMod>
 	</PowerModType>
@@ -8731,11 +8731,11 @@
 		<ModName>RuneMysticRogueArmor4</ModName>
 		<ModID>1022</ModID>
 		<DisplayName>Dark Chi</DisplayName>
-		<Description>+10% Dark Chi damage</Description>
+		<Description>+10% Dark Chi damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>DarkChi,DarkChi1,DarkChi2,DarkChi3,DarkChi4,DarkChi5,DarkChi6,DarkChi7,DarkChi8,DarkChi9,DarkChi10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.325</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>5</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueArmor5</ComboMod>
 	</PowerModType>
@@ -10105,7 +10105,7 @@
 		<ModName>RuneLegendaryStunStrike</ModName>
 		<ModID>2040</ModID>
 		<DisplayName>Stun Strike</DisplayName>
-		<Description>+1 second Stun Strike duration&#10;+10% Scorpion Sting damage</Description>
+		<Description>+1 second Stun Strike duration&#10;+15% Scorpion Sting damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>StunStrike</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
@@ -10117,11 +10117,11 @@
 		<ModName>RuneLegendaryStunStrikeBonus</ModName>
 		<ModID>2041</ModID>
 		<DisplayName>Scorpion Sting</DisplayName>
-		<Description>+10% Scorpion Sting damage</Description>
+		<Description>+15% Scorpion Sting damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>CrippleStrike,CrippleStrike1,CrippleStrike2,CrippleStrike3,CrippleStrike4,CrippleStrike5,CrippleStrike6,CrippleStrike7,CrippleStrike8,CrippleStrike9,CrippleStrike10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.186</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>4</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10174,7 +10174,7 @@
 		<ModName>RuneLegendaryEnfeeble</ModName>
 		<ModID>2046</ModID>
 		<DisplayName>Weaken</DisplayName>
-		<Description>+15% Attack Speed reduction&#10;+10% Withering Mist damage</Description>
+		<Description>+15% Attack Speed reduction&#10;+10% Withering Mist damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>Enfeeble</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
@@ -10186,11 +10186,11 @@
 		<ModName>RuneLegendaryEnfeebleBonus</ModName>
 		<ModID>2047</ModID>
 		<DisplayName>Withering Mist</DisplayName>
-		<Description>+10% Withering Mist damage</Description>
+		<Description>+10% Withering Mist damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>WhitheringMist,WhitheringMist1,WhitheringMist2,WhitheringMist3,WhitheringMist4,WhitheringMist5,WhitheringMist6,WhitheringMist7,WhitheringMist8,WhitheringMist9,WhitheringMist10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.192</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>5</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10243,7 +10243,7 @@
 		<ModName>RuneLegendaryShadowStep</ModName>
 		<ModID>2052</ModID>
 		<DisplayName>Shadow Step</DisplayName>
-		<Description>+15% Shadow Step damage&#10;+10% Dark Chi damage</Description>
+		<Description>+15% Shadow Step damage&#10;+10% Dark Chi damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>ShadowStepClose</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10255,11 +10255,11 @@
 		<ModName>RuneLegendaryShadowStepBonus</ModName>
 		<ModID>2053</ModID>
 		<DisplayName>Dark Chi</DisplayName>
-		<Description>+10% Dark Chi damage</Description>
+		<Description>+10% Dark Chi damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>DarkChi,DarkChi1,DarkChi2,DarkChi3,DarkChi4,DarkChi5,DarkChi6,DarkChi7,DarkChi8,DarkChi9,DarkChi10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.325</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>5</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10312,7 +10312,7 @@
 		<ModName>RuneLegendaryReduceArmor</ModName>
 		<ModID>2058</ModID>
 		<DisplayName>Reduce Armor</DisplayName>
-		<Description>Armor Breaker reduces speed&#10;+10% Black Storm damage</Description>
+		<Description>Armor Breaker reduces speed&#10;+15% Black Storm damage while Stealthed</Description>
 		<ModType>Power</ModType>
 		<PowerName>ReduceArmor</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
@@ -10324,11 +10324,11 @@
 		<ModName>RuneLegendaryReduceArmorBonus</ModName>
 		<ModID>2059</ModID>
 		<DisplayName>Black Storm</DisplayName>
-		<Description>+10% Black Storm damage</Description>
+		<Description>+15% Black Storm damage while Stealthed</Description>
 		<ModType>Power</ModType>
 		<PowerName>BlackStorm,BlackStorm1,BlackStorm2,BlackStorm3,BlackStorm4,BlackStorm5,BlackStorm6,BlackStorm7,BlackStorm8,BlackStorm9,BlackStorm10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.195</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>7</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10381,7 +10381,7 @@
 		<ModName>RuneLegendaryShadowArmor</ModName>
 		<ModID>2064</ModID>
 		<DisplayName>Shadow Armor</DisplayName>
-		<Description>10% Shadow Armor defense&#10;+10% Heart Seeker damage</Description>
+		<Description>10% Shadow Armor defense&#10;+10% Heart Seeker damage while Stealthed</Description>
 		<ModType>Buff</ModType>
 		<BuffName>ShadowArmor1,ShadowArmor2,ShadowArmor3,ShadowArmor4,ShadowArmor5,ShadowArmor6,ShadowArmor7,ShadowArmor8,ShadowArmor9,ShadowArmor10</BuffName>
 		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
@@ -10393,11 +10393,11 @@
 		<ModName>RuneLegendaryShadowArmorBonus</ModName>
 		<ModID>2065</ModID>
 		<DisplayName>Heart Seeker</DisplayName>
-		<Description>+10% Heart Seeker damage</Description>
+		<Description>+10% Heart Seeker damage while Stealthed</Description>
 		<ModType>Power</ModType>
 		<PowerName>HeartSeeker,HeartSeeker1,HeartSeeker2,HeartSeeker3,HeartSeeker4,HeartSeeker5,HeartSeeker6,HeartSeeker7,HeartSeeker8,HeartSeeker9,HeartSeeker10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.424</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>6</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10450,7 +10450,7 @@
 		<ModName>RuneLegendaryShadowLegion</ModName>
 		<ModID>2070</ModID>
 		<DisplayName>Shadow Legion</DisplayName>
-		<Description>+2 second Shadow Legion duration&#10;+10% Black Miasma damage</Description>
+		<Description>+2 second Shadow Legion duration&#10;+3 second Black Miasma tendril duration</Description>
 		<ModType>Power</ModType>
 		<PowerName>ShadowLegion</PowerName>
 		<PowerProperty>SpawnDuration</PowerProperty>
@@ -10462,11 +10462,11 @@
 		<ModName>RuneLegendaryShadowLegionBonus</ModName>
 		<ModID>2071</ModID>
 		<DisplayName>Black Miasma</DisplayName>
-		<Description>+10% Black Miasma damage</Description>
-		<ModType>Power</ModType>
-		<PowerName>ShadowTendrilDash,ShadowTendrilDash1,ShadowTendrilDash2,ShadowTendrilDash3,ShadowTendrilDash4,ShadowTendrilDash5,ShadowTendrilDash6,ShadowTendrilDash7,ShadowTendrilDash8,ShadowTendrilDash9,ShadowTendrilDash10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.206</PowerValue>
+		<Description>+3 second Black Miasma tendril duration</Description>
+		<ModType>Buff</ModType>
+		<BuffName>ShadowTendril,ShadowTendrilRank1,ShadowTendrilRank4,ShadowTendrilRank6,ShadowTendrilRank8,ShadowTendrilRank10</BuffName>
+		<BuffProperty>Duration,Duration,Duration,Duration,Duration,Duration</BuffProperty>
+		<BuffValue>3000,3000,3000,3000,3000,3000</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
