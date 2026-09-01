@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { defaultLoginSwzPath, ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils";
 import { MAGE_GEAR_EFFECT_PROPERTY, mageGearRuneEffect } from "./mageGearRuneEffects";
+import { ensurePaladinGearBuffs, PALADIN_GEAR_EFFECT_PROPERTY, paladinGearRuneEffect } from "./paladinGearRuneEffects";
 import { ROGUE_GEAR_EFFECT_PROPERTY, rogueGearRuneEffect } from "./rogueGearRuneEffects";
 
 /**
@@ -46,6 +47,8 @@ type Ability =
   | { kind: "rogue"; base: string; named?: string }
   /** Discipline-specific Mage effect shared with Legendary gear. */
   | { kind: "mage"; base: string; named?: string }
+  /** Discipline-specific Paladin effect shared with Legendary gear. */
+  | { kind: "paladin"; base: string; named?: string }
   /** Add to a numeric buff property, on the ranks that already declare it. */
   | { kind: "buff"; buffPrefix: string; property: string; value: number; named?: string; en: string; tr: string };
 
@@ -195,8 +198,8 @@ const ITEMS: Item[] = [
     gearId: 1177,
     rune: "MysticPaladinSword",
     abilities: [
-      { kind: "damage", base: "RollingSmash", pct: 0.15 },
-      { kind: "damage", base: "ShieldFlurryStrike", named: "ShieldFlurry", pct: 0.15 },
+      { kind: "paladin", base: "RollingSmash" },
+      { kind: "paladin", base: "ShieldFlurryStrike", named: "ShieldFlurry" },
       { kind: "damage", base: "FlameAxe", pct: 0.15 },
       { kind: "damage", base: "FuriousAssault", pct: 0.15 },
       { kind: "damage", base: "DivineWord", pct: 0.15 },
@@ -207,18 +210,8 @@ const ITEMS: Item[] = [
     gearId: 1178,
     rune: "MysticPaladinOffhand",
     abilities: [
-      { kind: "damage", base: "JuggernautCharge", named: "Juggernaut", pct: 0.15 },
-      // Second Wind heals over time through a self buff; DoTDamage is negative there, so a negative
-      // addend heals harder.
-      {
-        kind: "buff",
-        buffPrefix: "SecondWind",
-        property: "DoTDamage",
-        value: -1.5,
-        named: "SecondWind",
-        en: "Second Wind heals more",
-        tr: "Ikinci Nefes daha cok iyilestirir.",
-      },
+      { kind: "paladin", base: "JuggernautCharge", named: "Juggernaut" },
+      { kind: "paladin", base: "SecondWind" },
       { kind: "damage", base: "Harm", pct: 0.15 },
       { kind: "damage", base: "JusticeFist", pct: 0.15 },
       // Hallowed Reckoning's BaseDamageMult is negative (a heal), so the same +15% scaling lands as
@@ -237,8 +230,8 @@ const ITEMS: Item[] = [
     gearId: 1180,
     rune: "MysticPaladinArmor",
     abilities: [
-      { kind: "damage", base: "Shockwave", pct: 0.1 },
-      { kind: "damage", base: "Retribution", pct: 0.1 },
+      { kind: "paladin", base: "Shockwave" },
+      { kind: "paladin", base: "Retribution" },
       { kind: "damage", base: "LightningStorm", pct: 0.1 },
       // Cleaving Blows just turns the basic attack into a cleave for a while; there is nothing to
       // scale but the window it lasts.
@@ -298,6 +291,7 @@ const CLIENT = path.resolve(__dirname, "..", "..", "client", "content");
  */
 const GAME_SWZ = [path.join(CLIENT, "localhost", "p", "cbq", "Game.swz")];
 const LOOSE_POWER_MODS = path.join(CLIENT, "xml", "PowerModTypes.xml");
+const LOOSE_BUFFS = path.join(CLIENT, "xml", "PlayerBuffTypes.xml");
 const LOOSE_GEAR = path.join(CLIENT, "xml", "GearTypes.xml");
 /**
  * Login.swz exists in both p/cbp and p/cbq, and which one the client downloads has flipped
@@ -475,14 +469,18 @@ function buildMods(corpus: Corpus): { chains: string[][]; runeByGearId: Map<numb
         return;
       }
 
-      if (ability.kind === "rogue" || ability.kind === "mage") {
-        const effect = ability.kind === "rogue" ? rogueGearRuneEffect(ability.base) : mageGearRuneEffect(ability.base);
+      if (ability.kind === "rogue" || ability.kind === "mage" || ability.kind === "paladin") {
+        const effect = ability.kind === "rogue"
+          ? rogueGearRuneEffect(ability.base)
+          : ability.kind === "mage" ? mageGearRuneEffect(ability.base) : paladinGearRuneEffect(ability.base);
         if (!effect) throw new SwzPatchError(`No staged Rogue gear effect is defined for ${ability.base}.`);
         const description = corpus.turkish ? effect.tr : effect.description;
         const displayName = powerDisplayName(corpus.powers, ability.named ?? ability.base);
 
-        if (effect.kind === "buff") {
-          const entries = effect.buffNames.flatMap((buffName) => effect.properties.map((property) => ({ buffName, ...property })));
+        if (effect.kind === "buff" || effect.kind === "buffEntries") {
+          const entries = effect.kind === "buffEntries"
+            ? effect.entries.map((entry) => ({ buffName: entry.buffName, name: entry.property, value: entry.value }))
+            : effect.buffNames.flatMap((buffName) => effect.properties.map((property) => ({ buffName, ...property })));
           for (const entry of entries) {
             const block = corpus.buffs.match(new RegExp(`<BuffType BuffName="${entry.buffName}">([\\s\\S]*?)</BuffType>`))?.[1];
             if (!block?.includes(`<${entry.name}>`)) {
@@ -511,7 +509,8 @@ function buildMods(corpus: Corpus): { chains: string[][]; runeByGearId: Map<numb
         const targetBase = effect.kind === "damage" ? effect.targetBase ?? ability.base : ability.base;
         const names = powerRanks(corpus.powers, targetBase);
         const property = effect.kind === "conditional"
-          ? ability.kind === "rogue" ? ROGUE_GEAR_EFFECT_PROPERTY : MAGE_GEAR_EFFECT_PROPERTY
+          ? ability.kind === "rogue" ? ROGUE_GEAR_EFFECT_PROPERTY
+          : ability.kind === "mage" ? MAGE_GEAR_EFFECT_PROPERTY : PALADIN_GEAR_EFFECT_PROPERTY
           : effect.kind === "damage" ? "BaseDamageMult" : effect.property;
         const value = effect.kind === "conditional"
           ? String(effect.marker)
@@ -731,21 +730,23 @@ function patch(verify: boolean): void {
     const buffs = swz.chunks.find((chunk) => chunk.xml.includes("<PlayerBuffTypes"));
     if (!mods || !powers || !buffs) throw new SwzPatchError(`${path.basename(swzPath)} is missing PowerModTypes/PlayerPowerTypes/PlayerBuffTypes.`);
 
+    const buffResult = ensurePaladinGearBuffs(buffs.xml);
     const { chains } = buildMods({
       powerMods: mods.xml,
       powers: powers.xml,
-      buffs: buffs.xml,
+      buffs: buffResult.xml,
       turkish: swzPath.endsWith("Game.tr.swz"),
     });
     const result = insertMods(mods.xml, chains);
     const powerResult = addPseudoPowers(powers.xml, swzPath.endsWith("Game.tr.swz"));
-    summary.push(`${path.basename(swzPath)}: +${result.added} mods, +${powerResult.added} pseudo-powers`);
-    changes += result.added + powerResult.added;
-    if ((result.added > 0 || powerResult.added > 0) && !verify) {
+    summary.push(`${path.basename(swzPath)}: +${result.added} mods, +${powerResult.added} pseudo-powers, +${buffResult.changed} gear buffs`);
+    changes += result.added + powerResult.added + buffResult.changed;
+    if ((result.added > 0 || powerResult.added > 0 || buffResult.changed > 0) && !verify) {
       pending.push(() => {
         ensureBackup(swzPath);
         mods.xml = result.xml;
         powers.xml = powerResult.xml;
+        buffs.xml = buffResult.xml;
         writeSwz(swz);
       });
     }
@@ -754,7 +755,7 @@ function patch(verify: boolean): void {
   // The loose copies are what GameData and GearGoldBonuses read server-side.
   const referenceSwz = parseSwz(GAME_SWZ[0]);
   const referencePowers = referenceSwz.chunks.find((chunk) => chunk.xml.includes("<PlayerPowerTypes"))!.xml;
-  const referenceBuffs = referenceSwz.chunks.find((chunk) => chunk.xml.includes("<PlayerBuffTypes"))!.xml;
+  const referenceBuffs = ensurePaladinGearBuffs(referenceSwz.chunks.find((chunk) => chunk.xml.includes("<PlayerBuffTypes"))!.xml).xml;
 
   const loosePowerMods = fs.readFileSync(LOOSE_POWER_MODS, "utf8");
   const { chains, runeByGearId } = buildMods({
@@ -777,6 +778,14 @@ function patch(verify: boolean): void {
   changes += loosePowersResult.added;
   if (loosePowersResult.added > 0 && !verify) {
     pending.push(() => fs.writeFileSync(loosePowersPath, loosePowersResult.xml, "utf8"));
+  }
+
+  const looseBuffs = fs.readFileSync(LOOSE_BUFFS, "utf8");
+  const looseBuffsResult = ensurePaladinGearBuffs(looseBuffs);
+  summary.push(`PlayerBuffTypes.xml: +${looseBuffsResult.changed} gear buffs`);
+  changes += looseBuffsResult.changed;
+  if (looseBuffsResult.changed > 0 && !verify) {
+    pending.push(() => fs.writeFileSync(LOOSE_BUFFS, looseBuffsResult.xml, "utf8"));
   }
 
   let loginChanged = 0;

@@ -9260,7 +9260,7 @@
 		<ModName>RuneMysticPaladinSword</ModName>
 		<ModID>1066</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+15% Holy Smash damage&#10;+15% Shield Flurry damage&#10;+15% Flame Axe damage&#10;+15% Furious Assault damage&#10;+15% Divine Word damage&#10;+15% Subjugate damage</Description>
+		<Description>+10% Holy Smash damage vs Staggered&#10;Shield Flurry adds Armor Bane&#10;+15% Flame Axe damage&#10;+15% Furious Assault damage&#10;+15% Divine Word damage&#10;+15% Subjugate damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9272,11 +9272,11 @@
 		<ModName>RuneMysticPaladinSword1</ModName>
 		<ModID>1067</ModID>
 		<DisplayName>Holy Smash</DisplayName>
-		<Description>+15% Holy Smash damage</Description>
+		<Description>+10% Holy Smash damage vs Staggered</Description>
 		<ModType>Power</ModType>
 		<PowerName>RollingSmash,RollingSmash1,RollingSmash2,RollingSmash3,RollingSmash4,RollingSmash5,RollingSmash6,RollingSmash7,RollingSmash8,RollingSmash9,RollingSmash10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.3</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>20</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinSword2</ComboMod>
 	</PowerModType>
@@ -9284,11 +9284,11 @@
 		<ModName>RuneMysticPaladinSword2</ModName>
 		<ModID>1068</ModID>
 		<DisplayName>Shield Flurry</DisplayName>
-		<Description>+15% Shield Flurry damage</Description>
+		<Description>Shield Flurry adds Armor Bane</Description>
 		<ModType>Power</ModType>
 		<PowerName>ShieldFlurryStrike,ShieldFlurryStrike1,ShieldFlurryStrike2,ShieldFlurryStrike3,ShieldFlurryStrike4,ShieldFlurryStrike5,ShieldFlurryStrike6,ShieldFlurryStrike7,ShieldFlurryStrike8,ShieldFlurryStrike9,ShieldFlurryStrike10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.2055</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:ArmorBane</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinSword3</ComboMod>
 	</PowerModType>
@@ -9343,7 +9343,7 @@
 		<ModName>RuneMysticPaladinOffhand</ModName>
 		<ModID>1073</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+15% Juggernaut damage&#10;Second Wind heals more&#10;+15% Harm damage&#10;+15% Justice Fist damage&#10;+15% Hallowed Reckoning healing&#10;+15% Penance damage</Description>
+		<Description>Juggernaut adds Weaken&#10;+15% Second Wind healing power&#10;+15% Harm damage&#10;+15% Justice Fist damage&#10;+15% Hallowed Reckoning healing&#10;+15% Penance damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9355,23 +9355,23 @@
 		<ModName>RuneMysticPaladinOffhand1</ModName>
 		<ModID>1074</ModID>
 		<DisplayName>Juggernaut</DisplayName>
-		<Description>+15% Juggernaut damage</Description>
+		<Description>Juggernaut adds Weaken</Description>
 		<ModType>Power</ModType>
 		<PowerName>JuggernautCharge,JuggernautCharge1,JuggernautCharge2,JuggernautCharge3,JuggernautCharge4,JuggernautCharge5,JuggernautCharge6,JuggernautCharge7,JuggernautCharge8,JuggernautCharge9,JuggernautCharge10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.27</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Weakened</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinOffhand2</ComboMod>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneMysticPaladinOffhand2</ModName>
 		<ModID>1075</ModID>
-		<DisplayName>Second Wind heals more</DisplayName>
-		<Description>Second Wind heals more</Description>
+		<DisplayName>Second Wind</DisplayName>
+		<Description>+15% Second Wind healing power</Description>
 		<ModType>Buff</ModType>
 		<BuffName>SecondWind,SecondWind1,SecondWind2,SecondWind3,SecondWind4,SecondWind6,SecondWind7,SecondWind8,SecondWind9</BuffName>
 		<BuffProperty>DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage</BuffProperty>
-		<BuffValue>-1.5,-1.5,-1.5,-1.5,-1.5,-1.5,-1.5,-1.5,-1.5</BuffValue>
+		<BuffValue>-1.47,-1.05,-1.2,-1.35,-1.5,-1.6125,-1.6725,-1.7625,-1.845</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinOffhand3</ComboMod>
 	</PowerModType>
@@ -9426,7 +9426,7 @@
 		<ModName>RuneMysticPaladinArmor</ModName>
 		<ModID>1080</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+10% Shockwave damage&#10;+10% Retribution damage&#10;+10% Lightning Storm damage&#10;+2s Cleaving Blows duration&#10;+10% Celestial Lance damage&#10;+10% Verdict damage</Description>
+		<Description>+30% Shockwave defense boost&#10;+5 Retribution maximum hits&#10;+10% Lightning Storm damage&#10;+2s Cleaving Blows duration&#10;+10% Celestial Lance damage&#10;+10% Verdict damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9438,11 +9438,11 @@
 		<ModName>RuneMysticPaladinArmor1</ModName>
 		<ModID>1081</ModID>
 		<DisplayName>Shockwave</DisplayName>
-		<Description>+10% Shockwave damage</Description>
+		<Description>+30% Shockwave defense boost</Description>
 		<ModType>Power</ModType>
 		<PowerName>Shockwave,Shockwave1,Shockwave2,Shockwave3,Shockwave4,Shockwave5,Shockwave6,Shockwave7,Shockwave8,Shockwave9,Shockwave10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.145</PowerValue>
+		<PowerProperty>AddSelfBuff</PowerProperty>
+		<PowerValue>Append:GearShockwaveDefense</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinArmor2</ComboMod>
 	</PowerModType>
@@ -9450,11 +9450,11 @@
 		<ModName>RuneMysticPaladinArmor2</ModName>
 		<ModID>1082</ModID>
 		<DisplayName>Retribution</DisplayName>
-		<Description>+10% Retribution damage</Description>
+		<Description>+5 Retribution maximum hits</Description>
 		<ModType>Power</ModType>
 		<PowerName>Retribution,Retribution1,Retribution2,Retribution3,Retribution4,Retribution5,Retribution6,Retribution7,Retribution8,Retribution9,Retribution10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.1</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>5</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinArmor3</ComboMod>
 	</PowerModType>
@@ -10506,7 +10506,7 @@
 		<ModName>RuneLegendaryCleave</ModName>
 		<ModID>2074</ModID>
 		<DisplayName>Cleave</DisplayName>
-		<Description>+15% Cleave damage&#10;+10% Holy Smash damage</Description>
+		<Description>+15% Cleave damage&#10;+10% Holy Smash damage vs Staggered</Description>
 		<ModType>Power</ModType>
 		<PowerName>Cleave</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10518,11 +10518,11 @@
 		<ModName>RuneLegendaryCleaveBonus</ModName>
 		<ModID>2075</ModID>
 		<DisplayName>Holy Smash</DisplayName>
-		<Description>+10% Holy Smash damage</Description>
+		<Description>+10% Holy Smash damage vs Staggered</Description>
 		<ModType>Power</ModType>
 		<PowerName>RollingSmash,RollingSmash1,RollingSmash2,RollingSmash3,RollingSmash4,RollingSmash5,RollingSmash6,RollingSmash7,RollingSmash8,RollingSmash9,RollingSmash10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.2</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>20</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10575,7 +10575,7 @@
 		<ModName>RuneLegendaryShieldStun</ModName>
 		<ModID>2080</ModID>
 		<DisplayName>Shield Stun</DisplayName>
-		<Description>Shield Stun adds a stack of Ignite&#10;+10% Juggernaut damage</Description>
+		<Description>Shield Stun adds a stack of Ignite&#10;Juggernaut adds Weaken</Description>
 		<ModType>Power</ModType>
 		<PowerName>ShieldStun</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
@@ -10587,11 +10587,11 @@
 		<ModName>RuneLegendaryShieldStunBonus</ModName>
 		<ModID>2081</ModID>
 		<DisplayName>Juggernaut</DisplayName>
-		<Description>+10% Juggernaut damage</Description>
+		<Description>Juggernaut adds Weaken</Description>
 		<ModType>Power</ModType>
 		<PowerName>JuggernautCharge,JuggernautCharge1,JuggernautCharge2,JuggernautCharge3,JuggernautCharge4,JuggernautCharge5,JuggernautCharge6,JuggernautCharge7,JuggernautCharge8,JuggernautCharge9,JuggernautCharge10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.18</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Weakened</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10644,7 +10644,7 @@
 		<ModName>RuneLegendarySentinelForm</ModName>
 		<ModID>2086</ModID>
 		<DisplayName>Sentinel Form</DisplayName>
-		<Description>+5% Sentinel Form melee damage&#10;+10% Retribution damage</Description>
+		<Description>+5% Sentinel Form melee damage&#10;+5 Retribution maximum hits</Description>
 		<ModType>Power</ModType>
 		<PowerName>SFMelee,SFMeleeCombo</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10656,11 +10656,11 @@
 		<ModName>RuneLegendarySentinelFormBonus</ModName>
 		<ModID>2087</ModID>
 		<DisplayName>Retribution</DisplayName>
-		<Description>+10% Retribution damage</Description>
+		<Description>+5 Retribution maximum hits</Description>
 		<ModType>Power</ModType>
 		<PowerName>Retribution,Retribution1,Retribution2,Retribution3,Retribution4,Retribution5,Retribution6,Retribution7,Retribution8,Retribution9,Retribution10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.1</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>5</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10713,7 +10713,7 @@
 		<ModName>RuneLegendaryToughShout</ModName>
 		<ModID>2092</ModID>
 		<DisplayName>Guardian Shield</DisplayName>
-		<Description>+40% Guardian Shield damage&#10;+10% Shockwave damage</Description>
+		<Description>+40% Guardian Shield damage&#10;+30% Shockwave defense boost</Description>
 		<ModType>Power</ModType>
 		<PowerName>ToughShout</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10725,11 +10725,11 @@
 		<ModName>RuneLegendaryToughShoutBonus</ModName>
 		<ModID>2093</ModID>
 		<DisplayName>Shockwave</DisplayName>
-		<Description>+10% Shockwave damage</Description>
+		<Description>+30% Shockwave defense boost</Description>
 		<ModType>Power</ModType>
 		<PowerName>Shockwave,Shockwave1,Shockwave2,Shockwave3,Shockwave4,Shockwave5,Shockwave6,Shockwave7,Shockwave8,Shockwave9,Shockwave10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.145</PowerValue>
+		<PowerProperty>AddSelfBuff</PowerProperty>
+		<PowerValue>Append:GearShockwaveDefense</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10779,7 +10779,7 @@
 		<ModName>RuneLegendaryDefiance</ModName>
 		<ModID>2098</ModID>
 		<DisplayName>Defiance</DisplayName>
-		<Description>+10% Defiance damage&#10;+10% Shield Flurry damage</Description>
+		<Description>+10% Defiance damage&#10;Shield Flurry adds Armor Bane</Description>
 		<ModType>Power</ModType>
 		<PowerName>Defiance</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10791,11 +10791,11 @@
 		<ModName>RuneLegendaryDefianceBonus</ModName>
 		<ModID>2099</ModID>
 		<DisplayName>Shield Flurry</DisplayName>
-		<Description>+10% Shield Flurry damage</Description>
+		<Description>Shield Flurry adds Armor Bane</Description>
 		<ModType>Power</ModType>
 		<PowerName>ShieldFlurryStrike,ShieldFlurryStrike1,ShieldFlurryStrike2,ShieldFlurryStrike3,ShieldFlurryStrike4,ShieldFlurryStrike5,ShieldFlurryStrike6,ShieldFlurryStrike7,ShieldFlurryStrike8,ShieldFlurryStrike9,ShieldFlurryStrike10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.137</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:ArmorBane</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10848,7 +10848,7 @@
 		<ModName>RuneLegendaryBarrier</ModName>
 		<ModID>2104</ModID>
 		<DisplayName>Unstable Barrier</DisplayName>
-		<Description>+20% Unstable Barrier durability&#10;+10% Second Wind damage</Description>
+		<Description>+20% Unstable Barrier durability&#10;+15% Second Wind healing power</Description>
 		<ModType>WTF</ModType>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneLegendaryBarrierBonus</ComboMod>
@@ -10857,11 +10857,11 @@
 		<ModName>RuneLegendaryBarrierBonus</ModName>
 		<ModID>2105</ModID>
 		<DisplayName>Second Wind</DisplayName>
-		<Description>+10% Second Wind damage</Description>
-		<ModType>Power</ModType>
-		<PowerName>SecondWind,SecondWind1,SecondWind2,SecondWind3,SecondWind4,SecondWind5,SecondWind6,SecondWind7,SecondWind8,SecondWind9,SecondWind10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0</PowerValue>
+		<Description>+15% Second Wind healing power</Description>
+		<ModType>Buff</ModType>
+		<BuffName>SecondWind,SecondWind1,SecondWind2,SecondWind3,SecondWind4,SecondWind6,SecondWind7,SecondWind8,SecondWind9</BuffName>
+		<BuffProperty>DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage,DoTDamage</BuffProperty>
+		<BuffValue>-1.47,-1.05,-1.2,-1.35,-1.5,-1.6125,-1.6725,-1.7625,-1.845</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>

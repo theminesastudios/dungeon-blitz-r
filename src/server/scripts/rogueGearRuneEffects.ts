@@ -7,6 +7,12 @@ export type RogueGearRuneEffect =
   | { kind: "damage"; pct: number; targetBase?: string; description: string; tr: string }
   | { kind: "power"; property: string; value: string; description: string; tr: string }
   | {
+      kind: "buffEntries";
+      entries: Array<{ buffName: string; property: string; value: number }>;
+      description: string;
+      tr: string;
+    }
+  | {
       kind: "buff";
       buffNames: string[];
       properties: Array<{ name: string; value: number }>;
