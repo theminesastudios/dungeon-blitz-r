@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { defaultLoginSwzPath, ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils";
+import { MAGE_GEAR_EFFECT_PROPERTY, mageGearRuneEffect } from "./mageGearRuneEffects";
 import { ROGUE_GEAR_EFFECT_PROPERTY, rogueGearRuneEffect } from "./rogueGearRuneEffects";
 
 /**
@@ -43,6 +44,8 @@ type Ability =
   | { kind: "clone"; from: string }
   /** Discipline-specific Rogue effect shared with Legendary gear. */
   | { kind: "rogue"; base: string; named?: string }
+  /** Discipline-specific Mage effect shared with Legendary gear. */
+  | { kind: "mage"; base: string; named?: string }
   /** Add to a numeric buff property, on the ranks that already declare it. */
   | { kind: "buff"; buffPrefix: string; property: string; value: number; named?: string; en: string; tr: string };
 
@@ -129,8 +132,8 @@ const ITEMS: Item[] = [
     gearId: 1165,
     rune: "MysticMageSword",
     abilities: [
-      { kind: "damage", base: "FrostBlast", pct: 0.15 },
-      { kind: "damage", base: "FrozenWard", pct: 0.15 },
+      { kind: "mage", base: "FrostBlast" },
+      { kind: "mage", base: "FrozenWard" },
       { kind: "damage", base: "FlameSpout", pct: 0.15 },
       { kind: "damage", base: "IridescentBurst", pct: 0.15 },
       { kind: "damage", base: "Lifethirst", pct: 0.15 },
@@ -141,8 +144,8 @@ const ITEMS: Item[] = [
     gearId: 1166,
     rune: "MysticMageOffhand",
     abilities: [
-      { kind: "damage", base: "FrigidComet", pct: 0.15 },
-      { kind: "damage", base: "BitterBlade", pct: 0.15 },
+      { kind: "mage", base: "FrigidComet" },
+      { kind: "mage", base: "BitterBlade" },
       { kind: "damage", base: "FireStorm", pct: 0.15 },
       { kind: "damage", base: "FlameStrike", pct: 0.15 },
       { kind: "damage", base: "Infestation", pct: 0.15 },
@@ -153,8 +156,8 @@ const ITEMS: Item[] = [
     gearId: 1168,
     rune: "MysticMageArmor",
     abilities: [
-      { kind: "damage", base: "Avalanche", pct: 0.1 },
-      { kind: "damage", base: "GlacialSpear", pct: 0.1 },
+      { kind: "mage", base: "Avalanche" },
+      { kind: "mage", base: "GlacialSpear" },
       { kind: "damage", base: "MoltenFistExplode", named: "MoltenFist", pct: 0.1 },
       { kind: "damage", base: "FireBrandShot", named: "FireBrand", pct: 0.1 },
       { kind: "damage", base: "BansheeWail", pct: 0.1 },
@@ -482,8 +485,8 @@ function buildMods(corpus: Corpus): { chains: string[][]; runeByGearId: Map<numb
         return;
       }
 
-      if (ability.kind === "rogue") {
-        const effect = rogueGearRuneEffect(ability.base);
+      if (ability.kind === "rogue" || ability.kind === "mage") {
+        const effect = ability.kind === "rogue" ? rogueGearRuneEffect(ability.base) : mageGearRuneEffect(ability.base);
         if (!effect) throw new SwzPatchError(`No staged Rogue gear effect is defined for ${ability.base}.`);
         const description = corpus.turkish ? effect.tr : effect.description;
         const displayName = powerDisplayName(corpus.powers, ability.named ?? ability.base);
@@ -517,7 +520,7 @@ function buildMods(corpus: Corpus): { chains: string[][]; runeByGearId: Map<numb
 
         const names = powerRanks(corpus.powers, ability.base);
         const property = effect.kind === "conditional"
-          ? ROGUE_GEAR_EFFECT_PROPERTY
+          ? ability.kind === "rogue" ? ROGUE_GEAR_EFFECT_PROPERTY : MAGE_GEAR_EFFECT_PROPERTY
           : effect.kind === "damage" ? "BaseDamageMult" : effect.property;
         const value = effect.kind === "conditional"
           ? String(effect.marker)

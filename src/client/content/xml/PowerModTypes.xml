@@ -1106,8 +1106,10 @@
 		<ModName>IgniteCrit1</ModName>
 		<ModID>111</ModID>
 		<DisplayName>Volatile</DisplayName>
-		<Description>Gain a Critical Chance bonus vs. Ignited targets@Critical Chance Bonus:, 2%, 4%, 6%, 8%, 10%</Description>
+		<Description>Gain a Poison Damage bonus against Cursed targets.@Poison Damage Bonus:, 2%, 4%, 6%, 8%, 10%</Description>
 		<ModType>WTF</ModType>
+		<BuffName>Cursed</BuffName>
+		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.02</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1116,6 +1118,8 @@
 		<ModID>112</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
+		<BuffName>Cursed</BuffName>
+		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.04</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1124,6 +1128,8 @@
 		<ModID>113</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
+		<BuffName>Cursed</BuffName>
+		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.06</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1132,6 +1138,8 @@
 		<ModID>114</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
+		<BuffName>Cursed</BuffName>
+		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.08</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -1140,6 +1148,8 @@
 		<ModID>115</ModID>
 		<DisplayName>Volatile</DisplayName>
 		<ModType>WTF</ModType>
+		<BuffName>Cursed</BuffName>
+		<BuffProperty>PoisonMultiplier</BuffProperty>
 		<SelfValue>.1</SelfValue>
 		<IconName>a_Signet_Critical03</IconName>
 	</PowerModType>
@@ -3418,7 +3428,7 @@
 		<ModName>RuneIceSpike</ModName>
 		<ModID>357</ModID>
 		<DisplayName>Ice Lance</DisplayName>
-		<Description>Gain +50% Defense for 1 second during Ice Lance</Description>
+		<Description>Ice Lance +50% defense while dashing</Description>
 		<ModType>Power</ModType>
 		<PowerName>IceSpike</PowerName>
 		<PowerProperty>AddSelfBuff</PowerProperty>
@@ -8860,7 +8870,7 @@
 		<ModName>RuneMysticMageSword</ModName>
 		<ModID>1033</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+15% Arctic Blast damage&#10;+15% Frozen Ward damage&#10;+15% Inferno damage&#10;+15% Iridescent Burst damage&#10;+15% Lifethirst damage&#10;+15% Desecrate damage</Description>
+		<Description>+15% Arctic Blast damage vs Frozen/Rooted&#10;Frozen Ward adds 1 stack of Chilblains&#10;+15% Inferno damage&#10;+15% Iridescent Burst damage&#10;+15% Lifethirst damage&#10;+15% Desecrate damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -8872,11 +8882,11 @@
 		<ModName>RuneMysticMageSword1</ModName>
 		<ModID>1034</ModID>
 		<DisplayName>Arctic Blast</DisplayName>
-		<Description>+15% Arctic Blast damage</Description>
+		<Description>+15% Arctic Blast damage vs Frozen/Rooted</Description>
 		<ModType>Power</ModType>
 		<PowerName>FrostBlast,FrostBlast1,FrostBlast2,FrostBlast3,FrostBlast4,FrostBlast5,FrostBlast6,FrostBlast7,FrostBlast8,FrostBlast9,FrostBlast10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.3225</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>11</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageSword2</ComboMod>
 	</PowerModType>
@@ -8884,11 +8894,11 @@
 		<ModName>RuneMysticMageSword2</ModName>
 		<ModID>1035</ModID>
 		<DisplayName>Frozen Ward</DisplayName>
-		<Description>+15% Frozen Ward damage</Description>
+		<Description>Frozen Ward adds 1 stack of Chilblains</Description>
 		<ModType>Power</ModType>
 		<PowerName>FrozenWard,FrozenWard1,FrozenWard2,FrozenWard3,FrozenWard4,FrozenWard5,FrozenWard6,FrozenWard7,FrozenWard8,FrozenWard9,FrozenWard10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.1095</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Chilblains</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageSword3</ComboMod>
 	</PowerModType>
@@ -8943,7 +8953,7 @@
 		<ModName>RuneMysticMageOffhand</ModName>
 		<ModID>1040</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+15% Frigid Comet damage&#10;+15% Bitter Blade damage&#10;+15% Molten Rain damage&#10;+15% Conflagration damage&#10;+15% Infestation damage&#10;+15% Spectral Grasp damage</Description>
+		<Description>+1% Frigid Comet damage per Chilblains stack&#10;+1% Bitter Blade damage per Chilblains stack&#10;+15% Molten Rain damage&#10;+15% Conflagration damage&#10;+15% Infestation damage&#10;+15% Spectral Grasp damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -8955,11 +8965,11 @@
 		<ModName>RuneMysticMageOffhand1</ModName>
 		<ModID>1041</ModID>
 		<DisplayName>Frigid Comet</DisplayName>
-		<Description>+15% Frigid Comet damage</Description>
+		<Description>+1% Frigid Comet damage per Chilblains stack</Description>
 		<ModType>Power</ModType>
 		<PowerName>FrigidComet,FrigidComet1,FrigidComet2,FrigidComet3,FrigidComet4,FrigidComet5,FrigidComet6,FrigidComet7,FrigidComet8,FrigidComet9,FrigidComet10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.819</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>12</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageOffhand2</ComboMod>
 	</PowerModType>
@@ -8967,11 +8977,11 @@
 		<ModName>RuneMysticMageOffhand2</ModName>
 		<ModID>1042</ModID>
 		<DisplayName>Bitter Blade</DisplayName>
-		<Description>+15% Bitter Blade damage</Description>
+		<Description>+1% Bitter Blade damage per Chilblains stack</Description>
 		<ModType>Power</ModType>
 		<PowerName>BitterBlade,BitterBlade1,BitterBlade2,BitterBlade3,BitterBlade4,BitterBlade5,BitterBlade6,BitterBlade7,BitterBlade8,BitterBlade9,BitterBlade10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.87</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>13</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageOffhand3</ComboMod>
 	</PowerModType>
@@ -9026,7 +9036,7 @@
 		<ModName>RuneMysticMageArmor</ModName>
 		<ModID>1047</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+10% Frost Spire damage&#10;+10% Glacial Spear damage&#10;+10% Molten Fist damage&#10;+10% Firebrand damage&#10;+10% Wail of the Banshee damage&#10;Death Mark weakens 5% more</Description>
+		<Description>Frost Spire casts in both directions&#10;+10% Glacial Spear damage vs Frozen/Rooted&#10;+10% Molten Fist damage&#10;+10% Firebrand damage&#10;+10% Wail of the Banshee damage&#10;Death Mark weakens 5% more</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9038,11 +9048,11 @@
 		<ModName>RuneMysticMageArmor1</ModName>
 		<ModID>1048</ModID>
 		<DisplayName>Frost Spire</DisplayName>
-		<Description>+10% Frost Spire damage</Description>
+		<Description>Frost Spire casts in both directions</Description>
 		<ModType>Power</ModType>
 		<PowerName>Avalanche,Avalanche1,Avalanche2,Avalanche3,Avalanche4,Avalanche5,Avalanche6,Avalanche7,Avalanche8,Avalanche9,Avalanche10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.106</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>14</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageArmor2</ComboMod>
 	</PowerModType>
@@ -9050,11 +9060,11 @@
 		<ModName>RuneMysticMageArmor2</ModName>
 		<ModID>1049</ModID>
 		<DisplayName>Glacial Spear</DisplayName>
-		<Description>+10% Glacial Spear damage</Description>
+		<Description>+10% Glacial Spear damage vs Frozen/Rooted</Description>
 		<ModType>Power</ModType>
 		<PowerName>GlacialSpear,GlacialSpear1,GlacialSpear2,GlacialSpear3,GlacialSpear4,GlacialSpear5,GlacialSpear6,GlacialSpear7,GlacialSpear8,GlacialSpear9,GlacialSpear10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.438</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>15</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageArmor3</ComboMod>
 	</PowerModType>
@@ -9645,7 +9655,7 @@
 		<ModName>RuneLegendaryIceSpike</ModName>
 		<ModID>2000</ModID>
 		<DisplayName>Ice Lance</DisplayName>
-		<Description>Gain +50% Defense for 1 second during Ice Lance&#10;+10% Frozen Ward damage</Description>
+		<Description>Ice Lance +50% defense while dashing&#10;Frozen Ward adds 1 stack of Chilblains</Description>
 		<ModType>Power</ModType>
 		<PowerName>IceSpike</PowerName>
 		<PowerProperty>AddSelfBuff</PowerProperty>
@@ -9657,11 +9667,11 @@
 		<ModName>RuneLegendaryIceSpikeBonus</ModName>
 		<ModID>2001</ModID>
 		<DisplayName>Frozen Ward</DisplayName>
-		<Description>+10% Frozen Ward damage</Description>
+		<Description>Frozen Ward adds 1 stack of Chilblains</Description>
 		<ModType>Power</ModType>
 		<PowerName>FrozenWard,FrozenWard1,FrozenWard2,FrozenWard3,FrozenWard4,FrozenWard5,FrozenWard6,FrozenWard7,FrozenWard8,FrozenWard9,FrozenWard10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.073</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Chilblains</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -9714,7 +9724,7 @@
 		<ModName>RuneLegendaryIceNova</ModName>
 		<ModID>2006</ModID>
 		<DisplayName>Ice Nova</DisplayName>
-		<Description>Ice Nova Weakens targets&#10;+10% Frigid Comet damage</Description>
+		<Description>Ice Nova Weakens targets&#10;+1% Frigid Comet damage per Chilblains stack</Description>
 		<ModType>Power</ModType>
 		<PowerName>IceNova</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
@@ -9726,11 +9736,11 @@
 		<ModName>RuneLegendaryIceNovaBonus</ModName>
 		<ModID>2007</ModID>
 		<DisplayName>Frigid Comet</DisplayName>
-		<Description>+10% Frigid Comet damage</Description>
+		<Description>+1% Frigid Comet damage per Chilblains stack</Description>
 		<ModType>Power</ModType>
 		<PowerName>FrigidComet,FrigidComet1,FrigidComet2,FrigidComet3,FrigidComet4,FrigidComet5,FrigidComet6,FrigidComet7,FrigidComet8,FrigidComet9,FrigidComet10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.546</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>12</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -9783,7 +9793,7 @@
 		<ModName>RuneLegendaryHailstoneEmbrace</ModName>
 		<ModID>2012</ModID>
 		<DisplayName>Hailstone Embrace</DisplayName>
-		<Description>+5% Hailstone Embrace damage&#10;+10% Glacial Spear damage</Description>
+		<Description>+5% Hailstone Embrace damage&#10;+10% Glacial Spear damage vs Frozen/Rooted</Description>
 		<ModType>Power</ModType>
 		<PowerName>FrostArmorIce,FrostArmorIceWall</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9795,11 +9805,11 @@
 		<ModName>RuneLegendaryHailstoneEmbraceBonus</ModName>
 		<ModID>2013</ModID>
 		<DisplayName>Glacial Spear</DisplayName>
-		<Description>+10% Glacial Spear damage</Description>
+		<Description>+10% Glacial Spear damage vs Frozen/Rooted</Description>
 		<ModType>Power</ModType>
 		<PowerName>GlacialSpear,GlacialSpear1,GlacialSpear2,GlacialSpear3,GlacialSpear4,GlacialSpear5,GlacialSpear6,GlacialSpear7,GlacialSpear8,GlacialSpear9,GlacialSpear10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.438</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>15</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -9852,7 +9862,7 @@
 		<ModName>RuneLegendaryIceStorm</ModName>
 		<ModID>2018</ModID>
 		<DisplayName>Hail Storm</DisplayName>
-		<Description>+15% Hail Storm damage&#10;+10% Frost Spire damage</Description>
+		<Description>+15% Hail Storm damage&#10;Frost Spire casts in both directions</Description>
 		<ModType>Power</ModType>
 		<PowerName>IceStorm</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9864,11 +9874,11 @@
 		<ModName>RuneLegendaryIceStormBonus</ModName>
 		<ModID>2019</ModID>
 		<DisplayName>Frost Spire</DisplayName>
-		<Description>+10% Frost Spire damage</Description>
+		<Description>Frost Spire casts in both directions</Description>
 		<ModType>Power</ModType>
 		<PowerName>Avalanche,Avalanche1,Avalanche2,Avalanche3,Avalanche4,Avalanche5,Avalanche6,Avalanche7,Avalanche8,Avalanche9,Avalanche10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.106</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>14</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -9921,7 +9931,7 @@
 		<ModName>RuneLegendaryPermafrostClone</ModName>
 		<ModID>2024</ModID>
 		<DisplayName>Permafrost Clone</DisplayName>
-		<Description>Permafrost Clone dash Chills&#10;+10% Arctic Blast damage</Description>
+		<Description>Permafrost Clone dash Chills&#10;+15% Arctic Blast damage vs Frozen/Rooted</Description>
 		<ModType>Power</ModType>
 		<PowerName>PermafrostClone</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
@@ -9933,11 +9943,11 @@
 		<ModName>RuneLegendaryPermafrostCloneBonus</ModName>
 		<ModID>2025</ModID>
 		<DisplayName>Arctic Blast</DisplayName>
-		<Description>+10% Arctic Blast damage</Description>
+		<Description>+15% Arctic Blast damage vs Frozen/Rooted</Description>
 		<ModType>Power</ModType>
 		<PowerName>FrostBlast,FrostBlast1,FrostBlast2,FrostBlast3,FrostBlast4,FrostBlast5,FrostBlast6,FrostBlast7,FrostBlast8,FrostBlast9,FrostBlast10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.215</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>11</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -9990,7 +10000,7 @@
 		<ModName>RuneLegendaryPolarSentry</ModName>
 		<ModID>2030</ModID>
 		<DisplayName>Tundra Wyrm</DisplayName>
-		<Description>+1 second Tundra Wyrm duration&#10;+10% Bitter Blade damage</Description>
+		<Description>+1 second Tundra Wyrm duration&#10;+1% Bitter Blade damage per Chilblains stack</Description>
 		<ModType>Power</ModType>
 		<PowerName>PolarSentry</PowerName>
 		<PowerProperty>SpawnDuration</PowerProperty>
@@ -10002,11 +10012,11 @@
 		<ModName>RuneLegendaryPolarSentryBonus</ModName>
 		<ModID>2031</ModID>
 		<DisplayName>Bitter Blade</DisplayName>
-		<Description>+10% Bitter Blade damage</Description>
+		<Description>+1% Bitter Blade damage per Chilblains stack</Description>
 		<ModType>Power</ModType>
 		<PowerName>BitterBlade,BitterBlade1,BitterBlade2,BitterBlade3,BitterBlade4,BitterBlade5,BitterBlade6,BitterBlade7,BitterBlade8,BitterBlade9,BitterBlade10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.58</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>13</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>

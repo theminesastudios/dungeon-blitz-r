@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils";
+import { MAGE_GEAR_RUNE_EFFECTS } from "./mageGearRuneEffects";
 import { ROGUE_GEAR_EFFECT_PROPERTY, ROGUE_GEAR_RUNE_EFFECTS } from "./rogueGearRuneEffects";
 
 type PatchResult = { xml: string; changes: number; matchedGearIds: Set<string> };
@@ -160,16 +161,16 @@ function buildLegendaryMods(powerModsXml: string, powersXml: string, buffsXml: s
     const originalHead = findMod(powerModsXml, `Rune${pair.primaryRune}`);
     const originalLine = readTag(originalHead, "Description")?.split("@")[0];
     if (!originalLine) throw new SwzPatchError(`Rune${pair.primaryRune} has no Description.`);
-    const rogueEffect = ROGUE_GEAR_RUNE_EFFECTS[pair.secondaryPower];
-    const bonusDescription = rogueEffect?.description ?? `+10% ${pair.secondaryName} damage`;
+    const gearEffect = ROGUE_GEAR_RUNE_EFFECTS[pair.secondaryPower] ?? MAGE_GEAR_RUNE_EFFECTS[pair.secondaryPower];
+    const bonusDescription = gearEffect?.description ?? `+10% ${pair.secondaryName} damage`;
     const head = reidentify(originalHead, headName, modId++, bonusName).replace(
       /<Description>[\s\S]*?<\/Description>/,
       `<Description>${originalLine}${LINE_SEPARATOR}${bonusDescription}</Description>`,
     );
     const names = powerRanks(powersXml, pair.secondaryPower);
     let bonus: string;
-    if (rogueEffect?.kind === "buff") {
-      const entries = rogueEffect.buffNames.flatMap((buffName) => rogueEffect.properties.map((property) => ({ buffName, ...property })));
+    if (gearEffect?.kind === "buff") {
+      const entries = gearEffect.buffNames.flatMap((buffName) => gearEffect.properties.map((property) => ({ buffName, ...property })));
       for (const entry of entries) {
         const block = buffsXml.match(new RegExp(`<BuffType BuffName="${entry.buffName}">([\\s\\S]*?)</BuffType>`))?.[1];
         if (!block?.includes(`<${entry.name}>`)) throw new SwzPatchError(`${entry.buffName} does not declare <${entry.name}>.`);
@@ -183,14 +184,14 @@ function buildLegendaryMods(powerModsXml: string, powersXml: string, buffsXml: s
         "\t\t<IconName>a_Signet_Empty</IconName>", "\t</PowerModType>",
       ].join(eol);
     } else {
-      const property = rogueEffect?.kind === "conditional"
+      const property = gearEffect?.kind === "conditional"
         ? ROGUE_GEAR_EFFECT_PROPERTY
-        : rogueEffect?.kind === "damage" ? "BaseDamageMult"
-        : rogueEffect?.kind === "power" ? rogueEffect.property : "BaseDamageMult";
-      const value = rogueEffect?.kind === "conditional"
-        ? String(rogueEffect.marker)
-        : rogueEffect?.kind === "damage" ? round(rogueEffect.pct * strongestDamage(powersXml, names))
-        : rogueEffect?.kind === "power" ? rogueEffect.value : round(DAMAGE_BONUS * strongestDamage(powersXml, names));
+        : gearEffect?.kind === "damage" ? "BaseDamageMult"
+        : gearEffect?.kind === "power" ? gearEffect.property : "BaseDamageMult";
+      const value = gearEffect?.kind === "conditional"
+        ? String(gearEffect.marker)
+        : gearEffect?.kind === "damage" ? round(gearEffect.pct * strongestDamage(powersXml, names))
+        : gearEffect?.kind === "power" ? gearEffect.value : round(DAMAGE_BONUS * strongestDamage(powersXml, names));
       bonus = [
         "\t<PowerModType>", `\t\t<ModName>${bonusName}</ModName>`, `\t\t<ModID>${modId++}</ModID>`,
         `\t\t<DisplayName>${pair.secondaryName}</DisplayName>`, `\t\t<Description>${bonusDescription}</Description>`,
