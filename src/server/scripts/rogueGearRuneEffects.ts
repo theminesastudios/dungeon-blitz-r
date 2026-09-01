@@ -103,6 +103,57 @@ export const ROGUE_GEAR_RUNE_EFFECTS: Readonly<Record<string, RogueGearRuneEffec
     description: "+10% Dark Chi damage vs Bind",
     tr: "Kara Chi Baglanmis hedeflere %10 fazla hasar verir.",
   },
+  FatiguingStrike: {
+    kind: "power",
+    property: "AddTargetBuff",
+    value: "Append:ArmorBane",
+    description: "Hex Blade adds Armor Bane",
+    tr: "Buyulu Kilic Zirh Felaketi ekler.",
+  },
+  Devour: {
+    kind: "conditional",
+    marker: 4,
+    description: "+15% Devour damage vs Bind",
+    tr: "Yutma Baglanmis hedeflere %15 fazla hasar verir.",
+  },
+  ChaosArmor: {
+    kind: "damage",
+    pct: 0.1,
+    description: "+10% Chaos Wave damage",
+    tr: "Kaos Dalgasi hasari %10 artar.",
+  },
+  PainBender: {
+    kind: "power",
+    property: "AddTargetBuff",
+    value: "Append:Bound",
+    description: "Butcher's Boon adds 1 stack of Bind",
+    tr: "Kasabin Lutfu 1 Baglama yigi ekler.",
+  },
+  PoisonLance: {
+    kind: "buff",
+    buffNames: [
+      "DashArmor10",
+      "DashArmor25",
+      "DashArmor45",
+      "DashArmor50",
+      "DashArmor55",
+      "DashArmor60",
+      "DashArmor65",
+      "DashArmor75",
+    ],
+    properties: [
+      { name: "MagicDefense", value: 0.15 },
+      { name: "MeleeDefense", value: 0.15 },
+    ],
+    description: "Necrotic Surge +15% defense while dashing",
+    tr: "Nekrotik Dalga atilirken savunmayi %15 artirir.",
+  },
+  Reaper: {
+    kind: "conditional",
+    marker: 5,
+    description: "+10% Shadow Scythe damage vs Bind",
+    tr: "Golge Tirpani Baglanmis hedeflere %10 fazla hasar verir.",
+  },
 };
 
 export function rogueGearRuneEffect(powerName: string): RogueGearRuneEffect | undefined {

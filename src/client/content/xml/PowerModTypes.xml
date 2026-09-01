@@ -8470,7 +8470,7 @@
 		<ModName>RuneMysticRogueSword</ModName>
 		<ModID>1000</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>Withering Impact adds 2 stacks of Bleed&#10;+10% Severing Strike damage vs Poison/Hemo&#10;+15% Scorpion Sting damage vs Bind&#10;+10% Heart Seeker damage while Stealthed&#10;+15% Hex Blade damage&#10;+15% Devour damage</Description>
+		<Description>Withering Impact adds 2 stacks of Bleed&#10;+10% Severing Strike damage vs Poison/Hemo&#10;+15% Scorpion Sting damage vs Bind&#10;+10% Heart Seeker damage while Stealthed&#10;Hex Blade adds Armor Bane&#10;+15% Devour damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -8530,11 +8530,11 @@
 		<ModName>RuneMysticRogueSword5</ModName>
 		<ModID>1005</ModID>
 		<DisplayName>Hex Blade</DisplayName>
-		<Description>+15% Hex Blade damage</Description>
+		<Description>Hex Blade adds Armor Bane</Description>
 		<ModType>Power</ModType>
 		<PowerName>FatiguingStrike,FatiguingStrike1,FatiguingStrike2,FatiguingStrike3,FatiguingStrike4,FatiguingStrike5,FatiguingStrike6,FatiguingStrike7,FatiguingStrike8,FatiguingStrike9,FatiguingStrike10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.2565</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:ArmorBane</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueSword6</ComboMod>
 	</PowerModType>
@@ -8542,18 +8542,18 @@
 		<ModName>RuneMysticRogueSword6</ModName>
 		<ModID>1006</ModID>
 		<DisplayName>Devour</DisplayName>
-		<Description>+15% Devour damage</Description>
+		<Description>+15% Devour damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>Devour,Devour1,Devour2,Devour3,Devour4,Devour5,Devour6,Devour7,Devour8,Devour9,Devour10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.33</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>4</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneMysticRogueOffhand</ModName>
 		<ModID>1007</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+15% Chaos Wave power&#10;+15% Butcher's Boon damage&#10;+10% Withering Mist damage vs Bind&#10;+3 second Black Miasma tendril duration&#10;+15% Flurry of Daggers damage&#10;+15% Shadow Rend damage vs Poison/Hemo</Description>
+		<Description>+10% Chaos Wave damage&#10;Butcher's Boon adds 1 stack of Bind&#10;+10% Withering Mist damage vs Bind&#10;+3 second Black Miasma tendril duration&#10;+15% Flurry of Daggers damage&#10;+15% Shadow Rend damage vs Poison/Hemo</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -8565,11 +8565,11 @@
 		<ModName>RuneMysticRogueOffhand1</ModName>
 		<ModID>1008</ModID>
 		<DisplayName>Chaos Wave</DisplayName>
-		<Description>+15% Chaos Wave power</Description>
-		<ModType>Buff</ModType>
-		<BuffName>ChaosArmor5,ChaosArmor10,ChaosArmor15,ChaosArmor30</BuffName>
-		<BuffProperty>MagicDamage,MagicDamage,MagicDamage,MagicDamage</BuffProperty>
-		<BuffValue>0.015,0.015,0.015,0.015</BuffValue>
+		<Description>+10% Chaos Wave damage</Description>
+		<ModType>Power</ModType>
+		<PowerName>ChaosArmor,ChaosArmor1,ChaosArmor2,ChaosArmor3,ChaosArmor4,ChaosArmor5,ChaosArmor6,ChaosArmor7,ChaosArmor8,ChaosArmor9,ChaosArmor10</PowerName>
+		<PowerProperty>BaseDamageMult</PowerProperty>
+		<PowerValue>0.21</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueOffhand2</ComboMod>
 	</PowerModType>
@@ -8577,11 +8577,11 @@
 		<ModName>RuneMysticRogueOffhand2</ModName>
 		<ModID>1009</ModID>
 		<DisplayName>Butcher's Boon</DisplayName>
-		<Description>+15% Butcher's Boon damage</Description>
+		<Description>Butcher's Boon adds 1 stack of Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>PainBender,PainBender1,PainBender2,PainBender3,PainBender4,PainBender5,PainBender6,PainBender7,PainBender8,PainBender9,PainBender10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.6525</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Bound</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueOffhand3</ComboMod>
 	</PowerModType>
@@ -8683,7 +8683,7 @@
 		<ModName>RuneMysticRogueArmor</ModName>
 		<ModID>1018</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+10% Necrotic Surge damage&#10;+10% Shadow Scythe damage&#10;+15% Black Storm damage while Stealthed&#10;+10% Dark Chi damage vs Bind&#10;+10% Vicious Assault damage vs Poison/Hemo&#10;Assassinate adds 2 stacks of Bleed</Description>
+		<Description>Necrotic Surge +15% defense while dashing&#10;+10% Shadow Scythe damage vs Bind&#10;+15% Black Storm damage while Stealthed&#10;+10% Dark Chi damage vs Bind&#10;+10% Vicious Assault damage vs Poison/Hemo&#10;Assassinate adds 2 stacks of Bleed</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -8695,11 +8695,11 @@
 		<ModName>RuneMysticRogueArmor1</ModName>
 		<ModID>1019</ModID>
 		<DisplayName>Necrotic Surge</DisplayName>
-		<Description>+10% Necrotic Surge damage</Description>
-		<ModType>Power</ModType>
-		<PowerName>PoisonLance,PoisonLance1,PoisonLance2,PoisonLance3,PoisonLance4,PoisonLance5,PoisonLance6,PoisonLance7,PoisonLance8,PoisonLance9,PoisonLance10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.126</PowerValue>
+		<Description>Necrotic Surge +15% defense while dashing</Description>
+		<ModType>Buff</ModType>
+		<BuffName>DashArmor10,DashArmor10,DashArmor25,DashArmor25,DashArmor45,DashArmor45,DashArmor50,DashArmor50,DashArmor55,DashArmor55,DashArmor60,DashArmor60,DashArmor65,DashArmor65,DashArmor75,DashArmor75</BuffName>
+		<BuffProperty>MagicDefense,MeleeDefense,MagicDefense,MeleeDefense,MagicDefense,MeleeDefense,MagicDefense,MeleeDefense,MagicDefense,MeleeDefense,MagicDefense,MeleeDefense,MagicDefense,MeleeDefense,MagicDefense,MeleeDefense</BuffProperty>
+		<BuffValue>0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueArmor2</ComboMod>
 	</PowerModType>
@@ -8707,11 +8707,11 @@
 		<ModName>RuneMysticRogueArmor2</ModName>
 		<ModID>1020</ModID>
 		<DisplayName>Shadow Scythe</DisplayName>
-		<Description>+10% Shadow Scythe damage</Description>
+		<Description>+10% Shadow Scythe damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>Reaper,Reaper1,Reaper2,Reaper3,Reaper4,Reaper5,Reaper6,Reaper7,Reaper8,Reaper9,Reaper10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.25</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>5</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticRogueArmor3</ComboMod>
 	</PowerModType>
@@ -10059,7 +10059,7 @@
 		<ModName>RuneLegendaryPoisonStrike</ModName>
 		<ModID>2036</ModID>
 		<DisplayName>Poison Strike</DisplayName>
-		<Description>+25% Poison Strike DoT&#10;+10% Hex Blade damage</Description>
+		<Description>+25% Poison Strike DoT&#10;Hex Blade adds Armor Bane</Description>
 		<ModType>Power</ModType>
 		<PowerName>PoisonStrike</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
@@ -10071,11 +10071,11 @@
 		<ModName>RuneLegendaryPoisonStrikeBonus</ModName>
 		<ModID>2037</ModID>
 		<DisplayName>Hex Blade</DisplayName>
-		<Description>+10% Hex Blade damage</Description>
+		<Description>Hex Blade adds Armor Bane</Description>
 		<ModType>Power</ModType>
 		<PowerName>FatiguingStrike,FatiguingStrike1,FatiguingStrike2,FatiguingStrike3,FatiguingStrike4,FatiguingStrike5,FatiguingStrike6,FatiguingStrike7,FatiguingStrike8,FatiguingStrike9,FatiguingStrike10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.171</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:ArmorBane</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10197,7 +10197,7 @@
 		<ModName>RuneLegendaryGhostBlade</ModName>
 		<ModID>2048</ModID>
 		<DisplayName>Ghost Blade</DisplayName>
-		<Description>+5% Ghost Blade attack leech&#10;+10% Necrotic Surge damage</Description>
+		<Description>+5% Ghost Blade attack leech&#10;Necrotic Surge +15% defense while dashing</Description>
 		<ModType>Buff</ModType>
 		<BuffName>GhostBladeTarget1,GhostBladeTarget4,GhostBladeTarget6,GhostBladeTarget7,GhostBladeTarget9,GhostBladeTarget10</BuffName>
 		<BuffProperty>MeleeDamage</BuffProperty>
@@ -10209,11 +10209,11 @@
 		<ModName>RuneLegendaryGhostBladeBonus</ModName>
 		<ModID>2049</ModID>
 		<DisplayName>Necrotic Surge</DisplayName>
-		<Description>+10% Necrotic Surge damage</Description>
-		<ModType>Power</ModType>
-		<PowerName>PoisonLance,PoisonLance1,PoisonLance2,PoisonLance3,PoisonLance4,PoisonLance5,PoisonLance6,PoisonLance7,PoisonLance8,PoisonLance9,PoisonLance10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.126</PowerValue>
+		<Description>Necrotic Surge +15% defense while dashing</Description>
+		<ModType>Buff</ModType>
+		<BuffName>DashArmor10,DashArmor10,DashArmor25,DashArmor25,DashArmor45,DashArmor45,DashArmor50,DashArmor50,DashArmor55,DashArmor55,DashArmor60,DashArmor60,DashArmor65,DashArmor65,DashArmor75,DashArmor75</BuffName>
+		<BuffProperty>MagicDefense,MeleeDefense,MagicDefense,MeleeDefense,MagicDefense,MeleeDefense,MagicDefense,MeleeDefense,MagicDefense,MeleeDefense,MagicDefense,MeleeDefense,MagicDefense,MeleeDefense,MagicDefense,MeleeDefense</BuffProperty>
+		<BuffValue>0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15,0.15</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10266,7 +10266,7 @@
 		<ModName>RuneLegendaryHawkStrike</ModName>
 		<ModID>2054</ModID>
 		<DisplayName>Hawk Strike</DisplayName>
-		<Description>+10% Hawk Strike damage&#10;+10% Shadow Scythe damage</Description>
+		<Description>+10% Hawk Strike damage&#10;+10% Shadow Scythe damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>HawkStrike</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10278,11 +10278,11 @@
 		<ModName>RuneLegendaryHawkStrikeBonus</ModName>
 		<ModID>2055</ModID>
 		<DisplayName>Shadow Scythe</DisplayName>
-		<Description>+10% Shadow Scythe damage</Description>
+		<Description>+10% Shadow Scythe damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>Reaper,Reaper1,Reaper2,Reaper3,Reaper4,Reaper5,Reaper6,Reaper7,Reaper8,Reaper9,Reaper10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.25</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>5</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10404,7 +10404,7 @@
 		<ModName>RuneLegendarySoulReaver</ModName>
 		<ModID>2066</ModID>
 		<DisplayName>Soul Reaver</DisplayName>
-		<Description>+7% Soul Reaver life siphon&#10;+10% Butcher's Boon damage</Description>
+		<Description>+7% Soul Reaver life siphon&#10;Butcher's Boon adds 1 stack of Bind</Description>
 		<ModType>Buff</ModType>
 		<BuffName>SoulReaver1,SoulReaver2,SoulReaver3,SoulReaver4,SoulReaver5,SoulReaver6,SoulReaver7,SoulReaver8,SoulReaver9,SoulReaver10</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
@@ -10416,18 +10416,18 @@
 		<ModName>RuneLegendarySoulReaverBonus</ModName>
 		<ModID>2067</ModID>
 		<DisplayName>Butcher's Boon</DisplayName>
-		<Description>+10% Butcher's Boon damage</Description>
+		<Description>Butcher's Boon adds 1 stack of Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>PainBender,PainBender1,PainBender2,PainBender3,PainBender4,PainBender5,PainBender6,PainBender7,PainBender8,PainBender9,PainBender10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.435</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Bound</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneLegendarySoulShatter</ModName>
 		<ModID>2068</ModID>
 		<DisplayName>Soul Shatter</DisplayName>
-		<Description>+7% Carnifex damage&#10;+10% Devour damage</Description>
+		<Description>+7% Carnifex damage&#10;+15% Devour damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>SoulShatter</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10439,11 +10439,11 @@
 		<ModName>RuneLegendarySoulShatterBonus</ModName>
 		<ModID>2069</ModID>
 		<DisplayName>Devour</DisplayName>
-		<Description>+10% Devour damage</Description>
+		<Description>+15% Devour damage vs Bind</Description>
 		<ModType>Power</ModType>
 		<PowerName>Devour,Devour1,Devour2,Devour3,Devour4,Devour5,Devour6,Devour7,Devour8,Devour9,Devour10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.22</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>4</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
