@@ -244,22 +244,39 @@ function addPseudoPowers(xml: string): { xml: string; added: number } {
   const template = xml.match(/\t<Power PowerName="SwordMelee">[\s\S]*?<\/Power>/)?.[0];
   if (!template) throw new SwzPatchError("SwordMelee pseudo-power template not found.");
   const additions: string[] = [];
+  let out = xml;
+  let updated = 0;
   let powerId = FIRST_PSEUDO_POWER_ID;
   for (const pair of LEGENDARY_SKILL_PAIRS) {
     const name = legendaryRune(pair.primaryRune);
-    if (!xml.includes(`<Power PowerName="${name}">`)) {
-      additions.push(template.replace('PowerName="SwordMelee"', `PowerName="${name}"`)
-        .replace(/<PowerID>[\s\S]*?<\/PowerID>/, `<PowerID>${powerId}</PowerID>`)
-        .replace(/<DisplayName>[\s\S]*?<\/DisplayName>/, "<DisplayName>Legendary</DisplayName>")
-        .replace(/<Description>[\s\S]*?<\/Description>/, "<Description>Legendary power</Description>"));
+    const original = xml.match(new RegExp(`\t<Power PowerName="${pair.primaryRune}">[\\s\\S]*?</Power>`))?.[0];
+    if (!original) throw new SwzPatchError(`Power ${pair.primaryRune} not found for Legendary icon mapping.`);
+    const iconName = readTag(original, "IconName");
+    const runeIcon = readTag(original, "RuneIcon");
+    const displayName = readTag(original, "DisplayName");
+    if (!iconName || !displayName) throw new SwzPatchError(`Power ${pair.primaryRune} has no DisplayName/IconName.`);
+
+    let expected = template
+      .replace('PowerName="SwordMelee"', `PowerName="${name}"`)
+      .replace(/<PowerID>[\s\S]*?<\/PowerID>/, `<PowerID>${powerId}</PowerID>`)
+      .replace(/<DisplayName>[\s\S]*?<\/DisplayName>/, `<DisplayName>${displayName}</DisplayName>`)
+      .replace(/<Description>[\s\S]*?<\/Description>/, "<Description>Legendary power</Description>")
+      .replace(/<IconName>[\s\S]*?<\/IconName>/, `<IconName>${iconName}</IconName>`);
+    if (runeIcon) expected = expected.replace(/<RuneIcon>[\s\S]*?<\/RuneIcon>/, `<RuneIcon>${runeIcon}</RuneIcon>`);
+
+    const current = out.match(new RegExp(`\t<Power PowerName="${name}">[\\s\\S]*?</Power>`))?.[0];
+    if (!current) additions.push(expected);
+    else if (current.replace(/\r\n/g, "\n") !== expected.replace(/\r\n/g, "\n")) {
+      out = out.replace(current, expected);
+      updated += 1;
     }
     powerId += 1;
   }
-  if (additions.length === 0) return { xml, added: 0 };
-  const close = xml.lastIndexOf("</PlayerPowerTypes>");
+  if (additions.length === 0) return { xml: out, added: updated };
+  const close = out.lastIndexOf("</PlayerPowerTypes>");
   if (close === -1) throw new SwzPatchError("No </PlayerPowerTypes> close tag.");
-  const eol = xml.includes("\r\n") ? "\r\n" : "\n";
-  return { xml: `${xml.slice(0, close)}${additions.join(eol)}${eol}${xml.slice(close)}`, added: additions.length };
+  const eol = out.includes("\r\n") ? "\r\n" : "\n";
+  return { xml: `${out.slice(0, close)}${additions.join(eol)}${eol}${out.slice(close)}`, added: additions.length + updated };
 }
 
 function retargetLegendaryGear(xml: string): { xml: string; changed: number } {

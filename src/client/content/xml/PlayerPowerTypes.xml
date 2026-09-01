@@ -56799,9 +56799,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Ice Lance</DisplayName>
+		<IconName>a_PowerIcon_IceSpike</IconName>
+		<RuneIcon>a_RuneIcon_11</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -56828,9 +56828,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Fire Blast</DisplayName>
+		<IconName>a_PowerIcon_Explosion</IconName>
+		<RuneIcon>a_RuneIcon_10</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -56857,9 +56857,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Vine Strike</DisplayName>
+		<IconName>a_PowerIcon_VineLance</IconName>
+		<RuneIcon>a_RuneIcon_12</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -56886,9 +56886,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Ice Nova</DisplayName>
+		<IconName>a_PowerIcon_IceNova</IconName>
+		<RuneIcon>a_RuneIcon_14</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -56915,9 +56915,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Flame Wave</DisplayName>
+		<IconName>a_PowerIcon_FirePillar</IconName>
+		<RuneIcon>a_RuneIcon_13</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -56944,9 +56944,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Poison Cloud</DisplayName>
+		<IconName>a_PowerIcon_PoisonCloud</IconName>
+		<RuneIcon>a_RuneIcon_15</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -56973,8 +56973,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Hailstone Embrace</DisplayName>
+		<IconName>a_PowerIcon_FrostArmor</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -57002,8 +57002,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Draconic Soul</DisplayName>
+		<IconName>a_PowerIcon_DragonSoul</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -57031,9 +57031,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Plague Battalion</DisplayName>
+		<IconName>a_PowerIcon_LeechAura</IconName>
+		<RuneIcon>a_RuneIcon_07</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57060,9 +57060,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Hail Storm</DisplayName>
+		<IconName>a_PowerIcon_IceStorm</IconName>
+		<RuneIcon>a_RuneIcon_17</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57089,9 +57089,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Meteor Channel</DisplayName>
+		<IconName>a_PowerIcon_Meteor</IconName>
+		<RuneIcon>a_RuneIcon_16</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57118,9 +57118,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Call Guard</DisplayName>
+		<IconName>a_PowerIcon_SummonGuard</IconName>
+		<RuneIcon>a_RuneIcon_18</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57147,8 +57147,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Permafrost Clone</DisplayName>
+		<IconName>a_PowerIcon_SummonGolem</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -57176,8 +57176,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Wildfire</DisplayName>
+		<IconName>a_PowerIcon_FireNova</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -57205,8 +57205,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Call the Horde</DisplayName>
+		<IconName>a_PowerIcon_SummonGhoul</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -57234,8 +57234,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Tundra Wyrm</DisplayName>
+		<IconName>a_PowerIcon_PolarSentry</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -57263,8 +57263,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Pyromania</DisplayName>
+		<IconName>a_PowerIcon_FlameStrike</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -57292,8 +57292,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Bolster the Horde</DisplayName>
+		<IconName>a_PowerIcon_SummonGhoul2</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -57321,9 +57321,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Poison Strike</DisplayName>
+		<IconName>a_PowerIcon_OpenDoT</IconName>
+		<RuneIcon>a_RuneIcon_20</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57350,9 +57350,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Triple Strike</DisplayName>
+		<IconName>a_PowerIcon_OpenDamage</IconName>
+		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57379,9 +57379,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Stun Strike</DisplayName>
+		<IconName>a_PowerIcon_OpenStun</IconName>
+		<RuneIcon>a_RuneIcon_19</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57408,9 +57408,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Entanglement</DisplayName>
+		<IconName>a_PowerIcon_Root</IconName>
+		<RuneIcon>a_RuneIcon_23</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57437,9 +57437,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Steel Whirlwind</DisplayName>
+		<IconName>a_PowerIcon_DoubleStrike</IconName>
+		<RuneIcon>a_RuneIcon_24</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57466,9 +57466,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Weaken</DisplayName>
+		<IconName>a_PowerIcon_Enfeeble</IconName>
+		<RuneIcon>a_RuneIcon_22</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57495,8 +57495,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Ghost Blade</DisplayName>
+		<IconName>a_PowerIcon_GhostBlade</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -57524,8 +57524,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Charon's Blades</DisplayName>
+		<IconName>a_PowerIcon_CharonBlade01</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -57553,8 +57553,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Shadow Step</DisplayName>
+		<IconName>a_PowerIcon_ShadowStep</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -57582,9 +57582,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Hawk Strike</DisplayName>
+		<IconName>a_PowerIcon_Eviscerate</IconName>
+		<RuneIcon>a_RuneIcon_25</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57611,9 +57611,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Slapdash Decoy</DisplayName>
+		<IconName>a_PowerIcon_Decoy</IconName>
+		<RuneIcon>a_RuneIcon_26</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57640,9 +57640,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Armor Breaker</DisplayName>
+		<IconName>a_PowerIcon_ReduceArmor</IconName>
+		<RuneIcon>a_RuneIcon_27</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57669,9 +57669,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Crimson Butterfly</DisplayName>
+		<IconName>a_PowerIcon_CrimsonSlash</IconName>
+		<RuneIcon>a_RuneIcon_11</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57698,9 +57698,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Mist Walk</DisplayName>
+		<IconName>a_PowerIcon_MistWalk</IconName>
+		<RuneIcon>a_RuneIcon_19</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57727,8 +57727,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Midnight Shroud</DisplayName>
+		<IconName>a_PowerIcon_ShadowArmor</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -57756,9 +57756,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Soul Reaver</DisplayName>
+		<IconName>a_PowerIcon_SoulReaver</IconName>
+		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57785,9 +57785,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Carnifex</DisplayName>
+		<IconName>a_PowerIcon_AgonizingBond</IconName>
+		<RuneIcon>a_RuneIcon_21</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57814,8 +57814,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Shadow Legion</DisplayName>
+		<IconName>a_PowerIcon_ShadowLegion</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -57843,9 +57843,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Skewer</DisplayName>
+		<IconName>a_PowerIcon_SwordSkewer</IconName>
+		<RuneIcon>a_RuneIcon_02</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57872,9 +57872,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Cleave</DisplayName>
+		<IconName>a_PowerIcon_AxeCleave</IconName>
+		<RuneIcon>a_RuneIcon_03</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57901,7 +57901,7 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
+		<DisplayName>Smash</DisplayName>
 		<IconName>a_PowerIcon_MaceSmash</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
@@ -57930,9 +57930,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Warcry</DisplayName>
+		<IconName>a_PowerIcon_LightningShieldBurst</IconName>
+		<RuneIcon>a_RuneIcon_05</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57959,9 +57959,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Shield Stun</DisplayName>
+		<IconName>a_PowerIcon_ShieldStun</IconName>
+		<RuneIcon>a_RuneIcon_06</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -57988,9 +57988,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Healing Touch</DisplayName>
+		<IconName>a_PowerIcon_InstantHealFriend</IconName>
+		<RuneIcon>a_RuneIcon_04</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -58017,8 +58017,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Berserker</DisplayName>
+		<IconName>a_PowerIcon_Berserker</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -58046,8 +58046,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Sentinel Form</DisplayName>
+		<IconName>a_PowerIcon_SentinelForm01</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -58075,8 +58075,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Empyrean Aura</DisplayName>
+		<IconName>a_PowerIcon_EmpyreanRadiance</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -58104,9 +58104,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Jump Slam</DisplayName>
+		<IconName>a_PowerIcon_JumpSlam</IconName>
+		<RuneIcon>a_RuneIcon_09</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -58133,9 +58133,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Guardian Shield</DisplayName>
+		<IconName>a_PowerIcon_RollingLightning</IconName>
+		<RuneIcon>a_RuneIcon_08</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -58162,9 +58162,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Aura of Blessing</DisplayName>
+		<IconName>a_PowerIcon_GroupHealOverTime</IconName>
+		<RuneIcon>a_RuneIcon_07</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
@@ -58191,8 +58191,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Meteor Smash</DisplayName>
+		<IconName>a_PowerIcon_LeapStrike</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -58220,8 +58220,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Defiance</DisplayName>
+		<IconName>a_PowerIcon_HeroStrength</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -58249,8 +58249,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Sanctum</DisplayName>
+		<IconName>a_PowerIcon_Sanctum</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -58278,8 +58278,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Lightning Bomb</DisplayName>
+		<IconName>a_PowerIcon_LightningBomb</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -58307,8 +58307,8 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
+		<DisplayName>Unstable Barrier</DisplayName>
+		<IconName>a_PowerIcon_Barrier</IconName>
 		<RuneIcon>a_RuneIcon_01</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
@@ -58336,9 +58336,9 @@
 		<ProcModifier>0</ProcModifier>
 		<DamageType>Physical</DamageType>
 		<PowerGroup>SwordMelee</PowerGroup>
-		<DisplayName>Legendary</DisplayName>
-		<IconName>a_PowerIcon_MaceSmash</IconName>
-		<RuneIcon>a_RuneIcon_01</RuneIcon>
+		<DisplayName>Sacred Light</DisplayName>
+		<IconName>a_PowerIcon_SacredLight</IconName>
+		<RuneIcon>a_RuneIcon_07</RuneIcon>
 		<CastSound>snd_pwr_melee_rogue_01|snd_pwr_melee_rogue_02|snd_pwr_melee_rogue_03</CastSound>
 		<CastGfx/>
 		<FireGfx/>
