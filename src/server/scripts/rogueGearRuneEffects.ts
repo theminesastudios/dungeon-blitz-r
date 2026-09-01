@@ -4,7 +4,7 @@ export const ROGUE_GEAR_EFFECT_PROPERTY = "SpawnLimit";
 
 export type RogueGearRuneEffect =
   | { kind: "conditional"; marker: number; description: string; tr: string }
-  | { kind: "damage"; pct: number; targetBase?: string; description: string; tr: string }
+  | { kind: "damage"; pct: number; targetBase?: string; targetBases?: string[]; description: string; tr: string }
   | { kind: "power"; property: string; value: string; powerBases?: string[]; description: string; tr: string }
   | {
       kind: "buffEntries";
@@ -19,15 +19,6 @@ export type RogueGearRuneEffect =
       description: string;
       tr: string;
     };
-
-const TENDRIL_BUFFS = [
-  "ShadowTendril",
-  "ShadowTendrilRank1",
-  "ShadowTendrilRank4",
-  "ShadowTendrilRank6",
-  "ShadowTendrilRank8",
-  "ShadowTendrilRank10",
-];
 
 /**
  * First staged Rogue effect batch shared by the Legendary and Mystic generators.
@@ -91,17 +82,18 @@ export const ROGUE_GEAR_RUNE_EFFECTS: Readonly<Record<string, RogueGearRuneEffec
     tr: "Soldurucu Sis Baglanmis hedeflere %10 fazla hasar verir.",
   },
   ShadowTendrilDash: {
-    kind: "buff",
-    buffNames: TENDRIL_BUFFS,
-    properties: [{ name: "Duration", value: 3000 }],
+    kind: "power",
+    property: "SpawnLimit",
+    value: "8",
+    powerBases: ["ShadowTendril"],
     description: "+3 second Black Miasma tendril duration",
     tr: "Kara Miyazma dokunac suresi 3 saniye artar.",
   },
   BlackStorm: {
     kind: "conditional",
     marker: 7,
-    description: "+15% Black Storm damage while Stealthed",
-    tr: "Gizliyken Kara Firtina hasari %15 artar.",
+    description: "+30% Black Storm damage while Stealthed",
+    tr: "Gizliyken Kara Firtina hasari %30 artar.",
   },
   DarkChi: {
     kind: "conditional",
@@ -129,11 +121,10 @@ export const ROGUE_GEAR_RUNE_EFFECTS: Readonly<Record<string, RogueGearRuneEffec
     tr: "Kaos Dalgasi hasari %10 artar.",
   },
   PainBender: {
-    kind: "power",
-    property: "AddTargetBuff",
-    value: "Append:Bound",
-    description: "Butcher's Boon adds 1 stack of Bind",
-    tr: "Kasabin Lutfu 1 Baglama yigi ekler.",
+    kind: "conditional",
+    marker: 9,
+    description: "+10% Butcher's Boon damage vs Bind",
+    tr: "Kasabin Lutfu Baglanmis hedeflere %10 fazla hasar verir.",
   },
   PoisonLance: {
     kind: "buff",

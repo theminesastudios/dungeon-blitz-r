@@ -97,7 +97,7 @@ export const PALADIN_GEAR_RUNE_EFFECTS: Readonly<Record<string, RogueGearRuneEff
   Subjugate: {
     kind: "conditional",
     marker: 23,
-    description: "+15% Subjugate damage vs blind/holy",
+    description: "+15% Subjugate dmg vs blind/holy fire",
     tr: "Boyun Egdirme Kor veya Kutsal Ates altindaki hedeflere %15 fazla hasar verir.",
   },
   DivineWord: {
@@ -110,7 +110,7 @@ export const PALADIN_GEAR_RUNE_EFFECTS: Readonly<Record<string, RogueGearRuneEff
   Penance: {
     kind: "conditional",
     marker: 24,
-    description: "+10% Penance damage vs blind/holy",
+    description: "+10% Penance dmg vs blind/holy fire",
     tr: "Kefaret Kor veya Kutsal Ates altindaki hedeflere %10 fazla hasar verir.",
   },
   FountainOfLife: {
@@ -122,16 +122,15 @@ export const PALADIN_GEAR_RUNE_EFFECTS: Readonly<Record<string, RogueGearRuneEff
   CelestialLance: {
     kind: "conditional",
     marker: 23,
-    description: "+15% Celestial Lance damage vs blind/holy",
+    description: "+15% Celestial Lance dmg vs blind/holy fire",
     tr: "Semavi Mizrak Kor veya Kutsal Ates altindaki hedeflere %15 fazla hasar verir.",
   },
   VerdictROR: {
-    kind: "power",
-    property: "RecoverTime",
-    value: "-25",
-    powerBases: ["VerdictROR", "VerdictMelee"],
-    description: "+5% Verdict attack speed",
-    tr: "Hukum saldiri hizi %5 artar.",
+    kind: "damage",
+    pct: 0.1,
+    targetBases: ["VerdictHeal", "VerdictHealMelee"],
+    description: "+10% Verdict healing power",
+    tr: "Hukum iyilestirme gucu %10 artar.",
   },
 };
 
@@ -171,6 +170,12 @@ export function ensurePaladinGearBuffs(xml: string): { xml: string; changed: num
     changed += 1;
   }
   return { xml: updated, changed };
+}
+
+export function ensurePaladinGearModDescriptions(xml: string): { xml: string; changed: number } {
+  const pattern = /(\t<PowerModType>\s*\r?\n\t\t<ModName>RuneLeoneanAura<\/ModName>[\s\S]*?<Description>)5% Empyrean Aura Defense boost(<\/Description>[\s\S]*?<\/PowerModType>)/;
+  const updated = xml.replace(pattern, "$1+5% Empyrean Aura Defense boost$2");
+  return { xml: updated, changed: Number(updated !== xml) };
 }
 
 export function paladinGearRuneEffect(powerName: string): RogueGearRuneEffect | undefined {

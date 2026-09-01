@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { defaultLoginSwzPath, ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils";
 import { MAGE_GEAR_EFFECT_PROPERTY, mageGearRuneEffect } from "./mageGearRuneEffects";
-import { ensurePaladinGearBuffs, PALADIN_GEAR_EFFECT_PROPERTY, paladinGearRuneEffect } from "./paladinGearRuneEffects";
+import { ensurePaladinGearBuffs, ensurePaladinGearModDescriptions, PALADIN_GEAR_EFFECT_PROPERTY, paladinGearRuneEffect } from "./paladinGearRuneEffects";
 import { ROGUE_GEAR_EFFECT_PROPERTY, rogueGearRuneEffect } from "./rogueGearRuneEffects";
 
 /**
@@ -489,7 +489,7 @@ function buildMods(corpus: Corpus): { chains: string[][]; runeByGearId: Map<numb
         }
 
         const targetBases = effect.kind === "damage"
-          ? [effect.targetBase ?? ability.base]
+          ? effect.targetBases ?? [effect.targetBase ?? ability.base]
           : effect.kind === "power" && effect.powerBases ? effect.powerBases : [ability.base];
         const names = [...new Set(targetBases.flatMap((base) => powerRanks(corpus.powers, base)))];
         const property = effect.kind === "conditional"
@@ -715,17 +715,18 @@ function patch(verify: boolean): void {
     if (!mods || !powers || !buffs) throw new SwzPatchError(`${path.basename(swzPath)} is missing PowerModTypes/PlayerPowerTypes/PlayerBuffTypes.`);
 
     const buffResult = ensurePaladinGearBuffs(buffs.xml);
+    const modDescriptions = ensurePaladinGearModDescriptions(mods.xml);
     const { chains } = buildMods({
-      powerMods: mods.xml,
+      powerMods: modDescriptions.xml,
       powers: powers.xml,
       buffs: buffResult.xml,
       turkish: swzPath.endsWith("Game.tr.swz"),
     });
-    const result = insertMods(mods.xml, chains);
+    const result = insertMods(modDescriptions.xml, chains);
     const powerResult = addPseudoPowers(powers.xml, swzPath.endsWith("Game.tr.swz"));
-    summary.push(`${path.basename(swzPath)}: +${result.added} mods, +${powerResult.added} pseudo-powers, +${buffResult.changed} gear buffs`);
-    changes += result.added + powerResult.added + buffResult.changed;
-    if ((result.added > 0 || powerResult.added > 0 || buffResult.changed > 0) && !verify) {
+    summary.push(`${path.basename(swzPath)}: +${result.added + modDescriptions.changed} mods, +${powerResult.added} pseudo-powers, +${buffResult.changed} gear buffs`);
+    changes += result.added + modDescriptions.changed + powerResult.added + buffResult.changed;
+    if ((result.added > 0 || modDescriptions.changed > 0 || powerResult.added > 0 || buffResult.changed > 0) && !verify) {
       pending.push(() => {
         ensureBackup(swzPath);
         mods.xml = result.xml;
@@ -742,16 +743,17 @@ function patch(verify: boolean): void {
   const referenceBuffs = ensurePaladinGearBuffs(referenceSwz.chunks.find((chunk) => chunk.xml.includes("<PlayerBuffTypes"))!.xml).xml;
 
   const loosePowerMods = fs.readFileSync(LOOSE_POWER_MODS, "utf8");
+  const looseModDescriptions = ensurePaladinGearModDescriptions(loosePowerMods);
   const { chains, runeByGearId } = buildMods({
-    powerMods: loosePowerMods,
+    powerMods: looseModDescriptions.xml,
     powers: referencePowers,
     buffs: referenceBuffs,
     turkish: false,
   });
-  const looseResult = insertMods(loosePowerMods, chains);
-  summary.push(`PowerModTypes.xml: +${looseResult.added} mods`);
-  changes += looseResult.added;
-  if (looseResult.added > 0 && !verify) {
+  const looseResult = insertMods(looseModDescriptions.xml, chains);
+  summary.push(`PowerModTypes.xml: +${looseResult.added + looseModDescriptions.changed} mods`);
+  changes += looseResult.added + looseModDescriptions.changed;
+  if ((looseResult.added > 0 || looseModDescriptions.changed > 0) && !verify) {
     pending.push(() => fs.writeFileSync(LOOSE_POWER_MODS, looseResult.xml, "utf8"));
   }
 

@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { ensureBackup, parseSwz, SwzPatchError, writeSwz } from "./swzPatchUtils";
 import { MAGE_GEAR_RUNE_EFFECTS } from "./mageGearRuneEffects";
-import { ensurePaladinGearBuffs, PALADIN_GEAR_RUNE_EFFECTS } from "./paladinGearRuneEffects";
+import { ensurePaladinGearBuffs, ensurePaladinGearModDescriptions, PALADIN_GEAR_RUNE_EFFECTS } from "./paladinGearRuneEffects";
 import { ROGUE_GEAR_EFFECT_PROPERTY, ROGUE_GEAR_RUNE_EFFECTS } from "./rogueGearRuneEffects";
 
 type PatchResult = { xml: string; changes: number; matchedGearIds: Set<string> };
@@ -171,7 +171,7 @@ function buildLegendaryMods(powerModsXml: string, powersXml: string, buffsXml: s
       `<Description>${originalLine}${LINE_SEPARATOR}${bonusDescription}</Description>`,
     );
     const targetBases = gearEffect?.kind === "damage"
-      ? [gearEffect.targetBase ?? pair.secondaryPower]
+      ? gearEffect.targetBases ?? [gearEffect.targetBase ?? pair.secondaryPower]
       : gearEffect?.kind === "power" && gearEffect.powerBases ? gearEffect.powerBases : [pair.secondaryPower];
     const names = [...new Set(targetBases.flatMap((base) => powerRanks(powersXml, base)))];
     let bonus: string;
@@ -317,11 +317,12 @@ export function patchConfiguredLegendaryGearRunes(verifyOnly: boolean): number {
   const buffsChunk = game.chunks.find((chunk) => chunk.xml.includes("<PlayerBuffTypes"));
   if (!modsChunk || !powersChunk || !buffsChunk) throw new SwzPatchError("Game.swz is missing PowerModTypes/PlayerPowerTypes/PlayerBuffTypes.");
   const swzBuffs = ensurePaladinGearBuffs(buffsChunk.xml);
-  const swzMods = insertMods(modsChunk.xml, buildLegendaryMods(modsChunk.xml, powersChunk.xml, swzBuffs.xml));
+  const swzModDescriptions = ensurePaladinGearModDescriptions(modsChunk.xml);
+  const swzMods = insertMods(swzModDescriptions.xml, buildLegendaryMods(swzModDescriptions.xml, powersChunk.xml, swzBuffs.xml));
   const swzPowers = addPseudoPowers(powersChunk.xml);
-  summary.push(`Game.swz: +${swzMods.added} mods, +${swzPowers.added} pseudo-powers, +${swzBuffs.changed} gear buffs`);
-  changes += swzMods.added + swzPowers.added + swzBuffs.changed;
-  if ((swzMods.added > 0 || swzPowers.added > 0 || swzBuffs.changed > 0) && !verifyOnly) pending.push(() => {
+  summary.push(`Game.swz: +${swzMods.added + swzModDescriptions.changed} mods, +${swzPowers.added} pseudo-powers, +${swzBuffs.changed} gear buffs`);
+  changes += swzMods.added + swzModDescriptions.changed + swzPowers.added + swzBuffs.changed;
+  if ((swzMods.added > 0 || swzModDescriptions.changed > 0 || swzPowers.added > 0 || swzBuffs.changed > 0) && !verifyOnly) pending.push(() => {
     ensureBackup(GAME_SWZ); modsChunk.xml = swzMods.xml; powersChunk.xml = swzPowers.xml; buffsChunk.xml = swzBuffs.xml; writeSwz(game);
   });
 
@@ -329,13 +330,14 @@ export function patchConfiguredLegendaryGearRunes(verifyOnly: boolean): number {
   const loosePowers = fs.readFileSync(LOOSE_POWERS, "utf8");
   const looseBuffs = fs.readFileSync(LOOSE_BUFFS, "utf8");
   const looseBuffsResult = ensurePaladinGearBuffs(looseBuffs);
-  const looseModsResult = insertMods(looseMods, buildLegendaryMods(looseMods, loosePowers, looseBuffsResult.xml));
+  const looseModDescriptions = ensurePaladinGearModDescriptions(looseMods);
+  const looseModsResult = insertMods(looseModDescriptions.xml, buildLegendaryMods(looseModDescriptions.xml, loosePowers, looseBuffsResult.xml));
   const loosePowersResult = addPseudoPowers(loosePowers);
-  summary.push(`PowerModTypes.xml: +${looseModsResult.added} mods`);
+  summary.push(`PowerModTypes.xml: +${looseModsResult.added + looseModDescriptions.changed} mods`);
   summary.push(`PlayerPowerTypes.xml: +${loosePowersResult.added} pseudo-powers`);
   summary.push(`PlayerBuffTypes.xml: +${looseBuffsResult.changed} gear buffs`);
-  changes += looseModsResult.added + loosePowersResult.added + looseBuffsResult.changed;
-  if (looseModsResult.added > 0 && !verifyOnly) pending.push(() => fs.writeFileSync(LOOSE_POWER_MODS, looseModsResult.xml, "utf8"));
+  changes += looseModsResult.added + looseModDescriptions.changed + loosePowersResult.added + looseBuffsResult.changed;
+  if ((looseModsResult.added > 0 || looseModDescriptions.changed > 0) && !verifyOnly) pending.push(() => fs.writeFileSync(LOOSE_POWER_MODS, looseModsResult.xml, "utf8"));
   if (loosePowersResult.added > 0 && !verifyOnly) pending.push(() => fs.writeFileSync(LOOSE_POWERS, loosePowersResult.xml, "utf8"));
   if (looseBuffsResult.changed > 0 && !verifyOnly) pending.push(() => fs.writeFileSync(LOOSE_BUFFS, looseBuffsResult.xml, "utf8"));
 

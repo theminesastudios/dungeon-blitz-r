@@ -50,11 +50,10 @@ export const MAGE_GEAR_RUNE_EFFECTS: Readonly<Record<string, MageGearRuneEffect>
     tr: "Cehennem Atesi her Yanma yigi basina %1 fazla hasar verir.",
   },
   IridescentBurst: {
-    kind: "power",
-    property: "AddTargetBuff",
-    value: "Append:Staggered",
-    description: "Iridescent Burst adds Stagger",
-    tr: "Yanardoner Patlama Sendeleme ekler.",
+    kind: "damage",
+    pct: 0.1,
+    description: "+10% Iridescent Burst damage",
+    tr: "Yanardoner Patlama hasari %10 artar.",
   },
   FlameStrike: {
     kind: "damage",
