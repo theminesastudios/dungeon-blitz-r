@@ -14,7 +14,7 @@ const LEGENDARY_SKILL_PAIRS: LegendarySkillPair[] = [
   { primaryRune: "FireBlast", secondaryPower: "FlameSpout", secondaryName: "Inferno" },
   { primaryRune: "VineLance", secondaryPower: "Desecrate", secondaryName: "Desecrate" },
   { primaryRune: "IceNova", secondaryPower: "FrigidComet", secondaryName: "Frigid Comet" },
-  { primaryRune: "FirePillar", secondaryPower: "FireStorm", secondaryName: "Conflagration" },
+  { primaryRune: "FirePillar", secondaryPower: "FlameStrike", secondaryName: "Conflagration" },
   { primaryRune: "PoisonCloud", secondaryPower: "SpectralGrasp", secondaryName: "Spectral Grasp" },
   { primaryRune: "HailstoneEmbrace", secondaryPower: "GlacialSpear", secondaryName: "Glacial Spear" },
   { primaryRune: "SummonDragonSoul", secondaryPower: "FireBrandShot", secondaryName: "Firebrand" },
@@ -26,7 +26,7 @@ const LEGENDARY_SKILL_PAIRS: LegendarySkillPair[] = [
   { primaryRune: "WildFire", secondaryPower: "IridescentBurst", secondaryName: "Iridescent Burst" },
   { primaryRune: "SummonGhoul", secondaryPower: "Lifethirst", secondaryName: "Lifethirst" },
   { primaryRune: "PolarSentry", secondaryPower: "BitterBlade", secondaryName: "Bitter Blade" },
-  { primaryRune: "Pyromania", secondaryPower: "FlameStrike", secondaryName: "Molten Rain" },
+  { primaryRune: "Pyromania", secondaryPower: "FireStorm", secondaryName: "Molten Rain" },
   { primaryRune: "SummonRangedGhoul", secondaryPower: "Infestation", secondaryName: "Infestation" },
   // Rogue
   { primaryRune: "PoisonStrike", secondaryPower: "FatiguingStrike", secondaryName: "Hex Blade" },
@@ -167,7 +167,8 @@ function buildLegendaryMods(powerModsXml: string, powersXml: string, buffsXml: s
       /<Description>[\s\S]*?<\/Description>/,
       `<Description>${originalLine}${LINE_SEPARATOR}${bonusDescription}</Description>`,
     );
-    const names = powerRanks(powersXml, pair.secondaryPower);
+    const targetBase = gearEffect?.kind === "damage" ? gearEffect.targetBase ?? pair.secondaryPower : pair.secondaryPower;
+    const names = powerRanks(powersXml, targetBase);
     let bonus: string;
     if (gearEffect?.kind === "buff") {
       const entries = gearEffect.buffNames.flatMap((buffName) => gearEffect.properties.map((property) => ({ buffName, ...property })));

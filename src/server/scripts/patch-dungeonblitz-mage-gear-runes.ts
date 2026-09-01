@@ -232,6 +232,88 @@ function buildDamageBlock(
   ]);
 }
 
+function buildFireStackDamageBlock(
+  abc: ReturnType<typeof parseAbc>,
+  markerLocal: number,
+  buffLocal: number,
+  dynamicProperty: Buffer,
+): Buffer {
+  const var3 = multiname(abc, "var_3");
+  const var18 = multiname(abc, "var_18");
+  const basePowerName = multiname(abc, "basePowerName");
+  const method102 = multiname(abc, "method_102");
+  const combatState = multiname(abc, "combatState");
+  const buffTypesDict = multiname(abc, "buffTypesDict");
+  const method135 = multiname(abc, "method_135");
+  const method351 = multiname(abc, "method_351");
+
+  return assemble([
+    getLocal(0), { opcode: 0x66, operands: [var3] }, { opcode: 0x66, operands: [var18] },
+    { opcode: 0x12, branchTo: "done" },
+    getLocal(0), { opcode: 0x66, operands: [var3] }, { opcode: 0x66, operands: [var18] },
+    getLocal(0), { opcode: 0x66, operands: [var3] },
+    getLocal(2), { opcode: 0x66, operands: [basePowerName] },
+    { opcode: 0x2c, operands: [stringValue(abc, "SpawnLimit")] },
+    { opcode: 0x46, operands: [method102, writeU30(3)] },
+    setLocal(markerLocal),
+
+    getLocal(markerLocal), pushPositive(16), { opcode: 0xab },
+    { opcode: 0x11, branchTo: "loadBurn" },
+    getLocal(markerLocal), pushPositive(17), { opcode: 0xab },
+    { opcode: 0x12, branchTo: "done" },
+
+    { opcode: -1, label: "loadBurn" },
+    getLocal(3), { opcode: 0x66, operands: [combatState] },
+    { opcode: 0x60, operands: [classMultiname(abc, "class_14")] },
+    { opcode: 0x66, operands: [buffTypesDict] },
+    { opcode: 0x2c, operands: [stringValue(abc, "Burned")] },
+    { opcode: 0x66, operands: [dynamicProperty] },
+    { opcode: 0x46, operands: [method135, writeU30(1)] },
+    { opcode: 0x2a }, setLocal(buffLocal), { opcode: 0x12, branchTo: "done" },
+    getLocal(6), pushPositive(1), pushPositive(100), { opcode: 0xa3 },
+    getLocal(buffLocal), { opcode: 0x46, operands: [method351, writeU30(0)] },
+    { opcode: 0xa2 }, { opcode: 0xa0 }, { opcode: 0x75 }, setLocal(6),
+
+    { opcode: -1, label: "done" },
+  ]);
+}
+
+function buildPoisonDamageBlock(abc: ReturnType<typeof parseAbc>, markerLocal: number): Buffer {
+  const var3 = multiname(abc, "var_3");
+  const var18 = multiname(abc, "var_18");
+  const basePowerName = multiname(abc, "basePowerName");
+  const method102 = multiname(abc, "method_102");
+  const combatState = multiname(abc, "combatState");
+  const var1176 = multiname(abc, "var_1176");
+
+  return assemble([
+    getLocal(0), { opcode: 0x66, operands: [var3] }, { opcode: 0x66, operands: [var18] },
+    { opcode: 0x12, branchTo: "done" },
+    getLocal(0), { opcode: 0x66, operands: [var3] }, { opcode: 0x66, operands: [var18] },
+    getLocal(0), { opcode: 0x66, operands: [var3] },
+    getLocal(2), { opcode: 0x66, operands: [basePowerName] },
+    { opcode: 0x2c, operands: [stringValue(abc, "SpawnLimit")] },
+    { opcode: 0x46, operands: [method102, writeU30(3)] },
+    setLocal(markerLocal),
+
+    getLocal(markerLocal), pushPositive(18), { opcode: 0xab },
+    { opcode: 0x11, branchTo: "checkPoison" },
+    getLocal(markerLocal), pushPositive(19), { opcode: 0xab },
+    { opcode: 0x12, branchTo: "done" },
+
+    { opcode: -1, label: "checkPoison" },
+    getLocal(3), { opcode: 0x66, operands: [combatState] },
+    { opcode: 0x66, operands: [var1176] },
+    { opcode: 0x60, operands: [classMultiname(abc, "BuffType")] },
+    { opcode: 0x66, operands: [multiname(abc, "const_70")] },
+    { opcode: 0xa8 },
+    { opcode: 0x12, branchTo: "done" },
+    ...percentageAdd(6, 10, 100),
+
+    { opcode: -1, label: "done" },
+  ]);
+}
+
 function buildFrostSpireBlock(abc: ReturnType<typeof parseAbc>): Buffer {
   const powerType = multiname(abc, "powerType");
   const var4 = multiname(abc, "var_4");
@@ -278,6 +360,45 @@ function buildFrostSpireBlock(abc: ReturnType<typeof parseAbc>): Buffer {
   ]);
 }
 
+function buildDeathMarkDurationBlock(abc: ReturnType<typeof parseAbc>): Buffer {
+  const var4 = multiname(abc, "var_4");
+  const var18 = multiname(abc, "var_18");
+  const powerType = multiname(abc, "powerType");
+  const basePowerName = multiname(abc, "basePowerName");
+  const method102 = multiname(abc, "method_102");
+  const var54 = multiname(abc, "var_54");
+  const var108 = multiname(abc, "var_108");
+  const length = multiname(abc, "length");
+  const var2064 = multiname(abc, "var_2064");
+  const var1145 = multiname(abc, "var_1145");
+  const var344 = multiname(abc, "var_344");
+
+  return assemble([
+    getLocal(0), { opcode: 0x66, operands: [var4] }, { opcode: 0x66, operands: [var18] },
+    { opcode: 0x12, branchTo: "stock" },
+    getLocal(0), { opcode: 0x66, operands: [var4] }, { opcode: 0x66, operands: [var18] },
+    getLocal(0), { opcode: 0x66, operands: [var4] },
+    getLocal(0), { opcode: 0x66, operands: [powerType] }, { opcode: 0x66, operands: [basePowerName] },
+    { opcode: 0x2c, operands: [stringValue(abc, "SpawnDuration")] },
+    { opcode: 0x46, operands: [method102, writeU30(3)] },
+    pushPositive(3000), { opcode: 0xab }, { opcode: 0x12, branchTo: "stock" },
+
+    getLocal(0), { opcode: 0x66, operands: [var54] },
+    getLocal(0), { opcode: 0x66, operands: [powerType] }, { opcode: 0x66, operands: [var108] },
+    { opcode: 0x66, operands: [length] }, pushPositive(1), { opcode: 0xa1 },
+    { opcode: 0xab }, { opcode: 0x12, branchTo: "stock" },
+    getLocal(0), { opcode: 0x66, operands: [var2064] }, pushPositive(16),
+    { opcode: 0x18, branchTo: "stock" },
+
+    getLocal(0), getLocal(0), { opcode: 0x66, operands: [var1145] }, pushPositive(500),
+    { opcode: 0xa0 }, { opcode: 0x61, operands: [var1145] },
+    getLocal(0), { opcode: 0x27 }, { opcode: 0x61, operands: [var344] },
+    { opcode: 0x26 }, { opcode: 0x48 },
+
+    { opcode: -1, label: "stock" },
+  ]);
+}
+
 function isGetLocal(inst: Instruction, local: number): boolean {
   return (local <= 3 && inst.opcode === 0xd0 + local) || (inst.opcode === 0x62 && inst.operands[0]?.[1] === local);
 }
@@ -314,6 +435,51 @@ function frostSpireAnchor(abc: ReturnType<typeof parseAbc>, insts: Instruction[]
     ) return insts[index + 6].offset;
   }
   throw new PatchError("ActivePower.method_921 Wave branch not found.");
+}
+
+function deathMarkDurationAnchor(abc: ReturnType<typeof parseAbc>, insts: Instruction[]): number {
+  const propertyIs = (inst: Instruction, name: string): boolean =>
+    inst.opcode === 0x66 && abc.multinameNames[inst.operands[0]?.[1]] === name;
+  for (let index = 0; index + 9 < insts.length; index += 1) {
+    if (
+      insts[index].opcode === 0xd0 &&
+      propertyIs(insts[index + 1], "var_240") &&
+      BRANCH_OPCODES.has(insts[index + 2].opcode) &&
+      insts[index + 3].opcode === 0xd0 &&
+      propertyIs(insts[index + 4], "var_54") &&
+      insts[index + 5].opcode === 0xd0 &&
+      propertyIs(insts[index + 6], "powerType") &&
+      propertyIs(insts[index + 7], "var_108") &&
+      propertyIs(insts[index + 8], "length")
+    ) return insts[index].offset;
+  }
+  throw new PatchError("ActivePower.method_243 final phase branch not found.");
+}
+
+function shiftExceptions(
+  ctx: ReturnType<typeof parseSwf>,
+  target: MethodTarget,
+  insertAt: number,
+  delta: number,
+  label: string,
+): BytePatch[] {
+  if (!target.body.exceptionCount) return [];
+  const [, entriesStart] = readU30(ctx.body, target.body.exceptionCountPos, `${label}.exception_count`);
+  const shift = (offset: number): number => offset >= insertAt ? offset + delta : offset;
+  const data = Buffer.concat(target.body.exceptions.flatMap((entry) => [
+    writeU30(shift(entry.from)),
+    writeU30(shift(entry.to)),
+    writeU30(shift(entry.target)),
+    writeU30(entry.type),
+    writeU30(entry.name),
+  ]));
+  return [{
+    key: `${label}.exceptions`,
+    start: entriesStart,
+    end: target.body.traitsCountPos,
+    data,
+    detail: `shift ${target.body.exceptionCount} exception range(s)`,
+  }];
 }
 
 function spliceIntoMethod(code: Buffer, insts: Instruction[], atOffset: number, block: Buffer, label: string): Buffer {
@@ -371,6 +537,7 @@ function patchSwf(swfPath: string, verify: boolean): void {
   const abc = parseAbc(ctx);
   const damage = loadMethod(ctx, abc, "CombatState", "method_1393");
   const gather = loadMethod(ctx, abc, "ActivePower", "method_921");
+  const activeTick = loadMethod(ctx, abc, "ActivePower", "method_243");
   if (damage.body.exceptionCount || gather.body.exceptionCount) throw new PatchError("Mage gear target methods have unexpected exception tables.");
 
   const [damageLocals, damageLocalsEnd] = readU30(ctx.body, damage.body.localCountPos, "CombatState.method_1393.local_count");
@@ -385,9 +552,15 @@ function patchSwf(swfPath: string, verify: boolean): void {
   const legacyDamageBlock = buildDamageBlock(abc, markerLocal, buffLocal, dynamicProperty, 15);
   const legacyDamageOffset = hasDamage ? damage.code.indexOf(legacyDamageBlock) : -1;
   const hasCurrentDamage = hasDamage && damage.code.indexOf(damageBlock) >= 0;
+  const fireDamageBlock = buildFireStackDamageBlock(abc, markerLocal, buffLocal, dynamicProperty);
+  const hasFireDamage = hasDamage && damage.code.indexOf(fireDamageBlock) >= 0;
+  const poisonDamageBlock = buildPoisonDamageBlock(abc, markerLocal);
+  const hasPoisonDamage = hasDamage && damage.code.indexOf(poisonDamageBlock) >= 0;
   const frostBlock = buildFrostSpireBlock(abc);
+  const deathMarkBlock = buildDeathMarkDurationBlock(abc);
+  const hasDeathMarkDuration = activeTick.code.indexOf(deathMarkBlock) >= 0;
 
-  if (hasCurrentDamage && hasFrost) {
+  if (hasCurrentDamage && hasFireDamage && hasPoisonDamage && hasFrost && hasDeathMarkDuration) {
     syncClientRevision(swfPath, verify);
     console.log(`${swfPath}: Mage gear rune runtime verified.`);
     return;
@@ -395,15 +568,26 @@ function patchSwf(swfPath: string, verify: boolean): void {
   if (verify) throw new PatchError(`${swfPath}: Mage gear rune runtime patch is missing.`);
 
   const patches: BytePatch[] = [];
-  if (!hasCurrentDamage) {
-    if (hasDamage && legacyDamageOffset < 0) throw new PatchError("Existing Mage damage runtime has an unknown revision.");
-    const code = hasDamage
-      ? Buffer.concat([
-          damage.code.subarray(0, legacyDamageOffset),
-          damageBlock,
-          damage.code.subarray(legacyDamageOffset + legacyDamageBlock.length),
-        ])
-      : spliceIntoMethod(damage.code, damage.insts, damageAnchor(damage.insts), damageBlock, "CombatState.method_1393");
+  if (!hasCurrentDamage || !hasFireDamage || !hasPoisonDamage) {
+    let code = damage.code;
+    if (!hasCurrentDamage) {
+      if (hasDamage && legacyDamageOffset < 0) throw new PatchError("Existing Mage damage runtime has an unknown revision.");
+      code = hasDamage
+        ? Buffer.concat([
+            code.subarray(0, legacyDamageOffset),
+            damageBlock,
+            code.subarray(legacyDamageOffset + legacyDamageBlock.length),
+          ])
+        : spliceIntoMethod(code, damage.insts, damageAnchor(damage.insts), damageBlock, "CombatState.method_1393");
+    }
+    if (!hasFireDamage) {
+      const currentInsts = disassemble(code, "CombatState.method_1393 with Ice gear runtime");
+      code = spliceIntoMethod(code, currentInsts, damageAnchor(currentInsts), fireDamageBlock, "CombatState.method_1393 Fire stack runtime");
+    }
+    if (!hasPoisonDamage) {
+      const currentInsts = disassemble(code, "CombatState.method_1393 with elemental gear runtime");
+      code = spliceIntoMethod(code, currentInsts, damageAnchor(currentInsts), poisonDamageBlock, "CombatState.method_1393 Poison/Plague runtime");
+    }
     assertBranchesLand(code, "CombatState.method_1393");
     patches.push(
       { key: "mageDamage.code", start: damage.body.codeStart, end: damage.body.codeStart + damage.body.codeLen, data: code, detail: "Mage gear conditional damage" },
@@ -425,12 +609,22 @@ function patchSwf(swfPath: string, verify: boolean): void {
     const [maxStack] = readU30(ctx.body, gather.body.maxStackPos, "ActivePower.method_921.max_stack");
     if (maxStack < 10) patches.push({ key: "frostSpire.stack", start: gather.body.maxStackPos, end: gather.body.localCountPos, data: writeU30(10), detail: "Frost Spire targeting stack" });
   }
+  if (!hasDeathMarkDuration) {
+    const anchor = deathMarkDurationAnchor(abc, activeTick.insts);
+    const code = spliceIntoMethod(activeTick.code, activeTick.insts, anchor, deathMarkBlock, "ActivePower.method_243");
+    assertBranchesLand(code, "ActivePower.method_243");
+    patches.push(
+      { key: "deathMark.code", start: activeTick.body.codeStart, end: activeTick.body.codeStart + activeTick.body.codeLen, data: code, detail: "Death Mark gear area duration" },
+      { key: "deathMark.codeLen", start: activeTick.body.codeLenPos, end: activeTick.body.codeStart, data: writeU30(code.length), detail: "Death Mark duration code length" },
+      ...shiftExceptions(ctx, activeTick, anchor, deathMarkBlock.length, "ActivePower.method_243"),
+    );
+  }
 
   ensureBackup(swfPath);
   const result = applyPatchesToBody(ctx.body, patches);
   writeSwf(ctx, result.body, result.delta);
   syncClientRevision(swfPath, false);
-  console.log(`${swfPath}: patched Mage gear conditional damage and Frost Spire both-direction targeting.`);
+  console.log(`${swfPath}: patched Mage gear runtime, including Death Mark area duration.`);
 }
 
 const { swfPath, verify } = parseArgs(process.argv);

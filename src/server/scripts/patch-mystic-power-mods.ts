@@ -134,10 +134,10 @@ const ITEMS: Item[] = [
     abilities: [
       { kind: "mage", base: "FrostBlast" },
       { kind: "mage", base: "FrozenWard" },
-      { kind: "damage", base: "FlameSpout", pct: 0.15 },
-      { kind: "damage", base: "IridescentBurst", pct: 0.15 },
-      { kind: "damage", base: "Lifethirst", pct: 0.15 },
-      { kind: "damage", base: "Desecrate", pct: 0.15 },
+      { kind: "mage", base: "FlameSpout" },
+      { kind: "mage", base: "IridescentBurst" },
+      { kind: "mage", base: "Lifethirst" },
+      { kind: "mage", base: "Desecrate" },
     ],
   },
   {
@@ -146,10 +146,10 @@ const ITEMS: Item[] = [
     abilities: [
       { kind: "mage", base: "FrigidComet" },
       { kind: "mage", base: "BitterBlade" },
-      { kind: "damage", base: "FireStorm", pct: 0.15 },
-      { kind: "damage", base: "FlameStrike", pct: 0.15 },
-      { kind: "damage", base: "Infestation", pct: 0.15 },
-      { kind: "damage", base: "SpectralGrasp", pct: 0.15 },
+      { kind: "mage", base: "FireStorm" },
+      { kind: "mage", base: "FlameStrike" },
+      { kind: "mage", base: "Infestation" },
+      { kind: "mage", base: "SpectralGrasp" },
     ],
   },
   {
@@ -158,20 +158,10 @@ const ITEMS: Item[] = [
     abilities: [
       { kind: "mage", base: "Avalanche" },
       { kind: "mage", base: "GlacialSpear" },
-      { kind: "damage", base: "MoltenFistExplode", named: "MoltenFist", pct: 0.1 },
-      { kind: "damage", base: "FireBrandShot", named: "FireBrand", pct: 0.1 },
-      { kind: "damage", base: "BansheeWail", pct: 0.1 },
-      // Death Mark deals no damage of its own; it stacks an attack-down debuff, so the mod deepens
-      // that instead. MeleeDamage is negative on every rank, hence a negative addend.
-      {
-        kind: "buff",
-        buffPrefix: "DeathMarkStrength",
-        property: "MeleeDamage",
-        value: -0.05,
-        named: "DeathMark",
-        en: "Death Mark weakens 5% more",
-        tr: "Olum Isareti %5 daha cok zayiflatir.",
-      },
+      { kind: "mage", base: "MoltenFistExplode", named: "MoltenFist" },
+      { kind: "mage", base: "FireBrandShot", named: "FireBrand" },
+      { kind: "mage", base: "BansheeWail" },
+      { kind: "mage", base: "DeathMark" },
     ],
   },
   {
@@ -518,7 +508,8 @@ function buildMods(corpus: Corpus): { chains: string[][]; runeByGearId: Map<numb
           return;
         }
 
-        const names = powerRanks(corpus.powers, ability.base);
+        const targetBase = effect.kind === "damage" ? effect.targetBase ?? ability.base : ability.base;
+        const names = powerRanks(corpus.powers, targetBase);
         const property = effect.kind === "conditional"
           ? ability.kind === "rogue" ? ROGUE_GEAR_EFFECT_PROPERTY : MAGE_GEAR_EFFECT_PROPERTY
           : effect.kind === "damage" ? "BaseDamageMult" : effect.property;

@@ -8870,7 +8870,7 @@
 		<ModName>RuneMysticMageSword</ModName>
 		<ModID>1033</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+15% Arctic Blast damage vs Frozen/Rooted&#10;Frozen Ward adds 1 stack of Chilblains&#10;+15% Inferno damage&#10;+15% Iridescent Burst damage&#10;+15% Lifethirst damage&#10;+15% Desecrate damage</Description>
+		<Description>+15% Arctic Blast damage vs Frozen/Rooted&#10;Frozen Ward adds 1 stack of Chilblains&#10;+1% Inferno damage per Burn stack&#10;Iridescent Burst adds Stagger&#10;Lifethirst adds 1 stack of Poison&#10;+10% Desecrate damage vs Poison/Plague</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -8906,11 +8906,11 @@
 		<ModName>RuneMysticMageSword3</ModName>
 		<ModID>1036</ModID>
 		<DisplayName>Inferno</DisplayName>
-		<Description>+15% Inferno damage</Description>
+		<Description>+1% Inferno damage per Burn stack</Description>
 		<ModType>Power</ModType>
 		<PowerName>FlameSpout,FlameSpout1,FlameSpout2,FlameSpout3,FlameSpout4,FlameSpout5,FlameSpout6,FlameSpout7,FlameSpout8,FlameSpout9,FlameSpout10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.1665</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>16</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageSword4</ComboMod>
 	</PowerModType>
@@ -8918,11 +8918,11 @@
 		<ModName>RuneMysticMageSword4</ModName>
 		<ModID>1037</ModID>
 		<DisplayName>Iridescent Burst</DisplayName>
-		<Description>+15% Iridescent Burst damage</Description>
+		<Description>Iridescent Burst adds Stagger</Description>
 		<ModType>Power</ModType>
 		<PowerName>IridescentBurst,IridescentBurst1,IridescentBurst2,IridescentBurst3,IridescentBurst4,IridescentBurst5,IridescentBurst6,IridescentBurst7,IridescentBurst8,IridescentBurst9,IridescentBurst10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.1695</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Staggered</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageSword5</ComboMod>
 	</PowerModType>
@@ -8930,11 +8930,11 @@
 		<ModName>RuneMysticMageSword5</ModName>
 		<ModID>1038</ModID>
 		<DisplayName>Lifethirst</DisplayName>
-		<Description>+15% Lifethirst damage</Description>
+		<Description>Lifethirst adds 1 stack of Poison</Description>
 		<ModType>Power</ModType>
 		<PowerName>Lifethirst,Lifethirst1,Lifethirst2,Lifethirst3,Lifethirst4,Lifethirst5,Lifethirst6,Lifethirst7,Lifethirst8,Lifethirst9,Lifethirst10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.354</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:PoisonCloud</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageSword6</ComboMod>
 	</PowerModType>
@@ -8942,18 +8942,18 @@
 		<ModName>RuneMysticMageSword6</ModName>
 		<ModID>1039</ModID>
 		<DisplayName>Desecrate</DisplayName>
-		<Description>+15% Desecrate damage</Description>
+		<Description>+10% Desecrate damage vs Poison/Plague</Description>
 		<ModType>Power</ModType>
 		<PowerName>Desecrate,Desecrate1,Desecrate2,Desecrate3,Desecrate4,Desecrate5,Desecrate6,Desecrate7,Desecrate8,Desecrate9,Desecrate10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.4815</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>18</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneMysticMageOffhand</ModName>
 		<ModID>1040</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+1% Frigid Comet damage per Chilblains stack&#10;+1% Bitter Blade damage per Chilblains stack&#10;+15% Molten Rain damage&#10;+15% Conflagration damage&#10;+15% Infestation damage&#10;+15% Spectral Grasp damage</Description>
+		<Description>+1% Frigid Comet damage per Chilblains stack&#10;+1% Bitter Blade damage per Chilblains stack&#10;+1% Molten Rain damage per Burn stack&#10;+20% Conflagration trail DoT damage&#10;+2 second Infestation duration&#10;+15% Spectral Grasp damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -8989,11 +8989,11 @@
 		<ModName>RuneMysticMageOffhand3</ModName>
 		<ModID>1043</ModID>
 		<DisplayName>Molten Rain</DisplayName>
-		<Description>+15% Molten Rain damage</Description>
+		<Description>+1% Molten Rain damage per Burn stack</Description>
 		<ModType>Power</ModType>
 		<PowerName>FireStorm,FireStorm1,FireStorm2,FireStorm3,FireStorm4,FireStorm5,FireStorm6,FireStorm7,FireStorm8,FireStorm9,FireStorm10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.09</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>17</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageOffhand4</ComboMod>
 	</PowerModType>
@@ -9001,11 +9001,11 @@
 		<ModName>RuneMysticMageOffhand4</ModName>
 		<ModID>1044</ModID>
 		<DisplayName>Conflagration</DisplayName>
-		<Description>+15% Conflagration damage</Description>
+		<Description>+20% Conflagration trail DoT damage</Description>
 		<ModType>Power</ModType>
-		<PowerName>FlameStrike,FlameStrike1,FlameStrike2,FlameStrike3,FlameStrike4,FlameStrike5,FlameStrike6,FlameStrike7,FlameStrike8,FlameStrike9,FlameStrike10</PowerName>
+		<PowerName>FireFieldTrail,FireFieldTrail1,FireFieldTrail2,FireFieldTrail3,FireFieldTrail4,FireFieldTrail5,FireFieldTrail6,FireFieldTrail7,FireFieldTrail8,FireFieldTrail9,FireFieldTrail10</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.165</PowerValue>
+		<PowerValue>0.094</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageOffhand5</ComboMod>
 	</PowerModType>
@@ -9013,11 +9013,11 @@
 		<ModName>RuneMysticMageOffhand5</ModName>
 		<ModID>1045</ModID>
 		<DisplayName>Infestation</DisplayName>
-		<Description>+15% Infestation damage</Description>
-		<ModType>Power</ModType>
-		<PowerName>Infestation,Infestation1,Infestation2,Infestation3,Infestation4,Infestation5,Infestation6,Infestation7,Infestation8,Infestation9,Infestation10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.219</PowerValue>
+		<Description>+2 second Infestation duration</Description>
+		<ModType>Buff</ModType>
+		<BuffName>Infested1,Infested2,Infested3</BuffName>
+		<BuffProperty>Duration,Duration,Duration</BuffProperty>
+		<BuffValue>2000,2000,2000</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageOffhand6</ComboMod>
 	</PowerModType>
@@ -9036,7 +9036,7 @@
 		<ModName>RuneMysticMageArmor</ModName>
 		<ModID>1047</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>Frost Spire casts in both directions&#10;+10% Glacial Spear damage vs Frozen/Rooted&#10;+10% Molten Fist damage&#10;+10% Firebrand damage&#10;+10% Wail of the Banshee damage&#10;Death Mark weakens 5% more</Description>
+		<Description>Frost Spire casts in both directions&#10;+10% Glacial Spear damage vs Frozen/Rooted&#10;+15% Molten Fist damage&#10;+3 second Firebrand duration&#10;+10% Wail damage vs Poison/Plague&#10;+3 second Death Mark duration</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9072,11 +9072,11 @@
 		<ModName>RuneMysticMageArmor3</ModName>
 		<ModID>1050</ModID>
 		<DisplayName>Molten Fist</DisplayName>
-		<Description>+10% Molten Fist damage</Description>
+		<Description>+15% Molten Fist damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>MoltenFistExplode</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.137</PowerValue>
+		<PowerValue>0.2055</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageArmor4</ComboMod>
 	</PowerModType>
@@ -9084,11 +9084,11 @@
 		<ModName>RuneMysticMageArmor4</ModName>
 		<ModID>1051</ModID>
 		<DisplayName>Firebrand</DisplayName>
-		<Description>+10% Firebrand damage</Description>
-		<ModType>Power</ModType>
-		<PowerName>FireBrandShot1,FireBrandShot3,FireBrandShot6</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.1</PowerValue>
+		<Description>+3 second Firebrand duration</Description>
+		<ModType>Buff</ModType>
+		<BuffName>FireBrand,FireBrandRank1,FireBrandRank3,FireBrandRank6,FireBrandRank8</BuffName>
+		<BuffProperty>Duration,Duration,Duration,Duration,Duration</BuffProperty>
+		<BuffValue>3000,3000,3000,3000,3000</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageArmor5</ComboMod>
 	</PowerModType>
@@ -9096,23 +9096,23 @@
 		<ModName>RuneMysticMageArmor5</ModName>
 		<ModID>1052</ModID>
 		<DisplayName>Wail of the Banshee</DisplayName>
-		<Description>+10% Wail of the Banshee damage</Description>
+		<Description>+10% Wail damage vs Poison/Plague</Description>
 		<ModType>Power</ModType>
 		<PowerName>BansheeWail,BansheeWail1,BansheeWail2,BansheeWail3,BansheeWail4,BansheeWail5,BansheeWail6,BansheeWail7,BansheeWail8,BansheeWail9,BansheeWail10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.3818</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>19</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticMageArmor6</ComboMod>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneMysticMageArmor6</ModName>
 		<ModID>1053</ModID>
-		<DisplayName>Death Mark weakens 5% more</DisplayName>
-		<Description>Death Mark weakens 5% more</Description>
-		<ModType>Buff</ModType>
-		<BuffName>DeathMarkStrength1,DeathMarkStrength2,DeathMarkStrength3,DeathMarkStrength4,DeathMarkStrength5,DeathMarkStrength6</BuffName>
-		<BuffProperty>MeleeDamage,MeleeDamage,MeleeDamage,MeleeDamage,MeleeDamage,MeleeDamage</BuffProperty>
-		<BuffValue>-0.05,-0.05,-0.05,-0.05,-0.05,-0.05</BuffValue>
+		<DisplayName>Death Mark</DisplayName>
+		<Description>+3 second Death Mark duration</Description>
+		<ModType>Power</ModType>
+		<PowerName>DeathMark,DeathMark1,DeathMark2,DeathMark3,DeathMark4,DeathMark5,DeathMark6,DeathMark7,DeathMark8,DeathMark9,DeathMark10</PowerName>
+		<PowerProperty>SpawnDuration</PowerProperty>
+		<PowerValue>3000</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -9678,7 +9678,7 @@
 		<ModName>RuneLegendaryFireBlast</ModName>
 		<ModID>2002</ModID>
 		<DisplayName>Fire Blast</DisplayName>
-		<Description>Adds 2 Stacks of Burn to Fire Blast&#10;+10% Inferno damage</Description>
+		<Description>Adds 2 Stacks of Burn to Fire Blast&#10;+1% Inferno damage per Burn stack</Description>
 		<ModType>Power</ModType>
 		<PowerName>FireBlast</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
@@ -9690,18 +9690,18 @@
 		<ModName>RuneLegendaryFireBlastBonus</ModName>
 		<ModID>2003</ModID>
 		<DisplayName>Inferno</DisplayName>
-		<Description>+10% Inferno damage</Description>
+		<Description>+1% Inferno damage per Burn stack</Description>
 		<ModType>Power</ModType>
 		<PowerName>FlameSpout,FlameSpout1,FlameSpout2,FlameSpout3,FlameSpout4,FlameSpout5,FlameSpout6,FlameSpout7,FlameSpout8,FlameSpout9,FlameSpout10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.111</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>16</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneLegendaryVineLance</ModName>
 		<ModID>2004</ModID>
 		<DisplayName>Vine Lance</DisplayName>
-		<Description>15% Vine Lance damage&#10;+10% Desecrate damage</Description>
+		<Description>15% Vine Lance damage&#10;+10% Desecrate damage vs Poison/Plague</Description>
 		<ModType>Power</ModType>
 		<PowerName>VineLance</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9713,11 +9713,11 @@
 		<ModName>RuneLegendaryVineLanceBonus</ModName>
 		<ModID>2005</ModID>
 		<DisplayName>Desecrate</DisplayName>
-		<Description>+10% Desecrate damage</Description>
+		<Description>+10% Desecrate damage vs Poison/Plague</Description>
 		<ModType>Power</ModType>
 		<PowerName>Desecrate,Desecrate1,Desecrate2,Desecrate3,Desecrate4,Desecrate5,Desecrate6,Desecrate7,Desecrate8,Desecrate9,Desecrate10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.321</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>18</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -9747,7 +9747,7 @@
 		<ModName>RuneLegendaryFirePillar</ModName>
 		<ModID>2008</ModID>
 		<DisplayName>Flame Wave</DisplayName>
-		<Description>+15% Flame Wave damage&#10;+10% Conflagration damage</Description>
+		<Description>+15% Flame Wave damage&#10;+20% Conflagration trail DoT damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>FirePillar</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9759,18 +9759,18 @@
 		<ModName>RuneLegendaryFirePillarBonus</ModName>
 		<ModID>2009</ModID>
 		<DisplayName>Conflagration</DisplayName>
-		<Description>+10% Conflagration damage</Description>
+		<Description>+20% Conflagration trail DoT damage</Description>
 		<ModType>Power</ModType>
-		<PowerName>FireStorm,FireStorm1,FireStorm2,FireStorm3,FireStorm4,FireStorm5,FireStorm6,FireStorm7,FireStorm8,FireStorm9,FireStorm10</PowerName>
+		<PowerName>FireFieldTrail,FireFieldTrail1,FireFieldTrail2,FireFieldTrail3,FireFieldTrail4,FireFieldTrail5,FireFieldTrail6,FireFieldTrail7,FireFieldTrail8,FireFieldTrail9,FireFieldTrail10</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.06</PowerValue>
+		<PowerValue>0.094</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneLegendaryPoisonCloud</ModName>
 		<ModID>2010</ModID>
 		<DisplayName>Poison Cloud</DisplayName>
-		<Description>+50% Poison Cloud DoT&#10;+10% Spectral Grasp damage</Description>
+		<Description>+50% Poison Cloud DoT&#10;+15% Spectral Grasp damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>PoisonCloud</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
@@ -9782,11 +9782,11 @@
 		<ModName>RuneLegendaryPoisonCloudBonus</ModName>
 		<ModID>2011</ModID>
 		<DisplayName>Spectral Grasp</DisplayName>
-		<Description>+10% Spectral Grasp damage</Description>
+		<Description>+15% Spectral Grasp damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>SpectralGrasp,SpectralGrasp1,SpectralGrasp2,SpectralGrasp3,SpectralGrasp4,SpectralGrasp5,SpectralGrasp6,SpectralGrasp7,SpectralGrasp8,SpectralGrasp9,SpectralGrasp10</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.25</PowerValue>
+		<PowerValue>0.375</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -9816,7 +9816,7 @@
 		<ModName>RuneLegendarySummonDragonSoul</ModName>
 		<ModID>2014</ModID>
 		<DisplayName>Dragon Soul</DisplayName>
-		<Description>+.7 second Dragon Soul duration&#10;+10% Firebrand damage</Description>
+		<Description>+.7 second Dragon Soul duration&#10;+3 second Firebrand duration</Description>
 		<ModType>Power</ModType>
 		<PowerName>SummonDragonSoul</PowerName>
 		<PowerProperty>SpawnDuration</PowerProperty>
@@ -9828,18 +9828,18 @@
 		<ModName>RuneLegendarySummonDragonSoulBonus</ModName>
 		<ModID>2015</ModID>
 		<DisplayName>Firebrand</DisplayName>
-		<Description>+10% Firebrand damage</Description>
-		<ModType>Power</ModType>
-		<PowerName>FireBrandShot1,FireBrandShot3,FireBrandShot6</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.1</PowerValue>
+		<Description>+3 second Firebrand duration</Description>
+		<ModType>Buff</ModType>
+		<BuffName>FireBrand,FireBrandRank1,FireBrandRank3,FireBrandRank6,FireBrandRank8</BuffName>
+		<BuffProperty>Duration,Duration,Duration,Duration,Duration</BuffProperty>
+		<BuffValue>3000,3000,3000,3000,3000</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneLegendaryPlagueBattalion</ModName>
 		<ModID>2016</ModID>
 		<DisplayName>Plague Battalion</DisplayName>
-		<Description>+6% Plague Battalion damage&#10;+10% Death Mark damage</Description>
+		<Description>+6% Plague Battalion damage&#10;+3 second Death Mark duration</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Plagued1,Plagued2,Plagued3,Plagued4,Plagued5,Plagued6,Plagued7,Plagued8,Plagued9,Plagued10</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
@@ -9851,11 +9851,11 @@
 		<ModName>RuneLegendaryPlagueBattalionBonus</ModName>
 		<ModID>2017</ModID>
 		<DisplayName>Death Mark</DisplayName>
-		<Description>+10% Death Mark damage</Description>
+		<Description>+3 second Death Mark duration</Description>
 		<ModType>Power</ModType>
 		<PowerName>DeathMark,DeathMark1,DeathMark2,DeathMark3,DeathMark4,DeathMark5,DeathMark6,DeathMark7,DeathMark8,DeathMark9,DeathMark10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0</PowerValue>
+		<PowerProperty>SpawnDuration</PowerProperty>
+		<PowerValue>3000</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -9885,7 +9885,7 @@
 		<ModName>RuneLegendaryMeteor</ModName>
 		<ModID>2020</ModID>
 		<DisplayName>Meteor Channel</DisplayName>
-		<Description>+1 second Meteor duration&#10;+10% Molten Fist damage</Description>
+		<Description>+1 second Meteor duration&#10;+15% Molten Fist damage</Description>
 		<ModType>Buff</ModType>
 		<BuffName>MeteorROR1,MeteorROR2,MeteorROR3,MeteorROR4,MeteorROR5,MeteorROR6,MeteorROR7,MeteorROR8,MeteorROR9,MeteorROR10</BuffName>
 		<BuffProperty>Duration</BuffProperty>
@@ -9897,18 +9897,18 @@
 		<ModName>RuneLegendaryMeteorBonus</ModName>
 		<ModID>2021</ModID>
 		<DisplayName>Molten Fist</DisplayName>
-		<Description>+10% Molten Fist damage</Description>
+		<Description>+15% Molten Fist damage</Description>
 		<ModType>Power</ModType>
 		<PowerName>MoltenFistExplode</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.137</PowerValue>
+		<PowerValue>0.2055</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneLegendarySummonGuard</ModName>
 		<ModID>2022</ModID>
 		<DisplayName>Call Guard</DisplayName>
-		<Description>+5 second Call Guard duration&#10;+10% Wail of the Banshee damage</Description>
+		<Description>+5 second Call Guard duration&#10;+10% Wail damage vs Poison/Plague</Description>
 		<ModType>Power</ModType>
 		<PowerName>SummonGuard</PowerName>
 		<PowerProperty>SpawnDuration</PowerProperty>
@@ -9920,11 +9920,11 @@
 		<ModName>RuneLegendarySummonGuardBonus</ModName>
 		<ModID>2023</ModID>
 		<DisplayName>Wail of the Banshee</DisplayName>
-		<Description>+10% Wail of the Banshee damage</Description>
+		<Description>+10% Wail damage vs Poison/Plague</Description>
 		<ModType>Power</ModType>
 		<PowerName>BansheeWail,BansheeWail1,BansheeWail2,BansheeWail3,BansheeWail4,BansheeWail5,BansheeWail6,BansheeWail7,BansheeWail8,BansheeWail9,BansheeWail10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.3818</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>19</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -9954,7 +9954,7 @@
 		<ModName>RuneLegendaryWildFire</ModName>
 		<ModID>2026</ModID>
 		<DisplayName>WildFire</DisplayName>
-		<Description>+10% Wildfire damage&#10;+10% Iridescent Burst damage</Description>
+		<Description>+10% Wildfire damage&#10;Iridescent Burst adds Stagger</Description>
 		<ModType>Power</ModType>
 		<PowerName>WildFire</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9966,18 +9966,18 @@
 		<ModName>RuneLegendaryWildFireBonus</ModName>
 		<ModID>2027</ModID>
 		<DisplayName>Iridescent Burst</DisplayName>
-		<Description>+10% Iridescent Burst damage</Description>
+		<Description>Iridescent Burst adds Stagger</Description>
 		<ModType>Power</ModType>
 		<PowerName>IridescentBurst,IridescentBurst1,IridescentBurst2,IridescentBurst3,IridescentBurst4,IridescentBurst5,IridescentBurst6,IridescentBurst7,IridescentBurst8,IridescentBurst9,IridescentBurst10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.113</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Staggered</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneLegendarySummonGhoul</ModName>
 		<ModID>2028</ModID>
 		<DisplayName>Call the Horde</DisplayName>
-		<Description>+10% Call the Horde ghoul damage&#10;+10% Lifethirst damage</Description>
+		<Description>+10% Call the Horde ghoul damage&#10;Lifethirst adds 1 stack of Poison</Description>
 		<ModType>Power</ModType>
 		<PowerName>GhoulMelee</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9989,11 +9989,11 @@
 		<ModName>RuneLegendarySummonGhoulBonus</ModName>
 		<ModID>2029</ModID>
 		<DisplayName>Lifethirst</DisplayName>
-		<Description>+10% Lifethirst damage</Description>
+		<Description>Lifethirst adds 1 stack of Poison</Description>
 		<ModType>Power</ModType>
 		<PowerName>Lifethirst,Lifethirst1,Lifethirst2,Lifethirst3,Lifethirst4,Lifethirst5,Lifethirst6,Lifethirst7,Lifethirst8,Lifethirst9,Lifethirst10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.236</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:PoisonCloud</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10023,7 +10023,7 @@
 		<ModName>RuneLegendaryPyromania</ModName>
 		<ModID>2032</ModID>
 		<DisplayName>Pyromania</DisplayName>
-		<Description>+5%  Pyromania damage&#10;+10% Molten Rain damage</Description>
+		<Description>+5%  Pyromania damage&#10;+1% Molten Rain damage per Burn stack</Description>
 		<ModType>Power</ModType>
 		<PowerName>FlamethrowerROR</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10035,18 +10035,18 @@
 		<ModName>RuneLegendaryPyromaniaBonus</ModName>
 		<ModID>2033</ModID>
 		<DisplayName>Molten Rain</DisplayName>
-		<Description>+10% Molten Rain damage</Description>
+		<Description>+1% Molten Rain damage per Burn stack</Description>
 		<ModType>Power</ModType>
-		<PowerName>FlameStrike,FlameStrike1,FlameStrike2,FlameStrike3,FlameStrike4,FlameStrike5,FlameStrike6,FlameStrike7,FlameStrike8,FlameStrike9,FlameStrike10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.11</PowerValue>
+		<PowerName>FireStorm,FireStorm1,FireStorm2,FireStorm3,FireStorm4,FireStorm5,FireStorm6,FireStorm7,FireStorm8,FireStorm9,FireStorm10</PowerName>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>17</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneLegendarySummonRangedGhoul</ModName>
 		<ModID>2034</ModID>
 		<DisplayName>Bolster the Horde</DisplayName>
-		<Description>Bolster ghoul ranged attacks inflict Poison&#10;+10% Infestation damage</Description>
+		<Description>Bolster ghoul ranged attacks inflict Poison&#10;+2 second Infestation duration</Description>
 		<ModType>Power</ModType>
 		<PowerName>Ghoul2Fireball</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
@@ -10058,11 +10058,11 @@
 		<ModName>RuneLegendarySummonRangedGhoulBonus</ModName>
 		<ModID>2035</ModID>
 		<DisplayName>Infestation</DisplayName>
-		<Description>+10% Infestation damage</Description>
-		<ModType>Power</ModType>
-		<PowerName>Infestation,Infestation1,Infestation2,Infestation3,Infestation4,Infestation5,Infestation6,Infestation7,Infestation8,Infestation9,Infestation10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.146</PowerValue>
+		<Description>+2 second Infestation duration</Description>
+		<ModType>Buff</ModType>
+		<BuffName>Infested1,Infested2,Infested3</BuffName>
+		<BuffProperty>Duration,Duration,Duration</BuffProperty>
+		<BuffValue>2000,2000,2000</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
