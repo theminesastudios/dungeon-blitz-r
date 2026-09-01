@@ -5878,4 +5878,12 @@
 		<MeleeDefense>0.3</MeleeDefense>
 		<GfxType/>
 	</BuffType>
+	<BuffType BuffName="GearLightningStormDefense">
+		<BuffID>750</BuffID>
+		<Attack>false</Attack>
+		<Duration>5000</Duration>
+		<MagicDefense>0.2</MagicDefense>
+		<MeleeDefense>0.2</MeleeDefense>
+		<GfxType/>
+	</BuffType>
 </PlayerBuffTypes>

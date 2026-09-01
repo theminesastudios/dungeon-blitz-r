@@ -9260,7 +9260,7 @@
 		<ModName>RuneMysticPaladinSword</ModName>
 		<ModID>1066</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+10% Holy Smash damage vs Staggered&#10;Shield Flurry adds Armor Bane&#10;+15% Flame Axe damage&#10;+15% Furious Assault damage&#10;+15% Divine Word damage&#10;+15% Subjugate damage</Description>
+		<Description>+10% Holy Smash damage vs Staggered&#10;Shield Flurry adds Armor Bane&#10;+15% Flame Axe damage vs Ignited&#10;+10% Furious Assault damage vs Ignited&#10;Divine Word adds 1 stack of Holy Fire&#10;+15% Subjugate damage vs blind/holy</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9296,11 +9296,11 @@
 		<ModName>RuneMysticPaladinSword3</ModName>
 		<ModID>1069</ModID>
 		<DisplayName>Flame Axe</DisplayName>
-		<Description>+15% Flame Axe damage</Description>
+		<Description>+15% Flame Axe damage vs Ignited</Description>
 		<ModType>Power</ModType>
 		<PowerName>FlameAxe,FlameAxe1,FlameAxe2,FlameAxe3,FlameAxe4,FlameAxe5,FlameAxe6,FlameAxe7,FlameAxe8,FlameAxe9,FlameAxe10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.195</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>21</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinSword4</ComboMod>
 	</PowerModType>
@@ -9308,11 +9308,11 @@
 		<ModName>RuneMysticPaladinSword4</ModName>
 		<ModID>1070</ModID>
 		<DisplayName>Furious Assault</DisplayName>
-		<Description>+15% Furious Assault damage</Description>
+		<Description>+10% Furious Assault damage vs Ignited</Description>
 		<ModType>Power</ModType>
 		<PowerName>FuriousAssault,FuriousAssault1,FuriousAssault2,FuriousAssault3,FuriousAssault4,FuriousAssault5,FuriousAssault6,FuriousAssault7,FuriousAssault8,FuriousAssault9,FuriousAssault10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.273</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>22</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinSword5</ComboMod>
 	</PowerModType>
@@ -9320,11 +9320,11 @@
 		<ModName>RuneMysticPaladinSword5</ModName>
 		<ModID>1071</ModID>
 		<DisplayName>Divine Word</DisplayName>
-		<Description>+15% Divine Word damage</Description>
+		<Description>Divine Word adds 1 stack of Holy Fire</Description>
 		<ModType>Power</ModType>
 		<PowerName>DivineWord,DivineWord1,DivineWord2,DivineWord3,DivineWord4,DivineWord5,DivineWord6,DivineWord7,DivineWord8,DivineWord9,DivineWord10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.228</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:HolyFire1</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinSword6</ComboMod>
 	</PowerModType>
@@ -9332,18 +9332,18 @@
 		<ModName>RuneMysticPaladinSword6</ModName>
 		<ModID>1072</ModID>
 		<DisplayName>Subjugate</DisplayName>
-		<Description>+15% Subjugate damage</Description>
+		<Description>+15% Subjugate damage vs blind/holy</Description>
 		<ModType>Power</ModType>
 		<PowerName>Subjugate,Subjugate1,Subjugate2,Subjugate3,Subjugate4,Subjugate5,Subjugate6,Subjugate7,Subjugate8,Subjugate9,Subjugate10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.2775</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>23</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneMysticPaladinOffhand</ModName>
 		<ModID>1073</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>Juggernaut adds Weaken&#10;+15% Second Wind healing power&#10;+15% Harm damage&#10;+15% Justice Fist damage&#10;+15% Hallowed Reckoning healing&#10;+15% Penance damage</Description>
+		<Description>Juggernaut adds Weaken&#10;+15% Second Wind healing power&#10;Harm adds 1 stack of Ignite&#10;+10% Justice Fist damage vs Ignited&#10;+10% Hallowed Reckoning healing power&#10;+10% Penance damage vs blind/holy</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9379,11 +9379,11 @@
 		<ModName>RuneMysticPaladinOffhand3</ModName>
 		<ModID>1076</ModID>
 		<DisplayName>Harm</DisplayName>
-		<Description>+15% Harm damage</Description>
+		<Description>Harm adds 1 stack of Ignite</Description>
 		<ModType>Power</ModType>
 		<PowerName>Harm,Harm1,Harm2,Harm3,Harm4,Harm5,Harm6,Harm7,Harm8,Harm9,Harm10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.1785</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Ignite</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinOffhand4</ComboMod>
 	</PowerModType>
@@ -9391,23 +9391,23 @@
 		<ModName>RuneMysticPaladinOffhand4</ModName>
 		<ModID>1077</ModID>
 		<DisplayName>Justice Fist</DisplayName>
-		<Description>+15% Justice Fist damage</Description>
+		<Description>+10% Justice Fist damage vs Ignited</Description>
 		<ModType>Power</ModType>
 		<PowerName>JusticeFist,JusticeFist1,JusticeFist2,JusticeFist3,JusticeFist4,JusticeFist5,JusticeFist6,JusticeFist7,JusticeFist8,JusticeFist9,JusticeFist10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.225</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>22</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinOffhand5</ComboMod>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneMysticPaladinOffhand5</ModName>
 		<ModID>1078</ModID>
-		<DisplayName>Hallowed Reckoning healing</DisplayName>
-		<Description>+15% Hallowed Reckoning healing</Description>
+		<DisplayName>Hallowed Reckoning</DisplayName>
+		<Description>+10% Hallowed Reckoning healing power</Description>
 		<ModType>Power</ModType>
 		<PowerName>FountainOfLife,FountainOfLife1,FountainOfLife2,FountainOfLife3,FountainOfLife4,FountainOfLife5,FountainOfLife6,FountainOfLife7,FountainOfLife8,FountainOfLife9,FountainOfLife10</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>-0.45</PowerValue>
+		<PowerValue>-0.3</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinOffhand6</ComboMod>
 	</PowerModType>
@@ -9415,18 +9415,18 @@
 		<ModName>RuneMysticPaladinOffhand6</ModName>
 		<ModID>1079</ModID>
 		<DisplayName>Penance</DisplayName>
-		<Description>+15% Penance damage</Description>
+		<Description>+10% Penance damage vs blind/holy</Description>
 		<ModType>Power</ModType>
 		<PowerName>Penance,Penance1,Penance2,Penance3,Penance4,Penance5,Penance6,Penance7,Penance8,Penance9,Penance10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.336</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>24</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneMysticPaladinArmor</ModName>
 		<ModID>1080</ModID>
 		<DisplayName>Basic Attack</DisplayName>
-		<Description>+30% Shockwave defense boost&#10;+5 Retribution maximum hits&#10;+10% Lightning Storm damage&#10;+2s Cleaving Blows duration&#10;+10% Celestial Lance damage&#10;+10% Verdict damage</Description>
+		<Description>+30% Shockwave defense boost&#10;+5 Retribution maximum hits&#10;+20% Lightning Storm defense boost&#10;+3 second Cleaving Blows duration&#10;+15% Celestial Lance damage vs blind/holy&#10;+5% Verdict attack speed</Description>
 		<ModType>Power</ModType>
 		<PowerName>PunchMelee,MaceMelee,SwordMelee,AxeMelee,LightningBall,DivineBolt,AxeFlurry,StaffMelee,ScepterMelee,RapierMelee,SaberMelee,Energyball,PoisonDagger,HeavyDagger,Fireball,Iceball,Poisonball,FrostBolt,CrimsonShot,LichShot,CorrosiveDagger</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -9462,23 +9462,23 @@
 		<ModName>RuneMysticPaladinArmor3</ModName>
 		<ModID>1083</ModID>
 		<DisplayName>Lightning Storm</DisplayName>
-		<Description>+10% Lightning Storm damage</Description>
+		<Description>+20% Lightning Storm defense boost</Description>
 		<ModType>Power</ModType>
 		<PowerName>LightningStorm,LightningStorm1,LightningStorm2,LightningStorm3,LightningStorm4,LightningStorm5,LightningStorm6,LightningStorm7,LightningStorm8,LightningStorm9,LightningStorm10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.152</PowerValue>
+		<PowerProperty>AddSelfBuff</PowerProperty>
+		<PowerValue>Append:GearLightningStormDefense</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinArmor4</ComboMod>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneMysticPaladinArmor4</ModName>
 		<ModID>1084</ModID>
-		<DisplayName>+2s Cleaving Blows</DisplayName>
-		<Description>+2s Cleaving Blows duration</Description>
+		<DisplayName>Cleaving Blows</DisplayName>
+		<Description>+3 second Cleaving Blows duration</Description>
 		<ModType>Buff</ModType>
 		<BuffName>HeavyBlows</BuffName>
 		<BuffProperty>Duration</BuffProperty>
-		<BuffValue>2000</BuffValue>
+		<BuffValue>3000</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinArmor5</ComboMod>
 	</PowerModType>
@@ -9486,11 +9486,11 @@
 		<ModName>RuneMysticPaladinArmor5</ModName>
 		<ModID>1085</ModID>
 		<DisplayName>Celestial Lance</DisplayName>
-		<Description>+10% Celestial Lance damage</Description>
+		<Description>+15% Celestial Lance damage vs blind/holy</Description>
 		<ModType>Power</ModType>
 		<PowerName>CelestialLance,CelestialLance1,CelestialLance2,CelestialLance3,CelestialLance4,CelestialLance5,CelestialLance6,CelestialLance7,CelestialLance8,CelestialLance9,CelestialLance10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.524</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>23</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneMysticPaladinArmor6</ComboMod>
 	</PowerModType>
@@ -9498,11 +9498,11 @@
 		<ModName>RuneMysticPaladinArmor6</ModName>
 		<ModID>1086</ModID>
 		<DisplayName>Verdict</DisplayName>
-		<Description>+10% Verdict damage</Description>
+		<Description>+5% Verdict attack speed</Description>
 		<ModType>Power</ModType>
-		<PowerName>VerdictROR,VerdictROR1,VerdictROR2,VerdictROR3,VerdictROR4,VerdictROR5,VerdictROR6,VerdictROR7,VerdictROR8,VerdictROR9,VerdictROR10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.15</PowerValue>
+		<PowerName>VerdictROR,VerdictROR1,VerdictROR2,VerdictROR3,VerdictROR4,VerdictROR5,VerdictROR6,VerdictROR7,VerdictROR8,VerdictROR9,VerdictROR10,VerdictMelee1,VerdictMelee2,VerdictMelee3,VerdictMelee4,VerdictMelee5,VerdictMelee6,VerdictMelee7,VerdictMelee8,VerdictMelee9,VerdictMelee10</PowerName>
+		<PowerProperty>RecoverTime</PowerProperty>
+		<PowerValue>-25</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10483,7 +10483,7 @@
 		<ModName>RuneLegendarySkewer</ModName>
 		<ModID>2072</ModID>
 		<DisplayName>Skewer</DisplayName>
-		<Description>+15% Skewer damage&#10;+10% Subjugate damage</Description>
+		<Description>+15% Skewer damage&#10;+15% Subjugate damage vs blind/holy</Description>
 		<ModType>Power</ModType>
 		<PowerName>Skewer</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10495,11 +10495,11 @@
 		<ModName>RuneLegendarySkewerBonus</ModName>
 		<ModID>2073</ModID>
 		<DisplayName>Subjugate</DisplayName>
-		<Description>+10% Subjugate damage</Description>
+		<Description>+15% Subjugate damage vs blind/holy</Description>
 		<ModType>Power</ModType>
 		<PowerName>Subjugate,Subjugate1,Subjugate2,Subjugate3,Subjugate4,Subjugate5,Subjugate6,Subjugate7,Subjugate8,Subjugate9,Subjugate10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.185</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>23</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10529,7 +10529,7 @@
 		<ModName>RuneLegendarySmash</ModName>
 		<ModID>2076</ModID>
 		<DisplayName>Smash</DisplayName>
-		<Description>+15% Smash damage&#10;+10% Flame Axe damage</Description>
+		<Description>+15% Smash damage&#10;+15% Flame Axe damage vs Ignited</Description>
 		<ModType>Power</ModType>
 		<PowerName>Smash</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10541,18 +10541,18 @@
 		<ModName>RuneLegendarySmashBonus</ModName>
 		<ModID>2077</ModID>
 		<DisplayName>Flame Axe</DisplayName>
-		<Description>+10% Flame Axe damage</Description>
+		<Description>+15% Flame Axe damage vs Ignited</Description>
 		<ModType>Power</ModType>
 		<PowerName>FlameAxe,FlameAxe1,FlameAxe2,FlameAxe3,FlameAxe4,FlameAxe5,FlameAxe6,FlameAxe7,FlameAxe8,FlameAxe9,FlameAxe10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.13</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>21</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneLegendaryWarcry</ModName>
 		<ModID>2078</ModID>
 		<DisplayName>Warcry</DisplayName>
-		<Description>+10% Warcry effectiveness&#10;+10% Harm damage</Description>
+		<Description>+10% Warcry effectiveness&#10;Harm adds 1 stack of Ignite</Description>
 		<ModType>Power</ModType>
 		<PowerName>Warcry</PowerName>
 		<PowerProperty>AddTargetBuff</PowerProperty>
@@ -10564,11 +10564,11 @@
 		<ModName>RuneLegendaryWarcryBonus</ModName>
 		<ModID>2079</ModID>
 		<DisplayName>Harm</DisplayName>
-		<Description>+10% Harm damage</Description>
+		<Description>Harm adds 1 stack of Ignite</Description>
 		<ModType>Power</ModType>
 		<PowerName>Harm,Harm1,Harm2,Harm3,Harm4,Harm5,Harm6,Harm7,Harm8,Harm9,Harm10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.119</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:Ignite</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10598,7 +10598,7 @@
 		<ModName>RuneLegendaryTouchHeal</ModName>
 		<ModID>2082</ModID>
 		<DisplayName>Healing Touch</DisplayName>
-		<Description>+15% Healing Touch healing&#10;+10% Penance damage</Description>
+		<Description>+15% Healing Touch healing&#10;+10% Penance damage vs blind/holy</Description>
 		<ModType>Power</ModType>
 		<PowerName>TouchHeal</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10610,18 +10610,18 @@
 		<ModName>RuneLegendaryTouchHealBonus</ModName>
 		<ModID>2083</ModID>
 		<DisplayName>Penance</DisplayName>
-		<Description>+10% Penance damage</Description>
+		<Description>+10% Penance damage vs blind/holy</Description>
 		<ModType>Power</ModType>
 		<PowerName>Penance,Penance1,Penance2,Penance3,Penance4,Penance5,Penance6,Penance7,Penance8,Penance9,Penance10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.224</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>24</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneLegendaryBerserker</ModName>
 		<ModID>2084</ModID>
 		<DisplayName>Berserker</DisplayName>
-		<Description>+15% Berserker health regen&#10;+10% Cleaving Blows damage</Description>
+		<Description>+15% Berserker health regen&#10;+3 second Cleaving Blows duration</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Berserker1,Berserker2,Berserker3,Berserker4,Berserker5,Berserker6,Berserker7,Berserker8,Berserker9,Berserker10</BuffName>
 		<BuffProperty>DoTDamage</BuffProperty>
@@ -10633,11 +10633,11 @@
 		<ModName>RuneLegendaryBerserkerBonus</ModName>
 		<ModID>2085</ModID>
 		<DisplayName>Cleaving Blows</DisplayName>
-		<Description>+10% Cleaving Blows damage</Description>
-		<ModType>Power</ModType>
-		<PowerName>CleavingBlows,CleavingBlows1,CleavingBlows2,CleavingBlows3,CleavingBlows4,CleavingBlows5,CleavingBlows6,CleavingBlows7,CleavingBlows8,CleavingBlows9,CleavingBlows10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0</PowerValue>
+		<Description>+3 second Cleaving Blows duration</Description>
+		<ModType>Buff</ModType>
+		<BuffName>HeavyBlows</BuffName>
+		<BuffProperty>Duration</BuffProperty>
+		<BuffValue>3000</BuffValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10667,7 +10667,7 @@
 		<ModName>RuneLegendaryLeoneanAura</ModName>
 		<ModID>2088</ModID>
 		<DisplayName>Empyrean Aura</DisplayName>
-		<Description>5% Empyrean Aura Defense boost&#10;+10% Celestial Lance damage</Description>
+		<Description>5% Empyrean Aura Defense boost&#10;+15% Celestial Lance damage vs blind/holy</Description>
 		<ModType>Buff</ModType>
 		<BuffName>LeoneanAura1,LeoneanAura2,LeoneanAura3,LeoneanAura4,LeoneanAura5,LeoneanAura6,LeoneanAura7,LeoneanAura8,LeoneanAura9,LeoneanAura10</BuffName>
 		<BuffProperty>MeleeDefense,MagicDefense</BuffProperty>
@@ -10679,18 +10679,18 @@
 		<ModName>RuneLegendaryLeoneanAuraBonus</ModName>
 		<ModID>2089</ModID>
 		<DisplayName>Celestial Lance</DisplayName>
-		<Description>+10% Celestial Lance damage</Description>
+		<Description>+15% Celestial Lance damage vs blind/holy</Description>
 		<ModType>Power</ModType>
 		<PowerName>CelestialLance,CelestialLance1,CelestialLance2,CelestialLance3,CelestialLance4,CelestialLance5,CelestialLance6,CelestialLance7,CelestialLance8,CelestialLance9,CelestialLance10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.524</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>23</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneLegendaryJumpSlam</ModName>
 		<ModID>2090</ModID>
 		<DisplayName>Jump Slam</DisplayName>
-		<Description>+20% Jump Slam damage&#10;+10% Lightning Storm damage</Description>
+		<Description>+20% Jump Slam damage&#10;+20% Lightning Storm defense boost</Description>
 		<ModType>Power</ModType>
 		<PowerName>JumpSlam</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10702,11 +10702,11 @@
 		<ModName>RuneLegendaryJumpSlamBonus</ModName>
 		<ModID>2091</ModID>
 		<DisplayName>Lightning Storm</DisplayName>
-		<Description>+10% Lightning Storm damage</Description>
+		<Description>+20% Lightning Storm defense boost</Description>
 		<ModType>Power</ModType>
 		<PowerName>LightningStorm,LightningStorm1,LightningStorm2,LightningStorm3,LightningStorm4,LightningStorm5,LightningStorm6,LightningStorm7,LightningStorm8,LightningStorm9,LightningStorm10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.152</PowerValue>
+		<PowerProperty>AddSelfBuff</PowerProperty>
+		<PowerValue>Append:GearLightningStormDefense</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10736,7 +10736,7 @@
 		<ModName>RuneLegendaryGroupHoT</ModName>
 		<ModID>2094</ModID>
 		<DisplayName>Aura of Blessing</DisplayName>
-		<Description>+15% Aura of Blessing healing&#10;+10% Verdict damage</Description>
+		<Description>+15% Aura of Blessing healing&#10;+5% Verdict attack speed</Description>
 		<ModType>Power</ModType>
 		<PowerName>GroupHoT</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10748,18 +10748,18 @@
 		<ModName>RuneLegendaryGroupHoTBonus</ModName>
 		<ModID>2095</ModID>
 		<DisplayName>Verdict</DisplayName>
-		<Description>+10% Verdict damage</Description>
+		<Description>+5% Verdict attack speed</Description>
 		<ModType>Power</ModType>
-		<PowerName>VerdictROR,VerdictROR1,VerdictROR2,VerdictROR3,VerdictROR4,VerdictROR5,VerdictROR6,VerdictROR7,VerdictROR8,VerdictROR9,VerdictROR10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.15</PowerValue>
+		<PowerName>VerdictROR,VerdictROR1,VerdictROR2,VerdictROR3,VerdictROR4,VerdictROR5,VerdictROR6,VerdictROR7,VerdictROR8,VerdictROR9,VerdictROR10,VerdictMelee1,VerdictMelee2,VerdictMelee3,VerdictMelee4,VerdictMelee5,VerdictMelee6,VerdictMelee7,VerdictMelee8,VerdictMelee9,VerdictMelee10</PowerName>
+		<PowerProperty>RecoverTime</PowerProperty>
+		<PowerValue>-25</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneLegendaryLeapStrike</ModName>
 		<ModID>2096</ModID>
 		<DisplayName>Meteor Smash</DisplayName>
-		<Description>Bonus damage per stack of Ignite&#10;+10% Furious Assault damage</Description>
+		<Description>Bonus damage per stack of Ignite&#10;+10% Furious Assault damage vs Ignited</Description>
 		<ModType>WTF</ModType>
 		<IconName>a_Signet_Empty</IconName>
 		<ComboMod>RuneLegendaryLeapStrikeBonus</ComboMod>
@@ -10768,11 +10768,11 @@
 		<ModName>RuneLegendaryLeapStrikeBonus</ModName>
 		<ModID>2097</ModID>
 		<DisplayName>Furious Assault</DisplayName>
-		<Description>+10% Furious Assault damage</Description>
+		<Description>+10% Furious Assault damage vs Ignited</Description>
 		<ModType>Power</ModType>
 		<PowerName>FuriousAssault,FuriousAssault1,FuriousAssault2,FuriousAssault3,FuriousAssault4,FuriousAssault5,FuriousAssault6,FuriousAssault7,FuriousAssault8,FuriousAssault9,FuriousAssault10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.182</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>22</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10802,7 +10802,7 @@
 		<ModName>RuneLegendarySanctum</ModName>
 		<ModID>2100</ModID>
 		<DisplayName>Sanctum</DisplayName>
-		<Description>+7% Sanctum healing&#10;+10% Divine Word damage</Description>
+		<Description>+7% Sanctum healing&#10;Divine Word adds 1 stack of Holy Fire</Description>
 		<ModType>Power</ModType>
 		<PowerName>Sanctum</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10814,18 +10814,18 @@
 		<ModName>RuneLegendarySanctumBonus</ModName>
 		<ModID>2101</ModID>
 		<DisplayName>Divine Word</DisplayName>
-		<Description>+10% Divine Word damage</Description>
+		<Description>Divine Word adds 1 stack of Holy Fire</Description>
 		<ModType>Power</ModType>
 		<PowerName>DivineWord,DivineWord1,DivineWord2,DivineWord3,DivineWord4,DivineWord5,DivineWord6,DivineWord7,DivineWord8,DivineWord9,DivineWord10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.152</PowerValue>
+		<PowerProperty>AddTargetBuff</PowerProperty>
+		<PowerValue>Append:HolyFire1</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
 		<ModName>RuneLegendaryLightningBomb</ModName>
 		<ModID>2102</ModID>
 		<DisplayName>Lightning Bomb</DisplayName>
-		<Description>+25% Lightning Bomb damage&#10;+10% Justice Fist damage</Description>
+		<Description>+25% Lightning Bomb damage&#10;+10% Justice Fist damage vs Ignited</Description>
 		<ModType>Power</ModType>
 		<PowerName>LightningBombExplodeTwo</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>
@@ -10837,11 +10837,11 @@
 		<ModName>RuneLegendaryLightningBombBonus</ModName>
 		<ModID>2103</ModID>
 		<DisplayName>Justice Fist</DisplayName>
-		<Description>+10% Justice Fist damage</Description>
+		<Description>+10% Justice Fist damage vs Ignited</Description>
 		<ModType>Power</ModType>
 		<PowerName>JusticeFist,JusticeFist1,JusticeFist2,JusticeFist3,JusticeFist4,JusticeFist5,JusticeFist6,JusticeFist7,JusticeFist8,JusticeFist9,JusticeFist10</PowerName>
-		<PowerProperty>BaseDamageMult</PowerProperty>
-		<PowerValue>0.15</PowerValue>
+		<PowerProperty>SpawnLimit</PowerProperty>
+		<PowerValue>22</PowerValue>
 		<IconName>a_Signet_Empty</IconName>
 	</PowerModType>
 	<PowerModType>
@@ -10868,7 +10868,7 @@
 		<ModName>RuneLegendaryCleansingLight</ModName>
 		<ModID>2106</ModID>
 		<DisplayName>Cleansing Light</DisplayName>
-		<Description>+10% Sacred Light duration&#10;+10% Hallowed Reckoning damage</Description>
+		<Description>+10% Sacred Light duration&#10;+10% Hallowed Reckoning healing power</Description>
 		<ModType>Buff</ModType>
 		<BuffName>Sacred</BuffName>
 		<BuffProperty>Duration</BuffProperty>
@@ -10880,7 +10880,7 @@
 		<ModName>RuneLegendaryCleansingLightBonus</ModName>
 		<ModID>2107</ModID>
 		<DisplayName>Hallowed Reckoning</DisplayName>
-		<Description>+10% Hallowed Reckoning damage</Description>
+		<Description>+10% Hallowed Reckoning healing power</Description>
 		<ModType>Power</ModType>
 		<PowerName>FountainOfLife,FountainOfLife1,FountainOfLife2,FountainOfLife3,FountainOfLife4,FountainOfLife5,FountainOfLife6,FountainOfLife7,FountainOfLife8,FountainOfLife9,FountainOfLife10</PowerName>
 		<PowerProperty>BaseDamageMult</PowerProperty>

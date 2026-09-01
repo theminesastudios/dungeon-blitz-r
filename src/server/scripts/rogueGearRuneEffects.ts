@@ -5,7 +5,7 @@ export const ROGUE_GEAR_EFFECT_PROPERTY = "SpawnLimit";
 export type RogueGearRuneEffect =
   | { kind: "conditional"; marker: number; description: string; tr: string }
   | { kind: "damage"; pct: number; targetBase?: string; description: string; tr: string }
-  | { kind: "power"; property: string; value: string; description: string; tr: string }
+  | { kind: "power"; property: string; value: string; powerBases?: string[]; description: string; tr: string }
   | {
       kind: "buffEntries";
       entries: Array<{ buffName: string; property: string; value: number }>;

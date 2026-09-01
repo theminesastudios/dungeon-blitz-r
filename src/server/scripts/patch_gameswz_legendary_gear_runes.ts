@@ -170,8 +170,10 @@ function buildLegendaryMods(powerModsXml: string, powersXml: string, buffsXml: s
       /<Description>[\s\S]*?<\/Description>/,
       `<Description>${originalLine}${LINE_SEPARATOR}${bonusDescription}</Description>`,
     );
-    const targetBase = gearEffect?.kind === "damage" ? gearEffect.targetBase ?? pair.secondaryPower : pair.secondaryPower;
-    const names = powerRanks(powersXml, targetBase);
+    const targetBases = gearEffect?.kind === "damage"
+      ? [gearEffect.targetBase ?? pair.secondaryPower]
+      : gearEffect?.kind === "power" && gearEffect.powerBases ? gearEffect.powerBases : [pair.secondaryPower];
+    const names = [...new Set(targetBases.flatMap((base) => powerRanks(powersXml, base)))];
     let bonus: string;
     if (gearEffect?.kind === "buff" || gearEffect?.kind === "buffEntries") {
       const entries = gearEffect.kind === "buffEntries"

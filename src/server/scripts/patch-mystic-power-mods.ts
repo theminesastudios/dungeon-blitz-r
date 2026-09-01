@@ -200,10 +200,10 @@ const ITEMS: Item[] = [
     abilities: [
       { kind: "paladin", base: "RollingSmash" },
       { kind: "paladin", base: "ShieldFlurryStrike", named: "ShieldFlurry" },
-      { kind: "damage", base: "FlameAxe", pct: 0.15 },
-      { kind: "damage", base: "FuriousAssault", pct: 0.15 },
-      { kind: "damage", base: "DivineWord", pct: 0.15 },
-      { kind: "damage", base: "Subjugate", pct: 0.15 },
+      { kind: "paladin", base: "FlameAxe" },
+      { kind: "paladin", base: "FuriousAssault" },
+      { kind: "paladin", base: "DivineWord" },
+      { kind: "paladin", base: "Subjugate" },
     ],
   },
   {
@@ -212,18 +212,10 @@ const ITEMS: Item[] = [
     abilities: [
       { kind: "paladin", base: "JuggernautCharge", named: "Juggernaut" },
       { kind: "paladin", base: "SecondWind" },
-      { kind: "damage", base: "Harm", pct: 0.15 },
-      { kind: "damage", base: "JusticeFist", pct: 0.15 },
-      // Hallowed Reckoning's BaseDamageMult is negative (a heal), so the same +15% scaling lands as
-      // 15% more healing — only the wording has to change.
-      {
-        kind: "damage",
-        base: "FountainOfLife",
-        pct: 0.15,
-        en: "+15% Hallowed Reckoning healing",
-        tr: "Kutsal Hesaplasma iyilestirmesi %15 artar.",
-      },
-      { kind: "damage", base: "Penance", pct: 0.15 },
+      { kind: "paladin", base: "Harm" },
+      { kind: "paladin", base: "JusticeFist" },
+      { kind: "paladin", base: "FountainOfLife" },
+      { kind: "paladin", base: "Penance" },
     ],
   },
   {
@@ -232,20 +224,10 @@ const ITEMS: Item[] = [
     abilities: [
       { kind: "paladin", base: "Shockwave" },
       { kind: "paladin", base: "Retribution" },
-      { kind: "damage", base: "LightningStorm", pct: 0.1 },
-      // Cleaving Blows just turns the basic attack into a cleave for a while; there is nothing to
-      // scale but the window it lasts.
-      {
-        kind: "buff",
-        buffPrefix: "HeavyBlows",
-        property: "Duration",
-        value: 2000,
-        named: "CleavingBlows",
-        en: "+2s Cleaving Blows duration",
-        tr: "Yaran Darbeler suresi 2sn artar.",
-      },
-      { kind: "damage", base: "CelestialLance", pct: 0.1 },
-      { kind: "damage", base: "VerdictROR", named: "Verdict", pct: 0.1 },
+      { kind: "paladin", base: "LightningStorm" },
+      { kind: "paladin", base: "CleavingBlows" },
+      { kind: "paladin", base: "CelestialLance" },
+      { kind: "paladin", base: "VerdictROR", named: "Verdict" },
     ],
   },
   {
@@ -506,8 +488,10 @@ function buildMods(corpus: Corpus): { chains: string[][]; runeByGearId: Map<numb
           return;
         }
 
-        const targetBase = effect.kind === "damage" ? effect.targetBase ?? ability.base : ability.base;
-        const names = powerRanks(corpus.powers, targetBase);
+        const targetBases = effect.kind === "damage"
+          ? [effect.targetBase ?? ability.base]
+          : effect.kind === "power" && effect.powerBases ? effect.powerBases : [ability.base];
+        const names = [...new Set(targetBases.flatMap((base) => powerRanks(corpus.powers, base)))];
         const property = effect.kind === "conditional"
           ? ability.kind === "rogue" ? ROGUE_GEAR_EFFECT_PROPERTY
           : ability.kind === "mage" ? MAGE_GEAR_EFFECT_PROPERTY : PALADIN_GEAR_EFFECT_PROPERTY

@@ -76,10 +76,33 @@ function multiname(abc: ReturnType<typeof parseAbc>, name: string): Buffer {
   return writeU30(index);
 }
 
+function classMultiname(abc: ReturnType<typeof parseAbc>, className: string): Buffer {
+  const classIndex = classIndexByName(abc, className);
+  if (classIndex === null) throw new PatchError(`${className} class not found.`);
+  return writeU30(abc.instances[classIndex].classNameIdx);
+}
+
 function stringValue(abc: ReturnType<typeof parseAbc>, value: string): Buffer {
   const index = abc.stringValues.findIndex((candidate) => candidate === value);
   if (index < 0) throw new PatchError(`String ${value} not found.`);
   return writeU30(index);
+}
+
+function dynamicBuffMultiname(ctx: ReturnType<typeof parseSwf>, abc: ReturnType<typeof parseAbc>): Buffer {
+  const lookupIndex = abc.stringValues.findIndex((candidate) => candidate === "Chilblains");
+  if (lookupIndex < 0) throw new PatchError("Chilblains string not found.");
+  for (const body of abc.methodBodies.values()) {
+    const code = ctx.body.subarray(body.codeStart, body.codeStart + body.codeLen);
+    const insts = disassemble(code, `method ${body.methodIdx}`);
+    for (let index = 1; index + 1 < insts.length; index += 1) {
+      if (
+        insts[index].opcode === 0x2c && insts[index].operands[0]?.[1] === lookupIndex &&
+        insts[index - 1].opcode === 0x66 && abc.multinameNames[insts[index - 1].operands[0]?.[1]] === "buffTypesDict" &&
+        insts[index + 1].opcode === 0x66
+      ) return writeU30(insts[index + 1].operands[0][1]);
+    }
+  }
+  throw new PatchError("Could not harvest the runtime buff dictionary multiname.");
 }
 
 function getLocal(index: number): PatchInstruction {
@@ -131,6 +154,68 @@ function buildHolySmashDamageBlock(abc: ReturnType<typeof parseAbc>): Buffer {
     getLocal(3), { opcode: 0x66, operands: [combatState] }, { opcode: 0x66, operands: [var2291] },
     { opcode: 0x12, branchTo: "done" },
     ...percentageAdd(6, 10, 100),
+    { opcode: -1, label: "done" },
+  ]);
+}
+
+function buildIgnitedDamageBlock(abc: ReturnType<typeof parseAbc>, marker: number, percent: number): Buffer {
+  const var3 = multiname(abc, "var_3");
+  const var18 = multiname(abc, "var_18");
+  const basePowerName = multiname(abc, "basePowerName");
+  const method102 = multiname(abc, "method_102");
+  const combatState = multiname(abc, "combatState");
+  const ignite = multiname(abc, "var_1234");
+  return assemble([
+    getLocal(0), { opcode: 0x66, operands: [var3] }, { opcode: 0x66, operands: [var18] },
+    { opcode: 0x12, branchTo: "done" },
+    getLocal(0), { opcode: 0x66, operands: [var3] }, { opcode: 0x66, operands: [var18] },
+    getLocal(0), { opcode: 0x66, operands: [var3] },
+    getLocal(2), { opcode: 0x66, operands: [basePowerName] },
+    { opcode: 0x2c, operands: [stringValue(abc, "SpawnLimit")] },
+    { opcode: 0x46, operands: [method102, writeU30(3)] },
+    pushPositive(marker), { opcode: 0xab }, { opcode: 0x12, branchTo: "done" },
+    getLocal(3), { opcode: 0x66, operands: [combatState] }, { opcode: 0x66, operands: [ignite] },
+    { opcode: 0x12, branchTo: "done" },
+    ...percentageAdd(6, percent, 100),
+    { opcode: -1, label: "done" },
+  ]);
+}
+
+function buildBlindOrHolyDamageBlock(
+  abc: ReturnType<typeof parseAbc>,
+  dynamicProperty: Buffer,
+  holyFireString: Buffer,
+  marker: number,
+  percent: number,
+): Buffer {
+  const var3 = multiname(abc, "var_3");
+  const var18 = multiname(abc, "var_18");
+  const basePowerName = multiname(abc, "basePowerName");
+  const method102 = multiname(abc, "method_102");
+  const combatState = multiname(abc, "combatState");
+  const buffTypesDict = multiname(abc, "buffTypesDict");
+  const method135 = multiname(abc, "method_135");
+  const buffLookup = (name: Buffer): PatchInstruction[] => [
+    getLocal(3), { opcode: 0x66, operands: [combatState] },
+    { opcode: 0x60, operands: [classMultiname(abc, "class_14")] },
+    { opcode: 0x66, operands: [buffTypesDict] },
+    { opcode: 0x2c, operands: [name] },
+    { opcode: 0x66, operands: [dynamicProperty] },
+    { opcode: 0x46, operands: [method135, writeU30(1)] },
+  ];
+  return assemble([
+    getLocal(0), { opcode: 0x66, operands: [var3] }, { opcode: 0x66, operands: [var18] },
+    { opcode: 0x12, branchTo: "done" },
+    getLocal(0), { opcode: 0x66, operands: [var3] }, { opcode: 0x66, operands: [var18] },
+    getLocal(0), { opcode: 0x66, operands: [var3] },
+    getLocal(2), { opcode: 0x66, operands: [basePowerName] },
+    { opcode: 0x2c, operands: [stringValue(abc, "SpawnLimit")] },
+    { opcode: 0x46, operands: [method102, writeU30(3)] },
+    pushPositive(marker), { opcode: 0xab }, { opcode: 0x12, branchTo: "done" },
+    ...buffLookup(stringValue(abc, "Blinded")), { opcode: 0x11, branchTo: "apply" },
+    ...buffLookup(holyFireString), { opcode: 0x12, branchTo: "done" },
+    { opcode: -1, label: "apply" },
+    ...percentageAdd(6, percent, 100),
     { opcode: -1, label: "done" },
   ]);
 }
@@ -242,11 +327,23 @@ function patchSwf(swfPath: string, verify: boolean): void {
   const damage = loadMethod(ctx, abc, "CombatState", "method_1393");
   const addBuff = loadMethod(ctx, abc, "CombatState", "method_522");
   if (damage.body.exceptionCount || addBuff.body.exceptionCount) throw new PatchError("Paladin gear target methods have unexpected exception tables.");
-  const damageBlock = buildHolySmashDamageBlock(abc);
+  const holySmashBlock = buildHolySmashDamageBlock(abc);
+  const flameAxeBlock = buildIgnitedDamageBlock(abc, 21, 15);
+  const furiousJusticeBlock = buildIgnitedDamageBlock(abc, 22, 10);
+  const dynamicProperty = dynamicBuffMultiname(ctx, abc);
+  const existingHolyFireString = abc.stringValues.findIndex((candidate) => candidate === "HolyFire1");
+  const holyFireStringIndex = existingHolyFireString >= 0 ? existingHolyFireString : abc.stringValues.length;
+  const holyFireString = writeU30(holyFireStringIndex);
+  const subjugateCelestialBlock = buildBlindOrHolyDamageBlock(abc, dynamicProperty, holyFireString, 23, 15);
+  const penanceBlock = buildBlindOrHolyDamageBlock(abc, dynamicProperty, holyFireString, 24, 10);
   const capacityBlock = buildRetributionCapacityBlock(abc);
-  const hasDamage = damage.code.indexOf(damageBlock) >= 0;
+  const hasHolySmash = damage.code.indexOf(holySmashBlock) >= 0;
+  const hasFlameAxe = damage.code.indexOf(flameAxeBlock) >= 0;
+  const hasFuriousJustice = damage.code.indexOf(furiousJusticeBlock) >= 0;
+  const hasSubjugateCelestial = damage.code.indexOf(subjugateCelestialBlock) >= 0;
+  const hasPenance = damage.code.indexOf(penanceBlock) >= 0;
   const hasCapacity = addBuff.code.indexOf(capacityBlock) >= 0;
-  if (hasDamage && hasCapacity) {
+  if (hasHolySmash && hasFlameAxe && hasFuriousJustice && hasSubjugateCelestial && hasPenance && hasCapacity) {
     syncClientRevision(swfPath, verify);
     console.log(`${swfPath}: Paladin gear rune runtime verified.`);
     return;
@@ -254,11 +351,50 @@ function patchSwf(swfPath: string, verify: boolean): void {
   if (verify) throw new PatchError(`${swfPath}: Paladin gear rune runtime patch is missing.`);
 
   const patches: BytePatch[] = [];
-  if (!hasDamage) {
-    const code = spliceIntoMethod(damage.code, damage.insts, damageAnchor(damage.insts), damageBlock, "CombatState.method_1393 Paladin gear damage");
+  if (existingHolyFireString < 0) {
+    const bytes = Buffer.from("HolyFire1", "utf8");
+    patches.push(
+      {
+        key: "paladinGear.stringCount",
+        start: abc.stringCountPos,
+        end: abc.stringCountEnd,
+        data: writeU30(abc.stringValues.length + 1),
+        detail: "Paladin gear HolyFire1 string count",
+      },
+      {
+        key: "paladinGear.holyFireString",
+        start: abc.stringPoolEnd,
+        end: abc.stringPoolEnd,
+        data: Buffer.concat([writeU30(bytes.length), bytes]),
+        detail: "Paladin gear HolyFire1 string",
+      },
+    );
+  }
+  if (!hasHolySmash || !hasFlameAxe || !hasFuriousJustice || !hasSubjugateCelestial || !hasPenance) {
+    let code = damage.code;
+    if (!hasHolySmash) {
+      const insts = disassemble(code, "CombatState.method_1393 Holy Smash gear damage");
+      code = spliceIntoMethod(code, insts, damageAnchor(insts), holySmashBlock, "CombatState.method_1393 Holy Smash gear damage");
+    }
+    if (!hasFlameAxe) {
+      const insts = disassemble(code, "CombatState.method_1393 Flame Axe gear damage");
+      code = spliceIntoMethod(code, insts, damageAnchor(insts), flameAxeBlock, "CombatState.method_1393 Flame Axe gear damage");
+    }
+    if (!hasFuriousJustice) {
+      const insts = disassemble(code, "CombatState.method_1393 Furious Assault and Justice Fist gear damage");
+      code = spliceIntoMethod(code, insts, damageAnchor(insts), furiousJusticeBlock, "CombatState.method_1393 Furious Assault and Justice Fist gear damage");
+    }
+    if (!hasSubjugateCelestial) {
+      const insts = disassemble(code, "CombatState.method_1393 Subjugate and Celestial Lance gear damage");
+      code = spliceIntoMethod(code, insts, damageAnchor(insts), subjugateCelestialBlock, "CombatState.method_1393 Subjugate and Celestial Lance gear damage");
+    }
+    if (!hasPenance) {
+      const insts = disassemble(code, "CombatState.method_1393 Penance gear damage");
+      code = spliceIntoMethod(code, insts, damageAnchor(insts), penanceBlock, "CombatState.method_1393 Penance gear damage");
+    }
     assertBranchesLand(code, "CombatState.method_1393 Paladin gear damage");
     patches.push(
-      { key: "paladinDamage.code", start: damage.body.codeStart, end: damage.body.codeStart + damage.body.codeLen, data: code, detail: "Holy Smash gear conditional damage" },
+      { key: "paladinDamage.code", start: damage.body.codeStart, end: damage.body.codeStart + damage.body.codeLen, data: code, detail: "Paladin gear conditional damage" },
       { key: "paladinDamage.codeLen", start: damage.body.codeLenPos, end: damage.body.codeStart, data: writeU30(code.length), detail: "Paladin damage code length" },
     );
   }
