@@ -5870,4 +5870,20 @@
 			<AnimClass>a_Debuff_Armor</AnimClass>
 		</GfxType>
 	</BuffType>
+	<BuffType BuffName="GearShockwaveDefense">
+		<BuffID>749</BuffID>
+		<Attack>false</Attack>
+		<Duration>5000</Duration>
+		<MagicDefense>0.3</MagicDefense>
+		<MeleeDefense>0.3</MeleeDefense>
+		<GfxType/>
+	</BuffType>
+	<BuffType BuffName="GearLightningStormDefense">
+		<BuffID>750</BuffID>
+		<Attack>false</Attack>
+		<Duration>5000</Duration>
+		<MagicDefense>0.2</MagicDefense>
+		<MeleeDefense>0.2</MeleeDefense>
+		<GfxType/>
+	</BuffType>
 </PlayerBuffTypes>

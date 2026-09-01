@@ -90,6 +90,14 @@ export class LevelConfig {
         "OMM_Mission8Hard": { x: 2375, y: 849 }
     };
 
+    // a_Door_104 is authored at 19166,2575, but SD12's floor collision ends at x=19160.
+    // That six-pixel miss makes the client fall through the world. Return 266 pixels left of
+    // the marker on the same authored floor segment instead. Normal and Dread share geometry.
+    private static readonly DUNGEON_EXIT_SPAWN_OVERRIDES: Record<string, SpawnPoint> = {
+        "SD_Mission4_ShazariDesert": { x: 18900, y: 2575 },
+        "SD_Mission4Hard_ShazariDesertHard": { x: 18900, y: 2575 }
+    };
+
     private static readonly DOOR_TARGET_OVERRIDES: Record<string, number> = {
         "SwampRoadNorth_1_SwampRoadConnection": 1,
         "SwampRoadNorthHard_1_SwampRoadConnectionHard": 1,
@@ -377,12 +385,45 @@ export class LevelConfig {
         return this.DUNGEON_ENTRY_SPAWN_OVERRIDES[normalized] ?? null;
     }
 
+    static getDungeonExitResponseDoorId(
+        dungeonLevelName: string | null | undefined,
+        entryLevelName: string | null | undefined
+    ): number | null {
+        if (this.getDungeonExitSpawnOverride(dungeonLevelName, entryLevelName)) {
+            // A zero targetDoor lets Enter World / Player Data coordinates take precedence.
+            return 0;
+        }
+        return this.getDungeonEntranceDoorId(dungeonLevelName, entryLevelName);
+    }
+
+    static getDungeonExitSpawnOverride(
+        dungeonLevelName: string | null | undefined,
+        entryLevelName: string | null | undefined
+    ): SpawnPoint | null {
+        const dungeonLevel = this.normalizeLevelName(dungeonLevelName);
+        const entryLevel = this.normalizeLevelName(entryLevelName);
+        if (!dungeonLevel || !entryLevel) {
+            return null;
+        }
+
+        return this.DUNGEON_EXIT_SPAWN_OVERRIDES[`${dungeonLevel}_${entryLevel}`] ?? null;
+    }
+
     static getDoorTarget(level: string, doorId: number): string | null {
         // Special Case: 999 -> CraftTown
         if (doorId === 999) return "CraftTown";
         
         const key = `${level}_${doorId}`;
-        return this.DOOR_MAP.get(key) || this.DOOR_FALLBACKS[key] || null;
+        // DoorTypes.xml is the client-visible source of truth for door labels and contains
+        // several valid door-108 dungeon links omitted from the legacy door_map.json export.
+        // Falling back to the parsed DoorType keeps the nameplate response and the eventual
+        // open-door transfer on the same target instead of treating the door as a self-link.
+        return (
+            this.DOOR_MAP.get(key) ||
+            this.DOOR_TARGETS.get(key)?.targetLevel ||
+            this.DOOR_FALLBACKS[key] ||
+            null
+        );
     }
 
     static getDungeonEntranceDoorId(

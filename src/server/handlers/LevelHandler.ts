@@ -358,9 +358,9 @@ export class LevelHandler {
             // The dungeon's completion door id belongs to the dungeon map. Resolve the reverse
             // DoorTypes link so the destination map selects the authored door that entered this
             // dungeon (for example CH_MiniMission6 -> CemeteryHill door 206).
-            const entranceDoorId = LevelConfig.getDungeonEntranceDoorId(currentLevel, targetLevel);
-            if (entranceDoorId !== null) {
-                return entranceDoorId;
+            const responseDoorId = LevelConfig.getDungeonExitResponseDoorId(currentLevel, targetLevel);
+            if (responseDoorId !== null) {
+                return responseDoorId;
             }
 
             // Some dungeons have no authored reverse link. Door 0 lets their explicit transfer
@@ -1062,6 +1062,15 @@ export class LevelHandler {
             return {
                 x: Math.round(Number(syncState.x ?? 0)),
                 y: Math.round(Number(syncState.y ?? 0)),
+                hasCoord: true
+            };
+        }
+
+        const exitOverride = LevelConfig.getDungeonExitSpawnOverride(oldLevel, targetLevel);
+        if (exitOverride) {
+            return {
+                x: Math.round(exitOverride.x),
+                y: Math.round(exitOverride.y),
                 hasCoord: true
             };
         }
@@ -5905,18 +5914,29 @@ export class LevelHandler {
         const authoredDungeonEntranceDoorId = !teleportOverride?.hasCoord
             ? LevelConfig.getDungeonEntranceDoorId(oldLevel, targetLevel)
             : null;
-        // Player Data clears the client's targetDoor whenever explicit coordinates are present.
-        // Suppress that coordinate flag when an authored reverse door exists so the destination
-        // client can place the player at the exact entrance door selected by 0x2E.
+        const dungeonExitResponseDoorId = !teleportOverride?.hasCoord
+            ? LevelConfig.getDungeonExitResponseDoorId(oldLevel, targetLevel)
+            : null;
+        const dungeonExitSpawnOverride = !teleportOverride?.hasCoord
+            ? LevelConfig.getDungeonExitSpawnOverride(oldLevel, targetLevel)
+            : null;
+        // A nonzero targetDoor wins over coordinates in the Flash client. Broken authored
+        // markers therefore use targetDoor 0 plus their confirmed floor-point override.
         const newHasCoord = LevelHandler.shouldSendTransferCoordinates(
             oldLevel,
             targetLevel,
             spawn.hasCoord,
-            Boolean(teleportOverride?.hasCoord)
+            Boolean(teleportOverride?.hasCoord || dungeonExitSpawnOverride)
         );
-        if (authoredDungeonEntranceDoorId !== null) {
+        if (dungeonExitSpawnOverride) {
             console.log(
-                `[Level] Dungeon exit ${oldLevel} -> ${targetLevel} using entrance door ${authoredDungeonEntranceDoorId}`
+                `[Level] Dungeon exit ${oldLevel} -> ${targetLevel} using explicit spawn ` +
+                `${newX},${newY} and response door ${dungeonExitResponseDoorId}`
+            );
+        } else if (authoredDungeonEntranceDoorId !== null) {
+            console.log(
+                `[Level] Dungeon exit ${oldLevel} -> ${targetLevel} using response door ${dungeonExitResponseDoorId} ` +
+                `for entrance door ${authoredDungeonEntranceDoorId}`
             );
         }
         syncPotionReservationForLevelTransition(activeCharacter, oldLevel, targetLevel);

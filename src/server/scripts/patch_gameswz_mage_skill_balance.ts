@@ -704,7 +704,7 @@ function patchPowerModBlock(modName: string, block: string, stats: PatchStats): 
     next = apply(next, stats, replaceTag(next, "PowerValue", "Append:PoisonCloud"));
   } else if (modName === "RuneIceSpike") {
     stats.modBlocks += 1;
-    next = apply(next, stats, replaceTag(next, "Description", "Gain +50% Defense for 1 second during Ice Lance"));
+    next = apply(next, stats, replaceTag(next, "Description", "Ice Lance +50% defense while dashing"));
   }
 
   const maxMatch = modName.match(/^ChilblainsMax([1-5])$/);
