@@ -1000,6 +1000,27 @@ export class NpcHandler {
         // Herald goes back to being what he is - the man who tells you what the
         // grid is for.
 
+        // **With a key in hand he opens the coffers himself.**
+        //
+        // The client is supposed to do this: his cue is `Special_TreasureTrove`, and
+        // `Game.method_668`'s arm for that name opens `screenLockBox` - the panel the
+        // seasonal board is laid into - without the server being involved at all.
+        // That has stopped happening and has not been explained: the click reaches
+        // here (this bubble is the proof), `method_662` should pass on a stack of
+        // forty, and every static check on the patched client comes back clean.
+        //
+        // So the key stops depending on it. `raiseCoffersPrompt` is the same coffers,
+        // asked through `a_DialogBox` on 0x58 - a window the server draws itself -
+        // and a Yes runs `grantHallowsEvePrize`, which is the same `spendKey` and the
+        // same `nextPrize` the board would have used. It returns false when there is
+        // no key, which is exactly when he should be talking instead.
+        //
+        // This is a floor, not the destination: when the board opens again it will
+        // open on the same click, and this raise comes back out.
+        if (HallowsEve.raiseCoffersPrompt(client)) {
+            return;
+        }
+
         // No key, so there is nothing to unlock. He only falls back on the coffers
         // line when the coffers is the answer - the player is waiting on the clock,
         // or has never cleared the arena. The rest of the time he has a square to

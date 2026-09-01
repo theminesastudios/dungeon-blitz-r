@@ -452,6 +452,53 @@ export const HALLOWS_EVE_JACK_O_PET_IDS = [57, 58, 59, 60];
 export const HALLOWS_EVE_GARGOYLE_PET_IDS = [61, 62, 63, 64];
 
 /**
+ * How many cells the coffers board has, and what is behind them.
+ *
+ * ## The board is authored, not invented
+ *
+ * `a_ScreenHalloweenCoffers` ships a forty-cell `am_CofferGroup` and, down its left
+ * edge, five icons with five counts printed beside them in `am_TextGroup`:
+ * **x1, x1, x8, x10, x20**. Forty. Those five numbers are the board's contents, and
+ * the shelves below are them - a key opens one cell, one cell is one prize, and the
+ * column beside the wall says what is still in it.
+ *
+ * The counts are drawn text, not something a screen class sets, so they cannot be
+ * made to count down; what they can be is *true*, which is what this table is for.
+ * If a shelf here changes, the panel's own printed number is the thing that has to
+ * change with it - see `patch-ui4-hallows-eve-coffer-skin.ts`.
+ *
+ * ## The order, and what a shelf pays
+ *
+ * Cells are spent from the front, so the order here is the order a player meets
+ * them: the two singles first, then the pets, then the two gold shelves. A shelf
+ * that cannot pay a particular character - the helm they already own, a pet they
+ * already have - is stepped over rather than wasted, which is the rule
+ * `nextPrize` was already written around.
+ *
+ * `gargoyle` and `pet` both draw from the pet ladder; between them a whole board
+ * holds all nine of the event's collectables, so a player who works one board
+ * through finishes the set rather than needing nine of them.
+ */
+export const HALLOWS_EVE_BOARD_CELLS = 40;
+
+export type HallowsEveShelf = 'gargoyle' | 'helm' | 'pet' | 'goldBag' | 'goldPile';
+
+const HALLOWS_EVE_BOARD: Array<{ shelf: HallowsEveShelf; cells: number }> = [
+    { shelf: 'gargoyle', cells: 1 },
+    { shelf: 'helm', cells: 1 },
+    { shelf: 'pet', cells: 8 },
+    { shelf: 'goldBag', cells: 10 },
+    { shelf: 'goldPile', cells: 20 }
+];
+
+/** What the two gold shelves are worth. */
+const HALLOWS_EVE_GOLD_BAG = 100_000;
+const HALLOWS_EVE_GOLD_PILE = 25_000;
+
+/** How many cells are left on this character's board. Absent means untouched. */
+const BOARD_FIELD = 'hallowsEveBoardRemaining';
+
+/**
  * The two questions the square asks, and how they are asked.
  *
  * `UI_Seasonal.swf` ships the real panels - `a_ScreenHalloweenDungeonPrompt` with
@@ -770,22 +817,65 @@ export class HallowsEve {
     }
 
     /**
-     * Makes an old character's keys openable.
+     * How many cells this character's board still has behind glass.
      *
-     * Keys earned before the coffer became a lockbox live only in
-     * `hallowsEveKeys`; the client's panel is driven by `mOwnedLockboxes` and
-     * `DragonKeys`, which those characters have none of. Without this they would
-     * hold keys the skull grid refuses to open - it would say *"Maybe that old man
-     * knows how to open this..."* and nothing else.
+     * A character who has never opened one is looking at a full wall.
+     */
+    static boardRemaining(character: any): number {
+        const raw = Math.round(Number(character?.[BOARD_FIELD]));
+        if (!Number.isFinite(raw)) {
+            return HALLOWS_EVE_BOARD_CELLS;
+        }
+        return Math.min(HALLOWS_EVE_BOARD_CELLS, Math.max(0, raw));
+    }
+
+    /** Which shelf the cell at `position` (0-based, from the front) belongs to. */
+    private static shelfAt(position: number): HallowsEveShelf | null {
+        let start = 0;
+        for (const shelf of HALLOWS_EVE_BOARD) {
+            if (position < start + shelf.cells) {
+                return shelf.shelf;
+            }
+            start += shelf.cells;
+        }
+        return null;
+    }
+
+    /**
+     * Puts the board where the client can see it, and makes old keys openable.
      *
-     * Tops the two client-side counters up to the key count, never down: a player
-     * who bought Dragon Keys keeps them.
+     * **The coffer's `stackCount` is the board, not an inventory.** The screen
+     * patch draws cell *i* as a skull while `i < stackCount` and as an empty socket
+     * otherwise, so this one number is the whole wall: forty on a fresh board, one
+     * fewer for every key spent, and the client decrements its own copy the moment
+     * a cell is clicked, which is why a skull disappears the instant it is opened
+     * rather than on the next login.
+     *
+     * **It is never zeroed for want of a key, and that was a real bug.** This used
+     * to write zero to a character holding no key, on the grounds that
+     * `class_131.method_1459` walks the owned boxes from the back and opens the
+     * highest id that has a stack, so a permanently stocked coffer would take the
+     * skull grid's place over the Treasure Trove. Two things are wrong with that.
+     * The bias is harmless in this build - `Special_TreasureTrove` is a cue only
+     * this event's props carry, and every other way into the lockbox screen names
+     * its box outright (`ScreenArmory` sets `mLockboxID` from the item clicked). And
+     * the zero *closed the screen*: with no box in `mOwnedLockboxes`, `method_1459`
+     * finds nothing, and the prop answers with "Maybe that old man knows how to open
+     * this..." instead of opening the board at all.
+     *
+     * What stops an empty-handed player spending anything is not the stack; it is
+     * the key. The screen patch disables every cell while `mLockboxKeys` is zero, so
+     * the wall can stand there being looked at without being openable.
+     *
+     * `DragonKeys` is only ever topped up, never down: the client has one key
+     * counter for every kind of box, and a player who bought Dragon Keys keeps them.
      */
     static ensureCofferStock(character: any): boolean {
-        const keys = HallowsEve.getKeys(character);
-        if (!character || keys <= 0) {
+        if (!character) {
             return false;
         }
+        const keys = HallowsEve.getKeys(character);
+        const wanted = HallowsEve.boardRemaining(character);
 
         const boxes = Array.isArray(character.lockboxes) ? character.lockboxes : [];
         const entry = boxes.find(
@@ -794,16 +884,16 @@ export class HallowsEve {
         const held = Math.max(0, Math.round(Number(entry?.count ?? 0)));
         let changed = false;
 
-        if (held < keys) {
+        if (held !== wanted) {
             if (entry) {
-                entry.count = keys;
-            } else {
-                boxes.push({ lockboxID: HALLOWS_EVE_COFFER_LOCKBOX_ID, count: keys });
+                entry.count = wanted;
+            } else if (wanted > 0) {
+                boxes.push({ lockboxID: HALLOWS_EVE_COFFER_LOCKBOX_ID, count: wanted });
             }
             character.lockboxes = boxes;
             changed = true;
         }
-        if (Math.max(0, Math.round(Number(character.DragonKeys ?? 0))) < keys) {
+        if (keys > 0 && Math.max(0, Math.round(Number(character.DragonKeys ?? 0))) < keys) {
             character.DragonKeys = keys;
             changed = true;
         }
@@ -1131,6 +1221,7 @@ export class HallowsEve {
             : 'No key, no coffers. Beat the Green Knight through that arch and come back with one.';
     }
 
+
     // -----------------------------------------------------------------------
     // Keys
     // -----------------------------------------------------------------------
@@ -1149,14 +1240,21 @@ export class HallowsEve {
      * Refusing to spawn the grid is the honest fix. It is server-side, it costs
      * nothing, and it makes the grid mean what it looks like. The Herald is still
      * there to say when the next key is due.
+     *
+     * **The hazard it was written for is gone, so the grid stands.** What made a
+     * click dangerous was the screen picking a *trove* to open; it cannot any more.
+     * `method_1459` takes the highest owned id with a stack, the coffer is stocked
+     * with the board and outranks the trove, and every cell on that board is
+     * click-dead while the character holds no key. So the wall is furniture now: it
+     * stands while the board has cells, which - because a board opened to the last
+     * cell is replaced - is always.
+     *
+     * Gating it on the key instead, which is what this did for one round, hid the
+     * grid from everyone who had not just killed the Knight and left them nothing to
+     * click at all.
      */
     static hasCoffer(character: any): boolean {
-        const boxes = Array.isArray(character?.lockboxes) ? character.lockboxes : [];
-        return boxes.some(
-            (row: any) =>
-                Math.round(Number(row?.lockboxID ?? 0)) === HALLOWS_EVE_COFFER_LOCKBOX_ID &&
-                Math.round(Number(row?.count ?? 0)) > 0
-        );
+        return HallowsEve.boardRemaining(character) > 0;
     }
 
     static getKeys(character: any): number {
@@ -1377,17 +1475,11 @@ export class HallowsEve {
         if (!character) {
             return;
         }
-        const boxes = Array.isArray(character.lockboxes) ? character.lockboxes : [];
-        const entry = boxes.find(
-            (row: any) => Math.round(Number(row?.lockboxID ?? 0)) === HALLOWS_EVE_COFFER_LOCKBOX_ID
-        );
-        if (entry) {
-            entry.count = Math.max(0, Math.round(Number(entry.count ?? 0))) + 1;
-        } else {
-            boxes.push({ lockboxID: HALLOWS_EVE_COFFER_LOCKBOX_ID, count: 1 });
-        }
-        character.lockboxes = boxes;
+        // A clear pays a key, not a box. The box is the board, and the board is
+        // already on the wall - `ensureCofferStock` puts as many cells behind glass
+        // as the character has left to open.
         character.DragonKeys = Math.max(0, Math.round(Number(character.DragonKeys ?? 0))) + 1;
+        HallowsEve.ensureCofferStock(character);
     }
 
     /**
@@ -1413,14 +1505,14 @@ export class HallowsEve {
         }
         character[KEYS_FIELD] = held - 1;
 
-        const boxes = Array.isArray(character.lockboxes) ? character.lockboxes : [];
-        const entry = boxes.find(
-            (row: any) => Math.round(Number(row?.lockboxID ?? 0)) === HALLOWS_EVE_COFFER_LOCKBOX_ID
-        );
-        if (entry) {
-            entry.count = Math.max(0, Math.round(Number(entry.count ?? 0)) - 1);
-        }
+        // One key, one cell. A board opened to the last cell is replaced, so a
+        // player who works all forty is looking at a full wall again rather than a
+        // wall of empty sockets they can never use.
+        const remaining = HallowsEve.boardRemaining(character) - 1;
+        character[BOARD_FIELD] = remaining > 0 ? remaining : HALLOWS_EVE_BOARD_CELLS;
+
         character.DragonKeys = Math.max(0, Math.round(Number(character.DragonKeys ?? 0)) - 1);
+        HallowsEve.ensureCofferStock(character);
         return true;
     }
 
@@ -1454,23 +1546,13 @@ export class HallowsEve {
      * that cannot be delivered never costs a key.
      */
     static nextPrize(character: any): HallowsEvePrize {
-        const masterClass = String(character?.mMasterClass ?? character?.class ?? '').trim().toLowerCase();
-        const helmGearId = HALLOWS_EVE_HELM_GEAR_IDS[masterClass] ?? 0;
-        if (helmGearId > 0 && !HallowsEve.ownsGear(character, helmGearId)) {
-            return { kind: 'gear', gearId: helmGearId, label: 'a pumpkin helm' };
-        }
-
-        const shelves: Array<{ ids: number[]; label: string }> = [
-            { ids: HALLOWS_EVE_JACK_O_PET_IDS, label: 'a jack-o-lantern' },
-            { ids: HALLOWS_EVE_GARGOYLE_PET_IDS, label: 'a gargoyle' }
-        ];
-        for (const shelf of shelves) {
-            // Ordered, not rolled: the four in each set differ only in which find
-            // bonus they carry, so handing them out in order means a player who
-            // keeps coming back ends up with the set rather than four of one.
-            const missing = shelf.ids.find((petTypeId) => !HallowsEve.ownsPet(character, petTypeId));
-            if (missing !== undefined) {
-                return { kind: 'pet', petTypeId: missing, label: shelf.label };
+        // Cells are spent from the front, so the cell about to be opened is the one
+        // the board has already got through.
+        const opened = HALLOWS_EVE_BOARD_CELLS - HallowsEve.boardRemaining(character);
+        for (let position = opened; position < HALLOWS_EVE_BOARD_CELLS; position += 1) {
+            const prize = HallowsEve.prizeOnShelf(HallowsEve.shelfAt(position), character);
+            if (prize) {
+                return prize;
             }
         }
 
@@ -1480,5 +1562,55 @@ export class HallowsEve {
             gold: HALLOWS_EVE_CONSOLATION_GOLD,
             label: 'candy corn and gold'
         };
+    }
+
+    /**
+     * What one shelf is worth to this character, or null when it has nothing to
+     * give them.
+     *
+     * Null is how a cell is stepped over: a helm they already wear or a pet they
+     * already own is not a prize, and `nextPrize` walks on to the next cell rather
+     * than charging a key for something the character cannot receive.
+     *
+     * The pet shelves are ordered, not rolled. The four in each set differ only in
+     * which find bonus they carry, so handing them out in order means a player who
+     * keeps coming back ends up with the set instead of four of one.
+     */
+    private static prizeOnShelf(shelf: HallowsEveShelf | null, character: any): HallowsEvePrize | null {
+        if (shelf === 'helm') {
+            const masterClass = String(character?.mMasterClass ?? character?.class ?? '').trim().toLowerCase();
+            const helmGearId = HALLOWS_EVE_HELM_GEAR_IDS[masterClass] ?? 0;
+            if (helmGearId > 0 && !HallowsEve.ownsGear(character, helmGearId)) {
+                return { kind: 'gear', gearId: helmGearId, label: 'a pumpkin helm' };
+            }
+            return null;
+        }
+
+        if (shelf === 'gargoyle' || shelf === 'pet') {
+            // The single cell at the front of the board is the rarer set; the eight
+            // behind it are the whole ladder, so between them one board holds all
+            // nine collectables.
+            const ladder =
+                shelf === 'gargoyle'
+                    ? [{ ids: HALLOWS_EVE_GARGOYLE_PET_IDS, label: 'a gargoyle' }]
+                    : [
+                          { ids: HALLOWS_EVE_JACK_O_PET_IDS, label: 'a jack-o-lantern' },
+                          { ids: HALLOWS_EVE_GARGOYLE_PET_IDS, label: 'a gargoyle' }
+                      ];
+            for (const set of ladder) {
+                const missing = set.ids.find((petTypeId) => !HallowsEve.ownsPet(character, petTypeId));
+                if (missing !== undefined) {
+                    return { kind: 'pet', petTypeId: missing, label: set.label };
+                }
+            }
+            return null;
+        }
+
+        if (shelf === 'goldBag' || shelf === 'goldPile') {
+            const gold = shelf === 'goldBag' ? HALLOWS_EVE_GOLD_BAG : HALLOWS_EVE_GOLD_PILE;
+            return { kind: 'consolation', materialId: 0, gold, label: 'gold' };
+        }
+
+        return null;
     }
 }

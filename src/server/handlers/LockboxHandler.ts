@@ -322,17 +322,19 @@ export class LockboxHandler {
      * button, the sparkle fountain and the reward reveal are all the client's and
      * all already work. The server only has to say what came out.
      *
-     * What comes out is `HallowsEve.nextPrize`, not the trove's weighted pool -
-     * the event hands out the hat, then the four jack-o'-lanterns, then the four
-     * gargoyles, in order, so a player who keeps coming back finishes the set
-     * instead of collecting four of one. `applyReward` and `sendLockboxReveal`
-     * are shared with the trove, so the grant and the reveal behave identically.
+     * What comes out is `HallowsEve.nextPrize`, not the trove's weighted pool: the
+     * coffers is a forty-cell board whose contents are printed down the side of its
+     * own panel, and a key opens the next cell on it. `applyReward` and
+     * `sendLockboxReveal` are shared with the trove, so the grant and the reveal
+     * behave identically.
      *
-     * The client has already decremented its own copies of the stack and the key
-     * by the time this runs (`class_131.OpenLockbox` does it locally before it
-     * sends), so both are spent here to match rather than checked and refused -
-     * except for the stack itself, which is the one thing worth guarding: without
-     * it a replayed packet would mint prizes.
+     * The client has already decremented its own copies of the stack and the key by
+     * the time this runs (`class_131.OpenLockbox` does it locally before it sends),
+     * so both are spent here to match rather than checked and refused - except for
+     * the stack itself, which is the one thing worth guarding: without it a replayed
+     * packet would mint prizes. The stack it guards is the board (see
+     * `HallowsEve.ensureCofferStock`), which is zero for a character with no key, so
+     * the guard still refuses exactly what it always refused.
      */
     private static async openHallowsEveCoffer(client: Client): Promise<void> {
         const character = client.character;

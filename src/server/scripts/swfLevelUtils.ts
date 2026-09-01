@@ -50,7 +50,20 @@ export const TAG_PLACE_OBJECT3 = 70;
 export const TAG_DO_ABC = 82;
 export const TAG_DO_ABC_DEPRECATED = 72;
 
-const CHARACTER_TAGS = new Set([2, 4, 6, 10, 11, 13, 20, 21, 22, 32, 34, 35, 36, 39, 46, 48, 75, 83, 84]);
+/**
+ * Tag codes this file treats as a character definition.
+ *
+ * `DefineEditText` (37) is in here even though nothing below draws one. It has to
+ * be: `collectDependencies` walks this map, so leaving it out meant a text field
+ * was never collected, `remapTag` then dropped every placement that pointed at one,
+ * and an imported screen arrived with its labels missing - which is exactly what
+ * happened to the Hallow's Eve coffers panel (its header and its five prize counts
+ * are authored text, and none of them came across). Everything else the round trip
+ * needs was already here: `referencedIds` follows an EditText to its font,
+ * `remapTag` renumbers the FontID, and `attachmentTagsFor` carries the font's
+ * DefineFontName / align zones / CSMTextSettings.
+ */
+const CHARACTER_TAGS = new Set([2, 4, 6, 10, 11, 13, 20, 21, 22, 32, 34, 35, 36, 37, 39, 46, 48, 75, 83, 84]);
 
 // ---------------------------------------------------------------------------
 // File level IO
