@@ -969,6 +969,7 @@ interface Names {
   cursor: number;
   customMouse: number;
   currentCursor: number;
+  screenClosing: number;
   text: number;
   revealStart: number;
   getChildByName: number;
@@ -1748,6 +1749,22 @@ function chromeProgram(names: Names, str: (value: string) => number): Emitted[] 
   // (`CustomMouse.var_2002`), so stepping off a skull hands the cursor back rather
   // than clearing it.
   program.push(
+    // **Not while the screen is going away.**
+    //
+    // `Hide` does not close a screen, it starts closing one: `class_32.method_265`
+    // sets `var_790` and plays the close animation, and the screen goes on being
+    // ticked until that finishes (`Display` clears the flag again on the way back in).
+    // Every one of those ticks used to write the key cursor back over the hand-back
+    // `Hide` had just done - and with a prize still on the ring `var_1929` is held
+    // true, so the branch it took was the waiting key. That is the cursor that was
+    // left on the world until the next swing changed what `CustomMouse` computed.
+    getlocal(0),
+    get(names.screenClosing),
+    { opcode: OP.iffalse, branchTo: "curNotClosing", pop: 1 },
+    ...handBackCursor(names, str, "Tick"),
+    { opcode: OP.jump, branchTo: "afterCursor" },
+    { label: "curNotClosing" },
+
     getlocal(0),
     get(names.revealRunning),
     { opcode: OP.iffalse, branchTo: "curNotReveal", pop: 1 },
@@ -1786,6 +1803,7 @@ function chromeProgram(names: Names, str: (value: string) => number): Emitted[] 
     { opcode: OP.getlex, operands: [["u30", names.mouseClass]], push: 1 },
     getlocal(L_CURSOR),
     set(names.cursor),
+    { label: "afterCursor" },
   );
 
   HIDDEN_ALWAYS.forEach((name, index) => {
@@ -2470,6 +2488,51 @@ function revealDelayPatch(ctx: SwfContext, abc: ReturnType<typeof parseAbc>): By
 }
 
 /**
+ * Puts the mouse back in `CustomMouse`'s hands.
+ *
+ * Writes the cursor that class last applied - or `MouseCursor.AUTO` when it has none,
+ * which is its own fallback - and then clears its memory of what it applied, so its
+ * next tick finds a difference and takes the cursor back. Both halves are needed: a
+ * cleared memory against a computed null is no difference at all, and the mouse would
+ * be left showing whatever this file wrote last.
+ *
+ * Labels belong to a program, hence the tag: the tick and `Hide` both emit this.
+ */
+function handBackCursor(names: Names, str: (value: string) => number, tag: string): Emitted[] {
+  const { get, set, pushString } = emitters(names, str);
+
+  return [
+    { opcode: OP.getlex, operands: [["u30", names.var_1]], push: 1 },
+    get(names.customMouse),
+    { opcode: OP.dup, push: 1 },
+    { opcode: OP.iffalse, branchTo: `noMouse${tag}`, pop: 1 },
+    { opcode: OP.coerce_a },
+    setlocal(L_CURSOR),
+
+    // `Mouse.cursor = cm.var_2002 ? cm.var_2002 : "auto"`.
+    { opcode: OP.getlex, operands: [["u30", names.mouseClass]], push: 1 },
+    getlocal(L_CURSOR),
+    get(names.currentCursor),
+    { opcode: OP.dup, push: 1 },
+    { opcode: OP.iffalse, branchTo: `cursorAuto${tag}`, pop: 1 },
+    { opcode: OP.jump, branchTo: `cursorApply${tag}` },
+    { label: `cursorAuto${tag}` },
+    { opcode: OP.pop, pop: 1 },
+    pushString(CURSOR_AUTO),
+    { label: `cursorApply${tag}` },
+    set(names.cursor),
+
+    getlocal(L_CURSOR),
+    { opcode: OP.pushnull, push: 1 },
+    set(names.currentCursor),
+    { opcode: OP.jump, branchTo: `afterMouse${tag}` },
+    { label: `noMouse${tag}` },
+    { opcode: OP.pop, pop: 1 },
+    { label: `afterMouse${tag}` },
+  ];
+}
+
+/**
  * Gives the mouse back on the way out.
  *
  * The board writes `Mouse.cursor` directly - that is the whole reason the key cursor
@@ -2513,34 +2576,7 @@ function cursorProgram(names: Names, str: (value: string) => number): Emitted[] 
     getlocal(L_FLAG),
     { opcode: OP.iffalse, branchTo: "done", pop: 1 },
 
-    { opcode: OP.getlex, operands: [["u30", names.var_1]], push: 1 },
-    get(names.customMouse),
-    { opcode: OP.dup, push: 1 },
-    { opcode: OP.iffalse, branchTo: "noMouse", pop: 1 },
-    { opcode: OP.coerce_a },
-    setlocal(L_CURSOR),
-
-    // `Mouse.cursor = cm.var_2002 ? cm.var_2002 : "auto"`.
-    { opcode: OP.getlex, operands: [["u30", names.mouseClass]], push: 1 },
-    getlocal(L_CURSOR),
-    get(names.currentCursor),
-    { opcode: OP.dup, push: 1 },
-    { opcode: OP.iffalse, branchTo: "cursorAuto", pop: 1 },
-    { opcode: OP.jump, branchTo: "cursorApply" },
-    { label: "cursorAuto" },
-    { opcode: OP.pop, pop: 1 },
-    pushString(CURSOR_AUTO),
-    { label: "cursorApply" },
-    set(names.cursor),
-
-    // ...and the memory cleared, so the class writes the mouse itself again.
-    getlocal(L_CURSOR),
-    { opcode: OP.pushnull, push: 1 },
-    set(names.currentCursor),
-    { opcode: OP.jump, branchTo: "afterMouse" },
-    { label: "noMouse" },
-    { opcode: OP.pop, pop: 1 },
-    { label: "afterMouse" },
+    ...handBackCursor(names, str, "Close"),
 
     ...epilogue(),
     ...marker,
@@ -2788,6 +2824,10 @@ function patchSwf(swfPath: string, verify: boolean, only: string[] | null): void
     cursor: pool.publicQName("cursor"),
     customMouse: findOperandInClass(ctx, abc, "Game", OP.getproperty, "var_137"),
     currentCursor: findOperandInClass(ctx, abc, "CustomMouse", OP.getproperty, "var_2002"),
+    // `class_32.var_790` - the screen's own "a close is playing" flag. Private to that
+    // class, which is no obstacle: a private name is a namespace, and reading it with
+    // the very multiname that class uses resolves to the same slot.
+    screenClosing: findOperandInClass(ctx, abc, "class_32", OP.getproperty, "var_790"),
     text: pool.publicQName("text"),
     revealStart: inClass(OP.getproperty, "var_2206"),
     openHandler: inClass(OP.getproperty, "method_782"),
