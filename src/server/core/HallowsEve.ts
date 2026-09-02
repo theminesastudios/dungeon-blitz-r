@@ -2,6 +2,7 @@ import { EntityProps, EntityState, EntityTeam } from './Entity';
 import { LevelConfig } from './LevelConfig';
 import { BitBuffer } from '../network/protocol/bitBuffer';
 import { NewsHud } from './NewsHud';
+import { GameData } from './GameData';
 
 /**
  * The little of a session this file needs.
@@ -436,6 +437,15 @@ export const HALLOWS_EVE_MATERIAL_IDS = [121, 122, 123, 124, 125, 126];
 export const HALLOWS_EVE_CONSOLATION_MATERIAL_ID = 123;
 
 /** Gold paid alongside the consolation corn, once the coffers has nothing left. */
+/**
+ * What a board with nothing left to give pays.
+ *
+ * This is only reached when every cell has been stepped over - which used to
+ * happen the moment a character owned all nine collectables, and paid a quarter
+ * of a million gold each time. It is a fallback, not a jackpot: the candy shelf
+ * can always pay now, so reaching this at all means something is wrong, and it
+ * should not be the most profitable thing on the board when it does.
+ */
 export const HALLOWS_EVE_CONSOLATION_GOLD = 250_000;
 
 /** The class helms, by `mMasterClass`. GearIDs 1159..1161. */
@@ -452,51 +462,176 @@ export const HALLOWS_EVE_JACK_O_PET_IDS = [57, 58, 59, 60];
 export const HALLOWS_EVE_GARGOYLE_PET_IDS = [61, 62, 63, 64];
 
 /**
+ * The mount the front cell of the board pays.
+ *
+ * `MountTypes.xml` carries The Nightmare as `MountNightmare`, MountID 10, level 40,
+ * at an idol cost of 999,999,999 - which is the shipped game's way of saying it is
+ * not for sale. Its own description says it outright: *once a year when the moons
+ * align they can be spotted in the darkest of corners*. So it is the event's mount,
+ * and the coffers is where it comes from.
+ *
+ * The name is what travels: `LockboxHandler.applyReward` grants a mount by resolving
+ * `grantName` through `GameData.getMountId`, so `MountNightmare` is the id and the
+ * number below is only for reading a character's own list back.
+ */
+export const HALLOWS_EVE_MOUNT_NAME = 'MountNightmare';
+export const HALLOWS_EVE_MOUNT_DISPLAY_NAME = 'The Nightmare';
+export const HALLOWS_EVE_MOUNT_ID = 10;
+
+/**
  * How many cells the coffers board has, and what is behind them.
  *
  * ## The board is authored, not invented
  *
  * `a_ScreenHalloweenCoffers` ships a forty-cell `am_CofferGroup` and, down its left
- * edge, five icons with five counts printed beside them in `am_TextGroup`:
- * **x1, x1, x8, x10, x20**. Forty. Those five numbers are the board's contents, and
- * the shelves below are them - a key opens one cell, one cell is one prize, and the
- * column beside the wall says what is still in it.
+ * edge, five icons with five counts beside them in `am_TextGroup`. The counts are
+ * `am_PrizeCount0` at the top through `am_PrizeCount4` at the bottom, one per shelf in
+ * this table's order, and they are the board's contents: a key opens one cell, one
+ * cell is one prize, and the column beside the wall says what is in it.
  *
- * The counts are drawn text, not something a screen class sets, so they cannot be
- * made to count down; what they can be is *true*, which is what this table is for.
- * If a shelf here changes, the panel's own printed number is the thing that has to
- * change with it - see `patch-ui4-hallows-eve-coffer-skin.ts`.
+ * They are editable text fields with instance names, so they are *written* rather than
+ * drawn - `patch-dungeonblitz-hallows-eve-coffer-screen.ts` sets all five from its own
+ * `PRIZE_COUNTS`. **If a shelf here changes, that list has to change with it**, or the
+ * wall will be advertising a board it does not hold.
  *
  * ## The order, and what a shelf pays
  *
  * Cells are spent from the front, so the order here is the order a player meets
- * them: the two singles first, then the pets, then the two gold shelves. A shelf
+ * them: the mount first, then the helm, then the eight pets, the ten materials and
+ * the twenty gold cells. A shelf
  * that cannot pay a particular character - the helm they already own, a pet they
  * already have - is stepped over rather than wasted, which is the rule
  * `nextPrize` was already written around.
  *
- * `gargoyle` and `pet` both draw from the pet ladder; between them a whole board
- * holds all nine of the event's collectables, so a player who works one board
- * through finishes the set rather than needing nine of them.
+ * The front two cells are the mount - The Nightmare, one to a board and nowhere else
+ * in the game - and the class helm. Behind them the eight pets, one cell each, so a
+ * worked board finishes the set rather than needing eight boards for it. The last two
+ * shelves are the board paying out: ten materials, of which four are the event's own
+ * Candy Corn, and twenty cells of gold.
  */
 export const HALLOWS_EVE_BOARD_CELLS = 40;
 
-export type HallowsEveShelf = 'gargoyle' | 'helm' | 'pet' | 'goldBag' | 'goldPile';
+/**
+ * `gargoyle` is the pet shelf's old spelling, and `goldBag` a shelf no board deals.
+ *
+ * Both are still read, because a character's dealt board lives on them as
+ * `hallowsEveBoardLayout` - forty of these strings - and boards dealt under an earlier
+ * table are still out there carrying either name. A shelf nothing answers to is not an
+ * error (`prizeOnShelf` returns null and `nextPrize` steps over the cell) but it would
+ * quietly turn those cells into something else, so the branches stay until the boards
+ * holding them are gone.
+ */
+export type HallowsEveShelf = 'mount' | 'pet' | 'gargoyle' | 'helm' | 'candy' | 'goldBag' | 'goldPile';
 
 const HALLOWS_EVE_BOARD: Array<{ shelf: HallowsEveShelf; cells: number }> = [
-    { shelf: 'gargoyle', cells: 1 },
+    { shelf: 'mount', cells: 1 },
     { shelf: 'helm', cells: 1 },
     { shelf: 'pet', cells: 8 },
-    { shelf: 'goldBag', cells: 10 },
+    { shelf: 'candy', cells: 10 },
     { shelf: 'goldPile', cells: 20 }
 ];
 
-/** What the two gold shelves are worth. */
-const HALLOWS_EVE_GOLD_BAG = 100_000;
-const HALLOWS_EVE_GOLD_PILE = 25_000;
+/**
+ * Candy Corn - the event's own Legendary crafting material.
+ *
+ * `MaterialTypes.xml` carries six of these on `DropRealm SpecialHalloween`, one
+ * per kingdom (121..126), all displaying as "Candy Corn". They are the icon the
+ * panel draws on its eight-cell shelf, and they were the one prize on the board
+ * with nowhere to come from - which is why that shelf used to walk on and pay
+ * gold, and why a finished collection turned the whole board into a gold
+ * dispenser.
+ *
+ * The kingdom is picked from the cell rather than fixed, so a board hands out a
+ * spread instead of eight of one - a recipe wants a particular kingdom, and eight
+ * Infernal candies buy nothing Sylvan.
+ */
+export const HALLOWS_EVE_CANDY_MATERIAL_IDS = [121, 122, 123, 124, 125, 126];
+
+/**
+ * How many of the ten material cells are Candy Corn.
+ *
+ * All of them being candy made the shelf a single prize repeated, and the event's own
+ * material is worth more when it is not the only thing behind that icon. The other six
+ * are drawn from the rest of the game's Legendary materials, so the shelf pays
+ * something different more often than not and the candy is still the thing it is
+ * remembered for.
+ */
+const HALLOWS_EVE_CANDY_CELLS = 4;
+
+/**
+ * Every Legendary material that is not one of the event's own.
+ *
+ * Read once, lazily - `GameData.MATERIALS` is loaded at boot and this module is
+ * imported before that finishes, so reading it at module scope would find it
+ * empty. Falls back to the candy itself if the table is unavailable, which is
+ * worse than a mix but never worse than a crash.
+ */
+let hallowsEveOtherMaterials: number[] | null = null;
+
+function otherLegendaryMaterials(): number[] {
+    if (hallowsEveOtherMaterials) {
+        return hallowsEveOtherMaterials;
+    }
+    const rows = Array.isArray(GameData.MATERIALS) ? GameData.MATERIALS : [];
+    const ids = rows
+        .filter((row: any) => String(row?.Rarity ?? '').trim().toUpperCase() === 'L')
+        .map((row: any) => Math.round(Number(row?.MaterialID ?? 0)))
+        .filter((id: number) => id > 0 && !HALLOWS_EVE_CANDY_MATERIAL_IDS.includes(id));
+    hallowsEveOtherMaterials = ids.length > 0 ? ids : [...HALLOWS_EVE_CANDY_MATERIAL_IDS];
+    return hallowsEveOtherMaterials;
+}
+
+/**
+ * What the two gold shelves are worth.
+ *
+ * These are not free numbers. The reveal packet carries a *slot index*, and the
+ * client draws the reward card from its own twenty-entry table rather than from
+ * anything the server says - so a coffer paying 25,000 through the slot labelled
+ * `250,000 Gold` had the card announcing a quarter of a million every time while
+ * the character was credited a tenth of it.
+ *
+ * The two amounts the client can actually name are 250,000 and 500,000, so those
+ * are the two the shelves pay. The card, the banner and the gold that lands in
+ * the bag now all say the same thing.
+ */
+const HALLOWS_EVE_GOLD_BAG = 500_000;
+const HALLOWS_EVE_GOLD_PILE = 250_000;
+
+/**
+ * What one of the twenty gold cells rolls.
+ *
+ * The shelf pays a different amount each time rather than the same 250,000 twenty
+ * times, and the two entries are not a free choice: read the note above these
+ * constants. The reveal card is drawn by the client from its own twenty-entry table,
+ * by slot index, so the only amounts a coffer can *announce* are the ones that table
+ * already names. Rolling anything else would print one number and pay another.
+ *
+ * Weighted by repetition rather than by a table of chances - three parts pile to one
+ * part bag - so the twenty-cell shelf stays the cheaper of the two on average and the
+ * ten bags above it are still the better find.
+ */
+const HALLOWS_EVE_GOLD_ROLL = [
+    HALLOWS_EVE_GOLD_PILE,
+    HALLOWS_EVE_GOLD_PILE,
+    HALLOWS_EVE_GOLD_PILE,
+    HALLOWS_EVE_GOLD_BAG
+];
 
 /** How many cells are left on this character's board. Absent means untouched. */
 const BOARD_FIELD = 'hallowsEveBoardRemaining';
+
+/**
+ * Where each prize sits on this character's board.
+ *
+ * The shelves fix *how many* of each prize a board holds, not where they are.
+ * Handing them out in shelf order made the board readable from the outside - the
+ * pet was always the first skull, the gold always the last thirty - so a board is
+ * dealt once, shuffled, and remembered. The counts are exactly the ones printed
+ * down the side of the panel; only the order is chance.
+ *
+ * Cleared when the board refills, so the next wall is a fresh deal.
+ */
+const LAYOUT_FIELD = 'hallowsEveBoardLayout';
 
 /**
  * The two questions the square asks, and how they are asked.
@@ -549,6 +684,8 @@ interface PendingPrompt {
 export type HallowsEvePrize =
     | { kind: 'gear'; gearId: number; label: string }
     | { kind: 'pet'; petTypeId: number; label: string }
+    | { kind: 'mount'; mountName: string; mountId: number; label: string }
+    | { kind: 'material'; materialId: number; label: string }
     | { kind: 'consolation'; materialId: number; gold: number; label: string };
 
 function normalizeName(value: unknown): string {
@@ -829,16 +966,39 @@ export class HallowsEve {
         return Math.min(HALLOWS_EVE_BOARD_CELLS, Math.max(0, raw));
     }
 
-    /** Which shelf the cell at `position` (0-based, from the front) belongs to. */
-    private static shelfAt(position: number): HallowsEveShelf | null {
-        let start = 0;
-        for (const shelf of HALLOWS_EVE_BOARD) {
-            if (position < start + shelf.cells) {
-                return shelf.shelf;
-            }
-            start += shelf.cells;
+    /**
+     * This character's board, dealt and shuffled if they do not have one yet.
+     *
+     * Stored rather than re-rolled so that a board keeps its answer: the cell
+     * behind the third skull has to be the same prize on the next open as it was
+     * on this one, or the board is not a board.
+     */
+    private static layout(character: any): HallowsEveShelf[] {
+        const held = character?.[LAYOUT_FIELD];
+        if (Array.isArray(held) && held.length === HALLOWS_EVE_BOARD_CELLS) {
+            return held as HallowsEveShelf[];
         }
-        return null;
+
+        const cells: HallowsEveShelf[] = [];
+        for (const shelf of HALLOWS_EVE_BOARD) {
+            for (let n = 0; n < shelf.cells; n += 1) {
+                cells.push(shelf.shelf);
+            }
+        }
+        // Fisher-Yates, so every arrangement of the forty is equally likely.
+        for (let i = cells.length - 1; i > 0; i -= 1) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cells[i], cells[j]] = [cells[j], cells[i]];
+        }
+        if (character) {
+            character[LAYOUT_FIELD] = cells;
+        }
+        return cells;
+    }
+
+    /** Which shelf the cell at `position` (0-based, from the front) belongs to. */
+    private static shelfAt(character: any, position: number): HallowsEveShelf | null {
+        return HallowsEve.layout(character)[position] ?? null;
     }
 
     /**
@@ -900,6 +1060,77 @@ export class HallowsEve {
         return changed;
     }
 
+    /**
+     * Takes the event's collectables back off a character.
+     *
+     * The board only pays what the character does not already own, so once the mount,
+     * the helm and the pets are collected those cells step over themselves and there
+     * is no way to see them pay again. This is how a tester gets a second look.
+     *
+     * The helm goes from the body as well as the bag: it is one gear id in two lists,
+     * and leaving the equipped copy behind would leave `ownsGear` answering true and
+     * the shelf still stepping over itself. All three classes' helms are taken, not
+     * only this character's, because a character can change nothing about which one
+     * the shelf offers and a stale copy of another class's is just as owned.
+     */
+    static clearCollectables(character: any): { pets: number; helms: number; mounts: number } {
+        const removed = { pets: 0, helms: 0, mounts: 0 };
+        if (!character) {
+            return removed;
+        }
+
+        const petIds = [...HALLOWS_EVE_JACK_O_PET_IDS, ...HALLOWS_EVE_GARGOYLE_PET_IDS];
+        const pets = Array.isArray(character.pets) ? character.pets : [];
+        const keptPets = pets.filter(
+            (pet: any) => !petIds.includes(Math.round(Number(pet?.typeID ?? pet?.petID ?? 0)))
+        );
+        removed.pets = pets.length - keptPets.length;
+        character.pets = keptPets;
+
+        const helmIds = Object.values(HALLOWS_EVE_HELM_GEAR_IDS);
+        for (const field of ['inventoryGears', 'equippedGears']) {
+            const gears = Array.isArray(character[field]) ? character[field] : [];
+            const kept = gears.filter(
+                (gear: any) => !helmIds.includes(Math.round(Number(gear?.gearID ?? gear?.GearID ?? 0)))
+            );
+            removed.helms += gears.length - kept.length;
+            character[field] = kept;
+        }
+
+        const mounts = Array.isArray(character.mounts) ? character.mounts : [];
+        const keptMounts = mounts.filter((mount: any) => Math.round(Number(mount ?? 0)) !== HALLOWS_EVE_MOUNT_ID);
+        removed.mounts = mounts.length - keptMounts.length;
+        character.mounts = keptMounts;
+
+        return removed;
+    }
+
+    /**
+     * Puts every skull back on the wall, and deals the board again.
+     *
+     * The board refills on its own when the last cell is opened (see `spendKey`);
+     * this is the same thing on demand, for testing a board without working through
+     * the forty cells left on it.
+     *
+     * The layout goes with the cells. A refilled wall that kept its old deal would
+     * be a wall whose answers are already known - which is exactly what `spendKey`
+     * avoids by clearing `LAYOUT_FIELD` when it replaces a board.
+     *
+     * Returns how many cells were added, because that is what the client needs: its
+     * `mOwnedLockboxes` copy is updated by a *delta* packet (0x104), so the caller
+     * can put the skulls back on a screen that is already open rather than waiting
+     * for the next login.
+     */
+    static refreshBoard(character: any): number {
+        if (!character) {
+            return 0;
+        }
+        const before = HallowsEve.boardRemaining(character);
+        character[BOARD_FIELD] = HALLOWS_EVE_BOARD_CELLS;
+        delete character[LAYOUT_FIELD];
+        HallowsEve.ensureCofferStock(character);
+        return HALLOWS_EVE_BOARD_CELLS - before;
+    }
     static buildCoffersEntity(levelName?: string | null): EntityProps & Record<string, unknown> {
         // Facing left, back towards the arch the keys come out of.
         return buildProp(
@@ -1049,6 +1280,13 @@ export class HallowsEve {
 
     /**
      * Raises the coffers question, wherever the player is standing.
+     *
+     * **Nothing calls this any more.** It stood in for the coffer board while the
+     * board would not open; now that it does, a second window over the first - which
+     * also prints its question into the chat log - is worse than none. The answer
+     * side is still wired (`NpcHandler.tryHandleHallowsEvePromptAnswer` pays a
+     * `coffers` yes through the same `spendKey` and `nextPrize`), so raising it again
+     * is one call away if the client screen is ever lost.
      *
      * Returns false when there is no key to spend, which is the one case the
      * window has nothing to say - the caller decides whether that deserves a line
@@ -1510,16 +1748,51 @@ export class HallowsEve {
         // wall of empty sockets they can never use.
         const remaining = HallowsEve.boardRemaining(character) - 1;
         character[BOARD_FIELD] = remaining > 0 ? remaining : HALLOWS_EVE_BOARD_CELLS;
+        if (remaining <= 0) {
+            // A fresh wall gets a fresh shuffle rather than the same forty in the
+            // same order, which a player who worked one board would already know.
+            delete character[LAYOUT_FIELD];
+        }
 
         character.DragonKeys = Math.max(0, Math.round(Number(character.DragonKeys ?? 0)) - 1);
         HallowsEve.ensureCofferStock(character);
         return true;
     }
 
+    /**
+     * Adds one of a material to the character's stock, creating the row if new.
+     *
+     * Both ways of opening a coffer need this - the Herald and the screen - and
+     * the screen's route cannot borrow `LockboxHandler.applyReward` for it: that
+     * one resolves a *consumable* by name, and Candy Corn is a material, so the
+     * lookup came back zero and the candy was announced but never handed over.
+     */
+    static grantMaterial(character: any, materialId: number): void {
+        if (!character || materialId <= 0) {
+            return;
+        }
+        const materials = Array.isArray(character.materials) ? character.materials : [];
+        const entry = materials.find(
+            (row: any) => Math.round(Number(row?.materialID ?? 0)) === materialId
+        );
+        if (entry) {
+            entry.count = Math.max(0, Math.round(Number(entry.count ?? 0))) + 1;
+        } else {
+            materials.push({ materialID: materialId, count: 1 });
+        }
+        character.materials = materials;
+    }
+
     /** Whether the character already owns a pet of this type. */
     static ownsPet(character: any, petTypeId: number): boolean {
         const pets = Array.isArray(character?.pets) ? character.pets : [];
         return pets.some((pet: any) => Math.round(Number(pet?.typeID ?? pet?.petID ?? 0)) === petTypeId);
+    }
+
+    /** Whether the character already keeps this mount in the stable. */
+    static ownsMount(character: any, mountId: number): boolean {
+        const mounts = Array.isArray(character?.mounts) ? character.mounts : [];
+        return mounts.some((mount: any) => Math.round(Number(mount ?? 0)) === mountId);
     }
 
     /** Whether the character already has this gear in the bag or on the body. */
@@ -1550,7 +1823,7 @@ export class HallowsEve {
         // the board has already got through.
         const opened = HALLOWS_EVE_BOARD_CELLS - HallowsEve.boardRemaining(character);
         for (let position = opened; position < HALLOWS_EVE_BOARD_CELLS; position += 1) {
-            const prize = HallowsEve.prizeOnShelf(HallowsEve.shelfAt(position), character);
+            const prize = HallowsEve.prizeOnShelf(HallowsEve.shelfAt(character, position), character, position);
             if (prize) {
                 return prize;
             }
@@ -1576,7 +1849,23 @@ export class HallowsEve {
      * which find bonus they carry, so handing them out in order means a player who
      * keeps coming back ends up with the set instead of four of one.
      */
-    private static prizeOnShelf(shelf: HallowsEveShelf | null, character: any): HallowsEvePrize | null {
+    private static prizeOnShelf(
+        shelf: HallowsEveShelf | null,
+        character: any,
+        position: number
+    ): HallowsEvePrize | null {
+        if (shelf === 'mount') {
+            if (!HallowsEve.ownsMount(character, HALLOWS_EVE_MOUNT_ID)) {
+                return {
+                    kind: 'mount',
+                    mountName: HALLOWS_EVE_MOUNT_NAME,
+                    mountId: HALLOWS_EVE_MOUNT_ID,
+                    label: HALLOWS_EVE_MOUNT_DISPLAY_NAME
+                };
+            }
+            return null;
+        }
+
         if (shelf === 'helm') {
             const masterClass = String(character?.mMasterClass ?? character?.class ?? '').trim().toLowerCase();
             const helmGearId = HALLOWS_EVE_HELM_GEAR_IDS[masterClass] ?? 0;
@@ -1586,17 +1875,16 @@ export class HallowsEve {
             return null;
         }
 
-        if (shelf === 'gargoyle' || shelf === 'pet') {
-            // The single cell at the front of the board is the rarer set; the eight
-            // behind it are the whole ladder, so between them one board holds all
-            // nine collectables.
-            const ladder =
-                shelf === 'gargoyle'
-                    ? [{ ids: HALLOWS_EVE_GARGOYLE_PET_IDS, label: 'a gargoyle' }]
-                    : [
-                          { ids: HALLOWS_EVE_JACK_O_PET_IDS, label: 'a jack-o-lantern' },
-                          { ids: HALLOWS_EVE_GARGOYLE_PET_IDS, label: 'a gargoyle' }
-                      ];
+        if (shelf === 'pet' || shelf === 'gargoyle') {
+            // Eight cells, eight pets: the four jack-o-lanterns first, then the four
+            // gargoyles behind them. Each cell pays the next one the character does
+            // not own, and ownership is read again on every open, so a board hands out
+            // eight *different* pets rather than the same one eight times - and one
+            // worked board finishes the set.
+            const ladder = [
+                { ids: HALLOWS_EVE_JACK_O_PET_IDS, label: 'a jack-o-lantern' },
+                { ids: HALLOWS_EVE_GARGOYLE_PET_IDS, label: 'a gargoyle' }
+            ];
             for (const set of ladder) {
                 const missing = set.ids.find((petTypeId) => !HallowsEve.ownsPet(character, petTypeId));
                 if (missing !== undefined) {
@@ -1606,8 +1894,33 @@ export class HallowsEve {
             return null;
         }
 
+        if (shelf === 'candy') {
+            // Which of the ten material cells this is. The layout is already
+            // shuffled, so counting them in board order is enough to make the split
+            // fall in a different place on every board.
+            const nth = HallowsEve.layout(character)
+                .slice(0, position)
+                .filter((cell) => cell === 'candy').length;
+            if (nth < HALLOWS_EVE_CANDY_CELLS) {
+                // Kingdom off the cell, so the candy cells spread across the six
+                // rather than handing out four of one - a recipe wants a particular
+                // kingdom, and four Infernal candies buy nothing Sylvan.
+                const materialId =
+                    HALLOWS_EVE_CANDY_MATERIAL_IDS[position % HALLOWS_EVE_CANDY_MATERIAL_IDS.length];
+                return { kind: 'material', materialId, label: 'Candy Corn' };
+            }
+            const pool = otherLegendaryMaterials();
+            const materialId = pool[Math.floor(Math.random() * pool.length)];
+            return { kind: 'material', materialId, label: 'a rare material' };
+        }
+
         if (shelf === 'goldBag' || shelf === 'goldPile') {
-            const gold = shelf === 'goldBag' ? HALLOWS_EVE_GOLD_BAG : HALLOWS_EVE_GOLD_PILE;
+            // The bags are the fixed shelf; the twenty piles are the rolled one. See
+            // `HALLOWS_EVE_GOLD_ROLL`.
+            const gold =
+                shelf === 'goldBag'
+                    ? HALLOWS_EVE_GOLD_BAG
+                    : HALLOWS_EVE_GOLD_ROLL[Math.floor(Math.random() * HALLOWS_EVE_GOLD_ROLL.length)];
             return { kind: 'consolation', materialId: 0, gold, label: 'gold' };
         }
 

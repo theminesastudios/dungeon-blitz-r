@@ -8,7 +8,12 @@ import { ensureSigilStoreAlertState } from '../utils/AlertState';
 import { upsertInventoryGear } from '../utils/GearInventory';
 import { PetHandler } from './PetHandler';
 import { RewardHandler } from './RewardHandler';
-import { HallowsEve, HALLOWS_EVE_COFFER_LOCKBOX_ID, HallowsEvePrize } from '../core/HallowsEve';
+import {
+    HallowsEve,
+    HALLOWS_EVE_CANDY_MATERIAL_IDS,
+    HALLOWS_EVE_COFFER_LOCKBOX_ID,
+    HallowsEvePrize
+} from '../core/HallowsEve';
 
 const db = new JsonAdapter();
 
@@ -45,7 +50,27 @@ const HALLOWS_EVE_PET_DISPLAY_NAMES: Record<number, string> = {
  * index means to it, so a coffer prize has to point at a slot that draws the same
  * sort of thing: 1 is the pool's pet, 8 its class gear, 18 its gold.
  */
-const HALLOWS_EVE_REVEAL_SLOT = { pet: 1, gear: 8, gold: 18 } as const;
+/**
+ * Which slot of the client's reward table each coffer prize borrows.
+ *
+ * The reveal packet sends an index, and the client draws the card - icon and,
+ * for gold, the amount - from its own table entry for that index. It only reads
+ * the name the server sends for slots that do not carry a name of their own.
+ *
+ * So a prize has to borrow a slot that tells the truth about it: `goldBig` is the
+ * 500,000 entry and `gold` the 250,000 one, and Candy Corn rides a catalyst slot,
+ * which is the closest the table has to a crafting material and lets the server's
+ * own name through onto the card.
+ */
+const HALLOWS_EVE_REVEAL_SLOT = {
+    mount: 0,
+    pet: 1,
+    gear: 8,
+    otherMaterial: 14,
+    material: 15,
+    goldBig: 17,
+    gold: 18
+} as const;
 
 type LockboxRewardType = 'mount' | 'pet' | 'egg' | 'consumable' | 'gear' | 'charm' | 'gold' | 'dye';
 
@@ -351,11 +376,14 @@ export class LockboxHandler {
         // One call, not three: `spendKey` moves the event's own count, the coffer
         // stack and the Dragon Key together, so opening here and opening at the
         // Herald cost exactly the same thing.
+        // The prize is read *before* the key is spent. `spendKey` moves the board
+        // on by a cell, so asking after it would answer for the next skull and the
+        // one actually clicked would never pay - the front cell of every board was
+        // being skipped.
+        const prize = HallowsEve.nextPrize(character);
         if (!HallowsEve.spendKey(character)) {
             return;
         }
-
-        const prize = HallowsEve.nextPrize(character);
         const reward = LockboxHandler.buildHallowsEveReward(prize);
         LockboxHandler.sendLockboxReveal(client, reward);
 
@@ -366,6 +394,13 @@ export class LockboxHandler {
             `remainingCoffers=${LockboxHandler.getLockboxCount(character, HALLOWS_EVE_COFFER_LOCKBOX_ID)} ` +
             `remainingKeys=${Number(character.DragonKeys ?? 0)}`
         );
+
+        // `applyReward` cannot deliver a material - it resolves the catalyst slot
+        // this prize borrows as a *consumable* by name, and Candy Corn is not one,
+        // so it quietly grants nothing. The material is handed over here instead.
+        if (prize.kind === 'material') {
+            HallowsEve.grantMaterial(character, prize.materialId);
+        }
 
         await LockboxHandler.applyReward(client, reward);
         await LockboxHandler.saveCharacter(client);
@@ -403,6 +438,20 @@ export class LockboxHandler {
             };
         }
 
+        if (prize.kind === 'mount') {
+            // `applyReward` resolves a mount by name through `GameData.getMountId`, so
+            // the grant name is the `MountName` from `MountTypes.xml` rather than
+            // anything a player reads.
+            return {
+                index: HALLOWS_EVE_REVEAL_SLOT.mount,
+                type: 'mount',
+                grantName: prize.mountName,
+                packetName: prize.label,
+                rarity: 'Legendary',
+                selectionDebug
+            };
+        }
+
         if (prize.kind === 'pet') {
             const petName = HALLOWS_EVE_PET_NAMES[prize.petTypeId] ?? '';
             const displayName = HALLOWS_EVE_PET_DISPLAY_NAMES[prize.petTypeId] ?? prize.label;
@@ -416,8 +465,31 @@ export class LockboxHandler {
             };
         }
 
+        if (prize.kind === 'material') {
+            // A catalyst slot, not a gold one: the gold slots carry their own
+            // amount and would print it over the candy's name. The grant itself
+            // happens in `NpcHandler` and in `applyReward`.
+            // Only the event's own candy may use slot 15 - that row has been
+            // renamed and re-iconed to *be* Candy Corn, so anything else sent
+            // through it would arrive wearing the wrong name and picture. The
+            // other materials take the neighbouring catalyst slot, which still
+            // says what it is.
+            const candy = HALLOWS_EVE_CANDY_MATERIAL_IDS.includes(prize.materialId);
+            return {
+                index: candy
+                    ? HALLOWS_EVE_REVEAL_SLOT.material
+                    : HALLOWS_EVE_REVEAL_SLOT.otherMaterial,
+                type: 'consumable',
+                grantName: prize.label,
+                packetName: prize.label,
+                rarity: 'Legendary',
+                selectionDebug
+            };
+        }
+
         return {
-            index: HALLOWS_EVE_REVEAL_SLOT.gold,
+            // Whichever of the two nameable gold slots matches what is being paid.
+            index: prize.gold >= 500000 ? HALLOWS_EVE_REVEAL_SLOT.goldBig : HALLOWS_EVE_REVEAL_SLOT.gold,
             type: 'gold',
             grantName: `${prize.gold.toLocaleString('en-US')} Gold`,
             packetName: `${prize.gold.toLocaleString('en-US')} Gold`,
@@ -922,6 +994,21 @@ export class LockboxHandler {
         client.sendBitBuffer(0xB5, bb);
     }
 
+    /**
+     * Moves a client's own copy of a lockbox stack, without a relog.
+     *
+     * `mOwnedLockboxes` arrives with the player data and is then kept by deltas, so
+     * anything that changes a stack mid-session has to say by how much. The coffer
+     * board is that stack (see `HallowsEve.ensureCofferStock`), which is why a board
+     * refresh needs this: the screen redraws its skulls from the number the client
+     * is holding, and nothing else tells it the number moved.
+     */
+    static syncLockboxCount(client: Client, lockboxId: number, delta: number): void {
+        if (!client || !Number.isFinite(delta) || delta === 0) {
+            return;
+        }
+        LockboxHandler.sendLockboxInventoryDelta(client, lockboxId, Math.round(delta));
+    }
     private static sendLockboxInventoryDelta(client: Client, lockboxId: number, delta: number): void {
         const bb = new BitBuffer(false);
         bb.writeMethod6(lockboxId, 2);

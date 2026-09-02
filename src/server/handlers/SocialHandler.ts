@@ -11,6 +11,8 @@ import { GuildHandler } from './GuildHandler';
 import { NpcHandler } from './NpcHandler';
 import { LevelHandler } from './LevelHandler';
 import { MissionHandler } from './MissionHandler';
+import { LockboxHandler } from './LockboxHandler';
+import { HallowsEve, HALLOWS_EVE_BOARD_CELLS, HALLOWS_EVE_COFFER_LOCKBOX_ID } from '../core/HallowsEve';
 import { PetHandler } from './PetHandler';
 import { DialogueTranslationLoader } from '../data/DialogueTranslationLoader';
 import { LegendsInnDialogue } from '../core/LegendsInnDialogue';
@@ -290,6 +292,94 @@ export class SocialHandler {
         const hidden = report.byTarget.length - SocialHandler.DAMAGE_METER_MAX_ROWS;
         if (hidden > 0) {
             SocialHandler.sendChatStatus(client, `  ... and ${hidden} more enemy types.`);
+        }
+        return true;
+    }
+
+    /**
+     * Puts a full wall of skulls back, for testing a board without opening forty.
+     *
+     * `kurukafa: yenile` - and the bare `kurukafa:` - deal the board again and hand
+     * the client the difference, so an open coffer screen fills back in where it
+     * stands.
+     *
+     * `kurukafa: sifirla` does that *and* takes the event's collectables back off the
+     * character - the eight pets, the three pumpkin helms, The Nightmare. Those cells
+     * only pay what a character does not already own, so without this a collected
+     * board can never be watched paying them again. The client keeps its own copy of
+     * the stable and the pet list until the next login, so what it draws after this is
+     * one login behind.
+     *
+     * The slashless form is the one that can arrive:
+     * `class_127.method_1940` is a hardcoded allowlist and answers "Unknown Command"
+     * locally to any `/word` it does not know, so the slash spelling is matched here
+     * only so it starts working if that list is ever patched.
+     *
+     * Gated on the maintenance allowlist, and not for tidiness: a board is forty
+     * prizes, so a player who could refill their own would have an unlimited one.
+     */
+    private static async handleCofferBoardCommand(client: Client, message: string): Promise<boolean> {
+        // The colon is required. Without it the word alone is chat, and swallowing
+        // "coffers" out of a sentence is worse than the command being one keystroke
+        // longer.
+        const match = /^[\\/]?(?:kurukafa|kurukafalar|kuru\s*kafa|coffer|coffers)\s*:\s*(.*)$/i.exec(
+            String(message ?? '').trim()
+        );
+        if (!match) {
+            return false;
+        }
+
+        const argument = match[1].trim().toLowerCase();
+        const refresh = ['', 'yenile', 'yenıle', 'refresh'].includes(argument);
+        const wipe = ['sifirla', 'sıfırla', 'reset', 'temizle', 'kaldir', 'kaldır', 'sil', 'wipe'].includes(
+            argument
+        );
+        if (!refresh && !wipe) {
+            return false;
+        }
+
+        const email = String(client.account?.email ?? '').trim().toLowerCase();
+        // Logged on the way in, not only on the way out: a command that is typed and
+        // does nothing looks exactly like a command that never arrived, and one line
+        // here tells the two apart without another round of guessing.
+        console.log(
+            `[HallowsEve] coffer command from ${String(client.character?.name ?? 'Unknown')} ` +
+                `<${email || 'no-email'}>: argument="${argument}" mode=${wipe ? 'wipe' : 'refresh'}`
+        );
+        if (!SocialHandler.MAINTENANCE_COMMAND_EMAILS.has(email)) {
+            SocialHandler.sendChatStatus(client, 'You are not authorized to refresh the coffer board.');
+            return true;
+        }
+
+        const character = client.character;
+        if (!character) {
+            SocialHandler.sendChatStatus(client, 'No character to refresh.');
+            return true;
+        }
+
+        const cleared = wipe ? HallowsEve.clearCollectables(character) : null;
+        const added = HallowsEve.refreshBoard(character);
+        LockboxHandler.syncLockboxCount(client, HALLOWS_EVE_COFFER_LOCKBOX_ID, added);
+        if (client.userId) {
+            await db.saveCharacters(client.userId, client.characters);
+        }
+
+        SocialHandler.sendChatStatus(
+            client,
+            added > 0
+                ? `Coffer board refreshed: ${added} skulls back, ${HALLOWS_EVE_BOARD_CELLS} on the wall, freshly dealt.`
+                : `Coffer board re-dealt: ${HALLOWS_EVE_BOARD_CELLS} skulls were already on the wall.`
+        );
+        if (cleared) {
+            console.log(
+                `[HallowsEve] collectables cleared for ${String(character.name ?? 'Unknown')}: ` +
+                    `${cleared.pets} pets, ${cleared.helms} helm copies, ${cleared.mounts} mounts`
+            );
+            SocialHandler.sendChatStatus(
+                client,
+                `Collectables cleared: ${cleared.pets} pets, ${cleared.helms} helm copies, ` +
+                    `${cleared.mounts} mount. Log out and back in to see it.`
+            );
         }
         return true;
     }
@@ -1476,6 +1566,10 @@ export class SocialHandler {
         }
 
         if (SocialHandler.handleDamageMeterCommand(client, message)) {
+            return;
+        }
+
+        if (await SocialHandler.handleCofferBoardCommand(client, message)) {
             return;
         }
 

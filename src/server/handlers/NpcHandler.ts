@@ -1000,32 +1000,23 @@ export class NpcHandler {
         // Herald goes back to being what he is - the man who tells you what the
         // grid is for.
 
-        // **With a key in hand he opens the coffers himself.**
+        // **He only ever talks.** The board is the client's own work: his cue is
+        // `Special_TreasureTrove`, and `Game.method_668`'s arm for that name opens
+        // `screenLockBox` - the panel the seasonal grid is laid into - with the
+        // server not involved at all.
         //
-        // The client is supposed to do this: his cue is `Special_TreasureTrove`, and
-        // `Game.method_668`'s arm for that name opens `screenLockBox` - the panel the
-        // seasonal board is laid into - without the server being involved at all.
-        // That has stopped happening and has not been explained: the click reaches
-        // here (this bubble is the proof), `method_662` should pass on a stack of
-        // forty, and every static check on the patched client comes back clean.
+        // For a while he also raised `raiseCoffersPrompt`, an `a_DialogBox` Yes/No
+        // that spent the key server-side. That was a floor to stand on while the
+        // board would not open; with the board working it is a second window over
+        // the first, and it prints its question into the chat log as well. Gone.
         //
-        // So the key stops depending on it. `raiseCoffersPrompt` is the same coffers,
-        // asked through `a_DialogBox` on 0x58 - a window the server draws itself -
-        // and a Yes runs `grantHallowsEvePrize`, which is the same `spendKey` and the
-        // same `nextPrize` the board would have used. It returns false when there is
-        // no key, which is exactly when he should be talking instead.
-        //
-        // This is a floor, not the destination: when the board opens again it will
-        // open on the same click, and this raise comes back out.
-        if (HallowsEve.raiseCoffersPrompt(client)) {
-            return;
-        }
-
-        // No key, so there is nothing to unlock. He only falls back on the coffers
-        // line when the coffers is the answer - the player is waiting on the clock,
-        // or has never cleared the arena. The rest of the time he has a square to
-        // herald.
-        const waiting = HallowsEve.secondsUntilNextKey(character) > 0 || Math.random() < 0.25;
+        // The clock line is gated on actually having no key. `secondsUntilNextKey`
+        // is the wait for the *next* key and runs for twelve hours after a clear
+        // whether or not the one it paid has been spent, so on its own it told
+        // players holding a fistful of keys that they had none.
+        const waiting =
+            HallowsEve.getKeys(character) <= 0 &&
+            (HallowsEve.secondsUntilNextKey(character) > 0 || Math.random() < 0.25);
         NpcHandler.sendNpcBubble(
             client,
             npcId,
@@ -1103,6 +1094,22 @@ export class NpcHandler {
 
         if (prize.kind === 'gear') {
             delivered = upsertInventoryGear(character, prize.gearId, 0, [0, 0, 0], [0, 0]).inserted;
+        } else if (prize.kind === 'mount') {
+            // The stable is a plain list of ids. `sendMountReward` on the lockbox path
+            // is 0x36 with the id and a suppress flag, and the Herald wants the same
+            // window the coffer screen gets, so the flag is false here too.
+            const mounts = Array.isArray(character.mounts) ? character.mounts : [];
+            if (!mounts.some((mount: any) => Math.round(Number(mount ?? 0)) === prize.mountId)) {
+                mounts.push(prize.mountId);
+                character.mounts = Array.from(new Set(mounts)).sort(
+                    (left: number, right: number) => left - right
+                );
+                const mountPacket = new BitBuffer(false);
+                mountPacket.writeMethod4(prize.mountId);
+                mountPacket.writeMethod15(false);
+                client.sendBitBuffer(0x36, mountPacket);
+                delivered = true;
+            }
         } else if (prize.kind === 'pet') {
             const pets = Array.isArray(character.pets) ? character.pets : [];
             const specialId = pets.reduce((max: number, pet: any) => Math.max(max, Number(pet?.special_id ?? 0)), 0) + 1;
@@ -1110,15 +1117,17 @@ export class NpcHandler {
             character.pets = pets;
             newPet = { typeId: prize.petTypeId, specialId };
             delivered = true;
+        } else if (prize.kind === 'material') {
+            // Candy Corn pays no gold - it is the prize, not a consolation on top
+            // of one.
+            HallowsEve.grantMaterial(character, prize.materialId);
+            delivered = true;
         } else {
-            const materials = Array.isArray(character.materials) ? character.materials : [];
-            const entry = materials.find((row: any) => Math.round(Number(row?.materialID ?? 0)) === prize.materialId);
-            if (entry) {
-                entry.count = Math.max(0, Math.round(Number(entry.count ?? 0))) + 1;
-            } else {
-                materials.push({ materialID: prize.materialId, count: 1 });
+            // materialId 0 is "no material" - the gold shelves pay gold alone, and
+            // writing a row for material zero would put a phantom in the stock list.
+            if (prize.materialId > 0) {
+                HallowsEve.grantMaterial(character, prize.materialId);
             }
-            character.materials = materials;
             character.gold = Number(character.gold ?? 0) + prize.gold;
             delivered = true;
         }
