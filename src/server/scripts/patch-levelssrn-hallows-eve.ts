@@ -840,6 +840,12 @@ const DECOR_BACK: DecorEntry[] = [
    * off the scene through `sceneToLocalX/Y`, so these hang in the crown rather
    * than against sky. Small on purpose: at 0.4 they read as lanterns tied to
    * branches instead of as gourds parked in the air.
+   *
+   * **They do not stay here.** `patch-levelssrn-hallows-eve-pumpkin-swing.ts` lifts
+   * all three out of this composite afterwards and hangs them again as room
+   * children of a generated, swinging sprite - a composite child cannot animate.
+   * It reads their points and scales off these placements, so this list is still
+   * where they are positioned; run it after this script.
    */
   ...([
     { x: 790, y: -470, scale: 0.62 },
