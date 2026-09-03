@@ -32,6 +32,20 @@ const HALLOWS_EVE_PET_NAMES: Record<number, string> = {
     64: 'GargoyleGreen'
 };
 
+/**
+ * The helms by `GearName`, which is what the reveal has to send.
+ *
+ * `class_18.method_996` draws a gear reward with
+ * `class_14.gearTypesDict[param4]` - `param4` being the string off the packet - so the
+ * icon only appears if that string is a key of that dictionary. `GearTypes.xml` gives
+ * the three pumpkin helms these names against ids 1159..1161.
+ */
+const HALLOWS_EVE_HELM_GEAR_NAMES: Record<number, string> = {
+    1159: 'SpecialHalloweenHelmPaladin30',
+    1160: 'SpecialHalloweenHelmMage30',
+    1161: 'SpecialHalloweenHelmRogue30'
+};
+
 const HALLOWS_EVE_PET_DISPLAY_NAMES: Record<number, string> = {
     57: 'Bewildered Jack-O',
     58: 'Menacing Jack-O',
@@ -62,10 +76,38 @@ const HALLOWS_EVE_PET_DISPLAY_NAMES: Record<number, string> = {
  * which is the closest the table has to a crafting material and lets the server's
  * own name through onto the card.
  */
+/**
+ * How long the coffer's reveal takes on screen, before the grant is allowed to speak.
+ *
+ * The screen patch walks the skull's `Open` sequence from frame 3 to 63 at 28ms a
+ * frame - 1,680ms - and the class floats its reward card at `const_1176`, which that
+ * patch retunes to 1,800ms. Two seconds is just past both: the skull is open and the
+ * prize is in the ring by the time the NEW banner arrives, instead of the banner
+ * announcing the prize while the skull is still shut.
+ */
+const HALLOWS_EVE_REVEAL_MS = 2_000;
+
+/**
+ * The reveal slots, and the one rule behind them: **never ask the client to render.**
+ *
+ * The index is what the panel draws the card from, and three of the twenty entries make
+ * it *render* rather than look a picture up - the mount slot through
+ * `class_41.method_168`, the pet slot through `method_85`, the gear slot through
+ * `Game.RenderGear`. On this screen all three misbehaved, and always together: the
+ * reveal arrived late, the icon came out dark or empty, and the skull's opening
+ * animation never played at all - because `method_1148` sets `var_1929` and `var_2206`,
+ * which drive that animation, and then calls `method_996`, which is where the render
+ * happens. Gold and materials, which are looked up with `method_12`, never had any of
+ * those symptoms.
+ *
+ * So every coffer prize now goes out through a slot that only ever looks something up.
+ * The card's own icon and name are wrong for most of them, and that costs nothing: the
+ * card is hidden on this screen, the ribbon is written from the packet's name, and the
+ * ring is filled from art the panel carries (see `patch-ui4-hallows-eve-mount-icon.ts`).
+ */
 const HALLOWS_EVE_REVEAL_SLOT = {
-    mount: 0,
-    pet: 1,
-    gear: 8,
+    // `MinorRareCatalyst` - a consumable, drawn by name from `class_14.var_303`.
+    drawn: 15,
     otherMaterial: 14,
     material: 15,
     goldBig: 17,
@@ -395,6 +437,23 @@ export class LockboxHandler {
             `remainingKeys=${Number(character.DragonKeys ?? 0)}`
         );
 
+        // **The grant waits for the skull to finish opening.**
+        //
+        // Granting is what announces: `applyReward` sends the packets that put a NEW
+        // banner in the corner of the screen, and it was doing that the instant the open
+        // was received - before the skull had cracked, before the ring had anything in
+        // it. The prize was spoiled by its own delivery note.
+        //
+        // So the reveal goes out first and the grant follows it, one skull-opening
+        // later. See `HALLOWS_EVE_REVEAL_MS`.
+        await new Promise((resolve) => setTimeout(resolve, HALLOWS_EVE_REVEAL_MS));
+        if (client.character !== character || client.socket.destroyed) {
+            // The character left in the meantime. Nothing is lost - `spendKey` and the
+            // prize both live on the character object, and the next save writes them -
+            // but there is nobody to send the packets to.
+            return;
+        }
+
         // `applyReward` cannot deliver a material - it resolves the catalyst slot
         // this prize borrows as a *consumable* by name, and Candy Corn is not one,
         // so it quietly grants nothing. The material is handed over here instead.
@@ -417,6 +476,20 @@ export class LockboxHandler {
      * consolation. `selectionDebug` is only ever read by the trove's own log line
      * and is filled with zeroes rather than made optional, so the shared reward
      * shape stays one type.
+     *
+     * **`packetName` is a lookup key, not a label.** The one string the reveal packet
+     * carries reaches `class_18.method_996` as `param4`, and for two of these kinds
+     * that is what the icon is looked up by: `class_14.var_233[param4]` for a pet and
+     * `class_14.gearTypesDict[param4]` for gear. Sending a human label - *Bewildered
+     * Jack-O* rather than *PumpkinRed* - is a dictionary miss, and a miss draws
+     * nothing, which is why those two arrived with an empty ring. The trove has always
+     * sent keys here; this now does too, and the panel's own text resolves the pretty
+     * name from the key the way it does for a trove reward.
+     *
+     * The mount and the materials are the other way round: `method_996` looks those up
+     * by `this.var_162`, the *client's* own pool entry name, and ignores the string
+     * entirely - so for them it stays a label, and the coffer screen patch draws the
+     * mount's icon itself.
      */
     private static buildHallowsEveReward(prize: HallowsEvePrize): ResolvedLockboxReward {
         const selectionDebug = {
@@ -427,11 +500,12 @@ export class LockboxHandler {
         };
 
         if (prize.kind === 'gear') {
+            const gearName = HALLOWS_EVE_HELM_GEAR_NAMES[prize.gearId] ?? prize.label;
             return {
-                index: HALLOWS_EVE_REVEAL_SLOT.gear,
+                index: HALLOWS_EVE_REVEAL_SLOT.drawn,
                 type: 'gear',
                 grantName: prize.label,
-                packetName: prize.label,
+                packetName: gearName,
                 rarity: 'Legendary',
                 gearId: prize.gearId,
                 selectionDebug
@@ -443,7 +517,7 @@ export class LockboxHandler {
             // the grant name is the `MountName` from `MountTypes.xml` rather than
             // anything a player reads.
             return {
-                index: HALLOWS_EVE_REVEAL_SLOT.mount,
+                index: HALLOWS_EVE_REVEAL_SLOT.drawn,
                 type: 'mount',
                 grantName: prize.mountName,
                 packetName: prize.label,
@@ -454,12 +528,11 @@ export class LockboxHandler {
 
         if (prize.kind === 'pet') {
             const petName = HALLOWS_EVE_PET_NAMES[prize.petTypeId] ?? '';
-            const displayName = HALLOWS_EVE_PET_DISPLAY_NAMES[prize.petTypeId] ?? prize.label;
             return {
-                index: HALLOWS_EVE_REVEAL_SLOT.pet,
+                index: HALLOWS_EVE_REVEAL_SLOT.drawn,
                 type: 'pet',
                 grantName: petName,
-                packetName: displayName,
+                packetName: petName,
                 rarity: 'Legendary',
                 selectionDebug
             };

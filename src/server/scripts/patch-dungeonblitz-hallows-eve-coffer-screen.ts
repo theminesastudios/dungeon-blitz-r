@@ -332,8 +332,13 @@ const CARD_ICON_Y = 188;
  *
  * A `getBounds` fit stood here for one round and cost the prize entirely; this needs
  * no measurement, only the two setters.
+ *
+ * 50 against a plate whose face runs (-2, -2) to (50, 50): centred on (24, 24) the box
+ * spans -1 to 49, so it fills the frame with a unit of dark plate showing all round and
+ * nothing over the border.
  */
-const RING_FIT = 46;
+const RING_FIT = 50;
+
 const RING_ICON_X = 1;
 const RING_ICON_Y = 1;
 /**
@@ -368,6 +373,42 @@ const HOLDER_SCALE_DEN = 8;
  */
 const COUNT_GROUP = "am_TextGroup";
 const PRIZE_COUNTS = ["x1", "x1", "x8", "x10", "x20"];
+/**
+ * The mount prize, and the icon the client will not draw for it.
+ *
+ * `class_18.method_996` renders a mount from `class_14.var_362[this.var_162]` - the
+ * name of the pool entry the *client* looked up, not anything the server said. A coffer
+ * pays its mount through slot 0 because that is the pool's mount slot, so the icon it
+ * would draw is `MountLockbox01L01`, the trove's Ivorystorm Guardian, and on this
+ * client it comes back as an empty `Bitmap` besides.
+ *
+ * Rendering the right one instead does not help: that render needs the mount's art
+ * loaded and `Animation_HorseMount.swf` is not, in a square where nobody is mounted.
+ * So the picture is drawn art - a copy of the prize column's own mount icon, placed in
+ * the panel as `MOUNT_ICON_NAME` by `patch-ui4-hallows-eve-mount-icon.ts`.
+ *
+ * `MOUNT_PRIZE_NAME` is what the server sends as the reveal's name
+ * (`HALLOWS_EVE_MOUNT_DISPLAY_NAME` in `core/HallowsEve.ts`); change it there and this
+ * has to change with it.
+ */
+/**
+ * Where the imported pet pictures hang.
+ *
+
+/**
+ * Where the imported pet pictures hang, and what they are called.
+ *
+ * `patch-ui4-hallows-eve-mount-icon.ts` places one per family in the panel under this
+ * prefix plus the `animClass` the EntType carries. Change it there and here together.
+ */
+const PET_ART_PREFIX = "am_HallowsEvePet_";
+const HELM_ART_PREFIX = "am_HallowsEveHelm_";
+const RING_CX = 24;
+const RING_CY = 24;
+
+const MOUNT_PRIZE_NAME = "The Nightmare";
+const MOUNT_ICON_NAME = "am_HallowsEveMountIcon";
+
 const FLOATER_NAME = "am_RewardFloater0";
 const FLOATER_WRAP = "am_NameWrapper";
 const FLOATER_TEXT = "am_Name";
@@ -459,11 +500,15 @@ const L_BANNER = 25;
 const L_BURST = 26;
 const L_ICON = 27;
 const L_SHOW = 28;
+const L_MOUNT = 29;
+const L_POWER = 30;
 const SCRATCH_BASE = 10;
-const NEW_LOCAL_COUNT = 29;
-// The hosts declare 5 and 8; the deepest emitted block needs 5. Ten leaves both
-// covered with the margin the assembler insists on.
-const NEW_MAX_STACK = 10;
+const NEW_LOCAL_COUNT = 31;
+// The hosts declare 5 and 8; the deepest emitted block is the mount icon at 8 - the
+// holder, `class_41`, and its six arguments. Twelve leaves that covered with the four
+// slots of margin the assembler insists on, and `max_stack` is a u30 that encodes to
+// one byte either way, so raising it moves nothing.
+const NEW_MAX_STACK = 12;
 
 const OP = {
   jump: 0x10,
@@ -972,7 +1017,16 @@ interface Names {
   screenClosing: number;
   text: number;
   revealStart: number;
+  prizeName: number;
+  mountTypes: number;
+  petDict: number;
+  gearDict: number;
+  displayName: number;
+  numChildren: number;
+  removeChildAt: number;
+  scaleXGet: number;
   getChildByName: number;
+  getChildAt: number;
   gotoAndStop: number;
   buttonMode: number;
   mouseChildren: number;
@@ -1425,6 +1479,60 @@ function chromeProgram(names: Names, str: (value: string) => number): Emitted[] 
     { opcode: OP.iffalse, branchTo: "parkBanner", pop: 1 },
 
     // The prize, copied from the card the class fills in.
+    // **The name, resolved here rather than read off the card.**
+    //
+    // The reveal packet carries an index and a string, and the client uses each for a
+    // different thing. The card is drawn from its own twenty-entry table *by index*,
+    // and `class_18.method_839` names it from that same entry - `class_14.var_233
+    // [this.var_162].displayName` for a pet - so the card announced *Darkheart
+    // Apparition*, the pet sitting in slot 1 of the trove's pool, whichever jack-o the
+    // coffer had actually paid. Slot 0 did the same for the mount with *Ivorystorm
+    // Guardian*.
+    //
+    // The string is the other half. `method_996` looks a pet up by it
+    // (`class_14.var_233[param4]`) and gear by it (`class_14.gearTypesDict[param4]`),
+    // which is why the server sends keys there - and those same two dictionaries carry
+    // the pretty name on `displayName`. So the ribbon asks them itself: a key resolves
+    // to the prize's own name, and anything that resolves to neither - the mount, the
+    // materials, the gold - is already a label and is used as it stands.
+    //
+    // `method_1148` parks the string in `var_991`, which is where it is read from.
+    getlocal(0),
+    get(names.prizeName),
+    { opcode: OP.dup, push: 1 },
+    { opcode: OP.iffalse, branchTo: "noSentName", pop: 1 },
+    setlocal(L_CURSOR),
+
+    { opcode: OP.getlex, operands: [["u30", names.mountTypes]], push: 1 },
+    get(names.petDict),
+    getlocal(L_CURSOR),
+    { opcode: OP.getproperty, operands: [["u30", names.indexer]], pop: 2, push: 1 },
+    { opcode: OP.dup, push: 1 },
+    { opcode: OP.iffalse, branchTo: "notAPet", pop: 1 },
+    get(names.displayName),
+    setlocal(L_CURSOR),
+    { opcode: OP.jump, branchTo: "haveName" },
+
+    { label: "notAPet" },
+    { opcode: OP.pop, pop: 1 },
+    { opcode: OP.getlex, operands: [["u30", names.mountTypes]], push: 1 },
+    get(names.gearDict),
+    getlocal(L_CURSOR),
+    { opcode: OP.getproperty, operands: [["u30", names.indexer]], pop: 2, push: 1 },
+    { opcode: OP.dup, push: 1 },
+    { opcode: OP.iffalse, branchTo: "notGear", pop: 1 },
+    get(names.displayName),
+    setlocal(L_CURSOR),
+    { opcode: OP.jump, branchTo: "haveName" },
+
+    { label: "notGear" },
+    { opcode: OP.pop, pop: 1 },
+    { opcode: OP.jump, branchTo: "haveName" },
+
+    // Nothing was sent at all, which is the panel before its first open. The card's own
+    // text is the only name there is.
+    { label: "noSentName" },
+    { opcode: OP.pop, pop: 1 },
     getlocal(L_CLIP),
     ...child(FLOATER_NAME),
     { opcode: OP.dup, push: 1 },
@@ -1436,13 +1544,16 @@ function chromeProgram(names: Names, str: (value: string) => number): Emitted[] 
     { opcode: OP.dup, push: 1 },
     { opcode: OP.iffalse, branchTo: "noPrizeText", pop: 1 },
     get(names.text),
-    // "You got 250,000 Gold" rather than the bare name the card carries.
-    pushString(BANNER_PREFIX),
-    { opcode: OP.swap },
-    { opcode: OP.add, pop: 2, push: 1 },
-    getlocal(L_BANNER),
-    { opcode: OP.swap },
     setlocal(L_CURSOR),
+
+    { label: "haveName" },
+
+    // "You got The Nightmare" rather than the bare name.
+    pushString(BANNER_PREFIX),
+    getlocal(L_CURSOR),
+    { opcode: OP.add, pop: 2, push: 1 },
+    setlocal(L_CURSOR),
+    getlocal(L_BANNER),
     // `am_Name` is the ribbon's own text field, a direct child of the ring - no
     // wrapper to step through the way the old parchment had.
     ...child(BANNER_TEXT),
@@ -1643,12 +1754,137 @@ function chromeProgram(names: Names, str: (value: string) => number): Emitted[] 
     { opcode: OP.pop, pop: 1 },
     { label: "afterCardPark" },
 
+    // **The prize art, in the order it has to be tried.**
+    //
+    // The holder is picked first, then this file's own icon for the prize types the
+    // client cannot draw, and only then the fallback that moves whatever the class did
+    // draw. That order is not cosmetic: the fallback fills the holder, and every block
+    // here is guarded on the holder being *empty* so it cannot fight the class for it.
+    // With the move running first, the pet block below was skipped every single time -
+    // it never once ran, and what the ring kept showing was the render the move had
+    // just carried in.
     getlocal(0),
     get(names.iconHolder),
     { opcode: OP.dup, push: 1 },
     { opcode: OP.iffalse, branchTo: "noHolder", pop: 1 },
     { opcode: OP.coerce_a },
     setlocal(L_ICON),
+    // **The prize's own picture, drawn by this project rather than by the client.**
+    //
+    // Three of the five prizes used to be *rendered* by `class_18.method_996` -
+    // `method_85` for a pet, `method_168` for the mount, `RenderGear` for the helm - and
+    // all three came out wrong here: a dark unlit sketch for the pets, an empty bitmap
+    // for the mount, a helm placed for a card rather than a plate. The reveal no longer
+    // asks for any of it (see `buildHallowsEveReward`), so every one of those pictures is
+    // now drawn art parked in the panel by `patch-ui4-hallows-eve-mount-icon.ts`:
+    //
+    //     am_HallowsEvePet_PumpkinRed ... am_HallowsEvePet_GargoyleGreen
+    //     am_HallowsEveHelm_SpecialHalloweenHelmRogue30 ... and the two others
+    //     am_HallowsEveMountIcon
+    //
+    // The first two are named after the string the server sends, so finding one is a
+    // concatenation. The mount's name is fixed, so it is compared for.
+    //
+    // What is found goes *into the holder*, which is what the ring borrows - and the
+    // holder is emptied first, because the reveal has just put a catalyst icon in it and
+    // that is not the prize. `method_1148` clears the holder on every reveal, so this
+    // leaves nothing behind for the next one.
+    getlocal(0),
+    get(names.prizeName),
+    { opcode: OP.coerce_a },
+    setlocal(L_MOUNT),
+    getlocal(L_MOUNT),
+    { opcode: OP.iffalse, branchTo: "afterPetIcon", pop: 1 },
+
+    // The pet's, then the helm's, then the mount's - the first that answers wins.
+    getlocal(L_SKIN),
+    pushString(PET_ART_PREFIX),
+    getlocal(L_MOUNT),
+    { opcode: OP.add, pop: 2, push: 1 },
+    { opcode: OP.callproperty, operands: [["u30", names.getChildByName], ["u30", 1]], pop: 2, push: 1 },
+    { opcode: OP.dup, push: 1 },
+    { opcode: OP.iftrue, branchTo: "haveOwnArt", pop: 1 },
+    { opcode: OP.pop, pop: 1 },
+
+    getlocal(L_SKIN),
+    pushString(HELM_ART_PREFIX),
+    getlocal(L_MOUNT),
+    { opcode: OP.add, pop: 2, push: 1 },
+    { opcode: OP.callproperty, operands: [["u30", names.getChildByName], ["u30", 1]], pop: 2, push: 1 },
+    { opcode: OP.dup, push: 1 },
+    { opcode: OP.iftrue, branchTo: "haveOwnArt", pop: 1 },
+    { opcode: OP.pop, pop: 1 },
+
+    getlocal(L_MOUNT),
+    pushString(MOUNT_PRIZE_NAME),
+    { opcode: OP.ifne, branchTo: "afterPetIcon", pop: 2 },
+    getlocal(L_SKIN),
+    ...child(MOUNT_ICON_NAME),
+    { opcode: OP.dup, push: 1 },
+    { opcode: OP.iffalse, branchTo: "noOwnArt", pop: 1 },
+
+    { label: "haveOwnArt" },
+    { opcode: OP.coerce_a },
+    setlocal(L_POWER),
+
+    // One child means the reveal's own icon is still in there and ours is not; two means
+    // this already ran. Emptying and refilling on the first is what swaps them.
+    getlocal(L_ICON),
+    get(names.numChildren),
+    { opcode: OP.pushbyte, operands: [["s8", 1]], push: 1 },
+    { opcode: OP.ifne, branchTo: "afterPetIcon", pop: 2 },
+    getlocal(L_ICON),
+    { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
+    { opcode: OP.callpropvoid, operands: [["u30", names.removeChildAt], ["u30", 1]], pop: 2 },
+    getlocal(L_ICON),
+    getlocal(L_POWER),
+    { opcode: OP.callpropvoid, operands: [["u30", names.addChild], ["u30", 1]], pop: 2 },
+    { opcode: OP.jump, branchTo: "afterPetIcon" },
+
+    { label: "noOwnArt" },
+    { opcode: OP.pop, pop: 1 },
+    { label: "afterPetIcon" },
+
+    // **Where the prize actually went.**
+    //
+    // `am_Icon` carries two holders and `method_1148` chooses between them by prize
+    // type:
+    //
+    //     if (reward.var_86 == class_18.const_171) { _loc5_ = var_1085; method_14(var_1191) }
+    //     else                                     { _loc5_ = var_1191; method_14(var_1085) }
+    //
+    // `const_171` is the pet type - the same constant `method_839` opens the pet
+    // dictionary under - so a pet is drawn into `am_MaskIconHolder` and everything else
+    // into `am_ItemIconHolder`. Borrowing only the item holder therefore worked for
+    // gold, materials, gear and the mount, and left the ring empty for every pet with
+    // the art sitting in the holder next door.
+    //
+    // The child is moved across rather than the other holder being borrowed instead.
+    // Borrowing it would put `var_1085` in the socket, and `var_1085.parent` is how
+    // everything in this file finds `am_Icon` - see `theIcon` - so the anchor would
+    // start answering with the ring and the next hand-back would drag the socket, plate
+    // and all, onto the card. Moving the child leaves both holders where they are and
+    // the rest of this block unchanged; `method_1148` clears whichever holder it is not
+    // filling, so nothing is left behind on the next reveal.
+
+    getlocal(L_ICON),
+    get(names.numChildren),
+    { opcode: OP.iftrue, branchTo: "haveArt", pop: 1 },
+    getlocal(0),
+    get(names.maskHolder),
+    { opcode: OP.coerce_a },
+    setlocal(L_MOUNT),
+    getlocal(L_MOUNT),
+    { opcode: OP.iffalse, branchTo: "haveArt", pop: 1 },
+    getlocal(L_MOUNT),
+    get(names.numChildren),
+    { opcode: OP.iffalse, branchTo: "haveArt", pop: 1 },
+    getlocal(L_ICON),
+    getlocal(L_MOUNT),
+    { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
+    { opcode: OP.callproperty, operands: [["u30", names.getChildAt], ["u30", 1]], pop: 2, push: 1 },
+    { opcode: OP.callpropvoid, operands: [["u30", names.addChild], ["u30", 1]], pop: 2 },
+    { label: "haveArt" },
 
     getlocal(L_BANNER),
     ...child(RING_SOCKET),
@@ -1657,30 +1893,94 @@ function chromeProgram(names: Names, str: (value: string) => number): Emitted[] 
     getlocal(L_ICON),
     { opcode: OP.callpropvoid, operands: [["u30", names.addChild], ["u30", 1]], pop: 2 },
 
-    // Sized to the frame rather than scaled by a ratio. `width` and `height` are
-    // setters as well as getters: writing one adjusts `scaleX`/`scaleY` so the drawn
-    // box comes out at that many units, whatever the art measured to begin with. That
-    // is what makes one rule fit all of them - a reward icon is 48 square, a rendered
-    // pet is 58, a gear render is neither - without measuring anything, and it is the
-    // same property the ring probe read back cleanly at 37.5, so the multiname is known
-    // to resolve here.
+
+
+    // **The prize art, put on the holder's own origin first.**
+    //
+    // Fitting a box to the frame only lands where it is meant to if the art starts at
+    // the origin of what is being fitted, and one prize does not: `method_996` renders
+    // gear with `RenderGear` and then moves it, `_loc13_.m_TheDO.x = 22` and `y = 44`,
+    // because that is where a helm belongs on the *card*. Inside a 52 plate those two
+    // numbers are most of the plate: the box measured 22 wider and 44 taller than the
+    // art, the fit shrank it to make that box 46, and what was left of the helm sat
+    // off the bottom-right corner. Which is why the pumpkin hood arrived as nothing at
+    // all.
+    //
+    // The holder is cleared and refilled with exactly one child by every branch of
+    // `method_996`, so zeroing that child is both safe and enough - for the prizes
+    // already drawn at (0, 0) it changes nothing.
+    getlocal(L_ICON),
+    get(names.numChildren),
+    // An empty holder leaves nothing on the stack to put back, so this one skips the
+    // whole block rather than the pop at the end of it.
+    { opcode: OP.iffalse, branchTo: "afterPrizeArt", pop: 1 },
+    getlocal(L_ICON),
+    { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
+    { opcode: OP.callproperty, operands: [["u30", names.getChildAt], ["u30", 1]], pop: 2, push: 1 },
+    { opcode: OP.dup, push: 1 },
+    { opcode: OP.iffalse, branchTo: "noPrizeArt", pop: 1 },
+    { opcode: OP.dup, push: 1 },
+    { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
+    set(names.x),
+    { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
+    set(names.y),
+    { opcode: OP.jump, branchTo: "afterPrizeArt" },
+    { label: "noPrizeArt" },
+    { opcode: OP.pop, pop: 1 },
+    { label: "afterPrizeArt" },
+
+    // **Sized to the frame, and not squashed into it.**
+    //
+    // `width` and `height` are setters as well as getters, and writing one adjusts its
+    // own scale - so writing *both* forces a square and a 145x177 jack-o comes out
+    // stretched. So one is written and the other scale is copied from it, which keeps
+    // the shape; if the taller side then overflows, the fit is redone the other way
+    // round. Whichever way it goes the box ends up inside `RING_FIT` with its shape
+    // intact, and centring it on the plate is then just its own measured size.
     getlocal(L_ICON),
     { opcode: OP.pushbyte, operands: [["s8", RING_FIT]], push: 1 },
     set(names.width),
     getlocal(L_ICON),
+    getlocal(L_ICON),
+    get(names.scaleX),
+    set(names.scaleY),
+
+    { opcode: OP.pushbyte, operands: [["s8", RING_FIT]], push: 1 },
+    getlocal(L_ICON),
+    get(names.height),
+    { opcode: OP.iflt, branchTo: "tooTall", pop: 2 },
+    { opcode: OP.jump, branchTo: "placeInRing" },
+    { label: "tooTall" },
+    getlocal(L_ICON),
     { opcode: OP.pushbyte, operands: [["s8", RING_FIT]], push: 1 },
     set(names.height),
-
-    // Sizing does not move the origin, so the inset is set after it.
     getlocal(L_ICON),
-    { opcode: OP.pushbyte, operands: [["s8", RING_ICON_X]], push: 1 },
+    getlocal(L_ICON),
+    get(names.scaleY),
+    set(names.scaleX),
+
+    { label: "placeInRing" },
+    getlocal(L_ICON),
+    { opcode: OP.pushbyte, operands: [["s8", RING_CX]], push: 1 },
+    getlocal(L_ICON),
+    get(names.width),
+    { opcode: OP.pushbyte, operands: [["s8", 2]], push: 1 },
+    { opcode: OP.divide, pop: 2, push: 1 },
+    { opcode: OP.subtract, pop: 2, push: 1 },
     set(names.x),
     getlocal(L_ICON),
-    { opcode: OP.pushbyte, operands: [["s8", RING_ICON_Y]], push: 1 },
+    { opcode: OP.pushbyte, operands: [["s8", RING_CY]], push: 1 },
+    getlocal(L_ICON),
+    get(names.height),
+    { opcode: OP.pushbyte, operands: [["s8", 2]], push: 1 },
+    { opcode: OP.divide, pop: 2, push: 1 },
+    { opcode: OP.subtract, pop: 2, push: 1 },
     set(names.y),
+    { label: "afterFit" },
     getlocal(L_ICON),
     { opcode: OP.pushtrue, push: 1 },
     set(names.visible),
+
     { opcode: OP.jump, branchTo: "afterRingIcon" },
 
     { label: "noHolder" },
@@ -2160,6 +2460,28 @@ function boardProgram(names: Names, str: (value: string) => number): Emitted[] {
     setlocal(L_CAN_OPEN),
 
     ...cofferGroup(names, str),
+
+    // **A redraw must not move the skulls that are already gone.**
+    //
+    // This block draws from a count, and a count says *how many* are left, not which.
+    // Drawing the first `stackCount` cells as skulls is right on a board nobody has
+    // touched and wrong on every board after that: the player empties a socket in the
+    // middle, `Display()` comes round again - a pet or a mount grant is enough to call
+    // it - and the board redraws with the gap moved to the end.
+    //
+    // So a cell that is *already* an empty socket stays one, and only live cells past
+    // the count are spent. `L_WANT` counts the ones kept as the cells are walked, which
+    // is what makes that a single pass.
+    //
+    // The exception is a full board. A count of `COFFER_CELLS` means the wall has been
+    // replaced - `spendKey` refills it, and `kurukafa: yenile` does it on demand - and
+    // then the sockets *should* be filled back in, so nothing is preserved.
+    { opcode: OP.pushbyte, operands: [["s8", 0]], push: 1 },
+    setlocal(L_WANT),
+    getlocal(L_READY),
+    { opcode: OP.pushbyte, operands: [["s8", COFFER_CELLS]], push: 1 },
+    { opcode: OP.equals, pop: 2, push: 1 },
+    setlocal(L_SHOW),
   ];
 
   for (let index = 0; index < COFFER_CELLS; index += 1) {
@@ -2175,23 +2497,35 @@ function boardProgram(names: Names, str: (value: string) => number): Emitted[] {
       // has already paid out shows an empty socket and takes nothing. Both halves
       // matter: the listener sits on every cell whatever it is showing, so without
       // the second one an empty socket still spent a key.
+      //
+      // Which of the two this cell is: an empty socket stays empty unless the board
+      // has been refilled, and a skull is kept while there are skulls left to keep.
+      // See the note above the loop.
       { opcode: OP.dup, push: 1 },
-      { opcode: OP.pushbyte, operands: [["s8", index]], push: 1 },
+      { opcode: OP.dup, push: 1 },
+      { opcode: OP.getproperty, operands: [["u30", names.currentFrame]], pop: 1, push: 1 },
+      { opcode: OP.pushbyte, operands: [["s8", FRAME_READY]], push: 1 },
+      { opcode: OP.ifeq, branchTo: `weigh${index}`, pop: 2 },
+      getlocal(L_SHOW),
+      { opcode: OP.iffalse, branchTo: `spend${index}`, pop: 1 },
+      { label: `weigh${index}` },
+      getlocal(L_WANT),
       getlocal(L_READY),
-      { opcode: OP.iflt, branchTo: `alive${index}`, pop: 2 },
-      { opcode: OP.pushfalse, push: 1 },
-      { opcode: OP.jump, branchTo: `enable${index}` },
-      { label: `alive${index}` },
-      { opcode: OP.pushtrue, push: 1 },
-      { label: `enable${index}` },
-      set(names.mouseEnabled),
+      { opcode: OP.iflt, branchTo: `keep${index}`, pop: 2 },
 
-      { opcode: OP.pushbyte, operands: [["s8", index]], push: 1 },
-      getlocal(L_READY),
-      { opcode: OP.iflt, branchTo: `live${index}`, pop: 2 },
+      { label: `spend${index}` },
+      { opcode: OP.pushfalse, push: 1 },
+      set(names.mouseEnabled),
       { opcode: OP.pushbyte, operands: [["s8", FRAME_INACTIVE]], push: 1 },
       { opcode: OP.jump, branchTo: `frame${index}` },
-      { label: `live${index}` },
+
+      { label: `keep${index}` },
+      { opcode: OP.pushtrue, push: 1 },
+      set(names.mouseEnabled),
+      getlocal(L_WANT),
+      { opcode: OP.pushbyte, operands: [["s8", 1]], push: 1 },
+      { opcode: OP.add, pop: 2, push: 1 },
+      setlocal(L_WANT),
       { opcode: OP.pushbyte, operands: [["s8", FRAME_READY]], push: 1 },
       { label: `frame${index}` },
 
@@ -2312,6 +2646,34 @@ function findOperandInClass(
  * `mLockboxID` is the indexer, and taking it from there means taking the one this
  * very class already uses on this very object.
  */
+/**
+ * The pool index of the empty string, taken from a `pushstring` that already uses it.
+ *
+ * `appendStrings` cannot be asked for `""`: the constant pool's entry 0 *is* the empty
+ * string, `indexOf` therefore answers 0, and 0 reads as "not in the pool" - so every run
+ * appended another empty string, the pool grew, every index after it moved, and the
+ * block never matched itself twice. `--verify` failing on a file that had just been
+ * written is what that looks like.
+ *
+ * `class_128` needs one for `iconName.replace("a_PetIcon_", "")` - the very call this
+ * file is copying - so the index it uses is both correct and known good.
+ */
+function findEmptyStringOperand(ctx: SwfContext, abc: ReturnType<typeof parseAbc>, pool: PoolInfo): number {
+  for (const trait of classTraits(abc, "class_128")) {
+    const name = abc.multinameNames[trait.nameIdx] ?? String(trait.nameIdx);
+    const methodIdx = methodIdxForTrait([trait], abc, name);
+    if (methodIdx === null) continue;
+    const body = abc.methodBodies.get(methodIdx);
+    if (!body) continue;
+    const code = ctx.body.subarray(body.codeStart, body.codeStart + body.codeLen);
+    for (const inst of disassemble(code, `class_128.${name}`)) {
+      if (inst.opcode !== OP.pushstring) continue;
+      if (pool.strings[inst.operands[0][1]] === "") return inst.operands[0][1];
+    }
+  }
+  throw new PatchError("class_128 pushes no empty string; there is nowhere to borrow one from.");
+}
+
 function findIndexerOperand(ctx: SwfContext, abc: ReturnType<typeof parseAbc>): number {
   const instructions = methodInstructions(ctx, abc, HOST_CLASS, "OnRefreshScreen");
   for (let index = 0; index < instructions.length - 1; index += 1) {
@@ -2346,12 +2708,32 @@ function findIndexerOperand(ctx: SwfContext, abc: ReturnType<typeof parseAbc>): 
  * The Treasure Trove reveal uses the same timer and gets the same longer pause. Its
  * chest animation is 131 frames, so if anything it was the one being rushed.
  */
-/** The chest sounds, and the strings they are pointed at instead. */
-const CHEST_SOUNDS = ["LockBox_Spawn", "LockBox_Basic_Open"];
+/**
+ * The names the reveal is not allowed to say, and what they are pointed at instead.
+ *
+ * Two chest sounds and two animations. `Sparkle` is the sequence `method_1148` plays on
+ * `var_699` - a `SuperAnimInstance` of `a_SparkleFountainGroup` - which is the burst of
+ * yellow that went off in the middle of the board, over the plinth the chest used to
+ * stand on, with its own sound on its own frames. `AmbientGlow` is the other half of
+ * the same moment - `a_Lockbox_AmbientGlowAnim` on `am_AmbientGlowContainer`, a 246x106
+ * bar of light under it - and it is the one that was left glowing when only the sparkle
+ * was taken away.
+ *
+ * A sequence name is as safe to break as a sound name, and for the same reason:
+ *
+ *     public function method_34(param1:uint, param2:String, param3:Boolean) : void {
+ *         var _loc4_:class_26 = this.var_71.var_69[param2];
+ *         if (!_loc4_) { return; }
+ *         ...
+ *
+ * An unknown name is a dictionary miss and an early return - no animation, no frames,
+ * and so no frame sounds either. There is nothing to race and nothing to throw.
+ */
+const CHEST_SOUNDS = ["LockBox_Spawn", "LockBox_Basic_Open", "Sparkle", "AmbientGlow"];
 const CHEST_SILENT_CANDIDATES = [CLOSE_NAME, COFFER_GROUP_NAME, SKIN_NAME, GLOW_NAME];
 
 /**
- * Takes the treasure chest's voice off the coffers - and, with it, off the trove.
+ * Takes the chest's voice and the reveal's sparkle off the coffers - and the trove.
  *
  * There is no chest on the coffer screen. There is a carved skull opening, with its
  * own sound on its own timeline, and behind it `class_73` driving the lockbox chest it
@@ -2376,7 +2758,7 @@ const CHEST_SILENT_CANDIDATES = [CLOSE_NAME, COFFER_GROUP_NAME, SKIN_NAME, GLOW_
  * no-op. The operand is rewritten in place, so the replacement has to encode to the
  * same width; anything wider would move every byte after it.
  *
- * The Treasure Trove shares these call sites and goes quiet with them. That is the
+ * The Treasure Trove shares these call sites and loses the same three. That is the
  * price of settling it without a race, and a chest that no longer thumps is a smaller
  * loss than a skull that rattles.
  */
@@ -2772,6 +3154,10 @@ function patchSwf(swfPath: string, verify: boolean, only: string[] | null): void
     BANNER_NAME,
     BANNER_TEXT,
     BANNER_PREFIX,
+    MOUNT_PRIZE_NAME,
+    PET_ART_PREFIX,
+    HELM_ART_PREFIX,
+    MOUNT_ICON_NAME,
     COUNT_GROUP,
     ...PRIZE_COUNTS,
     ...PRIZE_COUNTS.map((_, index) => `am_PrizeCount${index}`),
@@ -2790,7 +3176,12 @@ function patchSwf(swfPath: string, verify: boolean, only: string[] | null): void
     ...HELMS.map((helm) => helm.className),
   ];
   const { indexOf, patches: stringPatches } = appendStrings(pool, wantedStrings);
+  const emptyString = findEmptyStringOperand(ctx, abc, pool);
   const str = (value: string): number => {
+    // See `findEmptyStringOperand`: this one is borrowed, never appended.
+    if (value === "") {
+      return emptyString;
+    }
     const index = indexOf.get(value);
     if (index === undefined) {
       throw new PatchError(`String "${value}" was never resolved`);
@@ -2830,6 +3221,16 @@ function patchSwf(swfPath: string, verify: boolean, only: string[] | null): void
     screenClosing: findOperandInClass(ctx, abc, "class_32", OP.getproperty, "var_790"),
     text: pool.publicQName("text"),
     revealStart: inClass(OP.getproperty, "var_2206"),
+    // `var_991` - the string off the reveal packet, parked by `method_1148`.
+    prizeName: inClass(OP.getproperty, "var_991"),
+    // `class_14`, whose dictionaries the ribbon asks whether it was sent a key.
+    mountTypes: pool.qNameIn("", "class_14"),
+    petDict: findOperandInClass(ctx, abc, "class_18", OP.getproperty, "var_233"),
+    gearDict: findOperandInClass(ctx, abc, "class_18", OP.getproperty, "gearTypesDict"),
+    displayName: findOperandInClass(ctx, abc, "class_18", OP.getproperty, "displayName"),
+    numChildren: pool.publicQName("numChildren"),
+    removeChildAt: pool.publicQName("removeChildAt"),
+    scaleXGet: pool.publicQName("scaleX"),
     openHandler: inClass(OP.getproperty, "method_782"),
     closeHandler: inClass(OP.getproperty, "method_1132"),
     openInFlight: inClass(OP.getproperty, "var_1883"),
@@ -2846,6 +3247,7 @@ function patchSwf(swfPath: string, verify: boolean, only: string[] | null): void
     scaleY: pool.publicQName("scaleY"),
     clearAnimation: pool.publicQName("ClearAnimation"),
     getChildByName: pool.publicQName("getChildByName"),
+    getChildAt: pool.publicQName("getChildAt"),
     gotoAndStop: pool.publicQName("gotoAndStop"),
     buttonMode: pool.publicQName("buttonMode"),
     mouseChildren: pool.publicQName("mouseChildren"),
