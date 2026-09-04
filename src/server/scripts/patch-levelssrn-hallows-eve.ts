@@ -37,6 +37,14 @@
  *   - an invisible `a_Door_108` marker carrying the door itself;
  *   - an `a_DoorMarker`, which is what draws the floating name plate.
  *
+ * **The marker was a mistake and is taken back out** by
+ * `patch-levelssrn-hallows-eve-door-plates.ts`: a room may carry only *one*
+ * `a_DoorMarker` and `Level` applies it to **every** door in that room, so the second
+ * one dragged the road-out-to-Wolf's-End plate across the square onto the rift. With
+ * no marker at all each door falls back to a plate position derived from its own
+ * placement, which is the only arrangement that serves two doors in one room. Run
+ * that script after this one; do not put the marker back.
+ *
  * The split is not optional. An `a_Door_` child is an editor marker and is given
  * `visible = DEVFLAG_SHOWCUES`, i.e. hidden, so it cannot also be the artwork. The
  * door still needs a character with real bounds, because a Door's clickable

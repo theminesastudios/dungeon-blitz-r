@@ -67,7 +67,12 @@ import {
     LEGENDS_INN_TITUS_WARNING,
     LegendsInnGate
 } from '../core/LegendsInnGate';
-import { HallowsEve, HALLOWS_EVE_PROMPT_CONTEXT } from '../core/HallowsEve';
+import {
+    HallowsEve,
+    HALLOWS_EVE_DOOR_ID,
+    HALLOWS_EVE_LEVEL,
+    HALLOWS_EVE_PROMPT_CONTEXT,
+} from '../core/HallowsEve';
 
 const db = new JsonAdapter();
 
@@ -5121,9 +5126,59 @@ export class LevelHandler {
         const isStoryAreaEntryLocked =
             Boolean(target) &&
             !LevelHandler.isStoryAreaEntryUnlocked(client, currentLevel, target);
+
+        /**
+         * What this door was answered with, and why.
+         *
+         * A door's floating name plate is built client-side by `Entity.method_579`,
+         * and that method returns without building anything when the state is CLOSED
+         * or LOCKED or when the target name is empty. So "the plate does not show" is
+         * always one of three things: the client never asked (no line here at all),
+         * the target did not resolve (`target: null`), or a gate answered LOCKED -
+         * and there is no way to tell them apart from the outside. One line per
+         * request separates them in a single walk past the door.
+         *
+         * Off by default - a line per door approach is noise once a question is
+         * answered. Set `DOOR_DIAG=1` to turn it back on.
+         *
+         * It has already earned its keep once: the Wolf's End plate was missing and
+         * this said `STATIC (open), target NewbieRoad`, which ruled out every
+         * server-side cause in one walk and moved the hunt to the client - where the
+         * plate turned out to be drawn on the wrong side of the square, because the
+         * room had grown a second `a_DoorMarker`.
+         */
+        const doorDiag = String(process.env.DOOR_DIAG ?? '0').trim() !== '0';
         
         const bb = new BitBuffer();
         bb.writeMethod4(doorId);
+
+        /**
+         * The Hallow's Eve arch answers CLOSED, so it builds no name plate.
+         *
+         * **A room may show exactly one door plate.** `Level`'s room walk keeps a
+         * single door and positions its plate once, after the walk; every other door
+         * in that room is left on `(0, 0)` - the room's origin, out at the far left
+         * of the square. `a_Room_SRN04` has two doors now, the road out to Wolf's End
+         * and this arch, and the plate is given to Wolf's End (see
+         * `patch-levelssrn-hallows-eve-door-plates.ts`, which moves that door to the
+         * back of the depth order).
+         *
+         * That leaves this one with a plate it would draw in the wrong place, so it
+         * is stopped at the source: `Entity.method_579` returns without building
+         * anything when the state is CLOSED. The arch loses nothing else - the door
+         * still opens, because `Game.OpenDoor` never consults the state and every
+         * rule about where it may lead is enforced below - and the Hollow Watcher
+         * standing beside it still names the dungeon in the prompt.
+         */
+        if (doorId === HALLOWS_EVE_DOOR_ID && LevelConfig.normalizeLevelName(target || '') === HALLOWS_EVE_LEVEL) {
+            if (doorDiag) {
+                console.log(`[DOOR-DIAG] ${currentLevel} door ${doorId} -> CLOSED (Hallow's Eve arch: room plate belongs to Wolf's End), target ${target ?? 'null'}`);
+            }
+            bb.writeMethod91(LevelHandler.DOORSTATE_CLOSED);
+            bb.writeMethod13(target || '');
+            client.sendBitBuffer(0x42, bb);
+            return;
+        }
 
         if (LegendsInn.isStageLevel(currentLevel)) {
             // Legends' Inn shows nothing but its portal.
@@ -5138,19 +5193,30 @@ export class LevelHandler {
             // point: the stages pretend to be one place, and a plate naming Craft Town
             // on the way in or the next stage over the boss's head gives that away
             // before the portal has even been earned.
+            if (doorDiag) {
+                console.log(`[DOOR-DIAG] ${currentLevel} door ${doorId} -> CLOSED (Legends' Inn stage), target ${target ?? 'null'}`);
+            }
             bb.writeMethod91(LevelHandler.DOORSTATE_CLOSED);
             bb.writeMethod13(target || '');
             client.sendBitBuffer(0x42, bb);
             return;
         }
 
+        let answeredState = LevelHandler.DOORSTATE_CLOSED;
+        let answeredWhy = 'no target in door_map';
         if (target && isDreadfoldGateLocked) {
+            answeredState = LevelHandler.DOORSTATE_LOCKED;
+            answeredWhy = 'dreadfold gate';
             bb.writeMethod91(LevelHandler.DOORSTATE_LOCKED);
             bb.writeMethod13(target);
         } else if (target && isStoryAreaEntryLocked) {
+            answeredState = LevelHandler.DOORSTATE_LOCKED;
+            answeredWhy = 'story area entry';
             bb.writeMethod91(LevelHandler.DOORSTATE_LOCKED);
             bb.writeMethod13(target);
         } else if (target && !isDungeonEntryUnlocked) {
+            answeredState = LevelHandler.DOORSTATE_LOCKED;
+            answeredWhy = 'dungeon entry mission';
             bb.writeMethod91(LevelHandler.DOORSTATE_LOCKED);
             bb.writeMethod13(target);
         } else if (target) {
@@ -5163,6 +5229,8 @@ export class LevelHandler {
             } else {
                 doorState = LevelHandler.DOORSTATE_STATIC;
             }
+            answeredState = doorState;
+            answeredWhy = 'open';
             bb.writeMethod91(doorState);
             bb.writeMethod13(target);
             if (doorState === LevelHandler.DOORSTATE_MISSIONREPEAT) {
@@ -5171,6 +5239,14 @@ export class LevelHandler {
         } else {
             bb.writeMethod91(LevelHandler.DOORSTATE_CLOSED);
             bb.writeMethod13("");
+        }
+
+        if (doorDiag) {
+            const stateName =
+                ['CLOSED', 'STATIC', 'DUNGEON', 'MISSIONREPEAT', 'LOCKED'][answeredState] ?? String(answeredState);
+            console.log(
+                `[DOOR-DIAG] ${currentLevel} door ${doorId} -> ${stateName} (${answeredWhy}), target ${target ?? 'null'}`
+            );
         }
 
         client.sendBitBuffer(0x42, bb);
